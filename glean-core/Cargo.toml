@@ -1,0 +1,11 @@
+[package]
+name = "glean-core"
+version = "0.1.0"
+authors = ["Jan-Erik Rediger <jrediger@mozilla.com>"]
+description = "A modern Telemetry library"
+repository = "https://github.com/badboy/glean.rs"
+readme = "README.md"
+license = "MPL-2.0"
+edition = "2018"
+
+[dependencies]
