@@ -3,3 +3,8 @@
 members = [
   "glean-core"
 ]
+
+[profile.release]
+opt-level = "s"
+debug = true
+lto = true
