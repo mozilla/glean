@@ -20,44 +20,6 @@ commands:
             rustup install <<parameters.rust-version>>
             rustup default <<parameters.rust-version>>
             rustc --version
-  build-libs:
-    parameters:
-      platform:
-        type: string
-    steps:
-      - run:
-          name: Compute libs/ checksum
-          command: echo "$(git rev-parse HEAD:libs)" >| libs_sha
-      - restore_cache:
-          name: Restore libs/ cache
-          key: libs-cache-{{ arch }}-{{ checksum "libs_sha" }}
-      - run:
-          name: Build libs
-          command: pushd libs && ./build-all.sh <<parameters.platform>> && popd
-      - save_cache:
-          name: Save libs/ cache
-          key: libs-cache-{{ arch }}-{{ checksum "libs_sha" }}
-          paths:
-            - libs/<<parameters.platform>>
-  build-desktop-libs:
-    steps:
-      - run: sudo apt-get install tcl
-      - build-libs:
-          platform: desktop
-  test-setup:
-    parameters:
-      rust-version:
-        type: string
-        default: "stable"
-    steps:
-      - checkout
-      - build-desktop-libs
-      - setup-rust-toolchain:
-          rust-version: <<parameters.rust-version>>
-      - run: |
-          echo 'export OPENSSL_DIR=$(pwd)/libs/desktop/linux-x86-64/openssl' >> $BASH_ENV
-          echo 'export SQLCIPHER_LIB_DIR=$(pwd)/libs/desktop/linux-x86-64/sqlcipher/lib' >> $BASH_ENV
-          echo 'export SQLCIPHER_INCLUDE_DIR=$(pwd)/libs/desktop/linux-x86-64/sqlcipher/include' >> $BASH_ENV
   rust-tests:
     parameters:
       rust-version:
@@ -77,23 +39,6 @@ commands:
       - run:
           name: Test (no default features)
           command: cargo test --all --no-default-features --verbose
-  sync-tests:
-    steps:
-      - test-setup
-      - run:
-          name: Install Node.js
-          command: |
-            curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
-            sudo apt-get install -y nodejs
-      - run:
-          name: Sync Integration Test Suite
-          command: cargo run -p sync-test -- --oauth-retries 5
-  bench-all:
-    steps:
-      - test-setup
-      - run:
-          name: Build and Run Benchmarks
-          command: cargo bench --all
 
 jobs:
   Check Rust formatting:
@@ -118,80 +63,6 @@ jobs:
     steps:
       - rust-tests:
           rust-version: "beta"
-  Sync integration tests:
-    docker:
-      - image: circleci/rust:latest-browsers
-    steps:
-      - sync-tests
-  Rust benchmarks:
-    docker:
-      - image: circleci/rust:latest
-    steps:
-      - bench-all
-  Carthage build:
-    macos:
-      xcode: "10.1.0"
-    steps:
-      - install-rust
-      - setup-rust-toolchain
-      - checkout
-      - restore_cache:
-          name: Restore Rust cache
-          keys:
-            - rust-cache-{{ arch }}-{{ checksum "Cargo.lock" }}
-            - rust-cache-{{ arch }}
-      - build-libs:
-          platform: ios
-      - run:
-          name: Build Carthage archive
-          command: |
-            rustup target add aarch64-apple-ios armv7-apple-ios i386-apple-ios x86_64-apple-ios
-            cargo lipo --help &>/dev/null || cargo install cargo-lipo
-            brew update
-            brew outdated carthage || brew upgrade carthage
-            brew install swift-protobuf
-            sh build-carthage.sh MozillaAppServices.framework.zip
-      - save_cache:
-          name: Save Rust cache
-          key: rust-cache-{{ arch }}-{{ checksum "Cargo.lock" }}
-          paths:
-            - "./target"
-      - run:
-          name: "Create Carthage bin-only project specification"
-          command: |
-            ZIP_URL=https://circleci.com/api/v1.1/project/github/mozilla/application-services/$CIRCLE_BUILD_NUM/artifacts/0/dist/MozillaAppServices.framework.zip
-            echo "{\"0.0.1\":\"$ZIP_URL\"}" > mozilla.app-services.json
-      - store_artifacts:
-          path: MozillaAppServices.framework.zip
-          destination: dist/MozillaAppServices.framework.zip
-      - store_artifacts:
-          path: mozilla.app-services.json
-          destination: dist/mozilla.app-services.json
-      - run:
-          name: "Carthage binary snapshot URL"
-          command: |
-            JSON_URL=https://circleci.com/api/v1.1/project/github/mozilla/application-services/$CIRCLE_BUILD_NUM/artifacts/0/dist/mozilla.app-services.json
-            echo "Add the following line to your Cartfile:"
-            echo "binary \"$JSON_URL\" ~> 0.0.1-snapshot # mozilla/application-services@$CIRCLE_SHA1"
-      - persist_to_workspace:
-          root: .
-          paths: MozillaAppServices.framework.zip
-  Carthage release:
-    macos:
-      xcode: "10.1.0"
-    steps:
-      - checkout
-      - attach_workspace:
-          at: .
-      - run:
-          name: Release Carthage archive on GitHub
-          command: |
-            # We should probably use ghr instead.
-            export TRAVIS_REPO_SLUG=mozilla/application-services # Pretty ironic but dpl reads that...
-            sudo chown -R `whoami` /Library/Ruby/Gems
-            gem install --user-install dpl
-            PATH=$HOME/.gem/ruby/2.3.0/bin:$PATH
-            dpl --provider=releases --api-key=${GITHUB_TOKEN} --file=MozillaAppServices.framework.zip --overwrite --skip-cleanup=true
 
 workflows:
   version: 2
@@ -202,19 +73,3 @@ workflows:
     jobs:
       - Rust tests - stable
       - Rust tests - beta
-      - Rust benchmarks
-      - Sync integration tests
-  carthage-framework:
-    jobs:
-      - Carthage build:
-          filters:  # required since `Release` has tag filters AND requires `Build`
-            tags:
-              only: /.*/
-      - Carthage release:
-          requires:
-            - Carthage build
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v.*/
