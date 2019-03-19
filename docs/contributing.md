@@ -1,4 +1,4 @@
-# Contributing to Application Services
+# Contributing to glean.rs
 
 Anyone is welcome to help with the Application Services project. Feel free to get in touch with other community members on IRC
 or through issues here on GitHub.
