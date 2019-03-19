@@ -56,9 +56,9 @@ cargo {
     apiLevel = 21
 
     // Where Cargo writes its outputs.
-    targetDirectory = '../../../target'
+    targetDirectory = '../../target'
 
-    libname = 'logins_ffi'
+    libname = 'glean_ffi'
 
     // The Cargo targets to invoke.  The mapping from short name to target
     // triple is defined by the `rust-android-gradle` plugin.
