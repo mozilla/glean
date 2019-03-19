@@ -1,7 +1,8 @@
 [workspace]
 
 members = [
-  "glean-core"
+  "glean-core",
+  "glean-core/ffi",
 ]
 
 [profile.release]
