@@ -1,0 +1,10 @@
+[book]
+title = "glean.rs - Cross-platform Telemetry library"
+authors = ["Jan-Erik Rediger", "glean Team"]
+src = "."
+
+[build]
+build-dir = "book"
+create-missing = false
+
+[output.html]
