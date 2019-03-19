@@ -101,7 +101,7 @@ ext.configurePublish = { groupIdArg, artifactIdArg, descriptionArg,
                     developers {
                         developer {
                             name = 'Firefox Telemetry'
-                            email = 'glean@mozilla.com'
+                            email = 'glean-team@mozilla.com'
                         }
                     }
 
@@ -145,7 +145,7 @@ ext.configurePublish = { groupIdArg, artifactIdArg, descriptionArg,
                         developers {
                             developer {
                                 name = 'Firefox Telemetry'
-                                email = 'glean@mozilla.com'
+                                email = 'glean-team@mozilla.com'
                             }
                         }
 
@@ -178,7 +178,7 @@ ext.configurePublish = { groupIdArg, artifactIdArg, descriptionArg,
                         developers {
                             developer {
                                 name = 'Firefox Telemetry'
-                                email = 'glean@mozilla.com'
+                                email = 'glean-team@mozilla.com'
                             }
                         }
 
