@@ -132,11 +132,11 @@ afterEvaluate {
     }
 }
 
-apply from: "$rootDir/publish.gradle"
-ext.configurePublish(
-        'org.mozilla.glean_rs',
-        'glean_rs',
-        'glean implementation',
-        /* jnaForTestConfiguration= */ configurations.jnaForTest,
-        /* variantWithoutLib= */ 'androidWithoutLib',
-)
+//apply from: "$rootDir/publish.gradle"
+//ext.configurePublish(
+        //'org.mozilla.glean_rs',
+        //'glean_rs',
+        //'glean implementation',
+        //[> jnaForTestConfiguration= <] configurations.jnaForTest,
+        //[> variantWithoutLib= <] 'androidWithoutLib',
+//)
