@@ -1,13 +1,6 @@
 version: 2.1
 
 commands:
-  install-rust:
-    steps:
-      - run:
-          name: Install Rust
-          command: |
-            curl https://sh.rustup.rs -sSf | sh -s -- -y
-            echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> $BASH_ENV
   setup-rust-toolchain:
     parameters:
       rust-version:
@@ -20,6 +13,15 @@ commands:
             rustup install <<parameters.rust-version>>
             rustup default <<parameters.rust-version>>
             rustc --version
+  test-setup:
+    parameters:
+      rust-version:
+        type: string
+        default: "stable"
+    steps:
+      - checkout
+      - setup-rust-toolchain:
+          rust-version: <<parameters.rust-version>>
   rust-tests:
     parameters:
       rust-version:
@@ -49,27 +51,89 @@ jobs:
       - run: rustup component add rustfmt
       - run: rustfmt --version
       - run: cargo fmt -- --check
+  Lint Rust with clippy:
+    docker:
+      - image: circleci/rust:latest
+    steps:
+      - checkout
+      - run: rustup component add clippy
+      - run: cargo clippy --version
+      - run: cargo clippy --all --all-targets --all-features -- -D warnings
   Rust tests - stable:
     docker:
       - image: circleci/rust:latest
     # We have to use a machine with more RAM for tests so we don't run out of memory.
-    resource_class: medium+
     steps:
       - rust-tests
   Rust tests - beta:
     docker:
       - image: circleci/rust:latest
-    resource_class: medium+
     steps:
       - rust-tests:
           rust-version: "beta"
+
+  # via https://circleci.com/blog/deploying-documentation-to-github-pages-with-continuous-integration/
+  Generate documentation:
+    docker:
+      - image: circleci/rust:latest
+    steps:
+      - checkout
+      - run:
+          name: Version information
+          command: rustc --version; cargo --version; rustup --version
+      - run:
+          name: Install mdbook
+          command: cargo install -f mdbook
+      - run:
+          name: Build documentation
+          command: bin/build-docs.sh
+      - persist_to_workspace:
+          root: build/
+          paths: docs
+
+  docs-deploy:
+    docker:
+      - image: node:8.10.0
+    steps:
+      - checkout
+      - attach_workspace:
+          at: build/
+      - run:
+          name: Disable jekyll builds
+          command: touch build/docs/.nojekyll
+      # Needed for write access to the GitHub repository;
+      # see https://circleci.com/docs/2.0/gh-bb-integration/#deployment-keys-and-user-keys
+      - add_ssh_keys:
+          fingerprints:
+            - "84:e6:13:7e:94:8d:e2:bf:4f:93:1f:d9:52:80:bb:2c"
+      # The gh-pages npm package can be used to push a directory to a git branch;
+      # see https://www.npmjs.com/package/gh-pages
+      - run:
+          name: Deploy docs to gh-pages branch
+          command: |
+            git config user.email "jrediger@mozilla.com"
+            git config user.name "CircleCI docs-deploy job"
+            npm install -g --silent gh-pages@2.0.1
+            gh-pages --dotfiles --message "[skip ci] Updates" --dist build/docs
 
 workflows:
   version: 2
   check-formating:
     jobs:
       - Check Rust formatting
+  clippy:
+    jobs:
+      - Lint Rust with clippy
   run-tests:
     jobs:
       - Rust tests - stable
       - Rust tests - beta
+  documentation:
+    jobs:
+      - Generate documentation
+      - docs-deploy:
+          requires:
+            - Generate documentation
+          filters:
+            branches:
+              only: master
