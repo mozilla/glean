@@ -4,9 +4,9 @@
 
 package mozilla.telemetry.glean
 
-open class GleanInternalAPI internal constructor () {
-    private val logger = Logger("glean/Glean")
+import mozilla.telemetry.glean.rust.LibGleanFFI
 
+open class GleanInternalAPI internal constructor () {
     // Include our singletons of StorageEngineManager and PingMaker
     // `internal` so this can be modified for testing
     internal var initialized = false
@@ -15,19 +15,10 @@ open class GleanInternalAPI internal constructor () {
      * Initialize glean.
      *
      * This should only be initialized once by the application, and not by
-     * libraries using glean. A message is logged to error and no changes are made
-     * to the state if initialize is called a more than once.
-     *
-     * A LifecycleObserver will be added to send pings when the application goes
-     * into the background.
-     *
-     * @param applicationContext [Context] to access application features, such
-     * as shared preferences
-     * @param configuration A Glean [Configuration] object with global settings.
+     * libraries using glean.
      */
     fun initialize() {
         if (isInitialized()) {
-            logger.error("Glean should not be initialized multiple times")
             return
         }
         initialized = true
@@ -38,6 +29,10 @@ open class GleanInternalAPI internal constructor () {
      */
     internal fun isInitialized(): Boolean {
         return initialized
+    }
+
+    fun increment(): Long {
+      return LibGleanFFI.INSTANCE.increment()
     }
 }
 
