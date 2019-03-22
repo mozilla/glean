@@ -7,7 +7,6 @@ package mozilla.telemetry.glean
 import mozilla.telemetry.glean.rust.LibGleanFFI
 
 open class GleanInternalAPI internal constructor () {
-    // Include our singletons of StorageEngineManager and PingMaker
     // `internal` so this can be modified for testing
     internal var initialized = false
 
