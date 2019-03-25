@@ -8,8 +8,8 @@ buildscript {
     ]
 
     ext.build = [
-        compileSdkVersion: 27,
-        targetSdkVersion: 27,
+        compileSdkVersion: 28,
+        targetSdkVersion: 28,
         minSdkVersion: 21, // So that we can publish for aarch64.
     ]
 
@@ -150,15 +150,6 @@ if (rootProject.ext.libsGitSha != null) {
         into rootProject.buildDir
     }
 
-    subprojects { project ->
-        afterEvaluate {
-            android.libraryVariants.all { v ->
-                def task = v.preBuild
-                task.dependsOn(rootProject.untarAndroidLibs)
-                task.dependsOn(rootProject.untarDesktopLibs)
-            }
-        }
-    }
 }
 
 // Configure some environment variables, per toolchain, that will apply during
