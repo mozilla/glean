@@ -116,27 +116,3 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }
-
-afterEvaluate {
-    // The `cargoBuild` task isn't available until after evaluation.
-    android.libraryVariants.all { variant ->
-        def productFlavor = ""
-        variant.productFlavors.each {
-            productFlavor += "${it.name.capitalize()}"
-        }
-        def buildType = "${variant.buildType.name.capitalize()}"
-        tasks["generate${productFlavor}${buildType}Assets"].dependsOn(tasks["cargoBuild"])
-
-        // For unit tests.
-        tasks["process${productFlavor}${buildType}UnitTestJavaRes"].dependsOn(tasks["cargoBuild"])
-    }
-}
-
-//apply from: "$rootDir/publish.gradle"
-//ext.configurePublish(
-        //'org.mozilla.glean_rs',
-        //'glean_rs',
-        //'glean implementation',
-        //[> jnaForTestConfiguration= <] configurations.jnaForTest,
-        //[> variantWithoutLib= <] 'androidWithoutLib',
-//)

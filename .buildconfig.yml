@@ -1,0 +1,11 @@
+libraryVersion: 0.0.1
+groupId: org.mozilla.telemetry
+projects:
+  glean-core-library:
+    path: glean-core/android
+    description: 'The glean core library'
+    publish: true
+  glean-sample-app:
+    path: samples/android/app
+    description: 'An app demoing how to use the Glean library to collect and send telemetry data.'
+    publish: false
