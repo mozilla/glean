@@ -1,7 +1,7 @@
 libraryVersion: 0.0.1
 groupId: org.mozilla.telemetry
 projects:
-  glean-core-library:
+  glean-core:
     path: glean-core/android
     description: 'The glean core library'
     publish: true
