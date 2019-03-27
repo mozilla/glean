@@ -8,8 +8,8 @@ buildscript {
     ]
 
     ext.build = [
-        compileSdkVersion: 28,
-        targetSdkVersion: 28,
+        compileSdkVersion: 27,
+        targetSdkVersion: 27,
         minSdkVersion: 21, // So that we can publish for aarch64.
     ]
 

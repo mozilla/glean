@@ -17,7 +17,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
         android:name=".GleanApplication">
-        <activity android:name="org.mozilla.samples.glean.MainActivity"
+        <activity android:name="org.mozilla.samples.glean_rs.MainActivity"
             android:windowSoftInputMode="adjustResize"
             android:launchMode="singleTask">
             <intent-filter>
