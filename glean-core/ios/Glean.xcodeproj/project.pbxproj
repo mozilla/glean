@@ -9,12 +9,12 @@
 /* Begin PBXBuildFile section */
 		BF3DE39B2243A2F20018E23F /* Glean.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF3DE3912243A2F20018E23F /* Glean.framework */; };
 		BF3DE3A02243A2F20018E23F /* GleanTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF3DE39F2243A2F20018E23F /* GleanTests.swift */; };
-		BF3DE3A22243A2F20018E23F /* Glean.h in Headers */ = {isa = PBXBuildFile; fileRef = BF3DE3942243A2F20018E23F /* Glean.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		BF51C3BC224BF19F0014CBAF /* common.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = BF51C3B8224BF19F0014CBAF /* common.xcconfig */; };
 		BF51C3BD224BF19F0014CBAF /* debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = BF51C3B9224BF19F0014CBAF /* debug.xcconfig */; };
 		BF51C3BE224BF19F0014CBAF /* release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = BF51C3BA224BF19F0014CBAF /* release.xcconfig */; };
 		BF51C3BF224BF19F0014CBAF /* base.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = BF51C3BB224BF19F0014CBAF /* base.xcconfig */; };
 		BF6F2DA8224BF8F100394062 /* libglean_ffi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BF6F2DA7224BF8F100394062 /* libglean_ffi.a */; };
+		BF93C698224BFC57006CE7D8 /* Glean.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF93C697224BFC57006CE7D8 /* Glean.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,6 +39,7 @@
 		BF51C3BA224BF19F0014CBAF /* release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = release.xcconfig; sourceTree = "<group>"; };
 		BF51C3BB224BF19F0014CBAF /* base.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = base.xcconfig; sourceTree = "<group>"; };
 		BF6F2DA7224BF8F100394062 /* libglean_ffi.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libglean_ffi.a; path = ../../target/universal/release/libglean_ffi.a; sourceTree = "<group>"; };
+		BF93C697224BFC57006CE7D8 /* Glean.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Glean.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +90,7 @@
 			children = (
 				BF3DE3942243A2F20018E23F /* Glean.h */,
 				BF3DE3952243A2F20018E23F /* Info.plist */,
+				BF93C697224BFC57006CE7D8 /* Glean.swift */,
 			);
 			path = Glean;
 			sourceTree = "<group>";
@@ -117,7 +119,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BF3DE3A22243A2F20018E23F /* Glean.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -173,6 +174,7 @@
 				TargetAttributes = {
 					BF3DE3902243A2F20018E23F = {
 						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1010;
 					};
 					BF3DE3992243A2F20018E23F = {
 						CreatedOnToolsVersion = 10.1;
@@ -243,6 +245,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BF93C698224BFC57006CE7D8 /* Glean.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -391,6 +394,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = BF51C3B9224BF19F0014CBAF /* debug.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Manual;
 				DEFINES_MODULE = YES;
@@ -409,6 +413,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -418,6 +423,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = BF51C3BA224BF19F0014CBAF /* release.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Manual;
 				DEFINES_MODULE = YES;
@@ -445,6 +451,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = BF51C3B9224BF19F0014CBAF /* debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 99QSBDSJN4;
 				INFOPLIST_FILE = GleanTests/Info.plist;
@@ -464,6 +471,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = BF51C3BA224BF19F0014CBAF /* release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 99QSBDSJN4;
 				INFOPLIST_FILE = GleanTests/Info.plist;
