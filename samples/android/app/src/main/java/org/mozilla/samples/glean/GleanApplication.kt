@@ -5,7 +5,10 @@
 package org.mozilla.samples.glean_rs
 
 import android.app.Application
+import android.util.Log
 import mozilla.telemetry.glean.Glean
+
+private const val TAG = "Glean.rs"
 
 class GleanApplication : Application() {
 
@@ -15,5 +18,6 @@ class GleanApplication : Application() {
         // Initialize the Glean library. Ideally, this is the first thing that
         // must be done right after enabling logging.
         Glean.initialize()
+        Log.i(TAG, "glean initialized")
     }
 }
