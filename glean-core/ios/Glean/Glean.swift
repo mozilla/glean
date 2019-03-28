@@ -8,9 +8,11 @@
 
 import Foundation
 
-open class Glean {
+public class Glean {
+    public static let shared = Glean()
+
     private var initialized: Bool = false
-    public init() {
+    private init() {
         self.initialized = true
     }
 
