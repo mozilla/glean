@@ -1,4 +1,4 @@
-#include "common.xcconfig"
+#include "../../xcconfig/common.xcconfig"
 
 INFOPLIST_FILE = Glean/Info.plist
 LIBRARY_SEARCH_PATHS = "../../target/universal/$(buildvariant)"
