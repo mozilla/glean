@@ -14,3 +14,7 @@ captures
 
 # iOS stuff.
 xcuserdata
+
+# Carthage build artifacts
+Cartfile.resolved
+Carthage
