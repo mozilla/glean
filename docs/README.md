@@ -1,5 +1,7 @@
 # glean.rs
 
+![Glean logo](glean.jpeg)
+
 _Modern Firefox Telemetry for mobile platforms_
 
 `glean` is a modern approach for a mobile Telemetry library.
