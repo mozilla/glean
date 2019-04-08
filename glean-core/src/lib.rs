@@ -28,8 +28,6 @@ mod tests {
     #[test]
     fn it_works() {
         metrics::flags::a11yEnabled.set(true);
-        metrics::app::clientId.set("c0ffee".into());
-
-        assert_eq!("", metrics::StorageManager.dump());
+        metrics::app::clientId.set("c0ffee");
     }
 }
