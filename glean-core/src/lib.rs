@@ -24,12 +24,12 @@ impl Glean {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use metrics::MetricRecorder;
 
     #[test]
     fn it_works() {
-        assert_eq!(false, metrics::flags::a11yEnabled.get());
         metrics::flags::a11yEnabled.set(true);
-        assert_eq!(true, metrics::flags::a11yEnabled.get());
+        metrics::app::clientId.set("c0ffee".into());
+
+        assert_eq!("", metrics::StorageManager.dump());
     }
 }
