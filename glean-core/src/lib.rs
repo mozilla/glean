@@ -2,7 +2,12 @@ use std::sync::RwLock;
 
 use lazy_static::lazy_static;
 
+mod common_metric_data;
+mod internal_metrics;
 pub mod metrics;
+pub mod storage;
+
+pub use common_metric_data::CommonMetricData;
 
 lazy_static! {
     static ref GLEAN_SINGLETON: RwLock<Glean> = RwLock::new(Glean::new());
@@ -13,21 +18,16 @@ pub struct Glean;
 
 impl Glean {
     fn new() -> Self {
+        internal_metrics::clientId.set("glean.rs-sample");
+
         Self
+    }
+
+    pub fn initialize() {
+        Glean::singleton();
     }
 
     pub fn singleton() -> &'static RwLock<Glean> {
         &*GLEAN_SINGLETON
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn it_works() {
-        metrics::flags::a11yEnabled.set(true);
-        metrics::app::clientId.set("c0ffee");
     }
 }
