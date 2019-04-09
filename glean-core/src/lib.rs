@@ -1,5 +1,3 @@
-use std::sync::RwLock;
-
 use lazy_static::lazy_static;
 
 mod common_metric_data;
@@ -10,7 +8,7 @@ pub mod storage;
 pub use common_metric_data::CommonMetricData;
 
 lazy_static! {
-    static ref GLEAN_SINGLETON: RwLock<Glean> = RwLock::new(Glean::new());
+    static ref GLEAN_SINGLETON: Glean = Glean::new();
 }
 
 #[derive(Debug)]
@@ -27,7 +25,7 @@ impl Glean {
         Glean::singleton();
     }
 
-    pub fn singleton() -> &'static RwLock<Glean> {
+    pub fn singleton() -> &'static Glean {
         &*GLEAN_SINGLETON
     }
 }
