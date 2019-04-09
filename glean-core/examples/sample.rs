@@ -10,6 +10,8 @@ lazy_static! {
 
 fn main() {
     Glean::initialize();
+    assert!(Glean::singleton().is_initialized());
+
     let local_metric: StringMetric = StringMetric::new(CommonMetricData {
         name: "local_metric".into(),
     });

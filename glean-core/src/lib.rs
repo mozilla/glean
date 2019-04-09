@@ -12,13 +12,17 @@ lazy_static! {
 }
 
 #[derive(Debug)]
-pub struct Glean;
+pub struct Glean {
+    initialized: bool,
+}
 
 impl Glean {
     fn new() -> Self {
         internal_metrics::clientId.set("glean.rs-sample");
 
-        Self
+        Self {
+            initialized: true,
+        }
     }
 
     pub fn initialize() {
@@ -27,5 +31,9 @@ impl Glean {
 
     pub fn singleton() -> &'static Glean {
         &*GLEAN_SINGLETON
+    }
+
+    pub fn is_initialized(&self) -> bool {
+        self.initialized
     }
 }
