@@ -28,4 +28,8 @@ fn main() {
 
     println!("Core Data:\n{}", storage::StorageManager.snapshot("core", true));
     println!("Metrics Data:\n{}", storage::StorageManager.snapshot("metrics", true));
+
+    println!();
+    println!("Core Data 2:\n{}", storage::StorageManager.snapshot("core", true));
+    println!("Metrics Data 2:\n{}", storage::StorageManager.snapshot("metrics", true));
 }

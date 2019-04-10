@@ -18,7 +18,7 @@ lazy_static! {
 }
 
 pub trait StorageDump {
-    fn snapshot(&self, store_name: &str, clear_store: bool) -> Option<JsonValue>;
+    fn snapshot(&mut self, store_name: &str, clear_store: bool) -> Option<JsonValue>;
 }
 
 pub struct StorageManager;
@@ -27,7 +27,7 @@ macro_rules! dump_storages {
     ($store_name:expr, $clear:expr => $(( $name:expr, $storage:tt),)+) => {{
         let data = json!({
             $(
-                $name: $storage.read().unwrap().snapshot($store_name, $clear),
+                $name: $storage.write().unwrap().snapshot($store_name, $clear),
             )+
         });
         data
