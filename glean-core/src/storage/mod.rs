@@ -18,16 +18,16 @@ lazy_static! {
 }
 
 pub trait StorageDump {
-    fn dump(&self, store_name: &str) -> Option<JsonValue>;
+    fn snapshot(&self, store_name: &str, clear_store: bool) -> Option<JsonValue>;
 }
 
 pub struct StorageManager;
 
 macro_rules! dump_storages {
-    ($store_name:expr => $(( $name:expr, $storage:tt),)+) => {{
+    ($store_name:expr, $clear:expr => $(( $name:expr, $storage:tt),)+) => {{
         let data = json!({
             $(
-                $name: $storage.read().unwrap().dump($store_name),
+                $name: $storage.read().unwrap().snapshot($store_name, $clear),
             )+
         });
         data
@@ -35,8 +35,8 @@ macro_rules! dump_storages {
 }
 
 impl StorageManager {
-    pub fn dump(&self, store_name: &str) -> String {
-        let data = dump_storages!(store_name => ("bool", BooleanStorage), ("string", StringStorage),);
+    pub fn snapshot(&self, store_name: &str, clear_store: bool) -> String {
+        let data = dump_storages!(store_name, clear_store => ("bool", BooleanStorage), ("string", StringStorage),);
 
         ::serde_json::to_string_pretty(&data).unwrap()
     }

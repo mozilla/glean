@@ -26,7 +26,7 @@ impl BooleanStorageImpl {
 }
 
 impl StorageDump for BooleanStorageImpl {
-    fn dump(&self, store_name: &str) -> Option<JsonValue> {
+    fn snapshot(&self, store_name: &str, _clear_store: bool) -> Option<JsonValue> {
         self.store.get(store_name).map(|store| json!(store))
     }
 }

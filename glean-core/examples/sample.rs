@@ -26,6 +26,6 @@ fn main() {
     GLOBAL_METRIC.set(true);
     local_metric.set("I can set this");
 
-    println!("Core Data:\n{}", storage::StorageManager.dump("core"));
-    println!("Metrics Data:\n{}", storage::StorageManager.dump("metrics"));
+    println!("Core Data:\n{}", storage::StorageManager.snapshot("core", true));
+    println!("Metrics Data:\n{}", storage::StorageManager.snapshot("metrics", true));
 }
