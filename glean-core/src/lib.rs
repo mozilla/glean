@@ -5,7 +5,7 @@ mod internal_metrics;
 pub mod metrics;
 pub mod storage;
 
-pub use common_metric_data::CommonMetricData;
+pub use common_metric_data::{CommonMetricData, Lifetime};
 
 lazy_static! {
     static ref GLEAN_SINGLETON: Glean = Glean::new();
