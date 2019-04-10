@@ -14,6 +14,7 @@ lazy_static! {
 #[derive(Debug)]
 pub struct Glean {
     initialized: bool,
+    upload_enabled: bool,
 }
 
 impl Glean {
@@ -22,6 +23,7 @@ impl Glean {
 
         Self {
             initialized: true,
+            upload_enabled: true,
         }
     }
 
@@ -35,5 +37,9 @@ impl Glean {
 
     pub fn is_initialized(&self) -> bool {
         self.initialized
+    }
+
+    pub fn is_upload_enabled(&self) -> bool {
+        self.upload_enabled
     }
 }

@@ -1,3 +1,5 @@
+use super::Glean;
+
 pub enum Lifetime {
     /// The metric is reset with each sent ping
     Ping,
@@ -25,6 +27,14 @@ pub struct CommonMetricData {
 impl CommonMetricData {
     pub fn fullname(&self) -> String {
         format!("{}.{}", self.category, self.name)
+    }
+
+    pub fn should_record(&self) -> bool {
+        if self.disabled || !Glean::singleton().is_upload_enabled() {
+            return false;
+        }
+
+        return true;
     }
 
     pub fn storage_names(&self) -> &[String] {
