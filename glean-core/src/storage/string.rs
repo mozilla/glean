@@ -26,7 +26,7 @@ impl StringStorageImpl {
 }
 
 impl StorageDump for StringStorageImpl {
-    fn dump(&self) -> Option<JsonValue> {
-        self.store.get("core").map(|store| json!(store))
+    fn dump(&self, store_name: &str) -> Option<JsonValue> {
+        self.store.get(store_name).map(|store| json!(store))
     }
 }

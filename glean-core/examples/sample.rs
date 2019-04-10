@@ -6,7 +6,7 @@ lazy_static! {
     pub static ref GLOBAL_METRIC: BooleanMetric = BooleanMetric::new(CommonMetricData {
         name: "global_metric".into(),
         category: "global".into(),
-        send_in_pings: vec!["core".into()],
+        send_in_pings: vec!["core".into(), "metrics".into()],
         lifetime: Lifetime::Ping,
         disabled: false,
     });
@@ -26,5 +26,6 @@ fn main() {
     GLOBAL_METRIC.set(true);
     local_metric.set("I can set this");
 
-    println!("{}", storage::StorageManager.dump());
+    println!("Core Data:\n{}", storage::StorageManager.dump("core"));
+    println!("Metrics Data:\n{}", storage::StorageManager.dump("metrics"));
 }
