@@ -6,15 +6,19 @@ use lazy_static::lazy_static;
 use serde_json::{json, Value as JsonValue};
 
 mod boolean;
+mod counter;
 mod string;
 
 use boolean::BooleanStorageImpl;
+use counter::CounterStorageImpl;
 use string::StringStorageImpl;
 
 lazy_static! {
     pub static ref BooleanStorage: RwLock<BooleanStorageImpl> =
         RwLock::new(BooleanStorageImpl::new());
     pub static ref StringStorage: RwLock<StringStorageImpl> = RwLock::new(StringStorageImpl::new());
+    pub static ref CounterStorage: RwLock<CounterStorageImpl> =
+        RwLock::new(CounterStorageImpl::new());
 }
 
 pub trait StorageDump {
@@ -36,7 +40,7 @@ macro_rules! dump_storages {
 
 impl StorageManager {
     pub fn snapshot(&self, store_name: &str, clear_store: bool) -> String {
-        let data = dump_storages!(store_name, clear_store => ("bool", BooleanStorage), ("string", StringStorage),);
+        let data = dump_storages!(store_name, clear_store => ("bool", BooleanStorage), ("string", StringStorage), ("counter", CounterStorage), );
 
         ::serde_json::to_string_pretty(&data).unwrap()
     }

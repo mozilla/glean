@@ -19,7 +19,10 @@ impl StringStorageImpl {
     pub fn record(&mut self, data: &CommonMetricData, value: String) {
         let name = data.fullname();
         for ping_name in data.storage_names() {
-            let data_store = self.store.entry(ping_name.clone()).or_insert_with(HashMap::new);
+            let data_store = self
+                .store
+                .entry(ping_name.clone())
+                .or_insert_with(HashMap::new);
             data_store.insert(name.clone(), value.clone());
         }
     }
