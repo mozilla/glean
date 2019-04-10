@@ -6,7 +6,7 @@ lazy_static! {
     pub static ref GLOBAL_METRIC: BooleanMetric = BooleanMetric::new(CommonMetricData {
         name: "global_metric".into(),
         category: "global".into(),
-        send_in_pings: vec!["default".into()],
+        send_in_pings: vec!["core".into()],
         lifetime: Lifetime::Ping,
         disabled: false,
     });
@@ -19,6 +19,7 @@ fn main() {
     let local_metric: StringMetric = StringMetric::new(CommonMetricData {
         name: "local_metric".into(),
         category: "local".into(),
+        send_in_pings: vec!["core".into()],
         .. Default::default()
     });
 

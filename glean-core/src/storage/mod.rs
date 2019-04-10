@@ -18,7 +18,7 @@ lazy_static! {
 }
 
 pub trait StorageDump {
-    fn dump(&self) -> JsonValue;
+    fn dump(&self) -> Option<JsonValue>;
 }
 
 pub struct StorageManager;

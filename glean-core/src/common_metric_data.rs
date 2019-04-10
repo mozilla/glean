@@ -26,4 +26,8 @@ impl CommonMetricData {
     pub fn fullname(&self) -> String {
         format!("{}.{}", self.category, self.name)
     }
+
+    pub fn storage_names(&self) -> &[String] {
+        &self.send_in_pings
+    }
 }

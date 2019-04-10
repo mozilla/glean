@@ -6,7 +6,7 @@ use super::StorageDump;
 use crate::CommonMetricData;
 
 pub struct StringStorageImpl {
-    store: HashMap<String, String>,
+    store: HashMap<String, HashMap<String, String>>,
 }
 
 impl StringStorageImpl {
@@ -18,12 +18,15 @@ impl StringStorageImpl {
 
     pub fn record(&mut self, data: &CommonMetricData, value: String) {
         let name = data.fullname();
-        self.store.insert(name, value);
+        for ping_name in data.storage_names() {
+            let data_store = self.store.entry(ping_name.clone()).or_insert_with(HashMap::new);
+            data_store.insert(name.clone(), value.clone());
+        }
     }
 }
 
 impl StorageDump for StringStorageImpl {
-    fn dump(&self) -> JsonValue {
-        json!(self.store)
+    fn dump(&self) -> Option<JsonValue> {
+        self.store.get("core").map(|store| json!(store))
     }
 }
