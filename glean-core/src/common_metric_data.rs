@@ -7,6 +7,13 @@ pub enum Lifetime {
     User
 }
 
+impl Default for Lifetime {
+    fn default() -> Self {
+        Lifetime::Ping
+    }
+}
+
+#[derive(Default)]
 pub struct CommonMetricData {
     pub name: String,
     pub category: String,

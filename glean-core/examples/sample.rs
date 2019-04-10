@@ -19,9 +19,7 @@ fn main() {
     let local_metric: StringMetric = StringMetric::new(CommonMetricData {
         name: "local_metric".into(),
         category: "local".into(),
-        send_in_pings: vec!["default".into()],
-        lifetime: Lifetime::Ping,
-        disabled: false,
+        .. Default::default()
     });
 
     GLOBAL_METRIC.set(true);
