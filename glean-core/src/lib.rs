@@ -19,8 +19,6 @@ pub struct Glean {
 
 impl Glean {
     fn new() -> Self {
-        internal_metrics::clientId.set("glean.rs-sample");
-
         Self {
             initialized: true,
             upload_enabled: true,
@@ -29,6 +27,7 @@ impl Glean {
 
     pub fn initialize() {
         Glean::singleton();
+        internal_metrics::clientId.set("glean.rs-sample");
     }
 
     pub fn singleton() -> &'static Glean {
