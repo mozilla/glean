@@ -1,3 +1,4 @@
+use std::sync::RwLock;
 use lazy_static::lazy_static;
 
 mod common_metric_data;
@@ -14,14 +15,14 @@ lazy_static! {
 #[derive(Debug)]
 pub struct Glean {
     initialized: bool,
-    upload_enabled: bool,
+    upload_enabled: RwLock<bool>,
 }
 
 impl Glean {
     fn new() -> Self {
         Self {
             initialized: true,
-            upload_enabled: true,
+            upload_enabled: RwLock::new(true),
         }
     }
 
@@ -38,7 +39,11 @@ impl Glean {
         self.initialized
     }
 
+    pub fn set_upload_enabled(&self, flag: bool) {
+        *self.upload_enabled.write().unwrap() = flag;
+    }
+
     pub fn is_upload_enabled(&self) -> bool {
-        self.upload_enabled
+        *self.upload_enabled.read().unwrap()
     }
 }
