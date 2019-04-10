@@ -17,7 +17,7 @@ impl BooleanStorageImpl {
     }
 
     pub fn record(&mut self, data: &CommonMetricData, value: bool) {
-        let name = data.name.clone();
+        let name = data.fullname();
         self.store.insert(name, value);
     }
 }

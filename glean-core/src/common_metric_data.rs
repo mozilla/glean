@@ -21,3 +21,9 @@ pub struct CommonMetricData {
     pub lifetime: Lifetime,
     pub disabled: bool,
 }
+
+impl CommonMetricData {
+    pub fn fullname(&self) -> String {
+        format!("{}.{}", self.category, self.name)
+    }
+}
