@@ -11,6 +11,10 @@ impl CounterMetric {
     }
 
     pub fn add(&self, value: u32) {
+        if !self.meta.should_record() {
+            return;
+        }
+
         let mut lock = CounterStorage.write().unwrap();
         lock.record(&self.meta, value)
     }

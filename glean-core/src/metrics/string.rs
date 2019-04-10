@@ -11,6 +11,10 @@ impl StringMetric {
     }
 
     pub fn set<S: Into<String>>(&self, value: S) {
+        if !self.meta.should_record() {
+            return;
+        }
+
         let mut lock = StringStorage.write().unwrap();
         lock.record(&self.meta, value.into())
     }

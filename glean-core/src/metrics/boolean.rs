@@ -11,6 +11,10 @@ impl BooleanMetric {
     }
 
     pub fn set(&self, value: bool) {
+        if !self.meta.should_record() {
+            return;
+        }
+
         let mut lock = BooleanStorage.write().unwrap();
         lock.record(&self.meta, value)
     }
