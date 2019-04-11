@@ -31,6 +31,14 @@ internal interface LibGleanFFI : Library {
     // String will work but either force us to leak them, or cause us to corrupt the heap (when we
     // free them).
 
-    /** Increment the internal counter */
-    fun increment(): Long;
+    fun glean_initialize()
+
+    fun glean_new_boolean_metric(
+        name: String,
+        category: String,
+        e: RustError.ByReference
+    ): MetricHandle
+
+    fun glean_str_free(string: Pointer)
 }
+internal typealias MetricHandle = Long

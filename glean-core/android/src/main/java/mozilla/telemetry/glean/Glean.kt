@@ -5,10 +5,13 @@
 package mozilla.telemetry.glean
 
 import mozilla.telemetry.glean.rust.LibGleanFFI
+import mozilla.telemetry.glean.rust.MetricHandle
+import mozilla.telemetry.glean.rust.RustError
 
 open class GleanInternalAPI internal constructor () {
     // `internal` so this can be modified for testing
     internal var initialized = false
+    internal var bool_metric : MetricHandle = 0
 
     /**
      * Initialize glean.
@@ -21,6 +24,10 @@ open class GleanInternalAPI internal constructor () {
             return
         }
         initialized = true
+        LibGleanFFI.INSTANCE.glean_initialize()
+
+        val e = RustError.ByReference()
+        bool_metric = LibGleanFFI.INSTANCE.glean_new_boolean_metric("enabled", "glean", e)
     }
 
     /**
@@ -28,10 +35,6 @@ open class GleanInternalAPI internal constructor () {
      */
     internal fun isInitialized(): Boolean {
         return initialized
-    }
-
-    fun increment(): Long {
-      return LibGleanFFI.INSTANCE.increment()
     }
 }
 

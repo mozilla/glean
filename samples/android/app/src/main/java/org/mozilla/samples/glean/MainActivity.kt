@@ -19,7 +19,6 @@ open class MainActivity : AppCompatActivity() {
 
         // Generate an event when user clicks on the button.
         buttonGenerateData.setOnClickListener {
-            Glean.increment()
             Log.i(TAG, "increment happened")
         }
     }

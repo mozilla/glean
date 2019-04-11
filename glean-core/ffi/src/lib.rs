@@ -34,4 +34,4 @@ pub extern fn glean_new_boolean_metric(name: FfiStr<'_>, category: FfiStr<'_>, e
 }
 
 define_handle_map_deleter!(BOOLEAN_METRICS, glean_destroy_boolean_metric);
-define_string_destructor!(glean_destroy_string);
+define_string_destructor!(glean_str_free);
