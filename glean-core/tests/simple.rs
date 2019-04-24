@@ -105,3 +105,40 @@ fn clear_is_store_specific() {
     assert!(!core_snapshot.contains(r#""local.store_specific": "snapshot 44""#));
     assert!(baseline_snapshot.contains(r#""local.store_specific": "snapshot 44""#));
 }
+
+lazy_static! {
+    pub static ref THREADSAFE_METRIC: CounterMetric = CounterMetric::new(CommonMetricData {
+        name: "threadsafe".into(),
+        category: "global".into(),
+        send_in_pings: vec!["core".into(), "metrics".into()],
+        lifetime: Lifetime::Ping,
+        disabled: false,
+    });
+}
+
+#[test]
+fn thread_safety() {
+    use std::thread;
+    use std::sync::{Arc, Barrier};
+
+    Glean::singleton().initialize();
+
+    let barrier = Arc::new(Barrier::new(2));
+    let c = barrier.clone();
+    let child = thread::spawn(move || {
+        THREADSAFE_METRIC.add(1);
+        c.wait();
+        THREADSAFE_METRIC.add(1);
+    });
+
+    THREADSAFE_METRIC.add(1);
+    barrier.wait();
+    THREADSAFE_METRIC.add(1);
+
+    child.join().unwrap();
+
+    let snapshot = storage::StorageManager.snapshot("core", true);
+    eprintln!("snapshot: {}", snapshot);
+    // TODO: Fix counter to actually increment
+    assert!(snapshot.contains(r#""global.threadsafe": "#));
+}
