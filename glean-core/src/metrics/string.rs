@@ -1,4 +1,4 @@
-use crate::storage::StringStorage;
+use crate::storage::GenericStorage;
 use crate::CommonMetricData;
 
 pub struct StringMetric {
@@ -10,12 +10,13 @@ impl StringMetric {
         Self { meta }
     }
 
-    pub fn set<S: Into<String>>(&self, value: S) {
+    pub fn set<S: AsRef<str>>(&self, value: S) {
         if !self.meta.should_record() {
             return;
         }
 
-        let mut lock = StringStorage.write().unwrap();
-        lock.record(&self.meta, value.into())
+        let s = value.as_ref();
+        let value = rkv::Value::Str(s);
+        GenericStorage.record("string", &self.meta, &value)
     }
 }

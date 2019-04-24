@@ -1,4 +1,4 @@
-use crate::storage::CounterStorage;
+use crate::storage::GenericStorage;
 use crate::CommonMetricData;
 
 pub struct CounterMetric {
@@ -15,7 +15,7 @@ impl CounterMetric {
             return;
         }
 
-        let mut lock = CounterStorage.write().unwrap();
-        lock.record(&self.meta, value)
+        let value = rkv::Value::U64(value as u64);
+        GenericStorage.record("counter", &self.meta, &value)
     }
 }

@@ -1,5 +1,6 @@
 use super::Glean;
 
+#[derive(Copy, Clone, Debug)]
 pub enum Lifetime {
     /// The metric is reset with each sent ping
     Ping,
@@ -12,6 +13,16 @@ pub enum Lifetime {
 impl Default for Lifetime {
     fn default() -> Self {
         Lifetime::Ping
+    }
+}
+
+impl Lifetime {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Lifetime::Ping => "ping",
+            Lifetime::Application => "app",
+            Lifetime::User => "user",
+        }
     }
 }
 

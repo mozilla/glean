@@ -13,6 +13,8 @@ lazy_static! {
 }
 
 fn main() {
+    color_backtrace::install();
+
     Glean::singleton().initialize();
     assert!(Glean::singleton().is_initialized());
 

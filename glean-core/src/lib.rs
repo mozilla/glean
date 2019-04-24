@@ -1,5 +1,7 @@
 use std::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 use lazy_static::lazy_static;
+use rkv::{Rkv, SingleStore, StoreOptions};
+use std::fs;
 
 mod common_metric_data;
 mod internal_metrics;
@@ -58,19 +60,43 @@ impl Glean {
     pub fn is_upload_enabled(&self) -> bool {
         self.read().upload_enabled
     }
+
+    pub fn read_with_store<F>(&self, store_name: &str, transaction_fn: &mut F) where F: FnMut(&rkv::Reader, SingleStore) {
+        let inner = self.write();
+        let store: SingleStore = inner.rkv.open_single(store_name, StoreOptions::create()).unwrap();
+        let reader = inner.rkv.read().unwrap();
+        transaction_fn(&reader, store);
+    }
+
+    pub fn record(&self, lifetime: Lifetime, typ: &str, ping_name: &str, key: &str, value: &rkv::Value) {
+        let inner = self.write();
+        let final_key = format!("{}#{}#{}", typ, ping_name, key);
+        let store_name = lifetime.as_str();
+        let store = inner.rkv.open_single(store_name, StoreOptions::create()).unwrap();
+
+        let mut writer = inner.rkv.write().unwrap();
+        store.put(&mut writer, final_key, value).unwrap();
+        let _ = writer.commit();
+    }
 }
 
 #[derive(Debug)]
 struct Inner {
     initialized: bool,
     upload_enabled: bool,
+    rkv: Rkv,
 }
 
 impl Inner {
     fn new() -> Self {
+        let path = std::path::Path::new("data");
+        fs::create_dir_all(&path).unwrap();
+        let rkv = Rkv::new(path).unwrap();
+
         Self {
             initialized: true,
             upload_enabled: true,
+            rkv: rkv,
         }
     }
 }
