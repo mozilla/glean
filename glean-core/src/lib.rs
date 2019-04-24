@@ -1,7 +1,8 @@
 use std::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
+use std::fs;
 use lazy_static::lazy_static;
 use rkv::{Rkv, SingleStore, StoreOptions};
-use std::fs;
+use tempfile::Builder;
 
 mod common_metric_data;
 mod internal_metrics;
@@ -96,8 +97,9 @@ struct Inner {
 
 impl Inner {
     fn new() -> Self {
-        let path = std::path::Path::new("data");
-        fs::create_dir_all(&path).unwrap();
+        let root = Builder::new().prefix("simple-db").tempdir().unwrap();
+        fs::create_dir_all(root.path()).unwrap();
+        let path = root.path();
         let rkv = Rkv::new(path).unwrap();
 
         Self {
