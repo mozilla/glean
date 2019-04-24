@@ -140,3 +140,28 @@ fn thread_safety() {
     let snapshot = storage::StorageManager.snapshot("core", true);
     assert!(snapshot.contains(r#""global.threadsafe": 4"#));
 }
+
+
+#[test]
+fn transformation_works() {
+    Glean::singleton().initialize();
+
+    let counter: CounterMetric = CounterMetric::new(CommonMetricData {
+        name: "transformation".into(),
+        category: "local".into(),
+        send_in_pings: vec!["core".into(), "metrics".into()],
+        .. Default::default()
+    });
+
+    counter.add(2);
+    let core_snapshot = storage::StorageManager.snapshot("core", true);
+    let metrics_snapshot = storage::StorageManager.snapshot("metrics", false);
+    assert!(core_snapshot.contains(r#""local.transformation": 2"#));
+    assert!(metrics_snapshot.contains(r#""local.transformation": 2"#));
+
+    counter.add(2);
+    let core_snapshot = storage::StorageManager.snapshot("core", true);
+    let metrics_snapshot = storage::StorageManager.snapshot("metrics", false);
+    assert!(core_snapshot.contains(r#""local.transformation": 2"#));
+    assert!(metrics_snapshot.contains(r#""local.transformation": 4"#));
+}
