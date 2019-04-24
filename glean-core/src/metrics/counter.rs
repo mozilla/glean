@@ -10,12 +10,17 @@ impl CounterMetric {
         Self { meta }
     }
 
-    pub fn add(&self, value: u32) {
+    pub fn add(&self, amount: u32) {
         if !self.meta.should_record() {
             return;
         }
 
-        let value = rkv::Value::U64(value as u64);
-        GenericStorage.record("counter", &self.meta, &value)
+        let amount = amount as u64;
+        GenericStorage.record_with("counter", &self.meta, |old_value| {
+            match old_value {
+                Some(rkv::Value::U64(old_value)) => rkv::OwnedValue::U64(old_value + amount),
+                _ => rkv::OwnedValue::U64(amount),
+            }
+        })
     }
 }

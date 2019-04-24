@@ -86,6 +86,21 @@ impl Glean {
         store.put(&mut writer, final_key, value).unwrap();
         let _ = writer.commit();
     }
+
+    pub fn record_with<F>(&self, lifetime: Lifetime, typ: &str, ping_name: &str, key: &str, transform: F) where F: Fn(Option<rkv::Value>) -> rkv::OwnedValue {
+        let inner = self.write();
+        let final_key = format!("{}#{}#{}", typ, ping_name, key);
+        let store_name = lifetime.as_str();
+        let store = inner.rkv.open_single(store_name, StoreOptions::create()).unwrap();
+
+        let mut writer = inner.rkv.write().unwrap();
+        let value = {
+            let old_value = store.get(&writer, &final_key).unwrap();
+            transform(old_value)
+        };
+        store.put(&mut writer, final_key, &(&value).into()).unwrap();
+        let _ = writer.commit();
+    }
 }
 
 #[derive(Debug)]

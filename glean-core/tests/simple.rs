@@ -138,7 +138,5 @@ fn thread_safety() {
     child.join().unwrap();
 
     let snapshot = storage::StorageManager.snapshot("core", true);
-    eprintln!("snapshot: {}", snapshot);
-    // TODO: Fix counter to actually increment
-    assert!(snapshot.contains(r#""global.threadsafe": "#));
+    assert!(snapshot.contains(r#""global.threadsafe": 4"#));
 }
