@@ -13,7 +13,7 @@ lazy_static! {
 }
 
 fn main() {
-    Glean::initialize();
+    Glean::singleton().initialize();
     assert!(Glean::singleton().is_initialized());
 
     let local_metric: StringMetric = StringMetric::new(CommonMetricData {

@@ -1,4 +1,4 @@
-use std::sync::RwLock;
+use std::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 use lazy_static::lazy_static;
 
 mod common_metric_data;
@@ -14,36 +14,63 @@ lazy_static! {
 
 #[derive(Debug)]
 pub struct Glean {
-    initialized: bool,
-    upload_enabled: RwLock<bool>,
+    inner: RwLock<Inner>,
 }
 
 impl Glean {
-    fn new() -> Self {
+    pub fn new() -> Self {
         Self {
-            initialized: true,
-            upload_enabled: RwLock::new(true),
+            inner: RwLock::new(Inner::new()),
         }
     }
 
-    pub fn initialize() {
-        Glean::singleton();
-        internal_metrics::clientId.set("glean.rs-sample");
-    }
-
-    pub fn singleton() -> &'static Glean {
+    pub fn singleton() -> &'static Self {
         &*GLEAN_SINGLETON
     }
 
+    pub fn initialize(&self) {
+        {
+            let mut inner = self.inner.write().unwrap();
+            inner.initialized = true;
+
+            // drop lock before we call any metric setters
+        }
+
+        internal_metrics::clientId.set("glean.rs-sample")
+    }
+
+    fn read(&self) -> RwLockReadGuard<Inner> {
+        self.inner.read().unwrap()
+    }
+
+    fn write(&self) -> RwLockWriteGuard<Inner> {
+        self.inner.write().unwrap()
+    }
+
     pub fn is_initialized(&self) -> bool {
-        self.initialized
+        self.read().initialized
     }
 
     pub fn set_upload_enabled(&self, flag: bool) {
-        *self.upload_enabled.write().unwrap() = flag;
+        self.write().upload_enabled = flag;
     }
 
     pub fn is_upload_enabled(&self) -> bool {
-        *self.upload_enabled.read().unwrap()
+        self.read().upload_enabled
+    }
+}
+
+#[derive(Debug)]
+struct Inner {
+    initialized: bool,
+    upload_enabled: bool,
+}
+
+impl Inner {
+    fn new() -> Self {
+        Self {
+            initialized: true,
+            upload_enabled: true,
+        }
     }
 }
