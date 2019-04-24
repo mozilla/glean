@@ -61,11 +61,18 @@ impl Glean {
         self.read().upload_enabled
     }
 
-    pub fn read_with_store<F>(&self, store_name: &str, transaction_fn: &mut F) where F: FnMut(&rkv::Reader, SingleStore) {
+    pub fn read_with_store<F>(&self, store_name: &str, mut transaction_fn: F) where F: FnMut(rkv::Reader, SingleStore) {
         let inner = self.write();
         let store: SingleStore = inner.rkv.open_single(store_name, StoreOptions::create()).unwrap();
         let reader = inner.rkv.read().unwrap();
-        transaction_fn(&reader, store);
+        transaction_fn(reader, store);
+    }
+
+    pub fn write_with_store<F>(&self, store_name: &str, mut transaction_fn: F) where F: FnMut(rkv::Writer, SingleStore) {
+        let inner = self.write();
+        let store: SingleStore = inner.rkv.open_single(store_name, StoreOptions::create()).unwrap();
+        let writer = inner.rkv.write().unwrap();
+        transaction_fn(writer, store);
     }
 
     pub fn record(&self, lifetime: Lifetime, typ: &str, ping_name: &str, key: &str, value: &rkv::Value) {

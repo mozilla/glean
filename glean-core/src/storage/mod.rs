@@ -27,8 +27,8 @@ impl StorageManager {
             let len = store_iter.len();
             let mut map = HashMap::new();
 
-            let mut snapshotter = |reader: &rkv::Reader, store: rkv::SingleStore| {
-                let mut iter = store.iter_from(reader, &store_iter).unwrap();
+            let mut snapshotter = |reader: rkv::Reader, store: rkv::SingleStore| {
+                let mut iter = store.iter_from(&reader, &store_iter).unwrap();
                 while let Some(Ok((metric_name, value))) = iter.next() {
                     if metric_name.len() < len || !metric_name.starts_with(store_iter.as_bytes()) {
                         break;
@@ -56,6 +56,29 @@ impl StorageManager {
             Glean::singleton().read_with_store(Lifetime::User.as_str(), &mut snapshotter);
 
             snapshot.insert(typ, map);
+        }
+
+        if clear_store {
+            let wrapped_store_name = format!("#{}#", store_name);
+            Glean::singleton().write_with_store(Lifetime::Ping.as_str(), |mut writer, store| {
+                let mut metrics = Vec::new();
+                {
+                    let mut iter = store.iter_start(&writer).unwrap();
+                    while let Some(Ok((metric_name, _))) = iter.next() {
+                        if let Ok(metric_name) = std::str::from_utf8(metric_name) {
+                            if metric_name.contains(&wrapped_store_name) {
+                                metrics.push(metric_name.to_owned());
+                            }
+                        }
+                    }
+                }
+
+                for to_delete in metrics {
+                    store.delete(&mut writer, to_delete).unwrap();
+                }
+
+                writer.commit().unwrap();
+            });
         }
 
         ::serde_json::to_string_pretty(&snapshot).unwrap()
