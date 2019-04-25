@@ -7,6 +7,7 @@ use tempfile::Builder;
 mod common_metric_data;
 mod internal_metrics;
 mod first_run;
+mod error_recording;
 pub mod metrics;
 pub mod storage;
 pub mod ping;
