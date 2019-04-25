@@ -44,4 +44,29 @@ impl StringListMetric {
             }
         })
     }
+
+    pub fn set(&self, value: Vec<String>) {
+        if !self.meta.should_record() {
+            return;
+        }
+
+        let value = if value.len() > MAX_LIST_LENGTH {
+            record_error(&self.meta, ErrorType::InvalidValue);
+            value[0..MAX_LIST_LENGTH].to_vec()
+        } else {
+            value
+        };
+
+        let value = value.into_iter().map(|elem| {
+            if elem.len() > MAX_STRING_LENGTH {
+                record_error(&self.meta, ErrorType::InvalidValue);
+                elem[0..MAX_STRING_LENGTH].to_string()
+            } else {
+                elem
+            }
+        }).collect();
+
+        let value = Metric::StringList(value);
+        GenericStorage.record(&self.meta, &value);
+    }
 }
