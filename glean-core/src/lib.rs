@@ -6,6 +6,7 @@ use tempfile::Builder;
 
 mod common_metric_data;
 mod internal_metrics;
+mod first_run;
 pub mod metrics;
 pub mod storage;
 pub mod ping;
@@ -45,8 +46,10 @@ impl Glean {
     }
 
     fn initialize_core_metrics(&self) {
-        let uuid = uuid::Uuid::new_v4();
-        internal_metrics::clientId.set(uuid.to_string())
+        if first_run::is_first_run() {
+            let uuid = uuid::Uuid::new_v4();
+            internal_metrics::clientId.set(uuid.to_string())
+        }
     }
 
     fn read(&self) -> RwLockReadGuard<Inner> {
@@ -129,9 +132,8 @@ struct Inner {
 
 impl Inner {
     fn new() -> Self {
-        let root = Builder::new().prefix("simple-db").tempdir().unwrap();
-        fs::create_dir_all(root.path()).unwrap();
-        let path = root.path();
+        let path = std::path::Path::new("data");
+        fs::create_dir_all(&path).unwrap();
         let rkv = Rkv::new(path).unwrap();
 
         Self {
