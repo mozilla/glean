@@ -141,7 +141,6 @@ fn thread_safety() {
     assert!(snapshot.contains(r#""global.threadsafe": 4"#));
 }
 
-
 #[test]
 fn transformation_works() {
     Glean::singleton().initialize();
@@ -156,8 +155,8 @@ fn transformation_works() {
     counter.add(2);
     let core_snapshot = storage::StorageManager.snapshot("core", true);
     let metrics_snapshot = storage::StorageManager.snapshot("metrics", false);
-    assert!(core_snapshot.contains(r#""local.transformation": 2"#));
-    assert!(metrics_snapshot.contains(r#""local.transformation": 2"#));
+    assert!(core_snapshot.contains(r#""local.transformation": 2"#), format!("core snapshot 1: {}", core_snapshot));
+    assert!(metrics_snapshot.contains(r#""local.transformation": 2"#), format!("metrics snapshot 1: {}", metrics_snapshot));
 
     counter.add(2);
     let core_snapshot = storage::StorageManager.snapshot("core", true);

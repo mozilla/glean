@@ -131,8 +131,9 @@ struct Inner {
 
 impl Inner {
     fn new() -> Self {
-        let path = std::path::Path::new("data");
-        fs::create_dir_all(&path).unwrap();
+        let root = Builder::new().prefix("simple-db").tempdir().unwrap();
+        fs::create_dir_all(root.path()).unwrap();
+        let path = root.path();
         let rkv = Rkv::new(path).unwrap();
 
         Self {
