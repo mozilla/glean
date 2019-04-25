@@ -36,7 +36,7 @@ pub struct CommonMetricData {
 }
 
 impl CommonMetricData {
-    pub fn fullname(&self) -> String {
+    pub fn identifier(&self) -> String {
         if self.category.is_empty() {
             self.name.clone()
         } else {
