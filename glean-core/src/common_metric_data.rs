@@ -37,7 +37,11 @@ pub struct CommonMetricData {
 
 impl CommonMetricData {
     pub fn fullname(&self) -> String {
-        format!("{}.{}", self.category, self.name)
+        if self.category.is_empty() {
+            self.name.clone()
+        } else {
+            format!("{}.{}", self.category, self.name)
+        }
     }
 
     pub fn should_record(&self) -> bool {
