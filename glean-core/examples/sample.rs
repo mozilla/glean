@@ -1,5 +1,6 @@
 use glean_core::metrics::{BooleanMetric, StringMetric, CounterMetric};
 use glean_core::{storage, CommonMetricData, Lifetime, Glean};
+use glean_core::ping::PingMaker;
 use lazy_static::lazy_static;
 
 lazy_static! {
@@ -13,6 +14,7 @@ lazy_static! {
 }
 
 fn main() {
+    env_logger::init();
     color_backtrace::install();
 
     Glean::singleton().initialize();
@@ -43,6 +45,11 @@ fn main() {
     call_counter.add(3);
 
     println!();
-    println!("Core Data 2:\n{}", storage::StorageManager.snapshot("core", true));
+    println!("Core Data 2:\n{}", storage::StorageManager.snapshot("core", false));
     println!("Metrics Data 2:\n{}", storage::StorageManager.snapshot("metrics", true));
+
+    let ping_maker = PingMaker::new();
+    let ping = ping_maker.collect("core");
+    let ping = ::serde_json::to_string_pretty(&ping).unwrap();
+    println!("Ping:\n{}", ping);
 }

@@ -8,6 +8,7 @@ mod common_metric_data;
 mod internal_metrics;
 pub mod metrics;
 pub mod storage;
+pub mod ping;
 
 pub use common_metric_data::{CommonMetricData, Lifetime};
 use metrics::Metric;
