@@ -40,8 +40,7 @@ impl PingMaker {
 
         // Flatten the whole thing.
         let client_info_obj = client_info.as_object().unwrap(); // safe, snapshot always returns an object.
-        for (key, value) in client_info_obj {
-            println!("key: {:?}, value: {:?}", key, value);
+        for (_key, value) in client_info_obj {
             merge(&mut map, value);
         }
 
