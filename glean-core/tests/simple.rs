@@ -169,18 +169,18 @@ fn transformation_works() {
 fn uuid() {
     Glean::singleton().initialize();
 
-    let list: UuidMetric = UuidMetric::new(CommonMetricData {
+    let uuid: UuidMetric = UuidMetric::new(CommonMetricData {
         name: "uuid".into(),
         category: "local".into(),
         send_in_pings: vec!["core".into()],
         .. Default::default()
     });
 
-    list.generate();
+    uuid.generate();
     let snapshot = storage::StorageManager.snapshot("core", false);
     assert!(snapshot.contains(r#""local.uuid": ""#), format!("Snapshot 1: {}", snapshot));
 
-    list.generate();
+    uuid.generate();
     let snapshot = storage::StorageManager.snapshot("core", false);
     assert!(snapshot.contains(r#""local.uuid": ""#), format!("Snapshot 2: {}", snapshot));
 }
