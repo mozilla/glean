@@ -10,6 +10,7 @@ pub mod metrics;
 pub mod storage;
 
 pub use common_metric_data::{CommonMetricData, Lifetime};
+use metrics::Metric;
 
 lazy_static! {
     static ref GLEAN_SINGLETON: Glean = Glean::new();
@@ -76,9 +77,9 @@ impl Glean {
         transaction_fn(writer, store);
     }
 
-    pub fn record(&self, lifetime: Lifetime, typ: &str, ping_name: &str, key: &str, value: &rkv::Value) {
+    pub fn record(&self, lifetime: Lifetime, ping_name: &str, key: &str, value: &rkv::Value) {
         let inner = self.write();
-        let final_key = format!("{}#{}#{}", typ, ping_name, key);
+        let final_key = format!("{}#{}", ping_name, key);
         let store_name = lifetime.as_str();
         let store = inner.rkv.open_single(store_name, StoreOptions::create()).unwrap();
 
@@ -87,18 +88,28 @@ impl Glean {
         let _ = writer.commit();
     }
 
-    pub fn record_with<F>(&self, lifetime: Lifetime, typ: &str, ping_name: &str, key: &str, transform: F) where F: Fn(Option<rkv::Value>) -> rkv::OwnedValue {
+    pub fn record_with<F>(&self, lifetime: Lifetime, ping_name: &str, key: &str, transform: F) where F: Fn(Option<Metric>) -> Metric {
         let inner = self.write();
-        let final_key = format!("{}#{}#{}", typ, ping_name, key);
+        let final_key = format!("{}#{}", ping_name, key);
         let store_name = lifetime.as_str();
         let store = inner.rkv.open_single(store_name, StoreOptions::create()).unwrap();
 
         let mut writer = inner.rkv.write().unwrap();
-        let value = {
+        let new_value : Metric = {
             let old_value = store.get(&writer, &final_key).unwrap();
-            transform(old_value)
+
+            match old_value {
+                Some(rkv::Value::Blob(blob)) => {
+                    let old_value = bincode::deserialize(blob).ok();
+                    transform(old_value)
+                }
+                _ => transform(None)
+            }
         };
-        store.put(&mut writer, final_key, &(&value).into()).unwrap();
+
+        let encoded = bincode::serialize(&new_value).unwrap();
+        let value = rkv::Value::Blob(&encoded);
+        store.put(&mut writer, final_key, &value).unwrap();
         let _ = writer.commit();
     }
 }

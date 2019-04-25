@@ -1,5 +1,6 @@
 use crate::storage::GenericStorage;
 use crate::CommonMetricData;
+use crate::metrics::Metric;
 
 pub struct BooleanMetric {
     meta: CommonMetricData,
@@ -15,7 +16,7 @@ impl BooleanMetric {
             return;
         }
 
-        let value = rkv::Value::Bool(value);
-        GenericStorage.record("bool", &self.meta, &value)
+        let value = Metric::Boolean(value);
+        GenericStorage.record(&self.meta, &value)
     }
 }

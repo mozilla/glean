@@ -2,10 +2,11 @@
 
 use std::collections::HashMap;
 
-use serde_json::{json, Value as JsonValue};
+use serde_json::Value as JsonValue;
 
 use crate::Glean;
 use crate::Lifetime;
+use crate::metrics::Metric;
 
 mod generic;
 
@@ -19,56 +20,47 @@ pub struct StorageManager;
 
 impl StorageManager {
     pub fn snapshot(&self, store_name: &str, clear_store: bool) -> String {
-        let metric_types = ["bool", "counter", "string"];
-        let mut snapshot : HashMap<&str, HashMap<String, JsonValue>> = HashMap::with_capacity(metric_types.len());
+        let mut snapshot : HashMap<&str, HashMap<String, JsonValue>> = HashMap::new();
 
-        for typ in &metric_types {
-            let store_iter = format!("{}#{}#", typ, store_name);
-            let len = store_iter.len();
-            let mut map = HashMap::new();
+        let store_iter = format!("{}#", store_name);
+        let len = store_iter.len();
 
-            let mut snapshotter = |reader: rkv::Reader, store: rkv::SingleStore| {
-                let mut iter = store.iter_from(&reader, &store_iter).unwrap();
-                while let Some(Ok((metric_name, value))) = iter.next() {
-                    if metric_name.len() < len || !metric_name.starts_with(store_iter.as_bytes()) {
-                        break;
-                    }
-
-                    let metric_name = &metric_name[len..];
-                    let data = match value.unwrap() {
-                        rkv::Value::Str(s) => json!(s),
-                        rkv::Value::U64(s) => json!(s),
-                        rkv::Value::I64(s) => json!(s),
-                        rkv::Value::F64(s) => json!(s.into_inner()),
-                        rkv::Value::Bool(s) => json!(s),
-                        rkv::Value::Json(s) => json!(s),
-                        rkv::Value::Blob(s) => json!(s),
-                        rkv::Value::Instant(_s) => unimplemented!(),
-                        rkv::Value::Uuid(_s) => unimplemented!(),
-                    };
-                    let metric_name = String::from_utf8_lossy(metric_name).into_owned();
-                    map.insert(metric_name, data);
+        let mut snapshotter = |reader: rkv::Reader, store: rkv::SingleStore| {
+            let mut iter = store.iter_from(&reader, &store_iter).unwrap();
+            while let Some(Ok((metric_name, value))) = iter.next() {
+                if !metric_name.starts_with(store_iter.as_bytes()) {
+                    break;
                 }
-            };
 
-            Glean::singleton().read_with_store(Lifetime::Ping.as_str(), &mut snapshotter);
-            Glean::singleton().read_with_store(Lifetime::Application.as_str(), &mut snapshotter);
-            Glean::singleton().read_with_store(Lifetime::User.as_str(), &mut snapshotter);
+                let metric_name = &metric_name[len..];
+                let metric : Metric = match value.unwrap() {
+                    rkv::Value::Blob(blob) => {
+                        bincode::deserialize(blob).unwrap()
+                    }
+                    _ => continue,
+                };
 
-            snapshot.insert(typ, map);
-        }
+                let map = snapshot.entry(metric.category()).or_insert_with(HashMap::new);
+                let metric_name = String::from_utf8_lossy(metric_name).into_owned();
+                map.insert(metric_name, metric.as_json());
+            }
+        };
+
+        Glean::singleton().read_with_store(Lifetime::Ping.as_str(), &mut snapshotter);
+        Glean::singleton().read_with_store(Lifetime::Application.as_str(), &mut snapshotter);
+        Glean::singleton().read_with_store(Lifetime::User.as_str(), &mut snapshotter);
 
         if clear_store {
-            let wrapped_store_name = format!("#{}#", store_name);
             Glean::singleton().write_with_store(Lifetime::Ping.as_str(), |mut writer, store| {
                 let mut metrics = Vec::new();
                 {
-                    let mut iter = store.iter_start(&writer).unwrap();
+                    let mut iter = store.iter_from(&writer, &store_iter).unwrap();
                     while let Some(Ok((metric_name, _))) = iter.next() {
                         if let Ok(metric_name) = std::str::from_utf8(metric_name) {
-                            if metric_name.contains(&wrapped_store_name) {
-                                metrics.push(metric_name.to_owned());
+                            if !metric_name.starts_with(&store_iter) {
+                                break;
                             }
+                            metrics.push(metric_name.to_owned());
                         }
                     }
                 }
