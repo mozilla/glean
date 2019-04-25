@@ -41,7 +41,12 @@ impl Glean {
             // drop lock before we call any metric setters
         }
 
-        internal_metrics::clientId.set("glean.rs-sample")
+        self.initialize_core_metrics();
+    }
+
+    fn initialize_core_metrics(&self) {
+        let uuid = uuid::Uuid::new_v4();
+        internal_metrics::clientId.set(uuid.to_string())
     }
 
     fn read(&self) -> RwLockReadGuard<Inner> {
