@@ -184,3 +184,34 @@ fn uuid() {
     let snapshot = storage::StorageManager.snapshot("core", false);
     assert!(snapshot.contains(r#""local.uuid": ""#), format!("Snapshot 2: {}", snapshot));
 }
+
+#[test]
+fn list() {
+    Glean::singleton().initialize();
+
+    let list: StringListMetric = StringListMetric::new(CommonMetricData {
+        name: "list".into(),
+        category: "local".into(),
+        send_in_pings: vec!["core".into()],
+        .. Default::default()
+    });
+
+    list.add("first");
+    let snapshot = storage::StorageManager.snapshot("core", false);
+    assert!(snapshot.contains(r#""local.list": ["#));
+    assert!(snapshot.contains(r#""first""#));
+
+    list.add("second");
+    let snapshot = storage::StorageManager.snapshot("core", false);
+    assert!(snapshot.contains(r#""local.list": ["#));
+    assert!(snapshot.contains(r#""first""#));
+    assert!(snapshot.contains(r#""second""#));
+
+
+    list.set(vec!["third".into()]);
+    let snapshot = storage::StorageManager.snapshot("core", false);
+    assert!(snapshot.contains(r#""local.list": ["#));
+    assert!(!snapshot.contains(r#""first""#));
+    assert!(!snapshot.contains(r#""second""#));
+    assert!(snapshot.contains(r#""third""#));
+}

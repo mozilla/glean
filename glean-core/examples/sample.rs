@@ -1,4 +1,4 @@
-use glean_core::metrics::{BooleanMetric, StringMetric, CounterMetric};
+use glean_core::metrics::*;
 use glean_core::{storage, CommonMetricData, Lifetime, Glean};
 use glean_core::ping::PingMaker;
 use lazy_static::lazy_static;
@@ -47,6 +47,15 @@ fn main() {
     println!();
     println!("Core Data 2:\n{}", storage::StorageManager.snapshot("core", false));
     println!("Metrics Data 2:\n{}", storage::StorageManager.snapshot("metrics", true));
+
+    let list: StringListMetric = StringListMetric::new(CommonMetricData {
+        name: "list".into(),
+        category: "local".into(),
+        send_in_pings: vec!["core".into()],
+        .. Default::default()
+    });
+    list.add("once");
+    list.add("upon");
 
     let ping_maker = PingMaker::new();
     let ping = ping_maker.collect("core");
