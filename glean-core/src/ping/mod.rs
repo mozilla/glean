@@ -1,9 +1,6 @@
 use serde_json::{json, Value as JsonValue};
 use log::info;
 
-use crate::Glean;
-use crate::Lifetime;
-use crate::metrics::Metric;
 use crate::storage::StorageManager;
 
 pub struct PingMaker;
