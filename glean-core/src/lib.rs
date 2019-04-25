@@ -47,8 +47,7 @@ impl Glean {
 
     fn initialize_core_metrics(&self) {
         if first_run::is_first_run() {
-            let uuid = uuid::Uuid::new_v4();
-            internal_metrics::clientId.set(uuid.to_string())
+            internal_metrics::clientId.generate();
         }
     }
 

@@ -6,7 +6,7 @@ use lazy_static::lazy_static;
 lazy_static! {
     /// A UUID identifying a profile and allowing user-oriented Correlation of data.
     /// Some Unicode: جمع 搜集
-    pub static ref clientId: StringMetric = StringMetric::new(CommonMetricData {
+    pub static ref clientId: UuidMetric = UuidMetric::new(CommonMetricData {
         name: "client_id".into(),
         category: "".into(),
         send_in_pings: vec!["glean_client_info".into(), ],

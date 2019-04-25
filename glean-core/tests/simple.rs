@@ -1,4 +1,4 @@
-use glean_core::metrics::{BooleanMetric, StringMetric, CounterMetric};
+use glean_core::metrics::*;
 use glean_core::{storage, CommonMetricData, Lifetime, Glean};
 use lazy_static::lazy_static;
 
@@ -162,6 +162,26 @@ fn transformation_works() {
     counter.add(2);
     let core_snapshot = storage::StorageManager.snapshot("core", true);
     let metrics_snapshot = storage::StorageManager.snapshot("metrics", false);
-    assert!(core_snapshot.contains(r#""local.transformation": 2"#));
-    assert!(metrics_snapshot.contains(r#""local.transformation": 4"#));
+    assert!(core_snapshot.contains(r#""local.transformation": 2"#), format!("core snapshot 2: {}", core_snapshot));
+    assert!(metrics_snapshot.contains(r#""local.transformation": 4"#), format!("metrics snapshot 2: {}", metrics_snapshot));
+}
+
+#[test]
+fn uuid() {
+    Glean::singleton().initialize();
+
+    let list: UuidMetric = UuidMetric::new(CommonMetricData {
+        name: "uuid".into(),
+        category: "local".into(),
+        send_in_pings: vec!["core".into()],
+        .. Default::default()
+    });
+
+    list.generate();
+    let snapshot = storage::StorageManager.snapshot("core", false);
+    assert!(snapshot.contains(r#""local.uuid": ""#), format!("Snapshot 1: {}", snapshot));
+
+    list.generate();
+    let snapshot = storage::StorageManager.snapshot("core", false);
+    assert!(snapshot.contains(r#""local.uuid": ""#), format!("Snapshot 2: {}", snapshot));
 }

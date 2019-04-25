@@ -4,16 +4,19 @@ use serde_json::{json, Value as JsonValue};
 mod boolean;
 mod string;
 mod counter;
+mod uuid;
 
-pub use boolean::BooleanMetric;
-pub use string::StringMetric;
-pub use counter::CounterMetric;
+pub use self::boolean::BooleanMetric;
+pub use self::string::StringMetric;
+pub use self::counter::CounterMetric;
+pub use self::uuid::UuidMetric;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub enum Metric {
     String(String),
     Boolean(bool),
     Counter(u64),
+    Uuid(String),
 }
 
 impl Metric {
@@ -22,6 +25,7 @@ impl Metric {
             Metric::String(_) => "string",
             Metric::Boolean(_) => "boolean",
             Metric::Counter(_) => "counter",
+            Metric::Uuid(_) => "uuid",
         }
     }
 
@@ -30,6 +34,7 @@ impl Metric {
             Metric::String(s) => json!(s),
             Metric::Boolean(b) => json!(b),
             Metric::Counter(c) => json!(c),
+            Metric::Uuid(s) => json!(s),
         }
     }
 }
