@@ -19,3 +19,4 @@ xcuserdata
 Cartfile.resolved
 Carthage
 glean-core/data
+glean_app
