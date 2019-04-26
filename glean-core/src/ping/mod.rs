@@ -61,4 +61,9 @@ impl PingMaker {
             "metrics": metrics_data
         })
     }
+
+    pub fn collect_string(&self, storage: &str) -> String {
+        let ping = self.collect(storage);
+        ::serde_json::to_string_pretty(&ping).unwrap()
+    }
 }
