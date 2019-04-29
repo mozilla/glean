@@ -1,6 +1,7 @@
 use glean_core::metrics::*;
 use glean_core::{storage, CommonMetricData, Lifetime, Glean};
 use lazy_static::lazy_static;
+use tempfile::Builder;
 
 lazy_static! {
     pub static ref GLOBAL_METRIC: BooleanMetric = BooleanMetric::new(CommonMetricData {
@@ -10,17 +11,22 @@ lazy_static! {
         lifetime: Lifetime::Ping,
         disabled: false,
     });
+
+    pub static ref GLOBAL_TMP : String = {
+        let root = Builder::new().prefix("simple-db").tempdir().unwrap();
+        root.path().display().to_string()
+    };
 }
 
 #[test]
 fn it_works() {
-    Glean::singleton().initialize();
+    Glean::singleton().initialize(&*GLOBAL_TMP);
     assert!(Glean::singleton().is_initialized());
 }
 
 #[test]
 fn can_set_metrics() {
-    Glean::singleton().initialize();
+    Glean::singleton().initialize(&*GLOBAL_TMP);
 
     let local_metric: StringMetric = StringMetric::new(CommonMetricData {
         name: "local_metric".into(),
@@ -43,7 +49,7 @@ fn can_set_metrics() {
 
 #[test]
 fn can_snapshot() {
-    Glean::singleton().initialize();
+    Glean::singleton().initialize(&*GLOBAL_TMP);
 
     let local_metric: StringMetric = StringMetric::new(CommonMetricData {
         name: "can_snapshot_local_metric".into(),
@@ -60,7 +66,7 @@ fn can_snapshot() {
 
 #[test]
 fn snapshot_can_clear_ping_store() {
-    Glean::singleton().initialize();
+    Glean::singleton().initialize(&*GLOBAL_TMP);
 
     let local_metric: StringMetric = StringMetric::new(CommonMetricData {
         name: "clear_snapshot_local_metric".into(),
@@ -80,7 +86,7 @@ fn snapshot_can_clear_ping_store() {
 
 #[test]
 fn clear_is_store_specific() {
-    Glean::singleton().initialize();
+    Glean::singleton().initialize(&*GLOBAL_TMP);
 
     let local_metric: StringMetric = StringMetric::new(CommonMetricData {
         name: "store_specific".into(),
@@ -121,7 +127,7 @@ fn thread_safety() {
     use std::thread;
     use std::sync::{Arc, Barrier};
 
-    Glean::singleton().initialize();
+    Glean::singleton().initialize(&*GLOBAL_TMP);
 
     let barrier = Arc::new(Barrier::new(2));
     let c = barrier.clone();
@@ -143,7 +149,7 @@ fn thread_safety() {
 
 #[test]
 fn transformation_works() {
-    Glean::singleton().initialize();
+    Glean::singleton().initialize(&*GLOBAL_TMP);
 
     let counter: CounterMetric = CounterMetric::new(CommonMetricData {
         name: "transformation".into(),
@@ -167,7 +173,7 @@ fn transformation_works() {
 
 #[test]
 fn uuid() {
-    Glean::singleton().initialize();
+    Glean::singleton().initialize(&*GLOBAL_TMP);
 
     let uuid: UuidMetric = UuidMetric::new(CommonMetricData {
         name: "uuid".into(),
@@ -187,7 +193,7 @@ fn uuid() {
 
 #[test]
 fn list() {
-    Glean::singleton().initialize();
+    Glean::singleton().initialize(&*GLOBAL_TMP);
 
     let list: StringListMetric = StringListMetric::new(CommonMetricData {
         name: "list".into(),
