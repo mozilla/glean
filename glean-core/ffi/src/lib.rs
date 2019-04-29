@@ -36,7 +36,7 @@ pub extern fn glean_initialize() {
         });
     }
 
-    Glean::singleton().initialize();
+    Glean::singleton().initialize("/data/user/0/org.mozilla.samples.glean_rs/data");
     log::info!("Glean.rs initialized");
 }
 

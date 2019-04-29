@@ -1,3 +1,6 @@
+use std::env;
+
+use tempfile::Builder;
 use glean_core::metrics::*;
 use glean_core::{storage, CommonMetricData, Lifetime, Glean};
 use glean_core::ping::PingMaker;
@@ -17,7 +20,16 @@ fn main() {
     env_logger::init();
     color_backtrace::install();
 
-    Glean::singleton().initialize();
+    let mut args = env::args().skip(1);
+
+    let data_path = if let Some(path) = args.next() {
+        path
+    } else {
+        let root = Builder::new().prefix("simple-db").tempdir().unwrap();
+        root.path().display().to_string()
+    };
+
+    Glean::singleton().initialize(&data_path);
     assert!(Glean::singleton().is_initialized());
 
     let local_metric: StringMetric = StringMetric::new(CommonMetricData {

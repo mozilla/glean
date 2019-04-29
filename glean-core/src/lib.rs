@@ -2,7 +2,6 @@ use std::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 use std::fs;
 use lazy_static::lazy_static;
 use rkv::{Rkv, SingleStore, StoreOptions};
-use tempfile::Builder;
 
 mod common_metric_data;
 mod internal_metrics;
@@ -13,6 +12,7 @@ pub mod storage;
 pub mod ping;
 
 pub use common_metric_data::{CommonMetricData, Lifetime};
+pub use error_recording::ErrorType;
 use metrics::Metric;
 
 lazy_static! {
@@ -35,21 +35,20 @@ impl Glean {
         &*GLEAN_SINGLETON
     }
 
-    pub fn initialize(&self) {
+    pub fn initialize(&self, data_path: &str) {
         {
-            let mut inner = self.inner.write().unwrap();
-            inner.initialized = true;
+            let mut inner = self.write();
+            inner.initialize(data_path);
 
             // drop lock before we call any metric setters
         }
 
-        self.initialize_core_metrics();
+        self.initialize_core_metrics(data_path);
     }
 
-    fn initialize_core_metrics(&self) {
-        //if first_run::is_first_run() {
-        //}
-        internal_metrics::clientId.generate_if_missing();
+    fn initialize_core_metrics(&self, data_path: &str) {
+        internal_metrics::first_run.set(first_run::is_first_run(data_path));
+        internal_metrics::client_id.generate_if_missing();
     }
 
     fn read(&self) -> RwLockReadGuard<Inner> {
@@ -74,15 +73,17 @@ impl Glean {
 
     pub fn read_with_store<F>(&self, store_name: &str, mut transaction_fn: F) where F: FnMut(rkv::Reader, SingleStore) {
         let inner = self.write();
-        let store: SingleStore = inner.rkv.open_single(store_name, StoreOptions::create()).unwrap();
-        let reader = inner.rkv.read().unwrap();
+        let rkv = inner.rkv.as_ref().unwrap();
+        let store: SingleStore = rkv.open_single(store_name, StoreOptions::create()).unwrap();
+        let reader = rkv.read().unwrap();
         transaction_fn(reader, store);
     }
 
     pub fn write_with_store<F>(&self, store_name: &str, mut transaction_fn: F) where F: FnMut(rkv::Writer, SingleStore) {
         let inner = self.write();
-        let store: SingleStore = inner.rkv.open_single(store_name, StoreOptions::create()).unwrap();
-        let writer = inner.rkv.write().unwrap();
+        let rkv = inner.rkv.as_ref().unwrap();
+        let store: SingleStore = rkv.open_single(store_name, StoreOptions::create()).unwrap();
+        let writer = rkv.write().unwrap();
         transaction_fn(writer, store);
     }
 
@@ -90,9 +91,10 @@ impl Glean {
         let inner = self.write();
         let final_key = format!("{}#{}", ping_name, key);
         let store_name = lifetime.as_str();
-        let store = inner.rkv.open_single(store_name, StoreOptions::create()).unwrap();
+        let rkv = inner.rkv.as_ref().unwrap();
+        let store = rkv.open_single(store_name, StoreOptions::create()).unwrap();
 
-        let mut writer = inner.rkv.write().unwrap();
+        let mut writer = rkv.write().unwrap();
         store.put(&mut writer, final_key, value).unwrap();
         let _ = writer.commit();
     }
@@ -101,9 +103,10 @@ impl Glean {
         let inner = self.write();
         let final_key = format!("{}#{}", ping_name, key);
         let store_name = lifetime.as_str();
-        let store = inner.rkv.open_single(store_name, StoreOptions::create()).unwrap();
+        let rkv = inner.rkv.as_ref().unwrap();
+        let store = rkv.open_single(store_name, StoreOptions::create()).unwrap();
 
-        let mut writer = inner.rkv.write().unwrap();
+        let mut writer = rkv.write().unwrap();
         let new_value : Metric = {
             let old_value = store.get(&writer, &final_key).unwrap();
 
@@ -127,13 +130,27 @@ impl Glean {
 struct Inner {
     initialized: bool,
     upload_enabled: bool,
-    rkv: Rkv,
+    rkv: Option<Rkv>,
 }
 
 impl Inner {
     fn new() -> Self {
         log::info!("Creating new Inner glean");
-        let path = std::path::Path::new("/data/user/0/org.mozilla.samples.glean_rs/data");
+
+        Self {
+            initialized: false,
+            upload_enabled: true,
+            rkv: None,
+        }
+    }
+
+    fn initialize(&mut self, data_path: &str) {
+        self.rkv = Some(self.open_rkv(data_path));
+        self.initialized = true;
+    }
+
+    fn open_rkv(&mut self, path: &str) -> Rkv {
+        let path = std::path::Path::new(path);
         log::info!("Path is: {:?}", path.display());
         if let Err(e) = fs::create_dir_all(&path) {
             log::info!("Failed to create data dir. LETS CRASH!!!1! (error: {:?})", e);
@@ -148,11 +165,6 @@ impl Inner {
             }
         };
         log::info!("Rkv done. We are initialized!");
-
-        Self {
-            initialized: true,
-            upload_enabled: true,
-            rkv: rkv,
-        }
+        rkv
     }
 }
