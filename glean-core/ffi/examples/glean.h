@@ -5,7 +5,7 @@ struct ExternError {
   char *message; // note: nullable
 };
 
-void glean_initialize();
+void glean_initialize(const char* data_path);
 
 uint8_t glean_is_upload_enabled();
 

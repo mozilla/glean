@@ -5,7 +5,7 @@
 
 int main(void)
 {
-  glean_initialize();
+  glean_initialize("/tmp/glean_data");
 
   printf("Glean upload enabled? %d\n", glean_is_upload_enabled());
   glean_set_upload_enabled(0);
