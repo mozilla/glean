@@ -25,7 +25,24 @@ lazy_static! {
 
 #[no_mangle]
 pub extern fn glean_initialize() {
+    #[cfg(target_os = "android")]
+    {
+        let _ = std::panic::catch_unwind(|| {
+            android_logger::init_once(
+                android_logger::Filter::default().with_min_level(log::Level::Debug),
+                Some("libglean_ffi"),
+                );
+            log::debug!("Android logging should be hooked up!")
+        });
+    }
+
     Glean::singleton().initialize();
+    log::info!("Glean.rs initialized");
+}
+
+#[no_mangle]
+pub extern fn glean_is_initialized() -> u8 {
+    Glean::singleton().is_initialized().into_ffi_value()
 }
 
 #[no_mangle]
@@ -76,9 +93,9 @@ pub extern fn glean_new_counter_metric(name: FfiStr, category: FfiStr, err: &mut
 }
 
 #[no_mangle]
-pub extern fn glean_counter_add(metric_id: u64, amount: u32, error: &mut ExternError) {
+pub extern fn glean_counter_add(metric_id: u64, amount: u64, error: &mut ExternError) {
     COUNTER_METRICS.call_with_output(error, metric_id, |metric| {
-        metric.add(amount);
+        metric.add(amount as u32);
         ()
     })
 }
