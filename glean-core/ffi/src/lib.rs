@@ -24,7 +24,7 @@ lazy_static! {
 }
 
 #[no_mangle]
-pub extern fn glean_initialize() {
+pub extern fn glean_initialize(data_dir: FfiStr) {
     #[cfg(target_os = "android")]
     {
         let _ = std::panic::catch_unwind(|| {
@@ -36,7 +36,8 @@ pub extern fn glean_initialize() {
         });
     }
 
-    Glean::singleton().initialize("/data/user/0/org.mozilla.samples.glean_rs/data");
+    let data_dir = data_dir.into_string();
+    Glean::singleton().initialize(&data_dir);
     log::info!("Glean.rs initialized");
 }
 

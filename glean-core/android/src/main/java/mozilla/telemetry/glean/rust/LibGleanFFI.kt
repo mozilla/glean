@@ -31,7 +31,7 @@ internal interface LibGleanFFI : Library {
     // String will work but either force us to leak them, or cause us to corrupt the heap (when we
     // free them).
 
-    fun glean_initialize()
+    fun glean_initialize(data_dir: String)
     fun glean_is_initialized(): Byte
 
     fun glean_is_upload_enabled(): Byte

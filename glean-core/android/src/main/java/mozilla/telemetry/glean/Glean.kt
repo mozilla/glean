@@ -6,6 +6,7 @@ package mozilla.telemetry.glean
 
 import android.util.Log
 import android.content.Context
+import java.io.File
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.MetricHandle
 import mozilla.telemetry.glean.rust.RustError
@@ -21,13 +22,14 @@ open class GleanInternalAPI internal constructor () {
      * libraries using glean.
      */
     fun initialize(applicationContext: Context) {
-        val dir = applicationContext.applicationInfo.dataDir
-        Log.i("glean-kotlin", "data dir: $dir")
+        val data_dir = File(applicationContext.applicationInfo.dataDir, "glean_data")
+        Log.i("glean-kotlin", "data dir: $data_dir")
 
-        //if (isInitialized()) {
-        //    return
-        //}
-        LibGleanFFI.INSTANCE.glean_initialize()
+        if (isInitialized()) {
+            return
+        }
+
+        LibGleanFFI.INSTANCE.glean_initialize(data_dir.getPath())
 
         val e = RustError.ByReference()
         bool_metric = LibGleanFFI.INSTANCE.glean_new_boolean_metric("enabled", "glean", e)
