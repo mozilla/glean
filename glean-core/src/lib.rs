@@ -47,8 +47,8 @@ impl Glean {
     }
 
     fn initialize_core_metrics(&self) {
-        if first_run::is_first_run() {
-        }
+        //if first_run::is_first_run() {
+        //}
         internal_metrics::clientId.generate_if_missing();
     }
 
@@ -134,12 +134,20 @@ impl Inner {
     fn new() -> Self {
         log::info!("Creating new Inner glean");
         let path = std::path::Path::new("/data/user/0/org.mozilla.samples.glean_rs/data");
+        log::info!("Path is: {:?}", path.display());
         if let Err(e) = fs::create_dir_all(&path) {
             log::info!("Failed to create data dir. LETS CRASH!!!1! (error: {:?})", e);
             panic!("WAAAAAH!!!1!");
         }
-
-        let rkv = Rkv::new(path).unwrap();
+        log::info!("path created. creating rkv.");
+        let rkv = match Rkv::new(path) {
+            Ok(rkv) => rkv,
+            Err(e) => {
+                log::info!("Failed to create rkv. LETS CRASH!!!1! (error: {:?})", e);
+                panic!("WAAAAAH!!!1!");
+            }
+        };
+        log::info!("Rkv done. We are initialized!");
 
         Self {
             initialized: true,
