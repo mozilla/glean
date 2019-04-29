@@ -4,13 +4,14 @@
 
 package mozilla.telemetry.glean
 
+import android.util.Log
+import android.content.Context
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.MetricHandle
 import mozilla.telemetry.glean.rust.RustError
 
 open class GleanInternalAPI internal constructor () {
     // `internal` so this can be modified for testing
-    internal var initialized = false
     internal var bool_metric : MetricHandle = 0
 
     /**
@@ -19,11 +20,13 @@ open class GleanInternalAPI internal constructor () {
      * This should only be initialized once by the application, and not by
      * libraries using glean.
      */
-    fun initialize() {
-        if (isInitialized()) {
-            return
-        }
-        initialized = true
+    fun initialize(applicationContext: Context) {
+        val dir = applicationContext.applicationInfo.dataDir
+        Log.i("glean-kotlin", "data dir: $dir")
+
+        //if (isInitialized()) {
+        //    return
+        //}
         LibGleanFFI.INSTANCE.glean_initialize()
 
         val e = RustError.ByReference()
@@ -34,7 +37,8 @@ open class GleanInternalAPI internal constructor () {
      * Returns true if the Glean library has been initialized.
      */
     internal fun isInitialized(): Boolean {
-        return initialized
+        val initialized = LibGleanFFI.INSTANCE.glean_is_initialized()
+        return initialized.toInt() != 0
     }
 }
 
