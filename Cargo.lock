@@ -225,6 +225,7 @@ dependencies = [
  "ffi-support 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "glean-core 0.1.0",
  "lazy_static 1.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]

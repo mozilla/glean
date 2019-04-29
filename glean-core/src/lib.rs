@@ -132,9 +132,13 @@ struct Inner {
 
 impl Inner {
     fn new() -> Self {
-        let root = Builder::new().prefix("simple-db").tempdir().unwrap();
-        fs::create_dir_all(root.path()).unwrap();
-        let path = root.path();
+        log::info!("Creating new Inner glean");
+        let path = std::path::Path::new("/data/user/0/org.mozilla.samples.glean_rs/data");
+        if let Err(e) = fs::create_dir_all(&path) {
+            log::info!("Failed to create data dir. LETS CRASH!!!1! (error: {:?})", e);
+            panic!("WAAAAAH!!!1!");
+        }
+
         let rkv = Rkv::new(path).unwrap();
 
         Self {
