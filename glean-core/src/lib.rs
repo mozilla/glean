@@ -48,8 +48,8 @@ impl Glean {
 
     fn initialize_core_metrics(&self) {
         if first_run::is_first_run() {
-            internal_metrics::clientId.generate();
         }
+        internal_metrics::clientId.generate_if_missing();
     }
 
     fn read(&self) -> RwLockReadGuard<Inner> {
