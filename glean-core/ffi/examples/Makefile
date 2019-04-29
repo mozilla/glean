@@ -1,4 +1,4 @@
-objects = glean_app.c ../../../target/debug/libglean_ffi.dylib
+objects = glean_app.c ../../../target/release/libglean_ffi.dylib
 headers = glean.h
 
 glean_app: $(objects) $(headers)
@@ -7,3 +7,6 @@ glean_app: $(objects) $(headers)
 
 ../../../target/debug/libglean_ffi.dylib: ../src/lib.rs
 	cargo build
+
+../../../target/release/libglean_ffi.dylib: ../src/lib.rs
+	cargo build --release
