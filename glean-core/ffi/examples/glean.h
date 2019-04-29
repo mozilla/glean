@@ -20,4 +20,6 @@ void glean_set_upload_enabled(uint8_t flag);
 
 char *glean_ping_collect(const char* ping_name, struct ExternError *error);
 
+void glean_destroy_boolean_metric(uint64_t handle, struct ExternError *error);
+
 void glean_str_free(char* ptr);

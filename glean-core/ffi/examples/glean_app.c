@@ -22,5 +22,7 @@ int main(void)
   printf("Payload:\n%s\n", payload);
   glean_str_free(payload);
 
+  glean_destroy_boolean_metric(metric, &err);
+
   return 0;
 }
