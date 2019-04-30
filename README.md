@@ -1,5 +1,7 @@
 # glean.rs
 
+![Glean logo](docs/glean.jpeg)
+
 _Modern Firefox Telemetry for mobile platforms_
 
 ### Overview
