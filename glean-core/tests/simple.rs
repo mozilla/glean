@@ -1,5 +1,5 @@
 use glean_core::metrics::*;
-use glean_core::{storage, CommonMetricData, Lifetime, Glean};
+use glean_core::{storage, CommonMetricData, Glean, Lifetime};
 use lazy_static::lazy_static;
 use tempfile::Builder;
 
@@ -11,8 +11,7 @@ lazy_static! {
         lifetime: Lifetime::Ping,
         disabled: false,
     });
-
-    pub static ref GLOBAL_TMP : String = {
+    pub static ref GLOBAL_TMP: String = {
         let root = Builder::new().prefix("simple-db").tempdir().unwrap();
         root.path().display().to_string()
     };
@@ -32,14 +31,14 @@ fn can_set_metrics() {
         name: "local_metric".into(),
         category: "local".into(),
         send_in_pings: vec!["core".into()],
-        .. Default::default()
+        ..Default::default()
     });
 
     let call_counter: CounterMetric = CounterMetric::new(CommonMetricData {
         name: "calls".into(),
         category: "local".into(),
         send_in_pings: vec!["core".into(), "metrics".into()],
-        .. Default::default()
+        ..Default::default()
     });
 
     GLOBAL_METRIC.set(true);
@@ -55,7 +54,7 @@ fn can_snapshot() {
         name: "can_snapshot_local_metric".into(),
         category: "local".into(),
         send_in_pings: vec!["core".into()],
-        .. Default::default()
+        ..Default::default()
     });
 
     local_metric.set("snapshot 42");
@@ -72,7 +71,7 @@ fn snapshot_can_clear_ping_store() {
         name: "clear_snapshot_local_metric".into(),
         category: "local".into(),
         send_in_pings: vec!["core".into()],
-        .. Default::default()
+        ..Default::default()
     });
 
     local_metric.set("snapshot 43");
@@ -92,7 +91,7 @@ fn clear_is_store_specific() {
         name: "store_specific".into(),
         category: "local".into(),
         send_in_pings: vec!["core".into(), "baseline".into()],
-        .. Default::default()
+        ..Default::default()
     });
 
     local_metric.set("snapshot 44");
@@ -124,8 +123,8 @@ lazy_static! {
 
 #[test]
 fn thread_safety() {
-    use std::thread;
     use std::sync::{Arc, Barrier};
+    use std::thread;
 
     Glean::singleton().initialize(&*GLOBAL_TMP);
 
@@ -155,20 +154,32 @@ fn transformation_works() {
         name: "transformation".into(),
         category: "local".into(),
         send_in_pings: vec!["core".into(), "metrics".into()],
-        .. Default::default()
+        ..Default::default()
     });
 
     counter.add(2);
     let core_snapshot = storage::StorageManager.snapshot("core", true);
     let metrics_snapshot = storage::StorageManager.snapshot("metrics", false);
-    assert!(core_snapshot.contains(r#""local.transformation": 2"#), format!("core snapshot 1: {}", core_snapshot));
-    assert!(metrics_snapshot.contains(r#""local.transformation": 2"#), format!("metrics snapshot 1: {}", metrics_snapshot));
+    assert!(
+        core_snapshot.contains(r#""local.transformation": 2"#),
+        format!("core snapshot 1: {}", core_snapshot)
+    );
+    assert!(
+        metrics_snapshot.contains(r#""local.transformation": 2"#),
+        format!("metrics snapshot 1: {}", metrics_snapshot)
+    );
 
     counter.add(2);
     let core_snapshot = storage::StorageManager.snapshot("core", true);
     let metrics_snapshot = storage::StorageManager.snapshot("metrics", false);
-    assert!(core_snapshot.contains(r#""local.transformation": 2"#), format!("core snapshot 2: {}", core_snapshot));
-    assert!(metrics_snapshot.contains(r#""local.transformation": 4"#), format!("metrics snapshot 2: {}", metrics_snapshot));
+    assert!(
+        core_snapshot.contains(r#""local.transformation": 2"#),
+        format!("core snapshot 2: {}", core_snapshot)
+    );
+    assert!(
+        metrics_snapshot.contains(r#""local.transformation": 4"#),
+        format!("metrics snapshot 2: {}", metrics_snapshot)
+    );
 }
 
 #[test]
@@ -179,16 +190,22 @@ fn uuid() {
         name: "uuid".into(),
         category: "local".into(),
         send_in_pings: vec!["core".into()],
-        .. Default::default()
+        ..Default::default()
     });
 
     uuid.generate();
     let snapshot = storage::StorageManager.snapshot("core", false);
-    assert!(snapshot.contains(r#""local.uuid": ""#), format!("Snapshot 1: {}", snapshot));
+    assert!(
+        snapshot.contains(r#""local.uuid": ""#),
+        format!("Snapshot 1: {}", snapshot)
+    );
 
     uuid.generate();
     let snapshot = storage::StorageManager.snapshot("core", false);
-    assert!(snapshot.contains(r#""local.uuid": ""#), format!("Snapshot 2: {}", snapshot));
+    assert!(
+        snapshot.contains(r#""local.uuid": ""#),
+        format!("Snapshot 2: {}", snapshot)
+    );
 }
 
 #[test]
@@ -199,7 +216,7 @@ fn list() {
         name: "list".into(),
         category: "local".into(),
         send_in_pings: vec!["core".into()],
-        .. Default::default()
+        ..Default::default()
     });
 
     list.add("first");
@@ -212,7 +229,6 @@ fn list() {
     assert!(snapshot.contains(r#""local.list": ["#));
     assert!(snapshot.contains(r#""first""#));
     assert!(snapshot.contains(r#""second""#));
-
 
     list.set(vec!["third".into()]);
     let snapshot = storage::StorageManager.snapshot("core", false);

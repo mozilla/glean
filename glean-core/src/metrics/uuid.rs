@@ -1,6 +1,6 @@
+use crate::metrics::Metric;
 use crate::storage::GenericStorage;
 use crate::CommonMetricData;
-use crate::metrics::Metric;
 
 pub struct UuidMetric {
     meta: CommonMetricData,
@@ -28,14 +28,12 @@ impl UuidMetric {
     }
 
     pub fn generate_if_missing(&self) {
-        GenericStorage.record_with(&self.meta, |old_value| {
-            match old_value {
-                Some(Metric::Uuid(old_value)) => Metric::Uuid(old_value),
-                _ => {
-                    let uuid = uuid::Uuid::new_v4();
-                    let new_value = uuid.to_string();
-                    Metric::Uuid(new_value)
-                }
+        GenericStorage.record_with(&self.meta, |old_value| match old_value {
+            Some(Metric::Uuid(old_value)) => Metric::Uuid(old_value),
+            _ => {
+                let uuid = uuid::Uuid::new_v4();
+                let new_value = uuid.to_string();
+                Metric::Uuid(new_value)
             }
         })
     }

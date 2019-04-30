@@ -1,6 +1,6 @@
+use crate::metrics::Metric;
 use crate::storage::GenericStorage;
 use crate::CommonMetricData;
-use crate::metrics::Metric;
 
 pub struct BooleanMetric {
     meta: CommonMetricData,

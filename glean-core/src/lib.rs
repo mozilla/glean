@@ -1,15 +1,15 @@
-use std::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
-use std::fs;
 use lazy_static::lazy_static;
 use rkv::{Rkv, SingleStore, StoreOptions};
+use std::fs;
+use std::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 
 mod common_metric_data;
-mod internal_metrics;
-mod first_run;
 mod error_recording;
+mod first_run;
+mod internal_metrics;
 pub mod metrics;
-pub mod storage;
 pub mod ping;
+pub mod storage;
 
 pub use common_metric_data::{CommonMetricData, Lifetime};
 pub use error_recording::ErrorType;
@@ -71,7 +71,10 @@ impl Glean {
         self.read().upload_enabled
     }
 
-    pub fn read_with_store<F>(&self, store_name: &str, mut transaction_fn: F) where F: FnMut(rkv::Reader, SingleStore) {
+    pub fn read_with_store<F>(&self, store_name: &str, mut transaction_fn: F)
+    where
+        F: FnMut(rkv::Reader, SingleStore),
+    {
         let inner = self.write();
         let rkv = inner.rkv.as_ref().unwrap();
         let store: SingleStore = rkv.open_single(store_name, StoreOptions::create()).unwrap();
@@ -79,7 +82,10 @@ impl Glean {
         transaction_fn(reader, store);
     }
 
-    pub fn write_with_store<F>(&self, store_name: &str, mut transaction_fn: F) where F: FnMut(rkv::Writer, SingleStore) {
+    pub fn write_with_store<F>(&self, store_name: &str, mut transaction_fn: F)
+    where
+        F: FnMut(rkv::Writer, SingleStore),
+    {
         let inner = self.write();
         let rkv = inner.rkv.as_ref().unwrap();
         let store: SingleStore = rkv.open_single(store_name, StoreOptions::create()).unwrap();
@@ -99,7 +105,10 @@ impl Glean {
         let _ = writer.commit();
     }
 
-    pub fn record_with<F>(&self, lifetime: Lifetime, ping_name: &str, key: &str, transform: F) where F: Fn(Option<Metric>) -> Metric {
+    pub fn record_with<F>(&self, lifetime: Lifetime, ping_name: &str, key: &str, transform: F)
+    where
+        F: Fn(Option<Metric>) -> Metric,
+    {
         let inner = self.write();
         let final_key = format!("{}#{}", ping_name, key);
         let store_name = lifetime.as_str();
@@ -107,7 +116,7 @@ impl Glean {
         let store = rkv.open_single(store_name, StoreOptions::create()).unwrap();
 
         let mut writer = rkv.write().unwrap();
-        let new_value : Metric = {
+        let new_value: Metric = {
             let old_value = store.get(&writer, &final_key).unwrap();
 
             match old_value {
@@ -115,7 +124,7 @@ impl Glean {
                     let old_value = bincode::deserialize(blob).ok();
                     transform(old_value)
                 }
-                _ => transform(None)
+                _ => transform(None),
             }
         };
 
@@ -153,7 +162,10 @@ impl Inner {
         let path = std::path::Path::new(path);
         log::info!("Path is: {:?}", path.display());
         if let Err(e) = fs::create_dir_all(&path) {
-            log::info!("Failed to create data dir. LETS CRASH!!!1! (error: {:?})", e);
+            log::info!(
+                "Failed to create data dir. LETS CRASH!!!1! (error: {:?})",
+                e
+            );
             panic!("WAAAAAH!!!1!");
         }
         log::info!("path created. creating rkv.");

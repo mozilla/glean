@@ -7,7 +7,7 @@ pub enum Lifetime {
     /// The metric is reset on application restart
     Application,
     /// The metric is reset with each user profile
-    User
+    User,
 }
 
 impl Default for Lifetime {

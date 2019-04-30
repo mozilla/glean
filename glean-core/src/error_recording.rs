@@ -1,5 +1,5 @@
-use crate::CommonMetricData;
 use crate::metrics::CounterMetric;
+use crate::CommonMetricData;
 use crate::Lifetime;
 
 #[derive(Debug)]
@@ -25,16 +25,13 @@ pub fn record_error(meta: &CommonMetricData, error: ErrorType) {
         send_in_pings.push("metrics".into());
     }
 
-    let metric = CounterMetric::new(
-        CommonMetricData {
-            name: format!("{}/{}", error.to_string(), identifier),
-            category: "glean.error".into(),
-            lifetime: Lifetime::Ping,
-            send_in_pings: send_in_pings,
-            .. Default::default()
-        }
-    );
+    let metric = CounterMetric::new(CommonMetricData {
+        name: format!("{}/{}", error.to_string(), identifier),
+        category: "glean.error".into(),
+        lifetime: Lifetime::Ping,
+        send_in_pings: send_in_pings,
+        ..Default::default()
+    });
 
     metric.add(1);
 }
-

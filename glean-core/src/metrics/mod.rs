@@ -1,17 +1,17 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use serde_json::{json, Value as JsonValue};
 
 mod boolean;
-mod string;
 mod counter;
-mod uuid;
+mod string;
 mod string_list;
+mod uuid;
 
 pub use self::boolean::BooleanMetric;
-pub use self::string::StringMetric;
 pub use self::counter::CounterMetric;
-pub use self::uuid::UuidMetric;
+pub use self::string::StringMetric;
 pub use self::string_list::StringListMetric;
+pub use self::uuid::UuidMetric;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub enum Metric {

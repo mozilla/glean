@@ -1,9 +1,9 @@
+use crate::error_recording::{record_error, ErrorType};
+use crate::metrics::Metric;
 use crate::storage::GenericStorage;
 use crate::CommonMetricData;
-use crate::metrics::Metric;
-use crate::error_recording::{record_error, ErrorType};
 
-const MAX_LENGTH_VALUE : usize = 50;
+const MAX_LENGTH_VALUE: usize = 50;
 
 pub struct StringMetric {
     meta: CommonMetricData,

@@ -1,6 +1,6 @@
+use crate::metrics::Metric;
 use crate::storage::GenericStorage;
 use crate::CommonMetricData;
-use crate::metrics::Metric;
 
 pub struct CounterMetric {
     meta: CommonMetricData,
@@ -17,11 +17,9 @@ impl CounterMetric {
         }
 
         let amount = amount as u64;
-        GenericStorage.record_with(&self.meta, |old_value| {
-            match old_value {
-                Some(Metric::Counter(old_value)) => Metric::Counter(old_value + amount),
-                _ => Metric::Counter(amount),
-            }
+        GenericStorage.record_with(&self.meta, |old_value| match old_value {
+            Some(Metric::Counter(old_value)) => Metric::Counter(old_value + amount),
+            _ => Metric::Counter(amount),
         })
     }
 }

@@ -4,9 +4,9 @@ use std::collections::HashMap;
 
 use serde_json::{json, Value as JsonValue};
 
+use crate::metrics::Metric;
 use crate::Glean;
 use crate::Lifetime;
-use crate::metrics::Metric;
 
 mod generic;
 
@@ -25,7 +25,7 @@ impl StorageManager {
     }
 
     pub fn snapshot_as_json(&self, store_name: &str, clear_store: bool) -> JsonValue {
-        let mut snapshot : HashMap<&str, HashMap<String, JsonValue>> = HashMap::new();
+        let mut snapshot: HashMap<&str, HashMap<String, JsonValue>> = HashMap::new();
 
         let store_iter = format!("{}#", store_name);
         let len = store_iter.len();
@@ -38,14 +38,14 @@ impl StorageManager {
                 }
 
                 let metric_name = &metric_name[len..];
-                let metric : Metric = match value.unwrap() {
-                    rkv::Value::Blob(blob) => {
-                        bincode::deserialize(blob).unwrap()
-                    }
+                let metric: Metric = match value.unwrap() {
+                    rkv::Value::Blob(blob) => bincode::deserialize(blob).unwrap(),
                     _ => continue,
                 };
 
-                let map = snapshot.entry(metric.category()).or_insert_with(HashMap::new);
+                let map = snapshot
+                    .entry(metric.category())
+                    .or_insert_with(HashMap::new);
                 let metric_name = String::from_utf8_lossy(metric_name).into_owned();
                 map.insert(metric_name, metric.as_json());
             }
