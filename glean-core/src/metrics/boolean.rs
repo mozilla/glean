@@ -1,4 +1,5 @@
-use crate::storage::BooleanStorage;
+use crate::metrics::Metric;
+use crate::storage::GenericStorage;
 use crate::CommonMetricData;
 
 pub struct BooleanMetric {
@@ -15,7 +16,7 @@ impl BooleanMetric {
             return;
         }
 
-        let mut lock = BooleanStorage.write().unwrap();
-        lock.record(&self.meta, value)
+        let value = Metric::Boolean(value);
+        GenericStorage.record(&self.meta, &value)
     }
 }

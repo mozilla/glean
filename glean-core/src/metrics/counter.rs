@@ -1,4 +1,5 @@
-use crate::storage::CounterStorage;
+use crate::metrics::Metric;
+use crate::storage::GenericStorage;
 use crate::CommonMetricData;
 
 pub struct CounterMetric {
@@ -10,12 +11,14 @@ impl CounterMetric {
         Self { meta }
     }
 
-    pub fn add(&self, value: u32) {
+    pub fn add(&self, amount: u64) {
         if !self.meta.should_record() {
             return;
         }
 
-        let mut lock = CounterStorage.write().unwrap();
-        lock.record(&self.meta, value)
+        GenericStorage.record_with(&self.meta, |old_value| match old_value {
+            Some(Metric::Counter(old_value)) => Metric::Counter(old_value + amount),
+            _ => Metric::Counter(amount),
+        })
     }
 }

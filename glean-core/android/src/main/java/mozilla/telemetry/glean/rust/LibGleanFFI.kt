@@ -31,14 +31,24 @@ internal interface LibGleanFFI : Library {
     // String will work but either force us to leak them, or cause us to corrupt the heap (when we
     // free them).
 
-    fun glean_initialize()
+    fun glean_initialize(data_dir: String)
+    fun glean_is_initialized(): Byte
 
-    fun glean_new_boolean_metric(
-        name: String,
-        category: String,
-        e: RustError.ByReference
-    ): MetricHandle
+    fun glean_is_upload_enabled(): Byte
+    fun glean_set_upload_enabled(flag: Byte)
+
+    fun glean_new_boolean_metric(name: String, category: String, e: RustError.ByReference): Long
+
+    fun glean_new_counter_metric(name: String, category: String, e: RustError.ByReference): MetricHandle
+    fun glean_counter_add(handle: MetricHandle, amount: Long, e: RustError.ByReference): MetricHandle
+
+    fun glean_new_string_metric(name: String, category: String, e: RustError.ByReference): MetricHandle
+
+    fun glean_ping_collect(ping_name: String, e: RustError.ByReference): Pointer?
+
+    fun glean_destroy_boolean_metric(handle: MetricHandle, e: RustError.ByReference)
 
     fun glean_str_free(string: Pointer)
+
 }
 internal typealias MetricHandle = Long

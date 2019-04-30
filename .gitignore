@@ -8,7 +8,6 @@ target
 local.properties
 .idea
 build
-.DS_Store
 captures
 .externalNativeBuild
 
@@ -18,3 +17,12 @@ xcuserdata
 # Carthage build artifacts
 Cartfile.resolved
 Carthage
+
+# OS stuff
+.DS_Store
+*.dSYM
+
+# local stuff
+data/
+glean-core/data
+glean_app
