@@ -2,6 +2,11 @@
 
 Record a list of Unicode string values.
 
+## Methods
+
+* `add(value)` - Append the given value to the list.
+* `set(value_list)` - Set to the specified list.
+
 ## Limits
 
 * Fixed maximum string length: 20 bytes. Specified in number of Unicode characters.

@@ -8,6 +8,10 @@ _Note:_ This is not supporting recording JSON blobs - please get in contact with
 
 ---
 
+## Methods
+
+* `set(value)` - Set to the specified `value`.
+
 ## Limits
 
 * Fixed maximum string length: 20 bytes. Specified in number of Unicode characters. Longer strings are truncated.
