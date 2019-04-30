@@ -11,12 +11,11 @@ impl CounterMetric {
         Self { meta }
     }
 
-    pub fn add(&self, amount: u32) {
+    pub fn add(&self, amount: u64) {
         if !self.meta.should_record() {
             return;
         }
 
-        let amount = amount as u64;
         GenericStorage.record_with(&self.meta, |old_value| match old_value {
             Some(Metric::Counter(old_value)) => Metric::Counter(old_value + amount),
             _ => Metric::Counter(amount),

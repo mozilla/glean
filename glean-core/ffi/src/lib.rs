@@ -99,7 +99,7 @@ pub extern "C" fn glean_new_counter_metric(
 #[no_mangle]
 pub extern "C" fn glean_counter_add(metric_id: u64, amount: u64, error: &mut ExternError) {
     COUNTER_METRICS.call_with_output(error, metric_id, |metric| {
-        metric.add(amount as u32);
+        metric.add(amount);
         ()
     })
 }

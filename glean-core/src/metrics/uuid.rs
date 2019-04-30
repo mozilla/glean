@@ -24,7 +24,7 @@ impl UuidMetric {
     pub fn generate(&self) -> uuid::Uuid {
         let uuid = uuid::Uuid::new_v4();
         self.set(uuid);
-        return uuid;
+        uuid
     }
 
     pub fn generate_if_missing(&self) {

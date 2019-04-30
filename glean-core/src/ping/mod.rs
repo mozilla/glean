@@ -18,6 +18,12 @@ fn merge(a: &mut JsonValue, b: &JsonValue) {
     }
 }
 
+impl Default for PingMaker {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl PingMaker {
     pub fn new() -> Self {
         Self

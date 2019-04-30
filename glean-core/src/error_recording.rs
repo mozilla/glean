@@ -29,7 +29,7 @@ pub fn record_error(meta: &CommonMetricData, error: ErrorType) {
         name: format!("{}/{}", error.to_string(), identifier),
         category: "glean.error".into(),
         lifetime: Lifetime::Ping,
-        send_in_pings: send_in_pings,
+        send_in_pings,
         ..Default::default()
     });
 

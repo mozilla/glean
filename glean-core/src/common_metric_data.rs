@@ -17,7 +17,7 @@ impl Default for Lifetime {
 }
 
 impl Lifetime {
-    pub fn as_str(&self) -> &'static str {
+    pub fn as_str(self) -> &'static str {
         match self {
             Lifetime::Ping => "ping",
             Lifetime::Application => "app",
@@ -48,8 +48,7 @@ impl CommonMetricData {
         if self.disabled || !Glean::singleton().is_upload_enabled() {
             return false;
         }
-
-        return true;
+        true
     }
 
     pub fn storage_names(&self) -> &[String] {
