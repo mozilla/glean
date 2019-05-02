@@ -13,7 +13,7 @@ pub use self::string::StringMetric;
 pub use self::string_list::StringListMetric;
 pub use self::uuid::UuidMetric;
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum Metric {
     String(String),
     Boolean(bool),
