@@ -33,10 +33,19 @@ impl Glean {
         }
     }
 
-    pub fn singleton() -> &'static Self {
+    /// Get the global singleton instance of Glean.
+    ///
+    /// This is internally used by metrics and for coordinating storage.
+    ///
+    /// Use `initialize()` to properly initialize this object.
+    pub fn singleton() -> &'static Glean {
         &*GLEAN_SINGLETON
     }
 
+    /// Initialize the global Glean object.
+    ///
+    /// This will create the necessary directories and files in `data_path`.
+    /// This will also initialize the core metrics.
     pub fn initialize(&self, data_path: &str) {
         {
             let mut inner = self.write();
@@ -61,14 +70,21 @@ impl Glean {
         self.inner.write().unwrap()
     }
 
+    /// Determine whether the global Glean object is fully initialized yet.
     pub fn is_initialized(&self) -> bool {
         self.read().is_initialized()
     }
 
+    /// Set whether upload is enabled or not.
+    ///
+    /// When upload is disabled, no data will be recorded.
     pub fn set_upload_enabled(&self, flag: bool) {
         self.write().set_upload_enabled(flag)
     }
 
+    /// Determine whether upload is enabled.
+    ///
+    /// When upload is disabled, no data will be recorded.
     pub fn is_upload_enabled(&self) -> bool {
         self.read().is_upload_enabled()
     }
