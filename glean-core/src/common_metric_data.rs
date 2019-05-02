@@ -1,6 +1,6 @@
 use super::Glean;
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum Lifetime {
     /// The metric is reset with each sent ping
     Ping,
