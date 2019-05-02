@@ -1,7 +1,8 @@
-use lazy_static::lazy_static;
-use rkv::{Rkv, SingleStore, StoreOptions};
 use std::fs;
 use std::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
+
+use lazy_static::lazy_static;
+use rkv::{Rkv, SingleStore, StoreOptions};
 
 mod common_metric_data;
 mod error_recording;
@@ -77,15 +78,29 @@ impl Glean {
         self.read().upload_enabled
     }
 
-    pub(crate) fn read_with_store<F>(&self, store_name: &str, mut transaction_fn: F)
+    pub(crate) fn iter_store_from<F>(&self, lifetime: Lifetime, iter_start: &str, mut transaction_fn: F)
     where
-        F: FnMut(rkv::Reader, SingleStore),
+        F: FnMut(&[u8], Metric)
     {
         let inner = self.write();
         let rkv = inner.rkv.as_ref().unwrap();
-        let store: SingleStore = rkv.open_single(store_name, StoreOptions::create()).unwrap();
+        let store: SingleStore = rkv.open_single(lifetime.as_str(), StoreOptions::create()).unwrap();
         let reader = rkv.read().unwrap();
-        transaction_fn(reader, store);
+        let mut iter = store.iter_from(&reader, &iter_start).unwrap();
+        let len = iter_start.len();
+
+        while let Some(Ok((metric_name, value))) = iter.next() {
+            if !metric_name.starts_with(iter_start.as_bytes()) {
+                break;
+            }
+
+            let metric_name = &metric_name[len..];
+            let metric: Metric = match value.unwrap() {
+                rkv::Value::Blob(blob) => bincode::deserialize(blob).unwrap(),
+                _ => continue,
+            };
+            transaction_fn(metric_name, metric);
+        }
     }
 
     pub(crate) fn write_with_store<F>(&self, store_name: &str, mut transaction_fn: F)

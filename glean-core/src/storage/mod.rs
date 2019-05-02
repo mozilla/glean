@@ -24,32 +24,18 @@ impl StorageManager {
         let mut snapshot: HashMap<&str, HashMap<String, JsonValue>> = HashMap::new();
 
         let store_iter = format!("{}#", store_name);
-        let len = store_iter.len();
 
-        let mut snapshotter = |reader: rkv::Reader, store: rkv::SingleStore| {
-            let mut iter = store.iter_from(&reader, &store_iter).unwrap();
-            while let Some(Ok((metric_name, value))) = iter.next() {
-                if !metric_name.starts_with(store_iter.as_bytes()) {
-                    break;
-                }
-
-                let metric_name = &metric_name[len..];
-                let metric: Metric = match value.unwrap() {
-                    rkv::Value::Blob(blob) => bincode::deserialize(blob).unwrap(),
-                    _ => continue,
-                };
-
-                let map = snapshot
-                    .entry(metric.category())
-                    .or_insert_with(HashMap::new);
-                let metric_name = String::from_utf8_lossy(metric_name).into_owned();
-                map.insert(metric_name, metric.as_json());
-            }
+        let mut snapshotter = |metric_name: &[u8], metric: Metric| {
+            let map = snapshot
+                .entry(metric.category())
+                .or_insert_with(HashMap::new);
+            let metric_name = String::from_utf8_lossy(metric_name).into_owned();
+            map.insert(metric_name, metric.as_json());
         };
 
-        Glean::singleton().read_with_store(Lifetime::Ping.as_str(), &mut snapshotter);
-        Glean::singleton().read_with_store(Lifetime::Application.as_str(), &mut snapshotter);
-        Glean::singleton().read_with_store(Lifetime::User.as_str(), &mut snapshotter);
+        Glean::singleton().iter_store_from(Lifetime::Ping, &store_iter, &mut snapshotter);
+        Glean::singleton().iter_store_from(Lifetime::Application, &store_iter, &mut snapshotter);
+        Glean::singleton().iter_store_from(Lifetime::User, &store_iter, &mut snapshotter);
 
         if clear_store {
             Glean::singleton().write_with_store(Lifetime::Ping.as_str(), |mut writer, store| {
