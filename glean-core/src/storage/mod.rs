@@ -25,7 +25,7 @@ impl StorageManager {
 
         let store_iter = format!("{}#", store_name);
 
-        let mut snapshotter = |metric_name: &[u8], metric: Metric| {
+        let mut snapshotter = |metric_name: &[u8], metric: &Metric| {
             let map = snapshot
                 .entry(metric.category())
                 .or_insert_with(HashMap::new);

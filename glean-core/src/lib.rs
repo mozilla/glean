@@ -1,5 +1,7 @@
 use std::fs;
 use std::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
+use std::collections::BTreeMap;
+use std::collections::btree_map::Entry;
 
 use lazy_static::lazy_static;
 use rkv::{Rkv, SingleStore, StoreOptions};
@@ -80,14 +82,28 @@ impl Glean {
 
     pub(crate) fn iter_store_from<F>(&self, lifetime: Lifetime, iter_start: &str, mut transaction_fn: F)
     where
-        F: FnMut(&[u8], Metric)
+        F: FnMut(&[u8], &Metric)
     {
-        let inner = self.write();
+        let inner = self.read();
+        let len = iter_start.len();
+
+        // Lifetime::Application data is not persisted to disk
+        if lifetime == Lifetime::Application {
+            for (key, value) in &inner.app_data {
+                if key.starts_with(iter_start) {
+                    let key = &key[len..];
+                    transaction_fn(key.as_bytes(), value);
+                }
+
+            }
+
+            return;
+        }
+
         let rkv = inner.rkv.as_ref().unwrap();
         let store: SingleStore = rkv.open_single(lifetime.as_str(), StoreOptions::create()).unwrap();
         let reader = rkv.read().unwrap();
         let mut iter = store.iter_from(&reader, &iter_start).unwrap();
-        let len = iter_start.len();
 
         while let Some(Ok((metric_name, value))) = iter.next() {
             if !metric_name.starts_with(iter_start.as_bytes()) {
@@ -99,7 +115,7 @@ impl Glean {
                 rkv::Value::Blob(blob) => bincode::deserialize(blob).unwrap(),
                 _ => continue,
             };
-            transaction_fn(metric_name, metric);
+            transaction_fn(metric_name, &metric);
         }
     }
 
@@ -107,6 +123,10 @@ impl Glean {
     where
         F: FnMut(rkv::Writer, SingleStore),
     {
+        if store_name == Lifetime::Application {
+            panic!("Can't write with store for application-lifetime data");
+        }
+
         let inner = self.write();
         let rkv = inner.rkv.as_ref().unwrap();
         let store: SingleStore = rkv.open_single(store_name.as_str(), StoreOptions::create()).unwrap();
@@ -134,8 +154,23 @@ impl Glean {
     where
         F: Fn(Option<Metric>) -> Metric,
     {
-        let inner = self.write();
+        let mut inner = self.write();
         let final_key = format!("{}#{}", ping_name, key);
+
+        if lifetime == Lifetime::Application {
+            let entry = inner.app_data.entry(final_key);
+            match entry {
+                Entry::Vacant(entry) => {
+                    entry.insert(transform(None));
+                }
+                Entry::Occupied(mut entry) => {
+                    let old_value = entry.get();
+                    entry.insert(transform(Some(old_value.clone())));
+                }
+            }
+            return;
+        }
+
         let store_name = lifetime.as_str();
         let rkv = inner.rkv.as_ref().unwrap();
         let store = rkv.open_single(store_name, StoreOptions::create()).unwrap();
@@ -165,6 +200,7 @@ struct Inner {
     initialized: bool,
     upload_enabled: bool,
     rkv: Option<Rkv>,
+    app_data: BTreeMap<String, Metric>,
 }
 
 impl Inner {
@@ -175,6 +211,7 @@ impl Inner {
             initialized: false,
             upload_enabled: true,
             rkv: None,
+            app_data: BTreeMap::new(),
         }
     }
 
