@@ -114,15 +114,19 @@ impl Glean {
         transaction_fn(writer, store);
     }
 
-    pub(crate) fn record(&self, lifetime: Lifetime, ping_name: &str, key: &str, value: &rkv::Value) {
+    pub(crate) fn record(&self, lifetime: Lifetime, ping_name: &str, key: &str, metric: &Metric) {
         let inner = self.write();
+
+        let encoded = bincode::serialize(&metric).unwrap();
+        let value = rkv::Value::Blob(&encoded);
+
         let final_key = format!("{}#{}", ping_name, key);
         let store_name = lifetime.as_str();
         let rkv = inner.rkv.as_ref().unwrap();
         let store = rkv.open_single(store_name, StoreOptions::create()).unwrap();
 
         let mut writer = rkv.write().unwrap();
-        store.put(&mut writer, final_key, value).unwrap();
+        store.put(&mut writer, final_key, &value).unwrap();
         let _ = writer.commit();
     }
 
