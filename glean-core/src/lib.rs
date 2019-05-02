@@ -77,7 +77,7 @@ impl Glean {
         self.read().upload_enabled
     }
 
-    pub fn read_with_store<F>(&self, store_name: &str, mut transaction_fn: F)
+    pub(crate) fn read_with_store<F>(&self, store_name: &str, mut transaction_fn: F)
     where
         F: FnMut(rkv::Reader, SingleStore),
     {
@@ -88,7 +88,7 @@ impl Glean {
         transaction_fn(reader, store);
     }
 
-    pub fn write_with_store<F>(&self, store_name: &str, mut transaction_fn: F)
+    pub(crate) fn write_with_store<F>(&self, store_name: &str, mut transaction_fn: F)
     where
         F: FnMut(rkv::Writer, SingleStore),
     {
@@ -99,7 +99,7 @@ impl Glean {
         transaction_fn(writer, store);
     }
 
-    pub fn record(&self, lifetime: Lifetime, ping_name: &str, key: &str, value: &rkv::Value) {
+    pub(crate) fn record(&self, lifetime: Lifetime, ping_name: &str, key: &str, value: &rkv::Value) {
         let inner = self.write();
         let final_key = format!("{}#{}", ping_name, key);
         let store_name = lifetime.as_str();
@@ -111,7 +111,7 @@ impl Glean {
         let _ = writer.commit();
     }
 
-    pub fn record_with<F>(&self, lifetime: Lifetime, ping_name: &str, key: &str, transform: F)
+    pub(crate) fn record_with<F>(&self, lifetime: Lifetime, ping_name: &str, key: &str, transform: F)
     where
         F: Fn(Option<Metric>) -> Metric,
     {
