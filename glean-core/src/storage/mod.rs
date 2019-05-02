@@ -38,7 +38,7 @@ impl StorageManager {
         Glean::singleton().iter_store_from(Lifetime::User, &store_iter, &mut snapshotter);
 
         if clear_store {
-            Glean::singleton().write_with_store(Lifetime::Ping.as_str(), |mut writer, store| {
+            Glean::singleton().write_with_store(Lifetime::Ping, |mut writer, store| {
                 let mut metrics = Vec::new();
                 {
                     let mut iter = store.iter_from(&writer, &store_iter).unwrap();

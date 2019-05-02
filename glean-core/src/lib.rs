@@ -103,13 +103,13 @@ impl Glean {
         }
     }
 
-    pub(crate) fn write_with_store<F>(&self, store_name: &str, mut transaction_fn: F)
+    pub(crate) fn write_with_store<F>(&self, store_name: Lifetime, mut transaction_fn: F)
     where
         F: FnMut(rkv::Writer, SingleStore),
     {
         let inner = self.write();
         let rkv = inner.rkv.as_ref().unwrap();
-        let store: SingleStore = rkv.open_single(store_name, StoreOptions::create()).unwrap();
+        let store: SingleStore = rkv.open_single(store_name.as_str(), StoreOptions::create()).unwrap();
         let writer = rkv.write().unwrap();
         transaction_fn(writer, store);
     }
