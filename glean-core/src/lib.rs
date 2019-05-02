@@ -26,14 +26,8 @@ pub struct Glean {
     inner: RwLock<Inner>,
 }
 
-impl Default for Glean {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
 impl Glean {
-    pub fn new() -> Self {
+    fn new() -> Self {
         Self {
             inner: RwLock::new(Inner::new()),
         }
