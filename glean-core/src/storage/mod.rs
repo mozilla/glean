@@ -12,10 +12,6 @@ mod generic;
 
 pub use generic::GenericStorage;
 
-pub trait StorageDump {
-    fn snapshot(&mut self, store_name: &str, clear_store: bool) -> Option<JsonValue>;
-}
-
 pub struct StorageManager;
 
 impl StorageManager {
