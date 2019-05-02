@@ -21,3 +21,5 @@
         - [Datetime](user/metrics/datetime.md)
         - [Event](user/metrics/event.md)
         - [Labeled Metrics](user/metrics/labeled_metric.md)
+    - [Pings](user/pings/index.md)
+        - [Baseline Ping](user/pings/baseline.md)
