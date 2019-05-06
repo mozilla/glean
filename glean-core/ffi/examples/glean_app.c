@@ -12,8 +12,8 @@ int main(void)
   printf("Glean upload enabled? %d\n", glean_is_upload_enabled());
   glean_set_upload_enabled(1);
 
-  struct ExternError err;
-  uint64_t metric = glean_new_counter_metric("counter", "local", &err);
+  ExternError err;
+  uint64_t metric = glean_new_counter_metric("local", "counter", &err);
   printf("Created counter: %llu\n", metric);
 
   glean_counter_add(metric, 2, &err);
