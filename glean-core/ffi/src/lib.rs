@@ -53,8 +53,8 @@ pub extern "C" fn glean_set_upload_enabled(flag: u8) {
 
 #[no_mangle]
 pub extern "C" fn glean_new_boolean_metric(
-    name: FfiStr,
     category: FfiStr,
+    name: FfiStr,
     err: &mut ExternError,
 ) -> u64 {
     BOOLEAN_METRICS.insert_with_output(err, || {
@@ -69,8 +69,8 @@ pub extern "C" fn glean_new_boolean_metric(
 
 #[no_mangle]
 pub extern "C" fn glean_new_string_metric(
-    name: FfiStr,
     category: FfiStr,
+    name: FfiStr,
     err: &mut ExternError,
 ) -> u64 {
     STRING_METRICS.insert_with_output(err, || {
@@ -85,8 +85,8 @@ pub extern "C" fn glean_new_string_metric(
 
 #[no_mangle]
 pub extern "C" fn glean_new_counter_metric(
-    name: FfiStr,
     category: FfiStr,
+    name: FfiStr,
     err: &mut ExternError,
 ) -> u64 {
     COUNTER_METRICS.insert_with_output(err, || {
