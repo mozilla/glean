@@ -1,3 +1,6 @@
+// Currently requried to `extern crate` for cbindgen to pick it up
+extern crate ffi_support;
+
 use std::os::raw::c_char;
 
 use ffi_support::{
@@ -104,6 +107,21 @@ pub extern "C" fn glean_counter_add(metric_id: u64, amount: u64, error: &mut Ext
 }
 
 #[no_mangle]
+pub extern "C" fn glean_boolean_set(metric_id: u64, value: u8, error: &mut ExternError) {
+    BOOLEAN_METRICS.call_with_output(error, metric_id, |metric| {
+        metric.set(value != 0);
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn glean_string_set(metric_id: u64, value: FfiStr, error: &mut ExternError) {
+    STRING_METRICS.call_with_output(error, metric_id, |metric| {
+        let value = value.into_string();
+        metric.set(value);
+    })
+}
+
+#[no_mangle]
 pub extern "C" fn glean_ping_collect(ping_name: FfiStr, error: &mut ExternError) -> *mut c_char {
     call_with_output(error, || {
         let ping_maker = glean_core::ping::PingMaker::new();
@@ -114,4 +132,6 @@ pub extern "C" fn glean_ping_collect(ping_name: FfiStr, error: &mut ExternError)
 }
 
 define_handle_map_deleter!(BOOLEAN_METRICS, glean_destroy_boolean_metric);
+define_handle_map_deleter!(STRING_METRICS, glean_destroy_string_metric);
+define_handle_map_deleter!(COUNTER_METRICS, glean_destroy_counter_metric);
 define_string_destructor!(glean_str_free);
