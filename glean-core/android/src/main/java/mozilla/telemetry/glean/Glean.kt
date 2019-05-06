@@ -42,6 +42,13 @@ open class GleanInternalAPI internal constructor () {
         val initialized = LibGleanFFI.INSTANCE.glean_is_initialized()
         return initialized.toInt() != 0
     }
+
+    fun collect(ping_name: String) {
+        val e = RustError.ByReference()
+        val s = LibGleanFFI.INSTANCE.glean_ping_collect(ping_name, e)!!
+        LibGleanFFI.INSTANCE.glean_str_free(s)
+
+    }
 }
 
 object Glean : GleanInternalAPI() {
