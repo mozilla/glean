@@ -107,7 +107,9 @@ pub extern "C" fn glean_counter_add(metric_id: u64, amount: u64, error: &mut Ext
 pub extern "C" fn glean_ping_collect(ping_name: FfiStr, error: &mut ExternError) -> *mut c_char {
     call_with_output(error, || {
         let ping_maker = glean_core::ping::PingMaker::new();
-        ping_maker.collect_string(ping_name.as_str())
+        let data = ping_maker.collect_string(ping_name.as_str());
+        log::info!("Ping({}): {}", ping_name.as_str(), data);
+        data
     })
 }
 

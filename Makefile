@@ -3,8 +3,6 @@ ifeq ($(ANDROID_HOME),)
 endif
 
 build-apk:
-	export CROSS_COMPILE=x86_64-unknown-linux-gnu-
-	./gradlew glean-core:cargoBuild
 	./gradlew glean-core:build 
 	./gradlew glean-sample-app:build
 .PHONY: build-apk

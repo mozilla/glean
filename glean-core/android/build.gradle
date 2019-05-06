@@ -43,9 +43,20 @@ configurations {
 }
 
 afterEvaluate {
-    android.sourceSets.debug.jniLibs.srcDirs = android.sourceSets.main.jniLibs.srcDirs
-    android.sourceSets.release.jniLibs.srcDirs = android.sourceSets.main.jniLibs.srcDirs
-    android.sourceSets.main.jniLibs.srcDirs = []
+    // The `cargoBuild` task isn't available until after evaluation.
+    android.libraryVariants.all { variant ->
+        def productFlavor = ""
+        variant.productFlavors.each {
+            productFlavor += "${it.name.capitalize()}"
+        }
+        def buildType = "${variant.buildType.name.capitalize()}"
+        if (variant.buildType.name != 'withoutLib') {
+            tasks["generate${productFlavor}${buildType}Assets"].dependsOn(tasks["cargoBuild"])
+        }
+
+        // For unit tests.
+        tasks["process${productFlavor}${buildType}UnitTestJavaRes"].dependsOn(tasks["cargoBuild"])
+    }
 }
 
 cargo {
