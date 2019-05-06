@@ -37,12 +37,13 @@ internal interface LibGleanFFI : Library {
     fun glean_is_upload_enabled(): Byte
     fun glean_set_upload_enabled(flag: Byte)
 
-    fun glean_new_boolean_metric(name: String, category: String, e: RustError.ByReference): Long
+    fun glean_new_boolean_metric(category: String, name: String, e: RustError.ByReference): Long
+    fun glean_boolean_set(handle: MetricHandle, value: Byte, e: RustError.ByReference)
 
-    fun glean_new_counter_metric(name: String, category: String, e: RustError.ByReference): MetricHandle
-    fun glean_counter_add(handle: MetricHandle, amount: Long, e: RustError.ByReference): MetricHandle
+    fun glean_new_counter_metric(category: String, name: String, e: RustError.ByReference): MetricHandle
+    fun glean_counter_add(handle: MetricHandle, amount: Long, e: RustError.ByReference)
 
-    fun glean_new_string_metric(name: String, category: String, e: RustError.ByReference): MetricHandle
+    fun glean_new_string_metric(category: String, name: String, e: RustError.ByReference): MetricHandle
 
     fun glean_ping_collect(ping_name: String, e: RustError.ByReference): Pointer?
 
