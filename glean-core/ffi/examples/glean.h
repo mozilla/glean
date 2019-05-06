@@ -181,5 +181,5 @@ void glean_string_set(uint64_t metric_id, FfiStr value, ExternError *error);
 void glean_destroy_boolean_metric(uint64_t handle, ExternError *error);
 void glean_destroy_string_metric(uint64_t handle, ExternError *error);
 void glean_destroy_counter_metric(uint64_t handle, ExternError *error);
-void glean_str_free(char* ptr);
+void glean_str_free(char *ptr);
 

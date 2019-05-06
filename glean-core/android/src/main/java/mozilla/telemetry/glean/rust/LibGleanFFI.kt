@@ -31,25 +31,35 @@ internal interface LibGleanFFI : Library {
     // String will work but either force us to leak them, or cause us to corrupt the heap (when we
     // free them).
 
+    fun glean_boolean_set(metric_id: Long, value: Byte, error: RustError.ByReference)
+
+    fun glean_counter_add(metric_id: Long, amount: Long, error: RustError.ByReference)
+
     fun glean_initialize(data_dir: String)
+
     fun glean_is_initialized(): Byte
 
     fun glean_is_upload_enabled(): Byte
+
+    fun glean_new_boolean_metric(category: String, name: String, err: RustError.ByReference): Long
+
+    fun glean_new_counter_metric(category: String, name: String, err: RustError.ByReference): Long
+
+    fun glean_new_string_metric(category: String, name: String, err: RustError.ByReference): Long
+
+    fun glean_ping_collect(ping_name: String, error: RustError.ByReference): Pointer?
+
     fun glean_set_upload_enabled(flag: Byte)
 
-    fun glean_new_boolean_metric(category: String, name: String, e: RustError.ByReference): Long
-    fun glean_boolean_set(handle: MetricHandle, value: Byte, e: RustError.ByReference)
+    fun glean_string_set(metric_id: Long, value: String, error: RustError.ByReference)
 
-    fun glean_new_counter_metric(category: String, name: String, e: RustError.ByReference): MetricHandle
-    fun glean_counter_add(handle: MetricHandle, amount: Long, e: RustError.ByReference)
+    fun glean_destroy_boolean_metric(handle: Long, error: RustError.ByReference)
 
-    fun glean_new_string_metric(category: String, name: String, e: RustError.ByReference): MetricHandle
+    fun glean_destroy_string_metric(handle: Long, error: RustError.ByReference)
 
-    fun glean_ping_collect(ping_name: String, e: RustError.ByReference): Pointer?
+    fun glean_destroy_counter_metric(handle: Long, error: RustError.ByReference)
 
-    fun glean_destroy_boolean_metric(handle: MetricHandle, e: RustError.ByReference)
-
-    fun glean_str_free(string: Pointer)
+    fun glean_str_free(ptr: Pointer)
 
 }
 internal typealias MetricHandle = Long
