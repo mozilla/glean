@@ -80,6 +80,7 @@ cargo {
         'arm',
         'arm64',
         'x86',
+        'x86_64',
     ]
 
     // Perform release builds (which should have debug info, due to
