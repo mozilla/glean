@@ -1,3 +1,5 @@
+#![allow(clippy::redundant_closure)]
+
 // Currently requried to `extern crate` for cbindgen to pick it up
 extern crate ffi_support;
 

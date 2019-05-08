@@ -1,3 +1,5 @@
+#![allow(clippy::new_without_default)]
+
 use std::path::PathBuf;
 
 use uuid::Uuid;
