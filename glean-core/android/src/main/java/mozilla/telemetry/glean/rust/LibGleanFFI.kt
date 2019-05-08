@@ -31,15 +31,15 @@ internal interface LibGleanFFI : Library {
     // String will work but either force us to leak them, or cause us to corrupt the heap (when we
     // free them).
 
-    fun glean_boolean_set(metric_id: Long, value: Byte, error: RustError.ByReference)
+    fun glean_boolean_set(glean_handle: Long, metric_id: Long, value: Byte, error: RustError.ByReference)
 
-    fun glean_counter_add(metric_id: Long, amount: Long, error: RustError.ByReference)
+    fun glean_counter_add(glean_handle: Long, metric_id: Long, amount: Long, error: RustError.ByReference)
 
-    fun glean_initialize(data_dir: String, application_id: String)
+    fun glean_initialize(data_dir: String, application_id: String): Long
 
-    fun glean_is_initialized(): Byte
+    fun glean_is_initialized(glean_handle: Long): Byte
 
-    fun glean_is_upload_enabled(): Byte
+    fun glean_is_upload_enabled(glean_handle: Long): Byte
 
     fun glean_new_boolean_metric(category: String, name: String, err: RustError.ByReference): Long
 
@@ -47,11 +47,13 @@ internal interface LibGleanFFI : Library {
 
     fun glean_new_string_metric(category: String, name: String, err: RustError.ByReference): Long
 
-    fun glean_ping_collect(ping_name: String, error: RustError.ByReference): Pointer?
+    fun glean_ping_collect(glean_handle: Long, ping_name: String, error: RustError.ByReference): Pointer?
 
-    fun glean_set_upload_enabled(flag: Byte)
+    fun glean_set_upload_enabled(glean_handle: Long, flag: Byte)
 
-    fun glean_string_set(metric_id: Long, value: String, error: RustError.ByReference)
+    fun glean_string_set(glean_handle: Long, metric_id: Long, value: String, error: RustError.ByReference)
+
+    fun glean_destroy_glean(handle: Long, error: RustError.ByReference)
 
     fun glean_destroy_boolean_metric(handle: Long, error: RustError.ByReference)
 

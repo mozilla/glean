@@ -13,7 +13,8 @@ import mozilla.telemetry.glean.rust.RustError
 
 open class GleanInternalAPI internal constructor () {
     // `internal` so this can be modified for testing
-    internal var bool_metric: MetricHandle = 0
+    internal var bool_metric: MetricHandle = 0L
+    internal var glean: MetricHandle = 0L
 
     /**
      * Initialize glean.
@@ -29,23 +30,31 @@ open class GleanInternalAPI internal constructor () {
             return
         }
 
-        LibGleanFFI.INSTANCE.glean_initialize(data_dir.getPath(), applicationContext.packageName)
+        glean = LibGleanFFI.INSTANCE.glean_initialize(data_dir.getPath(), applicationContext.packageName)
 
         val e = RustError.ByReference()
-        bool_metric = LibGleanFFI.INSTANCE.glean_new_boolean_metric("enabled", "glean", e)
+        bool_metric = LibGleanFFI.INSTANCE.glean_new_boolean_metric("glean", "enabled", e)
     }
 
     /**
      * Returns true if the Glean library has been initialized.
      */
     internal fun isInitialized(): Boolean {
-        val initialized = LibGleanFFI.INSTANCE.glean_is_initialized()
+        if (glean == 0L) {
+            return false
+        }
+
+        val initialized = LibGleanFFI.INSTANCE.glean_is_initialized(glean)
         return initialized.toInt() != 0
+    }
+
+    fun handle(): Long {
+        return glean
     }
 
     fun collect(ping_name: String) {
         val e = RustError.ByReference()
-        val s = LibGleanFFI.INSTANCE.glean_ping_collect(ping_name, e)!!
+        val s = LibGleanFFI.INSTANCE.glean_ping_collect(glean, ping_name, e)!!
         LibGleanFFI.INSTANCE.glean_str_free(s)
     }
 }

@@ -1,5 +1,5 @@
 ifeq ($(ANDROID_HOME),)
-	ANDROID_HOME := ~/Library/Android
+	ANDROID_HOME := ~/Library/Android/sdk
 endif
 
 build-apk:
@@ -8,11 +8,11 @@ build-apk:
 .PHONY: build-apk
 
 install:
-	$(ANDROID_HOME)/sdk/platform-tools/adb install -r ./samples/android/app/build/outputs/apk/debug/glean-sample-app-debug.apk
+	$(ANDROID_HOME)/platform-tools/adb install -r ./samples/android/app/build/outputs/apk/debug/glean-sample-app-debug.apk
 .PHONY: install
 
 emulator:
-	$(ANDROID_HOME)/sdk/emulator/emulator -avd Nexus_5X_API_P -netdelay none -netspeed full
+	$(ANDROID_HOME)/emulator/emulator -avd Nexus_5X_API_P -netdelay none -netspeed full
 .PHONY: install
 
 lint:

@@ -1,7 +1,8 @@
+use crate::database::Database;
 use crate::metrics::Metric;
-use crate::storage::GenericStorage;
 use crate::CommonMetricData;
 
+#[derive(Debug)]
 pub struct BooleanMetric {
     meta: CommonMetricData,
 }
@@ -11,12 +12,12 @@ impl BooleanMetric {
         Self { meta }
     }
 
-    pub fn set(&self, value: bool) {
+    pub fn set(&self, storage: &Database, value: bool) {
         if !self.meta.should_record() {
             return;
         }
 
         let value = Metric::Boolean(value);
-        GenericStorage.record(&self.meta, &value)
+        storage.record(&self.meta, &value)
     }
 }

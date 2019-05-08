@@ -2,12 +2,15 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use rkv::{Rkv, SingleStore, StoreOptions};
 use std::collections::btree_map::Entry;
 use std::collections::BTreeMap;
 use std::fs;
+use std::sync::RwLock;
+
+use rkv::{Rkv, SingleStore, StoreOptions};
 
 use crate::metrics::Metric;
+use crate::CommonMetricData;
 use crate::Lifetime;
 
 #[derive(Debug)]
@@ -16,14 +19,14 @@ pub struct Database {
     // Metrics with 'application' lifetime only live as long
     // as the application lives: they don't need to be persisted
     // to disk using rkv. Store them in a map.
-    app_lifetime_data: BTreeMap<String, Metric>,
+    app_lifetime_data: RwLock<BTreeMap<String, Metric>>,
 }
 
 impl Database {
     pub fn new() -> Self {
         Self {
             rkv: None,
-            app_lifetime_data: BTreeMap::new(),
+            app_lifetime_data: RwLock::new(BTreeMap::new()),
         }
     }
 
@@ -66,7 +69,8 @@ impl Database {
 
         // Lifetime::Application data is not persisted to disk
         if lifetime == Lifetime::Application {
-            for (key, value) in &self.app_lifetime_data {
+            let data = self.app_lifetime_data.read().unwrap();
+            for (key, value) in data.iter() {
                 if key.starts_with(iter_start) {
                     let key = &key[len..];
                     transaction_fn(key.as_bytes(), value);
@@ -114,7 +118,21 @@ impl Database {
     }
 
     /// Records a metric in the underlying storage system.
-    pub fn record(&self, lifetime: Lifetime, storage_name: &str, key: &str, metric: &Metric) {
+    pub fn record(&self, data: &CommonMetricData, value: &Metric) {
+        let name = data.identifier();
+
+        for ping_name in data.storage_names() {
+            self.record_per_lifetime(data.lifetime, ping_name, &name, value);
+        }
+    }
+
+    fn record_per_lifetime(
+        &self,
+        lifetime: Lifetime,
+        storage_name: &str,
+        key: &str,
+        metric: &Metric,
+    ) {
         let encoded = bincode::serialize(&metric).unwrap();
         let value = rkv::Value::Blob(&encoded);
 
@@ -130,8 +148,18 @@ impl Database {
 
     /// Records the provided value, with the given lifetime, after
     /// applying a transformation function.
-    pub fn record_with<F>(
-        &mut self,
+    pub fn record_with<F>(&self, data: &CommonMetricData, transform: F)
+    where
+        F: Fn(Option<Metric>) -> Metric,
+    {
+        let name = data.identifier();
+        for ping_name in data.storage_names() {
+            self.record_per_lifetime_with(data.lifetime, ping_name, &name, &transform);
+        }
+    }
+
+    pub fn record_per_lifetime_with<F>(
+        &self,
         lifetime: Lifetime,
         storage_name: &str,
         key: &str,
@@ -142,7 +170,8 @@ impl Database {
         let final_key = format!("{}#{}", storage_name, key);
 
         if lifetime == Lifetime::Application {
-            let entry = self.app_lifetime_data.entry(final_key);
+            let mut data = self.app_lifetime_data.write().unwrap();
+            let entry = data.entry(final_key);
             match entry {
                 Entry::Vacant(entry) => {
                     entry.insert(transform(None));

@@ -1,7 +1,8 @@
+use crate::database::Database;
 use crate::metrics::Metric;
-use crate::storage::GenericStorage;
 use crate::CommonMetricData;
 
+#[derive(Debug)]
 pub struct CounterMetric {
     meta: CommonMetricData,
 }
@@ -11,12 +12,12 @@ impl CounterMetric {
         Self { meta }
     }
 
-    pub fn add(&self, amount: u64) {
+    pub fn add(&self, storage: &Database, amount: u64) {
         if !self.meta.should_record() {
             return;
         }
 
-        GenericStorage.record_with(&self.meta, |old_value| match old_value {
+        storage.record_with(&self.meta, |old_value| match old_value {
             Some(Metric::Counter(old_value)) => Metric::Counter(old_value + amount),
             _ => Metric::Counter(amount),
         })

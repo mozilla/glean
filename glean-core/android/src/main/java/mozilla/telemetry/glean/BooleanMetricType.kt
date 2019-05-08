@@ -20,6 +20,6 @@ class BooleanMetricType {
      */
     fun set(value: Boolean) {
         val e = RustError.ByReference()
-        LibGleanFFI.INSTANCE.glean_boolean_set(this.handle, if (value) { 1 } else { 0 }, e)
+        LibGleanFFI.INSTANCE.glean_boolean_set(Glean.handle(), this.handle, if (value) { 1 } else { 0 }, e)
     }
 }
