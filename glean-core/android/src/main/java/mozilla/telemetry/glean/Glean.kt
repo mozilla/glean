@@ -13,7 +13,7 @@ import mozilla.telemetry.glean.rust.RustError
 
 open class GleanInternalAPI internal constructor () {
     // `internal` so this can be modified for testing
-    internal var bool_metric : MetricHandle = 0
+    internal var bool_metric: MetricHandle = 0
 
     /**
      * Initialize glean.
@@ -29,7 +29,7 @@ open class GleanInternalAPI internal constructor () {
             return
         }
 
-        LibGleanFFI.INSTANCE.glean_initialize(data_dir.getPath())
+        LibGleanFFI.INSTANCE.glean_initialize(data_dir.getPath(), applicationContext.packageName)
 
         val e = RustError.ByReference()
         bool_metric = LibGleanFFI.INSTANCE.glean_new_boolean_metric("enabled", "glean", e)
@@ -47,9 +47,7 @@ open class GleanInternalAPI internal constructor () {
         val e = RustError.ByReference()
         val s = LibGleanFFI.INSTANCE.glean_ping_collect(ping_name, e)!!
         LibGleanFFI.INSTANCE.glean_str_free(s)
-
     }
 }
 
-object Glean : GleanInternalAPI() {
-}
+object Glean : GleanInternalAPI()
