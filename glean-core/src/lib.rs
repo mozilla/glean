@@ -4,18 +4,19 @@ use lazy_static::lazy_static;
 use rkv::SingleStore;
 
 mod common_metric_data;
+mod database;
 mod error_recording;
 mod first_run;
-mod internal_metrics;
 mod inner;
+mod internal_metrics;
 pub mod metrics;
 pub mod ping;
 pub mod storage;
 
 pub use common_metric_data::{CommonMetricData, Lifetime};
 pub use error_recording::ErrorType;
-use metrics::Metric;
 use inner::Inner;
+use metrics::Metric;
 
 lazy_static! {
     static ref GLEAN_SINGLETON: Glean = Glean::new();
@@ -91,26 +92,39 @@ impl Glean {
 
     pub(crate) fn iter_store_from<F>(&self, lifetime: Lifetime, iter_start: &str, transaction_fn: F)
     where
-        F: FnMut(&[u8], &Metric)
+        F: FnMut(&[u8], &Metric),
     {
-        self.read().iter_store_from(lifetime, iter_start, transaction_fn)
+        self.read()
+            .data_store
+            .iter_store_from(lifetime, iter_start, transaction_fn)
     }
 
     pub(crate) fn write_with_store<F>(&self, store_name: Lifetime, transaction_fn: F)
     where
         F: FnMut(rkv::Writer, SingleStore),
     {
-        self.write().write_with_store(store_name, transaction_fn)
+        self.write()
+            .data_store
+            .write_with_store(store_name, transaction_fn)
     }
 
     pub(crate) fn record(&self, lifetime: Lifetime, ping_name: &str, key: &str, metric: &Metric) {
-        self.write().record(lifetime, ping_name, key, metric)
+        self.write()
+            .data_store
+            .record(lifetime, ping_name, key, metric)
     }
 
-    pub(crate) fn record_with<F>(&self, lifetime: Lifetime, ping_name: &str, key: &str, transform: F)
-    where
+    pub(crate) fn record_with<F>(
+        &self,
+        lifetime: Lifetime,
+        ping_name: &str,
+        key: &str,
+        transform: F,
+    ) where
         F: Fn(Option<Metric>) -> Metric,
     {
-        self.write().record_with(lifetime, ping_name, key, transform)
+        self.write()
+            .data_store
+            .record_with(lifetime, ping_name, key, transform)
     }
 }
