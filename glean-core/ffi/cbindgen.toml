@@ -8,6 +8,7 @@ autogen_warning = """/* DO NOT MODIFY THIS MANUALLY! This file was generated usi
  *   2. Run `cbindgen glean-core/ffi --lockfile Cargo.lock -o glean-core/ffi/examples/glean.h`
  */"""
 trailer = """
+void glean_destroy_glean(uint64_t handle, ExternError *error);
 void glean_destroy_boolean_metric(uint64_t handle, ExternError *error);
 void glean_destroy_string_metric(uint64_t handle, ExternError *error);
 void glean_destroy_counter_metric(uint64_t handle, ExternError *error);

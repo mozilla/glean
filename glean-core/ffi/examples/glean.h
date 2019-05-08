@@ -156,15 +156,21 @@ typedef struct {
  */
 typedef const char *FfiStr;
 
-void glean_boolean_set(uint64_t metric_id, uint8_t value, ExternError *error);
+void glean_boolean_set(uint64_t glean_handle,
+                       uint64_t metric_id,
+                       uint8_t value,
+                       ExternError *error);
 
-void glean_counter_add(uint64_t metric_id, uint64_t amount, ExternError *error);
+void glean_counter_add(uint64_t glean_handle,
+                       uint64_t metric_id,
+                       uint64_t amount,
+                       ExternError *error);
 
-void glean_initialize(FfiStr data_dir);
+uint64_t glean_initialize(FfiStr data_dir);
 
-uint8_t glean_is_initialized(void);
+uint8_t glean_is_initialized(uint64_t glean_handle);
 
-uint8_t glean_is_upload_enabled(void);
+uint8_t glean_is_upload_enabled(uint64_t glean_handle);
 
 uint64_t glean_new_boolean_metric(FfiStr category, FfiStr name, ExternError *err);
 
@@ -172,12 +178,13 @@ uint64_t glean_new_counter_metric(FfiStr category, FfiStr name, ExternError *err
 
 uint64_t glean_new_string_metric(FfiStr category, FfiStr name, ExternError *err);
 
-char *glean_ping_collect(FfiStr ping_name, ExternError *error);
+char *glean_ping_collect(uint64_t glean_handle, FfiStr ping_name, ExternError *error);
 
-void glean_set_upload_enabled(uint8_t flag);
+void glean_set_upload_enabled(uint64_t glean_handle, uint8_t flag);
 
-void glean_string_set(uint64_t metric_id, FfiStr value, ExternError *error);
+void glean_string_set(uint64_t glean_handle, uint64_t metric_id, FfiStr value, ExternError *error);
 
+void glean_destroy_glean(uint64_t handle, ExternError *error);
 void glean_destroy_boolean_metric(uint64_t handle, ExternError *error);
 void glean_destroy_string_metric(uint64_t handle, ExternError *error);
 void glean_destroy_counter_metric(uint64_t handle, ExternError *error);
