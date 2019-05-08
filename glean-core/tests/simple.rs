@@ -1,6 +1,9 @@
 use glean_core::metrics::*;
 use glean_core::{storage, CommonMetricData, Glean, Lifetime};
+use jsonschema_valid;
 use lazy_static::lazy_static;
+use serde_json::{self, Value};
+use std::io::stdout;
 use tempfile::Builder;
 
 lazy_static! {
@@ -15,6 +18,15 @@ lazy_static! {
         let root = Builder::new().prefix("simple-db").tempdir().unwrap();
         root.path().display().to_string()
     };
+    pub static ref GLOBAL_SCHEMA: Value =
+        { serde_json::from_str(include_str!("schema.json")).unwrap() };
+}
+
+fn validate_against_schema(instance: &Value) {
+    println!("{:?}\n", instance);
+    jsonschema_valid::validate_to_stream(&mut stdout(), instance, &GLOBAL_SCHEMA, None, true);
+    // TODO: This is disabled since we don't produce valid glean JSON yet, but
+    // eventually this should assert
 }
 
 #[test]
@@ -58,6 +70,9 @@ fn can_snapshot() {
     });
 
     local_metric.set("snapshot 42");
+
+    let json = storage::StorageManager.snapshot_as_json("core", false);
+    validate_against_schema(&json);
 
     let snapshot = storage::StorageManager.snapshot("core", false);
     assert!(snapshot.contains(r#""local.can_snapshot_local_metric": "snapshot 42""#));

@@ -1,0 +1,3 @@
+[submodule "mozilla-pipeline-schemas"]
+	path = mozilla-pipeline-schemas
+	url = git://github.com/mozilla-services/mozilla-pipeline-schemas.git
