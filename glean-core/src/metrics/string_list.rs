@@ -1,6 +1,6 @@
+use crate::database::Database;
 use crate::error_recording::{record_error, ErrorType};
 use crate::metrics::Metric;
-use crate::database::Database;
 use crate::CommonMetricData;
 
 // Maximum length of any list

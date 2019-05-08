@@ -4,9 +4,9 @@ use std::collections::HashMap;
 
 use serde_json::{json, Value as JsonValue};
 
+use crate::database::Database;
 use crate::metrics::Metric;
 use crate::Lifetime;
-use crate::database::Database;
 
 pub struct StorageManager;
 
@@ -16,7 +16,12 @@ impl StorageManager {
         ::serde_json::to_string_pretty(&data).unwrap()
     }
 
-    pub fn snapshot_as_json(&self, storage: &Database, store_name: &str, clear_store: bool) -> JsonValue {
+    pub fn snapshot_as_json(
+        &self,
+        storage: &Database,
+        store_name: &str,
+        clear_store: bool,
+    ) -> JsonValue {
         let mut snapshot: HashMap<&str, HashMap<String, JsonValue>> = HashMap::new();
 
         let store_iter = format!("{}#", store_name);

@@ -1,7 +1,7 @@
+use crate::database::Database;
 use crate::metrics::CounterMetric;
 use crate::CommonMetricData;
 use crate::Lifetime;
-use crate::database::Database;
 
 #[derive(Debug)]
 pub enum ErrorType {

@@ -40,28 +40,16 @@ fn main() {
     local_metric.set(glean.storage(), "I can set this");
     call_counter.add(glean.storage(), 1);
 
-    println!(
-        "Core Data:\n{}",
-        glean.snapshot("core", true)
-    );
+    println!("Core Data:\n{}", glean.snapshot("core", true));
 
     call_counter.add(glean.storage(), 2);
-    println!(
-        "Metrics Data:\n{}",
-        glean.snapshot("metrics", true)
-    );
+    println!("Metrics Data:\n{}", glean.snapshot("metrics", true));
 
     call_counter.add(glean.storage(), 3);
 
     println!();
-    println!(
-        "Core Data 2:\n{}",
-        glean.snapshot("core", false)
-    );
-    println!(
-        "Metrics Data 2:\n{}",
-        glean.snapshot("metrics", true)
-    );
+    println!("Core Data 2:\n{}", glean.snapshot("core", false));
+    println!("Metrics Data 2:\n{}", glean.snapshot("metrics", true));
 
     let list: StringListMetric = StringListMetric::new(CommonMetricData {
         name: "list".into(),

@@ -13,12 +13,12 @@ pub mod storage;
 mod util;
 
 pub use crate::common_metric_data::{CommonMetricData, Lifetime};
+use crate::database::Database;
 pub use crate::error_recording::ErrorType;
 use crate::internal_metrics::CoreMetrics;
-use crate::storage::StorageManager;
-use crate::database::Database;
-use crate::util::sanitize_application_id;
 use crate::ping::PingMaker;
+use crate::storage::StorageManager;
+use crate::util::sanitize_application_id;
 
 const GLEAN_SCHEMA_VERSION: u32 = 1;
 
@@ -59,8 +59,12 @@ impl Glean {
     }
 
     fn initialize_core_metrics(&mut self, data_path: &str) {
-        self.core_metrics.first_run.set(self.storage(), first_run::is_first_run(data_path));
-        self.core_metrics.client_id.generate_if_missing(self.storage());
+        self.core_metrics
+            .first_run
+            .set(self.storage(), first_run::is_first_run(data_path));
+        self.core_metrics
+            .client_id
+            .generate_if_missing(self.storage());
     }
 
     /// Determine whether the global Glean object is fully initialized yet.
@@ -92,7 +96,6 @@ impl Glean {
         self.data_path.as_ref().unwrap()
     }
 
-
     pub fn storage(&self) -> &Database {
         &self.data_store
     }
@@ -123,12 +126,8 @@ impl Glean {
         let ping_maker = PingMaker::new();
         let doc_id = Uuid::new_v4().to_string();
         let url_path = self.make_path(ping_name, &doc_id);
-        let ping_content = ::serde_json::to_string_pretty(&ping_maker.collect(self.storage(), ping_name)).unwrap();
-        ping_maker.store_ping(
-            &doc_id,
-            &self.get_data_path(),
-            &url_path,
-            &ping_content,
-        )
+        let ping_content =
+            ::serde_json::to_string_pretty(&ping_maker.collect(self.storage(), ping_name)).unwrap();
+        ping_maker.store_ping(&doc_id, &self.get_data_path(), &url_path, &ping_content)
     }
 }

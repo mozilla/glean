@@ -1,5 +1,5 @@
-use crate::metrics::Metric;
 use crate::database::Database;
+use crate::metrics::Metric;
 use crate::CommonMetricData;
 
 #[derive(Debug)]

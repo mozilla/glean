@@ -12,7 +12,7 @@ impl CoreMetrics {
             client_id: UuidMetric::new(CommonMetricData {
                 name: "client_id".into(),
                 category: "".into(),
-                send_in_pings: vec!["glean_client_info".into(), ],
+                send_in_pings: vec!["glean_client_info".into()],
                 lifetime: Lifetime::Application,
                 disabled: false,
             }),
@@ -20,7 +20,7 @@ impl CoreMetrics {
             first_run: BooleanMetric::new(CommonMetricData {
                 name: "first_run".into(),
                 category: "".into(),
-                send_in_pings: vec!["glean_client_info".into(), ],
+                send_in_pings: vec!["glean_client_info".into()],
                 lifetime: Lifetime::Application,
                 disabled: false,
             }),

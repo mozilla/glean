@@ -2,10 +2,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use std::sync::RwLock;
 use std::collections::btree_map::Entry;
 use std::collections::BTreeMap;
 use std::fs;
+use std::sync::RwLock;
 
 use rkv::{Rkv, SingleStore, StoreOptions};
 
@@ -126,7 +126,13 @@ impl Database {
         }
     }
 
-    fn record_per_lifetime(&self, lifetime: Lifetime, storage_name: &str, key: &str, metric: &Metric) {
+    fn record_per_lifetime(
+        &self,
+        lifetime: Lifetime,
+        storage_name: &str,
+        key: &str,
+        metric: &Metric,
+    ) {
         let encoded = bincode::serialize(&metric).unwrap();
         let value = rkv::Value::Blob(&encoded);
 
