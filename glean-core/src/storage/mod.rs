@@ -8,8 +8,6 @@ use crate::metrics::Metric;
 use crate::Lifetime;
 use crate::database::Database;
 
-mod generic;
-
 pub struct StorageManager;
 
 impl StorageManager {
