@@ -24,8 +24,6 @@ impl StorageManager {
     ) -> JsonValue {
         let mut snapshot: HashMap<&str, HashMap<String, JsonValue>> = HashMap::new();
 
-        let store_iter = format!("{}#", store_name);
-
         let mut snapshotter = |metric_name: &[u8], metric: &Metric| {
             let map = snapshot
                 .entry(metric.category())
@@ -34,31 +32,12 @@ impl StorageManager {
             map.insert(metric_name, metric.as_json());
         };
 
-        storage.iter_store_from(Lifetime::Ping, &store_iter, &mut snapshotter);
-        storage.iter_store_from(Lifetime::Application, &store_iter, &mut snapshotter);
-        storage.iter_store_from(Lifetime::User, &store_iter, &mut snapshotter);
+        storage.iter_store_from(Lifetime::Ping, &store_name, &mut snapshotter);
+        storage.iter_store_from(Lifetime::Application, &store_name, &mut snapshotter);
+        storage.iter_store_from(Lifetime::User, &store_name, &mut snapshotter);
 
         if clear_store {
-            storage.write_with_store(Lifetime::Ping, |mut writer, store| {
-                let mut metrics = Vec::new();
-                {
-                    let mut iter = store.iter_from(&writer, &store_iter).unwrap();
-                    while let Some(Ok((metric_name, _))) = iter.next() {
-                        if let Ok(metric_name) = std::str::from_utf8(metric_name) {
-                            if !metric_name.starts_with(&store_iter) {
-                                break;
-                            }
-                            metrics.push(metric_name.to_owned());
-                        }
-                    }
-                }
-
-                for to_delete in metrics {
-                    store.delete(&mut writer, to_delete).unwrap();
-                }
-
-                writer.commit().unwrap();
-            });
+            storage.clear_ping_lifetime_storage(store_name);
         }
 
         json!(snapshot)
