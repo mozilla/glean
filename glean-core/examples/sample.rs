@@ -29,7 +29,7 @@ fn main() {
         root.path().display().to_string()
     };
 
-    Glean::singleton().initialize(&data_path);
+    Glean::singleton().initialize(&data_path, "org.mozilla.glean_core.example");
     assert!(Glean::singleton().is_initialized());
 
     let local_metric: StringMetric = StringMetric::new(CommonMetricData {

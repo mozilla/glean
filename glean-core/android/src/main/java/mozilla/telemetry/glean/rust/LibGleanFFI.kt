@@ -35,7 +35,7 @@ internal interface LibGleanFFI : Library {
 
     fun glean_counter_add(metric_id: Long, amount: Long, error: RustError.ByReference)
 
-    fun glean_initialize(data_dir: String)
+    fun glean_initialize(data_dir: String, application_id: String)
 
     fun glean_is_initialized(): Byte
 

@@ -2,6 +2,7 @@ use std::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 
 use lazy_static::lazy_static;
 use rkv::SingleStore;
+use uuid::Uuid;
 
 mod common_metric_data;
 mod database;
@@ -12,15 +13,19 @@ mod internal_metrics;
 pub mod metrics;
 pub mod ping;
 pub mod storage;
+mod util;
 
 pub use common_metric_data::{CommonMetricData, Lifetime};
 pub use error_recording::ErrorType;
 use inner::Inner;
 use metrics::Metric;
+use ping::PingMaker;
 
 lazy_static! {
     static ref GLEAN_SINGLETON: Glean = Glean::new();
 }
+
+const GLEAN_SCHEMA_VERSION: u32 = 1;
 
 #[derive(Debug)]
 pub struct Glean {
@@ -47,10 +52,10 @@ impl Glean {
     ///
     /// This will create the necessary directories and files in `data_path`.
     /// This will also initialize the core metrics.
-    pub fn initialize(&self, data_path: &str) {
+    pub fn initialize(&self, data_path: &str, application_id: &str) {
         {
             let mut inner = self.write();
-            inner.initialize(data_path);
+            inner.initialize(data_path, application_id);
 
             // drop lock before we call any metric setters
         }
@@ -126,5 +131,36 @@ impl Glean {
         self.write()
             .data_store
             .record_with(lifetime, ping_name, key, transform)
+    }
+
+    fn make_path(&self, ping_name: &str, doc_id: &str) -> String {
+        format!(
+            "/submit/{}/{}/{}/{}",
+            self.read().get_application_id(),
+            ping_name,
+            GLEAN_SCHEMA_VERSION,
+            doc_id
+        )
+    }
+
+    /// Send a ping by name.
+    ///
+    /// The ping content is assembled as soon as possible, but upload is not
+    /// guaranteed to happen immediately, as that depends on the upload
+    /// policies.
+    ///
+    /// TODO: (Verify this is correct):
+    /// If the ping currently contains no content, it will not be sent.
+    pub fn send_ping(&self, ping_name: &str) -> std::io::Result<()> {
+        let ping_maker = PingMaker::new();
+        let doc_id = Uuid::new_v4().to_string();
+        let url_path = self.make_path(ping_name, &doc_id);
+        let ping_content = ::serde_json::to_string_pretty(&ping_maker.collect(ping_name)).unwrap();
+        ping_maker.store_ping(
+            &doc_id,
+            &self.read().get_data_path(),
+            &url_path,
+            &ping_content,
+        )
     }
 }
