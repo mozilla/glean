@@ -20,7 +20,16 @@ pub fn sanitize_application_id(application_id: &str) -> String {
 
 #[test]
 fn test_sanitize_application_id() {
-    assert!("org-mozilla-test-app" == sanitize_application_id("org.mozilla.test-app"));
-    assert!("org-mozilla-test-app" == sanitize_application_id("org.mozilla..test---app"));
-    assert!("org-mozilla-test-app" == sanitize_application_id("org-mozilla-test-app"));
+    assert_eq!(
+        "org-mozilla-test-app",
+        sanitize_application_id("org.mozilla.test-app")
+    );
+    assert_eq!(
+        "org-mozilla-test-app",
+        sanitize_application_id("org.mozilla..test---app")
+    );
+    assert_eq!(
+        "org-mozilla-test-app",
+        sanitize_application_id("org-mozilla-test-app")
+    );
 }

@@ -16,8 +16,9 @@ lazy_static! {
         let root = Builder::new().prefix("simple-db").tempdir().unwrap();
         root.path().display().to_string()
     };
-    pub static ref GLOBAL_APPLICATION_ID: String = "org.mozilla.glean.test.app".to_string();
 }
+
+const GLOBAL_APPLICATION_ID: &str = "org.mozilla.glean.test.app";
 
 #[test]
 fn it_works() {
