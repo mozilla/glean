@@ -5,22 +5,20 @@ use std::collections::HashMap;
 use serde_json::{json, Value as JsonValue};
 
 use crate::metrics::Metric;
-use crate::Glean;
 use crate::Lifetime;
+use crate::database::Database;
 
 mod generic;
-
-pub use generic::GenericStorage;
 
 pub struct StorageManager;
 
 impl StorageManager {
-    pub fn snapshot(&self, store_name: &str, clear_store: bool) -> String {
-        let data = self.snapshot_as_json(store_name, clear_store);
+    pub fn snapshot(&self, storage: &Database, store_name: &str, clear_store: bool) -> String {
+        let data = self.snapshot_as_json(storage, store_name, clear_store);
         ::serde_json::to_string_pretty(&data).unwrap()
     }
 
-    pub fn snapshot_as_json(&self, store_name: &str, clear_store: bool) -> JsonValue {
+    pub fn snapshot_as_json(&self, storage: &Database, store_name: &str, clear_store: bool) -> JsonValue {
         let mut snapshot: HashMap<&str, HashMap<String, JsonValue>> = HashMap::new();
 
         let store_iter = format!("{}#", store_name);
@@ -33,12 +31,12 @@ impl StorageManager {
             map.insert(metric_name, metric.as_json());
         };
 
-        Glean::singleton().iter_store_from(Lifetime::Ping, &store_iter, &mut snapshotter);
-        Glean::singleton().iter_store_from(Lifetime::Application, &store_iter, &mut snapshotter);
-        Glean::singleton().iter_store_from(Lifetime::User, &store_iter, &mut snapshotter);
+        storage.iter_store_from(Lifetime::Ping, &store_iter, &mut snapshotter);
+        storage.iter_store_from(Lifetime::Application, &store_iter, &mut snapshotter);
+        storage.iter_store_from(Lifetime::User, &store_iter, &mut snapshotter);
 
         if clear_store {
-            Glean::singleton().write_with_store(Lifetime::Ping, |mut writer, store| {
+            storage.write_with_store(Lifetime::Ping, |mut writer, store| {
                 let mut metrics = Vec::new();
                 {
                     let mut iter = store.iter_from(&writer, &store_iter).unwrap();

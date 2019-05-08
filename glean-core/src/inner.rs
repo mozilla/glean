@@ -1,3 +1,10 @@
+use std::fs;
+use std::collections::BTreeMap;
+
+use rkv::Rkv;
+
+use crate::metrics::*;
+use crate::storage::StorageManager;
 use crate::database::Database;
 use std::path::PathBuf;
 
@@ -52,5 +59,13 @@ impl Inner {
     pub fn get_data_path(&self) -> &PathBuf {
         // TODO: Error handling?
         self.data_path.as_ref().unwrap()
+    }
+
+    pub fn storage(&self) -> &Database {
+        &self.data_store
+    }
+
+    pub fn snapshot(&mut self, store_name: &str, clear_store: bool) -> String {
+        StorageManager.snapshot(&self.storage(), store_name, clear_store)
     }
 }

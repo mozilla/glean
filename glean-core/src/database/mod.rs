@@ -8,6 +8,7 @@ use std::collections::BTreeMap;
 use std::fs;
 
 use crate::metrics::Metric;
+use crate::CommonMetricData;
 use crate::Lifetime;
 
 #[derive(Debug)]
@@ -114,7 +115,15 @@ impl Database {
     }
 
     /// Records a metric in the underlying storage system.
-    pub fn record(&self, lifetime: Lifetime, storage_name: &str, key: &str, metric: &Metric) {
+    pub fn record(&self, data: &CommonMetricData, value: &Metric) {
+        let name = data.identifier();
+
+        for ping_name in data.storage_names() {
+            self.record_per_lifetime(data.lifetime, ping_name, &name, value);
+        }
+    }
+
+    fn record_per_lifetime(&self, lifetime: Lifetime, storage_name: &str, key: &str, metric: &Metric) {
         let encoded = bincode::serialize(&metric).unwrap();
         let value = rkv::Value::Blob(&encoded);
 
@@ -130,8 +139,18 @@ impl Database {
 
     /// Records the provided value, with the given lifetime, after
     /// applying a transformation function.
-    pub fn record_with<F>(
-        &mut self,
+    pub fn record_with<F>(&self, data: &CommonMetricData, transform: F)
+    where
+        F: Fn(Option<Metric>) -> Metric,
+    {
+        let name = data.identifier();
+        for ping_name in data.storage_names() {
+            self.record_per_lifetime_with(data.lifetime, ping_name, &name, &transform);
+        }
+    }
+
+    pub fn record_per_lifetime_with<F>(
+        &self,
         lifetime: Lifetime,
         storage_name: &str,
         key: &str,
@@ -141,19 +160,19 @@ impl Database {
     {
         let final_key = format!("{}#{}", storage_name, key);
 
-        if lifetime == Lifetime::Application {
-            let entry = self.app_lifetime_data.entry(final_key);
-            match entry {
-                Entry::Vacant(entry) => {
-                    entry.insert(transform(None));
-                }
-                Entry::Occupied(mut entry) => {
-                    let old_value = entry.get();
-                    entry.insert(transform(Some(old_value.clone())));
-                }
-            }
-            return;
-        }
+        //if lifetime == Lifetime::Application {
+            //let entry = self.app_lifetime_data.entry(final_key);
+            //match entry {
+                //Entry::Vacant(entry) => {
+                    //entry.insert(transform(None));
+                //}
+                //Entry::Occupied(mut entry) => {
+                    //let old_value = entry.get();
+                    //entry.insert(transform(Some(old_value.clone())));
+                //}
+            //}
+            //return;
+        //}
 
         let store_name = lifetime.as_str();
         let rkv = self.rkv.as_ref().unwrap();

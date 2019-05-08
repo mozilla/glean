@@ -1,7 +1,3 @@
-use std::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
-
-use lazy_static::lazy_static;
-use rkv::SingleStore;
 use uuid::Uuid;
 
 mod common_metric_data;
@@ -18,44 +14,33 @@ mod util;
 pub use common_metric_data::{CommonMetricData, Lifetime};
 pub use error_recording::ErrorType;
 use inner::Inner;
-use metrics::Metric;
 use ping::PingMaker;
-
-lazy_static! {
-    static ref GLEAN_SINGLETON: Glean = Glean::new();
-}
+use database::Database;
+use internal_metrics::CoreMetrics;
 
 const GLEAN_SCHEMA_VERSION: u32 = 1;
 
 #[derive(Debug)]
 pub struct Glean {
-    inner: RwLock<Inner>,
+    inner: Inner,
+    core_metrics: CoreMetrics,
 }
 
 impl Glean {
-    fn new() -> Self {
+    pub fn new() -> Self {
         Self {
-            inner: RwLock::new(Inner::new()),
+            inner: Inner::new(),
+            core_metrics: CoreMetrics::new(),
         }
-    }
-
-    /// Get the global singleton instance of Glean.
-    ///
-    /// This is internally used by metrics and for coordinating storage.
-    ///
-    /// Use `initialize()` to properly initialize this object.
-    pub fn singleton() -> &'static Glean {
-        &*GLEAN_SINGLETON
     }
 
     /// Initialize the global Glean object.
     ///
     /// This will create the necessary directories and files in `data_path`.
     /// This will also initialize the core metrics.
-    pub fn initialize(&self, data_path: &str, application_id: &str) {
+    pub fn initialize(&mut self, data_path: &str, application_id: &str) {
         {
-            let mut inner = self.write();
-            inner.initialize(data_path, application_id);
+            self.write().initialize(data_path, application_id);
 
             // drop lock before we call any metric setters
         }
@@ -63,17 +48,17 @@ impl Glean {
         self.initialize_core_metrics(data_path);
     }
 
-    fn initialize_core_metrics(&self, data_path: &str) {
-        internal_metrics::first_run.set(first_run::is_first_run(data_path));
-        internal_metrics::client_id.generate_if_missing();
+    fn initialize_core_metrics(&mut self, data_path: &str) {
+        self.core_metrics.first_run.set(self.storage(), first_run::is_first_run(data_path));
+        self.core_metrics.client_id.generate_if_missing(self.storage());
     }
 
-    fn read(&self) -> RwLockReadGuard<Inner> {
-        self.inner.read().unwrap()
+    fn read(&self) -> &Inner {
+        &self.inner
     }
 
-    fn write(&self) -> RwLockWriteGuard<Inner> {
-        self.inner.write().unwrap()
+    fn write(&mut self) -> &mut Inner {
+        &mut self.inner
     }
 
     /// Determine whether the global Glean object is fully initialized yet.
@@ -84,7 +69,7 @@ impl Glean {
     /// Set whether upload is enabled or not.
     ///
     /// When upload is disabled, no data will be recorded.
-    pub fn set_upload_enabled(&self, flag: bool) {
+    pub fn set_upload_enabled(&mut self, flag: bool) {
         self.write().set_upload_enabled(flag)
     }
 
@@ -95,42 +80,12 @@ impl Glean {
         self.read().is_upload_enabled()
     }
 
-    pub(crate) fn iter_store_from<F>(&self, lifetime: Lifetime, iter_start: &str, transaction_fn: F)
-    where
-        F: FnMut(&[u8], &Metric),
-    {
-        self.read()
-            .data_store
-            .iter_store_from(lifetime, iter_start, transaction_fn)
+    pub fn storage(&self) -> &Database {
+        self.read().storage()
     }
 
-    pub(crate) fn write_with_store<F>(&self, store_name: Lifetime, transaction_fn: F)
-    where
-        F: FnMut(rkv::Writer, SingleStore),
-    {
-        self.write()
-            .data_store
-            .write_with_store(store_name, transaction_fn)
-    }
-
-    pub(crate) fn record(&self, lifetime: Lifetime, ping_name: &str, key: &str, metric: &Metric) {
-        self.write()
-            .data_store
-            .record(lifetime, ping_name, key, metric)
-    }
-
-    pub(crate) fn record_with<F>(
-        &self,
-        lifetime: Lifetime,
-        ping_name: &str,
-        key: &str,
-        transform: F,
-    ) where
-        F: Fn(Option<Metric>) -> Metric,
-    {
-        self.write()
-            .data_store
-            .record_with(lifetime, ping_name, key, transform)
+    pub fn snapshot(&mut self, store_name: &str, clear_store: bool) -> String {
+        self.write().snapshot(store_name, clear_store)
     }
 
     fn make_path(&self, ping_name: &str, doc_id: &str) -> String {
@@ -155,7 +110,7 @@ impl Glean {
         let ping_maker = PingMaker::new();
         let doc_id = Uuid::new_v4().to_string();
         let url_path = self.make_path(ping_name, &doc_id);
-        let ping_content = ::serde_json::to_string_pretty(&ping_maker.collect(ping_name)).unwrap();
+        let ping_content = ::serde_json::to_string_pretty(&ping_maker.collect(self.storage(), ping_name)).unwrap();
         ping_maker.store_ping(
             &doc_id,
             &self.read().get_data_path(),

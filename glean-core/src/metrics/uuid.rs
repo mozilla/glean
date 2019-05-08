@@ -1,7 +1,8 @@
 use crate::metrics::Metric;
-use crate::storage::GenericStorage;
+use crate::database::Database;
 use crate::CommonMetricData;
 
+#[derive(Debug)]
 pub struct UuidMetric {
     meta: CommonMetricData,
 }
@@ -11,24 +12,24 @@ impl UuidMetric {
         Self { meta }
     }
 
-    pub fn set(&self, value: uuid::Uuid) {
+    pub fn set(&self, storage: &Database, value: uuid::Uuid) {
         if !self.meta.should_record() {
             return;
         }
 
         let s = value.to_string();
         let value = Metric::Uuid(s);
-        GenericStorage.record(&self.meta, &value)
+        storage.record(&self.meta, &value)
     }
 
-    pub fn generate(&self) -> uuid::Uuid {
+    pub fn generate(&self, storage: &Database) -> uuid::Uuid {
         let uuid = uuid::Uuid::new_v4();
-        self.set(uuid);
+        self.set(storage, uuid);
         uuid
     }
 
-    pub fn generate_if_missing(&self) {
-        GenericStorage.record_with(&self.meta, |old_value| match old_value {
+    pub fn generate_if_missing(&self, storage: &Database) {
+        storage.record_with(&self.meta, |old_value| match old_value {
             Some(Metric::Uuid(old_value)) => Metric::Uuid(old_value),
             _ => {
                 let uuid = uuid::Uuid::new_v4();

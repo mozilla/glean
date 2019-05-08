@@ -6,6 +6,7 @@ use log::info;
 use serde_json::{json, Value as JsonValue};
 
 use crate::storage::StorageManager;
+use crate::database::Database;
 
 pub struct PingMaker;
 
@@ -37,15 +38,15 @@ impl PingMaker {
         1
     }
 
-    fn get_ping_info(&self, storage: &str) -> JsonValue {
+    fn get_ping_info(&self, storage_name: &str) -> JsonValue {
         json!({
-            "ping_type": storage,
-            "seq": self.get_ping_seq(storage),
+            "ping_type": storage_name,
+            "seq": self.get_ping_seq(storage_name),
         })
     }
 
-    fn get_client_info(&self) -> JsonValue {
-        let client_info = StorageManager.snapshot_as_json("glean_client_info", true);
+    fn get_client_info(&self, storage: &Database) -> JsonValue {
+        let client_info = StorageManager.snapshot_as_json(storage, "glean_client_info", true);
         let mut map = json!({});
 
         // Flatten the whole thing.
@@ -57,23 +58,23 @@ impl PingMaker {
         json!(map)
     }
 
-    pub fn collect(&self, storage: &str) -> JsonValue {
-        info!("Collecting {}", storage);
+    pub fn collect(&self, storage: &Database, storage_name: &str) -> JsonValue {
+        info!("Collecting {}", storage_name);
 
-        let metrics_data = StorageManager.snapshot_as_json(storage, true);
+        let metrics_data = StorageManager.snapshot_as_json(storage, storage_name, true);
 
-        let ping_info = self.get_ping_info(storage);
-        let client_info = self.get_client_info();
+        let ping_info = self.get_ping_info(storage_name);
+        let client_info = self.get_client_info(storage);
 
         json!({
             "ping_info": ping_info,
             "client_info": client_info,
-            "metrics": metrics_data
+            "metrics": metrics_data,
         })
     }
 
-    pub fn collect_string(&self, storage: &str) -> String {
-        let ping = self.collect(storage);
+    pub fn collect_string(&self, storage: &Database, storage_name: &str) -> String {
+        let ping = self.collect(storage, storage_name);
         ::serde_json::to_string_pretty(&ping).unwrap()
     }
 

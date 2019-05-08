@@ -1,10 +1,11 @@
 use crate::error_recording::{record_error, ErrorType};
 use crate::metrics::Metric;
-use crate::storage::GenericStorage;
+use crate::database::Database;
 use crate::CommonMetricData;
 
 const MAX_LENGTH_VALUE: usize = 50;
 
+#[derive(Debug)]
 pub struct StringMetric {
     meta: CommonMetricData,
 }
@@ -14,20 +15,20 @@ impl StringMetric {
         Self { meta }
     }
 
-    pub fn set<S: Into<String>>(&self, value: S) {
+    pub fn set<S: Into<String>>(&self, storage: &Database, value: S) {
         if !self.meta.should_record() {
             return;
         }
 
         let s = value.into();
         let s = if s.len() > MAX_LENGTH_VALUE {
-            record_error(&self.meta, ErrorType::InvalidValue);
+            record_error(storage, &self.meta, ErrorType::InvalidValue);
             s[0..MAX_LENGTH_VALUE].to_string()
         } else {
             s
         };
 
         let value = Metric::String(s);
-        GenericStorage.record(&self.meta, &value)
+        storage.record(&self.meta, &value)
     }
 }
