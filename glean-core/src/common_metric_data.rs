@@ -43,7 +43,6 @@ impl CommonMetricData {
     }
 
     pub fn should_record(&self) -> bool {
-        //if self.disabled || !Glean::singleton().is_upload_enabled() {
         if self.disabled {
             return false;
         }

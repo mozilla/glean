@@ -121,7 +121,7 @@ pub extern "C" fn glean_counter_add(
     GLEAN.call_with_output(error, glean_handle, |glean| {
         let mut err = ExternError::success();
         COUNTER_METRICS.call_with_output(&mut err, metric_id, |metric| {
-            metric.add(glean.storage(), amount);
+            metric.add(glean, amount);
         })
     })
 }
@@ -136,7 +136,7 @@ pub extern "C" fn glean_boolean_set(
     GLEAN.call_with_output(error, glean_handle, |glean| {
         let mut err = ExternError::success();
         BOOLEAN_METRICS.call_with_output(&mut err, metric_id, |metric| {
-            metric.set(glean.storage(), value != 0);
+            metric.set(glean, value != 0);
         })
     })
 }
@@ -152,7 +152,7 @@ pub extern "C" fn glean_string_set(
         let mut err = ExternError::success();
         STRING_METRICS.call_with_output(&mut err, metric_id, |metric| {
             let value = value.into_string();
-            metric.set(glean.storage(), value);
+            metric.set(glean, value);
         })
     })
 }

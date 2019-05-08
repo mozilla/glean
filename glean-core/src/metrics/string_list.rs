@@ -1,7 +1,7 @@
-use crate::database::Database;
 use crate::error_recording::{record_error, ErrorType};
 use crate::metrics::Metric;
 use crate::CommonMetricData;
+use crate::Glean;
 
 // Maximum length of any list
 const MAX_LIST_LENGTH: usize = 20;
@@ -18,39 +18,41 @@ impl StringListMetric {
         Self { meta }
     }
 
-    pub fn add<S: Into<String>>(&self, storage: &Database, value: S) {
+    pub fn add<S: Into<String>>(&self, glean: &Glean, value: S) {
         if !self.meta.should_record() {
             return;
         }
 
         let value = value.into();
         let value = if value.len() > MAX_STRING_LENGTH {
-            record_error(storage, &self.meta, ErrorType::InvalidValue);
+            record_error(glean, &self.meta, ErrorType::InvalidValue);
             value[0..MAX_STRING_LENGTH].to_string()
         } else {
             value
         };
 
-        storage.record_with(&self.meta, |old_value| match old_value {
-            Some(Metric::StringList(mut old_value)) => {
-                if old_value.len() == MAX_LIST_LENGTH {
-                    record_error(storage, &self.meta, ErrorType::InvalidValue);
-                    return Metric::StringList(old_value);
+        glean
+            .storage()
+            .record_with(&self.meta, |old_value| match old_value {
+                Some(Metric::StringList(mut old_value)) => {
+                    if old_value.len() == MAX_LIST_LENGTH {
+                        record_error(glean, &self.meta, ErrorType::InvalidValue);
+                        return Metric::StringList(old_value);
+                    }
+                    old_value.push(value.clone());
+                    Metric::StringList(old_value)
                 }
-                old_value.push(value.clone());
-                Metric::StringList(old_value)
-            }
-            _ => Metric::StringList(vec![value.clone()]),
-        })
+                _ => Metric::StringList(vec![value.clone()]),
+            })
     }
 
-    pub fn set(&self, storage: &Database, value: Vec<String>) {
-        if !self.meta.should_record() {
+    pub fn set(&self, glean: &Glean, value: Vec<String>) {
+        if !self.meta.should_record() || !glean.is_upload_enabled() {
             return;
         }
 
         let value = if value.len() > MAX_LIST_LENGTH {
-            record_error(storage, &self.meta, ErrorType::InvalidValue);
+            record_error(glean, &self.meta, ErrorType::InvalidValue);
             value[0..MAX_LIST_LENGTH].to_vec()
         } else {
             value
@@ -60,7 +62,7 @@ impl StringListMetric {
             .into_iter()
             .map(|elem| {
                 if elem.len() > MAX_STRING_LENGTH {
-                    record_error(storage, &self.meta, ErrorType::InvalidValue);
+                    record_error(glean, &self.meta, ErrorType::InvalidValue);
                     elem[0..MAX_STRING_LENGTH].to_string()
                 } else {
                     elem
@@ -69,6 +71,6 @@ impl StringListMetric {
             .collect();
 
         let value = Metric::StringList(value);
-        storage.record(&self.meta, &value);
+        glean.storage().record(&self.meta, &value);
     }
 }
