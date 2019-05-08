@@ -37,8 +37,8 @@ fn can_set_metrics() {
         ..Default::default()
     });
 
-    local_metric.set(glean.storage(), "I can set this");
-    call_counter.add(glean.storage(), 1);
+    local_metric.set(&glean, "I can set this");
+    call_counter.add(&glean, 1);
 }
 
 #[test]
@@ -54,7 +54,7 @@ fn can_snapshot() {
         ..Default::default()
     });
 
-    local_metric.set(glean.storage(), "snapshot 42");
+    local_metric.set(&glean, "snapshot 42");
 
     let snapshot = glean.snapshot("core", false);
     assert!(snapshot.contains(r#""local.can_snapshot_local_metric": "snapshot 42""#));
@@ -73,7 +73,7 @@ fn snapshot_can_clear_ping_store() {
         ..Default::default()
     });
 
-    local_metric.set(glean.storage(), "snapshot 43");
+    local_metric.set(&glean, "snapshot 43");
 
     let snapshot = glean.snapshot("core", true);
     assert!(snapshot.contains(r#""local.clear_snapshot_local_metric": "snapshot 43""#));
@@ -95,7 +95,7 @@ fn clear_is_store_specific() {
         ..Default::default()
     });
 
-    local_metric.set(glean.storage(), "snapshot 44");
+    local_metric.set(&glean, "snapshot 44");
 
     // Snapshot 1: Clear core.
     let core_snapshot = glean.snapshot("core", true);
@@ -135,14 +135,14 @@ fn thread_safety() {
     let threadsafe_metric_clone = threadsafe_metric.clone();
     let glean_clone = glean.clone();
     let child = thread::spawn(move || {
-        threadsafe_metric_clone.add(glean_clone.lock().unwrap().storage(), 1);
+        threadsafe_metric_clone.add(&*glean_clone.lock().unwrap(), 1);
         c.wait();
-        threadsafe_metric_clone.add(glean_clone.lock().unwrap().storage(), 1);
+        threadsafe_metric_clone.add(&*glean_clone.lock().unwrap(), 1);
     });
 
-    threadsafe_metric.add(glean.lock().unwrap().storage(), 1);
+    threadsafe_metric.add(&*glean.lock().unwrap(), 1);
     barrier.wait();
-    threadsafe_metric.add(glean.lock().unwrap().storage(), 1);
+    threadsafe_metric.add(&*glean.lock().unwrap(), 1);
 
     child.join().unwrap();
 
@@ -163,7 +163,7 @@ fn transformation_works() {
         ..Default::default()
     });
 
-    counter.add(glean.storage(), 2);
+    counter.add(&glean, 2);
     let core_snapshot = glean.snapshot("core", true);
     let metrics_snapshot = glean.snapshot("metrics", false);
     assert!(
@@ -175,7 +175,7 @@ fn transformation_works() {
         format!("metrics snapshot 1: {}", metrics_snapshot)
     );
 
-    counter.add(glean.storage(), 2);
+    counter.add(&glean, 2);
     let core_snapshot = glean.snapshot("core", true);
     let metrics_snapshot = glean.snapshot("metrics", false);
     assert!(
@@ -201,14 +201,14 @@ fn uuid() {
         ..Default::default()
     });
 
-    uuid.generate(glean.storage());
+    uuid.generate(&glean);
     let snapshot = glean.snapshot("core", false);
     assert!(
         snapshot.contains(r#""local.uuid": ""#),
         format!("Snapshot 1: {}", snapshot)
     );
 
-    uuid.generate(glean.storage());
+    uuid.generate(&glean);
     let snapshot = glean.snapshot("core", false);
     assert!(
         snapshot.contains(r#""local.uuid": ""#),
@@ -229,18 +229,18 @@ fn list() {
         ..Default::default()
     });
 
-    list.add(glean.storage(), "first");
+    list.add(&glean, "first");
     let snapshot = glean.snapshot("core", false);
     assert!(snapshot.contains(r#""local.list": ["#));
     assert!(snapshot.contains(r#""first""#));
 
-    list.add(glean.storage(), "second");
+    list.add(&glean, "second");
     let snapshot = glean.snapshot("core", false);
     assert!(snapshot.contains(r#""local.list": ["#));
     assert!(snapshot.contains(r#""first""#));
     assert!(snapshot.contains(r#""second""#));
 
-    list.set(glean.storage(), vec!["third".into()]);
+    list.set(&glean, vec!["third".into()]);
     let snapshot = glean.snapshot("core", false);
     assert!(snapshot.contains(r#""local.list": ["#));
     assert!(!snapshot.contains(r#""first""#));

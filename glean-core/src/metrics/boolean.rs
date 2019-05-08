@@ -1,6 +1,6 @@
-use crate::database::Database;
 use crate::metrics::Metric;
 use crate::CommonMetricData;
+use crate::Glean;
 
 #[derive(Debug)]
 pub struct BooleanMetric {
@@ -12,12 +12,12 @@ impl BooleanMetric {
         Self { meta }
     }
 
-    pub fn set(&self, storage: &Database, value: bool) {
-        if !self.meta.should_record() {
+    pub fn set(&self, glean: &Glean, value: bool) {
+        if !self.meta.should_record() || !glean.is_upload_enabled() {
             return;
         }
 
         let value = Metric::Boolean(value);
-        storage.record(&self.meta, &value)
+        glean.storage().record(&self.meta, &value)
     }
 }
