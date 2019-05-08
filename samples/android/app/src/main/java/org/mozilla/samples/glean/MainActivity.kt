@@ -9,6 +9,17 @@ import android.util.Log
 import android.support.v7.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import mozilla.telemetry.glean.Glean
+import mozilla.telemetry.glean.BooleanMetricType
+
+internal object Metrics {
+    /**
+     * internal metric
+     */
+    val isStarted: BooleanMetricType by lazy {
+        BooleanMetricType("core", "is_started")
+    }
+}
+
 
 private const val TAG = "Glean.rs"
 
@@ -19,8 +30,9 @@ open class MainActivity : AppCompatActivity() {
 
         // Generate an event when user clicks on the button.
         buttonGenerateData.setOnClickListener {
-            Glean.increment()
             Log.i(TAG, "increment happened")
+            Metrics.isStarted.set(true)
+            Glean.collect("core")
         }
     }
 }

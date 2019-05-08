@@ -4,11 +4,17 @@
 
 package mozilla.telemetry.glean
 
+import android.util.Log
+import android.content.Context
+import java.io.File
 import mozilla.telemetry.glean.rust.LibGleanFFI
+import mozilla.telemetry.glean.rust.MetricHandle
+import mozilla.telemetry.glean.rust.RustError
 
 open class GleanInternalAPI internal constructor () {
     // `internal` so this can be modified for testing
-    internal var initialized = false
+    internal var bool_metric: MetricHandle = 0L
+    internal var glean: MetricHandle = 0L
 
     /**
      * Initialize glean.
@@ -16,24 +22,41 @@ open class GleanInternalAPI internal constructor () {
      * This should only be initialized once by the application, and not by
      * libraries using glean.
      */
-    fun initialize() {
+    fun initialize(applicationContext: Context) {
+        val data_dir = File(applicationContext.applicationInfo.dataDir, "glean_data")
+        Log.i("glean-kotlin", "data dir: $data_dir")
+
         if (isInitialized()) {
             return
         }
-        initialized = true
+
+        glean = LibGleanFFI.INSTANCE.glean_initialize(data_dir.getPath(), applicationContext.packageName)
+
+        val e = RustError.ByReference()
+        bool_metric = LibGleanFFI.INSTANCE.glean_new_boolean_metric("glean", "enabled", e)
     }
 
     /**
      * Returns true if the Glean library has been initialized.
      */
     internal fun isInitialized(): Boolean {
-        return initialized
+        if (glean == 0L) {
+            return false
+        }
+
+        val initialized = LibGleanFFI.INSTANCE.glean_is_initialized(glean)
+        return initialized.toInt() != 0
     }
 
-    fun increment(): Long {
-      return LibGleanFFI.INSTANCE.increment()
+    fun handle(): Long {
+        return glean
+    }
+
+    fun collect(ping_name: String) {
+        val e = RustError.ByReference()
+        val s = LibGleanFFI.INSTANCE.glean_ping_collect(glean, ping_name, e)!!
+        LibGleanFFI.INSTANCE.glean_str_free(s)
     }
 }
 
-object Glean : GleanInternalAPI() {
-}
+object Glean : GleanInternalAPI()

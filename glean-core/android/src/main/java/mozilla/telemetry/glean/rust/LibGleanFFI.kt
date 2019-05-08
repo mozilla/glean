@@ -31,6 +31,37 @@ internal interface LibGleanFFI : Library {
     // String will work but either force us to leak them, or cause us to corrupt the heap (when we
     // free them).
 
-    /** Increment the internal counter */
-    fun increment(): Long;
+    fun glean_boolean_set(glean_handle: Long, metric_id: Long, value: Byte, error: RustError.ByReference)
+
+    fun glean_counter_add(glean_handle: Long, metric_id: Long, amount: Long, error: RustError.ByReference)
+
+    fun glean_initialize(data_dir: String, application_id: String): Long
+
+    fun glean_is_initialized(glean_handle: Long): Byte
+
+    fun glean_is_upload_enabled(glean_handle: Long): Byte
+
+    fun glean_new_boolean_metric(category: String, name: String, err: RustError.ByReference): Long
+
+    fun glean_new_counter_metric(category: String, name: String, err: RustError.ByReference): Long
+
+    fun glean_new_string_metric(category: String, name: String, err: RustError.ByReference): Long
+
+    fun glean_ping_collect(glean_handle: Long, ping_name: String, error: RustError.ByReference): Pointer?
+
+    fun glean_set_upload_enabled(glean_handle: Long, flag: Byte)
+
+    fun glean_string_set(glean_handle: Long, metric_id: Long, value: String, error: RustError.ByReference)
+
+    fun glean_destroy_glean(handle: Long, error: RustError.ByReference)
+
+    fun glean_destroy_boolean_metric(handle: Long, error: RustError.ByReference)
+
+    fun glean_destroy_string_metric(handle: Long, error: RustError.ByReference)
+
+    fun glean_destroy_counter_metric(handle: Long, error: RustError.ByReference)
+
+    fun glean_str_free(ptr: Pointer)
+
 }
+internal typealias MetricHandle = Long

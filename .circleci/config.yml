@@ -34,13 +34,13 @@ commands:
       # This is not perfect (really we want the cartesian product), but is good enough in practice.
       - run:
           name: Test
-          command: cargo test --all --verbose
+          command: RUST_TEST_THREADS=1 cargo test --all --verbose
       - run:
           name: Test (all features)
-          command: cargo test --all --all-features --verbose
+          command: RUST_TEST_THREADS=1 cargo test --all --all-features --verbose
       - run:
           name: Test (no default features)
-          command: cargo test --all --no-default-features --verbose
+          command: RUST_TEST_THREADS=1 cargo test --all --no-default-features --verbose
 
 jobs:
   Check Rust formatting:
