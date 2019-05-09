@@ -82,7 +82,7 @@ jobs:
 
   Android tests:
     docker:
-      - image: circleci/android:api-21
+      - image: circleci/android:api-23-ndk
     steps:
       - android-tests
 
