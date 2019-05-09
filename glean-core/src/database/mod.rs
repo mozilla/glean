@@ -61,17 +61,20 @@ impl Database {
         rkv
     }
 
-    pub fn iter_store_from<F>(&self, lifetime: Lifetime, iter_start: &str, mut transaction_fn: F)
+    /// Iterates with the provided transaction function on the data from
+    /// the given storage.
+    pub fn iter_store_from<F>(&self, lifetime: Lifetime, storage_name: &str, mut transaction_fn: F)
     where
         F: FnMut(&[u8], &Metric),
     {
+        let iter_start = format!("{}#", storage_name);
         let len = iter_start.len();
 
         // Lifetime::Application data is not persisted to disk
         if lifetime == Lifetime::Application {
             let data = self.app_lifetime_data.read().unwrap();
             for (key, value) in data.iter() {
-                if key.starts_with(iter_start) {
+                if key.starts_with(&iter_start) {
                     let key = &key[len..];
                     transaction_fn(key.as_bytes(), value);
                 }
@@ -126,6 +129,8 @@ impl Database {
         }
     }
 
+    /// Records a metric in the underlying storage system, for
+    /// a single lifetime.
     fn record_per_lifetime(
         &self,
         lifetime: Lifetime,
@@ -133,10 +138,17 @@ impl Database {
         key: &str,
         metric: &Metric,
     ) {
+        let final_key = format!("{}#{}", storage_name, key);
+
+        if lifetime == Lifetime::Application {
+            let mut data = self.app_lifetime_data.write().unwrap();
+            data.insert(final_key, metric.clone());
+            return;
+        }
+
         let encoded = bincode::serialize(&metric).unwrap();
         let value = rkv::Value::Blob(&encoded);
 
-        let final_key = format!("{}#{}", storage_name, key);
         let store_name = lifetime.as_str();
         let rkv = self.rkv.as_ref().unwrap();
         let store = rkv.open_single(store_name, StoreOptions::create()).unwrap();
@@ -158,6 +170,8 @@ impl Database {
         }
     }
 
+    /// Records a metric in the underlying storage system, after applying the
+    /// given transformation function, for a single lifetime.
     pub fn record_per_lifetime_with<F>(
         &self,
         lifetime: Lifetime,
@@ -206,11 +220,36 @@ impl Database {
         store.put(&mut writer, final_key, &value).unwrap();
         let _ = writer.commit();
     }
+
+    /// Clears a storage (only Ping Lifetime).
+    pub fn clear_ping_lifetime_storage(&self, storage_name: &str) {
+        self.write_with_store(Lifetime::Ping, |mut writer, store| {
+            let mut metrics = Vec::new();
+            {
+                let mut iter = store.iter_from(&writer, &storage_name).unwrap();
+                while let Some(Ok((metric_name, _))) = iter.next() {
+                    if let Ok(metric_name) = std::str::from_utf8(metric_name) {
+                        if !metric_name.starts_with(&storage_name) {
+                            break;
+                        }
+                        metrics.push(metric_name.to_owned());
+                    }
+                }
+            }
+
+            for to_delete in metrics {
+                store.delete(&mut writer, to_delete).unwrap();
+            }
+
+            writer.commit().unwrap();
+        });
+    }
 }
 
 #[cfg(test)]
 mod test {
     use super::*;
+    use std::collections::HashMap;
     use tempfile::tempdir;
 
     #[test]
@@ -230,5 +269,187 @@ mod test {
 
         assert!(dir.path().exists());
         assert!(db.rkv.is_some());
+    }
+
+    #[test]
+    fn test_ping_lifetime_metric_recorded() {
+        // Init the database in a temporary directory.
+        let dir = tempdir().unwrap();
+        let str_dir = dir.path().display().to_string();
+        let mut db = Database::new();
+        db.initialize(&str_dir);
+
+        // Attempt to record a known value.
+        let test_value = "test-value";
+        let test_storage = "test-storage";
+        let test_metric_id = "telemetry_test.test_name";
+        db.record_per_lifetime(
+            Lifetime::Ping,
+            test_storage,
+            test_metric_id,
+            &Metric::String(test_value.to_string()),
+        );
+
+        // Verify that the data is correctly recorded.
+        let mut found_metrics = 0;
+        let mut snapshotter = |metric_name: &[u8], metric: &Metric| {
+            found_metrics += 1;
+            let metric_id = String::from_utf8_lossy(metric_name).into_owned();
+            assert_eq!(test_metric_id, metric_id);
+            match metric {
+                Metric::String(s) => assert_eq!(test_value, s),
+                _ => panic!("Unexpected data found"),
+            }
+        };
+
+        db.iter_store_from(Lifetime::Ping, test_storage, &mut snapshotter);
+        assert_eq!(1, found_metrics, "We only expect 1 Lifetime.Ping metric.");
+    }
+
+    #[test]
+    fn test_application_lifetime_metric_recorded() {
+        // Init the database in a temporary directory.
+        let dir = tempdir().unwrap();
+        let str_dir = dir.path().display().to_string();
+        let mut db = Database::new();
+        db.initialize(&str_dir);
+
+        // Attempt to record a known value.
+        let test_value = "test-value";
+        let test_storage = "test-storage1";
+        let test_metric_id = "telemetry_test.test_name";
+        db.record_per_lifetime(
+            Lifetime::Application,
+            test_storage,
+            test_metric_id,
+            &Metric::String(test_value.to_string()),
+        );
+
+        // Verify that the data is correctly recorded.
+        let mut found_metrics = 0;
+        let mut snapshotter = |metric_name: &[u8], metric: &Metric| {
+            found_metrics += 1;
+            let metric_id = String::from_utf8_lossy(metric_name).into_owned();
+            assert_eq!(test_metric_id, metric_id);
+            match metric {
+                Metric::String(s) => assert_eq!(test_value, s),
+                _ => panic!("Unexpected data found"),
+            }
+        };
+
+        db.iter_store_from(Lifetime::Application, test_storage, &mut snapshotter);
+        assert_eq!(
+            1, found_metrics,
+            "We only expect 1 Lifetime.Application metric."
+        );
+    }
+
+    #[test]
+    fn test_user_lifetime_metric_recorded() {
+        // Init the database in a temporary directory.
+        let dir = tempdir().unwrap();
+        let str_dir = dir.path().display().to_string();
+        let mut db = Database::new();
+        db.initialize(&str_dir);
+
+        // Attempt to record a known value.
+        let test_value = "test-value";
+        let test_storage = "test-storage2";
+        let test_metric_id = "telemetry_test.test_name";
+        db.record_per_lifetime(
+            Lifetime::User,
+            test_storage,
+            test_metric_id,
+            &Metric::String(test_value.to_string()),
+        );
+
+        // Verify that the data is correctly recorded.
+        let mut found_metrics = 0;
+        let mut snapshotter = |metric_name: &[u8], metric: &Metric| {
+            found_metrics += 1;
+            let metric_id = String::from_utf8_lossy(metric_name).into_owned();
+            assert_eq!(test_metric_id, metric_id);
+            match metric {
+                Metric::String(s) => assert_eq!(test_value, s),
+                _ => panic!("Unexpected data found"),
+            }
+        };
+
+        db.iter_store_from(Lifetime::User, test_storage, &mut snapshotter);
+        assert_eq!(1, found_metrics, "We only expect 1 Lifetime.User metric.");
+    }
+
+    #[test]
+    fn test_clear_ping_storage() {
+        // Init the database in a temporary directory.
+        let dir = tempdir().unwrap();
+        let str_dir = dir.path().display().to_string();
+        let mut db = Database::new();
+        db.initialize(&str_dir);
+
+        // Attempt to record a known value for every single lifetime.
+        let test_storage = "test-storage";
+        db.record_per_lifetime(
+            Lifetime::User,
+            test_storage,
+            "telemetry_test.test_name_user",
+            &Metric::String("test-value-user".to_string()),
+        );
+        db.record_per_lifetime(
+            Lifetime::Ping,
+            test_storage,
+            "telemetry_test.test_name_ping",
+            &Metric::String("test-value-ping".to_string()),
+        );
+        db.record_per_lifetime(
+            Lifetime::Application,
+            test_storage,
+            "telemetry_test.test_name_application",
+            &Metric::String("test-value-application".to_string()),
+        );
+
+        // Take a snapshot for the data, all the lifetimes.
+        {
+            let mut snapshot: HashMap<String, String> = HashMap::new();
+            let mut snapshotter = |metric_name: &[u8], metric: &Metric| {
+                let metric_name = String::from_utf8_lossy(metric_name).into_owned();
+                match metric {
+                    Metric::String(s) => snapshot.insert(metric_name, s.to_string()),
+                    _ => panic!("Unexpected data found"),
+                };
+            };
+
+            db.iter_store_from(Lifetime::User, test_storage, &mut snapshotter);
+            db.iter_store_from(Lifetime::Ping, test_storage, &mut snapshotter);
+            db.iter_store_from(Lifetime::Application, test_storage, &mut snapshotter);
+
+            assert_eq!(3, snapshot.len(), "We expect all lifetimes to be present.");
+            assert!(snapshot.contains_key("telemetry_test.test_name_user"));
+            assert!(snapshot.contains_key("telemetry_test.test_name_ping"));
+            assert!(snapshot.contains_key("telemetry_test.test_name_application"));
+        }
+
+        // Clear the Ping lifetime.
+        db.clear_ping_lifetime_storage(test_storage);
+
+        // Take a snapshot again and check that we're only clearing the Ping lifetime.
+        {
+            let mut snapshot: HashMap<String, String> = HashMap::new();
+            let mut snapshotter = |metric_name: &[u8], metric: &Metric| {
+                let metric_name = String::from_utf8_lossy(metric_name).into_owned();
+                match metric {
+                    Metric::String(s) => snapshot.insert(metric_name, s.to_string()),
+                    _ => panic!("Unexpected data found"),
+                };
+            };
+
+            db.iter_store_from(Lifetime::User, test_storage, &mut snapshotter);
+            db.iter_store_from(Lifetime::Ping, test_storage, &mut snapshotter);
+            db.iter_store_from(Lifetime::Application, test_storage, &mut snapshotter);
+
+            assert_eq!(2, snapshot.len(), "We only expect 2 metrics to be left.");
+            assert!(snapshot.contains_key("telemetry_test.test_name_user"));
+            assert!(snapshot.contains_key("telemetry_test.test_name_application"));
+        }
     }
 }
