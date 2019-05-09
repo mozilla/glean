@@ -23,3 +23,18 @@ test:
     notification_emails:
       - CHANGE-ME@test-only.com
     expires: 2100-01-01
+
+  is_started:
+    type: boolean
+    description: >
+      Testing boolean
+    send_in_pings:
+      - baseline
+    lifetime: application
+    bugs:
+      - 1234567890
+    data_reviews:
+      - N/A
+    notification_emails:
+      - CHANGE-ME@test-only.com
+    expires: 2100-01-01

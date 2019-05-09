@@ -13,22 +13,6 @@ import mozilla.telemetry.glean.private.BooleanMetricType
 import mozilla.telemetry.glean.private.Lifetime
 import org.mozilla.samples.glean_rs.GleanMetrics.Test
 
-internal object Metrics {
-    /**
-     * internal metric
-     */
-    val isStarted: BooleanMetricType by lazy {
-        BooleanMetricType(
-            disabled = false,
-            category = "core",
-            lifetime = Lifetime.Application,
-            name = "is_started",
-            sendInPings = listOf("baseline")
-        )
-    }
-}
-
-
 private const val TAG = "Glean.rs"
 
 open class MainActivity : AppCompatActivity() {
@@ -36,7 +20,7 @@ open class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        Metrics.isStarted.set(true)
+        Test.isStarted.set(true)
 
         // Generate an event when user clicks on the button.
         buttonGenerateData.setOnClickListener {
