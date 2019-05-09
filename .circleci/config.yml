@@ -42,6 +42,31 @@ commands:
           name: Test (no default features)
           command: RUST_TEST_THREADS=1 cargo test --all --no-default-features --verbose
 
+  # TODO: Android tests not working
+
+  # install-rustup:
+  #   steps:
+  #     - run:
+  #         name: Installing rustup
+  #         command: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+  #     - run:
+  #         command: export PATH=$HOME/.cargo/bin:$PATH
+  #     - run:
+  #         command: |
+  #           rustup target add aarch64-linux-android
+  #           rustup target add armv7-linux-androideabi
+  #           rustup target add i686-linux-android
+  #           rustup target add x86_64-linux-android
+
+  # android-tests:
+  #   steps:
+  #     - install-rustup
+  #     - test-setup:
+  #         rust-version: stable
+  #     - run:
+  #         name: Test
+  #         command: ./gradlew test
+
 jobs:
   Check Rust formatting:
     docker:
@@ -71,6 +96,13 @@ jobs:
     steps:
       - rust-tests:
           rust-version: "beta"
+
+  # TODO: Android tests not working
+  # Android tests:
+  #   docker:
+  #     - image: circleci/android:api-23-ndk
+  #   steps:
+  #     - android-tests
 
   # via https://circleci.com/blog/deploying-documentation-to-github-pages-with-continuous-integration/
   Generate documentation:
@@ -128,6 +160,7 @@ workflows:
     jobs:
       - Rust tests - stable
       - Rust tests - beta
+      # - Android tests
   documentation:
     jobs:
       - Generate documentation
