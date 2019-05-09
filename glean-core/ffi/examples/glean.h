@@ -156,6 +156,8 @@ typedef struct {
  */
 typedef const char *FfiStr;
 
+typedef const char *const *RawStringArray;
+
 void glean_boolean_set(uint64_t glean_handle,
                        uint64_t metric_id,
                        uint8_t value,
@@ -166,17 +168,32 @@ void glean_counter_add(uint64_t glean_handle,
                        uint64_t amount,
                        ExternError *error);
 
-uint64_t glean_initialize(FfiStr data_dir);
+uint64_t glean_initialize(FfiStr data_dir, FfiStr application_id);
 
 uint8_t glean_is_initialized(uint64_t glean_handle);
 
 uint8_t glean_is_upload_enabled(uint64_t glean_handle);
 
-uint64_t glean_new_boolean_metric(FfiStr category, FfiStr name, ExternError *err);
+uint64_t glean_new_boolean_metric(FfiStr category,
+                                  FfiStr name,
+                                  RawStringArray send_in_pings,
+                                  int32_t send_in_pings_len,
+                                  int32_t lifetime,
+                                  ExternError *err);
 
-uint64_t glean_new_counter_metric(FfiStr category, FfiStr name, ExternError *err);
+uint64_t glean_new_counter_metric(FfiStr category,
+                                  FfiStr name,
+                                  RawStringArray send_in_pings,
+                                  int32_t send_in_pings_len,
+                                  int32_t lifetime,
+                                  ExternError *err);
 
-uint64_t glean_new_string_metric(FfiStr category, FfiStr name, ExternError *err);
+uint64_t glean_new_string_metric(FfiStr category,
+                                 FfiStr name,
+                                 RawStringArray send_in_pings,
+                                 int32_t send_in_pings_len,
+                                 int32_t lifetime,
+                                 ExternError *err);
 
 char *glean_ping_collect(uint64_t glean_handle, FfiStr ping_name, ExternError *error);
 
