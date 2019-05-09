@@ -91,7 +91,7 @@ cargo {
 
     // Build for the "host" platform
     if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-        targets.push('win32-x86-64-gnu')
+        targets.push('win32-x86-64-msvc')
     } else if (Os.isFamily(Os.FAMILY_MAC)) {
         targets.push('darwin')
     } else if (Os.isFamily(Os.FAMILY_UNIX)) {
