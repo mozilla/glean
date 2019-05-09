@@ -24,6 +24,11 @@ type RawStringArray = *const *const c_char;
 
 /// Create a vector of strings from a raw C-like string array
 unsafe fn from_raw_string_array(arr: RawStringArray, len: i32) -> Vec<String> {
+    if len == 0 {
+        return vec![];
+    }
+
+    // FIXME: We should double check for null pointers and handle that instead of crashing
     let arr_ptrs = std::slice::from_raw_parts(arr, len as usize);
     arr_ptrs
         .iter()
