@@ -24,7 +24,7 @@ type RawStringArray = *const *const c_char;
 
 /// Create a vector of strings from a raw C-like string array
 unsafe fn from_raw_string_array(arr: RawStringArray, len: i32) -> Vec<String> {
-    if len == 0 {
+    if arr.is_null() || len == 0 {
         return vec![];
     }
 
