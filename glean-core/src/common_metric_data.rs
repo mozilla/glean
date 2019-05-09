@@ -34,6 +34,20 @@ pub struct CommonMetricData {
 }
 
 impl CommonMetricData {
+    /// Create a new metadata object
+    pub fn new<A: Into<String>, B: Into<String>, C: Into<String>>(
+        category: A,
+        name: B,
+        ping_name: C,
+    ) -> CommonMetricData {
+        CommonMetricData {
+            name: name.into(),
+            category: category.into(),
+            send_in_pings: vec![ping_name.into()],
+            ..Default::default()
+        }
+    }
+
     pub fn identifier(&self) -> String {
         if self.category.is_empty() {
             self.name.clone()
@@ -43,7 +57,6 @@ impl CommonMetricData {
     }
 
     pub fn should_record(&self) -> bool {
-        //if self.disabled || !Glean::singleton().is_upload_enabled() {
         if self.disabled {
             return false;
         }

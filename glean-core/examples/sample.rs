@@ -37,15 +37,15 @@ fn main() {
         ..Default::default()
     });
 
-    local_metric.set(glean.storage(), "I can set this");
-    call_counter.add(glean.storage(), 1);
+    local_metric.set(&glean, "I can set this");
+    call_counter.add(&glean, 1);
 
     println!("Core Data:\n{}", glean.snapshot("core", true));
 
-    call_counter.add(glean.storage(), 2);
+    call_counter.add(&glean, 2);
     println!("Metrics Data:\n{}", glean.snapshot("metrics", true));
 
-    call_counter.add(glean.storage(), 3);
+    call_counter.add(&glean, 3);
 
     println!();
     println!("Core Data 2:\n{}", glean.snapshot("core", false));
@@ -57,8 +57,8 @@ fn main() {
         send_in_pings: vec!["core".into()],
         ..Default::default()
     });
-    list.add(glean.storage(), "once");
-    list.add(glean.storage(), "upon");
+    list.add(&glean, "once");
+    list.add(&glean, "upon");
 
     let ping_maker = PingMaker::new();
     let ping = ping_maker.collect(glean.storage(), "core");
@@ -68,7 +68,7 @@ fn main() {
     let mut long_string = std::iter::repeat('x').take(49).collect::<String>();
     long_string.push('a');
     long_string.push('b');
-    local_metric.set(glean.storage(), long_string);
+    local_metric.set(&glean, long_string);
     let ping_maker = PingMaker::new();
     let ping = ping_maker.collect(glean.storage(), "core");
     let ping = ::serde_json::to_string_pretty(&ping).unwrap();

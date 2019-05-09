@@ -1,6 +1,6 @@
-use crate::database::Database;
 use crate::metrics::CounterMetric;
 use crate::CommonMetricData;
+use crate::Glean;
 use crate::Lifetime;
 
 #[derive(Debug)]
@@ -18,7 +18,7 @@ impl ErrorType {
     }
 }
 
-pub fn record_error(storage: &Database, meta: &CommonMetricData, error: ErrorType) {
+pub fn record_error(glean: &Glean, meta: &CommonMetricData, error: ErrorType) {
     let identifier = meta.identifier();
 
     let mut send_in_pings = meta.send_in_pings.clone();
@@ -34,5 +34,5 @@ pub fn record_error(storage: &Database, meta: &CommonMetricData, error: ErrorTyp
         ..Default::default()
     });
 
-    metric.add(storage, 1);
+    metric.add(glean, 1);
 }

@@ -1,4 +1,5 @@
 #![allow(clippy::new_without_default)]
+#![allow(clippy::redundant_closure)]
 
 use std::path::PathBuf;
 
@@ -63,10 +64,8 @@ impl Glean {
     fn initialize_core_metrics(&mut self, data_path: &str) {
         self.core_metrics
             .first_run
-            .set(self.storage(), first_run::is_first_run(data_path));
-        self.core_metrics
-            .client_id
-            .generate_if_missing(self.storage());
+            .set(self, first_run::is_first_run(data_path));
+        self.core_metrics.client_id.generate_if_missing(self);
     }
 
     /// Determine whether the global Glean object is fully initialized yet.

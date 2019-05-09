@@ -1,6 +1,6 @@
-use crate::database::Database;
 use crate::metrics::Metric;
 use crate::CommonMetricData;
+use crate::Glean;
 
 #[derive(Debug)]
 pub struct UuidMetric {
@@ -12,30 +12,36 @@ impl UuidMetric {
         Self { meta }
     }
 
-    pub fn set(&self, storage: &Database, value: uuid::Uuid) {
-        if !self.meta.should_record() {
+    pub fn set(&self, glean: &Glean, value: uuid::Uuid) {
+        if !self.meta.should_record() || !glean.is_upload_enabled() {
             return;
         }
 
         let s = value.to_string();
         let value = Metric::Uuid(s);
-        storage.record(&self.meta, &value)
+        glean.storage().record(&self.meta, &value)
     }
 
-    pub fn generate(&self, storage: &Database) -> uuid::Uuid {
+    pub fn generate(&self, storage: &Glean) -> uuid::Uuid {
         let uuid = uuid::Uuid::new_v4();
         self.set(storage, uuid);
         uuid
     }
 
-    pub fn generate_if_missing(&self, storage: &Database) {
-        storage.record_with(&self.meta, |old_value| match old_value {
-            Some(Metric::Uuid(old_value)) => Metric::Uuid(old_value),
-            _ => {
-                let uuid = uuid::Uuid::new_v4();
-                let new_value = uuid.to_string();
-                Metric::Uuid(new_value)
-            }
-        })
+    pub fn generate_if_missing(&self, glean: &Glean) {
+        if !self.meta.should_record() || !glean.is_upload_enabled() {
+            return;
+        }
+
+        glean
+            .storage()
+            .record_with(&self.meta, |old_value| match old_value {
+                Some(Metric::Uuid(old_value)) => Metric::Uuid(old_value),
+                _ => {
+                    let uuid = uuid::Uuid::new_v4();
+                    let new_value = uuid.to_string();
+                    Metric::Uuid(new_value)
+                }
+            })
     }
 }
