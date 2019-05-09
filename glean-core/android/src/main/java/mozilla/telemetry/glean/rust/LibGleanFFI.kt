@@ -42,6 +42,8 @@ internal interface LibGleanFFI : Library {
 
     fun glean_is_upload_enabled(glean_handle: Long): Byte
 
+    fun glean_send_ping(glean_handle: Long, ping_name: String)
+
     fun glean_new_boolean_metric(category: String, name: String, send_in_pings: StringArray, send_in_pings_len: Int, lifetime: Int, err: RustError.ByReference): Long
 
     fun glean_new_counter_metric(category: String, name: String, send_in_pings: StringArray, send_in_pings_len: Int, lifetime: Int, err: RustError.ByReference): Long

@@ -4,15 +4,29 @@
 
 package mozilla.telemetry.glean
 
+import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import java.io.File
 
 @RunWith(RobolectricTestRunner::class)
 class GleanTest {
     @Test
     fun `simple smoke test`() {
-        Glean.initialize(ApplicationProvider.getApplicationContext())
+        GleanInternalAPI().initialize(ApplicationProvider.getApplicationContext())
+    }
+
+    @Test
+    fun `send a ping`() {
+        val context: Context = ApplicationProvider.getApplicationContext()
+        val glean = GleanInternalAPI()
+        glean.initialize(context)
+        glean.handleBackgroundEvent()
+        val pingPath = File(context.applicationInfo.dataDir, "glean_data/pings")
+        val path = pingPath.toString()
+        assertEquals(2, pingPath.listFiles()?.size)
     }
 }

@@ -174,6 +174,8 @@ uint8_t glean_is_initialized(uint64_t glean_handle);
 
 uint8_t glean_is_upload_enabled(uint64_t glean_handle);
 
+void glean_send_ping(uint64_t glean_handle, FfiStr ping_name);
+
 uint64_t glean_new_boolean_metric(FfiStr category,
                                   FfiStr name,
                                   RawStringArray send_in_pings,
