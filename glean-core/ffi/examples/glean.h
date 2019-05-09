@@ -168,13 +168,19 @@ void glean_counter_add(uint64_t glean_handle,
                        uint64_t amount,
                        ExternError *error);
 
+uint64_t glean_counter_test_get_value(uint64_t glean_handle,
+                                      uint64_t metric_id,
+                                      FfiStr storage_name);
+
+uint8_t glean_counter_test_has_value(uint64_t glean_handle,
+                                     uint64_t metric_id,
+                                     FfiStr storage_name);
+
 uint64_t glean_initialize(FfiStr data_dir, FfiStr application_id);
 
 uint8_t glean_is_initialized(uint64_t glean_handle);
 
 uint8_t glean_is_upload_enabled(uint64_t glean_handle);
-
-void glean_send_ping(uint64_t glean_handle, FfiStr ping_name);
 
 uint64_t glean_new_boolean_metric(FfiStr category,
                                   FfiStr name,
@@ -198,6 +204,8 @@ uint64_t glean_new_string_metric(FfiStr category,
                                  ExternError *err);
 
 char *glean_ping_collect(uint64_t glean_handle, FfiStr ping_name, ExternError *error);
+
+void glean_send_ping(uint64_t glean_handle, FfiStr ping_name);
 
 void glean_set_upload_enabled(uint64_t glean_handle, uint8_t flag);
 
