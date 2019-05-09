@@ -3,7 +3,7 @@ use super::{metrics::*, CommonMetricData, Lifetime};
 #[derive(Debug)]
 pub struct CoreMetrics {
     pub client_id: UuidMetric,
-    pub first_run: BooleanMetric,
+    pub first_run_date: StringMetric,
 }
 
 impl CoreMetrics {
@@ -13,15 +13,16 @@ impl CoreMetrics {
                 name: "client_id".into(),
                 category: "".into(),
                 send_in_pings: vec!["glean_client_info".into()],
-                lifetime: Lifetime::Application,
+                lifetime: Lifetime::User,
                 disabled: false,
             }),
 
-            first_run: BooleanMetric::new(CommonMetricData {
-                name: "first_run".into(),
+            // TODO: this should really be a "DatetimeType".
+            first_run_date: StringMetric::new(CommonMetricData {
+                name: "first_run_date".into(),
                 category: "".into(),
                 send_in_pings: vec!["glean_client_info".into()],
-                lifetime: Lifetime::Application,
+                lifetime: Lifetime::User,
                 disabled: false,
             }),
         }
