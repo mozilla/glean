@@ -41,6 +41,13 @@ commands:
       - run:
           name: Test (no default features)
           command: RUST_TEST_THREADS=1 cargo test --all --no-default-features --verbose
+  android-tests:
+    steps:
+      - test-setup:
+          rust-version: stable
+      - run:
+          name: Test
+          command: ./gradlew test
 
 jobs:
   Check Rust formatting:
@@ -72,8 +79,14 @@ jobs:
       - rust-tests:
           rust-version: "beta"
 
-  # via https://circleci.com/blog/deploying-documentation-to-github-pages-with-continuous-integration/
-  Generate documentation:
+  Android tests:
+    docker:
+      - image: circleci/rust:latest
+    steps:
+      - android-tests
+
+    # via https://circleci.com/blog/deploying-documentation-to-github-pages-with-continuous-integration/
+Generate documentation:
     docker:
       - image: circleci/rust:latest
     steps:
@@ -128,6 +141,7 @@ workflows:
     jobs:
       - Rust tests - stable
       - Rust tests - beta
+      - Android tests
   documentation:
     jobs:
       - Generate documentation
