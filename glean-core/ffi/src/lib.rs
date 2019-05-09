@@ -192,6 +192,38 @@ pub extern "C" fn glean_counter_add(
 }
 
 #[no_mangle]
+pub extern "C" fn glean_counter_test_has_value(
+    glean_handle: u64,
+    metric_id: u64,
+    storage_name: FfiStr,
+) -> u8 {
+    let mut err = ExternError::success();
+    GLEAN.call_with_output(&mut err, glean_handle, |glean| {
+        let mut err = ExternError::success();
+        COUNTER_METRICS.call_with_output(&mut err, metric_id, |metric| {
+            metric
+                .test_get_value(glean, storage_name.as_str())
+                .is_none()
+        })
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn glean_counter_test_get_value(
+    glean_handle: u64,
+    metric_id: u64,
+    storage_name: FfiStr,
+) -> u64 {
+    let mut err = ExternError::success();
+    GLEAN.call_with_output(&mut err, glean_handle, |glean| {
+        let mut err = ExternError::success();
+        COUNTER_METRICS.call_with_output(&mut err, metric_id, |metric| {
+            metric.test_get_value(glean, storage_name.as_str()).unwrap()
+        })
+    })
+}
+
+#[no_mangle]
 pub extern "C" fn glean_boolean_set(
     glean_handle: u64,
     metric_id: u64,
