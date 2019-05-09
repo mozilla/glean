@@ -104,7 +104,7 @@ jobs:
   #   steps:
   #     - android-tests
 
-    # via https://circleci.com/blog/deploying-documentation-to-github-pages-with-continuous-integration/
+  # via https://circleci.com/blog/deploying-documentation-to-github-pages-with-continuous-integration/
   Generate documentation:
     docker:
       - image: circleci/rust:latest
