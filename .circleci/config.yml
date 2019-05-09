@@ -41,6 +41,7 @@ commands:
       - run:
           name: Test (no default features)
           command: RUST_TEST_THREADS=1 cargo test --all --no-default-features --verbose
+
   android-tests:
     steps:
       - test-setup:
@@ -81,7 +82,7 @@ jobs:
 
   Android tests:
     docker:
-      - image: circleci/rust:latest
+      - image: circleci/android-21:latest
     steps:
       - android-tests
 
