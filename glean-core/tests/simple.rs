@@ -164,6 +164,7 @@ fn transformation_works() {
     });
 
     counter.add(&glean, 2);
+
     let core_snapshot = glean.snapshot("core", true);
     let metrics_snapshot = glean.snapshot("metrics", false);
     assert!(
