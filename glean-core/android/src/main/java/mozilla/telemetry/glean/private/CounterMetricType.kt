@@ -85,11 +85,8 @@ class CounterMetricType(
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun testHasValue(pingName: String = sendInPings.first()): Boolean {
-        /*@Suppress("EXPERIMENTAL_API_USAGE")
-        Dispatchers.API.assertInTestingMode()
-
-        return CountersStorageEngine.getSnapshot(pingName, false)?.get(identifier) != null*/
-        return false
+        val res = LibGleanFFI.INSTANCE.glean_counter_test_has_value(Glean.handle, this.handle, pingName)
+        return res != 0.toByte()
     }
 
     /**
@@ -104,10 +101,7 @@ class CounterMetricType(
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun testGetValue(pingName: String = sendInPings.first()): Int {
-        /*@Suppress("EXPERIMENTAL_API_USAGE")
-        Dispatchers.API.assertInTestingMode()
-
-        return CountersStorageEngine.getSnapshot(pingName, false)!![identifier]!!*/
-        return 1
+        // FIXME(#19): glean-core should give us an int to begin with
+        return LibGleanFFI.INSTANCE.glean_counter_test_get_value(Glean.handle, this.handle, pingName).toInt()
     }
 }
