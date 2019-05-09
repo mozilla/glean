@@ -35,11 +35,11 @@ open class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        Metrics.isStarted.set(true)
+
         // Generate an event when user clicks on the button.
         buttonGenerateData.setOnClickListener {
             Log.i(TAG, "increment happened")
-            Metrics.isStarted.set(true)
-            Glean.collect("baseline")
         }
     }
 }
