@@ -27,5 +27,9 @@ open class MainActivity : AppCompatActivity() {
             Test.testCounter.add(1)
             Log.i(TAG, "increment happened")
         }
+
+        buttonSendPing.setOnClickListener {
+            Glean.handleBackgroundEvent()
+        }
     }
 }
