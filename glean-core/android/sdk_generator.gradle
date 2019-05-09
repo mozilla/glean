@@ -1,0 +1,206 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+/*
+ * IMPORTANT DEVELOPER'S NOTE:
+ *
+ * Because of how Fenix and &-browser include this file, any time this file
+ * is updated, we need to publish an android-components snapshot immediately
+ * to avoid breaking the build.
+ *
+ * (This comment will become irrelevant when Fenix starts using tagged releases
+ * of android-components rather than tracking snapshots.)
+ */
+
+import org.apache.tools.ant.taskdefs.condition.Os
+import groovy.json.JsonOutput
+
+// logger.info("allow glean: %s", allowGleanPrivate)
+
+// This installs a Miniconda3 environment into the gradle user home directory
+// so that it will be shared between all libraries that use Glean.  This is
+// important because it is approximately 300MB in installed size.
+
+String GLEAN_PARSER_VERSION = "0.25.0"
+// The version of Miniconda is explicitly specified.
+// Miniconda3-4.5.12 is known to not work on Windows.
+String MINICONDA_VERSION = "4.5.11"
+File GLEAN_BOOTSTRAP_DIR = new File(
+    project.getGradle().gradleUserHomeDir,
+    "glean/bootstrap-${MINICONDA_VERSION}"
+)
+File GLEAN_MINICONDA_DIR = new File(
+    GLEAN_BOOTSTRAP_DIR,
+    "Miniconda3"
+)
+
+// Define the path to the Miniconda3 installation as a buildConfig variable so
+// that tests that need to run JSON through our JSON schema can do so.
+android {
+    defaultConfig {
+        buildConfigField(
+            "String",
+            "GLEAN_MINICONDA_DIR",
+            // Carefully escape the string here so it will support `\` in
+            // Windows paths correctly.
+            JsonOutput.toJson(GLEAN_MINICONDA_DIR.path)
+        )
+    }
+}
+
+/* This script runs a given Python module as a "main" module, like
+ * `python -m module`. However, it first checks that the installed
+ * package is at the desired version, and if not, upgrades it using `pip`.
+ */
+String runPythonScript = """
+import importlib
+import subprocess
+import sys
+
+module_name = sys.argv[1]
+expected_version = sys.argv[2]
+
+try:
+    module = importlib.import_module(module_name)
+except ImportError:
+    found_version = None
+else:
+    found_version = getattr(module, '__version__')
+
+# if found_version != expected_version:
+if True:
+    #     pip install git+https://github.com/tangentlabs/django-oscar-paypal.git@issue/34/oscar-0.6
+    subprocess.check_call([
+        sys.executable,
+        '-m',
+        'pip',
+        'install',
+        '--upgrade',
+        f'git+https://github.com/Dexterp37/glean_parser.git@glean-rs-support'
+    ])
+    
+subprocess.check_call([
+    sys.executable,
+    '-m',
+    module_name
+] + sys.argv[3:])
+"""
+
+// Even though we are installing the Miniconda environment to the gradle user
+// home directory, the gradle-python-envs plugin is hardcoded to download the
+// installer to the project's build directory. Doing so will fail if the
+// project's build directory doesn't already exist. This task ensures that
+// the project's build directory exists before downloading and installing the
+// Miniconda environment.
+// See https://github.com/JetBrains/gradle-python-envs/issues/26
+// The fix in the above is not actually sufficient -- we need to add createBuildDir
+// as a dependency of Bootstrap_CONDA (where conda is installed), as the preBuild
+// task alone isn't early enough.
+task createBuildDir {
+    description = "Make sure the build dir exists before creating the Python Environments"
+    onlyIf {
+        !file(buildDir).exists()
+    }
+    doLast {
+        println "Creating build directory:" + buildDir.getPath()
+        buildDir.mkdir()
+    }
+}
+
+// Configure the Python environments
+envs {
+    bootstrapDirectory = GLEAN_BOOTSTRAP_DIR
+    pipInstallOptions = "--trusted-host pypi.python.org --no-cache-dir"
+
+    // Setup a miniconda environment. conda is used because it works
+    // non-interactively on Windows, unlike the other options
+    conda "Miniconda3", "Miniconda3-${MINICONDA_VERSION}", "64", ["glean_parser==${GLEAN_PARSER_VERSION}"]
+}
+
+tasks.whenTaskAdded { task ->
+    if (task.name.startsWith('Bootstrap_CONDA')) {
+        task.dependsOn(createBuildDir)
+    }
+}
+preBuild.dependsOn(createBuildDir)
+preBuild.finalizedBy("build_envs")
+
+clean {
+    delete GLEAN_BOOTSTRAP_DIR
+}
+
+// Generate the Metrics API
+ext.gleanGenerateMetricsAPI = {
+    variant ->
+
+    def sourceOutputDir =  "$buildDir/generated/source/glean/${variant.dirName}/kotlin"
+    // Get the name of the package as if it were to be used in the R or BuildConfig
+    // files. This is required since applications can define different application ids
+    // depending on the variant type: the generated API definitions don't need to be
+    // different due to that.
+    TaskProvider buildConfigProvider = variant.getGenerateBuildConfigProvider()
+    def originalPackageName = buildConfigProvider.get().getBuildConfigPackageName()
+
+    def fullNamespace = "${originalPackageName}.GleanMetrics"
+    def generateKotlinAPI = task("generateMetricsSourceFor${variant.name.capitalize()}", type: Exec) {
+        description = "Generate the Kotlin code for the Metrics API"
+
+        workingDir  rootDir
+        // Note that the command line is OS dependant: on linux/mac is Miniconda3/bin/python.
+        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+            commandLine new File(GLEAN_MINICONDA_DIR, "python")
+        } else {
+            commandLine new File(GLEAN_MINICONDA_DIR, "bin/python")
+        }
+
+        args "-c"
+        args runPythonScript
+        args "glean_parser"
+        args GLEAN_PARSER_VERSION
+        args "translate"
+        args "-f"
+        args "kotlin"
+        args "-o"
+        args "$sourceOutputDir"
+        args "-s"
+        args "namespace=$fullNamespace"
+        args "$projectDir/metrics.yaml"
+        args "$projectDir/pings.yaml"
+
+        // If we're building the Glean library itself (rather than an
+        // application using Glean) pass the --allow-reserved flag so we can
+        // use metrics in the "glean..." category
+        if (project.name == 'glean-core') {
+            args "--allow-reserved"
+        }
+
+        // Only show the output if something went wrong.
+        ignoreExitValue = true
+        standardOutput = new ByteArrayOutputStream()
+        errorOutput = standardOutput
+        doLast {
+            if (execResult.exitValue != 0) {
+                throw new GradleException("Process '${commandLine}' finished with non-zero exit value ${execResult.exitValue}:\n\n${standardOutput.toString()}")
+            }
+        }
+    }
+
+    // Only attach the generation task if the metrics file is available. We don't need to
+    // fail hard otherwise, as some 3rd party project might just want metrics included in
+    // Glean and nothing more.
+    if (file("$projectDir/metrics.yaml").exists() || file("$projectDir/pings.yaml").exists()) {
+        // This is an Android-Gradle plugin 3+-ism.  Culted from reading the source,
+        // searching for "registerJavaGeneratingTask", and finding
+        // https://github.com/GoogleCloudPlatform/endpoints-framework-gradle-plugin/commit/2f2b91476fb1c6647791e2c6fe531a47615a1e85.
+        // The added directory doesn't appear in the paths listed by the
+        // `sourceSets` task, for reasons unknown.
+        variant.registerJavaGeneratingTask(generateKotlinAPI, new File(sourceOutputDir))
+    }
+}
+
+if (android.hasProperty('applicationVariants')) {
+    android.applicationVariants.all(ext.gleanGenerateMetricsAPI)
+} else {
+    android.libraryVariants.all(ext.gleanGenerateMetricsAPI)
+}

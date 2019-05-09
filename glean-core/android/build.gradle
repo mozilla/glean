@@ -1,3 +1,11 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+plugins {
+    id "com.jetbrains.python.envs" version "0.0.26"
+}
+
 apply plugin: 'com.android.library'
 apply plugin: 'org.mozilla.rust-android-gradle.rust-android'
 apply plugin: 'kotlin-android'
@@ -83,7 +91,7 @@ cargo {
 
     // Build for the "host" platform
     if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-        targets.push('win32-x86-64-gnu')
+        targets.push('win32-x86-64-msvc')
     } else if (Os.isFamily(Os.FAMILY_MAC)) {
         targets.push('darwin')
     } else if (Os.isFamily(Os.FAMILY_UNIX)) {
@@ -120,6 +128,8 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'net.java.dev.jna:jna:4.5.2@aar'
 
+    implementation "androidx.annotation:annotation:1.0.2"
+
     // For reasons unknown, resolving the jnaForTest configuration directly
     // trips a nasty issue with the Android-Gradle plugin 3.2.1, like `Cannot
     // change attributes of configuration ':PROJECT:kapt' after it has been
@@ -136,3 +146,6 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }
+
+//apply from: 'https://github.com/mozilla-mobile/android-components/raw/master/components/service/glean/scripts/sdk_generator.gradle'
+apply from: 'sdk_generator.gradle'
