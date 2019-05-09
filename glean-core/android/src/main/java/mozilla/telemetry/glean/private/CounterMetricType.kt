@@ -5,6 +5,10 @@
 package mozilla.telemetry.glean.private
 
 import androidx.annotation.VisibleForTesting
+import mozilla.telemetry.glean.Glean
+import mozilla.telemetry.glean.rust.LibGleanFFI
+import mozilla.telemetry.glean.rust.RustError
+
 // import mozilla.components.service.glean.Dispatchers
 // import mozilla.components.service.glean.storages.CountersStorageEngine
 // import mozilla.components.support.base.log.logger.Logger
@@ -18,15 +22,23 @@ import androidx.annotation.VisibleForTesting
  * The counter API only exposes the [add] method, which takes care of validating the input
  * data and making sure that limits are enforced.
  */
-data class CounterMetricType(
-    override val disabled: Boolean,
-    override val category: String,
-    override val lifetime: Lifetime,
-    override val name: String,
-    override val sendInPings: List<String>
-) : CommonMetricData {
+class CounterMetricType(
+    disabled: Boolean,
+    category: String,
+    lifetime: Lifetime,
+    name: String,
+    val sendInPings: List<String>
+) {
 
     //private val logger = Logger("glean/CounterMetricType")
+
+    private var handle: Long
+
+    init {
+        println("New Counter: $category.$name")
+        val e = RustError.ByReference()
+        this.handle = LibGleanFFI.INSTANCE.glean_new_counter_metric(category, name, e)
+    }
 
     /**
      * Add to counter value.
@@ -47,6 +59,9 @@ data class CounterMetricType(
                     amount = amount
             )
         }*/
+        val e = RustError.ByReference()
+        LibGleanFFI.INSTANCE.glean_counter_add(Glean.handle, this.handle, amount.toLong(), e)
+
     }
 
     /**

@@ -16,7 +16,7 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 import groovy.json.JsonOutput
 
-logger.info("allow glean: %s", allowGleanPrivate)
+// logger.info("allow glean: %s", allowGleanPrivate)
 
 // This installs a Miniconda3 environment into the gradle user home directory
 // so that it will be shared between all libraries that use Glean.  This is
