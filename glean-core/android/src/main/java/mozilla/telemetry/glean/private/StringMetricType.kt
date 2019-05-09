@@ -5,6 +5,7 @@
 package mozilla.telemetry.glean.private
 
 import androidx.annotation.VisibleForTesting
+import com.sun.jna.StringArray
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.RustError
@@ -36,8 +37,16 @@ class StringMetricType(
 
     init {
         println("New String: $category.$name")
+
         val e = RustError.ByReference()
-        this.handle = LibGleanFFI.INSTANCE.glean_new_string_metric(category, name, e)
+        val ffiPingsList = StringArray(sendInPings.toTypedArray(), "utf-8")
+        this.handle = LibGleanFFI.INSTANCE.glean_new_string_metric(
+                category = category,
+                name = name,
+                send_in_pings = ffiPingsList,
+                send_in_pings_len = sendInPings.size,
+                lifetime = lifetime.ordinal,
+                err = e)
     }
 
     /**

@@ -10,13 +10,20 @@ import android.support.v7.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.private.BooleanMetricType
+import mozilla.telemetry.glean.private.Lifetime
 
 internal object Metrics {
     /**
      * internal metric
      */
     val isStarted: BooleanMetricType by lazy {
-        BooleanMetricType("core", "is_started")
+        BooleanMetricType(
+            disabled = false,
+            category = "core",
+            lifetime = Lifetime.Application,
+            name = "is_started",
+            sendInPings = listOf("baseline")
+        )
     }
 }
 
@@ -32,7 +39,7 @@ open class MainActivity : AppCompatActivity() {
         buttonGenerateData.setOnClickListener {
             Log.i(TAG, "increment happened")
             Metrics.isStarted.set(true)
-            Glean.collect("core")
+            Glean.collect("baseline")
         }
     }
 }

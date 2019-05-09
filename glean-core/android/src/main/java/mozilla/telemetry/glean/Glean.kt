@@ -6,6 +6,8 @@ package mozilla.telemetry.glean
 
 import android.util.Log
 import android.content.Context
+import com.sun.jna.StringArray
+import mozilla.telemetry.glean.private.Lifetime
 import java.io.File
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.MetricHandle
@@ -33,7 +35,15 @@ open class GleanInternalAPI internal constructor () {
         handle = LibGleanFFI.INSTANCE.glean_initialize(dataDir.path, applicationContext.packageName)
 
         val e = RustError.ByReference()
-        bool_metric = LibGleanFFI.INSTANCE.glean_new_boolean_metric("glean", "enabled", e)
+        val pings = listOf("baseline")
+        val ffiPingsList = StringArray(pings.toTypedArray(), "utf-8")
+        bool_metric = LibGleanFFI.INSTANCE.glean_new_boolean_metric(
+                category = "glean",
+                name = "enabled",
+                send_in_pings = ffiPingsList,
+                send_in_pings_len = pings.size,
+                lifetime = Lifetime.Application.ordinal,
+                err = e)
     }
 
     /**
