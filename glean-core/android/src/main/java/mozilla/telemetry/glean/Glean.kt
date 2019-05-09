@@ -36,6 +36,9 @@ open class GleanInternalAPI internal constructor () {
 
         handle = LibGleanFFI.INSTANCE.glean_initialize(dataDir.path, applicationContext.packageName)
 
+        // TODO: on glean-legacy we perform other actions before initialize the metrics (e.g.
+        // init the engines), then init the core metrics, and finally kick off the metrics
+        // schedulers. We should do something similar here as well.
         initializeCoreMetrics(applicationContext)
     }
 
