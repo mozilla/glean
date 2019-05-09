@@ -42,12 +42,18 @@ impl PingMaker {
         json!({
             "ping_type": storage_name,
             "seq": self.get_ping_seq(storage_name),
+            "start_time": "2019-03-29T09:50-04:00",
+            "end_time": "2019-03-29T09:53-04:00"
         })
     }
 
     fn get_client_info(&self, storage: &Database) -> JsonValue {
         let client_info = StorageManager.snapshot_as_json(storage, "glean_client_info", true);
-        let mut map = json!({});
+        // Add the "telemetry_sdk_build", which is the glean-core version.
+        let version = env!("CARGO_PKG_VERSION");
+        let mut map = json!({
+            "telemetry_sdk_build": version,
+        });
 
         // Flatten the whole thing.
         let client_info_obj = client_info.as_object().unwrap(); // safe, snapshot always returns an object.

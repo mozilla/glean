@@ -62,9 +62,11 @@ impl Glean {
     }
 
     fn initialize_core_metrics(&mut self, data_path: &str) {
-        self.core_metrics
-            .first_run
-            .set(self, first_run::is_first_run(data_path));
+        if first_run::is_first_run(data_path) {
+            self.core_metrics
+                .first_run_date
+                .set(self, "2019-05-09-04:00");
+        }
         self.core_metrics.client_id.generate_if_missing(self);
     }
 
