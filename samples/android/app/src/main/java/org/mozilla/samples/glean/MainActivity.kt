@@ -11,6 +11,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.private.BooleanMetricType
 import mozilla.telemetry.glean.private.Lifetime
+import org.mozilla.samples.glean_rs.GleanMetrics.Test
 
 internal object Metrics {
     /**
@@ -39,6 +40,7 @@ open class MainActivity : AppCompatActivity() {
 
         // Generate an event when user clicks on the button.
         buttonGenerateData.setOnClickListener {
+            Test.testCounter.add(1)
             Log.i(TAG, "increment happened")
         }
     }
