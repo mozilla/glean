@@ -1,5 +1,6 @@
-package mozilla.telemetry.glean
+package mozilla.telemetry.glean.private
 
+import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.RustError
 

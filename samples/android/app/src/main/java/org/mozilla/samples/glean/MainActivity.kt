@@ -9,7 +9,7 @@ import android.util.Log
 import android.support.v7.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import mozilla.telemetry.glean.Glean
-import mozilla.telemetry.glean.BooleanMetricType
+import mozilla.telemetry.glean.private.BooleanMetricType
 
 internal object Metrics {
     /**
