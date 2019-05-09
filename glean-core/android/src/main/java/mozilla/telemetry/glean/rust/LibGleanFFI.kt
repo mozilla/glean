@@ -9,6 +9,7 @@ import com.sun.jna.Library
 import com.sun.jna.Native
 import com.sun.jna.Pointer
 import com.sun.jna.PointerType
+import com.sun.jna.StringArray
 import java.lang.reflect.Proxy
 
 internal interface LibGleanFFI : Library {
@@ -41,11 +42,11 @@ internal interface LibGleanFFI : Library {
 
     fun glean_is_upload_enabled(glean_handle: Long): Byte
 
-    fun glean_new_boolean_metric(category: String, name: String, err: RustError.ByReference): Long
+    fun glean_new_boolean_metric(category: String, name: String, send_in_pings: StringArray, send_in_pings_len: int32_t, lifetime: int32_t, err: RustError.ByReference): Long
 
-    fun glean_new_counter_metric(category: String, name: String, err: RustError.ByReference): Long
+    fun glean_new_counter_metric(category: String, name: String, send_in_pings: StringArray, send_in_pings_len: int32_t, lifetime: int32_t, err: RustError.ByReference): Long
 
-    fun glean_new_string_metric(category: String, name: String, err: RustError.ByReference): Long
+    fun glean_new_string_metric(category: String, name: String, send_in_pings: StringArray, send_in_pings_len: int32_t, lifetime: int32_t, err: RustError.ByReference): Long
 
     fun glean_ping_collect(glean_handle: Long, ping_name: String, error: RustError.ByReference): Pointer?
 
