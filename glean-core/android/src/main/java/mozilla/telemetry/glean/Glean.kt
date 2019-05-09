@@ -6,16 +6,18 @@ package mozilla.telemetry.glean
 
 import android.util.Log
 import android.content.Context
-import com.sun.jna.StringArray
-import mozilla.telemetry.glean.private.Lifetime
+import android.content.pm.PackageManager
+import android.os.Build
+import mozilla.components.service.glean.utils.getLocaleTag
 import java.io.File
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.MetricHandle
 import mozilla.telemetry.glean.rust.RustError
+import org.mozilla.glean_rs.GleanMetrics.GleanBaseline
+import org.mozilla.glean_rs.GleanMetrics.GleanInternalMetrics
 
 open class GleanInternalAPI internal constructor () {
     // `internal` so this can be modified for testing
-    internal var bool_metric: MetricHandle = 0L
     internal var handle: MetricHandle = 0L
 
     /**
@@ -34,16 +36,10 @@ open class GleanInternalAPI internal constructor () {
 
         handle = LibGleanFFI.INSTANCE.glean_initialize(dataDir.path, applicationContext.packageName)
 
-        val e = RustError.ByReference()
-        val pings = listOf("baseline")
-        val ffiPingsList = StringArray(pings.toTypedArray(), "utf-8")
-        bool_metric = LibGleanFFI.INSTANCE.glean_new_boolean_metric(
-                category = "glean",
-                name = "enabled",
-                send_in_pings = ffiPingsList,
-                send_in_pings_len = pings.size,
-                lifetime = Lifetime.Application.ordinal,
-                err = e)
+        // TODO: on glean-legacy we perform other actions before initialize the metrics (e.g.
+        // init the engines), then init the core metrics, and finally kick off the metrics
+        // schedulers. We should do something similar here as well.
+        initializeCoreMetrics(applicationContext)
     }
 
     /**
@@ -56,6 +52,49 @@ open class GleanInternalAPI internal constructor () {
 
         val initialized = LibGleanFFI.INSTANCE.glean_is_initialized(handle)
         return initialized.toInt() != 0
+    }
+
+    /**
+     * Initialize the core metrics internally managed by Glean (e.g. client id).
+     */
+    private fun initializeCoreMetrics(applicationContext: Context) {
+        // Set a few more metrics that will be sent as part of every ping.
+        // TODO: we should make sure to store the data below before any ping
+        // is generated and sent. In a-c's Glean, we rely on the StorageEngine(s)
+        // access to do so. Once we make the metric type API async, this won't work
+        // anymore.
+        GleanBaseline.locale.set(getLocaleTag())
+        GleanInternalMetrics.os.set("Android")
+        // https://developer.android.com/reference/android/os/Build.VERSION
+        GleanInternalMetrics.androidSdkVersion.set(Build.VERSION.SDK_INT.toString())
+        GleanInternalMetrics.osVersion.set(Build.VERSION.RELEASE)
+        // https://developer.android.com/reference/android/os/Build
+        GleanInternalMetrics.deviceManufacturer.set(Build.MANUFACTURER)
+        GleanInternalMetrics.deviceModel.set(Build.MODEL)
+        GleanInternalMetrics.architecture.set(Build.SUPPORTED_ABIS[0])
+
+        /*
+        configuration.channel?.let {
+            StringsStorageEngine.record(GleanInternalMetrics.appChannel, it)
+        }*/
+
+        try {
+            val packageInfo = applicationContext.packageManager.getPackageInfo(
+                    applicationContext.packageName, 0
+            )
+            @Suppress("DEPRECATION")
+            GleanInternalMetrics.appBuild.set(packageInfo.versionCode.toString())
+
+            GleanInternalMetrics.appDisplayVersion.set(
+                    packageInfo.versionName?.let { it } ?: "Unknown"
+            )
+        } catch (e: PackageManager.NameNotFoundException) {
+            Log.e(
+                "glean-kotlin",
+                "Could not get own package info, unable to report build id and display version"
+            )
+            throw AssertionError("Could not get own package info, aborting init")
+        }
     }
 
     fun collect(ping_name: String) {
