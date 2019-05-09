@@ -81,6 +81,15 @@ pub extern "C" fn glean_set_upload_enabled(glean_handle: u64, flag: u8) {
 }
 
 #[no_mangle]
+pub extern "C" fn glean_send_ping(glean_handle: u64, ping_name: FfiStr) {
+    let mut err = ExternError::success();
+    GLEAN.call_with_output(&mut err, glean_handle, |glean| {
+        // FIXME: Error handling
+        let _ = glean.send_ping(ping_name.as_str());
+    })
+}
+
+#[no_mangle]
 pub extern "C" fn glean_new_boolean_metric(
     category: FfiStr,
     name: FfiStr,

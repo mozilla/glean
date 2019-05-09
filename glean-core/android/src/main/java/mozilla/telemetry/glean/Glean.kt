@@ -63,6 +63,15 @@ open class GleanInternalAPI internal constructor () {
         val s = LibGleanFFI.INSTANCE.glean_ping_collect(handle, ping_name, e)!!
         LibGleanFFI.INSTANCE.glean_str_free(s)
     }
+
+    fun handleBackgroundEvent() {
+        sendPing("baseline")
+        sendPing("events")
+    }
+
+    private fun sendPing(pingName: String) {
+        LibGleanFFI.INSTANCE.glean_send_ping(handle, pingName)
+    }
 }
 
 object Glean : GleanInternalAPI()
