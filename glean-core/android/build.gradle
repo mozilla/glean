@@ -122,6 +122,14 @@ configurations {
     jnaForTest
 }
 
+android {
+  testOptions {
+    unitTests {
+      includeAndroidResources = true
+    }
+  }
+}
+
 dependencies {
     jnaForTest 'net.java.dev.jna:jna:4.5.2@jar'
 
