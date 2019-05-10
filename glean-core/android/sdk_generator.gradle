@@ -16,13 +16,11 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 import groovy.json.JsonOutput
 
-// logger.info("allow glean: %s", allowGleanPrivate)
-
 // This installs a Miniconda3 environment into the gradle user home directory
 // so that it will be shared between all libraries that use Glean.  This is
 // important because it is approximately 300MB in installed size.
 
-String GLEAN_PARSER_VERSION = "0.25.0"
+String GLEAN_PARSER_VERSION = "0.26.0"
 // The version of Miniconda is explicitly specified.
 // Miniconda3-4.5.12 is known to not work on Windows.
 String MINICONDA_VERSION = "4.5.11"
@@ -68,18 +66,16 @@ except ImportError:
 else:
     found_version = getattr(module, '__version__')
 
-# if found_version != expected_version:
-if True:
-    #     pip install git+https://github.com/tangentlabs/django-oscar-paypal.git@issue/34/oscar-0.6
+if found_version != expected_version:
     subprocess.check_call([
         sys.executable,
         '-m',
         'pip',
         'install',
         '--upgrade',
-        f'git+https://github.com/Dexterp37/glean_parser.git@glean-rs-support'
+        f'{module_name}=={expected_version}'
     ])
-    
+
 subprocess.check_call([
     sys.executable,
     '-m',
@@ -154,6 +150,11 @@ ext.gleanGenerateMetricsAPI = {
             commandLine new File(GLEAN_MINICONDA_DIR, "bin/python")
         }
 
+        def gleanNamespace = "mozilla.components.service.glean"
+        if (project.ext.has("gleanNamespace")) {
+            gleanNamespace = project.ext.get("gleanNamespace")
+        }
+
         args "-c"
         args runPythonScript
         args "glean_parser"
@@ -165,13 +166,15 @@ ext.gleanGenerateMetricsAPI = {
         args "$sourceOutputDir"
         args "-s"
         args "namespace=$fullNamespace"
+        args "-s"
+        args "glean_namespace=$gleanNamespace"
         args "$projectDir/metrics.yaml"
         args "$projectDir/pings.yaml"
 
         // If we're building the Glean library itself (rather than an
         // application using Glean) pass the --allow-reserved flag so we can
         // use metrics in the "glean..." category
-        if (project.name == 'glean-core') {
+        if (project.ext.has("allowGleanInternal")) {
             args "--allow-reserved"
         }
 
