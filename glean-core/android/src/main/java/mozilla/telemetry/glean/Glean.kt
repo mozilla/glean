@@ -111,6 +111,20 @@ open class GleanInternalAPI internal constructor () {
     private fun sendPing(pingName: String) {
         LibGleanFFI.INSTANCE.glean_send_ping(handle, pingName)
     }
+
+    /**
+     * Test-only method to destroy the owned glean-core handle.
+     */
+    internal fun testDestroyGleanHandle() {
+        if (!isInitialized()) {
+            // We don't need to destroy the Glean handle: it wasn't initialized.
+            return
+        }
+
+        val e = RustError.ByReference()
+        LibGleanFFI.INSTANCE.glean_destroy_glean(handle, e)
+        handle = 0L
+    }
 }
 
 object Glean : GleanInternalAPI()

@@ -203,7 +203,7 @@ pub extern "C" fn glean_counter_test_has_value(
         COUNTER_METRICS.call_with_output(&mut err, metric_id, |metric| {
             metric
                 .test_get_value(glean, storage_name.as_str())
-                .is_none()
+                .is_some()
         })
     })
 }
