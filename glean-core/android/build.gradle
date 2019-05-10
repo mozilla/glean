@@ -46,6 +46,10 @@ android {
     }
 }
 
+// Set configuration for the glean_parser
+ext.allowGleanInternal = true
+ext.gleanNamespace = "mozilla.telemetry.glean"
+
 configurations {
     withoutLib {
     }
