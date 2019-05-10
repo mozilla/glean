@@ -118,7 +118,10 @@ jobs:
           command: rustc --version; cargo --version; rustup --version
       - run:
           name: Install mdbook
-          command: cargo install -f mdbook
+          command: |
+              wget https://github.com/rust-lang-nursery/mdBook/releases/download/v0.2.1/mdbook-v0.2.1-x86_64-unknown-linux-gnu.tar.gz
+              tar -xvf mdbook-v0.2.1-x86_64-unknown-linux-gnu.tar.gz
+              mv mdbook /usr/local/cargo/bin/mdbook
       - run:
           name: Build documentation
           command: bin/build-docs.sh
