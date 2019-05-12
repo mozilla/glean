@@ -98,7 +98,7 @@ pub extern "C" fn glean_new_boolean_metric(
             .map_err(|_| {
                 log::error!("[Bool] Failed to convert from lifetime value {}", lifetime);
             })
-            .unwrap();
+            .unwrap_or(Lifetime::Ping);
 
         Ok(BooleanMetric::new(CommonMetricData {
             name: name.into_string(),
@@ -127,7 +127,7 @@ pub extern "C" fn glean_new_string_metric(
                     lifetime
                 );
             })
-            .unwrap();
+            .unwrap_or(Lifetime::Ping);
 
         Ok(StringMetric::new(CommonMetricData {
             name: name.into_string(),
@@ -156,7 +156,7 @@ pub extern "C" fn glean_new_counter_metric(
                     lifetime
                 );
             })
-            .unwrap();
+            .unwrap_or(Lifetime::Ping);
 
         Ok(CounterMetric::new(CommonMetricData {
             name: name.into_string(),
