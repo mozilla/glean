@@ -5,7 +5,7 @@
 #![allow(clippy::new_without_default)]
 #![allow(clippy::redundant_closure)]
 
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use uuid::Uuid;
 
@@ -35,38 +35,34 @@ pub struct Glean {
     upload_enabled: bool,
     data_store: Database,
     core_metrics: CoreMetrics,
-    data_path: Option<PathBuf>,
-    application_id: Option<String>,
+    data_path: PathBuf,
+    application_id: String,
 }
 
 impl Glean {
-    pub fn new() -> Self {
-        log::info!("Creating new glean");
-        Self {
-            initialized: false,
-            upload_enabled: true,
-            data_store: Database::new(),
-            core_metrics: CoreMetrics::new(),
-            data_path: None,
-            application_id: None,
-        }
-    }
-
     /// Initialize the global Glean object.
     ///
     /// This will create the necessary directories and files in `data_path`.
     /// This will also initialize the core metrics.
-    pub fn initialize(&mut self, data_path: &str, application_id: &str) {
-        self.data_store.initialize(data_path);
-        self.initialize_core_metrics(data_path);
+    pub fn new(data_path: &str, application_id: &str) -> Self {
+        log::info!("Creating new glean");
 
-        self.data_path = Some(PathBuf::from(data_path));
-        self.application_id = Some(sanitize_application_id(application_id));
-        self.initialized = true;
+        let application_id = sanitize_application_id(application_id);
+        let mut glean = Self {
+            initialized: true,
+            upload_enabled: true,
+            data_store: Database::new(data_path),
+            core_metrics: CoreMetrics::new(),
+            data_path: PathBuf::from(data_path),
+            application_id,
+        };
+        glean.initialize_core_metrics();
+        glean.initialized = true;
+        glean
     }
 
-    fn initialize_core_metrics(&mut self, data_path: &str) {
-        if first_run::is_first_run(data_path) {
+    fn initialize_core_metrics(&mut self) {
+        if first_run::is_first_run(&self.data_path) {
             self.core_metrics
                 .first_run_date
                 .set(self, "2019-05-09-04:00");
@@ -94,13 +90,11 @@ impl Glean {
     }
 
     pub fn get_application_id(&self) -> &str {
-        // TODO: Error handling?
-        self.application_id.as_ref().unwrap()
+        &self.application_id
     }
 
-    pub fn get_data_path(&self) -> &PathBuf {
-        // TODO: Error handling?
-        self.data_path.as_ref().unwrap()
+    pub fn get_data_path(&self) -> &Path {
+        &self.data_path
     }
 
     pub fn storage(&self) -> &Database {
