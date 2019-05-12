@@ -33,9 +33,9 @@ internal interface LibGleanFFI : Library {
     // String will work but either force us to leak them, or cause us to corrupt the heap (when we
     // free them).
 
-    fun glean_boolean_set(glean_handle: Long, metric_id: Long, value: Byte, error: RustError.ByReference)
+    fun glean_boolean_set(glean_handle: Long, metric_id: Long, value: Byte)
 
-    fun glean_counter_add(glean_handle: Long, metric_id: Long, amount: Long, error: RustError.ByReference)
+    fun glean_counter_add(glean_handle: Long, metric_id: Long, amount: Long)
 
     fun glean_counter_test_get_value(glean_handle: Long, metric_id: Long, storage_name: String): Long
 
@@ -52,8 +52,7 @@ internal interface LibGleanFFI : Library {
         name: String,
         send_in_pings: StringArray,
         send_in_pings_len: Int,
-        lifetime: Int,
-        err: RustError.ByReference
+        lifetime: Int
     ): Long
 
     fun glean_new_counter_metric(
@@ -61,8 +60,7 @@ internal interface LibGleanFFI : Library {
         name: String,
         send_in_pings: StringArray,
         send_in_pings_len: Int,
-        lifetime: Int,
-        err: RustError.ByReference
+        lifetime: Int
     ): Long
 
     fun glean_new_string_metric(
@@ -70,17 +68,16 @@ internal interface LibGleanFFI : Library {
         name: String,
         send_in_pings: StringArray,
         send_in_pings_len: Int,
-        lifetime: Int,
-        err: RustError.ByReference
+        lifetime: Int
     ): Long
 
-    fun glean_ping_collect(glean_handle: Long, ping_name: String, error: RustError.ByReference): Pointer?
+    fun glean_ping_collect(glean_handle: Long, ping_name: String): Pointer?
 
     fun glean_send_ping(glean_handle: Long, ping_name: String)
 
     fun glean_set_upload_enabled(glean_handle: Long, flag: Byte)
 
-    fun glean_string_set(glean_handle: Long, metric_id: Long, value: String, error: RustError.ByReference)
+    fun glean_string_set(glean_handle: Long, metric_id: Long, value: String)
 
     fun glean_destroy_glean(handle: Long, error: RustError.ByReference)
 

@@ -136,8 +136,7 @@ open class GleanInternalAPI internal constructor () {
     }
 
     fun collect(pingName: String) {
-        val e = RustError.ByReference()
-        val s = LibGleanFFI.INSTANCE.glean_ping_collect(handle, pingName, e)!!
+        val s = LibGleanFFI.INSTANCE.glean_ping_collect(handle, pingName)!!
         LibGleanFFI.INSTANCE.glean_str_free(s)
     }
 

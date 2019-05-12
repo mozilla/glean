@@ -8,7 +8,6 @@ import androidx.annotation.VisibleForTesting
 import com.sun.jna.StringArray
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.rust.LibGleanFFI
-import mozilla.telemetry.glean.rust.RustError
 
 // import mozilla.components.service.glean.Dispatchers
 // import mozilla.components.service.glean.storages.CountersStorageEngine
@@ -38,15 +37,13 @@ class CounterMetricType(
     init {
         println("New Counter: $category.$name")
 
-        val e = RustError.ByReference()
         val ffiPingsList = StringArray(sendInPings.toTypedArray(), "utf-8")
         this.handle = LibGleanFFI.INSTANCE.glean_new_counter_metric(
                 category = category,
                 name = name,
                 send_in_pings = ffiPingsList,
                 send_in_pings_len = sendInPings.size,
-                lifetime = lifetime.ordinal,
-                err = e)
+                lifetime = lifetime.ordinal)
     }
 
     /**
@@ -68,8 +65,7 @@ class CounterMetricType(
                     amount = amount
             )
         }*/
-        val e = RustError.ByReference()
-        LibGleanFFI.INSTANCE.glean_counter_add(Glean.handle, this.handle, amount.toLong(), e)
+        LibGleanFFI.INSTANCE.glean_counter_add(Glean.handle, this.handle, amount.toLong())
     }
 
     /**
