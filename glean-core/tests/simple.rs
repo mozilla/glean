@@ -16,14 +16,14 @@ const GLOBAL_APPLICATION_ID: &str = "org.mozilla.glean.test.app";
 #[test]
 fn it_works() {
     let (_t, tmpname) = tempdir();
-    let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID);
+    let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID).unwrap();
     assert!(glean.is_initialized());
 }
 
 #[test]
 fn can_set_metrics() {
     let (_t, tmpname) = tempdir();
-    let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID);
+    let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID).unwrap();
 
     let local_metric = StringMetric::new(CommonMetricData {
         name: "local_metric".into(),
@@ -46,7 +46,7 @@ fn can_set_metrics() {
 #[test]
 fn can_snapshot() {
     let (_t, tmpname) = tempdir();
-    let mut glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID);
+    let mut glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID).unwrap();
 
     let local_metric = StringMetric::new(CommonMetricData {
         name: "can_snapshot_local_metric".into(),
@@ -64,7 +64,7 @@ fn can_snapshot() {
 #[test]
 fn snapshot_can_clear_ping_store() {
     let (_t, tmpname) = tempdir();
-    let mut glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID);
+    let mut glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID).unwrap();
 
     let local_metric = StringMetric::new(CommonMetricData {
         name: "clear_snapshot_local_metric".into(),
@@ -85,7 +85,7 @@ fn snapshot_can_clear_ping_store() {
 #[test]
 fn clear_is_store_specific() {
     let (_t, tmpname) = tempdir();
-    let mut glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID);
+    let mut glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID).unwrap();
 
     let local_metric: StringMetric = StringMetric::new(CommonMetricData {
         name: "store_specific".into(),
@@ -117,7 +117,7 @@ fn thread_safety() {
     use std::thread;
 
     let (_t, tmpname) = tempdir();
-    let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID);
+    let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID).unwrap();
     let glean = Arc::new(Mutex::new(glean));
 
     let threadsafe_metric = CounterMetric::new(CommonMetricData {
@@ -151,7 +151,7 @@ fn thread_safety() {
 #[test]
 fn transformation_works() {
     let (_t, tmpname) = tempdir();
-    let mut glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID);
+    let mut glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID).unwrap();
 
     let counter: CounterMetric = CounterMetric::new(CommonMetricData {
         name: "transformation".into(),
@@ -189,7 +189,7 @@ fn transformation_works() {
 #[test]
 fn uuid() {
     let (_t, tmpname) = tempdir();
-    let mut glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID);
+    let mut glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID).unwrap();
 
     let uuid: UuidMetric = UuidMetric::new(CommonMetricData {
         name: "uuid".into(),
@@ -216,7 +216,7 @@ fn uuid() {
 #[test]
 fn list() {
     let (_t, tmpname) = tempdir();
-    let mut glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID);
+    let mut glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID).unwrap();
 
     let list: StringListMetric = StringListMetric::new(CommonMetricData {
         name: "list".into(),
@@ -247,7 +247,7 @@ fn list() {
 #[test]
 fn write_ping_to_disk() {
     let (temp, tmpname) = tempdir();
-    let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID);
+    let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID).unwrap();
 
     glean.send_ping("metrics").unwrap();
 

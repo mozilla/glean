@@ -14,7 +14,7 @@ fn new_glean() -> (Glean, TempDir) {
     let dir = tempfile::tempdir().unwrap();
     let tmpname = dir.path().display().to_string();
 
-    let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID);
+    let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID).unwrap();
 
     (glean, dir)
 }

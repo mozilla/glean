@@ -11,6 +11,7 @@ use uuid::Uuid;
 
 mod common_metric_data;
 mod database;
+mod error;
 mod error_recording;
 mod first_run;
 mod internal_metrics;
@@ -26,6 +27,7 @@ use crate::internal_metrics::CoreMetrics;
 use crate::ping::PingMaker;
 use crate::storage::StorageManager;
 use crate::util::sanitize_application_id;
+pub use error::{Error, Result};
 
 const GLEAN_SCHEMA_VERSION: u32 = 1;
 
@@ -44,30 +46,31 @@ impl Glean {
     ///
     /// This will create the necessary directories and files in `data_path`.
     /// This will also initialize the core metrics.
-    pub fn new(data_path: &str, application_id: &str) -> Self {
+    pub fn new(data_path: &str, application_id: &str) -> Result<Self> {
         log::info!("Creating new glean");
 
         let application_id = sanitize_application_id(application_id);
         let mut glean = Self {
             initialized: true,
             upload_enabled: true,
-            data_store: Database::new(data_path),
+            data_store: Database::new(data_path)?,
             core_metrics: CoreMetrics::new(),
             data_path: PathBuf::from(data_path),
             application_id,
         };
-        glean.initialize_core_metrics();
+        glean.initialize_core_metrics()?;
         glean.initialized = true;
-        glean
+        Ok(glean)
     }
 
-    fn initialize_core_metrics(&mut self) {
-        if first_run::is_first_run(&self.data_path) {
+    fn initialize_core_metrics(&mut self) -> Result<()> {
+        if first_run::is_first_run(&self.data_path)? {
             self.core_metrics
                 .first_run_date
                 .set(self, "2019-05-09-04:00");
         }
         self.core_metrics.client_id.generate_if_missing(self);
+        Ok(())
     }
 
     /// Determine whether the global Glean object is fully initialized yet.
@@ -123,7 +126,7 @@ impl Glean {
     ///
     /// TODO: (Verify this is correct):
     /// If the ping currently contains no content, it will not be sent.
-    pub fn send_ping(&self, ping_name: &str) -> std::io::Result<()> {
+    pub fn send_ping(&self, ping_name: &str) -> Result<()> {
         let ping_maker = PingMaker::new();
         let doc_id = Uuid::new_v4().to_string();
         let url_path = self.make_path(ping_name, &doc_id);
@@ -131,6 +134,7 @@ impl Glean {
             ::serde_json::to_string_pretty(&ping_maker.collect(self.storage(), ping_name)).unwrap();
         // FIXME: Logging ping content for now.  Eventually this should be controlled by a flag
         log::info!("{}", ping_content);
-        ping_maker.store_ping(&doc_id, &self.get_data_path(), &url_path, &ping_content)
+        ping_maker.store_ping(&doc_id, &self.get_data_path(), &url_path, &ping_content)?;
+        Ok(())
     }
 }
