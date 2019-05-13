@@ -1,3 +1,7 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
 //! Glean does not pass errors through the FFI component upwards.
 //! Most errors are not propagated and simply only logged for debugging.
 //! Errors should be recoverable and the platform-side should mostly ignore them.
