@@ -34,13 +34,13 @@ commands:
       # This is not perfect (really we want the cartesian product), but is good enough in practice.
       - run:
           name: Test
-          command: RUST_TEST_THREADS=1 cargo test --all --verbose
+          command: cargo test --all --verbose
       - run:
           name: Test (all features)
-          command: RUST_TEST_THREADS=1 cargo test --all --all-features --verbose
+          command: cargo test --all --all-features --verbose
       - run:
           name: Test (no default features)
-          command: RUST_TEST_THREADS=1 cargo test --all --no-default-features --verbose
+          command: cargo test --all --no-default-features --verbose
 
   install-rustup:
     steps:
