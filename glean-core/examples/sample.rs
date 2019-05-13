@@ -18,9 +18,7 @@ fn main() {
         root.path().display().to_string()
     };
 
-    let mut glean = Glean::new();
-
-    glean.initialize(&data_path, "org.mozilla.glean_core.example");
+    let mut glean = Glean::new(&data_path, "org.mozilla.glean_core.example");
     assert!(glean.is_initialized());
 
     let local_metric: StringMetric = StringMetric::new(CommonMetricData {
