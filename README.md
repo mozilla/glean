@@ -4,7 +4,15 @@
 
 _Modern Firefox Telemetry for mobile platforms_
 
-### Overview
+
+---
+
+**Note: This new approach for Glean is currently in development and not yet ready for use.
+The working and supported library is [Glean in android-components](https://github.com/mozilla-mobile/android-components/tree/master/components/service/glean).**
+
+---
+
+## Overview
 
 This repository is used to build the client-side cross-platform Telemetry library called `glean`.
 
