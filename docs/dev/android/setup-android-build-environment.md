@@ -1,10 +1,22 @@
+<!-- MarkdownTOC autolink="true" -->
+
+- [Setup the Android Build Environment](#setup-the-android-build-environment)
+  - [Doing a local build of the Android Components:](#doing-a-local-build-of-the-android-components)
+  - [Prepare your build environment](#prepare-your-build-environment)
+    - [Setting up Android dependencies](#setting-up-android-dependencies)
+    - [Setting up Rust](#setting-up-rust)
+  - [Building](#building)
+    - [Publishing the components to your local maven repository](#publishing-the-components-to-your-local-maven-repository)
+    - [Other build types](#other-build-types)
+- [Using Windows](#using-windows)
+  - [Setting up the build environment](#setting-up-the-build-environment)
+  - [Configure Maven](#configure-maven)
+  - [FAQ](#faq)
+
+<!-- /MarkdownTOC -->
+
+
 # Setup the Android Build Environment
-
----
-
-**Note: This is currently out-of-date. We'll update it with proper instructions soon.**
-
----
 
 ## Doing a local build of the Android Components:
 
@@ -12,78 +24,52 @@ This document describes how to make local builds of the Android components in
 this repository. Most consumers of these components *do not* need to follow
 this process, but will instead use pre-built components [todo: link to this]
 
-This document, and the build process itself, is a work-in-progress - please file issues (or just update the wiki!) if you notice errors or omissions.
-
 ## Prepare your build environment
-
-*NOTE: This section is almost certainly incomplete - given it is typically
-only done once, things have probably been forgotten or over-simplified.
-Please file PRs if you notice errors or omissions here*
-
-This process should work OK on Mac and Linux. It also works on [Windows via WSL by following these instructions](#using-windows).
 
 Typically, this process only needs to be run once, although periodically you
 may need to repeat some steps (eg, rust updates should be done periodically)
 
+### Setting up Android dependencies
+
 At the end of this process you should have the following environment variables set up.
 
-- `ANDROID_NDK_ROOT`
-- `ANDROID_NDK_TOOLCHAIN_DIR`
-- `ANDROID_NDK_API_VERSION`
 - `ANDROID_HOME`
-- `JAVA_HOME`
+- `NDK_HOME`
 
-These variables are required every time you build, so you should add them to
-a rc file or similar so they persist between reboots etc.
+The easiest way to install all the dependencies (and automatically
+handle updates), is by using [Android Studio](https://developer.android.com/studio/index.html).
+Once this is installed, the following dependencies can be installed through it:
 
-1. Install NDK r15c from https://developer.android.com/ndk/downloads/older_releases
-   (yes, this sucks, but newer versions don't understand the `--deprecated-headers`
-   argument required to build OpenSSL against a v21 toolchain).
-    - Extract it, put it somewhere (`$HOME/.android-ndk-r15c` is a reasonable
-      choice, but it doesn't matter), and set `ANDROID_NDK_ROOT` to this location.
+- Android SDK Tools
+- NDK
+- CMake
+- LLDB
 
-2. Install `rustup` from https://rustup.rs:
-    - If you already have it, run `rustup update`
-    - Run `rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android`
-    - Run `rustup toolchain add beta` (TODO: this no longer appears necessary).
+To install a dependency, open Android Studio and select `Tools > SDK Manager > SDK Tools`. Then tick the boxes corrensponding to the dependencies listed above.
 
-3. Ensure your clone of `mozilla/application-services` is up to date.
+With the dependencies installed, note down the `Android SDK Location` in `Tools > SDK Manager`. Set the `ANDROID_HOME` environment variable to that path. The `NDK_HOME` can be set to `NDK_HOME=$ANDROID_HOME/ndk-bundle`.
 
-4. Setup your NDK toolchains.
-    - Create a directory where we'll install the standalone toolchains.
-        - `mkdir -p ~/.ndk-standalone-toolchains`
-        - `export ANDROID_NDK_TOOLCHAIN_DIR=$HOME/.ndk-standalone-toolchains`
-    - `cd path/to/application-services/libs`
-    - `./setup_toolchains_local.sh $ANDROID_NDK_ROOT`
-        - Say yes if/when prompted.
-        - When this is done, it should have set `$ANDROID_NDK_API_VERSION` (to 21),
-          but you should add this to an rcfile as above.
+### Setting up Rust
 
-5. Install or locate Java
-    - Either install Java, or, if Android Studio is installed, you can probably find one
-      installed in a `jre` directory under the Android Studio directory.
-    - Set `JAVA_HOME` to this location and add it to your rc file.
+Rust can be installed using `rustup`, with the following commands:
 
-6. Install or locate the Android SDKs
-   - Install the Android SDKs. If Android Studio is involved, it may have already installed
-     them somewhere - use the "SDK Manager" to identify this location.
-   - Set `ANDROID_HOME` to this location and add it to your rc file.
+- `curl https://sh.rustup.rs -sSf | sh`
+- `rustup update`
 
-7. Build openssl and sqlcipher
-    - `cd path/to/application-services/libs` (Same dir you were just in for step 4)
-    - `./build-all.sh android` (Go make some coffee or something, this will take
-       some time as it has to compile sqlcipher and openssl for x86, x86_64, arm, and arm64).
-    - Note that if something goes wrong here
-        - Check all environment variables mentions above are set and correct.
-        - The following directories should exist, and point to standalone NDK
-          toolchains `$ANDROID_NDK_TOOLCHAIN_DIR/{x86,x86_64,arm,arm64}-$ANDROID_NDK_API_VERSION`.
+Platform specific toolchains need to be installed in Rust. This can be
+done using `rustup target` command. In order to enable building to real
+devices and Android emulators, the following targets need to be installed:
+
+- `rustup target add aarch64-linux-android`
+- `rustup target add armv7-linux-androideabi`
+- `rustup target add i686-linux-android`
+- `rustup target add x86_64-linux-android`
 
 ## Building
 
-Having done the above, the build process is the easy part! Again, ensure all
-environment variables mentioned above are in place.
+This should be relatively straightforward and painless:
 
-1. Ensure your clone of application-services is up-to-date.
+1. Ensure your clone repo is up-to-date.
 
 2. Ensure rust is up-to-date by running `rustup`
 
@@ -93,7 +79,10 @@ environment variables mentioned above are in place.
    You can see a list of projects by executing `./gradlew projects` and a list
    of tasks by executing `./gradlew tasks`.
 
-### Publishing the components to your local maven repository.
+The above can be skipped if using `Android Studio`, as the project directory can be imported
+and all the build details can be left to the IDE.
+
+### Publishing the components to your local maven repository
 
 The easiest way to use the build is to have your Android project reference the component from your local maven repository - this is done by the `publishToMavenLocal` task - so:
 
@@ -195,4 +184,8 @@ We now want to configure maven to use the native windows maven repository - then
 
 * Now you should be ready to roll - `./gradlew install` should complete and publish the components to your native maven repo!
 
-\o/
+## FAQ
+
+- **Q: Android Studio complains about Python not being found when building.**
+- A: Make sure that the `python` binary is on your `PATH`. On Windows, in addition to that, 
+it might be required to add its full path to the `rust.pythonCommand` entry in  `$project_root/local.properties`.
