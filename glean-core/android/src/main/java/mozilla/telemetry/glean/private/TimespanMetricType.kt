@@ -18,14 +18,14 @@ import androidx.annotation.VisibleForTesting
  *
  * The timespans API exposes the [start], [stopAndSum] and [cancel] methods.
  */
-data class TimespanMetricType(
-    override val disabled: Boolean,
-    override val category: String,
-    override val lifetime: Lifetime,
-    override val name: String,
-    override val sendInPings: List<String>,
-    val timeUnit: TimeUnit
-) : CommonMetricData {
+class TimespanMetricType(
+    disabled: Boolean,
+    category: String,
+    lifetime: Lifetime,
+    name: String,
+    val sendInPings: List<String>,
+    timeUnit: TimeUnit
+) {
 
     // private val logger = Logger("glean/TimespanMetricType")
 

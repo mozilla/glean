@@ -8,7 +8,7 @@ import android.util.Log
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
-import mozilla.components.service.glean.utils.getLocaleTag
+import mozilla.telemetry.glean.utils.getLocaleTag
 import java.io.File
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.MetricHandle
@@ -97,12 +97,47 @@ open class GleanInternalAPI internal constructor () {
         }
     }
 
+    /**
+     * Enable or disable Glean collection and upload.
+     *
+     * Metric collection is enabled by default.
+     *
+     * When uploading is disabled, metrics aren't recorded at all and no data
+     * is uploaded.
+     *
+     * When disabling, all pending metrics, events and queued pings are cleared.
+     *
+     * When enabling, the core Glean metrics are recreated.
+     *
+     * @param enabled When true, enable metric collection.
+     */
+    fun setUploadEnabled(enabled: Boolean) {
+        // logger.info("Metrics enabled: $enabled")
+        // val origUploadEnabled = uploadEnabled
+        // uploadEnabled = enabled
+        // if (isInitialized() && origUploadEnabled != enabled) {
+        //     onChangeUploadEnabled(enabled)
+        // }
+        // TODO: stub
+    }
+
+    /**
+     * Get whether or not Glean is allowed to record and upload data.
+     */
+    fun getUploadEnabled(): Boolean {
+        // TODO: stub
+        return false
+    }
+
     fun collect(ping_name: String) {
         val e = RustError.ByReference()
         val s = LibGleanFFI.INSTANCE.glean_ping_collect(handle, ping_name, e)!!
         LibGleanFFI.INSTANCE.glean_str_free(s)
     }
 
+    /**
+     * Handle the background event and send the appropriate pings.
+     */
     fun handleBackgroundEvent() {
         sendPing("baseline")
         sendPing("events")
