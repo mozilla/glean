@@ -131,7 +131,8 @@ impl Glean {
         let doc_id = Uuid::new_v4().to_string();
         let url_path = self.make_path(ping_name, &doc_id);
         let ping_content =
-            ::serde_json::to_string_pretty(&ping_maker.collect(self.storage(), ping_name)).unwrap();
+            ::serde_json::to_string_pretty(&ping_maker.collect(self.storage(), ping_name))
+                .expect("Pretty-printing JSON into a string should always work");
         // FIXME: Logging ping content for now.  Eventually this should be controlled by a flag
         log::info!("{}", ping_content);
         ping_maker.store_ping(&doc_id, &self.get_data_path(), &url_path, &ping_content)?;
