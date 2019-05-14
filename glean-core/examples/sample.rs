@@ -59,16 +59,13 @@ fn main() {
     list.add(&glean, "upon");
 
     let ping_maker = PingMaker::new();
-    let ping = ping_maker.collect(glean.storage(), "core");
-    let ping = ::serde_json::to_string_pretty(&ping).unwrap();
+    let ping = ping_maker.collect_string(glean.storage(), "core").unwrap();
     println!("Ping:\n{}", ping);
 
     let mut long_string = std::iter::repeat('x').take(49).collect::<String>();
     long_string.push('a');
     long_string.push('b');
     local_metric.set(&glean, long_string);
-    let ping_maker = PingMaker::new();
-    let ping = ping_maker.collect(glean.storage(), "core");
-    let ping = ::serde_json::to_string_pretty(&ping).unwrap();
+    let ping = ping_maker.collect_string(glean.storage(), "core").unwrap();
     println!("Metrics Ping:\n{}", ping);
 }
