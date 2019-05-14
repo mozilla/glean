@@ -7,7 +7,7 @@
 // https://github.com/mozilla/application-services/blob/84e077d1534dc287bbd472da658ce22eea5af032/build.gradle
 
 buildscript {
-    ext.kotlin_version = '1.3.30'
+    ext.kotlin_version = '1.3.31'
     ext.android_components_version = '0.50.0'
     ext.jna_version = '5.2.0'
 
