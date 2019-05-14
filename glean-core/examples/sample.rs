@@ -1,7 +1,7 @@
 use std::env;
 
 use glean_core::metrics::*;
-use glean_core::ping::PingMaker;
+use glean_core::ping;
 use glean_core::{CommonMetricData, Glean};
 use tempfile::Builder;
 
@@ -58,8 +58,7 @@ fn main() {
     list.add(&glean, "once");
     list.add(&glean, "upon");
 
-    let ping_maker = PingMaker::new();
-    let ping = ping_maker.collect(glean.storage(), "core");
+    let ping = ping::collect(glean.storage(), "core");
     let ping = ::serde_json::to_string_pretty(&ping).unwrap();
     println!("Ping:\n{}", ping);
 
@@ -67,8 +66,7 @@ fn main() {
     long_string.push('a');
     long_string.push('b');
     local_metric.set(&glean, long_string);
-    let ping_maker = PingMaker::new();
-    let ping = ping_maker.collect(glean.storage(), "core");
+    let ping = ping::collect(glean.storage(), "core");
     let ping = ::serde_json::to_string_pretty(&ping).unwrap();
     println!("Metrics Ping:\n{}", ping);
 }

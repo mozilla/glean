@@ -23,7 +23,6 @@ pub use crate::common_metric_data::{CommonMetricData, Lifetime};
 use crate::database::Database;
 pub use crate::error_recording::ErrorType;
 use crate::internal_metrics::CoreMetrics;
-use crate::ping::PingMaker;
 use crate::storage::StorageManager;
 use crate::util::sanitize_application_id;
 
@@ -124,13 +123,12 @@ impl Glean {
     /// TODO: (Verify this is correct):
     /// If the ping currently contains no content, it will not be sent.
     pub fn send_ping(&self, ping_name: &str) -> std::io::Result<()> {
-        let ping_maker = PingMaker::new();
         let doc_id = Uuid::new_v4().to_string();
         let url_path = self.make_path(ping_name, &doc_id);
         let ping_content =
-            ::serde_json::to_string_pretty(&ping_maker.collect(self.storage(), ping_name)).unwrap();
+            ::serde_json::to_string_pretty(&ping::collect(self.storage(), ping_name)).unwrap();
         // FIXME: Logging ping content for now.  Eventually this should be controlled by a flag
         log::info!("{}", ping_content);
-        ping_maker.store_ping(&doc_id, &self.get_data_path(), &url_path, &ping_content)
+        ping::store_ping(&doc_id, &self.get_data_path(), &url_path, &ping_content)
     }
 }

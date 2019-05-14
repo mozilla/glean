@@ -11,7 +11,7 @@ use ffi_support::{
 };
 use lazy_static::lazy_static;
 
-use glean_core::{metrics::*, CommonMetricData, Glean, Lifetime};
+use glean_core::{metrics::*, ping, CommonMetricData, Glean, Lifetime};
 
 lazy_static! {
     static ref GLEAN: ConcurrentHandleMap<Glean> = ConcurrentHandleMap::new();
@@ -260,8 +260,7 @@ pub extern "C" fn glean_ping_collect(
     error: &mut ExternError,
 ) -> *mut c_char {
     GLEAN.call_with_output(error, glean_handle, |glean| {
-        let ping_maker = glean_core::ping::PingMaker::new();
-        let data = ping_maker.collect_string(glean.storage(), ping_name.as_str());
+        let data = ping::collect_string(glean.storage(), ping_name.as_str());
         log::info!("Ping({}): {}", ping_name.as_str(), data);
         data
     })
