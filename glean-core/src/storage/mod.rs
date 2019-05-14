@@ -49,6 +49,10 @@ impl StorageManager {
             storage.clear_ping_lifetime_storage(store_name);
         }
 
-        Some(json!(snapshot))
+        if snapshot.is_empty() {
+            None
+        } else {
+            Some(json!(snapshot))
+        }
     }
 }
