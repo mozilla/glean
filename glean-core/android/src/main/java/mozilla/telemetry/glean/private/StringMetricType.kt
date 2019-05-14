@@ -10,9 +10,9 @@ import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.RustError
 
-//import mozilla.components.service.glean.Dispatchers
-//import mozilla.components.service.glean.storages.StringsStorageEngine
-//import mozilla.components.support.base.log.logger.Logger
+// import mozilla.components.service.glean.Dispatchers
+// import mozilla.components.service.glean.storages.StringsStorageEngine
+// import mozilla.components.support.base.log.logger.Logger
 
 /**
  * This implements the developer facing API for recording string metrics.
@@ -30,6 +30,8 @@ class StringMetricType(
     name: String,
     val sendInPings: List<String>
 ) {
+    // private val logger = Logger("glean/StringMetricType")
+
     private var handle: Long
 
     init {

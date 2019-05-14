@@ -1,0 +1,4 @@
+style:
+  # We want to allow "TODO" in comments
+  ForbiddenComment:
+    active: false

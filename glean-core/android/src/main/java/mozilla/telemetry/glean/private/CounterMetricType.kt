@@ -31,7 +31,7 @@ class CounterMetricType(
     val sendInPings: List<String>
 ) {
 
-    //private val logger = Logger("glean/CounterMetricType")
+    // private val logger = Logger("glean/CounterMetricType")
 
     private var handle: Long
 

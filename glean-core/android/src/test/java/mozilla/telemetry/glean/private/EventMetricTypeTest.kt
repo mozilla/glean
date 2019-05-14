@@ -10,9 +10,9 @@
 
 package mozilla.telemetry.glean.private
 
-import android.content.Context
+// import android.content.Context
 import android.os.SystemClock
-import androidx.test.core.app.ApplicationProvider
+// import androidx.test.core.app.ApplicationProvider
 // import kotlinx.coroutines.ExperimentalCoroutinesApi
 // import kotlinx.coroutines.ObsoleteCoroutinesApi
 import mozilla.telemetry.glean.Glean
