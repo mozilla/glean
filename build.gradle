@@ -1,11 +1,15 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+// This is based off:
+// https://github.com/mozilla/application-services/blob/84e077d1534dc287bbd472da658ce22eea5af032/build.gradle
 
 buildscript {
     ext.kotlin_version = '1.3.30'
-
-    ext.library = [
-        version: '0.16.1'
-    ]
+    ext.android_components_version = '0.50.0'
+    ext.jna_version = '5.2.0'
 
     ext.build = [
         compileSdkVersion: 27,
@@ -25,14 +29,13 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
         // Publish.
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
         classpath 'digital.wup:android-maven-publish:3.6.2'
 
-        classpath 'gradle.plugin.org.mozilla.rust-android-gradle:plugin:0.8.0'
+        classpath 'gradle.plugin.org.mozilla.rust-android-gradle:plugin:0.8.1'
 
         // Yes, this is unusual.  We want to access some host-specific
         // computation at build time.
-        classpath 'net.java.dev.jna:jna:4.5.2'
+        classpath "net.java.dev.jna:jna:$jna_version"
 
         // Downloading libs/ archives from Taskcluster.
         classpath 'de.undercouch:gradle-download-task:3.4.3'
@@ -44,13 +47,87 @@ buildscript {
     }
 }
 
+plugins {
+    id("io.gitlab.arturbosch.detekt").version("1.0.0-RC14")
+}
+
 apply plugin: 'de.undercouch.download'
 
 allprojects {
     repositories {
         google()
         jcenter()
+        maven {
+            url "https://maven.mozilla.org/maven2"
+        }
     }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+// Avoid Gradle namespace collision.  This is here, rather than in `buildscript
+// { ... }`, to avoid issues with importing.
+import com.sun.jna.Platform as DefaultPlatform
+
+//  application-services has hooks to download external dependencies here. This
+//  has been removed since `glean-core` doesn't have any external dependencies for now.
+
+Properties localProperties = null
+if (file('local.properties').canRead()) {
+    localProperties = new Properties()
+    localProperties.load(file('local.properties').newDataInputStream())
+    logger.lifecycle('Local configuration: loaded local.properties')
+}
+
+// For non-megazord builds, don't do a release build unless we explicitly want
+// it (e.g. in CI, or if specified in local.properties). This avoids some cases
+// where two builds of some crates are required when they wouldn't otherwise be,
+// as well as improving build times for local development.
+ext.nonMegazordProfile = "debug"
+// Additionally, we require `--locked` in CI, but not for local builds.
+// Unlike the above, this can't be overridden by `local.properties` (mainly
+// because doing so seems pointless, not for any security reason)
+ext.extraCargoBuildArguments = []
+
+if (System.getenv("CI")) {
+    // Note: CI can still override this (and does for PRs), this
+    // is just the default
+    ext.nonMegazordProfile = "release"
+    ext.extraCargoBuildArguments = ["--locked"]
+}
+
+if (localProperties != null) {
+    String localNonMegazordProfile = localProperties.getProperty(
+        "application-services.nonmegazord-profile")
+    if (localNonMegazordProfile != null) {
+        ext.nonMegazordProfile = localNonMegazordProfile
+    }
+}
+
+// The Cargo targets to invoke.  The mapping from short name to target
+// triple is defined by the `rust-android-gradle` plugin.
+// They can be overwritten in `local.properties` by the `rust.targets`
+// attribute.
+ext.rustTargets = [
+    'arm',
+    'arm64',
+    'x86_64',
+    'x86',
+]
+
+// Generate libs for our current platform so we can run unit tests.
+switch (DefaultPlatform.RESOURCE_PREFIX) {
+    case 'darwin':
+        ext.rustTargets += 'darwin'
+        break
+    case 'linux-x86-64':
+        ext.rustTargets += 'linux-x86-64'
+        break
+    case 'win32-x86-64':
+        ext.rustTargets += 'win32-x86-64-msvc'
+        break
 }
 
 subprojects {
@@ -72,108 +149,43 @@ subprojects {
     }
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
-}
-
-// Avoid Gradle namespace collision.  This is here, rather than in `buildscript
-// { ... }`, to avoid issues with importing.
-import com.sun.jna.Platform as DefaultPlatform
-
-// This is the output `git rev-parse HEAD:libs`.  We could discover this automatically, but
-// let's keep things simple and bump this manually for a while.  If and when we grow SNAPSHOT
-// support on maven.mozilla.org, we can invest in a better approach for versioning these
-// prerequisite libraries.
-//
-// Set this to `= null` in order to use libs from the source directory.
-ext.libsGitSha = '3c98949838e2df00517a0f60df82a73d4f3d7660'
-
-if (rootProject.ext.libsGitSha != null) {
-    task downloadAndroidLibs(type: Download) {
-        src "https://index.taskcluster.net/v1/task/project.application-services.application-services.build.libs.android.${rootProject.ext.libsGitSha}/artifacts/public/target.tar.gz"
-        dest new File(buildDir, "libs.android.${rootProject.ext.libsGitSha}.tar.gz")
-
-        doFirst {
-            if (it.dest.exists()) {
-                throw new StopExecutionException("File to download already exists: ${it.dest.path}")
-            }
-        }
-        overwrite true
-    }
-
-    task untarAndroidLibs(dependsOn: downloadAndroidLibs, type: Copy) {
-        from tarTree(downloadAndroidLibs.dest)
-        into rootProject.buildDir
-    }
-
-    task downloadDesktopLibs(type: Download) {
-        src {
-            switch (DefaultPlatform.RESOURCE_PREFIX) {
-                case 'darwin':
-                    return "https://index.taskcluster.net/v1/task/project.application-services.application-services.build.libs.desktop.macos.${rootProject.ext.libsGitSha}/artifacts/public/target.tar.gz"
-                case 'linux-x86-64':
-                    return "https://index.taskcluster.net/v1/task/project.application-services.application-services.build.libs.desktop.linux.${rootProject.ext.libsGitSha}/artifacts/public/target.tar.gz"
-                case 'win32-x86-64':
-                    return "https://index.taskcluster.net/v1/task/project.application-services.application-services.build.libs.desktop.win32-x86-64.${rootProject.ext.libsGitSha}/artifacts/public/target.tar.gz"
-                default:
-                    throw new GradleException("Unknown host platform '${DefaultPlatform.RESOURCE_PREFIX}'.  " +
-                                              "Set `ext.libsGitSha = null` in ${rootProject.rootDir}/build.gradle and build your own libs.  " +
-                                              "If you don't want to build your own libs for Android, you can untar\n\n${downloadAndroidLibs.src}\n\nat top-level to populate `libs/android/`.  " +
-                                              "You'll need build your own libs for your host platform in order to be able to build and run unit tests.")
-            }
-        }
-
-        dest {
-            switch (DefaultPlatform.RESOURCE_PREFIX) {
-                case 'darwin':
-                    return new File(buildDir, "libs.desktop.macos.${rootProject.ext.libsGitSha}.tar.gz")
-                case 'linux-x86-64':
-                    return new File(buildDir, "libs.desktop.linux.${rootProject.ext.libsGitSha}.tar.gz")
-                case 'win32-x86-64':
-                    return new File(buildDir, "libs.desktop.win32-x86-64.${rootProject.ext.libsGitSha}.tar.gz")
-                default:
-                    throw new GradleException("Unknown host platform '${DefaultPlatform.RESOURCE_PREFIX}'.  " +
-                                              "Set `ext.libsGitSha = null` in ${rootProject.rootDir}/build.gradle and build your own libs.")
-            }
-        }
-
-        doFirst {
-            if (it.dest.exists()) {
-                throw new StopExecutionException("File to download already exists: ${it.dest.path}")
-            }
-        }
-        overwrite true
-    }
-
-    task untarDesktopLibs(dependsOn: downloadDesktopLibs, type: Copy) {
-        from tarTree(downloadDesktopLibs.dest)
-        into rootProject.buildDir
-    }
-
-}
-
 // Configure some environment variables, per toolchain, that will apply during
 // the Cargo build.  We assume that the `libs/` directory has been populated
 // before invoking Gradle (or Cargo).
 ext.cargoExec = { spec, toolchain ->
-    // Use in-tree libs from the source directory in CI or if the git SHA is unset; otherwise use
-    // downloaded libs.
-    def libsRootDir = (System.getenv('CI') || ext.libsGitSha == null) ? rootProject.rootDir : rootProject.buildDir
+    // Intentionally empty. Removing this block breaks build.
 }
 
-task zipMavenArtifacts(type: Zip) {
-    from "${project.buildDir}/maven"
+detekt {
+    // The version number is duplicated, please refer to plugins block for more details
+    toolVersion = "1.0.0-RC14"
+    input = files("${projectDir}/glean-core", "${projectDir}/samples/android", "buildSrc")
+    filters = ".*test.*,.*/resources/.*,.*/tmp/.*,.*/build/.*"
+    config = files("${projectDir}/.detekt.yml")
+    failFast = false
+    reports {
+        xml.enabled = false
+    }
+}
 
-    include '**/*.aar'
-    include '**/*.jar'
-    include '**/*.pom'
-    include '**/*.md5'
-    include '**/*.sha1'
+configurations {
+    ktlint
+}
 
-    // Metadata is generated by maven.mozilla.org directly
-    exclude '**/*maven-metadata.xml*'
+dependencies {
+    ktlint "com.github.shyiko:ktlint:0.31.0"
+}
 
-    archiveName "target.maven.zip"
-    includeEmptyDirs = false
-    destinationDir(file("${project.buildDir}"))
+task ktlint(type: JavaExec, group: "verification") {
+    description = "Check Kotlin code style."
+    classpath = configurations.ktlint
+    main = "com.github.shyiko.ktlint.Main"
+    args "${projectDir}/glean-core/**/*.kt", "${projectDir}/samples/android/**/*.kt", "buildSrc/**/*.kt", "!**/build"
+}
+
+task ktlintFormat(type: JavaExec, group: "formatting") {
+    description = "Fix Kotlin code style deviations."
+    classpath = configurations.ktlint
+    main = "com.github.shyiko.ktlint.Main"
+    args "-F", "${projectDir}/components/**/*.kt", "${projectDir}/gradle-plugin/**/*.kt", "buildSrc/**/*.kt", "!**/build"
 }

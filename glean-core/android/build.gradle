@@ -2,6 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+// This is based off:
+// https://github.com/mozilla/application-services/blob/c40e2ccb422cf4af9ffdf095149cec34de1d4bef/components/fxa-client/android/build.gradle
+
 plugins {
     id "com.jetbrains.python.envs" version "0.0.26"
 }
@@ -11,8 +14,6 @@ apply plugin: 'org.mozilla.rust-android-gradle.rust-android'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
-import org.apache.tools.ant.taskdefs.condition.Os
-
 /*
  * This defines the location of the JSON schema used to validate the pings
  * created during unit testing.
@@ -21,8 +22,12 @@ import org.apache.tools.ant.taskdefs.condition.Os
 String GLEAN_PING_SCHEMA_GIT_HASH = "64b852c"
 String GLEAN_PING_SCHEMA_URL = "https://raw.githubusercontent.com/mozilla-services/mozilla-pipeline-schemas/$GLEAN_PING_SCHEMA_GIT_HASH/schemas/glean/baseline/baseline.1.schema.json"
 
+// Set configuration for the glean_parser
+ext.allowGleanInternal = true
+ext.gleanNamespace = "mozilla.telemetry.glean"
+
 android {
-    compileSdkVersion 27
+    compileSdkVersion rootProject.ext.build.compileSdkVersion
 
     defaultConfig {
         minSdkVersion rootProject.ext.build['minSdkVersion']
@@ -46,20 +51,14 @@ android {
     }
 
     sourceSets {
+        main.jniLibs.srcDirs += "$buildDir/nativeLibs/android"
         test.resources.srcDirs += "$buildDir/rustJniLibs/desktop"
+        test.resources.srcDirs += "$buildDir/nativeLibs/desktop"
     }
 
-    // Help folks debugging by including symbols in our native libraries.  Yes, this makes the
-    // resulting AAR very large.  The Android ecosystem seems to be in flux around who is in charge
-    // of stripping native binaries, but for now let's provide symbols and see how consumers react.
-    packagingOptions {
-        doNotStrip "**/*.so"
-    }
+    // Uncomment to include debug symbols in native library builds.
+    // packagingOptions { doNotStrip "**/*.so" }
 }
-
-// Set configuration for the glean_parser
-ext.allowGleanInternal = true
-ext.gleanNamespace = "mozilla.telemetry.glean"
 
 configurations {
     withoutLib {
@@ -67,20 +66,9 @@ configurations {
 }
 
 afterEvaluate {
-    // The `cargoBuild` task isn't available until after evaluation.
-    android.libraryVariants.all { variant ->
-        def productFlavor = ""
-        variant.productFlavors.each {
-            productFlavor += "${it.name.capitalize()}"
-        }
-        def buildType = "${variant.buildType.name.capitalize()}"
-        if (variant.buildType.name != 'withoutLib') {
-            tasks["generate${productFlavor}${buildType}Assets"].dependsOn(tasks["cargoBuild"])
-        }
-
-        // For unit tests.
-        tasks["process${productFlavor}${buildType}UnitTestJavaRes"].dependsOn(tasks["cargoBuild"])
-    }
+    android.sourceSets.debug.jniLibs.srcDirs = android.sourceSets.main.jniLibs.srcDirs
+    android.sourceSets.release.jniLibs.srcDirs = android.sourceSets.main.jniLibs.srcDirs
+    android.sourceSets.main.jniLibs.srcDirs = []
 }
 
 cargo {
@@ -95,29 +83,13 @@ cargo {
 
     libname = 'glean_ffi'
 
-    // The Cargo targets to invoke.  The mapping from short name to target
-    // triple is defined by the `rust-android-gradle` plugin.
-    targets = [
-        'arm',
-        'arm64',
-        'x86',
-        'x86_64',
-    ]
+    targets = rootProject.ext.rustTargets
 
-    // Build for the "host" platform
-    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-        targets.push('win32-x86-64-msvc')
-    } else if (Os.isFamily(Os.FAMILY_MAC)) {
-        targets.push('darwin')
-    } else if (Os.isFamily(Os.FAMILY_UNIX)) {
-        targets.push('linux-x86-64')
-    }
-
-    // Perform release builds (which should have debug info, due to
-    // `debug = true` in Cargo.toml).
-    profile = "release"
+    profile = rootProject.ext.nonMegazordProfile
 
     exec = rootProject.ext.cargoExec
+
+    extraCargoBuildArguments = rootProject.ext.extraCargoBuildArguments
 }
 
 configurations {
@@ -146,10 +118,10 @@ android {
 }
 
 dependencies {
-    jnaForTest 'net.java.dev.jna:jna:4.5.2@jar'
+    jnaForTest "net.java.dev.jna:jna:$jna_version@jar"
+    implementation "net.java.dev.jna:jna:$jna_version@aar"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'net.java.dev.jna:jna:4.5.2@aar'
 
     implementation "androidx.annotation:annotation:1.0.2"
 
@@ -168,6 +140,23 @@ dependencies {
 
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+}
+
+afterEvaluate {
+    // The `cargoBuild` task isn't available until after evaluation.
+    android.libraryVariants.all { variant ->
+        def productFlavor = ""
+        variant.productFlavors.each {
+            productFlavor += "${it.name.capitalize()}"
+        }
+        def buildType = "${variant.buildType.name.capitalize()}"
+        if (variant.buildType.name != 'withoutLib') {
+            tasks["generate${productFlavor}${buildType}Assets"].dependsOn(tasks["cargoBuild"])
+        }
+
+        // For unit tests.
+        tasks["process${productFlavor}${buildType}UnitTestJavaRes"].dependsOn(tasks["cargoBuild"])
+    }
 }
 
 //apply from: 'https://github.com/mozilla-mobile/android-components/raw/master/components/service/glean/scripts/sdk_generator.gradle'
