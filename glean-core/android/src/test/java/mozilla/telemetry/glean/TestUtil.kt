@@ -26,12 +26,9 @@ import mozilla.components.service.glean.scheduler.PingUploadWorker
 import mozilla.components.service.glean.storages.ExperimentsStorageEngine
 import mozilla.components.service.glean.storages.StorageEngineManager*/
 import org.json.JSONObject
-import org.junit.Assert
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito
-import org.mozilla.glean_rs.BuildConfig
-import java.io.File
-import java.util.concurrent.ExecutionException
+import org.mozilla.gleancore.BuildConfig
 
 /**
  * Checks ping content against the Glean ping schema.
@@ -118,31 +115,31 @@ internal fun checkPingSchema(content: String): JSONObject {
  */
 internal fun resetGlean(
     context: Context = ApplicationProvider.getApplicationContext(),
-    //config: Configuration = Configuration(),
+    // config: Configuration = Configuration(),
     clearStores: Boolean = true
 ) {
-    //Glean.enableTestingMode()
+    // Glean.enableTestingMode()
 
     // We're using the WorkManager in a bunch of places, and Glean will crash
     // in tests without this line. Let's simply put it here.
-    //WorkManagerTestInitHelper.initializeTestWorkManager(context)
+    // WorkManagerTestInitHelper.initializeTestWorkManager(context)
 
-    /*if (clearStores) {
+    /* if (clearStores) {
         // Clear all the stored data.
         val storageManager = StorageEngineManager(applicationContext = context)
         storageManager.clearAllStores()
         // The experiments storage engine needs to be cleared manually as it's not listed
         // in the `StorageEngineManager`.
         ExperimentsStorageEngine.clearAllStores()
-    }*/
+    } */
 
     // Clear the "first run" flag.
-    //val firstRun = FileFirstRunDetector(File(context.applicationInfo.dataDir, Glean.GLEAN_DATA_DIR))
-    //firstRun.reset()
+    // val firstRun = FileFirstRunDetector(File(context.applicationInfo.dataDir, Glean.GLEAN_DATA_DIR))
+    // firstRun.reset()
     // Init Glean.
-    //Glean.setUploadEnabled(true)
+    // Glean.setUploadEnabled(true)
     Glean.testDestroyGleanHandle()
-    Glean.initialize(context)//, config)
+    Glean.initialize(context) // , config)
 }
 
 /**
@@ -156,7 +153,12 @@ internal fun getContextWithMockedInfo(): Context {
     val packageInfo = Mockito.mock(PackageInfo::class.java)
     packageInfo.versionName = "glean.version.name"
     val packageManager = Mockito.mock(PackageManager::class.java)
-    Mockito.`when`(packageManager.getPackageInfo(ArgumentMatchers.anyString(), ArgumentMatchers.anyInt())).thenReturn(packageInfo)
+    Mockito.`when`(
+        packageManager.getPackageInfo(
+            ArgumentMatchers.anyString(),
+            ArgumentMatchers.anyInt()
+        )
+    ).thenReturn(packageInfo)
     Mockito.`when`(context.packageManager).thenReturn(packageManager)
     return context
 }

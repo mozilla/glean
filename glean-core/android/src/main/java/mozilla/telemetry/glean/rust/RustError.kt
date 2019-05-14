@@ -68,7 +68,6 @@ internal open class RustError : Structure() {
     }
 }
 
-
 /**
  * Helper to read a null terminated String out of the Pointer and free it.
  *

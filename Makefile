@@ -17,6 +17,7 @@ emulator:
 
 lint:
 	cargo clippy --all
+	./gradlew ktlint detekt
 .PHONY: lint
 
 fmt:

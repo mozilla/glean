@@ -101,6 +101,14 @@ jobs:
       - rust-tests:
           rust-version: "beta"
 
+  Lint Android with ktlint and detekt:
+    docker:
+      - image: circleci/android:api-23-ndk
+    steps:
+      - checkout
+      - run: ./gradlew ktlint
+      - run: ./gradlew detekt 
+        
   Android tests:
     docker:
       - image: circleci/android:api-23-ndk
@@ -159,9 +167,10 @@ workflows:
   check-formating:
     jobs:
       - Check Rust formatting
-  clippy:
+  lint:
     jobs:
       - Lint Rust with clippy
+      - Lint Android with ktlint and detekt
   run-tests:
     jobs:
       - Rust tests - stable

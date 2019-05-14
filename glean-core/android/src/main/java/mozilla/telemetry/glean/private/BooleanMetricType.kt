@@ -15,8 +15,8 @@ class BooleanMetricType(
     category: String,
     lifetime: Lifetime,
     name: String,
-    val sendInPings: List<String>)
-{
+    val sendInPings: List<String>
+) {
     private var handle: Long
 
     init {

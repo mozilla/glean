@@ -2,16 +2,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+@file:Suppress("FunctionNaming", "FunctionParameterNaming", "LongParameterList")
+
 package mozilla.telemetry.glean.rust
 
-import android.util.Log
 import com.sun.jna.Library
 import com.sun.jna.Native
 import com.sun.jna.Pointer
-import com.sun.jna.PointerType
 import com.sun.jna.StringArray
 import java.lang.reflect.Proxy
 
+@Suppress("TooManyFunctions")
 internal interface LibGleanFFI : Library {
     companion object {
         private val JNA_LIBRARY_NAME = "glean_ffi"
@@ -21,9 +22,9 @@ internal interface LibGleanFFI : Library {
         } catch (e: UnsatisfiedLinkError) {
             Proxy.newProxyInstance(
                 LibGleanFFI::class.java.classLoader,
-                arrayOf(LibGleanFFI::class.java))
-            { _, _, _ ->
-                throw RuntimeException("Glean functionality not available", e)
+                arrayOf(LibGleanFFI::class.java)
+            ) { _, _, _ ->
+                throw IllegalStateException("Glean functionality not available", e)
             } as LibGleanFFI
         }
     }
@@ -46,11 +47,32 @@ internal interface LibGleanFFI : Library {
 
     fun glean_is_upload_enabled(glean_handle: Long): Byte
 
-    fun glean_new_boolean_metric(category: String, name: String, send_in_pings: StringArray, send_in_pings_len: Int, lifetime: Int, err: RustError.ByReference): Long
+    fun glean_new_boolean_metric(
+        category: String,
+        name: String,
+        send_in_pings: StringArray,
+        send_in_pings_len: Int,
+        lifetime: Int,
+        err: RustError.ByReference
+    ): Long
 
-    fun glean_new_counter_metric(category: String, name: String, send_in_pings: StringArray, send_in_pings_len: Int, lifetime: Int, err: RustError.ByReference): Long
+    fun glean_new_counter_metric(
+        category: String,
+        name: String,
+        send_in_pings: StringArray,
+        send_in_pings_len: Int,
+        lifetime: Int,
+        err: RustError.ByReference
+    ): Long
 
-    fun glean_new_string_metric(category: String, name: String, send_in_pings: StringArray, send_in_pings_len: Int, lifetime: Int, err: RustError.ByReference): Long
+    fun glean_new_string_metric(
+        category: String,
+        name: String,
+        send_in_pings: StringArray,
+        send_in_pings_len: Int,
+        lifetime: Int,
+        err: RustError.ByReference
+    ): Long
 
     fun glean_ping_collect(glean_handle: Long, ping_name: String, error: RustError.ByReference): Pointer?
 
@@ -69,6 +91,6 @@ internal interface LibGleanFFI : Library {
     fun glean_destroy_counter_metric(handle: Long, error: RustError.ByReference)
 
     fun glean_str_free(ptr: Pointer)
-
 }
+
 internal typealias MetricHandle = Long

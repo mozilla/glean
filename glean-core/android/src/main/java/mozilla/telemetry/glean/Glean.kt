@@ -13,8 +13,8 @@ import java.io.File
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.MetricHandle
 import mozilla.telemetry.glean.rust.RustError
-import org.mozilla.glean_rs.GleanMetrics.GleanBaseline
-import org.mozilla.glean_rs.GleanMetrics.GleanInternalMetrics
+import org.mozilla.gleancore.GleanMetrics.GleanBaseline
+import org.mozilla.gleancore.GleanMetrics.GleanInternalMetrics
 
 open class GleanInternalAPI internal constructor () {
     companion object {
@@ -135,9 +135,9 @@ open class GleanInternalAPI internal constructor () {
         return false
     }
 
-    fun collect(ping_name: String) {
+    fun collect(pingName: String) {
         val e = RustError.ByReference()
-        val s = LibGleanFFI.INSTANCE.glean_ping_collect(handle, ping_name, e)!!
+        val s = LibGleanFFI.INSTANCE.glean_ping_collect(handle, pingName, e)!!
         LibGleanFFI.INSTANCE.glean_str_free(s)
     }
 

@@ -6,10 +6,10 @@ package mozilla.telemetry.glean.private
 
 import android.util.Log
 import androidx.annotation.VisibleForTesting
-//import mozilla.components.service.glean.Dispatchers
-//import mozilla.components.service.glean.storages.TimespansStorageEngine
-//import mozilla.components.service.glean.timing.TimingManager
-//import mozilla.components.support.base.log.logger.Logger
+// import mozilla.components.service.glean.Dispatchers
+// import mozilla.components.service.glean.storages.TimespansStorageEngine
+// import mozilla.components.service.glean.timing.TimingManager
+// import mozilla.components.support.base.log.logger.Logger
 
 /**
  * This implements the developer facing API for recording timespans.
@@ -99,8 +99,9 @@ class TimespanMetricType(
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun testHasValue(pingName: String = sendInPings.first()): Boolean {
+        // TimespansStorageEngine.getSnapshot(pingName, false)?.get(identifier) != null
         assert(false, { "Testing API not implemented for TimespanMetricType" })
-        return false //TimespansStorageEngine.getSnapshot(pingName, false)?.get(identifier) != null
+        return false
     }
 
     /**
