@@ -5,6 +5,7 @@
 package mozilla.telemetry.glean.private
 
 // import android.os.SystemClock
+import android.util.Log
 import androidx.annotation.VisibleForTesting
 // import mozilla.components.service.glean.Dispatchers
 // import mozilla.components.service.glean.storages.EventsStorageEngine
@@ -47,6 +48,9 @@ class EventMetricType<ExtraKeysEnum : Enum<ExtraKeysEnum>>(
     val sendInPings: List<String>,
     allowedExtraKeys: List<String> = listOf()
 ) {
+    companion object {
+        val LOG_TAG: String = "glean/EventMetricType"
+    }
 
     init {
         // TODO
@@ -98,6 +102,7 @@ class EventMetricType<ExtraKeysEnum : Enum<ExtraKeysEnum>>(
         //         extra = extraStrings
         //     )
         // }
+        Log.e(LOG_TAG, "EventMetricType.record is a stub")
     }
 
     /**
@@ -119,6 +124,7 @@ class EventMetricType<ExtraKeysEnum : Enum<ExtraKeysEnum>>(
         // return snapshot.any { event ->
         //     event.identifier == identifier
         // }
+        assert(false, { "Testing API not implementated for EventMetricType" })
         return false
     }
 
@@ -140,6 +146,7 @@ class EventMetricType<ExtraKeysEnum : Enum<ExtraKeysEnum>>(
         // return EventsStorageEngine.getSnapshot(pingName, false)!!.filter { event ->
         //     event.identifier == identifier
         // }
+        assert(false, { "Testing API not implementated for EventMetricType" })
         return listOf(RecordedEventData("LOL", "BAR", 0, null))
     }
 }

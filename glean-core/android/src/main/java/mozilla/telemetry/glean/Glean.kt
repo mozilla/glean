@@ -17,6 +17,10 @@ import org.mozilla.glean_rs.GleanMetrics.GleanBaseline
 import org.mozilla.glean_rs.GleanMetrics.GleanInternalMetrics
 
 open class GleanInternalAPI internal constructor () {
+    companion object {
+        private val LOG_TAG: String = "glean-kotlin"
+    }
+
     // `internal` so this can be modified for testing
     internal var handle: MetricHandle = 0L
 
@@ -28,7 +32,7 @@ open class GleanInternalAPI internal constructor () {
      */
     fun initialize(applicationContext: Context) {
         val dataDir = File(applicationContext.applicationInfo.dataDir, "glean_data")
-        Log.i("glean-kotlin", "data dir: $dataDir")
+        Log.i(LOG_TAG, "data dir: $dataDir")
 
         if (isInitialized()) {
             return
@@ -90,7 +94,7 @@ open class GleanInternalAPI internal constructor () {
             )
         } catch (e: PackageManager.NameNotFoundException) {
             Log.e(
-                "glean-kotlin",
+                LOG_TAG,
                 "Could not get own package info, unable to report build id and display version"
             )
             throw AssertionError("Could not get own package info, aborting init")
@@ -118,6 +122,7 @@ open class GleanInternalAPI internal constructor () {
         // if (isInitialized() && origUploadEnabled != enabled) {
         //     onChangeUploadEnabled(enabled)
         // }
+        Log.e(LOG_TAG, "setUploadEnabled is a stub")
         // TODO: stub
     }
 
@@ -125,6 +130,7 @@ open class GleanInternalAPI internal constructor () {
      * Get whether or not Glean is allowed to record and upload data.
      */
     fun getUploadEnabled(): Boolean {
+        Log.e(LOG_TAG, "getUploadEnabled is a stub")
         // TODO: stub
         return false
     }

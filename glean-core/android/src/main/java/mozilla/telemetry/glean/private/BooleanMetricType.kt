@@ -11,11 +11,11 @@ import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.RustError
 
 class BooleanMetricType(
-        disabled: Boolean,
-        category: String,
-        lifetime: Lifetime,
-        name: String,
-        val sendInPings: List<String>)
+    disabled: Boolean,
+    category: String,
+    lifetime: Lifetime,
+    name: String,
+    val sendInPings: List<String>)
 {
     private var handle: Long
 
@@ -55,7 +55,7 @@ class BooleanMetricType(
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun testHasValue(pingName: String = sendInPings.first()): Boolean {
-        // TODO
+        assert(false, { "Testing API not implementated for BooleanMetricType" })
         return false
     }
 
@@ -71,7 +71,7 @@ class BooleanMetricType(
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun testGetValue(pingName: String = sendInPings.first()): Boolean {
-        // TODO
+        assert(false, { "Testing API not implementated for BooleanMetricType" })
         return false
     }
 }

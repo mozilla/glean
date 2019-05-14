@@ -30,14 +30,9 @@ class StringMetricType(
     name: String,
     val sendInPings: List<String>
 ) {
-
-    //private val logger = Logger("glean/StringMetricType")
-
     private var handle: Long
 
     init {
-        println("New String: $category.$name")
-
         val e = RustError.ByReference()
         val ffiPingsList = StringArray(sendInPings.toTypedArray(), "utf-8")
         this.handle = LibGleanFFI.INSTANCE.glean_new_string_metric(
@@ -88,6 +83,7 @@ class StringMetricType(
         Dispatchers.API.assertInTestingMode()
 
         return StringsStorageEngine.getSnapshot(pingName, false)?.get(identifier) != null*/
+        assert(false, { "Testing API not implementated for StringMetricType" })
         return false
     }
 
@@ -107,6 +103,7 @@ class StringMetricType(
         Dispatchers.API.assertInTestingMode()
 
         return StringsStorageEngine.getSnapshot(pingName, false)!![identifier]!!*/
+        assert(false, { "Testing API not implementated for StringMetricType" })
         return "asd"
     }
 }

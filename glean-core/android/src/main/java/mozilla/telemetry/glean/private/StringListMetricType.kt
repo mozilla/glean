@@ -4,6 +4,7 @@
 
 package mozilla.telemetry.glean.private
 
+import android.util.Log
 import androidx.annotation.VisibleForTesting
 
 class StringListMetricType(
@@ -13,6 +14,9 @@ class StringListMetricType(
     name: String,
     val sendInPings: List<String>
 ) {
+    companion object {
+        val LOG_TAG: String = "glean/StringListMetricType"
+    }
 
     /**
      * Appends a string value to one or more string list metric stores.  If the string exceeds the
@@ -35,6 +39,7 @@ class StringListMetricType(
         //     )
         // }
         // TODO: stub
+        Log.e(LOG_TAG, "StringListMetricType is a stub")
     }
 
     /**
@@ -57,6 +62,7 @@ class StringListMetricType(
         //     )
         // }
         // TODO: stub
+        Log.e(LOG_TAG, "StringListMetricType is a stub")
     }
 
     /**
@@ -76,6 +82,7 @@ class StringListMetricType(
 
         // return StringListsStorageEngine.getSnapshot(pingName, false)?.get(identifier) != null
         // TODO: stub
+        assert(false, { "Testing API not implementated for StringListMetricType" })
         return false
     }
 
@@ -95,6 +102,7 @@ class StringListMetricType(
         // Dispatchers.API.assertInTestingMode()
 
         // return StringListsStorageEngine.getSnapshot(pingName, false)!![identifier]!!
+        assert(false, { "Testing API not implementated for StringListMetricType" })
         return listOf("FOO", "BAR")
     }
 }

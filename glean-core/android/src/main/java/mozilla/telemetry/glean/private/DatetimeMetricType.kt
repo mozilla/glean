@@ -4,6 +4,7 @@
 
 package mozilla.telemetry.glean.private
 
+import android.util.Log
 import androidx.annotation.VisibleForTesting
 // import mozilla.components.service.glean.Dispatchers
 // import mozilla.components.service.glean.storages.DatetimesStorageEngine
@@ -29,6 +30,10 @@ class DatetimeMetricType(
 
     // private val logger = Logger("glean/DatetimeMetricType")
 
+    companion object {
+        private val LOG_TAG: String = "glean/DatetimeMetricType"
+    }
+
     /**
      * Set a datetime value, truncating it to the metric's resolution.
      *
@@ -47,6 +52,7 @@ class DatetimeMetricType(
                 value
             )
         }*/
+        Log.e(LOG_TAG, "DatetimeMetricType.set is a stub")
     }
 
     /**
@@ -72,6 +78,7 @@ class DatetimeMetricType(
                 value
             )
         }*/
+        Log.e(LOG_TAG, "DatetimeMetricType.set is a stub")
     }
 
     /**
@@ -90,6 +97,7 @@ class DatetimeMetricType(
         Dispatchers.API.assertInTestingMode()
 
         return DatetimesStorageEngine.getSnapshot(pingName, false)?.get(identifier) != null*/
+        assert(false, { "Testing API is not implemented for DatetimeMetricType" })
         return false
     }
 
@@ -133,6 +141,7 @@ class DatetimeMetricType(
         Dispatchers.API.assertInTestingMode()
 
         return parseISOTimeString(DatetimesStorageEngine.getSnapshot(pingName, false)!![identifier]!!)!!*/
+        assert(false, { "Testing API is not implemented for DatetimeMetricType" })
         return Date()
     }
 }

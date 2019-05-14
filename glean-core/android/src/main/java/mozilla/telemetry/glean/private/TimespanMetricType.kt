@@ -4,6 +4,7 @@
 
 package mozilla.telemetry.glean.private
 
+import android.util.Log
 import androidx.annotation.VisibleForTesting
 //import mozilla.components.service.glean.Dispatchers
 //import mozilla.components.service.glean.storages.TimespansStorageEngine
@@ -26,8 +27,9 @@ class TimespanMetricType(
     val sendInPings: List<String>,
     timeUnit: TimeUnit
 ) {
-
-    // private val logger = Logger("glean/TimespanMetricType")
+    companion object {
+        val LOG_TAG: String = "glean/TimespanMetricType"
+    }
 
     /**
      * Start tracking time for the provided metric and associated object. This
@@ -45,6 +47,7 @@ class TimespanMetricType(
         }
 
         TimingManager.start(this, timerId)*/
+        Log.e(LOG_TAG, "TimespanMetricType.start is a stub")
     }
 
     /**
@@ -67,6 +70,7 @@ class TimespanMetricType(
                 TimespansStorageEngine.sum(this@TimespanMetricType, timeUnit, elapsedNanos)
             }
         }*/
+        Log.e(LOG_TAG, "TimespanMetricType.start is a stub")
     }
 
     /**
@@ -82,6 +86,7 @@ class TimespanMetricType(
         }
 
         TimingManager.cancel(this, timerId)*/
+        Log.e(LOG_TAG, "TimespanMetricType.start is a stub")
     }
 
     /**
@@ -94,6 +99,7 @@ class TimespanMetricType(
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun testHasValue(pingName: String = sendInPings.first()): Boolean {
+        assert(false, { "Testing API not implemented for TimespanMetricType" })
         return false //TimespansStorageEngine.getSnapshot(pingName, false)?.get(identifier) != null
     }
 
@@ -108,6 +114,7 @@ class TimespanMetricType(
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun testGetValue(pingName: String = sendInPings.first()): Long {
+        assert(false, { "Testing API not implemented for TimespanMetricType" })
         return 0L // TimespansStorageEngine.getSnapshot(pingName, false)!![identifier]!!
     }
 }

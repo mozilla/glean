@@ -4,8 +4,6 @@
 
 package mozilla.telemetry.glean.private
 
-import mozilla.telemetry.glean.Glean
-
 /**
  * Enumeration of different metric lifetimes.
  */

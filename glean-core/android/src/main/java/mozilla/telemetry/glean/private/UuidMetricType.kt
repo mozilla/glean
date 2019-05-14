@@ -4,6 +4,7 @@
 
 package mozilla.telemetry.glean.private
 
+import android.util.Log
 import androidx.annotation.VisibleForTesting
 // import mozilla.components.service.glean.Dispatchers
 import java.util.UUID
@@ -18,8 +19,9 @@ class UuidMetricType(
     name: String,
     val sendInPings: List<String>
 ) {
-
-    // private val logger = Logger("glean/UuidMetricType")
+    companion object {
+        val LOG_TAG: String = "glean/UuidMetricType"
+    }
 
     /**
      * Generate a new UUID value and set it in the metric store.
@@ -57,6 +59,7 @@ class UuidMetricType(
                 value = value
             )
         }*/
+        Log.e(LOG_TAG, "UuidMetricType.set is a stub")
     }
 
     /**
@@ -75,6 +78,7 @@ class UuidMetricType(
         Dispatchers.API.assertInTestingMode()
 
         return UuidsStorageEngine.getSnapshot(pingName, false)?.get(identifier) != null*/
+        assert(false, { "Testing API not implemented for UuidMetricType" })
         return false
     }
 
@@ -94,6 +98,7 @@ class UuidMetricType(
         Dispatchers.API.assertInTestingMode()
 
         return UuidsStorageEngine.getSnapshot(pingName, false)!![identifier]!!*/
+        assert(false, { "Testing API not implemented for UuidMetricType" })
         return UUID.randomUUID()
     }
 }
