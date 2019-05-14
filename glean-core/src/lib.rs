@@ -105,7 +105,9 @@ impl Glean {
     }
 
     pub fn snapshot(&mut self, store_name: &str, clear_store: bool) -> String {
-        StorageManager.snapshot(&self.storage(), store_name, clear_store)
+        StorageManager
+            .snapshot(&self.storage(), store_name, clear_store)
+            .unwrap_or_else(|| String::from(""))
     }
 
     fn make_path(&self, ping_name: &str, doc_id: &str) -> String {
@@ -130,9 +132,17 @@ impl Glean {
         let ping_maker = PingMaker::new();
         let doc_id = Uuid::new_v4().to_string();
         let url_path = self.make_path(ping_name, &doc_id);
-        let ping_content =
-            ::serde_json::to_string_pretty(&ping_maker.collect(self.storage(), ping_name))
-                .expect("Pretty-printing JSON into a string should always work");
+        let ping_content = match ping_maker.collect_string(self.storage(), ping_name) {
+            None => {
+                log::info!(
+                    "No content for ping '{}', therefore no ping queued.",
+                    ping_name
+                );
+                return Ok(());
+            }
+            Some(content) => content,
+        };
+
         // FIXME: Logging ping content for now.  Eventually this should be controlled by a flag
         log::info!("{}", ping_content);
         ping_maker.store_ping(&doc_id, &self.get_data_path(), &url_path, &ping_content)?;

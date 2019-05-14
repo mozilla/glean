@@ -15,10 +15,14 @@ use crate::Lifetime;
 pub struct StorageManager;
 
 impl StorageManager {
-    pub fn snapshot(&self, storage: &Database, store_name: &str, clear_store: bool) -> String {
-        let data = self.snapshot_as_json(storage, store_name, clear_store);
-        ::serde_json::to_string_pretty(&data)
-            .expect("Pretty-printing JSON into a string should always work")
+    pub fn snapshot(
+        &self,
+        storage: &Database,
+        store_name: &str,
+        clear_store: bool,
+    ) -> Option<String> {
+        self.snapshot_as_json(storage, store_name, clear_store)
+            .map(|data| ::serde_json::to_string_pretty(&data).unwrap())
     }
 
     pub fn snapshot_as_json(
@@ -26,7 +30,7 @@ impl StorageManager {
         storage: &Database,
         store_name: &str,
         clear_store: bool,
-    ) -> JsonValue {
+    ) -> Option<JsonValue> {
         let mut snapshot: HashMap<&str, HashMap<String, JsonValue>> = HashMap::new();
 
         let mut snapshotter = |metric_name: &[u8], metric: &Metric| {
@@ -45,6 +49,6 @@ impl StorageManager {
             storage.clear_ping_lifetime_storage(store_name);
         }
 
-        json!(snapshot)
+        Some(json!(snapshot))
     }
 }

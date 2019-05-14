@@ -52,7 +52,6 @@ impl PingMaker {
     }
 
     fn get_client_info(&self, storage: &Database) -> JsonValue {
-        let client_info = StorageManager.snapshot_as_json(storage, "glean_client_info", true);
         // Add the "telemetry_sdk_build", which is the glean-core version.
         let version = env!("CARGO_PKG_VERSION");
         let mut map = json!({
@@ -60,35 +59,42 @@ impl PingMaker {
         });
 
         // Flatten the whole thing.
-        let client_info_obj = client_info
-            .as_object()
-            .expect("Storage manager should guarantee an object for client_info");
-        for (_key, value) in client_info_obj {
-            merge(&mut map, value);
-        }
+        if let Some(client_info) =
+            StorageManager.snapshot_as_json(storage, "glean_client_info", true)
+        {
+            let client_info_obj = client_info.as_object().unwrap(); // safe, snapshot always returns an object.
+            for (_key, value) in client_info_obj {
+                merge(&mut map, value);
+            }
+        };
 
         json!(map)
     }
 
-    pub fn collect(&self, storage: &Database, storage_name: &str) -> JsonValue {
+    pub fn collect(&self, storage: &Database, storage_name: &str) -> Option<JsonValue> {
         info!("Collecting {}", storage_name);
 
-        let metrics_data = StorageManager.snapshot_as_json(storage, storage_name, true);
+        let metrics_data = match StorageManager.snapshot_as_json(storage, storage_name, true) {
+            None => {
+                info!("Storage for {} empty. Bailing out.", storage_name);
+                return None;
+            }
+            Some(data) => data,
+        };
 
         let ping_info = self.get_ping_info(storage_name);
         let client_info = self.get_client_info(storage);
 
-        json!({
+        Some(json!({
             "ping_info": ping_info,
             "client_info": client_info,
             "metrics": metrics_data,
-        })
+        }))
     }
 
-    pub fn collect_string(&self, storage: &Database, storage_name: &str) -> String {
-        let ping = self.collect(storage, storage_name);
-        ::serde_json::to_string_pretty(&ping)
-            .expect("Pretty-printing JSON into a string should always work")
+    pub fn collect_string(&self, storage: &Database, storage_name: &str) -> Option<String> {
+        self.collect(storage, storage_name)
+            .map(|ping| ::serde_json::to_string_pretty(&ping).unwrap())
     }
 
     fn get_pings_dir(&self, data_path: &Path) -> std::io::Result<PathBuf> {
