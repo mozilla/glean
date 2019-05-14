@@ -161,7 +161,6 @@ detekt {
     toolVersion = "1.0.0-RC14"
     input = files("${projectDir}/glean-core", "${projectDir}/samples/android", "buildSrc")
     filters = ".*test.*,.*/resources/.*,.*/tmp/.*,.*/build/.*"
-    config = files("${projectDir}/.detekt.yml")
     failFast = false
     reports {
         xml.enabled = false
