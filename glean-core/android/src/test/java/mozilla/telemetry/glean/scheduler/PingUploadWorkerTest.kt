@@ -1,12 +1,12 @@
-package mozilla.components.service.glean.scheduler
+package mozilla.telemetry.glean.scheduler
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.work.BackoffPolicy
 import androidx.work.NetworkType
 import androidx.work.WorkerParameters
-import mozilla.components.service.glean.config.Configuration
-import mozilla.components.service.glean.resetGlean
+import mozilla.telemetry.glean.config.Configuration
+import mozilla.telemetry.glean.resetGlean
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test

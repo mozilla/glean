@@ -7,15 +7,15 @@ package mozilla.telemetry.glean
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import org.junit.Assert.assertEquals
-import org.junit.Test
 import org.junit.Before
+import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.io.File
+import java.util.concurrent.TimeUnit
 
 @RunWith(RobolectricTestRunner::class)
 class GleanTest {
-
     @Before
     fun setUp() {
         resetGlean()
@@ -23,11 +23,25 @@ class GleanTest {
 
     @Test
     fun `send a ping`() {
+        val server = getMockWebServer()
         val context: Context = ApplicationProvider.getApplicationContext()
-        val pingPath = File(context.applicationInfo.dataDir, "glean_data/pings")
+        resetGlean(context, Glean.configuration.copy(
+            serverEndpoint = "http://" + server.hostName + ":" + server.port,
+            logPings = true
+        ))
 
         Glean.handleBackgroundEvent()
+        // Make sure the file is on the disk
+        val pingPath = File(context.applicationInfo.dataDir, "glean_data/pings")
         // Only the baseline ping should have been written
         assertEquals(1, pingPath.listFiles()?.size)
+
+        // Now trigger it to upload
+        triggerWorkManager()
+
+        val requests: MutableMap<String, String> = mutableMapOf()
+        val request = server.takeRequest(20L, TimeUnit.SECONDS)
+        val docType = request.path.split("/")[3]
+        assertEquals("baseline", docType)
     }
 }

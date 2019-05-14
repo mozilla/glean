@@ -14,7 +14,7 @@
     android:gravity="center"
     android:orientation="vertical"
     android:padding="10dp"
-    tools:context="org.mozilla.samples.glean_rs.MainActivity">
+    tools:context="org.mozilla.samples.gleancore.MainActivity">
 
     <!-- This is a dummy linear layout to capture focus and prevent the keyboard from popping
         when the app first launches.  This is a known issue of linear layouts and a common

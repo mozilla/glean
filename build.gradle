@@ -8,12 +8,12 @@
 
 buildscript {
     ext.kotlin_version = '1.3.31'
-    ext.android_components_version = '0.50.0'
+    ext.android_components_version = '0.52.0'
     ext.jna_version = '5.2.0'
 
     ext.build = [
-        compileSdkVersion: 27,
-        targetSdkVersion: 27,
+        compileSdkVersion: 28,
+        targetSdkVersion: 28,
         minSdkVersion: 21, // So that we can publish for aarch64.
     ]
 

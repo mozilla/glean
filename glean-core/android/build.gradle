@@ -33,6 +33,9 @@ android {
         minSdkVersion rootProject.ext.build['minSdkVersion']
         targetSdkVersion rootProject.ext.build['targetSdkVersion']
 
+        // TODO: 1551691 Get the version from git tag...? Also, we need to select a
+        // version that won't conflict with legacy glean-ac versions.
+        buildConfigField("String", "LIBRARY_VERSION", "\"0.1\"")
         buildConfigField("String", "GLEAN_PING_SCHEMA_URL", "\"" + GLEAN_PING_SCHEMA_URL + "\"")
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -118,6 +121,9 @@ android {
 }
 
 dependencies {
+    api "org.mozilla.components:concept-fetch:$android_components_version"
+    implementation "org.mozilla.components:lib-fetch-httpurlconnection:$android_components_version"
+
     jnaForTest "net.java.dev.jna:jna:$jna_version@jar"
     implementation "net.java.dev.jna:jna:$jna_version@aar"
 
@@ -125,6 +131,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.2.1"
 
     implementation "androidx.annotation:annotation:1.0.2"
+    implementation "androidx.work:work-runtime-ktx:2.0.0"
 
     // For reasons unknown, resolving the jnaForTest configuration directly
     // trips a nasty issue with the Android-Gradle plugin 3.2.1, like `Cannot
@@ -138,6 +145,10 @@ dependencies {
     testImplementation 'org.robolectric:robolectric:4.2.1'
     testImplementation 'org.mockito:mockito-core:2.24.5'
     testImplementation 'androidx.test:core-ktx:1.1.0'
+    testImplementation 'com.squareup.okhttp3:mockwebserver:3.10.0'
+    testImplementation "org.mozilla.components:lib-fetch-okhttp:$android_components_version"
+    testImplementation "org.mozilla.components:support-test:$android_components_version"
+    testImplementation "androidx.work:work-testing:2.0.0"
 
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'

@@ -9,13 +9,15 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.annotation.VisibleForTesting
+import mozilla.telemetry.glean.config.Configuration
 import mozilla.telemetry.glean.utils.getLocaleTag
 import java.io.File
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.MetricHandle
 import mozilla.telemetry.glean.rust.RustError
-import org.mozilla.gleancore.GleanMetrics.GleanBaseline
-import org.mozilla.gleancore.GleanMetrics.GleanInternalMetrics
+import mozilla.telemetry.glean.GleanMetrics.GleanBaseline
+import mozilla.telemetry.glean.GleanMetrics.GleanInternalMetrics
+import mozilla.telemetry.glean.scheduler.PingUploadWorker
 
 open class GleanInternalAPI internal constructor () {
     companion object {
@@ -25,21 +27,25 @@ open class GleanInternalAPI internal constructor () {
     // `internal` so this can be modified for testing
     internal var handle: MetricHandle = 0L
 
+    internal lateinit var configuration: Configuration
+
+    private lateinit var gleanDataDir: File
+
     /**
      * Initialize glean.
      *
      * This should only be initialized once by the application, and not by
      * libraries using glean.
      */
-    fun initialize(applicationContext: Context) {
-        val dataDir = File(applicationContext.applicationInfo.dataDir, "glean_data")
-        Log.i(LOG_TAG, "data dir: $dataDir")
-
+    fun initialize(applicationContext: Context, configuration: Configuration = Configuration()) {
         if (isInitialized()) {
             return
         }
 
-        handle = LibGleanFFI.INSTANCE.glean_initialize(dataDir.path, applicationContext.packageName)
+        this.configuration = configuration
+
+        this.gleanDataDir = File(applicationContext.applicationInfo.dataDir, "glean_data")
+        handle = LibGleanFFI.INSTANCE.glean_initialize(this.gleanDataDir.path, applicationContext.packageName)
 
         // TODO: on glean-legacy we perform other actions before initialize the metrics (e.g.
         // init the engines), then init the core metrics, and finally kick off the metrics
@@ -135,6 +141,13 @@ open class GleanInternalAPI internal constructor () {
         return false
     }
 
+    /**
+     * Get the data directory for glean.
+     */
+    internal fun getDataDir(): File {
+        return this.gleanDataDir
+    }
+
     fun collect(pingName: String) {
         val s = LibGleanFFI.INSTANCE.glean_ping_collect(handle, pingName)!!
         LibGleanFFI.INSTANCE.glean_str_free(s)
@@ -150,6 +163,8 @@ open class GleanInternalAPI internal constructor () {
 
     private fun sendPing(pingName: String) {
         LibGleanFFI.INSTANCE.glean_send_ping(handle, pingName)
+        // TODO: 1551692 Only do this when ping content was actually queued
+        PingUploadWorker.enqueueWorker()
     }
 
     /**

@@ -6,7 +6,7 @@ package org.mozilla.samples.gleancore
 
 import android.os.Bundle
 import android.util.Log
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import mozilla.telemetry.glean.Glean
 import org.mozilla.samples.gleancore.GleanMetrics.Test

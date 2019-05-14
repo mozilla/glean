@@ -8,9 +8,8 @@ import android.content.Context
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import androidx.test.core.app.ApplicationProvider
-/*import androidx.work.WorkInfo
+import androidx.work.WorkInfo
 import androidx.work.WorkManager
-import androidx.work.testing.WorkManagerTestInitHelper
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import mozilla.components.concept.fetch.Client
@@ -18,17 +17,17 @@ import mozilla.components.concept.fetch.Headers
 import mozilla.components.concept.fetch.MutableHeaders
 import mozilla.components.concept.fetch.Request
 import mozilla.components.concept.fetch.Response
-import mozilla.components.service.glean.config.Configuration
-import mozilla.components.service.glean.firstrun.FileFirstRunDetector
-import mozilla.components.service.glean.ping.PingMaker
-import mozilla.components.service.glean.private.PingType
-import mozilla.components.service.glean.scheduler.PingUploadWorker
-import mozilla.components.service.glean.storages.ExperimentsStorageEngine
-import mozilla.components.service.glean.storages.StorageEngineManager*/
 import org.json.JSONObject
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito
-import org.mozilla.gleancore.BuildConfig
+import mozilla.telemetry.glean.config.Configuration
+import mozilla.telemetry.glean.scheduler.PingUploadWorker
+import okhttp3.mockwebserver.Dispatcher
+import okhttp3.mockwebserver.MockResponse
+import okhttp3.mockwebserver.MockWebServer
+import okhttp3.mockwebserver.RecordedRequest
+import org.junit.Assert
+import java.util.concurrent.ExecutionException
 
 /**
  * Checks ping content against the Glean ping schema.
@@ -115,7 +114,7 @@ internal fun checkPingSchema(content: String): JSONObject {
  */
 internal fun resetGlean(
     context: Context = ApplicationProvider.getApplicationContext(),
-    // config: Configuration = Configuration(),
+    config: Configuration = Configuration(),
     clearStores: Boolean = true
 ) {
     Glean.enableTestingMode()
@@ -139,7 +138,7 @@ internal fun resetGlean(
     // Init Glean.
     // Glean.setUploadEnabled(true)
     Glean.testDestroyGleanHandle()
-    Glean.initialize(context) // , config)
+    Glean.initialize(context, config)
 }
 
 /**
@@ -169,7 +168,7 @@ internal fun getContextWithMockedInfo(): Context {
  * @param tag a string representing the worker tag
  * @return True if the task found in [WorkManager], false otherwise
  */
-/*internal fun isWorkScheduled(tag: String): Boolean {
+internal fun isWorkScheduled(tag: String): Boolean {
     val instance = WorkManager.getInstance()
     val statuses = instance.getWorkInfosByTag(tag)
     try {
@@ -187,7 +186,7 @@ internal fun getContextWithMockedInfo(): Context {
     }
 
     return false
-}*/
+}
 
 /**
  * Wait for a specifically tagged [WorkManager]'s Worker to be enqueued.
@@ -195,7 +194,7 @@ internal fun getContextWithMockedInfo(): Context {
  * @param workTag the tag of the expected Worker
  * @param timeoutMillis how log before stopping the wait. This defaults to 5000ms (5 seconds).
  */
-/*internal fun waitForEnqueuedWorker(workTag: String, timeoutMillis: Long = 5000) = runBlocking {
+internal fun waitForEnqueuedWorker(workTag: String, timeoutMillis: Long = 5000) = runBlocking {
     runBlocking {
         withTimeout(timeoutMillis) {
             do {
@@ -205,14 +204,14 @@ internal fun getContextWithMockedInfo(): Context {
             } while (true)
         }
     }
-}*/
+}
 
 /**
  * Helper function to simulate WorkManager being triggered since there appears to be a bug in
  * the current WorkManager test utilites that prevent it from being triggered by a test.  Once this
  * is fixed, the contents of this can be amended to trigger WorkManager directly.
  */
-/*internal fun triggerWorkManager() {
+internal fun triggerWorkManager() {
     // Check that the work is scheduled
     Assert.assertTrue("A scheduled PingUploadWorker must exist",
         isWorkScheduled(PingUploadWorker.PING_WORKER_TAG))
@@ -220,12 +219,12 @@ internal fun getContextWithMockedInfo(): Context {
     // Since WorkManager does not properly run in tests, simulate the work being done
     // We also assertTrue here to ensure that uploadPings() was successful
     Assert.assertTrue("Upload Pings must return true", PingUploadWorker.uploadPings())
-}*/
+}
 
 /**
  * This is a helper class to facilitate testing of ping tagging
  */
-/*internal class TestPingTagClient(
+internal class TestPingTagClient(
     private val responseUrl: String = Configuration.DEFAULT_DEBUGVIEW_ENDPOINT,
     private val responseStatus: Int = 200,
     private val responseHeaders: Headers = MutableHeaders(),
@@ -245,4 +244,18 @@ internal fun getContextWithMockedInfo(): Context {
             request.headers ?: responseHeaders,
             responseBody)
     }
-}*/
+}
+
+/**
+ * Create a mock webserver that accepts all requests.
+ * @return a [MockWebServer] instance
+ */
+internal fun getMockWebServer(): MockWebServer {
+    val server = MockWebServer()
+    server.setDispatcher(object : Dispatcher() {
+        override fun dispatch(request: RecordedRequest): MockResponse {
+            return MockResponse().setBody("OK")
+        }
+    })
+    return server
+}

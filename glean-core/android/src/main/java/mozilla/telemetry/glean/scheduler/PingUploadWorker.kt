@@ -2,7 +2,7 @@
 * License, v. 2.0. If a copy of the MPL was not distributed with this
 * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package mozilla.components.service.glean.scheduler
+package mozilla.telemetry.glean.scheduler
 
 import android.content.Context
 import androidx.annotation.VisibleForTesting
@@ -14,8 +14,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import mozilla.components.service.glean.Glean
-import mozilla.components.service.glean.net.HttpPingUploader
+import mozilla.telemetry.glean.net.HttpPingUploader
 
 /**
  * This class is the worker class used by [WorkManager] to handle uploading the ping to the server.
@@ -64,7 +63,7 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
          */
         internal fun uploadPings(): Boolean {
             val httpPingUploader = HttpPingUploader()
-            return Glean.pingStorageEngine.process(httpPingUploader::upload)
+            return httpPingUploader.process(httpPingUploader::upload)
         }
     }
 

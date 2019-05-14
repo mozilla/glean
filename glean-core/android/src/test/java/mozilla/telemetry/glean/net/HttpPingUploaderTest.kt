@@ -9,12 +9,13 @@ import mozilla.components.concept.fetch.Request
 import mozilla.components.concept.fetch.Response
 import mozilla.components.lib.fetch.httpurlconnection.HttpURLConnectionClient
 import mozilla.components.lib.fetch.okhttp.OkHttpClient
-import mozilla.components.service.glean.BuildConfig
-import mozilla.components.service.glean.TestPingTagClient
-import mozilla.components.service.glean.config.Configuration
-import mozilla.components.service.glean.getMockWebServer
+import mozilla.telemetry.glean.BuildConfig
+import mozilla.telemetry.glean.TestPingTagClient
+import mozilla.telemetry.glean.config.Configuration
+import mozilla.telemetry.glean.getMockWebServer
 import mozilla.components.support.test.any
 import mozilla.components.support.test.mock
+import mozilla.telemetry.glean.net.HttpPingUploader
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue

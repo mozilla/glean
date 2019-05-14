@@ -2,14 +2,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package mozilla.components.service.glean.config
+package mozilla.telemetry.glean.config
 
 import mozilla.components.concept.fetch.Client
 import mozilla.components.lib.fetch.httpurlconnection.HttpURLConnectionClient
-import mozilla.components.service.glean.BuildConfig
+import mozilla.telemetry.glean.BuildConfig
 
 /**
- * The Configuration class describes how to configure the Glean.
+ * The Configuration class describes how to configure Glean.
  *
  * @property serverEndpoint the server pings are sent to. Please note that this is
  *           is only meant to be changed for tests.

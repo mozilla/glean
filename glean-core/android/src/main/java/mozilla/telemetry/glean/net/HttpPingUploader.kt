@@ -2,8 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package mozilla.components.service.glean.net
+package mozilla.telemetry.glean.net
 
+import android.util.Log
 import androidx.annotation.VisibleForTesting
 import androidx.annotation.VisibleForTesting.PRIVATE
 import mozilla.components.concept.fetch.Client
@@ -11,9 +12,8 @@ import mozilla.components.concept.fetch.MutableHeaders
 import mozilla.components.concept.fetch.Request
 import mozilla.components.concept.fetch.isClientError
 import mozilla.components.concept.fetch.isSuccess
-import mozilla.components.service.glean.BuildConfig
-import mozilla.components.service.glean.config.Configuration
-import mozilla.components.support.base.log.logger.Logger
+import mozilla.telemetry.glean.BuildConfig
+import mozilla.telemetry.glean.config.Configuration
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
@@ -23,8 +23,10 @@ import java.util.concurrent.TimeUnit
  * A simple ping Uploader, which implements a "send once" policy, never
  * storing or attempting to send the ping again.
  */
-internal class HttpPingUploader : PingUploader {
-    private val logger = Logger("glean/HttpPingUploader")
+internal open class HttpPingUploader : PingUploader {
+    companion object {
+        val LOG_TAG: String = "glean/HttpPingUploader"
+    }
 
     /**
      * Log the contents of a ping to the console, if configured to do so in
@@ -41,9 +43,9 @@ internal class HttpPingUploader : PingUploader {
                 val json = JSONObject(data)
                 val indented = json.toString(2)
 
-                logger.debug("Glean ping to URL: $path\n$indented")
+                Log.d(LOG_TAG, "Glean ping to URL: $path\n$indented")
             } catch (e: JSONException) {
-                logger.debug("Exception parsing ping as JSON: $e") // $COVERAGE-IGNORE$
+                Log.d(LOG_TAG, "Exception parsing ping as JSON: $e") // $COVERAGE-IGNORE$
             }
         }
     }
@@ -70,7 +72,7 @@ internal class HttpPingUploader : PingUploader {
         return try {
             performUpload(config.httpClient.value, request)
         } catch (e: IOException) {
-            logger.warn("IOException while uploading ping", e)
+            Log.w(LOG_TAG, "IOException while uploading ping", e)
             false
         }
     }
@@ -115,7 +117,7 @@ internal class HttpPingUploader : PingUploader {
 
     @Throws(IOException::class)
     internal fun performUpload(client: Client, request: Request): Boolean {
-        logger.debug("Submitting ping to: ${request.url}")
+        Log.d(LOG_TAG, "Submitting ping to: ${request.url}")
         client.fetch(request).use { response ->
             when {
                 response.isSuccess -> {
@@ -123,7 +125,7 @@ internal class HttpPingUploader : PingUploader {
                     // 200 - OK. Request accepted into the pipeline.
 
                     // We treat all success codes as successful upload even though we only expect 200.
-                    logger.debug("Ping successfully sent (${response.status})")
+                    Log.d(LOG_TAG, "Ping successfully sent (${response.status})")
                     return true
                 }
 
@@ -139,7 +141,7 @@ internal class HttpPingUploader : PingUploader {
                     // Something our client did is not correct. It's unlikely that the client is going
                     // to recover from this by re-trying again, so we just log and error and report a
                     // successful upload to the service.
-                    logger.error("Server returned client error code ${response.status} for ${request.url}")
+                    Log.e(LOG_TAG, "Server returned client error code ${response.status} for ${request.url}")
                     return true
                 }
 
@@ -148,7 +150,7 @@ internal class HttpPingUploader : PingUploader {
                     // 500 - internal error
 
                     // For all other errors we log a warning an try again at a later time.
-                    logger.warn("Server returned response code ${response.status} for ${request.url}")
+                    Log.w(LOG_TAG, "Server returned response code ${response.status} for ${request.url}")
                     return false
                 }
             }
