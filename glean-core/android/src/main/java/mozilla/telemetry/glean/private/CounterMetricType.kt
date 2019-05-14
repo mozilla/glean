@@ -70,7 +70,6 @@ class CounterMetricType(
         }*/
         val e = RustError.ByReference()
         LibGleanFFI.INSTANCE.glean_counter_add(Glean.handle, this.handle, amount.toLong(), e)
-
     }
 
     /**

@@ -8,7 +8,7 @@ import android.util.Log
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
-import mozilla.components.service.glean.utils.getLocaleTag
+import mozilla.telemetry.glean.utils.getLocaleTag
 import java.io.File
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.MetricHandle
@@ -17,6 +17,10 @@ import org.mozilla.glean_rs.GleanMetrics.GleanBaseline
 import org.mozilla.glean_rs.GleanMetrics.GleanInternalMetrics
 
 open class GleanInternalAPI internal constructor () {
+    companion object {
+        private val LOG_TAG: String = "glean-kotlin"
+    }
+
     // `internal` so this can be modified for testing
     internal var handle: MetricHandle = 0L
 
@@ -28,7 +32,7 @@ open class GleanInternalAPI internal constructor () {
      */
     fun initialize(applicationContext: Context) {
         val dataDir = File(applicationContext.applicationInfo.dataDir, "glean_data")
-        Log.i("glean-kotlin", "data dir: $dataDir")
+        Log.i(LOG_TAG, "data dir: $dataDir")
 
         if (isInitialized()) {
             return
@@ -90,11 +94,45 @@ open class GleanInternalAPI internal constructor () {
             )
         } catch (e: PackageManager.NameNotFoundException) {
             Log.e(
-                "glean-kotlin",
+                LOG_TAG,
                 "Could not get own package info, unable to report build id and display version"
             )
             throw AssertionError("Could not get own package info, aborting init")
         }
+    }
+
+    /**
+     * Enable or disable Glean collection and upload.
+     *
+     * Metric collection is enabled by default.
+     *
+     * When uploading is disabled, metrics aren't recorded at all and no data
+     * is uploaded.
+     *
+     * When disabling, all pending metrics, events and queued pings are cleared.
+     *
+     * When enabling, the core Glean metrics are recreated.
+     *
+     * @param enabled When true, enable metric collection.
+     */
+    fun setUploadEnabled(enabled: Boolean) {
+        // logger.info("Metrics enabled: $enabled")
+        // val origUploadEnabled = uploadEnabled
+        // uploadEnabled = enabled
+        // if (isInitialized() && origUploadEnabled != enabled) {
+        //     onChangeUploadEnabled(enabled)
+        // }
+        Log.e(LOG_TAG, "setUploadEnabled is a stub")
+        // TODO: stub
+    }
+
+    /**
+     * Get whether or not Glean is allowed to record and upload data.
+     */
+    fun getUploadEnabled(): Boolean {
+        Log.e(LOG_TAG, "getUploadEnabled is a stub")
+        // TODO: stub
+        return false
     }
 
     fun collect(ping_name: String) {
@@ -103,6 +141,9 @@ open class GleanInternalAPI internal constructor () {
         LibGleanFFI.INSTANCE.glean_str_free(s)
     }
 
+    /**
+     * Handle the background event and send the appropriate pings.
+     */
     fun handleBackgroundEvent() {
         sendPing("baseline")
         sendPing("events")

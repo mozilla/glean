@@ -26,7 +26,6 @@ class GleanTest {
         glean.initialize(context)
         glean.handleBackgroundEvent()
         val pingPath = File(context.applicationInfo.dataDir, "glean_data/pings")
-        val path = pingPath.toString()
         assertEquals(2, pingPath.listFiles()?.size)
     }
 }

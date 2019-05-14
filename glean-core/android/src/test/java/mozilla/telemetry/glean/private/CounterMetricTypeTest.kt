@@ -2,11 +2,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+/* This file is based on the tests in the Glean android-components implentation.
+ *
+ * Care should be taken to not reorder elements in this file so it will be easier
+ * to track changes in Glean android-components.
+ */
+
 package mozilla.telemetry.glean.private
 
 //import kotlinx.coroutines.ExperimentalCoroutinesApi
 //import kotlinx.coroutines.ObsoleteCoroutinesApi
-//import mozilla.components.service.glean.resetGlean
+//import mozilla.telemetry.glean.resetGlean
 import mozilla.telemetry.glean.resetGlean
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
