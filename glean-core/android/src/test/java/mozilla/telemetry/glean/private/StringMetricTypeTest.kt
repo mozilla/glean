@@ -57,25 +57,6 @@ class StringMetricTypeTest {
     }
 
     @Test
-    fun `strings with no lifetime must not record data`() {
-        // Define a 'stringMetric' string metric, which will be stored in
-        // "store1". It's disabled so it should not record anything.
-        val stringMetric = StringMetricType(
-            disabled = true,
-            category = "telemetry",
-            lifetime = Lifetime.Ping,
-            name = "stringMetric",
-            sendInPings = listOf("store1")
-        )
-
-        // Attempt to store the string.
-        stringMetric.set("value")
-        // Check that nothing was recorded.
-        assertFalse("Strings must not be recorded if they have no lifetime",
-            stringMetric.testHasValue())
-    }
-
-    @Test
     fun `disabled strings must not record data`() {
         // Define a 'stringMetric' string metric, which will be stored in "store1". It's disabled
         // so it should not record anything.
