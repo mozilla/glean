@@ -92,6 +92,7 @@ pub extern "C" fn glean_new_boolean_metric(
     send_in_pings: RawStringArray,
     send_in_pings_len: i32,
     lifetime: i32,
+    disabled: u8,
 ) -> u64 {
     BOOLEAN_METRICS.insert_with_log(|| {
         let send_in_pings = unsafe { from_raw_string_array(send_in_pings, send_in_pings_len) };
@@ -106,7 +107,7 @@ pub extern "C" fn glean_new_boolean_metric(
             category: category.into_string(),
             send_in_pings,
             lifetime,
-            ..Default::default()
+            disabled: disabled != 0,
         }))
     })
 }
@@ -118,6 +119,7 @@ pub extern "C" fn glean_new_string_metric(
     send_in_pings: RawStringArray,
     send_in_pings_len: i32,
     lifetime: i32,
+    disabled: u8,
 ) -> u64 {
     STRING_METRICS.insert_with_log(|| {
         let send_in_pings = unsafe { from_raw_string_array(send_in_pings, send_in_pings_len) };
@@ -135,7 +137,7 @@ pub extern "C" fn glean_new_string_metric(
             category: category.into_string(),
             send_in_pings,
             lifetime,
-            ..Default::default()
+            disabled: disabled != 0,
         }))
     })
 }
@@ -147,6 +149,7 @@ pub extern "C" fn glean_new_counter_metric(
     send_in_pings: RawStringArray,
     send_in_pings_len: i32,
     lifetime: i32,
+    disabled: u8,
 ) -> u64 {
     COUNTER_METRICS.insert_with_log(|| {
         let send_in_pings = unsafe { from_raw_string_array(send_in_pings, send_in_pings_len) };
@@ -164,7 +167,7 @@ pub extern "C" fn glean_new_counter_metric(
             category: category.into_string(),
             send_in_pings,
             lifetime,
-            ..Default::default()
+            disabled: disabled != 0,
         }))
     })
 }

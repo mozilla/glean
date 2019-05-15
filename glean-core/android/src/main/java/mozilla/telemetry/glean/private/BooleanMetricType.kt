@@ -27,7 +27,8 @@ class BooleanMetricType(
                 name = name,
                 send_in_pings = ffiPingsList,
                 send_in_pings_len = sendInPings.size,
-                lifetime = lifetime.ordinal)
+                lifetime = lifetime.ordinal,
+                disabled = if (disabled) { 1 } else { 0 })
     }
 
     /**

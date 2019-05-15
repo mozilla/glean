@@ -52,7 +52,8 @@ internal interface LibGleanFFI : Library {
         name: String,
         send_in_pings: StringArray,
         send_in_pings_len: Int,
-        lifetime: Int
+        lifetime: Int,
+        disabled: Byte
     ): Long
 
     fun glean_new_counter_metric(
@@ -60,7 +61,8 @@ internal interface LibGleanFFI : Library {
         name: String,
         send_in_pings: StringArray,
         send_in_pings_len: Int,
-        lifetime: Int
+        lifetime: Int,
+        disabled: Byte
     ): Long
 
     fun glean_new_string_metric(
@@ -68,7 +70,8 @@ internal interface LibGleanFFI : Library {
         name: String,
         send_in_pings: StringArray,
         send_in_pings_len: Int,
-        lifetime: Int
+        lifetime: Int,
+        disabled: Byte
     ): Long
 
     fun glean_ping_collect(glean_handle: Long, ping_name: String): Pointer?
