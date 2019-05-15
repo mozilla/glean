@@ -64,7 +64,7 @@ class CounterMetricType(
             LibGleanFFI.INSTANCE.glean_counter_add(
                 Glean.handle,
                 this@CounterMetricType.handle,
-                amount.toLong())
+                amount)
         }
     }
 
@@ -96,10 +96,9 @@ class CounterMetricType(
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun testGetValue(pingName: String = sendInPings.first()): Int {
-        // FIXME(#19): glean-core should give us an int to begin with
         if (!testHasValue(pingName)) {
             throw NullPointerException()
         }
-        return LibGleanFFI.INSTANCE.glean_counter_test_get_value(Glean.handle, this.handle, pingName).toInt()
+        return LibGleanFFI.INSTANCE.glean_counter_test_get_value(Glean.handle, this.handle, pingName)
     }
 }

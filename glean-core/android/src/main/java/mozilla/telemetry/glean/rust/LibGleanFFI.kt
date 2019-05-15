@@ -60,9 +60,9 @@ internal interface LibGleanFFI : Library {
 
     fun glean_boolean_set(glean_handle: Long, metric_id: Long, value: Byte)
 
-    fun glean_counter_add(glean_handle: Long, metric_id: Long, amount: Long)
+    fun glean_counter_add(glean_handle: Long, metric_id: Long, amount: Int)
 
-    fun glean_counter_test_get_value(glean_handle: Long, metric_id: Long, storage_name: String): Long
+    fun glean_counter_test_get_value(glean_handle: Long, metric_id: Long, storage_name: String): Int
 
     fun glean_counter_test_has_value(glean_handle: Long, metric_id: Long, storage_name: String): Byte
 

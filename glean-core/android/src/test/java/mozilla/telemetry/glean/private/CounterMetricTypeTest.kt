@@ -135,4 +135,28 @@ class CounterMetricTypeTest {
         assertTrue(counterMetric.testHasValue("store2"))
         assertEquals(11, counterMetric.testGetValue("store2"))
     }
+
+    @Test
+    fun `negative values are not counted`() {
+        // Define a 'counterMetric' counter metric, which will be stored in "store1"
+        val counterMetric = CounterMetricType(
+            disabled = false,
+            category = "telemetry",
+            lifetime = Lifetime.Application,
+            name = "counter_metric",
+            sendInPings = listOf("store1")
+        )
+
+        // Increment to 1 (initial value)
+        counterMetric.add()
+
+        // Check that the count was incremented
+        assertTrue(counterMetric.testHasValue("store1"))
+        assertEquals(1, counterMetric.testGetValue("store1"))
+
+        counterMetric.add(-10)
+        // Check that count was NOT incremented.
+        assertTrue(counterMetric.testHasValue("store1"))
+        assertEquals(1, counterMetric.testGetValue("store1"))
+    }
 }
