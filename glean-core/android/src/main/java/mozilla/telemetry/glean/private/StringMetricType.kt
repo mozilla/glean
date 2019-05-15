@@ -8,6 +8,7 @@ import androidx.annotation.VisibleForTesting
 import com.sun.jna.StringArray
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.rust.LibGleanFFI
+import mozilla.telemetry.glean.rust.toByte
 
 import mozilla.telemetry.glean.Dispatchers
 // import mozilla.components.service.glean.storages.StringsStorageEngine
@@ -42,7 +43,8 @@ class StringMetricType(
                 name = name,
                 send_in_pings = ffiPingsList,
                 send_in_pings_len = sendInPings.size,
-                lifetime = lifetime.ordinal)
+                lifetime = lifetime.ordinal,
+                disabled = disabled.toByte())
     }
 
     /**

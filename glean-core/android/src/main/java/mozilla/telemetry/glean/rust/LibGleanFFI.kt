@@ -12,6 +12,9 @@ import com.sun.jna.Pointer
 import com.sun.jna.StringArray
 import java.lang.reflect.Proxy
 
+// Turn a boolean into its Byte (u8) representation
+internal fun Boolean.toByte(): Byte = if (this) 1 else 0
+
 @Suppress("TooManyFunctions")
 internal interface LibGleanFFI : Library {
     companion object {
@@ -52,7 +55,8 @@ internal interface LibGleanFFI : Library {
         name: String,
         send_in_pings: StringArray,
         send_in_pings_len: Int,
-        lifetime: Int
+        lifetime: Int,
+        disabled: Byte
     ): Long
 
     fun glean_new_counter_metric(
@@ -60,7 +64,8 @@ internal interface LibGleanFFI : Library {
         name: String,
         send_in_pings: StringArray,
         send_in_pings_len: Int,
-        lifetime: Int
+        lifetime: Int,
+        disabled: Byte
     ): Long
 
     fun glean_new_string_metric(
@@ -68,7 +73,8 @@ internal interface LibGleanFFI : Library {
         name: String,
         send_in_pings: StringArray,
         send_in_pings_len: Int,
-        lifetime: Int
+        lifetime: Int,
+        disabled: Byte
     ): Long
 
     fun glean_ping_collect(glean_handle: Long, ping_name: String): Pointer?

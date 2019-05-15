@@ -78,19 +78,22 @@ uint64_t glean_new_boolean_metric(FfiStr category,
                                   FfiStr name,
                                   RawStringArray send_in_pings,
                                   int32_t send_in_pings_len,
-                                  int32_t lifetime);
+                                  int32_t lifetime,
+                                  uint8_t disabled);
 
 uint64_t glean_new_counter_metric(FfiStr category,
                                   FfiStr name,
                                   RawStringArray send_in_pings,
                                   int32_t send_in_pings_len,
-                                  int32_t lifetime);
+                                  int32_t lifetime,
+                                  uint8_t disabled);
 
 uint64_t glean_new_string_metric(FfiStr category,
                                  FfiStr name,
                                  RawStringArray send_in_pings,
                                  int32_t send_in_pings_len,
-                                 int32_t lifetime);
+                                 int32_t lifetime,
+                                 uint8_t disabled);
 
 char *glean_ping_collect(uint64_t glean_handle, FfiStr ping_name);
 

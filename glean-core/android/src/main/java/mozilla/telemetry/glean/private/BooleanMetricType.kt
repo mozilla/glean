@@ -8,6 +8,7 @@ import androidx.annotation.VisibleForTesting
 import com.sun.jna.StringArray
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.rust.LibGleanFFI
+import mozilla.telemetry.glean.rust.toByte
 
 class BooleanMetricType(
     disabled: Boolean,
@@ -27,7 +28,8 @@ class BooleanMetricType(
                 name = name,
                 send_in_pings = ffiPingsList,
                 send_in_pings_len = sendInPings.size,
-                lifetime = lifetime.ordinal)
+                lifetime = lifetime.ordinal,
+                disabled = disabled.toByte())
     }
 
     /**
@@ -36,7 +38,7 @@ class BooleanMetricType(
      * @param value This is a user defined boolean value.
      */
     fun set(value: Boolean) {
-        LibGleanFFI.INSTANCE.glean_boolean_set(Glean.handle, this.handle, if (value) { 1 } else { 0 })
+        LibGleanFFI.INSTANCE.glean_boolean_set(Glean.handle, this.handle, value.toByte())
     }
 
     /**
