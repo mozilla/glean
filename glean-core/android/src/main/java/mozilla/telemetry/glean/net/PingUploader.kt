@@ -46,7 +46,7 @@ internal interface PingUploader {
      * @return Boolean representing the success of the upload task. This may be the value bubbled up
      *         from the callback, or if there was an error reading the files.
      */
-    fun process(processingCallback: (String, String, Configuration) -> Boolean): Boolean {
+    fun process(): Boolean {
         // This function is from PingsStorageEngine in glean-ac
 
         var success = true
@@ -58,7 +58,7 @@ internal interface PingUploader {
         storageDirectory.listFiles()?.forEach { file ->
             if (file.name.matches(Regex(FILE_PATTERN))) {
                 Log.d(LOG_TAG, "Processing ping: ${file.name}")
-                if (!processFile(file, processingCallback)) {
+                if (!processFile(file)) {
                     Log.e(LOG_TAG, "Error processing ping file: ${file.name}")
                     success = false
                 }
@@ -80,8 +80,7 @@ internal interface PingUploader {
      *
      */
     private fun processFile(
-        file: File,
-        processingCallback: (String, String, Configuration) -> Boolean
+        file: File
     ): Boolean {
         // This function is from PingsStorageEngine in glean-ac
 
@@ -92,7 +91,7 @@ internal interface PingUploader {
                 val serializedPing = it.readLine()
 
                 processed = serializedPing == null ||
-                    processingCallback(path, serializedPing, Glean.configuration)
+                    this.upload(path, serializedPing, Glean.configuration)
             } catch (e: FileNotFoundException) {
                 // This shouldn't happen after we queried the directory.
                 Log.e(LOG_TAG, "Could not find ping file ${file.name}")

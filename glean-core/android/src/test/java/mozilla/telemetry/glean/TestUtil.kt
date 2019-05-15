@@ -10,6 +10,7 @@ import android.content.pm.PackageManager
 import androidx.test.core.app.ApplicationProvider
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import androidx.work.testing.WorkManagerTestInitHelper
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import mozilla.components.concept.fetch.Client
@@ -121,7 +122,7 @@ internal fun resetGlean(
 
     // We're using the WorkManager in a bunch of places, and Glean will crash
     // in tests without this line. Let's simply put it here.
-    // WorkManagerTestInitHelper.initializeTestWorkManager(context)
+    WorkManagerTestInitHelper.initializeTestWorkManager(context)
 
     /* if (clearStores) {
         // Clear all the stored data.

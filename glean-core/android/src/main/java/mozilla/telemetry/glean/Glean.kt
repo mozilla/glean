@@ -32,13 +32,22 @@ open class GleanInternalAPI internal constructor () {
     private lateinit var gleanDataDir: File
 
     /**
-     * Initialize glean.
+     * Initialize Glean.
      *
      * This should only be initialized once by the application, and not by
-     * libraries using glean.
+     * libraries using Glean. A message is logged to error and no changes are made
+     * to the state if initialize is called a more than once.
+     *
+     * A LifecycleObserver will be added to send pings when the application goes
+     * into the background.
+     *
+     * @param applicationContext [Context] to access application features, such
+     * as shared preferences
+     * @param configuration A Glean [Configuration] object with global settings.
      */
     fun initialize(applicationContext: Context, configuration: Configuration = Configuration()) {
         if (isInitialized()) {
+            Log.e(LOG_TAG, "Glean should not be initialized multiple times")
             return
         }
 

@@ -63,7 +63,7 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
          */
         internal fun uploadPings(): Boolean {
             val httpPingUploader = HttpPingUploader()
-            return httpPingUploader.process(httpPingUploader::upload)
+            return httpPingUploader.process()
         }
     }
 
