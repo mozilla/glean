@@ -1,6 +1,6 @@
 [book]
-title = "glean.rs - Cross-platform Telemetry library"
-authors = ["Jan-Erik Rediger", "glean Team"]
+title = "Glean - Cross-platform Telemetry library"
+authors = ["Jan-Erik Rediger", "Glean Team"]
 src = "."
 
 [build]

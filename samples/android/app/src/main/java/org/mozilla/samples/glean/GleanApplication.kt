@@ -8,7 +8,7 @@ import android.app.Application
 import android.util.Log
 import mozilla.telemetry.glean.Glean
 
-private const val TAG = "Glean.rs"
+private const val TAG = "Glean"
 
 class GleanApplication : Application() {
 

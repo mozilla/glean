@@ -1,10 +1,10 @@
-# Contributing to glean.rs
+# Contributing to Glean
 
 Anyone is welcome to help with the Application Services project. Feel free to get in touch with other community members on IRC
 or through issues here on GitHub.
 
 - IRC: `#telemetry` on `irc.mozilla.org`
-- and of course, [the issues list](https://github.com/badboy/glean.rs/issues)
+- and of course, [the issues list](https://github.com/mozilla/glean/issues)
 
 Participation in this project is governed by the
 [Mozilla Community Participation Guidelines](https://www.mozilla.org/en-US/about/governance/policies/participation/).
@@ -28,7 +28,7 @@ cargo test --all
 ```
 
 If you plan to work on the Android component bindings, you should also review
-the instructions for [setting up an Android build environment](https://github.com/badboy/glean.rs/blob/master/docs/dev/setup-android-build-environment.md)
+the instructions for [setting up an Android build environment](https://github.com/mozilla/glean/blob/master/docs/dev/setup-android-build-environment.md)
 
 ## Sending Pull Requests ##
 

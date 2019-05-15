@@ -1,4 +1,4 @@
-# glean.rs
+# Glean
 
 ![Glean logo](docs/glean.jpeg)
 
@@ -23,12 +23,12 @@ The code is organized as follows:
 * [./glean-core/android](glean-core/android) contains the Kotlin bindings for use by Android applications.
 * [./glean-core/ios](glean-core/ios) contains the Swift bindings for use by iOS applications.
 
-This repository also hosts the [documentation](docs) for `glean.rs`
+This repository also hosts the [documentation](docs) for `Glean`
 Development documenation can be found in [./docs/dev](docs/dev).
 User-facing documentation can be found in [./docs/user](docs/user).
-[Everything is available online](https://badboy.github.com/glean.rs).
+[Everything is available online](https://mozilla.github.com/glean).
 
-The Rust documentation is available [online as well](https://badboy.github.com/glean.rs/docs).
+The Rust documentation is available [online as well](https://mozilla.github.com/glean/docs).
 
 ## License
 

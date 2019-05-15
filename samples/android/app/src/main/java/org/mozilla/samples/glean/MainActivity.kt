@@ -11,7 +11,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import mozilla.telemetry.glean.Glean
 import org.mozilla.samples.gleancore.GleanMetrics.Test
 
-private const val TAG = "Glean.rs"
+private const val TAG = "Glean"
 
 open class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

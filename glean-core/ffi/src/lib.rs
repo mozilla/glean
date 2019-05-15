@@ -57,7 +57,7 @@ pub extern "C" fn glean_initialize(data_dir: FfiStr, application_id: FfiStr) -> 
         let data_dir = data_dir.into_string();
         let application_id = application_id.into_string();
         let glean = Glean::new(&data_dir, &application_id)?;
-        log::info!("Glean.rs initialized");
+        log::info!("Glean initialized");
         Ok(glean)
     })
 }
