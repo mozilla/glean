@@ -1,6 +1,6 @@
-# Glean.rs Sample Application
+# Glean Sample Application
 
-A simple app showcasing Glean.rs, the mobile telemetry SDK.
+A simple app showcasing Glean, the mobile telemetry SDK.
 
 ## License
 

@@ -2,7 +2,7 @@
 
 ---
 
-*Note:* Testing of user-defined metrics is not yet implemented for Glean.rs.
+*Note:* Testing of user-defined metrics is not yet implemented for Glean.
 
 ---
 
