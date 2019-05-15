@@ -28,3 +28,7 @@ test:
 	RUST_TEST_THREADS=1 cargo test --all
 	./gradlew test
 .PHONY: test
+
+cbindgen:
+	cbindgen glean-core/ffi --lockfile Cargo.lock -o glean-core/ffi/examples/glean.h
+.PHONY: cbindgen

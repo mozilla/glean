@@ -60,7 +60,9 @@ impl PingMaker {
         });
 
         // Flatten the whole thing.
-        let client_info_obj = client_info.as_object().unwrap(); // safe, snapshot always returns an object.
+        let client_info_obj = client_info
+            .as_object()
+            .expect("Storage manager should guarantee an object for client_info");
         for (_key, value) in client_info_obj {
             merge(&mut map, value);
         }
@@ -85,7 +87,8 @@ impl PingMaker {
 
     pub fn collect_string(&self, storage: &Database, storage_name: &str) -> String {
         let ping = self.collect(storage, storage_name);
-        ::serde_json::to_string_pretty(&ping).unwrap()
+        ::serde_json::to_string_pretty(&ping)
+            .expect("Pretty-printing JSON into a string should always work")
     }
 
     fn get_pings_dir(&self, data_path: &Path) -> std::io::Result<PathBuf> {

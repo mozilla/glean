@@ -12,6 +12,7 @@ use rkv::{Rkv, SingleStore, StoreOptions};
 use crate::metrics::Metric;
 use crate::CommonMetricData;
 use crate::Lifetime;
+use crate::Result;
 
 #[derive(Debug)]
 pub struct Database {
@@ -27,34 +28,22 @@ impl Database {
     ///
     /// This opens the underlying rkv store and creates
     /// the underlying directory structure.
-    pub fn new(data_path: &str) -> Self {
-        Self {
-            rkv: Self::open_rkv(data_path),
+    pub fn new(data_path: &str) -> Result<Self> {
+        Ok(Self {
+            rkv: Self::open_rkv(data_path)?,
             app_lifetime_data: RwLock::new(BTreeMap::new()),
-        }
+        })
     }
 
     /// Creates the storage directories and inits rkv.
-    fn open_rkv(path: &str) -> Rkv {
+    fn open_rkv(path: &str) -> Result<Rkv> {
         let path = std::path::Path::new(path);
         log::info!("Path is: {:?}", path.display());
-        if let Err(e) = fs::create_dir_all(&path) {
-            log::info!(
-                "Failed to create data dir. LETS CRASH!!!1! (error: {:?})",
-                e
-            );
-            panic!("WAAAAAH!!!1!");
-        }
-        log::info!("path created. creating rkv.");
-        let rkv = match Rkv::new(path) {
-            Ok(rkv) => rkv,
-            Err(e) => {
-                log::info!("Failed to create rkv. LETS CRASH!!!1! (error: {:?})", e);
-                panic!("WAAAAAH!!!1!");
-            }
-        };
+        fs::create_dir_all(&path)?;
+
+        let rkv = Rkv::new(path)?;
         log::info!("Rkv done. We are initialized!");
-        rkv
+        Ok(rkv)
     }
 
     /// Iterates with the provided transaction function on the data from
@@ -253,9 +242,8 @@ mod test {
     use tempfile::tempdir;
 
     #[test]
-    #[should_panic]
     fn test_panicks_if_fails_dir_creation() {
-        let mut _db = Database::new("");
+        assert!(Database::new("").is_err());
     }
 
     #[test]
@@ -263,7 +251,7 @@ mod test {
         let dir = tempdir().unwrap();
         let str_dir = dir.path().display().to_string();
 
-        let mut _db = Database::new(&str_dir);
+        Database::new(&str_dir).unwrap();
 
         assert!(dir.path().exists());
     }
@@ -273,7 +261,7 @@ mod test {
         // Init the database in a temporary directory.
         let dir = tempdir().unwrap();
         let str_dir = dir.path().display().to_string();
-        let db = Database::new(&str_dir);
+        let db = Database::new(&str_dir).unwrap();
 
         // Attempt to record a known value.
         let test_value = "test-value";
@@ -307,7 +295,7 @@ mod test {
         // Init the database in a temporary directory.
         let dir = tempdir().unwrap();
         let str_dir = dir.path().display().to_string();
-        let db = Database::new(&str_dir);
+        let db = Database::new(&str_dir).unwrap();
 
         // Attempt to record a known value.
         let test_value = "test-value";
@@ -344,7 +332,7 @@ mod test {
         // Init the database in a temporary directory.
         let dir = tempdir().unwrap();
         let str_dir = dir.path().display().to_string();
-        let db = Database::new(&str_dir);
+        let db = Database::new(&str_dir).unwrap();
 
         // Attempt to record a known value.
         let test_value = "test-value";
@@ -378,7 +366,7 @@ mod test {
         // Init the database in a temporary directory.
         let dir = tempdir().unwrap();
         let str_dir = dir.path().display().to_string();
-        let db = Database::new(&str_dir);
+        let db = Database::new(&str_dir).unwrap();
 
         // Attempt to record a known value for every single lifetime.
         let test_storage = "test-storage";

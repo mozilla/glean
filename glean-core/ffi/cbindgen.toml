@@ -19,3 +19,4 @@ language = "C"
 
 [parse]
 parse_deps = true
+include = ["glean-core", "ffi-support"]

@@ -17,7 +17,8 @@ pub struct StorageManager;
 impl StorageManager {
     pub fn snapshot(&self, storage: &Database, store_name: &str, clear_store: bool) -> String {
         let data = self.snapshot_as_json(storage, store_name, clear_store);
-        ::serde_json::to_string_pretty(&data).unwrap()
+        ::serde_json::to_string_pretty(&data)
+            .expect("Pretty-printing JSON into a string should always work")
     }
 
     pub fn snapshot_as_json(

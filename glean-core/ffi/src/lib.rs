@@ -1,17 +1,21 @@
-#![allow(clippy::redundant_closure)]
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-// Currently requried to `extern crate` for cbindgen to pick it up
-extern crate ffi_support;
+#![allow(clippy::redundant_closure)]
 
 use std::convert::TryFrom;
 use std::os::raw::c_char;
 
 use ffi_support::{
-    define_handle_map_deleter, define_string_destructor, ConcurrentHandleMap, ExternError, FfiStr,
+    define_handle_map_deleter, define_string_destructor, ConcurrentHandleMap, FfiStr,
 };
 use lazy_static::lazy_static;
 
 use glean_core::{metrics::*, CommonMetricData, Glean, Lifetime};
+
+mod handlemap_ext;
+use handlemap_ext::HandleMapExtension;
 
 lazy_static! {
     static ref GLEAN: ConcurrentHandleMap<Glean> = ConcurrentHandleMap::new();
@@ -49,42 +53,35 @@ pub extern "C" fn glean_initialize(data_dir: FfiStr, application_id: FfiStr) -> 
         });
     }
 
-    let mut err = ExternError::success();
-    GLEAN.insert_with_output(&mut err, || {
+    GLEAN.insert_with_log(|| {
         let data_dir = data_dir.into_string();
         let application_id = application_id.into_string();
-        let glean = Glean::new(&data_dir, &application_id);
+        let glean = Glean::new(&data_dir, &application_id)?;
         log::info!("Glean.rs initialized");
-        glean
+        Ok(glean)
     })
 }
 
 #[no_mangle]
 pub extern "C" fn glean_is_initialized(glean_handle: u64) -> u8 {
-    let mut err = ExternError::success();
-    GLEAN.call_with_output(&mut err, glean_handle, |glean| glean.is_initialized())
+    GLEAN.call_infallible(glean_handle, |glean| glean.is_initialized())
 }
 
 #[no_mangle]
 pub extern "C" fn glean_is_upload_enabled(glean_handle: u64) -> u8 {
-    let mut err = ExternError::success();
-    GLEAN.call_with_output(&mut err, glean_handle, |glean| glean.is_upload_enabled())
+    GLEAN.call_infallible(glean_handle, |glean| glean.is_upload_enabled())
 }
 
 #[no_mangle]
 pub extern "C" fn glean_set_upload_enabled(glean_handle: u64, flag: u8) {
-    let mut err = ExternError::success();
-    GLEAN.call_with_output_mut(&mut err, glean_handle, |glean| {
-        glean.set_upload_enabled(flag != 0)
-    })
+    GLEAN.call_infallible_mut(glean_handle, |glean| glean.set_upload_enabled(flag != 0))
 }
 
 #[no_mangle]
 pub extern "C" fn glean_send_ping(glean_handle: u64, ping_name: FfiStr) {
-    let mut err = ExternError::success();
-    GLEAN.call_with_output(&mut err, glean_handle, |glean| {
-        // FIXME: Error handling
-        let _ = glean.send_ping(ping_name.as_str());
+    GLEAN.call_with_log(glean_handle, |glean| {
+        glean.send_ping(ping_name.as_str())?;
+        Ok(())
     })
 }
 
@@ -95,23 +92,22 @@ pub extern "C" fn glean_new_boolean_metric(
     send_in_pings: RawStringArray,
     send_in_pings_len: i32,
     lifetime: i32,
-    err: &mut ExternError,
 ) -> u64 {
-    BOOLEAN_METRICS.insert_with_output(err, || {
+    BOOLEAN_METRICS.insert_with_log(|| {
         let send_in_pings = unsafe { from_raw_string_array(send_in_pings, send_in_pings_len) };
         let lifetime = Lifetime::try_from(lifetime)
             .map_err(|_| {
                 log::error!("[Bool] Failed to convert from lifetime value {}", lifetime);
             })
-            .unwrap();
+            .unwrap_or(Lifetime::Ping);
 
-        BooleanMetric::new(CommonMetricData {
+        Ok(BooleanMetric::new(CommonMetricData {
             name: name.into_string(),
             category: category.into_string(),
             send_in_pings,
             lifetime,
             ..Default::default()
-        })
+        }))
     })
 }
 
@@ -122,9 +118,8 @@ pub extern "C" fn glean_new_string_metric(
     send_in_pings: RawStringArray,
     send_in_pings_len: i32,
     lifetime: i32,
-    err: &mut ExternError,
 ) -> u64 {
-    STRING_METRICS.insert_with_output(err, || {
+    STRING_METRICS.insert_with_log(|| {
         let send_in_pings = unsafe { from_raw_string_array(send_in_pings, send_in_pings_len) };
         let lifetime = Lifetime::try_from(lifetime)
             .map_err(|_| {
@@ -133,15 +128,15 @@ pub extern "C" fn glean_new_string_metric(
                     lifetime
                 );
             })
-            .unwrap();
+            .unwrap_or(Lifetime::Ping);
 
-        StringMetric::new(CommonMetricData {
+        Ok(StringMetric::new(CommonMetricData {
             name: name.into_string(),
             category: category.into_string(),
             send_in_pings,
             lifetime,
             ..Default::default()
-        })
+        }))
     })
 }
 
@@ -152,9 +147,8 @@ pub extern "C" fn glean_new_counter_metric(
     send_in_pings: RawStringArray,
     send_in_pings_len: i32,
     lifetime: i32,
-    err: &mut ExternError,
 ) -> u64 {
-    COUNTER_METRICS.insert_with_output(err, || {
+    COUNTER_METRICS.insert_with_log(|| {
         let send_in_pings = unsafe { from_raw_string_array(send_in_pings, send_in_pings_len) };
         let lifetime = Lifetime::try_from(lifetime)
             .map_err(|_| {
@@ -163,28 +157,22 @@ pub extern "C" fn glean_new_counter_metric(
                     lifetime
                 );
             })
-            .unwrap();
+            .unwrap_or(Lifetime::Ping);
 
-        CounterMetric::new(CommonMetricData {
+        Ok(CounterMetric::new(CommonMetricData {
             name: name.into_string(),
             category: category.into_string(),
             send_in_pings,
             lifetime,
             ..Default::default()
-        })
+        }))
     })
 }
 
 #[no_mangle]
-pub extern "C" fn glean_counter_add(
-    glean_handle: u64,
-    metric_id: u64,
-    amount: u64,
-    error: &mut ExternError,
-) {
-    GLEAN.call_with_output(error, glean_handle, |glean| {
-        let mut err = ExternError::success();
-        COUNTER_METRICS.call_with_output(&mut err, metric_id, |metric| {
+pub extern "C" fn glean_counter_add(glean_handle: u64, metric_id: u64, amount: u64) {
+    GLEAN.call_infallible(glean_handle, |glean| {
+        COUNTER_METRICS.call_infallible(metric_id, |metric| {
             metric.add(glean, amount);
         })
     })
@@ -196,10 +184,8 @@ pub extern "C" fn glean_counter_test_has_value(
     metric_id: u64,
     storage_name: FfiStr,
 ) -> u8 {
-    let mut err = ExternError::success();
-    GLEAN.call_with_output(&mut err, glean_handle, |glean| {
-        let mut err = ExternError::success();
-        COUNTER_METRICS.call_with_output(&mut err, metric_id, |metric| {
+    GLEAN.call_infallible(glean_handle, |glean| {
+        COUNTER_METRICS.call_infallible(metric_id, |metric| {
             metric
                 .test_get_value(glean, storage_name.as_str())
                 .is_some()
@@ -213,40 +199,26 @@ pub extern "C" fn glean_counter_test_get_value(
     metric_id: u64,
     storage_name: FfiStr,
 ) -> u64 {
-    let mut err = ExternError::success();
-    GLEAN.call_with_output(&mut err, glean_handle, |glean| {
-        let mut err = ExternError::success();
-        COUNTER_METRICS.call_with_output(&mut err, metric_id, |metric| {
+    GLEAN.call_infallible(glean_handle, |glean| {
+        COUNTER_METRICS.call_infallible(metric_id, |metric| {
             metric.test_get_value(glean, storage_name.as_str()).unwrap()
         })
     })
 }
 
 #[no_mangle]
-pub extern "C" fn glean_boolean_set(
-    glean_handle: u64,
-    metric_id: u64,
-    value: u8,
-    error: &mut ExternError,
-) {
-    GLEAN.call_with_output(error, glean_handle, |glean| {
-        let mut err = ExternError::success();
-        BOOLEAN_METRICS.call_with_output(&mut err, metric_id, |metric| {
+pub extern "C" fn glean_boolean_set(glean_handle: u64, metric_id: u64, value: u8) {
+    GLEAN.call_infallible(glean_handle, |glean| {
+        BOOLEAN_METRICS.call_infallible(metric_id, |metric| {
             metric.set(glean, value != 0);
         })
     })
 }
 
 #[no_mangle]
-pub extern "C" fn glean_string_set(
-    glean_handle: u64,
-    metric_id: u64,
-    value: FfiStr,
-    error: &mut ExternError,
-) {
-    GLEAN.call_with_output(error, glean_handle, |glean| {
-        let mut err = ExternError::success();
-        STRING_METRICS.call_with_output(&mut err, metric_id, |metric| {
+pub extern "C" fn glean_string_set(glean_handle: u64, metric_id: u64, value: FfiStr) {
+    GLEAN.call_infallible(glean_handle, |glean| {
+        STRING_METRICS.call_infallible(metric_id, |metric| {
             let value = value.into_string();
             metric.set(glean, value);
         })
@@ -254,12 +226,8 @@ pub extern "C" fn glean_string_set(
 }
 
 #[no_mangle]
-pub extern "C" fn glean_ping_collect(
-    glean_handle: u64,
-    ping_name: FfiStr,
-    error: &mut ExternError,
-) -> *mut c_char {
-    GLEAN.call_with_output(error, glean_handle, |glean| {
+pub extern "C" fn glean_ping_collect(glean_handle: u64, ping_name: FfiStr) -> *mut c_char {
+    GLEAN.call_infallible(glean_handle, |glean| {
         let ping_maker = glean_core::ping::PingMaker::new();
         let data = ping_maker.collect_string(glean.storage(), ping_name.as_str());
         log::info!("Ping({}): {}", ping_name.as_str(), data);
