@@ -128,7 +128,7 @@ impl Glean {
     ///
     /// TODO: (Verify this is correct):
     /// If the ping currently contains no content, it will not be sent.
-    pub fn send_ping(&self, ping_name: &str) -> Result<()> {
+    pub fn send_ping(&self, ping_name: &str) -> Result<bool> {
         let ping_maker = PingMaker::new();
         let doc_id = Uuid::new_v4().to_string();
         let url_path = self.make_path(ping_name, &doc_id);
@@ -138,15 +138,16 @@ impl Glean {
                     "No content for ping '{}', therefore no ping queued.",
                     ping_name
                 );
-                return Ok(());
+                return Ok(false);
             }
             Some(content) => content,
         };
 
         // FIXME: Logging ping content for now.  Eventually this should be controlled by a flag
         log::info!("{}", ping_content);
+
         ping_maker.store_ping(&doc_id, &self.get_data_path(), &url_path, &ping_content)?;
-        Ok(())
+        Ok(true)
     }
 }
 

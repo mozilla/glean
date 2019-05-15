@@ -169,10 +169,11 @@ open class GleanInternalAPI internal constructor () {
         sendPing("events")
     }
 
-    private fun sendPing(pingName: String) {
-        LibGleanFFI.INSTANCE.glean_send_ping(handle, pingName)
-        // TODO: 1551692 Only do this when ping content was actually queued
-        PingUploadWorker.enqueueWorker()
+    internal fun sendPing(pingName: String) {
+        val queued = LibGleanFFI.INSTANCE.glean_send_ping(handle, pingName)
+        if (queued != 0.toByte()) {
+            PingUploadWorker.enqueueWorker()
+        }
     }
 
     /**
