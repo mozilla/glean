@@ -17,7 +17,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -61,7 +60,6 @@ class CounterMetricTypeTest {
         assertEquals(11, counterMetric.testGetValue())
     }
 
-    @Ignore("Ignoring the test as 'disabled' is not passed through FFI")
     @Test
     fun `counters with no lifetime must not record data`() {
         // Define a 'counterMetric' counter metric, which will be stored in "store1".
@@ -81,7 +79,6 @@ class CounterMetricTypeTest {
             counterMetric.testHasValue())
     }
 
-    @Ignore("Ignoring the test as 'disabled' is not passed through FFI")
     @Test
     fun `disabled counters must not record data`() {
         // Define a 'counterMetric' counter metric, which will be stored in "store1".  It's disabled
