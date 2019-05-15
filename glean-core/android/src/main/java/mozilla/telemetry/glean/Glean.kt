@@ -63,23 +63,22 @@ open class GleanInternalAPI internal constructor () {
      */
     private fun initializeCoreMetrics(applicationContext: Context) {
         // Set a few more metrics that will be sent as part of every ping.
-        // TODO: we should make sure to store the data below before any ping
-        // is generated and sent. In a-c's Glean, we rely on the StorageEngine(s)
-        // access to do so. Once we make the metric type API async, this won't work
-        // anymore.
-        GleanBaseline.locale.set(getLocaleTag())
-        GleanInternalMetrics.os.set("Android")
+        // Please note that the following metrics must be set synchronously, so
+        // that they are guaranteed to be available with the first ping that is
+        // generated. We use an internal only API to do that.
+        GleanBaseline.locale.setSync(getLocaleTag())
+        GleanInternalMetrics.os.setSync("Android")
         // https://developer.android.com/reference/android/os/Build.VERSION
-        GleanInternalMetrics.androidSdkVersion.set(Build.VERSION.SDK_INT.toString())
-        GleanInternalMetrics.osVersion.set(Build.VERSION.RELEASE)
+        GleanInternalMetrics.androidSdkVersion.setSync(Build.VERSION.SDK_INT.toString())
+        GleanInternalMetrics.osVersion.setSync(Build.VERSION.RELEASE)
         // https://developer.android.com/reference/android/os/Build
-        GleanInternalMetrics.deviceManufacturer.set(Build.MANUFACTURER)
-        GleanInternalMetrics.deviceModel.set(Build.MODEL)
-        GleanInternalMetrics.architecture.set(Build.SUPPORTED_ABIS[0])
+        GleanInternalMetrics.deviceManufacturer.setSync(Build.MANUFACTURER)
+        GleanInternalMetrics.deviceModel.setSync(Build.MODEL)
+        GleanInternalMetrics.architecture.setSync(Build.SUPPORTED_ABIS[0])
 
         /*
         configuration.channel?.let {
-            StringsStorageEngine.record(GleanInternalMetrics.appChannel, it)
+            GleanInternalMetrics.appChannel.setSync(it)
         }*/
 
         try {
@@ -87,9 +86,9 @@ open class GleanInternalAPI internal constructor () {
                     applicationContext.packageName, 0
             )
             @Suppress("DEPRECATION")
-            GleanInternalMetrics.appBuild.set(packageInfo.versionCode.toString())
+            GleanInternalMetrics.appBuild.setSync(packageInfo.versionCode.toString())
 
-            GleanInternalMetrics.appDisplayVersion.set(
+            GleanInternalMetrics.appDisplayVersion.setSync(
                     packageInfo.versionName?.let { it } ?: "Unknown"
             )
         } catch (e: PackageManager.NameNotFoundException) {
