@@ -149,3 +149,20 @@ impl Glean {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn path_is_constructed_from_data() {
+        let t = tempfile::tempdir().unwrap();
+        let name = t.path().display().to_string();
+        let glean = Glean::new(&name, "org.mozilla.glean").unwrap();
+
+        assert_eq!(
+            "/submit/org-mozilla-glean/baseline/1/this-is-a-docid",
+            glean.make_path("baseline", "this-is-a-docid")
+        );
+    }
+}
