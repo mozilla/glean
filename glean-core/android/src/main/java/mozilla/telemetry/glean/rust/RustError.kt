@@ -67,25 +67,3 @@ internal open class RustError : Structure() {
         return Arrays.asList("code", "message")
     }
 }
-
-/**
- * Helper to read a null terminated String out of the Pointer and free it.
- *
- * Important: Do not use this pointer after this! For anything!
- */
-internal fun Pointer.getAndConsumeRustString(): String {
-    try {
-        return this.getRustString()
-    } finally {
-        LibGleanFFI.INSTANCE.glean_str_free(this)
-    }
-}
-
-/**
- * Helper to read a null terminated string out of the pointer.
- *
- * Important: doesn't free the pointer, use [getAndConsumeRustString] for that!
- */
-internal fun Pointer.getRustString(): String {
-    return this.getString(0, "utf8")
-}
