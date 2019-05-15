@@ -12,6 +12,9 @@ import com.sun.jna.Pointer
 import com.sun.jna.StringArray
 import java.lang.reflect.Proxy
 
+// Turn a boolean into its Byte (u8) representation
+internal fun Boolean.toByte(): Byte = if (this) 1 else 0
+
 @Suppress("TooManyFunctions")
 internal interface LibGleanFFI : Library {
     companion object {
