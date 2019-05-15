@@ -229,7 +229,9 @@ pub extern "C" fn glean_string_set(glean_handle: u64, metric_id: u64, value: Ffi
 pub extern "C" fn glean_ping_collect(glean_handle: u64, ping_name: FfiStr) -> *mut c_char {
     GLEAN.call_infallible(glean_handle, |glean| {
         let ping_maker = glean_core::ping::PingMaker::new();
-        let data = ping_maker.collect_string(glean.storage(), ping_name.as_str());
+        let data = ping_maker
+            .collect_string(glean.storage(), ping_name.as_str())
+            .unwrap_or_else(|| String::from(""));
         log::info!("Ping({}): {}", ping_name.as_str(), data);
         data
     })

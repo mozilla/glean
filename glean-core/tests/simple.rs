@@ -249,6 +249,15 @@ fn write_ping_to_disk() {
     let (temp, tmpname) = tempdir();
     let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID).unwrap();
 
+    // We need to store a metric as an empty ping is not stored.
+    let counter = CounterMetric::new(CommonMetricData {
+        name: "counter".into(),
+        category: "local".into(),
+        send_in_pings: vec!["metrics".into()],
+        ..Default::default()
+    });
+    counter.add(&glean, 1);
+
     glean.send_ping("metrics").unwrap();
 
     let path = temp.path().join("pings");

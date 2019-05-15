@@ -8,24 +8,26 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import org.junit.Before
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.io.File
 
 @RunWith(RobolectricTestRunner::class)
 class GleanTest {
-    @Test
-    fun `simple smoke test`() {
-        GleanInternalAPI().initialize(ApplicationProvider.getApplicationContext())
+
+    @Before
+    fun setUp() {
+        resetGlean()
     }
 
     @Test
     fun `send a ping`() {
         val context: Context = ApplicationProvider.getApplicationContext()
-        val glean = GleanInternalAPI()
-        glean.initialize(context)
-        glean.handleBackgroundEvent()
         val pingPath = File(context.applicationInfo.dataDir, "glean_data/pings")
-        assertEquals(2, pingPath.listFiles()?.size)
+
+        Glean.handleBackgroundEvent()
+        // Only the baseline ping should have been written
+        assertEquals(1, pingPath.listFiles()?.size)
     }
 }
