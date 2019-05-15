@@ -103,7 +103,7 @@ jobs:
 
   Lint Android with ktlint and detekt:
     docker:
-      - image: circleci/android:api-23-ndk
+      - image: circleci/android:api-27-ndk
     steps:
       - checkout
       - run: ./gradlew ktlint
@@ -111,7 +111,7 @@ jobs:
         
   Android tests:
     docker:
-      - image: circleci/android:api-23-ndk
+      - image: circleci/android:api-27-ndk
     steps:
       - android-tests
 
