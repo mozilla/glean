@@ -8,6 +8,7 @@ import android.util.Log
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
+import androidx.annotation.VisibleForTesting
 import mozilla.telemetry.glean.utils.getLocaleTag
 import java.io.File
 import mozilla.telemetry.glean.rust.LibGleanFFI
@@ -149,6 +150,18 @@ open class GleanInternalAPI internal constructor () {
 
     private fun sendPing(pingName: String) {
         LibGleanFFI.INSTANCE.glean_send_ping(handle, pingName)
+    }
+
+    /**
+     * Should be called from all users of the Glean testing API.
+     *
+     * This makes all asynchronous work synchronous so we can test the results of the
+     * API synchronously.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    fun enableTestingMode() {
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        Dispatchers.API.setTestingMode(enabled = true)
     }
 
     /**
