@@ -10,9 +10,8 @@
 
 package mozilla.telemetry.glean.private
 
-// import kotlinx.coroutines.ExperimentalCoroutinesApi
-// import kotlinx.coroutines.ObsoleteCoroutinesApi
-// import mozilla.components.service.glean.resetGlean
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.ObsoleteCoroutinesApi
 import mozilla.telemetry.glean.resetGlean
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -24,8 +23,8 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.lang.NullPointerException
 
-// @ObsoleteCoroutinesApi
-// @ExperimentalCoroutinesApi
+@ObsoleteCoroutinesApi
+@ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
 class CounterMetricTypeTest {
 

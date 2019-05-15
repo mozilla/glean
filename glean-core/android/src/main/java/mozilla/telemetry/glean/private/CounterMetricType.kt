@@ -9,7 +9,7 @@ import com.sun.jna.StringArray
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.rust.LibGleanFFI
 
-// import mozilla.components.service.glean.Dispatchers
+import mozilla.telemetry.glean.Dispatchers
 // import mozilla.components.service.glean.storages.CountersStorageEngine
 // import mozilla.components.support.base.log.logger.Logger
 
@@ -55,17 +55,15 @@ class CounterMetricType(
     fun add(amount: Int = 1) {
         /*if (!shouldRecord(logger)) {
             return
-        }
+        }*/
 
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.launch {
-            // Delegate storing the new counter value to the storage engine.
-            CountersStorageEngine.record(
-                    this@CounterMetricType,
-                    amount = amount
-            )
-        }*/
-        LibGleanFFI.INSTANCE.glean_counter_add(Glean.handle, this.handle, amount.toLong())
+            LibGleanFFI.INSTANCE.glean_counter_add(
+                Glean.handle,
+                this@CounterMetricType.handle,
+                amount.toLong())
+        }
     }
 
     /**

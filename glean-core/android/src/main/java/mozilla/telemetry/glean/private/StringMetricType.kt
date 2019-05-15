@@ -9,7 +9,7 @@ import com.sun.jna.StringArray
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.rust.LibGleanFFI
 
-// import mozilla.components.service.glean.Dispatchers
+import mozilla.telemetry.glean.Dispatchers
 // import mozilla.components.service.glean.storages.StringsStorageEngine
 // import mozilla.components.support.base.log.logger.Logger
 
@@ -54,16 +54,18 @@ class StringMetricType(
     fun set(value: String) {
         /*if (!shouldRecord(logger)) {
             return
-        }
+        }*/
 
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.launch {
-            // Delegate storing the string to the storage engine.
-            StringsStorageEngine.record(
-                this@StringMetricType,
-                value = value
-            )
-        }*/
+            setSync(value)
+        }
+    }
+
+    /**
+     * Internal only, synchronous API for setting a string value.
+     */
+    internal fun setSync(value: String) {
         LibGleanFFI.INSTANCE.glean_string_set(Glean.handle, this.handle, value)
     }
 

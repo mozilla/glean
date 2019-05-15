@@ -118,7 +118,7 @@ internal fun resetGlean(
     // config: Configuration = Configuration(),
     clearStores: Boolean = true
 ) {
-    // Glean.enableTestingMode()
+    Glean.enableTestingMode()
 
     // We're using the WorkManager in a bunch of places, and Glean will crash
     // in tests without this line. Let's simply put it here.
