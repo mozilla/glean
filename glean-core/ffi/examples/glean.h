@@ -97,7 +97,7 @@ uint64_t glean_new_string_metric(FfiStr category,
 
 char *glean_ping_collect(uint64_t glean_handle, FfiStr ping_name);
 
-uint8_t glean_send_ping(uint64_t glean_handle, FfiStr ping_name);
+uint8_t glean_send_ping(uint64_t glean_handle, FfiStr ping_name, uint8_t log_ping);
 
 void glean_set_upload_enabled(uint64_t glean_handle, uint8_t flag);
 

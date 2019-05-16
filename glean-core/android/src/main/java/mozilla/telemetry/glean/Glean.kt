@@ -170,7 +170,11 @@ open class GleanInternalAPI internal constructor () {
     }
 
     internal fun sendPing(pingName: String) {
-        val queued = LibGleanFFI.INSTANCE.glean_send_ping(handle, pingName)
+        val queued = LibGleanFFI.INSTANCE.glean_send_ping(
+            handle,
+            pingName,
+            if (configuration.logPings) 1 else 0
+        )
         if (queued != 0.toByte()) {
             PingUploadWorker.enqueueWorker()
         }
