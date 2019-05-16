@@ -21,7 +21,7 @@ pub use self::uuid::UuidMetric;
 pub enum Metric {
     String(String),
     Boolean(bool),
-    Counter(u64),
+    Counter(i32),
     Uuid(String),
     StringList(Vec<String>),
 }

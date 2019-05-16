@@ -1,7 +1,3 @@
-ifeq ($(ANDROID_HOME),)
-	ANDROID_HOME := ~/Library/Android/sdk
-endif
-
 build-apk:
 	./gradlew glean-core:build 
 	./gradlew glean-sample-app:build
@@ -15,7 +11,7 @@ emulator:
 	$(ANDROID_HOME)/emulator/emulator -avd Nexus_5X_API_P -netdelay none -netspeed full
 .PHONY: install
 
-lint:
+lint: fmt
 	cargo clippy --all
 	./gradlew ktlint detekt
 .PHONY: lint
@@ -25,7 +21,7 @@ fmt:
 .PHONY: fmt
 
 test:
-	RUST_TEST_THREADS=1 cargo test --all
+	cargo test --all
 	./gradlew test
 .PHONY: test
 

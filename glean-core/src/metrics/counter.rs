@@ -17,8 +17,14 @@ impl CounterMetric {
         Self { meta }
     }
 
-    pub fn add(&self, glean: &Glean, amount: u64) {
+    pub fn add(&self, glean: &Glean, amount: i32) {
         if !self.meta.should_record() || !glean.is_upload_enabled() {
+            return;
+        }
+
+        if amount <= 0 {
+            // TODO: Turn this into logging an error
+            log::warn!("CounterMetric::add: got negative amount. Not recording.");
             return;
         }
 
@@ -35,7 +41,7 @@ impl CounterMetric {
     /// Get the currently stored value as an integer.
     ///
     /// This doesn't clear the stored value.
-    pub fn test_get_value(&self, glean: &Glean, storage_name: &str) -> Option<u64> {
+    pub fn test_get_value(&self, glean: &Glean, storage_name: &str) -> Option<i32> {
         let snapshot = match StorageManager.snapshot_as_json(glean.storage(), storage_name, false) {
             Some(snapshot) => snapshot,
             None => return None,
@@ -45,6 +51,6 @@ impl CounterMetric {
             .and_then(|o| o.get("counter"))
             .and_then(|o| o.as_object())
             .and_then(|o| o.get(&self.meta.identifier()))
-            .and_then(|o| o.as_i64().map(|i| i as u64))
+            .and_then(|o| o.as_i64().map(|i| i as i32))
     }
 }
