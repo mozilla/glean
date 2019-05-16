@@ -173,7 +173,7 @@ pub extern "C" fn glean_new_counter_metric(
 }
 
 #[no_mangle]
-pub extern "C" fn glean_counter_add(glean_handle: u64, metric_id: u64, amount: u64) {
+pub extern "C" fn glean_counter_add(glean_handle: u64, metric_id: u64, amount: i32) {
     GLEAN.call_infallible(glean_handle, |glean| {
         COUNTER_METRICS.call_infallible(metric_id, |metric| {
             metric.add(glean, amount);
@@ -201,7 +201,7 @@ pub extern "C" fn glean_counter_test_get_value(
     glean_handle: u64,
     metric_id: u64,
     storage_name: FfiStr,
-) -> u64 {
+) -> i32 {
     GLEAN.call_infallible(glean_handle, |glean| {
         COUNTER_METRICS.call_infallible(metric_id, |metric| {
             metric.test_get_value(glean, storage_name.as_str()).unwrap()
