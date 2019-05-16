@@ -105,7 +105,7 @@ internal interface LibGleanFFI : Library {
 
     fun glean_ping_collect(glean_handle: Long, ping_name: String): Pointer?
 
-    fun glean_send_ping(glean_handle: Long, ping_name: String)
+    fun glean_send_ping(glean_handle: Long, ping_name: String, log_ping: Byte): Byte
 
     fun glean_set_upload_enabled(glean_handle: Long, flag: Byte)
 

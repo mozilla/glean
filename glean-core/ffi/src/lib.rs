@@ -78,10 +78,9 @@ pub extern "C" fn glean_set_upload_enabled(glean_handle: u64, flag: u8) {
 }
 
 #[no_mangle]
-pub extern "C" fn glean_send_ping(glean_handle: u64, ping_name: FfiStr) {
+pub extern "C" fn glean_send_ping(glean_handle: u64, ping_name: FfiStr, log_ping: u8) -> u8 {
     GLEAN.call_with_log(glean_handle, |glean| {
-        glean.send_ping(ping_name.as_str())?;
-        Ok(())
+        glean.send_ping(ping_name.as_str(), log_ping != 0)
     })
 }
 

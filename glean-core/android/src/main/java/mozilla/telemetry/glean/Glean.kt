@@ -15,6 +15,7 @@ import java.io.File
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.MetricHandle
 import mozilla.telemetry.glean.rust.RustError
+import mozilla.telemetry.glean.rust.toByte
 import mozilla.telemetry.glean.GleanMetrics.GleanBaseline
 import mozilla.telemetry.glean.GleanMetrics.GleanInternalMetrics
 import mozilla.telemetry.glean.scheduler.PingUploadWorker
@@ -169,10 +170,15 @@ open class GleanInternalAPI internal constructor () {
         sendPing("events")
     }
 
-    private fun sendPing(pingName: String) {
-        LibGleanFFI.INSTANCE.glean_send_ping(handle, pingName)
-        // TODO: 1551692 Only do this when ping content was actually queued
-        PingUploadWorker.enqueueWorker()
+    internal fun sendPing(pingName: String) {
+        val queued = LibGleanFFI.INSTANCE.glean_send_ping(
+            handle,
+            pingName,
+            (configuration.logPings).toByte()
+        )
+        if (queued != 0.toByte()) {
+            PingUploadWorker.enqueueWorker()
+        }
     }
 
     /**

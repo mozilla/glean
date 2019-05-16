@@ -258,7 +258,7 @@ fn write_ping_to_disk() {
     });
     counter.add(&glean, 1);
 
-    glean.send_ping("metrics").unwrap();
+    assert!(glean.send_ping("metrics", false).unwrap());
 
     let path = temp.path().join("pings");
 
