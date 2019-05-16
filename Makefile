@@ -21,7 +21,7 @@ fmt:
 .PHONY: fmt
 
 test:
-	RUST_TEST_THREADS=1 cargo test --all
+	cargo test --all
 	./gradlew test
 .PHONY: test
 
