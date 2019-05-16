@@ -92,10 +92,9 @@ open class GleanInternalAPI internal constructor () {
         GleanInternalMetrics.deviceModel.setSync(Build.MODEL)
         GleanInternalMetrics.architecture.setSync(Build.SUPPORTED_ABIS[0])
 
-        /*
         configuration.channel?.let {
             GleanInternalMetrics.appChannel.setSync(it)
-        }*/
+        }
 
         try {
             val packageInfo = applicationContext.packageManager.getPackageInfo(
