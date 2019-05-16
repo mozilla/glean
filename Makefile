@@ -11,7 +11,7 @@ emulator:
 	$(ANDROID_HOME)/emulator/emulator -avd Nexus_5X_API_P -netdelay none -netspeed full
 .PHONY: install
 
-lint:
+lint: fmt
 	cargo clippy --all
 	./gradlew ktlint detekt
 .PHONY: lint
