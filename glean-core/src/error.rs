@@ -4,7 +4,7 @@ use std::result;
 
 use failure::{self, Backtrace, Context, Fail};
 
-use ffi_support::ExternError;
+use ffi_support::{handle_map::HandleError, ExternError};
 
 use rkv::error::StoreError;
 
@@ -27,6 +27,10 @@ pub type Result<T> = result::Result<T, Error>;
 /// [`Error`]: std.struct.Error.html
 #[derive(Debug, Fail)]
 pub enum ErrorKind {
+    /// FFI-Support error
+    #[fail(display = "Invalid handle")]
+    Handle(HandleError),
+
     /// IO error
     #[fail(display = "An I/O error occured.")]
     IoError(io::Error),
@@ -79,6 +83,14 @@ impl From<ErrorKind> for Error {
 impl From<Context<ErrorKind>> for Error {
     fn from(inner: Context<ErrorKind>) -> Error {
         Error { inner }
+    }
+}
+
+impl From<HandleError> for Error {
+    fn from(error: HandleError) -> Error {
+        Error {
+            inner: Context::new(ErrorKind::Handle(error)),
+        }
     }
 }
 

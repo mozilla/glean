@@ -9,6 +9,7 @@ import com.sun.jna.StringArray
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.toByte
+import mozilla.telemetry.glean.rust.getAndConsumeRustString
 
 import mozilla.telemetry.glean.Dispatchers
 // import mozilla.components.service.glean.storages.StringsStorageEngine
@@ -84,11 +85,10 @@ class StringMetricType(
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun testHasValue(pingName: String = sendInPings.first()): Boolean {
         /*@Suppress("EXPERIMENTAL_API_USAGE")
-        Dispatchers.API.assertInTestingMode()
+        Dispatchers.API.assertInTestingMode()*/
 
-        return StringsStorageEngine.getSnapshot(pingName, false)?.get(identifier) != null*/
-        assert(false, { "Testing API not implementated for StringMetricType" })
-        return false
+        val res = LibGleanFFI.INSTANCE.glean_string_test_has_value(Glean.handle, this.handle, pingName)
+        return res != 0.toByte()
     }
 
     /**
@@ -104,10 +104,12 @@ class StringMetricType(
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun testGetValue(pingName: String = sendInPings.first()): String {
         /*@Suppress("EXPERIMENTAL_API_USAGE")
-        Dispatchers.API.assertInTestingMode()
+        Dispatchers.API.assertInTestingMode()*/
 
-        return StringsStorageEngine.getSnapshot(pingName, false)!![identifier]!!*/
-        assert(false, { "Testing API not implementated for StringMetricType" })
-        return "asd"
+        if (!testHasValue(pingName)) {
+            throw NullPointerException()
+        }
+        val ptr = LibGleanFFI.INSTANCE.glean_string_test_get_value(Glean.handle, this.handle, pingName)!!
+        return ptr.getAndConsumeRustString()
     }
 }

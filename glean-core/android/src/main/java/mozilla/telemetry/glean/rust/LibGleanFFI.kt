@@ -15,6 +15,28 @@ import java.lang.reflect.Proxy
 // Turn a boolean into its Byte (u8) representation
 internal fun Boolean.toByte(): Byte = if (this) 1 else 0
 
+/**
+ * Helper to read a null terminated String out of the Pointer and free it.
+ *
+ * Important: Do not use this pointer after this! For anything!
+ */
+internal fun Pointer.getAndConsumeRustString(): String {
+    try {
+        return this.getRustString()
+    } finally {
+        LibGleanFFI.INSTANCE.glean_str_free(this)
+    }
+}
+
+/**
+ * Helper to read a null terminated string out of the pointer.
+ *
+ * Important: doesn't free the pointer, use [getAndConsumeRustString] for that!
+ */
+internal fun Pointer.getRustString(): String {
+    return this.getString(0, "utf8")
+}
+
 @Suppress("TooManyFunctions")
 internal interface LibGleanFFI : Library {
     companion object {
@@ -76,6 +98,10 @@ internal interface LibGleanFFI : Library {
         lifetime: Int,
         disabled: Byte
     ): Long
+
+    fun glean_string_test_get_value(glean_handle: Long, metric_id: Long, storage_name: String): Pointer?
+
+    fun glean_string_test_has_value(glean_handle: Long, metric_id: Long, storage_name: String): Byte
 
     fun glean_ping_collect(glean_handle: Long, ping_name: String): Pointer?
 

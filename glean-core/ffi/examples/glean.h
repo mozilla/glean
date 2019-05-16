@@ -103,6 +103,10 @@ void glean_set_upload_enabled(uint64_t glean_handle, uint8_t flag);
 
 void glean_string_set(uint64_t glean_handle, uint64_t metric_id, FfiStr value);
 
+char *glean_string_test_get_value(uint64_t glean_handle, uint64_t metric_id, FfiStr storage_name);
+
+uint8_t glean_string_test_has_value(uint64_t glean_handle, uint64_t metric_id, FfiStr storage_name);
+
 void glean_destroy_glean(uint64_t handle, ExternError *error);
 void glean_destroy_boolean_metric(uint64_t handle, ExternError *error);
 void glean_destroy_string_metric(uint64_t handle, ExternError *error);
