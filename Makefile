@@ -1,7 +1,3 @@
-ifeq ($(ANDROID_HOME),)
-	ANDROID_HOME := ~/Library/Android/sdk
-endif
-
 build-apk:
 	./gradlew glean-core:build 
 	./gradlew glean-sample-app:build
