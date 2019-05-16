@@ -93,8 +93,10 @@ impl PingMaker {
     }
 
     pub fn collect_string(&self, storage: &Database, storage_name: &str) -> Option<String> {
+        // Use ::to_string, rather than ::to_string_pretty since the ping
+        // uploader relies on the JSON content being on a single line.
         self.collect(storage, storage_name)
-            .map(|ping| ::serde_json::to_string_pretty(&ping).unwrap())
+            .map(|ping| ::serde_json::to_string(&ping).unwrap())
     }
 
     fn get_pings_dir(&self, data_path: &Path) -> std::io::Result<PathBuf> {

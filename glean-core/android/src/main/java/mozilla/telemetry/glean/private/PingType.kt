@@ -2,10 +2,10 @@
 * License, v. 2.0. If a copy of the MPL was not distributed with this
 * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package mozilla.components.service.glean.private
+package mozilla.telemetry.glean.private
 
-import mozilla.components.service.glean.Glean
-import mozilla.components.support.base.log.logger.Logger
+import android.util.Log
+import mozilla.telemetry.glean.Glean
 
 /**
  * This implements the developer facing API for custom pings.
@@ -20,13 +20,13 @@ data class PingType(
 ) {
     init {
         if (pingRegistry.containsKey(name)) {
-            logger.error("Duplicate ping named $name")
+            Log.e(LOG_TAG, "Duplicate ping named $name")
         }
         pingRegistry[name] = this
     }
 
     companion object {
-        private val logger = Logger("glean/PingType")
+        private val LOG_TAG = "glean/PingType"
         internal val pingRegistry: MutableMap<String, PingType> = mutableMapOf()
     }
 

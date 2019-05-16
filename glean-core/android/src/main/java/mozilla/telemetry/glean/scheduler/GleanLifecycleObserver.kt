@@ -2,13 +2,13 @@
 * License, v. 2.0. If a copy of the MPL was not distributed with this
 * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package mozilla.components.service.glean.scheduler
+package mozilla.telemetry.glean.scheduler
 
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
-import mozilla.components.service.glean.Glean
-import mozilla.components.service.glean.GleanMetrics.GleanBaseline
+import mozilla.telemetry.glean.Glean
+import mozilla.telemetry.glean.GleanMetrics.GleanBaseline
 
 /**
  * Connects process lifecycle events from Android to Glean's handleEvent
