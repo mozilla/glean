@@ -84,8 +84,8 @@ class StringMetricType(
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun testHasValue(pingName: String = sendInPings.first()): Boolean {
-        /*@Suppress("EXPERIMENTAL_API_USAGE")
-        Dispatchers.API.assertInTestingMode()*/
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        Dispatchers.API.assertInTestingMode()
 
         val res = LibGleanFFI.INSTANCE.glean_string_test_has_value(Glean.handle, this.handle, pingName)
         return res != 0.toByte()
@@ -103,8 +103,8 @@ class StringMetricType(
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun testGetValue(pingName: String = sendInPings.first()): String {
-        /*@Suppress("EXPERIMENTAL_API_USAGE")
-        Dispatchers.API.assertInTestingMode()*/
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        Dispatchers.API.assertInTestingMode()
 
         if (!testHasValue(pingName)) {
             throw NullPointerException()
