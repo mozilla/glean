@@ -6,6 +6,7 @@
         - [Setup Build Environment](dev/android/setup-android-build-environment.md)
     - [Rust Component](dev/core/index.md)
         - [Dependency Management](dev/core/dependency-management.md)
+        - [Adding a new metric type](dev/core/new-metric-type.md)
     - [FFI Layer](dev/ffi/index.md)
         - [When/How FFI](dev/ffi/when-to-use-what-in-the-ffi.md)
     - [Contributing](contributing.md)

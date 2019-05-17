@@ -1,0 +1,212 @@
+# Adding a new metric type
+
+Data in Glean is stored in so called metrics.
+You can find the full list of implemented metric types [in the user overview](/user/metrics/index.md).
+
+Adding a new metric type involves defining the metric type's API, its persisted and in-memory storage as well as its serialization into the ping payload.
+
+## The metric type's API
+
+A metric type implementation is defined in its own file under `glean-core/src/metrics/`, e.g. `glean-core/src/metrics/counter.rs` for a [Counter](/user/metrics/counter.md).
+
+Start by defining a structure:
+
+```rust,noplaypen
+#[derive(Debug)]
+pub struct CounterMetric {
+    meta: CommonMetricData
+}
+```
+
+Its implementation should have a way to create a new metric from the common metric data. It should be the same for all metric types.
+
+```rust,noplaypen
+impl CounterMetric {
+    pub fn new(meta: CommonMetricData) -> Self {
+        Self { meta }
+    }
+}
+```
+
+Implement each method. The first argument to accept should always be `glean: &Glean`, that is: a reference to the Glean object, used to access the storage:
+
+```rust,noplaypen
+impl CounterMetric { // same block as above
+    pub fn add(&self, glean: &Glean, amount: i32) {
+        // Always include this check!
+        if !self.meta.should_record() || !glean.is_upload_enabled() {
+            return;
+        }
+
+        // Do error handling here
+
+        glean
+            .storage()
+            .record_with(&self.meta, |old_value| match old_value {
+                Some(Metric::Counter(old_value)) => Metric::Counter(old_value + amount),
+                _ => Metric::Counter(amount),
+            })
+    }
+}
+```
+
+Use `glean.storage().record()` to record a fixed value or `glean.storage.record_with()` to construct a new value from the currently stored one.
+
+The storage operation makes use of the metric's variant of the `Metric` enumeration.
+
+## The `Metric` enumeration
+
+Persistence and in-memory serialization as well as ping payload serialization are handled through the `Metric` enumeration.
+This is defined in `glean-core/src/metrics/mod.rs`.
+Variants of this enumeration are used in the storage implementation of the metric type.
+
+To add a new metric type, add a new variant to the `Metric` enum:
+
+```rust,noplaypen
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub enum Metric {
+    // ...
+    Counter(i32),
+}
+```
+
+Then modify the below implementation and define the right category name for the new type. This will be used in the ping payload:
+
+```rust,noplaypen
+impl Metric {
+    pub fn category(&self) -> &'static str {
+        match self {
+            // ...
+            Metric::Counter(_) => "counter",
+        }
+    }
+}
+```
+
+Finally, define the ping payload serialization (as JSON).
+In the simple cases where the in-memory representation maps to its JSON representation it is enough to call the `json!` macro.
+
+```rust,noplaypen
+impl Metric { // same block as above
+    pub fn as_json(&self) -> JsonValue {
+        match self {
+            // ...
+            Metric::Counter(c) => json!(c),
+        }
+    }
+}
+```
+
+For more complex serialization consider implementing serialization logic as a function returning a [`serde_json::Value`](https://docs.rs/serde_json/*/serde_json/enum.Value.html)
+or another object that can be serialized.
+
+## FFI layer
+
+In order to use a new metric type over the FFI layer, it needs implementations in the FFI component and the platform-part.
+
+### FFI component
+
+The FFI component implementation can be found in `glean-core/ffi/src/lib.rs`.
+
+Add a global map for your metric type:
+
+```rust,noplaypen
+lazy_static! {
+    static ref COUNTER_METRICS: ConcurrentHandleMap<CounterMetric> = ConcurrentHandleMap::new();
+}
+```
+
+Add a function to create new instances of this metric type:
+
+```rust,noplaypen
+#[no_mangle]
+pub extern "C" fn glean_new_counter_metric(
+    category: FfiStr,
+    name: FfiStr,
+    send_in_pings: RawStringArray,
+    send_in_pings_len: i32,
+    lifetime: i32,
+    disabled: u8,
+) -> u64 {
+    COUNTER_METRICS.insert_with_log(|| {
+        let send_in_pings = unsafe { from_raw_string_array(send_in_pings, send_in_pings_len) };
+        let lifetime = Lifetime::try_from(lifetime)
+            .map_err(|_| {
+                log::error!(
+                    "[Counter] Failed to convert from lifetime value {}",
+                    lifetime
+                );
+            })
+            .unwrap_or(Lifetime::Ping);
+
+        Ok(CounterMetric::new(CommonMetricData {
+            name: name.into_string(),
+            category: category.into_string(),
+            send_in_pings,
+            lifetime,
+            disabled: disabled != 0,
+        }))
+    })
+}
+```
+
+On the Rust side add wrappers around the metric type's storage functions:
+
+```rust,noplaypen
+#[no_mangle]
+pub extern "C" fn glean_counter_add(glean_handle: u64, metric_id: u64, amount: i32) {
+    GLEAN.call_infallible(glean_handle, |glean| {
+        COUNTER_METRICS.call_infallible(metric_id, |metric| {
+            metric.add(glean, amount);
+        })
+    })
+}
+```
+
+### Platform-part (Kotlin)
+
+The platform-specific FFI wrapper needs the definitons of these new functions.
+For Kotlin this is in `glean-core/android/src/main/java/mozilla/telemetry/glean/rust/LibGleanFFI.kt`:
+
+```kotlin
+fun glean_new_counter_metric(category: String, name: String, send_in_pings: StringArray, send_in_pings_len: Int, lifetime: Int, disabled: Byte): Long
+fun glean_counter_add(glean_handle: Long, metric_id: Long, amount: Int)
+```
+
+Finally, create a platform-specific metric type wrapper.
+For Kotlin this would be `glean-core/android/src/main/java/mozilla/telemetry/glean/private/CounterMetricType.kt`:
+
+```kotlin
+class CounterMetricType(
+    disabled: Boolean,
+    category: String,
+    lifetime: Lifetime,
+    name: String,
+    val sendInPings: List<String>
+) {
+    private var handle: Long
+
+    init {
+        println("New Counter: $category.$name")
+
+        val ffiPingsList = StringArray(sendInPings.toTypedArray(), "utf-8")
+        this.handle = LibGleanFFI.INSTANCE.glean_new_counter_metric(
+                category = category,
+                name = name,
+                send_in_pings = ffiPingsList,
+                send_in_pings_len = sendInPings.size,
+                lifetime = lifetime.ordinal,
+                disabled = disabled.toByte())
+    }
+
+    fun add(amount: Int = 1) {
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        Dispatchers.API.launch {
+            LibGleanFFI.INSTANCE.glean_counter_add(
+                Glean.handle,
+                this@CounterMetricType.handle,
+                amount)
+        }
+    }
+}
+```
