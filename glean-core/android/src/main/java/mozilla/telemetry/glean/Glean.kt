@@ -106,7 +106,7 @@ open class GleanInternalAPI internal constructor () {
         }
 
         val initialized = LibGleanFFI.INSTANCE.glean_is_initialized(handle)
-        return initialized.toInt() != 0
+        return initialized.toBoolean()
     }
 
     /**
@@ -143,7 +143,7 @@ open class GleanInternalAPI internal constructor () {
      * Get whether or not Glean is allowed to record and upload data.
      */
     fun getUploadEnabled(): Boolean {
-        return LibGleanFFI.INSTANCE.glean_is_upload_enabled(handle) != 0.toByte()
+        return LibGleanFFI.INSTANCE.glean_is_upload_enabled(handle).toBoolean()
     }
 
     /**
