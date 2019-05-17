@@ -15,6 +15,9 @@ import java.lang.reflect.Proxy
 // Turn a boolean into its Byte (u8) representation
 internal fun Boolean.toByte(): Byte = if (this) 1 else 0
 
+// Turn a Byte into a boolean where zero is false and non-zero is true
+internal fun Byte.toBoolean(): Boolean = this != 0.toByte()
+
 /**
  * Helper to read a null terminated String out of the Pointer and free it.
  *

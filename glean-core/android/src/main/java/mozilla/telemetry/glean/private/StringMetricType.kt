@@ -12,6 +12,8 @@ import mozilla.telemetry.glean.rust.toByte
 import mozilla.telemetry.glean.rust.getAndConsumeRustString
 
 import mozilla.telemetry.glean.Dispatchers
+import mozilla.telemetry.glean.rust.toBoolean
+
 // import mozilla.components.service.glean.storages.StringsStorageEngine
 // import mozilla.components.support.base.log.logger.Logger
 
@@ -88,7 +90,7 @@ class StringMetricType(
         Dispatchers.API.assertInTestingMode()
 
         val res = LibGleanFFI.INSTANCE.glean_string_test_has_value(Glean.handle, this.handle, pingName)
-        return res != 0.toByte()
+        return res.toBoolean()
     }
 
     /**

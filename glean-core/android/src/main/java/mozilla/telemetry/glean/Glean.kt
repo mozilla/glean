@@ -15,6 +15,7 @@ import java.io.File
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.MetricHandle
 import mozilla.telemetry.glean.rust.RustError
+import mozilla.telemetry.glean.rust.toBoolean
 import mozilla.telemetry.glean.rust.toByte
 import mozilla.telemetry.glean.GleanMetrics.GleanBaseline
 import mozilla.telemetry.glean.GleanMetrics.GleanInternalMetrics
@@ -176,7 +177,7 @@ open class GleanInternalAPI internal constructor () {
             pingName,
             (configuration.logPings).toByte()
         )
-        if (queued != 0.toByte()) {
+        if (queued.toBoolean()) {
             PingUploadWorker.enqueueWorker()
         }
     }

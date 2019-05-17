@@ -11,6 +11,8 @@ import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.toByte
 
 import mozilla.telemetry.glean.Dispatchers
+import mozilla.telemetry.glean.rust.toBoolean
+
 // import mozilla.components.service.glean.storages.CountersStorageEngine
 // import mozilla.components.support.base.log.logger.Logger
 
@@ -84,7 +86,7 @@ class CounterMetricType(
         Dispatchers.API.assertInTestingMode()
 
         val res = LibGleanFFI.INSTANCE.glean_counter_test_has_value(Glean.handle, this.handle, pingName)
-        return res != 0.toByte()
+        return res.toBoolean()
     }
 
     /**
