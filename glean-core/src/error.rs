@@ -8,6 +8,8 @@ use ffi_support::{handle_map::HandleError, ExternError};
 
 use rkv::error::StoreError;
 
+use serde_json;
+
 /// A specialized [`Result`] type for this crate's operations.
 ///
 /// This is generally used to avoid writing out [Error] directly and
@@ -32,12 +34,16 @@ pub enum ErrorKind {
     Handle(HandleError),
 
     /// IO error
-    #[fail(display = "An I/O error occured.")]
+    #[fail(display = "An I/O error occurred.")]
     IoError(io::Error),
 
     /// IO error
-    #[fail(display = "An Rkv error occured.")]
+    #[fail(display = "An Rkv error occurred.")]
     Rkv(StoreError),
+
+    /// JSON error
+    #[fail(display = "A JSON error occurred.")]
+    Json(serde_json::error::Error),
 }
 
 /// A specialized [`Error`] type for this crate's operations.
@@ -113,5 +119,13 @@ impl From<StoreError> for Error {
 impl From<Error> for ExternError {
     fn from(error: Error) -> ExternError {
         ffi_support::ExternError::new_error(ffi_support::ErrorCode::new(42), format!("{}", error))
+    }
+}
+
+impl From<serde_json::error::Error> for Error {
+    fn from(error: serde_json::error::Error) -> Error {
+        Error {
+            inner: Context::new(ErrorKind::Json(error)),
+        }
     }
 }

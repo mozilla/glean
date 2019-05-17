@@ -111,7 +111,7 @@ impl PingMaker {
         doc_id: &str,
         data_path: &Path,
         url_path: &str,
-        ping_content: &str,
+        ping_content: &JsonValue,
     ) -> std::io::Result<()> {
         let pings_dir = self.get_pings_dir(data_path)?;
 
@@ -124,7 +124,7 @@ impl PingMaker {
             let mut file = File::create(&temp_ping_path)?;
             file.write_all(url_path.as_bytes())?;
             file.write_all(b"\n")?;
-            file.write_all(ping_content.as_bytes())?;
+            file.write_all(::serde_json::to_string(ping_content)?.as_bytes())?;
         }
 
         std::fs::rename(temp_ping_path, ping_path)?;
