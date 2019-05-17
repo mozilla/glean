@@ -23,6 +23,7 @@ import mozilla.telemetry.glean.GleanMetrics.GleanBaseline
 import mozilla.telemetry.glean.GleanMetrics.GleanInternalMetrics
 import mozilla.telemetry.glean.GleanMetrics.Pings
 import mozilla.telemetry.glean.private.PingType
+import mozilla.telemetry.glean.private.RecordedExperimentData
 import mozilla.telemetry.glean.scheduler.GleanLifecycleObserver
 import mozilla.telemetry.glean.scheduler.PingUploadWorker
 
@@ -161,7 +162,7 @@ open class GleanInternalAPI internal constructor () {
         extra: Map<String, String>? = null
     ) {
         Log.e(LOG_TAG, "setExperimentActive is a stub")
-        // TODO: stub
+        // TODO: 1552471 stub
         // ExperimentsStorageEngine.setExperimentActive(experimentId, branch, extra)
     }
 
@@ -172,7 +173,7 @@ open class GleanInternalAPI internal constructor () {
      */
     fun setExperimentInactive(experimentId: String) {
         Log.e(LOG_TAG, "setExperimentInactive is a stub")
-        // TODO: stub
+        // TODO: 1552471 stub
         // ExperimentsStorageEngine.setExperimentInactive(experimentId)
     }
 
@@ -185,8 +186,9 @@ open class GleanInternalAPI internal constructor () {
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun testIsExperimentActive(experimentId: String): Boolean {
         Log.e(LOG_TAG, "testIsExperimentActive is a stub")
-        // TODO: stub
+        // TODO: 1552471 stub
         // return ExperimentsStorageEngine.getSnapshot()[experimentId] != null
+        assert(false, { "testIsExperimentActive is a stub" })
         return false
     }
 
@@ -197,12 +199,13 @@ open class GleanInternalAPI internal constructor () {
     * @return the [RecordedExperimentData] for the experiment
     * @throws [NullPointerException] if the requested experiment is not active
     */
-    /*
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun testGetExperimentData(experimentId: String): RecordedExperimentData {
-        return ExperimentsStorageEngine.getSnapshot().getValue(experimentId)
+        // TODO: 1552471 stub
+        // return ExperimentsStorageEngine.getSnapshot().getValue(experimentId)
+        assert(false, { "testGetExperimentData is a stub" })
+        return RecordedExperimentData("branch", null)
     }
-    */
 
     /**
      * Initialize the core metrics internally managed by Glean (e.g. client id).
