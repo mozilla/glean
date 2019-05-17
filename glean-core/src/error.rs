@@ -8,8 +8,6 @@ use ffi_support::{handle_map::HandleError, ExternError};
 
 use rkv::error::StoreError;
 
-use serde_json;
-
 /// A specialized [`Result`] type for this crate's operations.
 ///
 /// This is generally used to avoid writing out [Error] directly and
