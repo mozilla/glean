@@ -60,6 +60,9 @@ fn initialize_logging() {
     {
         match env_logger::try_init() {
             Ok(_) => log::debug!("stdout logging should be hooked up!"),
+            // Please note that this is only expected to fail during unit tests,
+            // where the logger might have already been initialized by a previous
+            // test. So it's fine to print with the "logger".
             Err(_) => log::debug!("stdout was already initialized"),
         };
     }
