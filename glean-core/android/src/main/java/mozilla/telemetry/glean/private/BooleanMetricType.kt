@@ -24,8 +24,6 @@ class BooleanMetricType(
     private var handle: Long
 
     init {
-        println("New Boolean: $category.$name")
-
         val ffiPingsList = StringArray(sendInPings.toTypedArray(), "utf-8")
         this.handle = LibGleanFFI.INSTANCE.glean_new_boolean_metric(
                 category = category,

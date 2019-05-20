@@ -18,3 +18,6 @@ path = ".."
 
 [target.'cfg(target_os = "android")'.dependencies]
 android_logger = "0.7.0"
+
+[target.'cfg(not(target_os = "android"))'.dependencies]
+env_logger = "0.6.1"

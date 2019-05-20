@@ -14,9 +14,6 @@ import mozilla.telemetry.glean.rust.RustError
 import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.rust.toBoolean
 
-// import mozilla.components.service.glean.storages.CountersStorageEngine
-// import mozilla.components.support.base.log.logger.Logger
-
 /**
  * This implements the developer facing API for recording counter metrics.
  *
@@ -34,13 +31,9 @@ class CounterMetricType(
     val sendInPings: List<String>
 ) {
 
-    // private val logger = Logger("glean/CounterMetricType")
-
     private var handle: Long
 
     init {
-        println("New Counter: $category.$name")
-
         val ffiPingsList = StringArray(sendInPings.toTypedArray(), "utf-8")
         this.handle = LibGleanFFI.INSTANCE.glean_new_counter_metric(
                 category = category,

@@ -28,6 +28,7 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import org.junit.Assert
+import org.robolectric.shadows.ShadowLog
 import java.util.concurrent.ExecutionException
 
 /**
@@ -116,8 +117,13 @@ internal fun checkPingSchema(content: String): JSONObject {
 internal fun resetGlean(
     context: Context = ApplicationProvider.getApplicationContext(),
     config: Configuration = Configuration(),
-    clearStores: Boolean = true
+    clearStores: Boolean = true,
+    redirectRobolectricLogs: Boolean = true
 ) {
+    if (redirectRobolectricLogs) {
+        ShadowLog.stream = System.out
+    }
+
     Glean.enableTestingMode()
 
     // We're using the WorkManager in a bunch of places, and Glean will crash
