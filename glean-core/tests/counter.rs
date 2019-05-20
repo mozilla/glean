@@ -5,6 +5,8 @@
 mod common;
 use crate::common::*;
 
+use serde_json::json;
+
 use glean_core::metrics::*;
 use glean_core::storage::StorageManager;
 use glean_core::{CommonMetricData, Glean, Lifetime};
@@ -24,7 +26,6 @@ fn counter_serializer_should_correctly_serialize_counters() {
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::User,
-            ..Default::default()
         });
 
         metric.add(&glean, 1);
@@ -33,8 +34,8 @@ fn counter_serializer_should_correctly_serialize_counters() {
             .snapshot_as_json(glean.storage(), "store1".into(), true)
             .unwrap();
         assert_eq!(
-            "{\"counter\":{\"telemetry.counter_metric\":1}}",
-            ::serde_json::to_string(&snapshot).unwrap(),
+            json!({"counter": {"telemetry.counter_metric": 1}}),
+            snapshot
         );
     }
 
@@ -46,16 +47,15 @@ fn counter_serializer_should_correctly_serialize_counters() {
             .snapshot_as_json(glean.storage(), "store1".into(), true)
             .unwrap();
         assert_eq!(
-            "{\"counter\":{\"telemetry.counter_metric\":1}}",
-            ::serde_json::to_string(&snapshot).unwrap(),
+            json!({"counter": {"telemetry.counter_metric": 1}}),
+            snapshot
         );
     }
 }
 
 #[test]
 fn set_value_properly_sets_the_value_in_all_stores() {
-    let (_t, tmpname) = tempdir();
-    let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID).unwrap();
+    let (glean, _t) = new_glean();
     let store_names: Vec<String> = vec!["store1".into(), "store2".into()];
 
     let metric = CounterMetric::new(CommonMetricData {
@@ -64,7 +64,6 @@ fn set_value_properly_sets_the_value_in_all_stores() {
         send_in_pings: store_names.clone(),
         disabled: false,
         lifetime: Lifetime::Ping,
-        ..Default::default()
     });
 
     metric.add(&glean, 1);
@@ -74,16 +73,16 @@ fn set_value_properly_sets_the_value_in_all_stores() {
             .snapshot_as_json(glean.storage(), &store_name, true)
             .unwrap();
 
-        assert_eq!(1, snapshot.as_object().unwrap().len());
-        println!("{:?}", snapshot);
-        assert_eq!(1, snapshot["counter"]["telemetry.counter_metric"]);
+        assert_eq!(
+            json!({"counter": {"telemetry.counter_metric": 1}}),
+            snapshot
+        );
     }
 }
 
 #[test]
 fn snapshot_returns_none_if_nothing_is_recorded_in_the_store() {
-    let (_t, tmpname) = tempdir();
-    let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID).unwrap();
+    let (glean, _t) = new_glean();
     assert!(StorageManager
         .snapshot(glean.storage(), "unknown_store", true)
         .is_none())
@@ -91,8 +90,7 @@ fn snapshot_returns_none_if_nothing_is_recorded_in_the_store() {
 
 #[test]
 fn snapshot_correctly_clears_the_stores() {
-    let (_t, tmpname) = tempdir();
-    let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID).unwrap();
+    let (glean, _t) = new_glean();
     let store_names: Vec<String> = vec!["store1".into(), "store2".into()];
 
     let metric = CounterMetric::new(CommonMetricData {
@@ -101,14 +99,13 @@ fn snapshot_correctly_clears_the_stores() {
         send_in_pings: store_names.clone(),
         disabled: false,
         lifetime: Lifetime::Ping,
-        ..Default::default()
     });
 
     metric.add(&glean, 1);
 
     // Get the snapshot from "store1" and clear it.
     let snapshot = StorageManager.snapshot(glean.storage(), "store1", true);
-    assert!(snapshot.is_some());
+    assert!(snapshot.unwrap().len() != 0);
     // Check that getting a new snapshot for "store1" returns an empty store.
     assert!(StorageManager
         .snapshot(glean.storage(), "store1", false)
@@ -116,7 +113,6 @@ fn snapshot_correctly_clears_the_stores() {
     // Check that we get the right data from both the stores. Clearing "store1" must
     // not clear "store2" as well.
     let snapshot2 = StorageManager.snapshot(glean.storage(), "store2", true);
-    assert!(snapshot.unwrap().len() != 0);
     assert!(snapshot2.unwrap().len() != 0);
 }
 
@@ -125,8 +121,7 @@ fn snapshot_correctly_clears_the_stores() {
 
 #[test]
 fn counters_must_not_increment_when_passed_zero_or_negative() {
-    let (_t, tmpname) = tempdir();
-    let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID).unwrap();
+    let (glean, _t) = new_glean();
 
     let metric = CounterMetric::new(CommonMetricData {
         name: "counter_metric".into(),
@@ -134,7 +129,6 @@ fn counters_must_not_increment_when_passed_zero_or_negative() {
         send_in_pings: vec!["store1".into()],
         disabled: false,
         lifetime: Lifetime::Application,
-        ..Default::default()
     });
 
     // Attempt to increment the counter with zero
@@ -146,6 +140,16 @@ fn counters_must_not_increment_when_passed_zero_or_negative() {
     metric.add(&glean, -1);
     // Check that nothing was recorded
     assert!(metric.test_get_value(&glean, "store1").is_none());
+
+    // Attempt increment counter properly
+    metric.add(&glean, 1);
+    // Check that nothing was recorded
+    assert_eq!(1, metric.test_get_value(&glean, "store1").unwrap());
+
+    // Attempt increment counter properly
+    metric.add(&glean, -1);
+    // Check that nothing was recorded
+    assert_eq!(1, metric.test_get_value(&glean, "store1").unwrap());
 
     // TODO: 1551975 Implement error reporting
     // assert_eq!(2, test_get_num_recorded_errors(metric, ...))
