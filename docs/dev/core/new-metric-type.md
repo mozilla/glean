@@ -130,14 +130,7 @@ pub extern "C" fn glean_new_counter_metric(
 ) -> u64 {
     COUNTER_METRICS.insert_with_log(|| {
         let send_in_pings = unsafe { from_raw_string_array(send_in_pings, send_in_pings_len) };
-        let lifetime = Lifetime::try_from(lifetime)
-            .map_err(|_| {
-                log::error!(
-                    "[Counter] Failed to convert from lifetime value {}",
-                    lifetime
-                );
-            })
-            .unwrap_or(Lifetime::Ping);
+        let lifetime = Lifetime::try_from(lifetime)?;
 
         Ok(CounterMetric::new(CommonMetricData {
             name: name.into_string(),
