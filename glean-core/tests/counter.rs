@@ -31,7 +31,7 @@ fn counter_serializer_should_correctly_serialize_counters() {
         metric.add(&glean, 1);
 
         let snapshot = StorageManager
-            .snapshot_as_json(glean.storage(), "store1".into(), true)
+            .snapshot_as_json(glean.storage(), "store1", true)
             .unwrap();
         assert_eq!(
             json!({"counter": {"telemetry.counter_metric": 1}}),
@@ -44,7 +44,7 @@ fn counter_serializer_should_correctly_serialize_counters() {
     {
         let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID).unwrap();
         let snapshot = StorageManager
-            .snapshot_as_json(glean.storage(), "store1".into(), true)
+            .snapshot_as_json(glean.storage(), "store1", true)
             .unwrap();
         assert_eq!(
             json!({"counter": {"telemetry.counter_metric": 1}}),
@@ -105,7 +105,7 @@ fn snapshot_correctly_clears_the_stores() {
 
     // Get the snapshot from "store1" and clear it.
     let snapshot = StorageManager.snapshot(glean.storage(), "store1", true);
-    assert!(snapshot.unwrap().len() != 0);
+    assert!(!snapshot.unwrap().is_empty());
     // Check that getting a new snapshot for "store1" returns an empty store.
     assert!(StorageManager
         .snapshot(glean.storage(), "store1", false)
@@ -113,7 +113,7 @@ fn snapshot_correctly_clears_the_stores() {
     // Check that we get the right data from both the stores. Clearing "store1" must
     // not clear "store2" as well.
     let snapshot2 = StorageManager.snapshot(glean.storage(), "store2", true);
-    assert!(snapshot2.unwrap().len() != 0);
+    assert!(!snapshot2.unwrap().is_empty());
 }
 
 // SKIPPED from glean-ac: counters are serialized in the correct JSON format
