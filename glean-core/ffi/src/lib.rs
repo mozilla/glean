@@ -200,6 +200,34 @@ pub extern "C" fn glean_boolean_set(glean_handle: u64, metric_id: u64, value: u8
 }
 
 #[no_mangle]
+pub extern "C" fn glean_boolean_test_has_value(
+    glean_handle: u64,
+    metric_id: u64,
+    storage_name: FfiStr,
+) -> u8 {
+    GLEAN.call_infallible(glean_handle, |glean| {
+        BOOLEAN_METRICS.call_infallible(metric_id, |metric| {
+            metric
+                .test_get_value(glean, storage_name.as_str())
+                .is_some()
+        })
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn glean_boolean_test_get_value(
+    glean_handle: u64,
+    metric_id: u64,
+    storage_name: FfiStr,
+) -> u8 {
+    GLEAN.call_infallible(glean_handle, |glean| {
+        BOOLEAN_METRICS.call_infallible(metric_id, |metric| {
+            metric.test_get_value(glean, storage_name.as_str()).unwrap()
+        })
+    })
+}
+
+#[no_mangle]
 pub extern "C" fn glean_string_set(glean_handle: u64, metric_id: u64, value: FfiStr) {
     GLEAN.call_infallible(glean_handle, |glean| {
         STRING_METRICS.call_infallible(metric_id, |metric| {
