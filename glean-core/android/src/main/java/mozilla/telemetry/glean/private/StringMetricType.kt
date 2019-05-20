@@ -10,6 +10,7 @@ import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.toByte
 import mozilla.telemetry.glean.rust.getAndConsumeRustString
+import mozilla.telemetry.glean.rust.RustError
 
 import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.rust.toBoolean
@@ -48,6 +49,13 @@ class StringMetricType(
                 send_in_pings_len = sendInPings.size,
                 lifetime = lifetime.ordinal,
                 disabled = disabled.toByte())
+    }
+
+    protected fun finalize() {
+        if (this.handle != 0L) {
+            val error = RustError.ByReference()
+            LibGleanFFI.INSTANCE.glean_destroy_string_metric(this.handle, error)
+        }
     }
 
     /**
