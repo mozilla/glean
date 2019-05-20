@@ -81,12 +81,6 @@ fn set_properly_sets_the_value_in_all_stores() {
     }
 }
 
-// SKIPPED from glean-ac: getSnapshot() returns null if nothing is recorded in the store
-// This test isn't metric type specific
-
-// SKIPPED from glean-ac: getSnapshot() correctly clears the stores.
-// This test isn't metric type specific
-
 // SKIPPED from glean-ac: strings are serialized in the correct JSON format
 // Completely redundant with other tests.
 
