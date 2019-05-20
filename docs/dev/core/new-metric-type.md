@@ -9,7 +9,7 @@ Adding a new metric type involves defining the metric type's API, its persisted 
 
 A metric type implementation is defined in its own file under `glean-core/src/metrics/`, e.g. `glean-core/src/metrics/counter.rs` for a [Counter](/user/metrics/counter.md).
 
-Start by defining a structure:
+Start by defining a structure to hold the metric's metadata:
 
 ```rust,noplaypen
 #[derive(Debug)]
