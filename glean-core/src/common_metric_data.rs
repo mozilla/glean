@@ -4,6 +4,8 @@
 
 use std::convert::TryFrom;
 
+use crate::error::{Error, ErrorKind};
+
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum Lifetime {
     /// The metric is reset with each sent ping
@@ -31,14 +33,14 @@ impl Lifetime {
 }
 
 impl TryFrom<i32> for Lifetime {
-    type Error = (); // FIXME: Proper error type needed
+    type Error = Error;
 
     fn try_from(value: i32) -> Result<Lifetime, Self::Error> {
         match value {
             0 => Ok(Lifetime::Ping),
             1 => Ok(Lifetime::Application),
             2 => Ok(Lifetime::User),
-            _ => Err(()),
+            e => Err(ErrorKind::Lifetime(e))?,
         }
     }
 }
