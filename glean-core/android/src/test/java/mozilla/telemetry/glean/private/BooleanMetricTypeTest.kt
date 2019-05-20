@@ -16,7 +16,6 @@ import mozilla.telemetry.glean.resetGlean
 import org.junit.Assert.assertTrue
 import org.junit.Assert.assertFalse
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -32,7 +31,6 @@ class BooleanMetricTypeTest {
         resetGlean()
     }
 
-    @Ignore("Ignoring the test since testing API is not implemented")
     @Test
     fun `The API saves to its storage engine`() {
         // Define a 'booleanMetric' boolean metric, which will be stored in "store1"
@@ -56,7 +54,6 @@ class BooleanMetricTypeTest {
         assertFalse(booleanMetric.testGetValue())
     }
 
-    @Ignore("Ignoring the test since testing API is not implemented")
     @Test
     fun `disabled booleans must not record data`() {
         // Define a 'booleanMetric' boolean metric, which will be stored in "store1". It's disabled
@@ -75,7 +72,6 @@ class BooleanMetricTypeTest {
         assertFalse(booleanMetric.testHasValue())
     }
 
-    @Ignore("Ignoring the test since testing API is not implemented")
     @Test(expected = NullPointerException::class)
     fun `testGetValue() throws NullPointerException if nothing is stored`() {
         // Define a 'booleanMetric' boolean metric to have an instance to call
@@ -90,7 +86,6 @@ class BooleanMetricTypeTest {
         booleanMetric.testGetValue()
     }
 
-    @Ignore("Ignoring the test since testing API is not implemented")
     @Test
     fun `The API saves to secondary pings`() {
         // Define a 'booleanMetric' boolean metric, which will be stored in "store1" and "store2"

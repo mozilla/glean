@@ -10,6 +10,9 @@ import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.toByte
 
+import mozilla.telemetry.glean.Dispatchers
+import mozilla.telemetry.glean.rust.toBoolean
+
 class BooleanMetricType(
     disabled: Boolean,
     category: String,
@@ -53,8 +56,11 @@ class BooleanMetricType(
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun testHasValue(pingName: String = sendInPings.first()): Boolean {
-        assert(false, { "Testing API not implementated for BooleanMetricType" })
-        return false
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        Dispatchers.API.assertInTestingMode()
+
+        val res = LibGleanFFI.INSTANCE.glean_boolean_test_has_value(Glean.handle, this.handle, pingName)
+        return res.toBoolean()
     }
 
     /**
@@ -69,7 +75,12 @@ class BooleanMetricType(
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun testGetValue(pingName: String = sendInPings.first()): Boolean {
-        assert(false, { "Testing API not implementated for BooleanMetricType" })
-        return false
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        Dispatchers.API.assertInTestingMode()
+
+        if (!testHasValue(pingName)) {
+            throw NullPointerException()
+        }
+        return LibGleanFFI.INSTANCE.glean_boolean_test_get_value(Glean.handle, this.handle, pingName).toBoolean()
     }
 }
