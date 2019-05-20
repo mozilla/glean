@@ -1,6 +1,6 @@
 # Adding a new metric type
 
-Data in Glean is stored in so called metrics.
+Data in Glean is stored in so-called metrics.
 You can find the full list of implemented metric types [in the user overview](/user/metrics/index.md).
 
 Adding a new metric type involves defining the metric type's API, its persisted and in-memory storage as well as its serialization into the ping payload.
@@ -165,7 +165,7 @@ pub extern "C" fn glean_counter_add(glean_handle: u64, metric_id: u64, amount: i
 
 ### Platform-part (Kotlin)
 
-The platform-specific FFI wrapper needs the definitons of these new functions.
+The platform-specific FFI wrapper needs the definitions of these new functions.
 For Kotlin this is in `glean-core/android/src/main/java/mozilla/telemetry/glean/rust/LibGleanFFI.kt`:
 
 ```kotlin
