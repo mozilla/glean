@@ -9,6 +9,8 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.annotation.VisibleForTesting
+import androidx.lifecycle.ProcessLifecycleOwner
+import kotlinx.coroutines.Job
 import mozilla.telemetry.glean.config.Configuration
 import mozilla.telemetry.glean.utils.getLocaleTag
 import java.io.File
@@ -19,11 +21,16 @@ import mozilla.telemetry.glean.rust.toBoolean
 import mozilla.telemetry.glean.rust.toByte
 import mozilla.telemetry.glean.GleanMetrics.GleanBaseline
 import mozilla.telemetry.glean.GleanMetrics.GleanInternalMetrics
+import mozilla.telemetry.glean.GleanMetrics.Pings
+import mozilla.telemetry.glean.private.PingType
+import mozilla.telemetry.glean.private.RecordedExperimentData
+import mozilla.telemetry.glean.scheduler.GleanLifecycleObserver
 import mozilla.telemetry.glean.scheduler.PingUploadWorker
 
+@Suppress("TooManyFunctions")
 open class GleanInternalAPI internal constructor () {
     companion object {
-        private val LOG_TAG: String = "glean-kotlin"
+        private val LOG_TAG: String = "glean/Glean"
     }
 
     // `internal` so this can be modified for testing
@@ -31,7 +38,14 @@ open class GleanInternalAPI internal constructor () {
 
     internal lateinit var configuration: Configuration
 
+    private val gleanLifecycleObserver by lazy { GleanLifecycleObserver() }
+
     private lateinit var gleanDataDir: File
+
+    // This object holds data related to any persistent information about the metrics ping,
+    // such as the last time it was sent and the store name
+    // TODO: 1551159 Integrate MetricsPingScheduler
+    // internal lateinit var metricsPingScheduler: MetricsPingScheduler
 
     /**
      * Initialize Glean.
@@ -47,11 +61,16 @@ open class GleanInternalAPI internal constructor () {
      * as shared preferences
      * @param configuration A Glean [Configuration] object with global settings.
      */
-    fun initialize(applicationContext: Context, configuration: Configuration = Configuration()) {
+    fun initialize(
+        applicationContext: Context,
+        configuration: Configuration = Configuration()
+    ) {
         if (isInitialized()) {
             Log.e(LOG_TAG, "Glean should not be initialized multiple times")
             return
         }
+
+        registerPings(Pings)
 
         this.configuration = configuration
 
@@ -62,6 +81,20 @@ open class GleanInternalAPI internal constructor () {
         // init the engines), then init the core metrics, and finally kick off the metrics
         // schedulers. We should do something similar here as well.
         initializeCoreMetrics(applicationContext)
+
+        // TODO: 1552308 Sending pending events will be handled on the Rust side
+        // Deal with any pending events so we can start recording new ones
+        // EventsStorageEngine.onReadyToSendPings(applicationContext)
+
+        // Set up information and scheduling for Glean owned pings. Ideally, the "metrics"
+        // ping startup check should be performed before any other ping, since it relies
+        // on being dispatched to the API context before any other metric.
+        // TODO: 1551159 Integrate MetricsPingScheduler
+        // metricsPingScheduler = MetricsPingScheduler(applicationContext)
+        // metricsPingScheduler.startupCheck()
+
+        // At this point, all metrics and events can be recorded.
+        ProcessLifecycleOwner.get().lifecycle.addObserver(gleanLifecycleObserver)
     }
 
     /**
@@ -73,7 +106,105 @@ open class GleanInternalAPI internal constructor () {
         }
 
         val initialized = LibGleanFFI.INSTANCE.glean_is_initialized(handle)
-        return initialized.toInt() != 0
+        return initialized.toBoolean()
+    }
+
+    /**
+     * Register the pings generated from `pings.yaml` with Glean.
+     *
+     * @param pings The `Pings` object generated for your library or application
+     * by Glean.
+     */
+    fun registerPings(pings: Any) {
+        // Instantiating the Pings object to send this function is enough to
+        // call the constructor and have it registered in [PingType.pingRegistry].
+        Log.i(LOG_TAG, "Registering pings for ${pings.javaClass.canonicalName}")
+    }
+
+    /**
+     * Enable or disable Glean collection and upload.
+     *
+     * Metric collection is enabled by default.
+     *
+     * When uploading is disabled, metrics aren't recorded at all and no data
+     * is uploaded.
+     *
+     * When disabling, all pending metrics, events and queued pings are cleared.
+     *
+     * When enabling, the core Glean metrics are recreated.
+     *
+     * @param enabled When true, enable metric collection.
+     */
+    fun setUploadEnabled(enabled: Boolean) {
+        LibGleanFFI.INSTANCE.glean_set_upload_enabled(handle, enabled.toByte())
+    }
+
+    /**
+     * Get whether or not Glean is allowed to record and upload data.
+     */
+    fun getUploadEnabled(): Boolean {
+        return LibGleanFFI.INSTANCE.glean_is_upload_enabled(handle).toBoolean()
+    }
+
+    /**
+     * Indicate that an experiment is running. Glean will then add an
+     * experiment annotation to the environment which is sent with pings. This
+     * information is not persisted between runs.
+     *
+     * @param experimentId The id of the active experiment (maximum
+     *     30 bytes)
+     * @param branch The experiment branch (maximum 30 bytes)
+     * @param extra Optional metadata to output with the ping
+     */
+    fun setExperimentActive(
+        experimentId: String,
+        branch: String,
+        extra: Map<String, String>? = null
+    ) {
+        Log.e(LOG_TAG, "setExperimentActive is a stub")
+        // TODO: 1552471 stub
+        // ExperimentsStorageEngine.setExperimentActive(experimentId, branch, extra)
+    }
+
+    /**
+     * Indicate that an experiment is no longer running.
+     *
+     * @param experimentId The id of the experiment to deactivate.
+     */
+    fun setExperimentInactive(experimentId: String) {
+        Log.e(LOG_TAG, "setExperimentInactive is a stub")
+        // TODO: 1552471 stub
+        // ExperimentsStorageEngine.setExperimentInactive(experimentId)
+    }
+
+    /**
+     * Tests whether an experiment is active, for testing purposes only.
+     *
+     * @param experimentId the id of the experiment to look for.
+     * @return true if the experiment is active and reported in pings, otherwise false
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    fun testIsExperimentActive(experimentId: String): Boolean {
+        Log.e(LOG_TAG, "testIsExperimentActive is a stub")
+        // TODO: 1552471 stub
+        // return ExperimentsStorageEngine.getSnapshot()[experimentId] != null
+        assert(false, { "testIsExperimentActive is a stub" })
+        return false
+    }
+
+    /**
+    * Returns the stored data for the requested active experiment, for testing purposes only.
+    *
+    * @param experimentId the id of the experiment to look for.
+    * @return the [RecordedExperimentData] for the experiment
+    * @throws [NullPointerException] if the requested experiment is not active
+    */
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    fun testGetExperimentData(experimentId: String): RecordedExperimentData {
+        // TODO: 1552471 stub
+        // return ExperimentsStorageEngine.getSnapshot().getValue(experimentId)
+        assert(false, { "testGetExperimentData is a stub" })
+        return RecordedExperimentData("branch", null)
     }
 
     /**
@@ -118,40 +249,6 @@ open class GleanInternalAPI internal constructor () {
     }
 
     /**
-     * Enable or disable Glean collection and upload.
-     *
-     * Metric collection is enabled by default.
-     *
-     * When uploading is disabled, metrics aren't recorded at all and no data
-     * is uploaded.
-     *
-     * When disabling, all pending metrics, events and queued pings are cleared.
-     *
-     * When enabling, the core Glean metrics are recreated.
-     *
-     * @param enabled When true, enable metric collection.
-     */
-    fun setUploadEnabled(enabled: Boolean) {
-        // logger.info("Metrics enabled: $enabled")
-        // val origUploadEnabled = uploadEnabled
-        // uploadEnabled = enabled
-        // if (isInitialized() && origUploadEnabled != enabled) {
-        //     onChangeUploadEnabled(enabled)
-        // }
-        Log.e(LOG_TAG, "setUploadEnabled is a stub")
-        // TODO: stub
-    }
-
-    /**
-     * Get whether or not Glean is allowed to record and upload data.
-     */
-    fun getUploadEnabled(): Boolean {
-        Log.e(LOG_TAG, "getUploadEnabled is a stub")
-        // TODO: stub
-        return false
-    }
-
-    /**
      * Get the data directory for glean.
      */
     internal fun getDataDir(): File {
@@ -167,19 +264,83 @@ open class GleanInternalAPI internal constructor () {
      * Handle the background event and send the appropriate pings.
      */
     fun handleBackgroundEvent() {
-        sendPing("baseline")
-        sendPing("events")
+        sendPings(listOf(Pings.baseline, Pings.events))
     }
 
-    internal fun sendPing(pingName: String) {
-        val queued = LibGleanFFI.INSTANCE.glean_send_ping(
+    /**
+     * Send a list of pings.
+     *
+     * The ping content is assembled as soon as possible, but upload is not
+     * guaranteed to happen immediately, as that depends on the upload
+     * policies.
+     *
+     * If the ping currently contains no content, it will not be sent.
+     *
+     * @param pings List of pings to send.
+     * @return The async Job performing the work of assembling the ping
+     */
+    internal fun sendPings(pings: List<PingType>) = Dispatchers.API.launch {
+        // TODO: 1552264 Move this logic to Rust
+        if (!isInitialized()) {
+            Log.e(LOG_TAG, "Glean must be initialized before sending pings.")
+            return@launch
+        }
+
+        if (!getUploadEnabled()) {
+            Log.e(LOG_TAG, "Glean must be enabled before sending pings.")
+            return@launch
+        }
+
+        var sentPing = false
+        for (ping in pings) {
+            if (sendPing(ping.name)) {
+                sentPing = true
+            } else {
+                Log.d(LOG_TAG, "No content for ping '$ping.name', therefore no ping queued.")
+            }
+        }
+
+        if (sentPing) {
+            PingUploadWorker.enqueueWorker()
+        }
+    }
+
+    /**
+     * Send a list of pings by name.
+     *
+     * Each ping will be looked up in the known instances of [PingType]. If the
+     * ping isn't known, an error is logged and the ping isn't queued for uploading.
+     *
+     * The ping content is assembled as soon as possible, but upload is not
+     * guaranteed to happen immediately, as that depends on the upload
+     * policies.
+     *
+     * If the ping currently contains no content, it will not be sent.
+     *
+     * @param pingNames List of ping names to send.
+     * @return The async Job performing the work of assembling the ping
+     */
+    internal fun sendPingsByName(pingNames: List<String>): Job? {
+        // val pings = pingNames.mapNotNull { pingName ->
+        //     PingType.pingRegistry.get(pingName)?.let {
+        //         it
+        //     } ?: run {
+        //         logger.error("Attempted to send unknown ping '$pingName'")
+        //         null
+        //     }
+        // }
+        // return sendPings(pings)
+        // TODO: 1552264
+        Log.e(LOG_TAG, "sendPingsByName is a stub")
+        return null
+    }
+
+    private fun sendPing(pingName: String): Boolean {
+        return LibGleanFFI.INSTANCE.glean_send_ping(
             handle,
             pingName,
             (configuration.logPings).toByte()
-        )
-        if (queued.toBoolean()) {
-            PingUploadWorker.enqueueWorker()
-        }
+        ).toBoolean()
     }
 
     /**

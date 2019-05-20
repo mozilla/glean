@@ -135,23 +135,24 @@ impl Glean {
         let ping_maker = PingMaker::new();
         let doc_id = Uuid::new_v4().to_string();
         let url_path = self.make_path(ping_name, &doc_id);
-        let ping_content = match ping_maker.collect_string(self.storage(), ping_name) {
+        match ping_maker.collect(self.storage(), ping_name) {
             None => {
                 log::info!(
                     "No content for ping '{}', therefore no ping queued.",
                     ping_name
                 );
-                return Ok(false);
+                Ok(false)
             }
-            Some(content) => content,
-        };
+            Some(content) => {
+                if log_ping {
+                    // Use pretty-printing for log
+                    log::info!("{}", ::serde_json::to_string_pretty(&content)?);
+                }
 
-        if log_ping {
-            log::info!("{}", ping_content);
+                ping_maker.store_ping(&doc_id, &self.get_data_path(), &url_path, &content)?;
+                Ok(true)
+            }
         }
-
-        ping_maker.store_ping(&doc_id, &self.get_data_path(), &url_path, &ping_content)?;
-        Ok(true)
     }
 }
 

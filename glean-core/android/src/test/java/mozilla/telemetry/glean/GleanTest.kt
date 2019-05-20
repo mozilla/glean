@@ -6,6 +6,7 @@ package mozilla.telemetry.glean
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import mozilla.telemetry.glean.GleanMetrics.Pings
 import mozilla.telemetry.glean.scheduler.PingUploadWorker
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -49,7 +50,7 @@ class GleanTest {
 
     @Test
     fun `sending an empty ping doesn't queue work`() {
-        Glean.sendPing("custom")
+        Glean.sendPings(listOf(Pings.metrics))
         assertFalse(isWorkScheduled(PingUploadWorker.PING_WORKER_TAG))
     }
 }
