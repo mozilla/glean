@@ -9,6 +9,7 @@ import com.sun.jna.StringArray
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.toByte
+import mozilla.telemetry.glean.rust.RustError
 
 class BooleanMetricType(
     disabled: Boolean,
@@ -30,6 +31,13 @@ class BooleanMetricType(
                 send_in_pings_len = sendInPings.size,
                 lifetime = lifetime.ordinal,
                 disabled = disabled.toByte())
+    }
+
+    protected fun finalize() {
+        if (this.handle != 0L) {
+            val error = RustError.ByReference()
+            LibGleanFFI.INSTANCE.glean_destroy_boolean_metric(this.handle, error)
+        }
     }
 
     /**
