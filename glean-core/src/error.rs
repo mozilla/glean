@@ -27,6 +27,10 @@ pub type Result<T> = result::Result<T, Error>;
 /// [`Error`]: std.struct.Error.html
 #[derive(Debug, Fail)]
 pub enum ErrorKind {
+    /// Lifetime conversion failed
+    #[fail(display = "Lifetime conversion from {} failed", _0)]
+    Lifetime(i32),
+
     /// FFI-Support error
     #[fail(display = "Invalid handle")]
     Handle(HandleError),
