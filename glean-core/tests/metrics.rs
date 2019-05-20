@@ -2,22 +2,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+mod common;
+use crate::common::*;
+
 use glean_core::metrics::*;
-use glean_core::{CommonMetricData, Glean};
-use tempfile::TempDir;
-
-const GLOBAL_APPLICATION_ID: &str = "org.mozilla.glean.test.app";
-
-// Create a new instance of Glean with a temporary directory.
-// We need to keep the `TempDir` alive, so that it's not deleted before we stop using it.
-fn new_glean() -> (Glean, TempDir) {
-    let dir = tempfile::tempdir().unwrap();
-    let tmpname = dir.path().display().to_string();
-
-    let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID).unwrap();
-
-    (glean, dir)
-}
+use glean_core::CommonMetricData;
 
 #[test]
 fn stores_strings() {

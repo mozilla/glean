@@ -12,7 +12,7 @@ emulator:
 .PHONY: install
 
 lint: fmt
-	cargo clippy --all
+	cargo clippy --all --all-targets --all-features -- -D warnings
 	./gradlew ktlint detekt
 .PHONY: lint
 
