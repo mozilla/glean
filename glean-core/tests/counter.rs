@@ -105,7 +105,7 @@ fn snapshot_correctly_clears_the_stores() {
 
     // Get the snapshot from "store1" and clear it.
     let snapshot = StorageManager.snapshot(glean.storage(), "store1", true);
-    assert!(!snapshot.unwrap().is_empty());
+    assert!(snapshot.is_some());
     // Check that getting a new snapshot for "store1" returns an empty store.
     assert!(StorageManager
         .snapshot(glean.storage(), "store1", false)
@@ -113,7 +113,7 @@ fn snapshot_correctly_clears_the_stores() {
     // Check that we get the right data from both the stores. Clearing "store1" must
     // not clear "store2" as well.
     let snapshot2 = StorageManager.snapshot(glean.storage(), "store2", true);
-    assert!(!snapshot2.unwrap().is_empty());
+    assert!(snapshot2.is_some());
 }
 
 // SKIPPED from glean-ac: counters are serialized in the correct JSON format
