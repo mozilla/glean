@@ -171,5 +171,14 @@ afterEvaluate {
     }
 }
 
+apply from: "$rootDir/publish.gradle"
+// If using jnaForTestConfiguration or variantWithoutLib,
+// please also update the corresponding .buildconfig-android.yml
+// `publishedArtifacts` property.
+ext.configurePublish(
+        /* jnaForTestConfiguration= */ configurations.jnaForTest,
+        /* variantWithoutLib= */ 'androidWithoutLib',
+)
+
 //apply from: 'https://github.com/mozilla-mobile/android-components/raw/master/components/service/glean/scripts/sdk_generator.gradle'
 apply from: 'sdk_generator.gradle'

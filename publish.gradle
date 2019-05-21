@@ -5,12 +5,18 @@
 def libLicense = properties.libLicense
 def libLicenseUrl = properties.libLicenseUrl
 def libRepositoryName = properties.libRepositoryName
+def libProjectName = properties.libProjectName
 def libUrl = properties.libUrl
 def libVcsUrl = properties.libVcsUrl
 
-ext.configurePublish = { groupIdArg, artifactIdArg, descriptionArg,
-                         jnaForTestConfiguration = null,
+// If using jnaForTestConfiguration or variantWithoutLib,
+// please also update the corresponding .buildconfig-android.yml
+// `publishedArtifacts` property.
+ext.configurePublish = { jnaForTestConfiguration = null,
                          variantWithoutLib = null ->
+    def theGroupId = rootProject.ext.library.groupId
+    def theArtifactId = project.ext.artifactId
+    def theDescription = project.ext.description
     // `jnaForTestConfiguration` is a hacky way to say yes, I'm using JNA and
     // want to pack the JNA dispatch libraries and my Rust libraries into a
     // single JAR for use in unit tests that run on a development host (and not
@@ -49,9 +55,14 @@ ext.configurePublish = { groupIdArg, artifactIdArg, descriptionArg,
         def forUnitTestsJarTask = task forUnitTestsJar(type: Jar) {
             from extractJnaResources
             from "$buildDir/rustJniLibs/desktop"
+            from "$buildDir/nativeLibs/desktop"
         }
 
         project.afterEvaluate {
+            def copyNativeLibsTask = tasks.findByName("copyNativeLibs")
+            if (copyNativeLibsTask != null) {
+                forUnitTestsJarTask.dependsOn(copyNativeLibsTask)
+            }
             forUnitTestsJarTask.dependsOn(tasks["cargoBuild"])
         }
     }
@@ -86,10 +97,10 @@ ext.configurePublish = { groupIdArg, artifactIdArg, descriptionArg,
                 // see https://github.com/researchgate/gradle-release/issues/125 and
                 // https://stackoverflow.com/q/28020520.
                 pom {
-                    groupId = groupIdArg
-                    artifactId = artifactIdArg
-                    description = descriptionArg
-                    version = rootProject.ext.library['version']
+                    groupId = theGroupId
+                    artifactId = theArtifactId
+                    description = theDescription
+                    version = rootProject.ext.library.version
 
                     licenses {
                         license {
@@ -130,10 +141,10 @@ ext.configurePublish = { groupIdArg, artifactIdArg, descriptionArg,
                     // artifact javadocJar
 
                     pom {
-                        groupId = groupIdArg
-                        artifactId = "${artifactIdArg}-withoutLib"
-                        description = descriptionArg
-                        version = rootProject.ext.library['version']
+                        groupId = theGroupId
+                        artifactId = "${theArtifactId}-withoutLib"
+                        description = theDescription
+                        version = rootProject.ext.library.version
 
                         licenses {
                             license {
@@ -163,10 +174,10 @@ ext.configurePublish = { groupIdArg, artifactIdArg, descriptionArg,
                     artifact tasks['forUnitTestsJar']
 
                     pom {
-                        groupId = groupIdArg
-                        artifactId = "${artifactIdArg}-forUnitTests"
-                        description = descriptionArg
-                        version = rootProject.ext.library['version']
+                        groupId = theGroupId
+                        artifactId = "${theArtifactId}-forUnitTests"
+                        description = theDescription
+                        version = rootProject.ext.library.version
 
                         licenses {
                             license {
@@ -197,63 +208,25 @@ ext.configurePublish = { groupIdArg, artifactIdArg, descriptionArg,
         }
     }
 
-    apply plugin: 'com.jfrog.bintray'
+    task zipMavenArtifacts
 
-    // It feels like this shouldn't be necessary, but without it an
-    // "unspecified" creeps into bintray URLs -- just like
-    // https://github.com/bintray/gradle-bintray-plugin/issues/244, but not
-    // fixed by gradle-bintray-plugin:1.8.4.
-    version = rootProject.ext.library['version']
+    publishing.publications.withType(MavenPublication).each {publication ->
+        def zipTask = task "zipMavenArtifact-${publication.artifactId}"(type: Zip) {
+            from "${project.buildDir}/maven"
 
-    Properties localProperties = null;
-    if (project.rootProject.file('local.properties').canRead()) {
-        localProperties = new Properties()
-        localProperties.load(project.rootProject.file('local.properties').newDataInputStream())
-    }
+            include "**/${publication.artifactId}/**/*.aar"
+            include "**/${publication.artifactId}/**/*.md5"
+            include "**/${publication.artifactId}/**/*.sha1"
+            include "**/${publication.artifactId}/**/*.pom"
+            include "**/${publication.artifactId}/**/*.jar"
 
-    def thePublications = ['aar']
-    if (variantWithoutLib != null) {
-        thePublications << 'aarWithoutLib'
-    }
-    if (jnaForTestConfiguration != null) {
-        thePublications << 'forUnitTestsJar'
-    }
+            // Metadata is generated by maven.mozilla.org directly
+            exclude '**/*maven-metadata.xml*'
 
-    bintray {
-        user = localProperties != null ? localProperties.getProperty("bintray.user") : ""
-        key = localProperties != null ? localProperties.getProperty("bintray.apikey") : ""
-
-        publications = thePublications
-
-        pkg {
-            repo = libRepositoryName
-            name = artifactIdArg
-            desc = descriptionArg
-            websiteUrl = libUrl
-            vcsUrl = libVcsUrl
-            if (project.ext.has('vcsTag')) {
-                vcsTag = project.ext.vcsTag
-            }
-            licenses = [libLicense]
-            publish = true
-            publicDownloadNumbers = true
+            archiveName "${publication.artifactId}.maven.zip"
+            includeEmptyDirs = false
+            destinationDir(file("${project.buildDir}"))
         }
-    }
-
-    task zipMavenArtifacts(type: Zip) {
-        from "${project.buildDir}/maven"
-
-        include '**/*.aar'
-        include '**/*.jar'
-        include '**/*.pom'
-        include '**/*.md5'
-        include '**/*.sha1'
-
-        // Metadata is generated by maven.mozilla.org directly
-        exclude '**/*maven-metadata.xml*'
-
-        archiveName "target.maven.zip"
-        includeEmptyDirs = false
-        destinationDir(file("${project.buildDir}"))
+        zipMavenArtifacts.dependsOn(zipTask)
     }
 }
