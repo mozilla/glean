@@ -209,6 +209,13 @@ class CounterMetricType(
                 disabled = disabled.toByte())
     }
 
+    protected fun finalize() {
+        if (this.handle != 0L) {
+            val error = RustError.ByReference()
+            LibGleanFFI.INSTANCE.glean_destroy_counter_metric(this.handle, error)
+        }
+    }
+
     fun shouldRecord(): Boolean {
         // Don't record metrics if we aren't initialized
         if (!Glean.isInitialized()) {
