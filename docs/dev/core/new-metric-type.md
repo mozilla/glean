@@ -19,11 +19,16 @@ pub struct CounterMetric {
 ```
 
 Its implementation should have a way to create a new metric from the common metric data. It should be the same for all metric types.
+It should also provide a `should_record` function as shown below.
 
 ```rust,noplaypen
 impl CounterMetric {
     pub fn new(meta: CommonMetricData) -> Self {
         Self { meta }
+    }
+
+    pub fn should_record(&self, glean: &Glean) -> bool {
+        glean.is_upload_enabled() && self.meta.should_record()
     }
 }
 ```
@@ -34,7 +39,7 @@ Implement each method. The first argument to accept should always be `glean: &Gl
 impl CounterMetric { // same block as above
     pub fn add(&self, glean: &Glean, amount: i32) {
         // Always include this check!
-        if !self.meta.should_record() || !glean.is_upload_enabled() {
+        if !self.should_record() {
             return;
         }
 
@@ -156,6 +161,17 @@ pub extern "C" fn glean_counter_add(glean_handle: u64, metric_id: u64, amount: i
 }
 ```
 
+Additionally, expose the `should_record` function:
+
+```rust,noplaypen
+#[no_mangle]
+pub extern "C" fn glean_counter_should_record(glean_handle: u64, metric_id: u64) -> u8 {
+    GLEAN.call_infallible(glean_handle, |glean| {
+        COUNTER_METRICS.call_infallible(metric_id, |metric| metric.should_record(&glean))
+    })
+}
+```
+
 ### Platform-part (Kotlin)
 
 The platform-specific FFI wrapper needs the definitions of these new functions.
@@ -164,6 +180,7 @@ For Kotlin this is in `glean-core/android/src/main/java/mozilla/telemetry/glean/
 ```kotlin
 fun glean_new_counter_metric(category: String, name: String, send_in_pings: StringArray, send_in_pings_len: Int, lifetime: Int, disabled: Byte): Long
 fun glean_counter_add(glean_handle: Long, metric_id: Long, amount: Int)
+fun glean_counter_should_record(glean_handle: Long, metric_id: Long): Byte
 ```
 
 Finally, create a platform-specific metric type wrapper.
@@ -192,7 +209,20 @@ class CounterMetricType(
                 disabled = disabled.toByte())
     }
 
+    fun shouldRecord(): Boolean {
+        // Don't record metrics if we aren't initialized
+        if (!Glean.isInitialized()) {
+            return false
+        }
+
+        return LibGleanFFI.INSTANCE.glean_counter_should_record(Glean.handle, this.handle).toBoolean()
+    }
+
     fun add(amount: Int = 1) {
+        if (!shouldRecord()) {
+            return
+        }
+
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.launch {
             LibGleanFFI.INSTANCE.glean_counter_add(
