@@ -11,30 +11,30 @@ use glean_core::metrics::*;
 use glean_core::storage::StorageManager;
 use glean_core::{CommonMetricData, Glean, Lifetime};
 
-// SKIPPED from glean-ac: counter deserializer should correctly parse integers
+// SKIPPED from glean-ac: string deserializer should correctly parse integers
 // This test doesn't really apply to rkv
 
 #[test]
-fn counter_serializer_should_correctly_serialize_counters() {
+fn string_serializer_should_correctly_serialize_strings() {
     let (_t, tmpname) = tempdir();
     {
         let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID).unwrap();
 
-        let metric = CounterMetric::new(CommonMetricData {
-            name: "counter_metric".into(),
+        let metric = StringMetric::new(CommonMetricData {
+            name: "string_metric".into(),
             category: "telemetry".into(),
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::User,
         });
 
-        metric.add(&glean, 1);
+        metric.set(&glean, "test_string_value");
 
         let snapshot = StorageManager
             .snapshot_as_json(glean.storage(), "store1", true)
             .unwrap();
         assert_eq!(
-            json!({"counter": {"telemetry.counter_metric": 1}}),
+            json!({"string": {"telemetry.string_metric": "test_string_value"}}),
             snapshot
         );
     }
@@ -47,74 +47,66 @@ fn counter_serializer_should_correctly_serialize_counters() {
             .snapshot_as_json(glean.storage(), "store1", true)
             .unwrap();
         assert_eq!(
-            json!({"counter": {"telemetry.counter_metric": 1}}),
+            json!({"string": {"telemetry.string_metric": "test_string_value"}}),
             snapshot
         );
     }
 }
 
 #[test]
-fn set_value_properly_sets_the_value_in_all_stores() {
+fn set_properly_sets_the_value_in_all_stores() {
     let (glean, _t) = new_glean();
     let store_names: Vec<String> = vec!["store1".into(), "store2".into()];
 
-    let metric = CounterMetric::new(CommonMetricData {
-        name: "counter_metric".into(),
+    let metric = StringMetric::new(CommonMetricData {
+        name: "string_metric".into(),
         category: "telemetry".into(),
         send_in_pings: store_names.clone(),
         disabled: false,
         lifetime: Lifetime::Ping,
     });
 
-    metric.add(&glean, 1);
+    metric.set(&glean, "test_string_value");
 
+    // Check that the data was correctly set in each store.
     for store_name in store_names {
         let snapshot = StorageManager
             .snapshot_as_json(glean.storage(), &store_name, true)
             .unwrap();
 
         assert_eq!(
-            json!({"counter": {"telemetry.counter_metric": 1}}),
+            json!({"string": {"telemetry.string_metric": "test_string_value"}}),
             snapshot
         );
     }
 }
 
-// SKIPPED from glean-ac: counters are serialized in the correct JSON format
+// SKIPPED from glean-ac: strings are serialized in the correct JSON format
 // Completely redundant with other tests.
 
 #[test]
-fn counters_must_not_increment_when_passed_zero_or_negative() {
+fn long_string_values_are_truncated() {
     let (glean, _t) = new_glean();
 
-    let metric = CounterMetric::new(CommonMetricData {
-        name: "counter_metric".into(),
+    let metric = StringMetric::new(CommonMetricData {
+        name: "string_metric".into(),
         category: "telemetry".into(),
         send_in_pings: vec!["store1".into()],
         disabled: false,
-        lifetime: Lifetime::Application,
+        lifetime: Lifetime::Ping,
     });
 
-    // Attempt to increment the counter with zero
-    metric.add(&glean, 0);
-    // Check that nothing was recorded
-    assert!(metric.test_get_value(&glean, "store1").is_none());
+    metric.set(
+        &glean,
+        "0123456789012345678901234567890123456789012345678901234567890123456789",
+    );
 
-    // Attempt to increment the counter with negative
-    metric.add(&glean, -1);
-    // Check that nothing was recorded
-    assert!(metric.test_get_value(&glean, "store1").is_none());
+    // Check that data was truncated
+    assert_eq!(
+        "01234567890123456789012345678901234567890123456789",
+        metric.test_get_value(&glean, "store1").unwrap()
+    );
 
-    // Attempt increment counter properly
-    metric.add(&glean, 1);
-    // Check that nothing was recorded
-    assert_eq!(1, metric.test_get_value(&glean, "store1").unwrap());
-
-    // Attempt increment counter properly
-    metric.add(&glean, -1);
-    // Check that nothing was recorded
-    assert_eq!(1, metric.test_get_value(&glean, "store1").unwrap());
-
-    // TODO: 1551975 Implement error reporting
-    // assert_eq!(2, test_get_num_recorded_errors(metric, ...))
+    // TODO: Requires error reporting (bug 1551975)
+    //assertEquals(1, testGetNumRecordedErrors(stringMetric, ErrorType.InvalidValue))
 }
