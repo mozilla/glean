@@ -3,6 +3,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use crate::metrics::Metric;
+use crate::metrics::MetricType;
 use crate::storage::StorageManager;
 use crate::CommonMetricData;
 use crate::Glean;
@@ -12,13 +13,15 @@ pub struct BooleanMetric {
     meta: CommonMetricData,
 }
 
+impl MetricType for BooleanMetric {
+    fn meta(&self) -> &CommonMetricData {
+        &self.meta
+    }
+}
+
 impl BooleanMetric {
     pub fn new(meta: CommonMetricData) -> Self {
         Self { meta }
-    }
-
-    pub fn should_record(&self, glean: &Glean) -> bool {
-        glean.is_upload_enabled() && self.meta.should_record()
     }
 
     pub fn set(&self, glean: &Glean, value: bool) {
