@@ -63,11 +63,15 @@ internal interface LibGleanFFI : Library {
 
     fun glean_boolean_set(glean_handle: Long, metric_id: Long, value: Byte)
 
+    fun glean_boolean_should_record(glean_handle: Long, metric_id: Long): Byte
+
     fun glean_boolean_test_get_value(glean_handle: Long, metric_id: Long, storage_name: String): Byte
 
     fun glean_boolean_test_has_value(glean_handle: Long, metric_id: Long, storage_name: String): Byte
 
     fun glean_counter_add(glean_handle: Long, metric_id: Long, amount: Int)
+
+    fun glean_counter_should_record(glean_handle: Long, metric_id: Long): Byte
 
     fun glean_counter_test_get_value(glean_handle: Long, metric_id: Long, storage_name: String): Int
 
@@ -117,6 +121,8 @@ internal interface LibGleanFFI : Library {
     fun glean_set_upload_enabled(glean_handle: Long, flag: Byte)
 
     fun glean_string_set(glean_handle: Long, metric_id: Long, value: String)
+
+    fun glean_string_should_record(glean_handle: Long, metric_id: Long): Byte
 
     fun glean_destroy_glean(handle: Long, error: RustError.ByReference)
 

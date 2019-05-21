@@ -20,8 +20,12 @@ impl StringMetric {
         Self { meta }
     }
 
+    pub fn should_record(&self, glean: &Glean) -> bool {
+        glean.is_upload_enabled() && self.meta.should_record()
+    }
+
     pub fn set<S: Into<String>>(&self, glean: &Glean, value: S) {
-        if !self.meta.should_record() || !glean.is_upload_enabled() {
+        if !self.should_record(glean) {
             return;
         }
 

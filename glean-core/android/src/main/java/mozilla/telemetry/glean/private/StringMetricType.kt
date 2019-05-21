@@ -51,6 +51,15 @@ class StringMetricType(
         }
     }
 
+    fun shouldRecord(): Boolean {
+        // Don't record metrics if we aren't initialized
+        if (!Glean.isInitialized()) {
+            return false
+        }
+
+        return LibGleanFFI.INSTANCE.glean_string_should_record(Glean.handle, this.handle).toBoolean()
+    }
+
     /**
      * Set a string value.
      *
@@ -58,9 +67,9 @@ class StringMetricType(
      *              the maximum length, it will be truncated.
      */
     fun set(value: String) {
-        /*if (!shouldRecord(logger)) {
+        if (!shouldRecord()) {
             return
-        }*/
+        }
 
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.launch {
