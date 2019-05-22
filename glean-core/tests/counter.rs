@@ -118,3 +118,30 @@ fn counters_must_not_increment_when_passed_zero_or_negative() {
     // TODO: 1551975 Implement error reporting
     // assert_eq!(2, test_get_num_recorded_errors(metric, ...))
 }
+
+#[test]
+fn transformation_works() {
+    let (glean, _t) = new_glean();
+
+    let counter: CounterMetric = CounterMetric::new(CommonMetricData {
+        name: "transformation".into(),
+        category: "local".into(),
+        send_in_pings: vec!["store1".into(), "store2".into()],
+        ..Default::default()
+    });
+
+    counter.add(&glean, 2);
+
+    assert_eq!(2, counter.test_get_value(&glean, "store1").unwrap());
+    assert_eq!(2, counter.test_get_value(&glean, "store2").unwrap());
+
+    // Clearing just one store
+    let _ = StorageManager
+        .snapshot_as_json(glean.storage(), "store1", true)
+        .unwrap();
+
+    counter.add(&glean, 2);
+
+    assert_eq!(2, counter.test_get_value(&glean, "store1").unwrap());
+    assert_eq!(4, counter.test_get_value(&glean, "store2").unwrap());
+}

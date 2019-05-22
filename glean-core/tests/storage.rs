@@ -18,6 +18,24 @@ fn snapshot_returns_none_if_nothing_is_recorded_in_the_store() {
 }
 
 #[test]
+fn can_snapshot() {
+    let (glean, _t) = new_glean();
+
+    let local_metric = StringMetric::new(CommonMetricData {
+        name: "can_snapshot_local_metric".into(),
+        category: "local".into(),
+        send_in_pings: vec!["store".into()],
+        ..Default::default()
+    });
+
+    local_metric.set(&glean, "snapshot 42");
+
+    assert!(StorageManager
+        .snapshot(glean.storage(), "store", true)
+        .is_some())
+}
+
+#[test]
 fn snapshot_correctly_clears_the_stores() {
     let (glean, _t) = new_glean();
     let store_names: Vec<String> = vec!["store1".into(), "store2".into()];

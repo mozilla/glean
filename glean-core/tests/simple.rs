@@ -5,106 +5,10 @@
 mod common;
 use crate::common::*;
 
+use serde_json::json;
+
 use glean_core::metrics::*;
-use glean_core::{CommonMetricData, Glean};
-
-#[test]
-fn it_works() {
-    let (_t, tmpname) = tempdir();
-    let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID).unwrap();
-    assert!(glean.is_initialized());
-}
-
-#[test]
-fn can_set_metrics() {
-    let (_t, tmpname) = tempdir();
-    let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID).unwrap();
-
-    let local_metric = StringMetric::new(CommonMetricData {
-        name: "local_metric".into(),
-        category: "local".into(),
-        send_in_pings: vec!["core".into()],
-        ..Default::default()
-    });
-
-    let call_counter = CounterMetric::new(CommonMetricData {
-        name: "calls".into(),
-        category: "local".into(),
-        send_in_pings: vec!["core".into(), "metrics".into()],
-        ..Default::default()
-    });
-
-    local_metric.set(&glean, "I can set this");
-    call_counter.add(&glean, 1);
-}
-
-#[test]
-fn can_snapshot() {
-    let (_t, tmpname) = tempdir();
-    let mut glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID).unwrap();
-
-    let local_metric = StringMetric::new(CommonMetricData {
-        name: "can_snapshot_local_metric".into(),
-        category: "local".into(),
-        send_in_pings: vec!["core".into()],
-        ..Default::default()
-    });
-
-    local_metric.set(&glean, "snapshot 42");
-
-    let snapshot = glean.snapshot("core", false);
-    assert!(snapshot.contains(r#""local.can_snapshot_local_metric": "snapshot 42""#));
-}
-
-#[test]
-fn snapshot_can_clear_ping_store() {
-    let (_t, tmpname) = tempdir();
-    let mut glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID).unwrap();
-
-    let local_metric = StringMetric::new(CommonMetricData {
-        name: "clear_snapshot_local_metric".into(),
-        category: "local".into(),
-        send_in_pings: vec!["core".into()],
-        ..Default::default()
-    });
-
-    local_metric.set(&glean, "snapshot 43");
-
-    let snapshot = glean.snapshot("core", true);
-    assert!(snapshot.contains(r#""local.clear_snapshot_local_metric": "snapshot 43""#));
-
-    let snapshot = glean.snapshot("core", true);
-    assert!(!snapshot.contains(r#""local.clear_snapshot_local_metric": "snapshot 43""#));
-}
-
-#[test]
-fn clear_is_store_specific() {
-    let (_t, tmpname) = tempdir();
-    let mut glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID).unwrap();
-
-    let local_metric: StringMetric = StringMetric::new(CommonMetricData {
-        name: "store_specific".into(),
-        category: "local".into(),
-        send_in_pings: vec!["core".into(), "baseline".into()],
-        ..Default::default()
-    });
-
-    local_metric.set(&glean, "snapshot 44");
-
-    // Snapshot 1: Clear core.
-    let core_snapshot = glean.snapshot("core", true);
-    let baseline_snapshot = glean.snapshot("baseline", false);
-
-    assert!(core_snapshot.contains(r#""local.store_specific": "snapshot 44""#));
-    assert!(baseline_snapshot.contains(r#""local.store_specific": "snapshot 44""#));
-
-    // Snapshot 2: Only baseline should contain the data.
-    let core_snapshot = glean.snapshot("core", true);
-    let baseline_snapshot = glean.snapshot("baseline", false);
-
-    assert!(!core_snapshot.contains(r#""local.store_specific": "snapshot 44""#));
-    assert!(baseline_snapshot.contains(r#""local.store_specific": "snapshot 44""#));
-}
+use glean_core::{CommonMetricData, Glean, storage::StorageManager};
 
 #[test]
 fn thread_safety() {
@@ -139,44 +43,8 @@ fn thread_safety() {
 
     child.join().unwrap();
 
-    let snapshot = glean.lock().unwrap().snapshot("core", true);
-    assert!(snapshot.contains(r#""global.threadsafe": 4"#));
-}
-
-#[test]
-fn transformation_works() {
-    let (_t, tmpname) = tempdir();
-    let mut glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID).unwrap();
-
-    let counter: CounterMetric = CounterMetric::new(CommonMetricData {
-        name: "transformation".into(),
-        category: "local".into(),
-        send_in_pings: vec!["core".into(), "metrics".into()],
-        ..Default::default()
-    });
-
-    counter.add(&glean, 2);
-
-    let core_snapshot = glean.snapshot("core", true);
-    let metrics_snapshot = glean.snapshot("metrics", false);
-    assert!(
-        core_snapshot.contains(r#""local.transformation": 2"#),
-        format!("core snapshot 1: {}", core_snapshot)
-    );
-    assert!(
-        metrics_snapshot.contains(r#""local.transformation": 2"#),
-        format!("metrics snapshot 1: {}", metrics_snapshot)
-    );
-
-    counter.add(&glean, 2);
-    let core_snapshot = glean.snapshot("core", true);
-    let metrics_snapshot = glean.snapshot("metrics", false);
-    assert!(
-        core_snapshot.contains(r#""local.transformation": 2"#),
-        format!("core snapshot 2: {}", core_snapshot)
-    );
-    assert!(
-        metrics_snapshot.contains(r#""local.transformation": 4"#),
-        format!("metrics snapshot 2: {}", metrics_snapshot)
-    );
+    let snapshot = StorageManager
+        .snapshot_as_json(glean.lock().unwrap().storage(), "core", true)
+        .unwrap();
+    assert_eq!(json!({"counter": { "global.threadsafe": 4 }}), snapshot);
 }
