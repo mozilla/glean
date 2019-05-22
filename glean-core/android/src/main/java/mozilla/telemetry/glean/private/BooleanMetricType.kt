@@ -41,13 +41,29 @@ class BooleanMetricType(
         }
     }
 
+    fun shouldRecord(): Boolean {
+        // Don't record metrics if we aren't initialized
+        if (!Glean.isInitialized()) {
+            return false
+        }
+
+        return LibGleanFFI.INSTANCE.glean_boolean_should_record(Glean.handle, this.handle).toBoolean()
+    }
+
     /**
      * Set a boolean value.
      *
      * @param value This is a user defined boolean value.
      */
     fun set(value: Boolean) {
-        LibGleanFFI.INSTANCE.glean_boolean_set(Glean.handle, this.handle, value.toByte())
+        if (!shouldRecord()) {
+            return
+        }
+
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        Dispatchers.API.launch {
+            LibGleanFFI.INSTANCE.glean_boolean_set(Glean.handle, this@BooleanMetricType.handle, value.toByte())
+        }
     }
 
     /**

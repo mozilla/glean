@@ -78,10 +78,7 @@ impl CommonMetricData {
     }
 
     pub fn should_record(&self) -> bool {
-        if self.disabled {
-            return false;
-        }
-        true
+        !self.disabled
     }
 
     pub fn storage_names(&self) -> &[String] {

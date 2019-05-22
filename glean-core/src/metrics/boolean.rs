@@ -17,8 +17,12 @@ impl BooleanMetric {
         Self { meta }
     }
 
+    pub fn should_record(&self, glean: &Glean) -> bool {
+        glean.is_upload_enabled() && self.meta.should_record()
+    }
+
     pub fn set(&self, glean: &Glean, value: bool) {
-        if !self.meta.should_record() || !glean.is_upload_enabled() {
+        if !self.should_record(glean) {
             return;
         }
 
