@@ -5,6 +5,8 @@
 mod common;
 use crate::common::*;
 
+use serde_json::json;
+
 use glean_core::metrics::*;
 use glean_core::storage::StorageManager;
 use glean_core::{CommonMetricData, Lifetime};
@@ -61,4 +63,42 @@ fn snapshot_correctly_clears_the_stores() {
     // not clear "store2" as well.
     let snapshot2 = StorageManager.snapshot(glean.storage(), "store2", true);
     assert!(snapshot2.is_some());
+}
+
+#[test]
+fn storage_is_thread_safe() {
+    use std::sync::{Arc, Barrier, Mutex};
+    use std::thread;
+
+    let (glean, _t) = new_glean();
+    let glean = Arc::new(Mutex::new(glean));
+
+    let threadsafe_metric = CounterMetric::new(CommonMetricData {
+        name: "threadsafe".into(),
+        category: "global".into(),
+        send_in_pings: vec!["core".into(), "metrics".into()],
+        ..Default::default()
+    });
+    let threadsafe_metric = Arc::new(threadsafe_metric);
+
+    let barrier = Arc::new(Barrier::new(2));
+    let c = barrier.clone();
+    let threadsafe_metric_clone = threadsafe_metric.clone();
+    let glean_clone = glean.clone();
+    let child = thread::spawn(move || {
+        threadsafe_metric_clone.add(&*glean_clone.lock().unwrap(), 1);
+        c.wait();
+        threadsafe_metric_clone.add(&*glean_clone.lock().unwrap(), 1);
+    });
+
+    threadsafe_metric.add(&*glean.lock().unwrap(), 1);
+    barrier.wait();
+    threadsafe_metric.add(&*glean.lock().unwrap(), 1);
+
+    child.join().unwrap();
+
+    let snapshot = StorageManager
+        .snapshot_as_json(glean.lock().unwrap().storage(), "core", true)
+        .unwrap();
+    assert_eq!(json!({"counter": { "global.threadsafe": 4 }}), snapshot);
 }
