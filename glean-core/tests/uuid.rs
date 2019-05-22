@@ -5,8 +5,6 @@
 mod common;
 use crate::common::*;
 
-use serde_json::json;
-
 use glean_core::metrics::*;
 use glean_core::CommonMetricData;
 
