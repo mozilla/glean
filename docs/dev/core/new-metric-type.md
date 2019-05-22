@@ -18,22 +18,28 @@ pub struct CounterMetric {
 }
 ```
 
+Implement the `MetricType` trait to expose the meta data.
+This also gives you a `should_record` method on the metric type.
+
+```
+impl MetricType for CounterMetric {
+    fn meta(&self) -> &CommonMetricData {
+        &self.meta
+    }
+}
+```
+
 Its implementation should have a way to create a new metric from the common metric data. It should be the same for all metric types.
-It should also provide a `should_record` function as shown below.
 
 ```rust,noplaypen
 impl CounterMetric {
     pub fn new(meta: CommonMetricData) -> Self {
         Self { meta }
     }
-
-    pub fn should_record(&self, glean: &Glean) -> bool {
-        glean.is_upload_enabled() && self.meta.should_record()
-    }
 }
 ```
 
-Implement each method. The first argument to accept should always be `glean: &Glean`, that is: a reference to the Glean object, used to access the storage:
+Implement each method for the type. The first argument to accept should always be `glean: &Glean`, that is: a reference to the Glean object, used to access the storage:
 
 ```rust,noplaypen
 impl CounterMetric { // same block as above
