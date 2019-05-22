@@ -2,13 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package mozilla.components.service.glean.private
-
-import mozilla.components.service.glean.storages.StorageEngine
-import mozilla.components.service.glean.storages.StorageEngineManager
-import mozilla.components.service.glean.error.ErrorRecording.ErrorType
-import mozilla.components.service.glean.error.ErrorRecording.recordError
-import mozilla.components.support.base.log.logger.Logger
+package mozilla.telemetry.glean.private
 
 /**
  * This implements the developer facing API for labeled metrics.
@@ -22,17 +16,15 @@ import mozilla.components.support.base.log.logger.Logger
  * The |StorageEngineManager.collect| method knows how to pull these special values back out of the
  * individual storage engines and rearrange them correctly in the ping.
  */
-data class LabeledMetricType<T>(
-    override val disabled: Boolean,
-    override val category: String,
-    override val lifetime: Lifetime,
-    override val name: String,
-    override val sendInPings: List<String>,
+class LabeledMetricType<T>(
+    disabled: Boolean,
+    category: String,
+    lifetime: Lifetime,
+    val name: String,
+    val sendInPings: List<String>,
     val subMetric: T,
     val labels: Set<String>? = null
-) : CommonMetricData {
-
-    private val logger = Logger("glean/LabeledMetricType")
+) {
 
     companion object {
         private const val MAX_LABELS = 16
@@ -53,7 +45,8 @@ data class LabeledMetricType<T>(
      * @return adjusted label, possibly set to [OTHER_LABEL]
      */
     private fun getFinalStaticLabel(label: String): String {
-        return if (labels!!.contains(label)) label else OTHER_LABEL
+        return OTHER_LABEL
+        /*return if (labels!!.contains(label)) label else OTHER_LABEL*/
     }
 
     /**
@@ -69,6 +62,8 @@ data class LabeledMetricType<T>(
      */
     @Suppress("ReturnCount")
     private fun getFinalDynamicLabel(label: String): String {
+        return "null"
+        /*
         if (lifetime != Lifetime.Application && seenLabels.size == 0) {
             // TODO 1530733: This might cause I/O on the main thread if this is the
             // first thing being stored to the given storage engine after app restart.
@@ -111,6 +106,7 @@ data class LabeledMetricType<T>(
             }
         }
         return label
+        */
     }
 
     /**
@@ -122,9 +118,11 @@ data class LabeledMetricType<T>(
      */
     @Suppress("UNCHECKED_CAST")
     internal fun getMetricWithNewName(newName: String): T {
+        return "null" as T
         // function is "internal" so we can mock it in testing
 
         // Every metric that supports labels needs an entry here
+        /*
         return when (subMetric) {
             is BooleanMetricType -> subMetric.copy(name = newName) as T
             is CounterMetricType -> subMetric.copy(name = newName) as T
@@ -137,15 +135,18 @@ data class LabeledMetricType<T>(
                 "Can not create a labeled version of this metric type"
             )
         }
+        */
     }
 
     /**
      * Delegates to [StorageEngineManager.getStorageEngineForMetric].
      * Provided here so it can be mocked for testing.
      */
+    /*
     internal fun getStorageEngineForMetric(): StorageEngine? {
         return StorageEngineManager.getStorageEngineForMetric(subMetric)
     }
+    */
 
     /**
      * Get the specific metric for a given label.
