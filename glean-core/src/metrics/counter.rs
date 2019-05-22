@@ -14,6 +14,10 @@ pub struct CounterMetric {
 }
 
 impl MetricType for CounterMetric {
+    fn with_meta(meta: CommonMetricData) -> Self {
+        Self { meta }
+    }
+
     fn meta(&self) -> &CommonMetricData {
         &self.meta
     }

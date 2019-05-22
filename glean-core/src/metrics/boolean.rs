@@ -14,6 +14,10 @@ pub struct BooleanMetric {
 }
 
 impl MetricType for BooleanMetric {
+    fn with_meta(meta: CommonMetricData) -> Self {
+        Self { meta }
+    }
+
     fn meta(&self) -> &CommonMetricData {
         &self.meta
     }

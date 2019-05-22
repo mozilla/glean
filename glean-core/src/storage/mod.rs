@@ -14,6 +14,28 @@ use crate::Lifetime;
 
 pub struct StorageManager;
 
+/// Labeled metrics are stored as `<metric name>/<label>`.
+/// They need to go into a nested object in the final snapshot.
+///
+/// We therefore extract the metric name and the label from the key and construct the new object or
+/// add to it.
+fn snapshot_labeled_metrics(
+    snapshot: &mut HashMap<String, HashMap<String, JsonValue>>,
+    metric_name: &str,
+    metric: &Metric,
+) {
+    let category = format!("labeled_{}", metric.category());
+    let map = snapshot.entry(category).or_insert_with(HashMap::new);
+
+    let mut s = metric_name.splitn(2, '/');
+    let metric_name = s.next().unwrap(); // Safe unwrap, the function is only called when the name does contain a '/'
+    let label = s.next().unwrap(); // Safe unwrap, the function is only called when the name does contain a '/'
+
+    let obj = map.entry(metric_name.into()).or_insert_with(|| json!({}));
+    let obj = obj.as_object_mut().unwrap(); // safe unwrap, we constructed the object above
+    obj.insert(label.into(), metric.as_json());
+}
+
 impl StorageManager {
     pub fn snapshot(
         &self,
@@ -31,14 +53,18 @@ impl StorageManager {
         store_name: &str,
         clear_store: bool,
     ) -> Option<JsonValue> {
-        let mut snapshot: HashMap<&str, HashMap<String, JsonValue>> = HashMap::new();
+        let mut snapshot: HashMap<String, HashMap<String, JsonValue>> = HashMap::new();
 
         let mut snapshotter = |metric_name: &[u8], metric: &Metric| {
-            let map = snapshot
-                .entry(metric.category())
-                .or_insert_with(HashMap::new);
             let metric_name = String::from_utf8_lossy(metric_name).into_owned();
-            map.insert(metric_name, metric.as_json());
+            if metric_name.contains('/') {
+                snapshot_labeled_metrics(&mut snapshot, &metric_name, &metric);
+            } else {
+                let map = snapshot
+                    .entry(metric.category().into())
+                    .or_insert_with(HashMap::new);
+                map.insert(metric_name, metric.as_json());
+            }
         };
 
         storage.iter_store_from(Lifetime::Ping, &store_name, &mut snapshotter);

@@ -45,7 +45,7 @@ impl TryFrom<i32> for Lifetime {
     }
 }
 
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Clone)]
 pub struct CommonMetricData {
     pub name: String,
     pub category: String,

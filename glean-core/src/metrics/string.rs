@@ -17,6 +17,10 @@ pub struct StringMetric {
 }
 
 impl MetricType for StringMetric {
+    fn with_meta(meta: CommonMetricData) -> Self {
+        Self { meta }
+    }
+
     fn meta(&self) -> &CommonMetricData {
         &self.meta
     }
