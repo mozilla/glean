@@ -11,6 +11,8 @@ use glean_core::metrics::*;
 use glean_core::storage::StorageManager;
 use glean_core::{CommonMetricData, Glean, Lifetime};
 
+// Tests ported from glean-ac
+
 // SKIPPED from glean-ac: counter deserializer should correctly parse integers
 // This test doesn't really apply to rkv
 
@@ -118,6 +120,8 @@ fn counters_must_not_increment_when_passed_zero_or_negative() {
     // TODO: 1551975 Implement error reporting
     // assert_eq!(2, test_get_num_recorded_errors(metric, ...))
 }
+
+// New tests for glean-core below
 
 #[test]
 fn transformation_works() {
