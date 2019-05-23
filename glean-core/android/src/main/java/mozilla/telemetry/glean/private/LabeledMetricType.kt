@@ -17,9 +17,9 @@ package mozilla.telemetry.glean.private
  * individual storage engines and rearrange them correctly in the ping.
  */
 class LabeledMetricType<T>(
-    disabled: Boolean,
-    category: String,
-    lifetime: Lifetime,
+    val disabled: Boolean,
+    val category: String,
+    val lifetime: Lifetime,
     val name: String,
     val sendInPings: List<String>,
     val subMetric: T,
@@ -62,7 +62,7 @@ class LabeledMetricType<T>(
      */
     @Suppress("ReturnCount")
     private fun getFinalDynamicLabel(label: String): String {
-        return "null"
+        return label
         /*
         if (lifetime != Lifetime.Application && seenLabels.size == 0) {
             // TODO 1530733: This might cause I/O on the main thread if this is the
@@ -118,24 +118,22 @@ class LabeledMetricType<T>(
      */
     @Suppress("UNCHECKED_CAST")
     internal fun getMetricWithNewName(newName: String): T {
-        return "null" as T
         // function is "internal" so we can mock it in testing
 
         // Every metric that supports labels needs an entry here
-        /*
+        // FIXME(bug 1552873): We need proper implementations AND serialization handling of these
         return when (subMetric) {
-            is BooleanMetricType -> subMetric.copy(name = newName) as T
-            is CounterMetricType -> subMetric.copy(name = newName) as T
-            is DatetimeMetricType -> subMetric.copy(name = newName) as T
-            is StringListMetricType -> subMetric.copy(name = newName) as T
-            is StringMetricType -> subMetric.copy(name = newName) as T
-            is TimespanMetricType -> subMetric.copy(name = newName) as T
-            is UuidMetricType -> subMetric.copy(name = newName) as T
+            is BooleanMetricType -> BooleanMetricType(disabled = disabled, category = category, name = newName, sendInPings = sendInPings, lifetime = lifetime) as T
+            is CounterMetricType -> CounterMetricType(disabled = disabled, category = category, name = newName, sendInPings = sendInPings, lifetime = lifetime) as T
+            /*is DatetimeMetricType -> subMetric.copy(name = newName) as T*/
+            /*is StringListMetricType -> subMetric.copy(name = newName) as T*/
+            is StringMetricType -> StringMetricType(disabled = disabled, category = category, name = newName, sendInPings = sendInPings, lifetime = lifetime) as T
+            /*is TimespanMetricType -> subMetric.copy(name = newName) as T*/
+            /*is UuidMetricType -> subMetric.copy(name = newName) as T*/
             else -> throw IllegalStateException(
                 "Can not create a labeled version of this metric type"
             )
         }
-        */
     }
 
     /**

@@ -15,10 +15,10 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.Ignore
 import org.junit.runner.RunWith
-/*
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
+// import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
+/*
 import java.util.UUID
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.ArgumentMatchers.eq
@@ -52,11 +52,9 @@ class LabeledMetricTypeTest {
         /*Glean.setUploadEnabled(true)*/
     }
 
-    @Ignore("LabeledMetricType is a stub")
     @Test
     fun `test labeled counter type`() {
-        /*
-        CountersStorageEngine.clearAllStores()
+        // CountersStorageEngine.clearAllStores()
 
         val counterMetric = CounterMetricType(
             disabled = false,
@@ -75,12 +73,24 @@ class LabeledMetricTypeTest {
             subMetric = counterMetric
         )
 
-        CountersStorageEngine.record(labeledCounterMetric["label1"], 1)
-        CountersStorageEngine.record(labeledCounterMetric["label2"], 2)
+        labeledCounterMetric["label1"].add(1)
+        labeledCounterMetric["label2"].add(2)
 
         // Record a regular non-labeled counter. This isn't normally
         // possible with the generated code because the subMetric is private,
         // but it's useful to test here that it works.
+        counterMetric.add(3)
+
+        assertTrue(labeledCounterMetric["label1"].testHasValue())
+        assertEquals(1, labeledCounterMetric["label1"].testGetValue())
+
+        assertTrue(labeledCounterMetric["label2"].testHasValue())
+        assertEquals(2, labeledCounterMetric["label2"].testGetValue())
+
+        assertTrue(counterMetric.testHasValue())
+        assertEquals(3, counterMetric.testGetValue())
+
+        /*
         CountersStorageEngine.record(counterMetric, 3)
 
         val snapshot = CountersStorageEngine.getSnapshot(storeName = "metrics", clearStore = false)
