@@ -90,16 +90,6 @@ class GleanTest {
     }
 
     @Test
-    fun `test path generation`() {
-        val uuid = UUID.randomUUID()
-        val path = Glean.makePath("test", uuid)
-        val applicationId = "mozilla-components-service-glean"
-        // Make sure that the default applicationId matches the package name.
-        assertEquals(applicationId, Glean.applicationId)
-        assertEquals(path, "/submit/$applicationId/test/${Glean.SCHEMA_VERSION}/$uuid")
-    }
-
-    @Test
     fun `test experiments recording`() {
         Glean.setExperimentActive(
             "experiment_test", "branch_a"
@@ -273,24 +263,6 @@ class GleanTest {
             val lines = it.readLines()
             assert(lines[0].contains("baseline"))
         }
-    }
-
-    @Test
-    fun `Application id sanitizer must correctly filter undesired characters`() {
-        assertEquals(
-            "org-mozilla-test-app",
-            Glean.sanitizeApplicationId("org.mozilla.test-app")
-        )
-
-        assertEquals(
-            "org-mozilla-test-app",
-            Glean.sanitizeApplicationId("org.mozilla..test---app")
-        )
-
-        assertEquals(
-            "org-mozilla-test-app",
-            Glean.sanitizeApplicationId("org-mozilla-test-app")
-        )
     }
 
     @Test
