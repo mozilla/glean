@@ -31,6 +31,7 @@ import mozilla.telemetry.glean.scheduler.PingUploadWorker
 open class GleanInternalAPI internal constructor () {
     companion object {
         private val LOG_TAG: String = "glean/Glean"
+        internal const val GLEAN_DATA_DIR: String = "glean_data"
     }
 
     // `internal` so this can be modified for testing
@@ -74,7 +75,7 @@ open class GleanInternalAPI internal constructor () {
 
         this.configuration = configuration
 
-        this.gleanDataDir = File(applicationContext.applicationInfo.dataDir, "glean_data")
+        this.gleanDataDir = File(applicationContext.applicationInfo.dataDir, GLEAN_DATA_DIR)
         handle = LibGleanFFI.INSTANCE.glean_initialize(this.gleanDataDir.path, applicationContext.packageName)
 
         // TODO: on glean-legacy we perform other actions before initialize the metrics (e.g.
