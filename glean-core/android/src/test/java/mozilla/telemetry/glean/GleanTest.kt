@@ -127,7 +127,7 @@ class GleanTest {
         */
     }
 
-    @Ignore("The experiments API is not implemented yet")
+    @Ignore("The experiments API is not implemented yet. See bug 1552471.")
     @Test
     fun `test experiments recording`() {
         Glean.setExperimentActive(
@@ -151,7 +151,7 @@ class GleanTest {
         assertEquals("value", storedData.extra?.getValue("test_key"))
     }
 
-    @Ignore("Disabled because we're not triggering pings when going to background")
+    @Ignore("Disabled because we're not triggering pings when going to background. See bug 1551159.")
     @Test
     fun `test sending of background pings`() {
         val server = getMockWebServer()
@@ -325,91 +325,13 @@ class GleanTest {
         assertEquals(testChannelName, GleanInternalMetrics.appChannel.testGetValue())
     }
 
-    @Ignore("This should probably be implemented in Rust")
-    @Test
-    fun `client_id and first_run_date metrics should be copied from the old location`() {
-        // 1539480 BACKWARD COMPATIBILITY HACK
+    // glean-ac test removed.
+    // `client_id and first_run_date metrics should be copied from the old location` was here.
+    // 1539480 BACKWARD COMPATIBILITY HACK that is not needed anymore.
 
-        // The resetGlean called right before this function will add client_id
-        // and first_run_date to the new location in glean_client_info.  We
-        // need to clear those out again so we can test what happens when they
-        // are missing.
-        /*
-        StorageEngineManager(
-            applicationContext = ApplicationProvider.getApplicationContext()
-        ).clearAllStores()
-
-        val clientIdMetric = UuidMetricType(
-            disabled = false,
-            category = "",
-            name = "client_id",
-            lifetime = Lifetime.User,
-            sendInPings = listOf("glean_ping_info")
-        )
-        val clientIdValue = clientIdMetric.generateAndSet()
-
-        val firstRunDateMetric = DatetimeMetricType(
-            disabled = false,
-            category = "",
-            name = "first_run_date",
-            lifetime = Lifetime.User,
-            sendInPings = listOf("glean_ping_info"),
-            timeUnit = GleanTimeUnit.Day
-        )
-        firstRunDateMetric.set()
-
-        assertFalse(GleanInternalMetrics.clientId.testHasValue())
-        assertFalse(GleanInternalMetrics.firstRunDate.testHasValue())
-
-        // This should copy the values to their new locations
-        Glean.initialized = false
-        Glean.initialize(ApplicationProvider.getApplicationContext())
-
-        assertEquals(clientIdValue, GleanInternalMetrics.clientId.testGetValue())
-        assertTrue(GleanInternalMetrics.firstRunDate.testHasValue())
-        */
-    }
-
-    @Ignore("This should probably be implemented in Rust")
-    @Test
-    fun `client_id and first_run_date metrics should not override new location`() {
-        // 1539480 BACKWARD COMPATIBILITY HACK
-
-        // The resetGlean called right before this function will add client_id
-        // and first_run_date to the new location in glean_client_info.
-        // In this case we want to keep those and confirm that any old values
-        // won't override the new ones.
-        /*
-        val clientIdMetric = UuidMetricType(
-            disabled = false,
-            category = "",
-            name = "client_id",
-            lifetime = Lifetime.User,
-            sendInPings = listOf("glean_ping_info")
-        )
-        val clientIdValue = clientIdMetric.generateAndSet()
-
-        val firstRunDateMetric = DatetimeMetricType(
-            disabled = false,
-            category = "",
-            name = "first_run_date",
-            lifetime = Lifetime.User,
-            sendInPings = listOf("glean_ping_info"),
-            timeUnit = GleanTimeUnit.Day
-        )
-        firstRunDateMetric.set(Date(2200, 1, 1))
-
-        assertTrue(GleanInternalMetrics.clientId.testHasValue())
-        assertTrue(GleanInternalMetrics.firstRunDate.testHasValue())
-
-        // This should copy the values to their new locations
-        Glean.initialized = false
-        Glean.initialize(ApplicationProvider.getApplicationContext())
-
-        assertNotEquals(clientIdValue, GleanInternalMetrics.clientId.testGetValue())
-        assertNotEquals(firstRunDateMetric.testGetValue(), GleanInternalMetrics.firstRunDate.testGetValue())
-        */
-    }
+    // glean-ac test removed.
+    // `client_id and first_run_date metrics should not override new location` was here.
+    // 1539480 BACKWARD COMPATIBILITY HACK that is not needed anymore.
 
     @Ignore("This should probably be implemented in Rust")
     @Test
