@@ -4,6 +4,7 @@
 
 use crate::error_recording::{record_error, ErrorType};
 use crate::metrics::Metric;
+use crate::metrics::MetricType;
 use crate::storage::StorageManager;
 use crate::CommonMetricData;
 use crate::Glean;
@@ -15,13 +16,15 @@ pub struct StringMetric {
     meta: CommonMetricData,
 }
 
+impl MetricType for StringMetric {
+    fn meta(&self) -> &CommonMetricData {
+        &self.meta
+    }
+}
+
 impl StringMetric {
     pub fn new(meta: CommonMetricData) -> Self {
         Self { meta }
-    }
-
-    pub fn should_record(&self, glean: &Glean) -> bool {
-        glean.is_upload_enabled() && self.meta.should_record()
     }
 
     pub fn set<S: Into<String>>(&self, glean: &Glean, value: S) {

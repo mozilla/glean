@@ -11,6 +11,9 @@ mod string;
 mod string_list;
 mod uuid;
 
+use crate::CommonMetricData;
+use crate::Glean;
+
 pub use self::boolean::BooleanMetric;
 pub use self::counter::CounterMetric;
 pub use self::string::StringMetric;
@@ -24,6 +27,14 @@ pub enum Metric {
     Counter(i32),
     Uuid(String),
     StringList(Vec<String>),
+}
+
+pub trait MetricType {
+    fn meta(&self) -> &CommonMetricData;
+
+    fn should_record(&self, glean: &Glean) -> bool {
+        glean.is_upload_enabled() && self.meta().should_record()
+    }
 }
 
 impl Metric {
