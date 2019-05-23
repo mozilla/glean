@@ -5,6 +5,7 @@
 #![allow(clippy::new_without_default)]
 #![allow(clippy::redundant_closure)]
 
+use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 
 use uuid::Uuid;
@@ -28,6 +29,7 @@ use crate::ping::PingMaker;
 use crate::storage::StorageManager;
 use crate::util::sanitize_application_id;
 pub use error::{Error, Result};
+use metrics::PingType;
 
 const GLEAN_SCHEMA_VERSION: u32 = 1;
 
@@ -39,6 +41,7 @@ pub struct Glean {
     core_metrics: CoreMetrics,
     data_path: PathBuf,
     application_id: String,
+    ping_registry: HashMap<String, PingType>,
 }
 
 impl Glean {
@@ -57,6 +60,7 @@ impl Glean {
             core_metrics: CoreMetrics::new(),
             data_path: PathBuf::from(data_path),
             application_id,
+            ping_registry: HashMap::new(),
         };
         glean.initialize_core_metrics()?;
         glean.initialized = true;
@@ -120,26 +124,25 @@ impl Glean {
         )
     }
 
-    /// Send a ping by name.
+    /// Send a ping.
     ///
     /// The ping content is assembled as soon as possible, but upload is not
     /// guaranteed to happen immediately, as that depends on the upload
     /// policies.
     ///
-    /// TODO: (Verify this is correct):
     /// If the ping currently contains no content, it will not be sent.
     ///
     /// Returns true if a ping was sent, false otherwise.
     /// Returns an error if collecting or writing the ping to disk failed.
-    pub fn send_ping(&self, ping_name: &str, log_ping: bool) -> Result<bool> {
+    pub fn send_ping(&self, ping: &PingType, log_ping: bool) -> Result<bool> {
         let ping_maker = PingMaker::new();
         let doc_id = Uuid::new_v4().to_string();
-        let url_path = self.make_path(ping_name, &doc_id);
-        match ping_maker.collect(self.storage(), ping_name) {
+        let url_path = self.make_path(&ping.name, &doc_id);
+        match ping_maker.collect(self.storage(), &ping) {
             None => {
                 log::info!(
                     "No content for ping '{}', therefore no ping queued.",
-                    ping_name
+                    ping.name
                 );
                 Ok(false)
             }
@@ -153,6 +156,41 @@ impl Glean {
                 Ok(true)
             }
         }
+    }
+
+    /// Send a ping by name.
+    ///
+    /// The ping content is assembled as soon as possible, but upload is not
+    /// guaranteed to happen immediately, as that depends on the upload
+    /// policies.
+    ///
+    /// If the ping currently contains no content, it will not be sent.
+    ///
+    /// Returns true if a ping was sent, false otherwise.
+    /// Returns an error if collecting or writing the ping to disk failed.
+    pub fn send_ping_by_name(&self, ping_name: &str, log_ping: bool) -> Result<bool> {
+        match self.get_ping_by_name(ping_name) {
+            None => {
+                log::error!("Unknown ping type {}", ping_name);
+                Ok(false)
+            }
+            Some(ping) => self.send_ping(ping, log_ping),
+        }
+    }
+
+    pub fn get_ping_by_name(&self, ping_name: &str) -> Option<&PingType> {
+        self.ping_registry.get(ping_name)
+    }
+
+    pub fn register_ping_type(&mut self, ping: &PingType) {
+        if self.ping_registry.contains_key(&ping.name) {
+            log::error!("Duplicate ping named {}", ping.name)
+        }
+
+        // TODO: This just clones the PingType.  This means we have a copy of the PingType
+        // for the ping registry and another managed by handles on the language-specific
+        // side, but these objects are small and this seems like a simple solution...
+        self.ping_registry.insert(ping.name.clone(), ping.clone());
     }
 }
 

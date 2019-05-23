@@ -19,6 +19,7 @@ use handlemap_ext::HandleMapExtension;
 
 lazy_static! {
     static ref GLEAN: ConcurrentHandleMap<Glean> = ConcurrentHandleMap::new();
+    static ref PING_TYPES: ConcurrentHandleMap<PingType> = ConcurrentHandleMap::new();
     static ref BOOLEAN_METRICS: ConcurrentHandleMap<BooleanMetric> = ConcurrentHandleMap::new();
     static ref STRING_METRICS: ConcurrentHandleMap<StringMetric> = ConcurrentHandleMap::new();
     static ref COUNTER_METRICS: ConcurrentHandleMap<CounterMetric> = ConcurrentHandleMap::new();
@@ -100,9 +101,41 @@ pub extern "C" fn glean_set_upload_enabled(glean_handle: u64, flag: u8) {
 }
 
 #[no_mangle]
-pub extern "C" fn glean_send_ping(glean_handle: u64, ping_name: FfiStr, log_ping: u8) -> u8 {
+pub extern "C" fn glean_send_ping(glean_handle: u64, ping_type_handle: u64, log_ping: u8) -> u8 {
+    GLEAN.call_infallible(glean_handle, |glean| {
+        PING_TYPES.call_with_log(ping_type_handle, |ping_type| {
+            glean.send_ping(ping_type, log_ping != 0)
+        })
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn glean_send_ping_by_name(
+    glean_handle: u64,
+    ping_name: FfiStr,
+    log_ping: u8,
+) -> u8 {
     GLEAN.call_with_log(glean_handle, |glean| {
-        glean.send_ping(ping_name.as_str(), log_ping != 0)
+        glean.send_ping_by_name(ping_name.as_str(), log_ping != 0)
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn glean_new_ping_type(ping_name: FfiStr, include_client_id: u8) -> u64 {
+    PING_TYPES.insert_with_log(|| Ok(PingType::new(ping_name.as_str(), include_client_id != 0)))
+}
+
+#[no_mangle]
+pub extern "C" fn glean_test_has_ping_type(glean_handle: u64, ping_name: FfiStr) -> u8 {
+    GLEAN.call_infallible(glean_handle, |glean| {
+        glean.get_ping_by_name(ping_name.as_str()).is_some()
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn glean_register_ping_type(glean_handle: u64, ping_type_handle: u64) {
+    PING_TYPES.call_infallible(ping_type_handle, |ping_type| {
+        GLEAN.call_infallible_mut(glean_handle, |glean| glean.register_ping_type(ping_type))
     })
 }
 
@@ -314,7 +347,10 @@ pub extern "C" fn glean_ping_collect(glean_handle: u64, ping_name: FfiStr) -> *m
     GLEAN.call_infallible(glean_handle, |glean| {
         let ping_maker = glean_core::ping::PingMaker::new();
         let data = ping_maker
-            .collect_string(glean.storage(), ping_name.as_str())
+            .collect_string(
+                glean.storage(),
+                glean.get_ping_by_name(ping_name.as_str()).unwrap(),
+            )
             .unwrap_or_else(|| String::from(""));
         log::info!("Ping({}): {}", ping_name.as_str(), data);
         data
@@ -322,6 +358,7 @@ pub extern "C" fn glean_ping_collect(glean_handle: u64, ping_name: FfiStr) -> *m
 }
 
 define_handle_map_deleter!(GLEAN, glean_destroy_glean);
+define_handle_map_deleter!(PING_TYPES, glean_destroy_ping_type);
 define_handle_map_deleter!(BOOLEAN_METRICS, glean_destroy_boolean_metric);
 define_handle_map_deleter!(STRING_METRICS, glean_destroy_string_metric);
 define_handle_map_deleter!(COUNTER_METRICS, glean_destroy_counter_metric);

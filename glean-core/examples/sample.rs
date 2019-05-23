@@ -19,6 +19,8 @@ fn main() {
     };
 
     let mut glean = Glean::new(&data_path, "org.mozilla.glean_core.example", true).unwrap();
+    glean.register_ping_type(&PingType::new("core", true));
+
     assert!(glean.is_initialized());
 
     let local_metric: StringMetric = StringMetric::new(CommonMetricData {
@@ -59,13 +61,17 @@ fn main() {
     list.add(&glean, "upon");
 
     let ping_maker = PingMaker::new();
-    let ping = ping_maker.collect_string(glean.storage(), "core").unwrap();
+    let ping = ping_maker
+        .collect_string(glean.storage(), glean.get_ping_by_name("core").unwrap())
+        .unwrap();
     println!("Ping:\n{}", ping);
 
     let mut long_string = std::iter::repeat('x').take(49).collect::<String>();
     long_string.push('a');
     long_string.push('b');
     local_metric.set(&glean, long_string);
-    let ping = ping_maker.collect_string(glean.storage(), "core").unwrap();
+    let ping = ping_maker
+        .collect_string(glean.storage(), glean.get_ping_by_name("core").unwrap())
+        .unwrap();
     println!("Metrics Ping:\n{}", ping);
 }

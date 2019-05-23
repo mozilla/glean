@@ -19,7 +19,6 @@ import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -71,7 +70,6 @@ class PingTypeTest {
         checkPingSchema(pingJson)
     }
 
-    @Ignore("Sending pings without a client_id is not supported")
     @Test
     fun `test sending of custom pings without client_id`() {
         val server = getMockWebServer()
@@ -139,8 +137,8 @@ class PingTypeTest {
 
     @Test
     fun `Registry should contain built-in pings`() {
-        assertTrue(PingType.pingRegistry.containsKey("metrics"))
-        assertTrue(PingType.pingRegistry.containsKey("events"))
-        assertTrue(PingType.pingRegistry.containsKey("baseline"))
+        assertTrue(Glean.testHasPingType("metrics"))
+        assertTrue(Glean.testHasPingType("events"))
+        assertTrue(Glean.testHasPingType("baseline"))
     }
 }

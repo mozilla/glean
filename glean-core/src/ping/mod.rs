@@ -10,6 +10,7 @@ use log::info;
 use serde_json::{json, Value as JsonValue};
 
 use crate::database::Database;
+use crate::metrics::PingType;
 use crate::storage::StorageManager;
 
 pub struct PingMaker;
@@ -51,7 +52,7 @@ impl PingMaker {
         })
     }
 
-    fn get_client_info(&self, storage: &Database) -> JsonValue {
+    fn get_client_info(&self, storage: &Database, include_client_id: bool) -> JsonValue {
         // Add the "telemetry_sdk_build", which is the glean-core version.
         let version = env!("CARGO_PKG_VERSION");
         let mut map = json!({
@@ -68,22 +69,26 @@ impl PingMaker {
             }
         };
 
+        if !include_client_id {
+            map.as_object_mut().unwrap().remove("client_id");
+        }
+
         json!(map)
     }
 
-    pub fn collect(&self, storage: &Database, storage_name: &str) -> Option<JsonValue> {
-        info!("Collecting {}", storage_name);
+    pub fn collect(&self, storage: &Database, ping: &PingType) -> Option<JsonValue> {
+        info!("Collecting {}", ping.name);
 
-        let metrics_data = match StorageManager.snapshot_as_json(storage, storage_name, true) {
+        let metrics_data = match StorageManager.snapshot_as_json(storage, &ping.name, true) {
             None => {
-                info!("Storage for {} empty. Bailing out.", storage_name);
+                info!("Storage for {} empty. Bailing out.", ping.name);
                 return None;
             }
             Some(data) => data,
         };
 
-        let ping_info = self.get_ping_info(storage_name);
-        let client_info = self.get_client_info(storage);
+        let ping_info = self.get_ping_info(&ping.name);
+        let client_info = self.get_client_info(storage, ping.include_client_id);
 
         Some(json!({
             "ping_info": ping_info,
@@ -92,8 +97,8 @@ impl PingMaker {
         }))
     }
 
-    pub fn collect_string(&self, storage: &Database, storage_name: &str) -> Option<String> {
-        self.collect(storage, storage_name)
+    pub fn collect_string(&self, storage: &Database, ping: &PingType) -> Option<String> {
+        self.collect(storage, ping)
             .map(|ping| ::serde_json::to_string_pretty(&ping).unwrap())
     }
 

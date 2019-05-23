@@ -120,7 +120,9 @@ internal interface LibGleanFFI : Library {
 
     fun glean_ping_collect(glean_handle: Long, ping_name: String): Pointer?
 
-    fun glean_send_ping(glean_handle: Long, ping_name: String, log_ping: Byte): Byte
+    fun glean_send_ping(glean_handle: Long, ping_type_handle: Long, log_ping: Byte): Byte
+
+    fun glean_send_ping_by_name(glean_handle: Long, ping_name: String, log_ping: Byte): Byte
 
     fun glean_set_upload_enabled(glean_handle: Long, flag: Byte)
 
@@ -136,7 +138,15 @@ internal interface LibGleanFFI : Library {
 
     fun glean_destroy_counter_metric(handle: Long, error: RustError.ByReference)
 
+    fun glean_destroy_ping_type(handle: Long, error: RustError.ByReference)
+
     fun glean_str_free(ptr: Pointer)
+
+    fun glean_register_ping_type(glean_handle: Long, ping_type_id: Long)
+
+    fun glean_new_ping_type(name: String, include_client_id: Byte): Long
+
+    fun glean_test_has_ping_type(glean_handle: Long, name: String): Byte
 }
 
 internal typealias MetricHandle = Long
