@@ -9,7 +9,7 @@ use glean_core::metrics::*;
 use glean_core::CommonMetricData;
 
 #[test]
-fn list() {
+fn list_can_store_multiple_items() {
     let (mut glean, _t) = new_glean();
 
     let list: StringListMetric = StringListMetric::new(CommonMetricData {

@@ -9,7 +9,7 @@ use glean_core::metrics::*;
 use glean_core::CommonMetricData;
 
 #[test]
-fn uuid() {
+fn uuid_is_generated_and_stored() {
     let (mut glean, _t) = new_glean();
 
     let uuid: UuidMetric = UuidMetric::new(CommonMetricData {
