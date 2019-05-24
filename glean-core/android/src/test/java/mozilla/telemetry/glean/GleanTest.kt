@@ -24,7 +24,7 @@ import mozilla.telemetry.glean.private.Lifetime
 import mozilla.telemetry.glean.private.NoExtraKeys
 import mozilla.telemetry.glean.private.PingType
 import mozilla.telemetry.glean.private.StringMetricType
-import mozilla.telemetry.glean.private.TimeUnit as GleanTimeUnit
+// import mozilla.telemetry.glean.private.TimeUnit as GleanTimeUnit
 // import mozilla.telemetry.glean.private.UuidMetricType
 // import mozilla.components.service.glean.storages.StringsStorageEngine
 import mozilla.telemetry.glean.scheduler.GleanLifecycleObserver
@@ -271,7 +271,6 @@ class GleanTest {
     fun `Don't handle events when uninitialized`() {
         val gleanSpy = spy<GleanInternalAPI>(GleanInternalAPI::class.java)
 
-        //gleanSpy.initialized = false
         gleanSpy.testDestroyGleanHandle()
         runBlocking {
             gleanSpy.handleBackgroundEvent()
