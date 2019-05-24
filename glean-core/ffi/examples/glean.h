@@ -80,6 +80,12 @@ uint8_t glean_counter_test_has_value(uint64_t glean_handle,
                                      uint64_t metric_id,
                                      FfiStr storage_name);
 
+/**
+ * Initialize the logging system based on the target platform. This ensures
+ * that logging is shown when executing glean unit tests.
+ */
+void glean_enable_logging(void);
+
 uint64_t glean_initialize(FfiStr data_dir, FfiStr application_id);
 
 uint8_t glean_is_initialized(uint64_t glean_handle);
