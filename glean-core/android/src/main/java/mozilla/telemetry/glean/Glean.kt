@@ -43,6 +43,9 @@ open class GleanInternalAPI internal constructor () {
 
     private lateinit var gleanDataDir: File
 
+    // Keep track of this flag before Glean is initialized
+    private var uploadEnabled: Boolean? = null
+
     // This object holds data related to any persistent information about the metrics ping,
     // such as the last time it was sent and the store name
     // TODO: 1551159 Integrate MetricsPingScheduler
@@ -77,6 +80,10 @@ open class GleanInternalAPI internal constructor () {
 
         this.gleanDataDir = File(applicationContext.applicationInfo.dataDir, GLEAN_DATA_DIR)
         handle = LibGleanFFI.INSTANCE.glean_initialize(this.gleanDataDir.path, applicationContext.packageName)
+
+        uploadEnabled?.let {
+            LibGleanFFI.INSTANCE.glean_set_upload_enabled(handle, it.toByte())
+        }
 
         // TODO: on glean-legacy we perform other actions before initialize the metrics (e.g.
         // init the engines), then init the core metrics, and finally kick off the metrics
@@ -137,7 +144,11 @@ open class GleanInternalAPI internal constructor () {
      * @param enabled When true, enable metric collection.
      */
     fun setUploadEnabled(enabled: Boolean) {
-        LibGleanFFI.INSTANCE.glean_set_upload_enabled(handle, enabled.toByte())
+        if (isInitialized()) {
+            LibGleanFFI.INSTANCE.glean_set_upload_enabled(handle, enabled.toByte())
+        } else {
+            uploadEnabled = enabled
+        }
     }
 
     /**
