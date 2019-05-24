@@ -25,6 +25,7 @@ internal interface PingUploader {
         // Since ping file names are UUIDs, this matches UUIDs for filtering purposes
         private const val FILE_PATTERN = "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
         private const val LOG_TAG = "glean/PingUploader"
+        internal const val PINGS_DIR = "pings"
     }
 
     fun upload(path: String, data: String, config: Configuration): Boolean
@@ -51,7 +52,7 @@ internal interface PingUploader {
 
         var success = true
         // TODO: 1551694 Get this directory from the rust side
-        val storageDirectory = File(Glean.getDataDir(), "pings")
+        val storageDirectory = File(Glean.getDataDir(), PINGS_DIR)
 
         Log.d(LOG_TAG, "Processing persisted pings at ${storageDirectory.absolutePath}")
 

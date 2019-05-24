@@ -178,8 +178,8 @@ impl Database {
                     entry.insert(transform(None));
                 }
                 Entry::Occupied(mut entry) => {
-                    let old_value = entry.get();
-                    entry.insert(transform(Some(old_value.clone())));
+                    let old_value = entry.get().clone();
+                    entry.insert(transform(Some(old_value)));
                 }
             }
             return;
