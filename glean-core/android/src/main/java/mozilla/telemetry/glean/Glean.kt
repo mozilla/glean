@@ -68,6 +68,7 @@ open class GleanInternalAPI internal constructor () {
      * as shared preferences
      * @param configuration A Glean [Configuration] object with global settings.
      */
+    @Synchronized
     fun initialize(
         applicationContext: Context,
         configuration: Configuration = Configuration()
@@ -323,10 +324,11 @@ open class GleanInternalAPI internal constructor () {
      * guaranteed to happen immediately, as that depends on the upload
      * policies.
      *
-     * If the ping currently contains no content, it will not be sent.
+     * If the ping currently contains no content, it will not be assembled and
+     * queued for sending.
      *
      * @param pings List of pings to send.
-     * @return The async Job performing the work of assembling the ping
+     * @return The async [Job] performing the work of assembling the ping
      */
     internal fun sendPings(pings: List<PingType>): Job? {
         val sendPing: (PingType) -> Boolean = {
@@ -350,10 +352,11 @@ open class GleanInternalAPI internal constructor () {
      * guaranteed to happen immediately, as that depends on the upload
      * policies.
      *
-     * If the ping currently contains no content, it will not be sent.
+     * If the ping currently contains no content, it will not be assembled and
+     * queued for sending.
      *
      * @param pingNames List of ping names to send.
-     * @return The async Job performing the work of assembling the ping
+     * @return The async [Job] performing the work of assembling the ping
      */
     internal fun sendPingsByName(pingNames: List<String>): Job? {
         val sendPing: (String) -> Boolean = {
@@ -397,7 +400,7 @@ open class GleanInternalAPI internal constructor () {
      * Register a [PingType] in the registry associated with this [Glean] object.
      */
     internal fun registerPingType(pingType: PingType) {
-        if (handle == 0L) {
+        if (!this.isInitialized()) {
             pingTypeQueue.add(pingType)
         } else {
             LibGleanFFI.INSTANCE.glean_register_ping_type(
@@ -410,9 +413,9 @@ open class GleanInternalAPI internal constructor () {
     /**
      * Returns true if a ping by this name is in the ping registry.
      *
-     * For testing only.
+     * For internal testing only.
      */
-    // @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     internal fun testHasPingType(pingName: String): Boolean {
         return LibGleanFFI.INSTANCE.glean_test_has_ping_type(handle, pingName).toBoolean()
     }

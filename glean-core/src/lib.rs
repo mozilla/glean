@@ -132,7 +132,7 @@ impl Glean {
     ///
     /// If the ping currently contains no content, it will not be sent.
     ///
-    /// Returns true if a ping was sent, false otherwise.
+    /// Returns true if a ping was assembled and queued, false otherwise.
     /// Returns an error if collecting or writing the ping to disk failed.
     pub fn send_ping(&self, ping: &PingType, log_ping: bool) -> Result<bool> {
         let ping_maker = PingMaker::new();
@@ -166,7 +166,7 @@ impl Glean {
     ///
     /// If the ping currently contains no content, it will not be sent.
     ///
-    /// Returns true if a ping was sent, false otherwise.
+    /// Returns true if a ping was assembled and queued, false otherwise.
     /// Returns an error if collecting or writing the ping to disk failed.
     pub fn send_ping_by_name(&self, ping_name: &str, log_ping: bool) -> Result<bool> {
         match self.get_ping_by_name(ping_name) {
@@ -187,9 +187,6 @@ impl Glean {
             log::error!("Duplicate ping named {}", ping.name)
         }
 
-        // TODO: This just clones the PingType.  This means we have a copy of the PingType
-        // for the ping registry and another managed by handles on the language-specific
-        // side, but these objects are small and this seems like a simple solution...
         self.ping_registry.insert(ping.name.clone(), ping.clone());
     }
 }

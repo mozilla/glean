@@ -12,7 +12,7 @@ pub struct PingType {
 }
 
 impl PingType {
-    pub fn new<A: Into<String> + Copy>(name: A, include_client_id: bool) -> Self {
+    pub fn new<A: Into<String>>(name: A, include_client_id: bool) -> Self {
         Self {
             name: name.into(),
             include_client_id,
