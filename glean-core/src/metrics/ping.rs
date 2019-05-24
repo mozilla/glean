@@ -6,8 +6,11 @@ use crate::error::Result;
 use crate::Glean;
 
 #[derive(Debug, Clone)]
+/// Stores information about a ping.
 pub struct PingType {
+    /// The name of the ping.
     pub name: String,
+    /// Whether the ping should include the client_id data
     pub include_client_id: bool,
 }
 
