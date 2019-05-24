@@ -155,7 +155,11 @@ open class GleanInternalAPI internal constructor () {
      * Get whether or not Glean is allowed to record and upload data.
      */
     fun getUploadEnabled(): Boolean {
-        return LibGleanFFI.INSTANCE.glean_is_upload_enabled(handle).toBoolean()
+        if (isInitialized()) {
+            return LibGleanFFI.INSTANCE.glean_is_upload_enabled(handle).toBoolean()
+        } else {
+            return uploadEnabled ?: false
+        }
     }
 
     /**
