@@ -1,28 +1,40 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+// Not exported in glean.h right now.
+typedef struct ExternError {
+    uint32_t code;
+    char *message;
+} ExternError;
+
 #include "glean.h"
 
 int main(void)
 {
-  glean_initialize("/tmp/glean_data");
+  uint64_t glean = glean_initialize("/tmp/glean_data", "c-app");
 
-  printf("Glean upload enabled? %d\n", glean_is_upload_enabled());
-  glean_set_upload_enabled(0);
-  printf("Glean upload enabled? %d\n", glean_is_upload_enabled());
-  glean_set_upload_enabled(1);
+  printf("Glean upload enabled? %d\n", glean_is_upload_enabled(glean));
+  glean_set_upload_enabled(glean, 0);
+  printf("Glean upload enabled? %d\n", glean_is_upload_enabled(glean));
+  glean_set_upload_enabled(glean, 1);
 
-  ExternError err;
-  uint64_t metric = glean_new_counter_metric("local", "counter", &err);
+  const char *pings[2];
+  pings[0] = "store1";
+  pings[1] =  NULL;
+  uint64_t metric = glean_new_counter_metric("local", "counter", pings, 1, 0, 0);
   printf("Created counter: %llu\n", metric);
 
-  glean_counter_add(metric, 2, &err);
+  glean_counter_add(glean, metric, 2);
 
-  char *payload = glean_ping_collect("core", &err);
+  char *payload = glean_ping_collect(glean, "store1");
   printf("Payload:\n%s\n", payload);
   glean_str_free(payload);
 
-  glean_destroy_boolean_metric(metric, &err);
+  ExternError err;
+  glean_destroy_counter_metric(metric, &err);
+
+  glean_destroy_glean(glean, &err);
 
   return 0;
 }
