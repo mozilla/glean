@@ -46,13 +46,13 @@ impl Glean {
     ///
     /// This will create the necessary directories and files in `data_path`.
     /// This will also initialize the core metrics.
-    pub fn new(data_path: &str, application_id: &str) -> Result<Self> {
+    pub fn new(data_path: &str, application_id: &str, upload_enabled: bool) -> Result<Self> {
         log::info!("Creating new glean");
 
         let application_id = sanitize_application_id(application_id);
         let mut glean = Self {
-            initialized: true,
-            upload_enabled: true,
+            initialized: false,
+            upload_enabled,
             data_store: Database::new(data_path)?,
             core_metrics: CoreMetrics::new(),
             data_path: PathBuf::from(data_path),
@@ -164,7 +164,7 @@ mod test {
     fn path_is_constructed_from_data() {
         let t = tempfile::tempdir().unwrap();
         let name = t.path().display().to_string();
-        let glean = Glean::new(&name, "org.mozilla.glean").unwrap();
+        let glean = Glean::new(&name, "org.mozilla.glean", true).unwrap();
 
         assert_eq!(
             "/submit/org-mozilla-glean/baseline/1/this-is-a-docid",

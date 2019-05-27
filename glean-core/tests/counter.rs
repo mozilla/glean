@@ -20,7 +20,7 @@ use glean_core::{CommonMetricData, Glean, Lifetime};
 fn counter_serializer_should_correctly_serialize_counters() {
     let (_t, tmpname) = tempdir();
     {
-        let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID).unwrap();
+        let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
 
         let metric = CounterMetric::new(CommonMetricData {
             name: "counter_metric".into(),
@@ -44,7 +44,7 @@ fn counter_serializer_should_correctly_serialize_counters() {
     // Make a new glean instance here, which should force reloading of the data from disk
     // so we can ensure it persisted, because it has User lifetime
     {
-        let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID).unwrap();
+        let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
         let snapshot = StorageManager
             .snapshot_as_json(glean.storage(), "store1", true)
             .unwrap();
