@@ -11,6 +11,7 @@ use crate::Glean;
 
 const MAX_LABELS: usize = 16;
 const OTHER_LABEL: &str = "__other__";
+const MAX_LABEL_LENGTH: usize = 30;
 
 /// A labeled metric.
 ///
@@ -67,7 +68,14 @@ where
             if self.seen_labels.len() >= MAX_LABELS {
                 return OTHER_LABEL;
             } else {
-                // TODO: Length check
+                if label.len() > MAX_LABEL_LENGTH {
+                    log::error!(
+                        "label length {} exceeds maximum of {}",
+                        label.len(),
+                        MAX_LABEL_LENGTH
+                    );
+                    return OTHER_LABEL;
+                }
 
                 // TODO: Regex check
 

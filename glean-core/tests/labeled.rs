@@ -124,3 +124,36 @@ fn labels_are_checked_against_static_list() {
         snapshot
     );
 }
+
+#[test]
+fn dynamic_labels_too_long() {
+    let (glean, _t) = new_glean();
+    let mut labeled: LabeledMetric<CounterMetric> = LabeledMetric::new(
+        CommonMetricData {
+            name: "labeled_metric".into(),
+            category: "telemetry".into(),
+            send_in_pings: vec!["store1".into()],
+            disabled: false,
+            lifetime: Lifetime::Ping,
+        },
+        None,
+    );
+
+    let metric = labeled.get(&glean, "this_string_has_more_than_thirty_characters");
+    metric.add(&glean, 1);
+
+    let snapshot = StorageManager
+        .snapshot_as_json(glean.storage(), "store1", true)
+        .unwrap();
+
+    assert_eq!(
+        json!({
+            "labeled_counter": {
+                "telemetry.labeled_metric": {
+                    "__other__": 1,
+                }
+            }
+        }),
+        snapshot
+    );
+}
