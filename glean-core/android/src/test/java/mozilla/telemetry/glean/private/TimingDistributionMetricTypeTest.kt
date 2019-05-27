@@ -97,6 +97,7 @@ class TimingDistributionMetricTypeTest {
         */
     }
 
+    @Ignore("The testing API is not implemented.")
     @Test(expected = NullPointerException::class)
     fun `testGetValue() throws NullPointerException if nothing is stored`() {
         // Define a timing distribution metric which will be stored in "store1"
