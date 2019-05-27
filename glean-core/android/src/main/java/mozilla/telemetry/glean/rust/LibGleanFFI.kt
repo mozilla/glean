@@ -46,7 +46,9 @@ internal interface LibGleanFFI : Library {
         private val JNA_LIBRARY_NAME = "glean_ffi"
 
         internal var INSTANCE: LibGleanFFI = try {
-            Native.loadLibrary(JNA_LIBRARY_NAME, LibGleanFFI::class.java) as LibGleanFFI
+            val lib = Native.loadLibrary(JNA_LIBRARY_NAME, LibGleanFFI::class.java) as LibGleanFFI
+            lib.glean_enable_logging()
+            lib
         } catch (e: UnsatisfiedLinkError) {
             Proxy.newProxyInstance(
                 LibGleanFFI::class.java.classLoader,
@@ -60,6 +62,8 @@ internal interface LibGleanFFI : Library {
     // Important: strings returned from rust as *mut char must be Pointers on this end, returning a
     // String will work but either force us to leak them, or cause us to corrupt the heap (when we
     // free them).
+
+    fun glean_enable_logging()
 
     fun glean_boolean_set(glean_handle: Long, metric_id: Long, value: Byte)
 

@@ -42,7 +42,8 @@ unsafe fn from_raw_string_array(arr: RawStringArray, len: i32) -> Vec<String> {
 
 /// Initialize the logging system based on the target platform. This ensures
 /// that logging is shown when executing glean unit tests.
-fn initialize_logging() {
+#[no_mangle]
+pub extern "C" fn glean_enable_logging() {
     #[cfg(target_os = "android")]
     {
         let _ = std::panic::catch_unwind(|| {
@@ -70,8 +71,6 @@ fn initialize_logging() {
 
 #[no_mangle]
 pub extern "C" fn glean_initialize(data_dir: FfiStr, application_id: FfiStr) -> u64 {
-    initialize_logging();
-
     GLEAN.insert_with_log(|| {
         let data_dir = data_dir.into_string();
         let application_id = application_id.into_string();
