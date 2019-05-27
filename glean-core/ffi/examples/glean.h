@@ -86,7 +86,7 @@ uint8_t glean_counter_test_has_value(uint64_t glean_handle,
  */
 void glean_enable_logging(void);
 
-uint64_t glean_initialize(FfiStr data_dir, FfiStr application_id);
+uint64_t glean_initialize(FfiStr data_dir, FfiStr application_id, uint8_t upload_enabled);
 
 uint8_t glean_is_initialized(uint64_t glean_handle);
 

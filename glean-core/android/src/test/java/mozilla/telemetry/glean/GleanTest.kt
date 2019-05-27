@@ -94,7 +94,6 @@ class GleanTest {
         val context: Context = ApplicationProvider.getApplicationContext()
         val config = Configuration()
 
-        assertFalse(Glean.getUploadEnabled())
         Glean.setUploadEnabled(true)
         assertTrue(Glean.getUploadEnabled())
 

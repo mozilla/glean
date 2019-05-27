@@ -44,7 +44,7 @@ open class GleanInternalAPI internal constructor () {
     private lateinit var gleanDataDir: File
 
     // Keep track of this flag before Glean is initialized
-    private var uploadEnabled: Boolean? = null
+    private var uploadEnabled: Boolean = true
 
     // This object holds data related to any persistent information about the metrics ping,
     // such as the last time it was sent and the store name
@@ -79,11 +79,7 @@ open class GleanInternalAPI internal constructor () {
         this.configuration = configuration
 
         this.gleanDataDir = File(applicationContext.applicationInfo.dataDir, GLEAN_DATA_DIR)
-        handle = LibGleanFFI.INSTANCE.glean_initialize(this.gleanDataDir.path, applicationContext.packageName)
-
-        uploadEnabled?.let {
-            LibGleanFFI.INSTANCE.glean_set_upload_enabled(handle, it.toByte())
-        }
+        handle = LibGleanFFI.INSTANCE.glean_initialize(this.gleanDataDir.path, applicationContext.packageName, uploadEnabled.toByte())
 
         // TODO: on glean-legacy we perform other actions before initialize the metrics (e.g.
         // init the engines), then init the core metrics, and finally kick off the metrics
@@ -158,7 +154,7 @@ open class GleanInternalAPI internal constructor () {
         if (isInitialized()) {
             return LibGleanFFI.INSTANCE.glean_is_upload_enabled(handle).toBoolean()
         } else {
-            return uploadEnabled ?: false
+            return uploadEnabled
         }
     }
 

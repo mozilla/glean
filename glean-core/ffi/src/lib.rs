@@ -70,11 +70,15 @@ pub extern "C" fn glean_enable_logging() {
 }
 
 #[no_mangle]
-pub extern "C" fn glean_initialize(data_dir: FfiStr, application_id: FfiStr) -> u64 {
+pub extern "C" fn glean_initialize(
+    data_dir: FfiStr,
+    application_id: FfiStr,
+    upload_enabled: u8,
+) -> u64 {
     GLEAN.insert_with_log(|| {
         let data_dir = data_dir.into_string();
         let application_id = application_id.into_string();
-        let glean = Glean::new(&data_dir, &application_id)?;
+        let glean = Glean::new(&data_dir, &application_id, upload_enabled != 0)?;
         log::info!("Glean initialized");
         Ok(glean)
     })

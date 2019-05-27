@@ -13,7 +13,7 @@ typedef struct ExternError {
 int main(void)
 {
   glean_enable_logging();
-  uint64_t glean = glean_initialize("/tmp/glean_data", "c-app");
+  uint64_t glean = glean_initialize("/tmp/glean_data", "c-app", true);
 
   printf("Glean upload enabled? %d\n", glean_is_upload_enabled(glean));
   glean_set_upload_enabled(glean, 0);
