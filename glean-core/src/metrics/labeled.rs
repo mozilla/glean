@@ -2,11 +2,15 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+use std::collections::HashSet;
 use std::marker::PhantomData;
 
 use crate::metrics::MetricType;
 use crate::CommonMetricData;
 use crate::Glean;
+
+const MAX_LABELS: usize = 16;
+const OTHER_LABEL: &str = "__other__";
 
 /// A labeled metric.
 ///
@@ -15,9 +19,11 @@ use crate::Glean;
 pub struct LabeledMetric<T> {
     meta: CommonMetricData,
     labels: Option<Vec<String>>,
-    // Type of the underlying metric
-    // We don't hold on to any of these, but we need to be able to create them.
-    typ: PhantomData<T>,
+    /// Type of the underlying metric
+    /// We don't hold on to any of these, but we need to be able to create them.
+    submetric: PhantomData<T>,
+
+    seen_labels: HashSet<String>,
 }
 
 impl<T> LabeledMetric<T>
@@ -31,7 +37,8 @@ where
         LabeledMetric {
             meta,
             labels,
-            typ: PhantomData,
+            submetric: PhantomData,
+            seen_labels: HashSet::new(),
         }
     }
 
@@ -42,6 +49,33 @@ where
         };
 
         T::with_meta(meta)
+    }
+
+    fn static_label<'a>(&mut self, label: &'a str) -> &'a str {
+        let labels = self.labels.as_ref().unwrap();
+        if labels.iter().any(|l| l == label) {
+            label
+        } else {
+            OTHER_LABEL
+        }
+    }
+
+    fn dynamic_label<'a>(&mut self, label: &'a str) -> &'a str {
+        // TODO(bug 1554970): Fetch seen_labels from the database if empty
+
+        if !self.seen_labels.contains(label) {
+            if self.seen_labels.len() >= MAX_LABELS {
+                return OTHER_LABEL;
+            } else {
+                // TODO: Length check
+
+                // TODO: Regex check
+
+                self.seen_labels.insert(label.into());
+            }
+        }
+
+        label
     }
 
     /// Get a specific metric for a given label.
@@ -55,7 +89,13 @@ where
     ///
     /// Labels must be `snake_case` and less than 30 characters.
     /// If an invalid label is used, the metric will be recorded in the special `OTHER_LABEL` label.
-    pub fn get(&self, _glean: &Glean, label: &str) -> T {
-        self.new_metric_with_name(format!("{}/{}", self.meta.name, label))
+    pub fn get(&mut self, _glean: &Glean, label: &str) -> T {
+        let label = match self.labels {
+            Some(_) => self.static_label(label),
+            None => self.dynamic_label(label),
+        };
+        let label = format!("{}/{}", self.meta.name, label);
+
+        self.new_metric_with_name(label)
     }
 }

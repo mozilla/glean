@@ -14,7 +14,7 @@ use glean_core::{CommonMetricData, Lifetime};
 #[test]
 fn can_create_labeled_metric() {
     let (glean, _t) = new_glean();
-    let labeled: LabeledMetric<CounterMetric> = LabeledMetric::new(
+    let mut labeled: LabeledMetric<CounterMetric> = LabeledMetric::new(
         CommonMetricData {
             name: "labeled_metric".into(),
             category: "telemetry".into(),
@@ -47,7 +47,7 @@ fn can_create_labeled_metric() {
 #[test]
 fn can_use_multiple_labels() {
     let (glean, _t) = new_glean();
-    let labeled: LabeledMetric<CounterMetric> = LabeledMetric::new(
+    let mut labeled: LabeledMetric<CounterMetric> = LabeledMetric::new(
         CommonMetricData {
             name: "labeled_metric".into(),
             category: "telemetry".into(),
