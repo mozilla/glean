@@ -157,3 +157,37 @@ fn dynamic_labels_too_long() {
         snapshot
     );
 }
+
+#[test]
+fn dynamic_labels_regex_mimsatch() {
+    let (glean, _t) = new_glean();
+    let mut labeled: LabeledMetric<CounterMetric> = LabeledMetric::new(
+        CommonMetricData {
+            name: "labeled_metric".into(),
+            category: "telemetry".into(),
+            send_in_pings: vec!["store1".into()],
+            disabled: false,
+            lifetime: Lifetime::Ping,
+        },
+        None,
+    );
+
+    labeled.get("notSnakeCase").add(&glean, 1);
+    labeled.get("").add(&glean, 1);
+    labeled.get("with/slash").add(&glean, 1);
+
+    let snapshot = StorageManager
+        .snapshot_as_json(glean.storage(), "store1", true)
+        .unwrap();
+
+    assert_eq!(
+        json!({
+            "labeled_counter": {
+                "telemetry.labeled_metric": {
+                    "__other__": 3,
+                }
+            }
+        }),
+        snapshot
+    );
+}

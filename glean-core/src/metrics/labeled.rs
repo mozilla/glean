@@ -5,6 +5,9 @@
 use std::collections::HashSet;
 use std::marker::PhantomData;
 
+use lazy_static::lazy_static;
+use regex::Regex;
+
 use crate::metrics::MetricType;
 use crate::CommonMetricData;
 use crate::Glean;
@@ -12,6 +15,9 @@ use crate::Glean;
 const MAX_LABELS: usize = 16;
 const OTHER_LABEL: &str = "__other__";
 const MAX_LABEL_LENGTH: usize = 30;
+lazy_static! {
+    static ref LABEL_REGEX: Regex = Regex::new("^[a-z_][a-z0-9_]{0,29}$").unwrap();
+}
 
 /// A labeled metric.
 ///
@@ -77,7 +83,10 @@ where
                     return OTHER_LABEL;
                 }
 
-                // TODO: Regex check
+                if !LABEL_REGEX.is_match(label) {
+                    log::error!("label must be snake_case, got '{}'", label,);
+                    return OTHER_LABEL;
+                }
 
                 self.seen_labels.insert(label.into());
             }
