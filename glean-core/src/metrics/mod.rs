@@ -22,11 +22,11 @@ pub use self::uuid::UuidMetric;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum Metric {
-    String(String),
     Boolean(bool),
     Counter(i32),
-    Uuid(String),
+    String(String),
     StringList(Vec<String>),
+    Uuid(String),
 }
 
 pub trait MetricType {
@@ -40,21 +40,21 @@ pub trait MetricType {
 impl Metric {
     pub fn category(&self) -> &'static str {
         match self {
-            Metric::String(_) => "string",
             Metric::Boolean(_) => "boolean",
             Metric::Counter(_) => "counter",
-            Metric::Uuid(_) => "uuid",
+            Metric::String(_) => "string",
             Metric::StringList(_) => "string_list",
+            Metric::Uuid(_) => "uuid",
         }
     }
 
     pub fn as_json(&self) -> JsonValue {
         match self {
-            Metric::String(s) => json!(s),
             Metric::Boolean(b) => json!(b),
             Metric::Counter(c) => json!(c),
-            Metric::Uuid(s) => json!(s),
+            Metric::String(s) => json!(s),
             Metric::StringList(v) => json!(v),
+            Metric::Uuid(s) => json!(s),
         }
     }
 }
