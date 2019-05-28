@@ -83,6 +83,7 @@ macro_rules! impl_labeled_metric {
     };
 }
 
+// Create the required FFI functions for LabeledMetric<CounterMetric>
 impl_labeled_metric!(
     CounterMetric,
     LABELED_COUNTER,
@@ -92,6 +93,7 @@ impl_labeled_metric!(
     glean_labeled_counter_metric_get
 );
 
+// Create the required FFI functions for LabeledMetric<BooleanMetric>
 impl_labeled_metric!(
     BooleanMetric,
     LABELED_BOOLEAN,
@@ -101,6 +103,7 @@ impl_labeled_metric!(
     glean_labeled_boolean_metric_get
 );
 
+// Create the required FFI functions for LabeledMetric<StringMetric>
 impl_labeled_metric!(
     StringMetric,
     LABELED_STRING,
