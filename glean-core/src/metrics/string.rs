@@ -50,15 +50,10 @@ impl StringMetric {
     ///
     /// This doesn't clear the stored value.
     pub fn test_get_value(&self, glean: &Glean, storage_name: &str) -> Option<String> {
-        let snapshot = match StorageManager.snapshot_as_json(glean.storage(), storage_name, false) {
-            Some(snapshot) => snapshot,
-            None => return None,
-        };
-        snapshot
-            .as_object()
-            .and_then(|o| o.get("string"))
-            .and_then(|o| o.as_object())
-            .and_then(|o| o.get(&self.meta.identifier()))
-            .and_then(|o| o.as_str().map(|s| s.into()))
+        match StorageManager.snapshot_metric(glean.storage(), storage_name, &self.meta.identifier())
+        {
+            Some(Metric::String(s)) => Some(s),
+            _ => None,
+        }
     }
 }

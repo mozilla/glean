@@ -55,4 +55,26 @@ impl StorageManager {
             Some(json!(snapshot))
         }
     }
+
+    pub fn snapshot_metric(
+        &self,
+        storage: &Database,
+        store_name: &str,
+        metric_id: &str,
+    ) -> Option<Metric> {
+        let mut snapshot: Option<Metric> = None;
+
+        let mut snapshotter = |metric_name: &[u8], metric: &Metric| {
+            let metric_name = String::from_utf8_lossy(metric_name).into_owned();
+            if metric_name == metric_id {
+                snapshot = Some(metric.clone())
+            }
+        };
+
+        storage.iter_store_from(Lifetime::Ping, &store_name, &mut snapshotter);
+        storage.iter_store_from(Lifetime::Application, &store_name, &mut snapshotter);
+        storage.iter_store_from(Lifetime::User, &store_name, &mut snapshotter);
+
+        snapshot
+    }
 }
