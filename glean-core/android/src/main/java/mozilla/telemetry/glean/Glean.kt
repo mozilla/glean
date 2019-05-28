@@ -399,6 +399,7 @@ open class GleanInternalAPI internal constructor () {
     /**
      * Register a [PingType] in the registry associated with this [Glean] object.
      */
+    @Synchronized
     internal fun registerPingType(pingType: PingType) {
         if (!this.isInitialized()) {
             pingTypeQueue.add(pingType)
