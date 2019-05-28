@@ -56,6 +56,19 @@ impl StorageManager {
         }
     }
 
+    /// Get the current value of a single metric identified by name.
+    ///
+    /// This look for a value in stores for all lifetimes.
+    ///
+    /// ## Arguments:
+    ///
+    /// * `storage`: The database to get data from.
+    /// * `store_name`: The store name to look into.
+    /// * `metric_id`: The full metric identifier.
+    ///
+    /// ## Return value:
+    ///
+    /// Returns the decoded metric or `None` if no data is found.
     pub fn snapshot_metric(
         &self,
         storage: &Database,
