@@ -18,11 +18,15 @@ pub struct CounterMetric {
 }
 ```
 
-Implement the `MetricType` trait to expose the meta data.
+Implement the `MetricType` trait to create a metric from the meta data as well as expose the meta data.
 This also gives you a `should_record` method on the metric type.
 
 ```
 impl MetricType for CounterMetric {
+    fn with_meta(meta: CommonMetricData) -> Self {
+        Self { meta }
+    }
+
     fn meta(&self) -> &CommonMetricData {
         &self.meta
     }
