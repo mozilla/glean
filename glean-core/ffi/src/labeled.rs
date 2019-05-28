@@ -10,14 +10,31 @@ use glean_core::{metrics::*, CommonMetricData, Lifetime};
 use super::handlemap_ext::HandleMapExtension;
 use super::*;
 
+/// Generate FFI functions for labeled metrics.
+///
+/// This can be used to reduce the amount of duplicated boilerplate around calling
+/// `LabeledMetric::new` and LabeledMetric.get`.
+/// The constructor function takes the general common meta data.
+///
+/// If any additional data needs to be passed in, this macro cannot be used.
+///
+/// Arguments:
+///
+/// * `metric` - The metric type, e.g. `CounterMetric`.
+/// * `global` - The name of the newly constructed global to hold instances of the labeled metric.
+/// * `metric_global` - The name of the map to hold instances of the underlying metric type.
+/// * `new_name` - Function name to create a new labeled metric of this type.
+/// * `destroy_name` - Function name to destroy the labeled metric.
+/// * `get_name` - Function name to get a new instance of the underlying metric.
 macro_rules! impl_labeled_metric {
-    ($metric:ty, $global:ident, $metric_global:ident, $new_name:ident, $destroy:ident, $get_name:ident) => {
+    ($metric:ty, $global:ident, $metric_global:ident, $new_name:ident, $destroy_name:ident, $get_name:ident) => {
         lazy_static! {
             static ref $global: ConcurrentHandleMap<LabeledMetric<$metric>> =
                 ConcurrentHandleMap::new();
         }
-        define_handle_map_deleter!($global, $destroy);
+        define_handle_map_deleter!($global, $destroy_name);
 
+        /// Create a new labeled metric.
         #[no_mangle]
         pub extern "C" fn $new_name(
             category: FfiStr,
@@ -53,6 +70,7 @@ macro_rules! impl_labeled_metric {
             })
         }
 
+        /// Create a new instance of the sub-metric of this labeled metric.
         #[no_mangle]
         pub extern "C" fn $get_name(glean_handle: u64, handle: u64, label: FfiStr) -> u64 {
             GLEAN.call_infallible(glean_handle, |glean| {
