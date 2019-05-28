@@ -38,7 +38,7 @@ class BooleanMetricType internal constructor(
         lifetime: Lifetime,
         name: String,
         sendInPings: List<String>
-    ) : this(0, sendInPings) {
+    ) : this(handle = 0, sendInPings = sendInPings) {
         val ffiPingsList = StringArray(sendInPings.toTypedArray(), "utf-8")
         this.handle = LibGleanFFI.INSTANCE.glean_new_boolean_metric(
                 category = category,
