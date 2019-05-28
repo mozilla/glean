@@ -81,6 +81,19 @@ internal interface LibGleanFFI : Library {
 
     fun glean_counter_test_has_value(glean_handle: Long, metric_id: Long, storage_name: String): Byte
 
+    fun glean_new_labeled_counter_metric(
+        category: String,
+        name: String,
+        send_in_pings: StringArray,
+        send_in_pings_len: Int,
+        lifetime: Int,
+        disabled: Byte,
+        labels: StringArray?,
+        label_count: Int
+    ): Long
+
+    fun glean_labeled_counter_metric_get(glean_handle: Long, handle: Long, label: String): Long
+
     fun glean_initialize(data_dir: String, application_id: String, upload_enabled: Byte): Long
 
     fun glean_is_initialized(glean_handle: Long): Byte

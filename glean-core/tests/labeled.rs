@@ -172,9 +172,9 @@ fn dynamic_labels_regex_mimsatch() {
         None,
     );
 
-    labeled.get("notSnakeCase").add(&glean, 1);
-    labeled.get("").add(&glean, 1);
-    labeled.get("with/slash").add(&glean, 1);
+    labeled.get(&glean, "notSnakeCase").add(&glean, 1);
+    labeled.get(&glean, "").add(&glean, 1);
+    labeled.get(&glean, "with/slash").add(&glean, 1);
 
     let snapshot = StorageManager
         .snapshot_as_json(glean.storage(), "store1", true)

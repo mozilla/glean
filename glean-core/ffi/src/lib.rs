@@ -23,6 +23,8 @@ lazy_static! {
     static ref BOOLEAN_METRICS: ConcurrentHandleMap<BooleanMetric> = ConcurrentHandleMap::new();
     static ref STRING_METRICS: ConcurrentHandleMap<StringMetric> = ConcurrentHandleMap::new();
     static ref COUNTER_METRICS: ConcurrentHandleMap<CounterMetric> = ConcurrentHandleMap::new();
+    static ref LABELED_COUNTER: ConcurrentHandleMap<LabeledMetric<CounterMetric>> =
+        ConcurrentHandleMap::new();
 }
 
 type RawStringArray = *const *const c_char;
@@ -357,9 +359,58 @@ pub extern "C" fn glean_ping_collect(glean_handle: u64, ping_name: FfiStr) -> *m
     })
 }
 
+#[no_mangle]
+pub extern "C" fn glean_new_labeled_counter_metric(
+    category: FfiStr,
+    name: FfiStr,
+    send_in_pings: RawStringArray,
+    send_in_pings_len: i32,
+    lifetime: i32,
+    disabled: u8,
+    labels: RawStringArray,
+    label_count: i32,
+) -> u64 {
+    LABELED_COUNTER.insert_with_log(|| {
+        let send_in_pings = unsafe { from_raw_string_array(send_in_pings, send_in_pings_len) };
+        let labels = unsafe { from_raw_string_array(labels, label_count) };
+        let labels = if labels.is_empty() {
+            None
+        } else {
+            Some(labels)
+        };
+        let lifetime = Lifetime::try_from(lifetime)?;
+
+        Ok(LabeledMetric::new(
+            CommonMetricData {
+                name: name.into_string(),
+                category: category.into_string(),
+                send_in_pings,
+                lifetime,
+                disabled: disabled != 0,
+            },
+            labels,
+        ))
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn glean_labeled_counter_metric_get(
+    glean_handle: u64,
+    handle: u64,
+    label: FfiStr,
+) -> u64 {
+    GLEAN.call_infallible(glean_handle, |glean| {
+        LABELED_COUNTER.call_infallible_mut(handle, |labeled| {
+            let metric = labeled.get(glean, label.as_str());
+            COUNTER_METRICS.insert_with_log(|| Ok(metric))
+        })
+    })
+}
+
 define_handle_map_deleter!(GLEAN, glean_destroy_glean);
 define_handle_map_deleter!(PING_TYPES, glean_destroy_ping_type);
 define_handle_map_deleter!(BOOLEAN_METRICS, glean_destroy_boolean_metric);
 define_handle_map_deleter!(STRING_METRICS, glean_destroy_string_metric);
 define_handle_map_deleter!(COUNTER_METRICS, glean_destroy_counter_metric);
+define_handle_map_deleter!(LABELED_COUNTER, glean_destroy_labeled_counter_metric);
 define_string_destructor!(glean_str_free);
