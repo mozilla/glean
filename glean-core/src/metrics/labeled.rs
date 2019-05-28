@@ -7,6 +7,7 @@ use std::collections::HashSet;
 use lazy_static::lazy_static;
 use regex::Regex;
 
+use crate::error_recording::{record_error, ErrorType};
 use crate::metrics::{Metric, MetricType};
 use crate::Glean;
 use crate::Lifetime;
@@ -112,16 +113,18 @@ where
                 return OTHER_LABEL;
             } else {
                 if label.len() > MAX_LABEL_LENGTH {
-                    log::error!(
+                    let msg = format!(
                         "label length {} exceeds maximum of {}",
                         label.len(),
                         MAX_LABEL_LENGTH
                     );
+                    record_error(glean, &self.submetric.meta(), ErrorType::InvalidLabel, msg);
                     return OTHER_LABEL;
                 }
 
                 if !LABEL_REGEX.is_match(label) {
-                    log::error!("label must be snake_case, got '{}'", label,);
+                    let msg = format!("label must be snake_case, got '{}'", label);
+                    record_error(glean, &self.submetric.meta(), ErrorType::InvalidLabel, msg);
                     return OTHER_LABEL;
                 }
 

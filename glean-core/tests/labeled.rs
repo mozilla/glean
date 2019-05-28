@@ -210,6 +210,7 @@ fn dynamic_labels_too_long() {
     assert_eq!(
         json!({
             "labeled_counter": {
+                "glean.error.invalid_label": { "telemetry.labeled_metric": 1 },
                 "telemetry.labeled_metric": {
                     "__other__": 1,
                 }
@@ -244,6 +245,7 @@ fn dynamic_labels_regex_mimsatch() {
     assert_eq!(
         json!({
             "labeled_counter": {
+                "glean.error.invalid_label": { "telemetry.labeled_metric": 3 },
                 "telemetry.labeled_metric": {
                     "__other__": 3,
                 }
