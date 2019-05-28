@@ -73,3 +73,21 @@ impl_labeled_metric!(
     glean_destroy_labeled_counter_metric,
     glean_labeled_counter_metric_get
 );
+
+impl_labeled_metric!(
+    BooleanMetric,
+    LABELED_BOOLEAN,
+    BOOLEAN_METRICS,
+    glean_new_labeled_boolean_metric,
+    glean_destroy_labeled_boolean_metric,
+    glean_labeled_boolean_metric_get
+);
+
+impl_labeled_metric!(
+    StringMetric,
+    LABELED_STRING,
+    STRING_METRICS,
+    glean_new_labeled_string_metric,
+    glean_destroy_labeled_string_metric,
+    glean_labeled_string_metric_get
+);

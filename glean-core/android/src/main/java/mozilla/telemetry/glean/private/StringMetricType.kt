@@ -23,17 +23,23 @@ import mozilla.telemetry.glean.rust.toBoolean
  *
  * The string API only exposes the [set] method, which takes care of validating the input
  * data and making sure that limits are enforced.
+ *
+ * The internal constructor is only used by labeled metrics directly.
  */
-class StringMetricType(
-    disabled: Boolean,
-    category: String,
-    lifetime: Lifetime,
-    name: String,
+class StringMetricType internal constructor(
+    var handle: Long,
     val sendInPings: List<String>
 ) {
-    private var handle: Long
-
-    init {
+    /**
+     * The public constructor used by automatically generated metrics.
+     */
+    constructor(
+        disabled: Boolean,
+        category: String,
+        lifetime: Lifetime,
+        name: String,
+        sendInPings: List<String>
+    ) : this(0, sendInPings) {
         val ffiPingsList = StringArray(sendInPings.toTypedArray(), "utf-8")
         this.handle = LibGleanFFI.INSTANCE.glean_new_string_metric(
                 category = category,

@@ -36,15 +36,25 @@ class LabeledMetricType<T>(
     init {
         val ffiPingsList = StringArray(sendInPings.toTypedArray(), "utf-8")
         val labelList = labels?.let { StringArray(it.toList().toTypedArray(), "utf-8") }
-        this.handle = LibGleanFFI.INSTANCE.glean_new_labeled_counter_metric(
-                category = category,
-                name = name,
-                send_in_pings = ffiPingsList,
-                send_in_pings_len = sendInPings.size,
-                lifetime = lifetime.ordinal,
-                disabled = disabled.toByte(),
-                labels = labelList,
-                label_count = if (labels != null) { labels.size } else { 0 })
+        val metricTypeInstantiator = when (subMetric) {
+            is CounterMetricType -> LibGleanFFI::glean_new_labeled_counter_metric
+            is BooleanMetricType -> LibGleanFFI::glean_new_labeled_boolean_metric
+            is StringMetricType -> LibGleanFFI::glean_new_labeled_string_metric
+            else -> throw IllegalStateException(
+                "Can not create a labeled version of this metric type"
+            )
+        }
+
+        this.handle = metricTypeInstantiator(
+                LibGleanFFI.INSTANCE,
+                category,
+                name,
+                ffiPingsList,
+                sendInPings.size,
+                lifetime.ordinal,
+                disabled.toByte(),
+                labelList,
+                if (labels != null) { labels.size } else { 0 })
     }
 
     /**
@@ -70,6 +80,14 @@ class LabeledMetricType<T>(
             is CounterMetricType -> {
                 val handle = LibGleanFFI.INSTANCE.glean_labeled_counter_metric_get(Glean.handle, this.handle, label)
                 return CounterMetricType(handle = handle, sendInPings = sendInPings) as T
+            }
+            is BooleanMetricType -> {
+                val handle = LibGleanFFI.INSTANCE.glean_labeled_boolean_metric_get(Glean.handle, this.handle, label)
+                return BooleanMetricType(handle = handle, sendInPings = sendInPings) as T
+            }
+            is StringMetricType -> {
+                val handle = LibGleanFFI.INSTANCE.glean_labeled_string_metric_get(Glean.handle, this.handle, label)
+                return StringMetricType(handle = handle, sendInPings = sendInPings) as T
             }
             else -> throw IllegalStateException(
                 "Can not create a labeled version of this metric type"
