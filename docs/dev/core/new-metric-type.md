@@ -71,9 +71,16 @@ Persistence and in-memory serialization as well as ping payload serialization ar
 This is defined in `glean-core/src/metrics/mod.rs`.
 Variants of this enumeration are used in the storage implementation of the metric type.
 
-To add a new metric type, add a new variant to the `Metric` enum:
+To add a new metric type, include the metric module and declare its use, then add a new variant to the `Metric` enum:
 
 ```rust,noplaypen
+
+mod counter;
+
+// ...
+
+pub use self::counter::CounterMetric;
+
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum Metric {
     // ...
