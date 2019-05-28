@@ -4,6 +4,7 @@
 
 use crate::error_recording::{record_error, ErrorType};
 use crate::metrics::Metric;
+use crate::metrics::MetricType;
 use crate::CommonMetricData;
 use crate::Glean;
 
@@ -17,13 +18,19 @@ pub struct StringListMetric {
     meta: CommonMetricData,
 }
 
+impl MetricType for StringListMetric {
+    fn meta(&self) -> &CommonMetricData {
+        &self.meta
+    }
+}
+
 impl StringListMetric {
     pub fn new(meta: CommonMetricData) -> Self {
         Self { meta }
     }
 
     pub fn add<S: Into<String>>(&self, glean: &Glean, value: S) {
-        if !self.meta.should_record() {
+        if !self.should_record(glean) {
             return;
         }
 
@@ -51,7 +58,7 @@ impl StringListMetric {
     }
 
     pub fn set(&self, glean: &Glean, value: Vec<String>) {
-        if !self.meta.should_record() || !glean.is_upload_enabled() {
+        if !self.should_record(glean) {
             return;
         }
 
