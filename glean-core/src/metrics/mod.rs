@@ -4,13 +4,16 @@
 
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value as JsonValue};
+use chrono::{DateTime, Utc};
 
 mod boolean;
 mod counter;
+mod datetime;
 mod labeled;
 mod ping;
 mod string;
 mod string_list;
+mod time_unit;
 mod uuid;
 
 use crate::CommonMetricData;
@@ -18,16 +21,19 @@ use crate::Glean;
 
 pub use self::boolean::BooleanMetric;
 pub use self::counter::CounterMetric;
+pub use self::datetime::DatetimeMetric;
 pub use self::labeled::LabeledMetric;
 pub use self::ping::PingType;
 pub use self::string::StringMetric;
 pub use self::string_list::StringListMetric;
+pub use self::time_unit::TimeUnit;
 pub use self::uuid::UuidMetric;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub enum Metric {
     Boolean(bool),
     Counter(i32),
+    Datetime(DateTime<Utc>),  // FIXME: should we store as something else?
     String(String),
     StringList(Vec<String>),
     Uuid(String),
@@ -48,6 +54,7 @@ impl Metric {
         match self {
             Metric::Boolean(_) => "boolean",
             Metric::Counter(_) => "counter",
+            Metric::Datetime(_) => "datetime",
             Metric::String(_) => "string",
             Metric::StringList(_) => "string_list",
             Metric::Uuid(_) => "uuid",
@@ -58,6 +65,7 @@ impl Metric {
         match self {
             Metric::Boolean(b) => json!(b),
             Metric::Counter(c) => json!(c),
+            Metric::Datetime(s) => json!(s), // FIXME: How to persist?
             Metric::String(s) => json!(s),
             Metric::StringList(v) => json!(v),
             Metric::Uuid(s) => json!(s),
