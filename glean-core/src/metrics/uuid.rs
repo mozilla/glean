@@ -3,6 +3,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use crate::metrics::Metric;
+use crate::metrics::MetricType;
 use crate::CommonMetricData;
 use crate::Glean;
 
@@ -11,13 +12,19 @@ pub struct UuidMetric {
     meta: CommonMetricData,
 }
 
+impl MetricType for UuidMetric {
+    fn meta(&self) -> &CommonMetricData {
+        &self.meta
+    }
+}
+
 impl UuidMetric {
     pub fn new(meta: CommonMetricData) -> Self {
         Self { meta }
     }
 
     pub fn set(&self, glean: &Glean, value: uuid::Uuid) {
-        if !self.meta.should_record() || !glean.is_upload_enabled() {
+        if !self.should_record(glean) {
             return;
         }
 
@@ -33,7 +40,7 @@ impl UuidMetric {
     }
 
     pub fn generate_if_missing(&self, glean: &Glean) {
-        if !self.meta.should_record() || !glean.is_upload_enabled() {
+        if !self.should_record(glean) {
             return;
         }
 
