@@ -106,6 +106,8 @@ uint64_t glean_new_counter_metric(FfiStr category,
                                   int32_t lifetime,
                                   uint8_t disabled);
 
+uint64_t glean_new_ping_type(FfiStr ping_name, uint8_t include_client_id);
+
 uint64_t glean_new_string_metric(FfiStr category,
                                  FfiStr name,
                                  RawStringArray send_in_pings,
@@ -115,7 +117,11 @@ uint64_t glean_new_string_metric(FfiStr category,
 
 char *glean_ping_collect(uint64_t glean_handle, FfiStr ping_name);
 
-uint8_t glean_send_ping(uint64_t glean_handle, FfiStr ping_name, uint8_t log_ping);
+void glean_register_ping_type(uint64_t glean_handle, uint64_t ping_type_handle);
+
+uint8_t glean_send_ping(uint64_t glean_handle, uint64_t ping_type_handle, uint8_t log_ping);
+
+uint8_t glean_send_ping_by_name(uint64_t glean_handle, FfiStr ping_name, uint8_t log_ping);
 
 void glean_set_upload_enabled(uint64_t glean_handle, uint8_t flag);
 
@@ -126,6 +132,8 @@ uint8_t glean_string_should_record(uint64_t glean_handle, uint64_t metric_id);
 char *glean_string_test_get_value(uint64_t glean_handle, uint64_t metric_id, FfiStr storage_name);
 
 uint8_t glean_string_test_has_value(uint64_t glean_handle, uint64_t metric_id, FfiStr storage_name);
+
+uint8_t glean_test_has_ping_type(uint64_t glean_handle, FfiStr ping_name);
 
 void glean_destroy_glean(uint64_t handle, ExternError *error);
 void glean_destroy_boolean_metric(uint64_t handle, ExternError *error);

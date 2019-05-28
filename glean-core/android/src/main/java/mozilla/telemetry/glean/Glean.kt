@@ -51,6 +51,9 @@ open class GleanInternalAPI internal constructor () {
     // TODO: 1551159 Integrate MetricsPingScheduler
     // internal lateinit var metricsPingScheduler: MetricsPingScheduler
 
+    // Keep track of ping types that have been registered before Glean is initialized.
+    private val pingTypeQueue: MutableList<PingType> = mutableListOf()
+
     /**
      * Initialize Glean.
      *
@@ -65,6 +68,7 @@ open class GleanInternalAPI internal constructor () {
      * as shared preferences
      * @param configuration A Glean [Configuration] object with global settings.
      */
+    @Synchronized
     fun initialize(
         applicationContext: Context,
         configuration: Configuration = Configuration()
@@ -80,6 +84,12 @@ open class GleanInternalAPI internal constructor () {
 
         this.gleanDataDir = File(applicationContext.applicationInfo.dataDir, GLEAN_DATA_DIR)
         handle = LibGleanFFI.INSTANCE.glean_initialize(this.gleanDataDir.path, applicationContext.packageName, uploadEnabled.toByte())
+
+        // If any pings were registered before initializing, do so now
+        this.pingTypeQueue.forEach { this.registerPingType(it) }
+        if (!Dispatchers.API.testingMode) {
+            this.pingTypeQueue.clear()
+        }
 
         // TODO: on glean-legacy we perform other actions before initialize the metrics (e.g.
         // init the engines), then init the core metrics, and finally kick off the metrics
@@ -121,7 +131,7 @@ open class GleanInternalAPI internal constructor () {
      */
     fun registerPings(pings: Any) {
         // Instantiating the Pings object to send this function is enough to
-        // call the constructor and have it registered in [PingType.pingRegistry].
+        // call the constructor and have it registered through [Glean.registerPingType].
         Log.i(LOG_TAG, "Registering pings for ${pings.javaClass.canonicalName}")
     }
 
@@ -279,20 +289,7 @@ open class GleanInternalAPI internal constructor () {
         sendPings(listOf(Pings.baseline, Pings.events))
     }
 
-    /**
-     * Send a list of pings.
-     *
-     * The ping content is assembled as soon as possible, but upload is not
-     * guaranteed to happen immediately, as that depends on the upload
-     * policies.
-     *
-     * If the ping currently contains no content, it will not be sent.
-     *
-     * @param pings List of pings to send.
-     * @return The async Job performing the work of assembling the ping
-     */
-    internal fun sendPings(pings: List<PingType>) = Dispatchers.API.launch {
-        // TODO: 1552264 Move this logic to Rust
+    private fun <T> sendPingsGeneric(pings: List<T>, pingSender: (T) -> Boolean) = Dispatchers.API.launch {
         if (!isInitialized()) {
             Log.e(LOG_TAG, "Glean must be initialized before sending pings.")
             return@launch
@@ -303,9 +300,12 @@ open class GleanInternalAPI internal constructor () {
             return@launch
         }
 
+        // TODO: 1553813: glean-ac collects and stores pings in parallel and
+        // then joins them all before queueing the worker. This here is writing them out
+        // sequentially.
         var sentPing = false
         for (ping in pings) {
-            if (sendPing(ping.name)) {
+            if (pingSender(ping)) {
                 sentPing = true
             } else {
                 Log.d(LOG_TAG, "No content for ping '$ping.name', therefore no ping queued.")
@@ -318,6 +318,31 @@ open class GleanInternalAPI internal constructor () {
     }
 
     /**
+     * Send a list of pings.
+     *
+     * The ping content is assembled as soon as possible, but upload is not
+     * guaranteed to happen immediately, as that depends on the upload
+     * policies.
+     *
+     * If the ping currently contains no content, it will not be assembled and
+     * queued for sending.
+     *
+     * @param pings List of pings to send.
+     * @return The async [Job] performing the work of assembling the ping
+     */
+    internal fun sendPings(pings: List<PingType>): Job? {
+        val sendPing: (PingType) -> Boolean = {
+            LibGleanFFI.INSTANCE.glean_send_ping(
+                handle,
+                it.handle,
+                (configuration.logPings).toByte()
+            ).toBoolean()
+        }
+
+        return sendPingsGeneric(pings, sendPing)
+    }
+
+    /**
      * Send a list of pings by name.
      *
      * Each ping will be looked up in the known instances of [PingType]. If the
@@ -327,32 +352,22 @@ open class GleanInternalAPI internal constructor () {
      * guaranteed to happen immediately, as that depends on the upload
      * policies.
      *
-     * If the ping currently contains no content, it will not be sent.
+     * If the ping currently contains no content, it will not be assembled and
+     * queued for sending.
      *
      * @param pingNames List of ping names to send.
-     * @return The async Job performing the work of assembling the ping
+     * @return The async [Job] performing the work of assembling the ping
      */
     internal fun sendPingsByName(pingNames: List<String>): Job? {
-        // val pings = pingNames.mapNotNull { pingName ->
-        //     PingType.pingRegistry.get(pingName)?.let {
-        //         it
-        //     } ?: run {
-        //         logger.error("Attempted to send unknown ping '$pingName'")
-        //         null
-        //     }
-        // }
-        // return sendPings(pings)
-        // TODO: 1552264
-        Log.e(LOG_TAG, "sendPingsByName is a stub")
-        return null
-    }
+        val sendPing: (String) -> Boolean = {
+            LibGleanFFI.INSTANCE.glean_send_ping_by_name(
+                handle,
+                it,
+                (configuration.logPings).toByte()
+            ).toBoolean()
+        }
 
-    private fun sendPing(pingName: String): Boolean {
-        return LibGleanFFI.INSTANCE.glean_send_ping(
-            handle,
-            pingName,
-            (configuration.logPings).toByte()
-        ).toBoolean()
+        return sendPingsGeneric(pingNames, sendPing)
     }
 
     /**
@@ -379,6 +394,31 @@ open class GleanInternalAPI internal constructor () {
         val e = RustError.ByReference()
         LibGleanFFI.INSTANCE.glean_destroy_glean(handle, e)
         handle = 0L
+    }
+
+    /**
+     * Register a [PingType] in the registry associated with this [Glean] object.
+     */
+    @Synchronized
+    internal fun registerPingType(pingType: PingType) {
+        if (!this.isInitialized()) {
+            pingTypeQueue.add(pingType)
+        } else {
+            LibGleanFFI.INSTANCE.glean_register_ping_type(
+                handle,
+                pingType.handle
+            )
+        }
+    }
+
+    /**
+     * Returns true if a ping by this name is in the ping registry.
+     *
+     * For internal testing only.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    internal fun testHasPingType(pingName: String): Boolean {
+        return LibGleanFFI.INSTANCE.glean_test_has_ping_type(handle, pingName).toBoolean()
     }
 }
 

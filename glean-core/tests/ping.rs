@@ -10,7 +10,10 @@ use glean_core::CommonMetricData;
 
 #[test]
 fn write_ping_to_disk() {
-    let (glean, temp) = new_glean();
+    let (mut glean, temp) = new_glean();
+
+    let ping = PingType::new("metrics", true);
+    glean.register_ping_type(&ping);
 
     // We need to store a metric as an empty ping is not stored.
     let counter = CounterMetric::new(CommonMetricData {
@@ -21,7 +24,7 @@ fn write_ping_to_disk() {
     });
     counter.add(&glean, 1);
 
-    assert!(glean.send_ping("metrics", false).unwrap());
+    assert!(ping.send(&glean, true).unwrap());
 
     let path = temp.path().join("pings");
 

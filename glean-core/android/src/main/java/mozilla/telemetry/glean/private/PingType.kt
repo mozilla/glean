@@ -4,8 +4,10 @@
 
 package mozilla.telemetry.glean.private
 
-import android.util.Log
 import mozilla.telemetry.glean.Glean
+import mozilla.telemetry.glean.rust.LibGleanFFI
+import mozilla.telemetry.glean.rust.RustError
+import mozilla.telemetry.glean.rust.toByte
 
 /**
  * This implements the developer facing API for custom pings.
@@ -14,20 +16,25 @@ import mozilla.telemetry.glean.Glean
  *
  * The Ping API only exposes the [send] method, which schedules a ping for sending.
  */
-data class PingType(
-    val name: String,
-    val includeClientId: Boolean
+class PingType(
+    name: String,
+    includeClientId: Boolean
 ) {
+    internal var handle: Long
+
     init {
-        if (pingRegistry.containsKey(name)) {
-            Log.e(LOG_TAG, "Duplicate ping named $name")
-        }
-        pingRegistry[name] = this
+        this.handle = LibGleanFFI.INSTANCE.glean_new_ping_type(
+            name = name,
+            include_client_id = includeClientId.toByte()
+        )
+        Glean.registerPingType(this)
     }
 
-    companion object {
-        private val LOG_TAG = "glean/PingType"
-        internal val pingRegistry: MutableMap<String, PingType> = mutableMapOf()
+    protected fun finalize() {
+        if (this.handle != 0L) {
+            val error = RustError.ByReference()
+            LibGleanFFI.INSTANCE.glean_destroy_ping_type(this.handle, error)
+        }
     }
 
     /**

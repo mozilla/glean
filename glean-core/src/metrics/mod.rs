@@ -7,6 +7,7 @@ use serde_json::{json, Value as JsonValue};
 
 mod boolean;
 mod counter;
+mod ping;
 mod string;
 mod string_list;
 mod uuid;
@@ -16,6 +17,7 @@ use crate::Glean;
 
 pub use self::boolean::BooleanMetric;
 pub use self::counter::CounterMetric;
+pub use self::ping::PingType;
 pub use self::string::StringMetric;
 pub use self::string_list::StringListMetric;
 pub use self::uuid::UuidMetric;
