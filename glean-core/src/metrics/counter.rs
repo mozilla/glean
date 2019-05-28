@@ -49,15 +49,10 @@ impl CounterMetric {
     ///
     /// This doesn't clear the stored value.
     pub fn test_get_value(&self, glean: &Glean, storage_name: &str) -> Option<i32> {
-        let snapshot = match StorageManager.snapshot_as_json(glean.storage(), storage_name, false) {
-            Some(snapshot) => snapshot,
-            None => return None,
-        };
-        snapshot
-            .as_object()
-            .and_then(|o| o.get("counter"))
-            .and_then(|o| o.as_object())
-            .and_then(|o| o.get(&self.meta.identifier()))
-            .and_then(|o| o.as_i64().map(|i| i as i32))
+        match StorageManager.snapshot_metric(glean.storage(), storage_name, &self.meta.identifier())
+        {
+            Some(Metric::Counter(i)) => Some(i),
+            _ => None,
+        }
     }
 }
