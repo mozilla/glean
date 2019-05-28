@@ -22,7 +22,7 @@ import mozilla.telemetry.glean.rust.toBoolean
  *
  * The boolean API only exposes the [set] method.
  *
- * The internal constructor is only used by labeled metrics directly.
+ * The internal constructor is only used by [LabeledMetricType] directly.
  */
 class BooleanMetricType internal constructor(
     var handle: Long,

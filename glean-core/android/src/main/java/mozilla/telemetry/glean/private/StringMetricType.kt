@@ -24,7 +24,7 @@ import mozilla.telemetry.glean.rust.toBoolean
  * The string API only exposes the [set] method, which takes care of validating the input
  * data and making sure that limits are enforced.
  *
- * The internal constructor is only used by labeled metrics directly.
+ * The internal constructor is only used by [LabeledMetricType] directly.
  */
 class StringMetricType internal constructor(
     var handle: Long,
