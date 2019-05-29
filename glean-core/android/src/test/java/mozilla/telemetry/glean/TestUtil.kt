@@ -100,7 +100,7 @@ internal fun checkPingSchema(content: String): JSONObject {
  * @throws AssertionError If the JSON content is not valid
  */
 internal fun collectAndCheckPingSchema(ping: PingType): JSONObject {
-    val jsonString = Glean.collect(ping)!!
+    val jsonString = Glean.testCollect(ping)!!
     return checkPingSchema(jsonString)
 }
 
