@@ -12,7 +12,7 @@ use glean_core::storage::StorageManager;
 use glean_core::{CommonMetricData, Lifetime};
 
 #[test]
-fn can_create_labeled_metric() {
+fn can_create_labeled_counter_metric() {
     let (glean, _t) = new_glean();
     let mut labeled: LabeledMetric<CounterMetric> = LabeledMetric::new(
         CommonMetricData {
@@ -22,7 +22,7 @@ fn can_create_labeled_metric() {
             disabled: false,
             lifetime: Lifetime::Ping,
         },
-        Some(vec!["label1".into(), "label2".into()]),
+        Some(vec!["label1".into()]),
     );
 
     let metric = labeled.get(&glean, "label1");
@@ -35,9 +35,69 @@ fn can_create_labeled_metric() {
     assert_eq!(
         json!({
             "labeled_counter": {
-                "telemetry.labeled_metric": {
-                    "label1": 1
-                }
+                "telemetry.labeled_metric": { "label1": 1 }
+            }
+        }),
+        snapshot
+    );
+}
+
+#[test]
+fn can_create_labeled_string_metric() {
+    let (glean, _t) = new_glean();
+    let mut labeled: LabeledMetric<StringMetric> = LabeledMetric::new(
+        CommonMetricData {
+            name: "labeled_metric".into(),
+            category: "telemetry".into(),
+            send_in_pings: vec!["store1".into()],
+            disabled: false,
+            lifetime: Lifetime::Ping,
+        },
+        Some(vec!["label1".into()]),
+    );
+
+    let metric = labeled.get(&glean, "label1");
+    metric.set(&glean, "text");
+
+    let snapshot = StorageManager
+        .snapshot_as_json(glean.storage(), "store1", true)
+        .unwrap();
+
+    assert_eq!(
+        json!({
+            "labeled_string": {
+                "telemetry.labeled_metric": { "label1": "text" }
+            }
+        }),
+        snapshot
+    );
+}
+
+#[test]
+fn can_create_labeled_bool_metric() {
+    let (glean, _t) = new_glean();
+    let mut labeled: LabeledMetric<BooleanMetric> = LabeledMetric::new(
+        CommonMetricData {
+            name: "labeled_metric".into(),
+            category: "telemetry".into(),
+            send_in_pings: vec!["store1".into()],
+            disabled: false,
+            lifetime: Lifetime::Ping,
+        },
+        Some(vec!["label1".into()]),
+    );
+
+    let metric = labeled.get(&glean, "label1");
+    metric.set(&glean, true);
+
+    let snapshot = StorageManager
+        .snapshot_as_json(glean.storage(), "store1", true)
+        .unwrap();
+
+    assert_eq!(
+        json!({
+            "labeled_boolean": {
+                "telemetry.labeled_metric": { "label1": true }
             }
         }),
         snapshot
