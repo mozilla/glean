@@ -37,11 +37,6 @@ buildscript {
         // computation at build time.
         classpath "net.java.dev.jna:jna:$jna_version"
 
-        // Downloading libs/ archives from Taskcluster.
-        classpath 'de.undercouch:gradle-download-task:3.4.3'
-
-        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.8'
-
         // Docs generation
         classpath "org.jetbrains.dokka:dokka-android-gradle-plugin:0.9.17"
 
@@ -53,8 +48,6 @@ buildscript {
 plugins {
     id("io.gitlab.arturbosch.detekt").version("1.0.0-RC14")
 }
-
-apply plugin: 'de.undercouch.download'
 
 allprojects {
     repositories {
