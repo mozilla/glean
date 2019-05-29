@@ -9,6 +9,7 @@ use serde_json::json;
 
 use glean_core::metrics::*;
 use glean_core::storage::StorageManager;
+use glean_core::{test_get_num_recorded_errors, ErrorType};
 use glean_core::{CommonMetricData, Glean, Lifetime};
 
 // Tests ported from glean-ac
@@ -112,13 +113,11 @@ fn counters_must_not_increment_when_passed_zero_or_negative() {
     // Check that nothing was recorded
     assert_eq!(1, metric.test_get_value(&glean, "store1").unwrap());
 
-    // Attempt increment counter properly
-    metric.add(&glean, -1);
-    // Check that nothing was recorded
-    assert_eq!(1, metric.test_get_value(&glean, "store1").unwrap());
-
-    // TODO: 1551975 Implement error reporting
-    // assert_eq!(2, test_get_num_recorded_errors(metric, ...))
+    // Make sure that the errors have been recorded
+    assert_eq!(
+        2,
+        test_get_num_recorded_errors(&glean, metric.meta(), ErrorType::InvalidValue)
+    );
 }
 
 // New tests for glean-core below

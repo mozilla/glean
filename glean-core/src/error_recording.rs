@@ -15,6 +15,7 @@
 use std::fmt::Display;
 
 use crate::metrics::CounterMetric;
+use crate::metrics::MetricType;
 use crate::CommonMetricData;
 use crate::Glean;
 use crate::Lifetime;
@@ -79,4 +80,37 @@ pub fn record_error(
 
     log::warn!("{}: {}", identifier, message);
     metric.add(glean, 1);
+}
+
+/// Get the number of recorded errors for the given metric and error type.
+///
+/// *Notes: This is a **test-only** API, but we need to expose it to be used in integration tests.
+///
+/// ## Arguments
+///
+/// * glean - The Glean object holding the database
+/// * meta - The metadata of the metric instance
+/// * error - The type of error
+///
+/// ## Return value
+///
+/// The number of errors reported
+pub fn test_get_num_recorded_errors(
+    glean: &Glean,
+    meta: &CommonMetricData,
+    error: ErrorType,
+) -> i32 {
+    let use_ping_name = &meta.send_in_pings[0];
+    let metric = CounterMetric::new(CommonMetricData {
+        name: format!("{}/{}", error.to_string(), meta.identifier()),
+        category: "glean.error".into(),
+        lifetime: Lifetime::Ping,
+        ..meta.clone()
+    });
+
+    metric
+        .test_get_value(glean, use_ping_name)
+        .unwrap_or_else(|| {
+            panic!("No error recorded for {}", metric.meta().identifier());
+        })
 }

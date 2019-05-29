@@ -9,6 +9,7 @@ use serde_json::json;
 
 use glean_core::metrics::*;
 use glean_core::storage::StorageManager;
+use glean_core::{test_get_num_recorded_errors, ErrorType};
 use glean_core::{CommonMetricData, Glean, Lifetime};
 
 // SKIPPED from glean-ac: string deserializer should correctly parse integers
@@ -105,6 +106,9 @@ fn long_string_values_are_truncated() {
         metric.test_get_value(&glean, "store1").unwrap()
     );
 
-    // TODO: Requires error reporting (bug 1551975)
-    //assertEquals(1, testGetNumRecordedErrors(stringMetric, ErrorType.InvalidValue))
+    // Make sure that the errors have been recorded
+    assert_eq!(
+        1,
+        test_get_num_recorded_errors(&glean, metric.meta(), ErrorType::InvalidValue)
+    );
 }
