@@ -15,7 +15,10 @@ use lazy_static::lazy_static;
 use glean_core::{metrics::*, CommonMetricData, Glean, Lifetime};
 
 mod handlemap_ext;
+mod labeled;
+
 use handlemap_ext::HandleMapExtension;
+pub use labeled::*;
 
 lazy_static! {
     static ref GLEAN: ConcurrentHandleMap<Glean> = ConcurrentHandleMap::new();

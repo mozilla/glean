@@ -22,18 +22,23 @@ import mozilla.telemetry.glean.rust.toBoolean
  *
  * The counter API only exposes the [add] method, which takes care of validating the input
  * data and making sure that limits are enforced.
+ *
+ * The internal constructor is only used by [LabeledMetricType] directly.
  */
-class CounterMetricType(
-    disabled: Boolean,
-    category: String,
-    lifetime: Lifetime,
-    name: String,
+class CounterMetricType internal constructor(
+    var handle: Long,
     val sendInPings: List<String>
 ) {
-
-    private var handle: Long
-
-    init {
+    /**
+     * The public constructor used by automatically generated metrics.
+     */
+    constructor(
+        disabled: Boolean,
+        category: String,
+        lifetime: Lifetime,
+        name: String,
+        sendInPings: List<String>
+    ) : this(handle = 0, sendInPings = sendInPings) {
         val ffiPingsList = StringArray(sendInPings.toTypedArray(), "utf-8")
         this.handle = LibGleanFFI.INSTANCE.glean_new_counter_metric(
                 category = category,

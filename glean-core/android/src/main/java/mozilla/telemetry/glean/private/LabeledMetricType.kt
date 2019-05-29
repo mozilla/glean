@@ -4,6 +4,12 @@
 
 package mozilla.telemetry.glean.private
 
+import com.sun.jna.StringArray
+
+import mozilla.telemetry.glean.Glean
+import mozilla.telemetry.glean.rust.LibGleanFFI
+import mozilla.telemetry.glean.rust.toByte
+
 /**
  * This implements the developer facing API for labeled metrics.
  *
@@ -17,134 +23,39 @@ package mozilla.telemetry.glean.private
  * individual storage engines and rearrange them correctly in the ping.
  */
 class LabeledMetricType<T>(
-    val disabled: Boolean,
-    val category: String,
-    val lifetime: Lifetime,
-    val name: String,
+    disabled: Boolean,
+    category: String,
+    lifetime: Lifetime,
+    name: String,
+    labels: Set<String>? = null,
     val sendInPings: List<String>,
-    val subMetric: T,
-    val labels: Set<String>? = null
+    val subMetric: T
 ) {
+    private val handle: Long
 
-    companion object {
-        private const val MAX_LABELS = 16
-        private const val OTHER_LABEL = "__other__"
-        private val labelRegex = Regex("^[a-z_][a-z0-9_]{0,29}$")
-        private const val MAX_LABEL_LENGTH = 30
-    }
-
-    private val seenLabels: MutableSet<String> = mutableSetOf()
-
-    /**
-     * Handles the label in the case where labels are predefined.
-     *
-     * If the given label is not in the predefined set of labels, returns [OTHER_LABEL], otherwise
-     * returns the label verbatim.
-     *
-     * @param label The label, as specified by the user
-     * @return adjusted label, possibly set to [OTHER_LABEL]
-     */
-    private fun getFinalStaticLabel(label: String): String {
-        return OTHER_LABEL
-        /*return if (labels!!.contains(label)) label else OTHER_LABEL*/
-    }
-
-    /**
-     * Handles the label in the case where labels aren't predefined.
-     *
-     * If we've already seen more than [MAX_LABELS] unique labels, returns [OTHER_LABEL].
-     *
-     * Also validates any unseen labels to make sure they are snake_case and under 30 characters.
-     * If not, returns [OTHER_LABEL].
-     *
-     * @param label The label, as specified by the user
-     * @return adjusted label, possibly set to [OTHER_LABEL]
-     */
-    @Suppress("ReturnCount")
-    private fun getFinalDynamicLabel(label: String): String {
-        return label
-        /*
-        if (lifetime != Lifetime.Application && seenLabels.size == 0) {
-            // TODO 1530733: This might cause I/O on the main thread if this is the
-            // first thing being stored to the given storage engine after app restart.
-            getStorageEngineForMetric()?.let {
-                val identifier = (subMetric as CommonMetricData).identifier
-                val prefix = "$identifier/"
-                seenLabels.addAll(
-                    it.getIdentifiersInStores((subMetric as CommonMetricData).sendInPings)
-                        .filter { it.startsWith(prefix) }
-                        .map { it.substring(prefix.length) }
-                )
-            }
-        }
-
-        if (!seenLabels.contains(label)) {
-            if (seenLabels.size >= MAX_LABELS) {
-                return OTHER_LABEL
-            } else {
-                if (label.length > MAX_LABEL_LENGTH) {
-                    recordError(
-                        this,
-                        ErrorType.InvalidValue,
-                        "label length ${label.length} exceeds maximum of $MAX_LABEL_LENGTH",
-                        logger
-                    )
-                    return OTHER_LABEL
-                }
-
-                // Labels must be snake_case.
-                if (!labelRegex.matches(label)) {
-                    recordError(
-                        this,
-                        ErrorType.InvalidValue,
-                        "label must be snake_case, got '$label'",
-                        logger
-                    )
-                    return OTHER_LABEL
-                }
-                seenLabels.add(label)
-            }
-        }
-        return label
-        */
-    }
-
-    /**
-     * Get a copy of the subMetric with the name changed to the given `newName`.
-     *
-     * @param newName The new name for the metric.
-     * @return A copy of subMetric with the new name.
-     * @throws IllegalStateException If this metric type does not support labels.
-     */
-    @Suppress("UNCHECKED_CAST")
-    internal fun getMetricWithNewName(newName: String): T {
-        // function is "internal" so we can mock it in testing
-
-        // Every metric that supports labels needs an entry here
-        // FIXME(bug 1552873): We need proper implementations AND serialization handling of these
-        return when (subMetric) {
-            is BooleanMetricType -> BooleanMetricType(disabled = disabled, category = category, name = newName, sendInPings = sendInPings, lifetime = lifetime) as T
-            is CounterMetricType -> CounterMetricType(disabled = disabled, category = category, name = newName, sendInPings = sendInPings, lifetime = lifetime) as T
-            /*is DatetimeMetricType -> subMetric.copy(name = newName) as T*/
-            /*is StringListMetricType -> subMetric.copy(name = newName) as T*/
-            is StringMetricType -> StringMetricType(disabled = disabled, category = category, name = newName, sendInPings = sendInPings, lifetime = lifetime) as T
-            /*is TimespanMetricType -> subMetric.copy(name = newName) as T*/
-            /*is UuidMetricType -> subMetric.copy(name = newName) as T*/
+    init {
+        val ffiPingsList = StringArray(sendInPings.toTypedArray(), "utf-8")
+        val labelList = labels?.let { StringArray(it.toList().toTypedArray(), "utf-8") }
+        val metricTypeInstantiator = when (subMetric) {
+            is CounterMetricType -> LibGleanFFI::glean_new_labeled_counter_metric
+            is BooleanMetricType -> LibGleanFFI::glean_new_labeled_boolean_metric
+            is StringMetricType -> LibGleanFFI::glean_new_labeled_string_metric
             else -> throw IllegalStateException(
                 "Can not create a labeled version of this metric type"
             )
         }
-    }
 
-    /**
-     * Delegates to [StorageEngineManager.getStorageEngineForMetric].
-     * Provided here so it can be mocked for testing.
-     */
-    /*
-    internal fun getStorageEngineForMetric(): StorageEngine? {
-        return StorageEngineManager.getStorageEngineForMetric(subMetric)
+        this.handle = metricTypeInstantiator(
+                LibGleanFFI.INSTANCE,
+                category,
+                name,
+                ffiPingsList,
+                sendInPings.size,
+                lifetime.ordinal,
+                disabled.toByte(),
+                labelList,
+                if (labels != null) { labels.size } else { 0 })
     }
-    */
 
     /**
      * Get the specific metric for a given label.
@@ -163,13 +74,24 @@ class LabeledMetricType<T>(
      * @param label The label
      * @return The specific metric for that label
      */
+    @Suppress("UNCHECKED_CAST")
     operator fun get(label: String): T {
-        val actualLabel = labels?.let {
-            getFinalStaticLabel(label)
-        } ?: run {
-            getFinalDynamicLabel(label)
+        return when (subMetric) {
+            is CounterMetricType -> {
+                val handle = LibGleanFFI.INSTANCE.glean_labeled_counter_metric_get(Glean.handle, this.handle, label)
+                return CounterMetricType(handle = handle, sendInPings = sendInPings) as T
+            }
+            is BooleanMetricType -> {
+                val handle = LibGleanFFI.INSTANCE.glean_labeled_boolean_metric_get(Glean.handle, this.handle, label)
+                return BooleanMetricType(handle = handle, sendInPings = sendInPings) as T
+            }
+            is StringMetricType -> {
+                val handle = LibGleanFFI.INSTANCE.glean_labeled_string_metric_get(Glean.handle, this.handle, label)
+                return StringMetricType(handle = handle, sendInPings = sendInPings) as T
+            }
+            else -> throw IllegalStateException(
+                "Can not create a labeled version of this metric type"
+            )
         }
-
-        return getMetricWithNewName("$name/$actualLabel")
     }
 }
