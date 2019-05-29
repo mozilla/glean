@@ -346,17 +346,17 @@ pub extern "C" fn glean_string_test_get_value(
 }
 
 #[no_mangle]
-pub extern "C" fn glean_ping_collect(glean_handle: u64, ping_name: FfiStr) -> *mut c_char {
+pub extern "C" fn glean_ping_collect(glean_handle: u64, ping_type_handle: u64) -> *mut c_char {
     GLEAN.call_infallible(glean_handle, |glean| {
-        let ping_maker = glean_core::ping::PingMaker::new();
-        let data = ping_maker
-            .collect_string(
-                glean.storage(),
-                glean.get_ping_by_name(ping_name.as_str()).unwrap(),
-            )
-            .unwrap_or_else(|| String::from(""));
-        log::info!("Ping({}): {}", ping_name.as_str(), data);
-        data
+        let res: glean_core::Result<String> = PING_TYPES.get_u64(ping_type_handle, |ping_type| {
+            let ping_maker = glean_core::ping::PingMaker::new();
+            let data = ping_maker
+                .collect_string(glean.storage(), ping_type)
+                .unwrap_or_else(|| String::from(""));
+            log::info!("Ping({}): {}", ping_type.name.as_str(), data);
+            Ok(data)
+        });
+        res.unwrap()
     })
 }
 

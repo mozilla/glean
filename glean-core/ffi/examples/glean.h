@@ -115,7 +115,7 @@ uint64_t glean_new_string_metric(FfiStr category,
                                  int32_t lifetime,
                                  uint8_t disabled);
 
-char *glean_ping_collect(uint64_t glean_handle, FfiStr ping_name);
+char *glean_ping_collect(uint64_t glean_handle, uint64_t ping_type_handle);
 
 void glean_register_ping_type(uint64_t glean_handle, uint64_t ping_type_handle);
 

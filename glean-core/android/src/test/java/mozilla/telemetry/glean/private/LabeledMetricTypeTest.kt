@@ -9,7 +9,9 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.test.core.app.ApplicationProvider
 */
+import mozilla.telemetry.glean.collectAndCheckPingSchema
 import mozilla.telemetry.glean.resetGlean
+import mozilla.telemetry.glean.GleanMetrics.Pings
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -90,16 +92,6 @@ class LabeledMetricTypeTest {
         assertTrue(counterMetric.testHasValue())
         assertEquals(3, counterMetric.testGetValue())
 
-        /*
-        CountersStorageEngine.record(counterMetric, 3)
-
-        val snapshot = CountersStorageEngine.getSnapshot(storeName = "metrics", clearStore = false)
-
-        assertEquals(3, snapshot!!.size)
-        assertEquals(1, snapshot.get("telemetry.labeled_counter_metric/label1"))
-        assertEquals(2, snapshot.get("telemetry.labeled_counter_metric/label2"))
-        assertEquals(3, snapshot.get("telemetry.labeled_counter_metric"))
-
         val json = collectAndCheckPingSchema(Pings.metrics).getJSONObject("metrics")!!
         // Do the same checks again on the JSON structure
         assertEquals(
@@ -119,7 +111,6 @@ class LabeledMetricTypeTest {
             json.getJSONObject("counter")!!
                 .get("telemetry.labeled_counter_metric")
         )
-        */
     }
 
     @Test
@@ -154,6 +145,27 @@ class LabeledMetricTypeTest {
         assertFalse(labeledCounterMetric["baz"].testHasValue())
         // The rest all lands in the __other__ bucket
         assertEquals(3, labeledCounterMetric["not_there"].testGetValue())
+
+        val json = collectAndCheckPingSchema(Pings.metrics).getJSONObject("metrics")!!
+        // Do the same checks again on the JSON structure
+        assertEquals(
+            3,
+            json.getJSONObject("labeled_counter")!!
+                .getJSONObject("telemetry.labeled_counter_metric")
+                .get("foo")
+        )
+        assertEquals(
+            1,
+            json.getJSONObject("labeled_counter")!!
+                .getJSONObject("telemetry.labeled_counter_metric")
+                .get("bar")
+        )
+        assertEquals(
+            3,
+            json.getJSONObject("labeled_counter")!!
+                .getJSONObject("telemetry.labeled_counter_metric")
+                .get("__other__")
+        )
     }
 
     @Test
@@ -186,6 +198,29 @@ class LabeledMetricTypeTest {
             assertEquals(1, labeledCounterMetric["label_$i"].testGetValue())
         }
         assertEquals(5, labeledCounterMetric["__other__"].testGetValue())
+
+        val json = collectAndCheckPingSchema(Pings.metrics).getJSONObject("metrics")!!
+        // Do the same checks again on the JSON structure
+        assertEquals(
+            2,
+            json.getJSONObject("labeled_counter")!!
+                .getJSONObject("telemetry.labeled_counter_metric")!!
+                .get("label_0")
+        )
+        for (i in 1..15) {
+            assertEquals(
+                1,
+                json.getJSONObject("labeled_counter")!!
+                    .getJSONObject("telemetry.labeled_counter_metric")!!
+                    .get("label_$i")
+            )
+        }
+        assertEquals(
+            5,
+            json.getJSONObject("labeled_counter")!!
+                .getJSONObject("telemetry.labeled_counter_metric")!!
+                .get("__other__")
+        )
     }
 
     @Test
@@ -212,6 +247,7 @@ class LabeledMetricTypeTest {
         labeledCounterMetric["with/slash"].add(1)
         labeledCounterMetric["this_string_has_more_than_thirty_characters"].add(1)
 
+        // TODO: 1551975
         /*assertEquals(*/
             /*4,*/
             /*ErrorRecording.testGetNumRecordedErrors(*/

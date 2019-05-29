@@ -1,4 +1,4 @@
-objects = glean_app.c ../../../target/release/libglean_ffi.dylib
+objects = glean_app.c $(wildcard ../../../target/release/libglean_ffi.so) $(wildcard ../../../target/release/libglean_ffi.dylib)
 headers = glean.h
 
 glean_app: $(objects) $(headers)

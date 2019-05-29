@@ -100,6 +100,19 @@ jobs:
     steps:
       - rust-tests:
           rust-version: "beta"
+  C tests:
+    docker:
+      - image: circleci/rust:latest
+    steps:
+      - test-setup:
+          rust-version: stable
+      - run: cargo build --release
+      # Just a basic smoke test for now to make sure it compiles and runs
+      # without returning an error
+      - run: |
+          cd glean-core/ffi/examples
+          make
+          ./glean_app
 
   Lint Android with ktlint and detekt:
     docker:
@@ -176,6 +189,7 @@ workflows:
       - Rust tests - stable
       - Rust tests - beta
       - Android tests
+      - C tests
   documentation:
     jobs:
       - Generate documentation
