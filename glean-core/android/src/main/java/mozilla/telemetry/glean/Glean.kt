@@ -17,6 +17,7 @@ import java.io.File
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.MetricHandle
 import mozilla.telemetry.glean.rust.RustError
+import mozilla.telemetry.glean.rust.getAndConsumeRustString
 import mozilla.telemetry.glean.rust.toBoolean
 import mozilla.telemetry.glean.rust.toByte
 import mozilla.telemetry.glean.GleanMetrics.GleanBaseline
@@ -277,9 +278,12 @@ open class GleanInternalAPI internal constructor () {
         return this.gleanDataDir
     }
 
-    fun collect(pingName: String) {
-        val s = LibGleanFFI.INSTANCE.glean_ping_collect(handle, pingName)!!
-        LibGleanFFI.INSTANCE.glean_str_free(s)
+    /**
+     * Collect a ping and return a string
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    internal fun testCollect(ping: PingType): String? {
+        return LibGleanFFI.INSTANCE.glean_ping_collect(handle, ping.handle)?.getAndConsumeRustString()
     }
 
     /**

@@ -157,7 +157,7 @@ internal interface LibGleanFFI : Library {
 
     fun glean_string_test_has_value(glean_handle: Long, metric_id: Long, storage_name: String): Byte
 
-    fun glean_ping_collect(glean_handle: Long, ping_name: String): Pointer?
+    fun glean_ping_collect(glean_handle: Long, ping_type_handle: Long): Pointer?
 
     fun glean_send_ping(glean_handle: Long, ping_type_handle: Long, log_ping: Byte): Byte
 

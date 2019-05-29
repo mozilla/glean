@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,6 +15,8 @@ int main(void)
 {
   glean_enable_logging();
   uint64_t glean = glean_initialize("/tmp/glean_data", "c-app", true);
+  uint64_t store1 = glean_new_ping_type("store1", true);
+  glean_register_ping_type(glean, store1);
 
   printf("Glean upload enabled? %d\n", glean_is_upload_enabled(glean));
   glean_set_upload_enabled(glean, 0);
@@ -28,7 +31,7 @@ int main(void)
 
   glean_counter_add(glean, metric, 2);
 
-  char *payload = glean_ping_collect(glean, "store1");
+  char *payload = glean_ping_collect(glean, store1);
   printf("Payload:\n%s\n", payload);
   glean_str_free(payload);
 
