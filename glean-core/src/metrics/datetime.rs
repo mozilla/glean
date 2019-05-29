@@ -5,11 +5,10 @@
 use crate::metrics::Metric;
 use crate::metrics::MetricType;
 use crate::metrics::time_unit::TimeUnit;
-use crate::storage::StorageManager;
 use crate::CommonMetricData;
 use crate::Glean;
 
-use chrono::{DateTime, TimeZone, NaiveDateTime, Utc};
+use chrono::{DateTime, FixedOffset};
 
 #[derive(Debug)]
 pub struct DatetimeMetric {
@@ -18,6 +17,10 @@ pub struct DatetimeMetric {
 }
 
 impl MetricType for DatetimeMetric {
+    fn with_meta(meta: CommonMetricData) -> Self {
+        Self { meta, time_unit: TimeUnit::Day } // FIXME: How do we handle this?
+    }
+
     fn meta(&self) -> &CommonMetricData {
         &self.meta
     }
@@ -29,12 +32,12 @@ impl DatetimeMetric {
     }
 
     /// Public facing API for setting
-    pub fn set(&self, glean: &Glean, value: DateTime<Utc>) {
+    pub fn set(&self, glean: &Glean, value: DateTime<FixedOffset>) {
         if !self.should_record(glean) {
             return;
         }
 
-        let value = Metric::Datetime(value);
+        let value = Metric::Datetime(value, self.time_unit.clone());
         glean
             .storage()
             .record(&self.meta, &value)

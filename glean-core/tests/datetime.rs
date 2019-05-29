@@ -17,6 +17,7 @@ use glean_core::{CommonMetricData, Glean, Lifetime};
 
 #[test]
 fn datetime_serializer_should_correctly_serialize_datetime() {
+    let expected_value = "1983-04-13T12:09+00:00";
     let (_t, tmpname) = tempdir();
     {
         let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
@@ -29,15 +30,15 @@ fn datetime_serializer_should_correctly_serialize_datetime() {
             lifetime: Lifetime::User,
         }, TimeUnit::Minute);
 
-        // `2014-07-08T09:10:11Z`
-        let dt = Utc.ymd(2014, 7, 8).and_hms(9, 10, 11);
+        // `1983-04-13T12:09:14.274+00:00` will be truncated to Minute resolution.
+        let dt = FixedOffset::east(0).ymd(1983, 4, 13).and_hms_milli(12, 9, 14, 274);
         metric.set(&glean, dt);
 
         let snapshot = StorageManager
             .snapshot_as_json(glean.storage(), "store1", true)
             .unwrap();
         assert_eq!(
-            json!({"datetime": {"telemetry.datetime_metric": "2014-07-08T09:10:11Z"}}),
+            json!({"datetime": {"telemetry.datetime_metric": expected_value}}),
             snapshot
         );
     }
@@ -50,7 +51,7 @@ fn datetime_serializer_should_correctly_serialize_datetime() {
             .snapshot_as_json(glean.storage(), "store1", true)
             .unwrap();
         assert_eq!(
-            json!({"datetime": {"telemetry.datetime_metric": "2014-07-08T09:10:11Z"}}),
+            json!({"datetime": {"telemetry.datetime_metric": expected_value}}),
             snapshot
         );
     }

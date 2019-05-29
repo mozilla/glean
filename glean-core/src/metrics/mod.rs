@@ -4,7 +4,7 @@
 
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value as JsonValue};
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, FixedOffset};
 
 mod boolean;
 mod counter;
@@ -18,6 +18,7 @@ mod uuid;
 
 use crate::CommonMetricData;
 use crate::Glean;
+use crate::util::get_iso_time_string;
 
 pub use self::boolean::BooleanMetric;
 pub use self::counter::CounterMetric;
@@ -33,7 +34,7 @@ pub use self::uuid::UuidMetric;
 pub enum Metric {
     Boolean(bool),
     Counter(i32),
-    Datetime(DateTime<Utc>),  // FIXME: should we store as something else?
+    Datetime(DateTime<FixedOffset>, TimeUnit),
     String(String),
     StringList(Vec<String>),
     Uuid(String),
@@ -54,7 +55,7 @@ impl Metric {
         match self {
             Metric::Boolean(_) => "boolean",
             Metric::Counter(_) => "counter",
-            Metric::Datetime(_) => "datetime",
+            Metric::Datetime(_, _) => "datetime",
             Metric::String(_) => "string",
             Metric::StringList(_) => "string_list",
             Metric::Uuid(_) => "uuid",
@@ -65,7 +66,7 @@ impl Metric {
         match self {
             Metric::Boolean(b) => json!(b),
             Metric::Counter(c) => json!(c),
-            Metric::Datetime(s) => json!(s), // FIXME: How to persist?
+            Metric::Datetime(d, tz) => json!(get_iso_time_string(*d, tz.clone())),
             Metric::String(s) => json!(s),
             Metric::StringList(v) => json!(v),
             Metric::Uuid(s) => json!(s),
