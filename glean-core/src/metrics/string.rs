@@ -11,6 +11,9 @@ use crate::Glean;
 
 const MAX_LENGTH_VALUE: usize = 100;
 
+/// # A string metric
+///
+/// Record an Unicode string value with arbitrary content.
 #[derive(Clone, Debug)]
 pub struct StringMetric {
     meta: CommonMetricData,
@@ -27,10 +30,12 @@ impl MetricType for StringMetric {
 }
 
 impl StringMetric {
+    /// Create a new metric
     pub fn new(meta: CommonMetricData) -> Self {
         Self { meta }
     }
 
+    /// Set to the specified value
     pub fn set<S: Into<String>>(&self, glean: &Glean, value: S) {
         if !self.should_record(glean) {
             return;

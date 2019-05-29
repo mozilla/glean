@@ -9,6 +9,9 @@ use crate::storage::StorageManager;
 use crate::CommonMetricData;
 use crate::Glean;
 
+/// # A counter metric
+///
+/// Count how often something happens.
 #[derive(Clone, Debug)]
 pub struct CounterMetric {
     meta: CommonMetricData,
@@ -25,10 +28,14 @@ impl MetricType for CounterMetric {
 }
 
 impl CounterMetric {
+    /// Create a new metric
     pub fn new(meta: CommonMetricData) -> Self {
         Self { meta }
     }
 
+    /// Increase the counter by `amount`
+    ///
+    /// Logs an error if the value is 0 or negative.
     pub fn add(&self, glean: &Glean, amount: i32) {
         if !self.should_record(glean) {
             return;
