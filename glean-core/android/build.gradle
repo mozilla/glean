@@ -13,6 +13,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'org.mozilla.rust-android-gradle.rust-android'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'org.jetbrains.dokka-android'
 
 /*
  * This defines the location of the JSON schema used to validate the pings
@@ -180,6 +181,13 @@ ext.configurePublish(
         /* jnaForTestConfiguration= */ configurations.jnaForTest,
         /* variantWithoutLib= */ 'androidWithoutLib',
 )
+
+task docs(type: org.jetbrains.dokka.gradle.DokkaAndroidTask, overwrite: true) {
+    moduleName = "$rootProject.name"
+    outputDirectory = "$buildDir/javadoc"
+    outputFormat = "html"
+    jdkVersion = 7
+}
 
 //apply from: 'https://github.com/mozilla-mobile/android-components/raw/master/components/service/glean/scripts/sdk_generator.gradle'
 apply from: 'sdk_generator.gradle'
