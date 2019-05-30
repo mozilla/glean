@@ -5,8 +5,10 @@
 use crate::metrics::Metric;
 use crate::metrics::MetricType;
 use crate::metrics::time_unit::TimeUnit;
+use crate::storage::StorageManager;
 use crate::CommonMetricData;
 use crate::Glean;
+use crate::util::get_iso_time_string;
 
 use chrono::{DateTime, FixedOffset};
 
@@ -42,22 +44,31 @@ impl DatetimeMetric {
             .storage()
             .record(&self.meta, &value)
     }
-/*
+
     /// **Test-only API (exported for FFI purposes).**
     ///
-    /// Get the currently stored value as an integer.
+    /// Get the currently stored value as a DateTime<FixedOffset>.
+    /// The precision of this value is truncated to the `time_unit`
+    /// precision.
     ///
     /// This doesn't clear the stored value.
-    pub fn test_get_value(&self, glean: &Glean, storage_name: &str) -> Option<i32> {
-        let snapshot = match StorageManager.snapshot_as_json(glean.storage(), storage_name, false) {
-            Some(snapshot) => snapshot,
-            None => return None,
-        };
-        snapshot
-            .as_object()
-            .and_then(|o| o.get("counter"))
-            .and_then(|o| o.as_object())
-            .and_then(|o| o.get(&self.meta.identifier()))
-            .and_then(|o| o.as_i64().map(|i| i as i32))
-    }*/
+    pub fn test_get_value(&self, glean: &Glean, storage_name: &str) -> Option<DateTime<FixedOffset>> {
+        panic!("This is not yet implemented. Please consider using `test_get_value_as_string"`);
+        None
+    }
+
+    /// **Test-only API (exported for FFI purposes).**
+    ///
+    /// Get the currently stored value as a String.
+    /// The precision of this value is truncated to the `time_unit`
+    /// precision.
+    ///
+    /// This doesn't clear the stored value.
+    pub fn test_get_value_as_string(&self, glean: &Glean, storage_name: &str) -> Option<String> {
+        match StorageManager.snapshot_metric(glean.storage(), storage_name, &self.meta.identifier())
+        {
+            Some(Metric::Datetime(d, tu)) => Some(get_iso_time_string(d, tu)),
+            _ => None,
+        }
+    }
 }
