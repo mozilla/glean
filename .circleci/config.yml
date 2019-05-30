@@ -148,7 +148,10 @@ jobs:
           command: bin/build-docs.sh
       - persist_to_workspace:
           root: build/
-          paths: docs
+          paths:
+            - docs/book
+            - docs/docs
+            - docs/index.html
 
   Generate Kotlin documentation:
     docker:
@@ -172,6 +175,9 @@ jobs:
       - run:
           name: Disable jekyll builds
           command: touch build/docs/.nojekyll
+      - run:
+          name: Show contents
+          command: ls -R
       # Needed for write access to the GitHub repository;
       # see https://circleci.com/docs/2.0/gh-bb-integration/#deployment-keys-and-user-keys
       - add_ssh_keys:
