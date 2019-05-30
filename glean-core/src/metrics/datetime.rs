@@ -10,7 +10,7 @@ use crate::CommonMetricData;
 use crate::Glean;
 use crate::util::get_iso_time_string;
 
-use chrono::{DateTime, FixedOffset};
+use chrono::{DateTime, FixedOffset, TimeZone};
 
 #[derive(Debug)]
 pub struct DatetimeMetric {
@@ -33,7 +33,47 @@ impl DatetimeMetric {
         Self { meta, time_unit }
     }
 
-    /// Public facing API for setting
+    /// Public facing API for setting the metric to a date/time which
+    /// includes the timezone offset.
+    /// 
+    /// Arguments:
+    /// 
+    /// * `glean`: the Glean instance this metric belongs to.
+    /// * `year`: the year to set the metric to.
+    /// * `month`: the month to set the metric to (1-12).
+    /// * `day`: the day to set the metric to (1-based).
+    /// * `hour`: the hour to set the metric to.
+    /// * `minute`: the minute to set the metric to.
+    /// * `second`: the second to set the metric to.
+    /// * `nano`: the nanosecond fraction to the last whole second.
+    pub fn set_with_details(
+        &self,
+        glean: &Glean,
+        year: i32,
+        month: u32,
+        day: u32,
+        hour: u32,
+        minute: u32,
+        second: u32,
+        nano: u32,
+        offset_seconds: i32) {
+        let datetime_obj = FixedOffset::east(offset_seconds)
+            .ymd_opt(year, month, day)
+            .and_hms_nano_opt(hour, minute, second, nano);
+
+        match datetime_obj.single() {
+            Some(d) => self.set(glean, d),
+            _ => log::warn!("DatetimeMetric::set: invalid input data. Not recording."), // FIXME: record error?
+        }
+    }
+
+    /// Public facing API for setting the metric to a date/time which
+    /// includes the timezone offset.
+    /// 
+    /// Arguments:
+    /// 
+    /// * `glean`: the Glean instance this metric belongs to.
+    /// * `value`: the date/time value, with offset, to set the metric to.
     pub fn set(&self, glean: &Glean, value: DateTime<FixedOffset>) {
         if !self.should_record(glean) {
             return;
@@ -52,9 +92,8 @@ impl DatetimeMetric {
     /// precision.
     ///
     /// This doesn't clear the stored value.
-    pub fn test_get_value(&self, glean: &Glean, storage_name: &str) -> Option<DateTime<FixedOffset>> {
-        panic!("This is not yet implemented. Please consider using `test_get_value_as_string"`);
-        None
+    pub fn test_get_value(&self, _glean: &Glean, _storage_name: &str) -> Option<DateTime<FixedOffset>> {
+        panic!("This is not yet implemented. Please consider using `test_get_value_as_string");
     }
 
     /// **Test-only API (exported for FFI purposes).**
