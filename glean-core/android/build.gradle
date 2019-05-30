@@ -183,7 +183,7 @@ ext.configurePublish(
 )
 
 task docs(type: org.jetbrains.dokka.gradle.DokkaAndroidTask, overwrite: true) {
-    moduleName = "$rootProject.name"
+    moduleName = "glean"
     outputDirectory = "$buildDir/../../../build/docs/javadoc"
     outputFormat = "html"
     jdkVersion = 7
