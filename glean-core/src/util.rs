@@ -67,7 +67,7 @@ mod test {
         // `1985-07-03T12:09:14.000560274+01:00`
         let dt = FixedOffset::east(3600)
             .ymd(1985, 7, 3)
-            .and_hms_nano(12, 9, 14, 1560274);
+            .and_hms_nano(12, 9, 14, 1_560_274);
         assert_eq!(
             "1985-07-03T12:09:14.001560274+01:00",
             get_iso_time_string(dt, TimeUnit::Nanosecond)

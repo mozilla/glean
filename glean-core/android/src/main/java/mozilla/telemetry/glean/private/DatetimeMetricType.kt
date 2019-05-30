@@ -4,7 +4,6 @@
 
 package mozilla.telemetry.glean.private
 
-import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.sun.jna.StringArray
 import mozilla.telemetry.glean.rust.LibGleanFFI
@@ -27,12 +26,6 @@ class DatetimeMetricType internal constructor(
     var handle: Long,
     val sendInPings: List<String>
 ) {
-    companion object {
-        // Note: the log tag is manually cropped to 23 characters, which is
-        // the maximum length allowed by Android.
-        private const val LOG_TAG: String = "glean/DatetimeMetricTyp"
-    }
-
     /**
      * The public constructor used by automatically generated metrics.
      */
