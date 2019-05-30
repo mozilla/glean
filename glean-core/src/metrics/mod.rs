@@ -2,9 +2,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value as JsonValue};
-use chrono::{DateTime, FixedOffset};
 
 mod boolean;
 mod counter;
@@ -16,9 +16,9 @@ mod string_list;
 mod time_unit;
 mod uuid;
 
+use crate::util::get_iso_time_string;
 use crate::CommonMetricData;
 use crate::Glean;
-use crate::util::get_iso_time_string;
 
 pub use self::boolean::BooleanMetric;
 pub use self::counter::CounterMetric;

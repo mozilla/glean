@@ -30,13 +30,13 @@ pub fn sanitize_application_id(application_id: &str) -> String {
 /// it to the provided TimeUnit.
 ///
 /// ## Arguments:
-/// 
+///
 /// * `datetime`: the `DateTime` object that holds the date, time and timezone information.
-/// * `truncate_to`: the desired resolution to use for the output string. 
+/// * `truncate_to`: the desired resolution to use for the output string.
 ///
 /// ## Return value:
-/// 
-/// Returns a string representing the provided date/time truncated to the requested time unit. 
+///
+/// Returns a string representing the provided date/time truncated to the requested time unit.
 pub fn get_iso_time_string(datetime: DateTime<FixedOffset>, truncate_to: TimeUnit) -> String {
     datetime.format(truncate_to.format_pattern()).to_string()
 }
@@ -65,7 +65,9 @@ mod test {
     #[test]
     fn test_get_iso_time_string() {
         // `1985-07-03T12:09:14.000560274+01:00`
-        let dt = FixedOffset::east(3600).ymd(1985, 7, 3).and_hms_nano(12, 9, 14, 1560274);
+        let dt = FixedOffset::east(3600)
+            .ymd(1985, 7, 3)
+            .and_hms_nano(12, 9, 14, 1560274);
         assert_eq!(
             "1985-07-03T12:09:14.001560274+01:00",
             get_iso_time_string(dt, TimeUnit::Nanosecond)
@@ -90,9 +92,6 @@ mod test {
             "1985-07-03T12+01:00",
             get_iso_time_string(dt, TimeUnit::Hour)
         );
-        assert_eq!(
-            "1985-07-03+01:00",
-            get_iso_time_string(dt, TimeUnit::Day)
-        );
+        assert_eq!("1985-07-03+01:00", get_iso_time_string(dt, TimeUnit::Day));
     }
 }

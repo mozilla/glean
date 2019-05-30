@@ -22,16 +22,21 @@ fn datetime_serializer_should_correctly_serialize_datetime() {
     {
         let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
 
-        let metric = DatetimeMetric::new(CommonMetricData {
-            name: "datetime_metric".into(),
-            category: "telemetry".into(),
-            send_in_pings: vec!["store1".into()],
-            disabled: false,
-            lifetime: Lifetime::User,
-        }, TimeUnit::Minute);
+        let metric = DatetimeMetric::new(
+            CommonMetricData {
+                name: "datetime_metric".into(),
+                category: "telemetry".into(),
+                send_in_pings: vec!["store1".into()],
+                disabled: false,
+                lifetime: Lifetime::User,
+            },
+            TimeUnit::Minute,
+        );
 
         // `1983-04-13T12:09:14.274+00:00` will be truncated to Minute resolution.
-        let dt = FixedOffset::east(0).ymd(1983, 4, 13).and_hms_milli(12, 9, 14, 274);
+        let dt = FixedOffset::east(0)
+            .ymd(1983, 4, 13)
+            .and_hms_milli(12, 9, 14, 274);
         metric.set(&glean, dt);
 
         let snapshot = StorageManager
@@ -62,22 +67,29 @@ fn set_value_properly_sets_the_value_in_all_stores() {
     let (glean, _t) = new_glean();
     let store_names: Vec<String> = vec!["store1".into(), "store2".into()];
 
-    let metric = DatetimeMetric::new(CommonMetricData {
-        name: "datetime_metric".into(),
-        category: "telemetry".into(),
-        send_in_pings: store_names.clone(),
-        disabled: false,
-        lifetime: Lifetime::Ping,
-    }, TimeUnit::Nanosecond);
+    let metric = DatetimeMetric::new(
+        CommonMetricData {
+            name: "datetime_metric".into(),
+            category: "telemetry".into(),
+            send_in_pings: store_names.clone(),
+            disabled: false,
+            lifetime: Lifetime::Ping,
+        },
+        TimeUnit::Nanosecond,
+    );
 
     // `1983-04-13T12:09:14.274+00:00` will be truncated to Minute resolution.
-    let dt = FixedOffset::east(0).ymd(1983, 4, 13).and_hms_nano(12, 9, 14, 1560274);
+    let dt = FixedOffset::east(0)
+        .ymd(1983, 4, 13)
+        .and_hms_nano(12, 9, 14, 1560274);
     metric.set(&glean, dt);
 
     for store_name in store_names {
         assert_eq!(
             "1983-04-13T12:09:14.001560274+00:00",
-            metric.test_get_value_as_string(&glean, &store_name).unwrap()
+            metric
+                .test_get_value_as_string(&glean, &store_name)
+                .unwrap()
         );
     }
 }
@@ -93,8 +105,9 @@ fn test_that_truncation_works() {
     let (glean, _t) = new_glean();
 
     // `1985-07-03T12:09:14.000560274+01:00`
-    let high_res_datetime =
-        FixedOffset::east(3600).ymd(1985, 7, 3).and_hms_nano(12, 9, 14, 1560274);
+    let high_res_datetime = FixedOffset::east(3600)
+        .ymd(1985, 7, 3)
+        .and_hms_nano(12, 9, 14, 1560274);
     let store_name = "store1";
 
     // Create an helper struct for defining the truncation cases.
@@ -145,18 +158,23 @@ fn test_that_truncation_works() {
 
     // Execute them all.
     for t in test_cases {
-        let metric = DatetimeMetric::new(CommonMetricData {
-            name: format!("datetime_metric_{}", t.case_name).into(),
-            category: "telemetry".into(),
-            send_in_pings: vec![store_name.into()],
-            disabled: false,
-            lifetime: Lifetime::User,
-        }, t.desired_resolution);
+        let metric = DatetimeMetric::new(
+            CommonMetricData {
+                name: format!("datetime_metric_{}", t.case_name).into(),
+                category: "telemetry".into(),
+                send_in_pings: vec![store_name.into()],
+                disabled: false,
+                lifetime: Lifetime::User,
+            },
+            t.desired_resolution,
+        );
         metric.set(&glean, high_res_datetime);
 
         assert_eq!(
             t.expected_result,
-            metric.test_get_value_as_string(&glean, &store_name).unwrap()
+            metric
+                .test_get_value_as_string(&glean, &store_name)
+                .unwrap()
         );
     }
 }

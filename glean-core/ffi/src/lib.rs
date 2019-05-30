@@ -300,7 +300,7 @@ pub extern "C" fn glean_boolean_test_get_value(
     })
 }
 
-// *** Start of the Datetime FFI part *** 
+// *** Start of the Datetime FFI part ***
 
 #[no_mangle]
 pub extern "C" fn glean_new_datetime_metric(
@@ -317,13 +317,16 @@ pub extern "C" fn glean_new_datetime_metric(
         let lifetime = Lifetime::try_from(lifetime)?;
         let tu = TimeUnit::try_from(time_unit)?;
 
-        Ok(DatetimeMetric::new(CommonMetricData {
-            name: name.into_string(),
-            category: category.into_string(),
-            send_in_pings,
-            lifetime,
-            disabled: disabled != 0,
-        }, tu))
+        Ok(DatetimeMetric::new(
+            CommonMetricData {
+                name: name.into_string(),
+                category: category.into_string(),
+                send_in_pings,
+                lifetime,
+                disabled: disabled != 0,
+            },
+            tu,
+        ))
     })
 }
 
@@ -338,10 +341,21 @@ pub extern "C" fn glean_datetime_set(
     minute: u32,
     second: u32,
     nano: u32,
-    offset_seconds: i32) {
+    offset_seconds: i32,
+) {
     GLEAN.call_infallible(glean_handle, |glean| {
         DATETIME_METRICS.call_infallible(metric_id, |metric| {
-            metric.set_with_details(glean, year, month, day, hour, minute, second, nano, offset_seconds);
+            metric.set_with_details(
+                glean,
+                year,
+                month,
+                day,
+                hour,
+                minute,
+                second,
+                nano,
+                offset_seconds,
+            );
         })
     })
 }
@@ -376,7 +390,9 @@ pub extern "C" fn glean_datetime_test_get_value_as_string(
 ) -> *mut c_char {
     GLEAN.call_infallible(glean_handle, |glean| {
         let res: glean_core::Result<String> = DATETIME_METRICS.get_u64(metric_id, |metric| {
-            Ok(metric.test_get_value_as_string(glean, storage_name.as_str()).unwrap())
+            Ok(metric
+                .test_get_value_as_string(glean, storage_name.as_str())
+                .unwrap())
         });
         res.unwrap()
     })
