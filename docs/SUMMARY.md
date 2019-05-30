@@ -26,3 +26,4 @@
         - [Labeled Metrics](user/metrics/labeled_metric.md)
     - [Pings](user/pings/index.md)
         - [Baseline Ping](user/pings/baseline.md)
+- [API Documentation](api/index.md)

@@ -58,7 +58,7 @@ commands:
             rustup target add i686-linux-android
             rustup target add x86_64-linux-android
 
-  android-tests:
+  android-setup:
     steps:
       - install-rustup
       - test-setup:
@@ -67,9 +67,6 @@ commands:
           name: Install missing Android SDK
           command: |
               sdkmanager 'build-tools;21.0.0'
-      - run:
-          name: Gradle Test
-          command: ./gradlew test
 
 jobs:
   Check Rust formatting:
@@ -126,10 +123,13 @@ jobs:
     docker:
       - image: circleci/android:api-28-ndk
     steps:
-      - android-tests
+      - android-setup
+      - run:
+          name: Android tests
+          command: ./gradlew test
 
   # via https://circleci.com/blog/deploying-documentation-to-github-pages-with-continuous-integration/
-  Generate documentation:
+  Generate Rust documentation:
     docker:
       - image: circleci/rust:latest
     steps:
@@ -144,11 +144,23 @@ jobs:
               tar -xvf mdbook-v0.2.1-x86_64-unknown-linux-gnu.tar.gz
               mv mdbook /usr/local/cargo/bin/mdbook
       - run:
-          name: Build documentation
+          name: Build Rust documentation
           command: bin/build-docs.sh
       - persist_to_workspace:
           root: build/
           paths: docs
+
+  Generate Kotlin documentation:
+    docker:
+      - image: circleci/android:api-28-ndk
+    steps:
+      - android-setup
+      - run:
+          name: Build Kotlin documentation
+          command: ./gradlew docs
+      - persist_to_workspace:
+          root: build/
+          paths: docs/javadoc
 
   docs-deploy:
     docker:
@@ -192,10 +204,12 @@ workflows:
       - C tests
   documentation:
     jobs:
-      - Generate documentation
+      - Generate Rust documentation
+      - Generate Kotlin documentation
       - docs-deploy:
           requires:
-            - Generate documentation
+            - Generate Rust documentation
+            - Generate Kotlin documentation
           filters:
             branches:
               only: master
