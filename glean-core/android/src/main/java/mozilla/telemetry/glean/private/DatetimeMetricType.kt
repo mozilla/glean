@@ -6,6 +6,7 @@ package mozilla.telemetry.glean.private
 
 import androidx.annotation.VisibleForTesting
 import com.sun.jna.StringArray
+import mozilla.components.service.glean.utils.parseISOTimeString
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.RustError
 import mozilla.telemetry.glean.rust.toByte
@@ -168,11 +169,6 @@ class DatetimeMetricType internal constructor(
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun testGetValue(pingName: String = sendInPings.first()): Date {
-        /*@Suppress("EXPERIMENTAL_API_USAGE")
-        Dispatchers.API.assertInTestingMode()
-
-        return parseISOTimeString(DatetimesStorageEngine.getSnapshot(pingName, false)!![identifier]!!)!!*/
-        assert(false, { "Testing API is not implemented for DatetimeMetricType" })
-        return Date()
+        return parseISOTimeString(testGetValueAsString(pingName))!!
     }
 }
