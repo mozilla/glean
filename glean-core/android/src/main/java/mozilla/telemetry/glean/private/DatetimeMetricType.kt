@@ -6,7 +6,7 @@ package mozilla.telemetry.glean.private
 
 import androidx.annotation.VisibleForTesting
 import com.sun.jna.StringArray
-import mozilla.components.service.glean.utils.parseISOTimeString
+import mozilla.telemetry.glean.utils.parseISOTimeString
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.RustError
 import mozilla.telemetry.glean.rust.toByte
