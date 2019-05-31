@@ -139,10 +139,10 @@ jobs:
           command: rustc --version; cargo --version; rustup --version
       - run:
           name: Install mdbook
-          command: |
-              wget https://github.com/rust-lang-nursery/mdBook/releases/download/v0.2.1/mdbook-v0.2.1-x86_64-unknown-linux-gnu.tar.gz
-              tar -xvf mdbook-v0.2.1-x86_64-unknown-linux-gnu.tar.gz
-              mv mdbook /usr/local/cargo/bin/mdbook
+          # The latest release of mdbook has a bug that produces broken
+          # internal links in `print.html`.  Once that fix is in a release,
+          # we should go back to using a tarball for speed.
+          command: cargo install mdbook 
       - run:
           name: Build Rust documentation
           command: bin/build-docs.sh
@@ -177,7 +177,7 @@ jobs:
           at: build/
       - run:
           name: Check internal documentation links
-          command: make linkcheck
+          command: linkchecker --ignore-url javadoc --ignore-url docs/glean_core build/docs
 
   docs-deploy:
     docker:
