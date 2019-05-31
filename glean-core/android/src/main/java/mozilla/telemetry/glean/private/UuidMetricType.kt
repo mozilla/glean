@@ -17,10 +17,10 @@ class UuidMetricType(
     category: String,
     lifetime: Lifetime,
     name: String,
-    val sendInPings: List<String>
+    private val sendInPings: List<String>
 ) {
     companion object {
-        val LOG_TAG: String = "glean/UuidMetricType"
+        private val LOG_TAG: String = "glean/UuidMetricType"
     }
 
     /**

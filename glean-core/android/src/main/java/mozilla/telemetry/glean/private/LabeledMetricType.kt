@@ -28,8 +28,8 @@ class LabeledMetricType<T>(
     lifetime: Lifetime,
     name: String,
     labels: Set<String>? = null,
-    val sendInPings: List<String>,
-    val subMetric: T
+    private val sendInPings: List<String>,
+    private val subMetric: T
 ) {
     private val handle: Long
 

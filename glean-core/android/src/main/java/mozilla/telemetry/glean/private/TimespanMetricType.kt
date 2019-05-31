@@ -24,11 +24,11 @@ class TimespanMetricType(
     category: String,
     lifetime: Lifetime,
     name: String,
-    val sendInPings: List<String>,
+    private val sendInPings: List<String>,
     timeUnit: TimeUnit
 ) {
     companion object {
-        val LOG_TAG: String = "glean/TimespanMetricType"
+        private val LOG_TAG: String = "glean/TimespanMetricType"
     }
 
     /**

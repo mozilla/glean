@@ -25,8 +25,8 @@ import mozilla.telemetry.glean.rust.toBoolean
  * The internal constructor is only used by [LabeledMetricType] directly.
  */
 class BooleanMetricType internal constructor(
-    var handle: Long,
-    val sendInPings: List<String>
+    private var handle: Long,
+    private val sendInPings: List<String>
 ) {
 
     /**

@@ -1,8 +1,9 @@
 # Adding new metrics
 
-All metrics that your project collects must be defined in a `metrics.yaml` file.
-This file should be at the root of the application or library module (the same directory as the `build.gradle` file you updated).
-The format of that file is documented [here](https://mozilla.github.io/glean_parser/metrics-yaml.html).
+All metrics that your project collects must be defined in a `metrics.yaml`
+file. This file should be at the root of the application or library module (the same
+directory as the `build.gradle` file you updated). The format of that file is
+documented [here](https://mozilla.github.io/glean_parser/metrics-yaml.html).
 
 When adding a new metric, the workflow is:
 
@@ -30,11 +31,11 @@ toolbar:
     description: |
       Event to record toolbar clicks.
     notification_emails:
-      - CHANGE-ME@test-only.com
+      - CHANGE-ME@example.com
     bugs:
       - 123456789
     data_reviews:
-      - http://test-only.com/path/to/data-review
+      - http://example.com/path/to/data-review
     expires:
       - 2019-06-01  # <-- Update to a date in the future
     
@@ -47,7 +48,8 @@ category2.subcategory:  # Categories can contain subcategories
 
 ```
 
-The details of the metric parameters are described below in [Common metric parameters](#Common-metric-parameters).
+The details of the metric parameters are described in [metric
+parameters](metric-parameters.md).
 
 The `metrics.yaml` file is used to generate `Kotlin` code that becomes the
 public API to access your application's metrics.

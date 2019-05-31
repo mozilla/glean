@@ -12,10 +12,10 @@ class StringListMetricType(
     category: String,
     lifetime: Lifetime,
     name: String,
-    val sendInPings: List<String>
+    private val sendInPings: List<String>
 ) {
     companion object {
-        val LOG_TAG: String = "glean/StringListMetricType"
+        private val LOG_TAG: String = "glean/StringListMetricType"
     }
 
     /**

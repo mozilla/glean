@@ -1,11 +1,5 @@
 # Unit testing Glean metrics
 
----
-
-*Note:* Testing of user-defined metrics is not yet implemented for Glean.
-
----
-
 In order to support unit testing inside of client applications using Glean, a set of testing API
 functions have been included.  The intent is to make Glean easier to test 'out of the box' in any
 client application it may be used in.  These functions expose a way to inspect and validate recorded
@@ -25,7 +19,7 @@ of the metric instances:
 assertTrue(GleanMetrics.Foo.UriCount.testHasValue())
 ```
 
-To check the actual values, there is a `testGetValue()` function on each of the metric instances.  
+To check the actual values, there is a `testGetValue()` function on each of the metric instances.
 This function will return a datatype appropriate to the specific type of the metric it is being used
 with:
 
@@ -46,7 +40,7 @@ custom ping name that the metric is being sent in.  In most cases you should not
 ping name to the test function and can just use the default which is the "default" ping that this
 metric is sent in.  You should only need to provide a `pingName` if the metric is being sent in more
 than one ping in order to identify the correct metric store.
- 
+
 You can call the `testHasValue()` and `testGetValue()` functions with `pingName` like this:
 
 ```kotlin
@@ -66,7 +60,7 @@ Glean.enableTestingMode()
 GleanMetrics.BrowserEngagement.click.record(
     mapOf(
         BrowserEngagement.clickKeys.font to "Courier"
-    )   
+    )
 )
 
 // Record more events without extras attached
@@ -78,7 +72,7 @@ assertTrue(BrowserEngagement.click.testHasValue())
 
 // Retrieve a snapshot of the recorded events
 val events = BrowserEngagement.click.testGetValue()
-      
+
 // Check if we collected all 3 events in the snapshot
 assertEquals(3, events.size)
 

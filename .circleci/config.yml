@@ -117,8 +117,8 @@ jobs:
     steps:
       - checkout
       - run: ./gradlew ktlint
-      - run: ./gradlew detekt 
-        
+      - run: ./gradlew detekt
+
   Android tests:
     docker:
       - image: circleci/android:api-28-ndk
@@ -164,6 +164,20 @@ jobs:
       - persist_to_workspace:
           root: build/
           paths: docs/javadoc
+
+  docs-linkcheck:
+    docker:
+      - image: circleci/python
+    steps:
+      - checkout
+      - run:
+          name: Install linkchecker
+          command: sudo apt install linkchecker
+      - attach_workspace:
+          at: build/
+      - run:
+          name: Check internal documentation links
+          command: make linkcheck
 
   docs-deploy:
     docker:
@@ -212,10 +226,13 @@ workflows:
     jobs:
       - Generate Rust documentation
       - Generate Kotlin documentation
-      - docs-deploy:
+      - docs-linkcheck:
           requires:
             - Generate Rust documentation
             - Generate Kotlin documentation
+      - docs-deploy:
+          requires:
+            - docs-linkcheck
           filters:
             branches:
               only: master
