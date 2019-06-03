@@ -57,7 +57,7 @@ class StringMetricType internal constructor(
         }
     }
 
-    fun shouldRecord(): Boolean {
+    private fun shouldRecord(): Boolean {
         // Don't record metrics if we aren't initialized
         if (!Glean.isInitialized()) {
             return false
