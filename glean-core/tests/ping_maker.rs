@@ -18,6 +18,7 @@ fn set_up_basic_ping() -> (Glean, PingMaker, PingType, tempfile::TempDir) {
     let ping_type = PingType::new("store1", true);
     glean.register_ping_type(&ping_type);
 
+    // Record something, so the ping will have data
     let metric = BooleanMetric::new(CommonMetricData {
         name: "boolean_metric".into(),
         category: "telemetry".into(),
@@ -25,7 +26,6 @@ fn set_up_basic_ping() -> (Glean, PingMaker, PingType, tempfile::TempDir) {
         disabled: false,
         lifetime: Lifetime::User,
     });
-
     metric.set(&glean, true);
 
     (glean, ping_maker, ping_type, t)
@@ -39,10 +39,10 @@ fn ping_info_must_contain_a_nonempty_start_and_end_time() {
     let ping_info = content["ping_info"].as_object().unwrap();
 
     let start_time_str = ping_info["start_time"].as_str().unwrap();
-    let start_time_date = iso8601_to_chrono(&iso8601::datetime(start_time_str).unwrap()).unwrap();
+    let start_time_date = iso8601_to_chrono(&iso8601::datetime(start_time_str).unwrap());
 
     let end_time_str = ping_info["end_time"].as_str().unwrap();
-    let end_time_date = iso8601_to_chrono(&iso8601::datetime(end_time_str).unwrap()).unwrap();
+    let end_time_date = iso8601_to_chrono(&iso8601::datetime(end_time_str).unwrap());
 
     assert!(start_time_date <= end_time_date);
 }
@@ -103,18 +103,14 @@ fn seq_number_must_be_sequential() {
     });
     metric.set(&glean, true);
 
-    let mut results: Vec<i64> = Vec::new();
-    for _ in 1..3 {
+    for i in 0..=1 {
         for ping_name in ["store1", "store2"].iter() {
             let ping_type = PingType::new(*ping_name, true);
             let content = ping_maker.collect(glean.storage(), &ping_type).unwrap();
             let seq_num = content["ping_info"]["seq"].as_i64().unwrap();
-            results.push(seq_num);
+            // Ensure sequence numbers in different stores are independent of
+            // each other
+            assert_eq!(i, seq_num);
         }
     }
-
-    assert_eq!(0, results[0]);
-    assert_eq!(0, results[1]);
-    assert_eq!(1, results[2]);
-    assert_eq!(1, results[3]);
 }

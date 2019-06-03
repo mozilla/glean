@@ -32,21 +32,16 @@ pub fn new_glean() -> (Glean, tempfile::TempDir) {
 }
 
 /// Convert an iso8601::DateTime to a chrono::DateTime<FixedOffset>
-pub fn iso8601_to_chrono(
-    datetime: &iso8601::DateTime,
-) -> Option<chrono::DateTime<chrono::FixedOffset>> {
+pub fn iso8601_to_chrono(datetime: &iso8601::DateTime) -> chrono::DateTime<chrono::FixedOffset> {
     if let YMD { year, month, day } = datetime.date {
-        Some(
-            chrono::FixedOffset::east(datetime.time.tz_offset_hours * 3600)
-                .ymd(year, month, day)
-                .and_hms_milli(
-                    datetime.time.hour,
-                    datetime.time.minute,
-                    datetime.time.second,
-                    datetime.time.millisecond,
-                ),
-        )
-    } else {
-        None
-    }
+        return chrono::FixedOffset::east(datetime.time.tz_offset_hours * 3600)
+            .ymd(year, month, day)
+            .and_hms_milli(
+                datetime.time.hour,
+                datetime.time.minute,
+                datetime.time.second,
+                datetime.time.millisecond,
+            );
+    };
+    panic!("Unsupported datetime format");
 }
