@@ -14,14 +14,14 @@ use glean_core::{CommonMetricData, Lifetime};
 #[test]
 fn can_create_labeled_counter_metric() {
     let (glean, _t) = new_glean();
-    let mut labeled: LabeledMetric<CounterMetric> = LabeledMetric::new(
-        CommonMetricData {
+    let mut labeled = LabeledMetric::new(
+        CounterMetric::new(CommonMetricData {
             name: "labeled_metric".into(),
             category: "telemetry".into(),
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
-        },
+        }),
         Some(vec!["label1".into()]),
     );
 
@@ -45,14 +45,14 @@ fn can_create_labeled_counter_metric() {
 #[test]
 fn can_create_labeled_string_metric() {
     let (glean, _t) = new_glean();
-    let mut labeled: LabeledMetric<StringMetric> = LabeledMetric::new(
-        CommonMetricData {
+    let mut labeled = LabeledMetric::new(
+        StringMetric::new(CommonMetricData {
             name: "labeled_metric".into(),
             category: "telemetry".into(),
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
-        },
+        }),
         Some(vec!["label1".into()]),
     );
 
@@ -76,14 +76,14 @@ fn can_create_labeled_string_metric() {
 #[test]
 fn can_create_labeled_bool_metric() {
     let (glean, _t) = new_glean();
-    let mut labeled: LabeledMetric<BooleanMetric> = LabeledMetric::new(
-        CommonMetricData {
+    let mut labeled = LabeledMetric::new(
+        BooleanMetric::new(CommonMetricData {
             name: "labeled_metric".into(),
             category: "telemetry".into(),
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
-        },
+        }),
         Some(vec!["label1".into()]),
     );
 
@@ -107,14 +107,14 @@ fn can_create_labeled_bool_metric() {
 #[test]
 fn can_use_multiple_labels() {
     let (glean, _t) = new_glean();
-    let mut labeled: LabeledMetric<CounterMetric> = LabeledMetric::new(
-        CommonMetricData {
+    let mut labeled = LabeledMetric::new(
+        CounterMetric::new(CommonMetricData {
             name: "labeled_metric".into(),
             category: "telemetry".into(),
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
-        },
+        }),
         None,
     );
 
@@ -144,14 +144,14 @@ fn can_use_multiple_labels() {
 #[test]
 fn labels_are_checked_against_static_list() {
     let (glean, _t) = new_glean();
-    let mut labeled: LabeledMetric<CounterMetric> = LabeledMetric::new(
-        CommonMetricData {
+    let mut labeled = LabeledMetric::new(
+        CounterMetric::new(CommonMetricData {
             name: "labeled_metric".into(),
             category: "telemetry".into(),
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
-        },
+        }),
         Some(vec!["label1".into(), "label2".into()]),
     );
 
@@ -188,14 +188,14 @@ fn labels_are_checked_against_static_list() {
 #[test]
 fn dynamic_labels_too_long() {
     let (glean, _t) = new_glean();
-    let mut labeled: LabeledMetric<CounterMetric> = LabeledMetric::new(
-        CommonMetricData {
+    let mut labeled = LabeledMetric::new(
+        CounterMetric::new(CommonMetricData {
             name: "labeled_metric".into(),
             category: "telemetry".into(),
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
-        },
+        }),
         None,
     );
 
@@ -221,14 +221,14 @@ fn dynamic_labels_too_long() {
 #[test]
 fn dynamic_labels_regex_mimsatch() {
     let (glean, _t) = new_glean();
-    let mut labeled: LabeledMetric<CounterMetric> = LabeledMetric::new(
-        CommonMetricData {
+    let mut labeled = LabeledMetric::new(
+        CounterMetric::new(CommonMetricData {
             name: "labeled_metric".into(),
             category: "telemetry".into(),
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
-        },
+        }),
         None,
     );
 

@@ -3,13 +3,11 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use std::collections::HashSet;
-use std::marker::PhantomData;
 
 use lazy_static::lazy_static;
 use regex::Regex;
 
 use crate::metrics::MetricType;
-use crate::CommonMetricData;
 use crate::Glean;
 
 const MAX_LABELS: usize = 16;
@@ -22,40 +20,35 @@ lazy_static! {
 /// A labeled metric.
 ///
 /// Labeled metrics allow to record multiple sub-metrics of the same type under different string labels.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LabeledMetric<T> {
-    meta: CommonMetricData,
     labels: Option<Vec<String>>,
     /// Type of the underlying metric
-    /// We don't hold on to any of these, but we need to be able to create them.
-    submetric: PhantomData<T>,
+    /// We hold on to an instance of it, which is cloned to create new modified instances.
+    submetric: T,
 
     seen_labels: HashSet<String>,
 }
 
 impl<T> LabeledMetric<T>
 where
-    T: MetricType,
+    T: MetricType + Clone,
 {
     /// Create a new labeled metric from the given meta data and optional list of labels.
     ///
     /// See [`get`](#method.get) for information how static or dynamic labels are handled.
-    pub fn new(meta: CommonMetricData, labels: Option<Vec<String>>) -> LabeledMetric<T> {
+    pub fn new(submetric: T, labels: Option<Vec<String>>) -> LabeledMetric<T> {
         LabeledMetric {
-            meta,
             labels,
-            submetric: PhantomData,
+            submetric,
             seen_labels: HashSet::new(),
         }
     }
 
     fn new_metric_with_name(&self, name: String) -> T {
-        let meta = CommonMetricData {
-            name,
-            ..self.meta.clone()
-        };
-
-        T::with_meta(meta)
+        let mut t = self.submetric.clone();
+        t.meta_mut().name = name;
+        t
     }
 
     fn static_label<'a>(&mut self, label: &'a str) -> &'a str {
@@ -111,7 +104,7 @@ where
             Some(_) => self.static_label(label),
             None => self.dynamic_label(label),
         };
-        let label = format!("{}/{}", self.meta.name, label);
+        let label = format!("{}/{}", self.submetric.meta().name, label);
 
         self.new_metric_with_name(label)
     }

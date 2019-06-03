@@ -8,18 +8,18 @@ use crate::storage::StorageManager;
 use crate::CommonMetricData;
 use crate::Glean;
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CounterMetric {
     meta: CommonMetricData,
 }
 
 impl MetricType for CounterMetric {
-    fn with_meta(meta: CommonMetricData) -> Self {
-        Self { meta }
-    }
-
     fn meta(&self) -> &CommonMetricData {
         &self.meta
+    }
+
+    fn meta_mut(&mut self) -> &mut CommonMetricData {
+        &mut self.meta
     }
 }
 

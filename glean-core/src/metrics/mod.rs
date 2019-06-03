@@ -24,7 +24,7 @@ pub use self::string::StringMetric;
 pub use self::string_list::StringListMetric;
 pub use self::uuid::UuidMetric;
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub enum Metric {
     Boolean(bool),
     Counter(i32),
@@ -34,9 +34,9 @@ pub enum Metric {
 }
 
 pub trait MetricType {
-    fn with_meta(meta: CommonMetricData) -> Self;
-
     fn meta(&self) -> &CommonMetricData;
+
+    fn meta_mut(&mut self) -> &mut CommonMetricData;
 
     fn should_record(&self, glean: &Glean) -> bool {
         glean.is_upload_enabled() && self.meta().should_record()

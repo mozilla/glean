@@ -12,7 +12,7 @@ A metric type implementation is defined in its own file under `glean-core/src/me
 Start by defining a structure to hold the metric's metadata:
 
 ```rust,noplaypen
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CounterMetric {
     meta: CommonMetricData
 }
@@ -23,12 +23,12 @@ This also gives you a `should_record` method on the metric type.
 
 ```
 impl MetricType for CounterMetric {
-    fn with_meta(meta: CommonMetricData) -> Self {
-        Self { meta }
-    }
-
     fn meta(&self) -> &CommonMetricData {
         &self.meta
+    }
+
+    fn meta_mut(&mut self) -> &mut CommonMetricData {
+        &mut self.meta
     }
 }
 ```
