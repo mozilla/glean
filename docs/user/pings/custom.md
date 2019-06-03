@@ -39,7 +39,7 @@ search:
 
 ## Loading custom ping metadata into your application or library
 
-Glean generates code from `pings.yaml` in a `Pings` object, which must
+Glean generates code from `pings.yaml` in a `Pings` object, which must be
 instantiated so Glean can send pings by name. This object must be registered
 with Glean from your startup code (such as in your application's `onCreate`
 method or a function called from that method).
@@ -88,7 +88,7 @@ type, you can add the special value `default` to `send_in_pings`:
 ## Sending a custom ping
 
 To send a custom ping, call the `send` method on the `PingType` object that
-glean generated for your ping.
+Glean generated for your ping.
 
 For example, to send the custom ping defined above:
 

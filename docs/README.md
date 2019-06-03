@@ -9,16 +9,16 @@ It started out as an [android-components library](https://github.com/mozilla-mob
 
 `Glean` is a work-in-progress to transform the concepts behind `Glean` into a cross-platform library based on a low-level [Rust](https://www.rust-lang.org/) library and the necessary platform integrations for Android and iOS (and beyond...).
 
+**Note: The cross-platform `Glean` project is in development. It's not finished,
+and not used. Some of this documentation refers to features that were
+implemented in an earlier Android-specific version of Glean, but are not yet
+implemented in this version.**
+
 To contact us you can:
 - Find us on the Mozilla Slack in *#glean*, on [Mozilla IRC](https://wiki.mozilla.org/IRC) in *#telemetry*.
 - To report issues or request changes, file a bug in [Bugzilla in Data Platform & Tools :: Glean: SDK](https://bugzilla.mozilla.org/enter_bug.cgi?product=Data%20Platform%20and%20Tools&component=Glean%3A%20SDK).
 - Send an email to *glean-team@mozilla.com*.
 - The Glean team is: *:janerik*, *:dexter*, *:travis*, *:mdroettboom*, *:gfritzsche*, *:chutten*
-
-**Note: The cross-platform `Glean` project is in development. It's not finished,
-and not used. Some of this documentation refers to features that were
-implemented in an earlier Android-specific version of Glean, but are not yet
-implemented in this version.**
 
 ## License
 

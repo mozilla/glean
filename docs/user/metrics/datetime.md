@@ -1,4 +1,4 @@
-# Datetimes
+# Datetime
 
 **STATUS: Not implemented.**
 
@@ -17,8 +17,13 @@ Distributions](timing_distribution.md). To record absolute times, see
 Datetimes have a required `time_unit` parameter to specify the smallest unit
 of resolution that the timespan will record. The allowed values for `time_unit` are:
 
-   `nanosecond`, `microsecond`, `millisecond`, `second`, `minute`, `hour`, and
-   `day`
+   - `nanosecond`
+   - `microsecond`
+   - `millisecond`
+   - `second`
+   - `minute`
+   - `hour`
+   - `day`
 
 Carefully consider the required resolution for recording your metric, and choose
 the coarsest resolution possible.

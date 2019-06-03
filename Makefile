@@ -36,7 +36,7 @@ cbindgen:
 .PHONY: cbindgen
 
 docs:
-	bin/build-docs.sh
+	bin/build-rust-docs.sh
 	./gradlew docs
 .PHONY: docs
 

@@ -41,7 +41,7 @@ assertEquals(6, Controls.refreshPressed.testGetValue())
 
 ## Limits
 
-* Only increments, saturates at the limits of a 32-bit signed integer
+* Only increments, saturates at the limits of a 32-bit signed integer.
 
 ## Examples
 

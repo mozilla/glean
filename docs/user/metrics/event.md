@@ -1,6 +1,6 @@
 # Events
 
-**Status: Not implemented.**
+**Status: [Not implemented.](https://bugzilla.mozilla.org/show_bug.cgi?id=1552872)**
 
 Events allow recording of e.g. individual occurences of user actions, say every
 time a view was open and from where. Each time you record an event, it records a

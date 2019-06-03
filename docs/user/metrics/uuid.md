@@ -1,6 +1,6 @@
-# UUIDs
+# UUID
 
-**STATUS: Not implemented.**
+**STATUS: [Not implemented.](https://bugzilla.mozilla.org/show_bug.cgi?id=1552870)**
 
 UUIDs are used to record values that uniquely identify some entity, such as a client id.
 

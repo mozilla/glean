@@ -1,4 +1,6 @@
-# The `metrics` ping
+# The `metrics** ping
+
+**STATUS: [Not implemented.](https://bugzilla.mozilla.org/show_bug.cgi?id=1551159)**
 
 ## Description
 The `metrics` ping is intended for all of the metrics that are explicitly set by the application or
@@ -37,7 +39,7 @@ The `metrics` ping shall also include the common
 ['client_info'](index.md#the-client_info-section) sections.
 
 ### Querying ping contents
-A quick note about querying ping contents (i.e. for https://sql.telemetry.mozilla.org):  Each metric
+A quick note about querying ping contents (i.e. for [sql.telemetry.mozilla.org](https://sql.telemetry.mozilla.org)):  Each metric
 in the metrics ping is organized by its metric type, and uses a namespace of 'glean.metrics'. For
 instance, in order to select a String field called `test` you would use `metrics.string['glean.metrics.test']`.
 

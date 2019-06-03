@@ -1,6 +1,6 @@
 # String List
 
-**STATUS: Not implemented.**
+**STATUS: [Not implemented.](https://bugzilla.mozilla.org/show_bug.cgi?id=1552862)**
 
 Strings lists are used for recording a list of Unicode string values, such as
 the names of the enabled search engines.

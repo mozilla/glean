@@ -1,6 +1,6 @@
-# Timing Distributions
+# Timing Distribution
 
-**STATUS: Not implemented.**
+**STATUS: [Not implemented.](https://bugzilla.mozilla.org/show_bug.cgi?id=1552865)**
 
 Timing distributions are used to accumulate and store time measurement, for
 analyzing distributions of the timing data.

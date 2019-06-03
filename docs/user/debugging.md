@@ -1,6 +1,6 @@
 # Debugging products using Glean
 
-**STATUS: Not implemented**
+**STATUS: [Not implemented](https://bugzilla.mozilla.org/show_bug.cgi?id=1554116)**
 
 Glean exports the `GleanDebugActivity`
 that can be used to toggle debugging features on or off. Users can invoke this special activity, at

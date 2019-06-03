@@ -1,6 +1,6 @@
-# Timespans
+# Timespan
 
-**STATUS: Not implemented.**
+**STATUS: [Not implemented.](https://bugzilla.mozilla.org/show_bug.cgi?id=1552863)**
 
 Timespans are used to make a summed measurement of how much time is spent in a
 particular task. 
@@ -14,8 +14,13 @@ Distributions](timing_distribution.md). To record absolute times, see
 Timespans have a required `time_unit` parameter to specify the smallest unit
 of resolution that the timespan will record. The allowed values for `time_unit` are:
 
-   `nanosecond`, `microsecond`, `millisecond`, `second`, `minute`, `hour`, and
-   `day`
+   - `nanosecond`
+   - `microsecond`
+   - `millisecond`
+   - `second`
+   - `minute`
+   - `hour`
+   - `day`
 
 Consider the resolution that is required by your metric, and use the largest
 possible value that will provide useful information so as to not leak too much

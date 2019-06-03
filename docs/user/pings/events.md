@@ -1,6 +1,6 @@
 # The `events` ping
 
-**STATUS: Not implemented.**
+**STATUS: [Not implemented.](https://bugzilla.mozilla.org/show_bug.cgi?id=1552872)**
 
 ## Description
 The events ping's purpose is to transport all of the event metric information.
