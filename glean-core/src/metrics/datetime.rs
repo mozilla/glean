@@ -95,21 +95,6 @@ impl DatetimeMetric {
 
     /// **Test-only API (exported for FFI purposes).**
     ///
-    /// Get the currently stored value as a DateTime<FixedOffset>.
-    /// The precision of this value is truncated to the `time_unit`
-    /// precision.
-    ///
-    /// This doesn't clear the stored value.
-    pub fn test_get_value(
-        &self,
-        _glean: &Glean,
-        _storage_name: &str,
-    ) -> Option<DateTime<FixedOffset>> {
-        panic!("This is not yet implemented. Please consider using `test_get_value_as_string");
-    }
-
-    /// **Test-only API (exported for FFI purposes).**
-    ///
     /// Get the currently stored value as a String.
     /// The precision of this value is truncated to the `time_unit`
     /// precision.
