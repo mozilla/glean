@@ -112,47 +112,47 @@ fn test_that_truncation_works() {
 
     // Create an helper struct for defining the truncation cases.
     struct TestCase {
-        case_name: String,
+        case_name: &'static str,
         desired_resolution: TimeUnit,
-        expected_result: String,
+        expected_result: &'static str,
     }
 
     // Define the single test cases.
     let test_cases = vec![
         TestCase {
-            case_name: "nano".to_string(),
+            case_name: "nano",
             desired_resolution: TimeUnit::Nanosecond,
-            expected_result: "1985-07-03T12:09:14.001560274+01:00".to_string(),
+            expected_result: "1985-07-03T12:09:14.001560274+01:00",
         },
         TestCase {
-            case_name: "micro".to_string(),
+            case_name: "micro",
             desired_resolution: TimeUnit::Microsecond,
-            expected_result: "1985-07-03T12:09:14.001560+01:00".to_string(),
+            expected_result: "1985-07-03T12:09:14.001560+01:00",
         },
         TestCase {
-            case_name: "milli".to_string(),
+            case_name: "milli",
             desired_resolution: TimeUnit::Millisecond,
-            expected_result: "1985-07-03T12:09:14.001+01:00".to_string(),
+            expected_result: "1985-07-03T12:09:14.001+01:00",
         },
         TestCase {
-            case_name: "second".to_string(),
+            case_name: "second",
             desired_resolution: TimeUnit::Second,
-            expected_result: "1985-07-03T12:09:14+01:00".to_string(),
+            expected_result: "1985-07-03T12:09:14+01:00",
         },
         TestCase {
-            case_name: "minute".to_string(),
+            case_name: "minute",
             desired_resolution: TimeUnit::Minute,
-            expected_result: "1985-07-03T12:09+01:00".to_string(),
+            expected_result: "1985-07-03T12:09+01:00",
         },
         TestCase {
-            case_name: "hour".to_string(),
+            case_name: "hour",
             desired_resolution: TimeUnit::Hour,
-            expected_result: "1985-07-03T12+01:00".to_string(),
+            expected_result: "1985-07-03T12+01:00",
         },
         TestCase {
-            case_name: "day".to_string(),
+            case_name: "day",
             desired_resolution: TimeUnit::Day,
-            expected_result: "1985-07-03+01:00".to_string(),
+            expected_result: "1985-07-03+01:00",
         },
     ];
 

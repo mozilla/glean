@@ -340,9 +340,20 @@ pub extern "C" fn glean_datetime_set(
     hour: u32,
     minute: u32,
     second: u32,
-    nano: u32,
+    nano: i64,
     offset_seconds: i32,
 ) {
+    use std::convert::TryInto;
+    // Convert and truncate the nanos to u32, as that's what the underlying
+    // library uses. Unfortunately, not all platform have unsigned integers
+    // so we need to work with what we have.
+    if nano < std::u32::MIN.try_into().unwrap() || nano > std::u32::MAX.try_into().unwrap() {
+        log::error!("Unexpected `nano` value coming from platform code {}", nano);
+        return;
+    }
+
+    // We are within the u32 boundaries for nano, we should be ok converting.
+    let converted_nanos = nano as u32;
     GLEAN.call_infallible(glean_handle, |glean| {
         DATETIME_METRICS.call_infallible(metric_id, |metric| {
             metric.set_with_details(
@@ -353,7 +364,7 @@ pub extern "C" fn glean_datetime_set(
                 hour,
                 minute,
                 second,
-                nano,
+                converted_nanos,
                 offset_seconds,
             );
         })

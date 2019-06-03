@@ -7,10 +7,9 @@ use std::convert::TryFrom;
 
 use crate::error::{Error, ErrorKind};
 
-/// Enumeration of different resolutions supported by the
-/// time related metric types (e.g. DatetimeMetric).
-//#[derive(Copy, Clone, Debug, PartialEq, Eq)]
-#[derive(Clone, Debug, Deserialize, Serialize)]
+/// Different resolutions supported by the time related
+/// metric types (e.g. DatetimeMetric).
+#[derive(Copy, Clone, Debug, Deserialize, Serialize)]
 pub enum TimeUnit {
     Nanosecond,
     Microsecond,
@@ -39,7 +38,9 @@ impl TimeUnit {
 }
 
 /// Trait implementation for converting an integer value
-/// to a TimeUnit. This is used in the FFI code.
+/// to a TimeUnit. This is used in the FFI code. Please
+/// note that values should match the ordering of the platform
+/// specific side of things (e.g. Kotlin implementation).
 impl TryFrom<i32> for TimeUnit {
     type Error = Error;
 

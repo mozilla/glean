@@ -102,7 +102,7 @@ class DatetimeMetricType internal constructor(
                 hour = value.get(Calendar.HOUR_OF_DAY),
                 minute = value.get(Calendar.MINUTE),
                 second = value.get(Calendar.SECOND),
-                nano = value.get(Calendar.MILLISECOND) * 1000000,
+                nano = value.get(Calendar.MILLISECOND) * 1000000L,
                 offset_seconds = value.get(Calendar.ZONE_OFFSET).div(1000)
             )
         }

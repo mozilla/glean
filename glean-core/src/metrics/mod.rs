@@ -66,7 +66,7 @@ impl Metric {
         match self {
             Metric::Boolean(b) => json!(b),
             Metric::Counter(c) => json!(c),
-            Metric::Datetime(d, tz) => json!(get_iso_time_string(*d, tz.clone())),
+            Metric::Datetime(d, tz) => json!(get_iso_time_string(*d, *tz)),
             Metric::String(s) => json!(s),
             Metric::StringList(v) => json!(v),
             Metric::Uuid(s) => json!(s),

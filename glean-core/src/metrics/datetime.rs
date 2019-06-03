@@ -14,6 +14,10 @@ use crate::Glean;
 
 use chrono::{DateTime, FixedOffset, TimeZone};
 
+/// # A datetime metric
+///
+/// Used to record an absolute date and time, such as the time the user first ran
+/// the application.
 #[derive(Debug)]
 pub struct DatetimeMetric {
     meta: CommonMetricData,
@@ -41,7 +45,7 @@ impl DatetimeMetric {
     /// Public facing API for setting the metric to a date/time which
     /// includes the timezone offset.
     ///
-    /// Arguments:
+    /// ## Arguments:
     ///
     /// * `glean`: the Glean instance this metric belongs to.
     /// * `year`: the year to set the metric to.
@@ -76,7 +80,7 @@ impl DatetimeMetric {
     /// Public facing API for setting the metric to a date/time which
     /// includes the timezone offset.
     ///
-    /// Arguments:
+    /// ## Arguments:
     ///
     /// * `glean`: the Glean instance this metric belongs to.
     /// * `value`: the date/time value, with offset, to set the metric to.
@@ -85,7 +89,7 @@ impl DatetimeMetric {
             return;
         }
 
-        let value = Metric::Datetime(value, self.time_unit.clone());
+        let value = Metric::Datetime(value, self.time_unit);
         glean.storage().record(&self.meta, &value)
     }
 

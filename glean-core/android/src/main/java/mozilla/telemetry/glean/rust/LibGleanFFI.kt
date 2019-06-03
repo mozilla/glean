@@ -90,7 +90,7 @@ internal interface LibGleanFFI : Library {
         hour: Int,
         minute: Int,
         second: Int,
-        nano: Int, // FIXME?
+        nano: Long,
         offset_seconds: Int
     )
 
