@@ -343,11 +343,10 @@ pub extern "C" fn glean_datetime_set(
     nano: i64,
     offset_seconds: i32,
 ) {
-    use std::convert::TryInto;
     // Convert and truncate the nanos to u32, as that's what the underlying
     // library uses. Unfortunately, not all platform have unsigned integers
     // so we need to work with what we have.
-    if nano < std::u32::MIN.try_into().unwrap() || nano > std::u32::MAX.try_into().unwrap() {
+    if nano < 0 || nano > i64::from(std::u32::MAX) {
         log::error!("Unexpected `nano` value coming from platform code {}", nano);
         return;
     }
