@@ -2,20 +2,15 @@
 
 **STATUS: Not implemented.**
 
-Datetimes are used to record an absolute date and time, for example the date and
-time that the application was first run.
+Datetimes are used to record an absolute date and time, for example the date and time that the application was first run.
 
-The device's offset from UTC is recorded and sent with the datetime value in the
-ping.
+The device's offset from UTC is recorded and sent with the datetime value in the ping.
 
-To measure the distribution of multiple timespans, see [Timing
-Distributions](timing_distribution.md). To record absolute times, see
-[Datetimes](datetime.md).
+To measure the distribution of multiple timespans, see [Timing Distributions](timing_distribution.md). To record absolute times, see [Datetimes](datetime.md).
 
 ## Configuration
 
-Datetimes have a required `time_unit` parameter to specify the smallest unit
-of resolution that the timespan will record. The allowed values for `time_unit` are:
+Datetimes have a required `time_unit` parameter to specify the smallest unit of resolution that the timespan will record. The allowed values for `time_unit` are:
 
    - `nanosecond`
    - `microsecond`
@@ -25,8 +20,7 @@ of resolution that the timespan will record. The allowed values for `time_unit` 
    - `hour`
    - `day`
 
-Carefully consider the required resolution for recording your metric, and choose
-the coarsest resolution possible.
+Carefully consider the required resolution for recording your metric, and choose the coarsest resolution possible.
 
 You first need to add an entry for it to the `metrics.yaml` file:
 
@@ -77,5 +71,4 @@ assertEquals("2019-03-25-05:00", Install.firstRun.testGetValueAsString())
 
 ## Reference
 
-* [Kotlin API
-  docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-datetime-metric-type/index.html)
+* [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-datetime-metric-type/index.html)

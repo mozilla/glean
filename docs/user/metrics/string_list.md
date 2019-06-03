@@ -2,13 +2,11 @@
 
 **STATUS: [Not implemented.](https://bugzilla.mozilla.org/show_bug.cgi?id=1552862)**
 
-Strings lists are used for recording a list of Unicode string values, such as
-the names of the enabled search engines.
+Strings lists are used for recording a list of Unicode string values, such as the names of the enabled search engines.
 
 ---
 
-_Note:_ Be careful using arbitrary strings and make sure they can't
-accidentally contain identifying data (like directory paths or user input).
+_Note:_ Be careful using arbitrary strings and make sure they can't accidentally contain identifying data (like directory paths or user input).
 
 ---
 
@@ -53,10 +51,8 @@ assertEquals(listOf("Google", "DuckDuckGo"), Search.engines.testGetValue())
 
 ## Limits
 
-* Fixed maximum string length: 50. Longer strings are truncated. For the
-  original Kotlin implementation of Glean, this is measured in Unicode
-  characters. For the Rust implementation, this is measured in the number of
-  bytes when the string is encoded in UTF-8.
+* Fixed maximum string length: 50. Longer strings are truncated. For the original Kotlin implementation of Glean, this is measured in Unicode characters. For the Rust implementation, this is measured in the number of bytes when the string is encoded in UTF-8.
+  
 * Fixed maximum list length: 20 items. Additional strings are dropped.
 
 ## Examples
@@ -66,10 +62,10 @@ assertEquals(listOf("Google", "DuckDuckGo"), Search.engines.testGetValue())
 ## Recorded errors
 
 * `invalid_value`: if the string is too long
+
 * `invalid_value`: if the list is too long
 
 ## Reference
 
-* [Kotlin
-  API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-string-list-metric-type/index.html)
+* [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-string-list-metric-type/index.html)
 

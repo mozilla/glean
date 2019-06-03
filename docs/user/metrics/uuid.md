@@ -19,8 +19,7 @@ user:
 
 ## API
 
-Now that the UUID is defined in `metrics.yaml`, you can use the metric to record
-values in the application's code.
+Now that the UUID is defined in `metrics.yaml`, you can use the metric to record values in the application's code.
 
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.User
@@ -55,6 +54,5 @@ assertEquals(uuid, User.clientId.testGetValue())
  
 ## Reference
 
-* See [Kotlin
-  API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-uuid-metric-type/index.html).
+* See [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-uuid-metric-type/index.html).
 

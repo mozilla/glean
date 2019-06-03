@@ -4,8 +4,7 @@ Booleans are used for simple flags, for example "is a11y enabled"?.
 
 ## Configuration
 
-Say you're adding a boolean to record whether a11y is enabled on the device. 
-First you need to add an entry for the boolean to the `metrics.yaml` file:
+Say you're adding a boolean to record whether a11y is enabled on the device. First you need to add an entry for the boolean to the `metrics.yaml` file:
 
 ```YAML
 flags:
@@ -50,6 +49,5 @@ assertTrue(Flags.a11yEnabled.testGetValue())
 
 ## Reference
 
-* [Kotlin
-API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-boolean-metric-type/index.html)
+* [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-boolean-metric-type/index.html)
 

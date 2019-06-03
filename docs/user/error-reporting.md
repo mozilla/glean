@@ -1,10 +1,9 @@
 # Error reporting
 
-Glean records the number of errors that occur when metrics are passed invalid
-data or are otherwise used incorrectly. This information is reported back in
-special labeled counter metrics in the `glean.error` category. Error metrics are
-included in the same pings as the metric that caused the error. Additionally,
-error metrics are always sent in the [`metrics` ping](pings/metrics.md) ping.
+Glean records the number of errors that occur when metrics are passed invalid data or are otherwise used incorrectly. 
+This information is reported back in special labeled counter metrics in the `glean.error` category. 
+Error metrics are included in the same pings as the metric that caused the error. 
+Additionally, error metrics are always sent in the [`metrics` ping](pings/metrics.md) ping.
 
 The following categories of errors are recorded:
 
@@ -37,6 +36,5 @@ Resulting in the following keys in the ping:
 }
 ```
 
-If you have a debug build of glean, details about the errors being recorded are
-included in the logs. This detailed information is not included in Glean pings.
+If you have a debug build of glean, details about the errors being recorded are included in the logs. This detailed information is not included in Glean pings.
 

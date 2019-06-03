@@ -1,10 +1,8 @@
 # Glean Pings
 
-Every glean ping is in JSON format and contains one or more of the [common sections](#ping-sections)
-with shared information data.
+Every glean ping is in JSON format and contains one or more of the [common sections](#ping-sections) with shared information data.
 
-If data collection is enabled, glean provides a set of built-in pings that are assembled out of the box
-without any developer intervention.  The following is a list of these built-in pings:
+If data collection is enabled, glean provides a set of built-in pings that are assembled out of the box without any developer intervention.  The following is a list of these built-in pings:
 
 - [`baseline` ping](baseline.md)
 - [`events` ping](events.md)
@@ -14,20 +12,16 @@ Applications can also define and send their own [custom pings](custom.md).
 
 ## Ping sections
 
-There are two standard metadata sections that are added to most pings, in
-addition to their core metrics and events content (which are described elsewhere
-in [adding new metrics](../adding-new-metrics.md).
+There are two standard metadata sections that are added to most pings, in addition to their core metrics and events content (which are described elsewhere in [adding new metrics](../adding-new-metrics.md).
 
-- The [`ping_info` section](#The-ping_info-section) contains core metadata that
-  is included in **every** ping.
-- The [`client_info` section](#The-client_info-section) contains information
-  that identifies the client. It is included in most pings (including all
-  built-in pings), but may be excluded from pings where we don't want to connect
-  client information with the other metrics in the ping.
+- The [`ping_info` section](#The-ping_info-section) contains core metadata that is included in **every** ping.
+  
+- The [`client_info` section](#The-client_info-section) contains information that identifies the client. 
+  It is included in most pings (including all built-in pings), but may be excluded from pings where we don't want to connect client information with the other metrics in the ping.
 
 ### The `ping_info` section
-The following fields are included in the `ping_info` section, for every ping. Optional fields
-are marked accordingly.
+The following fields are included in the `ping_info` section, for every ping. 
+Optional fields are marked accordingly.
 
 | Field name | Type | Description |
 |---|---|---|
@@ -37,11 +31,11 @@ are marked accordingly.
 | `start_time` | Datetime | The time of the start of collection of the data in the ping, in local time and with minute precision, including timezone information. |
 | `end_time` | Datetime | The time of the end of collection of the data in the ping, in local time and with minute precision, including timezone information. This is also the time this ping was generated and is likely well before ping transmission time. |
 
-All the metrics surviving application restarts (e.g. `seq`, ...) are removed once the
-application using glean is uninstalled.
+All the metrics surviving application restarts (e.g. `seq`, ...) are removed once the application using glean is uninstalled.
 
 ### The `client_info` section
-The following fields are included in the `client_info` section. Optional fields are marked accordingly.
+The following fields are included in the `client_info` section.
+Optional fields are marked accordingly.
 
 | Field name | Type | Description |
 |---|---|---|
@@ -58,18 +52,13 @@ The following fields are included in the `client_info` section. Optional fields 
 | `android_sdk_version` | String | *Optional*. The Android specific SDK version of the software running on this hardware device (e.g. "23") |
 | `telemetry_sdk_build` | String | The version of the glean library |
 
-All the metrics surviving application restarts (e.g. `client_id`, ...) are removed once the
-application using glean is uninstalled.
+All the metrics surviving application restarts (e.g. `client_id`, ...) are removed once the application using glean is uninstalled.
 
 ### The `experiments` object
 
 **STATUS: Not implemented.**
 
-This object (included in the [`ping_info` section](#The-ping_info-section))
-contains experiments keyed by the experiment `id`. Each listed experiment
-contains the `branch` the client is enrolled in and may contain a string to
-string map with additional data in the `extra` key. Both the `id` and `branch`
-are truncated to 30 characters.
+This object (included in the [`ping_info` section](#The-ping_info-section)) contains experiments keyed by the experiment `id`. Each listed experiment contains the `branch` the client is enrolled in and may contain a string to string map with additional data in the `extra` key. Both the `id` and `branch` are truncated to 30 characters.
 
 ```json
 {
@@ -84,8 +73,8 @@ are truncated to 30 characters.
 
 ## Ping submission
 
-The pings that glean generates are submitted to the Mozilla servers at specific paths, in order to provide
-additional metadata without the need to unpack the ping payload. A typical submission URL looks like
+The pings that glean generates are submitted to the Mozilla servers at specific paths, in order to provide additional metadata without the need to unpack the ping payload. 
+A typical submission URL looks like
 
   `"<server-address>/submit/<application-id>/<doc-type>/<glean-schema-version>/<ping-uuid>"`
 
@@ -109,9 +98,9 @@ A pre-defined set of headers is additionally sent along with the submitted ping:
 | `X-Client-Version` | e.g. `0.40.0` | The glean version, sent as a custom header to support handling of glean pings in the legacy pipeline |
 
 ## Defining background state
-These docs refer to application 'background' state in several places. This specifically means when
-the activity is no longer visible to the user, it has entered the Stopped state, and the system
-invokes the [`onStop()`](https://developer.android.com/reference/android/app/Activity.html#onStop()) callback.
-This may occur, for example, when a newly launched activity covers the entire screen. The system may
-also call `onStop()` when the activity has finished running, and is about to be terminated.
+
+These docs refer to application 'background' state in several places. 
+This specifically means when the activity is no longer visible to the user, it has entered the Stopped state, and the system invokes the [`onStop()`](https://developer.android.com/reference/android/app/Activity.html#onStop()) callback.
+This may occur, for example, when a newly launched activity covers the entire screen. 
+The system may also call `onStop()` when the activity has finished running, and is about to be terminated.
 

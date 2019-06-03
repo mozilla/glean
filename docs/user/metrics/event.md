@@ -2,14 +2,12 @@
 
 **Status: [Not implemented.](https://bugzilla.mozilla.org/show_bug.cgi?id=1552872)**
 
-Events allow recording of e.g. individual occurences of user actions, say every
-time a view was open and from where. Each time you record an event, it records a
+Events allow recording of e.g. individual occurences of user actions, say every time a view was open and from where. Each time you record an event, it records a
 timestamp, the event's name and a set of custom values.
 
 ## Configuration
 
-Say you're adding a new event for when a view is shown. First you need to add an
-entry for the event to the `metrics.yaml` file:
+Say you're adding a new event for when a view is shown. First you need to add an entry for the event to the `metrics.yaml` file:
 
 ```YAML
 views:
@@ -25,8 +23,7 @@ views:
 
 ## API
 
-Note that an `enum` has been generated for handling the `extra_keys`: it has the
-same name as the event metric, with `Keys` added.
+Note that an `enum` has been generated for handling the `extra_keys`: it has the same name as the event metric, with `Keys` added.
 
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.Views
@@ -54,12 +51,7 @@ assertEquals("login_opened", first.name)
 
 * When 500 events are queued on the client, and events pings is immediately sent.
 
-* Event timestamps use a system timer that is guaranteed to be monotonic only
-  within a particular boot of the device. Therefore, if there are any unsent
-  recorded events on disk when the application starts, any pings containing
-  those events are sent immediately, so that Glean can start over using a new
-  timer and events based on different timers are never sent within the same
-  ping.
+* Event timestamps use a system timer that is guaranteed to be monotonic only within a particular boot of the device. Therefore, if there are any unsent recorded events on disk when the application starts, any pings containing those events are sent immediately, so that Glean can start over using a new timer and events based on different timers are never sent within the same ping.
   
 ## Examples
 
@@ -71,6 +63,5 @@ assertEquals("login_opened", first.name)
  
 ## Reference
 
-* See [Kotlin
-  API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-event-metric-type/index.html).
+* See [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-event-metric-type/index.html).
 

@@ -1,9 +1,8 @@
 # Adding new metrics
 
-All metrics that your project collects must be defined in a `metrics.yaml`
-file. This file should be at the root of the application or library module (the same
-directory as the `build.gradle` file you updated). The format of that file is
-documented [here](https://mozilla.github.io/glean_parser/metrics-yaml.html).
+All metrics that your project collects must be defined in a `metrics.yaml` file. 
+This file should be at the root of the application or library module (the same directory as the `build.gradle` file you updated). 
+The format of that file is documented [here](https://mozilla.github.io/glean_parser/metrics-yaml.html).
 
 When adding a new metric, the workflow is:
 
@@ -16,10 +15,9 @@ This is also required for any new metric automatically collected by Glean.
 
 ## The `metrics.yaml` file
 
-The `metrics.yaml` file defines the metrics your application or library will
-send. They are organized into categories.
-
-Therefore, the overall organization is:
+The `metrics.yaml` file defines the metrics your application or library will send. 
+They are organized into categories.
+The overall organization is:
 
 ```YAML
 # Required to indicate this is a `metrics.yaml` file
@@ -48,18 +46,13 @@ category2.subcategory:  # Categories can contain subcategories
 
 ```
 
-The details of the metric parameters are described in [metric
-parameters](metric-parameters.md).
+The details of the metric parameters are described in [metric parameters](metric-parameters.md).
 
-The `metrics.yaml` file is used to generate `Kotlin` code that becomes the
-public API to access your application's metrics.
+The `metrics.yaml` file is used to generate `Kotlin` code that becomes the public API to access your application's metrics.
 
 ## Metric naming
 
-Category and metric names in the `metrics.yaml` are in `snake_case`, but given
-the Kotlin coding standards defined by
-[ktlint](https://github.com/pinterest/ktlint), these identifiers must be
-`camelCase` in Kotlin. For example, the metric defined in the `metrics.yaml` as:
+Category and metric names in the `metrics.yaml` are in `snake_case`, but given the Kotlin coding standards defined by [ktlint](https://github.com/pinterest/ktlint), these identifiers must be `camelCase` in Kotlin. For example, the metric defined in the `metrics.yaml` as:
 
 
 ```YAML
