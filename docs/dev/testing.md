@@ -2,7 +2,7 @@
 
 ## Running all tests
 
-The tests for all languages my be run from the command line (on Unix platforms):
+The tests for all languages may be run from the command line (on Unix platforms):
 
 ```
 make test
