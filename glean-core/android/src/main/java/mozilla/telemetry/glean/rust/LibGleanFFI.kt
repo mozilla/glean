@@ -81,6 +81,25 @@ internal interface LibGleanFFI : Library {
 
     fun glean_counter_test_has_value(glean_handle: Long, metric_id: Long, storage_name: String): Byte
 
+    fun glean_datetime_set(
+        glean_handle: Long,
+        metric_id: Long,
+        year: Int,
+        month: Int,
+        day: Int,
+        hour: Int,
+        minute: Int,
+        second: Int,
+        nano: Long,
+        offset_seconds: Int
+    )
+
+    fun glean_datetime_should_record(glean_handle: Long, metric_id: Long): Byte
+
+    fun glean_datetime_test_has_value(glean_handle: Long, metric_id: Long, storage_name: String): Byte
+
+    fun glean_datetime_test_get_value_as_string(glean_handle: Long, metric_id: Long, storage_name: String): Pointer?
+
     fun glean_new_labeled_counter_metric(
         category: String,
         name: String,
@@ -144,6 +163,16 @@ internal interface LibGleanFFI : Library {
         disabled: Byte
     ): Long
 
+    fun glean_new_datetime_metric(
+        category: String,
+        name: String,
+        send_in_pings: StringArray,
+        send_in_pings_len: Int,
+        lifetime: Int,
+        disabled: Byte,
+        time_unit: Int
+    ): Long
+
     fun glean_new_string_metric(
         category: String,
         name: String,
@@ -176,6 +205,8 @@ internal interface LibGleanFFI : Library {
     fun glean_destroy_string_metric(handle: Long, error: RustError.ByReference)
 
     fun glean_destroy_counter_metric(handle: Long, error: RustError.ByReference)
+
+    fun glean_destroy_datetime_metric(handle: Long, error: RustError.ByReference)
 
     fun glean_destroy_ping_type(handle: Long, error: RustError.ByReference)
 

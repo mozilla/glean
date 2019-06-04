@@ -46,6 +46,10 @@ pub enum ErrorKind {
     /// JSON error
     #[fail(display = "A JSON error occurred.")]
     Json(serde_json::error::Error),
+
+    /// TimeUnit conversion failed
+    #[fail(display = "TimeUnit conversion from {} failed", _0)]
+    TimeUnit(i32),
 }
 
 /// A specialized [`Error`] type for this crate's operations.

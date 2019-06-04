@@ -10,22 +10,21 @@
 
 package mozilla.telemetry.glean.private
 
-// import kotlinx.coroutines.ExperimentalCoroutinesApi
-// import kotlinx.coroutines.ObsoleteCoroutinesApi
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.ObsoleteCoroutinesApi
 import mozilla.telemetry.glean.resetGlean
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.util.Calendar
 import java.util.TimeZone
 
-// @ObsoleteCoroutinesApi
-// @ExperimentalCoroutinesApi
+@ObsoleteCoroutinesApi
+@ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
 class DatetimeMetricTypeTest {
 
@@ -34,7 +33,6 @@ class DatetimeMetricTypeTest {
         resetGlean()
     }
 
-    @Ignore("Datetime metric is a stub")
     @Test
     fun `The API saves to its storage engine`() {
         // Define a 'datetimeMetric' datetime metric, which will be stored in "store1"
@@ -81,7 +79,6 @@ class DatetimeMetricTypeTest {
         // assertEquals("2039-08-20T20:17:03-04:00", datetimeMetric.testGetValueAsString())
     }
 
-    @Ignore("Ignoring the test as 'disabled' is not passed through FFI")
     @Test
     fun `disabled datetimes must not record data`() {
         // Define a 'datetimeMetric' datetime metric, which will be stored in "store1". It's disabled
