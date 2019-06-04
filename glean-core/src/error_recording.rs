@@ -99,8 +99,9 @@ pub fn test_get_num_recorded_errors(
     glean: &Glean,
     meta: &CommonMetricData,
     error: ErrorType,
+    ping_name: Option<&str>,
 ) -> i32 {
-    let use_ping_name = &meta.send_in_pings[0];
+    let use_ping_name = ping_name.unwrap_or(&meta.send_in_pings[0]);
     let metric = CounterMetric::new(CommonMetricData {
         name: format!("{}/{}", error.to_string(), meta.identifier()),
         category: "glean.error".into(),
@@ -111,6 +112,74 @@ pub fn test_get_num_recorded_errors(
     metric
         .test_get_value(glean, use_ping_name)
         .unwrap_or_else(|| {
-            panic!("No error recorded for {}", metric.meta().identifier());
+            panic!(
+                "No error recorded for {} in '{}' store",
+                metric.meta().identifier(),
+                use_ping_name
+            );
         })
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use crate::metrics::*;
+
+    const GLOBAL_APPLICATION_ID: &str = "org.mozilla.glean.test.app";
+    pub fn new_glean() -> (Glean, tempfile::TempDir) {
+        let dir = tempfile::tempdir().unwrap();
+        let tmpname = dir.path().display().to_string();
+
+        let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
+
+        (glean, dir)
+    }
+
+    #[test]
+    fn recording_of_all_error_types() {
+        let (glean, _t) = new_glean();
+
+        let string_metric = StringMetric::new(CommonMetricData {
+            name: "string_metric".into(),
+            category: "telemetry".into(),
+            send_in_pings: vec!["store1".into(), "store2".into()],
+            disabled: false,
+            lifetime: Lifetime::User,
+        });
+
+        record_error(
+            &glean,
+            string_metric.meta(),
+            ErrorType::InvalidValue,
+            "Invalid value",
+        );
+
+        record_error(
+            &glean,
+            string_metric.meta(),
+            ErrorType::InvalidLabel,
+            "Invalid label",
+        );
+
+        for store in &["store1", "store2", "metrics"] {
+            assert_eq!(
+                1,
+                test_get_num_recorded_errors(
+                    &glean,
+                    string_metric.meta(),
+                    ErrorType::InvalidValue,
+                    Some(store)
+                )
+            );
+            assert_eq!(
+                1,
+                test_get_num_recorded_errors(
+                    &glean,
+                    string_metric.meta(),
+                    ErrorType::InvalidLabel,
+                    Some(store)
+                )
+            );
+        }
+    }
 }
