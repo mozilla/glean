@@ -25,6 +25,7 @@
         - [Events Ping](user/pings/events.md)
         - [Custom Pings](user/pings/custom.md)
 - [Development](dev/index.md)
+    - [Testing](dev/testing.md)
     - [Android](dev/android/index.md)
         - [Setup Build Environment](dev/android/setup-android-build-environment.md)
     - [Rust Component](dev/core/index.md)
