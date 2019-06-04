@@ -62,6 +62,14 @@ android {
 
     // Uncomment to include debug symbols in native library builds.
     // packagingOptions { doNotStrip "**/*.so" }
+
+    testOptions {
+        unitTests.all {
+            testLogging {
+                showStandardStreams = true
+            }
+        }
+    }
 }
 
 configurations {
