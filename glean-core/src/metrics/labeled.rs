@@ -52,6 +52,16 @@ where
         t
     }
 
+    /// Create a static label
+    ///
+    /// ## Arguments
+    ///
+    /// * `label` - The requested label
+    ///
+    /// ## Return value
+    ///
+    /// If the requested label is in the list of allowed labels, it is returned.
+    /// Otherwise the `OTHER_LABEL` is returned.
     fn static_label<'a>(&mut self, label: &'a str) -> &'a str {
         let labels = self.labels.as_ref().unwrap();
         if labels.iter().any(|l| l == label) {
@@ -61,6 +71,20 @@ where
         }
     }
 
+    /// Create a dynamic label
+    ///
+    /// Checkes the requested label against limitations, such as the label length and allowed
+    /// characters.
+    ///
+    /// ## Arguments
+    ///
+    /// * `label` - The requested label
+    ///
+    /// ## Return value
+    ///
+    /// Returns the valid label if within the limitations,
+    /// or `OTHER_LABEL` on any errors.
+    /// The errors are logged.
     fn dynamic_label<'a>(&mut self, glean: &Glean, label: &'a str) -> &'a str {
         if self.seen_labels.is_empty() && self.submetric.meta().lifetime != Lifetime::Application {
             // Fetch all labels that are already stored by iterating through existing data.
