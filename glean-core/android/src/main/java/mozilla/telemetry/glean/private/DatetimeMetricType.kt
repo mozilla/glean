@@ -24,8 +24,8 @@ import java.util.Date
  * allowing developers to record values that were previously registered in the metrics.yaml file.
  */
 class DatetimeMetricType internal constructor(
-    var handle: Long,
-    val sendInPings: List<String>
+    private var handle: Long,
+    private val sendInPings: List<String>
 ) {
     /**
      * The public constructor used by automatically generated metrics.
@@ -57,7 +57,7 @@ class DatetimeMetricType internal constructor(
         }
     }
 
-    fun shouldRecord(): Boolean {
+    private fun shouldRecord(): Boolean {
         // Don't record metrics if we aren't initialized
         if (!Glean.isInitialized()) {
             return false
