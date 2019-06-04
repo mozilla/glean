@@ -55,6 +55,8 @@ impl DatetimeMetric {
     /// * `minute`: the minute to set the metric to.
     /// * `second`: the second to set the metric to.
     /// * `nano`: the nanosecond fraction to the last whole second.
+    /// * `offset_seconds`: the timezone difference, in seconds, for the Eastern
+    ///   Hemisphere. Negative seconds mean Western Hemisphere.
     pub fn set_with_details(
         &self,
         glean: &Glean,
@@ -67,13 +69,20 @@ impl DatetimeMetric {
         nano: u32,
         offset_seconds: i32,
     ) {
+        let timezone_offset = FixedOffset::east_opt(offset_seconds);
+        if timezone_offset.is_none() {
+            log::warn!("DatetimeMetric::set: invalid timezone offset {}. Not recording.",
+                       offset_seconds);
+            return;
+        };
+
         let datetime_obj = FixedOffset::east(offset_seconds)
             .ymd_opt(year, month, day)
             .and_hms_nano_opt(hour, minute, second, nano);
 
         match datetime_obj.single() {
             Some(d) => self.set(glean, d),
-            _ => log::warn!("DatetimeMetric::set: invalid input data. Not recording."), // FIXME: record error?
+            _ => log::warn!("DatetimeMetric::set: invalid input data. Not recording."),
         }
     }
 
