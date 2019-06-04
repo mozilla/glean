@@ -8,18 +8,18 @@ use crate::storage::StorageManager;
 use crate::CommonMetricData;
 use crate::Glean;
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct BooleanMetric {
     meta: CommonMetricData,
 }
 
 impl MetricType for BooleanMetric {
-    fn with_meta(meta: CommonMetricData) -> Self {
-        Self { meta }
-    }
-
     fn meta(&self) -> &CommonMetricData {
         &self.meta
+    }
+
+    fn meta_mut(&mut self) -> &mut CommonMetricData {
+        &mut self.meta
     }
 }
 

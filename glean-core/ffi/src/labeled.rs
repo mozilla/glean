@@ -58,13 +58,13 @@ macro_rules! impl_labeled_metric {
                 let lifetime = Lifetime::try_from(lifetime)?;
 
                 Ok(LabeledMetric::new(
-                    CommonMetricData {
+                    <$metric>::new(CommonMetricData {
                         name: name.into_string(),
                         category: category.into_string(),
                         send_in_pings,
                         lifetime,
                         disabled: disabled != 0,
-                    },
+                    }),
                     labels,
                 ))
             })

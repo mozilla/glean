@@ -13,18 +13,18 @@ const MAX_LIST_LENGTH: usize = 20;
 // Maximum length of any string in the list
 const MAX_STRING_LENGTH: usize = 50;
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct StringListMetric {
     meta: CommonMetricData,
 }
 
 impl MetricType for StringListMetric {
-    fn with_meta(meta: CommonMetricData) -> Self {
-        Self { meta }
-    }
-
     fn meta(&self) -> &CommonMetricData {
         &self.meta
+    }
+
+    fn meta_mut(&mut self) -> &mut CommonMetricData {
+        &mut self.meta
     }
 }
 

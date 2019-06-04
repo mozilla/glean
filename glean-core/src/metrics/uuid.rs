@@ -7,18 +7,18 @@ use crate::metrics::MetricType;
 use crate::CommonMetricData;
 use crate::Glean;
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UuidMetric {
     meta: CommonMetricData,
 }
 
 impl MetricType for UuidMetric {
-    fn with_meta(meta: CommonMetricData) -> Self {
-        Self { meta }
-    }
-
     fn meta(&self) -> &CommonMetricData {
         &self.meta
+    }
+
+    fn meta_mut(&mut self) -> &mut CommonMetricData {
+        &mut self.meta
     }
 }
 
