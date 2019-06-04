@@ -7,8 +7,9 @@ use std::collections::HashSet;
 use lazy_static::lazy_static;
 use regex::Regex;
 
-use crate::metrics::MetricType;
+use crate::metrics::{Metric, MetricType};
 use crate::Glean;
+use crate::Lifetime;
 
 const MAX_LABELS: usize = 16;
 const OTHER_LABEL: &str = "__other__";
@@ -51,6 +52,16 @@ where
         t
     }
 
+    /// Create a static label
+    ///
+    /// ## Arguments
+    ///
+    /// * `label` - The requested label
+    ///
+    /// ## Return value
+    ///
+    /// If the requested label is in the list of allowed labels, it is returned.
+    /// Otherwise the `OTHER_LABEL` is returned.
     fn static_label<'a>(&mut self, label: &'a str) -> &'a str {
         let labels = self.labels.as_ref().unwrap();
         if labels.iter().any(|l| l == label) {
@@ -60,8 +71,41 @@ where
         }
     }
 
-    fn dynamic_label<'a>(&mut self, label: &'a str) -> &'a str {
-        // TODO(bug 1554970): Fetch seen_labels from the database if empty
+    /// Create a dynamic label
+    ///
+    /// Checkes the requested label against limitations, such as the label length and allowed
+    /// characters.
+    ///
+    /// ## Arguments
+    ///
+    /// * `label` - The requested label
+    ///
+    /// ## Return value
+    ///
+    /// Returns the valid label if within the limitations,
+    /// or `OTHER_LABEL` on any errors.
+    /// The errors are logged.
+    fn dynamic_label<'a>(&mut self, glean: &Glean, label: &'a str) -> &'a str {
+        if self.seen_labels.is_empty() && self.submetric.meta().lifetime != Lifetime::Application {
+            // Fetch all labels that are already stored by iterating through existing data.
+
+            let prefix = format!("{}/", self.submetric.meta().identifier());
+            let seen_labels = &mut self.seen_labels;
+            let mut snapshotter = |metric_name: &[u8], _: &Metric| {
+                let metric_name = String::from_utf8_lossy(metric_name);
+                if metric_name.starts_with(&prefix) {
+                    let label = metric_name.splitn(2, '/').nth(1).unwrap(); // safe unwrap, we know it contains a slash
+                    seen_labels.insert(label.into());
+                }
+            };
+
+            let lifetime = self.submetric.meta().lifetime;
+            for store in &self.submetric.meta().send_in_pings {
+                glean
+                    .storage()
+                    .iter_store_from(lifetime, store, &mut snapshotter);
+            }
+        }
 
         if !self.seen_labels.contains(label) {
             if self.seen_labels.len() >= MAX_LABELS {
@@ -99,10 +143,10 @@ where
     ///
     /// Labels must be `snake_case` and less than 30 characters.
     /// If an invalid label is used, the metric will be recorded in the special `OTHER_LABEL` label.
-    pub fn get(&mut self, _glean: &Glean, label: &str) -> T {
+    pub fn get(&mut self, glean: &Glean, label: &str) -> T {
         let label = match self.labels {
             Some(_) => self.static_label(label),
-            None => self.dynamic_label(label),
+            None => self.dynamic_label(glean, label),
         };
         let label = format!("{}/{}", self.submetric.meta().name, label);
 

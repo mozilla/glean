@@ -9,6 +9,7 @@ use serde_json::json;
 
 use glean_core::metrics::*;
 use glean_core::storage::StorageManager;
+use glean_core::Glean;
 use glean_core::{CommonMetricData, Lifetime};
 
 #[test]
@@ -250,4 +251,71 @@ fn dynamic_labels_regex_mimsatch() {
         }),
         snapshot
     );
+}
+
+#[test]
+fn seen_labels_get_reloaded_from_disk() {
+    let (glean, dir) = new_glean();
+    let mut labeled = LabeledMetric::new(
+        CounterMetric::new(CommonMetricData {
+            name: "labeled_metric".into(),
+            category: "telemetry".into(),
+            send_in_pings: vec!["store1".into()],
+            disabled: false,
+            lifetime: Lifetime::Ping,
+        }),
+        None,
+    );
+
+    // Store some data into labeled metrics
+    {
+        // Set the maximum number of labels
+        for i in 1..=16 {
+            let label = format!("label{}", i);
+            labeled.get(&glean, &label).add(&glean, i);
+        }
+
+        let snapshot = StorageManager
+            .snapshot_as_json(glean.storage(), "store1", false)
+            .unwrap();
+
+        // Check that the data is there
+        for i in 1..=16 {
+            let label = format!("label{}", i);
+            assert_eq!(
+                i,
+                snapshot["labeled_counter"]["telemetry.labeled_metric"][&label]
+            );
+        }
+
+        drop(glean);
+    }
+
+    // Force a reload
+    {
+        let tmpname = dir.path().display().to_string();
+        let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
+
+        // Try to store another label
+        labeled.get(&glean, "new_label").add(&glean, 40);
+
+        let snapshot = StorageManager
+            .snapshot_as_json(glean.storage(), "store1", false)
+            .unwrap();
+
+        // Check that the old data is still there
+        for i in 1..=16 {
+            let label = format!("label{}", i);
+            assert_eq!(
+                i,
+                snapshot["labeled_counter"]["telemetry.labeled_metric"][&label]
+            );
+        }
+
+        // The new label lands in the __other__ bucket, due to too many labels
+        assert_eq!(
+            40,
+            snapshot["labeled_counter"]["telemetry.labeled_metric"]["__other__"]
+        );
+    }
 }
