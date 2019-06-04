@@ -97,10 +97,7 @@ fn long_string_values_are_truncated() {
     });
 
     let test_sting = "01234567890".repeat(20);
-    metric.set(
-        &glean,
-        test_sting.clone(),
-    );
+    metric.set(&glean, test_sting.clone());
 
     // Check that data was truncated
     assert_eq!(
