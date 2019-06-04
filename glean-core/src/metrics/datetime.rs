@@ -4,6 +4,7 @@
 
 #![allow(clippy::too_many_arguments)]
 
+use crate::error_recording::{record_error, ErrorType};
 use crate::metrics::time_unit::TimeUnit;
 use crate::metrics::Metric;
 use crate::metrics::MetricType;
@@ -68,10 +69,8 @@ impl DatetimeMetric {
     ) {
         let timezone_offset = FixedOffset::east_opt(offset_seconds);
         if timezone_offset.is_none() {
-            log::warn!(
-                "DatetimeMetric::set: invalid timezone offset {}. Not recording.",
-                offset_seconds
-            );
+            let msg = format!("Invalid timezone offset {}. Not recording.", offset_seconds);
+            record_error(glean, &self.meta, ErrorType::InvalidValue, msg);
             return;
         };
 
@@ -81,7 +80,14 @@ impl DatetimeMetric {
 
         match datetime_obj.single() {
             Some(d) => self.set(glean, d),
-            _ => log::warn!("DatetimeMetric::set: invalid input data. Not recording."),
+            _ => {
+                record_error(
+                    glean,
+                    &self.meta,
+                    ErrorType::InvalidValue,
+                    "Invalid input data. Not recording.",
+                );
+            }
         }
     }
 
