@@ -25,15 +25,12 @@ pub struct DatetimeMetric {
 }
 
 impl MetricType for DatetimeMetric {
-    fn with_meta(meta: CommonMetricData) -> Self {
-        Self {
-            meta,
-            time_unit: TimeUnit::Day,
-        } // FIXME: How do we handle this?
-    }
-
     fn meta(&self) -> &CommonMetricData {
         &self.meta
+    }
+
+    fn meta_mut(&mut self) -> &mut CommonMetricData {
+        &mut self.meta
     }
 }
 
