@@ -9,7 +9,7 @@ use crate::storage::StorageManager;
 use crate::CommonMetricData;
 use crate::Glean;
 
-const MAX_LENGTH_VALUE: usize = 50;
+const MAX_LENGTH_VALUE: usize = 100;
 
 #[derive(Clone, Debug)]
 pub struct StringMetric {
