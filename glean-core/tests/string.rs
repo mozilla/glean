@@ -96,14 +96,15 @@ fn long_string_values_are_truncated() {
         lifetime: Lifetime::Ping,
     });
 
+    let test_sting = "01234567890".repeat(20);
     metric.set(
         &glean,
-        "0123456789012345678901234567890123456789012345678901234567890123456789",
+        test_sting.clone(),
     );
 
     // Check that data was truncated
     assert_eq!(
-        "01234567890123456789012345678901234567890123456789",
+        test_sting[..100],
         metric.test_get_value(&glean, "store1").unwrap()
     );
 
