@@ -92,7 +92,7 @@ A pre-defined set of headers is additionally sent along with the submitted ping:
 | Header | Value | Description |
 |--------|-------|-------------|
 | `Content-Type` | `application/json; charset=utf-8` | Describes the data sent to the server |
-| `User-Agent` | Defaults to e.g. `Glean/0.40.0 (Android)`, where `0.40.0` is the glean version number and `Android` is the platform name. It can be overriden by user through [configuration](https://github.com/mozilla-mobile/android-components/blob/8441728f156847a58dcb25d29254512a1801b266/components/service/glean/src/main/java/mozilla/components/service/glean/config/Configuration.kt#L23) | Describes the application sending the ping using glean |
+| `User-Agent` | Defaults to e.g. `Glean/0.40.0 (Android)`, where `0.40.0` is the glean version number and `Android` is the platform name. It can be overriden by user through [configuration](../../../javadoc/glean/mozilla.telemetry.glean/-configuration/index.html) | Describes the application sending the ping using glean |
 | `Date` | e.g. `Mon, 23 Jan 2019 10:10:10 GMT+00:00` | Submission date/time in GMT/UTC+0 offset |
 | `X-Client-Type` | `Glean` | Custom header to support handling of glean pings in the legacy pipeline |
 | `X-Client-Version` | e.g. `0.40.0` | The glean version, sent as a custom header to support handling of glean pings in the legacy pipeline |

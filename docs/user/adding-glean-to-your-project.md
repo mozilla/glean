@@ -3,7 +3,7 @@
 ## Before using the library
 Products using Glean to collect telemetry **must**:
 
-- add documentation for any new metric collected with the library in its repository (see [an example](https://github.com/mozilla-mobile/android-components/blob/df429df1a193516f796f2330863af384cce820bc/components/service/glean/docs/pings/pings.md));
+- add documentation for any new metric collected with the library in its repository (see [an example](pings/index.md));
 - go through data review for the newly collected data by following [this process](https://wiki.mozilla.org/Firefox/Data_Collection);
 - provide a way for users to turn data collection off (e.g. providing settings to control
   `Glean.setUploadEnabled()`).
