@@ -68,8 +68,10 @@ impl DatetimeMetric {
     ) {
         let timezone_offset = FixedOffset::east_opt(offset_seconds);
         if timezone_offset.is_none() {
-            log::warn!("DatetimeMetric::set: invalid timezone offset {}. Not recording.",
-                       offset_seconds);
+            log::warn!(
+                "DatetimeMetric::set: invalid timezone offset {}. Not recording.",
+                offset_seconds
+            );
             return;
         };
 
