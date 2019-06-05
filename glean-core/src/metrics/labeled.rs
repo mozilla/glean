@@ -14,7 +14,7 @@ use crate::Lifetime;
 
 const MAX_LABELS: usize = 16;
 const OTHER_LABEL: &str = "__other__";
-const MAX_LABEL_LENGTH: usize = 30;
+const MAX_LABEL_LENGTH: usize = 61;
 lazy_static! {
     static ref LABEL_REGEX: Regex = Regex::new("^[a-z_][a-z0-9_]{0,29}$").unwrap();
 }
