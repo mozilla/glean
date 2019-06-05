@@ -9,9 +9,13 @@ use std::path::{Path, PathBuf};
 use log::info;
 use serde_json::{json, Value as JsonValue};
 
-use crate::metrics::PingType;
+use crate::common_metric_data::{CommonMetricData, Lifetime};
+use crate::metrics::{CounterMetric, Metric, MetricType, PingType};
 use crate::storage::StorageManager;
 use crate::Glean;
+
+// An internal ping name, not to be touched by anything else
+const INTERNAL_STORAGE: &str = "glean_internal_info";
 
 pub struct PingMaker;
 
@@ -40,7 +44,29 @@ impl PingMaker {
     }
 
     fn get_ping_seq(&self, glean: &Glean, storage_name: &str) -> usize {
-        1
+        // Sequence numbers are stored as a counter under a name that includes the storage name
+        let seq = CounterMetric::new(CommonMetricData {
+            name: format!("{}#sequence", storage_name),
+            // We don't need a category, the name is already unique
+            category: "".into(),
+            send_in_pings: vec![INTERNAL_STORAGE.into()],
+            lifetime: Lifetime::User,
+            ..Default::default()
+        });
+
+        let current_seq = match StorageManager.snapshot_metric(
+            glean.storage(),
+            INTERNAL_STORAGE,
+            &seq.meta().identifier(),
+        ) {
+            Some(Metric::Counter(i)) => i,
+            _ => 0,
+        };
+
+        // Increase to next sequence id
+        seq.add(glean, 1);
+
+        current_seq as usize
     }
 
     fn get_ping_info(&self, glean: &Glean, storage_name: &str) -> JsonValue {

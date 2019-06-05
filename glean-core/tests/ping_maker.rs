@@ -88,7 +88,6 @@ fn collect_must_report_none_when_no_data_is_stored() {
 }
 
 #[test]
-#[ignore] // sequence numbers aren't implemented
 fn seq_number_must_be_sequential() {
     let (glean, ping_maker, _ping_type, _t) = set_up_basic_ping();
 
@@ -110,5 +109,38 @@ fn seq_number_must_be_sequential() {
             // each other
             assert_eq!(i, seq_num);
         }
+    }
+
+    // Test that ping sequence numbers increase independently.
+    {
+        let ping_type = PingType::new("store1", true);
+
+        // 3rd ping of store1
+        let content = ping_maker.collect(&glean, &ping_type).unwrap();
+        let seq_num = content["ping_info"]["seq"].as_i64().unwrap();
+        assert_eq!(2, seq_num);
+
+        // 4th ping of store1
+        let content = ping_maker.collect(&glean, &ping_type).unwrap();
+        let seq_num = content["ping_info"]["seq"].as_i64().unwrap();
+        assert_eq!(3, seq_num);
+    }
+
+    {
+        let ping_type = PingType::new("store2", true);
+
+        // 3rd ping of store2
+        let content = ping_maker.collect(&glean, &ping_type).unwrap();
+        let seq_num = content["ping_info"]["seq"].as_i64().unwrap();
+        assert_eq!(2, seq_num);
+    }
+
+    {
+        let ping_type = PingType::new("store1", true);
+
+        // 5th ping of store1
+        let content = ping_maker.collect(&glean, &ping_type).unwrap();
+        let seq_num = content["ping_info"]["seq"].as_i64().unwrap();
+        assert_eq!(4, seq_num);
     }
 }
