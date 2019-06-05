@@ -38,7 +38,12 @@ impl StringMetric {
 
         let s = value.into();
         let s = if s.len() > MAX_LENGTH_VALUE {
-            record_error(glean, &self.meta, ErrorType::InvalidValue);
+            let msg = format!(
+                "Value length {} exceeds maximum of {}",
+                s.len(),
+                MAX_LENGTH_VALUE
+            );
+            record_error(glean, &self.meta, ErrorType::InvalidValue, msg);
             s[0..MAX_LENGTH_VALUE].to_string()
         } else {
             s

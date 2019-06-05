@@ -23,7 +23,7 @@ mod util;
 
 pub use crate::common_metric_data::{CommonMetricData, Lifetime};
 use crate::database::Database;
-pub use crate::error_recording::ErrorType;
+pub use crate::error_recording::{test_get_num_recorded_errors, ErrorType};
 use crate::internal_metrics::CoreMetrics;
 use crate::ping::PingMaker;
 use crate::storage::StorageManager;

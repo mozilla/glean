@@ -2,6 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+use crate::error_recording::{record_error, ErrorType};
 use crate::metrics::Metric;
 use crate::metrics::MetricType;
 use crate::storage::StorageManager;
@@ -34,8 +35,12 @@ impl CounterMetric {
         }
 
         if amount <= 0 {
-            // TODO: Turn this into logging an error
-            log::warn!("CounterMetric::add: got negative amount. Not recording.");
+            record_error(
+                glean,
+                &self.meta,
+                ErrorType::InvalidValue,
+                format!("Added negative or zero value {}", amount),
+            );
             return;
         }
 
