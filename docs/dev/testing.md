@@ -22,6 +22,26 @@ The Rust tests may be run with the following command:
 cargo test --all
 ```
 
+Log ouptut can be controlled via the environment variable `RUST_LOG` for the `glean_core` crate:
+
+```
+export RUST_LOG=glean_core=debug
+```
+
+ When running tests with logging you need to tell `cargo` to not suppress output:
+
+```
+cargo test -- --nocapture
+```
+
+Tests run in parallel by default, leading to interleaving log lines.
+This makes it harder to understand what's going on.
+For debugging you can force single-threaded tests:
+
+```
+cargo test -- --nocapture --test-threads=1
+```
+
 ## Running the Kotlin/Android tests
 
 ### From the command line
