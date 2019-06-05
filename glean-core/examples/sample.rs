@@ -41,7 +41,7 @@ fn main() {
     local_metric.set(&glean, "I can set this");
     call_counter.add(&glean, 1);
 
-    println!("Core Data:\n{}", glean.snapshot("baseline", true));
+    println!("Baseline Data:\n{}", glean.snapshot("baseline", true));
 
     call_counter.add(&glean, 2);
     println!("Metrics Data:\n{}", glean.snapshot("metrics", true));
@@ -49,7 +49,7 @@ fn main() {
     call_counter.add(&glean, 3);
 
     println!();
-    println!("Core Data 2:\n{}", glean.snapshot("baseline", false));
+    println!("Baseline Data 2:\n{}", glean.snapshot("baseline", false));
     println!("Metrics Data 2:\n{}", glean.snapshot("metrics", true));
 
     let list: StringListMetric = StringListMetric::new(CommonMetricData {
@@ -65,7 +65,7 @@ fn main() {
     let ping = ping_maker
         .collect_string(glean.storage(), glean.get_ping_by_name("baseline").unwrap())
         .unwrap();
-    println!("Core Ping:\n{}", ping);
+    println!("Baseline Ping:\n{}", ping);
 
     let ping =
         ping_maker.collect_string(glean.storage(), glean.get_ping_by_name("metrics").unwrap());
