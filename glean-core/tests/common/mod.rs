@@ -12,6 +12,20 @@ use chrono::offset::TimeZone;
 use iso8601;
 use iso8601::Date::YMD;
 
+use ctor::ctor;
+
+/// Initialize the logger for all tests without individual tests requiring to call the init code.
+/// Log ouptut can be controlled via the environment variable `RUST_LOG` for the `glean_core` crate,
+/// e.g.:
+///
+/// ```
+/// export RUST_LOG=glean_core=debug
+/// ```
+#[ctor]
+fn init() {
+    let _ = env_logger::builder().is_test(true).try_init();
+}
+
 pub fn tempdir() -> (tempfile::TempDir, String) {
     let t = tempfile::tempdir().unwrap();
     let name = t.path().display().to_string();
