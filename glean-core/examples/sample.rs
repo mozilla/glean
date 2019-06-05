@@ -19,28 +19,29 @@ fn main() {
     };
 
     let mut glean = Glean::new(&data_path, "org.mozilla.glean_core.example", true).unwrap();
-    glean.register_ping_type(&PingType::new("core", true));
+    glean.register_ping_type(&PingType::new("baseline", true));
+    glean.register_ping_type(&PingType::new("metrics", true));
 
     assert!(glean.is_initialized());
 
     let local_metric: StringMetric = StringMetric::new(CommonMetricData {
         name: "local_metric".into(),
         category: "local".into(),
-        send_in_pings: vec!["core".into()],
+        send_in_pings: vec!["baseline".into()],
         ..Default::default()
     });
 
     let call_counter: CounterMetric = CounterMetric::new(CommonMetricData {
         name: "calls".into(),
         category: "local".into(),
-        send_in_pings: vec!["core".into(), "metrics".into()],
+        send_in_pings: vec!["baseline".into(), "metrics".into()],
         ..Default::default()
     });
 
     local_metric.set(&glean, "I can set this");
     call_counter.add(&glean, 1);
 
-    println!("Core Data:\n{}", glean.snapshot("core", true));
+    println!("Baseline Data:\n{}", glean.snapshot("baseline", true));
 
     call_counter.add(&glean, 2);
     println!("Metrics Data:\n{}", glean.snapshot("metrics", true));
@@ -48,13 +49,13 @@ fn main() {
     call_counter.add(&glean, 3);
 
     println!();
-    println!("Core Data 2:\n{}", glean.snapshot("core", false));
+    println!("Baseline Data 2:\n{}", glean.snapshot("baseline", false));
     println!("Metrics Data 2:\n{}", glean.snapshot("metrics", true));
 
     let list: StringListMetric = StringListMetric::new(CommonMetricData {
         name: "list".into(),
         category: "local".into(),
-        send_in_pings: vec!["core".into()],
+        send_in_pings: vec!["baseline".into()],
         ..Default::default()
     });
     list.add(&glean, "once");
@@ -62,16 +63,11 @@ fn main() {
 
     let ping_maker = PingMaker::new();
     let ping = ping_maker
-        .collect_string(glean.storage(), glean.get_ping_by_name("core").unwrap())
+        .collect_string(glean.storage(), glean.get_ping_by_name("baseline").unwrap())
         .unwrap();
-    println!("Ping:\n{}", ping);
+    println!("Baseline Ping:\n{}", ping);
 
-    let mut long_string = std::iter::repeat('x').take(49).collect::<String>();
-    long_string.push('a');
-    long_string.push('b');
-    local_metric.set(&glean, long_string);
-    let ping = ping_maker
-        .collect_string(glean.storage(), glean.get_ping_by_name("core").unwrap())
-        .unwrap();
-    println!("Metrics Ping:\n{}", ping);
+    let ping =
+        ping_maker.collect_string(glean.storage(), glean.get_ping_by_name("metrics").unwrap());
+    println!("Metrics Ping: {:?}", ping);
 }
