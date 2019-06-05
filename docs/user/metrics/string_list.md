@@ -1,22 +1,71 @@
 # String List
 
-Record a list of Unicode string values.
+**STATUS: [Not implemented.](https://bugzilla.mozilla.org/show_bug.cgi?id=1552862)**
 
-## Methods
+Strings lists are used for recording a list of Unicode string values, such as the names of the enabled search engines.
 
-* `add(value)` - Append the given value to the list.
-* `set(value_list)` - Set to the specified list.
+---
+
+_Note:_ Be careful using arbitrary strings and make sure they can't accidentally contain identifying data (like directory paths or user input).
+
+---
+
+## Configuration
+
+First you need to add an entry for the counter to the `metrics.yaml` file:
+
+```YAML
+search:
+  engines:
+    type: string_list
+    description: >
+      Records the name of the enabled search engines.
+    ...
+```
+
+## API
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Search
+
+// Add them one at a time
+engines.forEach {
+  Search.engines.add(it)
+}
+
+// Set them in one go
+Search.engines.set(engines)
+```
+
+There are test APIs available too:
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Search
+Glean.enableTestingMode()
+
+// Was anything recorded?
+assertTrue(Search.engines.testHasValue())
+// Does it have the expected value?
+assertEquals(listOf("Google", "DuckDuckGo"), Search.engines.testGetValue())
+```
 
 ## Limits
 
-* Fixed maximum string length: 20 bytes. Specified in number of Unicode characters.
+* Fixed maximum string length: 50. Longer strings are truncated. For the original Kotlin implementation of Glean, this is measured in Unicode characters. For the Rust implementation, this is measured in the number of bytes when the string is encoded in UTF-8.
+  
 * Fixed maximum list length: 20 items. Additional strings are dropped.
 
 ## Examples
 
-The names of the enabled search engines.
+* The names of the enabled search engines.
 
 ## Recorded errors
 
 * `invalid_value`: if the string is too long
+
 * `invalid_value`: if the list is too long
+
+## Reference
+
+* [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-string-list-metric-type/index.html)
+

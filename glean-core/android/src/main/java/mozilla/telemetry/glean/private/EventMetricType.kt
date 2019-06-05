@@ -45,11 +45,11 @@ class EventMetricType<ExtraKeysEnum : Enum<ExtraKeysEnum>>(
     category: String,
     lifetime: Lifetime,
     name: String,
-    val sendInPings: List<String>,
+    private val sendInPings: List<String>,
     allowedExtraKeys: List<String> = listOf()
 ) {
     companion object {
-        val LOG_TAG: String = "glean/EventMetricType"
+        private val LOG_TAG: String = "glean/EventMetricType"
     }
 
     init {

@@ -1,13 +1,13 @@
 # Adding a new metric type
 
 Data in Glean is stored in so-called metrics.
-You can find the full list of implemented metric types [in the user overview](/user/metrics/index.md).
+You can find the full list of implemented metric types [in the user overview](../../user/metrics/index.md).
 
 Adding a new metric type involves defining the metric type's API, its persisted and in-memory storage as well as its serialization into the ping payload.
 
 ## The metric type's API
 
-A metric type implementation is defined in its own file under `glean-core/src/metrics/`, e.g. `glean-core/src/metrics/counter.rs` for a [Counter](/user/metrics/counter.md).
+A metric type implementation is defined in its own file under `glean-core/src/metrics/`, e.g. `glean-core/src/metrics/counter.rs` for a [Counter](../../user/metrics/counter.md).
 
 Start by defining a structure to hold the metric's metadata:
 

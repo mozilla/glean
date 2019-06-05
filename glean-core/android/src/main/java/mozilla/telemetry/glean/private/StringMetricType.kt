@@ -27,8 +27,8 @@ import mozilla.telemetry.glean.rust.toBoolean
  * The internal constructor is only used by [LabeledMetricType] directly.
  */
 class StringMetricType internal constructor(
-    var handle: Long,
-    val sendInPings: List<String>
+    private var handle: Long,
+    private val sendInPings: List<String>
 ) {
     /**
      * The public constructor used by automatically generated metrics.
@@ -57,7 +57,7 @@ class StringMetricType internal constructor(
         }
     }
 
-    fun shouldRecord(): Boolean {
+    private fun shouldRecord(): Boolean {
         // Don't record metrics if we aren't initialized
         if (!Glean.isInitialized()) {
             return false

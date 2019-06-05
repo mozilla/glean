@@ -122,7 +122,7 @@ structures, and combinations there-in). There are two options we recommend for
 these cases:
 
 1. Passing data using protobufs. See the
-   "[Using protobuf-encoded data over Rust FFI](passing-protobuf-data-over-ffi.md)"
+   "[Using protobuf-encoded data over Rust FFI](https://github.com/mozilla/application-services/blob/master/docs/howtos/passing-protobuf-data-over-ffi.md)"
    document for details on how to do this. We recommend this for all new use cases, unless
    you have a specific reason that JSON is better (e.g. semi-opaque JSON encoded data is
    desired on the other side).
