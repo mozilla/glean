@@ -20,6 +20,7 @@ fn main() {
 
     let mut glean = Glean::new(&data_path, "org.mozilla.glean_core.example", true).unwrap();
     glean.register_ping_type(&PingType::new("core", true));
+    glean.register_ping_type(&PingType::new("metrics", true));
 
     assert!(glean.is_initialized());
 
@@ -64,14 +65,14 @@ fn main() {
     let ping = ping_maker
         .collect_string(glean.storage(), glean.get_ping_by_name("core").unwrap())
         .unwrap();
-    println!("Ping:\n{}", ping);
+    println!("Core Ping:\n{}", ping);
 
     let mut long_string = std::iter::repeat('x').take(49).collect::<String>();
     long_string.push('a');
     long_string.push('b');
     local_metric.set(&glean, long_string);
     let ping = ping_maker
-        .collect_string(glean.storage(), glean.get_ping_by_name("core").unwrap())
+        .collect_string(glean.storage(), glean.get_ping_by_name("metrics").unwrap())
         .unwrap();
     println!("Metrics Ping:\n{}", ping);
 }
