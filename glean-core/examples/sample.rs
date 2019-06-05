@@ -67,12 +67,7 @@ fn main() {
         .unwrap();
     println!("Core Ping:\n{}", ping);
 
-    let mut long_string = std::iter::repeat('x').take(49).collect::<String>();
-    long_string.push('a');
-    long_string.push('b');
-    local_metric.set(&glean, long_string);
-    let ping = ping_maker
-        .collect_string(glean.storage(), glean.get_ping_by_name("metrics").unwrap())
-        .unwrap();
-    println!("Metrics Ping:\n{}", ping);
+    let ping =
+        ping_maker.collect_string(glean.storage(), glean.get_ping_by_name("metrics").unwrap());
+    println!("Metrics Ping: {:?}", ping);
 }
