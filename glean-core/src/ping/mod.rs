@@ -9,9 +9,9 @@ use std::path::{Path, PathBuf};
 use log::info;
 use serde_json::{json, Value as JsonValue};
 
-use crate::database::Database;
 use crate::metrics::PingType;
 use crate::storage::StorageManager;
+use crate::Glean;
 
 pub struct PingMaker;
 
@@ -39,20 +39,20 @@ impl PingMaker {
         Self
     }
 
-    fn get_ping_seq(&self, _storage: &str) -> usize {
+    fn get_ping_seq(&self, glean: &Glean, storage_name: &str) -> usize {
         1
     }
 
-    fn get_ping_info(&self, storage_name: &str) -> JsonValue {
+    fn get_ping_info(&self, glean: &Glean, storage_name: &str) -> JsonValue {
         json!({
             "ping_type": storage_name,
-            "seq": self.get_ping_seq(storage_name),
+            "seq": self.get_ping_seq(glean, storage_name),
             "start_time": "2019-03-29T09:50-04:00",
             "end_time": "2019-03-29T09:53-04:00"
         })
     }
 
-    fn get_client_info(&self, storage: &Database, include_client_id: bool) -> JsonValue {
+    fn get_client_info(&self, glean: &Glean, include_client_id: bool) -> JsonValue {
         // Add the "telemetry_sdk_build", which is the glean-core version.
         let version = env!("CARGO_PKG_VERSION");
         let mut map = json!({
@@ -61,7 +61,7 @@ impl PingMaker {
 
         // Flatten the whole thing.
         if let Some(client_info) =
-            StorageManager.snapshot_as_json(storage, "glean_client_info", true)
+            StorageManager.snapshot_as_json(glean.storage(), "glean_client_info", true)
         {
             let client_info_obj = client_info.as_object().unwrap(); // safe, snapshot always returns an object.
             for (_key, value) in client_info_obj {
@@ -76,10 +76,11 @@ impl PingMaker {
         json!(map)
     }
 
-    pub fn collect(&self, storage: &Database, ping: &PingType) -> Option<JsonValue> {
+    pub fn collect(&self, glean: &Glean, ping: &PingType) -> Option<JsonValue> {
         info!("Collecting {}", ping.name);
 
-        let metrics_data = match StorageManager.snapshot_as_json(storage, &ping.name, true) {
+        let metrics_data = match StorageManager.snapshot_as_json(glean.storage(), &ping.name, true)
+        {
             None => {
                 info!("Storage for {} empty. Bailing out.", ping.name);
                 return None;
@@ -87,8 +88,8 @@ impl PingMaker {
             Some(data) => data,
         };
 
-        let ping_info = self.get_ping_info(&ping.name);
-        let client_info = self.get_client_info(storage, ping.include_client_id);
+        let ping_info = self.get_ping_info(glean, &ping.name);
+        let client_info = self.get_client_info(glean, ping.include_client_id);
 
         Some(json!({
             "ping_info": ping_info,
@@ -97,8 +98,8 @@ impl PingMaker {
         }))
     }
 
-    pub fn collect_string(&self, storage: &Database, ping: &PingType) -> Option<String> {
-        self.collect(storage, ping)
+    pub fn collect_string(&self, glean: &Glean, ping: &PingType) -> Option<String> {
+        self.collect(glean, ping)
             .map(|ping| ::serde_json::to_string_pretty(&ping).unwrap())
     }
 

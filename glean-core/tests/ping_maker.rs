@@ -35,7 +35,7 @@ fn set_up_basic_ping() -> (Glean, PingMaker, PingType, tempfile::TempDir) {
 fn ping_info_must_contain_a_nonempty_start_and_end_time() {
     let (glean, ping_maker, ping_type, _t) = set_up_basic_ping();
 
-    let content = ping_maker.collect(glean.storage(), &ping_type).unwrap();
+    let content = ping_maker.collect(&glean, &ping_type).unwrap();
     let ping_info = content["ping_info"].as_object().unwrap();
 
     let start_time_str = ping_info["start_time"].as_str().unwrap();
@@ -51,7 +51,7 @@ fn ping_info_must_contain_a_nonempty_start_and_end_time() {
 fn get_ping_info_must_report_all_the_required_fields() {
     let (glean, ping_maker, ping_type, _t) = set_up_basic_ping();
 
-    let content = ping_maker.collect(glean.storage(), &ping_type).unwrap();
+    let content = ping_maker.collect(&glean, &ping_type).unwrap();
     let ping_info = content["ping_info"].as_object().unwrap();
 
     assert_eq!("store1", ping_info["ping_type"].as_str().unwrap());
@@ -64,7 +64,7 @@ fn get_ping_info_must_report_all_the_required_fields() {
 fn get_client_info_must_report_all_the_available_data() {
     let (glean, ping_maker, ping_type, _t) = set_up_basic_ping();
 
-    let content = ping_maker.collect(glean.storage(), &ping_type).unwrap();
+    let content = ping_maker.collect(&glean, &ping_type).unwrap();
     let client_info = content["client_info"].as_object().unwrap();
 
     client_info["telemetry_sdk_build"].as_str().unwrap();
@@ -84,9 +84,7 @@ fn collect_must_report_none_when_no_data_is_stored() {
     let unknown_ping_type = PingType::new("unknown", true);
     glean.register_ping_type(&ping_type);
 
-    assert!(ping_maker
-        .collect(glean.storage(), &unknown_ping_type)
-        .is_none());
+    assert!(ping_maker.collect(&glean, &unknown_ping_type).is_none());
 }
 
 #[test]
@@ -106,7 +104,7 @@ fn seq_number_must_be_sequential() {
     for i in 0..=1 {
         for ping_name in ["store1", "store2"].iter() {
             let ping_type = PingType::new(*ping_name, true);
-            let content = ping_maker.collect(glean.storage(), &ping_type).unwrap();
+            let content = ping_maker.collect(&glean, &ping_type).unwrap();
             let seq_num = content["ping_info"]["seq"].as_i64().unwrap();
             // Ensure sequence numbers in different stores are independent of
             // each other

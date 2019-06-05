@@ -462,7 +462,7 @@ pub extern "C" fn glean_ping_collect(glean_handle: u64, ping_type_handle: u64) -
         let res: glean_core::Result<String> = PING_TYPES.get_u64(ping_type_handle, |ping_type| {
             let ping_maker = glean_core::ping::PingMaker::new();
             let data = ping_maker
-                .collect_string(glean.storage(), ping_type)
+                .collect_string(glean, ping_type)
                 .unwrap_or_else(|| String::from(""));
             log::info!("Ping({}): {}", ping_type.name.as_str(), data);
             Ok(data)
