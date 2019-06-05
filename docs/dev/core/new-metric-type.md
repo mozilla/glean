@@ -122,6 +122,12 @@ impl Metric { // same block as above
 For more complex serialization consider implementing serialization logic as a function returning a [`serde_json::Value`](https://docs.rs/serde_json/*/serde_json/enum.Value.html)
 or another object that can be serialized.
 
+For example, the `DateTime` serializer has the following entry, where `get_iso_time_string` is a function to convert from the `DateTime` metric representation to a string:
+
+```rust,noplaypen
+Metric::Datetime(d, time_unit) => json!(get_iso_time_string(*d, *time_unit)),
+```
+
 ## FFI layer
 
 In order to use a new metric type over the FFI layer, it needs implementations in the FFI component and the platform-part.
