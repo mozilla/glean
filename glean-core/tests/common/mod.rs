@@ -15,7 +15,7 @@ use iso8601::Date::YMD;
 use ctor::ctor;
 
 /// Initialize the logger for all tests without individual tests requiring to call the init code.
-/// Log ouptut can be controlled via the environment variable `RUST_LOG` for the `glean_core` crate,
+/// Log output can be controlled via the environment variable `RUST_LOG` for the `glean_core` crate,
 /// e.g.:
 ///
 /// ```
