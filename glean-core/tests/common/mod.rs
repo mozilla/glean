@@ -22,7 +22,7 @@ use ctor::ctor;
 /// export RUST_LOG=glean_core=debug
 /// ```
 #[ctor]
-fn init() {
+fn enable_test_logging() {
     let _ = env_logger::builder().is_test(true).try_init();
 }
 
