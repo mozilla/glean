@@ -33,6 +33,7 @@ test:
 
 test-rust-with-logs:
 	RUST_LOG=glean_core=debug cargo test --all -- --nocapture --test-threads=1
+.PHONY: test-rust-with-logs
 
 cbindgen:
 	cbindgen glean-core/ffi --lockfile Cargo.lock -o glean-core/ffi/examples/glean.h
