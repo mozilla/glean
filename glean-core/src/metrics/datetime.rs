@@ -15,7 +15,7 @@ use crate::Glean;
 
 use chrono::{DateTime, FixedOffset, TimeZone};
 
-/// # A datetime metric
+/// A datetime metric.
 ///
 /// Used to record an absolute date and time, such as the time the user first ran
 /// the application.
@@ -36,6 +36,7 @@ impl MetricType for DatetimeMetric {
 }
 
 impl DatetimeMetric {
+    /// Create a new datetime metric.
     pub fn new(meta: CommonMetricData, time_unit: TimeUnit) -> Self {
         Self { meta, time_unit }
     }
@@ -45,15 +46,15 @@ impl DatetimeMetric {
     ///
     /// ## Arguments:
     ///
-    /// * `glean`: the Glean instance this metric belongs to.
-    /// * `year`: the year to set the metric to.
-    /// * `month`: the month to set the metric to (1-12).
-    /// * `day`: the day to set the metric to (1-based).
-    /// * `hour`: the hour to set the metric to.
-    /// * `minute`: the minute to set the metric to.
-    /// * `second`: the second to set the metric to.
-    /// * `nano`: the nanosecond fraction to the last whole second.
-    /// * `offset_seconds`: the timezone difference, in seconds, for the Eastern
+    /// * `glean` - the Glean instance this metric belongs to.
+    /// * `year` - the year to set the metric to.
+    /// * `month` - the month to set the metric to (1-12).
+    /// * `day` - the day to set the metric to (1-based).
+    /// * `hour` - the hour to set the metric to.
+    /// * `minute` - the minute to set the metric to.
+    /// * `second` - the second to set the metric to.
+    /// * `nano` - the nanosecond fraction to the last whole second.
+    /// * `offset_seconds` - the timezone difference, in seconds, for the Eastern
     ///   Hemisphere. Negative seconds mean Western Hemisphere.
     pub fn set_with_details(
         &self,
@@ -96,8 +97,8 @@ impl DatetimeMetric {
     ///
     /// ## Arguments:
     ///
-    /// * `glean`: the Glean instance this metric belongs to.
-    /// * `value`: the date/time value, with offset, to set the metric to.
+    /// * `glean` - the Glean instance this metric belongs to.
+    /// * `value` - the date/time value, with offset, to set the metric to.
     pub fn set(&self, glean: &Glean, value: DateTime<FixedOffset>) {
         if !self.should_record(glean) {
             return;

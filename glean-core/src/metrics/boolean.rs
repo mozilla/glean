@@ -8,7 +8,7 @@ use crate::storage::StorageManager;
 use crate::CommonMetricData;
 use crate::Glean;
 
-/// # A boolean metric
+/// A boolean metric.
 ///
 /// Records a simple flag.
 #[derive(Clone, Debug)]
@@ -27,12 +27,17 @@ impl MetricType for BooleanMetric {
 }
 
 impl BooleanMetric {
-    /// Create a new metric
+    /// Create a new boolean metric.
     pub fn new(meta: CommonMetricData) -> Self {
         Self { meta }
     }
 
-    /// Set to the specified boolean value
+    /// Set to the specified boolean value.
+    ///
+    /// ## Arguments
+    ///
+    /// * `glean` - the Glean instance this metric belongs to.
+    /// * `value` - the value to set.
     pub fn set(&self, glean: &Glean, value: bool) {
         if !self.should_record(glean) {
             return;

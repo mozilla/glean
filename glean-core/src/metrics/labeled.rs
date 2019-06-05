@@ -36,9 +36,9 @@ impl<T> LabeledMetric<T>
 where
     T: MetricType + Clone,
 {
-    /// Create a new labeled metric from the given meta data and optional list of labels.
+    /// Create a new labeled metric from the given metric instance and optional list of labels.
     ///
-    /// See [`get`](#method.get) for information how static or dynamic labels are handled.
+    /// See [`get`](#method.get) for information on how static or dynamic labels are handled.
     pub fn new(submetric: T, labels: Option<Vec<String>>) -> LabeledMetric<T> {
         LabeledMetric {
             labels,

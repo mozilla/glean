@@ -2,9 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-//! # Metrics
-//!
-//! Glean supports different metric types to store data.
+//! The different metric types supported by the Glean SDK to handle data.
 
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
@@ -34,9 +32,9 @@ pub use self::string_list::StringListMetric;
 pub use self::time_unit::TimeUnit;
 pub use self::uuid::UuidMetric;
 
-/// The available metrics
+/// The available metrics.
 ///
-/// This is the in-memory and persisted layout of a metric
+/// This is the in-memory and persisted layout of a metric.
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub enum Metric {
     /// A boolean metric. See [`BooleanMetric`](struct.BooleanMetric.html) for more information.
@@ -53,7 +51,7 @@ pub enum Metric {
     Uuid(String),
 }
 
-/// A `MetricType` describes common behavior across all metrics
+/// A `MetricType` describes common behavior across all metrics.
 pub trait MetricType {
     /// Access the stored metadata
     fn meta(&self) -> &CommonMetricData;
@@ -71,7 +69,9 @@ pub trait MetricType {
 }
 
 impl Metric {
-    /// The category the metric fits into
+    /// The category the metric fits into.
+    ///
+    /// This determines the category to place the metric data in when assembling the ping payload.
     pub fn category(&self) -> &'static str {
         match self {
             Metric::Boolean(_) => "boolean",
