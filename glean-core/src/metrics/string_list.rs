@@ -13,6 +13,9 @@ const MAX_LIST_LENGTH: usize = 20;
 // Maximum length of any string in the list
 const MAX_STRING_LENGTH: usize = 50;
 
+/// A string list metric.
+///
+/// This allows appending a string value with arbitrary content to a list.
 #[derive(Clone, Debug)]
 pub struct StringListMetric {
     meta: CommonMetricData,
@@ -29,10 +32,21 @@ impl MetricType for StringListMetric {
 }
 
 impl StringListMetric {
+    /// Create a new string list metric.
     pub fn new(meta: CommonMetricData) -> Self {
         Self { meta }
     }
 
+    /// Add a new string to the list.
+    ///
+    /// ## Arguments
+    ///
+    /// * `glean` - The Glean instance this metric belongs to.
+    /// * `value` - The string to add.
+    ///
+    /// ## Notes
+    ///
+    /// Truncates the value if it is longer than `MAX_STRING_LENGTH` bytes and logs an error.
     pub fn add<S: Into<String>>(&self, glean: &Glean, value: S) {
         if !self.should_record(glean) {
             return;
@@ -71,6 +85,17 @@ impl StringListMetric {
             })
     }
 
+    /// Set to a specific list of strings.
+    ///
+    /// ## Arguments
+    ///
+    /// * `glean` - The Glean instance this metric belongs to.
+    /// * `value` - The list of string to set the metric to.
+    ///
+    /// ## Notes
+    ///
+    /// Truncates the list if it is longer than `MAX_LIST_LENGTH` and logs an error.
+    /// Truncates any value in the list if it is longer than `MAX_STRING_LENGTH` and logs an error.
     pub fn set(&self, glean: &Glean, value: Vec<String>) {
         if !self.should_record(glean) {
             return;
