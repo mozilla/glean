@@ -100,7 +100,7 @@ pub fn test_get_num_recorded_errors(
     meta: &CommonMetricData,
     error: ErrorType,
     ping_name: Option<&str>,
-) -> i32 {
+) -> Result<i32, String> {
     let use_ping_name = ping_name.unwrap_or(&meta.send_in_pings[0]);
     let metric = CounterMetric::new(CommonMetricData {
         name: format!("{}/{}", error.to_string(), meta.identifier()),
@@ -109,15 +109,13 @@ pub fn test_get_num_recorded_errors(
         ..meta.clone()
     });
 
-    metric
-        .test_get_value(glean, use_ping_name)
-        .unwrap_or_else(|| {
-            panic!(
-                "No error recorded for {} in '{}' store",
-                metric.meta().identifier(),
-                use_ping_name
-            );
-        })
+    metric.test_get_value(glean, use_ping_name).ok_or_else(|| {
+        format!(
+            "No error recorded for {} in '{}' store",
+            metric.meta().identifier(),
+            use_ping_name
+        )
+    })
 }
 
 #[cfg(test)]
@@ -163,7 +161,7 @@ mod test {
 
         for store in &["store1", "store2", "metrics"] {
             assert_eq!(
-                1,
+                Ok(1),
                 test_get_num_recorded_errors(
                     &glean,
                     string_metric.meta(),
@@ -172,7 +170,7 @@ mod test {
                 )
             );
             assert_eq!(
-                1,
+                Ok(1),
                 test_get_num_recorded_errors(
                     &glean,
                     string_metric.meta(),
