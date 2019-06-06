@@ -19,3 +19,12 @@ When re-enabling metrics:
 - Application lifetime metrics owned by Glean are regenerated from scratch so that they will appear in subsequent pings. This is the same process that happens during every startup of the application when Glean is enabled. The application is also responsible for setting any application lifetime metrics that it manages at this time.
 
 - Ping lifetime metrics do not need special handling.  They will begin recording again after metric uploading is re-enabled.
+
+## Reservered ping names
+
+The Glean SDK reserves all ping names starting with `glean_`.
+
+This currently includes, but is not limited to:
+
+* `glean_client_info`
+* `glean_internal_info`
