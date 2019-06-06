@@ -182,6 +182,15 @@ internal interface LibGleanFFI : Library {
         disabled: Byte
     ): Long
 
+    fun glean_new_string_list_metric(
+        category: String,
+        name: String,
+        send_in_pings: StringArray,
+        send_in_pings_len: Int,
+        lifetime: Int,
+        disabled: Byte
+    ): Long
+
     fun glean_string_test_get_value(glean_handle: Long, metric_id: Long, storage_name: String): Pointer?
 
     fun glean_string_test_has_value(glean_handle: Long, metric_id: Long, storage_name: String): Byte
@@ -198,11 +207,23 @@ internal interface LibGleanFFI : Library {
 
     fun glean_string_should_record(glean_handle: Long, metric_id: Long): Byte
 
+    fun glean_string_list_should_record(glean_handle: Long, metric_id: Long): Byte
+
+    fun glean_string_list_add(glean_handle: Long, metric_id: Long, value: String)
+
+    fun glean_string_list_set(glean_handle: Long, metric_id: Long, values: StringArray, values_len: Int)
+
+    fun glean_string_list_test_has_value(glean_handle: Long, metric_id: Long, storage_name: String): Byte
+
+    fun glean_string_list_test_get_value_as_json_string(glean_handle: Long, metric_id: Long, storage_name: String): Pointer?
+
     fun glean_destroy_glean(handle: Long, error: RustError.ByReference)
 
     fun glean_destroy_boolean_metric(handle: Long, error: RustError.ByReference)
 
     fun glean_destroy_string_metric(handle: Long, error: RustError.ByReference)
+
+    fun glean_destroy_string_list_metric(handle: Long, error: RustError.ByReference)
 
     fun glean_destroy_counter_metric(handle: Long, error: RustError.ByReference)
 
