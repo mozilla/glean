@@ -5,6 +5,7 @@
 use crate::error_recording::{record_error, ErrorType};
 use crate::metrics::Metric;
 use crate::metrics::MetricType;
+use crate::storage::StorageManager;
 use crate::CommonMetricData;
 use crate::Glean;
 
@@ -132,5 +133,33 @@ impl StringListMetric {
 
         let value = Metric::StringList(value);
         glean.storage().record(&self.meta, &value);
+    }
+
+    /// **Test-only API (exported for FFI purposes).**
+    ///
+    /// Get the currently-stored values.
+    ///
+    /// This doesn't clear the stored value.
+    pub fn test_get_value(&self, glean: &Glean, storage_name: &str) -> Option<Vec<String>> {
+        match StorageManager.snapshot_metric(glean.storage(), storage_name, &self.meta.identifier())
+        {
+            Some(Metric::StringList(values)) => Some(values),
+            _ => None,
+        }
+    }
+
+    /// **Test-only API (exported for FFI purposes).**
+    ///
+    /// Get the currently-stored values as a JSON String of the format
+    /// ["string1", "string2", ...]
+    ///
+    /// This doesn't clear the stored value.
+    pub fn test_get_value_as_json_string(
+        &self,
+        glean: &Glean,
+        storage_name: &str,
+    ) -> Option<String> {
+        self.test_get_value(glean, storage_name)
+            .map(|values| serde_json::to_string(&values).unwrap())
     }
 }
