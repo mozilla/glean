@@ -12,6 +12,24 @@ use chrono::offset::TimeZone;
 use iso8601;
 use iso8601::Date::YMD;
 
+use ctor::ctor;
+
+/// Initialize the logger for all tests without individual tests requiring to call the init code.
+/// Log output can be controlled via the environment variable `RUST_LOG` for the `glean_core` crate,
+/// e.g.:
+///
+/// ```
+/// export RUST_LOG=glean_core=debug
+/// ```
+#[ctor]
+fn enable_test_logging() {
+    // When testing we want all logs to go to stdout/stderr by default,
+    // without requiring each individual test to activate it.
+    // This only applies to glean-core tests, users of the main library still need to call
+    // `glean_enable_logging` of the FFI component (automatically done by the platform wrappers).
+    let _ = env_logger::builder().is_test(true).try_init();
+}
+
 pub fn tempdir() -> (tempfile::TempDir, String) {
     let t = tempfile::tempdir().unwrap();
     let name = t.path().display().to_string();
