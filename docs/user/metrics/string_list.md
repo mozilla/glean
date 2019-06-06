@@ -1,7 +1,5 @@
 # String List
 
-**STATUS: [Not implemented.](https://bugzilla.mozilla.org/show_bug.cgi?id=1552862)**
-
 Strings lists are used for recording a list of Unicode string values, such as the names of the enabled search engines.
 
 ---
@@ -52,7 +50,7 @@ assertEquals(listOf("Google", "DuckDuckGo"), Search.engines.testGetValue())
 ## Limits
 
 * Fixed maximum string length: 50. Longer strings are truncated. For the original Kotlin implementation of Glean, this is measured in Unicode characters. For the Rust implementation, this is measured in the number of bytes when the string is encoded in UTF-8.
-  
+
 * Fixed maximum list length: 20 items. Additional strings are dropped.
 
 ## Examples
