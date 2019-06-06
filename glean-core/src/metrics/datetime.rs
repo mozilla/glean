@@ -108,6 +108,31 @@ impl DatetimeMetric {
         glean.storage().record(&self.meta, &value)
     }
 
+    /// Get the stored datetime value.
+    ///
+    /// ## Arguments
+    ///
+    /// * `glean` - the Glean instance this metric belongs to.
+    /// * `storage_name` - the storage name to look into.
+    ///
+    /// ## Return value
+    ///
+    /// Returns the stored value or `None` if nothing stored.
+    pub(crate) fn get_value(
+        &self,
+        glean: &Glean,
+        storage_name: &str,
+    ) -> Option<DateTime<FixedOffset>> {
+        match StorageManager.snapshot_metric(
+            glean.storage(),
+            storage_name,
+            &self.meta().identifier(),
+        ) {
+            Some(Metric::Datetime(dt, _)) => Some(dt),
+            _ => None,
+        }
+    }
+
     /// **Test-only API (exported for FFI purposes).**
     ///
     /// Get the currently stored value as a String.

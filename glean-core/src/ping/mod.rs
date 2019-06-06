@@ -10,8 +10,9 @@ use log::info;
 use serde_json::{json, Value as JsonValue};
 
 use crate::common_metric_data::{CommonMetricData, Lifetime};
-use crate::metrics::{CounterMetric, Metric, MetricType, PingType};
+use crate::metrics::{CounterMetric, DatetimeMetric, Metric, MetricType, PingType, TimeUnit};
 use crate::storage::StorageManager;
+use crate::util::{get_iso_time_string, local_now_with_offset};
 use crate::Glean;
 
 // An internal ping name, not to be touched by anything else
@@ -69,12 +70,44 @@ impl PingMaker {
         current_seq as usize
     }
 
+    /// Get the formatted start and end times for this ping and update for the next ping.
+    fn get_start_end_times(&self, glean: &Glean, storage_name: &str) -> (String, String) {
+        let time_unit = TimeUnit::Minute;
+
+        let start_time = DatetimeMetric::new(
+            CommonMetricData {
+                name: format!("{}#start", storage_name),
+                category: "".into(),
+                send_in_pings: vec![INTERNAL_STORAGE.into()],
+                lifetime: Lifetime::User,
+                ..Default::default()
+            },
+            time_unit,
+        );
+
+        // "start_time" is the time the ping was generated the last time.
+        // If not available, we use the date the Glean object was initialized.
+        let start_time_data = start_time
+            .get_value(glean, INTERNAL_STORAGE)
+            .unwrap_or_else(|| glean.start_time());
+        let end_time_data = local_now_with_offset();
+
+        // Update the start time with the current time.
+        start_time.set(glean, end_time_data);
+
+        // Format the times.
+        let start_time_data = get_iso_time_string(start_time_data, time_unit);
+        let end_time_data = get_iso_time_string(end_time_data, time_unit);
+        (start_time_data, end_time_data)
+    }
+
     fn get_ping_info(&self, glean: &Glean, storage_name: &str) -> JsonValue {
+        let (start_time, end_time) = self.get_start_end_times(glean, storage_name);
         json!({
             "ping_type": storage_name,
             "seq": self.get_ping_seq(glean, storage_name),
-            "start_time": "2019-03-29T09:50-04:00",
-            "end_time": "2019-03-29T09:53-04:00"
+            "start_time": start_time,
+            "end_time": end_time,
         })
     }
 

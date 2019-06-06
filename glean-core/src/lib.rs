@@ -8,6 +8,7 @@
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 
+use chrono::{DateTime, FixedOffset};
 use uuid::Uuid;
 
 mod common_metric_data;
@@ -23,13 +24,13 @@ mod util;
 
 pub use crate::common_metric_data::{CommonMetricData, Lifetime};
 use crate::database::Database;
+pub use crate::error::{Error, Result};
 pub use crate::error_recording::{test_get_num_recorded_errors, ErrorType};
 use crate::internal_metrics::CoreMetrics;
+use crate::metrics::PingType;
 use crate::ping::PingMaker;
 use crate::storage::StorageManager;
-use crate::util::sanitize_application_id;
-pub use error::{Error, Result};
-use metrics::PingType;
+use crate::util::{local_now_with_offset, sanitize_application_id};
 
 const GLEAN_SCHEMA_VERSION: u32 = 1;
 
@@ -42,6 +43,7 @@ pub struct Glean {
     data_path: PathBuf,
     application_id: String,
     ping_registry: HashMap<String, PingType>,
+    start_time: DateTime<FixedOffset>,
 }
 
 impl Glean {
@@ -61,6 +63,7 @@ impl Glean {
             data_path: PathBuf::from(data_path),
             application_id,
             ping_registry: HashMap::new(),
+            start_time: local_now_with_offset(),
         };
         glean.initialize_core_metrics()?;
         glean.initialized = true;
@@ -188,6 +191,11 @@ impl Glean {
         }
 
         self.ping_registry.insert(ping.name.clone(), ping.clone());
+    }
+
+    /// Get create time of the Glean object.
+    pub(crate) fn start_time(&self) -> DateTime<FixedOffset> {
+        self.start_time
     }
 }
 
