@@ -9,7 +9,7 @@ use crate::metrics::time_unit::TimeUnit;
 use crate::metrics::Metric;
 use crate::metrics::MetricType;
 use crate::storage::StorageManager;
-use crate::util::get_iso_time_string;
+use crate::util::{get_iso_time_string, local_now_with_offset};
 use crate::CommonMetricData;
 use crate::Glean;
 
@@ -80,7 +80,7 @@ impl DatetimeMetric {
             .and_hms_nano_opt(hour, minute, second, nano);
 
         match datetime_obj.single() {
-            Some(d) => self.set(glean, d),
+            Some(d) => self.set(glean, Some(d)),
             _ => {
                 record_error(
                     glean,
@@ -98,12 +98,14 @@ impl DatetimeMetric {
     /// ## Arguments:
     ///
     /// * `glean` - the Glean instance this metric belongs to.
-    /// * `value` - the date/time value, with offset, to set the metric to.
-    pub fn set(&self, glean: &Glean, value: DateTime<FixedOffset>) {
+    /// * `value` - Some date/time value, with offset, to set the metric to.
+    ///             If none, the current local time is used.
+    pub fn set(&self, glean: &Glean, value: Option<DateTime<FixedOffset>>) {
         if !self.should_record(glean) {
             return;
         }
 
+        let value = value.unwrap_or_else(local_now_with_offset);
         let value = Metric::Datetime(value, self.time_unit);
         glean.storage().record(&self.meta, &value)
     }

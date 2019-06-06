@@ -37,7 +37,7 @@ fn datetime_serializer_should_correctly_serialize_datetime() {
         let dt = FixedOffset::east(0)
             .ymd(1983, 4, 13)
             .and_hms_milli(12, 9, 14, 274);
-        metric.set(&glean, dt);
+        metric.set(&glean, Some(dt));
 
         let snapshot = StorageManager
             .snapshot_as_json(glean.storage(), "store1", true)
@@ -82,7 +82,7 @@ fn set_value_properly_sets_the_value_in_all_stores() {
     let dt = FixedOffset::east(0)
         .ymd(1983, 4, 13)
         .and_hms_nano(12, 9, 14, 1_560_274);
-    metric.set(&glean, dt);
+    metric.set(&glean, Some(dt));
 
     for store_name in store_names {
         assert_eq!(
@@ -168,7 +168,7 @@ fn test_that_truncation_works() {
             },
             t.desired_resolution,
         );
-        metric.set(&glean, high_res_datetime);
+        metric.set(&glean, Some(high_res_datetime));
 
         assert_eq!(
             t.expected_result,
