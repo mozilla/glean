@@ -63,11 +63,10 @@ fn main() {
 
     let ping_maker = PingMaker::new();
     let ping = ping_maker
-        .collect_string(glean.storage(), glean.get_ping_by_name("baseline").unwrap())
+        .collect_string(&glean, glean.get_ping_by_name("baseline").unwrap())
         .unwrap();
     println!("Baseline Ping:\n{}", ping);
 
-    let ping =
-        ping_maker.collect_string(glean.storage(), glean.get_ping_by_name("metrics").unwrap());
+    let ping = ping_maker.collect_string(&glean, glean.get_ping_by_name("metrics").unwrap());
     println!("Metrics Ping: {:?}", ping);
 }

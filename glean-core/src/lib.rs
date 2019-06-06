@@ -138,7 +138,7 @@ impl Glean {
         let ping_maker = PingMaker::new();
         let doc_id = Uuid::new_v4().to_string();
         let url_path = self.make_path(&ping.name, &doc_id);
-        match ping_maker.collect(self.storage(), &ping) {
+        match ping_maker.collect(self, &ping) {
             None => {
                 log::info!(
                     "No content for ping '{}', therefore no ping queued.",
