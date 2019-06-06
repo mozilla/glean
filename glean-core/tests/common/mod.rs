@@ -23,6 +23,10 @@ use ctor::ctor;
 /// ```
 #[ctor]
 fn enable_test_logging() {
+    // When testing we want all logs to go to stdout/stderr by default,
+    // without requiring each individual test to activate it.
+    // This only applies to glean-core tests, users of the main library still need to call
+    // `glean_enable_logging` of the FFI component (automatically done by the platform wrappers).
     let _ = env_logger::builder().is_test(true).try_init();
 }
 
