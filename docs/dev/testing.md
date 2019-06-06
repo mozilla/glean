@@ -28,7 +28,7 @@ Log output can be controlled via the environment variable `RUST_LOG` for the `gl
 export RUST_LOG=glean_core=debug
 ```
 
- When running tests with logging you need to tell `cargo` to not suppress output:
+When running tests with logging you need to tell `cargo` to not suppress output:
 
 ```
 cargo test -- --nocapture
