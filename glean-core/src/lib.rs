@@ -35,7 +35,6 @@ const GLEAN_SCHEMA_VERSION: u32 = 1;
 
 #[derive(Debug)]
 pub struct Glean {
-    initialized: bool,
     upload_enabled: bool,
     data_store: Database,
     core_metrics: CoreMetrics,
@@ -54,7 +53,6 @@ impl Glean {
 
         let application_id = sanitize_application_id(application_id);
         let mut glean = Self {
-            initialized: false,
             upload_enabled,
             data_store: Database::new(data_path)?,
             core_metrics: CoreMetrics::new(),
@@ -63,7 +61,6 @@ impl Glean {
             ping_registry: HashMap::new(),
         };
         glean.initialize_core_metrics()?;
-        glean.initialized = true;
         Ok(glean)
     }
 
@@ -75,11 +72,6 @@ impl Glean {
         }
         self.core_metrics.client_id.generate_if_missing(self);
         Ok(())
-    }
-
-    /// Determine whether the global Glean object is fully initialized yet.
-    pub fn is_initialized(&self) -> bool {
-        self.initialized
     }
 
     /// Set whether upload is enabled or not.

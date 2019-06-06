@@ -141,8 +141,6 @@ internal interface LibGleanFFI : Library {
 
     fun glean_initialize(data_dir: String, application_id: String, upload_enabled: Byte): Long
 
-    fun glean_is_initialized(glean_handle: Long): Byte
-
     fun glean_is_upload_enabled(glean_handle: Long): Byte
 
     fun glean_new_boolean_metric(

@@ -90,11 +90,6 @@ pub extern "C" fn glean_initialize(
 }
 
 #[no_mangle]
-pub extern "C" fn glean_is_initialized(glean_handle: u64) -> u8 {
-    GLEAN.call_infallible(glean_handle, |glean| glean.is_initialized())
-}
-
-#[no_mangle]
 pub extern "C" fn glean_is_upload_enabled(glean_handle: u64) -> u8 {
     GLEAN.call_infallible(glean_handle, |glean| glean.is_upload_enabled())
 }

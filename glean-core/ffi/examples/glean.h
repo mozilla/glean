@@ -88,8 +88,6 @@ void glean_enable_logging(void);
 
 uint64_t glean_initialize(FfiStr data_dir, FfiStr application_id, uint8_t upload_enabled);
 
-uint8_t glean_is_initialized(uint64_t glean_handle);
-
 uint8_t glean_is_upload_enabled(uint64_t glean_handle);
 
 uint64_t glean_new_boolean_metric(FfiStr category,

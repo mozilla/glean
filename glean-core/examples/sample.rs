@@ -22,8 +22,6 @@ fn main() {
     glean.register_ping_type(&PingType::new("baseline", true));
     glean.register_ping_type(&PingType::new("metrics", true));
 
-    assert!(glean.is_initialized());
-
     let local_metric: StringMetric = StringMetric::new(CommonMetricData {
         name: "local_metric".into(),
         category: "local".into(),
