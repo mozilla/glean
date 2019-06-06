@@ -17,7 +17,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Assert.assertFalse
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -33,7 +32,6 @@ class StringListMetricTypeTest {
         resetGlean()
     }
 
-    @Ignore("StringListMetricType is a stub")
     @Test
     fun `The API saves to its storage engine by first adding then setting`() {
         // Define a 'stringMetric' string metric, which will be stored in "store1"
@@ -69,7 +67,6 @@ class StringListMetricTypeTest {
         assertEquals("other3", snapshot2[2])
     }
 
-    @Ignore("StringListMetricType is a stub")
     @Test
     fun `The API saves to its storage engine by first setting then adding`() {
         // Define a 'stringMetric' string metric, which will be stored in "store1"
@@ -104,7 +101,6 @@ class StringListMetricTypeTest {
         assertEquals("added1", snapshot2[3])
     }
 
-    @Ignore("StringListMetricType is a stub")
     @Test
     fun `lists with no lifetime must not record data`() {
         // Define a string list metric which will be stored in "store1".
@@ -130,7 +126,6 @@ class StringListMetricTypeTest {
             stringListMetric.testHasValue())
     }
 
-    @Ignore("StringListMetricType is a stub")
     @Test
     fun `disabled lists must not record data`() {
         // Define a string list metric which will be stored in "store1".
@@ -156,7 +151,6 @@ class StringListMetricTypeTest {
             stringListMetric.testHasValue())
     }
 
-    @Ignore("StringListMetricType is a stub")
     @Test(expected = NullPointerException::class)
     fun `testGetValue() throws NullPointerException if nothing is stored`() {
         val stringListMetric = StringListMetricType(
@@ -169,7 +163,6 @@ class StringListMetricTypeTest {
         stringListMetric.testGetValue()
     }
 
-    @Ignore("StringListMetricType is a stub")
     @Test
     fun `The API saves to secondary pings`() {
         // Define a 'stringMetric' string metric, which will be stored in "store1" and "store2"
