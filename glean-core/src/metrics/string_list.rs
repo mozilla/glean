@@ -71,12 +71,13 @@ impl StringListMetric {
             .record_with(&self.meta, |old_value| match old_value {
                 Some(Metric::StringList(mut old_value)) => {
                     if old_value.len() == MAX_LIST_LENGTH {
-                        let msg = format!(
-                            "String list length of {} exceeds maximum of {}",
-                            old_value.len() + 1,
-                            MAX_LIST_LENGTH
-                        );
-                        record_error(glean, &self.meta, ErrorType::InvalidValue, msg);
+                        //let msg = format!(
+                        //    "String list length of {} exceeds maximum of {}",
+                        //    old_value.len() + 1,
+                        //    MAX_LIST_LENGTH
+                        //);
+                        // TODO (bug 1557828) - record the error when it doesn't deadlock.
+                        // record_error(glean, &self.meta, ErrorType::InvalidValue, msg);
                         return Metric::StringList(old_value);
                     }
                     old_value.push(value.clone());
@@ -104,9 +105,9 @@ impl StringListMetric {
 
         let value = if value.len() > MAX_LIST_LENGTH {
             let msg = format!(
-                "Individual value length {} exceeds maximum of {}",
+                "StringList length {} exceeds maximum of {}",
                 value.len(),
-                MAX_STRING_LENGTH
+                MAX_LIST_LENGTH
             );
             record_error(glean, &self.meta, ErrorType::InvalidValue, msg);
             value[0..MAX_LIST_LENGTH].to_vec()
@@ -119,9 +120,9 @@ impl StringListMetric {
             .map(|elem| {
                 if elem.len() > MAX_STRING_LENGTH {
                     let msg = format!(
-                        "String list length of {} exceeds maximum of {}",
-                        elem.len() + 1,
-                        MAX_LIST_LENGTH
+                        "Individual value length of {} exceeds maximum of {}",
+                        elem.len(),
+                        MAX_STRING_LENGTH
                     );
                     record_error(glean, &self.meta, ErrorType::InvalidValue, msg);
                     elem[0..MAX_STRING_LENGTH].to_string()
