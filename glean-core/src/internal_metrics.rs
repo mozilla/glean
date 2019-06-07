@@ -7,7 +7,7 @@ use super::{metrics::*, CommonMetricData, Lifetime};
 #[derive(Debug)]
 pub struct CoreMetrics {
     pub client_id: UuidMetric,
-    pub first_run_date: StringMetric,
+    pub first_run_date: DatetimeMetric,
 }
 
 impl CoreMetrics {
@@ -21,14 +21,16 @@ impl CoreMetrics {
                 disabled: false,
             }),
 
-            // TODO: this should really be a "DatetimeType".
-            first_run_date: StringMetric::new(CommonMetricData {
-                name: "first_run_date".into(),
-                category: "".into(),
-                send_in_pings: vec!["glean_client_info".into()],
-                lifetime: Lifetime::User,
-                disabled: false,
-            }),
+            first_run_date: DatetimeMetric::new(
+                CommonMetricData {
+                    name: "first_run_date".into(),
+                    category: "".into(),
+                    send_in_pings: vec!["glean_client_info".into()],
+                    lifetime: Lifetime::User,
+                    disabled: false,
+                },
+                TimeUnit::Day,
+            ),
         }
     }
 }
