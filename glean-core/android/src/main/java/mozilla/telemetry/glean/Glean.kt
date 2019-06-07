@@ -116,12 +116,7 @@ open class GleanInternalAPI internal constructor () {
      * Returns true if the Glean library has been initialized.
      */
     internal fun isInitialized(): Boolean {
-        if (handle == 0L) {
-            return false
-        }
-
-        val initialized = LibGleanFFI.INSTANCE.glean_is_initialized(handle)
-        return initialized.toBoolean()
+        return handle != 0L
     }
 
     /**
