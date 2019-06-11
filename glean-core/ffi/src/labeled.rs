@@ -9,6 +9,7 @@ use glean_core::{metrics::*, CommonMetricData, Lifetime};
 
 use super::handlemap_ext::HandleMapExtension;
 use super::*;
+use crate::boolean::BOOLEAN_METRICS;
 use crate::counter::COUNTER_METRICS;
 use crate::string::STRING_METRICS;
 

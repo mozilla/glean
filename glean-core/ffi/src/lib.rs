@@ -14,6 +14,7 @@ use lazy_static::lazy_static;
 
 use glean_core::{metrics::*, CommonMetricData, Glean, Lifetime};
 
+mod boolean;
 mod counter;
 mod handlemap_ext;
 mod labeled;
@@ -26,7 +27,6 @@ pub use labeled::*;
 lazy_static! {
     static ref GLEAN: ConcurrentHandleMap<Glean> = ConcurrentHandleMap::new();
     static ref PING_TYPES: ConcurrentHandleMap<PingType> = ConcurrentHandleMap::new();
-    static ref BOOLEAN_METRICS: ConcurrentHandleMap<BooleanMetric> = ConcurrentHandleMap::new();
     static ref DATETIME_METRICS: ConcurrentHandleMap<DatetimeMetric> = ConcurrentHandleMap::new();
 }
 
@@ -136,73 +136,6 @@ pub extern "C" fn glean_test_has_ping_type(glean_handle: u64, ping_name: FfiStr)
 pub extern "C" fn glean_register_ping_type(glean_handle: u64, ping_type_handle: u64) {
     PING_TYPES.call_infallible(ping_type_handle, |ping_type| {
         GLEAN.call_infallible_mut(glean_handle, |glean| glean.register_ping_type(ping_type))
-    })
-}
-
-#[no_mangle]
-pub extern "C" fn glean_new_boolean_metric(
-    category: FfiStr,
-    name: FfiStr,
-    send_in_pings: RawStringArray,
-    send_in_pings_len: i32,
-    lifetime: i32,
-    disabled: u8,
-) -> u64 {
-    BOOLEAN_METRICS.insert_with_log(|| {
-        let send_in_pings = unsafe { from_raw_string_array(send_in_pings, send_in_pings_len) };
-        let lifetime = Lifetime::try_from(lifetime)?;
-
-        Ok(BooleanMetric::new(CommonMetricData {
-            name: name.into_string(),
-            category: category.into_string(),
-            send_in_pings,
-            lifetime,
-            disabled: disabled != 0,
-        }))
-    })
-}
-
-#[no_mangle]
-pub extern "C" fn glean_boolean_should_record(glean_handle: u64, metric_id: u64) -> u8 {
-    GLEAN.call_infallible(glean_handle, |glean| {
-        BOOLEAN_METRICS.call_infallible(metric_id, |metric| metric.should_record(&glean))
-    })
-}
-
-#[no_mangle]
-pub extern "C" fn glean_boolean_set(glean_handle: u64, metric_id: u64, value: u8) {
-    GLEAN.call_infallible(glean_handle, |glean| {
-        BOOLEAN_METRICS.call_infallible(metric_id, |metric| {
-            metric.set(glean, value != 0);
-        })
-    })
-}
-
-#[no_mangle]
-pub extern "C" fn glean_boolean_test_has_value(
-    glean_handle: u64,
-    metric_id: u64,
-    storage_name: FfiStr,
-) -> u8 {
-    GLEAN.call_infallible(glean_handle, |glean| {
-        BOOLEAN_METRICS.call_infallible(metric_id, |metric| {
-            metric
-                .test_get_value(glean, storage_name.as_str())
-                .is_some()
-        })
-    })
-}
-
-#[no_mangle]
-pub extern "C" fn glean_boolean_test_get_value(
-    glean_handle: u64,
-    metric_id: u64,
-    storage_name: FfiStr,
-) -> u8 {
-    GLEAN.call_infallible(glean_handle, |glean| {
-        BOOLEAN_METRICS.call_infallible(metric_id, |metric| {
-            metric.test_get_value(glean, storage_name.as_str()).unwrap()
-        })
     })
 }
 
@@ -333,6 +266,5 @@ pub extern "C" fn glean_ping_collect(glean_handle: u64, ping_type_handle: u64) -
 
 define_handle_map_deleter!(GLEAN, glean_destroy_glean);
 define_handle_map_deleter!(PING_TYPES, glean_destroy_ping_type);
-define_handle_map_deleter!(BOOLEAN_METRICS, glean_destroy_boolean_metric);
 define_handle_map_deleter!(DATETIME_METRICS, glean_destroy_datetime_metric);
 define_string_destructor!(glean_str_free);
