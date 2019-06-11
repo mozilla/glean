@@ -5,6 +5,14 @@
 #![allow(clippy::new_without_default)]
 #![allow(clippy::redundant_closure)]
 
+//! Glean is a modern approach for recording and sending Telemetry data.
+//!
+//! It's in use at Mozilla for their mobile products.
+//!
+//! All documentation can be found online:
+//!
+//! ## [The Glean Book](https://mozilla.github.io/glean)
+
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 
