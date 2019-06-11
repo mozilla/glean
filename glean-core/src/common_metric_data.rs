@@ -56,7 +56,7 @@ pub struct CommonMetricData {
     pub name: String,
     /// The metric's category.
     pub category: String,
-    /// List of pings to include this metric in.
+    /// List of ping names to include this metric in.
     pub send_in_pings: Vec<String>,
     /// The metric's lifetime.
     pub lifetime: Lifetime,
