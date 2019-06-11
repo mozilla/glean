@@ -6,7 +6,7 @@ use std::convert::TryFrom;
 
 use crate::error::{Error, ErrorKind};
 
-/// Different lifetimes for metrics.
+/// The supported metrics' lifetimes.
 ///
 /// A metric's lifetime determines when its stored data gets reset.
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]

@@ -11,19 +11,19 @@ use crate::error::{Error, ErrorKind};
 /// metric types (e.g. DatetimeMetric).
 #[derive(Copy, Clone, Debug, Deserialize, Serialize)]
 pub enum TimeUnit {
-    /// Format to nanosecond precision.
+    /// Truncate to nanosecond precision.
     Nanosecond,
-    /// Format to microsecond precision.
+    /// Truncate to microsecond precision.
     Microsecond,
-    /// Format to millisecond precision.
+    /// Truncate to millisecond precision.
     Millisecond,
-    /// Format to second precision.
+    /// Truncate to second precision.
     Second,
-    /// Format to minute precision.
+    /// Truncate to minute precision.
     Minute,
-    /// Format to hour precision.
+    /// Truncate to hour precision.
     Hour,
-    /// Format to day precision.
+    /// Truncate to day precision.
     Day,
 }
 

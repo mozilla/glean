@@ -50,7 +50,7 @@ impl StorageManager {
     ///
     /// ## Return value
     ///
-    /// Returns a JSON string of the stored data.
+    /// Returns the stored data in a string encoded as JSON.
     /// Returns `None` if no data for the store exists.
     pub fn snapshot(
         &self,

@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-//! Ping collection, assembly & sending.
+//! Ping collection, assembly & submission.
 
 use std::fs::{create_dir_all, File};
 use std::io::Write;
@@ -43,7 +43,7 @@ impl Default for PingMaker {
 }
 
 impl PingMaker {
-    /// Create a new PingMaker
+    /// Create a new PingMaker.
     pub fn new() -> Self {
         Self
     }
@@ -172,7 +172,8 @@ impl PingMaker {
         }))
     }
 
-    /// Collect a snapshot for the given ping from storage and attach required meta information, returning as a string containing JSON.
+    /// Collect a snapshot for the given ping from storage and attach required meta information,
+    /// returning it as a string containing JSON.
     ///
     /// ## Arguments
     ///
@@ -181,7 +182,7 @@ impl PingMaker {
     ///
     /// ## Return value
     ///
-    /// Returns a fully assembled JSON string of the ping payload.
+    /// Returns a fully assembled ping payload in a string encoded as JSON.
     /// If there is no data stored for the ping, `None` is returned.
     pub fn collect_string(&self, glean: &Glean, ping: &PingType) -> Option<String> {
         self.collect(glean, ping)
