@@ -18,6 +18,7 @@ mod counter;
 mod handlemap_ext;
 mod labeled;
 mod string;
+mod string_list;
 
 use handlemap_ext::HandleMapExtension;
 pub use labeled::*;
@@ -27,8 +28,6 @@ lazy_static! {
     static ref PING_TYPES: ConcurrentHandleMap<PingType> = ConcurrentHandleMap::new();
     static ref BOOLEAN_METRICS: ConcurrentHandleMap<BooleanMetric> = ConcurrentHandleMap::new();
     static ref DATETIME_METRICS: ConcurrentHandleMap<DatetimeMetric> = ConcurrentHandleMap::new();
-    static ref STRING_LIST_METRICS: ConcurrentHandleMap<StringListMetric> =
-        ConcurrentHandleMap::new();
 }
 
 type RawStringArray = *const *const c_char;
@@ -154,30 +153,6 @@ pub extern "C" fn glean_new_boolean_metric(
         let lifetime = Lifetime::try_from(lifetime)?;
 
         Ok(BooleanMetric::new(CommonMetricData {
-            name: name.into_string(),
-            category: category.into_string(),
-            send_in_pings,
-            lifetime,
-            disabled: disabled != 0,
-        }))
-    })
-}
-
-
-#[no_mangle]
-pub extern "C" fn glean_new_string_list_metric(
-    category: FfiStr,
-    name: FfiStr,
-    send_in_pings: RawStringArray,
-    send_in_pings_len: i32,
-    lifetime: i32,
-    disabled: u8,
-) -> u64 {
-    STRING_LIST_METRICS.insert_with_log(|| {
-        let send_in_pings = unsafe { from_raw_string_array(send_in_pings, send_in_pings_len) };
-        let lifetime = Lifetime::try_from(lifetime)?;
-
-        Ok(StringListMetric::new(CommonMetricData {
             name: name.into_string(),
             category: category.into_string(),
             send_in_pings,
@@ -341,74 +316,6 @@ pub extern "C" fn glean_datetime_test_get_value_as_string(
 
 // *** End of the Datetime FFI part ***
 
-// *** Start of the StringList FFI part ***
-
-#[no_mangle]
-pub extern "C" fn glean_string_list_should_record(glean_handle: u64, metric_id: u64) -> u8 {
-    GLEAN.call_infallible(glean_handle, |glean| {
-        STRING_LIST_METRICS.call_infallible(metric_id, |metric| metric.should_record(&glean))
-    })
-}
-
-#[no_mangle]
-pub extern "C" fn glean_string_list_add(glean_handle: u64, metric_id: u64, value: FfiStr) {
-    GLEAN.call_infallible(glean_handle, |glean| {
-        STRING_LIST_METRICS.call_infallible(metric_id, |metric| {
-            let value = value.into_string();
-            metric.add(glean, value);
-        })
-    })
-}
-
-#[no_mangle]
-pub extern "C" fn glean_string_list_set(
-    glean_handle: u64,
-    metric_id: u64,
-    values: RawStringArray,
-    values_len: i32,
-) {
-    GLEAN.call_infallible(glean_handle, |glean| {
-        STRING_LIST_METRICS.call_infallible(metric_id, |metric| {
-            let values = unsafe { from_raw_string_array(values, values_len) };
-            metric.set(glean, values);
-        })
-    })
-}
-
-#[no_mangle]
-pub extern "C" fn glean_string_list_test_has_value(
-    glean_handle: u64,
-    metric_id: u64,
-    storage_name: FfiStr,
-) -> u8 {
-    GLEAN.call_infallible(glean_handle, |glean| {
-        STRING_LIST_METRICS.call_infallible(metric_id, |metric| {
-            metric
-                .test_get_value(glean, storage_name.as_str())
-                .is_some()
-        })
-    })
-}
-
-#[no_mangle]
-pub extern "C" fn glean_string_list_test_get_value_as_json_string(
-    glean_handle: u64,
-    metric_id: u64,
-    storage_name: FfiStr,
-) -> *mut c_char {
-    GLEAN.call_infallible(glean_handle, |glean| {
-        // Use get_u64 so we can coerce to the proper type for the cstring return.
-        let res: glean_core::Result<String> = STRING_LIST_METRICS.get_u64(metric_id, |metric| {
-            Ok(metric
-                .test_get_value_as_json_string(glean, storage_name.as_str())
-                .unwrap())
-        });
-        res.unwrap()
-    })
-}
-
-// *** End of the StringList FFI part ***
-
 #[no_mangle]
 pub extern "C" fn glean_ping_collect(glean_handle: u64, ping_type_handle: u64) -> *mut c_char {
     GLEAN.call_infallible(glean_handle, |glean| {
@@ -427,6 +334,5 @@ pub extern "C" fn glean_ping_collect(glean_handle: u64, ping_type_handle: u64) -
 define_handle_map_deleter!(GLEAN, glean_destroy_glean);
 define_handle_map_deleter!(PING_TYPES, glean_destroy_ping_type);
 define_handle_map_deleter!(BOOLEAN_METRICS, glean_destroy_boolean_metric);
-define_handle_map_deleter!(STRING_LIST_METRICS, glean_destroy_string_list_metric);
 define_handle_map_deleter!(DATETIME_METRICS, glean_destroy_datetime_metric);
 define_string_destructor!(glean_str_free);
