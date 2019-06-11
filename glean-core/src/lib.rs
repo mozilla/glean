@@ -2,8 +2,17 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+#![deny(missing_docs)]
 #![allow(clippy::new_without_default)]
 #![allow(clippy::redundant_closure)]
+
+//! Glean is a modern approach for recording and sending Telemetry data.
+//!
+//! It's in use at Mozilla for their mobile products.
+//!
+//! All documentation can be found online:
+//!
+//! ## [The Glean Book](https://mozilla.github.io/glean)
 
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
@@ -34,6 +43,35 @@ use crate::util::{local_now_with_offset, sanitize_application_id};
 
 const GLEAN_SCHEMA_VERSION: u32 = 1;
 
+/// The object holding meta information about a Glean instance.
+///
+/// ## Example
+///
+/// Create a new Glean instance, register a ping, record a simple counter and then send the final
+/// ping.
+///
+/// ```rust,no_run
+/// # use glean_core::{Glean, CommonMetricData, metrics::*};
+/// let mut glean = Glean::new("/tmp/glean", "glean.sample.app", true).unwrap();
+/// let ping = PingType::new("baseline", true);
+/// glean.register_ping_type(&ping);
+///
+/// let call_counter: CounterMetric = CounterMetric::new(CommonMetricData {
+///     name: "calls".into(),
+///     category: "local".into(),
+///     send_in_pings: vec!["baseline".into()],
+///     ..Default::default()
+/// });
+///
+/// call_counter.add(&glean, 1);
+///
+/// glean.send_ping(&ping, true).unwrap();
+/// ```
+///
+/// ## Note
+///
+/// In specific language bindings, this is usually wrapped in a singleton and all metric recording goes to a single instance of this object.
+/// In the Rust core, it is possible to create multiple instances, which is used in testing.
 #[derive(Debug)]
 pub struct Glean {
     upload_enabled: bool,
@@ -46,7 +84,7 @@ pub struct Glean {
 }
 
 impl Glean {
-    /// Initialize the global Glean object.
+    /// Create and initialize a new Glean object.
     ///
     /// This will create the necessary directories and files in `data_path`.
     /// This will also initialize the core metrics.
@@ -89,18 +127,32 @@ impl Glean {
         self.upload_enabled
     }
 
+    /// Get the application ID as specified on instantiation.
     pub fn get_application_id(&self) -> &str {
         &self.application_id
     }
 
+    /// Get the data path of this instance.
     pub fn get_data_path(&self) -> &Path {
         &self.data_path
     }
 
+    /// Get a handle to the database.
     pub fn storage(&self) -> &Database {
         &self.data_store
     }
 
+    /// Take a snapshot for the given store and optionally clear it.
+    ///
+    /// ## Arguments
+    ///
+    /// * `store_name` - The store to snapshot.
+    /// * `clear_store` - Whether to clear the store after snapshotting.
+    ///
+    /// ## Return value
+    ///
+    /// Returns the snapshot in a string encoded as JSON.
+    /// If the snapshot is empty, it returns an empty string.
     pub fn snapshot(&mut self, store_name: &str, clear_store: bool) -> String {
         StorageManager
             .snapshot(&self.storage(), store_name, clear_store)
@@ -171,10 +223,17 @@ impl Glean {
         }
     }
 
+    /// Get a [`PingType`](metrics/struct.PingType.html) by name.
+    ///
+    /// ## Return value
+    ///
+    /// Returns the `PingType` if a ping of the given name was registered before.
+    /// Returns `None` otherwise.
     pub fn get_ping_by_name(&self, ping_name: &str) -> Option<&PingType> {
         self.ping_registry.get(ping_name)
     }
 
+    /// Register a new [`PingType`](metrics/struct.PingType.html).
     pub fn register_ping_type(&mut self, ping: &PingType) {
         if self.ping_registry.contains_key(&ping.name) {
             log::error!("Duplicate ping named {}", ping.name)
