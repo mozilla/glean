@@ -67,6 +67,11 @@ const GLEAN_SCHEMA_VERSION: u32 = 1;
 ///
 /// glean.send_ping(&ping, true).unwrap();
 /// ```
+///
+/// ## Note
+///
+/// In specific language bindings, this is usually wrapped in a singleton and all metric recording goes to a single instance of this object.
+/// In the Rust core, it is possible to create multiple instances, which is used in testing.
 #[derive(Debug)]
 pub struct Glean {
     upload_enabled: bool,
