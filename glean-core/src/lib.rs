@@ -34,6 +34,30 @@ use crate::util::{local_now_with_offset, sanitize_application_id};
 
 const GLEAN_SCHEMA_VERSION: u32 = 1;
 
+/// The object holding meta information about a Glean instance.
+///
+/// ## Example
+///
+/// Create a new Glean instance, register a ping, record a simple counter and then send the final
+/// ping.
+///
+/// ```rust,no_run
+/// # use glean_core::{Glean, CommonMetricData, metrics::*};
+/// let mut glean = Glean::new("/tmp/glean", "glean.sample.app", true).unwrap();
+/// let ping = PingType::new("baseline", true);
+/// glean.register_ping_type(&ping);
+///
+/// let call_counter: CounterMetric = CounterMetric::new(CommonMetricData {
+///     name: "calls".into(),
+///     category: "local".into(),
+///     send_in_pings: vec!["baseline".into()],
+///     ..Default::default()
+/// });
+///
+/// call_counter.add(&glean, 1);
+///
+/// glean.send_ping(&ping, true).unwrap();
+/// ```
 #[derive(Debug)]
 pub struct Glean {
     upload_enabled: bool,
