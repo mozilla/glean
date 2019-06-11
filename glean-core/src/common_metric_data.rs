@@ -6,6 +6,9 @@ use std::convert::TryFrom;
 
 use crate::error::{Error, ErrorKind};
 
+/// Different lifetimes for metrics.
+///
+/// A metric's lifetime determines when its stored data gets reset.
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum Lifetime {
     /// The metric is reset with each sent ping
@@ -23,6 +26,7 @@ impl Default for Lifetime {
 }
 
 impl Lifetime {
+    /// String representation of the lifetime.
     pub fn as_str(self) -> &'static str {
         match self {
             Lifetime::Ping => "ping",
@@ -45,17 +49,25 @@ impl TryFrom<i32> for Lifetime {
     }
 }
 
+/// The common set of data shared across all different metric types.
 #[derive(Default, Debug, Clone)]
 pub struct CommonMetricData {
+    /// The metric's name.
     pub name: String,
+    /// The metric's category.
     pub category: String,
+    /// List of pings to include this metric in.
     pub send_in_pings: Vec<String>,
+    /// The metric's lifetime.
     pub lifetime: Lifetime,
+    /// Whether or not the metric is disabled.
+    ///
+    /// Disabled metrics are never recorded.
     pub disabled: bool,
 }
 
 impl CommonMetricData {
-    /// Create a new metadata object
+    /// Create a new metadata object.
     pub fn new<A: Into<String>, B: Into<String>, C: Into<String>>(
         category: A,
         name: B,
@@ -69,6 +81,10 @@ impl CommonMetricData {
         }
     }
 
+    /// The metric's unique identifier.
+    ///
+    /// If `category` is empty, it's just the name.
+    /// Otherwise, it's the combination of the metric's `category` and `name`.
     pub fn identifier(&self) -> String {
         if self.category.is_empty() {
             self.name.clone()
@@ -77,10 +93,12 @@ impl CommonMetricData {
         }
     }
 
+    /// Whether this metric should be recorded.
     pub fn should_record(&self) -> bool {
         !self.disabled
     }
 
+    /// The list of storages this metric should be recorded into.
     pub fn storage_names(&self) -> &[String] {
         &self.send_in_pings
     }

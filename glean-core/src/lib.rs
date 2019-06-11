@@ -46,7 +46,7 @@ pub struct Glean {
 }
 
 impl Glean {
-    /// Initialize the global Glean object.
+    /// Create and initialize a new Glean object.
     ///
     /// This will create the necessary directories and files in `data_path`.
     /// This will also initialize the core metrics.
@@ -89,18 +89,32 @@ impl Glean {
         self.upload_enabled
     }
 
+    /// Get the application ID as specified on instantiation.
     pub fn get_application_id(&self) -> &str {
         &self.application_id
     }
 
+    /// Get the data path of this instance.
     pub fn get_data_path(&self) -> &Path {
         &self.data_path
     }
 
+    /// Get a handle to the database.
     pub fn storage(&self) -> &Database {
         &self.data_store
     }
 
+    /// Take a snapshot for the givven store and optionally clear it.
+    ///
+    /// ## Arguments
+    ///
+    /// * `store_name` - The store to snapshot.
+    /// * `clear_store` - Whether to clear the store after snapshotting.
+    ///
+    /// ## Return value
+    ///
+    /// Returns the snapshot as a JSON string.
+    /// If the snapshot is empty, it returns an empty string.
     pub fn snapshot(&mut self, store_name: &str, clear_store: bool) -> String {
         StorageManager
             .snapshot(&self.storage(), store_name, clear_store)
@@ -171,10 +185,17 @@ impl Glean {
         }
     }
 
+    /// Get a [`PingType`](metrics/struct.PingType.html) by name.
+    ///
+    /// ## Return value
+    ///
+    /// Returns the `PingType` if a ping of the given name was registered before.
+    /// Returns `None` otherwise.
     pub fn get_ping_by_name(&self, ping_name: &str) -> Option<&PingType> {
         self.ping_registry.get(ping_name)
     }
 
+    /// Register a new [`PingType`](metrics/struct.PingType.html).
     pub fn register_ping_type(&mut self, ping: &PingType) {
         if self.ping_registry.contains_key(&ping.name) {
             log::error!("Duplicate ping named {}", ping.name)
