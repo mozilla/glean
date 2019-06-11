@@ -23,7 +23,6 @@ mod string;
 mod string_list;
 
 use handlemap_ext::HandleMapExtension;
-pub use labeled::*;
 use ping_type::PING_TYPES;
 
 lazy_static! {
