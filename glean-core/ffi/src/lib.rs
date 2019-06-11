@@ -14,6 +14,7 @@ use lazy_static::lazy_static;
 
 use glean_core::{metrics::*, CommonMetricData, Glean, Lifetime};
 
+mod counter;
 mod handlemap_ext;
 mod labeled;
 
@@ -24,7 +25,6 @@ lazy_static! {
     static ref GLEAN: ConcurrentHandleMap<Glean> = ConcurrentHandleMap::new();
     static ref PING_TYPES: ConcurrentHandleMap<PingType> = ConcurrentHandleMap::new();
     static ref BOOLEAN_METRICS: ConcurrentHandleMap<BooleanMetric> = ConcurrentHandleMap::new();
-    static ref COUNTER_METRICS: ConcurrentHandleMap<CounterMetric> = ConcurrentHandleMap::new();
     static ref DATETIME_METRICS: ConcurrentHandleMap<DatetimeMetric> = ConcurrentHandleMap::new();
     static ref STRING_METRICS: ConcurrentHandleMap<StringMetric> = ConcurrentHandleMap::new();
     static ref STRING_LIST_METRICS: ConcurrentHandleMap<StringListMetric> =
@@ -206,73 +206,6 @@ pub extern "C" fn glean_new_string_list_metric(
             lifetime,
             disabled: disabled != 0,
         }))
-    })
-}
-
-#[no_mangle]
-pub extern "C" fn glean_new_counter_metric(
-    category: FfiStr,
-    name: FfiStr,
-    send_in_pings: RawStringArray,
-    send_in_pings_len: i32,
-    lifetime: i32,
-    disabled: u8,
-) -> u64 {
-    COUNTER_METRICS.insert_with_log(|| {
-        let send_in_pings = unsafe { from_raw_string_array(send_in_pings, send_in_pings_len) };
-        let lifetime = Lifetime::try_from(lifetime)?;
-
-        Ok(CounterMetric::new(CommonMetricData {
-            name: name.into_string(),
-            category: category.into_string(),
-            send_in_pings,
-            lifetime,
-            disabled: disabled != 0,
-        }))
-    })
-}
-
-#[no_mangle]
-pub extern "C" fn glean_counter_should_record(glean_handle: u64, metric_id: u64) -> u8 {
-    GLEAN.call_infallible(glean_handle, |glean| {
-        COUNTER_METRICS.call_infallible(metric_id, |metric| metric.should_record(&glean))
-    })
-}
-
-#[no_mangle]
-pub extern "C" fn glean_counter_add(glean_handle: u64, metric_id: u64, amount: i32) {
-    GLEAN.call_infallible(glean_handle, |glean| {
-        COUNTER_METRICS.call_infallible(metric_id, |metric| {
-            metric.add(glean, amount);
-        })
-    })
-}
-
-#[no_mangle]
-pub extern "C" fn glean_counter_test_has_value(
-    glean_handle: u64,
-    metric_id: u64,
-    storage_name: FfiStr,
-) -> u8 {
-    GLEAN.call_infallible(glean_handle, |glean| {
-        COUNTER_METRICS.call_infallible(metric_id, |metric| {
-            metric
-                .test_get_value(glean, storage_name.as_str())
-                .is_some()
-        })
-    })
-}
-
-#[no_mangle]
-pub extern "C" fn glean_counter_test_get_value(
-    glean_handle: u64,
-    metric_id: u64,
-    storage_name: FfiStr,
-) -> i32 {
-    GLEAN.call_infallible(glean_handle, |glean| {
-        COUNTER_METRICS.call_infallible(metric_id, |metric| {
-            metric.test_get_value(glean, storage_name.as_str()).unwrap()
-        })
     })
 }
 
@@ -564,6 +497,5 @@ define_handle_map_deleter!(PING_TYPES, glean_destroy_ping_type);
 define_handle_map_deleter!(BOOLEAN_METRICS, glean_destroy_boolean_metric);
 define_handle_map_deleter!(STRING_METRICS, glean_destroy_string_metric);
 define_handle_map_deleter!(STRING_METRICS, glean_destroy_string_list_metric);
-define_handle_map_deleter!(COUNTER_METRICS, glean_destroy_counter_metric);
 define_handle_map_deleter!(DATETIME_METRICS, glean_destroy_datetime_metric);
 define_string_destructor!(glean_str_free);
