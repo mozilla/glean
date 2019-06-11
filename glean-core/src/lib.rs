@@ -137,7 +137,7 @@ impl Glean {
         &self.data_store
     }
 
-    /// Take a snapshot for the givven store and optionally clear it.
+    /// Take a snapshot for the given store and optionally clear it.
     ///
     /// ## Arguments
     ///
