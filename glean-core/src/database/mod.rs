@@ -147,13 +147,13 @@ impl Database {
 
     /// Records the provided value, with the given lifetime, after
     /// applying a transformation function.
-    pub fn record_with<F>(&self, data: &CommonMetricData, transform: F)
+    pub fn record_with<F>(&self, data: &CommonMetricData, mut transform: F)
     where
-        F: Fn(Option<Metric>) -> Metric,
+        F: FnMut(Option<Metric>) -> Metric,
     {
         let name = data.identifier();
         for ping_name in data.storage_names() {
-            self.record_per_lifetime_with(data.lifetime, ping_name, &name, &transform);
+            self.record_per_lifetime_with(data.lifetime, ping_name, &name, &mut transform);
         }
     }
 
@@ -164,9 +164,9 @@ impl Database {
         lifetime: Lifetime,
         storage_name: &str,
         key: &str,
-        transform: F,
+        mut transform: F,
     ) where
-        F: Fn(Option<Metric>) -> Metric,
+        F: FnMut(Option<Metric>) -> Metric,
     {
         let final_key = format!("{}#{}", storage_name, key);
 

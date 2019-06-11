@@ -66,25 +66,29 @@ impl StringListMetric {
             value
         };
 
+        let mut error = None;
         glean
             .storage()
             .record_with(&self.meta, |old_value| match old_value {
                 Some(Metric::StringList(mut old_value)) => {
                     if old_value.len() == MAX_LIST_LENGTH {
-                        //let msg = format!(
-                        //    "String list length of {} exceeds maximum of {}",
-                        //    old_value.len() + 1,
-                        //    MAX_LIST_LENGTH
-                        //);
-                        // TODO (bug 1557828) - record the error when it doesn't deadlock.
-                        // record_error(glean, &self.meta, ErrorType::InvalidValue, msg);
-                        return Metric::StringList(old_value);
+                        let msg = format!(
+                            "String list length of {} exceeds maximum of {}",
+                            old_value.len() + 1,
+                            MAX_LIST_LENGTH
+                        );
+                        error = Some(msg);
+                    } else {
+                        old_value.push(value.clone());
                     }
-                    old_value.push(value.clone());
                     Metric::StringList(old_value)
                 }
                 _ => Metric::StringList(vec![value.clone()]),
-            })
+            });
+
+        if let Some(msg) = error {
+            record_error(glean, &self.meta, ErrorType::InvalidValue, msg);
+        }
     }
 
     /// Set to a specific list of strings.

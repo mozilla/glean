@@ -193,9 +193,11 @@ fn string_lists_dont_exceed_max_items() {
     metric.add(&glean, "test_string");
     assert_eq!(expected, metric.test_get_value(&glean, "store1").unwrap());
 
-    // TODO (bug 1557828) - Uncomment when the error starts being recorded again.
     // Ensure we recorded the error.
-    // assert_eq!(Ok(1), test_get_num_recorded_errors(&glean, metric.meta(), ErrorType::InvalidValue, None));
+    assert_eq!(
+        Ok(1),
+        test_get_num_recorded_errors(&glean, metric.meta(), ErrorType::InvalidValue, None)
+    );
 
     // Clear the metric.
     metric.set(&glean, vec![]);
@@ -209,9 +211,8 @@ fn string_lists_dont_exceed_max_items() {
     metric.set(&glean, too_many);
     assert_eq!(expected, metric.test_get_value(&glean, "store1").unwrap());
 
-    // TODO (bug 1557828) - Increment by 1 when the previous error starts being recorded again.
     assert_eq!(
-        Ok(1),
+        Ok(2),
         test_get_num_recorded_errors(&glean, metric.meta(), ErrorType::InvalidValue, None)
     );
 }
