@@ -4,6 +4,8 @@
 
 #![allow(non_upper_case_globals)]
 
+//! Storage snapshotting.
+
 use std::collections::HashMap;
 
 use serde_json::{json, Value as JsonValue};
@@ -12,6 +14,7 @@ use crate::database::Database;
 use crate::metrics::Metric;
 use crate::Lifetime;
 
+/// Snapshot metrics from the underlying database.
 pub struct StorageManager;
 
 /// Labeled metrics are stored as `<metric name>/<label>`.
@@ -37,6 +40,18 @@ fn snapshot_labeled_metrics(
 }
 
 impl StorageManager {
+    /// Snapshot the given store and optionally clear it.
+    ///
+    /// ## Arguments
+    ///
+    /// * `storage` - the database to read from.
+    /// * `store_name` - the store to snapshot.
+    /// * `clear_store` - whether to clear the data after snapshotting.
+    ///
+    /// ## Return value
+    ///
+    /// Returns a JSON string of the stored data.
+    /// Returns `None` if no data for the store exists.
     pub fn snapshot(
         &self,
         storage: &Database,
@@ -47,6 +62,18 @@ impl StorageManager {
             .map(|data| ::serde_json::to_string_pretty(&data).unwrap())
     }
 
+    /// Snapshot the given store and optionally clear it.
+    ///
+    /// ## Arguments
+    ///
+    /// * `storage` - the database to read from.
+    /// * `store_name` - the store to snapshot.
+    /// * `clear_store` - whether to clear the data after snapshotting.
+    ///
+    /// ## Return value
+    ///
+    /// Returns a JSON representation of the stored data.
+    /// Returns `None` if no data for the store exists.
     pub fn snapshot_as_json(
         &self,
         storage: &Database,
@@ -88,9 +115,9 @@ impl StorageManager {
     ///
     /// ## Arguments:
     ///
-    /// * `storage`: The database to get data from.
-    /// * `store_name`: The store name to look into.
-    /// * `metric_id`: The full metric identifier.
+    /// * `storage` - The database to get data from.
+    /// * `store_name` - The store name to look into.
+    /// * `metric_id` - The full metric identifier.
     ///
     /// ## Return value:
     ///
