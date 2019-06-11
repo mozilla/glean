@@ -63,7 +63,46 @@ internal interface LibGleanFFI : Library {
     // String will work but either force us to leak them, or cause us to corrupt the heap (when we
     // free them).
 
+    // Glean top-level API
+
+    fun glean_initialize(data_dir: String, application_id: String, upload_enabled: Byte): Long
+
+    fun glean_destroy_glean(handle: Long, error: RustError.ByReference)
+
     fun glean_enable_logging()
+
+    fun glean_set_upload_enabled(glean_handle: Long, flag: Byte)
+
+    fun glean_is_upload_enabled(glean_handle: Long): Byte
+
+    fun glean_ping_collect(glean_handle: Long, ping_type_handle: Long): Pointer?
+
+    fun glean_send_ping(glean_handle: Long, ping_type_handle: Long, log_ping: Byte): Byte
+
+    fun glean_send_ping_by_name(glean_handle: Long, ping_name: String, log_ping: Byte): Byte
+
+    // Ping type
+
+    fun glean_new_ping_type(name: String, include_client_id: Byte): Long
+
+    fun glean_destroy_ping_type(handle: Long, error: RustError.ByReference)
+
+    fun glean_register_ping_type(glean_handle: Long, ping_type_id: Long)
+
+    fun glean_test_has_ping_type(glean_handle: Long, name: String): Byte
+
+    // Boolean
+
+    fun glean_new_boolean_metric(
+        category: String,
+        name: String,
+        send_in_pings: StringArray,
+        send_in_pings_len: Int,
+        lifetime: Int,
+        disabled: Byte
+    ): Long
+
+    fun glean_destroy_boolean_metric(handle: Long, error: RustError.ByReference)
 
     fun glean_boolean_set(glean_handle: Long, metric_id: Long, value: Byte)
 
@@ -73,6 +112,19 @@ internal interface LibGleanFFI : Library {
 
     fun glean_boolean_test_has_value(glean_handle: Long, metric_id: Long, storage_name: String): Byte
 
+    // Counter
+
+    fun glean_new_counter_metric(
+        category: String,
+        name: String,
+        send_in_pings: StringArray,
+        send_in_pings_len: Int,
+        lifetime: Int,
+        disabled: Byte
+    ): Long
+
+    fun glean_destroy_counter_metric(handle: Long, error: RustError.ByReference)
+
     fun glean_counter_add(glean_handle: Long, metric_id: Long, amount: Int)
 
     fun glean_counter_should_record(glean_handle: Long, metric_id: Long): Byte
@@ -80,6 +132,41 @@ internal interface LibGleanFFI : Library {
     fun glean_counter_test_get_value(glean_handle: Long, metric_id: Long, storage_name: String): Int
 
     fun glean_counter_test_has_value(glean_handle: Long, metric_id: Long, storage_name: String): Byte
+
+    // String
+
+    fun glean_new_string_metric(
+        category: String,
+        name: String,
+        send_in_pings: StringArray,
+        send_in_pings_len: Int,
+        lifetime: Int,
+        disabled: Byte
+    ): Long
+
+    fun glean_destroy_string_metric(handle: Long, error: RustError.ByReference)
+
+    fun glean_string_set(glean_handle: Long, metric_id: Long, value: String)
+
+    fun glean_string_should_record(glean_handle: Long, metric_id: Long): Byte
+
+    fun glean_string_test_get_value(glean_handle: Long, metric_id: Long, storage_name: String): Pointer?
+
+    fun glean_string_test_has_value(glean_handle: Long, metric_id: Long, storage_name: String): Byte
+
+    // Datetime
+
+    fun glean_new_datetime_metric(
+        category: String,
+        name: String,
+        send_in_pings: StringArray,
+        send_in_pings_len: Int,
+        lifetime: Int,
+        disabled: Byte,
+        time_unit: Int
+    ): Long
+
+    fun glean_destroy_datetime_metric(handle: Long, error: RustError.ByReference)
 
     fun glean_datetime_set(
         glean_handle: Long,
@@ -100,6 +187,31 @@ internal interface LibGleanFFI : Library {
 
     fun glean_datetime_test_get_value_as_string(glean_handle: Long, metric_id: Long, storage_name: String): Pointer?
 
+    // String list
+
+    fun glean_new_string_list_metric(
+        category: String,
+        name: String,
+        send_in_pings: StringArray,
+        send_in_pings_len: Int,
+        lifetime: Int,
+        disabled: Byte
+    ): Long
+
+    fun glean_destroy_string_list_metric(handle: Long, error: RustError.ByReference)
+
+    fun glean_string_list_should_record(glean_handle: Long, metric_id: Long): Byte
+
+    fun glean_string_list_add(glean_handle: Long, metric_id: Long, value: String)
+
+    fun glean_string_list_set(glean_handle: Long, metric_id: Long, values: StringArray, values_len: Int)
+
+    fun glean_string_list_test_has_value(glean_handle: Long, metric_id: Long, storage_name: String): Byte
+
+    fun glean_string_list_test_get_value_as_json_string(glean_handle: Long, metric_id: Long, storage_name: String): Pointer?
+
+    // Labeld Counter
+
     fun glean_new_labeled_counter_metric(
         category: String,
         name: String,
@@ -112,6 +224,8 @@ internal interface LibGleanFFI : Library {
     ): Long
 
     fun glean_labeled_counter_metric_get(glean_handle: Long, handle: Long, label: String): Long
+
+    // Labeled Boolean
 
     fun glean_new_labeled_boolean_metric(
         category: String,
@@ -126,6 +240,8 @@ internal interface LibGleanFFI : Library {
 
     fun glean_labeled_boolean_metric_get(glean_handle: Long, handle: Long, label: String): Long
 
+    // Labeled string
+
     fun glean_new_labeled_string_metric(
         category: String,
         name: String,
@@ -139,103 +255,9 @@ internal interface LibGleanFFI : Library {
 
     fun glean_labeled_string_metric_get(glean_handle: Long, handle: Long, label: String): Long
 
-    fun glean_initialize(data_dir: String, application_id: String, upload_enabled: Byte): Long
-
-    fun glean_is_upload_enabled(glean_handle: Long): Byte
-
-    fun glean_new_boolean_metric(
-        category: String,
-        name: String,
-        send_in_pings: StringArray,
-        send_in_pings_len: Int,
-        lifetime: Int,
-        disabled: Byte
-    ): Long
-
-    fun glean_new_counter_metric(
-        category: String,
-        name: String,
-        send_in_pings: StringArray,
-        send_in_pings_len: Int,
-        lifetime: Int,
-        disabled: Byte
-    ): Long
-
-    fun glean_new_datetime_metric(
-        category: String,
-        name: String,
-        send_in_pings: StringArray,
-        send_in_pings_len: Int,
-        lifetime: Int,
-        disabled: Byte,
-        time_unit: Int
-    ): Long
-
-    fun glean_new_string_metric(
-        category: String,
-        name: String,
-        send_in_pings: StringArray,
-        send_in_pings_len: Int,
-        lifetime: Int,
-        disabled: Byte
-    ): Long
-
-    fun glean_new_string_list_metric(
-        category: String,
-        name: String,
-        send_in_pings: StringArray,
-        send_in_pings_len: Int,
-        lifetime: Int,
-        disabled: Byte
-    ): Long
-
-    fun glean_string_test_get_value(glean_handle: Long, metric_id: Long, storage_name: String): Pointer?
-
-    fun glean_string_test_has_value(glean_handle: Long, metric_id: Long, storage_name: String): Byte
-
-    fun glean_ping_collect(glean_handle: Long, ping_type_handle: Long): Pointer?
-
-    fun glean_send_ping(glean_handle: Long, ping_type_handle: Long, log_ping: Byte): Byte
-
-    fun glean_send_ping_by_name(glean_handle: Long, ping_name: String, log_ping: Byte): Byte
-
-    fun glean_set_upload_enabled(glean_handle: Long, flag: Byte)
-
-    fun glean_string_set(glean_handle: Long, metric_id: Long, value: String)
-
-    fun glean_string_should_record(glean_handle: Long, metric_id: Long): Byte
-
-    fun glean_string_list_should_record(glean_handle: Long, metric_id: Long): Byte
-
-    fun glean_string_list_add(glean_handle: Long, metric_id: Long, value: String)
-
-    fun glean_string_list_set(glean_handle: Long, metric_id: Long, values: StringArray, values_len: Int)
-
-    fun glean_string_list_test_has_value(glean_handle: Long, metric_id: Long, storage_name: String): Byte
-
-    fun glean_string_list_test_get_value_as_json_string(glean_handle: Long, metric_id: Long, storage_name: String): Pointer?
-
-    fun glean_destroy_glean(handle: Long, error: RustError.ByReference)
-
-    fun glean_destroy_boolean_metric(handle: Long, error: RustError.ByReference)
-
-    fun glean_destroy_string_metric(handle: Long, error: RustError.ByReference)
-
-    fun glean_destroy_string_list_metric(handle: Long, error: RustError.ByReference)
-
-    fun glean_destroy_counter_metric(handle: Long, error: RustError.ByReference)
-
-    fun glean_destroy_datetime_metric(handle: Long, error: RustError.ByReference)
-
-    fun glean_destroy_ping_type(handle: Long, error: RustError.ByReference)
+    // Misc
 
     fun glean_str_free(ptr: Pointer)
-
-    fun glean_register_ping_type(glean_handle: Long, ping_type_id: Long)
-
-    fun glean_new_ping_type(name: String, include_client_id: Byte): Long
-
-    fun glean_test_has_ping_type(glean_handle: Long, name: String): Byte
 }
 
 internal typealias MetricHandle = Long
