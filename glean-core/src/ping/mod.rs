@@ -172,7 +172,7 @@ impl PingMaker {
         }))
     }
 
-    /// Collect a snapshot for the given ping from storage and attach required meta information as a JSON string.
+    /// Collect a snapshot for the given ping from storage and attach required meta information, returning as a string containing JSON.
     ///
     /// ## Arguments
     ///
