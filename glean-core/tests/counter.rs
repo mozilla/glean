@@ -115,7 +115,7 @@ fn counters_must_not_increment_when_passed_zero_or_negative() {
 
     // Make sure that the errors have been recorded
     assert_eq!(
-        2,
+        Ok(2),
         test_get_num_recorded_errors(&glean, metric.meta(), ErrorType::InvalidValue, None)
     );
 }
