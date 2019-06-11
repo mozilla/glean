@@ -146,7 +146,7 @@ impl Glean {
     ///
     /// ## Return value
     ///
-    /// Returns the snapshot as a JSON string.
+    /// Returns the snapshot in a string encoded as JSON.
     /// If the snapshot is empty, it returns an empty string.
     pub fn snapshot(&mut self, store_name: &str, clear_store: bool) -> String {
         StorageManager
