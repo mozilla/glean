@@ -10,6 +10,7 @@ use glean_core::{metrics::*, CommonMetricData, Lifetime};
 use super::handlemap_ext::HandleMapExtension;
 use super::*;
 use crate::counter::COUNTER_METRICS;
+use crate::string::STRING_METRICS;
 
 /// Generate FFI functions for labeled metrics.
 ///
