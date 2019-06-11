@@ -2,6 +2,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+//! Ping collection, assembly & sending.
+
 use std::fs::{create_dir_all, File};
 use std::io::Write;
 use std::path::{Path, PathBuf};
@@ -18,6 +20,7 @@ use crate::Glean;
 // An internal ping name, not to be touched by anything else
 const INTERNAL_STORAGE: &str = "glean_internal_info";
 
+/// Collect a ping's data, assemble it into its full payload and store it on disk.
 pub struct PingMaker;
 
 fn merge(a: &mut JsonValue, b: &JsonValue) {
@@ -40,6 +43,7 @@ impl Default for PingMaker {
 }
 
 impl PingMaker {
+    /// Create a new PingMaker
     pub fn new() -> Self {
         Self
     }
@@ -135,6 +139,17 @@ impl PingMaker {
         json!(map)
     }
 
+    /// Collect a snapshot for the given ping from storage and attach required meta information.
+    ///
+    /// ## Arguments
+    ///
+    /// * `glean` - the Glean instance to collect data from.
+    /// * `ping` - the ping to collect for.
+    ///
+    /// ## Return value
+    ///
+    /// Returns a fully assembled JSON representation of the ping payload.
+    /// If there is no data stored for the ping, `None` is returned.
     pub fn collect(&self, glean: &Glean, ping: &PingType) -> Option<JsonValue> {
         info!("Collecting {}", ping.name);
 
@@ -157,6 +172,17 @@ impl PingMaker {
         }))
     }
 
+    /// Collect a snapshot for the given ping from storage and attach required meta information as a JSON string.
+    ///
+    /// ## Arguments
+    ///
+    /// * `glean` - the Glean instance to collect data from.
+    /// * `ping` - the ping to collect for.
+    ///
+    /// ## Return value
+    ///
+    /// Returns a fully assembled JSON string of the ping payload.
+    /// If there is no data stored for the ping, `None` is returned.
     pub fn collect_string(&self, glean: &Glean, ping: &PingType) -> Option<String> {
         self.collect(glean, ping)
             .map(|ping| ::serde_json::to_string_pretty(&ping).unwrap())
