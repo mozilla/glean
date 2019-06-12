@@ -17,19 +17,24 @@ At the end of this process you should have the following environment variables s
 
 - `ANDROID_HOME`
 - `NDK_HOME`
+- `JAVA_HOME`
 
 The easiest way to install all the dependencies (and automatically
 handle updates), is by using [Android Studio](https://developer.android.com/studio/index.html).
-Once this is installed, the following dependencies can be installed through it:
+Once this is installed, it must be run and the Glean project opened to complete initial setup.
+If Android Studio asks you to upgrade the verison of gradle, decline.
 
-- Android SDK Tools
+The following dependencies can be installed in Android Studio through `Tools > SDK Manager > SDK Tools`:
+
+- Android SDK Tools (may already be selected)
 - NDK
 - CMake
 - LLDB
 
-To install a dependency, open Android Studio and select `Tools > SDK Manager > SDK Tools`. Then tick the boxes corrensponding to the dependencies listed above.
-
-With the dependencies installed, note down the `Android SDK Location` in `Tools > SDK Manager`. Set the `ANDROID_HOME` environment variable to that path. The `NDK_HOME` can be set to `NDK_HOME=$ANDROID_HOME/ndk-bundle`.
+With the dependencies installed, note down the `Android SDK Location` in `Tools > SDK Manager`.
+Set the `ANDROID_HOME` environment variable to that path.
+The `NDK_HOME` can be set to `NDK_HOME=$ANDROID_HOME/ndk-bundle`.
+Set `JAVA_HOME` to be the location of Android Studio's JDK which can be found in Glean's "Project Structure" menu. (You may need to escape spaces in the path).
 
 ### Setting up Rust
 
