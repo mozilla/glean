@@ -13,7 +13,7 @@ use glean_core::{test_get_num_recorded_errors, CommonMetricData, ErrorType, Glea
 
 #[test]
 fn list_can_store_multiple_items() {
-    let (mut glean, _t) = new_glean();
+    let (glean, _t) = new_glean();
 
     let list: StringListMetric = StringListMetric::new(CommonMetricData {
         name: "list".into(),
@@ -23,36 +23,22 @@ fn list_can_store_multiple_items() {
     });
 
     list.add(&glean, "first");
-    let snapshot = glean.snapshot("core", false);
-    assert!(snapshot.contains(r#""local.list": ["#));
-    assert!(snapshot.contains(r#""first""#));
-    assert!(!snapshot.contains(r#""second""#));
-    assert!(!snapshot.contains(r#""third""#));
-    assert!(!snapshot.contains(r#""fourth""#));
+    assert_eq!(list.test_get_value(&glean, "core").unwrap(), vec!["first"]);
 
     list.add(&glean, "second");
-    let snapshot = glean.snapshot("core", false);
-    assert!(snapshot.contains(r#""local.list": ["#));
-    assert!(snapshot.contains(r#""first""#));
-    assert!(snapshot.contains(r#""second""#));
-    assert!(!snapshot.contains(r#""third""#));
-    assert!(!snapshot.contains(r#""fourth""#));
+    assert_eq!(
+        list.test_get_value(&glean, "core").unwrap(),
+        vec!["first", "second"]
+    );
 
     list.set(&glean, vec!["third".into()]);
-    let snapshot = glean.snapshot("core", false);
-    assert!(snapshot.contains(r#""local.list": ["#));
-    assert!(!snapshot.contains(r#""first""#));
-    assert!(!snapshot.contains(r#""second""#));
-    assert!(snapshot.contains(r#""third""#));
-    assert!(!snapshot.contains(r#""fourth""#));
+    assert_eq!(list.test_get_value(&glean, "core").unwrap(), vec!["third"]);
 
     list.add(&glean, "fourth");
-    let snapshot = glean.snapshot("core", false);
-    assert!(snapshot.contains(r#""local.list": ["#));
-    assert!(!snapshot.contains(r#""first""#));
-    assert!(!snapshot.contains(r#""second""#));
-    assert!(snapshot.contains(r#""third""#));
-    assert!(snapshot.contains(r#""fourth""#));
+    assert_eq!(
+        list.test_get_value(&glean, "core").unwrap(),
+        vec!["third", "fourth"]
+    );
 }
 
 #[test]
