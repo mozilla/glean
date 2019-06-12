@@ -21,7 +21,7 @@ pub struct CounterMetric {
 Implement the `MetricType` trait to create a metric from the meta data as well as expose the meta data.
 This also gives you a `should_record` method on the metric type.
 
-```
+```rust,noplaypen
 impl MetricType for CounterMetric {
     fn meta(&self) -> &CommonMetricData {
         &self.meta
@@ -134,14 +134,18 @@ In order to use a new metric type over the FFI layer, it needs implementations i
 
 ### FFI component
 
-The FFI component implementation can be found in `glean-core/ffi/src/lib.rs`.
+The FFI component implementation can be found in `glean-core/ffi/src`.
+Each metric type is implemented in its own module.
 
-Add a global map for your metric type:
+Add a new file named after your metric, e.g. `glean-core/ffi/src/counter.rs`, and declare it in `glean-core/ffi/src/lib.rs` with `mod counter;`.
+
+In the metric type module add a global map for your metric type and define the destructor:
 
 ```rust,noplaypen
 lazy_static! {
     static ref COUNTER_METRICS: ConcurrentHandleMap<CounterMetric> = ConcurrentHandleMap::new();
 }
+define_handle_map_deleter!(COUNTER_METRICS, glean_destroy_counter_metric);
 ```
 
 Add a function to create new instances of this metric type:
@@ -202,6 +206,7 @@ For Kotlin this is in `glean-core/android/src/main/java/mozilla/telemetry/glean/
 
 ```kotlin
 fun glean_new_counter_metric(category: String, name: String, send_in_pings: StringArray, send_in_pings_len: Int, lifetime: Int, disabled: Byte): Long
+fun glean_destroy_counter_metric(handle: Long, error: RustError.ByReference)
 fun glean_counter_add(glean_handle: Long, metric_id: Long, amount: Int)
 fun glean_counter_should_record(glean_handle: Long, metric_id: Long): Byte
 ```
