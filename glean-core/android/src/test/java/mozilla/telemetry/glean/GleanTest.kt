@@ -128,7 +128,7 @@ class GleanTest {
     @Test
     fun `sending an empty ping doesn't queue work`() {
         Glean.sendPings(listOf(Pings.metrics))
-        assertFalse(isWorkScheduled(PingUploadWorker.PING_WORKER_TAG))
+        assertFalse(getWorkerStatus(PingUploadWorker.PING_WORKER_TAG).isEnqueued)
     }
 
     // Tests from glean-ac (706af1f).
@@ -302,7 +302,7 @@ class GleanTest {
         runBlocking {
             gleanSpy.handleBackgroundEvent()
         }
-        assertFalse(isWorkScheduled(PingUploadWorker.PING_WORKER_TAG))
+        assertFalse(getWorkerStatus(PingUploadWorker.PING_WORKER_TAG).isEnqueued)
     }
 
     @Test
@@ -312,7 +312,7 @@ class GleanTest {
         runBlocking {
             Glean.handleBackgroundEvent()
         }
-        assertFalse(isWorkScheduled(PingUploadWorker.PING_WORKER_TAG))
+        assertFalse(getWorkerStatus(PingUploadWorker.PING_WORKER_TAG).isEnqueued)
     }
 
     @Test

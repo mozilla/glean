@@ -30,6 +30,7 @@ import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import org.junit.Assert
 import org.robolectric.shadows.ShadowLog
+import java.util.UUID
 import java.util.concurrent.ExecutionException
 
 /**
@@ -167,12 +168,18 @@ internal fun getContextWithMockedInfo(): Context {
 }
 
 /**
- * Helper function to check to see if a worker has been scheduled with the [WorkManager]
+ * Represents the Worker status returned by [getWorkerStatus]
+ */
+internal class WorkerStatus(val isEnqueued: Boolean, val workerId: UUID? = null)
+
+/**
+ * Helper function to check to see if a worker has been scheduled with the [WorkManager] and return
+ * the status along with the worker ID in a [WorkerStatus] object.
  *
  * @param tag a string representing the worker tag
- * @return True if the task found in [WorkManager], false otherwise
+ * @return [WorkerStatus] that contains the enqueued state along with the ID
  */
-internal fun isWorkScheduled(tag: String): Boolean {
+internal fun getWorkerStatus(tag: String): WorkerStatus {
     val instance = WorkManager.getInstance()
     val statuses = instance.getWorkInfosByTag(tag)
     try {
@@ -180,7 +187,7 @@ internal fun isWorkScheduled(tag: String): Boolean {
         for (workInfo in workInfoList) {
             val state = workInfo.state
             if ((state === WorkInfo.State.RUNNING) || (state === WorkInfo.State.ENQUEUED)) {
-                return true
+                return WorkerStatus(true, workInfo.id)
             }
         }
     } catch (e: ExecutionException) {
@@ -189,7 +196,7 @@ internal fun isWorkScheduled(tag: String): Boolean {
         // Do nothing but will return false
     }
 
-    return false
+    return WorkerStatus(false, null)
 }
 
 /**
@@ -202,7 +209,7 @@ internal fun waitForEnqueuedWorker(workTag: String, timeoutMillis: Long = 5000) 
     runBlocking {
         withTimeout(timeoutMillis) {
             do {
-                if (isWorkScheduled(workTag)) {
+                if (getWorkerStatus(workTag).isEnqueued) {
                     return@withTimeout
                 }
             } while (true)
@@ -217,12 +224,13 @@ internal fun waitForEnqueuedWorker(workTag: String, timeoutMillis: Long = 5000) 
  */
 internal fun triggerWorkManager() {
     // Check that the work is scheduled
+    val status = getWorkerStatus(PingUploadWorker.PING_WORKER_TAG)
     Assert.assertTrue("A scheduled PingUploadWorker must exist",
-        isWorkScheduled(PingUploadWorker.PING_WORKER_TAG))
+        status.isEnqueued)
 
-    // Since WorkManager does not properly run in tests, simulate the work being done
-    // We also assertTrue here to ensure that uploadPings() was successful
-    Assert.assertTrue("Upload Pings must return true", PingUploadWorker.uploadPings())
+    // Trigger WorkManager using TestDriver
+    val workManagerTestInitHelper = WorkManagerTestInitHelper.getTestDriver()
+    workManagerTestInitHelper.setAllConstraintsMet(status.workerId!!)
 }
 
 /**
