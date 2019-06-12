@@ -135,5 +135,5 @@ these cases:
    [`ffi_support::implement_into_ffi_by_json`](https://docs.rs/ffi-support/*/ffi_support/macro.implement_into_ffi_by_json.html)
    into the crate that defines the type.
 
-   Again, for new code, this is not a recommended approach for new code, unless
-   there's some reason it's preferrable for you.
+   For new non-test code this is not a recommended approach.
+   For test code, this can be a useful performance/simplicity tradeoff to make.
