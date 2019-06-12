@@ -12,13 +12,12 @@ Products using Glean to collect telemetry **must**:
 
 ### Setting up the dependency
 
-TODO: 1556494 
-<!-- Use Gradle to download the library from [maven.mozilla.org](https://maven.mozilla.org/)  -->
-<!-- ([Setup repository](../../../README.md#maven-repository)): -->
+Use Gradle to download the library from [maven.mozilla.org](https://maven.mozilla.org/)
+([Setup repository](../../../README.md#maven-repository)):
 
-<!-- ```Groovy -->
-<!-- implementation "org.mozilla.components:service-glean:{latest-version}" -->
-<!-- ``` -->
+```Groovy
+implementation "org.mozilla.components:service-glean:{latest-version}"
+```
 
 ### Integrating with the build system
 
