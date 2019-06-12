@@ -1,6 +1,7 @@
 # Adding Glean to your project
 
-## Before using the library
+## Before using Glean
+
 Products using Glean to collect telemetry **must**:
 
 - add documentation for any new metric collected with the library in its repository (see [an example](pings/index.md));
@@ -45,7 +46,38 @@ For example, if version *0.34.2* is used, then the include directive becomes:
 apply from: 'https://github.com/mozilla/glean/raw/v0.34.2/glean-core/android/sdk_generator.gradle'
 ```
 
+### Adding new metrics
+
+All metrics that your project collects must be defined in a `metrics.yaml` file. 
+This file should be at the root of the module (the same directory as the `build.gradle` file you updated). 
+The format of that file is documented [here](https://mozilla.github.io/glean_parser/metrics-yaml.html).
+To learn more, see [adding new metrics](adding-new-metrics.md).
+
+**Important**: as stated [here](#before-using-the-library), any new data collection requires documentation and data-review. This is also required for any new metric automatically collected by Glean.
+
+### Adding custom pings
+
+Please refer to the custom pings documentation [here](pings/custom.md).
+
+**Important**: as stated [here](#before-using-the-library), any new data collection, including new custom pings, requires documentation and data-review. This is also required for any new ping automatically collected by Glean.
+
+### Testing metrics
+
+In order to make testing metrics easier 'out of the box', all metrics include a set of test API functions in order to facilitate unit testing.  These include functions to test whether a value has been stored, and functions to retrieve the stored value for validation.  For more information, please refer to [Unit testing Glean metrics](testing-metrics.md).
+
+### Adding metadata about your project to the pipeline
+
+In order for data to be collected from your project, metadata must be added to `probe_scraper`.
+
+These specific steps are described in [the probe_scraper documentation](https://github.com/mozilla/probe-scraper#adding-a-new-glean-repository).
+
+## Application-specific steps
+
+The following steps are required for Glean-using applications, but not libraries.
+
 ### Initializing Glean
+
+Glean should only be initialized from the main application, not individual libraries.  If you are adding Glean support to a library, you can safely skip this section.
 
 Before any data collection can take place, Glean **must** be initialized from the application.
 An excellent place to perform this operation is within the `onCreate` method of the class that extends Android's `Application` class.
@@ -94,23 +126,4 @@ The application should provide some form of user interface to call this method.
 
 When going from enabled to disabled, all pending events, metrics and pings are cleared, except for `first_run_date`.
 When re-enabling, core Glean metrics will be recomputed at that time.
-
-### Adding new metrics
-
-All metrics that your application collects must be defined in a `metrics.yaml` file. 
-This file should be at the root of the application module (the same directory as the `build.gradle` file you updated). 
-The format of that file is documented [here](https://mozilla.github.io/glean_parser/metrics-yaml.html).
-To learn more, see [adding new metrics](adding-new-metrics.md).
-
-**Important**: as stated [here](#before-using-the-library), any new data collection requires documentation and data-review. This is also required for any new metric automatically collected by Glean.
-
-### Adding custom pings
-
-Please refer to the custom pings documentation [here](pings/custom.md).
-
-**Important**: as stated [here](#before-using-the-library), any new data collection, including new custom pings, requires documentation and data-review. This is also required for any new ping automatically collected by Glean.
-
-### Testing metrics
-
-In order to make testing metrics easier 'out of the box', all metrics include a set of test API functions in order to facilitate unit testing.  These include functions to test whether a value has been stored, and functions to retrieve the stored value for validation.  For more information, please refer to [Unit testing Glean metrics](testing-metrics.md).
 
