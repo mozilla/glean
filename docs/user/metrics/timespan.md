@@ -45,12 +45,12 @@ fun onShowLogin(e: Event) {
 }
 
 fun onLogin(e: Event) {
-    Auth.loginTime.stop(e.target)
+    Auth.loginTime.stopAndSum(e.target)
     // ...
 }
 
 fun onLoginCancel(e: Event) {
-    Auth.loginTime.cancel(e.tart)
+    Auth.loginTime.cancel(e.target)
     // ...
 }
 ```
