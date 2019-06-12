@@ -127,6 +127,8 @@ jobs:
       - run:
           name: Android tests
           command: ./gradlew test
+      - store_artifacts:
+          path: glean-core/android/build/reports/tests
 
   # via https://circleci.com/blog/deploying-documentation-to-github-pages-with-continuous-integration/
   Generate Rust documentation:
