@@ -267,7 +267,7 @@ open class GleanInternalAPI internal constructor () {
     }
 
     /**
-     * Get the data directory for glean.
+     * Get the data directory for Glean.
      */
     internal fun getDataDir(): File {
         return this.gleanDataDir

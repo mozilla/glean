@@ -20,7 +20,7 @@ All documentation is available online:
 
 ## Overview
 
-This repository is used to build the client-side cross-platform Telemetry library called `glean`.
+This repository is used to build the client-side cross-platform Telemetry library called `Glean`.
 
 The code is organized as follows:
 

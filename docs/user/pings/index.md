@@ -1,8 +1,8 @@
 # Glean Pings
 
-Every glean ping is in JSON format and contains one or more of the [common sections](#ping-sections) with shared information data.
+Every Glean ping is in JSON format and contains one or more of the [common sections](#ping-sections) with shared information data.
 
-If data collection is enabled, glean provides a set of built-in pings that are assembled out of the box without any developer intervention.  The following is a list of these built-in pings:
+If data collection is enabled, Glean provides a set of built-in pings that are assembled out of the box without any developer intervention.  The following is a list of these built-in pings:
 
 - [`baseline` ping](baseline.md)
 - [`events` ping](events.md)
@@ -31,7 +31,7 @@ Optional fields are marked accordingly.
 | `start_time` | Datetime | The time of the start of collection of the data in the ping, in local time and with minute precision, including timezone information. |
 | `end_time` | Datetime | The time of the end of collection of the data in the ping, in local time and with minute precision, including timezone information. This is also the time this ping was generated and is likely well before ping transmission time. |
 
-All the metrics surviving application restarts (e.g. `seq`, ...) are removed once the application using glean is uninstalled.
+All the metrics surviving application restarts (e.g. `seq`, ...) are removed once the application using Glean is uninstalled.
 
 ### The `client_info` section
 The following fields are included in the `client_info` section.
@@ -50,9 +50,9 @@ Optional fields are marked accordingly.
 | `os` | String | The name of the operating system (e.g. "linux", "Android", "ios") |
 | `os_version` | String | The user visible version of the operating system (e.g. "1.2.3") |
 | `android_sdk_version` | String | *Optional*. The Android specific SDK version of the software running on this hardware device (e.g. "23") |
-| `telemetry_sdk_build` | String | The version of the glean library |
+| `telemetry_sdk_build` | String | The version of the Glean library |
 
-All the metrics surviving application restarts (e.g. `client_id`, ...) are removed once the application using glean is uninstalled.
+All the metrics surviving application restarts (e.g. `client_id`, ...) are removed once the application using Glean is uninstalled.
 
 ### The `experiments` object
 
@@ -73,7 +73,7 @@ This object (included in the [`ping_info` section](#The-ping_info-section)) cont
 
 ## Ping submission
 
-The pings that glean generates are submitted to the Mozilla servers at specific paths, in order to provide additional metadata without the need to unpack the ping payload. 
+The pings that Glean generates are submitted to the Mozilla servers at specific paths, in order to provide additional metadata without the need to unpack the ping payload. 
 A typical submission URL looks like
 
   `"<server-address>/submit/<application-id>/<doc-type>/<glean-schema-version>/<ping-uuid>"`
@@ -81,9 +81,9 @@ A typical submission URL looks like
 where:
 
 - `<server-address>`: the address of the server that receives the pings;
-- `<application-id>`: a unique application id, automatically detected by glean; this is the value returned by [`Context.getPackageName()`](http://developer.android.com/reference/android/content/Context.html#getPackageName());
-- `<doc-type>`: the name of the ping; this can be one of the pings available out of the box with glean, or a custom ping;
-- `<glean-schema-version>`: the version of the glean ping schema;
+- `<application-id>`: a unique application id, automatically detected by Glean; this is the value returned by [`Context.getPackageName()`](http://developer.android.com/reference/android/content/Context.html#getPackageName());
+- `<doc-type>`: the name of the ping; this can be one of the pings available out of the box with Glean, or a custom ping;
+- `<glean-schema-version>`: the version of the Glean ping schema;
 - `<ping-uuid>`: a unique identifier for this ping.
 
 ### Submitted headers
@@ -92,10 +92,10 @@ A pre-defined set of headers is additionally sent along with the submitted ping:
 | Header | Value | Description |
 |--------|-------|-------------|
 | `Content-Type` | `application/json; charset=utf-8` | Describes the data sent to the server |
-| `User-Agent` | Defaults to e.g. `Glean/0.40.0 (Android)`, where `0.40.0` is the glean version number and `Android` is the platform name. It can be overriden by user through [configuration](../../../javadoc/glean/mozilla.telemetry.glean/-configuration/index.html) | Describes the application sending the ping using glean |
+| `User-Agent` | Defaults to e.g. `Glean/0.40.0 (Android)`, where `0.40.0` is the Glean version number and `Android` is the platform name. It can be overriden by user through [configuration](../../../javadoc/glean/mozilla.telemetry.glean/-configuration/index.html) | Describes the application sending the ping using Glean |
 | `Date` | e.g. `Mon, 23 Jan 2019 10:10:10 GMT+00:00` | Submission date/time in GMT/UTC+0 offset |
-| `X-Client-Type` | `Glean` | Custom header to support handling of glean pings in the legacy pipeline |
-| `X-Client-Version` | e.g. `0.40.0` | The glean version, sent as a custom header to support handling of glean pings in the legacy pipeline |
+| `X-Client-Type` | `Glean` | Custom header to support handling of Glean pings in the legacy pipeline |
+| `X-Client-Version` | e.g. `0.40.0` | The Glean version, sent as a custom header to support handling of Glean pings in the legacy pipeline |
 
 ## Defining background state
 

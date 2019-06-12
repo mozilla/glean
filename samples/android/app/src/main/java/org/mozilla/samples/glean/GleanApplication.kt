@@ -18,6 +18,6 @@ class GleanApplication : Application() {
         // Initialize the Glean library. Ideally, this is the first thing that
         // must be done right after enabling logging.
         Glean.initialize(applicationContext)
-        Log.i(TAG, "glean initialized")
+        Log.i(TAG, "Glean initialized")
     }
 }

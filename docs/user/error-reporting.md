@@ -36,5 +36,5 @@ Resulting in the following keys in the ping:
 }
 ```
 
-If you have a debug build of glean, details about the errors being recorded are included in the logs. This detailed information is not included in Glean pings.
+If you have a debug build of Glean, details about the errors being recorded are included in the logs. This detailed information is not included in Glean pings.
 

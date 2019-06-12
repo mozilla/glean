@@ -89,7 +89,7 @@ impl Glean {
     /// This will create the necessary directories and files in `data_path`.
     /// This will also initialize the core metrics.
     pub fn new(data_path: &str, application_id: &str, upload_enabled: bool) -> Result<Self> {
-        log::info!("Creating new glean");
+        log::info!("Creating new Glean");
 
         let application_id = sanitize_application_id(application_id);
         let mut glean = Self {
