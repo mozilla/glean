@@ -40,7 +40,7 @@ fn string_serializer_should_correctly_serialize_strings() {
         );
     }
 
-    // Make a new glean instance here, which should force reloading of the data from disk
+    // Make a new Glean instance here, which should force reloading of the data from disk
     // so we can ensure it persisted, because it has User lifetime
     {
         let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();

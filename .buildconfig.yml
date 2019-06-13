@@ -5,7 +5,7 @@ projects:
     path: glean-core/android
     artifactId: glean-core
     publishedArtifacts: [glean-core, glean-core-forUnitTests, glean-core-withoutLib]
-    description: 'The glean core library'
+    description: 'The Glean core library'
   glean-sample-app:
     path: samples/android/app
     artifactId: glean-core-sample-app
