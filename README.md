@@ -20,7 +20,7 @@ All documentation is available online:
 
 ## Overview
 
-This repository is used to build the client-side cross-platform Telemetry library called the `Glean SDK`.
+This repository is used to build the client-side cross-platform Telemetry library part of [Glean](https://docs.telemetry.mozilla.org/concepts/glean/glean.html), called the `Glean SDK`.
 
 The code is organized as follows:
 
@@ -34,6 +34,8 @@ This repository also hosts the documentation for the `Glean SDK`:
 * [The Glean SDK book][book] - Documentation on using and developing Glean SDK.
 * [Documentation of the Rust crate][rustdoc].
 * [Documentation of the Kotlin library][ktdoc].
+
+For an overview of Glean, see the [section in the Firefox data docs](https://docs.telemetry.mozilla.org/concepts/glean/glean.html).
 
 ## Contact
 
