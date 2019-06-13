@@ -7,8 +7,8 @@ _Modern Firefox Telemetry for mobile platforms_
 
 ---
 
-**Note: This new approach for Glean is currently in development and not yet ready for use.
-The working and supported library is [Glean in android-components][glean-ac].**
+**Note: This new approach for the Glean SDK is currently in development and not yet ready for use.
+The working and supported library is the [Glean SDK in android-components][glean-ac].**
 
 ---
 
@@ -16,11 +16,11 @@ The working and supported library is [Glean in android-components][glean-ac].**
 
 All documentation is available online:
 
-## [The Glean Book][book]
+## [The Glean SDK Book][book]
 
 ## Overview
 
-This repository is used to build the client-side cross-platform Telemetry library called `Glean`.
+This repository is used to build the client-side cross-platform Telemetry library called the `Glean SDK`.
 
 The code is organized as follows:
 
@@ -29,9 +29,9 @@ The code is organized as follows:
 * [./glean-core/android](glean-core/android) contains the Kotlin bindings for use by Android applications.
 * [./glean-core/ios](glean-core/ios) contains the Swift bindings for use by iOS applications.
 
-This repository also hosts the documentation for `Glean`:
+This repository also hosts the documentation for the `Glean SDK`:
 
-* [The Glean book][book] - Documentation on using and developing Glean.
+* [The Glean SDK book][book] - Documentation on using and developing Glean SDK.
 * [Documentation of the Rust crate][rustdoc].
 * [Documentation of the Kotlin library][ktdoc].
 
