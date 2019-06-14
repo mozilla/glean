@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit
 @RunWith(RobolectricTestRunner::class)
 class GleanDebugActivityTest {
 
-    private val testPackageName = "mozilla.components.service.glean"
+    private val testPackageName = "mozilla.telemetry.glean"
 
     @Before
     fun setup() {
@@ -144,7 +144,7 @@ class GleanDebugActivityTest {
         val request = server.takeRequest(10L, TimeUnit.SECONDS)
 
         assertTrue(
-            request.requestUrl.encodedPath().startsWith("/submit/mozilla-components-service-glean/metrics")
+            request.requestUrl.encodedPath().startsWith("/submit/mozilla-telemetry-glean/metrics")
         )
 
         server.shutdown()
@@ -189,7 +189,7 @@ class GleanDebugActivityTest {
 
         assertTrue(
             "Request path must be correct",
-            request.requestUrl.encodedPath().startsWith("/submit/mozilla-components-service-glean/metrics")
+            request.requestUrl.encodedPath().startsWith("/submit/mozilla-telemetry-glean/metrics")
         )
 
         assertNull(
