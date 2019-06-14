@@ -1,4 +1,4 @@
-package mozilla.components.service.glean.debug
+package mozilla.telemetry.glean.debug
 
 import android.content.Context
 import org.junit.Test
@@ -6,8 +6,8 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import android.content.Intent
 import androidx.test.core.app.ApplicationProvider
-import mozilla.components.service.glean.Glean
-import mozilla.components.service.glean.config.Configuration
+import mozilla.telemetry.glean.Glean
+import mozilla.telemetry.glean.config.Configuration
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -17,12 +17,12 @@ import org.robolectric.Robolectric
 import android.content.pm.ActivityInfo
 import android.content.pm.ResolveInfo
 import androidx.work.testing.WorkManagerTestInitHelper
-import mozilla.components.service.glean.private.BooleanMetricType
-import mozilla.components.service.glean.private.Lifetime
-import mozilla.components.service.glean.resetGlean
-import mozilla.components.service.glean.triggerWorkManager
-import mozilla.components.service.glean.TestPingTagClient
-import mozilla.components.service.glean.getMockWebServer
+import mozilla.telemetry.glean.private.BooleanMetricType
+import mozilla.telemetry.glean.private.Lifetime
+import mozilla.telemetry.glean.resetGlean
+import mozilla.telemetry.glean.triggerWorkManager
+import mozilla.telemetry.glean.TestPingTagClient
+import mozilla.telemetry.glean.getMockWebServer
 import org.robolectric.Shadows.shadowOf
 import java.util.concurrent.TimeUnit
 
