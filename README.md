@@ -44,6 +44,11 @@ To contact us you can:
 * Send an email to *glean-team@mozilla.com*.
 * The Glean Core team is: *:dexter*, *:janerik*, *:mdroettboom*, *:gfritzsche*
 
+## Credits
+
+The Glean logo artwork was contributed by [Diana Ciufo](https://dianaciufo.wordpress.com/).
+It's licensed under MPL.
+
 ## License
 
     This Source Code Form is subject to the terms of the Mozilla Public
