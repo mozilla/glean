@@ -41,6 +41,7 @@ To contact us you can:
 ## Credits
 
 The Glean logo artwork was contributed by [Diana Ciufo](https://dianaciufo.wordpress.com/).
+It's licensed under MPL.
 
 ## License
 
