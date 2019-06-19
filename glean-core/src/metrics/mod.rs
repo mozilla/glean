@@ -16,6 +16,7 @@ mod ping;
 mod string;
 mod string_list;
 mod time_unit;
+mod timespan;
 mod uuid;
 
 use crate::util::get_iso_time_string;
@@ -30,6 +31,7 @@ pub use self::ping::PingType;
 pub use self::string::StringMetric;
 pub use self::string_list::StringListMetric;
 pub use self::time_unit::TimeUnit;
+pub use self::timespan::TimespanMetric;
 pub use self::uuid::UuidMetric;
 
 /// The available metrics.
@@ -49,6 +51,8 @@ pub enum Metric {
     StringList(Vec<String>),
     /// A UUID metric. See [`UuidMetric`](struct.UuidMetric.html) for more information.
     Uuid(String),
+    /// A timespan metric. See [`TimespanMetric`](struct.TimespanMetric.html) for more information.
+    Timespan(std::time::Duration, TimeUnit),
 }
 
 /// A `MetricType` describes common behavior across all metrics.
@@ -80,6 +84,7 @@ impl Metric {
             Metric::String(_) => "string",
             Metric::StringList(_) => "string_list",
             Metric::Uuid(_) => "uuid",
+            Metric::Timespan(..) => "timespan",
         }
     }
 
@@ -92,6 +97,7 @@ impl Metric {
             Metric::String(s) => json!(s),
             Metric::StringList(v) => json!(v),
             Metric::Uuid(s) => json!(s),
+            Metric::Timespan(time, time_unit) => json!(time_unit.duration_convert(*time)),
         }
     }
 }
