@@ -11,10 +11,10 @@ package mozilla.telemetry.glean.private
 import mozilla.telemetry.glean.resetGlean
 // import org.junit.Assert.assertEquals
 import org.junit.Test
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.lang.NullPointerException
@@ -27,7 +27,6 @@ class TimespanMetricTypeTest {
         resetGlean()
     }
 
-    @Ignore("TimespanMetricType is a stub")
     @Test
     fun `The API must record to its storage engine`() {
         // Define a timespan metric, which will be stored in "store1"
@@ -41,15 +40,14 @@ class TimespanMetricTypeTest {
         )
 
         // Record a timespan.
-        metric.start(this)
-        metric.stopAndSum(this)
+        metric.start()
+        metric.stop()
 
         // Check that data was properly recorded.
         assertTrue(metric.testHasValue())
         assertTrue(metric.testGetValue() >= 0)
     }
 
-    @Ignore("TimespanMetricType is a stub")
     @Test
     fun `The API should not record if the metric is disabled`() {
         // Define a timespan metric, which will be stored in "store1"
@@ -63,18 +61,17 @@ class TimespanMetricTypeTest {
         )
 
         // Record a timespan.
-        metric.start(this)
-        metric.stopAndSum(this)
+        metric.start()
+        metric.stop()
 
         // Let's also call cancel() to make sure it's a no-op.
-        metric.cancel(this)
+        metric.cancel()
 
         // Check that data was not recorded.
         assertFalse("The API should not record a counter if metric is disabled",
             metric.testHasValue())
     }
 
-    @Ignore("TimespanMetricType is a stub")
     @Test
     fun `The API must correctly cancel`() {
         // Define a timespan metric, which will be stored in "store1"
@@ -88,9 +85,9 @@ class TimespanMetricTypeTest {
         )
 
         // Record a timespan.
-        metric.start(this)
-        metric.cancel(this)
-        metric.stopAndSum(this)
+        metric.start()
+        metric.cancel()
+        metric.stop()
 
         // Check that data was not recorded.
         assertFalse("The API should not record a counter if metric is cancelled",
@@ -99,7 +96,6 @@ class TimespanMetricTypeTest {
         // assertEquals(1, testGetNumRecordedErrors(metric, ErrorType.InvalidValue))
     }
 
-    @Ignore("TimespanMetricType is a stub")
     @Test(expected = NullPointerException::class)
     fun `testGetValue() throws NullPointerException if nothing is stored`() {
         val metric = TimespanMetricType(
@@ -113,7 +109,6 @@ class TimespanMetricTypeTest {
         metric.testGetValue()
     }
 
-    @Ignore("TimespanMetricType is a stub")
     @Test
     fun `The API saves to secondary pings`() {
         // Define a timespan metric, which will be stored in "store1" and "store2"
@@ -127,15 +122,14 @@ class TimespanMetricTypeTest {
         )
 
         // Record a timespan.
-        metric.start(this)
-        metric.stopAndSum(this)
+        metric.start()
+        metric.stop()
 
         // Check that data was properly recorded in the second ping.
         assertTrue(metric.testHasValue("store2"))
         assertTrue(metric.testGetValue("store2") >= 0)
     }
 
-    @Ignore("TimespanMetricType is a stub")
     @Test
     fun `Records an error if started twice`() {
         // Define a timespan metric, which will be stored in "store1" and "store2"
@@ -149,14 +143,59 @@ class TimespanMetricTypeTest {
         )
 
         // Record a timespan.
-        metric.start(this)
-        metric.start(this)
-        metric.stopAndSum(this)
+        metric.start()
+        metric.start()
+        metric.stop()
 
         // Check that data was properly recorded in the second ping.
         assertTrue(metric.testHasValue("store2"))
         assertTrue(metric.testGetValue("store2") >= 0)
         // TODO
         // assertEquals(1, testGetNumRecordedErrors(metric, ErrorType.InvalidValue))
+    }
+
+    @Test
+    fun `test setRawNanos`() {
+        val timespanNanos = 6 * 1000000000L
+
+        val metric = TimespanMetricType(
+            false,
+            "telemetry",
+            Lifetime.Ping,
+            "explicit_timespan",
+            listOf("store1"),
+            timeUnit = TimeUnit.Second
+        )
+
+        // This should have no effect
+        metric.start()
+        metric.stop()
+
+        // TODO(bug 1562859): setRawNanos currently overwrites. Is that ok?
+        metric.setRawNanos(timespanNanos)
+        assertEquals(6, metric.testGetValue())
+    }
+
+    @Test
+    fun `test setRawNanos followed by other API`() {
+        val timespanNanos = 6 * 1000000000L
+
+        val metric = TimespanMetricType(
+            false,
+            "telemetry",
+            Lifetime.Ping,
+            "explicit_timespan_1",
+            listOf("store1"),
+            timeUnit = TimeUnit.Second
+        )
+
+        metric.setRawNanos(timespanNanos)
+        assertEquals(6, metric.testGetValue())
+
+        // TODO(bug 1562859): start/stop does not overwrite. Correct behavior?
+        metric.start()
+        metric.stop()
+        val value = metric.testGetValue()
+        assertEquals(6, value)
     }
 }

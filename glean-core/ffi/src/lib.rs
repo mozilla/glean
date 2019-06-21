@@ -21,6 +21,7 @@ mod labeled;
 mod ping_type;
 mod string;
 mod string_list;
+mod timespan;
 mod uuid;
 
 use handlemap_ext::HandleMapExtension;
