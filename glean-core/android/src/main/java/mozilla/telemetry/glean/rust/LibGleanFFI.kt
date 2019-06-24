@@ -210,7 +210,28 @@ internal interface LibGleanFFI : Library {
 
     fun glean_string_list_test_get_value_as_json_string(glean_handle: Long, metric_id: Long, storage_name: String): Pointer?
 
-    // Labeld Counter
+    // UUID
+
+    fun glean_new_uuid_metric(
+        category: String,
+        name: String,
+        send_in_pings: StringArray,
+        send_in_pings_len: Int,
+        lifetime: Int,
+        disabled: Byte
+    ): Long
+
+    fun glean_destroy_uuid_metric(handle: Long, error: RustError.ByReference)
+
+    fun glean_uuid_should_record(glean_handle: Long, metric_id: Long): Byte
+
+    fun glean_uuid_set(glean_handle: Long, metric_id: Long, value: String)
+
+    fun glean_uuid_test_has_value(glean_handle: Long, metric_id: Long, storage_name: String): Byte
+
+    fun glean_uuid_test_get_value(glean_handle: Long, metric_id: Long, storage_name: String): Pointer?
+
+    // Labeled Counter
 
     fun glean_new_labeled_counter_metric(
         category: String,
