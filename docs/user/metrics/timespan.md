@@ -1,7 +1,5 @@
 # Timespan
 
-**STATUS: [Not implemented.](https://bugzilla.mozilla.org/show_bug.cgi?id=1552863)**
-
 Timespans are used to make a summed measurement of how much time is spent in a particular task. 
 
 To measure the distribution of multiple timespans, see [Timing Distributions](timing_distribution.md). To record absolute times, see [Datetimes](datetime.md).
