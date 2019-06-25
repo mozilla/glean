@@ -1,7 +1,5 @@
 # Timing Distribution
 
-**STATUS: [Not implemented.](https://bugzilla.mozilla.org/show_bug.cgi?id=1552865)**
-
 Timing distributions are used to accumulate and store time measurement, for analyzing distributions of the timing data.
 
 To measure the distribution of multiple timespans, see [Timing Distributions](timing_distribution.md). To record absolute times, see [Datetimes](datetime.md).

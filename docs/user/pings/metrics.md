@@ -1,7 +1,5 @@
 # The `metrics** ping
 
-**STATUS: [Not implemented.](https://bugzilla.mozilla.org/show_bug.cgi?id=1551159)**
-
 ## Description
 The `metrics` ping is intended for all of the metrics that are explicitly set by the application or are included in the application's `metrics.yaml` file (except events). 
 The reported data is tied to the ping's *measurement window*, which is the time between the collection of two `metrics` ping. 
