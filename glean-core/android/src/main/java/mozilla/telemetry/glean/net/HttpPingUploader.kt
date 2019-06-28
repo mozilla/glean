@@ -88,17 +88,12 @@ internal open class HttpPingUploader : PingUploader {
             "X-Client-Version" to BuildConfig.LIBRARY_VERSION
         )
 
-        var endpoint = config.serverEndpoint
+        val endpoint = config.serverEndpoint
 
         // If there is a pingTag set, then this header needs to be added in order to flag pings
         // for "debug view" use.
         config.pingTag?.let {
             headers.append("X-Debug-ID", it)
-
-            // NOTE: Tagged pings must be redirected to the GCP endpoint as the AWS endpoint isn't
-            // configured to handle them.  This may pose an issue with testing if a local server
-            // is used to capture pings.
-            endpoint = Configuration.DEFAULT_DEBUGVIEW_ENDPOINT
         }
 
         return Request(
