@@ -23,7 +23,7 @@ implementation "org.mozilla.components:service-glean:{latest-version}"
 ### Integrating with the build system
 
 In order for Glean to work, a Python environment must be accessible at build time.
-This is done automatically by the [`com.jetbrains.python.envs`](https://github.com/JetBrains/gradle-python-envs/) plugin. 
+This is done automatically by the [`com.jetbrains.python.envs`](https://github.com/JetBrains/gradle-python-envs/) plugin.
 The plugin **must** be manually enabled by adding the following `plugins` block at the top of the `build.gradle` file for your app module.
 
 ```Groovy
@@ -39,7 +39,7 @@ This script can be referenced directly from the GitHub repo, as shown below:
 apply from: 'https://github.com/mozilla/glean/raw/v{latest-version}/glean-core/android/sdk_generator.gradle'
 ```
 
-**Important:** the `{latest-version}` placeholder in the above link should be replaced with the version number of the Glean library used by the project. 
+> **Important:** the `{latest-version}` placeholder in the above link should be replaced with the version number of the Glean library used by the project.
 For example, if version *0.34.2* is used, then the include directive becomes:
 
 ```Groovy
@@ -48,18 +48,18 @@ apply from: 'https://github.com/mozilla/glean/raw/v0.34.2/glean-core/android/sdk
 
 ### Adding new metrics
 
-All metrics that your project collects must be defined in a `metrics.yaml` file. 
-This file should be at the root of the module (the same directory as the `build.gradle` file you updated). 
-The format of that file is documented [here](https://mozilla.github.io/glean_parser/metrics-yaml.html).
+All metrics that your project collects must be defined in a `metrics.yaml` file.
+This file should be at the root of the module (the same directory as the `build.gradle` file you updated).
+The format of that file is documented [with `glean_parser`](https://mozilla.github.io/glean_parser/metrics-yaml.html).
 To learn more, see [adding new metrics](adding-new-metrics.md).
 
-**Important**: as stated [here](#before-using-the-library), any new data collection requires documentation and data-review. This is also required for any new metric automatically collected by Glean.
+> **Important**: as stated [above](#before-using-glean), any new data collection requires documentation and data-review. This is also required for any new metric automatically collected by Glean.
 
 ### Adding custom pings
 
-Please refer to the custom pings documentation [here](pings/custom.md).
+Please refer to the [custom pings documentation](pings/custom.md).
 
-**Important**: as stated [here](#before-using-the-library), any new data collection, including new custom pings, requires documentation and data-review. This is also required for any new ping automatically collected by Glean.
+> **Important**: as stated [above](#before-using-glean), any new data collection, including new custom pings, requires documentation and data-review. This is also required for any new ping automatically collected by Glean.
 
 ### Testing metrics
 
@@ -69,7 +69,7 @@ In order to make testing metrics easier 'out of the box', all metrics include a 
 
 In order for data to be collected from your project, metadata must be added to `probe_scraper`.
 
-These specific steps are described in [the probe_scraper documentation](https://github.com/mozilla/probe-scraper#adding-a-new-glean-repository).
+These specific steps are described in [the `probe_scraper` documentation](https://github.com/mozilla/probe-scraper#adding-a-new-glean-repository).
 
 ## Application-specific steps
 
@@ -108,10 +108,10 @@ class SampleApplication : Application() {
 
 Once initialized, if collection is enabled, Glean will automatically start collecting [baseline metrics](pings/metrics.md) and sending its [pings](pings/index.md).
 
-Glean should be initialized as soon as possible, and importantly, before any other libraries in the application start using Glean. 
+Glean should be initialized as soon as possible, and importantly, before any other libraries in the application start using Glean.
 Library code should never call `Glean.initialize`, since it should be called exactly once per application.
 
-**Note**: if the application has the concept of release channels and knows which channel it is on at run-time, then it can provide Glean with this information by setting it as part of the `Configuration` object parameter of the `Glean.initialize` method. For example:
+> **Note**: if the application has the concept of release channels and knows which channel it is on at run-time, then it can provide Glean with this information by setting it as part of the `Configuration` object parameter of the `Glean.initialize` method. For example:
 
 ```Kotlin
 Glean.initialize(applicationContext, Configuration(channel = "beta"))
@@ -119,11 +119,10 @@ Glean.initialize(applicationContext, Configuration(channel = "beta"))
 
 ### Enabling and disabling metrics
 
-`Glean.setUploadEnabled()` should be called in response to the user enabling or disabling telemetry.  
+`Glean.setUploadEnabled()` should be called in response to the user enabling or disabling telemetry.
 This method should also be called at least once prior to calling `Glean.initialize()`.
 
 The application should provide some form of user interface to call this method.
 
 When going from enabled to disabled, all pending events, metrics and pings are cleared, except for `first_run_date`.
 When re-enabling, core Glean metrics will be recomputed at that time.
-

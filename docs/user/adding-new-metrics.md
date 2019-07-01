@@ -10,7 +10,7 @@ When adding a new metric, the workflow is:
 * Add a new entry to [`metrics.yaml`](#The-metricsyaml-file).
 * Add code to your project to record into the metric by calling Glean.
 
-**Important**: Any new data collection requires documentation and data-review.
+> **Important**: Any new data collection requires documentation and data-review.
 This is also required for any new metric automatically collected by Glean.
 
 ## The `metrics.yaml` file
