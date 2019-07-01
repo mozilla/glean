@@ -4,6 +4,7 @@
 
 use crate::metrics::Metric;
 use crate::metrics::MetricType;
+use crate::storage::StorageManager;
 use crate::CommonMetricData;
 use crate::Glean;
 
@@ -52,7 +53,7 @@ impl UuidMetric {
     /// ## Arguments
     ///
     /// * `glean` - The Glean instance this metric belongs to.
-    pub fn generate(&self, storage: &Glean) -> uuid::Uuid {
+    pub fn generate_and_set(&self, storage: &Glean) -> uuid::Uuid {
         let uuid = uuid::Uuid::new_v4();
         self.set(storage, uuid);
         uuid
@@ -78,5 +79,18 @@ impl UuidMetric {
                     Metric::Uuid(new_value)
                 }
             })
+    }
+
+    /// **Test-only API (exported for FFI purposes).**
+    ///
+    /// Get the currently stored value as a string.
+    ///
+    /// This doesn't clear the stored value.
+    pub fn test_get_value(&self, glean: &Glean, storage_name: &str) -> Option<String> {
+        match StorageManager.snapshot_metric(glean.storage(), storage_name, &self.meta.identifier())
+        {
+            Some(Metric::Uuid(s)) => Some(s),
+            _ => None,
+        }
     }
 }

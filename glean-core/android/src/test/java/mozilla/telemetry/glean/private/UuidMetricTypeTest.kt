@@ -10,22 +10,17 @@
 
 package mozilla.telemetry.glean.private
 
-// import kotlinx.coroutines.ExperimentalCoroutinesApi
-// import kotlinx.coroutines.ObsoleteCoroutinesApi
 import mozilla.telemetry.glean.resetGlean
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Assert.assertFalse
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.lang.NullPointerException
 import java.util.UUID
 
-// @ObsoleteCoroutinesApi
-// @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
 class UuidMetricTypeTest {
 
@@ -34,7 +29,6 @@ class UuidMetricTypeTest {
         resetGlean()
     }
 
-    @Ignore("UUIDMetricType is a stub")
     @Test
     fun `The API saves to its storage engine`() {
         // Define a 'uuidMetric' uuid metric, which will be stored in "store1"
@@ -45,6 +39,9 @@ class UuidMetricTypeTest {
             name = "uuid_metric",
             sendInPings = listOf("store1")
         )
+
+        // Check that there is no UUID recorded
+        assertFalse(uuidMetric.testHasValue())
 
         // Record two uuids of the same type, with a little delay.
         val uuid = uuidMetric.generateAndSet()
@@ -61,7 +58,6 @@ class UuidMetricTypeTest {
         assertEquals(uuid2, uuidMetric.testGetValue())
     }
 
-    @Ignore("UUIDMetricType is a stub")
     @Test
     fun `uuids with no lifetime must not record data`() {
         // Define a 'uuidMetric' uuid metric, which will be stored in
@@ -81,7 +77,6 @@ class UuidMetricTypeTest {
             uuidMetric.testHasValue())
     }
 
-    @Ignore("UUIDMetricType is a stub")
     @Test
     fun `disabled uuids must not record data`() {
         // Define a 'uuidMetric' uuid metric, which will be stored in "store1". It's disabled
@@ -101,7 +96,6 @@ class UuidMetricTypeTest {
             uuidMetric.testHasValue())
     }
 
-    @Ignore("UUIDMetricType is a stub")
     @Test(expected = NullPointerException::class)
     fun `testGetValue() throws NullPointerException if nothing is stored`() {
         val uuidMetric = UuidMetricType(
@@ -114,7 +108,6 @@ class UuidMetricTypeTest {
         uuidMetric.testGetValue()
     }
 
-    @Ignore("UUIDMetricType is a stub")
     @Test
     fun `The API saves to secondary pings`() {
         // Define a 'uuidMetric' uuid metric, which will be stored in "store1" and "store2"
