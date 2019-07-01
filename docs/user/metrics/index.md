@@ -42,7 +42,7 @@ Labeled metrics come in two forms:
   If a label that isn't part of this set is used at run time, it is converted to the special label `__other__`.
   
 - **Dynamic labels**: The labels aren't known at build time, so are set at run time.
-  Only the first 16 labels seen by Glean will be tracked. After that, any additional labels are converted to the special label `__other__`.
+  Only the first 16 labels seen by the Glean SDK will be tracked. After that, any additional labels are converted to the special label `__other__`.
 
 ---
 

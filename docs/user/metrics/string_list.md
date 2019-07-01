@@ -49,7 +49,7 @@ assertEquals(listOf("Google", "DuckDuckGo"), Search.engines.testGetValue())
 
 ## Limits
 
-* Fixed maximum string length: 50. Longer strings are truncated. For the original Kotlin implementation of Glean, this is measured in Unicode characters. For the Rust implementation, this is measured in the number of bytes when the string is encoded in UTF-8.
+* Fixed maximum string length: 50. Longer strings are truncated. For the original Kotlin implementation of the Glean SDK, this is measured in Unicode characters. For the Rust implementation, this is measured in the number of bytes when the string is encoded in UTF-8.
 
 * Fixed maximum list length: 20 items. Additional strings are dropped.
 

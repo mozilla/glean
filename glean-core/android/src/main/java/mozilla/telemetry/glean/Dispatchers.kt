@@ -40,11 +40,11 @@ internal object Dispatchers {
         }
 
         /**
-         * Helper function to ensure Glean is being used in testing mode and async
-         * jobs are being run synchronously.  This should be called from every method
-         * in the testing API to make sure that the results of the main API can be
-         * tested as expected.
-        */
+         * Helper function to ensure the Glean SDK is being used in testing
+         * mode and async jobs are being run synchronously.  This should be
+         * called from every method in the testing API to make sure that the
+         * results of the main API can be tested as expected.
+         */
         @VisibleForTesting(otherwise = VisibleForTesting.NONE)
         fun assertInTestingMode() {
             assert(
@@ -56,7 +56,8 @@ internal object Dispatchers {
         }
 
         /**
-         * Enable testing mode, which makes all of the Glean public API synchronous.
+         * Enable testing mode, which makes all of the Glean SDK public API
+         * synchronous.
          *
          * @param enabled whether or not to enable the testing mode
          */

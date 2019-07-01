@@ -2,7 +2,7 @@
 
 ## Before using Glean
 
-Products using Glean to collect telemetry **must**:
+Products using the Glean SDK to collect telemetry **must**:
 
 - add documentation for any new metric collected with the library in its repository (see [an example](pings/index.md));
 - go through data review for the newly collected data by following [this process](https://wiki.mozilla.org/Firefox/Data_Collection);
@@ -22,7 +22,7 @@ implementation "org.mozilla.components:service-glean:{latest-version}"
 
 ### Integrating with the build system
 
-In order for Glean to work, a Python environment must be accessible at build time.
+In order for the Glean SDK to generate an API for your metrics, a Python environment must be accessible at build time.
 This is done automatically by the [`com.jetbrains.python.envs`](https://github.com/JetBrains/gradle-python-envs/) plugin.
 The plugin **must** be manually enabled by adding the following `plugins` block at the top of the `build.gradle` file for your app module.
 
@@ -32,14 +32,14 @@ plugins {
 }
 ```
 
-Right before the end of the same file, the Glean build script must be included.
+Right before the end of the same file, the Glean SDK build script must be included.
 This script can be referenced directly from the GitHub repo, as shown below:
 
 ```Groovy
 apply from: 'https://github.com/mozilla/glean/raw/v{latest-version}/glean-core/android/sdk_generator.gradle'
 ```
 
-> **Important:** the `{latest-version}` placeholder in the above link should be replaced with the version number of the Glean library used by the project.
+> **Important:** the `{latest-version}` placeholder in the above link should be replaced with the version number of the Glean SDK used by the project.
 For example, if version *0.34.2* is used, then the include directive becomes:
 
 ```Groovy
@@ -53,13 +53,13 @@ This file should be at the root of the module (the same directory as the `build.
 The format of that file is documented [with `glean_parser`](https://mozilla.github.io/glean_parser/metrics-yaml.html).
 To learn more, see [adding new metrics](adding-new-metrics.md).
 
-> **Important**: as stated [above](#before-using-glean), any new data collection requires documentation and data-review. This is also required for any new metric automatically collected by Glean.
+> **Important**: as stated [above](#before-using-glean), any new data collection requires documentation and data-review. This is also required for any new metric automatically collected by the Glean SDK.
 
 ### Adding custom pings
 
 Please refer to the [custom pings documentation](pings/custom.md).
 
-> **Important**: as stated [above](#before-using-glean), any new data collection, including new custom pings, requires documentation and data-review. This is also required for any new ping automatically collected by Glean.
+> **Important**: as stated [above](#before-using-glean), any new data collection, including new custom pings, requires documentation and data-review. This is also required for any new ping automatically collected by the Glean SDK.
 
 ### Testing metrics
 
@@ -73,13 +73,13 @@ These specific steps are described in [the `probe_scraper` documentation](https:
 
 ## Application-specific steps
 
-The following steps are required for Glean-using applications, but not libraries.
+The following steps are required for applications using the Glean SDK, but not libraries.
 
-### Initializing Glean
+### Initializing the Glean SDK
 
-Glean should only be initialized from the main application, not individual libraries.  If you are adding Glean support to a library, you can safely skip this section.
+The Glean SDK should only be initialized from the main application, not individual libraries.  If you are adding Glean support to a library, you can safely skip this section.
 
-Before any data collection can take place, Glean **must** be initialized from the application.
+Before any data collection can take place, the Glean SDK **must** be initialized from the application.
 An excellent place to perform this operation is within the `onCreate` method of the class that extends Android's `Application` class.
 
 ```Kotlin
@@ -106,12 +106,12 @@ class SampleApplication : Application() {
 }
 ```
 
-Once initialized, if collection is enabled, Glean will automatically start collecting [baseline metrics](pings/metrics.md) and sending its [pings](pings/index.md).
+Once initialized, if collection is enabled, the Glean SDK will automatically start collecting [baseline metrics](pings/metrics.md) and sending its [pings](pings/index.md).
 
-Glean should be initialized as soon as possible, and importantly, before any other libraries in the application start using Glean.
+The Glean SDK should be initialized as soon as possible, and importantly, before any other libraries in the application start using Glean.
 Library code should never call `Glean.initialize`, since it should be called exactly once per application.
 
-> **Note**: if the application has the concept of release channels and knows which channel it is on at run-time, then it can provide Glean with this information by setting it as part of the `Configuration` object parameter of the `Glean.initialize` method. For example:
+> **Note**: if the application has the concept of release channels and knows which channel it is on at run-time, then it can provide the Glean SDK with this information by setting it as part of the `Configuration` object parameter of the `Glean.initialize` method. For example:
 
 ```Kotlin
 Glean.initialize(applicationContext, Configuration(channel = "beta"))

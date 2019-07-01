@@ -1,6 +1,6 @@
-# Debugging products using Glean
+# Debugging products using the Glean SDK
 
-Glean exports the `GleanDebugActivity` that can be used to toggle debugging features on or off. 
+The Glean SDK exports the `GleanDebugActivity` that can be used to toggle debugging features on or off. 
 Users can invoke this special activity, at run-time, using the following [`adb`](https://developer.android.com/studio/command-line/adb) command:
 
 `adb shell am start -n [applicationId]/mozilla.components.service.glean.debug.GleanDebugActivity [extra keys]`
@@ -14,7 +14,7 @@ In the above:
 
     |key|type|description|
     |---|----|-----------|
-    | logPings | boolean (--ez) | If set to `true`, Glean dumps pings to logcat; defaults to `false` |
+    | logPings | boolean (--ez) | If set to `true`, pings are dumped to logcat; defaults to `false` |
     | sendPing | string (--es) | Sends the ping with the given name immediately |
     | tagPings | string (--es) | Tags all outgoing pings as debug pings to make them available for real-time validation. The value must match the pattern `[a-zA-Z0-9-]{1,20}` |
 

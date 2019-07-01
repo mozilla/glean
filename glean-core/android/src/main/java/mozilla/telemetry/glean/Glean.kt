@@ -56,11 +56,12 @@ open class GleanInternalAPI internal constructor () {
     private val pingTypeQueue: MutableList<PingType> = mutableListOf()
 
     /**
-     * Initialize Glean.
+     * Initialize the Glean SDK.
      *
      * This should only be initialized once by the application, and not by
-     * libraries using Glean. A message is logged to error and no changes are made
-     * to the state if initialize is called a more than once.
+     * libraries using the Glean SDK. A message is logged to error and no
+     * changes are made to the state if initialize is called a more than
+     * once.
      *
      * A LifecycleObserver will be added to send pings when the application goes
      * into the background.
@@ -113,17 +114,17 @@ open class GleanInternalAPI internal constructor () {
     }
 
     /**
-     * Returns true if the Glean library has been initialized.
+     * Returns true if the Glean SDK has been initialized.
      */
     internal fun isInitialized(): Boolean {
         return handle != 0L
     }
 
     /**
-     * Register the pings generated from `pings.yaml` with Glean.
+     * Register the pings generated from `pings.yaml` with the Glean SDK.
      *
      * @param pings The `Pings` object generated for your library or application
-     * by Glean.
+     * by the Glean SDK.
      */
     fun registerPings(pings: Any) {
         // Instantiating the Pings object to send this function is enough to
