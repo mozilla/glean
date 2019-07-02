@@ -1,6 +1,6 @@
 # glean-core - Rust component
 
-The majority of Glean is implemented as a Rust component, to be usable across all platforms.
+The majority of the Glean SDK is implemented as a Rust component, to be usable across all platforms.
 
 This includes:
 

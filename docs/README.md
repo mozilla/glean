@@ -1,8 +1,8 @@
-# Glean
+# Glean SDK
 
 ![Glean logo](glean.jpeg)
 
-_Modern Firefox Telemetry for mobile platforms_
+_Modern telemetry for mobile platforms_
 
 The `Glean SDK` is a modern approach for a mobile Telemetry library and is part of the [Glean project](https://docs.telemetry.mozilla.org/concepts/glean/glean.html).
 It started out as an [android-components library](https://github.com/mozilla-mobile/android-components/tree/master/components/service/glean), written purely in Kotlin to be used on Android.

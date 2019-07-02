@@ -43,7 +43,7 @@ fun onLoginCancel(e: Event) {
 }
 ```
 
-The times reported in Glean will be the sum of all of these timespans recorded during the lifetime of the ping.
+The times reported in the Glean ping will be the sum of all of these timespans recorded during the lifetime of the ping.
 
 There are test APIs available too:
 

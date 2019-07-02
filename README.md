@@ -1,8 +1,8 @@
-# Glean
+# Glean SDK
 
 ![Glean logo](docs/glean.jpeg)
 
-_Modern Firefox Telemetry for mobile platforms_
+_Modern telemetry for mobile platforms_
 
 
 ---

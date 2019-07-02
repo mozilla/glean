@@ -49,7 +49,7 @@ assertEquals("login_opened", first.name)
 
 * When 500 events are queued on the client, and events pings is immediately sent.
 
-* Event timestamps use a system timer that is guaranteed to be monotonic only within a particular boot of the device. Therefore, if there are any unsent recorded events on disk when the application starts, any pings containing those events are sent immediately, so that Glean can start over using a new timer and events based on different timers are never sent within the same ping.
+* Event timestamps use a system timer that is guaranteed to be monotonic only within a particular boot of the device. Therefore, if there are any unsent recorded events on disk when the application starts, any pings containing those events are sent immediately, so that the Glean SDK can start over using a new timer and events based on different timers are never sent within the same ping.
   
 ## Examples
 

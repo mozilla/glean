@@ -12,7 +12,7 @@
 //!
 //! All documentation can be found online:
 //!
-//! ## [The Glean Book](https://mozilla.github.io/glean)
+//! ## [The Glean SDK Book](https://mozilla.github.io/glean)
 
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};

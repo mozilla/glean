@@ -8,10 +8,10 @@ When adding a new metric, the workflow is:
 
 * Decide on which [metric type](metrics/index.md) you want to use.
 * Add a new entry to [`metrics.yaml`](#The-metricsyaml-file).
-* Add code to your project to record into the metric by calling Glean.
+* Add code to your project to record into the metric by calling the Glean SDK.
 
 > **Important**: Any new data collection requires documentation and data-review.
-This is also required for any new metric automatically collected by Glean.
+This is also required for any new metric automatically collected by the Glean SDK.
 
 ## The `metrics.yaml` file
 

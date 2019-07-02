@@ -1,6 +1,6 @@
 # Adding a new metric type
 
-Data in Glean is stored in so-called metrics.
+Data in the Glean SDK is stored in so-called metrics.
 You can find the full list of implemented metric types [in the user overview](../../user/metrics/index.md).
 
 Adding a new metric type involves defining the metric type's API, its persisted and in-memory storage as well as its serialization into the ping payload.
@@ -43,7 +43,7 @@ impl CounterMetric {
 }
 ```
 
-Implement each method for the type. The first argument to accept should always be `glean: &Glean`, that is: a reference to the Glean object, used to access the storage:
+Implement each method for the type. The first argument to accept should always be `glean: &Glean`, that is: a reference to the `Glean` object, used to access the storage:
 
 ```rust,noplaypen
 impl CounterMetric { // same block as above
