@@ -1,5 +1,7 @@
 # Contributing to the Glean SDK
 
+> **Note:** This document describes contributing to the cross-platform implementation of the Glean SDK. To contribute to the Android-specific implementation, see [android-components](https://github.com/mozilla-mobile/android-components).
+
 Anyone is welcome to help with the Glean SDK project. Feel free to get in touch with other community members on IRC
 or through issues here on GitHub.
 

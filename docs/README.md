@@ -5,11 +5,11 @@
 _Modern telemetry for mobile platforms_
 
 The `Glean SDK` is a modern approach for a mobile Telemetry library and is part of the [Glean project](https://docs.telemetry.mozilla.org/concepts/glean/glean.html).
-It started out as an [android-components library](https://github.com/mozilla-mobile/android-components/tree/master/components/service/glean), written purely in Kotlin to be used on Android.
 
-The `Glean SDK` is a work-in-progress to transform the concepts behind the `Glean SDK` into a cross-platform library based on a low-level [Rust](https://www.rust-lang.org/) library and the necessary platform integrations for Android and iOS (and beyond...).
+There currently two independent implementations of the Glean SDK, both sharing the documentation here:
 
-**Note: The cross-platform `Glean SDK` project is in development. It's not finished, and not used. Some of this documentation refers to features that were implemented in an earlier Android-specific version of the Glean SDK, but are not yet implemented in this version.**
+- An Android-only implementation in [android-components](https://github.com/mozilla-mobile/android-components/tree/master/components/service/glean).
+- A [cross-platform implementation](https://github.com/mozilla/glean/).  (This implementation is currently under development and not ready for use).
 
 To contact us you can:
 - Find us on the Mozilla Slack in *#glean*, on [Mozilla IRC](https://wiki.mozilla.org/IRC) in *#telemetry*.
