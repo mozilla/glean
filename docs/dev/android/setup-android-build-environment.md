@@ -1,5 +1,7 @@
 # Setup the Android Build Environment
 
+> **Important:** This documentation refers to setting up the development environment for the [cross-platform implementation of the Glean SDK](https://github.com/mozilla/glean).  Instructions for setting up the implementation in android-components is documented in the [android-components repository](https://github.com/mozilla-mobile/android-components).
+
 ## Doing a local build of the Android Components:
 
 This document describes how to make local builds of the Android components in

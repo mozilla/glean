@@ -4,14 +4,6 @@
 
 _Modern telemetry for mobile platforms_
 
-
----
-
-**Note: This new approach for the Glean SDK is currently in development and not yet ready for use.
-The working and supported library is the [Glean SDK in android-components][glean-ac].**
-
----
-
 ## Documentation
 
 All documentation is available online:
@@ -20,22 +12,21 @@ All documentation is available online:
 
 ## Overview
 
-This repository is used to build the client-side cross-platform Telemetry library part of [Glean](https://docs.telemetry.mozilla.org/concepts/glean/glean.html), called the `Glean SDK`.
+Refer to the documentation for [using and developing the Glean SDK](book).
 
-The code is organized as follows:
+For an overview of Glean beyond just the SDK, see the [section in the Firefox data docs](https://docs.telemetry.mozilla.org/concepts/glean/glean.html).
+
+There currently two independent implementations of the Glean SDK:
+
+- An Android-only implementation in [android-components](https://github.com/mozilla-mobile/android-components/tree/master/components/service/glean).
+- A [cross-platform implementation](https://github.com/mozilla/glean/). (This implementation is currently under development and not ready for use).
+
+The code in this repository for the cross-platform implementation is organized as follows:
 
 * [./glean-core/](glean-core) contains the source for the low-level Rust library.
 * [./glean-core/ffi](glean-core/ffi) contains the mapping into a C FFI.
 * [./glean-core/android](glean-core/android) contains the Kotlin bindings for use by Android applications.
 * [./glean-core/ios](glean-core/ios) contains the Swift bindings for use by iOS applications.
-
-This repository also hosts the documentation for the `Glean SDK`:
-
-* [The Glean SDK book][book] - Documentation on using and developing Glean SDK.
-* [Documentation of the Rust crate][rustdoc].
-* [Documentation of the Kotlin library][ktdoc].
-
-For an overview of Glean, see the [section in the Firefox data docs](https://docs.telemetry.mozilla.org/concepts/glean/glean.html).
 
 ## Contact
 
