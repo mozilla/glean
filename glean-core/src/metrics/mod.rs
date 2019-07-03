@@ -97,7 +97,9 @@ impl Metric {
             Metric::String(s) => json!(s),
             Metric::StringList(v) => json!(v),
             Metric::Uuid(s) => json!(s),
-            Metric::Timespan(time, time_unit) => json!(time_unit.duration_convert(*time)),
+            Metric::Timespan(time, time_unit) => {
+                json!({"value": time_unit.duration_convert(*time), "time_unit": time_unit})
+            }
         }
     }
 }

@@ -53,7 +53,7 @@ fn serializer_should_correctly_serialize_timespans() {
             .unwrap();
 
         assert_eq!(
-            json!({"timespan": {"telemetry.timespan_metric": duration}}),
+            json!({"timespan": {"telemetry.timespan_metric": { "value": duration, "time_unit": "nanosecond" }}}),
             snapshot
         );
     }
