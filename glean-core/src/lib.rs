@@ -25,6 +25,7 @@ mod database;
 mod error;
 mod error_recording;
 mod first_run;
+mod histogram;
 mod internal_metrics;
 pub mod metrics;
 pub mod ping;
