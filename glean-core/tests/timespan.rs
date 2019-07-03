@@ -16,7 +16,7 @@ use glean_core::{CommonMetricData, Glean, Lifetime};
 // Tests ported from glean-ac
 
 #[test]
-fn serializer_should_correctly_serialize_counters() {
+fn serializer_should_correctly_serialize_timespans() {
     let (_t, tmpname) = tempdir();
 
     let duration = 60;
