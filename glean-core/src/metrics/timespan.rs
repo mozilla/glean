@@ -44,6 +44,10 @@ impl TimespanMetric {
     }
 
     /// Start tracking time for the provided metric.
+    ///
+    /// This records an error if it's already tracking time (i.e. start was already
+    /// called with no corresponding `stop`): in that case the original
+    /// start time will be preserved.
     pub fn set_start(&self, glean: &Glean, start_time: u64) {
         if !self.should_record(glean) {
             return;
@@ -64,7 +68,7 @@ impl TimespanMetric {
         *stored_time = Some(start_time);
     }
 
-    /// Stop tracking time for the provided metric.
+    /// Stop tracking time for the provided metric. Sets the metric to the elapsed time.
     ///
     /// This will record an error if no `start` was called.
     pub fn set_stop(&self, glean: &Glean, stop_time: u64) {
@@ -85,18 +89,19 @@ impl TimespanMetric {
         self.set_raw(glean, duration, false);
     }
 
-    /// Abort a running timer.
+    /// Abort a previous `start` call. No error is recorded if no `start` was called.
     pub fn cancel(&self) {
         let mut start_time = self.start_time.lock().unwrap();
         *start_time = None;
     }
 
     /// Explicitly set the timespan value.
+    ///
     /// This API should only be used if your library or application requires recording
     /// times in a way that can not make use of `start`/`stop`/`cancel`.
     ///
     /// Care should be taken using this if the ping lifetime might contain more than one
-    /// timespan measurement.  To be safe, `set_raw` should generally be followed by
+    /// timespan measurement. To be safe, `set_raw` should generally be followed by
     /// sending a custom ping containing the timespan.
     ///
     /// ## Arguments
