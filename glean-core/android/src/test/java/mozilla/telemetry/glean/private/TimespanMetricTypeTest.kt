@@ -92,7 +92,7 @@ class TimespanMetricTypeTest {
         // Check that data was not recorded.
         assertFalse("The API should not record a counter if metric is cancelled",
             metric.testHasValue())
-        // TODO
+        // TODO(bug 1556963)
         // assertEquals(1, testGetNumRecordedErrors(metric, ErrorType.InvalidValue))
     }
 
@@ -150,7 +150,7 @@ class TimespanMetricTypeTest {
         // Check that data was properly recorded in the second ping.
         assertTrue(metric.testHasValue("store2"))
         assertTrue(metric.testGetValue("store2") >= 0)
-        // TODO
+        // TODO(bug 1556963)
         // assertEquals(1, testGetNumRecordedErrors(metric, ErrorType.InvalidValue))
     }
 
