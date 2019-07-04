@@ -32,19 +32,19 @@ pub enum ErrorKind {
     Lifetime(i32),
 
     /// FFI-Support error
-    #[fail(display = "Invalid handle")]
+    #[fail(display = "Invalid handle: {}", _0)]
     Handle(HandleError),
 
     /// IO error
-    #[fail(display = "An I/O error occurred.")]
+    #[fail(display = "An I/O error occurred: {}", _0)]
     IoError(io::Error),
 
     /// IO error
-    #[fail(display = "An Rkv error occurred.")]
+    #[fail(display = "An Rkv error occurred: {}", _0)]
     Rkv(StoreError),
 
     /// JSON error
-    #[fail(display = "A JSON error occurred.")]
+    #[fail(display = "A JSON error occurred: {}", _0)]
     Json(serde_json::error::Error),
 
     /// TimeUnit conversion failed
