@@ -195,6 +195,12 @@ impl PingMaker {
         Ok(pings_dir)
     }
 
+    fn get_tmp_dir(&self, data_path: &Path) -> std::io::Result<PathBuf> {
+        let pings_dir = data_path.join("tmp");
+        create_dir_all(&pings_dir)?;
+        Ok(pings_dir)
+    }
+
     /// Store a ping to disk in the pings directory.
     pub fn store_ping(
         &self,
@@ -204,10 +210,11 @@ impl PingMaker {
         ping_content: &JsonValue,
     ) -> std::io::Result<()> {
         let pings_dir = self.get_pings_dir(data_path)?;
+        let temp_dir = self.get_tmp_dir(data_path)?;
 
         // Write to a temporary location and then move when done,
         // for transactional writes.
-        let temp_ping_path = std::env::temp_dir().join(doc_id);
+        let temp_ping_path = temp_dir.join(doc_id);
         let ping_path = pings_dir.join(doc_id);
 
         {
