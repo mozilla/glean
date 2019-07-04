@@ -116,8 +116,8 @@ jobs:
       - image: circleci/android:api-28-ndk
     steps:
       - checkout
-      - run: ./gradlew ktlint
-      - run: ./gradlew detekt
+      - run: ./gradlew --no-daemon ktlint
+      - run: ./gradlew --no-daemon detekt
 
   Android tests:
     docker:
@@ -126,7 +126,7 @@ jobs:
       - android-setup
       - run:
           name: Android tests
-          command: ./gradlew test
+          command: ./gradlew --no-daemon test
       - store_artifacts:
           path: glean-core/android/build/reports/tests
 
@@ -162,7 +162,7 @@ jobs:
       - android-setup
       - run:
           name: Build Kotlin documentation
-          command: ./gradlew docs
+          command: ./gradlew --no-daemon docs
       - persist_to_workspace:
           root: build/
           paths: docs/javadoc
