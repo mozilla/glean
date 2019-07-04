@@ -107,6 +107,11 @@ impl TimespanMetric {
             return;
         }
 
+        if self.start_time.is_some() {
+            log::warn!("Timespan already running. Raw value not recorded.");
+            return;
+        }
+
         glean.storage().record_with(&self.meta, |old_value| {
             if overwrite {
                 Metric::Timespan(elapsed, self.time_unit)
