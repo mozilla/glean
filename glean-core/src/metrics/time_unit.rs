@@ -2,14 +2,17 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;
+use std::time::Duration;
+
+use serde::{Deserialize, Serialize};
 
 use crate::error::{Error, ErrorKind};
 
 /// Different resolutions supported by the time related
 /// metric types (e.g. DatetimeMetric).
 #[derive(Copy, Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "lowercase")]
 pub enum TimeUnit {
     /// Truncate to nanosecond precision.
     Nanosecond,
@@ -40,6 +43,28 @@ impl TimeUnit {
             Minute => "%Y-%m-%dT%H:%M%:z",
             Hour => "%Y-%m-%dT%H%:z",
             Day => "%Y-%m-%d%:z",
+        }
+    }
+
+    /// Convert a duration to the requested time unit.
+    ///
+    /// ## Arguments
+    ///
+    /// * `duration` - the duration to convert.
+    ///
+    /// ## Return value
+    ///
+    /// The integer representation of the converted duration.
+    pub fn duration_convert(self, duration: Duration) -> u64 {
+        use TimeUnit::*;
+        match self {
+            Nanosecond => duration.as_nanos() as u64,
+            Microsecond => duration.as_micros() as u64,
+            Millisecond => duration.as_millis() as u64,
+            Second => duration.as_secs(),
+            Minute => duration.as_secs() / 60,
+            Hour => duration.as_secs() / 60 / 60,
+            Day => duration.as_secs() / 60 / 60 / 24,
         }
     }
 }

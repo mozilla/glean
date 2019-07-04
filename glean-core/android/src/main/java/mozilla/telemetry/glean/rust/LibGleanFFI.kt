@@ -231,7 +231,35 @@ internal interface LibGleanFFI : Library {
 
     fun glean_uuid_test_get_value(glean_handle: Long, metric_id: Long, storage_name: String): Pointer?
 
-    // Labeled Counter
+    // Timespan
+
+    fun glean_new_timespan_metric(
+        category: String,
+        name: String,
+        send_in_pings: StringArray,
+        send_in_pings_len: Int,
+        lifetime: Int,
+        disabled: Byte,
+        time_unit: Int
+    ): Long
+
+    fun glean_destroy_timespan_metric(handle: Long, error: RustError.ByReference)
+
+    fun glean_timespan_should_record(glean_handle: Long, metric_id: Long): Byte
+
+    fun glean_timespan_set_start(glean_handle: Long, metric_id: Long, start_time: Long)
+
+    fun glean_timespan_set_stop(glean_handle: Long, metric_id: Long, stop_time: Long)
+
+    fun glean_timespan_cancel(metric_id: Long)
+
+    fun glean_timespan_set_raw_nanos(glean_handle: Long, metric_id: Long, elapsed_nanos: Long)
+
+    fun glean_timespan_test_has_value(glean_handle: Long, metric_id: Long, storage_name: String): Byte
+
+    fun glean_timespan_test_get_value(glean_handle: Long, metric_id: Long, storage_name: String): Long
+
+    // Labeld Counter
 
     fun glean_new_labeled_counter_metric(
         category: String,

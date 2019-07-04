@@ -1,10 +1,10 @@
 # Timespan
 
-Timespans are used to make a summed measurement of how much time is spent in a particular task. 
+Timespans are used to make a measurement of how much time is spent in a particular task.
 
 To measure the distribution of multiple timespans, see [Timing Distributions](timing_distribution.md). To record absolute times, see [Datetimes](datetime.md).
 
-## Configuration 
+## Configuration
 
 Timespans have a required `time_unit` parameter to specify the smallest unit of resolution that the timespan will record. The allowed values for `time_unit` are:
 
@@ -38,22 +38,22 @@ Each time interval that the timespan metric records must be associated with an o
 import org.mozilla.yourApplication.GleanMetrics.Auth
 
 fun onShowLogin(e: Event) {
-    Auth.loginTime.start(e.target)
+    Auth.loginTime.start()
     // ...
 }
 
 fun onLogin(e: Event) {
-    Auth.loginTime.stopAndSum(e.target)
+    Auth.loginTime.stop()
     // ...
 }
 
 fun onLoginCancel(e: Event) {
-    Auth.loginTime.cancel(e.target)
+    Auth.loginTime.cancel()
     // ...
 }
 ```
 
-The time reported in the telemetry ping will be the sum of all of these timespans recorded during the lifetime of the ping.
+The time reported in the telemetry ping will be timespan recorded during the lifetime of the ping.
 
 There are test APIs available too:
 
@@ -77,7 +77,7 @@ assertTrue(Auth.loginTime.testGetValue() > 0)
 
 ## Recorded errors
 
-* `invalid_value`: If recording a negative timespan. 
+* `invalid_value`: If recording a negative timespan.
 
 ## Reference
 
