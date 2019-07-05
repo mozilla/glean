@@ -208,7 +208,11 @@ internal interface LibGleanFFI : Library {
 
     fun glean_string_list_test_has_value(glean_handle: Long, metric_id: Long, storage_name: String): Byte
 
-    fun glean_string_list_test_get_value_as_json_string(glean_handle: Long, metric_id: Long, storage_name: String): Pointer?
+    fun glean_string_list_test_get_value_as_json_string(
+        glean_handle: Long,
+        metric_id: Long,
+        storage_name: String
+    ): Pointer?
 
     // UUID
 
