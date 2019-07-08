@@ -17,7 +17,7 @@ import mozilla.telemetry.glean.rust.toByte
  * The Ping API only exposes the [send] method, which schedules a ping for sending.
  */
 class PingType(
-    name: String,
+    internal val name: String,
     includeClientId: Boolean
 ) {
     internal var handle: Long

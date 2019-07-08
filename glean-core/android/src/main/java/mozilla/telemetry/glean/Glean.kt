@@ -289,7 +289,11 @@ open class GleanInternalAPI internal constructor () {
         sendPings(listOf(Pings.baseline, Pings.events))
     }
 
-    private fun <T> sendPingsGeneric(pings: List<T>, pingSender: (T) -> Boolean) = Dispatchers.API.launch {
+    private fun <T> sendPingsGeneric(
+        pings: List<T>,
+        pingSender: (T) -> Boolean,
+        nameFn: (T) -> String
+    ) = Dispatchers.API.launch {
         if (!isInitialized()) {
             Log.e(LOG_TAG, "Glean must be initialized before sending pings.")
             return@launch
@@ -308,7 +312,7 @@ open class GleanInternalAPI internal constructor () {
             if (pingSender(ping)) {
                 sentPing = true
             } else {
-                Log.d(LOG_TAG, "No content for ping '$ping.name', therefore no ping queued.")
+                Log.d(LOG_TAG, "No content for ping '${nameFn(ping)}', therefore no ping queued.")
             }
         }
 
@@ -338,8 +342,9 @@ open class GleanInternalAPI internal constructor () {
                 (configuration.logPings).toByte()
             ).toBoolean()
         }
+        val nameFn: (PingType) -> String = { it.name }
 
-        return sendPingsGeneric(pings, sendPing)
+        return sendPingsGeneric(pings, sendPing, nameFn)
     }
 
     /**
@@ -366,8 +371,9 @@ open class GleanInternalAPI internal constructor () {
                 (configuration.logPings).toByte()
             ).toBoolean()
         }
+        val nameFn: (String) -> String = { it }
 
-        return sendPingsGeneric(pingNames, sendPing)
+        return sendPingsGeneric(pingNames, sendPing, nameFn)
     }
 
     /**
