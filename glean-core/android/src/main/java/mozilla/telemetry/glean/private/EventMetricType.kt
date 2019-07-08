@@ -5,8 +5,18 @@
 package mozilla.telemetry.glean.private
 
 // import android.os.SystemClock
-import android.util.Log
+import android.os.SystemClock
 import androidx.annotation.VisibleForTesting
+import com.sun.jna.StringArray
+import mozilla.telemetry.glean.Dispatchers
+import mozilla.telemetry.glean.Glean
+import mozilla.telemetry.glean.rust.LibGleanFFI
+import mozilla.telemetry.glean.rust.getAndConsumeRustString
+import mozilla.telemetry.glean.rust.toBoolean
+import mozilla.telemetry.glean.rust.toByte
+import org.json.JSONArray
+import org.json.JSONObject
+
 // import mozilla.components.service.glean.Dispatchers
 // import mozilla.components.service.glean.storages.EventsStorageEngine
 // import mozilla.components.service.glean.storages.RecordedEventData
@@ -40,20 +50,44 @@ enum class NoExtraKeys(val value: Int) {
  * The Events API only exposes the [record] method, which takes care of validating the input
  * data and making sure that limits are enforced.
  */
-class EventMetricType<ExtraKeysEnum : Enum<ExtraKeysEnum>>(
-    disabled: Boolean,
-    category: String,
-    lifetime: Lifetime,
-    name: String,
-    private val sendInPings: List<String>,
-    allowedExtraKeys: List<String> = listOf()
+class EventMetricType<ExtraKeysEnum : Enum<ExtraKeysEnum>> internal constructor(
+    private var handle: Long,
+    private val sendInPings: List<String>
 ) {
-    companion object {
-        private val LOG_TAG: String = "glean/EventMetricType"
+    /**
+    * The public constructor used by automatically generated metrics.
+    */
+    constructor(
+        disabled: Boolean,
+        category: String,
+        lifetime: Lifetime,
+        name: String,
+        sendInPings: List<String>,
+        allowedExtraKeys: List<String>? = null
+    ) : this(handle = 0, sendInPings = sendInPings) {
+        val ffiPingsList = StringArray(sendInPings.toTypedArray(), "utf-8")
+        val ffiAllowedExtraKeys = allowedExtraKeys?.let {
+            StringArray(it.toTypedArray(), "utf-8")
+        }
+        val ffiAllowedExtraKeysLen = allowedExtraKeys?.let { it.size } ?: 0
+        this.handle = LibGleanFFI.INSTANCE.glean_new_event_metric(
+            category = category,
+            name = name,
+            send_in_pings = ffiPingsList,
+            send_in_pings_len = sendInPings.size,
+            lifetime = lifetime.ordinal,
+            disabled = disabled.toByte(),
+            allowed_extra_keys = ffiAllowedExtraKeys,
+            allowed_extra_keys_len = ffiAllowedExtraKeysLen
+        )
     }
 
-    init {
-        // TODO
+    private fun shouldRecord(): Boolean {
+        if (!Glean.isInitialized()) {
+            return false
+        }
+
+        return LibGleanFFI.INSTANCE.glean_event_should_record(Glean.handle, this.handle).toBoolean()
     }
 
     /**
@@ -64,45 +98,36 @@ class EventMetricType<ExtraKeysEnum : Enum<ExtraKeysEnum>>(
      *              The maximum length for values is defined by [MAX_LENGTH_EXTRA_KEY_VALUE]
      */
     fun record(extra: Map<ExtraKeysEnum, String>? = null) {
-        // if (!shouldRecord(logger)) {
-        //     return
-        // }
+        if (!shouldRecord()) {
+            return
+        }
 
-        // // We capture the event time now, since we don't know when the async code below
-        // // might get executed.
-        // val monotonicElapsed = SystemClock.elapsedRealtime()
+        // We capture the event time now, since we don't know when the async code below
+        // might get executed.
+        val timestamp = SystemClock.elapsedRealtime()
 
-        // // Convert the extra key enums to strings before passing to the storage engine
-        // val extraStrings = extra?.let { extra ->
-        //     // There are two extra "keys" in play here:
-        //     //   1. The Kotlin enumeration names, in CamelCase
-        //     //   2. The keys sent in the ping, in snake_case
-        //     // Here we need to get (2) to send in the ping.
-        //     if (extra.size > 0) {
-        //         val result = mutableMapOf<String, String>()
-        //         for ((k, v) in extra) {
-        //             allowedExtraKeys.getOrNull(k.ordinal)?.let { stringKey ->
-        //                 result[stringKey] = v
-        //             } ?: run {
-        //                 logger.debug("No string value for enum ${k.ordinal}")
-        //             }
-        //         }
-        //         result
-        //     } else {
-        //         null
-        //     }
-        // }
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        Dispatchers.API.launch {
+            // The Map is sent over FFI as a pair of parallel Arrays
+            var keys: IntArray? = null
+            var values: StringArray? = null
+            var len: Int = 0
+            if (extra != null) {
+                val extraList = extra.toList()
+                keys = IntArray(extra.size, { extraList[it].first.ordinal })
+                values = StringArray(Array<String>(extra.size, { extraList[it].second }), "utf-8")
+                len = extra.size
+            }
 
-        // @Suppress("EXPERIMENTAL_API_USAGE")
-        // Dispatchers.API.launch {
-        //     // Delegate storing the event to the storage engine.
-        //     EventsStorageEngine.record(
-        //         metricData = this@EventMetricType,
-        //         monotonicElapsedMs = monotonicElapsed,
-        //         extra = extraStrings
-        //     )
-        // }
-        Log.e(LOG_TAG, "EventMetricType.record is a stub")
+            LibGleanFFI.INSTANCE.glean_event_record(
+                Glean.handle,
+                this@EventMetricType.handle,
+                timestamp,
+                keys,
+                values,
+                len
+            )
+        }
     }
 
     /**
@@ -117,15 +142,39 @@ class EventMetricType<ExtraKeysEnum : Enum<ExtraKeysEnum>>(
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun testHasValue(pingName: String = sendInPings.first()): Boolean {
-        // @Suppress("EXPERIMENTAL_API_USAGE")
-        // Dispatchers.API.assertInTestingMode()
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        Dispatchers.API.assertInTestingMode()
 
-        // val snapshot = EventsStorageEngine.getSnapshot(pingName, false) ?: return false
-        // return snapshot.any { event ->
-        //     event.identifier == identifier
-        // }
-        assert(false, { "Testing API not implementated for EventMetricType" })
-        return false
+        return LibGleanFFI.INSTANCE.glean_event_test_has_value(
+            Glean.handle,
+            this.handle,
+            pingName
+        ).toBoolean()
+    }
+
+    /**
+    * Deserializes an event in JSON into a RecordedEventData object.
+    *
+    * @param jsonContent The JSONObject containing the data for the event.
+    * @return [RecordedEventData] representing the event data
+    */
+    private fun deserializeEvent(jsonContent: JSONObject): RecordedEventData {
+        val extra: Map<String, String>? = jsonContent.optJSONObject("extra")?.let {
+            val extraValues: MutableMap<String, String> = mutableMapOf()
+            it.names()?.let { names ->
+                for (i in 0 until names.length()) {
+                    extraValues[names.getString(i)] = it.getString(names.getString(i))
+                }
+            }
+            extraValues
+        }
+
+        return RecordedEventData(
+            jsonContent.getString("category"),
+            jsonContent.getString("name"),
+            jsonContent.getLong("timestamp"),
+            extra
+        )
     }
 
     /**
@@ -140,13 +189,29 @@ class EventMetricType<ExtraKeysEnum : Enum<ExtraKeysEnum>>(
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun testGetValue(pingName: String = sendInPings.first()): List<RecordedEventData> {
-        // @Suppress("EXPERIMENTAL_API_USAGE")
-        // Dispatchers.API.assertInTestingMode()
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        Dispatchers.API.assertInTestingMode()
 
-        // return EventsStorageEngine.getSnapshot(pingName, false)!!.filter { event ->
-        //     event.identifier == identifier
-        // }
-        assert(false, { "Testing API not implementated for EventMetricType" })
-        return listOf(RecordedEventData("LOL", "BAR", 0, null))
+        val ptr = LibGleanFFI.INSTANCE.glean_event_test_get_value_as_json_string(
+            Glean.handle,
+            this.handle,
+            pingName
+        )!!
+
+        var jsonRes: JSONArray
+        try {
+            jsonRes = JSONArray(ptr.getAndConsumeRustString())
+        } catch (e: org.json.JSONException) {
+            throw NullPointerException()
+        }
+        if (jsonRes.length() == 0) {
+            throw NullPointerException()
+        }
+
+        val result: MutableList<RecordedEventData> = mutableListOf()
+        for (i in 0..jsonRes.length() - 1) {
+            result.add(deserializeEvent(jsonRes.getJSONObject(i)))
+        }
+        return result
     }
 }

@@ -18,6 +18,7 @@ mod macros;
 mod boolean;
 mod counter;
 mod datetime;
+mod event;
 mod handlemap_ext;
 mod labeled;
 mod ping_type;
@@ -49,6 +50,8 @@ unsafe fn from_raw_string_array(arr: RawStringArray, len: i32) -> Vec<String> {
         .map(|&p| FfiStr::from_raw(p).into_string())
         .collect()
 }
+
+type RawIntArray = *const i32;
 
 /// Initialize the logging system based on the target platform. This ensures
 /// that logging is shown when executing the Glean SDK unit tests.
@@ -92,6 +95,11 @@ pub extern "C" fn glean_initialize(
         log::info!("Glean initialized");
         Ok(glean)
     })
+}
+
+#[no_mangle]
+pub extern "C" fn glean_on_ready_to_send_pings(glean_handle: u64) {
+    GLEAN.call_infallible(glean_handle, |glean| glean.on_ready_to_send_pings())
 }
 
 #[no_mangle]

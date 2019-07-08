@@ -54,6 +54,8 @@
  */
 typedef const char *FfiStr;
 
+typedef const int32_t *RawIntArray;
+
 typedef const char *const *RawStringArray;
 
 void glean_boolean_set(uint64_t glean_handle, uint64_t metric_id, uint8_t value);
@@ -80,11 +82,47 @@ uint8_t glean_counter_test_has_value(uint64_t glean_handle,
                                      uint64_t metric_id,
                                      FfiStr storage_name);
 
+void glean_datetime_set(uint64_t glean_handle,
+                        uint64_t metric_id,
+                        int32_t year,
+                        uint32_t month,
+                        uint32_t day,
+                        uint32_t hour,
+                        uint32_t minute,
+                        uint32_t second,
+                        int64_t nano,
+                        int32_t offset_seconds);
+
+uint8_t glean_datetime_should_record(uint64_t glean_handle, uint64_t metric_id);
+
+char *glean_datetime_test_get_value_as_string(uint64_t glean_handle,
+                                              uint64_t metric_id,
+                                              FfiStr storage_name);
+
+uint8_t glean_datetime_test_has_value(uint64_t glean_handle,
+                                      uint64_t metric_id,
+                                      FfiStr storage_name);
+
 /**
  * Initialize the logging system based on the target platform. This ensures
- * that logging is shown when executing glean unit tests.
+ * that logging is shown when executing Glean unit tests.
  */
 void glean_enable_logging(void);
+
+void glean_event_record(uint64_t glean_handle,
+                        uint64_t metric_id,
+                        uint64_t timestamp,
+                        RawIntArray extra_keys,
+                        RawStringArray extra_values,
+                        int32_t extra_len);
+
+uint8_t glean_event_should_record(uint64_t glean_handle, uint64_t metric_id);
+
+char *glean_event_test_get_value_as_json_string(uint64_t glean_handle,
+                                                uint64_t metric_id,
+                                                FfiStr storage_name);
+
+uint8_t glean_event_test_has_value(uint64_t glean_handle, uint64_t metric_id, FfiStr storage_name);
 
 uint64_t glean_initialize(FfiStr data_dir, FfiStr application_id, uint8_t upload_enabled);
 
@@ -104,7 +142,31 @@ uint64_t glean_new_counter_metric(FfiStr category,
                                   int32_t lifetime,
                                   uint8_t disabled);
 
+uint64_t glean_new_datetime_metric(FfiStr category,
+                                   FfiStr name,
+                                   RawStringArray send_in_pings,
+                                   int32_t send_in_pings_len,
+                                   int32_t lifetime,
+                                   uint8_t disabled,
+                                   int32_t time_unit);
+
+uint64_t glean_new_event_metric(FfiStr category,
+                                FfiStr name,
+                                RawStringArray send_in_pings,
+                                int32_t send_in_pings_len,
+                                int32_t lifetime,
+                                uint8_t disabled,
+                                RawStringArray extra_keys,
+                                int32_t extra_keys_len);
+
 uint64_t glean_new_ping_type(FfiStr ping_name, uint8_t include_client_id);
+
+uint64_t glean_new_string_list_metric(FfiStr category,
+                                      FfiStr name,
+                                      RawStringArray send_in_pings,
+                                      int32_t send_in_pings_len,
+                                      int32_t lifetime,
+                                      uint8_t disabled);
 
 uint64_t glean_new_string_metric(FfiStr category,
                                  FfiStr name,
@@ -112,6 +174,15 @@ uint64_t glean_new_string_metric(FfiStr category,
                                  int32_t send_in_pings_len,
                                  int32_t lifetime,
                                  uint8_t disabled);
+
+uint64_t glean_new_uuid_metric(FfiStr category,
+                               FfiStr name,
+                               RawStringArray send_in_pings,
+                               int32_t send_in_pings_len,
+                               int32_t lifetime,
+                               uint8_t disabled);
+
+void glean_on_ready_to_send_pings(uint64_t glean_handle);
 
 char *glean_ping_collect(uint64_t glean_handle, uint64_t ping_type_handle);
 
@@ -123,6 +194,23 @@ uint8_t glean_send_ping_by_name(uint64_t glean_handle, FfiStr ping_name, uint8_t
 
 void glean_set_upload_enabled(uint64_t glean_handle, uint8_t flag);
 
+void glean_string_list_add(uint64_t glean_handle, uint64_t metric_id, FfiStr value);
+
+void glean_string_list_set(uint64_t glean_handle,
+                           uint64_t metric_id,
+                           RawStringArray values,
+                           int32_t values_len);
+
+uint8_t glean_string_list_should_record(uint64_t glean_handle, uint64_t metric_id);
+
+char *glean_string_list_test_get_value_as_json_string(uint64_t glean_handle,
+                                                      uint64_t metric_id,
+                                                      FfiStr storage_name);
+
+uint8_t glean_string_list_test_has_value(uint64_t glean_handle,
+                                         uint64_t metric_id,
+                                         FfiStr storage_name);
+
 void glean_string_set(uint64_t glean_handle, uint64_t metric_id, FfiStr value);
 
 uint8_t glean_string_should_record(uint64_t glean_handle, uint64_t metric_id);
@@ -132,6 +220,14 @@ char *glean_string_test_get_value(uint64_t glean_handle, uint64_t metric_id, Ffi
 uint8_t glean_string_test_has_value(uint64_t glean_handle, uint64_t metric_id, FfiStr storage_name);
 
 uint8_t glean_test_has_ping_type(uint64_t glean_handle, FfiStr ping_name);
+
+void glean_uuid_set(uint64_t glean_handle, uint64_t metric_id, FfiStr value);
+
+uint8_t glean_uuid_should_record(uint64_t glean_handle, uint64_t metric_id);
+
+char *glean_uuid_test_get_value(uint64_t glean_handle, uint64_t metric_id, FfiStr storage_name);
+
+uint8_t glean_uuid_test_has_value(uint64_t glean_handle, uint64_t metric_id, FfiStr storage_name);
 
 void glean_destroy_glean(uint64_t handle, ExternError *error);
 void glean_destroy_boolean_metric(uint64_t handle, ExternError *error);

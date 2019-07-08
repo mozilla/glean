@@ -119,9 +119,8 @@ open class GleanInternalAPI internal constructor () {
         // schedulers. We should do something similar here as well.
         initializeCoreMetrics(applicationContext)
 
-        // TODO: 1552308 Sending pending events will be handled on the Rust side
         // Deal with any pending events so we can start recording new ones
-        // EventsStorageEngine.onReadyToSendPings(applicationContext)
+        LibGleanFFI.INSTANCE.glean_on_ready_to_send_pings(this.handle)
 
         // Set up information and scheduling for Glean owned pings. Ideally, the "metrics"
         // ping startup check should be performed before any other ping, since it relies

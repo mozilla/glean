@@ -5,12 +5,17 @@
 // #[allow(dead_code)] is required on this module as a workaround for
 // https://github.com/rust-lang/rust/issues/46379
 #![allow(dead_code)]
-use glean_core::Glean;
+use glean_core::{Glean, Result};
+
+use std::fs::{read_dir, OpenOptions};
+use std::io::{BufRead, BufReader};
+use std::path::Path;
 
 use chrono;
 use chrono::offset::TimeZone;
 use iso8601;
 use iso8601::Date::YMD;
+use serde_json::Value as JsonValue;
 
 use ctor::ctor;
 
@@ -62,4 +67,30 @@ pub fn iso8601_to_chrono(datetime: &iso8601::DateTime) -> chrono::DateTime<chron
             );
     };
     panic!("Unsupported datetime format");
+}
+
+/// Get a vector of the currently queued pings
+pub fn test_get_queued_pings(data_path: &Path) -> Result<Vec<(String, JsonValue)>> {
+    let pings_dir = data_path.join("pings");
+    let entries = read_dir(&pings_dir)?;
+    Ok(entries
+        .filter_map(|entry| entry.ok())
+        .filter(|entry| match entry.file_type() {
+            Ok(file_type) => file_type.is_file(),
+            Err(_) => false,
+        })
+        .filter_map(|entry| OpenOptions::new().read(true).open(entry.path()).ok())
+        .filter_map(|file| {
+            let mut lines = BufReader::new(file).lines();
+            if let (Some(Ok(url)), Some(Ok(json))) = (lines.next(), lines.next()) {
+                if let Ok(parsed_json) = serde_json::from_str::<JsonValue>(&json) {
+                    Some((url, parsed_json))
+                } else {
+                    None
+                }
+            } else {
+                None
+            }
+        })
+        .collect())
 }
