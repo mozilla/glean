@@ -136,7 +136,10 @@ class TimespanMetricType internal constructor(
 
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.launch {
-            LibGleanFFI.INSTANCE.glean_timespan_set_raw_nanos(Glean.handle, this@TimespanMetricType.handle, elapsedNanos)
+            LibGleanFFI.INSTANCE.glean_timespan_set_raw_nanos(
+                Glean.handle,
+                this@TimespanMetricType.handle,
+                elapsedNanos)
         }
     }
 

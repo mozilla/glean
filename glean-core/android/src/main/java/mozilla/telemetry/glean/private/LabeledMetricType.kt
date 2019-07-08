@@ -79,15 +79,15 @@ class LabeledMetricType<T>(
         return when (subMetric) {
             is CounterMetricType -> {
                 val handle = LibGleanFFI.INSTANCE.glean_labeled_counter_metric_get(Glean.handle, this.handle, label)
-                return CounterMetricType(handle = handle, sendInPings = sendInPings) as T
+                CounterMetricType(handle = handle, sendInPings = sendInPings) as T
             }
             is BooleanMetricType -> {
                 val handle = LibGleanFFI.INSTANCE.glean_labeled_boolean_metric_get(Glean.handle, this.handle, label)
-                return BooleanMetricType(handle = handle, sendInPings = sendInPings) as T
+                BooleanMetricType(handle = handle, sendInPings = sendInPings) as T
             }
             is StringMetricType -> {
                 val handle = LibGleanFFI.INSTANCE.glean_labeled_string_metric_get(Glean.handle, this.handle, label)
-                return StringMetricType(handle = handle, sendInPings = sendInPings) as T
+                StringMetricType(handle = handle, sendInPings = sendInPings) as T
             }
             else -> throw IllegalStateException(
                 "Can not create a labeled version of this metric type"

@@ -80,6 +80,7 @@ internal interface PingUploader {
      * @param processingCallback the callback that actually processes the file
      *
      */
+    @Suppress("ReturnCount")
     private fun processFile(
         file: File
     ): Boolean {

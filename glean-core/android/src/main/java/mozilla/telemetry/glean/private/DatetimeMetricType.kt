@@ -16,6 +16,7 @@ import mozilla.telemetry.glean.rust.getAndConsumeRustString
 import mozilla.telemetry.glean.rust.toBoolean
 import java.util.Calendar
 import java.util.Date
+import java.util.concurrent.TimeUnit as AndroidTimeUnit
 
 /**
  * This implements the developer facing API for recording datetime metrics.
@@ -102,8 +103,10 @@ class DatetimeMetricType internal constructor(
                 hour = value.get(Calendar.HOUR_OF_DAY),
                 minute = value.get(Calendar.MINUTE),
                 second = value.get(Calendar.SECOND),
-                nano = value.get(Calendar.MILLISECOND) * 1000000L,
-                offset_seconds = value.get(Calendar.ZONE_OFFSET).div(1000)
+                nano = AndroidTimeUnit.MILLISECONDS.toNanos(value.get(Calendar.MILLISECOND).toLong()),
+                offset_seconds = AndroidTimeUnit.MILLISECONDS.toSeconds(
+                        value.get(Calendar.ZONE_OFFSET).toLong()
+                ).toInt()
             )
         }
     }

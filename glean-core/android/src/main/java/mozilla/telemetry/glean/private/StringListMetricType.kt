@@ -140,7 +140,10 @@ class StringListMetricType(
         }
 
         val jsonRes: JSONArray
-        val ptr = LibGleanFFI.INSTANCE.glean_string_list_test_get_value_as_json_string(Glean.handle, this.handle, pingName)!!
+        val ptr = LibGleanFFI.INSTANCE.glean_string_list_test_get_value_as_json_string(
+            Glean.handle,
+            this.handle,
+            pingName)!!
         try {
             jsonRes = JSONArray(ptr.getAndConsumeRustString())
         } catch (e: org.json.JSONException) {

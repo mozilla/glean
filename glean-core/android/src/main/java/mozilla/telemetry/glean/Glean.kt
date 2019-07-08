@@ -85,7 +85,11 @@ open class GleanInternalAPI internal constructor () {
         this.configuration = configuration
 
         this.gleanDataDir = File(applicationContext.applicationInfo.dataDir, GLEAN_DATA_DIR)
-        handle = LibGleanFFI.INSTANCE.glean_initialize(this.gleanDataDir.path, applicationContext.packageName, uploadEnabled.toByte())
+        handle = LibGleanFFI.INSTANCE.glean_initialize(
+            this.gleanDataDir.path,
+            applicationContext.packageName,
+            uploadEnabled.toByte()
+        )
 
         // If any pings were registered before initializing, do so now
         this.pingTypeQueue.forEach { this.registerPingType(it) }

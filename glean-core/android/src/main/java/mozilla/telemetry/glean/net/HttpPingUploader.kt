@@ -111,6 +111,7 @@ internal open class HttpPingUploader : PingUploader {
     }
 
     @Throws(IOException::class)
+    @Suppress("ReturnCount")
     internal fun performUpload(client: Client, request: Request): Boolean {
         Log.d(LOG_TAG, "Submitting ping to: ${request.url}")
         client.fetch(request).use { response ->
