@@ -189,8 +189,22 @@ impl PingMaker {
             .map(|ping| ::serde_json::to_string_pretty(&ping).unwrap())
     }
 
+    /// Get path to a directory for ping storage.
+    ///
+    /// The directory will be created inside the `data_path`.
+    /// The `pings` directory (and its parents) is created if it does not exist.
     fn get_pings_dir(&self, data_path: &Path) -> std::io::Result<PathBuf> {
         let pings_dir = data_path.join("pings");
+        create_dir_all(&pings_dir)?;
+        Ok(pings_dir)
+    }
+
+    /// Get path to a directory for temporary storage.
+    ///
+    /// The directory will be created inside the `data_path`.
+    /// The `tmp` directory (and its parents) is created if it does not exist.
+    fn get_tmp_dir(&self, data_path: &Path) -> std::io::Result<PathBuf> {
+        let pings_dir = data_path.join("tmp");
         create_dir_all(&pings_dir)?;
         Ok(pings_dir)
     }
@@ -204,10 +218,11 @@ impl PingMaker {
         ping_content: &JsonValue,
     ) -> std::io::Result<()> {
         let pings_dir = self.get_pings_dir(data_path)?;
+        let temp_dir = self.get_tmp_dir(data_path)?;
 
         // Write to a temporary location and then move when done,
         // for transactional writes.
-        let temp_ping_path = std::env::temp_dir().join(doc_id);
+        let temp_ping_path = temp_dir.join(doc_id);
         let ping_path = pings_dir.join(doc_id);
 
         {
