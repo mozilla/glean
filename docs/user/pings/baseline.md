@@ -3,6 +3,7 @@
 ## Description
 
 This ping is intended to provide metrics that are managed by the library itself, and not explicitly set by the application or included in the application's `metrics.yaml` file.
+No `baseline` ping is sent if the application crashes, with the data from before the crash.
 
 ## Scheduling
 
