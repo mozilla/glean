@@ -54,7 +54,9 @@ A quick note about querying ping contents (i.e. for https://sql.telemetry.mozill
   },
   "metrics": {
     "string": {
-      "glean.baseline.locale": "en-US",
+      "glean.baseline.locale": "en-US"
+    },
+    "timespan": {
       "glean.baseline.duration": {
         "value": 52,
         "time_unit": "second"
