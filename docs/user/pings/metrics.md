@@ -1,10 +1,11 @@
-# The `metrics** ping
+# The `metrics` ping
 
 ## Description
 The `metrics` ping is intended for all of the metrics that are explicitly set by the application or are included in the application's `metrics.yaml` file (except events). 
 The reported data is tied to the ping's *measurement window*, which is the time between the collection of two `metrics` ping. 
 Ideally, this window is expected to be about 24 hours, given that the collection is scheduled daily at 4AM. 
 Data in the [`ping_info`](index.md#the-ping_info-section) section of the ping can be used to infer the length of this window.
+If the application crashes, unsent recorded metrics are sent along with the next `metrics` ping.
 
 ## Scheduling
 The desired behaviour is to collect the ping at the first available opportunity after 4AM local time on a new calendar day. 
