@@ -58,7 +58,7 @@ pub extern "C" fn glean_timespan_should_record(glean_handle: u64, metric_id: u64
 #[no_mangle]
 pub extern "C" fn glean_timespan_set_start(glean_handle: u64, metric_id: u64, start_time: u64) {
     GLEAN.call_infallible(glean_handle, |glean| {
-        TIMESPAN_METRICS.call_infallible(metric_id, |metric| {
+        TIMESPAN_METRICS.call_infallible_mut(metric_id, |metric| {
             metric.set_start(glean, start_time);
         })
     })
@@ -67,7 +67,7 @@ pub extern "C" fn glean_timespan_set_start(glean_handle: u64, metric_id: u64, st
 #[no_mangle]
 pub extern "C" fn glean_timespan_set_stop(glean_handle: u64, metric_id: u64, stop_time: u64) {
     GLEAN.call_infallible(glean_handle, |glean| {
-        TIMESPAN_METRICS.call_infallible(metric_id, |metric| {
+        TIMESPAN_METRICS.call_infallible_mut(metric_id, |metric| {
             metric.set_stop(glean, stop_time);
         })
     })
@@ -75,7 +75,7 @@ pub extern "C" fn glean_timespan_set_stop(glean_handle: u64, metric_id: u64, sto
 
 #[no_mangle]
 pub extern "C" fn glean_timespan_cancel(metric_id: u64) {
-    TIMESPAN_METRICS.call_infallible(metric_id, |metric| {
+    TIMESPAN_METRICS.call_infallible_mut(metric_id, |metric| {
         metric.cancel();
     })
 }

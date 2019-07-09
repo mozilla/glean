@@ -24,7 +24,7 @@ fn serializer_should_correctly_serialize_timespans() {
     {
         let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
 
-        let metric = TimespanMetric::new(
+        let mut metric = TimespanMetric::new(
             CommonMetricData {
                 name: "timespan_metric".into(),
                 category: "telemetry".into(),
@@ -63,7 +63,7 @@ fn serializer_should_correctly_serialize_timespans() {
 fn single_elapsed_time_must_be_recorded() {
     let (glean, _t) = new_glean();
 
-    let metric = TimespanMetric::new(
+    let mut metric = TimespanMetric::new(
         CommonMetricData {
             name: "timespan_metric".into(),
             category: "telemetry".into(),
@@ -92,7 +92,7 @@ fn single_elapsed_time_must_be_recorded() {
 fn second_timer_run_is_skipped() {
     let (glean, _t) = new_glean();
 
-    let metric = TimespanMetric::new(
+    let mut metric = TimespanMetric::new(
         CommonMetricData {
             name: "timespan_metric".into(),
             category: "telemetry".into(),
@@ -121,7 +121,7 @@ fn second_timer_run_is_skipped() {
 fn recorded_time_conforms_to_resolution() {
     let (glean, _t) = new_glean();
 
-    let ns_metric = TimespanMetric::new(
+    let mut ns_metric = TimespanMetric::new(
         CommonMetricData {
             name: "timespan_ns".into(),
             category: "telemetry".into(),
@@ -132,7 +132,7 @@ fn recorded_time_conforms_to_resolution() {
         TimeUnit::Nanosecond,
     );
 
-    let minute_metric = TimespanMetric::new(
+    let mut minute_metric = TimespanMetric::new(
         CommonMetricData {
             name: "timespan_m".into(),
             category: "telemetry".into(),
@@ -165,7 +165,7 @@ fn recorded_time_conforms_to_resolution() {
 fn cancel_does_not_store() {
     let (glean, _t) = new_glean();
 
-    let metric = TimespanMetric::new(
+    let mut metric = TimespanMetric::new(
         CommonMetricData {
             name: "timespan_metric".into(),
             category: "telemetry".into(),
@@ -186,7 +186,7 @@ fn cancel_does_not_store() {
 fn nothing_stored_before_stop() {
     let (glean, _t) = new_glean();
 
-    let metric = TimespanMetric::new(
+    let mut metric = TimespanMetric::new(
         CommonMetricData {
             name: "timespan_metric".into(),
             category: "telemetry".into(),
@@ -227,4 +227,29 @@ fn set_raw_time() {
 
     let time_in_ns = time.as_nanos() as u64;
     assert_eq!(Some(time_in_ns), metric.test_get_value(&glean, "store1"));
+}
+
+#[test]
+fn set_raw_time_does_nothing_when_timer_running() {
+    let (glean, _t) = new_glean();
+
+    let mut metric = TimespanMetric::new(
+        CommonMetricData {
+            name: "timespan_metric".into(),
+            category: "telemetry".into(),
+            send_in_pings: vec!["store1".into()],
+            disabled: false,
+            lifetime: Lifetime::Ping,
+        },
+        TimeUnit::Nanosecond,
+    );
+
+    let time = Duration::from_secs(42);
+
+    metric.set_start(&glean, 0);
+    metric.set_raw(&glean, time, false);
+    metric.set_stop(&glean, 60);
+
+    // We expect the start/stop value, not the raw value.
+    assert_eq!(Some(60), metric.test_get_value(&glean, "store1"));
 }
