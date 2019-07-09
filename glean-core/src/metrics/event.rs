@@ -5,7 +5,7 @@
 use std::collections::HashMap;
 use std::iter::Iterator;
 
-use serde_json::{json, Value as JsonValue};
+use serde_json::json;
 
 use crate::error_recording::{record_error, ErrorType};
 use crate::event_database::RecordedEventData;
@@ -49,14 +49,14 @@ impl EventMetric {
     ///
     /// ## Arguments
     ///
-    /// * `glean`:  The Glean instance this metric belongs to.
-    /// * `timestamp`: A monotonically increasing timestamp, in nanoseconds.
+    /// * `glean` - The Glean instance this metric belongs to.
+    /// * `timestamp` - A monotonically increasing timestamp, in nanoseconds.
     ///   This must be provided since the actual recording of the event may
     ///   happen some time later than the moment the event occurred.
-    /// * `extra`: A HashMap of (key, value) pairs. The key is an index
-    ///   into the metric's allowed_extra_keys vector where the key's string
+    /// * `extra` - A HashMap of (key, value) pairs. The key is an index
+    ///   into the metric's `allowed_extra_keys` vector where the key's string
     ///   is looked up.
-    pub fn record(&self, glean: &Glean, timestamp: u64, extra: Option<HashMap<usize, String>>) {
+    pub fn record(&self, glean: &Glean, timestamp: u64, extra: Option<HashMap<i32, String>>) {
         if !self.should_record(glean) {
             return;
         }
@@ -64,9 +64,9 @@ impl EventMetric {
         let extra_strings = extra.and_then(|extra| {
             Some(
                 extra
-                    .iter()
-                    .map(|(k, v)| (self.allowed_extra_keys.get(*k).unwrap(), v))
-                    .map(|(k, v)| (k.to_string(), self.truncate_value(glean, k, v).to_string()))
+                    .into_iter()
+                    .map(|(k, v)| (self.allowed_extra_keys.get(k as usize).unwrap(), v))
+                    .map(|(k, v)| (k.to_string(), self.truncate_value(glean, k, &v).to_string()))
                     .collect(),
             )
         });
@@ -76,6 +76,8 @@ impl EventMetric {
             .record(glean, &self.meta, timestamp, extra_strings);
     }
 
+    /// Truncates values to MAX_LENGTH_EXTRA_KEY_VALUE, and reports an error
+    /// when doing so.
     fn truncate_value<'a>(&self, glean: &Glean, key: &str, value: &'a str) -> &'a str {
         if value.len() > MAX_LENGTH_EXTRA_KEY_VALUE {
             let msg = format!(
@@ -119,14 +121,7 @@ impl EventMetric {
     ///
     /// This doesn't clear the stored value.
     pub fn test_get_value_as_json_string(&self, glean: &Glean, store_name: &str) -> Option<String> {
-        self.test_get_value(glean, store_name).and_then(|value| {
-            Some(
-                json!(value
-                    .iter()
-                    .map(|event| event.serialize())
-                    .collect::<JsonValue>())
-                .to_string(),
-            )
-        })
+        self.test_get_value(glean, store_name)
+            .and_then(|value| Some(json!(value).to_string()))
     }
 }

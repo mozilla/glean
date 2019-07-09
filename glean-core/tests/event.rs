@@ -59,7 +59,7 @@ fn record_properly_records_with_optional_arguments() {
         vec!["key1".into(), "key2".into()],
     );
 
-    let extra: HashMap<usize, String> = [(0, "value1".into()), (1, "value2".into())]
+    let extra: HashMap<i32, String> = [(0, "value1".into()), (1, "value2".into())]
         .iter()
         .cloned()
         .collect();
@@ -137,6 +137,7 @@ fn snapshot_correctly_clears_the_stores() {
         assert_eq!(1, s.as_array().unwrap().len());
         assert_eq!("telemetry", s[0]["category"]);
         assert_eq!("test_event_clear", s[0]["name"]);
+        println!("{:?}", s[0].get("extra"));
         assert!(s[0].get("extra").is_none());
     }
 }
@@ -174,14 +175,14 @@ fn test_sending_of_event_ping_when_it_fills_up() {
     // We send 510 events. We expect to get the first 500 in the ping and 10
     // remaining afterward
     for i in 0..510 {
-        let mut extra: HashMap<usize, String> = HashMap::new();
+        let mut extra: HashMap<i32, String> = HashMap::new();
         extra.insert(0, i.to_string());
         click.record(&glean, i, Some(extra));
     }
 
     assert_eq!(10, click.test_get_value(&glean, "events").unwrap().len());
 
-    let (url, json) = &test_get_queued_pings(glean.get_data_path()).unwrap()[0];
+    let (url, json) = &get_queued_pings(glean.get_data_path()).unwrap()[0];
     assert!(url.starts_with(format!("/submit/{}/events/", glean.get_application_id()).as_str()));
     assert_eq!(500, json["events"].as_array().unwrap().len());
 
@@ -221,7 +222,7 @@ fn extra_keys_must_be_recorded_and_truncated_if_needed() {
     );
 
     let test_value = "LeanGleanByFrank";
-    let mut extra: HashMap<usize, String> = HashMap::new();
+    let mut extra: HashMap<i32, String> = HashMap::new();
     extra.insert(0, test_value.to_string());
     extra.insert(1, test_value.to_string().repeat(10));
 

@@ -108,7 +108,8 @@ class EventMetricType<ExtraKeysEnum : Enum<ExtraKeysEnum>> internal constructor(
 
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.launch {
-            // The Map is sent over FFI as a pair of parallel Arrays
+            // The Map is sent over FFI as a pair of arrays, one containing the
+            // keys, and the other containing the values.
             var keys: IntArray? = null
             var values: StringArray? = null
             var len: Int = 0
@@ -155,7 +156,12 @@ class EventMetricType<ExtraKeysEnum : Enum<ExtraKeysEnum>> internal constructor(
     /**
     * Deserializes an event in JSON into a RecordedEventData object.
     *
-    * @param jsonContent The JSONObject containing the data for the event.
+    * @param jsonContent The JSONObject containing the data for the event. It is in
+    * the same format as an event sent in a ping, and has the following entries:
+    *   - timestamp (Int)
+    *   - category (String): The category of the event metric
+    *   - name (String): The name of the event metric
+    *   - extra (Map<String, String>?): Map of extra key/value pairs
     * @return [RecordedEventData] representing the event data
     */
     private fun deserializeEvent(jsonContent: JSONObject): RecordedEventData {
@@ -198,9 +204,8 @@ class EventMetricType<ExtraKeysEnum : Enum<ExtraKeysEnum>> internal constructor(
             pingName
         )!!
 
-        var jsonRes: JSONArray
-        try {
-            jsonRes = JSONArray(ptr.getAndConsumeRustString())
+        var jsonRes = try {
+            JSONArray(ptr.getAndConsumeRustString())
         } catch (e: org.json.JSONException) {
             throw NullPointerException()
         }
@@ -209,7 +214,7 @@ class EventMetricType<ExtraKeysEnum : Enum<ExtraKeysEnum>> internal constructor(
         }
 
         val result: MutableList<RecordedEventData> = mutableListOf()
-        for (i in 0..jsonRes.length() - 1) {
+        for (i in 0 until jsonRes.length()) {
             result.add(deserializeEvent(jsonRes.getJSONObject(i)))
         }
         return result

@@ -7,7 +7,7 @@
 #![allow(dead_code)]
 use glean_core::{Glean, Result};
 
-use std::fs::{read_dir, OpenOptions};
+use std::fs::{read_dir, File};
 use std::io::{BufRead, BufReader};
 use std::path::Path;
 
@@ -69,8 +69,8 @@ pub fn iso8601_to_chrono(datetime: &iso8601::DateTime) -> chrono::DateTime<chron
     panic!("Unsupported datetime format");
 }
 
-/// Get a vector of the currently queued pings
-pub fn test_get_queued_pings(data_path: &Path) -> Result<Vec<(String, JsonValue)>> {
+/// Get a vector of the currently queued pings.
+pub fn get_queued_pings(data_path: &Path) -> Result<Vec<(String, JsonValue)>> {
     let pings_dir = data_path.join("pings");
     let entries = read_dir(&pings_dir)?;
     Ok(entries
@@ -79,7 +79,7 @@ pub fn test_get_queued_pings(data_path: &Path) -> Result<Vec<(String, JsonValue)
             Ok(file_type) => file_type.is_file(),
             Err(_) => false,
         })
-        .filter_map(|entry| OpenOptions::new().read(true).open(entry.path()).ok())
+        .filter_map(|entry| File::open(entry.path()).ok())
         .filter_map(|file| {
             let mut lines = BufReader::new(file).lines();
             if let (Some(Ok(url)), Some(Ok(json))) = (lines.next(), lines.next()) {

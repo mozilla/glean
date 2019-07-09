@@ -2,9 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use std::collections::HashMap;
 use std::convert::TryFrom;
-use std::iter::Iterator;
 use std::os::raw::c_char;
 
 use ffi_support::{define_handle_map_deleter, ConcurrentHandleMap, FfiStr};
@@ -14,7 +12,9 @@ use glean_core::metrics::{EventMetric, MetricType};
 use glean_core::{CommonMetricData, Lifetime};
 
 use crate::handlemap_ext::HandleMapExtension;
-use crate::{from_raw_string_array, RawIntArray, RawStringArray, GLEAN};
+use crate::{
+    from_raw_int_array_and_string_array, from_raw_string_array, RawIntArray, RawStringArray, GLEAN,
+};
 
 lazy_static! {
     pub static ref EVENT_METRICS: ConcurrentHandleMap<EventMetric> = ConcurrentHandleMap::new();
@@ -57,28 +57,6 @@ pub extern "C" fn glean_event_should_record(glean_handle: u64, metric_id: u64) -
     })
 }
 
-/// Create a HashMap<usize, String> from a pair of C arrays.
-unsafe fn from_raw_int_string_arrays(
-    keys: RawIntArray,
-    values: RawStringArray,
-    len: i32,
-) -> Option<HashMap<usize, String>> {
-    if keys.is_null() || values.is_null() || len == 0 {
-        return None;
-    }
-
-    let keys_ptrs = std::slice::from_raw_parts(keys, len as usize);
-    let values_ptrs = std::slice::from_raw_parts(values, len as usize);
-
-    Some(
-        keys_ptrs
-            .iter()
-            .zip(values_ptrs.iter())
-            .map(|(&k, &v)| (k as usize, FfiStr::from_raw(v).into_string()))
-            .collect(),
-    )
-}
-
 #[no_mangle]
 pub extern "C" fn glean_event_record(
     glean_handle: u64,
@@ -91,7 +69,7 @@ pub extern "C" fn glean_event_record(
     GLEAN.call_infallible(glean_handle, |glean| {
         EVENT_METRICS.call_infallible(metric_id, |metric| {
             metric.record(glean, timestamp, unsafe {
-                from_raw_int_string_arrays(extra_keys, extra_values, extra_len)
+                from_raw_int_array_and_string_array(extra_keys, extra_values, extra_len)
             });
         })
     })

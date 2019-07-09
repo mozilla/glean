@@ -4,92 +4,39 @@
 
 use std::collections::HashMap;
 use std::fs;
-use std::fs::{create_dir_all, OpenOptions};
+use std::fs::{create_dir_all, File, OpenOptions};
 use std::io::BufRead;
 use std::io::BufReader;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::sync::RwLock;
 
-use serde_json::{json, Map as JsonMap, Value as JsonValue};
+use serde::{Deserialize, Serialize};
+use serde_json;
+use serde_json::{json, Value as JsonValue};
 
 use crate::CommonMetricData;
 use crate::Glean;
 use crate::Result;
 
-const TIMESTAMP_FIELD: &str = "timestamp";
-const CATEGORY_FIELD: &str = "category";
-const NAME_FIELD: &str = "name";
-const EXTRA_FIELD: &str = "extra";
-
-#[derive(Debug, Clone)]
+/// Represents the data for a single event.
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct RecordedEventData {
     pub timestamp: u64,
     pub category: String,
     pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub extra: Option<HashMap<String, String>>,
 }
 
 impl RecordedEventData {
-    /// Serialize an event to JSON
-    pub fn serialize(&self) -> JsonValue {
-        RecordedEventData::serialize_parts(self.timestamp, &self.category, &self.name, &self.extra)
-    }
-
     /// Serialize an event to JSON, adjusting its timestamp relative to a base timestamp
     pub fn serialize_relative(&self, timestamp_offset: u64) -> JsonValue {
-        RecordedEventData::serialize_parts(
-            self.timestamp - timestamp_offset,
-            &self.category,
-            &self.name,
-            &self.extra,
-        )
-    }
-
-    /// Internal function to perform the serialization to JSON
-    fn serialize_parts(
-        timestamp: u64,
-        category: &str,
-        name: &str,
-        extra: &Option<HashMap<String, String>>,
-    ) -> JsonValue {
-        let mut result = JsonMap::new();
-        result.insert(TIMESTAMP_FIELD.to_string(), json!(timestamp));
-        result.insert(CATEGORY_FIELD.to_string(), json!(category));
-        result.insert(NAME_FIELD.to_string(), json!(name));
-        if let Some(extra) = extra {
-            result.insert(
-                EXTRA_FIELD.to_string(),
-                JsonValue::Object(
-                    extra
-                        .iter()
-                        .map(|(k, v)| (k.clone(), json!(v)))
-                        .collect::<JsonMap<String, JsonValue>>(),
-                ),
-            );
-        }
-        JsonValue::Object(result)
-    }
-
-    /// Deserialize an event from JSON
-    pub fn deserialize(value: &JsonValue) -> Option<RecordedEventData> {
-        let extra = value
-            .get(EXTRA_FIELD.to_string())
-            .and_then(|extra| extra.as_object())
-            .and_then(|extra| {
-                Some(
-                    extra
-                        .iter()
-                        .filter(|(_, v)| v.as_str().is_some())
-                        .map(|(k, v)| (k.to_string(), v.as_str().unwrap().to_string()))
-                        .collect(),
-                )
-            });
-        Some(RecordedEventData {
-            timestamp: value.get(TIMESTAMP_FIELD.to_string())?.as_u64()?,
-            category: value.get(CATEGORY_FIELD.to_string())?.as_str()?.to_string(),
-            name: value.get(NAME_FIELD.to_string())?.as_str()?.to_string(),
-            extra,
+        json!(&RecordedEventData {
+            timestamp: self.timestamp - timestamp_offset,
+            category: self.category.clone(),
+            name: self.name.clone(),
+            extra: self.extra.clone(),
         })
     }
 }
@@ -99,11 +46,11 @@ impl RecordedEventData {
 /// So that the data survives shutting down of the application, events are stored
 /// in an append-only file on disk, in addition to the store in memory. Each line
 /// of this file records a single event in JSON, exactly as it will be sent in the
-/// ping.  There is one file per store.
+/// ping. There is one file per store.
 ///
 /// When restarting the application, these on-disk files are checked, and if any are
 /// found, they are loaded, queued for sending and flushed immediately before any
-/// further events are collected.  This is because the timestamps for these events
+/// further events are collected. This is because the timestamps for these events
 /// may have come from a previous boot of the device, and therefore will not be
 /// compatible with any newly-collected events.
 #[derive(Debug)]
@@ -111,6 +58,7 @@ pub struct EventDatabase {
     pub path: PathBuf,
     // The in-memory list of events
     event_stores: RwLock<HashMap<String, Vec<RecordedEventData>>>,
+    file_lock: RwLock<()>,
 }
 
 impl EventDatabase {
@@ -118,7 +66,7 @@ impl EventDatabase {
     ///
     /// # Arguments
     ///
-    /// - `data_path`: The directory to store events in. A new directory
+    /// * `data_path` - The directory to store events in. A new directory
     ///   `events` will be created inside of this directory.
     pub fn new(data_path: &str) -> Result<Self> {
         let path = Path::new(data_path).join("events");
@@ -127,6 +75,7 @@ impl EventDatabase {
         Ok(Self {
             path,
             event_stores: RwLock::new(HashMap::new()),
+            file_lock: RwLock::new(()),
         })
     }
 
@@ -144,7 +93,7 @@ impl EventDatabase {
     ///
     /// # Arguments
     ///
-    /// * `glean`:  The Glean instance.
+    /// * `glean` - The Glean instance.
     pub fn on_ready_to_send_pings(&self, glean: &Glean) {
         match self.load_events_from_disk() {
             Ok(_) => self.send_all_events(glean),
@@ -153,21 +102,18 @@ impl EventDatabase {
     }
 
     fn load_events_from_disk(&self) -> Result<()> {
+        let _lock = self.file_lock.read().unwrap();
         let mut db = self.event_stores.write().unwrap();
         for entry in fs::read_dir(&self.path)? {
             let entry = entry?;
             if entry.file_type()?.is_file() {
                 let store_name = entry.file_name().into_string()?;
-                let file = BufReader::new(OpenOptions::new().read(true).open(entry.path())?);
+                let file = BufReader::new(File::open(entry.path())?);
                 db.insert(
                     store_name,
                     file.lines()
                         .filter_map(|line| line.ok())
-                        .filter_map(|line| {
-                            println!("{}", line);
-                            serde_json::from_str::<JsonValue>(&line).ok()
-                        })
-                        .filter_map(|json| RecordedEventData::deserialize(&json))
+                        .filter_map(|line| serde_json::from_str::<RecordedEventData>(&line).ok())
                         .collect(),
                 );
             }
@@ -196,13 +142,13 @@ impl EventDatabase {
     ///
     /// # Arguments
     ///
-    /// - `glean`: The Glean instance.
-    /// - `meta`: The metadata about the event metric. Used to get the category,
+    /// * `glean` - The Glean instance.
+    /// * `meta` - The metadata about the event metric. Used to get the category,
     ///   name and stores for the metric.
-    /// - `timestamp`: The timestamp of the event, in nanoseconds. Must use a
+    /// * `timestamp` - The timestamp of the event, in nanoseconds. Must use a
     ///   monotonically increasing timer (this value is obtained on the
     ///   platform-specific side).
-    /// - `extra`: Extra data values, mapping strings to strings.
+    /// * `extra` - Extra data values, mapping strings to strings.
     pub fn record(
         &self,
         glean: &Glean,
@@ -216,7 +162,7 @@ impl EventDatabase {
             name: meta.name.to_string(),
             extra,
         };
-        let event_json = event.serialize().to_string();
+        let event_json = serde_json::to_string(&event).unwrap();
         let mut stores_to_send: Vec<&str> = Vec::new();
 
         {
@@ -247,13 +193,12 @@ impl EventDatabase {
 
     /// Writes an event to a single store on disk.
     ///
-    /// This assumes that the write lock in `self.event_stores` is already held.
-    ///
     /// # Arguments
     ///
-    /// - `store_name`: The name of the store.
-    /// - `event_json`: The event content, as a single-line JSON-encoded string.
+    /// * `store_name` - The name of the store.
+    /// * `event_json` - The event content, as a single-line JSON-encoded string.
     fn write_event_to_disk(&self, store_name: &str, event_json: &str) {
+        let _lock = self.file_lock.write().unwrap();
         if let Err(err) = OpenOptions::new()
             .create(true)
             .append(true)
@@ -268,12 +213,12 @@ impl EventDatabase {
     ///
     /// # Arguments
     ///
-    /// - `store_name` The name of the desired store.
-    /// - `clear_store` Whether to clear the store afterward.
+    /// * `store_name` - The name of the desired store.
+    /// * `clear_store` - Whether to clear the store afterward.
     ///
     /// # Returns
     ///
-    /// The JsonValue as an array of events, if any.
+    /// The an array of events, JSON encoded, if any.
     pub fn snapshot_as_json(&self, store_name: &str, clear_store: bool) -> Option<JsonValue> {
         let result = {
             let db = self.event_stores.read().unwrap();
@@ -291,11 +236,16 @@ impl EventDatabase {
         };
 
         if clear_store {
-            let mut db = self.event_stores.write().unwrap();
-            db.remove(&store_name.to_string());
+            {
+                let mut db = self.event_stores.write().unwrap();
+                db.remove(&store_name.to_string());
+            }
 
-            if let Err(err) = fs::remove_file(self.path.join(store_name)) {
-                log::error!("Error removing events queue file {}: {}", store_name, err);
+            {
+                let _lock = self.file_lock.write().unwrap();
+                if let Err(err) = fs::remove_file(self.path.join(store_name)) {
+                    log::error!("Error removing events queue file {}: {}", store_name, err);
+                }
             }
         }
 
