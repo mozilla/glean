@@ -4,7 +4,7 @@ Timing distributions are used to accumulate and store time measurement, for anal
 
 To measure the distribution of multiple timespans, see [Timing Distributions](timing_distribution.md). To record absolute times, see [Datetimes](datetime.md).
 
-## Configuration 
+## Configuration
 
 Timing distributions have a required `time_unit` parameter to specify the resolution and range of the values that are recorded. The allowed values for `time_unit` are:
 
@@ -32,17 +32,23 @@ pages:
 
 ## API
 
-Now you can use the timing distribution from the application's code. Each time interval that the timing distribution metric records must be associated with an object provided by the user. This is so that intervals can be measured concurrently.  For example, to measure page load time on a number of tabs that are loading at the same time, each time interval should be associated with an object that uniquely represents each tab.
+Now you can use the timing distribution from the application's code.
+Starting a timer returns a timer ID that needs to be used to stop or cancel the timer at a later point.
+Multiple intervals can be measured concurrently.
+For example, to measure page load time on a number of tabs that are loading at the same time, each tab object needs to store the running timer ID.
 
 ```Kotlin
+import mozilla.components.service.glean.timing.GleanTimerId
 import org.mozilla.yourApplication.GleanMetrics.Pages
 
+val timerId : GleanTimerId
+
 fun onPageStart(e: Event) {
-    Pages.pageLoad.start(e.target)
+    timerId = Pages.pageLoad.start()
 }
 
 fun onPageLoaded(e: Event) {
-    Pages.pageLoad.stopAndAccumulate(e.target)
+    Pages.pageLoad.stopAndAccumulate(timerId)
 }
 ```
 
@@ -77,7 +83,8 @@ assertEquals(2L, snapshot.count())
 
 ## Recorded errors
 
-* `invalid_value`: If recording a negative timespan. 
+* `invalid_value`: If recording a negative timespan.
+* `invalid_value`: If a non-existing/stopped timer is stopped again.
 
 ## Reference
 
