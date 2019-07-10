@@ -127,6 +127,8 @@ jobs:
       - run:
           name: Android tests
           command: ./gradlew --no-daemon test
+          environment:
+            GRADLE_OPTS: -Xmx2048m
       - store_artifacts:
           path: glean-core/android/build/reports/tests
 
