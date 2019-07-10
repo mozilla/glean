@@ -2,6 +2,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+use uuid::Uuid;
+
 use crate::metrics::Metric;
 use crate::metrics::MetricType;
 use crate::storage::StorageManager;
@@ -38,7 +40,7 @@ impl UuidMetric {
     ///
     /// * `glean` - The Glean instance this metric belongs to.
     /// * `value` - The UUID to set the metric to.
-    pub fn set(&self, glean: &Glean, value: uuid::Uuid) {
+    pub fn set(&self, glean: &Glean, value: Uuid) {
         if !self.should_record(glean) {
             return;
         }
@@ -53,32 +55,31 @@ impl UuidMetric {
     /// ## Arguments
     ///
     /// * `glean` - The Glean instance this metric belongs to.
-    pub fn generate_and_set(&self, storage: &Glean) -> uuid::Uuid {
-        let uuid = uuid::Uuid::new_v4();
+    pub fn generate_and_set(&self, storage: &Glean) -> Uuid {
+        let uuid = Uuid::new_v4();
         self.set(storage, uuid);
         uuid
     }
 
-    /// Generate a new random UUID if none is stored yet.
+    /// Get the stored Uuid value.
     ///
     /// ## Arguments
     ///
-    /// * `glean` - The Glean instance this metric belongs to.
-    pub fn generate_if_missing(&self, glean: &Glean) {
-        if !self.should_record(glean) {
-            return;
+    /// * `glean` - the Glean instance this metric belongs to.
+    /// * `storage_name` - the storage name to look into.
+    ///
+    /// ## Return value
+    ///
+    /// Returns the stored value or `None` if nothing stored.
+    pub(crate) fn get_value(&self, glean: &Glean, storage_name: &str) -> Option<Uuid> {
+        match StorageManager.snapshot_metric(
+            glean.storage(),
+            storage_name,
+            &self.meta().identifier(),
+        ) {
+            Some(Metric::Uuid(uuid)) => Uuid::parse_str(&uuid).ok(),
+            _ => None,
         }
-
-        glean
-            .storage()
-            .record_with(&self.meta, |old_value| match old_value {
-                Some(Metric::Uuid(old_value)) => Metric::Uuid(old_value),
-                _ => {
-                    let uuid = uuid::Uuid::new_v4();
-                    let new_value = uuid.to_string();
-                    Metric::Uuid(new_value)
-                }
-            })
     }
 
     /// **Test-only API (exported for FFI purposes).**

@@ -476,4 +476,39 @@ class GleanTest {
         assertEquals(1, pingStringMetrics.length())
         assertEquals(testValue, pingStringMetrics.get("telemetry.string_metric"))
     }
+
+    @Test
+    fun `Basic metrics should be cleared when disabling uploading`() {
+        val stringMetric = StringMetricType(
+            disabled = false,
+            category = "telemetry",
+            lifetime = Lifetime.Ping,
+            name = "string_metric",
+            sendInPings = listOf("default")
+        )
+
+        stringMetric.set("TEST VALUE")
+        assertTrue(stringMetric.testHasValue())
+
+        Glean.setUploadEnabled(false)
+        assertFalse(stringMetric.testHasValue())
+        stringMetric.set("TEST VALUE")
+        assertFalse(stringMetric.testHasValue())
+
+        Glean.setUploadEnabled(true)
+        assertFalse(stringMetric.testHasValue())
+        stringMetric.set("TEST VALUE")
+        assertTrue(stringMetric.testHasValue())
+    }
+
+    @Test
+    fun `Core metrics should be cleared and restored when disabling and enabling uploading`() {
+        assertTrue(GleanInternalMetrics.os.testHasValue())
+
+        Glean.setUploadEnabled(false)
+        assertFalse(GleanInternalMetrics.os.testHasValue())
+
+        Glean.setUploadEnabled(true)
+        assertTrue(GleanInternalMetrics.os.testHasValue())
+    }
 }

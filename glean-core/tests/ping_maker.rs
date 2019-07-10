@@ -144,3 +144,29 @@ fn seq_number_must_be_sequential() {
         assert_eq!(4, seq_num);
     }
 }
+
+#[test]
+fn test_clear_pending_pings() {
+    let (mut glean, _) = new_glean();
+    let ping_maker = PingMaker::new();
+    let ping_type = PingType::new("store1", true);
+    glean.register_ping_type(&ping_type);
+
+    // Record something, so the ping will have data
+    let metric = BooleanMetric::new(CommonMetricData {
+        name: "boolean_metric".into(),
+        category: "telemetry".into(),
+        send_in_pings: vec!["store1".into()],
+        disabled: false,
+        lifetime: Lifetime::User,
+    });
+    metric.set(&glean, true);
+
+    assert!(glean.send_ping(&ping_type, false).is_ok());
+    assert_eq!(1, get_queued_pings(glean.get_data_path()).unwrap().len());
+
+    assert!(ping_maker
+        .clear_pending_pings(glean.get_data_path())
+        .is_ok());
+    assert_eq!(0, get_queued_pings(glean.get_data_path()).unwrap().len());
+}

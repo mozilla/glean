@@ -15,7 +15,7 @@ use crate::common_metric_data::{CommonMetricData, Lifetime};
 use crate::metrics::{CounterMetric, DatetimeMetric, Metric, MetricType, PingType, TimeUnit};
 use crate::storage::StorageManager;
 use crate::util::{get_iso_time_string, local_now_with_offset};
-use crate::Glean;
+use crate::{Glean, Result};
 
 // An internal ping name, not to be touched by anything else
 const INTERNAL_STORAGE: &str = "glean_internal_info";
@@ -254,4 +254,43 @@ impl PingMaker {
 
         Ok(())
     }
+
+    /// Clear any pending pings in the queue.
+    pub fn clear_pending_pings(&self, data_path: &Path) -> Result<()> {
+        let pings_dir = self.get_pings_dir(data_path)?;
+        std::fs::remove_dir_all(&pings_dir)?;
+        create_dir_all(&pings_dir)?;
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    const GLOBAL_APPLICATION_ID: &str = "org.mozilla.glean.test.app";
+    pub fn new_glean() -> (Glean, tempfile::TempDir) {
+        let dir = tempfile::tempdir().unwrap();
+        let tmpname = dir.path().display().to_string();
+        let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
+        (glean, dir)
+    }
+
+    #[test]
+    fn sequence_numbers_should_be_reset_when_toggling_uploading() {
+        let (mut glean, _) = new_glean();
+        let ping_maker = PingMaker::new();
+
+        assert_eq!(0, ping_maker.get_ping_seq(&glean, "custom"));
+        assert_eq!(1, ping_maker.get_ping_seq(&glean, "custom"));
+
+        glean.set_upload_enabled(false);
+        assert_eq!(0, ping_maker.get_ping_seq(&glean, "custom"));
+        assert_eq!(0, ping_maker.get_ping_seq(&glean, "custom"));
+
+        glean.set_upload_enabled(true);
+        assert_eq!(0, ping_maker.get_ping_seq(&glean, "custom"));
+        assert_eq!(1, ping_maker.get_ping_seq(&glean, "custom"));
+    }
+
 }

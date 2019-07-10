@@ -18,6 +18,7 @@ use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 
 use chrono::{DateTime, FixedOffset};
+use lazy_static::lazy_static;
 use uuid::Uuid;
 
 mod common_metric_data;
@@ -25,7 +26,6 @@ mod database;
 mod error;
 mod error_recording;
 mod event_database;
-mod first_run;
 mod histogram;
 mod internal_metrics;
 pub mod metrics;
@@ -46,6 +46,10 @@ use crate::util::{local_now_with_offset, sanitize_application_id};
 
 const GLEAN_SCHEMA_VERSION: u32 = 1;
 const DEFAULT_MAX_EVENTS: usize = 500;
+lazy_static! {
+    static ref KNOWN_CLIENT_ID: Uuid =
+        Uuid::parse_str("c0ffeec0-ffee-c0ff-eec0-ffeec0ffeec0").unwrap();
+}
 
 /// The object holding meta information about a Glean instance.
 ///
@@ -115,16 +119,32 @@ impl Glean {
             start_time: local_now_with_offset(),
             max_events: DEFAULT_MAX_EVENTS,
         };
-        glean.initialize_core_metrics()?;
+        glean.on_change_upload_enabled(upload_enabled);
         Ok(glean)
     }
 
-    fn initialize_core_metrics(&mut self) -> Result<()> {
-        if first_run::is_first_run(&self.data_path)? {
+    /// Initialize the core metrics managed by Glean's Rust core.
+    fn initialize_core_metrics(&mut self) {
+        let need_new_client_id = match self
+            .core_metrics
+            .client_id
+            .get_value(self, "glean_client_info")
+        {
+            None => true,
+            Some(uuid) => uuid == *KNOWN_CLIENT_ID,
+        };
+        if need_new_client_id {
+            self.core_metrics.client_id.generate_and_set(self);
+        }
+
+        if self
+            .core_metrics
+            .first_run_date
+            .get_value(self, "glean_client_info")
+            .is_none()
+        {
             self.core_metrics.first_run_date.set(self, None);
         }
-        self.core_metrics.client_id.generate_if_missing(self);
-        Ok(())
     }
 
     /// Called when Glean is initialized to the point where it can correctly
@@ -137,9 +157,23 @@ impl Glean {
 
     /// Set whether upload is enabled or not.
     ///
-    /// When upload is disabled, no data will be recorded.
+    /// When uploading is disabled, metrics aren't recorded at all and no
+    /// data is uploaded.
+    ///
+    /// When disabling, all pending metrics, events and queued pings are cleared.
+    ///
+    /// When enabling, the core Glean metrics are recreated.
+    ///
+    /// If the value of this flag is not actually changed, this is a no-op.
+    ///
+    /// # Arguments
+    ///
+    /// * `flag` - When true, enable metric collection.
     pub fn set_upload_enabled(&mut self, flag: bool) {
-        self.upload_enabled = flag;
+        if self.upload_enabled != flag {
+            self.upload_enabled = flag;
+            self.on_change_upload_enabled(flag);
+        }
     }
 
     /// Determine whether upload is enabled.
@@ -147,6 +181,72 @@ impl Glean {
     /// When upload is disabled, no data will be recorded.
     pub fn is_upload_enabled(&self) -> bool {
         self.upload_enabled
+    }
+
+    /// Handles the changing of state when upload_enabled changes.
+    ///
+    /// Should only be called when the state actually changes.
+    /// When disabling, all pending metrics, events and queued pings are cleared.
+    ///
+    /// When enabling, the core Glean metrics are recreated.
+    ///
+    /// # Arguments
+    ///
+    /// * `flag` - When true, enable metric collection.
+    fn on_change_upload_enabled(&mut self, flag: bool) {
+        if flag {
+            self.initialize_core_metrics();
+        } else {
+            self.clear_metrics();
+        }
+    }
+
+    /// Clear any pending metrics when telemetry is disabled.
+    fn clear_metrics(&mut self) {
+        // There is only one metric that we want to survive after clearing all
+        // metrics: first_run_date. Here, we store its value so we can restore
+        // it after clearing the metrics.
+        let existing_first_run_date = self
+            .core_metrics
+            .first_run_date
+            .get_value(self, "glean_client_info");
+
+        // Clear any pending pings.
+        let ping_maker = PingMaker::new();
+        if let Err(err) = ping_maker.clear_pending_pings(self.get_data_path()) {
+            log::error!("Error clearing pending pings: {}", err);
+        }
+
+        // Delete all stored metrics.
+        // Note that this also includes the ping sequence numbers, so it has
+        // the effect of resetting those to their initial values.
+        self.data_store.clear_all();
+        // TODO: 1552872: Clear the event store, once the event metric lands.
+
+        // This does not clear the experiments store (which isn't managed by the
+        // StorageEngineManager), since doing so would mean we would have to have the
+        // application tell us again which experiments are active if telemetry is
+        // re-enabled.
+
+        {
+            // We need to briefly set upload_enabled to true here so that `set`
+            // is not a no-op.
+            self.upload_enabled = true;
+
+            // Store a "dummy" KNOWN_CLIENT_ID in the client_id metric. This will
+            // make it easier to detect if pings were unintentionally sent after
+            // uploading is disabled.
+            self.core_metrics.client_id.set(self, *KNOWN_CLIENT_ID);
+
+            // Restore the first_run_date.
+            if let Some(existing_first_run_date) = existing_first_run_date {
+                self.core_metrics
+                    .first_run_date
+                    .set(self, Some(existing_first_run_date));
+            }
+
+            self.upload_enabled = false;
+        }
     }
 
     /// Get the application ID as specified on instantiation.
@@ -347,15 +447,22 @@ impl Glean {
 mod test {
     use super::*;
     use crate::metrics::RecordedExperimentData;
+    use crate::metrics::StringMetric;
+
+    const GLOBAL_APPLICATION_ID: &str = "org.mozilla.glean.test.app";
+    pub fn new_glean() -> (Glean, tempfile::TempDir) {
+        let dir = tempfile::tempdir().unwrap();
+        let tmpname = dir.path().display().to_string();
+        let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
+        (glean, dir)
+    }
 
     #[test]
     fn path_is_constructed_from_data() {
-        let t = tempfile::tempdir().unwrap();
-        let name = t.path().display().to_string();
-        let glean = Glean::new(&name, "org.mozilla.glean", true).unwrap();
+        let (glean, _) = new_glean();
 
         assert_eq!(
-            "/submit/org-mozilla-glean/baseline/1/this-is-a-docid",
+            "/submit/org-mozilla-glean-test-app/baseline/1/this-is-a-docid",
             glean.make_path("baseline", "this-is-a-docid")
         );
     }
@@ -442,5 +549,119 @@ mod test {
             !glean.test_is_experiment_active(experiment_id.clone()),
             "The experiment must not be available any more."
         );
+    }
+
+    #[test]
+    fn basic_metrics_should_be_cleared_when_uploading_is_disabled() {
+        let (mut glean, _t) = new_glean();
+        let metric = StringMetric::new(CommonMetricData::new(
+            "category",
+            "string_metric",
+            "baseline",
+        ));
+
+        metric.set(&glean, "TEST VALUE");
+        assert!(metric.test_get_value(&glean, "baseline").is_some());
+
+        glean.set_upload_enabled(false);
+        assert!(metric.test_get_value(&glean, "baseline").is_none());
+
+        metric.set(&glean, "TEST VALUE");
+        assert!(metric.test_get_value(&glean, "baseline").is_none());
+
+        glean.set_upload_enabled(true);
+        assert!(metric.test_get_value(&glean, "baseline").is_none());
+
+        metric.set(&glean, "TEST VALUE");
+        assert!(metric.test_get_value(&glean, "baseline").is_some());
+    }
+
+    #[test]
+    fn first_run_date_is_managed_correctly_when_toggling_uploading() {
+        let (mut glean, _) = new_glean();
+
+        let original_first_run_date = glean
+            .core_metrics
+            .first_run_date
+            .get_value(&glean, "glean_client_info");
+
+        glean.set_upload_enabled(false);
+        assert_eq!(
+            original_first_run_date,
+            glean
+                .core_metrics
+                .first_run_date
+                .get_value(&glean, "glean_client_info")
+        );
+
+        glean.set_upload_enabled(true);
+        assert_eq!(
+            original_first_run_date,
+            glean
+                .core_metrics
+                .first_run_date
+                .get_value(&glean, "glean_client_info")
+        );
+    }
+
+    #[test]
+    fn client_id_is_managed_correctly_when_toggling_uploading() {
+        let (mut glean, _) = new_glean();
+
+        let original_client_id = glean
+            .core_metrics
+            .client_id
+            .get_value(&glean, "glean_client_info");
+        assert!(original_client_id.is_some());
+        assert_ne!(*KNOWN_CLIENT_ID, original_client_id.unwrap());
+
+        glean.set_upload_enabled(false);
+        assert_eq!(
+            *KNOWN_CLIENT_ID,
+            glean
+                .core_metrics
+                .client_id
+                .get_value(&glean, "glean_client_info")
+                .unwrap()
+        );
+
+        glean.set_upload_enabled(true);
+        let current_client_id = glean
+            .core_metrics
+            .client_id
+            .get_value(&glean, "glean_client_info");
+        assert!(current_client_id.is_some());
+        assert_ne!(*KNOWN_CLIENT_ID, current_client_id.unwrap());
+        assert_ne!(original_client_id, current_client_id);
+    }
+
+    #[test]
+    fn client_id_is_set_to_known_value_when_uploading_disabled_at_start() {
+        let dir = tempfile::tempdir().unwrap();
+        let tmpname = dir.path().display().to_string();
+        let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, false).unwrap();
+
+        assert_eq!(
+            *KNOWN_CLIENT_ID,
+            glean
+                .core_metrics
+                .client_id
+                .get_value(&glean, "glean_client_info")
+                .unwrap()
+        );
+    }
+
+    #[test]
+    fn client_id_is_set_to_random_value_when_uploading_disabled_at_start() {
+        let dir = tempfile::tempdir().unwrap();
+        let tmpname = dir.path().display().to_string();
+        let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
+
+        let current_client_id = glean
+            .core_metrics
+            .client_id
+            .get_value(&glean, "glean_client_info");
+        assert!(current_client_id.is_some());
+        assert_ne!(*KNOWN_CLIENT_ID, current_client_id.unwrap());
     }
 }
