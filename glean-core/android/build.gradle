@@ -68,6 +68,8 @@ android {
             testLogging {
                 showStandardStreams = true
             }
+
+            maxHeapSize = "1024m"
         }
     }
 }
