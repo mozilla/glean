@@ -1,7 +1,7 @@
 # Summary
 
 - [Glean](README.md)
-- [User](user/index.md)
+- [Using the Glean SDK](user/index.md)
     - [Adding Glean to your project](user/adding-glean-to-your-project.md)
     - [Adding new metrics](user/adding-new-metrics.md)
     - [Metric parameters](user/metric-parameters.md)
@@ -26,9 +26,9 @@
         - [Metrics Ping](user/pings/metrics.md)
         - [Events Ping](user/pings/events.md)
         - [Custom Pings](user/pings/custom.md)
-- [Development](dev/index.md)
+- [Developing the Glean SDK](dev/index.md)
     - [Testing](dev/testing.md)
-    - [Android](dev/android/index.md)
+    - [Android Component](dev/android/index.md)
         - [Setup Build Environment](dev/android/setup-android-build-environment.md)
     - [Rust Component](dev/core/index.md)
         - [Dependency Management](dev/core/dependency-management.md)
