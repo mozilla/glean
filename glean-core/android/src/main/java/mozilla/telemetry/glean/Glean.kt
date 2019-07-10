@@ -29,6 +29,9 @@ import mozilla.telemetry.glean.private.RecordedExperimentData
 import mozilla.telemetry.glean.scheduler.GleanLifecycleObserver
 import mozilla.telemetry.glean.scheduler.PingUploadWorker
 
+// Public exported type identifying individual timers for [TimingDistributionMetricType].
+typealias GleanTimerId = Long
+
 @Suppress("TooManyFunctions")
 open class GleanInternalAPI internal constructor () {
     companion object {

@@ -8,14 +8,13 @@ import androidx.annotation.VisibleForTesting
 import android.os.SystemClock
 import com.sun.jna.StringArray
 import mozilla.telemetry.glean.Glean
+import mozilla.telemetry.glean.GleanTimerId
 import mozilla.telemetry.glean.rust.getAndConsumeRustString
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.toByte
 import mozilla.telemetry.glean.rust.RustError
 import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.rust.toBoolean
-
-typealias GleanTimerId = Long
 
 /**
  * This implements the developer facing API for recording timing distribution metrics.
