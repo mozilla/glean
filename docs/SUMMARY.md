@@ -28,7 +28,7 @@
         - [Custom Pings](user/pings/custom.md)
 - [Developing the Glean SDK](dev/index.md)
     - [Testing](dev/testing.md)
-    - [Android Component](dev/android/index.md)
+    - [Android bindings](dev/android/index.md)
         - [Setup Build Environment](dev/android/setup-android-build-environment.md)
     - [Rust Component](dev/core/index.md)
         - [Dependency Management](dev/core/dependency-management.md)
