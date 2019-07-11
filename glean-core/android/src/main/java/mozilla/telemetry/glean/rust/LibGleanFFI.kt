@@ -11,6 +11,7 @@ import com.sun.jna.Native
 import com.sun.jna.Pointer
 import com.sun.jna.StringArray
 import java.lang.reflect.Proxy
+import mozilla.telemetry.glean.GleanTimerId
 
 // Turn a boolean into its Byte (u8) representation
 internal fun Boolean.toByte(): Byte = if (this) 1 else 0
@@ -262,6 +263,41 @@ internal interface LibGleanFFI : Library {
     fun glean_timespan_test_has_value(glean_handle: Long, metric_id: Long, storage_name: String): Byte
 
     fun glean_timespan_test_get_value(glean_handle: Long, metric_id: Long, storage_name: String): Long
+
+    // TimingDistribution
+
+    fun glean_new_timing_distribution_metric(
+        category: String,
+        name: String,
+        send_in_pings: StringArray,
+        send_in_pings_len: Int,
+        lifetime: Int,
+        disabled: Byte,
+        time_unit: Int
+    ): Long
+
+    fun glean_destroy_timing_distribution_metric(handle: Long, error: RustError.ByReference)
+
+    fun glean_timing_distribution_should_record(glean_handle: Long, metric_id: Long): Byte
+
+    fun glean_timing_distribution_set_start(glean_handle: Long, metric_id: Long, start_time: Long): GleanTimerId
+
+    fun glean_timing_distribution_set_stop_and_accumulate(
+        glean_handle: Long,
+        metric_id: Long,
+        timer_id: GleanTimerId,
+        stop_time: Long
+    )
+
+    fun glean_timing_distribution_cancel(metric_id: Long, timer_id: GleanTimerId)
+
+    fun glean_timing_distribution_test_has_value(glean_handle: Long, metric_id: Long, storage_name: String): Byte
+
+    fun glean_timing_distribution_test_get_value_as_json_string(
+        glean_handle: Long,
+        metric_id: Long,
+        storage_name: String
+    ): Pointer?
 
     // Labeld Counter
 

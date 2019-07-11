@@ -7,17 +7,16 @@ package mozilla.telemetry.glean.private
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import mozilla.telemetry.glean.resetGlean
-// import mozilla.components.service.glean.timing.TimingManager
-import org.junit.After
-// import org.junit.Assert.assertEquals
-// import org.junit.Assert.assertTrue
-// import org.junit.Assert.assertFalse
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
+import org.junit.Assert.assertFalse
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.lang.NullPointerException
+import org.mockito.Mockito.spy
+import org.mockito.Mockito.`when`
 
 @ObsoleteCoroutinesApi
 @ExperimentalCoroutinesApi
@@ -29,31 +28,24 @@ class TimingDistributionMetricTypeTest {
         resetGlean()
     }
 
-    @After
-    fun reset() {
-        // TimingManager.testResetTimeSource()
-    }
-
-    @Ignore("TimingManager is not implemented yet. See bug 1554689")
     @Test
     fun `The API saves to its storage engine`() {
-        /*
         // Define a timing distribution metric which will be stored in "store1"
-        val metric = TimingDistributionMetricType(
+        val metric = spy(TimingDistributionMetricType(
             disabled = false,
             category = "telemetry",
             lifetime = Lifetime.Ping,
             name = "timing_distribution",
             sendInPings = listOf("store1"),
             timeUnit = TimeUnit.Millisecond
-        )
+        ))
 
         // Accumulate a few values
         for (i in 1L..3L) {
-            TimingManager.getElapsedNanos = { 0 }
-            metric.start(this)
-            TimingManager.getElapsedNanos = { i * 1000000 } // ms to ns
-            metric.stopAndAccumulate(this)
+            `when`(metric.getElapsedTimeNanos()).thenReturn(0L)
+            var id = metric.start()
+            `when`(metric.getElapsedTimeNanos()).thenReturn(i * 1000000L) // ms to ns
+            metric.stopAndAccumulate(id)
         }
 
         // Check that data was properly recorded.
@@ -61,19 +53,16 @@ class TimingDistributionMetricTypeTest {
         val snapshot = metric.testGetValue()
         // Check the sum
         assertEquals(6L, snapshot.sum)
-        // Check that the 1L fell into the first bucket
-        assertEquals(1L, snapshot.values[0])
-        // Check that the 2L fell into the second bucket
+        // Check that the 1L fell into the first bucket (max 1)
         assertEquals(1L, snapshot.values[1])
-        // Check that the 3L fell into the third bucket
+        // Check that the 2L fell into the second bucket (max 2)
         assertEquals(1L, snapshot.values[2])
-        */
+        // Check that the 3L fell into the third bucket (max 3)
+        assertEquals(1L, snapshot.values[3])
     }
 
-    @Ignore("TimingManager is not implemented yet. See bug 1554689")
     @Test
     fun `disabled timing distributions must not record data`() {
-        /*
         // Define a timing distribution metric which will be stored in "store1"
         // It's lifetime is set to Lifetime.Ping so it should not record anything.
         val metric = TimingDistributionMetricType(
@@ -86,18 +75,14 @@ class TimingDistributionMetricTypeTest {
         )
 
         // Attempt to store the timespan using set
-        TimingManager.getElapsedNanos = { 0 }
-        metric.start(this)
-        TimingManager.getElapsedNanos = { 1 }
-        metric.stopAndAccumulate(this)
+        val id = metric.start()
+        metric.stopAndAccumulate(id)
 
         // Check that nothing was recorded.
-        assertFalse("TimingDistributions without a lifetime should not record data.",
+        assertFalse("Disabled TimingDistributions should not record data.",
             metric.testHasValue())
-        */
     }
 
-    @Ignore("The testing API is not implemented.")
     @Test(expected = NullPointerException::class)
     fun `testGetValue() throws NullPointerException if nothing is stored`() {
         // Define a timing distribution metric which will be stored in "store1"
@@ -112,26 +97,24 @@ class TimingDistributionMetricTypeTest {
         metric.testGetValue()
     }
 
-    @Ignore("TimingManager is not implemented yet. See bug 1554689")
     @Test
     fun `The API saves to secondary pings`() {
-        /*
         // Define a timing distribution metric which will be stored in multiple stores
-        val metric = TimingDistributionMetricType(
+        val metric = spy(TimingDistributionMetricType(
             disabled = false,
             category = "telemetry",
             lifetime = Lifetime.Ping,
             name = "timing_distribution",
             sendInPings = listOf("store1", "store2", "store3"),
             timeUnit = TimeUnit.Millisecond
-        )
+        ))
 
         // Accumulate a few values
         for (i in 1L..3L) {
-            TimingManager.getElapsedNanos = { 0 }
-            metric.start(this)
-            TimingManager.getElapsedNanos = { i * 1000000 } // ms to ns
-            metric.stopAndAccumulate(this)
+            `when`(metric.getElapsedTimeNanos()).thenReturn(0L)
+            val id = metric.start()
+            `when`(metric.getElapsedTimeNanos()).thenReturn(i * 1000000L) // ms to ns
+            metric.stopAndAccumulate(id)
         }
 
         // Check that data was properly recorded in the second ping.
@@ -140,11 +123,11 @@ class TimingDistributionMetricTypeTest {
         // Check the sum
         assertEquals(6L, snapshot.sum)
         // Check that the 1L fell into the first bucket
-        assertEquals(1L, snapshot.values[0])
-        // Check that the 2L fell into the second bucket
         assertEquals(1L, snapshot.values[1])
-        // Check that the 3L fell into the third bucket
+        // Check that the 2L fell into the second bucket
         assertEquals(1L, snapshot.values[2])
+        // Check that the 3L fell into the third bucket
+        assertEquals(1L, snapshot.values[3])
 
         // Check that data was properly recorded in the third ping.
         assertTrue(metric.testHasValue("store3"))
@@ -152,11 +135,10 @@ class TimingDistributionMetricTypeTest {
         // Check the sum
         assertEquals(6L, snapshot2.sum)
         // Check that the 1L fell into the first bucket
-        assertEquals(1L, snapshot2.values[0])
-        // Check that the 2L fell into the second bucket
         assertEquals(1L, snapshot2.values[1])
-        // Check that the 3L fell into the third bucket
+        // Check that the 2L fell into the second bucket
         assertEquals(1L, snapshot2.values[2])
-        */
+        // Check that the 3L fell into the third bucket
+        assertEquals(1L, snapshot2.values[3])
     }
 }
