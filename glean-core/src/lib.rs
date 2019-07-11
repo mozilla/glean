@@ -278,6 +278,30 @@ impl Glean {
     pub(crate) fn start_time(&self) -> DateTime<FixedOffset> {
         self.start_time
     }
+
+    /// Indicate that an experiment is running.
+    /// Glean will then add an experiment annotation to the environment
+    /// which is sent with pings. This information is not persisted between runs.
+    ///
+    /// ## Arguments
+    ///
+    /// * `experiment_id` - The id of the active experiment (maximum 30 bytes).
+    /// * `branch` - The experiment branch (maximum 30 bytes).
+    /// * `extra` - Optional metadata to output with the ping.
+    pub fn set_experiment_active(&self, experiment_id: String, branch: String, extra: Option<HashMap<String, String>>) {
+        let metric = metrics::ExperimentMetric::new(experiment_id);
+        metric.set_active(&self, branch, extra);
+    }
+
+    /// Indicate that an experiment is no longer running.
+    ///
+    /// ## Arguments
+    ///
+    /// * `experiment_id` - The id of the active experiment to deactivate (maximum 30 bytes).
+    pub fn set_experiment_inactive(&self, experiment_id: String) {
+        let metric = metrics::ExperimentMetric::new(experiment_id);
+        metric.set_inactive(&self);
+    }
 }
 
 #[cfg(test)]
