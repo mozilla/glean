@@ -230,7 +230,11 @@ impl Glean {
 
         {
             // We need to briefly set upload_enabled to true here so that `set`
-            // is not a no-op.
+            // is not a no-op. This is safe, since nothing on the Rust side can
+            // run concurrently to this since we hold a mutable reference to the
+            // Glean object. Additionally, the pending pings have been cleared
+            // from disk, so the PingUploader can't wake up and start sending
+            // pings.
             self.upload_enabled = true;
 
             // Store a "dummy" KNOWN_CLIENT_ID in the client_id metric. This will
@@ -652,7 +656,7 @@ mod test {
     }
 
     #[test]
-    fn client_id_is_set_to_random_value_when_uploading_disabled_at_start() {
+    fn client_id_is_set_to_random_value_when_uploading_enabled_at_start() {
         let dir = tempfile::tempdir().unwrap();
         let tmpname = dir.path().display().to_string();
         let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();

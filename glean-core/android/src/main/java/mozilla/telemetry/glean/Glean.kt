@@ -184,15 +184,11 @@ open class GleanInternalAPI internal constructor () {
                 synchronized(PingUploader.pingQueueLock) {
                     LibGleanFFI.INSTANCE.glean_set_upload_enabled(handle, enabled.toByte())
                 }
-            }
 
-            Dispatchers.API.launch {
-                if (originalEnabled != getUploadEnabled()) {
-                    if (getUploadEnabled()) {
-                        // If uploading is being re-enabled, we have to restore the
-                        // application-lifetime metrics.
-                        initializeCoreMetrics((this@GleanInternalAPI).applicationContext)
-                    }
+                if (!originalEnabled && getUploadEnabled()) {
+                    // If uploading is being re-enabled, we have to restore the
+                    // application-lifetime metrics.
+                    initializeCoreMetrics((this@GleanInternalAPI).applicationContext)
                 }
             }
         } else {
