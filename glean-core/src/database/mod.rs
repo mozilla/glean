@@ -233,6 +233,14 @@ impl Database {
             writer.commit().unwrap();
         });
     }
+
+    /// Removes a metric from the storage (only Application Lifetime).
+    pub fn remove_application_lifetime_metric(&self, storage_name: &str, metric_name: &str) {
+       let final_key = format!("{}#{}", storage_name, metric_name);
+
+        let mut data = self.app_lifetime_data.write().unwrap();
+        data.remove(&final_key);
+    }
 }
 
 #[cfg(test)]
