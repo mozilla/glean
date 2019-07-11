@@ -169,10 +169,18 @@ impl Glean {
     /// # Arguments
     ///
     /// * `flag` - When true, enable metric collection.
-    pub fn set_upload_enabled(&mut self, flag: bool) {
+    ///
+    /// # Returns
+    ///
+    /// * `did_work` - When true, the flag was different from the current value,
+    ///   and actual work was done to clear or reinstate metrics.
+    pub fn set_upload_enabled(&mut self, flag: bool) -> bool {
         if self.upload_enabled != flag {
             self.upload_enabled = flag;
             self.on_change_upload_enabled(flag);
+            true
+        } else {
+            false
         }
     }
 
@@ -667,5 +675,23 @@ mod test {
             .get_value(&glean, "glean_client_info");
         assert!(current_client_id.is_some());
         assert_ne!(*KNOWN_CLIENT_ID, current_client_id.unwrap());
+    }
+
+    #[test]
+    fn enabling_when_already_enabled_is_a_noop() {
+        let dir = tempfile::tempdir().unwrap();
+        let tmpname = dir.path().display().to_string();
+        let mut glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
+
+        assert!(!glean.set_upload_enabled(true));
+    }
+
+    #[test]
+    fn disabling_when_already_disabled_is_a_noop() {
+        let dir = tempfile::tempdir().unwrap();
+        let tmpname = dir.path().display().to_string();
+        let mut glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, false).unwrap();
+
+        assert!(!glean.set_upload_enabled(false));
     }
 }
