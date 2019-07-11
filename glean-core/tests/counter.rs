@@ -148,3 +148,23 @@ fn transformation_works() {
     assert_eq!(2, counter.test_get_value(&glean, "store1").unwrap());
     assert_eq!(4, counter.test_get_value(&glean, "store2").unwrap());
 }
+
+#[test]
+fn saturates_at_boundary() {
+    let (glean, _t) = new_glean();
+
+    let counter: CounterMetric = CounterMetric::new(CommonMetricData {
+        name: "transformation".into(),
+        category: "local".into(),
+        send_in_pings: vec!["store1".into()],
+        ..Default::default()
+    });
+
+    counter.add(&glean, 2);
+    counter.add(&glean, i32::max_value());
+
+    assert_eq!(
+        i32::max_value(),
+        counter.test_get_value(&glean, "store1").unwrap()
+    );
+}
