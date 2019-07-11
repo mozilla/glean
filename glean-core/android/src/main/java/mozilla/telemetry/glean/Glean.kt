@@ -11,6 +11,7 @@ import android.os.Build
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ProcessLifecycleOwner
 import kotlinx.coroutines.Job
+import mozilla.components.support.ktx.android.content.isMainProcess
 import mozilla.telemetry.glean.config.Configuration
 import mozilla.telemetry.glean.utils.getLocaleTag
 import java.io.File
@@ -75,6 +76,13 @@ open class GleanInternalAPI internal constructor () {
         applicationContext: Context,
         configuration: Configuration = Configuration()
     ) {
+        // In certain situations Glean.initialize may be called from a process other than the main
+        // process.  In this case we want initialize to be a no-op and just return.
+        if (!applicationContext.isMainProcess()) {
+            Log.e(LOG_TAG, "Attempted to initialize Glean on a process other than the main process")
+            return
+        }
+
         if (isInitialized()) {
             Log.e(LOG_TAG, "Glean should not be initialized multiple times")
             return
