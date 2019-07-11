@@ -2,50 +2,17 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use std::convert::TryFrom;
 use std::os::raw::c_char;
 
-use ffi_support::{define_handle_map_deleter, ConcurrentHandleMap, FfiStr};
-use lazy_static::lazy_static;
+use ffi_support::FfiStr;
 
-use glean_core::metrics::{DatetimeMetric, MetricType, TimeUnit};
-use glean_core::{CommonMetricData, Lifetime};
+use crate::{define_metric, handlemap_ext::HandleMapExtension, GLEAN};
 
-use crate::handlemap_ext::HandleMapExtension;
-use crate::{from_raw_string_array, RawStringArray, GLEAN};
-
-lazy_static! {
-    static ref DATETIME_METRICS: ConcurrentHandleMap<DatetimeMetric> = ConcurrentHandleMap::new();
-}
-define_handle_map_deleter!(DATETIME_METRICS, glean_destroy_datetime_metric);
-
-#[no_mangle]
-pub extern "C" fn glean_new_datetime_metric(
-    category: FfiStr,
-    name: FfiStr,
-    send_in_pings: RawStringArray,
-    send_in_pings_len: i32,
-    lifetime: i32,
-    disabled: u8,
-    time_unit: i32,
-) -> u64 {
-    DATETIME_METRICS.insert_with_log(|| {
-        let send_in_pings = unsafe { from_raw_string_array(send_in_pings, send_in_pings_len) };
-        let lifetime = Lifetime::try_from(lifetime)?;
-        let tu = TimeUnit::try_from(time_unit)?;
-
-        Ok(DatetimeMetric::new(
-            CommonMetricData {
-                name: name.into_string(),
-                category: category.into_string(),
-                send_in_pings,
-                lifetime,
-                disabled: disabled != 0,
-            },
-            tu,
-        ))
-    })
-}
+define_metric!(DatetimeMetric => DATETIME_METRICS {
+    new           -> glean_new_datetime_metric(time_unit: i32),
+    destroy       -> glean_destroy_datetime_metric,
+    should_record -> glean_datetime_should_record,
+});
 
 #[no_mangle]
 pub extern "C" fn glean_datetime_set(
@@ -84,13 +51,6 @@ pub extern "C" fn glean_datetime_set(
                 offset_seconds,
             );
         })
-    })
-}
-
-#[no_mangle]
-pub extern "C" fn glean_datetime_should_record(glean_handle: u64, metric_id: u64) -> u8 {
-    GLEAN.call_infallible(glean_handle, |glean| {
-        DATETIME_METRICS.call_infallible(metric_id, |metric| metric.should_record(&glean))
     })
 }
 

@@ -13,6 +13,8 @@ use lazy_static::lazy_static;
 
 use glean_core::Glean;
 
+mod macros;
+
 mod boolean;
 mod counter;
 mod datetime;
