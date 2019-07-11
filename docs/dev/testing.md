@@ -10,11 +10,7 @@ The tests for all languages may be run from the command line:
 make test
 ```
 
----
-
-_Windows Note:_ On Windows, `make` is not available by default. While not required, installing `make` will allow you to use the convenience features in the `Makefile`.
-
----
+> **Windows Note:** On Windows, `make` is not available by default. While not required, installing `make` will allow you to use the convenience features in the `Makefile`.
 
 ## Running the Rust tests
 
