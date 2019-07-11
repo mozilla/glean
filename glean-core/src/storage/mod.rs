@@ -143,4 +143,41 @@ impl StorageManager {
 
         snapshot
     }
+
+    ///  Snapshot the experiments.
+    ///
+    /// ## Arguments:
+    ///
+    /// * `storage` - The database to get data from.
+    ///
+    /// ## Return value
+    ///
+    /// Returns a JSON representation of the stored data.
+    /// Returns `None` if no data for the store exists.
+    pub fn snapshot_experiments_as_json(
+        &self,
+        storage: &Database
+    ) -> Option<JsonValue> {
+        let mut snapshot: HashMap<String, HashMap<String, JsonValue>> = HashMap::new();
+
+        let mut snapshotter = |metric_name: &[u8], metric: &Metric| {
+            let metric_name = String::from_utf8_lossy(metric_name).into_owned();
+            if metric_name.ends_with("#experiment") {
+                let name = metric_name.splitn(2, '#').next().unwrap(); // safe unwrap, first field of a split always valid
+                let map = snapshot
+                    .entry(metric.category().into())
+                    .or_insert_with(HashMap::new);
+                map.insert(name.to_string(), metric.as_json());
+            }
+        };
+
+        // FIXME: glean_internal_info should probably not be known here or, at least, shared.
+        storage.iter_store_from(Lifetime::Application, "glean_internal_info".into(), &mut snapshotter);
+
+        if snapshot.is_empty() {
+            None
+        } else {
+            Some(json!(snapshot))
+        }
+    }
 }
