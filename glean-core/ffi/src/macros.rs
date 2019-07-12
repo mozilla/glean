@@ -8,7 +8,7 @@
 ///
 /// * `$metric_type` - metric type to use from glean_core, e.g. `CounterMetric`.
 /// * `$metric_map` - name to use for the global name, should be all uppercase, e.g. `COUNTER_METRICS`.
-/// * `$new_fn(...)` - name of the constructor function, followed by all additional (non-common) arguments.
+/// * `$new_fn(...)` - (optional) name of the constructor function, followed by all additional (non-common) arguments.
 /// * `$destroy` - name of the destructor function.
 /// * `$should_record` - name of the function to determine if the metric should be recorded.
 ///
