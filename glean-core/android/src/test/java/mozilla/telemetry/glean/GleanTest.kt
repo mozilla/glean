@@ -349,38 +349,6 @@ class GleanTest {
     // `client_id and first_run_date metrics should not override new location` was here.
     // 1539480 BACKWARD COMPATIBILITY HACK that is not needed anymore.
 
-    @Ignore("This should probably be implemented in Rust")
-    @Test
-    fun `client_id and first_run_date must be generated if not available after the first start`() {
-        // 1539480 BACKWARD COMPATIBILITY HACK
-
-        // The resetGlean called right before this function will add client_id
-        // and first_run_date to the new location in glean_client_info.  We
-        // need to clear those out again so we can test what happens when they
-        // are missing.
-        /*
-        StorageEngineManager(
-            applicationContext = ApplicationProvider.getApplicationContext()
-        ).clearAllStores()
-
-        assertFalse(GleanInternalMetrics.clientId.testHasValue())
-        assertFalse(GleanInternalMetrics.firstRunDate.testHasValue())
-
-        // Set this to be a non-first start with missing clientId/firstRunDate.
-        val gleanDataDir =
-            File(ApplicationProvider.getApplicationContext<Context>().applicationInfo.dataDir, Glean.GLEAN_DATA_DIR)
-        val firstRunDetector = FileFirstRunDetector(gleanDataDir)
-        firstRunDetector.createFirstRunFile()
-
-        // This should copy the values to their new locations
-        Glean.initialized = false
-        Glean.initialize(ApplicationProvider.getApplicationContext())
-
-        assertTrue(GleanInternalMetrics.clientId.testHasValue())
-        assertTrue(GleanInternalMetrics.firstRunDate.testHasValue())
-        */
-    }
-
     @Test
     fun `getLanguageTag() reports the tag for the default locale`() {
         val defaultLanguageTag = getLocaleTag()

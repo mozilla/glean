@@ -26,7 +26,11 @@ internal interface PingUploader {
         private const val FILE_PATTERN = "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
         private const val LOG_TAG = "glean/PingUploader"
         internal const val PINGS_DIR = "pings"
-        // A lock to prevent simultaneous writes in the ping queue directory
+        // A lock to prevent simultaneous writes in the ping queue directory.
+        // In particular, there are issues if the pings are cleared (as part of
+        // disabling telemetry), while the ping uploader is trying to upload queued pings.
+        // Therefore, this lock is held both when uploading pings and when calling
+        // into the Rust code that might clear queued pings (set_upload_enabled).
         internal val pingQueueLock = Any()
     }
 

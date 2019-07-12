@@ -172,8 +172,8 @@ impl Glean {
     ///
     /// # Returns
     ///
-    /// * `did_work` - When true, the flag was different from the current value,
-    ///   and actual work was done to clear or reinstate metrics.
+    /// * Returns true when the flag was different from the current value, and
+    ///   actual work was done to clear or reinstate metrics.
     pub fn set_upload_enabled(&mut self, flag: bool) -> bool {
         if self.upload_enabled != flag {
             self.upload_enabled = flag;
@@ -561,6 +561,42 @@ mod test {
             !glean.test_is_experiment_active(experiment_id.clone()),
             "The experiment must not be available any more."
         );
+    }
+
+    #[test]
+    fn client_id_and_first_run_date_must_be_regenerated() {
+        let dir = tempfile::tempdir().unwrap();
+        let tmpname = dir.path().display().to_string();
+        {
+            let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
+
+            glean.data_store.clear_all();
+
+            assert!(glean
+                .core_metrics
+                .client_id
+                .test_get_value(&glean, "glean_client_info")
+                .is_none());
+            assert!(glean
+                .core_metrics
+                .first_run_date
+                .test_get_value_as_string(&glean, "glean_client_info")
+                .is_none());
+        }
+
+        {
+            let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
+            assert!(glean
+                .core_metrics
+                .client_id
+                .test_get_value(&glean, "glean_client_info")
+                .is_some());
+            assert!(glean
+                .core_metrics
+                .first_run_date
+                .test_get_value_as_string(&glean, "glean_client_info")
+                .is_some());
+        }
     }
 
     #[test]
