@@ -62,7 +62,9 @@ impl CounterMetric {
         glean
             .storage()
             .record_with(&self.meta, |old_value| match old_value {
-                Some(Metric::Counter(old_value)) => Metric::Counter(old_value + amount),
+                Some(Metric::Counter(old_value)) => {
+                    Metric::Counter(old_value.saturating_add(amount))
+                }
                 _ => Metric::Counter(amount),
             })
     }
