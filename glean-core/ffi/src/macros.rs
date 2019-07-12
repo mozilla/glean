@@ -20,7 +20,7 @@
 #[macro_export]
 macro_rules! define_metric {
     ($metric_type:ident => $metric_map:ident {
-        new -> $new_fn:ident($($new_argname:ident: $new_argtyp:ty),* $(,)*),
+        $(new -> $new_fn:ident($($new_argname:ident: $new_argtyp:ty),* $(,)*),)?
         destroy -> $destroy_fn:ident,
         should_record -> $should_record_fn:ident,
 
@@ -40,6 +40,7 @@ macro_rules! define_metric {
             })
         }
 
+        $(
         #[no_mangle]
         pub extern "C" fn $new_fn(
             category: ffi_support::FfiStr,
@@ -67,6 +68,7 @@ macro_rules! define_metric {
                 }, $($new_argname),*))
             })
         }
+        )?
 
         $(
             #[no_mangle]
