@@ -64,7 +64,7 @@ fn record_properly_records_with_optional_arguments() {
         .cloned()
         .collect();
 
-    metric.record(&glean, 1000, Some(extra));
+    metric.record(&glean, 1000, extra);
 
     for store_name in store_names {
         let events = metric.test_get_value(&glean, &store_name).unwrap();
@@ -177,7 +177,7 @@ fn test_sending_of_event_ping_when_it_fills_up() {
     for i in 0..510 {
         let mut extra: HashMap<i32, String> = HashMap::new();
         extra.insert(0, i.to_string());
-        click.record(&glean, i, Some(extra));
+        click.record(&glean, i, extra);
     }
 
     assert_eq!(10, click.test_get_value(&glean, "events").unwrap().len());
@@ -226,7 +226,7 @@ fn extra_keys_must_be_recorded_and_truncated_if_needed() {
     extra.insert(0, test_value.to_string());
     extra.insert(1, test_value.to_string().repeat(10));
 
-    test_event.record(&glean, 0, Some(extra));
+    test_event.record(&glean, 0, extra);
 
     let snapshot = glean
         .event_storage()

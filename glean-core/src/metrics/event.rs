@@ -3,7 +3,6 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use std::collections::HashMap;
-use std::iter::Iterator;
 
 use serde_json::json;
 
@@ -53,23 +52,42 @@ impl EventMetric {
     /// * `timestamp` - A monotonically increasing timestamp, in nanoseconds.
     ///   This must be provided since the actual recording of the event may
     ///   happen some time later than the moment the event occurred.
-    /// * `extra` - A HashMap of (key, value) pairs. The key is an index
-    ///   into the metric's `allowed_extra_keys` vector where the key's string
-    ///   is looked up.
-    pub fn record(&self, glean: &Glean, timestamp: u64, extra: Option<HashMap<i32, String>>) {
+    /// * `extra` - A HashMap of (key, value) pairs. The key is an index into
+    ///   the metric's `allowed_extra_keys` vector where the key's string is
+    ///   looked up. If any key index is out of range, an error is reported and
+    ///   no event is recorded.
+    pub fn record<M: Into<Option<HashMap<i32, String>>>>(
+        &self,
+        glean: &Glean,
+        timestamp: u64,
+        extra: M,
+    ) {
         if !self.should_record(glean) {
             return;
         }
 
-        let extra_strings = extra.and_then(|extra| {
-            Some(
-                extra
-                    .into_iter()
-                    .map(|(k, v)| (self.allowed_extra_keys.get(k as usize).unwrap(), v))
-                    .map(|(k, v)| (k.to_string(), self.truncate_value(glean, k, &v).to_string()))
-                    .collect(),
-            )
-        });
+        let extra = extra.into();
+        let extra_strings: Option<HashMap<String, String>> = if let Some(extra) = extra {
+            if extra.is_empty() {
+                None
+            } else {
+                let mut extra_strings = HashMap::new();
+                for (k, v) in extra.into_iter() {
+                    match self.allowed_extra_keys.get(k as usize) {
+                        Some(k) => extra_strings
+                            .insert(k.to_string(), self.truncate_value(glean, k, &v).to_string()),
+                        None => {
+                            let msg = format!("Invalid key index {}", k);
+                            record_error(glean, &self.meta, ErrorType::InvalidValue, msg);
+                            return;
+                        }
+                    };
+                }
+                Some(extra_strings)
+            }
+        } else {
+            None
+        };
 
         glean
             .event_storage()

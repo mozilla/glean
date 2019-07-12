@@ -8,6 +8,7 @@ use std::fs::{create_dir_all, File, OpenOptions};
 use std::io::BufRead;
 use std::io::BufReader;
 use std::io::Write;
+use std::iter::FromIterator;
 use std::path::{Path, PathBuf};
 use std::sync::RwLock;
 
@@ -55,9 +56,11 @@ impl RecordedEventData {
 /// compatible with any newly-collected events.
 #[derive(Debug)]
 pub struct EventDatabase {
+    /// Path to directory of on-disk event files
     pub path: PathBuf,
-    // The in-memory list of events
+    /// The in-memory list of events
     event_stores: RwLock<HashMap<String, Vec<RecordedEventData>>>,
+    /// A lock to be held when doing operations on the filesystem
     file_lock: RwLock<()>,
 }
 
@@ -79,9 +82,10 @@ impl EventDatabase {
         })
     }
 
-    /// Initialize events storage. This must be called once on application startup,
-    /// e.g. from [Glean.initialize], but after we are ready to send pings, since
-    /// this could potentially collect and send pings.
+    /// Initialize events storage after Glean is fully initialized and ready to
+    /// send pings. This must be called once on application startup, e.g. from
+    /// [Glean.initialize], but after we are ready to send pings, since this
+    /// could potentially collect and send pings.
     ///
     /// If there are any events queued on disk, it loads them into memory so
     /// that the memory and disk representations are in sync.
@@ -94,7 +98,7 @@ impl EventDatabase {
     /// # Arguments
     ///
     /// * `glean` - The Glean instance.
-    pub fn on_ready_to_send_pings(&self, glean: &Glean) {
+    pub fn flush_pending_events_on_startup(&self, glean: &Glean) {
         match self.load_events_from_disk() {
             Ok(_) => self.send_all_events(glean),
             Err(err) => log::error!("Error loading pings from disk: {}", err),
@@ -156,6 +160,8 @@ impl EventDatabase {
         timestamp: u64,
         extra: Option<HashMap<String, String>>,
     ) {
+        // Create RecordedEventData object, and its JSON form for serialization
+        // on disk.
         let event = RecordedEventData {
             timestamp,
             category: meta.category.to_string(),
@@ -163,8 +169,9 @@ impl EventDatabase {
             extra,
         };
         let event_json = serde_json::to_string(&event).unwrap();
-        let mut stores_to_send: Vec<&str> = Vec::new();
 
+        // Store the event in memory and on disk to each of the stores.
+        let mut stores_to_send: Vec<&str> = Vec::new();
         {
             let mut db = self.event_stores.write().unwrap();
             for store_name in meta.send_in_pings.iter() {
@@ -179,6 +186,8 @@ impl EventDatabase {
             }
         }
 
+        // If any of the event stores reached maximum size, send the pings
+        // containing those events immediately.
         for store_name in stores_to_send {
             if let Err(err) = glean.send_ping_by_name(store_name, false) {
                 log::error!(
@@ -214,7 +223,7 @@ impl EventDatabase {
     /// # Arguments
     ///
     /// * `store_name` - The name of the desired store.
-    /// * `clear_store` - Whether to clear the store afterward.
+    /// * `clear_store` - Whether to clear the store after snapshotting.
     ///
     /// # Returns
     ///
@@ -225,10 +234,9 @@ impl EventDatabase {
             db.get(&store_name.to_string()).and_then(|store| {
                 if !store.is_empty() {
                     let first_timestamp = store[0].timestamp;
-                    Some(json!(store
-                        .iter()
-                        .map(|e| e.serialize_relative(first_timestamp))
-                        .collect::<Vec<JsonValue>>()))
+                    Some(JsonValue::from_iter(
+                        store.iter().map(|e| e.serialize_relative(first_timestamp)),
+                    ))
                 } else {
                     None
                 }
@@ -236,16 +244,14 @@ impl EventDatabase {
         };
 
         if clear_store {
-            {
-                let mut db = self.event_stores.write().unwrap();
-                db.remove(&store_name.to_string());
-            }
+            self.event_stores
+                .write()
+                .unwrap()
+                .remove(&store_name.to_string());
 
-            {
-                let _lock = self.file_lock.write().unwrap();
-                if let Err(err) = fs::remove_file(self.path.join(store_name)) {
-                    log::error!("Error removing events queue file {}: {}", store_name, err);
-                }
+            let _lock = self.file_lock.write().unwrap();
+            if let Err(err) = fs::remove_file(self.path.join(store_name)) {
+                log::error!("Error removing events queue file {}: {}", store_name, err);
             }
         }
 

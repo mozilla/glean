@@ -252,8 +252,7 @@ class EventMetricTypeTest {
         event.record(extra = mapOf(SomeExtraKeys.SomeExtra to "bar"))
         assertEquals(1, event.testGetValue().size)
 
-        // Clear the in-memory storage only to mock being loaded in a fresh process
-        // EventsStorageEngine.eventStores.clear()
+        // Start a new Glean instance to trigger the sending of "stale" events
         resetGlean(
             getContextWithMockedInfo(),
             Glean.configuration.copy(
@@ -267,7 +266,7 @@ class EventMetricTypeTest {
         PingUploadWorker.enqueueWorker()
         triggerWorkManager()
 
-        val request = server.takeRequest(20L, TimeUnit.SECONDS)
+        val request = server.takeRequest(1L, TimeUnit.SECONDS)
         assertEquals("POST", request.method)
         val applicationId = "mozilla-telemetry-glean"
         assert(

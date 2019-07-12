@@ -5,21 +5,21 @@
 use std::convert::TryFrom;
 use std::os::raw::c_char;
 
-use ffi_support::{define_handle_map_deleter, ConcurrentHandleMap, FfiStr};
-use lazy_static::lazy_static;
+use ffi_support::FfiStr;
 
-use glean_core::metrics::{EventMetric, MetricType};
+use glean_core::metrics::EventMetric;
 use glean_core::{CommonMetricData, Lifetime};
 
 use crate::handlemap_ext::HandleMapExtension;
 use crate::{
-    from_raw_int_array_and_string_array, from_raw_string_array, RawIntArray, RawStringArray, GLEAN,
+    define_metric, from_raw_int_array_and_string_array, from_raw_string_array, RawIntArray,
+    RawStringArray, GLEAN,
 };
 
-lazy_static! {
-    pub static ref EVENT_METRICS: ConcurrentHandleMap<EventMetric> = ConcurrentHandleMap::new();
-}
-define_handle_map_deleter!(EVENT_METRICS, glean_destroy_event_metric);
+define_metric!(EventMetric => EVENT_METRICS {
+    destroy       -> glean_destroy_event_metric,
+    should_record -> glean_event_should_record,
+});
 
 #[no_mangle]
 pub extern "C" fn glean_new_event_metric(
@@ -47,13 +47,6 @@ pub extern "C" fn glean_new_event_metric(
             },
             extra_keys,
         ))
-    })
-}
-
-#[no_mangle]
-pub extern "C" fn glean_event_should_record(glean_handle: u64, metric_id: u64) -> u8 {
-    GLEAN.call_infallible(glean_handle, |glean| {
-        EVENT_METRICS.call_infallible(metric_id, |metric| metric.should_record(&glean))
     })
 }
 
