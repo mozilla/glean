@@ -8,7 +8,7 @@
 ///
 /// * `$metric_type` - metric type to use from glean_core, e.g. `CounterMetric`.
 /// * `$metric_map` - name to use for the global name, should be all uppercase, e.g. `COUNTER_METRICS`.
-/// * `$new_fn(...)` - name of the constructor function, followed by all additional (non-common) arguments.
+/// * `$new_fn(...)` - (optional) name of the constructor function, followed by all additional (non-common) arguments.
 /// * `$destroy` - name of the destructor function.
 /// * `$should_record` - name of the function to determine if the metric should be recorded.
 ///
@@ -20,7 +20,7 @@
 #[macro_export]
 macro_rules! define_metric {
     ($metric_type:ident => $metric_map:ident {
-        new -> $new_fn:ident($($new_argname:ident: $new_argtyp:ty),* $(,)*),
+        $(new -> $new_fn:ident($($new_argname:ident: $new_argtyp:ty),* $(,)*),)?
         destroy -> $destroy_fn:ident,
         should_record -> $should_record_fn:ident,
 
@@ -40,6 +40,7 @@ macro_rules! define_metric {
             })
         }
 
+        $(
         #[no_mangle]
         pub extern "C" fn $new_fn(
             category: ffi_support::FfiStr,
@@ -67,6 +68,7 @@ macro_rules! define_metric {
                 }, $($new_argname),*))
             })
         }
+        )?
 
         $(
             #[no_mangle]
