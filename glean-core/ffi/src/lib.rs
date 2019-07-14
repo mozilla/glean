@@ -39,18 +39,34 @@ lazy_static! {
 type RawStringArray = *const *const c_char;
 type RawIntArray = *const i32;
 
-/// Create a vector of strings from a raw C-like string array
-unsafe fn from_raw_string_array(arr: RawStringArray, len: i32) -> Vec<String> {
-    if arr.is_null() || len == 0 {
-        return vec![];
-    }
+/// Create a vector of strings from a raw C-like string array.
+///
+/// Returns an error if any of the strings contain invalid UTF-8 characters.
+///
+/// ## Safety
+///
+/// * We check the array pointer for validity (non-null).
+/// * FfiStr checks each individual char pointer for validity (non-null).
+/// * We discard invalid char pointers (null pointer).
+/// * Invalid UTF-8 in any string will return an error from this function.
+fn from_raw_string_array(arr: RawStringArray, len: i32) -> glean_core::Result<Vec<String>> {
+    unsafe {
+        if arr.is_null() || len == 0 {
+            return Ok(vec![]);
+        }
 
-    // FIXME: We should double check for null pointers and handle that instead of crashing
-    let arr_ptrs = std::slice::from_raw_parts(arr, len as usize);
-    arr_ptrs
-        .iter()
-        .map(|&p| FfiStr::from_raw(p).into_string())
-        .collect()
+        let arr_ptrs = std::slice::from_raw_parts(arr, len as usize);
+        arr_ptrs
+            .iter()
+            .map(|&p| {
+                // Drop invalid strings
+                FfiStr::from_raw(p)
+                    .as_opt_str()
+                    .map(|s| s.to_string())
+                    .ok_or_else(glean_core::Error::utf8_error)
+            })
+            .collect()
+    }
 }
 
 /// Create a HashMap<i32, String> from a pair of C int and string arrays.
@@ -242,3 +258,59 @@ pub extern "C" fn glean_experiment_test_get_data(
 
 define_handle_map_deleter!(GLEAN, glean_destroy_glean);
 define_string_destructor!(glean_str_free);
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use std::ffi::CString;
+
+    mod raw_string_array {
+        use super::*;
+
+        #[test]
+        fn parsing_valid_array() {
+            let expected = vec!["first", "second"];
+            let array: Vec<CString> = expected
+                .iter()
+                .map(|&s| CString::new(&*s).unwrap())
+                .collect();
+            let ptr_array: Vec<*const _> = array.iter().map(|s| s.as_ptr()).collect();
+
+            let list = from_raw_string_array(ptr_array.as_ptr(), expected.len() as i32).unwrap();
+            assert_eq!(expected, list);
+        }
+
+        #[test]
+        fn parsing_empty_array() {
+            let expected: Vec<String> = vec![];
+
+            // Testing a null pointer (length longer to ensure the null pointer is checked)
+            let list = from_raw_string_array(std::ptr::null(), 2).unwrap();
+            assert_eq!(expected, list);
+
+            // Need a (filled) vector to obtain a valid pointer.
+            let array = vec![CString::new("glean").unwrap()];
+            let ptr_array: Vec<*const _> = array.iter().map(|s| s.as_ptr()).collect();
+
+            // Check the length with a valid pointer.
+            let list = from_raw_string_array(ptr_array.as_ptr(), 0).unwrap();
+            assert_eq!(expected, list);
+        }
+
+        #[test]
+        fn parsing_invalid_utf8_fails() {
+            // CAREFUL! We're manually constructing nul-terminated
+
+            // Need a (filled) vector to obtain a valid pointer.
+            let array = vec![
+                // -1 is definitely an invalid UTF-8 codepoint
+                // Let's not break anything and append the nul terminator
+                vec![0x67, 0x6c, -1, 0x65, 0x61, 0x6e, 0x00],
+            ];
+            let ptr_array: Vec<*const _> = array.iter().map(|s| s.as_ptr()).collect();
+
+            let list = from_raw_string_array(ptr_array.as_ptr(), array.len() as i32);
+            assert!(list.is_err());
+        }
+    }
+}

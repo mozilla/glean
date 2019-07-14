@@ -55,6 +55,10 @@ pub enum ErrorKind {
     /// OsString conversion failed
     #[fail(display = "OsString conversion from {:?} failed", _0)]
     OsString(OsString),
+
+    /// Unknown error
+    #[fail(display = "Invalid  UTF-8 byte sequence in string.")]
+    Utf8Error,
 }
 
 /// A specialized [`Error`] type for this crate's operations.
@@ -71,6 +75,15 @@ impl Error {
     /// [`ErrorKind`]: enum.ErrorKind.html
     pub fn kind(&self) -> &ErrorKind {
         &*self.inner.get_context()
+    }
+
+    /// Return a new UTF-8 error
+    ///
+    /// This is exposed in order to expose conversion errors on the FFI layer.
+    pub fn utf8_error() -> Error {
+        Error {
+            inner: Context::new(ErrorKind::Utf8Error),
+        }
     }
 }
 
