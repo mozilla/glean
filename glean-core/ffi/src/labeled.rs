@@ -50,9 +50,8 @@ macro_rules! impl_labeled_metric {
             label_count: i32,
         ) -> u64 {
             $global.insert_with_log(|| {
-                let send_in_pings =
-                    unsafe { from_raw_string_array(send_in_pings, send_in_pings_len) };
-                let labels = unsafe { from_raw_string_array(labels, label_count) };
+                let send_in_pings = from_raw_string_array(send_in_pings, send_in_pings_len)?;
+                let labels = from_raw_string_array(labels, label_count)?;
                 let labels = if labels.is_empty() {
                     None
                 } else {
