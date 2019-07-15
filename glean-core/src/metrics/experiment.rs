@@ -17,6 +17,10 @@ use crate::Lifetime;
 // An internal ping name, not to be touched by anything else
 const INTERNAL_STORAGE: &str = "glean_internal_info";
 
+/// The maximum length of the experiment id and the branch id. Identifiers
+/// longer than this number of characters are truncated.
+const MAX_EXPERIMENTS_IDS_LEN: usize = 30;
+
 /// The data for a single experiment.
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct RecordedExperimentData {
@@ -49,11 +53,24 @@ impl ExperimentMetric {
     ///
     /// ## Arguments
     ///
-    /// * `id` - the id of the experiment.
+    /// * `id` - the id of the experiment. Please note that this will be
+    ///          truncated to MAX_EXPERIMENTS_IDS_LEN, if needed.
     pub fn new(id: String) -> Self {
+        // Make sure that experiment id is within the expected limit.
+        let truncated_id = if id.len() > MAX_EXPERIMENTS_IDS_LEN {
+            log::warn!(
+                "Value length {} for experiment id exceeds maximum of {}",
+                id.len(),
+                MAX_EXPERIMENTS_IDS_LEN
+            );
+            id[0..MAX_EXPERIMENTS_IDS_LEN].to_string()
+        } else {
+            id
+        };
+
         Self {
             meta: CommonMetricData {
-                name: format!("{}#experiment", id),
+                name: format!("{}#experiment", truncated_id),
                 // We don't need a category, the name is already unique
                 category: "".into(),
                 send_in_pings: vec![INTERNAL_STORAGE.into()],
@@ -68,19 +85,28 @@ impl ExperimentMetric {
     /// ## Arguments
     ///
     /// * `glean` - The Glean instance this metric belongs to.
-    /// * `branch` -  the active branch of the experiment.
+    /// * `branch` -  the active branch of the experiment. Please note that this will be
+    ///               truncated to MAX_EXPERIMENTS_IDS_LEN, if needed.
     /// * `extra` - an optional, user defined String to String map used to provide richer
     ///             experiment context if needed.
-    ///
-    /// ## Notes
-    ///
-    /// Logs an error if the `amount` is 0 or negative.
     pub fn set_active(&self, glean: &Glean, branch: String, extra: Option<HashMap<String, String>>) {
         if !self.should_record(glean) {
             return;
         }
 
-        let value = Metric::Experiment(RecordedExperimentData{ branch, extra });
+        // Make sure that branch id is within the expected limit.
+        let truncated_branch = if branch.len() > MAX_EXPERIMENTS_IDS_LEN {
+            log::warn!(
+                "Value length {} for branch exceeds maximum of {}",
+                branch.len(),
+                MAX_EXPERIMENTS_IDS_LEN
+            );
+            branch[0..MAX_EXPERIMENTS_IDS_LEN].to_string()
+        } else {
+            branch
+        };
+
+        let value = Metric::Experiment(RecordedExperimentData{ branch: truncated_branch, extra });
         glean.storage().record(&self.meta, &value)
     }
 
