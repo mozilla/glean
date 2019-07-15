@@ -123,17 +123,16 @@ impl ExperimentMetric {
         glean.storage().remove_single_metric(Lifetime::Application, INTERNAL_STORAGE, &self.meta.name)
     }
 
-    /*
     /// **Test-only API (exported for FFI purposes).**
     ///
-    /// Get the currently stored value as an integer.
+    /// Get the currently stored experiment data as RecordedExperimentData.
     ///
     /// This doesn't clear the stored value.
-    pub fn test_get_value(&self, glean: &Glean, storage_name: &str) -> Option<i32> {
-        match StorageManager.snapshot_metric(glean.storage(), storage_name, &self.meta.identifier())
+    pub fn test_get_value(&self, glean: &Glean) -> Option<RecordedExperimentData> {
+        match StorageManager.snapshot_metric(glean.storage(), INTERNAL_STORAGE, &self.meta.identifier())
         {
-            Some(Metric::Counter(i)) => Some(i),
+            Some(Metric::Experiment(e)) => Some(e),
             _ => None,
         }
-    }*/
+    }
 }
