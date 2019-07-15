@@ -152,8 +152,19 @@ impl StorageManager {
     ///
     /// ## Return value
     ///
-    /// Returns a JSON representation of the stored data.
-    /// Returns `None` if no data for the store exists.
+    /// Returns a JSON representation of the experiment data, in the following format:
+    /// 
+    /// {
+    ///  'experiment-id': {
+    ///    'branch': 'branch-id',
+    ///    'extra': {
+    ///      'additional': 'property',
+    ///      // ...
+    ///    }
+    ///  }
+    /// }
+    /// 
+    /// Returns `None` if no data for experiments exists.
     pub fn snapshot_experiments_as_json(
         &self,
         storage: &Database
