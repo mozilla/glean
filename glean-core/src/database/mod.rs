@@ -253,12 +253,32 @@ impl Database {
         });
     }
 
-    /// Removes a metric from the storage (only Application Lifetime).
-    pub fn remove_application_lifetime_metric(&self, storage_name: &str, metric_name: &str) {
-       let final_key = Self::get_storage_key(storage_name, Some(metric_name));
+    /// Removes a single metric from the storage.
+    ///
+    /// ## Arguments
+    ///
+    /// * `lifetime` - the lifetime of the storage in which to look for the metric.
+    /// * `storage_name` - the name of the storage to store/fetch data from.
+    /// * `metric_key` - the metric key/name.
+    pub fn remove_single_metric(
+        &self,
+        lifetime: Lifetime,
+        storage_name: &str,
+        metric_name: &str
+    ) {
+        let final_key = Self::get_storage_key(storage_name, Some(metric_name));
 
-        let mut data = self.app_lifetime_data.write().unwrap();
-        data.remove(&final_key);
+        if lifetime == Lifetime::Application {
+            let mut data = self.app_lifetime_data.write().unwrap();
+            data.remove(&final_key);
+            return;
+        }
+
+        self.write_with_store(lifetime, |mut writer, store| {
+            store.delete(&mut writer, final_key.clone()).unwrap();
+
+            writer.commit().unwrap();
+        });
     }
 }
 
@@ -458,6 +478,58 @@ mod test {
             assert_eq!(2, snapshot.len(), "We only expect 2 metrics to be left.");
             assert!(snapshot.contains_key("telemetry_test.test_name_user"));
             assert!(snapshot.contains_key("telemetry_test.test_name_application"));
+        }
+    }
+
+    #[test]
+    fn test_remove_single_metric() {
+        // Init the database in a temporary directory.
+        let dir = tempdir().unwrap();
+        let str_dir = dir.path().display().to_string();
+        let db = Database::new(&str_dir).unwrap();
+
+        let test_storage = "test-storage-single-lifetime";
+        let metric_id_pattern = "telemetry_test.single_metric";
+
+        // Write sample metrics to the database.
+        let lifetimes = vec![Lifetime::User, Lifetime::Ping, Lifetime::Application];
+
+        for lifetime in lifetimes.iter() {
+            for value in vec!["retain", "delete"] {
+                db.record_per_lifetime(
+                    *lifetime,
+                    test_storage,
+                    &format!("{}_{}", metric_id_pattern, value),
+                    &Metric::String(value.to_string()),
+                );
+            }
+        }
+
+        // Remove "telemetry_test.single_metric_delete" from each lifetime.
+        for lifetime in lifetimes.iter() {
+            db.remove_single_metric(*lifetime, test_storage, &format!("{}_delete", metric_id_pattern));
+        }
+
+        // Verify that "telemetry_test.single_metric_retain" is still around for all lifetimes.
+        for lifetime in lifetimes.iter() {
+            let mut found_metrics = 0;
+            let mut snapshotter = |metric_name: &[u8], metric: &Metric| {
+                found_metrics += 1;
+                let metric_id = String::from_utf8_lossy(metric_name).into_owned();
+                assert_eq!(format!("{}_retain", metric_id_pattern), metric_id);
+                match metric {
+                    Metric::String(s) => assert_eq!("retain", s),
+                    _ => panic!("Unexpected data found"),
+                }
+            };
+
+            // Check the User lifetime.
+            db.iter_store_from(*lifetime, test_storage, &mut snapshotter);
+            assert_eq!(
+                1,
+                found_metrics,
+                "We only expect 1 metric for this lifetime."
+            );
         }
     }
 }
