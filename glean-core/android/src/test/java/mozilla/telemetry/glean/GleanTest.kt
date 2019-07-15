@@ -129,10 +129,8 @@ class GleanTest {
 
     // Tests from glean-ac (706af1f).
 
-    @Ignore("This should probably be implemented in Rust. We should also have a test here to check that nothing gets enqueued in the Dispatcher")
     @Test
     fun `disabling upload should disable metrics recording`() {
-        /*
         val stringMetric = StringMetricType(
                 disabled = false,
                 category = "telemetry",
@@ -143,11 +141,7 @@ class GleanTest {
         Glean.setUploadEnabled(false)
         assertEquals(false, Glean.getUploadEnabled())
         stringMetric.set("foo")
-        assertNull(
-                "Metrics should not be recorded if Glean is disabled",
-                StringsStorageEngine.getSnapshot(storeName = "store1", clearStore = false)
-        )
-        */
+        assertFalse(stringMetric.testHasValue())
     }
 
     @Ignore("The experiments API is not implemented yet. See bug 1552471.")
