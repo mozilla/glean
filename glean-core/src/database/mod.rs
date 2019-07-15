@@ -46,13 +46,32 @@ impl Database {
         Ok(rkv)
     }
 
+    /// Build the key of the final location data should be stored using the
+    /// storage name and the metric key/name (if available).
+    ///
+    /// ## Arguments
+    ///
+    /// * `storage_name` - the name of the storage to store/fetch data from.
+    /// * `metric_key` - the optional metric key/name.
+    ///
+    /// ## Return value
+    ///
+    /// Returns a String representing the location, in the database, data must
+    /// be written or read from.
+    fn get_storage_key(storage_name: &str, metric_key: Option<&str>) -> String {
+        match metric_key {
+            Some(k) => format!("{}#{}", storage_name, k),
+            None => format!("{}#", storage_name)
+        }
+    }
+
     /// Iterates with the provided transaction function on the data from
     /// the given storage.
     pub fn iter_store_from<F>(&self, lifetime: Lifetime, storage_name: &str, mut transaction_fn: F)
     where
         F: FnMut(&[u8], &Metric),
     {
-        let iter_start = format!("{}#", storage_name);
+        let iter_start = Self::get_storage_key(storage_name, None);
         let len = iter_start.len();
 
         // Lifetime::Application data is not persisted to disk
@@ -123,7 +142,7 @@ impl Database {
         key: &str,
         metric: &Metric,
     ) {
-        let final_key = format!("{}#{}", storage_name, key);
+        let final_key = Self::get_storage_key(storage_name, Some(key));
 
         if lifetime == Lifetime::Application {
             let mut data = self.app_lifetime_data.write().unwrap();
@@ -168,7 +187,7 @@ impl Database {
     ) where
         F: FnMut(Option<Metric>) -> Metric,
     {
-        let final_key = format!("{}#{}", storage_name, key);
+        let final_key = Self::get_storage_key(storage_name, Some(key));
 
         if lifetime == Lifetime::Application {
             let mut data = self.app_lifetime_data.write().unwrap();
@@ -236,7 +255,7 @@ impl Database {
 
     /// Removes a metric from the storage (only Application Lifetime).
     pub fn remove_application_lifetime_metric(&self, storage_name: &str, metric_name: &str) {
-       let final_key = format!("{}#{}", storage_name, metric_name);
+       let final_key = Self::get_storage_key(storage_name, Some(metric_name));
 
         let mut data = self.app_lifetime_data.write().unwrap();
         data.remove(&final_key);
