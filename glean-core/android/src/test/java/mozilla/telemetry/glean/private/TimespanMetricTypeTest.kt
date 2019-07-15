@@ -155,6 +155,29 @@ class TimespanMetricTypeTest {
     }
 
     @Test
+    fun `Value unchanged if stopped twice`() {
+        // Define a timespan metric, which will be stored in "store1" and "store2"
+        val metric = TimespanMetricType(
+            disabled = false,
+            category = "telemetry",
+            lifetime = Lifetime.Application,
+            name = "timespan_metric",
+            sendInPings = listOf("store1"),
+            timeUnit = TimeUnit.Nanosecond
+        )
+
+        // Record a timespan.
+        metric.start()
+        metric.stop()
+        assertTrue(metric.testHasValue())
+        val value = metric.testGetValue()
+
+        metric.stop()
+
+        assertEquals(value, metric.testGetValue())
+    }
+
+    @Test
     fun `test setRawNanos`() {
         val timespanNanos = 6 * 1000000000L
 
