@@ -88,7 +88,6 @@ jobs:
   Rust tests - stable:
     docker:
       - image: circleci/rust:latest
-    # We have to use a machine with more RAM for tests so we don't run out of memory.
     steps:
       - rust-tests
   Rust tests - beta:
@@ -110,6 +109,27 @@ jobs:
           cd glean-core/ffi/examples
           make
           ./glean_app
+
+  Rust code coverage:
+    docker:
+      - image: circleci/rust:latest
+    steps:
+      - run:
+          name: Setup custom environment variables
+          command: |
+              echo "export CARGO_INCREMENTAL=0" >> $BASH_ENV
+              echo "export RUSTFLAGS='-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Zno-landing-pads'" >> $BASH_ENV
+      - rust-tests:
+          rust-version: "nightly"
+      - run:
+          name: Create and upload code coverage
+          command: |
+              curl -L https://github.com/mozilla/grcov/releases/latest/download/grcov-linux-x86_64.tar.bz2 | tar jxf -;
+              curl -L https://codecov.io/bash > codecov.sh;
+              chmod +x codecov.sh;
+              zip -0 ccov.zip `find . \( -name "glean*.gc*" \) -print`
+              ./grcov ccov.zip -s . -t lcov --llvm --branch --ignore-not-existing --ignore-dir "/*" -o lcov.info
+              ./codecov.sh -f lcov.info;
 
   Lint Android with ktlint and detekt:
     docker:
@@ -226,6 +246,9 @@ workflows:
       - Rust tests - beta
       - Android tests
       - C tests
+  coverage:
+    jobs:
+      - Rust code coverage
   documentation:
     jobs:
       - Generate Rust documentation
