@@ -94,7 +94,7 @@ impl ExperimentMetric {
             return;
         }
 
-        glean.storage().remove_application_lifetime_metric(INTERNAL_STORAGE, &self.meta.name)
+        glean.storage().remove_single_metric(Lifetime::Application, INTERNAL_STORAGE, &self.meta.name)
     }
 
     /*
