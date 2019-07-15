@@ -12,6 +12,7 @@ import mozilla.telemetry.glean.resetGlean
 // import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -190,11 +191,6 @@ class TimespanMetricTypeTest {
             timeUnit = TimeUnit.Second
         )
 
-        // This should have no effect
-        metric.start()
-        metric.stop()
-
-        // TODO(bug 1562859): setRawNanos currently overwrites. Is that ok?
         metric.setRawNanos(timespanNanos)
         assertEquals(6, metric.testGetValue())
     }
@@ -215,10 +211,51 @@ class TimespanMetricTypeTest {
         metric.setRawNanos(timespanNanos)
         assertEquals(6, metric.testGetValue())
 
-        // TODO(bug 1562859): start/stop does not overwrite. Correct behavior?
         metric.start()
         metric.stop()
         val value = metric.testGetValue()
         assertEquals(6, value)
+    }
+
+    @Test
+    fun `setRawNanos does not overwrite value`() {
+        val timespanNanos = 6 * 1000000000L
+
+        val metric = TimespanMetricType(
+            false,
+            "telemetry",
+            Lifetime.Ping,
+            "explicit_timespan_1",
+            listOf("store1"),
+            timeUnit = TimeUnit.Second
+        )
+
+        metric.start()
+        metric.stop()
+        val value = metric.testGetValue()
+
+        metric.setRawNanos(timespanNanos)
+
+        assertEquals(value, metric.testGetValue())
+    }
+
+    @Test
+    fun `setRawNanos does nothing when timer is running`() {
+        val timespanNanos = 1000000000L
+
+        val metric = TimespanMetricType(
+            false,
+            "telemetry",
+            Lifetime.Ping,
+            "explicit_timespan",
+            listOf("store1"),
+            timeUnit = TimeUnit.Second
+        )
+
+        metric.start()
+        metric.setRawNanos(timespanNanos)
+        metric.stop()
+
+        assertNotEquals(timespanNanos, metric.testGetValue())
     }
 }
