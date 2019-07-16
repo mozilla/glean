@@ -31,6 +31,8 @@ pub use self::counter::CounterMetric;
 pub use self::datetime::DatetimeMetric;
 pub use self::event::EventMetric;
 pub(crate) use self::experiment::ExperimentMetric;
+// Note: clippy complains about this being useless but, if I remove
+// the next line, then tests in glean-core\src\lib.rs will fail to build.
 pub(crate) use self::experiment::RecordedExperimentData;
 pub use self::labeled::LabeledMetric;
 pub use self::ping::PingType;

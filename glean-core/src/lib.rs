@@ -320,10 +320,7 @@ impl Glean {
     ///
     /// True if the experiment is active, false otherwise.
     pub fn test_is_experiment_active(&self, experiment_id: String) -> bool {
-        match self.test_get_experiment_data_as_json(experiment_id) {
-            Some(_) => true,
-            None => false,
-        }
+        self.test_get_experiment_data_as_json(experiment_id).is_some()
     }
 
     /// **Test-only API (exported for FFI purposes).**
