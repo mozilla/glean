@@ -115,7 +115,7 @@ impl PingMaker {
         });
 
         // Get the experiment data, if available.
-        if let Some(experiment_data) = StorageManager.snapshot_experiments_as_json(glean.storage())
+        if let Some(experiment_data) = StorageManager.snapshot_experiments_as_json(glean.storage(), INTERNAL_STORAGE)
         {
             merge(&mut map, &experiment_data);
         };

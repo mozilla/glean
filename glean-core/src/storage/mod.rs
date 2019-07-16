@@ -149,6 +149,7 @@ impl StorageManager {
     /// ## Arguments:
     ///
     /// * `storage` - The database to get data from.
+    /// * `store_name` - The store name to look into.
     ///
     /// ## Return value
     ///
@@ -167,7 +168,8 @@ impl StorageManager {
     /// Returns `None` if no data for experiments exists.
     pub fn snapshot_experiments_as_json(
         &self,
-        storage: &Database
+        storage: &Database,
+        store_name: &str
     ) -> Option<JsonValue> {
         let mut snapshot: HashMap<String, HashMap<String, JsonValue>> = HashMap::new();
 
@@ -183,7 +185,7 @@ impl StorageManager {
         };
 
         // FIXME: glean_internal_info should probably not be known here or, at least, shared.
-        storage.iter_store_from(Lifetime::Application, "glean_internal_info".into(), &mut snapshotter);
+        storage.iter_store_from(Lifetime::Application, store_name, &mut snapshotter);
 
         if snapshot.is_empty() {
             None
