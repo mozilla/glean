@@ -3,6 +3,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use serde::{Deserialize, Serialize};
+use serde_json::json;
 use std::collections::HashMap;
 
 use crate::error_recording::{record_error, ErrorType};
@@ -125,13 +126,14 @@ impl ExperimentMetric {
 
     /// **Test-only API (exported for FFI purposes).**
     ///
-    /// Get the currently stored experiment data as RecordedExperimentData.
+    /// Get the currently stored experiment data as a JSON representation of
+    /// the RecordedExperimentData.
     ///
     /// This doesn't clear the stored value.
-    pub fn test_get_value(&self, glean: &Glean) -> Option<RecordedExperimentData> {
+    pub fn test_get_value_as_json_string(&self, glean: &Glean) -> Option<String> {
         match StorageManager.snapshot_metric(glean.storage(), INTERNAL_STORAGE, &self.meta.identifier())
         {
-            Some(Metric::Experiment(e)) => Some(e),
+            Some(Metric::Experiment(e)) => Some(json!(e).to_string()),
             _ => None,
         }
     }

@@ -302,6 +302,42 @@ impl Glean {
         let metric = metrics::ExperimentMetric::new(experiment_id);
         metric.set_inactive(&self);
     }
+
+    /// **Test-only API (exported for FFI purposes).**
+    /// 
+    /// Check if an experiment is currently active.
+    ///
+    /// ## Arguments
+    ///
+    /// * `experiment_id` - The id of the experiment (maximum 30 bytes).
+    /// 
+    /// ## Return value
+    ///
+    /// True if the experiment is active, false otherwise.
+    pub fn test_is_experiment_active(&self, experiment_id: String) -> bool {
+        match self.test_get_experiment_data(experiment_id) {
+            Some(_) => true,
+            None => false
+        }
+    }
+
+    /// **Test-only API (exported for FFI purposes).**
+    /// 
+    /// Get stored data for the requested experiment.
+    ///
+    /// ## Arguments
+    ///
+    /// * `experiment_id` - The id of the active experiment (maximum 30 bytes).
+    /// 
+    /// ## Return value
+    ///
+    /// If the requested experiment is active, a JSON string with the following format:
+    /// { 'branch': 'the-branch-name', 'extra': {'key': 'value', ...}}
+    /// Otherwise, None.
+    pub fn test_get_experiment_data(&self, experiment_id: String) -> Option<String> {
+        let metric = metrics::ExperimentMetric::new(experiment_id);
+        metric.test_get_value_as_json_string(&self)
+    }
 }
 
 #[cfg(test)]
