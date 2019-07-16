@@ -29,6 +29,7 @@ import mozilla.telemetry.glean.private.PingType
 import mozilla.telemetry.glean.private.RecordedExperimentData
 import mozilla.telemetry.glean.scheduler.GleanLifecycleObserver
 import mozilla.telemetry.glean.scheduler.PingUploadWorker
+import org.json.JSONObject
 
 // Public exported type identifying individual timers for [TimingDistributionMetricType].
 typealias GleanTimerId = Long
@@ -214,8 +215,8 @@ open class GleanInternalAPI internal constructor () {
 
         extra?.let {
             numKeys = extra.size
-            keys = StringArray(extra.values.toTypedArray())
-            values = StringArray(extra.keys.toTypedArray())
+            keys = StringArray(extra.keys.toTypedArray(), "utf-8")
+            values = StringArray(extra.values.toTypedArray(), "utf-8")
         }
 
         LibGleanFFI.INSTANCE.glean_set_experiment_active(
@@ -250,11 +251,10 @@ open class GleanInternalAPI internal constructor () {
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun testIsExperimentActive(experimentId: String): Boolean {
-        Log.e(LOG_TAG, "testIsExperimentActive is a stub")
-        // TODO: 1552471 stub
-        // return ExperimentsStorageEngine.getSnapshot()[experimentId] != null
-        assert(false, { "testIsExperimentActive is a stub" })
-        return false
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        Dispatchers.API.assertInTestingMode()
+
+        return LibGleanFFI.INSTANCE.glean_experiment_test_is_active(handle, experimentId).toBoolean()
     }
 
     /**
@@ -262,14 +262,41 @@ open class GleanInternalAPI internal constructor () {
     *
     * @param experimentId the id of the experiment to look for.
     * @return the [RecordedExperimentData] for the experiment
-    * @throws [NullPointerException] if the requested experiment is not active
+    * @throws [NullPointerException] if the requested experiment is not active or data is corrupt.
     */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun testGetExperimentData(experimentId: String): RecordedExperimentData {
-        // TODO: 1552471 stub
-        // return ExperimentsStorageEngine.getSnapshot().getValue(experimentId)
-        assert(false, { "testGetExperimentData is a stub" })
-        return RecordedExperimentData("branch", null)
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        // Dispatchers.API.assertInTestingMode()
+        Dispatchers.API.assertInTestingMode()
+
+        val ptr = LibGleanFFI.INSTANCE.glean_experiment_test_get_data(
+            handle,
+            experimentId
+        )!!
+
+        var branchId: String? = null
+        var extraMap: Map<String, String>? = null
+        try {
+            // Parse and extract the fields from the JSON string here so
+            // that we can always throw NullPointerException if something
+            // goes wrong.
+            val jsonRes = JSONObject(ptr.getAndConsumeRustString())
+            branchId = jsonRes.getString("branch")
+            extraMap = jsonRes.optJSONObject("extra")?.let {
+                val map = mutableMapOf<String, String>()
+                it.names()?.let { names ->
+                    for (i in 0 until names.length()) {
+                        map[names.getString(i)] = it.getString(names.getString(i))
+                    }
+                }
+                map
+            }
+        } catch (e: org.json.JSONException) {
+            throw NullPointerException()
+        }
+
+        return RecordedExperimentData(branchId, extraMap)
     }
 
     /**

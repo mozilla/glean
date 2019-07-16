@@ -144,7 +144,6 @@ class GleanTest {
         assertFalse(stringMetric.testHasValue())
     }
 
-    @Ignore("The experiments API is not implemented yet. See bug 1552471.")
     @Test
     fun `test experiments recording`() {
         Glean.setExperimentActive(

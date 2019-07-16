@@ -225,5 +225,25 @@ pub extern "C" fn glean_set_experiment_inactive(
     })
 }
 
+#[no_mangle]
+pub extern "C" fn glean_experiment_test_is_active(
+    glean_handle: u64,
+    experiment_id: FfiStr,
+) -> u8 {
+    GLEAN.call_infallible(glean_handle, |glean| {
+        glean.test_is_experiment_active(experiment_id.as_str().to_string())
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn glean_experiment_test_get_data(
+    glean_handle: u64,
+    experiment_id: FfiStr,
+) -> *mut c_char {
+    GLEAN.call_infallible(glean_handle, |glean| {
+        glean.test_get_experiment_data(experiment_id.as_str().to_string())
+    })
+}
+
 define_handle_map_deleter!(GLEAN, glean_destroy_glean);
 define_string_destructor!(glean_str_free);
