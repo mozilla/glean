@@ -48,7 +48,7 @@ pub extern "C" fn glean_timespan_set_raw_nanos(
     let elapsed = Duration::from_nanos(elapsed_nanos);
     GLEAN.call_infallible(glean_handle, |glean| {
         TIMESPAN_METRICS.call_infallible(metric_id, |metric| {
-            metric.set_raw(glean, elapsed, true);
+            metric.set_raw(glean, elapsed, false);
         })
     })
 }

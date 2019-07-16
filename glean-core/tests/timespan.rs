@@ -11,6 +11,7 @@ use serde_json::json;
 
 use glean_core::metrics::*;
 use glean_core::storage::StorageManager;
+use glean_core::{test_get_num_recorded_errors, ErrorType};
 use glean_core::{CommonMetricData, Glean, Lifetime};
 
 // Tests ported from glean-ac
@@ -252,4 +253,10 @@ fn set_raw_time_does_nothing_when_timer_running() {
 
     // We expect the start/stop value, not the raw value.
     assert_eq!(Some(60), metric.test_get_value(&glean, "store1"));
+
+    // Make sure that the error has been recorded
+    assert_eq!(
+        Ok(1),
+        test_get_num_recorded_errors(&glean, metric.meta(), ErrorType::InvalidValue, None)
+    );
 }

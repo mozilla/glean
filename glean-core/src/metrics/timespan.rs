@@ -108,7 +108,12 @@ impl TimespanMetric {
         }
 
         if self.start_time.is_some() {
-            log::warn!("Timespan already running. Raw value not recorded.");
+            record_error(
+                glean,
+                &self.meta,
+                ErrorType::InvalidValue,
+                "Timespan already running. Raw value not recorded.",
+            );
             return;
         }
 
