@@ -93,9 +93,14 @@ impl Glean {
         log::info!("Creating new Glean");
 
         let application_id = sanitize_application_id(application_id);
+
+        // Creating the data store creates the necessary path as well.
+        // If that fails we bail out and don't initialize further.
+        let data_store = Database::new(data_path)?;
+
         let mut glean = Self {
             upload_enabled,
-            data_store: Database::new(data_path)?,
+            data_store,
             core_metrics: CoreMetrics::new(),
             data_path: PathBuf::from(data_path),
             application_id,

@@ -74,6 +74,7 @@ open class GleanInternalAPI internal constructor () {
      * as shared preferences
      * @param configuration A Glean [Configuration] object with global settings.
      */
+    @Suppress("ReturnCount")
     @Synchronized
     fun initialize(
         applicationContext: Context,
@@ -101,6 +102,11 @@ open class GleanInternalAPI internal constructor () {
             applicationContext.packageName,
             uploadEnabled.toByte()
         )
+
+        // If initialization of Glean fails we bail out and don't initialize further.
+        if (handle == 0L) {
+            return
+        }
 
         // If any pings were registered before initializing, do so now
         this.pingTypeQueue.forEach { this.registerPingType(it) }
