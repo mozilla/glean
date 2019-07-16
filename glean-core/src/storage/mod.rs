@@ -154,7 +154,7 @@ impl StorageManager {
     /// ## Return value
     ///
     /// Returns a JSON representation of the experiment data, in the following format:
-    /// 
+    ///
     /// {
     ///  'experiment-id': {
     ///    'branch': 'branch-id',
@@ -164,12 +164,12 @@ impl StorageManager {
     ///    }
     ///  }
     /// }
-    /// 
+    ///
     /// Returns `None` if no data for experiments exists.
     pub fn snapshot_experiments_as_json(
         &self,
         storage: &Database,
-        store_name: &str
+        store_name: &str,
     ) -> Option<JsonValue> {
         let mut snapshot: HashMap<String, HashMap<String, JsonValue>> = HashMap::new();
 
@@ -197,9 +197,9 @@ impl StorageManager {
 
 #[cfg(test)]
 mod test {
+    use super::*;
     use crate::metrics::ExperimentMetric;
     use crate::Glean;
-    use super::*;
 
     // Experiment's API tests: the next test comes from glean-ac's
     // ExperimentsStorageEngineTest.kt.
@@ -209,10 +209,10 @@ mod test {
         let name = t.path().display().to_string();
         let glean = Glean::new(&name, "org.mozilla.glean", true).unwrap();
 
-
-        let extra: HashMap<String, String> = [
-            ("test-key".into(), "test-value".into())
-        ].iter().cloned().collect();
+        let extra: HashMap<String, String> = [("test-key".into(), "test-value".into())]
+            .iter()
+            .cloned()
+            .collect();
 
         let metric = ExperimentMetric::new("some-experiment".to_string());
 
@@ -227,8 +227,8 @@ mod test {
 
         metric.set_inactive(&glean);
 
-        let empty_snapshot = StorageManager
-            .snapshot_experiments_as_json(glean.storage(), "glean_internal_info");
+        let empty_snapshot =
+            StorageManager.snapshot_experiments_as_json(glean.storage(), "glean_internal_info");
         assert!(empty_snapshot.is_none());
     }
 }

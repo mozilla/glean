@@ -61,7 +61,7 @@ impl Database {
     fn get_storage_key(storage_name: &str, metric_key: Option<&str>) -> String {
         match metric_key {
             Some(k) => format!("{}#{}", storage_name, k),
-            None => format!("{}#", storage_name)
+            None => format!("{}#", storage_name),
         }
     }
 
@@ -260,12 +260,7 @@ impl Database {
     /// * `lifetime` - the lifetime of the storage in which to look for the metric.
     /// * `storage_name` - the name of the storage to store/fetch data from.
     /// * `metric_key` - the metric key/name.
-    pub fn remove_single_metric(
-        &self,
-        lifetime: Lifetime,
-        storage_name: &str,
-        metric_name: &str
-    ) {
+    pub fn remove_single_metric(&self, lifetime: Lifetime, storage_name: &str, metric_name: &str) {
         let final_key = Self::get_storage_key(storage_name, Some(metric_name));
 
         if lifetime == Lifetime::Application {
@@ -507,7 +502,11 @@ mod test {
 
         // Remove "telemetry_test.single_metric_delete" from each lifetime.
         for lifetime in lifetimes.iter() {
-            db.remove_single_metric(*lifetime, test_storage, &format!("{}_delete", metric_id_pattern));
+            db.remove_single_metric(
+                *lifetime,
+                test_storage,
+                &format!("{}_delete", metric_id_pattern),
+            );
         }
 
         // Verify that "telemetry_test.single_metric_retain" is still around for all lifetimes.
@@ -526,8 +525,7 @@ mod test {
             // Check the User lifetime.
             db.iter_store_from(*lifetime, test_storage, &mut snapshotter);
             assert_eq!(
-                1,
-                found_metrics,
+                1, found_metrics,
                 "We only expect 1 metric for this lifetime."
             );
         }

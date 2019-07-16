@@ -27,7 +27,7 @@ const MAX_EXPERIMENTS_IDS_LEN: usize = 30;
 pub struct RecordedExperimentData {
     pub branch: String,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub extra: Option<HashMap<String, String>>
+    pub extra: Option<HashMap<String, String>>,
 }
 
 /// An experiment metric.
@@ -77,7 +77,7 @@ impl ExperimentMetric {
                 send_in_pings: vec![INTERNAL_STORAGE.into()],
                 lifetime: Lifetime::Application,
                 ..Default::default()
-            }
+            },
         }
     }
 
@@ -90,7 +90,12 @@ impl ExperimentMetric {
     ///               truncated to MAX_EXPERIMENTS_IDS_LEN, if needed.
     /// * `extra` - an optional, user defined String to String map used to provide richer
     ///             experiment context if needed.
-    pub fn set_active(&self, glean: &Glean, branch: String, extra: Option<HashMap<String, String>>) {
+    pub fn set_active(
+        &self,
+        glean: &Glean,
+        branch: String,
+        extra: Option<HashMap<String, String>>,
+    ) {
         if !self.should_record(glean) {
             return;
         }
@@ -107,7 +112,10 @@ impl ExperimentMetric {
             branch
         };
 
-        let value = Metric::Experiment(RecordedExperimentData{ branch: truncated_branch, extra });
+        let value = Metric::Experiment(RecordedExperimentData {
+            branch: truncated_branch,
+            extra,
+        });
         glean.storage().record(&self.meta, &value)
     }
 
@@ -121,7 +129,11 @@ impl ExperimentMetric {
             return;
         }
 
-        glean.storage().remove_single_metric(Lifetime::Application, INTERNAL_STORAGE, &self.meta.name)
+        glean.storage().remove_single_metric(
+            Lifetime::Application,
+            INTERNAL_STORAGE,
+            &self.meta.name,
+        )
     }
 
     /// **Test-only API (exported for FFI purposes).**
@@ -131,8 +143,11 @@ impl ExperimentMetric {
     ///
     /// This doesn't clear the stored value.
     pub fn test_get_value_as_json_string(&self, glean: &Glean) -> Option<String> {
-        match StorageManager.snapshot_metric(glean.storage(), INTERNAL_STORAGE, &self.meta.identifier())
-        {
+        match StorageManager.snapshot_metric(
+            glean.storage(),
+            INTERNAL_STORAGE,
+            &self.meta.identifier(),
+        ) {
             Some(Metric::Experiment(e)) => Some(json!(e).to_string()),
             _ => None,
         }

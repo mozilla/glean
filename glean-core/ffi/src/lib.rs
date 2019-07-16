@@ -92,10 +92,12 @@ unsafe fn from_raw_string_array_and_string_array(
         keys_ptrs
             .iter()
             .zip(values_ptrs.iter())
-            .map(|(&k, &v)| (
-                FfiStr::from_raw(k).into_string(),
-                FfiStr::from_raw(v).into_string()
-            ))
+            .map(|(&k, &v)| {
+                (
+                    FfiStr::from_raw(k).into_string(),
+                    FfiStr::from_raw(v).into_string(),
+                )
+            })
             .collect(),
     )
 }
@@ -204,32 +206,25 @@ pub extern "C" fn glean_set_experiment_active(
     extra_len: i32,
 ) {
     GLEAN.call_infallible(glean_handle, |glean| {
-        let extra = unsafe {
-            from_raw_string_array_and_string_array(extra_keys, extra_values, extra_len)
-        };
+        let extra =
+            unsafe { from_raw_string_array_and_string_array(extra_keys, extra_values, extra_len) };
         glean.set_experiment_active(
             experiment_id.as_str().to_string(),
             branch.as_str().to_string(),
-            extra
+            extra,
         );
     })
 }
 
 #[no_mangle]
-pub extern "C" fn glean_set_experiment_inactive(
-    glean_handle: u64,
-    experiment_id: FfiStr,
-) {
+pub extern "C" fn glean_set_experiment_inactive(glean_handle: u64, experiment_id: FfiStr) {
     GLEAN.call_infallible(glean_handle, |glean| {
         glean.set_experiment_inactive(experiment_id.as_str().to_string());
     })
 }
 
 #[no_mangle]
-pub extern "C" fn glean_experiment_test_is_active(
-    glean_handle: u64,
-    experiment_id: FfiStr,
-) -> u8 {
+pub extern "C" fn glean_experiment_test_is_active(glean_handle: u64, experiment_id: FfiStr) -> u8 {
     GLEAN.call_infallible(glean_handle, |glean| {
         glean.test_is_experiment_active(experiment_id.as_str().to_string())
     })

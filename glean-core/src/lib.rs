@@ -288,7 +288,12 @@ impl Glean {
     /// * `experiment_id` - The id of the active experiment (maximum 30 bytes).
     /// * `branch` - The experiment branch (maximum 30 bytes).
     /// * `extra` - Optional metadata to output with the ping.
-    pub fn set_experiment_active(&self, experiment_id: String, branch: String, extra: Option<HashMap<String, String>>) {
+    pub fn set_experiment_active(
+        &self,
+        experiment_id: String,
+        branch: String,
+        extra: Option<HashMap<String, String>>,
+    ) {
         let metric = metrics::ExperimentMetric::new(experiment_id);
         metric.set_active(&self, branch, extra);
     }
@@ -304,31 +309,31 @@ impl Glean {
     }
 
     /// **Test-only API (exported for FFI purposes).**
-    /// 
+    ///
     /// Check if an experiment is currently active.
     ///
     /// ## Arguments
     ///
     /// * `experiment_id` - The id of the experiment (maximum 30 bytes).
-    /// 
+    ///
     /// ## Return value
     ///
     /// True if the experiment is active, false otherwise.
     pub fn test_is_experiment_active(&self, experiment_id: String) -> bool {
         match self.test_get_experiment_data_as_json(experiment_id) {
             Some(_) => true,
-            None => false
+            None => false,
         }
     }
 
     /// **Test-only API (exported for FFI purposes).**
-    /// 
+    ///
     /// Get stored data for the requested experiment.
     ///
     /// ## Arguments
     ///
     /// * `experiment_id` - The id of the active experiment (maximum 30 bytes).
-    /// 
+    ///
     /// ## Return value
     ///
     /// If the requested experiment is active, a JSON string with the following format:
@@ -342,8 +347,8 @@ impl Glean {
 
 #[cfg(test)]
 mod test {
-    use crate::metrics::RecordedExperimentData;
     use super::*;
+    use crate::metrics::RecordedExperimentData;
 
     #[test]
     fn path_is_constructed_from_data() {
@@ -372,7 +377,7 @@ mod test {
         // Mark the experiment as active.
         glean.set_experiment_active(very_long_id.clone(), very_long_branch_id.clone(), None);
 
-        // Generate the expected id and branch strings. 
+        // Generate the expected id and branch strings.
         let mut expected_id = very_long_id.clone();
         expected_id.truncate(30);
         let mut expected_branch_id = very_long_branch_id.clone();
@@ -385,9 +390,13 @@ mod test {
 
         // Make sure the branch id was truncated as well.
         let experiment_data = glean.test_get_experiment_data_as_json(expected_id.clone());
-        assert!(!experiment_data.is_none(), "Experiment data must be available");
+        assert!(
+            !experiment_data.is_none(),
+            "Experiment data must be available"
+        );
 
-        let parsed_json: RecordedExperimentData = ::serde_json::from_str(&experiment_data.unwrap()).unwrap();
+        let parsed_json: RecordedExperimentData =
+            ::serde_json::from_str(&experiment_data.unwrap()).unwrap();
         assert_eq!(expected_branch_id, parsed_json.branch);
     }
 
@@ -400,12 +409,17 @@ mod test {
         // Define the experiment's data.
         let experiment_id: String = "test-toggle-experiment".into();
         let branch_id: String = "test-branch-toggle".into();
-        let extra: HashMap<String, String> = [
-            ("test-key".into(), "test-value".into())
-        ].iter().cloned().collect();
+        let extra: HashMap<String, String> = [("test-key".into(), "test-value".into())]
+            .iter()
+            .cloned()
+            .collect();
 
         // Activate an experiment.
-        glean.set_experiment_active(experiment_id.clone(), branch_id.clone(), Some(extra.clone()));
+        glean.set_experiment_active(
+            experiment_id.clone(),
+            branch_id.clone(),
+            Some(extra.clone()),
+        );
 
         // Check that the experiment is marekd as active.
         assert!(
@@ -415,9 +429,13 @@ mod test {
 
         // Check that the extra data was stored.
         let experiment_data = glean.test_get_experiment_data_as_json(experiment_id.clone());
-        assert!(!experiment_data.is_none(), "Experiment data must be available");
+        assert!(
+            !experiment_data.is_none(),
+            "Experiment data must be available"
+        );
 
-        let parsed_data: RecordedExperimentData = ::serde_json::from_str(&experiment_data.unwrap()).unwrap();
+        let parsed_data: RecordedExperimentData =
+            ::serde_json::from_str(&experiment_data.unwrap()).unwrap();
         assert_eq!(parsed_data.extra.unwrap(), extra.clone());
 
         // Disable the experiment and check that is no longer available.
