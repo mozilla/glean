@@ -10,6 +10,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ProcessLifecycleOwner
+import com.sun.jna.StringArray
 import kotlinx.coroutines.Job
 import mozilla.components.support.ktx.android.content.isMainProcess
 import mozilla.telemetry.glean.config.Configuration
@@ -200,9 +201,31 @@ open class GleanInternalAPI internal constructor () {
         branch: String,
         extra: Map<String, String>? = null
     ) {
-        Log.e(LOG_TAG, "setExperimentActive is a stub")
-        // TODO: 1552471 stub
-        // ExperimentsStorageEngine.setExperimentActive(experimentId, branch, extra)
+        if (!isInitialized()) {
+            Log.e(LOG_TAG, "Please call Glean.initialize() before using this API")
+            return
+        }
+
+        // The 'extra' map is sent over FFI as a pair of arrays, one containing
+        // the keys and the other containing the values.
+        var keys: StringArray? = null
+        var values: StringArray? = null
+        var numKeys = 0
+
+        extra?.let {
+            numKeys = extra.size
+            keys = StringArray(extra.values.toTypedArray())
+            values = StringArray(extra.keys.toTypedArray())
+        }
+
+        LibGleanFFI.INSTANCE.glean_set_experiment_active(
+            handle,
+            experimentId,
+            branch,
+            keys,
+            values,
+            numKeys
+        )
     }
 
     /**
@@ -211,9 +234,12 @@ open class GleanInternalAPI internal constructor () {
      * @param experimentId The id of the experiment to deactivate.
      */
     fun setExperimentInactive(experimentId: String) {
-        Log.e(LOG_TAG, "setExperimentInactive is a stub")
-        // TODO: 1552471 stub
-        // ExperimentsStorageEngine.setExperimentInactive(experimentId)
+        if (!isInitialized()) {
+            Log.e(LOG_TAG, "Please call Glean.initialize() before using this API")
+            return
+        }
+
+        LibGleanFFI.INSTANCE.glean_set_experiment_inactive(handle, experimentId)
     }
 
     /**

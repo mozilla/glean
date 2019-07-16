@@ -75,6 +75,31 @@ unsafe fn from_raw_int_array_and_string_array(
     )
 }
 
+/// Create a HashMap<T, String> from a pair of C string arrays.
+unsafe fn from_raw_string_array_and_string_array(
+    keys: RawStringArray,
+    values: RawStringArray,
+    len: i32,
+) -> Option<HashMap<String, String>> {
+    if keys.is_null() || values.is_null() || len == 0 {
+        return None;
+    }
+
+    let keys_ptrs = std::slice::from_raw_parts(keys, len as usize);
+    let values_ptrs = std::slice::from_raw_parts(values, len as usize);
+
+    Some(
+        keys_ptrs
+            .iter()
+            .zip(values_ptrs.iter())
+            .map(|(&k, &v)| (
+                FfiStr::from_raw(k).into_string(),
+                FfiStr::from_raw(v).into_string()
+            ))
+            .collect(),
+    )
+}
+
 /// Initialize the logging system based on the target platform. This ensures
 /// that logging is shown when executing the Glean SDK unit tests.
 #[no_mangle]
@@ -166,6 +191,37 @@ pub extern "C" fn glean_ping_collect(glean_handle: u64, ping_type_handle: u64) -
             Ok(data)
         });
         res.unwrap()
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn glean_set_experiment_active(
+    glean_handle: u64,
+    experiment_id: FfiStr,
+    branch: FfiStr,
+    extra_keys: RawStringArray,
+    extra_values: RawStringArray,
+    extra_len: i32,
+) {
+    GLEAN.call_infallible(glean_handle, |glean| {
+        let extra = unsafe {
+            from_raw_string_array_and_string_array(extra_keys, extra_values, extra_len)
+        };
+        glean.set_experiment_active(
+            experiment_id.as_str().to_string(),
+            branch.as_str().to_string(),
+            extra
+        );
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn glean_set_experiment_inactive(
+    glean_handle: u64,
+    experiment_id: FfiStr,
+) {
+    GLEAN.call_infallible(glean_handle, |glean| {
+        glean.set_experiment_inactive(experiment_id.as_str().to_string());
     })
 }
 
