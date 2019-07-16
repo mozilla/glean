@@ -258,6 +258,21 @@ open class GleanInternalAPI internal constructor () {
     }
 
     /**
+     * Utility function to get a String -> String [Map] out of a [JSONObject].
+     */
+    private fun getMapFromJSONObject(jsonRes: JSONObject): Map<String, String>? {
+        return jsonRes.optJSONObject("extra")?.let {
+            val map = mutableMapOf<String, String>()
+            it.names()?.let { names ->
+                for (i in 0 until names.length()) {
+                    map[names.getString(i)] = it.getString(names.getString(i))
+                }
+            }
+            map
+        }
+    }
+
+    /**
     * Returns the stored data for the requested active experiment, for testing purposes only.
     *
     * @param experimentId the id of the experiment to look for.
@@ -267,7 +282,6 @@ open class GleanInternalAPI internal constructor () {
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun testGetExperimentData(experimentId: String): RecordedExperimentData {
         @Suppress("EXPERIMENTAL_API_USAGE")
-        // Dispatchers.API.assertInTestingMode()
         Dispatchers.API.assertInTestingMode()
 
         val ptr = LibGleanFFI.INSTANCE.glean_experiment_test_get_data(
@@ -277,21 +291,14 @@ open class GleanInternalAPI internal constructor () {
 
         var branchId: String? = null
         var extraMap: Map<String, String>? = null
+
         try {
             // Parse and extract the fields from the JSON string here so
             // that we can always throw NullPointerException if something
             // goes wrong.
             val jsonRes = JSONObject(ptr.getAndConsumeRustString())
             branchId = jsonRes.getString("branch")
-            extraMap = jsonRes.optJSONObject("extra")?.let {
-                val map = mutableMapOf<String, String>()
-                it.names()?.let { names ->
-                    for (i in 0 until names.length()) {
-                        map[names.getString(i)] = it.getString(names.getString(i))
-                    }
-                }
-                map
-            }
+            extraMap = getMapFromJSONObject(jsonRes)
         } catch (e: org.json.JSONException) {
             throw NullPointerException()
         }
