@@ -241,7 +241,7 @@ pub extern "C" fn glean_experiment_test_get_data(
     experiment_id: FfiStr,
 ) -> *mut c_char {
     GLEAN.call_infallible(glean_handle, |glean| {
-        glean.test_get_experiment_data(experiment_id.as_str().to_string())
+        glean.test_get_experiment_data_as_json(experiment_id.as_str().to_string())
     })
 }
 

@@ -194,3 +194,41 @@ impl StorageManager {
         }
     }
 }
+
+#[cfg(test)]
+mod test {
+    use crate::metrics::ExperimentMetric;
+    use crate::Glean;
+    use super::*;
+
+    // Experiment's API tests: the next test comes from glean-ac's
+    // ExperimentsStorageEngineTest.kt.
+    #[test]
+    fn test_experiments_json_serialization() {
+        let t = tempfile::tempdir().unwrap();
+        let name = t.path().display().to_string();
+        let glean = Glean::new(&name, "org.mozilla.glean", true).unwrap();
+
+
+        let extra: HashMap<String, String> = [
+            ("test-key".into(), "test-value".into())
+        ].iter().cloned().collect();
+
+        let metric = ExperimentMetric::new("some-experiment".to_string());
+
+        metric.set_active(&glean, "test-branch".to_string(), Some(extra));
+        let snapshot = StorageManager
+            .snapshot_experiments_as_json(glean.storage(), "glean_internal_info")
+            .unwrap();
+        assert_eq!(
+            json!({"experiments": {"some-experiment": {"branch": "test-branch", "extra": {"test-key": "test-value"}}}}),
+            snapshot
+        );
+
+        metric.set_inactive(&glean);
+
+        let empty_snapshot = StorageManager
+            .snapshot_experiments_as_json(glean.storage(), "glean_internal_info");
+        assert!(empty_snapshot.is_none());
+    }
+}

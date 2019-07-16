@@ -30,7 +30,8 @@ pub use self::boolean::BooleanMetric;
 pub use self::counter::CounterMetric;
 pub use self::datetime::DatetimeMetric;
 pub use self::event::EventMetric;
-pub use self::experiment::ExperimentMetric; // FIXME: should this be crate-only? But then how to run tests? Using Glean.set*?
+pub(crate) use self::experiment::ExperimentMetric;
+pub(crate) use self::experiment::RecordedExperimentData;
 pub use self::labeled::LabeledMetric;
 pub use self::ping::PingType;
 pub use self::string::StringMetric;
