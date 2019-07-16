@@ -232,7 +232,6 @@ class GleanTest {
         }
     }
 
-    @Ignore("This is currently failing")
     @Test
     fun `initialize() must not crash the app if Glean's data dir is messed up`() {
         // Remove the Glean's data directory.
@@ -246,6 +245,8 @@ class GleanTest {
         assertTrue(gleanDir.createNewFile())
 
         resetGlean()
+
+        assertFalse(Glean.isInitialized())
 
         // Clean up after this, so that other tests don't fail.
         assertTrue(gleanDir.delete())
