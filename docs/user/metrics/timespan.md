@@ -77,9 +77,12 @@ assertTrue(Auth.loginTime.testGetValue() > 0)
 
 ## Recorded errors
 
-* `invalid_value`: If recording a negative timespan.
+* `invalid_value`
+    * If recording a negative timespan.
+    * If starting a timer while a previous timer is running.
+    * If stopping a timer while it is not running.
+    * If trying to set a raw timespan while a timer is running.
 
 ## Reference
 
 * [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-timespan-metric-type/index.html)
-
