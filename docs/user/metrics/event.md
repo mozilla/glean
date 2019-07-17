@@ -49,7 +49,9 @@ assertEquals("login_opened", first.name)
 
 * When 500 events are queued on the client, and events pings is immediately sent.
 
-* Event timestamps use a system timer that is guaranteed to be monotonic only within a particular boot of the device. Therefore, if there are any unsent recorded events on disk when the application starts, any pings containing those events are sent immediately, so that the Glean SDK can start over using a new timer and events based on different timers are never sent within the same ping.
+* The keys in the `extra_keys` list must be in dotted snake case, with a maximum length of 40.  For the original Kotlin implementation of the Glean SDK, this is measured in Unicode characters. For the Rust implementation, this is measured in the number of bytes when the string is encoded in UTF-8.
+
+* The values in the `extras` object have a maximum length of 50. For the original Kotlin implementation of the Glean SDK, this is measured in Unicode characters. For the Rust implementation, this is measured in the number of bytes when the string is encoded in UTF-8.
   
 ## Examples
 
@@ -57,7 +59,7 @@ assertEquals("login_opened", first.name)
 
 ## Recorded errors 
 
-* None.
+* `invalid_value`: if any of the values in the `extras` object are greater than 50 bytes in length. 
  
 ## Reference
 

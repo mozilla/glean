@@ -1,6 +1,4 @@
-# Internal design details
-
-## Clearing metrics when disabling/enabling Glean
+# Clearing metrics when disabling/enabling Glean
 
 When disabling upload (`Glean.setUploadEnabled(false)`), metrics are also cleared to prevent their storage on the local device, and lessen the likelihood
 of accidentally sending them.
@@ -20,11 +18,3 @@ When re-enabling metrics:
 
 - Ping lifetime metrics do not need special handling.  They will begin recording again after metric uploading is re-enabled.
 
-## Reservered ping names
-
-The Glean SDK reserves all ping names starting with `glean_`.
-
-This currently includes, but is not limited to:
-
-* `glean_client_info`
-* `glean_internal_info`
