@@ -13,10 +13,6 @@ One possible strategy could be to wrap the Glean SDK API call to send the ping i
 Let us start by defining a custom ping with a sample metric in it. Here is the `pings.yaml` file:
 
 ```yaml
-# This Source Code Form is subject to the terms of the Mozilla Public
-# License, v. 2.0. If a copy of the MPL was not distributed with this
-# file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
 $schema: moz://mozilla.org/schemas/glean/pings/1-0-0
 
 my_custom_ping:
@@ -36,19 +32,14 @@ my_custom_ping:
 And here is the `metrics.yaml`
 
 ```yaml
-# This Source Code Form is subject to the terms of the Mozilla Public
-# License, v. 2.0. If a copy of the MPL was not distributed with this
-# file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
 $schema: moz://mozilla.org/schemas/glean/metrics/1-0-0
 
-my_custom_ping:
+custom_ping_data:
   sample_string:
     type: string
     lifetime: ping
     description: >
-      An hashed and salted version of the Google Advertising ID from the device.
-      This will never be sent in a ping that also contains the client_id.
+      A sample string metric for demonstrating unit tests for custom pings.
     send_in_pings:
       - my_custom_ping
     bugs:
@@ -64,7 +55,7 @@ A potential usage of the Glean SDK generated API could be the following:
 
 ```kotlin
 import my.component.GleanMetrics.Pings
-import my.component.GleanMetrics.MyCustomPing
+import my.component.GleanMetrics.CustomPingData
 
 class MyCustomPingScheduler {
   /**
@@ -77,7 +68,7 @@ class MyCustomPingScheduler {
    */
   fun addSomeData() {
     // Record some sample data.
-    MyCustomPing.sampleString.set("test-data")
+    CustomPingData.sampleString.set("test-data")
   }
 
   /**
@@ -94,7 +85,7 @@ class MyCustomPingScheduler {
    */
   @VisibleForTesting(otherwise = VisibleForTesting.NONE)
   internal fun sendPing() {
-    MyCustomPing.send()
+    Pings.MyCustomPing.send()
   }
 }
 ```
@@ -102,6 +93,14 @@ class MyCustomPingScheduler {
 Finally, here is a simple unit test that intercepts the `MyCustomPingScheduler.schedulePing()` call in order to perform the validation on the data. This specific example uses Mockito, but any other framework would work.
 
 ```kotlin
+// Metrics and pings definitions.
+import my.component.GleanMetrics.Pings
+import my.component.GleanMetrics.CustomPingData
+
+// Mockito imports for using spies.
+import org.mockito.Mockito.spy
+import org.mockito.Mockito.`when`
+
 @Test
 fun `verify custom ping metrics`() {
   // Enable testing mode
@@ -109,11 +108,16 @@ fun `verify custom ping metrics`() {
   Glean.enableTestingMode()
 
   val scheduler = spy(MyCustomPingScheduler())
-  `when`(scheduler.sendPing()).then {
-    // Here we validate the content of the ping.
-    assertTrue(MyCustomPing.sampleString.testHasValue())
-    assertEquals("test-data", MyCustomPing.sampleString.testGetValue())
-  }
+  doAnswer {
+    // Here we validate the content that goes into the ping.
+    assertTrue(CustomPingData.sampleString.testHasValue())
+    assertEquals("test-data", CustomPingData.sampleString.testGetValue())
+
+    // We want to intercept this call, but we also want to make sure the
+    // real Glean API is called in order to clear the ping store and to provide
+    // consistent behaviour with respect to the application.
+    it.callRealMethod()
+  }.`when`(scheduler).sendPing()
 
   scheduler.addSomeData()
   scheduler.schedulePing()
