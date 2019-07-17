@@ -155,15 +155,17 @@ impl StorageManager {
     ///
     /// Returns a JSON representation of the experiment data, in the following format:
     ///
+    /// ```json
     /// {
-    ///  'experiment-id': {
-    ///    'branch': 'branch-id',
-    ///    'extra': {
-    ///      'additional': 'property',
+    ///  "experiment-id": {
+    ///    "branch": "branch-id",
+    ///    "extra": {
+    ///      "additional": "property",
     ///      // ...
     ///    }
     ///  }
     /// }
+    /// ```
     ///
     /// Returns `None` if no data for experiments exists.
     pub fn snapshot_experiments_as_json(
@@ -171,20 +173,16 @@ impl StorageManager {
         storage: &Database,
         store_name: &str,
     ) -> Option<JsonValue> {
-        let mut snapshot: HashMap<String, HashMap<String, JsonValue>> = HashMap::new();
+        let mut snapshot: HashMap<String, JsonValue> = HashMap::new();
 
         let mut snapshotter = |metric_name: &[u8], metric: &Metric| {
             let metric_name = String::from_utf8_lossy(metric_name).into_owned();
             if metric_name.ends_with("#experiment") {
                 let name = metric_name.splitn(2, '#').next().unwrap(); // safe unwrap, first field of a split always valid
-                let map = snapshot
-                    .entry(metric.category().into())
-                    .or_insert_with(HashMap::new);
-                map.insert(name.to_string(), metric.as_json());
+                snapshot.insert(name.to_string(), metric.as_json());
             }
         };
 
-        // FIXME: glean_internal_info should probably not be known here or, at least, shared.
         storage.iter_store_from(Lifetime::Application, store_name, &mut snapshotter);
 
         if snapshot.is_empty() {
@@ -221,7 +219,7 @@ mod test {
             .snapshot_experiments_as_json(glean.storage(), "glean_internal_info")
             .unwrap();
         assert_eq!(
-            json!({"experiments": {"some-experiment": {"branch": "test-branch", "extra": {"test-key": "test-value"}}}}),
+            json!({"some-experiment": {"branch": "test-branch", "extra": {"test-key": "test-value"}}}),
             snapshot
         );
 

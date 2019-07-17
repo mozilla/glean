@@ -46,8 +46,9 @@ impl Database {
         Ok(rkv)
     }
 
-    /// Build the key of the final location data should be stored using the
-    /// storage name and the metric key/name (if available).
+    /// Build the key of the final location of the data in the database.
+    /// Such location is built using the storage name and the metric
+    /// key/name (if available).
     ///
     /// ## Arguments
     ///
@@ -490,7 +491,7 @@ mod test {
         let lifetimes = vec![Lifetime::User, Lifetime::Ping, Lifetime::Application];
 
         for lifetime in lifetimes.iter() {
-            for value in vec!["retain", "delete"] {
+            for value in &["retain", "delete"] {
                 db.record_per_lifetime(
                     *lifetime,
                     test_storage,

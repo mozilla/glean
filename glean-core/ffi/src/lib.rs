@@ -75,7 +75,7 @@ unsafe fn from_raw_int_array_and_string_array(
     )
 }
 
-/// Create a HashMap<T, String> from a pair of C string arrays.
+/// Create a HashMap<String, String> from a pair of C string arrays.
 unsafe fn from_raw_string_array_and_string_array(
     keys: RawStringArray,
     values: RawStringArray,

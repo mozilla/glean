@@ -320,7 +320,8 @@ impl Glean {
     ///
     /// True if the experiment is active, false otherwise.
     pub fn test_is_experiment_active(&self, experiment_id: String) -> bool {
-        self.test_get_experiment_data_as_json(experiment_id).is_some()
+        self.test_get_experiment_data_as_json(experiment_id)
+            .is_some()
     }
 
     /// **Test-only API (exported for FFI purposes).**
@@ -427,7 +428,7 @@ mod test {
         // Check that the extra data was stored.
         let experiment_data = glean.test_get_experiment_data_as_json(experiment_id.clone());
         assert!(
-            !experiment_data.is_none(),
+            experiment_data.is_some(),
             "Experiment data must be available"
         );
 

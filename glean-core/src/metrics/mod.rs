@@ -31,8 +31,9 @@ pub use self::counter::CounterMetric;
 pub use self::datetime::DatetimeMetric;
 pub use self::event::EventMetric;
 pub(crate) use self::experiment::ExperimentMetric;
-// Note: clippy complains about this being useless but, if I remove
-// the next line, then tests in glean-core\src\lib.rs will fail to build.
+// Note: only expose RecordedExperimentData to tests in
+// the next line, so that glean-core\src\lib.rs won't fail to build.
+#[cfg(test)]
 pub(crate) use self::experiment::RecordedExperimentData;
 pub use self::labeled::LabeledMetric;
 pub use self::ping::PingType;
@@ -95,7 +96,7 @@ impl Metric {
             Metric::Boolean(_) => "boolean",
             Metric::Counter(_) => "counter",
             Metric::Datetime(_, _) => "datetime",
-            Metric::Experiment(_) => "experiments",
+            Metric::Experiment(_) => panic!("Experiments should not be serialized through this"),
             Metric::String(_) => "string",
             Metric::StringList(_) => "string_list",
             Metric::Uuid(_) => "uuid",

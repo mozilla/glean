@@ -54,7 +54,7 @@ impl ExperimentMetric {
     /// ## Arguments
     ///
     /// * `id` - the id of the experiment. Please note that this will be
-    ///          truncated to MAX_EXPERIMENTS_IDS_LEN, if needed.
+    ///          truncated to `MAX_EXPERIMENTS_IDS_LEN`, if needed.
     pub fn new(id: String) -> Self {
         // Make sure that experiment id is within the expected limit.
         let truncated_id = if id.len() > MAX_EXPERIMENTS_IDS_LEN {
@@ -86,7 +86,7 @@ impl ExperimentMetric {
     ///
     /// * `glean` - The Glean instance this metric belongs to.
     /// * `branch` -  the active branch of the experiment. Please note that this will be
-    ///               truncated to MAX_EXPERIMENTS_IDS_LEN, if needed.
+    ///               truncated to `MAX_EXPERIMENTS_IDS_LEN`, if needed.
     /// * `extra` - an optional, user defined String to String map used to provide richer
     ///             experiment context if needed.
     pub fn set_active(
@@ -110,6 +110,9 @@ impl ExperimentMetric {
         } else {
             branch
         };
+
+        // TODO (bug 1566001): add sane limits for the extra keys and
+        // values as well.
 
         let value = Metric::Experiment(RecordedExperimentData {
             branch: truncated_branch,
