@@ -26,6 +26,7 @@
         - [Metrics Ping](user/pings/metrics.md)
         - [Events Ping](user/pings/events.md)
         - [Custom Pings](user/pings/custom.md)
+        - [Testing custom pings](user/pings/testing-custom-pings.md)
 - [Developing the Glean SDK](dev/index.md)
     - [Testing](dev/testing.md)
     - [Android bindings](dev/android/index.md)

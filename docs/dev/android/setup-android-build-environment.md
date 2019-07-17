@@ -54,6 +54,10 @@ devices and Android emulators, the following targets need to be installed:
 - `rustup target add i686-linux-android`
 - `rustup target add x86_64-linux-android`
 
+The `mdbook` crate is required in order to build documentation:
+
+- `cargo install mdbook`
+
 ## Building
 
 This should be relatively straightforward and painless:
