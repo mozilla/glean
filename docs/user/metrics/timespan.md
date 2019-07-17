@@ -67,6 +67,23 @@ assertTrue(Auth.loginTime.testHasValue())
 assertTrue(Auth.loginTime.testGetValue() > 0)
 ```
 
+### Raw API
+
+> **Note**: The raw API was designed to support a specific set of use-cases.
+> Please consider using the higher level APIs listed above.
+
+It's possible to explicitly set the timespan value, in nanoseconds.
+This API should only be used if your library or application requires recording times in a way that can not make use of `start`/`stop`/`cancel`.
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.HistorySync
+
+val duration = SyncResult.status.syncs.took.toLong()
+HistorySync.setRawNanos(duration)
+```
+
+The raw API will not overwrite a running timer or existing timespan value.
+
 ## Limits
 
 * None.
