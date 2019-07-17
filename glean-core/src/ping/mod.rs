@@ -118,7 +118,9 @@ impl PingMaker {
         if let Some(experiment_data) =
             StorageManager.snapshot_experiments_as_json(glean.storage(), INTERNAL_STORAGE)
         {
-            map.as_object_mut().unwrap().insert("experiments".to_string(), experiment_data);
+            map.as_object_mut()
+                .unwrap()
+                .insert("experiments".to_string(), experiment_data);
         };
 
         map
