@@ -13,6 +13,52 @@ It is written as a set of [templates](https://github.com/mozilla-services/mozill
 
 TODO: Fill in the rest of the metric types. https://bugzilla.mozilla.org/show_bug.cgi?id=1566854
 
+### Timespan
+
+A [Timespan](../../../user/metrics/timespan.md) is represented as an object of their duration as an integer and the time unit.
+
+| Field name | Type | Description |
+|---|---|---|
+| `value` | Integer | The value in the marked time unit. |
+| `time_unit` | String | The time unit, see the [timespan's configuration](../../../user/metrics/timespan.md#configuration) for valid values. |
+
+#### Example
+
+```json
+{
+    "time_unit": "milliseconds",
+    "value": 10
+}
+```
+
+## Timing Distribution
+
+A [Timing distribution](../../../user/metrics/timing_distribution.md) is represented as an object with the following fields.
+
+| Field name | Type | Description |
+|---|---|---|
+| `bucket_count` | Integer | The bucket count of the histogram. |
+| `range` | Array&lt;Integer&gt; | The range indicated by its minimum and maxium value. |
+| `sum` | Integer | The sum of all recorded values. |
+| `time_unit` | String | The timespan's time unit, see the [time distribution's configuration](../../../user/metrics/timing_distribution.md#configuration) for valid values. |
+| `values` | Map&lt;String, Integer&gt; | The values in each bucket. The key is the minimum value for the range of that bucket. Buckets with no values are not reported. |
+
+#### Example:
+
+```json
+{
+    "bucket_count": 100,
+    "range": [0, 60000],
+    "histogram_type": "expontential",
+    "sum": 3,
+    "time_unit": "milliseconds",
+    "values": {
+        "0": 1,
+        "1": 3,
+    }
+}
+```
+
 ### Event
 
 [Events](../../../user/metrics/event.md) are represented as an array of objects, with one object for each event.
