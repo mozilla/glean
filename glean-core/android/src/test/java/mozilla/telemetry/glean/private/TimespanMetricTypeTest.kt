@@ -46,7 +46,7 @@ class TimespanMetricTypeTest {
 
         // Check that data was properly recorded.
         assertTrue(metric.testHasValue())
-        assertTrue(metric.testGetValue() >= 0)
+        assertTrue(metric.testGetValueAsUnit() >= 0)
     }
 
     @Test
@@ -98,7 +98,7 @@ class TimespanMetricTypeTest {
     }
 
     @Test(expected = NullPointerException::class)
-    fun `testGetValue() throws NullPointerException if nothing is stored`() {
+    fun `testGetValueAsUnit() throws NullPointerException if nothing is stored`() {
         val metric = TimespanMetricType(
             disabled = false,
             category = "telemetry",
@@ -107,7 +107,7 @@ class TimespanMetricTypeTest {
             sendInPings = listOf("store1"),
             timeUnit = TimeUnit.Millisecond
         )
-        metric.testGetValue()
+        metric.testGetValueAsUnit()
     }
 
     @Test
@@ -128,7 +128,7 @@ class TimespanMetricTypeTest {
 
         // Check that data was properly recorded in the second ping.
         assertTrue(metric.testHasValue("store2"))
-        assertTrue(metric.testGetValue("store2") >= 0)
+        assertTrue(metric.testGetValueAsUnit("store2") >= 0)
     }
 
     @Test
@@ -150,7 +150,7 @@ class TimespanMetricTypeTest {
 
         // Check that data was properly recorded in the second ping.
         assertTrue(metric.testHasValue("store2"))
-        assertTrue(metric.testGetValue("store2") >= 0)
+        assertTrue(metric.testGetValueAsUnit("store2") >= 0)
         // TODO(bug 1556963)
         // assertEquals(1, testGetNumRecordedErrors(metric, ErrorType.InvalidValue))
     }
@@ -171,11 +171,11 @@ class TimespanMetricTypeTest {
         metric.start()
         metric.stop()
         assertTrue(metric.testHasValue())
-        val value = metric.testGetValue()
+        val value = metric.testGetValueAsUnit()
 
         metric.stop()
 
-        assertEquals(value, metric.testGetValue())
+        assertEquals(value, metric.testGetValueAsUnit())
     }
 
     @Test
@@ -192,7 +192,7 @@ class TimespanMetricTypeTest {
         )
 
         metric.setRawNanos(timespanNanos)
-        assertEquals(6, metric.testGetValue())
+        assertEquals(6, metric.testGetValueAsUnit())
     }
 
     @Test
@@ -209,11 +209,11 @@ class TimespanMetricTypeTest {
         )
 
         metric.setRawNanos(timespanNanos)
-        assertEquals(6, metric.testGetValue())
+        assertEquals(6, metric.testGetValueAsUnit())
 
         metric.start()
         metric.stop()
-        val value = metric.testGetValue()
+        val value = metric.testGetValueAsUnit()
         assertEquals(6, value)
     }
 
@@ -232,11 +232,11 @@ class TimespanMetricTypeTest {
 
         metric.start()
         metric.stop()
-        val value = metric.testGetValue()
+        val value = metric.testGetValueAsUnit()
 
         metric.setRawNanos(timespanNanos)
 
-        assertEquals(value, metric.testGetValue())
+        assertEquals(value, metric.testGetValueAsUnit())
     }
 
     @Test
@@ -256,6 +256,6 @@ class TimespanMetricTypeTest {
         metric.setRawNanos(timespanNanos)
         metric.stop()
 
-        assertNotEquals(timespanNanos, metric.testGetValue())
+        assertNotEquals(timespanNanos, metric.testGetValueAsUnit())
     }
 }

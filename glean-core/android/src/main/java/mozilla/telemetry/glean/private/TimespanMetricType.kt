@@ -160,7 +160,7 @@ class TimespanMetricType internal constructor(
     }
 
     /**
-     * Returns the stored value for testing purposes only
+     * Returns the stored value for testing purposes only, in the metric's time unit.
      *
      * @param pingName represents the name of the ping to retrieve the metric for.  Defaults
      *                 to the either the first value in [defaultStorageDestinations] or the first
@@ -169,13 +169,33 @@ class TimespanMetricType internal constructor(
      * @throws [NullPointerException] if no value is stored
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    fun testGetValue(pingName: String = sendInPings.first()): Long {
+    fun testGetValueAsUnit(pingName: String = sendInPings.first()): Long {
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.assertInTestingMode()
 
         if (!testHasValue(pingName)) {
             throw NullPointerException()
         }
-        return LibGleanFFI.INSTANCE.glean_timespan_test_get_value(Glean.handle, this.handle, pingName)
+        return LibGleanFFI.INSTANCE.glean_timespan_test_get_value_as_unit(Glean.handle, this.handle, pingName)
+    }
+
+    /**
+     * Returns the stored value for testing purposes only, in nanoseconds.
+     *
+     * @param pingName represents the name of the ping to retrieve the metric for.  Defaults
+     *                 to the either the first value in [defaultStorageDestinations] or the first
+     *                 value in [sendInPings]
+     * @return value of the stored metric
+     * @throws [NullPointerException] if no value is stored
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    fun testGetValueAsNanos(pingName: String = sendInPings.first()): Long {
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        Dispatchers.API.assertInTestingMode()
+
+        if (!testHasValue(pingName)) {
+            throw NullPointerException()
+        }
+        return LibGleanFFI.INSTANCE.glean_timespan_test_get_value_as_nanos(Glean.handle, this.handle, pingName)
     }
 }

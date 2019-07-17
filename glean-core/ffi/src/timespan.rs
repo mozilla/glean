@@ -62,21 +62,38 @@ pub extern "C" fn glean_timespan_test_has_value(
     GLEAN.call_infallible(glean_handle, |glean| {
         TIMESPAN_METRICS.call_infallible(metric_id, |metric| {
             metric
-                .test_get_value(glean, storage_name.as_str())
+                .test_get_value_as_nanos(glean, storage_name.as_str())
                 .is_some()
         })
     })
 }
 
 #[no_mangle]
-pub extern "C" fn glean_timespan_test_get_value(
+pub extern "C" fn glean_timespan_test_get_value_as_unit(
     glean_handle: u64,
     metric_id: u64,
     storage_name: FfiStr,
 ) -> u64 {
     GLEAN.call_infallible(glean_handle, |glean| {
         TIMESPAN_METRICS.call_infallible(metric_id, |metric| {
-            metric.test_get_value(glean, storage_name.as_str()).unwrap()
+            metric
+                .test_get_value_as_unit(glean, storage_name.as_str())
+                .unwrap()
+        })
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn glean_timespan_test_get_value_as_nanos(
+    glean_handle: u64,
+    metric_id: u64,
+    storage_name: FfiStr,
+) -> u64 {
+    GLEAN.call_infallible(glean_handle, |glean| {
+        TIMESPAN_METRICS.call_infallible(metric_id, |metric| {
+            metric
+                .test_get_value_as_nanos(glean, storage_name.as_str())
+                .unwrap()
         })
     })
 }

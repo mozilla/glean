@@ -262,7 +262,9 @@ internal interface LibGleanFFI : Library {
 
     fun glean_timespan_test_has_value(glean_handle: Long, metric_id: Long, storage_name: String): Byte
 
-    fun glean_timespan_test_get_value(glean_handle: Long, metric_id: Long, storage_name: String): Long
+    fun glean_timespan_test_get_value_as_unit(glean_handle: Long, metric_id: Long, storage_name: String): Long
+
+    fun glean_timespan_test_get_value_as_nanos(glean_handle: Long, metric_id: Long, storage_name: String): Long
 
     // TimingDistribution
 

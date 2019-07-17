@@ -131,13 +131,26 @@ impl TimespanMetric {
 
     /// **Test-only API (exported for FFI purposes).**
     ///
-    /// Get the currently stored value as an integer.
+    /// Get the currently stored value as an integer in the metric's unit.
     ///
     /// This doesn't clear the stored value.
-    pub fn test_get_value(&self, glean: &Glean, storage_name: &str) -> Option<u64> {
+    pub fn test_get_value_as_unit(&self, glean: &Glean, storage_name: &str) -> Option<u64> {
         match StorageManager.snapshot_metric(glean.storage(), storage_name, &self.meta.identifier())
         {
             Some(Metric::Timespan(time, time_unit)) => Some(time_unit.duration_convert(time)),
+            _ => None,
+        }
+    }
+
+    /// **Test-only API (exported for FFI purposes).**
+    ///
+    /// Get the currently stored value as an integer in `nanoseconds`.
+    ///
+    /// This doesn't clear the stored value.
+    pub fn test_get_value_as_nanos(&self, glean: &Glean, storage_name: &str) -> Option<u64> {
+        match StorageManager.snapshot_metric(glean.storage(), storage_name, &self.meta.identifier())
+        {
+            Some(Metric::Timespan(time, _)) => Some(TimeUnit::Nanosecond.duration_convert(time)),
             _ => None,
         }
     }

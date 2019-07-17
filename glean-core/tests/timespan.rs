@@ -40,7 +40,7 @@ fn serializer_should_correctly_serialize_timespans() {
         metric.set_stop(&glean, duration);
 
         let val = metric
-            .test_get_value(&glean, "store1")
+            .test_get_value_as_unit(&glean, "store1")
             .expect("Value should be stored");
         assert_eq!(duration, val, "Recorded timespan should be positive.");
     }
@@ -81,7 +81,7 @@ fn single_elapsed_time_must_be_recorded() {
     metric.set_stop(&glean, duration);
 
     let val = metric
-        .test_get_value(&glean, "store1")
+        .test_get_value_as_unit(&glean, "store1")
         .expect("Value should be stored");
     assert_eq!(duration, val, "Recorded timespan should be positive.");
 }
@@ -108,13 +108,13 @@ fn second_timer_run_is_skipped() {
     metric.set_start(&glean, 0);
     metric.set_stop(&glean, duration);
 
-    let first_value = metric.test_get_value(&glean, "store1").unwrap();
+    let first_value = metric.test_get_value_as_unit(&glean, "store1").unwrap();
     assert_eq!(duration, first_value);
 
     metric.set_start(&glean, 0);
     metric.set_stop(&glean, duration * 2);
 
-    let second_value = metric.test_get_value(&glean, "store1").unwrap();
+    let second_value = metric.test_get_value_as_unit(&glean, "store1").unwrap();
     assert_eq!(second_value, first_value);
 }
 
@@ -148,7 +148,7 @@ fn recorded_time_conforms_to_resolution() {
     ns_metric.set_start(&glean, 0);
     ns_metric.set_stop(&glean, duration);
 
-    let ns_value = ns_metric.test_get_value(&glean, "store1").unwrap();
+    let ns_value = ns_metric.test_get_value_as_unit(&glean, "store1").unwrap();
     assert_eq!(duration, ns_value);
 
     // 1 minute in nanoseconds
@@ -156,7 +156,9 @@ fn recorded_time_conforms_to_resolution() {
     minute_metric.set_start(&glean, 0);
     minute_metric.set_stop(&glean, duration_minute);
 
-    let minute_value = minute_metric.test_get_value(&glean, "store1").unwrap();
+    let minute_value = minute_metric
+        .test_get_value_as_unit(&glean, "store1")
+        .unwrap();
     assert_eq!(1, minute_value);
 }
 
@@ -180,7 +182,7 @@ fn cancel_does_not_store() {
     metric.set_start(&glean, 0);
     metric.cancel();
 
-    assert_eq!(None, metric.test_get_value(&glean, "store1"));
+    assert_eq!(None, metric.test_get_value_as_unit(&glean, "store1"));
 }
 
 #[test]
@@ -202,10 +204,13 @@ fn nothing_stored_before_stop() {
 
     metric.set_start(&glean, 0);
 
-    assert_eq!(None, metric.test_get_value(&glean, "store1"));
+    assert_eq!(None, metric.test_get_value_as_unit(&glean, "store1"));
 
     metric.set_stop(&glean, duration);
-    assert_eq!(duration, metric.test_get_value(&glean, "store1").unwrap());
+    assert_eq!(
+        duration,
+        metric.test_get_value_as_unit(&glean, "store1").unwrap()
+    );
 }
 
 #[test]
@@ -227,7 +232,10 @@ fn set_raw_time() {
     metric.set_raw(&glean, time, false);
 
     let time_in_ns = time.as_nanos() as u64;
-    assert_eq!(Some(time_in_ns), metric.test_get_value(&glean, "store1"));
+    assert_eq!(
+        Some(time_in_ns),
+        metric.test_get_value_as_unit(&glean, "store1")
+    );
 }
 
 #[test]
@@ -252,7 +260,7 @@ fn set_raw_time_does_nothing_when_timer_running() {
     metric.set_stop(&glean, 60);
 
     // We expect the start/stop value, not the raw value.
-    assert_eq!(Some(60), metric.test_get_value(&glean, "store1"));
+    assert_eq!(Some(60), metric.test_get_value_as_unit(&glean, "store1"));
 
     // Make sure that the error has been recorded
     assert_eq!(
