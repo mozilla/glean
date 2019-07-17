@@ -63,11 +63,11 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
          * @return true if process was successful
          */
         internal fun uploadPings(): Boolean {
-            if (Glean.getUploadEnabled()) {
-                val httpPingUploader = HttpPingUploader()
-                return httpPingUploader.process()
+            return if (Glean.getUploadEnabled()) {
+                httpPingUploader().process()
+            } else {
+                false
             }
-            return false
         }
     }
 
