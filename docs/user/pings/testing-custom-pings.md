@@ -101,11 +101,26 @@ import my.component.GleanMetrics.CustomPingData
 import org.mockito.Mockito.spy
 import org.mockito.Mockito.`when`
 
-@Test
-fun `verify custom ping metrics`() {
+/**
+ * This is an helper function used to enable testing mode for Glean.
+ * Should only be called once before the tests, but nothing breaks if it's
+ * called more than once!
+ */
+fun setupGleanOnce() {
   // Enable testing mode
   // (Perhaps called from a @Before method so it precedes every test in the suite.)
   Glean.enableTestingMode()
+
+  // We're using the WorkManager in a bunch of places, and Glean will crash
+  // in tests without this line. Let's simply put it here.
+  WorkManagerTestInitHelper.initializeTestWorkManager(context)
+
+  Glean.initialize(context)
+}
+
+@Test
+fun `verify custom ping metrics`() {
+  setupGleanOnce()
 
   val scheduler = spy(MyCustomPingScheduler())
   doAnswer {
