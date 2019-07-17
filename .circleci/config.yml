@@ -125,6 +125,13 @@ jobs:
     steps:
       - android-setup
       - run:
+          name: Check skip condition
+          command: |
+            if git log -1 "$CIRCLE_SHA1" | grep -q '\[doc only\]'; then
+                echo "Skipping this step. Last commit was tagged to not require Android tests."
+                circleci-agent step halt
+            fi
+      - run:
           name: Android tests
           command: ./gradlew --no-daemon test
           environment:
