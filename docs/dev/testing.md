@@ -90,4 +90,4 @@ It is possible to completely skip running CI on a given push by including the fo
 [ci skip]
 ```
 
-This should only be used for meatdata files, such as those in `.github`, `LICENSE` or `CODE_OF_CONDUCT.md`.
+This should only be used for metadata files, such as those in `.github`, `LICENSE` or `CODE_OF_CONDUCT.md`.
