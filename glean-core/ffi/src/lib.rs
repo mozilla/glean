@@ -5,7 +5,6 @@
 #![allow(clippy::redundant_closure)]
 
 use std::collections::HashMap;
-use std::iter::Iterator;
 use std::os::raw::c_char;
 
 use ffi_support::{
@@ -54,7 +53,7 @@ unsafe fn from_raw_string_array(arr: RawStringArray, len: i32) -> Vec<String> {
         .collect()
 }
 
-/// Create a HashMap<T, String> from a pair of C int and string arrays.
+/// Create a HashMap<i32, String> from a pair of C int and string arrays.
 unsafe fn from_raw_int_array_and_string_array(
     keys: RawIntArray,
     values: RawStringArray,

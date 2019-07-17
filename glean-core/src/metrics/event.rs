@@ -4,7 +4,7 @@
 
 use std::collections::HashMap;
 
-use serde_json::json;
+use serde_json::{json, Value as JsonValue};
 
 use crate::error_recording::{record_error, ErrorType};
 use crate::event_database::RecordedEventData;
@@ -138,8 +138,11 @@ impl EventMetric {
     /// Get the currently stored events for this event metric as a JSON-encoded string.
     ///
     /// This doesn't clear the stored value.
-    pub fn test_get_value_as_json_string(&self, glean: &Glean, store_name: &str) -> Option<String> {
-        self.test_get_value(glean, store_name)
-            .and_then(|value| Some(json!(value).to_string()))
+    pub fn test_get_value_as_json_string(&self, glean: &Glean, store_name: &str) -> String {
+        match self.test_get_value(glean, store_name) {
+            Some(value) => json!(value),
+            None => json!(JsonValue::Null),
+        }
+        .to_string()
     }
 }

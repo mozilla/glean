@@ -110,6 +110,9 @@ class EventMetricType<ExtraKeysEnum : Enum<ExtraKeysEnum>> internal constructor(
         Dispatchers.API.launch {
             // The Map is sent over FFI as a pair of arrays, one containing the
             // keys, and the other containing the values.
+            // In Kotlin, Map.keys and Map.values are not guaranteed to return the entries
+            // in any particular order. Therefore, we iterate over the pairs together and
+            // create the keys and values arrays step-by-step.
             var keys: IntArray? = null
             var values: StringArray? = null
             var len: Int = 0
@@ -154,16 +157,16 @@ class EventMetricType<ExtraKeysEnum : Enum<ExtraKeysEnum>> internal constructor(
     }
 
     /**
-    * Deserializes an event in JSON into a RecordedEventData object.
-    *
-    * @param jsonContent The JSONObject containing the data for the event. It is in
-    * the same format as an event sent in a ping, and has the following entries:
-    *   - timestamp (Int)
-    *   - category (String): The category of the event metric
-    *   - name (String): The name of the event metric
-    *   - extra (Map<String, String>?): Map of extra key/value pairs
-    * @return [RecordedEventData] representing the event data
-    */
+     * Deserializes an event in JSON into a RecordedEventData object.
+     *
+     * @param jsonContent The JSONObject containing the data for the event. It is in
+     * the same format as an event sent in a ping, and has the following entries:
+     *   - timestamp (Int)
+     *   - category (String): The category of the event metric
+     *   - name (String): The name of the event metric
+     *   - extra (Map<String, String>?): Map of extra key/value pairs
+     * @return [RecordedEventData] representing the event data
+     */
     private fun deserializeEvent(jsonContent: JSONObject): RecordedEventData {
         val extra: Map<String, String>? = jsonContent.optJSONObject("extra")?.let {
             val extraValues: MutableMap<String, String> = mutableMapOf()
@@ -204,7 +207,7 @@ class EventMetricType<ExtraKeysEnum : Enum<ExtraKeysEnum>> internal constructor(
             pingName
         )!!
 
-        var jsonRes = try {
+        val jsonRes = try {
             JSONArray(ptr.getAndConsumeRustString())
         } catch (e: org.json.JSONException) {
             throw NullPointerException()
