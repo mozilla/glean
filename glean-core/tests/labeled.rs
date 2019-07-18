@@ -240,7 +240,7 @@ fn dynamic_labels_regex_mimsatch() {
         "with/slash",
         "1.not_fine",
         "this.$isnotfine",
-        "-.not_fine"
+        "-.not_fine",
     ];
     let num_non_validating = labels_not_validating.len();
 
@@ -287,7 +287,7 @@ fn dynamic_labels_regex_allowed() {
         "this.is_fine.2",
         "_.is_fine",
         "this.is-fine",
-        "this-is-fine"
+        "this-is-fine",
     ];
 
     for label in &labels_validating {
