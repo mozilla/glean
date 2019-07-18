@@ -60,7 +60,10 @@ assertTrue(Auth.timesPerStage["auth_with_server"].testGetValue() > 0)Now you can
 
 ## Limits
 
-* Each label must be in `snake_case` (and also may contain `.`).
+
+* Labels support lowercase alphanumeric characters; they additionally allow for dots (`.`), underscores (`_`) and/or hyphens (`-`).
+
+* Labels are limited to starting with either a letter or an underscore character.
 
 * Each label must have a maximum of 60 characters.
 

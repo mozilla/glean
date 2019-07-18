@@ -234,9 +234,19 @@ fn dynamic_labels_regex_mimsatch() {
         None,
     );
 
-    labeled.get(&glean, "notSnakeCase").add(&glean, 1);
-    labeled.get(&glean, "").add(&glean, 1);
-    labeled.get(&glean, "with/slash").add(&glean, 1);
+    let labels_not_validating = vec![
+        "notSnakeCase",
+        "",
+        "with/slash",
+        "1.not_fine",
+        "this.$isnotfine",
+        "-.not_fine",
+    ];
+    let num_non_validating = labels_not_validating.len();
+
+    for label in &labels_not_validating {
+        labeled.get(&glean, label).add(&glean, 1);
+    }
 
     let snapshot = StorageManager
         .snapshot_as_json(glean.storage(), "store1", true)
@@ -245,9 +255,61 @@ fn dynamic_labels_regex_mimsatch() {
     assert_eq!(
         json!({
             "labeled_counter": {
-                "glean.error.invalid_label": { "telemetry.labeled_metric": 3 },
+                "glean.error.invalid_label": { "telemetry.labeled_metric": num_non_validating },
                 "telemetry.labeled_metric": {
-                    "__other__": 3,
+                    "__other__": num_non_validating,
+                }
+            }
+        }),
+        snapshot
+    );
+}
+
+#[test]
+fn dynamic_labels_regex_allowed() {
+    let (glean, _t) = new_glean();
+    let mut labeled = LabeledMetric::new(
+        CounterMetric::new(CommonMetricData {
+            name: "labeled_metric".into(),
+            category: "telemetry".into(),
+            send_in_pings: vec!["store1".into()],
+            disabled: false,
+            lifetime: Lifetime::Ping,
+        }),
+        None,
+    );
+
+    let labels_validating = vec![
+        "this.is.fine",
+        "this_is_fine_too",
+        "this.is_still_fine",
+        "thisisfine",
+        "this.is_fine.2",
+        "_.is_fine",
+        "this.is-fine",
+        "this-is-fine",
+    ];
+
+    for label in &labels_validating {
+        labeled.get(&glean, label).add(&glean, 1);
+    }
+
+    let snapshot = StorageManager
+        .snapshot_as_json(glean.storage(), "store1", true)
+        .unwrap();
+
+    assert_eq!(
+        json!({
+            "labeled_counter": {
+                "telemetry.labeled_metric": {
+                    "this.is.fine": 1,
+                    "this_is_fine_too": 1,
+                    "this.is_still_fine": 1,
+                    "thisisfine": 1,
+                    "this.is_fine.2": 1,
+                    "_.is_fine": 1,
+                    "this.is-fine": 1,
+                    "this-is-fine": 1
                 }
             }
         }),
