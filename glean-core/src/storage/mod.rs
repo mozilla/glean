@@ -143,4 +143,90 @@ impl StorageManager {
 
         snapshot
     }
+
+    ///  Snapshot the experiments.
+    ///
+    /// ## Arguments:
+    ///
+    /// * `storage` - The database to get data from.
+    /// * `store_name` - The store name to look into.
+    ///
+    /// ## Return value
+    ///
+    /// Returns a JSON representation of the experiment data, in the following format:
+    ///
+    /// ```json
+    /// {
+    ///  "experiment-id": {
+    ///    "branch": "branch-id",
+    ///    "extra": {
+    ///      "additional": "property",
+    ///      // ...
+    ///    }
+    ///  }
+    /// }
+    /// ```
+    ///
+    /// Returns `None` if no data for experiments exists.
+    pub fn snapshot_experiments_as_json(
+        &self,
+        storage: &Database,
+        store_name: &str,
+    ) -> Option<JsonValue> {
+        let mut snapshot: HashMap<String, JsonValue> = HashMap::new();
+
+        let mut snapshotter = |metric_name: &[u8], metric: &Metric| {
+            let metric_name = String::from_utf8_lossy(metric_name).into_owned();
+            if metric_name.ends_with("#experiment") {
+                let name = metric_name.splitn(2, '#').next().unwrap(); // safe unwrap, first field of a split always valid
+                snapshot.insert(name.to_string(), metric.as_json());
+            }
+        };
+
+        storage.iter_store_from(Lifetime::Application, store_name, &mut snapshotter);
+
+        if snapshot.is_empty() {
+            None
+        } else {
+            Some(json!(snapshot))
+        }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use crate::metrics::ExperimentMetric;
+    use crate::Glean;
+
+    // Experiment's API tests: the next test comes from glean-ac's
+    // ExperimentsStorageEngineTest.kt.
+    #[test]
+    fn test_experiments_json_serialization() {
+        let t = tempfile::tempdir().unwrap();
+        let name = t.path().display().to_string();
+        let glean = Glean::new(&name, "org.mozilla.glean", true).unwrap();
+
+        let extra: HashMap<String, String> = [("test-key".into(), "test-value".into())]
+            .iter()
+            .cloned()
+            .collect();
+
+        let metric = ExperimentMetric::new("some-experiment".to_string());
+
+        metric.set_active(&glean, "test-branch".to_string(), Some(extra));
+        let snapshot = StorageManager
+            .snapshot_experiments_as_json(glean.storage(), "glean_internal_info")
+            .unwrap();
+        assert_eq!(
+            json!({"some-experiment": {"branch": "test-branch", "extra": {"test-key": "test-value"}}}),
+            snapshot
+        );
+
+        metric.set_inactive(&glean);
+
+        let empty_snapshot =
+            StorageManager.snapshot_experiments_as_json(glean.storage(), "glean_internal_info");
+        assert!(empty_snapshot.is_none());
+    }
 }

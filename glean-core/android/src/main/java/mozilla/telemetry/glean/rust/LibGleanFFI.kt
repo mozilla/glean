@@ -84,6 +84,21 @@ internal interface LibGleanFFI : Library {
 
     fun glean_send_ping_by_name(glean_handle: Long, ping_name: String, log_ping: Byte): Byte
 
+    fun glean_set_experiment_active(
+        glean_handle: Long,
+        experiment_id: String,
+        branch: String,
+        extra_keys: StringArray?,
+        extra_values: StringArray?,
+        extra_len: Int
+    )
+
+    fun glean_set_experiment_inactive(glean_handle: Long, experiment_id: String)
+
+    fun glean_experiment_test_is_active(glean_handle: Long, experiment_id: String): Byte
+
+    fun glean_experiment_test_get_data(glean_handle: Long, experiment_id: String): Pointer?
+
     // Ping type
 
     fun glean_new_ping_type(name: String, include_client_id: Byte): Long

@@ -12,6 +12,7 @@ mod boolean;
 mod counter;
 mod datetime;
 mod event;
+mod experiment;
 mod labeled;
 mod ping;
 mod string;
@@ -30,6 +31,11 @@ pub use self::boolean::BooleanMetric;
 pub use self::counter::CounterMetric;
 pub use self::datetime::DatetimeMetric;
 pub use self::event::EventMetric;
+pub(crate) use self::experiment::ExperimentMetric;
+// Note: only expose RecordedExperimentData to tests in
+// the next line, so that glean-core\src\lib.rs won't fail to build.
+#[cfg(test)]
+pub(crate) use self::experiment::RecordedExperimentData;
 pub use self::labeled::LabeledMetric;
 pub use self::ping::PingType;
 pub use self::string::StringMetric;
@@ -51,6 +57,8 @@ pub enum Metric {
     Counter(i32),
     /// A datetime metric. See [`DatetimeMetric`](struct.DatetimeMetric.html) for more information.
     Datetime(DateTime<FixedOffset>, TimeUnit),
+    /// An experiment metric. See [`ExperimentMetric`](struct.ExperimentMetric.html) for more information.
+    Experiment(experiment::RecordedExperimentData),
     /// A string metric. See [`StringMetric`](struct.StringMetric.html) for more information.
     String(String),
     /// A string list metric. See [`StringListMetric`](struct.StringListMetric.html) for more information.
@@ -89,6 +97,7 @@ impl Metric {
             Metric::Boolean(_) => "boolean",
             Metric::Counter(_) => "counter",
             Metric::Datetime(_, _) => "datetime",
+            Metric::Experiment(_) => panic!("Experiments should not be serialized through this"),
             Metric::String(_) => "string",
             Metric::StringList(_) => "string_list",
             Metric::Uuid(_) => "uuid",
@@ -103,6 +112,7 @@ impl Metric {
             Metric::Boolean(b) => json!(b),
             Metric::Counter(c) => json!(c),
             Metric::Datetime(d, time_unit) => json!(get_iso_time_string(*d, *time_unit)),
+            Metric::Experiment(e) => json!(e),
             Metric::String(s) => json!(s),
             Metric::StringList(v) => json!(v),
             Metric::Uuid(s) => json!(s),

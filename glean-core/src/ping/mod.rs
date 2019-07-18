@@ -107,12 +107,23 @@ impl PingMaker {
 
     fn get_ping_info(&self, glean: &Glean, storage_name: &str) -> JsonValue {
         let (start_time, end_time) = self.get_start_end_times(glean, storage_name);
-        json!({
+        let mut map = json!({
             "ping_type": storage_name,
             "seq": self.get_ping_seq(glean, storage_name),
             "start_time": start_time,
             "end_time": end_time,
-        })
+        });
+
+        // Get the experiment data, if available.
+        if let Some(experiment_data) =
+            StorageManager.snapshot_experiments_as_json(glean.storage(), INTERNAL_STORAGE)
+        {
+            map.as_object_mut()
+                .unwrap()
+                .insert("experiments".to_string(), experiment_data);
+        };
+
+        map
     }
 
     fn get_client_info(&self, glean: &Glean, include_client_id: bool) -> JsonValue {
