@@ -56,3 +56,38 @@ To run the full Android test suite, in the "Gradle" pane, navigate to `glean-cor
 You can save this task permanently by opening the task dropdown in the toolbar and selecting "Save glean.rs:glean-core:android [testDebugUnitTest] Configuration".
 
 To run a single Android test, navigate to the file containing the test, and right click on the green arrow in the left margin next to the test.  There you have a choice of running or debugging the test.
+
+## Testing in CI
+
+We run multiple tests on CI for every Pull Request and every commit to the `master` branch.
+These include:
+
+* Full Android tests
+* Rust tests
+* Rust source code formatting
+* Rust and Android source code linting
+* Generating documentation from Rust & Kotlin code and the book
+* Checking link validity of documentation
+* Deploying generated documentation
+
+These checks are required to pass before a Pull Request is merged.
+
+### Documentation-only changes
+
+Documentation is deployed from CI, we therefore need it to run on documentation changes.
+However, some of the long-running code tests can be skipped.
+For that add the following literal string to the last commit message to be pushed:
+
+```
+[doc only]
+```
+
+### Skipping CI completely
+
+It is possible to completely skip running CI on a given push by including the following literal string in the commit message:
+
+```
+[ci skip]
+```
+
+This should only be used for metadata files, such as those in `.github`, `LICENSE` or `CODE_OF_CONDUCT.md`.
