@@ -15,7 +15,7 @@ TODO: Fill in the rest of the metric types. https://bugzilla.mozilla.org/show_bu
 
 ### Event
 
-Events are represented as an array of objects, with one object for each event.
+[Events](../../../user/metrics/event.md) are represented as an array of objects, with one object for each event.
 Each event object has the following keys:
 
 - `timestamp`: (integer) A monotonically increasing timestamp value, in milliseconds.
