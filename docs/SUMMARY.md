@@ -34,8 +34,11 @@
     - [Rust Component](dev/core/index.md)
         - [Dependency Management](dev/core/dependency-management.md)
         - [Adding a new metric type](dev/core/new-metric-type.md)
-        - [Internal design details](dev/core/internal.md)
     - [FFI Layer](dev/ffi/index.md)
         - [When/How FFI](dev/ffi/when-to-use-what-in-the-ffi.md)
     - [Contributing](contributing.md)
+    - [Internal implementation details](dev/core/internal/index.md)
+        - [Reserved ping names](dev/core/internal/reserved-ping-names.md).
+        - [Clearing metrics when disabling/enabling Glean](dev/core/internal/clearing.md).
+        - [Payload format](dev/core/internal/payload.md).
 - [API Documentation](api/index.md)
