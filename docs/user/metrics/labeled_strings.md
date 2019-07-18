@@ -39,7 +39,8 @@ assertTrue(Login.errorsByStage["server_auth"].testHasValue())
 
 ## Limits
 
-* Each label must be in `snake_case` (and also may contain `.`).
+
+* Labels support alphanumeric characters; they additionally allow for docs, underscores and/or hyphens.
 
 * Each label must have a maximum of 60 characters.
 
