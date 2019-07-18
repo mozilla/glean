@@ -32,7 +32,7 @@ pub struct RecordedExperimentData {
 /// An experiment metric.
 ///
 /// Used to store active experiments.
-/// This is used through the set_experiment_active/set_experiment_inactive Glean SDK API.
+/// This is used through the `set_experiment_active`/`set_experiment_inactive` Glean SDK API.
 #[derive(Clone, Debug)]
 pub struct ExperimentMetric {
     meta: CommonMetricData,
