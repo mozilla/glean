@@ -40,7 +40,7 @@ assertTrue(Login.errorsByStage["server_auth"].testHasValue())
 ## Limits
 
 
-* Labels support alphanumeric characters; they additionally allow for dots (`.`), underscores (`_`) and/or hyphens (`-`).
+* Labels support lowercase alphanumeric characters; they additionally allow for dots (`.`), underscores (`_`) and/or hyphens (`-`).
 
 * Labels are limited to starting with either a letter or an underscore character.
 
