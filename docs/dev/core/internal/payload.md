@@ -135,7 +135,7 @@ Each event object has the following keys:
   The keys must be from the set defined for this event in the `metrics.yaml` file.
   The values have a maximum length of 50 bytes, when encoded as UTF-8.
 
-For example:
+#### Example
 
 ```json
 [
