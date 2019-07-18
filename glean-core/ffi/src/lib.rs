@@ -4,6 +4,7 @@
 
 #![allow(clippy::redundant_closure)]
 
+use std::collections::HashMap;
 use std::os::raw::c_char;
 
 use ffi_support::{
@@ -18,6 +19,7 @@ mod macros;
 mod boolean;
 mod counter;
 mod datetime;
+mod event;
 mod handlemap_ext;
 mod labeled;
 mod ping_type;
@@ -35,6 +37,7 @@ lazy_static! {
 }
 
 type RawStringArray = *const *const c_char;
+type RawIntArray = *const i32;
 
 /// Create a vector of strings from a raw C-like string array
 unsafe fn from_raw_string_array(arr: RawStringArray, len: i32) -> Vec<String> {
@@ -48,6 +51,28 @@ unsafe fn from_raw_string_array(arr: RawStringArray, len: i32) -> Vec<String> {
         .iter()
         .map(|&p| FfiStr::from_raw(p).into_string())
         .collect()
+}
+
+/// Create a HashMap<i32, String> from a pair of C int and string arrays.
+unsafe fn from_raw_int_array_and_string_array(
+    keys: RawIntArray,
+    values: RawStringArray,
+    len: i32,
+) -> Option<HashMap<i32, String>> {
+    if keys.is_null() || values.is_null() || len == 0 {
+        return None;
+    }
+
+    let keys_ptrs = std::slice::from_raw_parts(keys, len as usize);
+    let values_ptrs = std::slice::from_raw_parts(values, len as usize);
+
+    Some(
+        keys_ptrs
+            .iter()
+            .zip(values_ptrs.iter())
+            .map(|(&k, &v)| (k, FfiStr::from_raw(v).into_string()))
+            .collect(),
+    )
 }
 
 /// Initialize the logging system based on the target platform. This ensures
@@ -92,6 +117,11 @@ pub extern "C" fn glean_initialize(
         log::info!("Glean initialized");
         Ok(glean)
     })
+}
+
+#[no_mangle]
+pub extern "C" fn glean_on_ready_to_send_pings(glean_handle: u64) {
+    GLEAN.call_infallible(glean_handle, |glean| glean.on_ready_to_send_pings())
 }
 
 #[no_mangle]

@@ -10,16 +10,19 @@
 
 package mozilla.telemetry.glean.private
 
-// import android.content.Context
 import android.os.SystemClock
-// import androidx.test.core.app.ApplicationProvider
-// import kotlinx.coroutines.ExperimentalCoroutinesApi
-// import kotlinx.coroutines.ObsoleteCoroutinesApi
 import mozilla.telemetry.glean.Glean
+import mozilla.telemetry.glean.checkPingSchema
+import mozilla.telemetry.glean.getContextWithMockedInfo
+import mozilla.telemetry.glean.getMockWebServer
 import mozilla.telemetry.glean.resetGlean
+import mozilla.telemetry.glean.scheduler.PingUploadWorker
+import mozilla.telemetry.glean.triggerWorkManager
+import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.fail
 import org.junit.Test
 import org.junit.Before
@@ -27,14 +30,20 @@ import org.junit.Ignore
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.lang.NullPointerException
+import java.util.concurrent.TimeUnit
 
 // Declared here, since Kotlin can not declare nested enum classes.
 enum class clickKeys {
-    objectId
+    objectId,
+    other
 }
 
 enum class testNameKeys {
     testName
+}
+
+enum class SomeExtraKeys {
+    SomeExtra
 }
 
 // @ObsoleteCoroutinesApi
@@ -47,7 +56,6 @@ class EventMetricTypeTest {
         resetGlean()
     }
 
-    @Ignore("EventMetricType is a stub")
     @Test
     fun `The API records to its storage engine`() {
 
@@ -58,16 +66,16 @@ class EventMetricTypeTest {
             lifetime = Lifetime.Ping,
             name = "click",
             sendInPings = listOf("store1"),
-            allowedExtraKeys = listOf("object_id")
+            allowedExtraKeys = listOf("object_id", "other")
         )
 
         // Record two events of the same type, with a little delay.
-        click.record(extra = mapOf(clickKeys.objectId to "buttonA"))
+        click.record(extra = mapOf(clickKeys.objectId to "buttonA", clickKeys.other to "foo"))
 
         val expectedTimeSinceStart: Long = 37
         SystemClock.sleep(expectedTimeSinceStart)
 
-        click.record(extra = mapOf(clickKeys.objectId to "buttonB"))
+        click.record(extra = mapOf(clickKeys.objectId to "buttonB", clickKeys.other to "bar"))
 
         // Check that data was properly recorded.
         val snapshot = click.testGetValue()
@@ -77,16 +85,17 @@ class EventMetricTypeTest {
         val firstEvent = snapshot.single { e -> e.extra?.get("object_id") == "buttonA" }
         assertEquals("ui", firstEvent.category)
         assertEquals("click", firstEvent.name)
+        assertEquals("foo", firstEvent.extra?.get("other"))
 
         val secondEvent = snapshot.single { e -> e.extra?.get("object_id") == "buttonB" }
         assertEquals("ui", secondEvent.category)
         assertEquals("click", secondEvent.name)
+        assertEquals("bar", secondEvent.extra?.get("other"))
 
         assertTrue("The sequence of the events must be preserved",
             firstEvent.timestamp < secondEvent.timestamp)
     }
 
-    @Ignore("EventMetricType is a stub")
     @Test
     fun `The API records to its storage engine when category is empty`() {
         // Define a 'click' event, which will be stored in "store1"
@@ -122,7 +131,6 @@ class EventMetricTypeTest {
             firstEvent.timestamp < secondEvent.timestamp)
     }
 
-    @Ignore("disabled is not passed through ffi")
     @Test
     fun `disabled events must not record data`() {
         // Define a 'click' event, which will be stored in "store1". It's disabled
@@ -143,7 +151,6 @@ class EventMetricTypeTest {
             click.testHasValue())
     }
 
-    @Ignore("EventMetricType is a stub")
     @Test(expected = NullPointerException::class)
     fun `testGetValue() throws NullPointerException if nothing is stored`() {
         val testEvent = EventMetricType<NoExtraKeys>(
@@ -156,7 +163,6 @@ class EventMetricTypeTest {
         testEvent.testGetValue()
     }
 
-    @Ignore("EventMetricType is a stub")
     @Test
     fun `The API records to secondary pings`() {
         // Define a 'click' event, which will be stored in "store1" and "store2"
@@ -194,7 +200,7 @@ class EventMetricTypeTest {
             firstEvent.timestamp < secondEvent.timestamp)
     }
 
-    @Ignore("EventMetricType is a stub")
+    @Ignore("Metric clearing when uploading disabled is not implemented")
     @Test
     fun `events should not record when upload is disabled`() {
         val eventMetric = EventMetricType<testNameKeys>(
@@ -222,5 +228,57 @@ class EventMetricTypeTest {
         eventMetric.record(mapOf(testNameKeys.testName to "event3"))
         val snapshot3 = eventMetric.testGetValue()
         assertEquals(1, snapshot3.size)
+    }
+
+    // Moved from EventsStorageEngineTest.kt in glean-ac
+    @Test
+    fun `flush queued events on startup`() {
+        val server = getMockWebServer()
+
+        resetGlean(getContextWithMockedInfo(), Glean.configuration.copy(
+            serverEndpoint = "http://" + server.hostName + ":" + server.port,
+            logPings = true
+        ))
+
+        val event = EventMetricType<SomeExtraKeys>(
+            disabled = false,
+            category = "telemetry",
+            name = "test_event",
+            lifetime = Lifetime.Ping,
+            sendInPings = listOf("events"),
+            allowedExtraKeys = listOf("someExtra")
+        )
+
+        event.record(extra = mapOf(SomeExtraKeys.SomeExtra to "bar"))
+        assertEquals(1, event.testGetValue().size)
+
+        // Start a new Glean instance to trigger the sending of "stale" events
+        resetGlean(
+            getContextWithMockedInfo(),
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
+                logPings = true
+            ),
+            clearStores = false
+        )
+
+        // Trigger worker task to upload the pings in the background
+        PingUploadWorker.enqueueWorker()
+        triggerWorkManager()
+
+        val request = server.takeRequest(1L, TimeUnit.SECONDS)
+        assertEquals("POST", request.method)
+        val applicationId = "mozilla-telemetry-glean"
+        assert(
+            request.path.startsWith("/submit/$applicationId/events/")
+        )
+        val pingJsonData = request.body.readUtf8()
+        val pingJson = JSONObject(pingJsonData)
+        checkPingSchema(pingJson)
+        assertNotNull(pingJson.opt("events"))
+        assertEquals(
+            1,
+            pingJson.getJSONArray("events").length()
+        )
     }
 }

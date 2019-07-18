@@ -153,23 +153,30 @@ impl PingMaker {
     pub fn collect(&self, glean: &Glean, ping: &PingType) -> Option<JsonValue> {
         info!("Collecting {}", ping.name);
 
-        let metrics_data = match StorageManager.snapshot_as_json(glean.storage(), &ping.name, true)
-        {
-            None => {
-                info!("Storage for {} empty. Bailing out.", ping.name);
-                return None;
-            }
-            Some(data) => data,
-        };
+        let metrics_data = StorageManager.snapshot_as_json(glean.storage(), &ping.name, true);
+        let events_data = glean.event_storage().snapshot_as_json(&ping.name, true);
+
+        if metrics_data.is_none() && events_data.is_none() {
+            info!("Storage for {} empty. Bailing out.", ping.name);
+            return None;
+        }
 
         let ping_info = self.get_ping_info(glean, &ping.name);
         let client_info = self.get_client_info(glean, ping.include_client_id);
 
-        Some(json!({
+        let mut json = json!({
             "ping_info": ping_info,
-            "client_info": client_info,
-            "metrics": metrics_data,
-        }))
+            "client_info": client_info
+        });
+        let json_obj = json.as_object_mut()?;
+        if let Some(metrics_data) = metrics_data {
+            json_obj.insert("metrics".to_string(), metrics_data);
+        }
+        if let Some(events_data) = events_data {
+            json_obj.insert("events".to_string(), events_data);
+        }
+
+        Some(json)
     }
 
     /// Collect a snapshot for the given ping from storage and attach required meta information,

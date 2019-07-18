@@ -70,6 +70,8 @@ internal interface LibGleanFFI : Library {
 
     fun glean_destroy_glean(handle: Long, error: RustError.ByReference)
 
+    fun glean_on_ready_to_send_pings(handle: Long)
+
     fun glean_enable_logging()
 
     fun glean_set_upload_enabled(glean_handle: Long, flag: Byte)
@@ -299,7 +301,39 @@ internal interface LibGleanFFI : Library {
         storage_name: String
     ): Pointer?
 
-    // Labeld Counter
+    // Event
+
+    fun glean_new_event_metric(
+        category: String,
+        name: String,
+        send_in_pings: StringArray,
+        send_in_pings_len: Int,
+        lifetime: Int,
+        disabled: Byte,
+        allowed_extra_keys: StringArray?,
+        allowed_extra_keys_len: Int
+    ): Long
+
+    fun glean_event_should_record(glean_handle: Long, metric_id: Long): Byte
+
+    fun glean_event_record(
+        glean_handle: Long,
+        handle: Long,
+        timestamp: Long,
+        extra_keys: IntArray?,
+        extra_values: StringArray?,
+        extra_len: Int
+    )
+
+    fun glean_event_test_has_value(glean_handle: Long, metric_id: Long, storage_name: String): Byte
+
+    fun glean_event_test_get_value_as_json_string(
+        glean_handle: Long,
+        handle: Long,
+        storage_Name: String
+    ): Pointer?
+
+    // Labeled Counter
 
     fun glean_new_labeled_counter_metric(
         category: String,

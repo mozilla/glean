@@ -1,3 +1,4 @@
+use std::ffi::OsString;
 use std::fmt::{self, Display};
 use std::io;
 use std::result;
@@ -50,6 +51,10 @@ pub enum ErrorKind {
     /// TimeUnit conversion failed
     #[fail(display = "TimeUnit conversion from {} failed", _0)]
     TimeUnit(i32),
+
+    /// OsString conversion failed
+    #[fail(display = "OsString conversion from {:?} failed", _0)]
+    OsString(OsString),
 }
 
 /// A specialized [`Error`] type for this crate's operations.
@@ -132,6 +137,14 @@ impl From<serde_json::error::Error> for Error {
     fn from(error: serde_json::error::Error) -> Error {
         Error {
             inner: Context::new(ErrorKind::Json(error)),
+        }
+    }
+}
+
+impl From<OsString> for Error {
+    fn from(error: OsString) -> Error {
+        Error {
+            inner: Context::new(ErrorKind::OsString(error)),
         }
     }
 }

@@ -24,6 +24,7 @@ mod common_metric_data;
 mod database;
 mod error;
 mod error_recording;
+mod event_database;
 mod first_run;
 mod histogram;
 mod internal_metrics;
@@ -36,6 +37,7 @@ pub use crate::common_metric_data::{CommonMetricData, Lifetime};
 use crate::database::Database;
 pub use crate::error::{Error, Result};
 pub use crate::error_recording::{test_get_num_recorded_errors, ErrorType};
+use crate::event_database::EventDatabase;
 use crate::internal_metrics::CoreMetrics;
 use crate::metrics::PingType;
 use crate::ping::PingMaker;
@@ -43,6 +45,7 @@ use crate::storage::StorageManager;
 use crate::util::{local_now_with_offset, sanitize_application_id};
 
 const GLEAN_SCHEMA_VERSION: u32 = 1;
+const DEFAULT_MAX_EVENTS: usize = 500;
 
 /// The object holding meta information about a Glean instance.
 ///
@@ -77,11 +80,13 @@ const GLEAN_SCHEMA_VERSION: u32 = 1;
 pub struct Glean {
     upload_enabled: bool,
     data_store: Database,
+    event_data_store: EventDatabase,
     core_metrics: CoreMetrics,
     data_path: PathBuf,
     application_id: String,
     ping_registry: HashMap<String, PingType>,
     start_time: DateTime<FixedOffset>,
+    max_events: usize,
 }
 
 impl Glean {
@@ -97,15 +102,18 @@ impl Glean {
         // Creating the data store creates the necessary path as well.
         // If that fails we bail out and don't initialize further.
         let data_store = Database::new(data_path)?;
+        let event_data_store = EventDatabase::new(data_path)?;
 
         let mut glean = Self {
             upload_enabled,
             data_store,
+            event_data_store,
             core_metrics: CoreMetrics::new(),
             data_path: PathBuf::from(data_path),
             application_id,
             ping_registry: HashMap::new(),
             start_time: local_now_with_offset(),
+            max_events: DEFAULT_MAX_EVENTS,
         };
         glean.initialize_core_metrics()?;
         Ok(glean)
@@ -117,6 +125,14 @@ impl Glean {
         }
         self.core_metrics.client_id.generate_if_missing(self);
         Ok(())
+    }
+
+    /// Called when Glean is initialized to the point where it can correctly
+    /// assemble pings. Usually called from the language specific layer after all
+    /// of the core metrics have been set and the ping types have been
+    /// registered.
+    pub fn on_ready_to_send_pings(&self) {
+        self.event_data_store.flush_pending_events_on_startup(&self);
     }
 
     /// Set whether upload is enabled or not.
@@ -146,6 +162,16 @@ impl Glean {
     /// Get a handle to the database.
     pub fn storage(&self) -> &Database {
         &self.data_store
+    }
+
+    /// Get a handle to the event database.
+    pub fn event_storage(&self) -> &EventDatabase {
+        &self.event_data_store
+    }
+
+    /// Get the maximum number of events to store before sending a ping.
+    pub fn get_max_events(&self) -> usize {
+        self.max_events
     }
 
     /// Take a snapshot for the given store and optionally clear it.
