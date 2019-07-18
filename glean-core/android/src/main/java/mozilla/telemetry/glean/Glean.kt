@@ -207,16 +207,20 @@ open class GleanInternalAPI internal constructor () {
             return
         }
 
-        // The 'extra' map is sent over FFI as a pair of arrays, one containing
-        // the keys and the other containing the values.
+        // The Map is sent over FFI as a pair of arrays, one containing the
+        // keys, and the other containing the values.
+        // In Kotlin, Map.keys and Map.values are not guaranteed to return the entries
+        // in any particular order. Therefore, we iterate over the pairs together and
+        // create the keys and values arrays step-by-step.
         var keys: StringArray? = null
         var values: StringArray? = null
         var numKeys = 0
 
         extra?.let {
             numKeys = extra.size
-            keys = StringArray(extra.keys.toTypedArray(), "utf-8")
-            values = StringArray(extra.values.toTypedArray(), "utf-8")
+            val extraList = extra.toList()
+            keys = StringArray(Array(extra.size) { extraList[it].first }, "utf-8")
+            values = StringArray(Array(extra.size) { extraList[it].second }, "utf-8")
         }
 
         LibGleanFFI.INSTANCE.glean_set_experiment_active(
