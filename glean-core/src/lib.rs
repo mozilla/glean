@@ -229,7 +229,9 @@ impl Glean {
         // Note that this also includes the ping sequence numbers, so it has
         // the effect of resetting those to their initial values.
         self.data_store.clear_all();
-        // TODO: 1552872: Clear the event store, once the event metric lands.
+        if let Err(err) = self.event_data_store.clear_all() {
+            log::error!("Error clearing pending events: {}", err);
+        }
 
         // This does not clear the experiments store (which isn't managed by the
         // StorageEngineManager), since doing so would mean we would have to have the

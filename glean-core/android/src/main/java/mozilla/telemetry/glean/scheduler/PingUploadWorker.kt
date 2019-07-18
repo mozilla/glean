@@ -64,7 +64,7 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
          */
         internal fun uploadPings(): Boolean {
             return if (Glean.getUploadEnabled()) {
-                httpPingUploader().process()
+                HttpPingUploader().process()
             } else {
                 false
             }

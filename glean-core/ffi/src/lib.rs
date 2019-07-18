@@ -158,7 +158,9 @@ pub extern "C" fn glean_is_upload_enabled(glean_handle: u64) -> u8 {
 
 #[no_mangle]
 pub extern "C" fn glean_set_upload_enabled(glean_handle: u64, flag: u8) {
-    GLEAN.call_infallible_mut(glean_handle, |glean| glean.set_upload_enabled(flag != 0))
+    GLEAN.call_infallible_mut(glean_handle, |glean| glean.set_upload_enabled(flag != 0));
+    // The return value of set_upload_enabled is an implementation detail
+    // that isn't exposed over FFI.
 }
 
 #[no_mangle]

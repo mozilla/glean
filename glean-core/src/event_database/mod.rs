@@ -258,6 +258,17 @@ impl EventDatabase {
         result
     }
 
+    /// Clear all stored events, both in memory and on-disk.
+    pub fn clear_all(&self) -> Result<()> {
+        self.event_stores.write().unwrap().clear();
+
+        let _lock = self.file_lock.write().unwrap();
+        std::fs::remove_dir_all(&self.path)?;
+        create_dir_all(&self.path)?;
+
+        Ok(())
+    }
+
     /// **Test-only API (exported for FFI purposes).**
     ///
     /// Return whether there are any events currently stored for the given even
