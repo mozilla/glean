@@ -22,19 +22,19 @@ lazy_static! {
     /// Some examples of good and bad labels:
     ///
     /// Good:
-    ///   this.is.fine
-    ///   this_is_fine_too
-    ///   this.is_still_fine
-    ///   thisisfine
-    ///   this.is_fine.2
-    ///   _.is_fine
-    ///   this.is-fine
-    ///   this-is-fine
+    /// * `this.is.fine`
+    /// * `this_is_fine_too`
+    /// * `this.is_still_fine`
+    /// * `thisisfine`
+    /// * `this.is_fine.2`
+    /// * `_.is_fine`
+    /// * `this.is-fine`
+    /// * `this-is-fine`
     /// Bad:
-    ///   this.is.not_fine_due_tu_the_length_being_too_long_i_thing.i.guess
-    ///   1.not_fine
-    ///   this.$isnotfine
-    ///   -.not_fine
+    /// * `this.is.not_fine_due_tu_the_length_being_too_long_i_thing.i.guess`
+    /// * `1.not_fine`
+    /// * `this.$isnotfine`
+    /// * `-.not_fine`
     static ref LABEL_REGEX: Regex = Regex::new("^[a-z_][a-z0-9_-]{0,29}(\\.[a-z0-9_-]{0,29})*$").unwrap();
 }
 
