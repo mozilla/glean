@@ -26,9 +26,10 @@ pub extern "C" fn glean_string_list_set(
     values_len: i32,
 ) {
     GLEAN.call_infallible(glean_handle, |glean| {
-        STRING_LIST_METRICS.call_infallible(metric_id, |metric| {
-            let values = unsafe { from_raw_string_array(values, values_len) };
+        STRING_LIST_METRICS.call_with_log(metric_id, |metric| {
+            let values = from_raw_string_array(values, values_len)?;
             metric.set(glean, values);
+            Ok(())
         })
     })
 }

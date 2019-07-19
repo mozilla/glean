@@ -52,7 +52,7 @@ macro_rules! define_metric {
             $($new_argname: $new_argtyp),*
         ) -> u64 {
             $metric_map.insert_with_log(|| {
-                let send_in_pings = unsafe { crate::from_raw_string_array(send_in_pings, send_in_pings_len) };
+                let send_in_pings = crate::from_raw_string_array(send_in_pings, send_in_pings_len)?;
                 let lifetime = std::convert::TryFrom::try_from(lifetime)?;
 
                 $(

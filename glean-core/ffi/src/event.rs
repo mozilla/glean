@@ -33,9 +33,9 @@ pub extern "C" fn glean_new_event_metric(
     extra_keys_len: i32,
 ) -> u64 {
     EVENT_METRICS.insert_with_log(|| {
-        let send_in_pings = unsafe { from_raw_string_array(send_in_pings, send_in_pings_len) };
+        let send_in_pings = from_raw_string_array(send_in_pings, send_in_pings_len)?;
         let lifetime = Lifetime::try_from(lifetime)?;
-        let extra_keys = unsafe { from_raw_string_array(extra_keys, extra_keys_len) };
+        let extra_keys = from_raw_string_array(extra_keys, extra_keys_len)?;
 
         Ok(EventMetric::new(
             CommonMetricData {
@@ -60,10 +60,10 @@ pub extern "C" fn glean_event_record(
     extra_len: i32,
 ) {
     GLEAN.call_infallible(glean_handle, |glean| {
-        EVENT_METRICS.call_infallible(metric_id, |metric| {
-            metric.record(glean, timestamp, unsafe {
-                from_raw_int_array_and_string_array(extra_keys, extra_values, extra_len)
-            });
+        EVENT_METRICS.call_with_log(metric_id, |metric| {
+            let extra = from_raw_int_array_and_string_array(extra_keys, extra_values, extra_len)?;
+            metric.record(glean, timestamp, extra);
+            Ok(())
         })
     })
 }
