@@ -26,7 +26,6 @@ import org.junit.Assert.assertNotNull
 import org.junit.Assert.fail
 import org.junit.Test
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.lang.NullPointerException
@@ -200,7 +199,6 @@ class EventMetricTypeTest {
             firstEvent.timestamp < secondEvent.timestamp)
     }
 
-    @Ignore("Metric clearing when uploading disabled is not implemented")
     @Test
     fun `events should not record when upload is disabled`() {
         val eventMetric = EventMetricType<testNameKeys>(

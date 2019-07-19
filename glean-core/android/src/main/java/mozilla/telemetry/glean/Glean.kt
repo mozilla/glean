@@ -25,6 +25,7 @@ import mozilla.telemetry.glean.rust.toByte
 import mozilla.telemetry.glean.GleanMetrics.GleanBaseline
 import mozilla.telemetry.glean.GleanMetrics.GleanInternalMetrics
 import mozilla.telemetry.glean.GleanMetrics.Pings
+import mozilla.telemetry.glean.net.PingUploader
 import mozilla.telemetry.glean.private.PingType
 import mozilla.telemetry.glean.private.RecordedExperimentData
 import mozilla.telemetry.glean.scheduler.GleanLifecycleObserver
@@ -45,6 +46,8 @@ open class GleanInternalAPI internal constructor () {
     internal var handle: MetricHandle = 0L
 
     internal lateinit var configuration: Configuration
+
+    private lateinit var applicationContext: Context
 
     private val gleanLifecycleObserver by lazy { GleanLifecycleObserver() }
 
@@ -95,6 +98,8 @@ open class GleanInternalAPI internal constructor () {
         }
 
         registerPings(Pings)
+
+        this.applicationContext = applicationContext
 
         this.configuration = configuration
 
@@ -170,7 +175,22 @@ open class GleanInternalAPI internal constructor () {
      */
     fun setUploadEnabled(enabled: Boolean) {
         if (isInitialized()) {
-            LibGleanFFI.INSTANCE.glean_set_upload_enabled(handle, enabled.toByte())
+            val originalEnabled = getUploadEnabled()
+
+            Dispatchers.API.launch {
+                // glean_set_upload_enabled might delete all of the queued pings. We
+                // therefore need to obtain the lock from the PingUploader so that
+                // iterating over and deleting the pings doesn't happen at the same time.
+                synchronized(PingUploader.pingQueueLock) {
+                    LibGleanFFI.INSTANCE.glean_set_upload_enabled(handle, enabled.toByte())
+                }
+
+                if (!originalEnabled && getUploadEnabled()) {
+                    // If uploading is being re-enabled, we have to restore the
+                    // application-lifetime metrics.
+                    initializeCoreMetrics((this@GleanInternalAPI).applicationContext)
+                }
+            }
         } else {
             uploadEnabled = enabled
         }

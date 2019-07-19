@@ -14,6 +14,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.net.HttpPingUploader
 
 /**
@@ -62,8 +63,11 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
          * @return true if process was successful
          */
         internal fun uploadPings(): Boolean {
-            val httpPingUploader = HttpPingUploader()
-            return httpPingUploader.process()
+            return if (Glean.getUploadEnabled()) {
+                HttpPingUploader().process()
+            } else {
+                false
+            }
         }
     }
 

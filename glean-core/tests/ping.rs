@@ -35,3 +35,33 @@ fn write_ping_to_disk() {
     }
     assert_eq!(1, count);
 }
+
+#[test]
+fn disabling_upload_clears_pending_pings() {
+    let (mut glean, _) = new_glean();
+
+    let ping = PingType::new("metrics", true);
+    glean.register_ping_type(&ping);
+
+    // We need to store a metric as an empty ping is not stored.
+    let counter = CounterMetric::new(CommonMetricData {
+        name: "counter".into(),
+        category: "local".into(),
+        send_in_pings: vec!["metrics".into()],
+        ..Default::default()
+    });
+
+    counter.add(&glean, 1);
+    assert!(ping.send(&glean, true).unwrap());
+    assert_eq!(1, get_queued_pings(glean.get_data_path()).unwrap().len());
+
+    glean.set_upload_enabled(false);
+    assert_eq!(0, get_queued_pings(glean.get_data_path()).unwrap().len());
+
+    glean.set_upload_enabled(true);
+    assert_eq!(0, get_queued_pings(glean.get_data_path()).unwrap().len());
+
+    counter.add(&glean, 1);
+    assert!(ping.send(&glean, true).unwrap());
+    assert_eq!(1, get_queued_pings(glean.get_data_path()).unwrap().len());
+}

@@ -276,6 +276,18 @@ impl Database {
             writer.commit().unwrap();
         });
     }
+
+    /// Clears all metrics in the database.
+    pub fn clear_all(&self) {
+        for lifetime in [Lifetime::User, Lifetime::Ping].iter() {
+            self.write_with_store(*lifetime, |mut writer, store| {
+                store.clear(&mut writer).unwrap();
+                writer.commit().unwrap();
+            });
+        }
+
+        self.app_lifetime_data.write().unwrap().clear();
+    }
 }
 
 #[cfg(test)]

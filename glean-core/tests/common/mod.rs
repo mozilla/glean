@@ -70,6 +70,16 @@ pub fn iso8601_to_chrono(datetime: &iso8601::DateTime) -> chrono::DateTime<chron
 }
 
 /// Get a vector of the currently queued pings.
+///
+/// # Arguments
+///
+/// * `data_path` - Glean's data path, as returned from Glean::get_data_path()
+///
+/// # Returns
+///
+/// A vector of all queued pings. Each entry is a pair `(url, json_data)`, where
+/// `url` is the endpoint the ping will go to, and `json_data` is the JSON
+/// payload.
 pub fn get_queued_pings(data_path: &Path) -> Result<Vec<(String, JsonValue)>> {
     let pings_dir = data_path.join("pings");
     let entries = read_dir(&pings_dir)?;
