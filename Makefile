@@ -36,6 +36,7 @@ test-rust-with-logs:
 .PHONY: test-rust-with-logs
 
 cbindgen:
+	RUSTUP_TOOLCHAIN=nightly \
 	cbindgen glean-core/ffi --lockfile Cargo.lock -o glean-core/ffi/examples/glean.h
 .PHONY: cbindgen
 
