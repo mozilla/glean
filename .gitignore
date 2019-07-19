@@ -25,4 +25,4 @@ Carthage
 # local stuff
 data/
 glean-core/data
-glean_app
+glean_app*
