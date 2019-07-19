@@ -3,12 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Not exported in glean.h right now.
-typedef struct ExternError {
-    uint32_t code;
-    char *message;
-} ExternError;
-
 #include "glean.h"
 
 int main(void)
