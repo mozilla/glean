@@ -253,14 +253,14 @@ pub extern "C" fn glean_set_experiment_active(
     extra_values: RawStringArray,
     extra_len: i32,
 ) {
-    GLEAN.call_infallible(glean_handle, |glean| {
-        let extra =
-            unsafe { from_raw_string_array_and_string_array(extra_keys, extra_values, extra_len) };
+    GLEAN.call_with_log(glean_handle, |glean| {
+        let extra = from_raw_string_array_and_string_array(extra_keys, extra_values, extra_len)?;
         glean.set_experiment_active(
             experiment_id.as_str().to_string(),
             branch.as_str().to_string(),
             extra,
         );
+        Ok(())
     })
 }
 
