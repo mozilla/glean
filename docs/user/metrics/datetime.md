@@ -29,6 +29,7 @@ install:
     time_unit: day 
     description: >
       Records the date when the application was first run
+    lifetime: user
     ...
 ```
 

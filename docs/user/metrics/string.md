@@ -22,6 +22,7 @@ search.default:
     type: string
     description: >
       The name of the default search engine.
+    lifetime: application
     ...
 ```
 

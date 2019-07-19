@@ -12,6 +12,7 @@ flags:
     type: boolean
     description: >
       Records whether a11y is enabled on the device.
+    lifetime: application
     ...
 ```
 

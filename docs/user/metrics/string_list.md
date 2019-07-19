@@ -18,6 +18,7 @@ search:
     type: string_list
     description: >
       Records the name of the enabled search engines.
+    lifetime: application
     ...
 ```
 
