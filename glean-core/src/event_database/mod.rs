@@ -251,7 +251,12 @@ impl EventDatabase {
 
             let _lock = self.file_lock.write().unwrap();
             if let Err(err) = fs::remove_file(self.path.join(store_name)) {
-                log::error!("Error removing events queue file {}: {}", store_name, err);
+                match err.kind() {
+                    std::io::ErrorKind::NotFound => {
+                        // silently drop this error, the file was already non-existing
+                    }
+                    _ => log::error!("Error removing events queue file {}: {}", store_name, err),
+                }
             }
         }
 
