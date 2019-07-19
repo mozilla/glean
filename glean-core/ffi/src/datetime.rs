@@ -76,11 +76,10 @@ pub extern "C" fn glean_datetime_test_get_value_as_string(
     storage_name: FfiStr,
 ) -> *mut c_char {
     GLEAN.call_infallible(glean_handle, |glean| {
-        let res: glean_core::Result<String> = DATETIME_METRICS.get_u64(metric_id, |metric| {
-            Ok(metric
+        DATETIME_METRICS.call_infallible(metric_id, |metric| {
+            metric
                 .test_get_value_as_string(glean, storage_name.as_str())
-                .unwrap())
-        });
-        res.unwrap()
+                .unwrap()
+        })
     })
 }

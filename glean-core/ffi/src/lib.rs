@@ -234,15 +234,14 @@ pub extern "C" fn glean_send_ping_by_name(
 #[no_mangle]
 pub extern "C" fn glean_ping_collect(glean_handle: u64, ping_type_handle: u64) -> *mut c_char {
     GLEAN.call_infallible(glean_handle, |glean| {
-        let res: glean_core::Result<String> = PING_TYPES.get_u64(ping_type_handle, |ping_type| {
+        PING_TYPES.call_infallible(ping_type_handle, |ping_type| {
             let ping_maker = glean_core::ping::PingMaker::new();
             let data = ping_maker
                 .collect_string(glean, ping_type)
                 .unwrap_or_else(|| String::from(""));
             log::info!("Ping({}): {}", ping_type.name.as_str(), data);
-            Ok(data)
-        });
-        res.unwrap()
+            data
+        })
     })
 }
 

@@ -46,9 +46,8 @@ pub extern "C" fn glean_uuid_test_get_value(
     storage_name: FfiStr,
 ) -> *mut c_char {
     GLEAN.call_infallible(glean_handle, |glean| {
-        let res: glean_core::Result<String> = UUID_METRICS.get_u64(metric_id, |metric| {
-            Ok(metric.test_get_value(glean, storage_name.as_str()).unwrap())
-        });
-        res.unwrap()
+        UUID_METRICS.call_infallible(metric_id, |metric| {
+            metric.test_get_value(glean, storage_name.as_str()).unwrap()
+        })
     })
 }

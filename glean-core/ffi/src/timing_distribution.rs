@@ -70,13 +70,10 @@ pub extern "C" fn glean_timing_distribution_test_get_value_as_json_string(
     storage_name: FfiStr,
 ) -> *mut c_char {
     GLEAN.call_infallible(glean_handle, |glean| {
-        // Use get_u64 so we can coerce to the proper type for the cstring return.
-        let res: glean_core::Result<String> =
-            TIMING_DISTRIBUTION_METRICS.get_u64(metric_id, |metric| {
-                Ok(metric
-                    .test_get_value_as_json_string(glean, storage_name.as_str())
-                    .unwrap())
-            });
-        res.unwrap()
+        TIMING_DISTRIBUTION_METRICS.call_infallible(metric_id, |metric| {
+            metric
+                .test_get_value_as_json_string(glean, storage_name.as_str())
+                .unwrap()
+        })
     })
 }
