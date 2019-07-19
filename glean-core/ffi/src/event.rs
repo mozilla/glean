@@ -88,9 +88,8 @@ pub extern "C" fn glean_event_test_get_value_as_json_string(
     storage_name: FfiStr,
 ) -> *mut c_char {
     GLEAN.call_infallible(glean_handle, |glean| {
-        let res: glean_core::Result<String> = EVENT_METRICS.get_u64(metric_id, |metric| {
-            Ok(metric.test_get_value_as_json_string(glean, storage_name.as_str()))
-        });
-        res.unwrap()
+        EVENT_METRICS.call_infallible(metric_id, |metric| {
+            metric.test_get_value_as_json_string(glean, storage_name.as_str())
+        })
     })
 }

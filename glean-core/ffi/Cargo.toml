@@ -10,7 +10,7 @@ crate-type = ["lib", "staticlib", "cdylib"]
 
 [dependencies]
 lazy_static = "1.3.0"
-ffi-support = "0.3"
+ffi-support = "0.3.5"
 log = "0.4.6"
 uuid = { version = "0.7.4", features = ["v4"] }
 
