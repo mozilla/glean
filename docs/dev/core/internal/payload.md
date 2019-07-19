@@ -11,7 +11,111 @@ It is written as a set of [templates](https://github.com/mozilla-services/mozill
 
 ## Metric types
 
-TODO: Fill in the rest of the metric types. https://bugzilla.mozilla.org/show_bug.cgi?id=1566854
+### Boolean
+
+A [Boolean](../../../user/metrics/boolean.md) is represented by its boolean value.
+
+#### Example
+
+```json
+true
+```
+
+
+### Counter
+
+A [Counter](../../../user/metrics/counter.md) is represented by its integer value.
+
+#### Example
+
+```json
+17
+```
+
+### String
+
+A [String](../../../user/metrics/string.md) is represented by its string value.
+
+#### Example
+
+```json
+"sample string"
+```
+
+### String list
+
+A [String List](../../../user/metrics/string_list.md) is represented as an array of strings.
+
+```json
+["sample string", "another one"]
+```
+
+### Timespan
+
+A [Timespan](../../../user/metrics/timespan.md) is represented as an object of their duration as an integer and the time unit.
+
+| Field name | Type | Description |
+|---|---|---|
+| `value` | Integer | The value in the marked time unit. |
+| `time_unit` | String | The time unit, see the [timespan's configuration](../../../user/metrics/timespan.md#configuration) for valid values. |
+
+#### Example
+
+```json
+{
+    "time_unit": "milliseconds",
+    "value": 10
+}
+```
+
+## Timing Distribution
+
+A [Timing distribution](../../../user/metrics/timing_distribution.md) is represented as an object with the following fields.
+
+| Field name | Type | Description |
+|---|---|---|
+| `bucket_count` | Integer | The bucket count of the histogram. |
+| `range` | Array&lt;Integer&gt; | The range indicated by its minimum and maxium value. |
+| `sum` | Integer | The sum of all recorded values. |
+| `time_unit` | String | The timespan's time unit, see the [time distribution's configuration](../../../user/metrics/timing_distribution.md#configuration) for valid values. |
+| `values` | Map&lt;String, Integer&gt; | The values in each bucket. The key is the minimum value for the range of that bucket. Buckets with no values are not reported. |
+
+#### Example:
+
+```json
+{
+    "bucket_count": 100,
+    "range": [0, 60000],
+    "histogram_type": "expontential",
+    "sum": 3,
+    "time_unit": "milliseconds",
+    "values": {
+        "0": 1,
+        "1": 3,
+    }
+}
+```
+
+### UUID
+
+A [UUID](../../../user/metrics/uuid.md) is represented by the string representation of the UUID.
+
+#### Example
+
+```json
+"29711dc8-a954-11e9-898a-eb4ea7e8fd3f"
+```
+
+### Datetime
+
+A [Datetime](../../../user/metrics/datetime.md) is represented by its ISO8601 string representation, truncated to the metric's time unit.
+It always includes the timezone offset.
+
+#### Example
+
+```json
+"2019-07-18T14:06:00.000+02:00"
+```
 
 ### Event
 
@@ -31,7 +135,7 @@ Each event object has the following keys:
   The keys must be from the set defined for this event in the `metrics.yaml` file.
   The values have a maximum length of 50 bytes, when encoded as UTF-8.
 
-For example:
+#### Example
 
 ```json
 [
@@ -58,3 +162,27 @@ When the application starts up again, there is no good way to determine if the d
 To get around this, on application startup, any queued events are immediately collected into pings and then cleared.
 These "startup-triggered pings" are likely to have a very short duration, as recorded in `ping_info.start_time` and `ping_info.end_time` (see [the `ping_info` section](../../../user/pings/index.md#The-ping_info-section)).
 The maximum timestamp of the events in these pings are quite likely to exceed the duration of the ping, but this is to be expected.
+
+### Labeled metrics
+
+Currently several labeled metrics are supported:
+
+* [Labeled Counters](../../../user/metrics/labeled_counters.md).
+* [Labeled Strings](../../../user/metrics/labeled_strings.md).
+* [Labeled Timespans](../../../user/metrics/labeled_timespans.md).
+
+All are on the top-level represented in the same way, as an object mapping the label to the metric's value.
+See the individual metric types for details on the value payload:
+
+* [Counter](#counter)
+* [String](#string)
+* [Timespan](#timespan)
+
+#### Example for Labeled Counters
+
+```json
+{
+    "label1": 2,
+    "label2": 17
+}
+```
