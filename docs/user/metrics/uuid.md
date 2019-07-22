@@ -12,6 +12,7 @@ user:
     type: uuid
     description: >
       A unique identifier for the client's profile
+    lifetime: user
     ...
 ```
 

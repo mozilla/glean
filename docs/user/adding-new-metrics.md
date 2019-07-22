@@ -36,12 +36,12 @@ toolbar:
       - http://example.com/path/to/data-review
     expires:
       - 2019-06-01  # <-- Update to a date in the future
-    
-  metric2:
+
+  double_click:
     ...
-    
+
 category2.subcategory:  # Categories can contain subcategories
-  metric3:
+  metric:
     ...
 
 ```
@@ -50,7 +50,32 @@ The details of the metric parameters are described in [metric parameters](metric
 
 The `metrics.yaml` file is used to generate `Kotlin` code that becomes the public API to access your application's metrics.
 
-## Metric naming
+## Recommendations for defining new metrics
+
+“There are only two hard things in Computer Science: cache invalidation and naming things” -- attributed to Phil Karlton.
+
+### Lifetimes
+
+The `lifetime` parameter of a metric defines when it will be reset. There are three options available:
+
+- `ping` (default): The metric is reset each time it is sent in the ping.
+  This is the most common case, and should be used for metrics that are highly dynamic, such as things computed in response to the user's interaction with the application.
+- `application`: The metric is related to an application run, and is reset only when the application restarts.
+  This should be used for things that are constant during the run of an application, such as the operating system version.
+  In practice, these metrics are generally set during application startup.
+  A common mistake---using the `ping` lifetime for these type of metrics---means that they will only be included in the first ping sent during a particular run of the application.
+- `user`: The metric is part of the user's profile.
+  This should be used for things that change only when the user's profile is created.
+  It is rare to use this lifetime outside of some metrics that are built in to Glean, such as `client_id`.
+
+### Naming things
+
+Choose the category and names of metrics to be as specific as possible.
+It is not necessary to put the type of the metric in the category or name, since this information is retained in other ways through the entire end-to-end system.
+
+For example, if defining a set of events related to search, put them in a category called `search`, rather than just `events` or `search_events`.
+
+## A note about case inflection
 
 Category and metric names in the `metrics.yaml` are in `snake_case`, but given the Kotlin coding standards defined by [ktlint](https://github.com/pinterest/ktlint), these identifiers must be `camelCase` in Kotlin. For example, the metric defined in the `metrics.yaml` as:
 

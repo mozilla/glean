@@ -19,8 +19,8 @@ All metric types also support the following optional parameters:
 
 - `lifetime`: Defines the lifetime of the metric. Different lifetimes affect when the metrics value is reset.
   - `ping` (default): The metric is reset each time it is sent in a ping.
-  - `user`: The metric is part of the user's profile.
   - `application`: The metric is related to an application run, and is reset when the application restarts.
+  - `user`: The metric is part of the user's profile.
     
 - `send_in_pings`: Defines which pings the metric should be sent on. If not specified, the metric is sent on the "default ping", which is the `events` ping for events and the `metrics` ping for everything else. Most metrics don't need to specify this unless they are sent on custom pings.
   
