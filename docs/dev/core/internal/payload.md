@@ -122,18 +122,12 @@ It always includes the timezone offset.
 [Events](../../../user/metrics/event.md) are represented as an array of objects, with one object for each event.
 Each event object has the following keys:
 
-- `timestamp`: (integer) A monotonically increasing timestamp value, in milliseconds.
-  To avoid leaking absolute times, the first timestamp in the array is always zero, and subsequent timestamps in the array are relative to that reference point.
-
-- `category`: (string) The event's category.
-  This comes directly from the category under which the metric was defined in the `metrics.yaml` file.
-
-- `name`: (string) The event's name, as defined in the `metrics.yaml` file.
-
-- `extra`: (object, optional) Extra data associated with the event.
-  Both the keys and values of this object are strings.
-  The keys must be from the set defined for this event in the `metrics.yaml` file.
-  The values have a maximum length of 50 bytes, when encoded as UTF-8.
+| Field name | Type | Description |
+|---|---|---|
+| `timestamp` | Integer | A monotonically increasing timestamp value, in milliseconds. To avoid leaking absolute times, the first timestamp in the array is always zero, and subsequent timestamps in the array are relative to that reference point. |
+| `category` | String | The event's category. This comes directly from the category under which the metric was defined in the `metrics.yaml` file. |
+| `name` | String | The event's name, as defined in the `metrics.yaml` file. |
+| `extra` | Object (optional) | Extra data associated with the event. Both the keys and values of this object are strings. The keys must be from the set defined for this event in the `metrics.yaml` file. The values have a maximum length of 50 bytes, when encoded as UTF-8. |
 
 #### Example
 
