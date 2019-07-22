@@ -2,10 +2,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use crate::error_recording::{record_error, ErrorType};
 use crate::metrics::Metric;
 use crate::metrics::MetricType;
 use crate::storage::StorageManager;
+use crate::util::truncate_string_at_boundary_with_error;
 use crate::CommonMetricData;
 use crate::Glean;
 
@@ -51,18 +51,7 @@ impl StringMetric {
             return;
         }
 
-        let s = value.into();
-        let s = if s.len() > MAX_LENGTH_VALUE {
-            let msg = format!(
-                "Value length {} exceeds maximum of {}",
-                s.len(),
-                MAX_LENGTH_VALUE
-            );
-            record_error(glean, &self.meta, ErrorType::InvalidValue, msg);
-            s[0..MAX_LENGTH_VALUE].to_string()
-        } else {
-            s
-        };
+        let s = truncate_string_at_boundary_with_error(glean, &self.meta, value, MAX_LENGTH_VALUE);
 
         let value = Metric::String(s);
         glean.storage().record(&self.meta, &value)

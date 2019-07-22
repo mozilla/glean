@@ -5,7 +5,10 @@
 use chrono::offset::TimeZone;
 use chrono::{DateTime, FixedOffset, Local};
 
+use crate::error_recording::{record_error, ErrorType};
 use crate::metrics::TimeUnit;
+use crate::CommonMetricData;
+use crate::Glean;
 
 /// Sanitizes the application id, generating a pipeline-friendly string that replaces
 /// non alphanumeric characters with dashes.
@@ -52,6 +55,65 @@ pub(crate) fn local_now_with_offset() -> DateTime<FixedOffset> {
     let naive = now.naive_utc();
     let fixed_tz = Local.offset_from_utc_datetime(&naive);
     fixed_tz.from_utc_datetime(&naive)
+}
+
+/// Truncates a string, ensuring that it doesn't end in the middle of a codepoint.
+///
+/// ## Arguments:
+///
+/// * `value` - The `String` to truncate.
+/// * `length` - The length, in bytes, to truncate to.  The resulting string will
+///   be at most this many bytes, but may be shorter to prevent ending in the middle
+///   of a codepoint.
+///
+/// ## Return value:
+///
+/// Returns a string, with at most `length` bytes.
+pub(crate) fn truncate_string_at_boundary<S: Into<String>>(value: S, length: usize) -> String {
+    let s = value.into();
+    if s.len() > length {
+        for i in (0..=length).rev() {
+            if s.is_char_boundary(i) {
+                return s[0..i].to_string();
+            }
+        }
+        // If we never saw a character boundary, the safest thing we can do is
+        // return the empty string, though this should never happen in practice.
+        return "".to_string();
+    }
+    s
+}
+
+/// Truncates a string, ensuring that it doesn't end in the middle of a codepoint.
+/// If the string required truncation, records an error through the error
+/// reporting mechanism.
+///
+/// ## Arguments:
+///
+/// * `glean` - The Glean instance the metric doing the truncation belongs to.
+/// * `meta` - The metadata for the metric. Used for recording the error.
+/// * `value` - The `String` to truncate.
+/// * `length` - The length, in bytes, to truncate to.  The resulting string will
+///   be at most this many bytes, but may be shorter to prevent ending in the middle
+///   of a codepoint.
+///
+/// ## Return value:
+///
+/// Returns a string, with at most `length` bytes.
+pub(crate) fn truncate_string_at_boundary_with_error<S: Into<String>>(
+    glean: &Glean,
+    meta: &CommonMetricData,
+    value: S,
+    length: usize,
+) -> String {
+    let s = value.into();
+    if s.len() > length {
+        let msg = format!("Value length {} exceeds maximum of {}", s.len(), length);
+        record_error(glean, meta, ErrorType::InvalidValue, msg);
+        truncate_string_at_boundary(s, length)
+    } else {
+        s
+    }
 }
 
 #[cfg(test)]
@@ -120,5 +182,20 @@ mod test {
             now,
             fixed_now
         );
+    }
+
+    #[test]
+    fn truncate_safely_test() {
+        let value = "电脑坏了".to_string();
+        let truncated = truncate_string_at_boundary(value.clone(), 10);
+        assert_eq!("电脑坏", truncated);
+    }
+
+    #[test]
+    #[should_panic]
+    fn truncate_naive() {
+        // Ensure that truncating the naïve way on this string would panic
+        let value = "电脑坏了".to_string();
+        value[0..10].to_string();
     }
 }

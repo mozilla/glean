@@ -9,6 +9,7 @@ use serde_json::{json, Value as JsonValue};
 use crate::error_recording::{record_error, ErrorType};
 use crate::event_database::RecordedEventData;
 use crate::metrics::MetricType;
+use crate::util::truncate_string_at_boundary_with_error;
 use crate::CommonMetricData;
 use crate::Glean;
 
@@ -74,8 +75,15 @@ impl EventMetric {
                 let mut extra_strings = HashMap::new();
                 for (k, v) in extra.into_iter() {
                     match self.allowed_extra_keys.get(k as usize) {
-                        Some(k) => extra_strings
-                            .insert(k.to_string(), self.truncate_value(glean, k, &v).to_string()),
+                        Some(k) => extra_strings.insert(
+                            k.to_string(),
+                            truncate_string_at_boundary_with_error(
+                                glean,
+                                &self.meta,
+                                v,
+                                MAX_LENGTH_EXTRA_KEY_VALUE,
+                            ),
+                        ),
                         None => {
                             let msg = format!("Invalid key index {}", k);
                             record_error(glean, &self.meta, ErrorType::InvalidValue, msg);
@@ -92,23 +100,6 @@ impl EventMetric {
         glean
             .event_storage()
             .record(glean, &self.meta, timestamp, extra_strings);
-    }
-
-    /// Truncates values to MAX_LENGTH_EXTRA_KEY_VALUE, and reports an error
-    /// when doing so.
-    fn truncate_value<'a>(&self, glean: &Glean, key: &str, value: &'a str) -> &'a str {
-        if value.len() > MAX_LENGTH_EXTRA_KEY_VALUE {
-            let msg = format!(
-                "Value length {} for key {} exceeds maximum of {}",
-                value.len(),
-                key,
-                MAX_LENGTH_EXTRA_KEY_VALUE
-            );
-            record_error(glean, &self.meta, ErrorType::InvalidValue, msg);
-            &value[0..MAX_LENGTH_EXTRA_KEY_VALUE]
-        } else {
-            value
-        }
     }
 
     /// **Test-only API (exported for FFI purposes).**
