@@ -89,10 +89,11 @@ pub trait MetricType {
 }
 
 impl Metric {
-    /// The category the metric fits into.
+    /// The ping section the metric fits into.
     ///
-    /// This determines the category to place the metric data in when assembling the ping payload.
-    pub fn category(&self) -> &'static str {
+    /// This determines the section of the ping to place the metric data in when
+    /// assembling the ping payload.
+    pub fn ping_section(&self) -> &'static str {
         match self {
             Metric::Boolean(_) => "boolean",
             Metric::Counter(_) => "counter",
