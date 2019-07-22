@@ -198,12 +198,14 @@ impl TimingDistributionMetric {
             });
     }
 
-    /// Abort a previous [start] call. No error is recorded if no [start] was called.
+    /// Abort a previous `set_start` call. No error is recorded if no `set_start`
+    /// was called.
     ///
-    /// @param timerId The [GleanTimerId] to associate with this timing. This allows
-    /// for concurrent timing of events associated with different ids to the
-    /// same timing distribution metric.
-    ///
+    /// ## Arguments
+    /// 
+    /// * `id` - The `TimerId` to associate with this timing. This allows
+    ///   for concurrent timing of events associated with different ids to the
+    ///   same timing distribution metric.
     pub fn cancel(&mut self, id: TimerId) {
         self.timings.cancel(id);
     }
