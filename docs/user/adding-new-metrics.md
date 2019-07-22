@@ -60,13 +60,13 @@ The `lifetime` parameter of a metric defines when it will be reset. There are th
 
 - `ping` (default): The metric is reset each time it is sent in the ping.
   This is the most common case, and should be used for metrics that are highly dynamic, such as things computed in response to the user's interaction with the application.
-- `user`: The metric is part of the user's profile.
-  This should be used for things that change only when the user's profile is created.
-  It is rare to use this lifetime outside of some metrics that are built in to Glean, such as `client_id`.
 - `application`: The metric is related to an application run, and is reset only when the application restarts.
   This should be used for things that are constant during the run of an application, such as the operating system version.
   In practice, these metrics are generally set during application startup.
   A common mistake---using the `ping` lifetime for these type of metrics---means that they will only be included in the first ping sent during a particular run of the application.
+- `user`: The metric is part of the user's profile.
+  This should be used for things that change only when the user's profile is created.
+  It is rare to use this lifetime outside of some metrics that are built in to Glean, such as `client_id`.
 
 ### Naming things
 
