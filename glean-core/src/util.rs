@@ -187,8 +187,12 @@ mod test {
     #[test]
     fn truncate_safely_test() {
         let value = "电脑坏了".to_string();
-        let truncated = truncate_string_at_boundary(value.clone(), 10);
+        let truncated = truncate_string_at_boundary(value, 10);
         assert_eq!("电脑坏", truncated);
+
+        let value = "0123456789abcdef".to_string();
+        let truncated = truncate_string_at_boundary(value, 10);
+        assert_eq!("0123456789", truncated);
     }
 
     #[test]
