@@ -179,7 +179,23 @@ impl TimingDistributionMetric {
         let duration = Duration::from_nanos(duration);
         let duration = self.time_unit.duration_convert(duration);
 
-        self.accumulate_samples(glean, vec![duration as u32])
+        if !self.should_record(glean) {
+            return;
+        }
+
+        glean
+            .storage()
+            .record_with(&self.meta, |old_value| match old_value {
+                Some(Metric::TimingDistribution(mut hist, time_unit)) => {
+                    hist.accumulate(duration as u32);
+                    Metric::TimingDistribution(hist, time_unit)
+                }
+                _ => {
+                    let mut hist = Histogram::default();
+                    hist.accumulate(duration as u32);
+                    Metric::TimingDistribution(hist, self.time_unit)
+                }
+            });
     }
 
     /// Abort a previous `set_start` call. No error is recorded if no `set_start`
@@ -194,7 +210,12 @@ impl TimingDistributionMetric {
         self.timings.cancel(id);
     }
 
-    /// Accumulates the provided samples in the metric.
+    /// Accumulates the provided signed samples in the metric.
+    ///
+    /// This is required so that the platform-specific code can provide us with
+    /// 64 bit signed integers if no `u32` comparable type is available. This
+    /// will take care of filtering and reporting errors for any provided negative
+    /// sample.
     ///
     /// Please note that this assumes that the provided samples are already in the
     /// "unit" declared by the instance of the implementing metric type (e.g. if the
@@ -205,56 +226,32 @@ impl TimingDistributionMetric {
     /// ## Arguments
     ///
     /// - `samples` - The vector holding the samples to be recorded by the metric.
-    pub fn accumulate_samples(&mut self, glean: &Glean, samples: Vec<u32>) {
-        if !self.should_record(glean) {
-            return;
-        }
-
-        for sample in samples {
-            glean
-                .storage()
-                .record_with(&self.meta, |old_value| match old_value {
-                    Some(Metric::TimingDistribution(mut hist, time_unit)) => {
-                        hist.accumulate(sample);
-                        Metric::TimingDistribution(hist, time_unit)
-                    }
-                    _ => {
-                        let mut hist = Histogram::default();
-                        hist.accumulate(sample);
-                        Metric::TimingDistribution(hist, self.time_unit)
-                    }
-                });
-        }
-    }
-
-    /// Accumulates the provided signed samples in the metric.
-    ///
-    /// This is required so that the platform-specific code can provide us with
-    /// 64 bit signed integers if no `u32` comparable type is available. This
-    /// will take care of filtering and reporting errors for any provided negative
-    /// sample.
-    ///
-    /// ## Arguments
-    ///
-    /// - `samples` - The vector holding the samples to be recorded by the metric.
     ///
     /// ## Notes
     ///
     /// Discards any negative value in `samples` and report an `ErrorType::InvalidValue`
     /// for each of them.
     pub fn accumulate_samples_signed(&mut self, glean: &Glean, samples: Vec<i64>) {
-        let sample_count = samples.len();
-        let positive_samples: Vec<u32> = samples
-            .into_iter()
-            .filter(|s| *s >= 0)
-            .map(|s| s as u32)
-            .collect();
-        // Report if we find any negative value.
-        let num_errors = sample_count - positive_samples.len();
-        let msg = format!("Accumulated ${} negative samples", num_errors);
+        let mut num_errors = 0;
+
+        glean.storage().record_with(&self.meta, |old_value| {
+            let (mut hist, time_unit) = match old_value {
+                Some(Metric::TimingDistribution(hist, time_unit)) => (hist, time_unit),
+                _ => (Histogram::default(), self.time_unit),
+            };
+
+            for sample in samples.iter() {
+                if *sample >= 0 {
+                    hist.accumulate(*sample as u32);
+                } else {
+                    num_errors += 1;
+                }
+            }
+            Metric::TimingDistribution(hist, time_unit)
+        });
+
+        let msg = format!("Accumulated {} negative samples", num_errors);
         record_error(glean, &self.meta, ErrorType::InvalidValue, msg, num_errors);
-        // Finally, accumulate the values.
-        self.accumulate_samples(glean, positive_samples);
     }
 
     /// **Test-only API (exported for FFI purposes).**

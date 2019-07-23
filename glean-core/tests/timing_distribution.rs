@@ -154,7 +154,7 @@ fn the_accumulate_samples_api_correctly_stores_timing_values() {
     );
 
     // Accumulate the samples.
-    metric.accumulate_samples(&glean, [1, 2, 3].to_vec());
+    metric.accumulate_samples_signed(&glean, [-1, 1, 2, 3].to_vec());
 
     let val = metric
         .test_get_value(&glean, "store1")
