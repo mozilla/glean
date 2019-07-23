@@ -179,23 +179,7 @@ impl TimingDistributionMetric {
         let duration = Duration::from_nanos(duration);
         let duration = self.time_unit.duration_convert(duration);
 
-        if !self.should_record(glean) {
-            return;
-        }
-
-        glean
-            .storage()
-            .record_with(&self.meta, |old_value| match old_value {
-                Some(Metric::TimingDistribution(mut hist, time_unit)) => {
-                    hist.accumulate(duration as u32);
-                    Metric::TimingDistribution(hist, time_unit)
-                }
-                _ => {
-                    let mut hist = Histogram::default();
-                    hist.accumulate(duration as u32);
-                    Metric::TimingDistribution(hist, self.time_unit)
-                }
-            });
+        self.accumulate_samples(glean, vec![duration as u32])
     }
 
     /// Abort a previous `set_start` call. No error is recorded if no `set_start`
@@ -208,6 +192,39 @@ impl TimingDistributionMetric {
     ///   same timing distribution metric.
     pub fn cancel(&mut self, id: TimerId) {
         self.timings.cancel(id);
+    }
+
+    /// Accumulates the provided samples in the metric.
+    ///
+    /// Please note that this assumes that the provided samples are already in the
+    /// "unit" declared by the instance of the implementing metric type (e.g. if the
+    /// implementing class is a [TimingDistributionMetricType] and the instance this
+    /// method was called on is using [TimeUnit.Second], then `samples` are assumed
+    /// to be in that unit).
+    ///
+    /// ## Arguments
+    ///
+    /// - `samples` - The vector holding the samples to be recorded by the metric.
+    pub fn accumulate_samples(&mut self, glean: &Glean, samples: Vec<u32>) {
+        if !self.should_record(glean) {
+            return;
+        }
+
+        for sample in samples {
+            glean
+                .storage()
+                .record_with(&self.meta, |old_value| match old_value {
+                    Some(Metric::TimingDistribution(mut hist, time_unit)) => {
+                        hist.accumulate(sample);
+                        Metric::TimingDistribution(hist, time_unit)
+                    }
+                    _ => {
+                        let mut hist = Histogram::default();
+                        hist.accumulate(sample);
+                        Metric::TimingDistribution(hist, self.time_unit)
+                    }
+                });
+        }
     }
 
     /// **Test-only API (exported for FFI purposes).**
