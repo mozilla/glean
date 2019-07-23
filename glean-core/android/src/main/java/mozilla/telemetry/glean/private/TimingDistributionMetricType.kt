@@ -7,6 +7,7 @@ package mozilla.telemetry.glean.private
 import androidx.annotation.VisibleForTesting
 import android.os.SystemClock
 import com.sun.jna.StringArray
+import mozilla.components.service.glean.private.HistogramBase
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.GleanTimerId
 import mozilla.telemetry.glean.rust.getAndConsumeRustString
@@ -25,7 +26,7 @@ import mozilla.telemetry.glean.rust.toBoolean
 class TimingDistributionMetricType internal constructor(
     private var handle: Long,
     private val sendInPings: List<String>
-) {
+) : HistogramBase {
     /**
      * The public constructor used by automatically generated metrics.
      */
@@ -141,6 +142,26 @@ class TimingDistributionMetricType internal constructor(
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.launch {
             LibGleanFFI.INSTANCE.glean_timing_distribution_cancel(this@TimingDistributionMetricType.handle, timerId)
+        }
+    }
+
+    override fun accumulateSamples(samples: LongArray) {
+        if (!shouldRecord()) {
+            return
+        }
+
+        samples.forEach {
+            println("Kotlin sample: ${it}")
+        }
+
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        Dispatchers.API.launch {
+            LibGleanFFI.INSTANCE.glean_timing_distribution_accumulate_samples(
+                Glean.handle,
+                this@TimingDistributionMetricType.handle,
+                samples,
+                samples.size
+            )
         }
     }
 
