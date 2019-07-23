@@ -6,7 +6,10 @@ use std::os::raw::c_char;
 
 use ffi_support::FfiStr;
 
-use crate::{define_metric, handlemap_ext::HandleMapExtension, RawUInt64Array, from_raw_uint64_array_to_u32, GLEAN};
+use crate::{
+    define_metric, from_raw_uint64_array_to_u32, handlemap_ext::HandleMapExtension, RawUInt64Array,
+    GLEAN,
+};
 use glean_core::metrics::TimerId;
 
 define_metric!(TimingDistributionMetric => TIMING_DISTRIBUTION_METRICS {

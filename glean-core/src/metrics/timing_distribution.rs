@@ -186,7 +186,7 @@ impl TimingDistributionMetric {
     /// was called.
     ///
     /// ## Arguments
-    /// 
+    ///
     /// * `id` - The `TimerId` to associate with this timing. This allows
     ///   for concurrent timing of events associated with different ids to the
     ///   same timing distribution metric.

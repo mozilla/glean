@@ -160,20 +160,14 @@ fn from_raw_string_array_and_string_array(
 /// ## Safety
 ///
 /// * We check the array pointer for validity (non-null).
-fn from_raw_uint64_array_to_u32(
-    values: RawUInt64Array,
-    len: i32,
-) -> glean_core::Result<Vec<u32>> {
+fn from_raw_uint64_array_to_u32(values: RawUInt64Array, len: i32) -> glean_core::Result<Vec<u32>> {
     unsafe {
         if values.is_null() || len == 0 {
             return Ok(vec![]);
         }
 
         let values_ptrs = std::slice::from_raw_parts(values, len as usize);
-        Ok(values_ptrs
-            .iter()
-            .map(|&v| {v as u32})
-            .collect())
+        Ok(values_ptrs.iter().map(|&v| v as u32).collect())
     }
 }
 
