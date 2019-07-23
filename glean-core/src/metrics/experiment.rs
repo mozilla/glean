@@ -9,6 +9,7 @@ use std::collections::HashMap;
 use crate::metrics::Metric;
 use crate::metrics::MetricType;
 use crate::storage::StorageManager;
+use crate::util::truncate_string_at_boundary;
 use crate::CommonMetricData;
 use crate::Glean;
 use crate::Lifetime;
@@ -63,7 +64,7 @@ impl ExperimentMetric {
                 id.len(),
                 MAX_EXPERIMENTS_IDS_LEN
             );
-            id[0..MAX_EXPERIMENTS_IDS_LEN].to_string()
+            truncate_string_at_boundary(id, MAX_EXPERIMENTS_IDS_LEN)
         } else {
             id
         };
@@ -106,7 +107,7 @@ impl ExperimentMetric {
                 branch.len(),
                 MAX_EXPERIMENTS_IDS_LEN
             );
-            branch[0..MAX_EXPERIMENTS_IDS_LEN].to_string()
+            truncate_string_at_boundary(branch, MAX_EXPERIMENTS_IDS_LEN)
         } else {
             branch
         };
