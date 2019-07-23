@@ -92,11 +92,11 @@ pub enum Metric {
 }
 ```
 
-Then modify the below implementation and define the right category name for the new type. This will be used in the ping payload:
+Then modify the below implementation and define the right ping section name for the new type. This will be used in the ping payload:
 
 ```rust,noplaypen
 impl Metric {
-    pub fn category(&self) -> &'static str {
+    pub fn ping_section(&self) -> &'static str {
         match self {
             // ...
             Metric::Counter(_) => "counter",
