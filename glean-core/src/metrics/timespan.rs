@@ -115,6 +115,7 @@ impl TimespanMetric {
                 &self.meta,
                 ErrorType::InvalidValue,
                 "Timespan already running. Raw value not recorded.",
+                None,
             );
             return;
         }
