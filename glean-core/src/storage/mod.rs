@@ -27,8 +27,8 @@ fn snapshot_labeled_metrics(
     metric_name: &str,
     metric: &Metric,
 ) {
-    let category = format!("labeled_{}", metric.category());
-    let map = snapshot.entry(category).or_insert_with(HashMap::new);
+    let ping_section = format!("labeled_{}", metric.ping_section());
+    let map = snapshot.entry(ping_section).or_insert_with(HashMap::new);
 
     let mut s = metric_name.splitn(2, '/');
     let metric_name = s.next().unwrap(); // Safe unwrap, the function is only called when the name does contain a '/'
@@ -88,7 +88,7 @@ impl StorageManager {
                 snapshot_labeled_metrics(&mut snapshot, &metric_name, &metric);
             } else {
                 let map = snapshot
-                    .entry(metric.category().into())
+                    .entry(metric.ping_section().into())
                     .or_insert_with(HashMap::new);
                 map.insert(metric_name, metric.as_json());
             }
