@@ -6,6 +6,7 @@ use crate::error_recording::{record_error, ErrorType};
 use crate::metrics::Metric;
 use crate::metrics::MetricType;
 use crate::storage::StorageManager;
+use crate::util::truncate_string_at_boundary_with_error;
 use crate::CommonMetricData;
 use crate::Glean;
 
@@ -53,18 +54,8 @@ impl StringListMetric {
             return;
         }
 
-        let value = value.into();
-        let value = if value.len() > MAX_STRING_LENGTH {
-            let msg = format!(
-                "Individual value length {} exceeds maximum of {}",
-                value.len(),
-                MAX_STRING_LENGTH
-            );
-            record_error(glean, &self.meta, ErrorType::InvalidValue, msg);
-            value[0..MAX_STRING_LENGTH].to_string()
-        } else {
-            value
-        };
+        let value =
+            truncate_string_at_boundary_with_error(glean, &self.meta, value, MAX_STRING_LENGTH);
 
         let mut error = None;
         glean
