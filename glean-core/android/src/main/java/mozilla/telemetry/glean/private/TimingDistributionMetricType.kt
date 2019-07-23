@@ -7,7 +7,6 @@ package mozilla.telemetry.glean.private
 import androidx.annotation.VisibleForTesting
 import android.os.SystemClock
 import com.sun.jna.StringArray
-import mozilla.components.service.glean.private.HistogramBase
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.GleanTimerId
 import mozilla.telemetry.glean.rust.getAndConsumeRustString
@@ -72,14 +71,12 @@ class TimingDistributionMetricType internal constructor(
     }
 
     /**
-     * Start tracking time for the provided metric and associated object. This
+     * Start tracking time for the provided metric and [GleanTimerId]. This
      * records an error if it’s already tracking time (i.e. start was already
      * called with no corresponding [stopAndAccumulate]): in that case the original
      * start time will be preserved.
      *
-     * @param timerId The object to associate with this timing.  This allows
-     * for concurrent timing of events associated with different objects to the
-     * same timespan metric.
+     * @return The [GleanTimerId] object to associate with this timing.
      */
     fun start(): GleanTimerId? {
         if (!shouldRecord()) {
@@ -98,12 +95,12 @@ class TimingDistributionMetricType internal constructor(
     }
 
     /**
-     * Stop tracking time for the provided metric and associated object. Add a
+     * Stop tracking time for the provided metric and associated timer id. Add a
      * count to the corresponding bucket in the timing distribution.
      * This will record an error if no [start] was called.
      *
-     * @param timerId The object to associate with this timing.  This allows
-     * for concurrent timing of events associated with different objects to the
+     * @param timerId The [GleanTimerId] to associate with this timing.  This allows
+     * for concurrent timing of events associated with different ids to the
      * same timespan metric.
      */
     fun stopAndAccumulate(timerId: GleanTimerId?) {
@@ -130,9 +127,9 @@ class TimingDistributionMetricType internal constructor(
     /**
      * Abort a previous [start] call. No error is recorded if no [start] was called.
      *
-     * @param timerId The object to associate with this timing.  This allows
-     * for concurrent timing of events associated with different objects to the
-     * same timespan metric.
+     * @param timerId The [GleanTimerId] to associate with this timing. This allows
+     * for concurrent timing of events associated with different ids to the
+     * same timing distribution metric.
      */
     fun cancel(timerId: GleanTimerId?) {
         if (!shouldRecord() || timerId == null) {
@@ -150,10 +147,14 @@ class TimingDistributionMetricType internal constructor(
             return
         }
 
-        samples.forEach {
-            println("Kotlin sample: ${it}")
-        }
-
+        // The reason we're using [Long](s) instead of [UInt](s) in Kotlin-land is
+        // the lack of [UInt] (in stable form). The positive part of [Int] would not
+        // be enough to represent the values coming in:
+        // - [UInt.MAX_VALUE] is 4294967295
+        // - [Int.MAX_VALUE] is 2147483647
+        // - [Long.MAX_VALUE] is 9223372036854775807
+        //
+        // On the rust side, Long(s) are handled as u64 and then casted to u32.
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.launch {
             LibGleanFFI.INSTANCE.glean_timing_distribution_accumulate_samples(
