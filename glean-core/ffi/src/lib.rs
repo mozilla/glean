@@ -38,7 +38,7 @@ lazy_static! {
 
 type RawStringArray = *const *const c_char;
 type RawIntArray = *const i32;
-type RawUInt64Array = *const u64;
+type RawInt64Array = *const i64;
 
 /// Create a vector of strings from a raw C-like string array.
 ///
@@ -160,14 +160,14 @@ fn from_raw_string_array_and_string_array(
 /// ## Safety
 ///
 /// * We check the array pointer for validity (non-null).
-fn from_raw_uint64_array_to_u32(values: RawUInt64Array, len: i32) -> glean_core::Result<Vec<u32>> {
+fn from_raw_int64_array(values: RawInt64Array, len: i32) -> glean_core::Result<Vec<i64>> {
     unsafe {
         if values.is_null() || len == 0 {
             return Ok(vec![]);
         }
 
         let values_ptrs = std::slice::from_raw_parts(values, len as usize);
-        Ok(values_ptrs.iter().map(|&v| v as u32).collect())
+        Ok(values_ptrs.iter().map(|&v| v as i64).collect())
     }
 }
 

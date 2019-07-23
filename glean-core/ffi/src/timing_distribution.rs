@@ -7,7 +7,7 @@ use std::os::raw::c_char;
 use ffi_support::FfiStr;
 
 use crate::{
-    define_metric, from_raw_uint64_array_to_u32, handlemap_ext::HandleMapExtension, RawUInt64Array,
+    define_metric, from_raw_int64_array, handlemap_ext::HandleMapExtension, RawInt64Array,
     GLEAN,
 };
 use glean_core::metrics::TimerId;
@@ -55,7 +55,7 @@ pub extern "C" fn glean_timing_distribution_cancel(metric_id: u64, timer_id: Tim
 pub extern "C" fn glean_timing_distribution_accumulate_samples(
     glean_handle: u64,
     metric_id: u64,
-    raw_samples: RawUInt64Array,
+    raw_samples: RawInt64Array,
     num_samples: i32,
 ) {
     GLEAN.call_infallible(glean_handle, |glean| {
@@ -63,11 +63,12 @@ pub extern "C" fn glean_timing_distribution_accumulate_samples(
             // The Kotlin code is sending Long(s), which are 64 bits, as there's
             // currently no stable UInt type. The positive part of [Int] would not
             // be enough to represent the values coming in:.
-            // Here Long(s) are handled as u64 and then casted to u32.
-            let samples = from_raw_uint64_array_to_u32(raw_samples, num_samples);
-            // It's safe to unwrap from the result of `from_raw_uint_array`, its
-            // always returning `Ok`.
-            metric.accumulate_samples(glean, samples.unwrap());
+            // Here Long(s) are handled as i64 and then casted to u32.
+            //
+            // Note: It's safe to unwrap from the result of `from_raw_uint_array`,
+            // its always returning `Ok`.
+            let samples = from_raw_int64_array(raw_samples, num_samples).unwrap();
+            metric.accumulate_samples_signed(glean, samples);
         })
     })
 }

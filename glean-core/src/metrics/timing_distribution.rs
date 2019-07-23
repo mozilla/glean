@@ -171,7 +171,7 @@ impl TimingDistributionMetric {
     pub fn set_stop_and_accumulate(&mut self, glean: &Glean, id: TimerId, stop_time: u64) {
         let duration = match self.timings.set_stop(id, stop_time) {
             Err(error) => {
-                record_error(glean, &self.meta, ErrorType::InvalidValue, error);
+                record_error(glean, &self.meta, ErrorType::InvalidValue, error, None);
                 return;
             }
             Ok(duration) => duration,
@@ -225,6 +225,36 @@ impl TimingDistributionMetric {
                     }
                 });
         }
+    }
+
+    /// Accumulates the provided signed samples in the metric.
+    ///
+    /// This is required so that the platform-specific code can provide us with
+    /// 64 bit signed integers if no `u32` comparable type is available. This
+    /// will take care of filtering and reporting errors for any provided negative
+    /// sample.
+    ///
+    /// ## Arguments
+    ///
+    /// - `samples` - The vector holding the samples to be recorded by the metric.
+    ///
+    /// ## Notes
+    ///
+    /// Discards any negative value in `samples` and report an `ErrorType::InvalidValue`
+    /// for each of them.
+    pub fn accumulate_samples_signed(&mut self, glean: &Glean, samples: Vec<i64>) {
+        let sample_count = samples.len();
+        let positive_samples: Vec<u32> = samples
+            .into_iter()
+            .filter(|s| *s >= 0)
+            .map(|s| s as u32)
+            .collect();
+        // Report if we find any negative value.
+        let num_errors = sample_count - positive_samples.len();
+        let msg = format!("Accumulated ${} negative samples", num_errors);
+        record_error(glean, &self.meta, ErrorType::InvalidValue, msg, num_errors);
+        // Finally, accumulate the values.
+        self.accumulate_samples(glean, positive_samples);
     }
 
     /// **Test-only API (exported for FFI purposes).**
