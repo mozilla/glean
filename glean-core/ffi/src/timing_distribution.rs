@@ -7,8 +7,7 @@ use std::os::raw::c_char;
 use ffi_support::FfiStr;
 
 use crate::{
-    define_metric, from_raw_int64_array, handlemap_ext::HandleMapExtension, RawInt64Array,
-    GLEAN,
+    define_metric, from_raw_int64_array, handlemap_ext::HandleMapExtension, RawInt64Array, GLEAN,
 };
 use glean_core::metrics::TimerId;
 

@@ -60,7 +60,7 @@ pub fn record_error<O: Into<Option<usize>>>(
     meta: &CommonMetricData,
     error: ErrorType,
     message: impl Display,
-    num_errors: O
+    num_errors: O,
 ) {
     // Split off any label of the identifier
     let identifier = meta.identifier();
