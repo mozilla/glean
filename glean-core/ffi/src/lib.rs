@@ -38,6 +38,7 @@ lazy_static! {
 
 type RawStringArray = *const *const c_char;
 type RawIntArray = *const i32;
+type RawUIntArray = *const u32;
 
 /// Create a vector of strings from a raw C-like string array.
 ///
@@ -147,6 +148,32 @@ fn from_raw_string_array_and_string_array(
             })
             .collect();
         res.map(Some)
+    }
+}
+
+/// Create a Vec<u32> from a raw C uint array.
+///
+/// This will never return an `Error`. However, this is returning
+/// a `Result` for consistency with `from_raw_string_array` and
+/// returning an empty `Vec` if the input is empty.
+///
+/// ## Safety
+///
+/// * We check the array pointer for validity (non-null).
+fn from_raw_uint_array(
+    values: RawUIntArray,
+    len: i32,
+) -> glean_core::Result<Vec<u32>> {
+    unsafe {
+        if values.is_null() || len == 0 {
+            return Ok(vec![]);
+        }
+
+        let values_ptrs = std::slice::from_raw_parts(values, len as usize);
+        Ok(values_ptrs.to_vec())/*
+            .iter()
+            .map(|&v| {v})
+            .collect())*/
     }
 }
 

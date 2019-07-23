@@ -308,6 +308,8 @@ internal interface LibGleanFFI : Library {
 
     fun glean_timing_distribution_cancel(metric_id: Long, timer_id: GleanTimerId)
 
+    fun glean_timing_distribution_accumulate_samples(glean_handle: Long, metric_id: Long, samples: LongArray?, len: Int)
+
     fun glean_timing_distribution_test_has_value(glean_handle: Long, metric_id: Long, storage_name: String): Byte
 
     fun glean_timing_distribution_test_get_value_as_json_string(
