@@ -56,7 +56,6 @@ impl StringListMetric {
 
         let value =
             truncate_string_at_boundary_with_error(glean, &self.meta, value, MAX_STRING_LENGTH);
-
         let mut error = None;
         glean
             .storage()
@@ -78,7 +77,7 @@ impl StringListMetric {
             });
 
         if let Some(msg) = error {
-            record_error(glean, &self.meta, ErrorType::InvalidValue, msg);
+            record_error(glean, &self.meta, ErrorType::InvalidValue, msg, None);
         }
     }
 
@@ -104,7 +103,7 @@ impl StringListMetric {
                 value.len(),
                 MAX_LIST_LENGTH
             );
-            record_error(glean, &self.meta, ErrorType::InvalidValue, msg);
+            record_error(glean, &self.meta, ErrorType::InvalidValue, msg, None);
             value[0..MAX_LIST_LENGTH].to_vec()
         } else {
             value
@@ -119,7 +118,7 @@ impl StringListMetric {
                         elem.len(),
                         MAX_STRING_LENGTH
                     );
-                    record_error(glean, &self.meta, ErrorType::InvalidValue, msg);
+                    record_error(glean, &self.meta, ErrorType::InvalidValue, msg, None);
                     elem[0..MAX_STRING_LENGTH].to_string()
                 } else {
                     elem

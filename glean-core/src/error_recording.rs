@@ -54,11 +54,13 @@ impl ErrorType {
 /// * error -  The error type to record
 /// * message - The message to log. This message is not sent with the ping.
 ///             It does not need to include the metric name, as that is automatically prepended to the message.
-pub fn record_error(
+//  * num_errors - The number of errors of the same type to report.
+pub fn record_error<O: Into<Option<usize>>>(
     glean: &Glean,
     meta: &CommonMetricData,
     error: ErrorType,
     message: impl Display,
+    num_errors: O
 ) {
     // Split off any label of the identifier
     let identifier = meta.identifier();
@@ -79,7 +81,7 @@ pub fn record_error(
     });
 
     log::warn!("{}: {}", identifier, message);
-    metric.add(glean, 1);
+    metric.add(glean, num_errors.into().unwrap_or(1) as i32);
 }
 
 /// Get the number of recorded errors for the given metric and error type.
@@ -145,11 +147,15 @@ mod test {
             lifetime: Lifetime::User,
         });
 
+        let expected_invalid_values_errors: i32 = 1;
+        let expected_invalid_labels_errors: i32 = 2;
+
         record_error(
             &glean,
             string_metric.meta(),
             ErrorType::InvalidValue,
             "Invalid value",
+            None,
         );
 
         record_error(
@@ -157,11 +163,12 @@ mod test {
             string_metric.meta(),
             ErrorType::InvalidLabel,
             "Invalid label",
+            expected_invalid_labels_errors as usize,
         );
 
         for store in &["store1", "store2", "metrics"] {
             assert_eq!(
-                Ok(1),
+                Ok(expected_invalid_values_errors),
                 test_get_num_recorded_errors(
                     &glean,
                     string_metric.meta(),
@@ -170,7 +177,7 @@ mod test {
                 )
             );
             assert_eq!(
-                Ok(1),
+                Ok(expected_invalid_labels_errors),
                 test_get_num_recorded_errors(
                     &glean,
                     string_metric.meta(),

@@ -137,13 +137,13 @@ where
                         label.len(),
                         MAX_LABEL_LENGTH
                     );
-                    record_error(glean, &self.submetric.meta(), ErrorType::InvalidLabel, msg);
+                    record_error(glean, &self.submetric.meta(), ErrorType::InvalidLabel, msg, None);
                     return OTHER_LABEL;
                 }
 
                 if !LABEL_REGEX.is_match(label) {
                     let msg = format!("label must be snake_case, got '{}'", label);
-                    record_error(glean, &self.submetric.meta(), ErrorType::InvalidLabel, msg);
+                    record_error(glean, &self.submetric.meta(), ErrorType::InvalidLabel, msg, None);
                     return OTHER_LABEL;
                 }
 

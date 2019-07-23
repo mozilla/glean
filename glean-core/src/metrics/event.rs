@@ -86,7 +86,7 @@ impl EventMetric {
                         ),
                         None => {
                             let msg = format!("Invalid key index {}", k);
-                            record_error(glean, &self.meta, ErrorType::InvalidValue, msg);
+                            record_error(glean, &self.meta, ErrorType::InvalidValue, msg, None);
                             return;
                         }
                     };
