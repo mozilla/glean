@@ -14,6 +14,7 @@ import com.sun.jna.StringArray
 import kotlinx.coroutines.Job
 import mozilla.components.support.ktx.android.content.isMainProcess
 import mozilla.telemetry.glean.config.Configuration
+import mozilla.telemetry.glean.config.FfiConfiguration
 import mozilla.telemetry.glean.utils.getLocaleTag
 import java.io.File
 import mozilla.telemetry.glean.rust.LibGleanFFI
@@ -102,13 +103,15 @@ open class GleanInternalAPI internal constructor () {
         this.applicationContext = applicationContext
 
         this.configuration = configuration
-
         this.gleanDataDir = File(applicationContext.applicationInfo.dataDir, GLEAN_DATA_DIR)
-        handle = LibGleanFFI.INSTANCE.glean_initialize(
-            this.gleanDataDir.path,
-            applicationContext.packageName,
-            uploadEnabled.toByte()
+
+        val cfg = FfiConfiguration(
+            dataDir = this.gleanDataDir.path,
+            packageName = applicationContext.packageName,
+            uploadEnabled = uploadEnabled
         )
+
+        handle = LibGleanFFI.INSTANCE.glean_initialize(cfg)
 
         // If initialization of Glean fails we bail out and don't initialize further.
         if (handle == 0L) {

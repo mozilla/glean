@@ -198,16 +198,60 @@ pub extern "C" fn glean_enable_logging() {
     }
 }
 
-#[no_mangle]
-pub extern "C" fn glean_initialize(
-    data_dir: FfiStr,
-    application_id: FfiStr,
+#[repr(C)]
+pub struct FfiConfiguration<'a> {
+    data_dir: FfiStr<'a>,
+    package_name: FfiStr<'a>,
     upload_enabled: u8,
-) -> u64 {
+    max_events: Option<&'a i64>,
+}
+
+#[derive(Debug)]
+pub struct GleanConfiguration {
+    upload_enabled: bool,
+    data_path: String,
+    application_id: String,
+    max_events: Option<usize>,
+}
+
+use std::convert::TryFrom;
+impl TryFrom<&FfiConfiguration<'_>> for GleanConfiguration {
+    type Error = glean_core::Error;
+    fn try_from(cfg: &FfiConfiguration) -> Result<Self, Self::Error> {
+        let data_path = cfg
+            .data_dir
+            .as_opt_str()
+            .map(|s| s.to_string())
+            .ok_or_else(glean_core::Error::utf8_error)?;
+        let application_id = cfg
+            .package_name
+            .as_opt_str()
+            .map(|s| s.to_string())
+            .ok_or_else(glean_core::Error::utf8_error)?;
+        let upload_enabled = cfg.upload_enabled != 0;
+        let max_events = cfg.max_events.map(|m| *m as usize);
+
+        Ok(Self {
+            upload_enabled,
+            data_path,
+            application_id,
+            max_events,
+        })
+    }
+}
+
+#[no_mangle]
+#[allow(clippy::let_unit_value)]
+pub unsafe extern "C" fn glean_initialize(cfg: *const FfiConfiguration) -> u64 {
+    assert!(!cfg.is_null());
+
     GLEAN.insert_with_log(|| {
-        let data_dir = data_dir.into_string();
-        let application_id = application_id.into_string();
-        let glean = Glean::new(&data_dir, &application_id, upload_enabled != 0)?;
+        let glean_cfg = GleanConfiguration::try_from(&*cfg)?;
+        let glean = Glean::new(
+            &glean_cfg.data_path,
+            &glean_cfg.application_id,
+            glean_cfg.upload_enabled,
+        )?;
         log::info!("Glean initialized");
         Ok(glean)
     })

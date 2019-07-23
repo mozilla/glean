@@ -7,6 +7,41 @@ package mozilla.telemetry.glean.config
 import mozilla.components.concept.fetch.Client
 import mozilla.components.lib.fetch.httpurlconnection.HttpURLConnectionClient
 import mozilla.telemetry.glean.BuildConfig
+import mozilla.telemetry.glean.rust.toByte
+
+import com.sun.jna.Structure
+import com.sun.jna.ptr.LongByReference
+
+/**
+ * Define the order of fields as laid out in memory.
+ * **CAUTION**: This must match _exactly_ the definition on the Rust side.
+ */
+@Structure.FieldOrder("dataDir", "packageName", "uploadEnabled", "maxEvents")
+internal class FfiConfiguration(
+    dataDir: String,
+    packageName: String,
+    uploadEnabled: Boolean,
+    maxEvents: Long? = null
+) : Structure() {
+    /**
+     * Expose all structure fields as actual fields,
+     * in order for Structure to turn them into the right memory representiation
+     */
+
+    @JvmField
+    public var dataDir: String = dataDir
+    @JvmField
+    public var packageName: String = packageName
+    @JvmField
+    public var uploadEnabled: Byte = uploadEnabled.toByte()
+    @JvmField
+    public var maxEvents: LongByReference = if (maxEvents == null) LongByReference() else LongByReference(maxEvents!!)
+
+    init {
+        // Force UTF-8 string encoding when passing strings over the FFI
+        this.stringEncoding = "UTF-8"
+    }
+}
 
 /**
  * The Configuration class describes how to configure Glean.
