@@ -62,11 +62,9 @@ pub extern "C" fn glean_timing_distribution_accumulate_samples(
             // The Kotlin code is sending Long(s), which are 64 bits, as there's
             // currently no stable UInt type. The positive part of [Int] would not
             // be enough to represent the values coming in:.
-            // Here Long(s) are handled as i64 and then casted to u32.
-            //
-            // Note: It's safe to unwrap from the result of `from_raw_uint_array`,
-            // its always returning `Ok`.
-            let samples = from_raw_int64_array(raw_samples, num_samples).unwrap();
+            // Here Long(s) are handled as i64 and then casted in `accumulate_samples_signed`
+            // to u32.
+            let samples = from_raw_int64_array(raw_samples, num_samples);
             metric.accumulate_samples_signed(glean, samples);
         })
     })

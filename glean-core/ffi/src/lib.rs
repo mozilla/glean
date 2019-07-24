@@ -153,21 +153,19 @@ fn from_raw_string_array_and_string_array(
 
 /// Create a Vec<u32> from a raw C uint64 array.
 ///
-/// This will never return an `Error`. However, this is returning
-/// a `Result` for consistency with `from_raw_string_array` and
-/// returning an empty `Vec` if the input is empty.
+/// This will return an empty `Vec` if the input is empty.
 ///
 /// ## Safety
 ///
 /// * We check the array pointer for validity (non-null).
-fn from_raw_int64_array(values: RawInt64Array, len: i32) -> glean_core::Result<Vec<i64>> {
+fn from_raw_int64_array(values: RawInt64Array, len: i32) -> Vec<i64> {
     unsafe {
         if values.is_null() || len == 0 {
-            return Ok(vec![]);
+            return vec![];
         }
 
-        let values_ptrs = std::slice::from_raw_parts(values, len as usize);
-        Ok(values_ptrs.iter().map(|&v| v as i64).collect())
+        let value_slice = std::slice::from_raw_parts(values, len as usize);
+        value_slice.iter().map(|&v| v as i64).collect()
     }
 }
 
