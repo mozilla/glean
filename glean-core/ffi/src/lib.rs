@@ -38,6 +38,7 @@ lazy_static! {
 
 type RawStringArray = *const *const c_char;
 type RawIntArray = *const i32;
+type RawInt64Array = *const i64;
 
 /// Create a vector of strings from a raw C-like string array.
 ///
@@ -147,6 +148,24 @@ fn from_raw_string_array_and_string_array(
             })
             .collect();
         res.map(Some)
+    }
+}
+
+/// Create a Vec<u32> from a raw C uint64 array.
+///
+/// This will return an empty `Vec` if the input is empty.
+///
+/// ## Safety
+///
+/// * We check the array pointer for validity (non-null).
+fn from_raw_int64_array(values: RawInt64Array, len: i32) -> Vec<i64> {
+    unsafe {
+        if values.is_null() || len == 0 {
+            return vec![];
+        }
+
+        let value_slice = std::slice::from_raw_parts(values, len as usize);
+        value_slice.to_vec()
     }
 }
 

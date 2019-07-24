@@ -71,7 +71,7 @@ impl DatetimeMetric {
         let timezone_offset = FixedOffset::east_opt(offset_seconds);
         if timezone_offset.is_none() {
             let msg = format!("Invalid timezone offset {}. Not recording.", offset_seconds);
-            record_error(glean, &self.meta, ErrorType::InvalidValue, msg);
+            record_error(glean, &self.meta, ErrorType::InvalidValue, msg, None);
             return;
         };
 
@@ -87,6 +87,7 @@ impl DatetimeMetric {
                     &self.meta,
                     ErrorType::InvalidValue,
                     "Invalid input data. Not recording.",
+                    None,
                 );
             }
         }

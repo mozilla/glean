@@ -55,6 +55,7 @@ impl CounterMetric {
                 &self.meta,
                 ErrorType::InvalidValue,
                 format!("Added negative or zero value {}", amount),
+                None,
             );
             return;
         }

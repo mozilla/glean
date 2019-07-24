@@ -6,7 +6,9 @@ use std::os::raw::c_char;
 
 use ffi_support::FfiStr;
 
-use crate::{define_metric, handlemap_ext::HandleMapExtension, GLEAN};
+use crate::{
+    define_metric, from_raw_int64_array, handlemap_ext::HandleMapExtension, RawInt64Array, GLEAN,
+};
 use glean_core::metrics::TimerId;
 
 define_metric!(TimingDistributionMetric => TIMING_DISTRIBUTION_METRICS {
@@ -45,6 +47,26 @@ pub extern "C" fn glean_timing_distribution_set_stop_and_accumulate(
 pub extern "C" fn glean_timing_distribution_cancel(metric_id: u64, timer_id: TimerId) {
     TIMING_DISTRIBUTION_METRICS.call_infallible_mut(metric_id, |metric| {
         metric.cancel(timer_id);
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn glean_timing_distribution_accumulate_samples(
+    glean_handle: u64,
+    metric_id: u64,
+    raw_samples: RawInt64Array,
+    num_samples: i32,
+) {
+    GLEAN.call_infallible(glean_handle, |glean| {
+        TIMING_DISTRIBUTION_METRICS.call_infallible_mut(metric_id, |metric| {
+            // The Kotlin code is sending Long(s), which are 64 bits, as there's
+            // currently no stable UInt type. The positive part of [Int] would not
+            // be enough to represent the values coming in:.
+            // Here Long(s) are handled as i64 and then casted in `accumulate_samples_signed`
+            // to u32.
+            let samples = from_raw_int64_array(raw_samples, num_samples);
+            metric.accumulate_samples_signed(glean, samples);
+        })
     })
 }
 

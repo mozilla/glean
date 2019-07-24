@@ -171,7 +171,7 @@ impl TimingDistributionMetric {
     pub fn set_stop_and_accumulate(&mut self, glean: &Glean, id: TimerId, stop_time: u64) {
         let duration = match self.timings.set_stop(id, stop_time) {
             Err(error) => {
-                record_error(glean, &self.meta, ErrorType::InvalidValue, error);
+                record_error(glean, &self.meta, ErrorType::InvalidValue, error, None);
                 return;
             }
             Ok(duration) => duration,
@@ -198,14 +198,60 @@ impl TimingDistributionMetric {
             });
     }
 
-    /// Abort a previous [start] call. No error is recorded if no [start] was called.
+    /// Abort a previous `set_start` call. No error is recorded if no `set_start`
+    /// was called.
     ///
-    /// @param timerId The [GleanTimerId] to associate with this timing. This allows
-    /// for concurrent timing of events associated with different ids to the
-    /// same timing distribution metric.
+    /// ## Arguments
     ///
+    /// * `id` - The `TimerId` to associate with this timing. This allows
+    ///   for concurrent timing of events associated with different ids to the
+    ///   same timing distribution metric.
     pub fn cancel(&mut self, id: TimerId) {
         self.timings.cancel(id);
+    }
+
+    /// Accumulates the provided signed samples in the metric.
+    ///
+    /// This is required so that the platform-specific code can provide us with
+    /// 64 bit signed integers if no `u32` comparable type is available. This
+    /// will take care of filtering and reporting errors for any provided negative
+    /// sample.
+    ///
+    /// Please note that this assumes that the provided samples are already in the
+    /// "unit" declared by the instance of the implementing metric type (e.g. if the
+    /// implementing class is a [TimingDistributionMetricType] and the instance this
+    /// method was called on is using [TimeUnit.Second], then `samples` are assumed
+    /// to be in that unit).
+    ///
+    /// ## Arguments
+    ///
+    /// - `samples` - The vector holding the samples to be recorded by the metric.
+    ///
+    /// ## Notes
+    ///
+    /// Discards any negative value in `samples` and report an `ErrorType::InvalidValue`
+    /// for each of them.
+    pub fn accumulate_samples_signed(&mut self, glean: &Glean, samples: Vec<i64>) {
+        let mut num_errors = 0;
+
+        glean.storage().record_with(&self.meta, |old_value| {
+            let (mut hist, time_unit) = match old_value {
+                Some(Metric::TimingDistribution(hist, time_unit)) => (hist, time_unit),
+                _ => (Histogram::default(), self.time_unit),
+            };
+
+            for sample in samples.iter() {
+                if *sample >= 0 {
+                    hist.accumulate(*sample as u32);
+                } else {
+                    num_errors += 1;
+                }
+            }
+            Metric::TimingDistribution(hist, time_unit)
+        });
+
+        let msg = format!("Accumulated {} negative samples", num_errors);
+        record_error(glean, &self.meta, ErrorType::InvalidValue, msg, num_errors);
     }
 
     /// **Test-only API (exported for FFI purposes).**
