@@ -55,7 +55,7 @@ impl ErrorType {
 /// * message - The message to log. This message is not sent with the ping.
 ///             It does not need to include the metric name, as that is automatically prepended to the message.
 //  * num_errors - The number of errors of the same type to report.
-pub fn record_error<O: Into<Option<usize>>>(
+pub fn record_error<O: Into<Option<i32>>>(
     glean: &Glean,
     meta: &CommonMetricData,
     error: ErrorType,
@@ -81,7 +81,7 @@ pub fn record_error<O: Into<Option<usize>>>(
     });
 
     log::warn!("{}: {}", identifier, message);
-    metric.add(glean, num_errors.into().unwrap_or(1) as i32);
+    metric.add(glean, num_errors.into().unwrap_or(1));
 }
 
 /// Get the number of recorded errors for the given metric and error type.
@@ -163,7 +163,7 @@ mod test {
             string_metric.meta(),
             ErrorType::InvalidLabel,
             "Invalid label",
-            expected_invalid_labels_errors as usize,
+            expected_invalid_labels_errors,
         );
 
         for store in &["store1", "store2", "metrics"] {
