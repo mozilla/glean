@@ -175,9 +175,7 @@ impl EventDatabase {
         {
             let mut db = self.event_stores.write().unwrap();
             for store_name in meta.send_in_pings.iter() {
-                let store = db
-                    .entry(store_name.to_string())
-                    .or_insert_with(|| Vec::new());
+                let store = db.entry(store_name.to_string()).or_insert_with(Vec::new);
                 store.push(event.clone());
                 self.write_event_to_disk(store_name, &event_json);
                 if store.len() == glean.get_max_events() {
