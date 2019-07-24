@@ -18,7 +18,7 @@ may need to repeat some steps (eg, rust updates should be done periodically)
 At the end of this process you should have the following environment variables set up.
 
 - `ANDROID_HOME`
-- `NDK_HOME`
+- `ANDROID_NDK_ROOT`
 - `JAVA_HOME`
 
 The easiest way to install all the dependencies (and automatically
@@ -35,7 +35,7 @@ The following dependencies can be installed in Android Studio through `Tools > S
 
 With the dependencies installed, note down the `Android SDK Location` in `Tools > SDK Manager`.
 Set the `ANDROID_HOME` environment variable to that path.
-The `NDK_HOME` can be set to `NDK_HOME=$ANDROID_HOME/ndk-bundle`.
+The `ANDROID_NDK_ROOT` can be set to `ANDROID_NDK_ROOT=$ANDROID_HOME/ndk-bundle`.
 Set `JAVA_HOME` to be the location of Android Studio's JDK which can be found in Glean's "Project Structure" menu. (You may need to escape spaces in the path).
 
 ### Setting up Rust
