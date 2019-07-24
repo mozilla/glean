@@ -165,7 +165,7 @@ fn from_raw_int64_array(values: RawInt64Array, len: i32) -> Vec<i64> {
         }
 
         let value_slice = std::slice::from_raw_parts(values, len as usize);
-        value_slice.iter().map(|&v| v as i64).collect()
+        value_slice.to_vec()
     }
 }
 
