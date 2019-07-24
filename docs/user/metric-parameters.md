@@ -2,6 +2,8 @@
 
 All metric types must include the following required parameters:
 
+- `type`: **Required.**  Specifies the type of a metric, like "counter" or "event". This defines which operations are valid for the metric, how it is stored and how data analysis tooling displays it. See the list of [supported metric types](metrics/index.md).
+
 - `description`: **Required.** A textual description of the metric for humans. It should describe what the metric does, what it means for analysts, and its edge cases or any other helpful information.
   
 - `notification_emails`: **Required.** A list of email addresses to notify for important events with the metric or when people with context or ownership for the metric need to be contacted.
