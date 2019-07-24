@@ -139,7 +139,7 @@ Each metric type is implemented in its own module.
 
 Add a new file named after your metric, e.g. `glean-core/ffi/src/counter.rs`, and declare it in `glean-core/ffi/src/lib.rs` with `mod counter;`.
 
-In the metric type module define your metric type using the `define_metric` macr.
+In the metric type module define your metric type using the `define_metric` macro.
 This allows to reference the metric name and defines the global map as well as some common functions such as the constructor and destructor.
 Simple operations can be also defined in the same macro invocation:
 
