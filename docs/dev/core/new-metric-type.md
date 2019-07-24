@@ -139,62 +139,39 @@ Each metric type is implemented in its own module.
 
 Add a new file named after your metric, e.g. `glean-core/ffi/src/counter.rs`, and declare it in `glean-core/ffi/src/lib.rs` with `mod counter;`.
 
-In the metric type module add a global map for your metric type and define the destructor:
+In the metric type module define your metric type using the `define_metric` macro.
+This allows referencing the metric name and defines the global map as well as some common functions such as the constructor and destructor.
+Simple operations can be also defined in the same macro invocation:
+
 
 ```rust,noplaypen
-lazy_static! {
-    static ref COUNTER_METRICS: ConcurrentHandleMap<CounterMetric> = ConcurrentHandleMap::new();
-}
-define_handle_map_deleter!(COUNTER_METRICS, glean_destroy_counter_metric);
+use crate::{define_metric, handlemap_ext::HandleMapExtension, GLEAN};
+
+define_metric!(CounterMetric => COUNTER_METRICS {
+    new           -> glean_new_counter_metric(),
+    destroy       -> glean_destroy_counter_metric,
+    should_record -> glean_counter_should_record,
+
+    add -> glean_counter_add(amount: i32),
+});
 ```
 
-Add a function to create new instances of this metric type:
+More complex operations need to be defined as plain functions.
+For example the test helper function for a counter metric can be defined as:
 
 ```rust,noplaypen
 #[no_mangle]
-pub extern "C" fn glean_new_counter_metric(
-    category: FfiStr,
-    name: FfiStr,
-    send_in_pings: RawStringArray,
-    send_in_pings_len: i32,
-    lifetime: i32,
-    disabled: u8,
-) -> u64 {
-    COUNTER_METRICS.insert_with_log(|| {
-        let send_in_pings = unsafe { from_raw_string_array(send_in_pings, send_in_pings_len) };
-        let lifetime = Lifetime::try_from(lifetime)?;
-
-        Ok(CounterMetric::new(CommonMetricData {
-            name: name.into_string(),
-            category: category.into_string(),
-            send_in_pings,
-            lifetime,
-            disabled: disabled != 0,
-        }))
-    })
-}
-```
-
-On the Rust side add wrappers around the metric type's storage functions:
-
-```rust,noplaypen
-#[no_mangle]
-pub extern "C" fn glean_counter_add(glean_handle: u64, metric_id: u64, amount: i32) {
+pub extern "C" fn glean_counter_test_has_value(
+    glean_handle: u64,
+    metric_id: u64,
+    storage_name: FfiStr,
+) -> u8 {
     GLEAN.call_infallible(glean_handle, |glean| {
         COUNTER_METRICS.call_infallible(metric_id, |metric| {
-            metric.add(glean, amount);
+            metric
+                .test_get_value(glean, storage_name.as_str())
+                .is_some()
         })
-    })
-}
-```
-
-Additionally, expose the `should_record` function:
-
-```rust,noplaypen
-#[no_mangle]
-pub extern "C" fn glean_counter_should_record(glean_handle: u64, metric_id: u64) -> u8 {
-    GLEAN.call_infallible(glean_handle, |glean| {
-        COUNTER_METRICS.call_infallible(metric_id, |metric| metric.should_record(&glean))
     })
 }
 ```
@@ -225,8 +202,6 @@ class CounterMetricType(
     private var handle: Long
 
     init {
-        println("New Counter: $category.$name")
-
         val ffiPingsList = StringArray(sendInPings.toTypedArray(), "utf-8")
         this.handle = LibGleanFFI.INSTANCE.glean_new_counter_metric(
                 category = category,
@@ -265,6 +240,15 @@ class CounterMetricType(
                 this@CounterMetricType.handle,
                 amount)
         }
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    fun testHasValue(pingName: String = sendInPings.first()): Boolean {
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        Dispatchers.API.assertInTestingMode()
+
+        val res = LibGleanFFI.INSTANCE.glean_counter_test_has_value(Glean.handle, this.handle, pingName)
+        return res.toBoolean()
     }
 }
 ```
