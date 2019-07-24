@@ -81,7 +81,9 @@ pub fn record_error<O: Into<Option<i32>>>(
     });
 
     log::warn!("{}: {}", identifier, message);
-    metric.add(glean, num_errors.into().unwrap_or(1));
+    let to_report = num_errors.into().unwrap_or(1);
+    debug_assert!(to_report > 0);
+    metric.add(glean, to_report);
 }
 
 /// Get the number of recorded errors for the given metric and error type.
