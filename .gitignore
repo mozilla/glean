@@ -26,3 +26,4 @@ Carthage
 data/
 glean-core/data
 glean_app*
+!glean_app.c
