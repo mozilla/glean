@@ -250,8 +250,10 @@ impl TimingDistributionMetric {
             Metric::TimingDistribution(hist, time_unit)
         });
 
-        let msg = format!("Accumulated {} negative samples", num_errors);
-        record_error(glean, &self.meta, ErrorType::InvalidValue, msg, num_errors);
+        if num_errors > 0 {
+            let msg = format!("Accumulated {} negative samples", num_errors);
+            record_error(glean, &self.meta, ErrorType::InvalidValue, msg, num_errors);
+        }
     }
 
     /// **Test-only API (exported for FFI purposes).**

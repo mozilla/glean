@@ -153,6 +153,50 @@ fn the_accumulate_samples_api_correctly_stores_timing_values() {
         TimeUnit::Second,
     );
 
+    // Accumulate the samples. We intentionally do not report
+    // negative values to not trigger error reporting.
+    metric.accumulate_samples_signed(&glean, [1, 2, 3].to_vec());
+
+    let val = metric
+        .test_get_value(&glean, "store1")
+        .expect("Value should be stored");
+
+    // Check that we got the right sum and number of samples.
+    assert_eq!(val.sum(), 6);
+    assert_eq!(val.count(), 3);
+
+    // We should get a sample in each of the first 3 buckets.
+    assert_eq!(1, val.values()[1]);
+    assert_eq!(1, val.values()[2]);
+    assert_eq!(1, val.values()[3]);
+
+    // No errors should be reported.
+    assert!(test_get_num_recorded_errors(
+        &glean,
+        metric.meta(),
+        ErrorType::InvalidValue,
+        Some("store1")
+    )
+    .is_err());
+}
+
+#[test]
+fn the_accumulate_samples_api_correctly_handles_negative_values() {
+    let (_t, tmpname) = tempdir();
+
+    let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
+
+    let mut metric = TimingDistributionMetric::new(
+        CommonMetricData {
+            name: "distribution".into(),
+            category: "telemetry".into(),
+            send_in_pings: vec!["store1".into()],
+            disabled: false,
+            lifetime: Lifetime::Ping,
+        },
+        TimeUnit::Second,
+    );
+
     // Accumulate the samples.
     metric.accumulate_samples_signed(&glean, [-1, 1, 2, 3].to_vec());
 
@@ -168,4 +212,15 @@ fn the_accumulate_samples_api_correctly_stores_timing_values() {
     assert_eq!(1, val.values()[1]);
     assert_eq!(1, val.values()[2]);
     assert_eq!(1, val.values()[3]);
+
+    // 1 error should be reported.
+    assert_eq!(
+        Ok(1),
+        test_get_num_recorded_errors(
+            &glean,
+            metric.meta(),
+            ErrorType::InvalidValue,
+            Some("store1")
+        )
+    );
 }
