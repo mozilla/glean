@@ -27,6 +27,15 @@ typedef const int32_t *RawIntArray;
 
 typedef const char *const *RawStringArray;
 
+typedef struct {
+  FfiStr data_dir;
+  FfiStr package_name;
+  uint8_t upload_enabled;
+  const int64_t *max_events;
+} FfiConfiguration;
+
+typedef const int64_t *RawInt64Array;
+
 void glean_boolean_set(uint64_t glean_handle, uint64_t metric_id, uint8_t value);
 
 uint8_t glean_boolean_should_record(uint64_t glean_handle, uint64_t metric_id);
@@ -125,7 +134,7 @@ char *glean_experiment_test_get_data(uint64_t glean_handle, FfiStr experiment_id
 
 uint8_t glean_experiment_test_is_active(uint64_t glean_handle, FfiStr experiment_id);
 
-uint64_t glean_initialize(FfiStr data_dir, FfiStr application_id, uint8_t upload_enabled);
+uint64_t glean_initialize(const FfiConfiguration *cfg);
 
 uint8_t glean_is_upload_enabled(uint64_t glean_handle);
 
@@ -322,6 +331,11 @@ uint64_t glean_timespan_test_get_value(uint64_t glean_handle,
 uint8_t glean_timespan_test_has_value(uint64_t glean_handle,
                                       uint64_t metric_id,
                                       FfiStr storage_name);
+
+void glean_timing_distribution_accumulate_samples(uint64_t glean_handle,
+                                                  uint64_t metric_id,
+                                                  RawInt64Array raw_samples,
+                                                  int32_t num_samples);
 
 void glean_timing_distribution_cancel(uint64_t metric_id, TimerId timer_id);
 
