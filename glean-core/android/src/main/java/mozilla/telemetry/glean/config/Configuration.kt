@@ -15,6 +15,7 @@ import com.sun.jna.ptr.LongByReference
 /**
  * Define the order of fields as laid out in memory.
  * **CAUTION**: This must match _exactly_ the definition on the Rust side.
+ *  If this side is changed, the Rust side need to be changed, too.
  */
 @Structure.FieldOrder("dataDir", "packageName", "uploadEnabled", "maxEvents")
 internal class FfiConfiguration(

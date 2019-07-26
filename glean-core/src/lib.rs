@@ -51,6 +51,21 @@ lazy_static! {
         Uuid::parse_str("c0ffeec0-ffee-c0ff-eec0-ffeec0ffeec0").unwrap();
 }
 
+/// The Glean configuration.
+///
+/// Optional values will be filled in with default values.
+#[derive(Debug)]
+pub struct Configuration {
+    /// Whether upload should be enabled.
+    pub upload_enabled: bool,
+    /// Path to a directory to store all data in.
+    pub data_path: String,
+    /// The application ID (will be sanitized during initialization).
+    pub application_id: String,
+    /// The maximum number of events to store before sending a ping containing events.
+    pub max_events: Option<usize>,
+}
+
 /// The object holding meta information about a Glean instance.
 ///
 /// ## Example
@@ -98,28 +113,28 @@ impl Glean {
     ///
     /// This will create the necessary directories and files in `data_path`.
     /// This will also initialize the core metrics.
-    pub fn new(data_path: &str, application_id: &str, upload_enabled: bool) -> Result<Self> {
+    pub fn new(cfg: Configuration) -> Result<Self> {
         log::info!("Creating new Glean");
 
-        let application_id = sanitize_application_id(application_id);
+        let application_id = sanitize_application_id(&cfg.application_id);
 
         // Creating the data store creates the necessary path as well.
         // If that fails we bail out and don't initialize further.
-        let data_store = Database::new(data_path)?;
-        let event_data_store = EventDatabase::new(data_path)?;
+        let data_store = Database::new(&cfg.data_path)?;
+        let event_data_store = EventDatabase::new(&cfg.data_path)?;
 
         let mut glean = Self {
-            upload_enabled,
+            upload_enabled: cfg.upload_enabled,
             data_store,
             event_data_store,
             core_metrics: CoreMetrics::new(),
-            data_path: PathBuf::from(data_path),
+            data_path: PathBuf::from(cfg.data_path),
             application_id,
             ping_registry: HashMap::new(),
             start_time: local_now_with_offset(),
-            max_events: DEFAULT_MAX_EVENTS,
+            max_events: cfg.max_events.unwrap_or(DEFAULT_MAX_EVENTS),
         };
-        glean.on_change_upload_enabled(upload_enabled);
+        glean.on_change_upload_enabled(cfg.upload_enabled);
         Ok(glean)
     }
 
