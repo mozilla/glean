@@ -8,6 +8,7 @@
     - [Testing metrics](user/testing-metrics.md)
     - [Debugging products using Glean](user/debugging.md)
     - [Error reporting](user/error-reporting.md)
+    - [Using the experiments API](user/experiments-api.md)
     - [Metric types](user/metrics/index.md)
         - [Boolean](user/metrics/boolean.md)
         - [Counter](user/metrics/counter.md)
