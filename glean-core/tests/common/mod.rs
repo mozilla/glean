@@ -49,7 +49,13 @@ pub fn new_glean() -> (Glean, tempfile::TempDir) {
     let dir = tempfile::tempdir().unwrap();
     let tmpname = dir.path().display().to_string();
 
-    let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
+    let cfg = glean_core::Configuration {
+        data_path: tmpname,
+        application_id: GLOBAL_APPLICATION_ID.into(),
+        upload_enabled: true,
+        max_events: None,
+    };
+    let glean = Glean::new(cfg).unwrap();
 
     (glean, dir)
 }

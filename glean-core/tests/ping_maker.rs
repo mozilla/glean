@@ -13,7 +13,13 @@ use glean_core::{CommonMetricData, Glean, Lifetime};
 
 fn set_up_basic_ping() -> (Glean, PingMaker, PingType, tempfile::TempDir) {
     let (t, tmpname) = tempdir();
-    let mut glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
+    let cfg = glean_core::Configuration {
+        data_path: tmpname,
+        application_id: GLOBAL_APPLICATION_ID.into(),
+        upload_enabled: true,
+        max_events: None,
+    };
+    let mut glean = Glean::new(cfg).unwrap();
     let ping_maker = PingMaker::new();
     let ping_type = PingType::new("store1", true);
     glean.register_ping_type(&ping_type);

@@ -54,7 +54,7 @@ lazy_static! {
 /// The Glean configuration.
 ///
 /// Optional values will be filled in with default values.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Configuration {
     /// Whether upload should be enabled.
     pub upload_enabled: bool,
@@ -74,8 +74,14 @@ pub struct Configuration {
 /// ping.
 ///
 /// ```rust,no_run
-/// # use glean_core::{Glean, CommonMetricData, metrics::*};
-/// let mut glean = Glean::new("/tmp/glean", "glean.sample.app", true).unwrap();
+/// # use glean_core::{Glean, Configuration, CommonMetricData, metrics::*};
+/// let cfg = Configuration {
+///     data_path: "/tmp/glean".into(),
+///     application_id: "glean.sample.app".into(),
+///     upload_enabled: true,
+///     max_events: None,
+/// };
+/// let mut glean = Glean::new(cfg).unwrap();
 /// let ping = PingType::new("baseline", true);
 /// glean.register_ping_type(&ping);
 ///
@@ -136,6 +142,23 @@ impl Glean {
         };
         glean.on_change_upload_enabled(cfg.upload_enabled);
         Ok(glean)
+    }
+
+    /// For tests make it easy to create a Glean object using only the required configuration.
+    #[cfg(test)]
+    pub(crate) fn with_options(
+        data_path: &str,
+        application_id: &str,
+        upload_enabled: bool,
+    ) -> Result<Self> {
+        let cfg = Configuration {
+            data_path: data_path.into(),
+            application_id: application_id.into(),
+            upload_enabled,
+            max_events: None,
+        };
+
+        Self::new(cfg)
     }
 
     /// Initialize the core metrics managed by Glean's Rust core.
@@ -482,7 +505,7 @@ mod test {
     pub fn new_glean() -> (Glean, tempfile::TempDir) {
         let dir = tempfile::tempdir().unwrap();
         let tmpname = dir.path().display().to_string();
-        let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
+        let glean = Glean::with_options(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
         (glean, dir)
     }
 
@@ -502,7 +525,7 @@ mod test {
     fn experiment_id_and_branch_get_truncated_if_too_long() {
         let t = tempfile::tempdir().unwrap();
         let name = t.path().display().to_string();
-        let glean = Glean::new(&name, "org.mozilla.glean.tests", true).unwrap();
+        let glean = Glean::with_options(&name, "org.mozilla.glean.tests", true).unwrap();
 
         // Generate long strings for the used ids.
         let very_long_id = "test-experiment-id".repeat(5);
@@ -538,7 +561,7 @@ mod test {
     fn experiments_status_is_correctly_toggled() {
         let t = tempfile::tempdir().unwrap();
         let name = t.path().display().to_string();
-        let glean = Glean::new(&name, "org.mozilla.glean.tests", true).unwrap();
+        let glean = Glean::with_options(&name, "org.mozilla.glean.tests", true).unwrap();
 
         // Define the experiment's data.
         let experiment_id: String = "test-toggle-experiment".into();
@@ -585,7 +608,7 @@ mod test {
         let dir = tempfile::tempdir().unwrap();
         let tmpname = dir.path().display().to_string();
         {
-            let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
+            let glean = Glean::with_options(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
 
             glean.data_store.clear_all();
 
@@ -602,7 +625,7 @@ mod test {
         }
 
         {
-            let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
+            let glean = Glean::with_options(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
             assert!(glean
                 .core_metrics
                 .client_id
@@ -704,7 +727,7 @@ mod test {
     fn client_id_is_set_to_known_value_when_uploading_disabled_at_start() {
         let dir = tempfile::tempdir().unwrap();
         let tmpname = dir.path().display().to_string();
-        let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, false).unwrap();
+        let glean = Glean::with_options(&tmpname, GLOBAL_APPLICATION_ID, false).unwrap();
 
         assert_eq!(
             *KNOWN_CLIENT_ID,
@@ -720,7 +743,7 @@ mod test {
     fn client_id_is_set_to_random_value_when_uploading_enabled_at_start() {
         let dir = tempfile::tempdir().unwrap();
         let tmpname = dir.path().display().to_string();
-        let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
+        let glean = Glean::with_options(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
 
         let current_client_id = glean
             .core_metrics
@@ -734,7 +757,7 @@ mod test {
     fn enabling_when_already_enabled_is_a_noop() {
         let dir = tempfile::tempdir().unwrap();
         let tmpname = dir.path().display().to_string();
-        let mut glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
+        let mut glean = Glean::with_options(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
 
         assert!(!glean.set_upload_enabled(true));
     }
@@ -743,7 +766,7 @@ mod test {
     fn disabling_when_already_disabled_is_a_noop() {
         let dir = tempfile::tempdir().unwrap();
         let tmpname = dir.path().display().to_string();
-        let mut glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, false).unwrap();
+        let mut glean = Glean::with_options(&tmpname, GLOBAL_APPLICATION_ID, false).unwrap();
 
         assert!(!glean.set_upload_enabled(false));
     }
