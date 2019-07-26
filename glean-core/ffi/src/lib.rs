@@ -2,8 +2,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-#![allow(clippy::redundant_closure)]
-
 use std::collections::HashMap;
 use std::convert::TryFrom;
 use std::os::raw::c_char;
@@ -239,7 +237,6 @@ impl TryFrom<&FfiConfiguration<'_>> for glean_core::Configuration {
 }
 
 #[no_mangle]
-#[allow(clippy::let_unit_value)]
 pub unsafe extern "C" fn glean_initialize(cfg: *const FfiConfiguration) -> u64 {
     assert!(!cfg.is_null());
 
