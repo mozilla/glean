@@ -10,7 +10,7 @@ import mozilla.telemetry.glean.BuildConfig
 import mozilla.telemetry.glean.rust.toByte
 
 import com.sun.jna.Structure
-import com.sun.jna.ptr.LongByReference
+import com.sun.jna.ptr.IntByReference
 
 /**
  * Define the order of fields as laid out in memory.
@@ -22,7 +22,7 @@ internal class FfiConfiguration(
     dataDir: String,
     packageName: String,
     uploadEnabled: Boolean,
-    maxEvents: Long? = null
+    maxEvents: Int? = null
 ) : Structure() {
     /**
      * Expose all structure fields as actual fields,
@@ -36,7 +36,7 @@ internal class FfiConfiguration(
     @JvmField
     public var uploadEnabled: Byte = uploadEnabled.toByte()
     @JvmField
-    public var maxEvents: LongByReference = if (maxEvents == null) LongByReference() else LongByReference(maxEvents!!)
+    public var maxEvents: IntByReference = if (maxEvents == null) IntByReference() else IntByReference(maxEvents!!)
 
     init {
         // Force UTF-8 string encoding when passing strings over the FFI
@@ -67,7 +67,7 @@ data class Configuration internal constructor(
     val userAgent: String = DEFAULT_USER_AGENT,
     val connectionTimeout: Long = DEFAULT_CONNECTION_TIMEOUT,
     val readTimeout: Long = DEFAULT_READ_TIMEOUT,
-    val maxEvents: Int = DEFAULT_MAX_EVENTS,
+    val maxEvents: Int? = null,
     val logPings: Boolean = DEFAULT_LOG_PINGS,
     // NOTE: since only simple object or strings can be made `const val`s, if the
     // default values for the lines below are ever changed, they are required

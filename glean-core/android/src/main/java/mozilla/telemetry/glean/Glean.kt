@@ -108,7 +108,8 @@ open class GleanInternalAPI internal constructor () {
         val cfg = FfiConfiguration(
             dataDir = this.gleanDataDir.path,
             packageName = applicationContext.packageName,
-            uploadEnabled = uploadEnabled
+            uploadEnabled = uploadEnabled,
+            maxEvents = this.configuration.maxEvents
         )
 
         handle = LibGleanFFI.INSTANCE.glean_initialize(cfg)

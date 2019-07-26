@@ -208,7 +208,7 @@ pub struct FfiConfiguration<'a> {
     data_dir: FfiStr<'a>,
     package_name: FfiStr<'a>,
     upload_enabled: u8,
-    max_events: Option<&'a i64>,
+    max_events: Option<&'a i32>,
 }
 
 /// Convert the FFI-compatible configuration object into the proper Rust configuration object.
