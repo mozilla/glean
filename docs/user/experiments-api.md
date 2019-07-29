@@ -38,4 +38,4 @@ assertEquals(
 
 ## Reference
 
-* [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean/-glean.html).
+* [Kotlin API docs](../../javadoc/glean/mozilla.telemetry.glean/-glean.html).
