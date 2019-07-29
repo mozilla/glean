@@ -18,8 +18,6 @@ There are different metrics to choose from, depending on what you want to achiev
 
 * [Timespan](timespan.md): Used to measure how much time is spent in a single task.
 
-* [Labeled timespans](labeled_timespans.md): Used to measure how much time is spent in a set of related tasks, for example different stages in a login process (the time take for `"fill_form"`, `"auth_with_server"`, `"load_next_view"`).
-
 * [Timing Distribution](timing_distribution.md): Used to record the distribution of multiple time measurements.
 
 * [Datetime](datetime.md): Used to record an absolute date and time, such as the time the user first ran the application.
