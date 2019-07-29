@@ -31,6 +31,8 @@ search:
     - http://example.com/path/to/data-review
 ```
 
+> Note: the names `baseline`, `metrics`, `events` and `all_pings` are reserved and may not be used as the name of a custom ping.
+
 ## Loading custom ping metadata into your application or library
 
 The Glean SDK build generates code from `pings.yaml` in a `Pings` object, which must be instantiated so Glean can send pings by name. 
