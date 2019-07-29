@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit as AndroidTimeUnit
  */
 class DatetimeMetricType internal constructor(
     private var handle: Long,
+    private var disabled: Boolean,
     private val sendInPings: List<String>
 ) {
     /**
@@ -38,7 +39,7 @@ class DatetimeMetricType internal constructor(
         name: String,
         sendInPings: List<String>,
         timeUnit: TimeUnit = TimeUnit.Minute
-    ) : this(handle = 0, sendInPings = sendInPings) {
+    ) : this(handle = 0, disabled = disabled, sendInPings = sendInPings) {
         val ffiPingsList = StringArray(sendInPings.toTypedArray(), "utf-8")
         this.handle = LibGleanFFI.INSTANCE.glean_new_datetime_metric(
             category = category,
@@ -56,15 +57,6 @@ class DatetimeMetricType internal constructor(
             val error = RustError.ByReference()
             LibGleanFFI.INSTANCE.glean_destroy_datetime_metric(this.handle, error)
         }
-    }
-
-    private fun shouldRecord(): Boolean {
-        // Don't record metrics if we aren't initialized
-        if (!Glean.isInitialized()) {
-            return false
-        }
-
-        return LibGleanFFI.INSTANCE.glean_datetime_should_record(Glean.handle, this.handle).toBoolean()
     }
 
     /**
@@ -88,7 +80,7 @@ class DatetimeMetricType internal constructor(
      * @param value The [Calendar] value to set. If not provided, will record the current time.
      */
     internal fun set(value: Calendar) {
-        if (!shouldRecord()) {
+        if (disabled) {
             return
         }
 

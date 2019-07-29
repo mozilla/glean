@@ -136,6 +136,10 @@ open class GleanInternalAPI internal constructor () {
         // metricsPingScheduler = MetricsPingScheduler(applicationContext)
         // metricsPingScheduler.startupCheck()
 
+        // Signal Dispatcher that init is complete
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        Dispatchers.API.flushQueuedInitialTasks()
+
         // At this point, all metrics and events can be recorded.
         ProcessLifecycleOwner.get().lifecycle.addObserver(gleanLifecycleObserver)
     }

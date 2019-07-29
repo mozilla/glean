@@ -52,6 +52,7 @@ enum class NoExtraKeys(val value: Int) {
  */
 class EventMetricType<ExtraKeysEnum : Enum<ExtraKeysEnum>> internal constructor(
     private var handle: Long,
+    private val disabled: Boolean,
     private val sendInPings: List<String>
 ) {
     /**
@@ -64,7 +65,7 @@ class EventMetricType<ExtraKeysEnum : Enum<ExtraKeysEnum>> internal constructor(
         name: String,
         sendInPings: List<String>,
         allowedExtraKeys: List<String>? = null
-    ) : this(handle = 0, sendInPings = sendInPings) {
+    ) : this(handle = 0, disabled = disabled, sendInPings = sendInPings) {
         val ffiPingsList = StringArray(sendInPings.toTypedArray(), "utf-8")
         val ffiAllowedExtraKeys = allowedExtraKeys?.let {
             StringArray(it.toTypedArray(), "utf-8")
@@ -82,14 +83,6 @@ class EventMetricType<ExtraKeysEnum : Enum<ExtraKeysEnum>> internal constructor(
         )
     }
 
-    private fun shouldRecord(): Boolean {
-        if (!Glean.isInitialized()) {
-            return false
-        }
-
-        return LibGleanFFI.INSTANCE.glean_event_should_record(Glean.handle, this.handle).toBoolean()
-    }
-
     /**
      * Record an event by using the information provided by the instance of this class.
      *
@@ -98,7 +91,7 @@ class EventMetricType<ExtraKeysEnum : Enum<ExtraKeysEnum>> internal constructor(
      *              The maximum length for values is defined by [MAX_LENGTH_EXTRA_KEY_VALUE]
      */
     fun record(extra: Map<ExtraKeysEnum, String>? = null) {
-        if (!shouldRecord()) {
+        if (disabled) {
             return
         }
 

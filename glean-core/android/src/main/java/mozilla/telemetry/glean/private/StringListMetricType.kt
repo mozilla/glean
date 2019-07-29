@@ -18,6 +18,7 @@ import org.json.JSONArray
 
 class StringListMetricType(
     private var handle: Long,
+    private val disabled: Boolean,
     private val sendInPings: List<String>
 ) {
     /**
@@ -29,7 +30,7 @@ class StringListMetricType(
         lifetime: Lifetime,
         name: String,
         sendInPings: List<String>
-    ) : this(handle = 0, sendInPings = sendInPings) {
+    ) : this(handle = 0, disabled = disabled, sendInPings = sendInPings) {
         val ffiPingsList = StringArray(sendInPings.toTypedArray(), "utf-8")
         this.handle = LibGleanFFI.INSTANCE.glean_new_string_list_metric(
             category = category,
@@ -49,15 +50,6 @@ class StringListMetricType(
         // It is expected to only ever error if this.handle's invalid.
     }
 
-    private fun shouldRecord(): Boolean {
-        // Don't record metrics if Glean isn't initialized.
-        if (!Glean.isInitialized()) {
-            return false
-        }
-
-        return LibGleanFFI.INSTANCE.glean_string_list_should_record(Glean.handle, this.handle).toBoolean()
-    }
-
     /**
      * Appends a string value to one or more string list metric stores.  If the string exceeds the
      * maximum string length or if the list exceeds the maximum length it will be truncated.
@@ -66,7 +58,7 @@ class StringListMetricType(
      *              this string is [MAX_STRING_LENGTH].
      */
     fun add(value: String) {
-        if (!shouldRecord()) {
+        if (disabled) {
             return
         }
 
@@ -86,7 +78,7 @@ class StringListMetricType(
      * @param value This is a user defined string list.
      */
     fun set(value: List<String>) {
-        if (!shouldRecord()) {
+        if (disabled) {
             return
         }
 

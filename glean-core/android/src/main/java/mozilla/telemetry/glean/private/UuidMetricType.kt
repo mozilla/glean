@@ -17,6 +17,7 @@ import java.util.UUID
 
 class UuidMetricType(
     private var handle: Long,
+    private val disabled: Boolean,
     private val sendInPings: List<String>
 ) {
     /**
@@ -28,7 +29,7 @@ class UuidMetricType(
         lifetime: Lifetime,
         name: String,
         sendInPings: List<String>
-    ) : this(handle = 0, sendInPings = sendInPings) {
+    ) : this(handle = 0, disabled = disabled, sendInPings = sendInPings) {
         val ffiPingsList = StringArray(sendInPings.toTypedArray(), "utf-8")
         this.handle = LibGleanFFI.INSTANCE.glean_new_uuid_metric(
             category = category,
@@ -46,15 +47,6 @@ class UuidMetricType(
         }
     }
 
-    private fun shouldRecord(): Boolean {
-        // Don't record metrics if we aren't initialized
-        if (!Glean.isInitialized()) {
-            return false
-        }
-
-        return LibGleanFFI.INSTANCE.glean_uuid_should_record(Glean.handle, this.handle).toBoolean()
-    }
-
     /**
      * Generate a new UUID value and set it in the metric store.
      */
@@ -62,7 +54,7 @@ class UuidMetricType(
         // Even if `set` is already checking if we're allowed to record,
         // we need to check here as well otherwise we'd return a `UUID`
         // that won't be stored anywhere.
-        if (!shouldRecord()) {
+        if (disabled) {
             return null
         }
 
@@ -77,7 +69,7 @@ class UuidMetricType(
      * @param value a valid [UUID] to set the metric to
      */
     fun set(value: UUID) {
-        if (!shouldRecord()) {
+        if (disabled) {
             return
         }
 

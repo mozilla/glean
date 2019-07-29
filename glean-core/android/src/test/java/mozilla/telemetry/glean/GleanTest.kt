@@ -16,13 +16,14 @@ import mozilla.telemetry.glean.GleanMetrics.GleanInternalMetrics
 import mozilla.telemetry.glean.GleanMetrics.Pings
 import mozilla.telemetry.glean.config.Configuration
 import mozilla.telemetry.glean.net.PingUploader
-// import mozilla.components.service.glean.firstrun.FileFirstRunDetector
-// import mozilla.telemetry.glean.private.DatetimeMetricType
+import mozilla.telemetry.glean.private.CounterMetricType
 import mozilla.telemetry.glean.private.EventMetricType
 import mozilla.telemetry.glean.private.Lifetime
 import mozilla.telemetry.glean.private.NoExtraKeys
 import mozilla.telemetry.glean.private.PingType
 import mozilla.telemetry.glean.private.StringMetricType
+// import mozilla.components.service.glean.firstrun.FileFirstRunDetector
+// import mozilla.telemetry.glean.private.DatetimeMetricType
 // import mozilla.telemetry.glean.private.TimeUnit as GleanTimeUnit
 // import mozilla.telemetry.glean.private.UuidMetricType
 // import mozilla.components.service.glean.storages.StringsStorageEngine
@@ -251,26 +252,35 @@ class GleanTest {
         assertTrue(gleanDir.delete())
     }
 
-    @Ignore("This should probably be implemented in the Rust side.")
     @Test
-    fun `Don't send metrics if not initialized`() {
-        /*
-        val stringMetric = StringMetricType(
+    fun `queued recorded metrics correctly record during init`() {
+        val counterMetric = CounterMetricType(
             disabled = false,
             category = "telemetry",
             lifetime = Lifetime.Application,
-            name = "string_metric",
+            name = "counter_metric",
             sendInPings = listOf("store1")
         )
-        Glean.initialized = false
-        stringMetric.set("foo")
-        assertNull(
-            "Metrics should not be recorded if Glean is not initialized",
-            StringsStorageEngine.getSnapshot(storeName = "store1", clearStore = false)
-        )
 
-        Glean.initialized = true
-        */
+        // Enable queuing
+        Dispatchers.API.setTaskQueueing(true)
+
+        // This will queue 3 tasks that will add to the metric value once Glean is initialized
+        for (i in 0..2) {
+            counterMetric.add()
+        }
+
+        // Ensure that no value has been stored yet since the tasks have only been queued and not
+        // executed yet
+        assertFalse("No value must be stored", counterMetric.testHasValue())
+
+        // Calling resetGlean here will cause Glean to be initialized and should cause the queued
+        // tasks recording metrics to execute
+        resetGlean(clearStores = false)
+
+        // Verify that the callback was executed by testing for the correct value
+        assertTrue("Value must exist", counterMetric.testHasValue())
+        assertEquals("Value must match", 3, counterMetric.testGetValue())
     }
 
     @Test

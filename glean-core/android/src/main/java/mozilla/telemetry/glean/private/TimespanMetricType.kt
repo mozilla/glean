@@ -25,6 +25,7 @@ import mozilla.telemetry.glean.rust.toBoolean
  */
 class TimespanMetricType internal constructor(
     private var handle: Long,
+    private val disabled: Boolean,
     private val sendInPings: List<String>
 ) {
     /**
@@ -37,7 +38,7 @@ class TimespanMetricType internal constructor(
         name: String,
         sendInPings: List<String>,
         timeUnit: TimeUnit = TimeUnit.Minute
-    ) : this(handle = 0, sendInPings = sendInPings) {
+    ) : this(handle = 0, disabled = disabled, sendInPings = sendInPings) {
         val ffiPingsList = StringArray(sendInPings.toTypedArray(), "utf-8")
         this.handle = LibGleanFFI.INSTANCE.glean_new_timespan_metric(
             category = category,
@@ -57,15 +58,6 @@ class TimespanMetricType internal constructor(
         }
     }
 
-    private fun shouldRecord(): Boolean {
-        // Don't record metrics if we aren't initialized
-        if (!Glean.isInitialized()) {
-            return false
-        }
-
-        return LibGleanFFI.INSTANCE.glean_timespan_should_record(Glean.handle, this.handle).toBoolean()
-    }
-
     /**
      * Start tracking time for the provided metric.
      * This records an error if it’s already tracking time (i.e. start was already
@@ -73,7 +65,7 @@ class TimespanMetricType internal constructor(
      * start time will be preserved.
      */
     fun start() {
-        if (!shouldRecord()) {
+        if (disabled) {
             return
         }
 
@@ -91,7 +83,7 @@ class TimespanMetricType internal constructor(
      * This will record an error if no [start] was called.
      */
     fun stop() {
-        if (!shouldRecord()) {
+        if (disabled) {
             return
         }
 
@@ -107,7 +99,7 @@ class TimespanMetricType internal constructor(
      * Abort a previous [start] call. No error is recorded if no [start] was called.
      */
     fun cancel() {
-        if (!shouldRecord()) {
+        if (disabled) {
             return
         }
 
@@ -128,7 +120,7 @@ class TimespanMetricType internal constructor(
      * @param elapsedNanos The elapsed time to record, in nanoseconds.
      */
     fun setRawNanos(elapsedNanos: Long) {
-        if (!shouldRecord()) {
+        if (disabled) {
             return
         }
 

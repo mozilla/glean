@@ -28,6 +28,7 @@ import mozilla.telemetry.glean.rust.toBoolean
  */
 class StringMetricType internal constructor(
     private var handle: Long,
+    private val disabled: Boolean,
     private val sendInPings: List<String>
 ) {
     /**
@@ -39,7 +40,7 @@ class StringMetricType internal constructor(
         lifetime: Lifetime,
         name: String,
         sendInPings: List<String>
-    ) : this(handle = 0, sendInPings = sendInPings) {
+    ) : this(handle = 0, disabled = disabled, sendInPings = sendInPings) {
         val ffiPingsList = StringArray(sendInPings.toTypedArray(), "utf-8")
         this.handle = LibGleanFFI.INSTANCE.glean_new_string_metric(
                 category = category,
@@ -57,15 +58,6 @@ class StringMetricType internal constructor(
         }
     }
 
-    private fun shouldRecord(): Boolean {
-        // Don't record metrics if we aren't initialized
-        if (!Glean.isInitialized()) {
-            return false
-        }
-
-        return LibGleanFFI.INSTANCE.glean_string_should_record(Glean.handle, this.handle).toBoolean()
-    }
-
     /**
      * Set a string value.
      *
@@ -73,7 +65,7 @@ class StringMetricType internal constructor(
      *              the maximum length, it will be truncated.
      */
     fun set(value: String) {
-        if (!shouldRecord()) {
+        if (disabled) {
             return
         }
 

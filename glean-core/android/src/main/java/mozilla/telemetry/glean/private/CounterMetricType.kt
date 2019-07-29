@@ -27,6 +27,7 @@ import mozilla.telemetry.glean.rust.toBoolean
  */
 class CounterMetricType internal constructor(
     private var handle: Long,
+    private val disabled: Boolean,
     private val sendInPings: List<String>
 ) {
     /**
@@ -38,7 +39,7 @@ class CounterMetricType internal constructor(
         lifetime: Lifetime,
         name: String,
         sendInPings: List<String>
-    ) : this(handle = 0, sendInPings = sendInPings) {
+    ) : this(handle = 0, disabled = disabled, sendInPings = sendInPings) {
         val ffiPingsList = StringArray(sendInPings.toTypedArray(), "utf-8")
         this.handle = LibGleanFFI.INSTANCE.glean_new_counter_metric(
                 category = category,
@@ -56,15 +57,6 @@ class CounterMetricType internal constructor(
         }
     }
 
-    private fun shouldRecord(): Boolean {
-        // Don't record metrics if we aren't initialized
-        if (!Glean.isInitialized()) {
-            return false
-        }
-
-        return LibGleanFFI.INSTANCE.glean_counter_should_record(Glean.handle, this.handle).toBoolean()
-    }
-
     /**
      * Add to counter value.
      *
@@ -72,7 +64,7 @@ class CounterMetricType internal constructor(
      * without parameters.
      */
     fun add(amount: Int = 1) {
-        if (!shouldRecord()) {
+        if (disabled) {
             return
         }
 
