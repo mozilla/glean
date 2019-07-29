@@ -134,7 +134,7 @@ impl EventDatabase {
         for store_name in store_names {
             if let Err(err) = glean.send_ping_by_name(&store_name, false) {
                 log::error!(
-                    "Error flushing existing events to the {} ping: {}",
+                    "Error flushing existing events to the '{}' ping: {}",
                     store_name,
                     err
                 );
@@ -212,7 +212,7 @@ impl EventDatabase {
             .open(self.path.join(store_name))
             .and_then(|mut file| writeln!(file, "{}", event_json))
         {
-            log::error!("Error writing event to store {}: {}", store_name, err);
+            log::error!("IO error writing event to store '{}': {}", store_name, err);
         }
     }
 
@@ -236,6 +236,7 @@ impl EventDatabase {
                         store.iter().map(|e| e.serialize_relative(first_timestamp)),
                     ))
                 } else {
+                    log::error!("Unexpectly got empty event store for '{}'", store_name);
                     None
                 }
             })
@@ -253,7 +254,7 @@ impl EventDatabase {
                     std::io::ErrorKind::NotFound => {
                         // silently drop this error, the file was already non-existing
                     }
-                    _ => log::error!("Error removing events queue file {}: {}", store_name, err),
+                    _ => log::error!("Error removing events queue file '{}': {}", store_name, err),
                 }
             }
         }
