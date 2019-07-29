@@ -26,6 +26,7 @@ import mozilla.telemetry.glean.rust.toBoolean
  */
 class BooleanMetricType internal constructor(
     private var handle: Long,
+    private val disabled: Boolean,
     private val sendInPings: List<String>
 ) {
 
@@ -38,7 +39,7 @@ class BooleanMetricType internal constructor(
         lifetime: Lifetime,
         name: String,
         sendInPings: List<String>
-    ) : this(handle = 0, sendInPings = sendInPings) {
+    ) : this(handle = 0, disabled = disabled, sendInPings = sendInPings) {
         val ffiPingsList = StringArray(sendInPings.toTypedArray(), "utf-8")
         this.handle = LibGleanFFI.INSTANCE.glean_new_boolean_metric(
                 category = category,
@@ -56,22 +57,13 @@ class BooleanMetricType internal constructor(
         }
     }
 
-    private fun shouldRecord(): Boolean {
-        // Don't record metrics if we aren't initialized
-        if (!Glean.isInitialized()) {
-            return false
-        }
-
-        return LibGleanFFI.INSTANCE.glean_boolean_should_record(Glean.handle, this.handle).toBoolean()
-    }
-
     /**
      * Set a boolean value.
      *
      * @param value This is a user defined boolean value.
      */
     fun set(value: Boolean) {
-        if (!shouldRecord()) {
+        if (disabled) {
             return
         }
 

@@ -24,6 +24,7 @@ import mozilla.telemetry.glean.rust.toBoolean
  */
 class TimingDistributionMetricType internal constructor(
     private var handle: Long,
+    private val disabled: Boolean,
     private val sendInPings: List<String>
 ) : HistogramBase {
     /**
@@ -36,7 +37,7 @@ class TimingDistributionMetricType internal constructor(
         name: String,
         sendInPings: List<String>,
         timeUnit: TimeUnit = TimeUnit.Minute
-    ) : this(handle = 0, sendInPings = sendInPings) {
+    ) : this(handle = 0, disabled = disabled, sendInPings = sendInPings) {
         val ffiPingsList = StringArray(sendInPings.toTypedArray(), "utf-8")
         this.handle = LibGleanFFI.INSTANCE.glean_new_timing_distribution_metric(
             category = category,
@@ -56,15 +57,6 @@ class TimingDistributionMetricType internal constructor(
         }
     }
 
-    private fun shouldRecord(): Boolean {
-        // Don't record metrics if we aren't initialized
-        if (!Glean.isInitialized()) {
-            return false
-        }
-
-        return LibGleanFFI.INSTANCE.glean_timing_distribution_should_record(Glean.handle, this.handle).toBoolean()
-    }
-
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     internal fun getElapsedTimeNanos(): Long {
         return SystemClock.elapsedRealtimeNanos()
@@ -79,7 +71,7 @@ class TimingDistributionMetricType internal constructor(
      * @return The [GleanTimerId] object to associate with this timing.
      */
     fun start(): GleanTimerId? {
-        if (!shouldRecord()) {
+        if (disabled) {
             return null
         }
 
@@ -106,7 +98,7 @@ class TimingDistributionMetricType internal constructor(
     fun stopAndAccumulate(timerId: GleanTimerId?) {
         // [start] might return null.
         // Accepting that means users of this API don't need to do a null check.
-        if (!shouldRecord() || timerId == null) {
+        if (disabled || timerId == null) {
             return
         }
 
@@ -132,7 +124,7 @@ class TimingDistributionMetricType internal constructor(
      * same timing distribution metric.
      */
     fun cancel(timerId: GleanTimerId?) {
-        if (!shouldRecord() || timerId == null) {
+        if (disabled || timerId == null) {
             return
         }
 
@@ -143,7 +135,7 @@ class TimingDistributionMetricType internal constructor(
     }
 
     override fun accumulateSamples(samples: LongArray) {
-        if (!shouldRecord()) {
+        if (disabled) {
             return
         }
 
