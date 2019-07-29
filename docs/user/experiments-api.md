@@ -18,6 +18,9 @@ Glean.setExperimentActive(
 Glean.setExperimentInactive("blue-button-effective")
 ```
 
+> **Important**: Experiment IDs and branch don't need to be pre-defined in the Glean SDK registry files.
+Please also note that the `extra` map is non-nested arbitrary `String` to `String` map.
+
 There are test APIs available too:
 
 ```Kotlin
