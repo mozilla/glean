@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package mozilla.components.service.glean.scheduler
+package mozilla.telemetry.glean.scheduler
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -13,13 +13,13 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.Worker
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import mozilla.components.service.glean.Dispatchers
-import mozilla.components.service.glean.Glean
-import mozilla.components.service.glean.GleanMetrics.Pings
+import mozilla.telemetry.glean.Dispatchers
+import mozilla.telemetry.glean.Glean
+import mozilla.telemetry.glean.GleanMetrics.Pings
 import mozilla.components.support.base.log.logger.Logger
-import mozilla.components.service.glean.utils.getISOTimeString
-import mozilla.components.service.glean.utils.parseISOTimeString
-import mozilla.components.service.glean.private.TimeUnit
+import mozilla.telemetry.glean.utils.getISOTimeString
+import mozilla.telemetry.glean.utils.parseISOTimeString
+import mozilla.telemetry.glean.private.TimeUnit
 import java.util.Calendar
 import java.util.Date
 import java.util.concurrent.TimeUnit as AndroidTimeUnit

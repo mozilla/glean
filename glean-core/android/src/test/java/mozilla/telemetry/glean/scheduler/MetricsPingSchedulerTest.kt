@@ -2,25 +2,25 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package mozilla.components.service.glean.scheduler
+package mozilla.telemetry.glean.scheduler
 
 import android.content.Context
 import android.os.SystemClock
 import androidx.test.core.app.ApplicationProvider
 import androidx.work.testing.WorkManagerTestInitHelper
-import mozilla.components.service.glean.getContextWithMockedInfo
-import mozilla.components.service.glean.Glean
-import mozilla.components.service.glean.private.Lifetime
-import mozilla.components.service.glean.resetGlean
-import mozilla.components.service.glean.private.StringMetricType
-import mozilla.components.service.glean.private.TimeUnit
-import mozilla.components.service.glean.checkPingSchema
-import mozilla.components.service.glean.triggerWorkManager
-import mozilla.components.service.glean.config.Configuration
-import mozilla.components.service.glean.getMockWebServer
-import mozilla.components.service.glean.getWorkerStatus
-import mozilla.components.service.glean.utils.getISOTimeString
-import mozilla.components.service.glean.utils.parseISOTimeString
+import mozilla.telemetry.glean.getContextWithMockedInfo
+import mozilla.telemetry.glean.Glean
+import mozilla.telemetry.glean.private.Lifetime
+import mozilla.telemetry.glean.resetGlean
+import mozilla.telemetry.glean.private.StringMetricType
+import mozilla.telemetry.glean.private.TimeUnit
+import mozilla.telemetry.glean.checkPingSchema
+import mozilla.telemetry.glean.triggerWorkManager
+import mozilla.telemetry.glean.config.Configuration
+import mozilla.telemetry.glean.getMockWebServer
+import mozilla.telemetry.glean.getWorkerStatus
+import mozilla.telemetry.glean.utils.getISOTimeString
+import mozilla.telemetry.glean.utils.parseISOTimeString
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
