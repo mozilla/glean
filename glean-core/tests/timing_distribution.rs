@@ -21,8 +21,15 @@ fn serializer_should_correctly_serialize_timing_distribution() {
     let duration = 60;
     let time_unit = TimeUnit::Nanosecond;
 
+    let cfg = glean_core::Configuration {
+        data_path: tmpname,
+        application_id: GLOBAL_APPLICATION_ID.into(),
+        upload_enabled: true,
+        max_events: None,
+    };
+
     {
-        let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
+        let glean = Glean::new(cfg.clone()).unwrap();
 
         let mut metric = TimingDistributionMetric::new(
             CommonMetricData {
@@ -48,7 +55,7 @@ fn serializer_should_correctly_serialize_timing_distribution() {
     // Make a new Glean instance here, which should force reloading of the data from disk
     // so we can ensure it persisted, because it has User lifetime
     {
-        let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
+        let glean = Glean::new(cfg.clone()).unwrap();
         let snapshot = StorageManager
             .snapshot_as_json(glean.storage(), "store1", true)
             .unwrap();
@@ -99,12 +106,10 @@ fn set_value_properly_sets_the_value_in_all_stores() {
 
 #[test]
 fn timing_distributions_must_not_accumulate_negative_values() {
-    let (_t, tmpname) = tempdir();
+    let (glean, _t) = new_glean();
 
     let duration = 60;
     let time_unit = TimeUnit::Nanosecond;
-
-    let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
 
     let mut metric = TimingDistributionMetric::new(
         CommonMetricData {
@@ -138,9 +143,7 @@ fn timing_distributions_must_not_accumulate_negative_values() {
 
 #[test]
 fn the_accumulate_samples_api_correctly_stores_timing_values() {
-    let (_t, tmpname) = tempdir();
-
-    let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
+    let (glean, _t) = new_glean();
 
     let mut metric = TimingDistributionMetric::new(
         CommonMetricData {
@@ -182,9 +185,7 @@ fn the_accumulate_samples_api_correctly_stores_timing_values() {
 
 #[test]
 fn the_accumulate_samples_api_correctly_handles_negative_values() {
-    let (_t, tmpname) = tempdir();
-
-    let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
+    let (glean, _t) = new_glean();
 
     let mut metric = TimingDistributionMetric::new(
         CommonMetricData {

@@ -44,8 +44,16 @@ fn list_can_store_multiple_items() {
 #[test]
 fn stringlist_serializer_should_correctly_serialize_stringlists() {
     let (_t, tmpname) = tempdir();
+    let cfg = glean_core::Configuration {
+        data_path: tmpname,
+        application_id: GLOBAL_APPLICATION_ID.into(),
+        upload_enabled: true,
+        max_events: None,
+    };
+
     {
-        let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
+        let glean = Glean::new(cfg.clone()).unwrap();
+
         let metric = StringListMetric::new(CommonMetricData {
             name: "string_list_metric".into(),
             category: "telemetry.test".into(),
@@ -57,7 +65,7 @@ fn stringlist_serializer_should_correctly_serialize_stringlists() {
     }
 
     {
-        let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
+        let glean = Glean::new(cfg.clone()).unwrap();
 
         let snapshot = StorageManager
             .snapshot_as_json(glean.storage(), "store1", true)

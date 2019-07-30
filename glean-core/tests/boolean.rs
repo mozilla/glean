@@ -17,8 +17,15 @@ use glean_core::{CommonMetricData, Glean, Lifetime};
 #[test]
 fn boolean_serializer_should_correctly_serialize_boolean() {
     let (_t, tmpname) = tempdir();
+    let cfg = glean_core::Configuration {
+        data_path: tmpname,
+        application_id: GLOBAL_APPLICATION_ID.into(),
+        upload_enabled: true,
+        max_events: None,
+    };
+
     {
-        let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
+        let glean = Glean::new(cfg.clone()).unwrap();
 
         let metric = BooleanMetric::new(CommonMetricData {
             name: "boolean_metric".into(),
@@ -42,7 +49,7 @@ fn boolean_serializer_should_correctly_serialize_boolean() {
     // Make a new Glean instance here, which should force reloading of the data from disk
     // so we can ensure it persisted, because it has User lifetime
     {
-        let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
+        let glean = Glean::new(cfg.clone()).unwrap();
         let snapshot = StorageManager
             .snapshot_as_json(glean.storage(), "store1", true)
             .unwrap();

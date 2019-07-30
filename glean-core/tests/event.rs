@@ -9,14 +9,13 @@ use std::collections::HashMap;
 use std::fs;
 
 use glean_core::metrics::*;
-use glean_core::{CommonMetricData, Glean, Lifetime};
+use glean_core::{CommonMetricData, Lifetime};
 
 #[test]
 fn record_properly_records_without_optional_arguments() {
-    let (_t, tmpname) = tempdir();
     let store_names = vec!["store1".into(), "store2".into()];
 
-    let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
+    let (glean, _t) = new_glean();
 
     let metric = EventMetric::new(
         CommonMetricData {
@@ -42,11 +41,9 @@ fn record_properly_records_without_optional_arguments() {
 
 #[test]
 fn record_properly_records_with_optional_arguments() {
-    let (_t, tmpname) = tempdir();
+    let (glean, _t) = new_glean();
 
     let store_names = vec!["store1".into(), "store2".into()];
-
-    let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
 
     let metric = EventMetric::new(
         CommonMetricData {
@@ -84,9 +81,7 @@ fn record_properly_records_with_optional_arguments() {
 
 #[test]
 fn snapshot_returns_none_if_nothing_is_recorded_in_the_store() {
-    let (_t, tmpname) = tempdir();
-
-    let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
+    let (glean, _t) = new_glean();
 
     assert!(glean
         .event_storage()
@@ -96,11 +91,9 @@ fn snapshot_returns_none_if_nothing_is_recorded_in_the_store() {
 
 #[test]
 fn snapshot_correctly_clears_the_stores() {
-    let (_t, tmpname) = tempdir();
+    let (glean, _t) = new_glean();
 
     let store_names = vec!["store1".into(), "store2".into()];
-
-    let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
 
     let metric = EventMetric::new(
         CommonMetricData {
@@ -151,11 +144,9 @@ fn snapshot_correctly_clears_the_stores() {
 
 #[test]
 fn test_sending_of_event_ping_when_it_fills_up() {
-    let (_t, tmpname) = tempdir();
+    let (mut glean, _t) = new_glean();
 
     let store_names: Vec<String> = vec!["events".into()];
-
-    let mut glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
 
     for store_name in &store_names {
         glean.register_ping_type(&PingType::new(store_name.clone(), true));
@@ -204,11 +195,9 @@ fn test_sending_of_event_ping_when_it_fills_up() {
 
 #[test]
 fn extra_keys_must_be_recorded_and_truncated_if_needed() {
-    let (_t, tmpname) = tempdir();
+    let (glean, _t) = new_glean();
 
     let store_names: Vec<String> = vec!["store1".into()];
-
-    let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
 
     let test_event = EventMetric::new(
         CommonMetricData {

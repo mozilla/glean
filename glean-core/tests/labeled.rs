@@ -319,7 +319,16 @@ fn dynamic_labels_regex_allowed() {
 
 #[test]
 fn seen_labels_get_reloaded_from_disk() {
-    let (glean, dir) = new_glean();
+    let (_t, tmpname) = tempdir();
+    let cfg = glean_core::Configuration {
+        data_path: tmpname,
+        application_id: GLOBAL_APPLICATION_ID.into(),
+        upload_enabled: true,
+        max_events: None,
+    };
+
+    let glean = Glean::new(cfg.clone()).unwrap();
+
     let mut labeled = LabeledMetric::new(
         CounterMetric::new(CommonMetricData {
             name: "labeled_metric".into(),
@@ -357,8 +366,7 @@ fn seen_labels_get_reloaded_from_disk() {
 
     // Force a reload
     {
-        let tmpname = dir.path().display().to_string();
-        let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
+        let glean = Glean::new(cfg.clone()).unwrap();
 
         // Try to store another label
         labeled.get(&glean, "new_label").add(&glean, 40);

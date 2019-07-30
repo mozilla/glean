@@ -205,7 +205,7 @@ mod test {
     fn test_experiments_json_serialization() {
         let t = tempfile::tempdir().unwrap();
         let name = t.path().display().to_string();
-        let glean = Glean::new(&name, "org.mozilla.glean", true).unwrap();
+        let glean = Glean::with_options(&name, "org.mozilla.glean", true).unwrap();
 
         let extra: HashMap<String, String> = [("test-key".into(), "test-value".into())]
             .iter()

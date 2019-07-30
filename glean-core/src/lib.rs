@@ -3,8 +3,6 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 #![deny(missing_docs)]
-#![allow(clippy::new_without_default)]
-#![allow(clippy::redundant_closure)]
 
 //! Glean is a modern approach for recording and sending Telemetry data.
 //!
@@ -51,6 +49,21 @@ lazy_static! {
         Uuid::parse_str("c0ffeec0-ffee-c0ff-eec0-ffeec0ffeec0").unwrap();
 }
 
+/// The Glean configuration.
+///
+/// Optional values will be filled in with default values.
+#[derive(Debug, Clone)]
+pub struct Configuration {
+    /// Whether upload should be enabled.
+    pub upload_enabled: bool,
+    /// Path to a directory to store all data in.
+    pub data_path: String,
+    /// The application ID (will be sanitized during initialization).
+    pub application_id: String,
+    /// The maximum number of events to store before sending a ping containing events.
+    pub max_events: Option<usize>,
+}
+
 /// The object holding meta information about a Glean instance.
 ///
 /// ## Example
@@ -59,8 +72,14 @@ lazy_static! {
 /// ping.
 ///
 /// ```rust,no_run
-/// # use glean_core::{Glean, CommonMetricData, metrics::*};
-/// let mut glean = Glean::new("/tmp/glean", "glean.sample.app", true).unwrap();
+/// # use glean_core::{Glean, Configuration, CommonMetricData, metrics::*};
+/// let cfg = Configuration {
+///     data_path: "/tmp/glean".into(),
+///     application_id: "glean.sample.app".into(),
+///     upload_enabled: true,
+///     max_events: None,
+/// };
+/// let mut glean = Glean::new(cfg).unwrap();
 /// let ping = PingType::new("baseline", true);
 /// glean.register_ping_type(&ping);
 ///
@@ -98,29 +117,46 @@ impl Glean {
     ///
     /// This will create the necessary directories and files in `data_path`.
     /// This will also initialize the core metrics.
-    pub fn new(data_path: &str, application_id: &str, upload_enabled: bool) -> Result<Self> {
+    pub fn new(cfg: Configuration) -> Result<Self> {
         log::info!("Creating new Glean");
 
-        let application_id = sanitize_application_id(application_id);
+        let application_id = sanitize_application_id(&cfg.application_id);
 
         // Creating the data store creates the necessary path as well.
         // If that fails we bail out and don't initialize further.
-        let data_store = Database::new(data_path)?;
-        let event_data_store = EventDatabase::new(data_path)?;
+        let data_store = Database::new(&cfg.data_path)?;
+        let event_data_store = EventDatabase::new(&cfg.data_path)?;
 
         let mut glean = Self {
-            upload_enabled,
+            upload_enabled: cfg.upload_enabled,
             data_store,
             event_data_store,
             core_metrics: CoreMetrics::new(),
-            data_path: PathBuf::from(data_path),
+            data_path: PathBuf::from(cfg.data_path),
             application_id,
             ping_registry: HashMap::new(),
             start_time: local_now_with_offset(),
-            max_events: DEFAULT_MAX_EVENTS,
+            max_events: cfg.max_events.unwrap_or(DEFAULT_MAX_EVENTS),
         };
-        glean.on_change_upload_enabled(upload_enabled);
+        glean.on_change_upload_enabled(cfg.upload_enabled);
         Ok(glean)
+    }
+
+    /// For tests make it easy to create a Glean object using only the required configuration.
+    #[cfg(test)]
+    pub(crate) fn with_options(
+        data_path: &str,
+        application_id: &str,
+        upload_enabled: bool,
+    ) -> Result<Self> {
+        let cfg = Configuration {
+            data_path: data_path.into(),
+            application_id: application_id.into(),
+            upload_enabled,
+            max_events: None,
+        };
+
+        Self::new(cfg)
     }
 
     /// Initialize the core metrics managed by Glean's Rust core.
@@ -478,7 +514,7 @@ mod test {
     pub fn new_glean() -> (Glean, tempfile::TempDir) {
         let dir = tempfile::tempdir().unwrap();
         let tmpname = dir.path().display().to_string();
-        let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
+        let glean = Glean::with_options(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
         (glean, dir)
     }
 
@@ -498,7 +534,7 @@ mod test {
     fn experiment_id_and_branch_get_truncated_if_too_long() {
         let t = tempfile::tempdir().unwrap();
         let name = t.path().display().to_string();
-        let glean = Glean::new(&name, "org.mozilla.glean.tests", true).unwrap();
+        let glean = Glean::with_options(&name, "org.mozilla.glean.tests", true).unwrap();
 
         // Generate long strings for the used ids.
         let very_long_id = "test-experiment-id".repeat(5);
@@ -534,7 +570,7 @@ mod test {
     fn experiments_status_is_correctly_toggled() {
         let t = tempfile::tempdir().unwrap();
         let name = t.path().display().to_string();
-        let glean = Glean::new(&name, "org.mozilla.glean.tests", true).unwrap();
+        let glean = Glean::with_options(&name, "org.mozilla.glean.tests", true).unwrap();
 
         // Define the experiment's data.
         let experiment_id: String = "test-toggle-experiment".into();
@@ -581,7 +617,7 @@ mod test {
         let dir = tempfile::tempdir().unwrap();
         let tmpname = dir.path().display().to_string();
         {
-            let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
+            let glean = Glean::with_options(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
 
             glean.data_store.clear_all();
 
@@ -598,7 +634,7 @@ mod test {
         }
 
         {
-            let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
+            let glean = Glean::with_options(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
             assert!(glean
                 .core_metrics
                 .client_id
@@ -700,7 +736,7 @@ mod test {
     fn client_id_is_set_to_known_value_when_uploading_disabled_at_start() {
         let dir = tempfile::tempdir().unwrap();
         let tmpname = dir.path().display().to_string();
-        let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, false).unwrap();
+        let glean = Glean::with_options(&tmpname, GLOBAL_APPLICATION_ID, false).unwrap();
 
         assert_eq!(
             *KNOWN_CLIENT_ID,
@@ -716,7 +752,7 @@ mod test {
     fn client_id_is_set_to_random_value_when_uploading_enabled_at_start() {
         let dir = tempfile::tempdir().unwrap();
         let tmpname = dir.path().display().to_string();
-        let glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
+        let glean = Glean::with_options(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
 
         let current_client_id = glean
             .core_metrics
@@ -730,7 +766,7 @@ mod test {
     fn enabling_when_already_enabled_is_a_noop() {
         let dir = tempfile::tempdir().unwrap();
         let tmpname = dir.path().display().to_string();
-        let mut glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
+        let mut glean = Glean::with_options(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
 
         assert!(!glean.set_upload_enabled(true));
     }
@@ -739,7 +775,7 @@ mod test {
     fn disabling_when_already_disabled_is_a_noop() {
         let dir = tempfile::tempdir().unwrap();
         let tmpname = dir.path().display().to_string();
-        let mut glean = Glean::new(&tmpname, GLOBAL_APPLICATION_ID, false).unwrap();
+        let mut glean = Glean::with_options(&tmpname, GLOBAL_APPLICATION_ID, false).unwrap();
 
         assert!(!glean.set_upload_enabled(false));
     }

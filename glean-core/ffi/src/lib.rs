@@ -2,9 +2,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-#![allow(clippy::redundant_closure)]
-
 use std::collections::HashMap;
+use std::convert::TryFrom;
 use std::os::raw::c_char;
 
 use ffi_support::{
@@ -198,16 +197,56 @@ pub extern "C" fn glean_enable_logging() {
     }
 }
 
-#[no_mangle]
-pub extern "C" fn glean_initialize(
-    data_dir: FfiStr,
-    application_id: FfiStr,
+/// Configuration over FFI.
+///
+/// **CAUTION**: This must match _exactly_ the definition on the Kotlin side.
+/// If this side is changed, the Kotlin side need to be changed, too.
+#[repr(C)]
+pub struct FfiConfiguration<'a> {
+    data_dir: FfiStr<'a>,
+    package_name: FfiStr<'a>,
     upload_enabled: u8,
-) -> u64 {
+    max_events: Option<&'a i32>,
+}
+
+/// Convert the FFI-compatible configuration object into the proper Rust configuration object.
+impl TryFrom<&FfiConfiguration<'_>> for glean_core::Configuration {
+    type Error = glean_core::Error;
+
+    fn try_from(cfg: &FfiConfiguration) -> Result<Self, Self::Error> {
+        let data_path = cfg
+            .data_dir
+            .as_opt_str()
+            .map(|s| s.to_string())
+            .ok_or_else(glean_core::Error::utf8_error)?;
+        let application_id = cfg
+            .package_name
+            .as_opt_str()
+            .map(|s| s.to_string())
+            .ok_or_else(glean_core::Error::utf8_error)?;
+        let upload_enabled = cfg.upload_enabled != 0;
+        let max_events = cfg.max_events.map(|m| *m as usize);
+
+        Ok(Self {
+            upload_enabled,
+            data_path,
+            application_id,
+            max_events,
+        })
+    }
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn glean_initialize(cfg: *const FfiConfiguration) -> u64 {
+    assert!(!cfg.is_null());
+
     GLEAN.insert_with_log(|| {
-        let data_dir = data_dir.into_string();
-        let application_id = application_id.into_string();
-        let glean = Glean::new(&data_dir, &application_id, upload_enabled != 0)?;
+        // We can create a reference to the FfiConfiguration struct:
+        // 1. We did a null check
+        // 2. We're not holding on to it beyond this function
+        //    and we copy out all data when needed.
+        let glean_cfg = glean_core::Configuration::try_from(&*cfg)?;
+        let glean = Glean::new(glean_cfg)?;
         log::info!("Glean initialized");
         Ok(glean)
     })

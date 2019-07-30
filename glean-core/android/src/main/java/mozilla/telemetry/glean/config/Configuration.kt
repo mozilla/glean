@@ -7,6 +7,42 @@ package mozilla.telemetry.glean.config
 import mozilla.components.concept.fetch.Client
 import mozilla.components.lib.fetch.httpurlconnection.HttpURLConnectionClient
 import mozilla.telemetry.glean.BuildConfig
+import mozilla.telemetry.glean.rust.toByte
+
+import com.sun.jna.Structure
+import com.sun.jna.ptr.IntByReference
+
+/**
+ * Define the order of fields as laid out in memory.
+ * **CAUTION**: This must match _exactly_ the definition on the Rust side.
+ *  If this side is changed, the Rust side need to be changed, too.
+ */
+@Structure.FieldOrder("dataDir", "packageName", "uploadEnabled", "maxEvents")
+internal class FfiConfiguration(
+    dataDir: String,
+    packageName: String,
+    uploadEnabled: Boolean,
+    maxEvents: Int? = null
+) : Structure() {
+    /**
+     * Expose all structure fields as actual fields,
+     * in order for Structure to turn them into the right memory representiation
+     */
+
+    @JvmField
+    public var dataDir: String = dataDir
+    @JvmField
+    public var packageName: String = packageName
+    @JvmField
+    public var uploadEnabled: Byte = uploadEnabled.toByte()
+    @JvmField
+    public var maxEvents: IntByReference = if (maxEvents == null) IntByReference() else IntByReference(maxEvents!!)
+
+    init {
+        // Force UTF-8 string encoding when passing strings over the FFI
+        this.stringEncoding = "UTF-8"
+    }
+}
 
 /**
  * The Configuration class describes how to configure Glean.
@@ -31,7 +67,7 @@ data class Configuration internal constructor(
     val userAgent: String = DEFAULT_USER_AGENT,
     val connectionTimeout: Long = DEFAULT_CONNECTION_TIMEOUT,
     val readTimeout: Long = DEFAULT_READ_TIMEOUT,
-    val maxEvents: Int = DEFAULT_MAX_EVENTS,
+    val maxEvents: Int? = null,
     val logPings: Boolean = DEFAULT_LOG_PINGS,
     // NOTE: since only simple object or strings can be made `const val`s, if the
     // default values for the lines below are ever changed, they are required

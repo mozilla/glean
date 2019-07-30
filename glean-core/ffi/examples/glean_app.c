@@ -8,7 +8,13 @@
 int main(void)
 {
   glean_enable_logging();
-  uint64_t glean = glean_initialize("/tmp/glean_data", "c-app", true);
+  FfiConfiguration cfg = {
+    "/tmp/glean_data",
+    "c-app",
+    true,
+    NULL
+  };
+  uint64_t glean = glean_initialize(&cfg);
   uint64_t store1 = glean_new_ping_type("store1", true);
   glean_register_ping_type(glean, store1);
 

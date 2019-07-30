@@ -18,7 +18,13 @@ fn main() {
         root.path().display().to_string()
     };
 
-    let mut glean = Glean::new(&data_path, "org.mozilla.glean_core.example", true).unwrap();
+    let cfg = glean_core::Configuration {
+        data_path,
+        application_id: "org.mozilla.glean_core.example".into(),
+        upload_enabled: true,
+        max_events: None,
+    };
+    let mut glean = Glean::new(cfg).unwrap();
     glean.register_ping_type(&PingType::new("baseline", true));
     glean.register_ping_type(&PingType::new("metrics", true));
 

@@ -12,6 +12,7 @@ import com.sun.jna.Pointer
 import com.sun.jna.StringArray
 import java.lang.reflect.Proxy
 import mozilla.telemetry.glean.GleanTimerId
+import mozilla.telemetry.glean.config.FfiConfiguration
 
 // Turn a boolean into its Byte (u8) representation
 internal fun Boolean.toByte(): Byte = if (this) 1 else 0
@@ -66,7 +67,7 @@ internal interface LibGleanFFI : Library {
 
     // Glean top-level API
 
-    fun glean_initialize(data_dir: String, application_id: String, upload_enabled: Byte): Long
+    fun glean_initialize(cfg: FfiConfiguration): Long
 
     fun glean_destroy_glean(handle: Long, error: RustError.ByReference)
 
