@@ -38,7 +38,7 @@ adb shell am start -n org.mozilla.samples.glean/mozilla.components.service.glean
 ## Glean Log messages
 
 Glean logs warnings and errors through the Android logging framework.
-When running a Glean-powered app in the Android emulator or on a device connected to your computer via cable, there are several ways to read the log output
+When running a Glean-powered app in the Android emulator or on a device connected to your computer via cable, there are several ways to read the log output.
 
 ### Android Studio
 
@@ -70,7 +70,7 @@ You can match for `glean` using grep:
 adb logcat | grep -i glean
 ```
 
-A simpler way to filter for only the application to debug is using [pidcat][], a wrapper around `adb`, which adds colors and proper filtering by application ID and log level.
+A simple way to filter for only the application that is being debugged is by using [pidcat][], a wrapper around `adb`, which adds colors and proper filtering by application ID and log level.
 Run it like this to filter for an application:
 
 ```
