@@ -50,6 +50,7 @@ To display the log messages for an app:
 
 The Logcat window will show all log messages and allows to filter those by the application ID.
 Select the application ID of the product you're debugging.
+You can also filter by `Glean` only.
 
 More information can be found in the [View Logs with Logcat][] help article.
 
