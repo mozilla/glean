@@ -141,7 +141,9 @@ impl PingMaker {
             for (_key, value) in client_info_obj {
                 merge(&mut map, value);
             }
-        };
+        } else {
+            log::warn!("Empty client info data.");
+        }
 
         if !include_client_id {
             map.as_object_mut().unwrap().remove("client_id");
@@ -243,6 +245,8 @@ impl PingMaker {
         let temp_ping_path = temp_dir.join(doc_id);
         let ping_path = pings_dir.join(doc_id);
 
+        log::debug!("Storing ping '{}' at '{}'", doc_id, ping_path.display());
+
         {
             let mut file = File::create(&temp_ping_path)?;
             file.write_all(url_path.as_bytes())?;
@@ -250,7 +254,14 @@ impl PingMaker {
             file.write_all(::serde_json::to_string(ping_content)?.as_bytes())?;
         }
 
-        std::fs::rename(temp_ping_path, ping_path)?;
+        if let Err(e) = std::fs::rename(&temp_ping_path, &ping_path) {
+            log::warn!(
+                "Unable to move '{}' to '{}",
+                temp_ping_path.display(),
+                ping_path.display()
+            );
+            return Err(e);
+        }
 
         Ok(())
     }
@@ -260,6 +271,9 @@ impl PingMaker {
         let pings_dir = self.get_pings_dir(data_path)?;
         std::fs::remove_dir_all(&pings_dir)?;
         create_dir_all(&pings_dir)?;
+
+        log::debug!("All pending pings deleted");
+
         Ok(())
     }
 }

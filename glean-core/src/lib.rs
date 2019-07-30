@@ -175,6 +175,7 @@ impl Glean {
     /// * Returns true when the flag was different from the current value, and
     ///   actual work was done to clear or reinstate metrics.
     pub fn set_upload_enabled(&mut self, flag: bool) -> bool {
+        log::info!("Upload enabled: {:?}", flag);
         if self.upload_enabled != flag {
             self.upload_enabled = flag;
             self.on_change_upload_enabled(flag);
@@ -343,7 +344,17 @@ impl Glean {
                     log::info!("{}", ::serde_json::to_string_pretty(&content)?);
                 }
 
-                ping_maker.store_ping(&doc_id, &self.get_data_path(), &url_path, &content)?;
+                if let Err(e) =
+                    ping_maker.store_ping(&doc_id, &self.get_data_path(), &url_path, &content)
+                {
+                    log::warn!("IO error while writing ping to file: {}", e);
+                    return Err(e.into());
+                }
+
+                log::info!(
+                    "The ping '{}' was submitted and will be sent as soon as possible",
+                    ping.name
+                );
                 Ok(true)
             }
         }
@@ -362,7 +373,7 @@ impl Glean {
     pub fn send_ping_by_name(&self, ping_name: &str, log_ping: bool) -> Result<bool> {
         match self.get_ping_by_name(ping_name) {
             None => {
-                log::error!("Unknown ping type {}", ping_name);
+                log::error!("Attempted to send unknown ping '{}'", ping_name);
                 Ok(false)
             }
             Some(ping) => self.send_ping(ping, log_ping),
@@ -382,7 +393,7 @@ impl Glean {
     /// Register a new [`PingType`](metrics/struct.PingType.html).
     pub fn register_ping_type(&mut self, ping: &PingType) {
         if self.ping_registry.contains_key(&ping.name) {
-            log::error!("Duplicate ping named {}", ping.name)
+            log::error!("Duplicate ping named '{}'", ping.name)
         }
 
         self.ping_registry.insert(ping.name.clone(), ping.clone());
