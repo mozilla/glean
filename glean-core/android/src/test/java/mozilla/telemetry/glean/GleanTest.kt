@@ -42,7 +42,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Assert.assertFalse
 // import org.junit.Assert.assertNotEquals
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.mock
@@ -168,7 +167,6 @@ class GleanTest {
         assertEquals("value", storedData.extra?.getValue("test_key"))
     }
 
-    @Ignore("Disabled because we're not triggering pings when going to background. See bug 1551159.")
     @Test
     fun `test sending of background pings`() {
         val server = getMockWebServer()
