@@ -31,6 +31,7 @@ import mozilla.telemetry.glean.private.PingType
 import mozilla.telemetry.glean.private.RecordedExperimentData
 import mozilla.telemetry.glean.scheduler.GleanLifecycleObserver
 import mozilla.telemetry.glean.scheduler.PingUploadWorker
+import mozilla.telemetry.glean.scheduler.MetricsPingScheduler
 import org.json.JSONObject
 
 // Public exported type identifying individual timers for [TimingDistributionMetricType].
@@ -59,8 +60,7 @@ open class GleanInternalAPI internal constructor () {
 
     // This object holds data related to any persistent information about the metrics ping,
     // such as the last time it was sent and the store name
-    // TODO: 1551159 Integrate MetricsPingScheduler
-    // internal lateinit var metricsPingScheduler: MetricsPingScheduler
+    internal lateinit var metricsPingScheduler: MetricsPingScheduler
 
     // Keep track of ping types that have been registered before Glean is initialized.
     private val pingTypeQueue: MutableList<PingType> = mutableListOf()
@@ -136,9 +136,8 @@ open class GleanInternalAPI internal constructor () {
         // Set up information and scheduling for Glean owned pings. Ideally, the "metrics"
         // ping startup check should be performed before any other ping, since it relies
         // on being dispatched to the API context before any other metric.
-        // TODO: 1551159 Integrate MetricsPingScheduler
-        // metricsPingScheduler = MetricsPingScheduler(applicationContext)
-        // metricsPingScheduler.startupCheck()
+        metricsPingScheduler = MetricsPingScheduler(applicationContext)
+        metricsPingScheduler.startupCheck()
 
         // Signal Dispatcher that init is complete
         @Suppress("EXPERIMENTAL_API_USAGE")
