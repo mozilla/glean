@@ -11,7 +11,6 @@ use crate::{define_metric, handlemap_ext::HandleMapExtension, GLEAN};
 define_metric!(DatetimeMetric => DATETIME_METRICS {
     new           -> glean_new_datetime_metric(time_unit: i32),
     destroy       -> glean_destroy_datetime_metric,
-    should_record -> glean_datetime_should_record,
 });
 
 #[no_mangle]

@@ -9,7 +9,6 @@ use crate::{define_metric, handlemap_ext::HandleMapExtension, GLEAN};
 define_metric!(BooleanMetric => BOOLEAN_METRICS {
     new           -> glean_new_boolean_metric(),
     destroy       -> glean_destroy_boolean_metric,
-    should_record -> glean_boolean_should_record,
 });
 
 #[no_mangle]

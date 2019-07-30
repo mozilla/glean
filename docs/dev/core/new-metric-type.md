@@ -150,7 +150,6 @@ use crate::{define_metric, handlemap_ext::HandleMapExtension, GLEAN};
 define_metric!(CounterMetric => COUNTER_METRICS {
     new           -> glean_new_counter_metric(),
     destroy       -> glean_destroy_counter_metric,
-    should_record -> glean_counter_should_record,
 
     add -> glean_counter_add(amount: i32),
 });
@@ -185,7 +184,6 @@ For Kotlin this is in `glean-core/android/src/main/java/mozilla/telemetry/glean/
 fun glean_new_counter_metric(category: String, name: String, send_in_pings: StringArray, send_in_pings_len: Int, lifetime: Int, disabled: Byte): Long
 fun glean_destroy_counter_metric(handle: Long, error: RustError.ByReference)
 fun glean_counter_add(glean_handle: Long, metric_id: Long, amount: Int)
-fun glean_counter_should_record(glean_handle: Long, metric_id: Long): Byte
 ```
 
 Finally, create a platform-specific metric type wrapper.
@@ -217,15 +215,6 @@ class CounterMetricType(
             val error = RustError.ByReference()
             LibGleanFFI.INSTANCE.glean_destroy_counter_metric(this.handle, error)
         }
-    }
-
-    fun shouldRecord(): Boolean {
-        // Don't record metrics if we aren't initialized
-        if (!Glean.isInitialized()) {
-            return false
-        }
-
-        return LibGleanFFI.INSTANCE.glean_counter_should_record(Glean.handle, this.handle).toBoolean()
     }
 
     fun add(amount: Int = 1) {
