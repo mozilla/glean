@@ -17,7 +17,6 @@
         - [Labeled Strings](user/metrics/labeled_strings.md)
         - [String List](user/metrics/string_list.md)
         - [Timespan](user/metrics/timespan.md)
-        - [Labeled Timespans](user/metrics/labeled_timespans.md)
         - [Timing Distribution](user/metrics/timing_distribution.md)
         - [UUID](user/metrics/uuid.md)
         - [Datetime](user/metrics/datetime.md)

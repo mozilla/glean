@@ -163,7 +163,6 @@ Currently several labeled metrics are supported:
 
 * [Labeled Counters](../../../user/metrics/labeled_counters.md).
 * [Labeled Strings](../../../user/metrics/labeled_strings.md).
-* [Labeled Timespans](../../../user/metrics/labeled_timespans.md).
 
 All are on the top-level represented in the same way, as an object mapping the label to the metric's value.
 See the individual metric types for details on the value payload:
