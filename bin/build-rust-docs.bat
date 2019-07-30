@@ -22,11 +22,11 @@ cargo doc --no-deps
 
 if exist %docs_location% rmdir /S /Q %docs_location%
 mkdir %docs_location%
-echo "<meta http-equiv=refresh content=0;url=book/index.html>" > %docs_location%\index.html
+echo "<meta http-equiv=refresh content=0;url=book\index.html>" > %docs_location%\index.html
 
 mkdir %docs_location%\book
-xcopy /K /E docs\book\ %docs_location%\book
+xcopy /K /E docs\book\. %docs_location%\book
 
 mkdir %docs_location%\docs
 xcopy /K /E target\doc\. %docs_location%\docs
-echo "<meta http-equiv=refresh content=0;url=%crate_name%/index.html>\n" > %docs_location%\docs\index.html
+echo "<meta http-equiv=refresh content=0;url=%crate_name%\index.html>\n" > %docs_location%\docs\index.html
