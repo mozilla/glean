@@ -110,8 +110,6 @@ class MyCustomPingSchedulerTest {
 
     @Test
     fun `verify custom ping metrics`() {
-      setupGleanOnce()
-
       val scheduler = spy(MyCustomPingScheduler())
       doAnswer {
         // Here we validate the content that goes into the ping.
