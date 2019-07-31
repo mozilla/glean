@@ -16,6 +16,7 @@ class ActivityCollectingDataTest {
     @get:Rule
     val gleanRule = GleanTestRule(ApplicationProvider.getApplicationContext())
 
+    @Test
     fun checkCollectedData() {
       // The Glean SDK testing API can be called here.
     }
