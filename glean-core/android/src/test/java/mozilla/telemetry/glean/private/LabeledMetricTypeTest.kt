@@ -9,17 +9,18 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.test.core.app.ApplicationProvider
 */
+import androidx.test.core.app.ApplicationProvider
 import mozilla.telemetry.glean.collectAndCheckPingSchema
-import mozilla.telemetry.glean.resetGlean
 import mozilla.telemetry.glean.GleanMetrics.Pings
+import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.After
-import org.junit.Before
 import org.junit.Test
 import org.junit.Ignore
 import org.junit.runner.RunWith
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Assert.assertFalse
+import org.junit.Rule
 /*
 import java.util.UUID
 import org.mockito.ArgumentMatchers.anyString
@@ -44,10 +45,8 @@ class LabeledMetricTypeTest {
     ) : CommonMetricData
     */
 
-    @Before
-    fun setup() {
-        resetGlean()
-    }
+    @get:Rule
+    val gleanRule = GleanTestRule(ApplicationProvider.getApplicationContext())
 
     @After
     fun resetGlobalState() {

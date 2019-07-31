@@ -12,11 +12,12 @@ package mozilla.telemetry.glean.private
 
 // import kotlinx.coroutines.ExperimentalCoroutinesApi
 // import kotlinx.coroutines.ObsoleteCoroutinesApi
-import mozilla.telemetry.glean.resetGlean
+import androidx.test.core.app.ApplicationProvider
+import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Assert.assertFalse
-import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -27,10 +28,8 @@ import java.lang.NullPointerException
 @RunWith(RobolectricTestRunner::class)
 class StringListMetricTypeTest {
 
-    @Before
-    fun setUp() {
-        resetGlean()
-    }
+    @get:Rule
+    val gleanRule = GleanTestRule(ApplicationProvider.getApplicationContext())
 
     @Test
     fun `The API saves to its storage engine by first adding then setting`() {

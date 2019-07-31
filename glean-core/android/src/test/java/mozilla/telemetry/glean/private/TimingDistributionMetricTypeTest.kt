@@ -4,13 +4,14 @@
 
 package mozilla.telemetry.glean.private
 
+import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
-import mozilla.telemetry.glean.resetGlean
+import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Assert.assertFalse
-import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -23,10 +24,8 @@ import org.mockito.Mockito.`when`
 @RunWith(RobolectricTestRunner::class)
 class TimingDistributionMetricTypeTest {
 
-    @Before
-    fun setUp() {
-        resetGlean()
-    }
+    @get:Rule
+    val gleanRule = GleanTestRule(ApplicationProvider.getApplicationContext())
 
     @Test
     fun `The API saves to its storage engine`() {
@@ -43,7 +42,7 @@ class TimingDistributionMetricTypeTest {
         // Accumulate a few values
         for (i in 1L..3L) {
             `when`(metric.getElapsedTimeNanos()).thenReturn(0L)
-            var id = metric.start()
+            val id = metric.start()
             `when`(metric.getElapsedTimeNanos()).thenReturn(i * 1000000L) // ms to ns
             metric.stopAndAccumulate(id)
         }
