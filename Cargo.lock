@@ -244,7 +244,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "glean_ffi"
+name = "glean-ffi"
 version = "0.1.0"
 dependencies = [
  "android_logger 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
