@@ -19,6 +19,7 @@ mod boolean;
 mod counter;
 mod datetime;
 mod event;
+mod ffi_string_ext;
 mod handlemap_ext;
 mod labeled;
 mod ping_type;
@@ -28,6 +29,7 @@ mod timespan;
 mod timing_distribution;
 mod uuid;
 
+use ffi_string_ext::FallibleToString;
 use handlemap_ext::HandleMapExtension;
 use ping_type::PING_TYPES;
 
@@ -60,10 +62,7 @@ fn from_raw_string_array(arr: RawStringArray, len: i32) -> glean_core::Result<Ve
             .iter()
             .map(|&p| {
                 // Drop invalid strings
-                FfiStr::from_raw(p)
-                    .as_opt_str()
-                    .map(|s| s.to_string())
-                    .ok_or_else(glean_core::Error::utf8_error)
+                FfiStr::from_raw(p).to_string_fallible()
             })
             .collect()
     }
@@ -95,12 +94,7 @@ fn from_raw_int_array_and_string_array(
         let res: glean_core::Result<_> = keys_ptrs
             .iter()
             .zip(values_ptrs.iter())
-            .map(|(&k, &v)| {
-                FfiStr::from_raw(v)
-                    .as_opt_str()
-                    .map(|s| (k, s.to_string()))
-                    .ok_or_else(glean_core::Error::utf8_error)
-            })
+            .map(|(&k, &v)| FfiStr::from_raw(v).to_string_fallible().map(|s| (k, s)))
             .collect();
         res.map(Some)
     }
@@ -133,15 +127,9 @@ fn from_raw_string_array_and_string_array(
             .iter()
             .zip(values_ptrs.iter())
             .map(|(&k, &v)| {
-                let k = FfiStr::from_raw(k)
-                    .as_opt_str()
-                    .map(|s| s.to_string())
-                    .ok_or_else(glean_core::Error::utf8_error)?;
+                let k = FfiStr::from_raw(k).to_string_fallible()?;
 
-                let v = FfiStr::from_raw(v)
-                    .as_opt_str()
-                    .map(|s| s.to_string())
-                    .ok_or_else(glean_core::Error::utf8_error)?;
+                let v = FfiStr::from_raw(v).to_string_fallible()?;
 
                 Ok((k, v))
             })
@@ -214,16 +202,8 @@ impl TryFrom<&FfiConfiguration<'_>> for glean_core::Configuration {
     type Error = glean_core::Error;
 
     fn try_from(cfg: &FfiConfiguration) -> Result<Self, Self::Error> {
-        let data_path = cfg
-            .data_dir
-            .as_opt_str()
-            .map(|s| s.to_string())
-            .ok_or_else(glean_core::Error::utf8_error)?;
-        let application_id = cfg
-            .package_name
-            .as_opt_str()
-            .map(|s| s.to_string())
-            .ok_or_else(glean_core::Error::utf8_error)?;
+        let data_path = cfg.data_dir.to_string_fallible()?;
+        let application_id = cfg.package_name.to_string_fallible()?;
         let upload_enabled = cfg.upload_enabled != 0;
         let max_events = cfg.max_events.map(|m| *m as usize);
 
