@@ -7,11 +7,10 @@ use std::convert::TryFrom;
 
 use glean_core::{metrics::*, CommonMetricData, Lifetime};
 
-use super::handlemap_ext::HandleMapExtension;
-use super::*;
 use crate::boolean::BOOLEAN_METRICS;
 use crate::counter::COUNTER_METRICS;
 use crate::string::STRING_METRICS;
+use crate::*;
 
 /// Generate FFI functions for labeled metrics.
 ///
@@ -50,6 +49,8 @@ macro_rules! impl_labeled_metric {
             label_count: i32,
         ) -> u64 {
             $global.insert_with_log(|| {
+                let name = name.to_string_fallible()?;
+                let category = category.to_string_fallible()?;
                 let send_in_pings = from_raw_string_array(send_in_pings, send_in_pings_len)?;
                 let labels = from_raw_string_array(labels, label_count)?;
                 let labels = if labels.is_empty() {
@@ -61,8 +62,8 @@ macro_rules! impl_labeled_metric {
 
                 Ok(LabeledMetric::new(
                     <$metric>::new(CommonMetricData {
-                        name: name.into_string(),
-                        category: category.into_string(),
+                        name,
+                        category,
                         send_in_pings,
                         lifetime,
                         disabled: disabled != 0,

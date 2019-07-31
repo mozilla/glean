@@ -10,6 +10,7 @@ use ffi_support::FfiStr;
 use glean_core::metrics::EventMetric;
 use glean_core::{CommonMetricData, Lifetime};
 
+use crate::ffi_string_ext::FallibleToString;
 use crate::handlemap_ext::HandleMapExtension;
 use crate::{
     define_metric, from_raw_int_array_and_string_array, from_raw_string_array, RawIntArray,
@@ -32,14 +33,16 @@ pub extern "C" fn glean_new_event_metric(
     extra_keys_len: i32,
 ) -> u64 {
     EVENT_METRICS.insert_with_log(|| {
+        let name = name.to_string_fallible()?;
+        let category = category.to_string_fallible()?;
         let send_in_pings = from_raw_string_array(send_in_pings, send_in_pings_len)?;
         let lifetime = Lifetime::try_from(lifetime)?;
         let extra_keys = from_raw_string_array(extra_keys, extra_keys_len)?;
 
         Ok(EventMetric::new(
             CommonMetricData {
-                name: name.into_string(),
-                category: category.into_string(),
+                name,
+                category,
                 send_in_pings,
                 lifetime,
                 disabled: disabled != 0,

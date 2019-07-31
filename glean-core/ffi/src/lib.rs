@@ -293,27 +293,29 @@ pub extern "C" fn glean_set_experiment_active(
     extra_len: i32,
 ) {
     GLEAN.call_with_log(glean_handle, |glean| {
+        let experiment_id = experiment_id.to_string_fallible()?;
+        let branch = branch.to_string_fallible()?;
         let extra = from_raw_string_array_and_string_array(extra_keys, extra_values, extra_len)?;
-        glean.set_experiment_active(
-            experiment_id.as_str().to_string(),
-            branch.as_str().to_string(),
-            extra,
-        );
+
+        glean.set_experiment_active(experiment_id, branch, extra);
         Ok(())
     })
 }
 
 #[no_mangle]
 pub extern "C" fn glean_set_experiment_inactive(glean_handle: u64, experiment_id: FfiStr) {
-    GLEAN.call_infallible(glean_handle, |glean| {
-        glean.set_experiment_inactive(experiment_id.as_str().to_string());
+    GLEAN.call_with_log(glean_handle, |glean| {
+        let experiment_id = experiment_id.to_string_fallible()?;
+        glean.set_experiment_inactive(experiment_id);
+        Ok(())
     })
 }
 
 #[no_mangle]
 pub extern "C" fn glean_experiment_test_is_active(glean_handle: u64, experiment_id: FfiStr) -> u8 {
-    GLEAN.call_infallible(glean_handle, |glean| {
-        glean.test_is_experiment_active(experiment_id.as_str().to_string())
+    GLEAN.call_with_log(glean_handle, |glean| {
+        let experiment_id = experiment_id.to_string_fallible()?;
+        Ok(glean.test_is_experiment_active(experiment_id))
     })
 }
 
@@ -322,8 +324,9 @@ pub extern "C" fn glean_experiment_test_get_data(
     glean_handle: u64,
     experiment_id: FfiStr,
 ) -> *mut c_char {
-    GLEAN.call_infallible(glean_handle, |glean| {
-        glean.test_get_experiment_data_as_json(experiment_id.as_str().to_string())
+    GLEAN.call_with_log(glean_handle, |glean| {
+        let experiment_id = experiment_id.to_string_fallible()?;
+        Ok(glean.test_get_experiment_data_as_json(experiment_id))
     })
 }
 

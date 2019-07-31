@@ -43,6 +43,8 @@ macro_rules! define_metric {
             $($new_argname: $new_argtyp),*
         ) -> u64 {
             $metric_map.insert_with_log(|| {
+                let name = crate::FallibleToString::to_string_fallible(&name)?;
+                let category = crate::FallibleToString::to_string_fallible(&category)?;
                 let send_in_pings = crate::from_raw_string_array(send_in_pings, send_in_pings_len)?;
                 let lifetime = std::convert::TryFrom::try_from(lifetime)?;
 
@@ -51,8 +53,8 @@ macro_rules! define_metric {
                 )*
 
                 Ok(glean_core::metrics::$metric_type::new(glean_core::CommonMetricData {
-                    name: name.into_string(),
-                    category: category.into_string(),
+                    name,
+                    category,
                     send_in_pings,
                     lifetime,
                     disabled: disabled != 0,
@@ -64,8 +66,8 @@ macro_rules! define_metric {
         $(
             #[no_mangle]
             pub extern "C" fn $op_fn(glean_handle: u64, metric_id: u64, $($op_argname: $op_argtyp),*) {
-                crate::handlemap_ext::HandleMapExtension::call_infallible(&*crate::GLEAN, glean_handle, |glean| {
-                    crate::handlemap_ext::HandleMapExtension::call_infallible(&*$metric_map, metric_id, |metric| {
+                crate::HandleMapExtension::call_infallible(&*crate::GLEAN, glean_handle, |glean| {
+                    crate::HandleMapExtension::call_infallible(&*$metric_map, metric_id, |metric| {
                         metric.$op(glean, $($op_argname),*);
                     })
                 })
