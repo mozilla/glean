@@ -6,7 +6,22 @@ These functions expose a way to inspect and validate recorded metric values with
 
 ## General test API method semantics
 
-In order to prevent issues with async calls when unit testing Glean, it is important to put the Glean SDK into testing mode by calling `Glean.enableTestingMode()`.
+In order to prevent issues with async calls when unit testing Glean, it is important to put the Glean SDK into testing mode by applying the JUnit `GleanTestRule` to your test class, as shown below:
+
+```kotlin
+@RunWith(AndroidJUnit4::class)
+class ActivityCollectingDataTest {
+    // Apply the GleanTestRule to set up a disposable Glean instance.
+    // Please note that this clears the Glean data across tests.
+    @get:Rule
+    val gleanRule = GleanTestRule(ApplicationProvider.getApplicationContext())
+
+    fun checkCollectedData() {
+      // The Glean SDK testing API can be called here.
+    }
+}
+```
+
 This will ensure that metrics are done recording when the other test functions are used.
 
 To check if a value exists (i.e. it has been recorded), there is a `testHasValue()` function on each of the metric instances:
@@ -43,10 +58,6 @@ GleanMetrics.Foo.UriCount.testGetValue("customPing")
 
 Here is a longer example to better illustrate the intended use of the test API:
 ```kotlin
-// Enable testing mode
-// (Perhaps called from a @Before method so it precedes every test in the suite.)
-Glean.enableTestingMode()
-
 // Record a metric value with extra to validate against
 GleanMetrics.BrowserEngagement.click.record(
     mapOf(

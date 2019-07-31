@@ -31,7 +31,6 @@ There are test APIs available too:
 
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.Login
-Glean.enableTestingMode()
 
 // Was anything recorded?
 assertTrue(Login.errorsByStage["server_auth"].testHasValue())

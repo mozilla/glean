@@ -32,7 +32,6 @@ There are test APIs available too:
 
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.Stability
-Glean.enableTestingMode()
 // Was anything recorded?
 assertTrue(Stability.crashCount["uncaught_exception"].testHasValue())
 assertTrue(Stability.crashCount["native_code_crash"].testHasValue())

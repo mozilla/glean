@@ -26,7 +26,6 @@ There are test APIs available too:
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.SearchDefault
 
-Glean.enableTestingMode()
 // Was the experiment annotated in Glean pings?
 assertTrue(Glean.testIsExperimentActive("blue-button-effective"))
 // Was the correct branch reported?

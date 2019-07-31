@@ -11,12 +11,14 @@
 package mozilla.telemetry.glean.private
 
 import android.os.SystemClock
+import androidx.test.core.app.ApplicationProvider
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.checkPingSchema
 import mozilla.telemetry.glean.getContextWithMockedInfo
 import mozilla.telemetry.glean.getMockWebServer
 import mozilla.telemetry.glean.resetGlean
 import mozilla.telemetry.glean.scheduler.PingUploadWorker
+import mozilla.telemetry.glean.testing.GleanTestRule
 import mozilla.telemetry.glean.triggerWorkManager
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
@@ -25,7 +27,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.fail
 import org.junit.Test
-import org.junit.Before
+import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.lang.NullPointerException
@@ -50,10 +52,8 @@ enum class SomeExtraKeys {
 @RunWith(RobolectricTestRunner::class)
 class EventMetricTypeTest {
 
-    @Before
-    fun setUp() {
-        resetGlean()
-    }
+    @get:Rule
+    val gleanRule = GleanTestRule(ApplicationProvider.getApplicationContext())
 
     @Test
     fun `The API records to its storage engine`() {

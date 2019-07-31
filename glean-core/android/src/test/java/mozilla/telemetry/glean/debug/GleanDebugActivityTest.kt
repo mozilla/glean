@@ -22,6 +22,8 @@ import mozilla.telemetry.glean.resetGlean
 import mozilla.telemetry.glean.triggerWorkManager
 import mozilla.telemetry.glean.TestPingTagClient
 import mozilla.telemetry.glean.getMockWebServer
+import mozilla.telemetry.glean.testing.GleanTestRule
+import org.junit.Rule
 import org.robolectric.Shadows.shadowOf
 import java.util.concurrent.TimeUnit
 
@@ -30,10 +32,11 @@ class GleanDebugActivityTest {
 
     private val testPackageName = "mozilla.telemetry.glean"
 
+    @get:Rule
+    val gleanRule = GleanTestRule(ApplicationProvider.getApplicationContext())
+
     @Before
     fun setup() {
-        resetGlean()
-
         // This makes sure we have a "launch" intent in our package, otherwise
         // it will fail looking for it in `GleanDebugActivityTest`.
         val pm = ApplicationProvider.getApplicationContext<Context>().packageManager

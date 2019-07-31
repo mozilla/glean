@@ -8,14 +8,14 @@ package mozilla.telemetry.glean.private
 
 // import mozilla.telemetry.glean.error.ErrorRecording.ErrorType
 // import mozilla.telemetry.glean.error.ErrorRecording.testGetNumRecordedErrors
-import mozilla.telemetry.glean.resetGlean
-// import org.junit.Assert.assertEquals
+import androidx.test.core.app.ApplicationProvider
+import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Test
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
-import org.junit.Before
+import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.lang.NullPointerException
@@ -23,10 +23,8 @@ import java.lang.NullPointerException
 @RunWith(RobolectricTestRunner::class)
 class TimespanMetricTypeTest {
 
-    @Before
-    fun setUp() {
-        resetGlean()
-    }
+    @get:Rule
+    val gleanRule = GleanTestRule(ApplicationProvider.getApplicationContext())
 
     @Test
     fun `The API must record to its storage engine`() {

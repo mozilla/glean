@@ -33,7 +33,6 @@ There are test APIs available too, for example:
 
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.Views
-Glean.enableTestingMode()
 
 // Was any event recorded?
 assertTrue(Views.loginOpened.testHasValue())

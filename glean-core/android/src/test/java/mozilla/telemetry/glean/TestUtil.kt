@@ -122,28 +122,10 @@ internal fun resetGlean(
         ShadowLog.stream = System.out
     }
 
-    Glean.enableTestingMode()
-
     // We're using the WorkManager in a bunch of places, and Glean will crash
     // in tests without this line. Let's simply put it here.
     WorkManagerTestInitHelper.initializeTestWorkManager(context)
-
-    /* if (clearStores) {
-        // Clear all the stored data.
-        val storageManager = StorageEngineManager(applicationContext = context)
-        storageManager.clearAllStores()
-        // The experiments storage engine needs to be cleared manually as it's not listed
-        // in the `StorageEngineManager`.
-        ExperimentsStorageEngine.clearAllStores()
-    } */
-
-    // Clear the "first run" flag.
-    // val firstRun = FileFirstRunDetector(File(context.applicationInfo.dataDir, Glean.GLEAN_DATA_DIR))
-    // firstRun.reset()
-    // Init Glean.
-    // Glean.setUploadEnabled(true)
-    Glean.testDestroyGleanHandle()
-    Glean.initialize(context, config)
+    Glean.resetGlean(context, config, clearStores)
 }
 
 /**

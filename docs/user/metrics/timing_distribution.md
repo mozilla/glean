@@ -58,7 +58,6 @@ Continuing the `pageLoad` example above, at this point the metric should have a 
 
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.Pages
-Glean.enableTestingMode()
 
 // Was anything recorded?
 assertTrue(pages.pageLoad.testHasValue())
@@ -76,7 +75,7 @@ assertEquals(2L, snapshot.count())
 ## Limits
 
 * Which range of values is recorded in detail depends on the `time_unit`, e.g. for milliseconds, all values greater 60000 are recorded as overflow values.
-  
+
 ## Examples
 
 * How long does it take a page to load?

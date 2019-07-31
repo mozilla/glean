@@ -28,7 +28,6 @@ There are test APIs available too:
 
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.Controls
-Glean.enableTestingMode()
 
 // Was anything recorded?
 assertTrue(Controls.refreshPressed.testHasValue())

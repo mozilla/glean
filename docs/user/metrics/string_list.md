@@ -40,7 +40,6 @@ There are test APIs available too:
 
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.Search
-Glean.enableTestingMode()
 
 // Was anything recorded?
 assertTrue(Search.engines.testHasValue())

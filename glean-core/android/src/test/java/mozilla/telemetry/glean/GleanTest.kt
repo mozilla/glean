@@ -29,6 +29,7 @@ import mozilla.telemetry.glean.private.StringMetricType
 // import mozilla.components.service.glean.storages.StringsStorageEngine
 import mozilla.telemetry.glean.scheduler.GleanLifecycleObserver
 import mozilla.telemetry.glean.scheduler.PingUploadWorker
+import mozilla.telemetry.glean.testing.GleanTestRule
 // import mozilla.components.service.glean.storages.StorageEngineManager
 import mozilla.telemetry.glean.utils.getLanguageFromLocale
 import mozilla.telemetry.glean.utils.getLocaleTag
@@ -41,7 +42,7 @@ import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Assert.assertFalse
 // import org.junit.Assert.assertNotEquals
-import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.mock
@@ -60,10 +61,8 @@ import java.util.concurrent.TimeUnit
 @RunWith(RobolectricTestRunner::class)
 class GleanTest {
 
-    @Before
-    fun setup() {
-        resetGlean()
-    }
+    @get:Rule
+    val gleanRule = GleanTestRule(ApplicationProvider.getApplicationContext())
 
     @After
     fun resetGlobalState() {
