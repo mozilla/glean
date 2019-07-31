@@ -89,6 +89,12 @@ jobs:
     steps:
       - rust-tests:
           rust-version: "beta"
+  Rust tests - minimum version:
+    docker:
+      - image: circleci/rust:latest
+    steps:
+      - rust-tests:
+          rust-version: "1.34.2"
   C tests:
     docker:
       - image: circleci/rust:latest
@@ -223,6 +229,7 @@ workflows:
     jobs:
       - Rust tests - stable
       - Rust tests - beta
+      - Rust tests - minimum version
       - Android tests
       - C tests
   documentation:
