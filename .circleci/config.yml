@@ -30,17 +30,9 @@ commands:
     steps:
       - test-setup:
           rust-version: <<parameters.rust-version>>
-      # Test with 1. only default features on, 2. all features on, 3. no features on.
-      # This is not perfect (really we want the cartesian product), but is good enough in practice.
       - run:
           name: Test
           command: cargo test --all --verbose
-      - run:
-          name: Test (all features)
-          command: cargo test --all --all-features --verbose
-      - run:
-          name: Test (no default features)
-          command: cargo test --all --no-default-features --verbose
 
   install-rustup:
     steps:

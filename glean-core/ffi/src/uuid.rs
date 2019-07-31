@@ -6,7 +6,9 @@ use std::os::raw::c_char;
 
 use ffi_support::FfiStr;
 
-use crate::{define_metric, handlemap_ext::HandleMapExtension, GLEAN};
+use crate::{
+    define_metric, ffi_string_ext::FallibleToString, handlemap_ext::HandleMapExtension, GLEAN,
+};
 
 define_metric!(UuidMetric => UUID_METRICS {
     new           -> glean_new_uuid_metric(),
@@ -16,9 +18,11 @@ define_metric!(UuidMetric => UUID_METRICS {
 #[no_mangle]
 pub extern "C" fn glean_uuid_set(glean_handle: u64, metric_id: u64, value: FfiStr) {
     GLEAN.call_infallible(glean_handle, |glean| {
-        UUID_METRICS.call_infallible(metric_id, |metric| {
-            let uuid = uuid::Uuid::parse_str(&value.into_string());
+        UUID_METRICS.call_with_log(metric_id, |metric| {
+            let value = value.to_string_fallible()?;
+            let uuid = uuid::Uuid::parse_str(&value);
             metric.set(glean, uuid.unwrap());
+            Ok(())
         })
     })
 }

@@ -6,14 +6,25 @@ use std::os::raw::c_char;
 
 use ffi_support::FfiStr;
 
-use crate::{define_metric, handlemap_ext::HandleMapExtension, GLEAN};
+use crate::{
+    define_metric, ffi_string_ext::FallibleToString, handlemap_ext::HandleMapExtension, GLEAN,
+};
 
 define_metric!(StringMetric => STRING_METRICS {
     new           -> glean_new_string_metric(),
     destroy       -> glean_destroy_string_metric,
-
-    set -> glean_string_set(value: FfiStr),
 });
+
+#[no_mangle]
+pub extern "C" fn glean_string_set(glean_handle: u64, metric_id: u64, value: FfiStr) {
+    GLEAN.call_infallible(glean_handle, |glean| {
+        STRING_METRICS.call_with_log(metric_id, |metric| {
+            let value = value.to_string_fallible()?;
+            metric.set(glean, value);
+            Ok(())
+        })
+    })
+}
 
 #[no_mangle]
 pub extern "C" fn glean_string_test_has_value(

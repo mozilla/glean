@@ -7,6 +7,7 @@ use lazy_static::lazy_static;
 
 use glean_core::metrics::PingType;
 
+use crate::ffi_string_ext::FallibleToString;
 use crate::handlemap_ext::HandleMapExtension;
 use crate::GLEAN;
 
@@ -17,7 +18,10 @@ define_handle_map_deleter!(PING_TYPES, glean_destroy_ping_type);
 
 #[no_mangle]
 pub extern "C" fn glean_new_ping_type(ping_name: FfiStr, include_client_id: u8) -> u64 {
-    PING_TYPES.insert_with_log(|| Ok(PingType::new(ping_name.as_str(), include_client_id != 0)))
+    PING_TYPES.insert_with_log(|| {
+        let ping_name = ping_name.to_string_fallible()?;
+        Ok(PingType::new(&ping_name, include_client_id != 0))
+    })
 }
 
 #[no_mangle]
