@@ -11,7 +11,6 @@ use crate::{define_metric, handlemap_ext::HandleMapExtension, GLEAN};
 define_metric!(UuidMetric => UUID_METRICS {
     new           -> glean_new_uuid_metric(),
     destroy       -> glean_destroy_uuid_metric,
-    should_record -> glean_uuid_should_record,
 });
 
 #[no_mangle]

@@ -18,7 +18,6 @@ use crate::{
 
 define_metric!(EventMetric => EVENT_METRICS {
     destroy       -> glean_destroy_event_metric,
-    should_record -> glean_event_should_record,
 });
 
 #[no_mangle]

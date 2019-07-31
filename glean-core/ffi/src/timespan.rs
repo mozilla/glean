@@ -11,7 +11,6 @@ use crate::{define_metric, handlemap_ext::HandleMapExtension, GLEAN};
 define_metric!(TimespanMetric => TIMESPAN_METRICS {
     new           -> glean_new_timespan_metric(time_unit: i32),
     destroy       -> glean_destroy_timespan_metric,
-    should_record -> glean_timespan_should_record,
 });
 
 #[no_mangle]

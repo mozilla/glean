@@ -9,7 +9,6 @@ use crate::{define_metric, handlemap_ext::HandleMapExtension, GLEAN};
 define_metric!(CounterMetric => COUNTER_METRICS {
     new           -> glean_new_counter_metric(),
     destroy       -> glean_destroy_counter_metric,
-    should_record -> glean_counter_should_record,
 
     add -> glean_counter_add(amount: i32),
 });

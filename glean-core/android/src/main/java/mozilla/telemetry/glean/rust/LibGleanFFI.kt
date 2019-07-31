@@ -125,8 +125,6 @@ internal interface LibGleanFFI : Library {
 
     fun glean_boolean_set(glean_handle: Long, metric_id: Long, value: Byte)
 
-    fun glean_boolean_should_record(glean_handle: Long, metric_id: Long): Byte
-
     fun glean_boolean_test_get_value(glean_handle: Long, metric_id: Long, storage_name: String): Byte
 
     fun glean_boolean_test_has_value(glean_handle: Long, metric_id: Long, storage_name: String): Byte
@@ -146,8 +144,6 @@ internal interface LibGleanFFI : Library {
 
     fun glean_counter_add(glean_handle: Long, metric_id: Long, amount: Int)
 
-    fun glean_counter_should_record(glean_handle: Long, metric_id: Long): Byte
-
     fun glean_counter_test_get_value(glean_handle: Long, metric_id: Long, storage_name: String): Int
 
     fun glean_counter_test_has_value(glean_handle: Long, metric_id: Long, storage_name: String): Byte
@@ -166,8 +162,6 @@ internal interface LibGleanFFI : Library {
     fun glean_destroy_string_metric(handle: Long, error: RustError.ByReference)
 
     fun glean_string_set(glean_handle: Long, metric_id: Long, value: String)
-
-    fun glean_string_should_record(glean_handle: Long, metric_id: Long): Byte
 
     fun glean_string_test_get_value(glean_handle: Long, metric_id: Long, storage_name: String): Pointer?
 
@@ -200,8 +194,6 @@ internal interface LibGleanFFI : Library {
         offset_seconds: Int
     )
 
-    fun glean_datetime_should_record(glean_handle: Long, metric_id: Long): Byte
-
     fun glean_datetime_test_has_value(glean_handle: Long, metric_id: Long, storage_name: String): Byte
 
     fun glean_datetime_test_get_value_as_string(glean_handle: Long, metric_id: Long, storage_name: String): Pointer?
@@ -218,8 +210,6 @@ internal interface LibGleanFFI : Library {
     ): Long
 
     fun glean_destroy_string_list_metric(handle: Long, error: RustError.ByReference)
-
-    fun glean_string_list_should_record(glean_handle: Long, metric_id: Long): Byte
 
     fun glean_string_list_add(glean_handle: Long, metric_id: Long, value: String)
 
@@ -246,8 +236,6 @@ internal interface LibGleanFFI : Library {
 
     fun glean_destroy_uuid_metric(handle: Long, error: RustError.ByReference)
 
-    fun glean_uuid_should_record(glean_handle: Long, metric_id: Long): Byte
-
     fun glean_uuid_set(glean_handle: Long, metric_id: Long, value: String)
 
     fun glean_uuid_test_has_value(glean_handle: Long, metric_id: Long, storage_name: String): Byte
@@ -267,8 +255,6 @@ internal interface LibGleanFFI : Library {
     ): Long
 
     fun glean_destroy_timespan_metric(handle: Long, error: RustError.ByReference)
-
-    fun glean_timespan_should_record(glean_handle: Long, metric_id: Long): Byte
 
     fun glean_timespan_set_start(glean_handle: Long, metric_id: Long, start_time: Long)
 
@@ -295,8 +281,6 @@ internal interface LibGleanFFI : Library {
     ): Long
 
     fun glean_destroy_timing_distribution_metric(handle: Long, error: RustError.ByReference)
-
-    fun glean_timing_distribution_should_record(glean_handle: Long, metric_id: Long): Byte
 
     fun glean_timing_distribution_set_start(glean_handle: Long, metric_id: Long, start_time: Long): GleanTimerId
 
@@ -331,8 +315,6 @@ internal interface LibGleanFFI : Library {
         allowed_extra_keys: StringArray?,
         allowed_extra_keys_len: Int
     ): Long
-
-    fun glean_event_should_record(glean_handle: Long, metric_id: Long): Byte
 
     fun glean_event_record(
         glean_handle: Long,

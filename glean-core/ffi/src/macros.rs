@@ -10,7 +10,6 @@
 /// * `$metric_map` - name to use for the global name, should be all uppercase, e.g. `COUNTER_METRICS`.
 /// * `$new_fn(...)` - (optional) name of the constructor function, followed by all additional (non-common) arguments.
 /// * `$destroy` - name of the destructor function.
-/// * `$should_record` - name of the function to determine if the metric should be recorded.
 ///
 /// Additional simple functions can be define as a mapping `$op -> $op_fn`:
 ///
@@ -22,7 +21,6 @@ macro_rules! define_metric {
     ($metric_type:ident => $metric_map:ident {
         $(new -> $new_fn:ident($($new_argname:ident: $new_argtyp:ty),* $(,)*),)?
         destroy -> $destroy_fn:ident,
-        should_record -> $should_record_fn:ident,
 
         $(
             $op:ident -> $op_fn:ident($($op_argname:ident: $op_argtyp:ty),* $(,)*)
@@ -32,13 +30,6 @@ macro_rules! define_metric {
             pub static ref $metric_map: ffi_support::ConcurrentHandleMap<glean_core::metrics::$metric_type> = ffi_support::ConcurrentHandleMap::new();
         }
         ffi_support::define_handle_map_deleter!($metric_map, $destroy_fn);
-
-        #[no_mangle]
-        pub extern "C" fn $should_record_fn(glean_handle: u64, metric_id: u64) -> u8 {
-            crate::handlemap_ext::HandleMapExtension::call_infallible(&*crate::GLEAN, glean_handle, |glean| {
-                crate::handlemap_ext::HandleMapExtension::call_infallible(&*$metric_map, metric_id, |metric| glean_core::metrics::MetricType::should_record(&*metric, &glean))
-            })
-        }
 
         $(
         #[no_mangle]

@@ -14,7 +14,6 @@ use glean_core::metrics::TimerId;
 define_metric!(TimingDistributionMetric => TIMING_DISTRIBUTION_METRICS {
     new           -> glean_new_timing_distribution_metric(time_unit: i32),
     destroy       -> glean_destroy_timing_distribution_metric,
-    should_record -> glean_timing_distribution_should_record,
 });
 
 #[no_mangle]

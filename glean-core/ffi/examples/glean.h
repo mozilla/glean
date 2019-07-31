@@ -38,8 +38,6 @@ typedef const int64_t *RawInt64Array;
 
 void glean_boolean_set(uint64_t glean_handle, uint64_t metric_id, uint8_t value);
 
-uint8_t glean_boolean_should_record(uint64_t glean_handle, uint64_t metric_id);
-
 uint8_t glean_boolean_test_get_value(uint64_t glean_handle,
                                      uint64_t metric_id,
                                      FfiStr storage_name);
@@ -49,8 +47,6 @@ uint8_t glean_boolean_test_has_value(uint64_t glean_handle,
                                      FfiStr storage_name);
 
 void glean_counter_add(uint64_t glean_handle, uint64_t metric_id, int32_t amount);
-
-uint8_t glean_counter_should_record(uint64_t glean_handle, uint64_t metric_id);
 
 int32_t glean_counter_test_get_value(uint64_t glean_handle,
                                      uint64_t metric_id,
@@ -70,8 +66,6 @@ void glean_datetime_set(uint64_t glean_handle,
                         uint32_t second,
                         int64_t nano,
                         int32_t offset_seconds);
-
-uint8_t glean_datetime_should_record(uint64_t glean_handle, uint64_t metric_id);
 
 char *glean_datetime_test_get_value_as_string(uint64_t glean_handle,
                                               uint64_t metric_id,
@@ -121,8 +115,6 @@ void glean_event_record(uint64_t glean_handle,
                         RawIntArray extra_keys,
                         RawStringArray extra_values,
                         int32_t extra_len);
-
-uint8_t glean_event_should_record(uint64_t glean_handle, uint64_t metric_id);
 
 char *glean_event_test_get_value_as_json_string(uint64_t glean_handle,
                                                 uint64_t metric_id,
@@ -292,8 +284,6 @@ void glean_string_list_set(uint64_t glean_handle,
                            RawStringArray values,
                            int32_t values_len);
 
-uint8_t glean_string_list_should_record(uint64_t glean_handle, uint64_t metric_id);
-
 char *glean_string_list_test_get_value_as_json_string(uint64_t glean_handle,
                                                       uint64_t metric_id,
                                                       FfiStr storage_name);
@@ -303,8 +293,6 @@ uint8_t glean_string_list_test_has_value(uint64_t glean_handle,
                                          FfiStr storage_name);
 
 void glean_string_set(uint64_t glean_handle, uint64_t metric_id, FfiStr value);
-
-uint8_t glean_string_should_record(uint64_t glean_handle, uint64_t metric_id);
 
 char *glean_string_test_get_value(uint64_t glean_handle, uint64_t metric_id, FfiStr storage_name);
 
@@ -321,8 +309,6 @@ void glean_timespan_set_raw_nanos(uint64_t glean_handle,
 void glean_timespan_set_start(uint64_t glean_handle, uint64_t metric_id, uint64_t start_time);
 
 void glean_timespan_set_stop(uint64_t glean_handle, uint64_t metric_id, uint64_t stop_time);
-
-uint8_t glean_timespan_should_record(uint64_t glean_handle, uint64_t metric_id);
 
 uint64_t glean_timespan_test_get_value(uint64_t glean_handle,
                                        uint64_t metric_id,
@@ -348,8 +334,6 @@ void glean_timing_distribution_set_stop_and_accumulate(uint64_t glean_handle,
                                                        TimerId timer_id,
                                                        uint64_t stop_time);
 
-uint8_t glean_timing_distribution_should_record(uint64_t glean_handle, uint64_t metric_id);
-
 char *glean_timing_distribution_test_get_value_as_json_string(uint64_t glean_handle,
                                                               uint64_t metric_id,
                                                               FfiStr storage_name);
@@ -359,8 +343,6 @@ uint8_t glean_timing_distribution_test_has_value(uint64_t glean_handle,
                                                  FfiStr storage_name);
 
 void glean_uuid_set(uint64_t glean_handle, uint64_t metric_id, FfiStr value);
-
-uint8_t glean_uuid_should_record(uint64_t glean_handle, uint64_t metric_id);
 
 char *glean_uuid_test_get_value(uint64_t glean_handle, uint64_t metric_id, FfiStr storage_name);
 

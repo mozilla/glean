@@ -11,7 +11,6 @@ use crate::{define_metric, handlemap_ext::HandleMapExtension, GLEAN};
 define_metric!(StringMetric => STRING_METRICS {
     new           -> glean_new_string_metric(),
     destroy       -> glean_destroy_string_metric,
-    should_record -> glean_string_should_record,
 
     set -> glean_string_set(value: FfiStr),
 });
