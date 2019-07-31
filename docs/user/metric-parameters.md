@@ -26,8 +26,6 @@ All metric types also support the following optional parameters:
     
 - `send_in_pings`: Defines which pings the metric should be sent on. If not specified, the metric is sent on the "default ping", which is the `events` ping for events and the `metrics` ping for everything else. Most metrics don't need to specify this unless they are sent on custom pings.
 
-  (There is an additional special value of `all_pings` that may be used for internal metrics only.  It is used to indicate to the ingestion pipeline that a metric may appear in any ping.)
-  
 - `disabled`: (default: `false`) Data collection for this metric is disabled.
 
 - `version`: (default: 0) The version of the metric. A monotonically increasing integer value. This should be bumped if the metric changes in a backward-incompatible way.
