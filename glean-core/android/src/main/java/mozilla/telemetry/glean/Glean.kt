@@ -524,8 +524,8 @@ open class GleanInternalAPI internal constructor () {
         }*/
 
         // Init Glean.
-        // Glean.setUploadEnabled(true)
         Glean.testDestroyGleanHandle()
+        Glean.setUploadEnabled(true)
         Glean.initialize(context, config)
     }
 
