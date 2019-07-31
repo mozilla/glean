@@ -103,7 +103,8 @@ import org.mockito.Mockito.`when`
 
 @RunWith(AndroidJUnit4::class)
 class MyCustomPingSchedulerTest {
-    // Apply the GleanTestRule
+    // Apply the GleanTestRule to set up a disposable Glean instance.
+    // Please note that this clears the Glean data across tests.
     @get:Rule
     val gleanRule = GleanTestRule(ApplicationProvider.getApplicationContext())
 
