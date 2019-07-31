@@ -25,7 +25,7 @@ pub type RawInt64Array = *const i64;
 /// * Invalid UTF-8 in any string will return an error from this function.
 pub fn from_raw_string_array(arr: RawStringArray, len: i32) -> glean_core::Result<Vec<String>> {
     unsafe {
-        if arr.is_null() || len == 0 {
+        if arr.is_null() || len <= 0 {
             return Ok(vec![]);
         }
 
@@ -56,7 +56,7 @@ pub fn from_raw_int_array_and_string_array(
     len: i32,
 ) -> glean_core::Result<Option<HashMap<i32, String>>> {
     unsafe {
-        if keys.is_null() || values.is_null() || len == 0 {
+        if keys.is_null() || values.is_null() || len <= 0 {
             return Ok(None);
         }
 
@@ -88,7 +88,7 @@ pub fn from_raw_string_array_and_string_array(
     len: i32,
 ) -> glean_core::Result<Option<HashMap<String, String>>> {
     unsafe {
-        if keys.is_null() || values.is_null() || len == 0 {
+        if keys.is_null() || values.is_null() || len <= 0 {
             return Ok(None);
         }
 
@@ -119,7 +119,7 @@ pub fn from_raw_string_array_and_string_array(
 /// * We check the array pointer for validity (non-null).
 pub fn from_raw_int64_array(values: RawInt64Array, len: i32) -> Vec<i64> {
     unsafe {
-        if values.is_null() || len == 0 {
+        if values.is_null() || len <= 0 {
             return vec![];
         }
 
