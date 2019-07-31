@@ -6,7 +6,7 @@ These functions expose a way to inspect and validate recorded metric values with
 
 ## General test API method semantics
 
-In order to prevent issues with async calls when unit testing Glean, it is important to put the Glean SDK into testing mode by applying the JUnit `GleanTestRule` to your test class, as shown below:
+In order to prevent issues with async calls when unit testing Glean, it is important to put the Glean SDK into testing mode by applying the JUnit `GleanTestRule` to your test class. When the Glean SDK is in testing mode, it enables uploading and clears the recorded emtrics at the beginning of each test run. The rule can be used as shown below:
 
 ```kotlin
 @RunWith(AndroidJUnit4::class)
