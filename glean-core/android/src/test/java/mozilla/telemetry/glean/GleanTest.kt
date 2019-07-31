@@ -22,26 +22,18 @@ import mozilla.telemetry.glean.private.Lifetime
 import mozilla.telemetry.glean.private.NoExtraKeys
 import mozilla.telemetry.glean.private.PingType
 import mozilla.telemetry.glean.private.StringMetricType
-// import mozilla.components.service.glean.firstrun.FileFirstRunDetector
-// import mozilla.telemetry.glean.private.DatetimeMetricType
-// import mozilla.telemetry.glean.private.TimeUnit as GleanTimeUnit
-// import mozilla.telemetry.glean.private.UuidMetricType
-// import mozilla.components.service.glean.storages.StringsStorageEngine
 import mozilla.telemetry.glean.scheduler.GleanLifecycleObserver
 import mozilla.telemetry.glean.scheduler.PingUploadWorker
 import mozilla.telemetry.glean.testing.GleanTestRule
-// import mozilla.components.service.glean.storages.StorageEngineManager
 import mozilla.telemetry.glean.utils.getLanguageFromLocale
 import mozilla.telemetry.glean.utils.getLocaleTag
 import org.json.JSONObject
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
-// import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Assert.assertFalse
-// import org.junit.Assert.assertNotEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -51,9 +43,7 @@ import org.robolectric.RobolectricTestRunner
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
-// import java.util.Date
 import java.util.Locale
-// import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 @ObsoleteCoroutinesApi
