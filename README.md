@@ -28,6 +28,8 @@ The code in this repository for the cross-platform implementation is organized a
 * [./glean-core/android](glean-core/android) contains the Kotlin bindings for use by Android applications.
 * [./glean-core/ios](glean-core/ios) contains the Swift bindings for use by iOS applications.
 
+**Note: The Glean SDK requires at least [Rust 1.34.2](https://blog.rust-lang.org/2019/05/14/Rust-1.34.2.html). Older versions are untested.**
+
 ## Contact
 
 To contact us you can:
