@@ -145,6 +145,15 @@ dependencies {
     implementation "androidx.annotation:annotation:1.0.2"
     implementation "androidx.work:work-runtime-ktx:2.0.1"
 
+    // We need a compileOnly dependency on the following block of testing
+    // libraries in order to expose the GleanTestRule to applications/libraries
+    // using the Glean SDK.
+    // We can't simply create a separate package otherwise we would need
+    // to provide a public API for the testing package to access the
+    // Glean internals, which is something we would not want to do.
+    compileOnly 'junit:junit:4.12'
+    compileOnly 'androidx.work:work-testing:2.0.1'
+
     // For reasons unknown, resolving the jnaForTest configuration directly
     // trips a nasty issue with the Android-Gradle plugin 3.2.1, like `Cannot
     // change attributes of configuration ':PROJECT:kapt' after it has been
