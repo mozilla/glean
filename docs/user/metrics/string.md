@@ -26,7 +26,7 @@ search.default:
     ...
 ```
 
-## API 
+## API
 
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.SearchDefault
@@ -42,7 +42,6 @@ There are test APIs available too:
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.SearchDefault
 
-Glean.enableTestingMode()
 // Was anything recorded?
 assertTrue(SearchDefault.name.testHasValue())
 // Does the string metric have the expected value?

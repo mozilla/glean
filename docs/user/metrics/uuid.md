@@ -31,11 +31,10 @@ There are test APIs available too.
 
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.User
-Glean.enableTestingMode()
 
 // Was anything recorded?
 assertTrue(User.clientId.testHasValue())
-// Was it the expected value? 
+// Was it the expected value?
 assertEquals(uuid, User.clientId.testGetValue())
 ```
 
@@ -50,7 +49,7 @@ assertEquals(uuid, User.clientId.testGetValue())
 ## Recorded errors
 
 * None.
- 
+
 ## Reference
 
 * See [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-uuid-metric-type/index.html).

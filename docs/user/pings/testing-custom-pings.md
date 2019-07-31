@@ -101,40 +101,30 @@ import my.component.GleanMetrics.CustomPingData
 import org.mockito.Mockito.spy
 import org.mockito.Mockito.`when`
 
-/**
- * This is an helper function used to enable testing mode for Glean.
- * Should only be called once before the tests, but nothing breaks if it's
- * called more than once!
- */
-fun setupGleanOnce() {
-  // Enable testing mode
-  // (Perhaps called from a @Before method so it precedes every test in the suite.)
-  Glean.enableTestingMode()
+@RunWith(AndroidJUnit4::class)
+class MyCustomPingSchedulerTest {
+    // Apply the GleanTestRule
+    @get:Rule
+    val gleanRule = GleanTestRule(ApplicationProvider.getApplicationContext())
 
-  // We're using the WorkManager in a bunch of places, and Glean will crash
-  // in tests without this line. Let's simply put it here.
-  WorkManagerTestInitHelper.initializeTestWorkManager(context)
+    @Test
+    fun `verify custom ping metrics`() {
+      setupGleanOnce()
 
-  Glean.initialize(context)
-}
+      val scheduler = spy(MyCustomPingScheduler())
+      doAnswer {
+        // Here we validate the content that goes into the ping.
+        assertTrue(CustomPingData.sampleString.testHasValue())
+        assertEquals("test-data", CustomPingData.sampleString.testGetValue())
 
-@Test
-fun `verify custom ping metrics`() {
-  setupGleanOnce()
+        // We want to intercept this call, but we also want to make sure the
+        // real Glean API is called in order to clear the ping store and to provide
+        // consistent behaviour with respect to the application.
+        it.callRealMethod()
+      }.`when`(scheduler).sendPing()
 
-  val scheduler = spy(MyCustomPingScheduler())
-  doAnswer {
-    // Here we validate the content that goes into the ping.
-    assertTrue(CustomPingData.sampleString.testHasValue())
-    assertEquals("test-data", CustomPingData.sampleString.testGetValue())
-
-    // We want to intercept this call, but we also want to make sure the
-    // real Glean API is called in order to clear the ping store and to provide
-    // consistent behaviour with respect to the application.
-    it.callRealMethod()
-  }.`when`(scheduler).sendPing()
-
-  scheduler.addSomeData()
-  scheduler.schedulePing()
+      scheduler.addSomeData()
+      scheduler.schedulePing()
+    }
 }
 ```

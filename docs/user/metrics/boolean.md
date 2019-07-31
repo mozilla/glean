@@ -28,7 +28,6 @@ There are test APIs available too:
 
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.Flags
-Glean.enableTestingMode()
 
 // Was anything recorded?
 assertTrue(Flags.a11yEnabled.testHasValue())

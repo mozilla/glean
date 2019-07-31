@@ -59,7 +59,6 @@ There are test APIs available too:
 
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.Auth
-Glean.enableTestingMode()
 
 // Was anything recorded?
 assertTrue(Auth.loginTime.testHasValue())
