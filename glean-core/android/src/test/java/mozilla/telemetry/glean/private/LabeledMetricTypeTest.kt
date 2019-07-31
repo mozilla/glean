@@ -9,15 +9,11 @@ import mozilla.telemetry.glean.collectAndCheckPingSchema
 import mozilla.telemetry.glean.GleanMetrics.Pings
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Test
-import org.junit.Ignore
 import org.junit.runner.RunWith
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Assert.assertFalse
 import org.junit.Rule
-/*
-import java.util.UUID
-*/
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
@@ -229,58 +225,6 @@ class LabeledMetricTypeTest {
             4,
             labeledCounterMetric["__other__"].testGetValue()
         )
-    }
-
-    @Ignore("UUID metric not yet implemented")
-    @Test
-    fun `Test labeled uuid metric type`() {
-        val uuidMetric = UuidMetricType(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.Application,
-            name = "labeled_uuid_metric",
-            sendInPings = listOf("metrics")
-        )
-
-        val labeledUuidMetric = LabeledMetricType<UuidMetricType>(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.Application,
-            name = "labeled_uuid_metric",
-            sendInPings = listOf("metrics"),
-            subMetric = uuidMetric
-        )
-
-        // labeledUuidMetric["label1"].record(UUID.randomUUID())
-        // labeledUuidMetric["label2"].record(UUID.randomUUID())
-
-        // collectAndCheckPingSchema(Pings.metrics).getJSONObject("metrics")!!
-    }
-
-    @Ignore("String List metric not yet implemented")
-    @Test
-    fun `Test labeled string list metric type`() {
-        val stringListMetric = StringListMetricType(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.Application,
-            name = "labeled_string_list_metric",
-            sendInPings = listOf("metrics")
-        )
-
-        val labeledStringListMetric = LabeledMetricType<StringListMetricType>(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.Application,
-            name = "labeled_string_list_metric",
-            sendInPings = listOf("metrics"),
-            subMetric = stringListMetric
-        )
-
-        // labeledStringListMetric["label1"].set(listOf("a", "b", "c"))
-        // labeledStringListMetric["label2"].set(listOf("a", "b", "c"))
-
-        // collectAndCheckPingSchema(Pings.metrics).getJSONObject("metrics")!!
     }
 
     @Test
