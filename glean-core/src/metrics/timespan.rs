@@ -120,16 +120,33 @@ impl TimespanMetric {
             return;
         }
 
+        let mut report_value_exists: bool = false;
         glean.storage().record_with(&self.meta, |old_value| {
             if overwrite {
                 Metric::Timespan(elapsed, self.time_unit)
             } else {
                 match old_value {
-                    Some(old @ Metric::Timespan(..)) => old,
+                    Some(old @ Metric::Timespan(..)) => {
+                        // If some value already exists, report an error.
+                        // We do this out of the storage since recording an
+                        // error accesses the storage as well.
+                        report_value_exists = true;
+                        old
+                    }
                     _ => Metric::Timespan(elapsed, self.time_unit),
                 }
             }
         });
+
+        if report_value_exists {
+            record_error(
+                glean,
+                &self.meta,
+                ErrorType::InvalidValue,
+                "Timespan value already recorded. New value discarded.",
+                None,
+            );
+        };
     }
 
     /// **Test-only API (exported for FFI purposes).**
