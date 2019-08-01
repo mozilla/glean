@@ -79,8 +79,10 @@ class TimespanMetricType internal constructor(
 
     /**
      * Stop tracking time for the provided metric.
-     * Sets the metric to the elapsed time.
-     * This will record an error if no [start] was called.
+     * Sets the metric to the elapsed time, but does not overwrite an already
+     * existing value.
+     * This will record an error if no [start] was called or there is an already
+     * existing value.
      */
     fun stop() {
         if (disabled) {

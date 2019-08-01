@@ -114,6 +114,11 @@ fn second_timer_run_is_skipped() {
     metric.set_start(&glean, 0);
     metric.set_stop(&glean, duration);
 
+    // No error should be recorded here: we had no prior value stored.
+    assert!(
+        test_get_num_recorded_errors(&glean, metric.meta(), ErrorType::InvalidValue, None).is_err()
+    );
+
     let first_value = metric.test_get_value(&glean, "store1").unwrap();
     assert_eq!(duration, first_value);
 
@@ -122,6 +127,13 @@ fn second_timer_run_is_skipped() {
 
     let second_value = metric.test_get_value(&glean, "store1").unwrap();
     assert_eq!(second_value, first_value);
+
+    // Make sure that the error has been recorded: we had a stored value, the
+    // new measurement was dropped.
+    assert_eq!(
+        Ok(1),
+        test_get_num_recorded_errors(&glean, metric.meta(), ErrorType::InvalidValue, None)
+    );
 }
 
 #[test]
