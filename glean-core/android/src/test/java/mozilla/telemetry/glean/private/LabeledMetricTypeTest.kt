@@ -4,59 +4,26 @@
 
 package mozilla.telemetry.glean.private
 
-/*
-import android.content.Context
-import android.content.SharedPreferences
-import androidx.test.core.app.ApplicationProvider
-*/
 import androidx.test.core.app.ApplicationProvider
 import mozilla.telemetry.glean.collectAndCheckPingSchema
 import mozilla.telemetry.glean.GleanMetrics.Pings
 import mozilla.telemetry.glean.testing.GleanTestRule
-import org.junit.After
 import org.junit.Test
-import org.junit.Ignore
 import org.junit.runner.RunWith
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Assert.assertFalse
 import org.junit.Rule
-/*
-import java.util.UUID
-import org.mockito.ArgumentMatchers.anyString
-import org.mockito.ArgumentMatchers.eq
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.doAnswer
-import org.mockito.Mockito.doReturn
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.spy
-*/
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class LabeledMetricTypeTest {
-    /*
-    private data class GenericMetricType(
-        override val disabled: Boolean,
-        override val category: String,
-        override val lifetime: Lifetime,
-        override val name: String,
-        override val sendInPings: List<String>
-    ) : CommonMetricData
-    */
 
     @get:Rule
     val gleanRule = GleanTestRule(ApplicationProvider.getApplicationContext())
 
-    @After
-    fun resetGlobalState() {
-        /*Glean.setUploadEnabled(true)*/
-    }
-
     @Test
     fun `test labeled counter type`() {
-        // CountersStorageEngine.clearAllStores()
-
         val counterMetric = CounterMetricType(
             disabled = false,
             category = "telemetry",
@@ -260,99 +227,6 @@ class LabeledMetricTypeTest {
         )
     }
 
-    @Ignore("Timespan metric not yet implemented")
-    @Test
-    fun `Test labeled timespan metric type`() {
-        /*
-        TimespansStorageEngine.clearAllStores()
-
-        val timespanMetric = TimespanMetricType(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.Application,
-            name = "labeled_timespan_metric",
-            sendInPings = listOf("metrics"),
-            timeUnit = TimeUnit.Nanosecond
-        )
-
-        val labeledTimespanMetric = LabeledMetricType<TimespanMetricType>(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.Application,
-            name = "labeled_timespan_metric",
-            sendInPings = listOf("metrics"),
-            subMetric = timespanMetric
-        )
-
-        labeledTimespanMetric["label1"].start(this)
-        labeledTimespanMetric["label1"].stopAndSum(this)
-        labeledTimespanMetric["label2"].start(this)
-        labeledTimespanMetric["label2"].stopAndSum(this)
-
-        assertTrue(labeledTimespanMetric["label1"].testHasValue())
-
-        collectAndCheckPingSchema(Pings.metrics).getJSONObject("metrics")!!
-        */
-    }
-
-    @Ignore("UUID metric not yet implemented")
-    @Test
-    fun `Test labeled uuid metric type`() {
-        /*
-        val uuidMetric = UuidMetricType(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.Application,
-            name = "labeled_uuid_metric",
-            sendInPings = listOf("metrics")
-        )
-
-        val labeledUuidMetric = LabeledMetricType<UuidMetricType>(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.Application,
-            name = "labeled_uuid_metric",
-            sendInPings = listOf("metrics"),
-            subMetric = uuidMetric
-        )
-
-        UuidsStorageEngine.record(labeledUuidMetric["label1"], UUID.randomUUID())
-        UuidsStorageEngine.record(labeledUuidMetric["label2"], UUID.randomUUID())
-
-        collectAndCheckPingSchema(Pings.metrics).getJSONObject("metrics")!!
-        */
-    }
-
-    @Ignore("String List metric not yet implemented")
-    @Test
-    fun `Test labeled string list metric type`() {
-        /*
-        StringListsStorageEngine.clearAllStores()
-
-        val stringListMetric = StringListMetricType(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.Application,
-            name = "labeled_string_list_metric",
-            sendInPings = listOf("metrics")
-        )
-
-        val labeledStringListMetric = LabeledMetricType<StringListMetricType>(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.Application,
-            name = "labeled_string_list_metric",
-            sendInPings = listOf("metrics"),
-            subMetric = stringListMetric
-        )
-
-        StringListsStorageEngine.set(labeledStringListMetric["label1"], listOf("a", "b", "c"))
-        StringListsStorageEngine.set(labeledStringListMetric["label2"], listOf("a", "b", "c"))
-
-        collectAndCheckPingSchema(Pings.metrics).getJSONObject("metrics")!!
-        */
-    }
-
     @Test
     fun `Test labeled string metric type`() {
         val stringMetric = StringMetricType(
@@ -405,10 +279,8 @@ class LabeledMetricTypeTest {
         assertTrue(labeledBooleanMetric["label2"].testGetValue())
     }
 
-    @Ignore("Events are not yet implemented")
     @Test(expected = IllegalStateException::class)
     fun `Test that we labeled events are an exception`() {
-        /*
         val eventMetric = EventMetricType<NoExtraKeys>(
             disabled = false,
             category = "telemetry",
@@ -427,7 +299,6 @@ class LabeledMetricTypeTest {
         )
 
         labeledEventMetric["label1"]
-        */
     }
 
     // SKIPPED `test seen labels get reloaded from disk`
