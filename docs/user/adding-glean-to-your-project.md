@@ -11,16 +11,20 @@ Products using the Glean SDK to collect telemetry **must**:
 
 ## Usage
 
-### Setting up the dependency
+### Integrating with your project
 
-Use Gradle to download the library from [maven.mozilla.org](https://maven.mozilla.org/)
-([Setup repository](../../../README.md#maven-repository)):
+#### Setting up the dependency
+
+Use Gradle to download the library from [maven.mozilla.org](https://maven.mozilla.org/) ([Setup repository](https://github.com/mozilla-mobile/android-components/blob/master/README.md#maven-repository)) by adding the following to your Gradle configuration:
 
 ```Groovy
 implementation "org.mozilla.components:service-glean:{latest-version}"
 ```
 
-### Integrating with the build system
+The Glean SDK is released as part of [android-components](https://github.com/mozilla-mobile/android-components).  Therefore, it follows android-components' versions.
+The [android-components release page](https://github.com/mozilla-mobile/android-components/releases/) can be used to determine the latest version.
+
+#### Integrating with the build system
 
 In order for the Glean SDK to generate an API for your metrics, a Python environment must be accessible at build time.
 This is done automatically by the [`com.jetbrains.python.envs`](https://github.com/JetBrains/gradle-python-envs/) plugin.
@@ -36,14 +40,14 @@ Right before the end of the same file, the Glean SDK build script must be includ
 This script can be referenced directly from the GitHub repo, as shown below:
 
 ```Groovy
-apply from: 'https://github.com/mozilla/glean/raw/v{latest-version}/glean-core/android/sdk_generator.gradle'
+apply from: 'https://github.com/mozilla-mobile/android-components/raw/v{latest-version}/components/service/scripts/sdk_generator.gradle'
 ```
 
 > **Important:** the `{latest-version}` placeholder in the above link should be replaced with the version number of the Glean SDK used by the project.
-For example, if version *0.34.2* is used, then the include directive becomes:
+For example, if version *6.0.2* is used, then the include directive becomes:
 
 ```Groovy
-apply from: 'https://github.com/mozilla/glean/raw/v0.34.2/glean-core/android/sdk_generator.gradle'
+apply from: 'https://github.com/mozilla-mobile/android-components/raw/v6.0.2/components/service/scripts/sdk_generator.gradle'
 ```
 
 ### Adding new metrics
