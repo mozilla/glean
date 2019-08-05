@@ -137,7 +137,7 @@ open class GleanInternalAPI internal constructor () {
         // ping startup check should be performed before any other ping, since it relies
         // on being dispatched to the API context before any other metric.
         metricsPingScheduler = MetricsPingScheduler(applicationContext)
-        metricsPingScheduler.startupCheck()
+        metricsPingScheduler.schedule()
 
         // Signal Dispatcher that init is complete
         @Suppress("EXPERIMENTAL_API_USAGE")
