@@ -114,6 +114,7 @@ jobs:
       - image: circleci/android:api-28-ndk
     steps:
       - checkout
+      - run: ./gradlew --no-daemon lint
       - run: ./gradlew --no-daemon ktlint
       - run: ./gradlew --no-daemon detekt
 
