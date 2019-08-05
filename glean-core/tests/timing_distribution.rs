@@ -5,6 +5,8 @@
 mod common;
 use crate::common::*;
 
+use std::time::Duration;
+
 use serde_json::json;
 
 use glean_core::metrics::*;
@@ -224,4 +226,33 @@ fn the_accumulate_samples_api_correctly_handles_negative_values() {
             Some("store1")
         )
     );
+}
+
+#[test]
+fn large_nanoseconds_values() {
+    let (glean, _t) = new_glean();
+
+    let mut metric = TimingDistributionMetric::new(
+        CommonMetricData {
+            name: "distribution".into(),
+            category: "telemetry".into(),
+            send_in_pings: vec!["store1".into()],
+            disabled: false,
+            lifetime: Lifetime::Ping,
+        },
+        TimeUnit::Nanosecond,
+    );
+
+    let time = Duration::from_secs(10).as_nanos() as u64;
+    assert!(time > u64::from(u32::max_value()));
+
+    let id = metric.set_start(&glean, 0);
+    metric.set_stop_and_accumulate(&glean, id, time);
+
+    let val = metric
+        .test_get_value(&glean, "store1")
+        .expect("Value should be stored");
+
+    // Check that we got the right sum and number of samples.
+    assert_eq!(val.sum() as u64, time);
 }
