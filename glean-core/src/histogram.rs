@@ -117,7 +117,7 @@ impl Histogram {
     /// Add a single value to this histogram.
     pub fn accumulate(&mut self, sample: u64) {
         *self.get_bucket_for_sample(sample) += 1;
-        self.sum += sample;
+        self.sum = self.sum.saturating_add(sample);
         self.count += 1;
     }
 
@@ -256,5 +256,18 @@ mod test {
         assert_eq!(1, hist.values[33]); // bucket_ranges[33] = 92
         assert_eq!(1, hist.values[57]); // bucket_ranges[57] = 964
         assert_eq!(1, hist.values[80]); // bucket_ranges[80] = 9262
+    }
+
+    #[test]
+    fn accumulate_large_numbers() {
+        let mut hist = Histogram::exponential(1, 500, 10);
+
+        hist.accumulate(u64::max_value());
+        hist.accumulate(u64::max_value());
+
+        assert_eq!(2, hist.count());
+        // Saturate before overflowing
+        assert_eq!(u64::max_value(), hist.sum());
+        assert_eq!(2, hist.values[9]);
     }
 }
