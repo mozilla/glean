@@ -4,3 +4,8 @@ style:
     active: false
 build:
   maxIssues: 0
+
+complexity:
+  LongMethod:
+    active: true
+    threshold: 60
