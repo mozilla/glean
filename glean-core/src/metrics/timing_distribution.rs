@@ -88,10 +88,10 @@ pub struct TimingDistributionMetric {
 #[derive(Debug, Serialize)]
 pub struct Snapshot {
     bucket_count: usize,
-    range: [u32; 2],
+    range: [u64; 2],
     histogram_type: Type,
-    values: HashMap<u32, u32>,
-    sum: u32,
+    values: HashMap<u64, u64>,
+    sum: u64,
     time_unit: TimeUnit,
 }
 
@@ -187,12 +187,12 @@ impl TimingDistributionMetric {
             .storage()
             .record_with(&self.meta, |old_value| match old_value {
                 Some(Metric::TimingDistribution(mut hist, time_unit)) => {
-                    hist.accumulate(duration as u32);
+                    hist.accumulate(duration);
                     Metric::TimingDistribution(hist, time_unit)
                 }
                 _ => {
                     let mut hist = Histogram::default();
-                    hist.accumulate(duration as u32);
+                    hist.accumulate(duration);
                     Metric::TimingDistribution(hist, self.time_unit)
                 }
             });
@@ -213,7 +213,7 @@ impl TimingDistributionMetric {
     /// Accumulates the provided signed samples in the metric.
     ///
     /// This is required so that the platform-specific code can provide us with
-    /// 64 bit signed integers if no `u32` comparable type is available. This
+    /// 64 bit signed integers if no `u64` comparable type is available. This
     /// will take care of filtering and reporting errors for any provided negative
     /// sample.
     ///
@@ -242,7 +242,7 @@ impl TimingDistributionMetric {
 
             for sample in samples.iter() {
                 if *sample >= 0 {
-                    hist.accumulate(*sample as u32);
+                    hist.accumulate(*sample as u64);
                 } else {
                     num_errors += 1;
                 }

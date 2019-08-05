@@ -146,7 +146,7 @@ class TimingDistributionMetricType internal constructor(
         // - [Int.MAX_VALUE] is 2147483647
         // - [Long.MAX_VALUE] is 9223372036854775807
         //
-        // On the rust side, Long(s) are handled as u64 and then casted to u32.
+        // On the rust side, Long(s) are handled as i64 and then casted to u64.
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.launch {
             LibGleanFFI.INSTANCE.glean_timing_distribution_accumulate_samples(

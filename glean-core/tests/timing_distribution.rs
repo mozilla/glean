@@ -49,7 +49,7 @@ fn serializer_should_correctly_serialize_timing_distribution() {
             .test_get_value(&glean, "store1")
             .expect("Value should be stored");
 
-        assert_eq!(val.sum(), duration as u32);
+        assert_eq!(val.sum(), duration);
     }
 
     // Make a new Glean instance here, which should force reloading of the data from disk

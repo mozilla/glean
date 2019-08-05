@@ -10,8 +10,8 @@ use serde::{Deserialize, Serialize};
 // of millisecond.  The values arrived at were approximated using existing "_MS"
 // telemetry probes as a guide.
 const DEFAULT_BUCKET_COUNT: usize = 100;
-const DEFAULT_RANGE_MIN: u32 = 0;
-const DEFAULT_RANGE_MAX: u32 = 60_000;
+const DEFAULT_RANGE_MIN: u64 = 0;
+const DEFAULT_RANGE_MAX: u64 = 60_000;
 
 /// Create the possible ranges in an exponential distribution from `min` to `max` with
 /// `bucket_count` buckets.
@@ -22,8 +22,8 @@ const DEFAULT_RANGE_MAX: u32 = 60_000;
 /// Bucket limits are the minimal bucket value.
 /// That means values in a bucket `i` are `bucket[i] <= value < bucket[i+1]`.
 /// It will always contain an underflow bucket (`< 1`).
-fn exponential_range(min: u32, max: u32, bucket_count: usize) -> Vec<u32> {
-    let log_max = f64::from(max).ln();
+fn exponential_range(min: u64, max: u64, bucket_count: usize) -> Vec<u64> {
+    let log_max = (max as f64).ln();
 
     let mut ranges = Vec::with_capacity(bucket_count);
     let mut current = min;
@@ -36,10 +36,10 @@ fn exponential_range(min: u32, max: u32, bucket_count: usize) -> Vec<u32> {
     ranges.push(current);
 
     for i in 2..bucket_count {
-        let log_current = f64::from(current).ln();
+        let log_current = (current as f64).ln();
         let log_ratio = (log_max - log_current) / (bucket_count - i) as f64;
         let log_next = log_current + log_ratio;
-        let next_value = log_next.exp().round() as u32;
+        let next_value = log_next.exp().round() as u64;
         current = if next_value > current {
             next_value
         } else {
@@ -77,13 +77,13 @@ pub enum Type {
 /// ```
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Histogram {
-    min: u32,
-    max: u32,
-    bucket_ranges: Vec<u32>,
-    values: Vec<u32>,
+    min: u64,
+    max: u64,
+    bucket_ranges: Vec<u64>,
+    values: Vec<u64>,
 
-    count: u32,
-    sum: u32,
+    count: u64,
+    sum: u64,
     typ: Type,
 }
 
@@ -95,7 +95,7 @@ impl Default for Histogram {
 
 impl Histogram {
     /// Create a histogram with `count` exponential buckets in the range `min` to `max`.
-    pub fn exponential(min: u32, max: u32, bucket_count: usize) -> Histogram {
+    pub fn exponential(min: u64, max: u64, bucket_count: usize) -> Histogram {
         let bucket_ranges = exponential_range(min, max, bucket_count);
 
         Histogram {
@@ -115,19 +115,19 @@ impl Histogram {
     }
 
     /// Add a single value to this histogram.
-    pub fn accumulate(&mut self, sample: u32) {
+    pub fn accumulate(&mut self, sample: u64) {
         *self.get_bucket_for_sample(sample) += 1;
         self.sum += sample;
         self.count += 1;
     }
 
     /// Get the total sum of values recorded in this histogram.
-    pub fn sum(&self) -> u32 {
+    pub fn sum(&self) -> u64 {
         self.sum
     }
 
     /// Get the total count of values recorded in this histogram.
-    pub fn count(&self) -> u32 {
+    pub fn count(&self) -> u64 {
         self.count
     }
 
@@ -135,7 +135,7 @@ impl Histogram {
     ///
     /// This uses a binary search to locate the index `i` of the bucket such that:
     /// bucket[i] <= sample < bucket[i+1]
-    fn get_bucket_for_sample(&mut self, sample: u32) -> &mut u32 {
+    fn get_bucket_for_sample(&mut self, sample: u64) -> &mut u64 {
         let limit = match self.bucket_ranges.binary_search(&sample) {
             // Found an exact match to fit it in
             Ok(i) => i,
@@ -147,24 +147,24 @@ impl Histogram {
     }
 
     /// Get the list of ranges.
-    pub fn bucket_ranges(&self) -> &[u32] {
+    pub fn bucket_ranges(&self) -> &[u64] {
         &self.bucket_ranges
     }
 
     /// Get the filled values.
-    pub fn values(&self) -> &[u32] {
+    pub fn values(&self) -> &[u64] {
         &self.values
     }
 
     /// Get the minimal recordable value.
-    pub fn min(&self) -> u32 {
+    pub fn min(&self) -> u64 {
         self.min
     }
 
     /// Get the maximal recordable value.
     ///
     /// Samples bigger than  the `max` will be recorded into the overflow bucket.
-    pub fn max(&self) -> u32 {
+    pub fn max(&self) -> u64 {
         self.max
     }
 
