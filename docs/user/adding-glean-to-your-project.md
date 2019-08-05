@@ -13,15 +13,9 @@ Products using the Glean SDK to collect telemetry **must**:
 
 ### Integrating with your project
 
-There are currently two implementations of Glean: an Android-only implementation that is part of Mozilla's [android-components](https://github.com/mozilla-mobile/android-components) project, and a [cross-platform implementation in Rust](https://github.com/mozilla/glean).
-
-This section describes integrating with the Android-only implementation.  The other implementation is still a work in progress and does not make release builds available.
-
 #### Setting up the dependency
 
-Use Gradle to download the library from [maven.mozilla.org](https://maven.mozilla.org/)
-([Setup repository](../../../README.md#maven-repository)) by adding the following to
-your Gradle configuration:
+Use Gradle to download the library from [maven.mozilla.org](https://maven.mozilla.org/) ([Setup repository](https://github.com/mozilla-mobile/android-components/blob/master/README.md#maven-repository)) by adding the following to your Gradle configuration:
 
 ```Groovy
 implementation "org.mozilla.components:service-glean:{latest-version}"
