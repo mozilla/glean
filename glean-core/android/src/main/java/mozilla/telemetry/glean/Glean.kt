@@ -494,6 +494,7 @@ open class GleanInternalAPI internal constructor () {
      * This makes all asynchronous work synchronous so we can test the results of the
      * API synchronously.
      */
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     internal fun enableTestingMode() {
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.setTestingMode(enabled = true)
@@ -507,6 +508,7 @@ open class GleanInternalAPI internal constructor () {
      * @param config the [Configuration] to init Glean with
      * @param clearStores if true, clear the contents of all stores
      */
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     internal fun resetGlean(
         context: Context,
         config: Configuration,
@@ -533,6 +535,7 @@ open class GleanInternalAPI internal constructor () {
     /**
      * Test-only method to destroy the owned glean-core handle.
      */
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     internal fun testDestroyGleanHandle() {
         if (!isInitialized()) {
             // We don't need to destroy the Glean handle: it wasn't initialized.
