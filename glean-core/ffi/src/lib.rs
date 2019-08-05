@@ -87,7 +87,7 @@ impl TryFrom<&FfiConfiguration<'_>> for glean_core::Configuration {
         let data_path = cfg.data_dir.to_string_fallible()?;
         let application_id = cfg.package_name.to_string_fallible()?;
         let upload_enabled = cfg.upload_enabled != 0;
-        let max_events = cfg.max_events.map(|m| *m as usize);
+        let max_events = cfg.max_events.filter(|&&i| i >= 0).map(|m| *m as usize);
 
         Ok(Self {
             upload_enabled,
