@@ -191,15 +191,22 @@ For Kotlin this would be `glean-core/android/src/main/java/mozilla/telemetry/gle
 
 ```kotlin
 class CounterMetricType(
-    disabled: Boolean,
-    category: String,
-    lifetime: Lifetime,
-    name: String,
-    val sendInPings: List<String>
+    private var handle: Long,
+    private val disabled: Boolean,
+    private val sendInPings: List<String>
 ) {
     private var handle: Long
 
-    init {
+    /**
+     * The public constructor used by automatically generated metrics.
+     */
+    constructor(
+        disabled: Boolean,
+        category: String,
+        lifetime: Lifetime,
+        name: String,
+        sendInPings: List<String>
+    ) : this(handle = 0, disabled = disabled, sendInPings = sendInPings) {
         val ffiPingsList = StringArray(sendInPings.toTypedArray(), "utf-8")
         this.handle = LibGleanFFI.INSTANCE.glean_new_counter_metric(
                 category = category,
@@ -218,7 +225,7 @@ class CounterMetricType(
     }
 
     fun add(amount: Int = 1) {
-        if (!shouldRecord()) {
+        if (disabled) {
             return
         }
 
