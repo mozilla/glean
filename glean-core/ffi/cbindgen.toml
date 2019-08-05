@@ -20,7 +20,7 @@ autogen_warning = """/* DO NOT MODIFY THIS MANUALLY! This file was generated usi
 language = "C"
 
 [parse.expand]
-crates = ["glean_ffi"]
+crates = ["glean-ffi"]
 
 [parse]
 parse_deps = true

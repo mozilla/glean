@@ -27,11 +27,16 @@ typedef const int32_t *RawIntArray;
 
 typedef const char *const *RawStringArray;
 
+/**
+ * Configuration over FFI.
+ * CAUTION**: This must match _exactly_ the definition on the Kotlin side.
+ * If this side is changed, the Kotlin side need to be changed, too.
+ */
 typedef struct {
   FfiStr data_dir;
   FfiStr package_name;
   uint8_t upload_enabled;
-  const int64_t *max_events;
+  const int32_t *max_events;
 } FfiConfiguration;
 
 typedef const int64_t *RawInt64Array;
