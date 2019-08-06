@@ -323,8 +323,8 @@ open class GleanInternalAPI internal constructor () {
             experimentId
         )!!
 
-        var branchId: String? = null
-        var extraMap: Map<String, String>? = null
+        var branchId: String
+        var extraMap: Map<String, String>?
 
         try {
             // Parse and extract the fields from the JSON string here so
