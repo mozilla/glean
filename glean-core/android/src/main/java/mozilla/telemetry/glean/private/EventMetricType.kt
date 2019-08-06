@@ -4,7 +4,6 @@
 
 package mozilla.telemetry.glean.private
 
-// import android.os.SystemClock
 import android.os.SystemClock
 import androidx.annotation.VisibleForTesting
 import com.sun.jna.StringArray
@@ -16,11 +15,6 @@ import mozilla.telemetry.glean.rust.toBoolean
 import mozilla.telemetry.glean.rust.toByte
 import org.json.JSONArray
 import org.json.JSONObject
-
-// import mozilla.components.service.glean.Dispatchers
-// import mozilla.components.service.glean.storages.EventsStorageEngine
-// import mozilla.components.service.glean.storages.RecordedEventData
-// import mozilla.components.support.base.log.logger.Logger
 
 @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
 data class RecordedEventData(

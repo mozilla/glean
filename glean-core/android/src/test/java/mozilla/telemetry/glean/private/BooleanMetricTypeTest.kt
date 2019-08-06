@@ -10,8 +10,6 @@
 
 package mozilla.telemetry.glean.private
 
-// import kotlinx.coroutines.ExperimentalCoroutinesApi
-// import kotlinx.coroutines.ObsoleteCoroutinesApi
 import androidx.test.core.app.ApplicationProvider
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Assert.assertTrue
@@ -22,8 +20,6 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.lang.NullPointerException
 
-// @ObsoleteCoroutinesApi
-// @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
 class BooleanMetricTypeTest {
 

@@ -5,8 +5,6 @@
 package mozilla.telemetry.glean.private
 
 import androidx.test.core.app.ApplicationProvider
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.ObsoleteCoroutinesApi
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -19,8 +17,6 @@ import java.lang.NullPointerException
 import org.mockito.Mockito.spy
 import org.mockito.Mockito.`when`
 
-@ObsoleteCoroutinesApi
-@ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
 class TimingDistributionMetricTypeTest {
 

@@ -11,8 +11,6 @@
 package mozilla.telemetry.glean.private
 
 import androidx.test.core.app.ApplicationProvider
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.ObsoleteCoroutinesApi
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -24,8 +22,6 @@ import org.robolectric.RobolectricTestRunner
 import java.util.Calendar
 import java.util.TimeZone
 
-@ObsoleteCoroutinesApi
-@ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
 class DatetimeMetricTypeTest {
 
