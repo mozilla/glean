@@ -6,6 +6,7 @@ package mozilla.telemetry.glean.testing
 
 import android.content.Context
 import androidx.work.testing.WorkManagerTestInitHelper
+import androidx.annotation.VisibleForTesting
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.config.Configuration
 import org.junit.rules.TestWatcher
@@ -25,6 +26,7 @@ import org.junit.runner.Description
  * val gleanRule = GleanTestRule(ApplicationProvider.getApplicationContext())
  * ```
  */
+@VisibleForTesting(otherwise = VisibleForTesting.NONE)
 class GleanTestRule(
     val context: Context
 ) : TestWatcher() {
