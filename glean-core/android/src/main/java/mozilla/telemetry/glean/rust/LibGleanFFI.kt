@@ -48,7 +48,7 @@ internal interface LibGleanFFI : Library {
         private val JNA_LIBRARY_NAME = "glean_ffi"
 
         internal var INSTANCE: LibGleanFFI = try {
-            val lib = Native.loadLibrary(JNA_LIBRARY_NAME, LibGleanFFI::class.java) as LibGleanFFI
+            val lib = Native.load(JNA_LIBRARY_NAME, LibGleanFFI::class.java) as LibGleanFFI
             lib.glean_enable_logging()
             lib
         } catch (e: UnsatisfiedLinkError) {
