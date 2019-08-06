@@ -303,6 +303,8 @@ char *glean_string_test_get_value(uint64_t glean_handle, uint64_t metric_id, Ffi
 
 uint8_t glean_string_test_has_value(uint64_t glean_handle, uint64_t metric_id, FfiStr storage_name);
 
+void glean_test_clear_all_stores(uint64_t glean_handle);
+
 uint8_t glean_test_has_ping_type(uint64_t glean_handle, FfiStr ping_name);
 
 void glean_timespan_cancel(uint64_t metric_id);

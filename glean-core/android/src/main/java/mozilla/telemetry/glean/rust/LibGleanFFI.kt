@@ -69,6 +69,8 @@ internal interface LibGleanFFI : Library {
 
     fun glean_initialize(cfg: FfiConfiguration): Long
 
+    fun glean_test_clear_all_stores(handle: Long)
+
     fun glean_destroy_glean(handle: Long, error: RustError.ByReference)
 
     fun glean_on_ready_to_send_pings(handle: Long)

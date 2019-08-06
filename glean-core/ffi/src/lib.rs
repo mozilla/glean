@@ -212,5 +212,10 @@ pub extern "C" fn glean_experiment_test_get_data(
     })
 }
 
+#[no_mangle]
+pub extern "C" fn glean_test_clear_all_stores(glean_handle: u64) {
+    GLEAN.call_infallible(glean_handle, |glean| glean.test_clear_all_stores());
+}
+
 define_handle_map_deleter!(GLEAN, glean_destroy_glean);
 define_string_destructor!(glean_str_free);
