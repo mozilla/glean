@@ -58,23 +58,23 @@ class LabeledMetricTypeTest {
         assertTrue(counterMetric.testHasValue())
         assertEquals(3, counterMetric.testGetValue())
 
-        val json = collectAndCheckPingSchema(Pings.metrics).getJSONObject("metrics")!!
+        val json = collectAndCheckPingSchema(Pings.metrics).getJSONObject("metrics")
         // Do the same checks again on the JSON structure
         assertEquals(
             1,
-            json.getJSONObject("labeled_counter")!!
-                .getJSONObject("telemetry.labeled_counter_metric")!!
+            json.getJSONObject("labeled_counter")
+                .getJSONObject("telemetry.labeled_counter_metric")
                 .get("label1")
         )
         assertEquals(
             2,
-            json.getJSONObject("labeled_counter")!!
-                .getJSONObject("telemetry.labeled_counter_metric")!!
+            json.getJSONObject("labeled_counter")
+                .getJSONObject("telemetry.labeled_counter_metric")
                 .get("label2")
         )
         assertEquals(
             3,
-            json.getJSONObject("counter")!!
+            json.getJSONObject("counter")
                 .get("telemetry.labeled_counter_metric")
         )
     }
@@ -112,23 +112,23 @@ class LabeledMetricTypeTest {
         // The rest all lands in the __other__ bucket
         assertEquals(3, labeledCounterMetric["not_there"].testGetValue())
 
-        val json = collectAndCheckPingSchema(Pings.metrics).getJSONObject("metrics")!!
+        val json = collectAndCheckPingSchema(Pings.metrics).getJSONObject("metrics")
         // Do the same checks again on the JSON structure
         assertEquals(
             3,
-            json.getJSONObject("labeled_counter")!!
+            json.getJSONObject("labeled_counter")
                 .getJSONObject("telemetry.labeled_counter_metric")
                 .get("foo")
         )
         assertEquals(
             1,
-            json.getJSONObject("labeled_counter")!!
+            json.getJSONObject("labeled_counter")
                 .getJSONObject("telemetry.labeled_counter_metric")
                 .get("bar")
         )
         assertEquals(
             3,
-            json.getJSONObject("labeled_counter")!!
+            json.getJSONObject("labeled_counter")
                 .getJSONObject("telemetry.labeled_counter_metric")
                 .get("__other__")
         )
@@ -165,26 +165,26 @@ class LabeledMetricTypeTest {
         }
         assertEquals(5, labeledCounterMetric["__other__"].testGetValue())
 
-        val json = collectAndCheckPingSchema(Pings.metrics).getJSONObject("metrics")!!
+        val json = collectAndCheckPingSchema(Pings.metrics).getJSONObject("metrics")
         // Do the same checks again on the JSON structure
         assertEquals(
             2,
-            json.getJSONObject("labeled_counter")!!
-                .getJSONObject("telemetry.labeled_counter_metric")!!
+            json.getJSONObject("labeled_counter")
+                .getJSONObject("telemetry.labeled_counter_metric")
                 .get("label_0")
         )
         for (i in 1..15) {
             assertEquals(
                 1,
-                json.getJSONObject("labeled_counter")!!
-                    .getJSONObject("telemetry.labeled_counter_metric")!!
+                json.getJSONObject("labeled_counter")
+                    .getJSONObject("telemetry.labeled_counter_metric")
                     .get("label_$i")
             )
         }
         assertEquals(
             5,
-            json.getJSONObject("labeled_counter")!!
-                .getJSONObject("telemetry.labeled_counter_metric")!!
+            json.getJSONObject("labeled_counter")
+                .getJSONObject("telemetry.labeled_counter_metric")
                 .get("__other__")
         )
     }
