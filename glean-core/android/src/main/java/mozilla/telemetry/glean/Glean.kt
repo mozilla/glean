@@ -121,6 +121,8 @@ open class GleanInternalAPI internal constructor () {
 
         // If any pings were registered before initializing, do so now
         this.pingTypeQueue.forEach { this.registerPingType(it) }
+
+        @Suppress("EXPERIMENTAL_API_USAGE")
         if (!Dispatchers.API.testingMode) {
             this.pingTypeQueue.clear()
         }
@@ -184,6 +186,7 @@ open class GleanInternalAPI internal constructor () {
         if (isInitialized()) {
             val originalEnabled = getUploadEnabled()
 
+            @Suppress("EXPERIMENTAL_API_USAGE")
             Dispatchers.API.launch {
                 // glean_set_upload_enabled might delete all of the queued pings. We
                 // therefore need to obtain the lock from the PingUploader so that
@@ -400,6 +403,7 @@ open class GleanInternalAPI internal constructor () {
         sendPings(listOf(Pings.baseline, Pings.events))
     }
 
+    @Suppress("EXPERIMENTAL_API_USAGE")
     private fun <T> sendPingsGeneric(
         pings: List<T>,
         pingSender: (T) -> Boolean,
