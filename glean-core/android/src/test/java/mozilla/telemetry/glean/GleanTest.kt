@@ -9,7 +9,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.test.core.app.ApplicationProvider
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import mozilla.telemetry.glean.GleanMetrics.GleanInternalMetrics
@@ -47,7 +46,6 @@ import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 @ObsoleteCoroutinesApi
-@ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
 class GleanTest {
 

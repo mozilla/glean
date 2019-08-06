@@ -47,8 +47,6 @@ enum class SomeExtraKeys {
     SomeExtra
 }
 
-// @ObsoleteCoroutinesApi
-// @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
 class EventMetricTypeTest {
 
