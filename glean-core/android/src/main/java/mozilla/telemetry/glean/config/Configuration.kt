@@ -36,7 +36,7 @@ internal class FfiConfiguration(
     @JvmField
     public var uploadEnabled: Byte = uploadEnabled.toByte()
     @JvmField
-    public var maxEvents: IntByReference = if (maxEvents == null) IntByReference() else IntByReference(maxEvents!!)
+    public var maxEvents: IntByReference = if (maxEvents == null) IntByReference() else IntByReference(maxEvents)
 
     init {
         // Force UTF-8 string encoding when passing strings over the FFI
