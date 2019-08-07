@@ -502,6 +502,17 @@ impl Glean {
         let metric = metrics::ExperimentMetric::new(experiment_id);
         metric.test_get_value_as_json_string(&self)
     }
+
+    /// **Test-only API (exported for FFI purposes).**
+    ///
+    /// Delete all stored metrics.
+    /// Note that this also includes the ping sequence numbers, so it has
+    /// the effect of resetting those to their initial values.
+    pub fn test_clear_all_stores(&self) {
+        self.data_store.clear_all();
+        // We don't care about this failing, maybe the data does just not exist.
+        let _ = self.event_data_store.clear_all();
+    }
 }
 
 #[cfg(test)]

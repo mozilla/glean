@@ -520,15 +520,10 @@ open class GleanInternalAPI internal constructor () {
     ) {
         Glean.enableTestingMode()
 
-        // TODO: this will be addressed in bug 1570247
-        /*if (clearStores) {
+        if (isInitialized() && clearStores) {
             // Clear all the stored data.
-            val storageManager = StorageEngineManager(applicationContext = context)
-            storageManager.clearAllStores()
-            // The experiments storage engine needs to be cleared manually as it's not listed
-            // in the `StorageEngineManager`.
-            ExperimentsStorageEngine.clearAllStores()
-        }*/
+            LibGleanFFI.INSTANCE.glean_test_clear_all_stores(handle)
+        }
 
         // Init Glean.
         Glean.testDestroyGleanHandle()
