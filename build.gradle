@@ -30,6 +30,7 @@ buildscript {
         androidx_browser: '1.0.0',
         androidx_core: '1.0.0',
         androidx_espresso: '3.2.0',
+        androidx_junit: '1.1.1',
         androidx_test: '1.2.0',
         androidx_work: '2.0.1',
     ]

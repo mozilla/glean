@@ -164,7 +164,7 @@ dependencies {
     // causing it to be resolved.  Cloning first dissociates the configuration,
     // avoiding other configurations from being resolved.  Tricky!
     testImplementation files(configurations.jnaForTest.copyRecursive().files)
-    testImplementation "junit:junit:$versions.junit"
+    testImplementation "androidx.test.ext:junit:$versions.androidx_junit"
     testImplementation "org.robolectric:robolectric:$versions.robolectric"
     testImplementation "org.mockito:mockito-core:$versions.mockito"
     testImplementation "androidx.test:core-ktx:$versions.androidx_core"
