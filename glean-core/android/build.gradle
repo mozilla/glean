@@ -134,6 +134,7 @@ android {
 dependencies {
     api "org.mozilla.components:concept-fetch:$versions.android_components"
     implementation "org.mozilla.components:lib-fetch-httpurlconnection:$versions.android_components"
+    implementation "org.mozilla.components:support-base:$versions.android_components"
     implementation "org.mozilla.components:support-ktx:$versions.android_components"
 
     jnaForTest "net.java.dev.jna:jna:$versions.jna@jar"
@@ -172,8 +173,8 @@ dependencies {
     testImplementation "org.mozilla.components:support-test:$versions.android_components"
     testImplementation "androidx.work:work-testing:$versions.androidx_work"
 
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    androidTestImplementation "androidx.test:runner:$versions.androidx_test"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$versions.androidx_espresso"
 }
 
 afterEvaluate {
