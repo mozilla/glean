@@ -12,6 +12,7 @@ package mozilla.telemetry.glean.private
 
 import android.os.SystemClock
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.checkPingSchema
 import mozilla.telemetry.glean.getContextWithMockedInfo
@@ -29,7 +30,6 @@ import org.junit.Assert.fail
 import org.junit.Test
 import org.junit.Rule
 import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 import java.lang.NullPointerException
 import java.util.concurrent.TimeUnit
 
@@ -47,7 +47,7 @@ enum class SomeExtraKeys {
     SomeExtra
 }
 
-@RunWith(RobolectricTestRunner::class)
+@RunWith(AndroidJUnit4::class)
 class EventMetricTypeTest {
 
     @get:Rule
@@ -264,7 +264,7 @@ class EventMetricTypeTest {
 
         val request = server.takeRequest(1L, TimeUnit.SECONDS)
         assertEquals("POST", request.method)
-        val applicationId = "mozilla-telemetry-glean"
+        val applicationId = "mozilla-telemetry-glean-test"
         assert(
             request.path.startsWith("/submit/$applicationId/events/")
         )

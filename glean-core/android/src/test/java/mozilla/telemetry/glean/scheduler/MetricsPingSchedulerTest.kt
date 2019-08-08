@@ -6,6 +6,7 @@ package mozilla.telemetry.glean.scheduler
 
 import android.os.SystemClock
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.work.testing.WorkManagerTestInitHelper
 import mozilla.telemetry.glean.getContextWithMockedInfo
 import mozilla.telemetry.glean.Glean
@@ -38,11 +39,10 @@ import org.mockito.Mockito.spy
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
-import org.robolectric.RobolectricTestRunner
 import java.util.Calendar
 import java.util.concurrent.TimeUnit as AndroidTimeUnit
 
-@RunWith(RobolectricTestRunner::class)
+@RunWith(AndroidJUnit4::class)
 class MetricsPingSchedulerTest {
     private fun <T> kotlinFriendlyAny(): T {
         // This is required to work around the Kotlin/ArgumentMatchers problem with using

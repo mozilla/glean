@@ -4,6 +4,7 @@
 
 package mozilla.telemetry.glean.net
 
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import mozilla.components.concept.fetch.Client
 import mozilla.components.concept.fetch.Request
 import mozilla.components.concept.fetch.Response
@@ -21,7 +22,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.spy
-import org.robolectric.RobolectricTestRunner
 import java.io.IOException
 import java.net.CookieHandler
 import java.net.CookieManager
@@ -29,7 +29,7 @@ import java.net.HttpCookie
 import java.net.URI
 import java.util.concurrent.TimeUnit
 
-@RunWith(RobolectricTestRunner::class)
+@RunWith(AndroidJUnit4::class)
 class HttpPingUploaderTest {
     private val testPath: String = "/some/random/path/not/important"
     private val testPing: String = "{ 'ping': 'test' }"

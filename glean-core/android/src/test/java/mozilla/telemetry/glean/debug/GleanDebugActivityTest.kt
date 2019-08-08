@@ -3,7 +3,6 @@ package mozilla.telemetry.glean.debug
 import android.content.Context
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 import android.content.Intent
 import androidx.test.core.app.ApplicationProvider
 import mozilla.telemetry.glean.Glean
@@ -16,6 +15,7 @@ import org.junit.Before
 import org.robolectric.Robolectric
 import android.content.pm.ActivityInfo
 import android.content.pm.ResolveInfo
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import mozilla.telemetry.glean.private.BooleanMetricType
 import mozilla.telemetry.glean.private.Lifetime
 import mozilla.telemetry.glean.resetGlean
@@ -27,10 +27,10 @@ import org.junit.Rule
 import org.robolectric.Shadows.shadowOf
 import java.util.concurrent.TimeUnit
 
-@RunWith(RobolectricTestRunner::class)
+@RunWith(AndroidJUnit4::class)
 class GleanDebugActivityTest {
 
-    private val testPackageName = "mozilla.telemetry.glean"
+    private val testPackageName = "mozilla.telemetry.glean.test"
 
     @get:Rule
     val gleanRule = GleanTestRule(ApplicationProvider.getApplicationContext())
@@ -143,7 +143,7 @@ class GleanDebugActivityTest {
         val request = server.takeRequest(10L, TimeUnit.SECONDS)
 
         assertTrue(
-            request.requestUrl.encodedPath().startsWith("/submit/mozilla-telemetry-glean/metrics")
+            request.requestUrl.encodedPath().startsWith("/submit/mozilla-telemetry-glean-test/metrics")
         )
 
         server.shutdown()
@@ -188,7 +188,7 @@ class GleanDebugActivityTest {
 
         assertTrue(
             "Request path must be correct",
-            request.requestUrl.encodedPath().startsWith("/submit/mozilla-telemetry-glean/metrics")
+            request.requestUrl.encodedPath().startsWith("/submit/mozilla-telemetry-glean-test/metrics")
         )
 
         assertNull(
