@@ -7,9 +7,32 @@
 // https://github.com/mozilla/application-services/blob/84e077d1534dc287bbd472da658ce22eea5af032/build.gradle
 
 buildscript {
-    ext.kotlin_version = '1.3.31'
-    ext.android_components_version = '0.52.0'
-    ext.jna_version = '5.2.0'
+    // Define the version of the used dependencies in a single place, to ease
+    // changing them. Please note that, for using in Android-Components, the
+    // versions below must match the ones in that repository.
+    ext.versions = [
+        android_components: '5.0.0',
+        android_gradle_plugin: '3.4.1',
+        android_maven_publish_plugin: '3.6.2',
+        coroutines: '1.2.2',
+        dokka: '0.9.17',
+        jna: '5.2.0',
+        junit: '4.12',
+        mockito: '2.24.5',
+        mockwebserver: '3.10.0',
+        kotlin: '1.3.40',
+        robolectric: '4.2.1', // This is different than a-c, but we're fine, it's only tests.
+        rust_android_plugin: '0.8.1',
+
+        // Android X dependencies
+        androidx_annotation: '1.0.2',
+        androidx_appcompat: '1.0.0',
+        androidx_browser: '1.0.0',
+        androidx_core: '1.0.0',
+        androidx_espresso: '3.2.0',
+        androidx_test: '1.2.0',
+        androidx_work: '2.0.1',
+    ]
 
     ext.build = [
         compileSdkVersion: 29,
@@ -25,20 +48,20 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.2'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "com.android.tools.build:gradle:$versions.android_gradle_plugin"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin"
 
         // Publish.
-        classpath 'digital.wup:android-maven-publish:3.6.2'
+        classpath "digital.wup:android-maven-publish:$versions.android_maven_publish_plugin"
 
-        classpath 'gradle.plugin.org.mozilla.rust-android-gradle:plugin:0.8.1'
+        classpath "gradle.plugin.org.mozilla.rust-android-gradle:plugin:$versions.rust_android_plugin"
 
         // Yes, this is unusual.  We want to access some host-specific
         // computation at build time.
-        classpath "net.java.dev.jna:jna:$jna_version"
+        classpath "net.java.dev.jna:jna:$versions.jna"
 
         // Docs generation
-        classpath "org.jetbrains.dokka:dokka-android-gradle-plugin:0.9.17"
+        classpath "org.jetbrains.dokka:dokka-android-gradle-plugin:$versions.dokka"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -46,7 +69,7 @@ buildscript {
 }
 
 plugins {
-    id("io.gitlab.arturbosch.detekt").version("1.0.0-RC14")
+    id("io.gitlab.arturbosch.detekt").version("1.0.0-RC16")
 }
 
 allprojects {
