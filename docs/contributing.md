@@ -11,12 +11,12 @@ or through issues here on GitHub.
 Participation in this project is governed by the
 [Mozilla Community Participation Guidelines](https://www.mozilla.org/en-US/about/governance/policies/participation/).
 
-## Bug Reports ##
+## Bug Reports
 
 You can file issues here on GitHub. Please try to include as much information as you can and under what conditions
 you saw the issue.
 
-## Making Code Changes ##
+## Making Code Changes
 
 To work on the code in this repo you will need to be familiar with
 the [Rust](https://www.rust-lang.org/) programming language.
@@ -32,7 +32,7 @@ cargo test --all
 If you plan to work on the Android component bindings, you should also review
 the instructions for [setting up an Android build environment](https://github.com/mozilla/glean/blob/master/docs/dev/setup-android-build-environment.md)
 
-## Sending Pull Requests ##
+## Sending Pull Requests
 
 Patches should be submitted as [pull requests](https://help.github.com/articles/about-pull-requests/) (PRs).
 
@@ -49,6 +49,6 @@ When submitting a PR:
 - Run `cargo test` to make sure your code passes linting and tests.
 - Please do not include merge commits in pull requests; include only commits with the new relevant code.
 
-## Code Review ##
+## Code Review
 
 This project is production Mozilla code and subject to our [engineering practices and quality standards](https://developer.mozilla.org/en-US/docs/Mozilla/Developer_guide/Committing_Rules_and_Responsibilities). Every patch must be peer reviewed by a member of the Application Services team.
