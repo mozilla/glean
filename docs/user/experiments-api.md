@@ -2,7 +2,7 @@
 
 The Glean SDK supports tagging all its pings with experiments annotations. The annotations are useful to report that experiments were active at the time the measurement were collected. The annotations are reported in the optional `experiments` entry in the [`ping_info` section](pings/index.md) of all the Glean SDK pings.
 
-> **Important**: the data set through this API is not persisted by the Glean SDK.
+> **Important**: the experiment annotations set through this API are not persisted by the Glean SDK.
 > The application or consuming library is responsible for setting the relevant experiment annotations at each run.
 
 ## API
