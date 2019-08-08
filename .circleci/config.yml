@@ -115,6 +115,13 @@ jobs:
     resource_class: "large"
     steps:
       - run:
+          name: Check skip condition
+          command: |
+            if git log -1 "$CIRCLE_SHA1" | grep -q '\[doc only\]'; then
+                echo "Skipping this step. Last commit was tagged to not require Android tests."
+                circleci-agent step halt
+            fi
+      - run:
           name: Setup custom environment variables
           command: |
               echo "export CARGO_INCREMENTAL=0" >> $BASH_ENV
