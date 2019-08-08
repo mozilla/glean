@@ -9,11 +9,32 @@ package mozilla.telemetry.glean.private
  * the Timespan and TimingDistribution metric types.
  */
 enum class TimeUnit {
+    /**
+     * Represents a nanosecond precision.
+     */
     Nanosecond,
+    /**
+     * Represents a microsecond precision.
+     */
     Microsecond,
+    /**
+     * Represents a millisecond precision.
+     */
     Millisecond,
+    /**
+     * Represents a second precision.
+     */
     Second,
+    /**
+     * Represents a minute precision.
+     */
     Minute,
+    /**
+     * Represents a hour precision.
+     */
     Hour,
-    Day
+    /**
+     * Represents a day precision.
+     */
+    Day,
 }

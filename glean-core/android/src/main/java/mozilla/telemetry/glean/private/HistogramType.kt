@@ -8,6 +8,12 @@ package mozilla.telemetry.glean.private
  * Enumeration of the different kinds of histograms supported by metrics based on histograms.
  */
 enum class HistogramType {
+    /**
+     * A histogram with linear spaced buckets.
+     */
     Linear,
+    /**
+     * A histogram with exponentially spaced buckets.
+     */
     Exponential
 }

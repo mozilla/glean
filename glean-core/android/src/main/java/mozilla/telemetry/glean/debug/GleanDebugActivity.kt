@@ -24,12 +24,22 @@ class GleanDebugActivity : Activity() {
 
     companion object {
         // This is a list of the currently accepted commands
+        /**
+         * Sends the ping with the given name immediately
+         */
         const val SEND_PING_EXTRA_KEY = "sendPing"
+        /**
+         * If set to `true`, pings are dumped to logcat, defaults to `false`.
+         */
         const val LOG_PINGS_EXTRA_KEY = "logPings"
+        /**
+         * Tags all outgoing pings as debug pings to make them available for real-time validation.
+         * The value must match the pattern `[a-zA-Z0-9-]{1,20}`.
+         */
         const val TAG_DEBUG_VIEW_EXTRA_KEY = "tagPings"
 
         // Regular expression filter for debugId
-        val pingTagPattern = "[a-zA-Z0-9-]{1,20}".toRegex()
+        internal val pingTagPattern = "[a-zA-Z0-9-]{1,20}".toRegex()
     }
 
     // IMPORTANT: These activities are unsecured, and may be triggered by
@@ -38,6 +48,9 @@ class GleanDebugActivity : Activity() {
     // exposed this way.  For example, it would be dangerous to change the
     // submission URL.
 
+    /**
+     * On creation of the debug activity, launch the requested command.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

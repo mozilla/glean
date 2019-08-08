@@ -16,7 +16,8 @@ import mozilla.components.support.ktx.android.org.json.tryGetLong
  * as well as including a helper function to calculate the bucket sizes.
  *
  * @param bucketCount total number of buckets
- * @param range an array always containing 2 elements: the minimum and maximum bucket values
+ * @param rangeMin the minimum bucket value
+ * @param rangeMax the maximum bucket value
  * @param histogramType the [HistogramType] representing the bucket layout
  * @param values a map containing the bucket index mapped to the accumulated count
  * @param sum the accumulated sum of all the samples in the timing distribution
@@ -93,7 +94,11 @@ data class TimingDistributionData(
         }
     }
 
-    // This is a calculated read-only property that returns the total count of accumulated values
+    /**
+     * The total count of accumulated values.
+     *
+     * This is calculated from all recorded values.
+     */
     val count: Long
         get() = values.map { it.value }.sum()
 }

@@ -61,7 +61,8 @@ internal class FfiConfiguration(
  * @property pingTag String tag to be applied to headers when uploading pings for debug view.
  *           This is only meant to be used internally by the `GleanDebugActivity`.
  * @property channel the release channel the application is on, if known. This will be
- *           sent along with all the pings, in the `client_info` section. */
+ *           sent along with all the pings, in the `client_info` section.
+ */
 data class Configuration internal constructor(
     val serverEndpoint: String,
     val userAgent: String = DEFAULT_USER_AGENT,
@@ -76,6 +77,18 @@ data class Configuration internal constructor(
     val pingTag: String? = null,
     val channel: String? = null
 ) {
+    /**
+     * Configuration for Glean.
+     *
+     * @param connectionTimeout the timeout, in milliseconds, to use when connecting to
+     *           the [serverEndpoint]
+     * @param readTimeout the timeout, in milliseconds, to use when connecting to
+     *           the [serverEndpoint]
+     * @param maxEvents the number of events to store before the events ping is sent
+     * @param httpClient The HTTP client implementation to use for uploading pings.
+     * @param channel the release channel the application is on, if known. This will be
+     *           sent along with all the pings, in the `client_info` section.
+     */
     // This is the only public constructor this class should have. It should only
     // expose things we want to allow external applications to change. Every test
     // only or internal configuration option should be added to the above primary internal
@@ -100,10 +113,25 @@ data class Configuration internal constructor(
     )
 
     companion object {
+        /**
+         * The default server pings are sent to.
+         */
         const val DEFAULT_TELEMETRY_ENDPOINT = "https://incoming.telemetry.mozilla.org"
+        /**
+         * The default user agent used when sending pings.
+         */
         const val DEFAULT_USER_AGENT = "Glean/${BuildConfig.LIBRARY_VERSION} (Android)"
+        /**
+         * The default connection timeout when sending pings.
+         */
         const val DEFAULT_CONNECTION_TIMEOUT = 10000L
+        /**
+         * The default read timeout when sending pings.
+         */
         const val DEFAULT_READ_TIMEOUT = 30000L
+        /**
+         * Whether to log pings by default.
+         */
         const val DEFAULT_LOG_PINGS = false
     }
 }
