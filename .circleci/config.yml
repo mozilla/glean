@@ -135,7 +135,7 @@ jobs:
               curl -L https://codecov.io/bash > codecov.sh;
               chmod +x codecov.sh;
               zip -0 ccov.zip `find . \( -name "glean*.gc*" \) -print`
-              ./grcov ccov.zip -s . -t lcov --llvm --branch --ignore-not-existing --ignore-dir "/*" -o lcov.info
+              ./grcov ccov.zip -s . -t lcov --llvm --branch --ignore-not-existing --ignore-dir "/*" --ignore-dir "glean-core/ffi/*" -o lcov.info
               ./codecov.sh -f lcov.info;
 
   Lint Android with ktlint and detekt:
