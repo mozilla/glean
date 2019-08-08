@@ -80,7 +80,6 @@ jobs:
   Rust tests - stable:
     docker:
       - image: circleci/rust:latest
-    # We have to use a machine with more RAM for tests so we don't run out of memory.
     steps:
       - rust-tests
   Rust tests - beta:
@@ -109,6 +108,36 @@ jobs:
           make
           ./glean_app
 
+  Rust code coverage:
+    docker:
+      - image: circleci/rust:latest
+    # We have to use a machine with more RAM for tests so we don't run out of memory.
+    resource_class: "large"
+    steps:
+      - run:
+          name: Check skip condition
+          command: |
+            if git log -1 "$CIRCLE_SHA1" | grep -q '\[doc only\]'; then
+                echo "Skipping this step. Last commit was tagged to not require Android tests."
+                circleci-agent step halt
+            fi
+      - run:
+          name: Setup custom environment variables
+          command: |
+              echo "export CARGO_INCREMENTAL=0" >> $BASH_ENV
+              echo "export RUSTFLAGS='-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Zno-landing-pads'" >> $BASH_ENV
+      - rust-tests:
+          rust-version: "nightly"
+      - run:
+          name: Create and upload code coverage
+          command: |
+              curl -L https://github.com/mozilla/grcov/releases/latest/download/grcov-linux-x86_64.tar.bz2 | tar jxf -;
+              curl -L https://codecov.io/bash > codecov.sh;
+              chmod +x codecov.sh;
+              zip -0 ccov.zip `find . \( -name "glean*.gc*" \) -print`
+              ./grcov ccov.zip -s . -t lcov --llvm --branch --ignore-not-existing --ignore-dir "/*" -o lcov.info
+              ./codecov.sh -f lcov.info;
+
   Lint Android with ktlint and detekt:
     docker:
       - image: circleci/android:api-28-ndk
@@ -135,6 +164,12 @@ jobs:
           command: ./gradlew --no-daemon test
           environment:
             GRADLE_OPTS: -Xmx2048m
+      - run:
+          name: Upload Kotlin code coverage
+          command: |
+              curl -L https://codecov.io/bash > codecov.sh;
+              chmod +x codecov.sh;
+              ./codecov.sh -f glean-core/android/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml
       - store_artifacts:
           path: glean-core/android/build/reports/tests
 
@@ -233,6 +268,9 @@ workflows:
       - Rust tests - minimum version
       - Android tests
       - C tests
+  coverage:
+    jobs:
+      - Rust code coverage
   documentation:
     jobs:
       - Generate Rust documentation

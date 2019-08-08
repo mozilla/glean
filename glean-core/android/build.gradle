@@ -14,6 +14,7 @@ apply plugin: 'org.mozilla.rust-android-gradle.rust-android'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'org.jetbrains.dokka-android'
+apply plugin: 'jacoco'
 
 /*
  * This defines the location of the JSON schema used to validate the pings
@@ -83,6 +84,35 @@ afterEvaluate {
     android.sourceSets.debug.jniLibs.srcDirs = android.sourceSets.main.jniLibs.srcDirs
     android.sourceSets.release.jniLibs.srcDirs = android.sourceSets.main.jniLibs.srcDirs
     android.sourceSets.main.jniLibs.srcDirs = []
+
+    jacoco {
+      toolVersion = "0.8.4"
+    }
+
+    task jacocoTestReport(type: JacocoReport) {
+        reports {
+            xml.enabled = true
+            html.enabled = true
+        }
+
+        def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*',
+                          '**/*Test*.*', 'android/**/*.*', '**/*$[0-9].*']
+        def kotlinDebugTree = fileTree(dir: "$project.buildDir/tmp/kotlin-classes/debug", excludes: fileFilter)
+        def javaDebugTree = fileTree(dir: "$project.buildDir/intermediates/classes/debug", excludes: fileFilter)
+        def mainSrc = "$project.projectDir/src/main/java"
+
+        sourceDirectories = files([mainSrc])
+        classDirectories = files([kotlinDebugTree, javaDebugTree])
+        executionData = fileTree(dir: project.buildDir, includes: [
+                'jacoco/testDebugUnitTest.exec', 'outputs/code-coverage/connected/*coverage.ec'
+        ])
+    }
+
+    tasks.withType(Test) {
+      jacoco.includeNoLocationClasses = true
+
+      finalizedBy jacocoTestReport
+    }
 }
 
 cargo {
