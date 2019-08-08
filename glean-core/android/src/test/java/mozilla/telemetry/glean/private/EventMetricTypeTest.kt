@@ -197,7 +197,7 @@ class EventMetricTypeTest {
             firstEvent.timestamp < secondEvent.timestamp)
     }
 
-    @Test(expected = NullPointerException::class)
+    @Test
     fun `events should not record when upload is disabled`() {
         val eventMetric = EventMetricType<testNameKeys>(
             disabled = false,
@@ -215,8 +215,12 @@ class EventMetricTypeTest {
         Glean.setUploadEnabled(false)
         assertEquals(false, Glean.getUploadEnabled())
         eventMetric.record(mapOf(testNameKeys.testName to "event2"))
-        // The following line will throw a NPE.
-        eventMetric.testGetValue()
+        @Suppress("EmptyCatchBlock")
+        try {
+            eventMetric.testGetValue()
+            fail("Expected events to be empty")
+        } catch (e: NullPointerException) {
+        }
         Glean.setUploadEnabled(true)
         eventMetric.record(mapOf(testNameKeys.testName to "event3"))
         val snapshot3 = eventMetric.testGetValue()
