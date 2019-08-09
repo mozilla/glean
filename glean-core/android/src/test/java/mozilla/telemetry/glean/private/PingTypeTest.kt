@@ -36,6 +36,11 @@ class PingTypeTest {
     fun `test sending of custom pings`() {
         val server = getMockWebServer()
 
+        resetGlean(getContextWithMockedInfo(), Glean.configuration.copy(
+            serverEndpoint = "http://" + server.hostName + ":" + server.port,
+            logPings = true
+        ))
+
         val customPing = PingType(
             name = "custom",
             includeClientId = true
@@ -48,11 +53,6 @@ class PingTypeTest {
             name = "counter",
             sendInPings = listOf("custom")
         )
-
-        resetGlean(getContextWithMockedInfo(), Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port,
-            logPings = true
-        ))
 
         counter.add()
         assertTrue(counter.testHasValue())
@@ -74,6 +74,11 @@ class PingTypeTest {
     fun `test sending of custom pings without client_id`() {
         val server = getMockWebServer()
 
+        resetGlean(getContextWithMockedInfo(), Glean.configuration.copy(
+            serverEndpoint = "http://" + server.hostName + ":" + server.port,
+            logPings = true
+        ))
+
         val customPing = PingType(
             name = "custom",
             includeClientId = false
@@ -86,11 +91,6 @@ class PingTypeTest {
             name = "counter",
             sendInPings = listOf("custom")
         )
-
-        resetGlean(getContextWithMockedInfo(), Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port,
-            logPings = true
-        ))
 
         counter.add()
         assertTrue(counter.testHasValue())

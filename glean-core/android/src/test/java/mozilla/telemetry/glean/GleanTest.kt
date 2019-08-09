@@ -389,6 +389,11 @@ class GleanTest {
 
         val server = getMockWebServer()
 
+        resetGlean(getContextWithMockedInfo(), Glean.configuration.copy(
+            serverEndpoint = "http://" + server.hostName + ":" + server.port,
+            logPings = true
+        ))
+
         val pingName = "custom_ping_1"
         val ping = PingType(
             name = pingName,
@@ -401,11 +406,6 @@ class GleanTest {
             name = "string_metric",
             sendInPings = listOf(pingName)
         )
-
-        resetGlean(getContextWithMockedInfo(), Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port,
-            logPings = true
-        ))
 
         // This test relies on testing mode to be disabled, since we need to prove the
         // real-world async behaviour of this. We don't need to care about clearing it,

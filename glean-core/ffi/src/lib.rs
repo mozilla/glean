@@ -132,22 +132,17 @@ pub extern "C" fn glean_set_upload_enabled(glean_handle: u64, flag: u8) {
 }
 
 #[no_mangle]
-pub extern "C" fn glean_send_ping(glean_handle: u64, ping_type_handle: u64, log_ping: u8) -> u8 {
-    GLEAN.call_infallible(glean_handle, |glean| {
-        PING_TYPES.call_with_log(ping_type_handle, |ping_type| {
-            glean.send_ping(ping_type, log_ping != 0)
-        })
-    })
-}
-
-#[no_mangle]
-pub extern "C" fn glean_send_ping_by_name(
+pub extern "C" fn glean_send_pings_by_name(
     glean_handle: u64,
-    ping_name: FfiStr,
+    ping_names: RawStringArray,
+    ping_names_len: i32,
     log_ping: u8,
 ) -> u8 {
     GLEAN.call_with_log(glean_handle, |glean| {
-        glean.send_ping_by_name(ping_name.as_str(), log_ping != 0)
+        let log_ping = log_ping != 0;
+        let pings = from_raw_string_array(ping_names, ping_names_len)?;
+
+        Ok(glean.send_pings_by_name(&pings, log_ping))
     })
 }
 

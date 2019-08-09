@@ -262,9 +262,10 @@ char *glean_ping_collect(uint64_t glean_handle, uint64_t ping_type_handle);
 
 void glean_register_ping_type(uint64_t glean_handle, uint64_t ping_type_handle);
 
-uint8_t glean_send_ping(uint64_t glean_handle, uint64_t ping_type_handle, uint8_t log_ping);
-
-uint8_t glean_send_ping_by_name(uint64_t glean_handle, FfiStr ping_name, uint8_t log_ping);
+uint8_t glean_send_pings_by_name(uint64_t glean_handle,
+                                 RawStringArray ping_names,
+                                 int32_t ping_names_len,
+                                 uint8_t log_ping);
 
 void glean_set_experiment_active(uint64_t glean_handle,
                                  FfiStr experiment_id,

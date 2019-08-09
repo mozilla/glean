@@ -396,6 +396,25 @@ impl Glean {
         }
     }
 
+    /// Send a list of pings by name.
+    ///
+    /// See `send_ping` for detailed information.
+    ///
+    /// Returns true if at least one ping was assembled and queued, false otherwise.
+    pub fn send_pings_by_name(&self, ping_names: &[String], log_ping: bool) -> bool {
+        // TODO: 1553813: glean-ac collects and stores pings in parallel and then joins them all before queueing the worker.
+        // This here is writing them out sequentially.
+
+        let mut result = false;
+
+        for ping_name in ping_names {
+            if let Ok(true) = self.send_ping_by_name(ping_name, log_ping) {
+                result = true;
+            }
+        }
+        result
+    }
+
     /// Send a ping by name.
     ///
     /// The ping content is assembled as soon as possible, but upload is not

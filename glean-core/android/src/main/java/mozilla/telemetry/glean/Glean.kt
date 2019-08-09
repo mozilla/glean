@@ -403,39 +403,6 @@ open class GleanInternalAPI internal constructor () {
         sendPings(listOf(Pings.baseline, Pings.events))
     }
 
-    @Suppress("EXPERIMENTAL_API_USAGE")
-    private fun <T> sendPingsGeneric(
-        pings: List<T>,
-        pingSender: (T) -> Boolean,
-        nameFn: (T) -> String
-    ) = Dispatchers.API.launch {
-        if (!isInitialized()) {
-            Log.e(LOG_TAG, "Glean must be initialized before sending pings.")
-            return@launch
-        }
-
-        if (!getUploadEnabled()) {
-            Log.e(LOG_TAG, "Glean must be enabled before sending pings.")
-            return@launch
-        }
-
-        // TODO: 1553813: glean-ac collects and stores pings in parallel and
-        // then joins them all before queueing the worker. This here is writing them out
-        // sequentially.
-        var sentPing = false
-        for (ping in pings) {
-            if (pingSender(ping)) {
-                sentPing = true
-            } else {
-                Log.d(LOG_TAG, "No content for ping '${nameFn(ping)}', therefore no ping queued.")
-            }
-        }
-
-        if (sentPing) {
-            PingUploadWorker.enqueueWorker()
-        }
-    }
-
     /**
      * Send a list of pings.
      *
@@ -450,16 +417,8 @@ open class GleanInternalAPI internal constructor () {
      * @return The async [Job] performing the work of assembling the ping
      */
     internal fun sendPings(pings: List<PingType>): Job? {
-        val sendPing: (PingType) -> Boolean = {
-            LibGleanFFI.INSTANCE.glean_send_ping(
-                handle,
-                it.handle,
-                (configuration.logPings).toByte()
-            ).toBoolean()
-        }
-        val nameFn: (PingType) -> String = { it.name }
-
-        return sendPingsGeneric(pings, sendPing, nameFn)
+        val pingNames = pings.map { it.name }
+        return sendPingsByName(pingNames)
     }
 
     /**
@@ -478,17 +437,30 @@ open class GleanInternalAPI internal constructor () {
      * @param pingNames List of ping names to send.
      * @return The async [Job] performing the work of assembling the ping
      */
-    internal fun sendPingsByName(pingNames: List<String>): Job? {
-        val sendPing: (String) -> Boolean = {
-            LibGleanFFI.INSTANCE.glean_send_ping_by_name(
-                handle,
-                it,
-                (configuration.logPings).toByte()
-            ).toBoolean()
+    @Suppress("EXPERIMENTAL_API_USAGE")
+    internal fun sendPingsByName(pingNames: List<String>) = Dispatchers.API.launch {
+        if (!isInitialized()) {
+            Log.e(LOG_TAG, "Glean must be initialized before sending pings.")
+            return@launch
         }
-        val nameFn: (String) -> String = { it }
 
-        return sendPingsGeneric(pingNames, sendPing, nameFn)
+        if (!getUploadEnabled()) {
+            Log.e(LOG_TAG, "Glean must be enabled before sending pings.")
+            return@launch
+        }
+
+        val pingArray = StringArray(pingNames.toTypedArray(), "utf-8")
+        val pingArrayLen = pingNames.size
+        val sentPing = LibGleanFFI.INSTANCE.glean_send_pings_by_name(
+            handle,
+            pingArray,
+            pingArrayLen,
+            (configuration.logPings).toByte()
+        ).toBoolean()
+
+        if (sentPing) {
+            PingUploadWorker.enqueueWorker()
+        }
     }
 
     /**
