@@ -15,7 +15,7 @@ views:
       Recorded when the login view is opened.
     ...
     extra_keys:
-      source_of_login: 
+      source_of_login:
         description: The source from which the login view was opened, e.g. "toolbar".
 ```
 
@@ -46,7 +46,7 @@ assertEquals("login_opened", first.name)
 
 ## Limits
 
-* When 500 events are queued on the client, and events pings is immediately sent.
+* When 500 events are queued on the client an events pings is immediately sent.
 
 * The keys in the `extra_keys` list must be in dotted snake case, with a maximum length of 40.  For the original Kotlin implementation of the Glean SDK, this is measured in Unicode characters. For the Rust implementation, this is measured in the number of bytes when the string is encoded in UTF-8.
 
@@ -56,9 +56,9 @@ assertEquals("login_opened", first.name)
 
 * Every time a new tab is opened.
 
-## Recorded errors 
+## Recorded errors
 
-* `invalid_value`: if any of the values in the `extras` object are greater than 50 bytes in length. 
+* `invalid_value`: if any of the values in the `extras` object are greater than 50 bytes in length.
  
 ## Reference
 
