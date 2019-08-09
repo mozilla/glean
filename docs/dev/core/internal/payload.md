@@ -169,7 +169,6 @@ See the individual metric types for details on the value payload:
 
 * [Counter](#counter)
 * [String](#string)
-* [Timespan](#timespan)
 
 #### Example for Labeled Counters
 
