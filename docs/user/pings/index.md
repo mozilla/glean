@@ -57,6 +57,7 @@ All the metrics surviving application restarts (e.g. `client_id`, ...) are remov
 ### The `experiments` object
 
 This object (included in the [`ping_info` section](#The-ping_info-section)) contains experiments keyed by the experiment `id`. Each listed experiment contains the `branch` the client is enrolled in and may contain a string to string map with additional data in the `extra` key. Both the `id` and `branch` are truncated to 30 characters.
+See [Using the Experiments API](experiments-api.md) on how to record experiments data.
 
 ```json
 {
