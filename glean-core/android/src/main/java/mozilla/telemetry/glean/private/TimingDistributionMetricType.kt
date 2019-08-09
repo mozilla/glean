@@ -50,6 +50,9 @@ class TimingDistributionMetricType internal constructor(
         )
     }
 
+    /**
+     * Destroy this metric.
+     */
     protected fun finalize() {
         if (this.handle != 0L) {
             val error = RustError.ByReference()
@@ -163,9 +166,8 @@ class TimingDistributionMetricType internal constructor(
      * attempt to await the last task (if any) writing to the the metric's storage engine before
      * returning a value.
      *
-     * @param pingName represents the name of the ping to retrieve the metric for.  Defaults
-     *                 to the either the first value in [defaultStorageDestinations] or the first
-     *                 value in [sendInPings]
+     * @param pingName represents the name of the ping to retrieve the metric for.
+     *                 Defaults to the first value in `sendInPings`.
      * @return true if metric value exists, otherwise false
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
@@ -182,9 +184,8 @@ class TimingDistributionMetricType internal constructor(
      * Returns the stored value for testing purposes only. This function will attempt to await the
      * last task (if any) writing to the the metric's storage engine before returning a value.
      *
-     * @param pingName represents the name of the ping to retrieve the metric for.  Defaults
-     *                 to the either the first value in [defaultStorageDestinations] or the first
-     *                 value in [sendInPings]
+     * @param pingName represents the name of the ping to retrieve the metric for.
+     *                 Defaults to the first value in `sendInPings`.
      * @return value of the stored metric
      * @throws [NullPointerException] if no value is stored
      */

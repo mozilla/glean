@@ -16,11 +16,26 @@ import mozilla.telemetry.glean.rust.toByte
 import org.json.JSONArray
 import org.json.JSONObject
 
+/**
+ * Deserialized event data.
+ */
 @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
 data class RecordedEventData(
+    /**
+     * The event's category, part of the full identifier
+     */
     val category: String,
+    /**
+     *  The event's name, part of the full identifier
+     */
     val name: String,
+    /**
+     *  The event's timestamp
+     */
     var timestamp: Long,
+    /**
+     *  Any extra data recorded for the event
+     */
     val extra: Map<String, String>? = null,
 
     internal val identifier: String = if (category.isEmpty()) { name } else { "$category.$name" }
@@ -31,7 +46,12 @@ data class RecordedEventData(
  * that an [EventMetricType] can accept.
  */
 @Suppress("EmptyClassBlock")
-enum class NoExtraKeys(val value: Int) {
+enum class NoExtraKeys(
+    /**
+     * @suppress
+     */
+    val value: Int
+) {
     // deliberately empty
 }
 
@@ -82,7 +102,7 @@ class EventMetricType<ExtraKeysEnum : Enum<ExtraKeysEnum>> internal constructor(
      *
      * @param extra optional. This is map, both keys and values need to be strings, keys are
      *              identifiers. This is used for events where additional richer context is needed.
-     *              The maximum length for values is defined by [MAX_LENGTH_EXTRA_KEY_VALUE]
+     *              The maximum length for values is defined by `MAX_LENGTH_EXTRA_KEY_VALUE`.
      */
     fun record(extra: Map<ExtraKeysEnum, String>? = null) {
         if (disabled) {
@@ -126,9 +146,8 @@ class EventMetricType<ExtraKeysEnum : Enum<ExtraKeysEnum>> internal constructor(
      * attempt to await the last task (if any) writing to the the metric's storage engine before
      * returning a value.
      *
-     * @param pingName represents the name of the ping to retrieve the metric for.  Defaults
-     *                 to the either the first value in [defaultStorageDestinations] or the first
-     *                 value in [sendInPings]
+     * @param pingName represents the name of the ping to retrieve the metric for.
+     *                 Defaults to the first value in `sendInPings`.
      * @return true if metric value exists, otherwise false
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
@@ -177,9 +196,8 @@ class EventMetricType<ExtraKeysEnum : Enum<ExtraKeysEnum>> internal constructor(
      * Returns the stored value for testing purposes only. This function will attempt to await the
      * last task (if any) writing to the the metric's storage engine before returning a value.
      *
-     * @param pingName represents the name of the ping to retrieve the metric for.  Defaults
-     *                 to the either the first value in [defaultStorageDestinations] or the first
-     *                 value in [sendInPings]
+     * @param pingName represents the name of the ping to retrieve the metric for.
+     *                 Defaults to the first value in `sendInPings`.
      * @return value of the stored metric
      * @throws [NullPointerException] if no value is stored
      */

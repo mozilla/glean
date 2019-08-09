@@ -6,8 +6,17 @@ package mozilla.telemetry.glean.private
 
 import androidx.annotation.VisibleForTesting
 
+/**
+ * Deserialized experiment data.
+ */
 @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
 data class RecordedExperimentData(
+    /**
+     * The experiment's branch as set through `setExperimentActive`.
+     */
     val branch: String,
+    /**
+     * Any extra data associated with this experiment through `setExperimentActive`.
+     */
     val extra: Map<String, String>? = null
 )

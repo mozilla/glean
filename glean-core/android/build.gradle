@@ -238,6 +238,7 @@ task docs(type: org.jetbrains.dokka.gradle.DokkaAndroidTask, overwrite: true) {
     outputDirectory = "$buildDir/../../../build/docs/javadoc"
     outputFormat = "html"
     jdkVersion = 7
+    reportUndocumented = true
 }
 
 //apply from: 'https://github.com/mozilla-mobile/android-components/raw/master/components/service/glean/scripts/sdk_generator.gradle'

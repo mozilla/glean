@@ -34,9 +34,17 @@ import mozilla.telemetry.glean.scheduler.PingUploadWorker
 import mozilla.telemetry.glean.scheduler.MetricsPingScheduler
 import org.json.JSONObject
 
-// Public exported type identifying individual timers for [TimingDistributionMetricType].
+/**
+ * Public exported type identifying individual timers for
+ * [TimingDistributionMetricType][mozilla.telemetry.glean.private.TimingDistributionMetricType].
+ */
 typealias GleanTimerId = Long
 
+/**
+ * The main Glean API.
+ *
+ * This is exposed through the global [Glean] object.
+ */
 @Suppress("TooManyFunctions")
 open class GleanInternalAPI internal constructor () {
     companion object {
@@ -222,8 +230,7 @@ open class GleanInternalAPI internal constructor () {
      * experiment annotation to the environment which is sent with pings. This
      * information is not persisted between runs.
      *
-     * @param experimentId The id of the active experiment (maximum
-     *     30 bytes)
+     * @param experimentId The id of the active experiment (maximum 30 bytes)
      * @param branch The experiment branch (maximum 30 bytes)
      * @param extra Optional metadata to output with the ping
      */
@@ -544,4 +551,14 @@ open class GleanInternalAPI internal constructor () {
     }
 }
 
+/**
+ * The main Glean object.
+ *
+ * Before any data collection can take place, the Glean SDK **must** be initialized from the application.
+ *
+ * ```
+ * Glean.setUploadEnabled(true)
+ * Glean.initialize(applicationContext)
+ * ```
+ */
 object Glean : GleanInternalAPI()

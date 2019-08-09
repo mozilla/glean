@@ -30,6 +30,9 @@ class PingType(
         Glean.registerPingType(this)
     }
 
+    /**
+     * Destroy this ping type.
+     */
     protected fun finalize() {
         if (this.handle != 0L) {
             val error = RustError.ByReference()

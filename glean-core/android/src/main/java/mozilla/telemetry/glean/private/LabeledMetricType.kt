@@ -62,14 +62,14 @@ class LabeledMetricType<T>(
      *
      * If a set of acceptable labels were specified in the metrics.yaml file,
      * and the given label is not in the set, it will be recorded under the
-     * special [OTHER_LABEL].
+     * special `OTHER_LABEL`.
      *
      * If a set of acceptable labels was not specified in the metrics.yaml file,
      * only the first 16 unique labels will be used. After that, any additional
-     * labels will be recorded under the special [OTHER_LABEL] label.
+     * labels will be recorded under the special `OTHER_LABEL` label.
      *
      * Labels must be snake_case and less than 30 characters. If an invalid label
-     * is used, the metric will be recorded in the special [OTHER_LABEL] label.
+     * is used, the metric will be recorded in the special `OTHER_LABEL` label.
      *
      * @param label The label
      * @return The specific metric for that label
