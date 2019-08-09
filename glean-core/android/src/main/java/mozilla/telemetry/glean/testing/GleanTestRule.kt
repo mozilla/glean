@@ -28,7 +28,7 @@ import org.junit.runner.Description
  */
 @VisibleForTesting(otherwise = VisibleForTesting.NONE)
 class GleanTestRule(
-    val context: Context
+    private val context: Context
 ) : TestWatcher() {
     override fun starting(description: Description?) {
         // We're using the WorkManager in a bunch of places, and Glean will crash
