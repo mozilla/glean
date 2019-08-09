@@ -49,7 +49,7 @@ Before submitting a PR:
 - Your patch should include new tests that cover your changes. It is your and your reviewer's responsibility to ensure your patch includes adequate tests.
 
 When submitting a PR:
-- You agree to license your code under the project's open source license ([MPL 2.0](/LICENSE)).
+- You agree to license your code under the project's open source license ([MPL 2.0](https://mozilla.org/MPL/2.0/)).
 - Base your branch off the current `master` (see below for an example workflow).
 - Add both your code and new tests if relevant.
 - Run `cargo test` to make sure your code passes linting and tests.
