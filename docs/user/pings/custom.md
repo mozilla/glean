@@ -35,10 +35,10 @@ search:
 
 ## Loading custom ping metadata into your application or library
 
-The Glean SDK build generates code from `pings.yaml` in a `Pings` object, which must be instantiated so Glean can send pings by name. 
+The Glean SDK build generates code from `pings.yaml` in a `Pings` object, which must be instantiated so Glean can send pings by name.
 This object must be registered with Glean from your startup code (such as in your application's `onCreate` method or a function called from that method).
 
-```
+```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.Pings
 
 ...

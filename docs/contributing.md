@@ -3,18 +3,24 @@
 > **Note:** This document describes contributing to the cross-platform implementation of the Glean SDK. To contribute to the Android-specific implementation, see [android-components](https://github.com/mozilla-mobile/android-components).
 
 Anyone is welcome to help with the Glean SDK project. Feel free to get in touch with other community members on IRC
-or through issues here on GitHub.
+or through issues on GitHub or Bugzilla.
 
 - IRC: `#telemetry` on `irc.mozilla.org`
-- and of course, [the issues list](https://github.com/mozilla/glean/issues)
+- [the Bugzilla issues list][bugzillalist]
+- [the GitHub issues list](https://github.com/mozilla/glean/issues)
+
+[bugzillalist]: https://bugzilla.mozilla.org/buglist.cgi?list_id=14844212&resolution=---&classification=Client%20Software&classification=Developer%20Infrastructure&classification=Components&classification=Server%20Software&classification=Other&query_format=advanced&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED&component=Glean%3A%20SDK&product=Data%20Platform%20and%20Tools
 
 Participation in this project is governed by the
 [Mozilla Community Participation Guidelines](https://www.mozilla.org/en-US/about/governance/policies/participation/).
 
 ## Bug Reports
 
-You can file issues here on GitHub. Please try to include as much information as you can and under what conditions
-you saw the issue.
+To report issues or request changes, file a bug in [Bugzilla in Data Platform & Tools :: Glean: SDK][newbugzilla].
+
+If you don't have a Bugzilla account, we also accept [issues on GitHub](https://github.com/mozilla/glean/issues/new).
+
+[newbugzilla]: https://bugzilla.mozilla.org/enter_bug.cgi?assigned_to=nobody%40mozilla.org&bug_ignored=0&bug_severity=normal&bug_status=NEW&cf_fission_milestone=---&cf_fx_iteration=---&cf_fx_points=---&cf_status_firefox65=---&cf_status_firefox66=---&cf_status_firefox67=---&cf_status_firefox_esr60=---&cf_status_thunderbird_esr60=---&cf_tracking_firefox65=---&cf_tracking_firefox66=---&cf_tracking_firefox67=---&cf_tracking_firefox_esr60=---&cf_tracking_firefox_relnote=---&cf_tracking_thunderbird_esr60=---&product=Data%20Platform%20and%20Tools&component=Glean%3A%20SDK&contenttypemethod=list&contenttypeselection=text%2Fplain&defined_groups=1&flag_type-203=X&flag_type-37=X&flag_type-41=X&flag_type-607=X&flag_type-721=X&flag_type-737=X&flag_type-787=X&flag_type-799=X&flag_type-800=X&flag_type-803=X&flag_type-835=X&flag_type-846=X&flag_type-855=X&flag_type-864=X&flag_type-916=X&flag_type-929=X&flag_type-930=X&flag_type-935=X&flag_type-936=X&flag_type-937=X&form_name=enter_bug&maketemplate=Remember%20values%20as%20bookmarkable%20template&op_sys=Unspecified&priority=P3&&rep_platform=Unspecified&status_whiteboard=%5Btelemetry%3Aglean-rs%3Am%3F%5D&target_milestone=---&version=unspecified
 
 ## Making Code Changes
 
@@ -43,7 +49,7 @@ Before submitting a PR:
 - Your patch should include new tests that cover your changes. It is your and your reviewer's responsibility to ensure your patch includes adequate tests.
 
 When submitting a PR:
-- You agree to license your code under the project's open source license ([MPL 2.0](/LICENSE)).
+- You agree to license your code under the project's open source license ([MPL 2.0](https://mozilla.org/MPL/2.0/)).
 - Base your branch off the current `master` (see below for an example workflow).
 - Add both your code and new tests if relevant.
 - Run `cargo test` to make sure your code passes linting and tests.

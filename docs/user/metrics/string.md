@@ -2,15 +2,9 @@
 
 This allows recording a Unicode string value with arbitrary content.
 
----
+> **Note**: Be careful using arbitrary strings and make sure they can't accidentally contain identifying data (like directory paths or user input).
 
-_Note:_ Be careful using arbitrary strings and make sure they can't accidentally contain identifying data (like directory paths or user input).
-
----
-
-_Note:_ This is does not support recording JSON blobs - please get in contact with the Telemetry team if you're missing a type.
-
----
+> **Note**: This is does not support recording JSON blobs - please get in contact with the Telemetry team if you're missing a type.
 
 ## Configuration
 

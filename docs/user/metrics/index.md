@@ -2,9 +2,11 @@
 
 There are different metrics to choose from, depending on what you want to achieve:
 
-* [Events](event.md): Records events e.g. individual occurences of user actions, say every time a view was open and from where.
-
 * [Boolean](boolean.md): Records a single truth value, for example "is a11y enabled?"
+
+* [Counter](counter.md): Used to count how often something happens, for example, how often a certain button was pressed.
+
+* [Labeled counter](labeled_counters.md): Used to count how often something happens, for example which kind of crash occurred (`"uncaught_exception"` or `"native_code_crash"`).
 
 * [String](string.md): Records a single Unicode string value, for example the name of the OS.
 
@@ -12,17 +14,15 @@ There are different metrics to choose from, depending on what you want to achiev
 
 * [String List](string_list.md): Records a list of Unicode string values, for example the list of enabled search engines.
 
-* [Counter](counter.md): Used to count how often something happens, for example, how often a certain button was pressed.
-
-* [Labeled counter](labeled_counters.md): Used to count how often something happens, for example which kind of crash occurred (`"uncaught_exception"` or `"native_code_crash"`).
-
 * [Timespan](timespan.md): Used to measure how much time is spent in a single task.
 
 * [Timing Distribution](timing_distribution.md): Used to record the distribution of multiple time measurements.
 
+* [UUID](uuid.md): Used to record universally unique identifiers (UUIDs), such as a client ID.
+
 * [Datetime](datetime.md): Used to record an absolute date and time, such as the time the user first ran the application.
 
-* [UUID](uuid.md): Used to record universally unique identifiers (UUIDs), such as a client ID.
+* [Events](event.md): Records events e.g. individual occurences of user actions, say every time a view was open and from where.
 
 ## Labeled metrics
 
@@ -42,8 +42,4 @@ Labeled metrics come in two forms:
 - **Dynamic labels**: The labels aren't known at build time, so are set at run time.
   Only the first 16 labels seen by the Glean SDK will be tracked. After that, any additional labels are converted to the special label `__other__`.
 
----
-
-_Note:_ Be careful with using arbitrary strings as labels and make sure they can't accidentally contain identifying data (like directory paths or user input).
-
----
+> **Note**: Be careful with using arbitrary strings as labels and make sure they can't accidentally contain identifying data (like directory paths or user input).

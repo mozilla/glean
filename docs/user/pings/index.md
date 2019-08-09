@@ -5,22 +5,22 @@ Every Glean ping is in JSON format and contains one or more of the [common secti
 If data collection is enabled, the Glean SDK provides a set of built-in pings that are assembled out of the box without any developer intervention.  The following is a list of these built-in pings:
 
 - [`baseline` ping](baseline.md)
-- [`events` ping](events.md)
 - [`metrics` ping](metrics.md)
+- [`events` ping](events.md)
 
 Applications can also define and send their own [custom pings](custom.md).
 
 ## Ping sections
 
-There are two standard metadata sections that are added to most pings, in addition to their core metrics and events content (which are described elsewhere in [adding new metrics](../adding-new-metrics.md).
+There are two standard metadata sections that are added to most pings, in addition to their core metrics and events content (which are described in [Adding new metrics](../adding-new-metrics.md)).
 
 - The [`ping_info` section](#The-ping_info-section) contains core metadata that is included in **every** ping.
   
-- The [`client_info` section](#The-client_info-section) contains information that identifies the client. 
+- The [`client_info` section](#The-client_info-section) contains information that identifies the client.
   It is included in most pings (including all built-in pings), but may be excluded from pings where we don't want to connect client information with the other metrics in the ping.
 
 ### The `ping_info` section
-The following fields are included in the `ping_info` section, for every ping. 
+The following fields are included in the `ping_info` section, for every ping.
 Optional fields are marked accordingly.
 
 | Field name | Type | Description |
@@ -48,7 +48,7 @@ Optional fields are marked accordingly.
 | `device_model` | String | The model name of the device |
 | `first_run_date` | Datetime | The date of the first run of the application, in local time and with day precision, including timezone information. |
 | `os` | String | The name of the operating system (e.g. "linux", "Android", "ios") |
-| `os_version` | String | The user visible version of the operating system (e.g. "1.2.3") |
+| `os_version` | String | The user-visible version of the operating system (e.g. "1.2.3") |
 | `android_sdk_version` | String | *Optional*. The Android specific SDK version of the software running on this hardware device (e.g. "23") |
 | `telemetry_sdk_build` | String | The version of the Glean SDK |
 
@@ -57,6 +57,7 @@ All the metrics surviving application restarts (e.g. `client_id`, ...) are remov
 ### The `experiments` object
 
 This object (included in the [`ping_info` section](#The-ping_info-section)) contains experiments keyed by the experiment `id`. Each listed experiment contains the `branch` the client is enrolled in and may contain a string to string map with additional data in the `extra` key. Both the `id` and `branch` are truncated to 30 characters.
+See [Using the Experiments API](../experiments-api.md) on how to record experiments data.
 
 ```json
 {
@@ -71,7 +72,7 @@ This object (included in the [`ping_info` section](#The-ping_info-section)) cont
 
 ## Ping submission
 
-The pings that the Glean SDK generates are submitted to the Mozilla servers at specific paths, in order to provide additional metadata without the need to unpack the ping payload. 
+The pings that the Glean SDK generates are submitted to the Mozilla servers at specific paths, in order to provide additional metadata without the need to unpack the ping payload.
 A typical submission URL looks like
 
   `"<server-address>/submit/<application-id>/<doc-type>/<glean-schema-version>/<ping-uuid>"`
@@ -97,8 +98,8 @@ A pre-defined set of headers is additionally sent along with the submitted ping:
 
 ## Defining background state
 
-These docs refer to application 'background' state in several places. 
+These docs refer to application 'background' state in several places.
 This specifically means when the activity is no longer visible to the user, it has entered the Stopped state, and the system invokes the [`onStop()`](https://developer.android.com/reference/android/app/Activity.html#onStop()) callback.
-This may occur, for example, when a newly launched activity covers the entire screen. 
+This may occur, for example, when a newly launched activity covers the entire screen.
 The system may also call `onStop()` when the activity has finished running, and is about to be terminated.
 
