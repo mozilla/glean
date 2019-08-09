@@ -34,10 +34,10 @@ android {
 dependencies {
     implementation project(':glean-core')
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$rootProject.versions.kotlin"
 
-    implementation "androidx.appcompat:appcompat:1.0.0"
-    implementation "androidx.browser:browser:1.0.0"
+    implementation "androidx.appcompat:appcompat:$rootProject.versions.androidx_appcompat"
+    implementation "androidx.browser:browser:$rootProject.versions.androidx_browser"
 }
 
 ext.gleanNamespace = "mozilla.telemetry.glean"

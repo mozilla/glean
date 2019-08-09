@@ -3,7 +3,6 @@ package mozilla.telemetry.glean.debug
 import android.content.Context
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 import android.content.Intent
 import androidx.test.core.app.ApplicationProvider
 import mozilla.telemetry.glean.Glean
@@ -13,9 +12,10 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
-import org.robolectric.Robolectric
 import android.content.pm.ActivityInfo
 import android.content.pm.ResolveInfo
+import androidx.test.core.app.ActivityScenario.launch
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import mozilla.telemetry.glean.private.BooleanMetricType
 import mozilla.telemetry.glean.private.Lifetime
 import mozilla.telemetry.glean.resetGlean
@@ -27,10 +27,10 @@ import org.junit.Rule
 import org.robolectric.Shadows.shadowOf
 import java.util.concurrent.TimeUnit
 
-@RunWith(RobolectricTestRunner::class)
+@RunWith(AndroidJUnit4::class)
 class GleanDebugActivityTest {
 
-    private val testPackageName = "mozilla.telemetry.glean"
+    private val testPackageName = "mozilla.telemetry.glean.test"
 
     @get:Rule
     val gleanRule = GleanTestRule(ApplicationProvider.getApplicationContext())
@@ -62,8 +62,7 @@ class GleanDebugActivityTest {
         assertNull(intent.extras)
 
         // Start the activity through our intent.
-        val activity = Robolectric.buildActivity(GleanDebugActivity::class.java, intent)
-        activity.create().start().resume()
+        launch<GleanDebugActivity>(intent)
 
         // Verify that the original configuration and the one after init took place
         // are the same.
@@ -81,8 +80,7 @@ class GleanDebugActivityTest {
         val intent = Intent(ApplicationProvider.getApplicationContext<Context>(),
             GleanDebugActivity::class.java)
         intent.putExtra(GleanDebugActivity.LOG_PINGS_EXTRA_KEY, true)
-        val activity = Robolectric.buildActivity(GleanDebugActivity::class.java, intent)
-        activity.create().start().resume()
+        launch<GleanDebugActivity>(intent)
 
         // Check that the configuration option was correctly flipped.
         assertTrue(Glean.configuration.logPings)
@@ -96,12 +94,13 @@ class GleanDebugActivityTest {
         // Add at least an option, otherwise the activity will be removed.
         intent.putExtra(GleanDebugActivity.LOG_PINGS_EXTRA_KEY, true)
         // Start the activity through our intent.
-        val activity = Robolectric.buildActivity(GleanDebugActivity::class.java, intent)
-        activity.create().start().resume()
+        val scenario = launch<GleanDebugActivity>(intent)
 
         // Check that our main activity was launched.
-        assertEquals(testPackageName,
-            shadowOf(activity.get()).peekNextStartedActivityForResult().intent.`package`!!)
+        scenario.onActivity { activity ->
+            assertEquals(testPackageName,
+                shadowOf(activity).peekNextStartedActivityForResult().intent.`package`!!)
+        }
     }
 
     @Test
@@ -129,8 +128,7 @@ class GleanDebugActivityTest {
         val intent = Intent(ApplicationProvider.getApplicationContext<Context>(),
         GleanDebugActivity::class.java)
         intent.putExtra(GleanDebugActivity.SEND_PING_EXTRA_KEY, "metrics")
-        val activity = Robolectric.buildActivity(GleanDebugActivity::class.java, intent)
-        activity.create().start().resume()
+        launch<GleanDebugActivity>(intent)
 
         // Since we reset the serverEndpoint back to the default for untagged pings, we need to
         // override it here so that the local server we created to intercept the pings will
@@ -143,7 +141,7 @@ class GleanDebugActivityTest {
         val request = server.takeRequest(10L, TimeUnit.SECONDS)
 
         assertTrue(
-            request.requestUrl.encodedPath().startsWith("/submit/mozilla-telemetry-glean/metrics")
+            request.requestUrl.encodedPath().startsWith("/submit/mozilla-telemetry-glean-test/metrics")
         )
 
         server.shutdown()
@@ -175,8 +173,7 @@ class GleanDebugActivityTest {
             GleanDebugActivity::class.java)
         intent.putExtra(GleanDebugActivity.SEND_PING_EXTRA_KEY, "metrics")
         intent.putExtra(GleanDebugActivity.TAG_DEBUG_VIEW_EXTRA_KEY, "inv@lid_id")
-        val activity = Robolectric.buildActivity(GleanDebugActivity::class.java, intent)
-        activity.create().start().resume()
+        launch<GleanDebugActivity>(intent)
 
         // Since a bad tag ID results in resetting the endpoint to the default, verify that
         // has happened.
@@ -188,7 +185,7 @@ class GleanDebugActivityTest {
 
         assertTrue(
             "Request path must be correct",
-            request.requestUrl.encodedPath().startsWith("/submit/mozilla-telemetry-glean/metrics")
+            request.requestUrl.encodedPath().startsWith("/submit/mozilla-telemetry-glean-test/metrics")
         )
 
         assertNull(
@@ -231,8 +228,7 @@ class GleanDebugActivityTest {
             GleanDebugActivity::class.java)
         intent.putExtra(GleanDebugActivity.SEND_PING_EXTRA_KEY, "metrics")
         intent.putExtra(GleanDebugActivity.TAG_DEBUG_VIEW_EXTRA_KEY, pingTag)
-        val activity = Robolectric.buildActivity(GleanDebugActivity::class.java, intent)
-        activity.create().start().resume()
+        launch<GleanDebugActivity>(intent)
 
         // This will trigger the call to `fetch()` in the TestPingTagClient which is where the
         // test assertions will occur

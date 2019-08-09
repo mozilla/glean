@@ -5,6 +5,7 @@
 package mozilla.telemetry.glean.private
 
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import mozilla.telemetry.glean.collectAndCheckPingSchema
 import mozilla.telemetry.glean.GleanMetrics.Pings
 import mozilla.telemetry.glean.testing.GleanTestRule
@@ -14,9 +15,8 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Assert.assertFalse
 import org.junit.Rule
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
+@RunWith(AndroidJUnit4::class)
 class LabeledMetricTypeTest {
 
     @get:Rule
