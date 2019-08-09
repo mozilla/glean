@@ -49,3 +49,15 @@ linkcheck: docs
 	# Requires https://wummel.github.io/linkchecker/
 	linkchecker --ignore-url javadoc --ignore-url docs/glean_core build/docs
 .PHONY: linkcheck
+
+rust-coverage:
+	# Expects a Rust nightly toolchain to be available.
+	# Expects grcov and genhtml to be available in $PATH.
+	CARGO_INCREMENTAL=0 \
+	RUSTFLAGS='-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Zno-landing-pads' \
+	RUSTUP_TOOLCHAIN=nightly \
+		cargo build
+	zip -0 ccov.zip `find . \( -name "glean*.gc*" \) -print`
+	grcov ccov.zip -s . -t lcov --llvm --branch --ignore-not-existing --ignore-dir "/*" --ignore-dir "glean-core/ffi/*" -o lcov.info
+	genhtml -o report/ --show-details --highlight --ignore-errors source --legend lcov.info
+.PHONY: rust-coverage
