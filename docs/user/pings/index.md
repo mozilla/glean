@@ -12,7 +12,7 @@ Applications can also define and send their own [custom pings](custom.md).
 
 ## Ping sections
 
-There are two standard metadata sections that are added to most pings, in addition to their core metrics and events content (which are described elsewhere in [adding new metrics](../adding-new-metrics.md).
+There are two standard metadata sections that are added to most pings, in addition to their core metrics and events content (which are described in [Adding new metrics](../adding-new-metrics.md)).
 
 - The [`ping_info` section](#The-ping_info-section) contains core metadata that is included in **every** ping.
   
