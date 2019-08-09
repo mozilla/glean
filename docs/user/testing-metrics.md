@@ -43,7 +43,8 @@ Note that each of these functions has its visibility limited to the scope of uni
 ## Testing metrics for custom pings
 
 In order to test metrics where the metric is included in more than one ping, the test functions take an optional `pingName` argument.
-This is the name of the ping that the metric is being sent in, such as `events` for the "events" ping, or `metrics` for the "metrics" ping.
+This is the name of the ping that the metric is being sent in, such as `events` for the ["events" ping](pings/events.md),
+or `metrics` for the ["metrics" ping](pings/metrics.md).
 This could also be a custom ping name that the metric is being sent in.
 In most cases you should not have to supply the ping name to the test function and can just use the default which is the "default" ping that this metric is sent in.
 You should only need to provide a `pingName` if the metric is being sent in more than one ping in order to identify the correct metric store.
