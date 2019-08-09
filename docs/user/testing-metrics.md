@@ -38,7 +38,7 @@ This function will return a datatype appropriate to the specific type of the met
 assertEquals(5, GleanMetrics.Foo.UriCount.testGetValue())
 ```
 
-Note that each of these functions has it's visibility limited to the scope to only unit tests by making use of the `@VisibleForTesting` annotation, so the IDE should complain if you attempt to use them inside of client code.
+Note that each of these functions has its visibility limited to the scope of unit tests by making use of the `@VisibleForTesting` annotation, so the IDE should complain if you attempt to use them inside of client code.
 
 ## Testing metrics for custom pings
 
