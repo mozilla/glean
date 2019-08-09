@@ -6,7 +6,7 @@ _Modern telemetry for mobile platforms_
 
 The `Glean SDK` is a modern approach for a mobile Telemetry library and is part of the [Glean project](https://docs.telemetry.mozilla.org/concepts/glean/glean.html).
 
-There currently two independent implementations of the Glean SDK, both sharing the documentation here:
+There are currently two independent implementations of the Glean SDK, both sharing the documentation here:
 
 - An Android-only implementation in [android-components](https://github.com/mozilla-mobile/android-components/tree/master/components/service/glean).
 - A [cross-platform implementation](https://github.com/mozilla/glean/).  (This implementation is currently under development and not ready for use).
