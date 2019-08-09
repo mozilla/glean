@@ -557,8 +557,7 @@ open class GleanInternalAPI internal constructor () {
  * Before any data collection can take place, the Glean SDK **must** be initialized from the application.
  *
  * ```
- * Glean.setUploadEnabled(Settings.isTelemetryEnabled)
- *
+ * Glean.setUploadEnabled(true)
  * Glean.initialize(applicationContext)
  * ```
  */
