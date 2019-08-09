@@ -42,8 +42,4 @@ Labeled metrics come in two forms:
 - **Dynamic labels**: The labels aren't known at build time, so are set at run time.
   Only the first 16 labels seen by the Glean SDK will be tracked. After that, any additional labels are converted to the special label `__other__`.
 
----
-
-_Note:_ Be careful with using arbitrary strings as labels and make sure they can't accidentally contain identifying data (like directory paths or user input).
-
----
+> **Note**: Be careful with using arbitrary strings as labels and make sure they can't accidentally contain identifying data (like directory paths or user input).
