@@ -84,7 +84,7 @@ data class Configuration internal constructor(
     constructor(
         connectionTimeout: Long = DEFAULT_CONNECTION_TIMEOUT,
         readTimeout: Long = DEFAULT_READ_TIMEOUT,
-        maxEvents: Int = DEFAULT_MAX_EVENTS,
+        maxEvents: Int? = null,
         httpClient: Lazy<Client> = lazy { HttpURLConnectionClient() },
         channel: String? = null
     ) : this (
@@ -104,7 +104,6 @@ data class Configuration internal constructor(
         const val DEFAULT_USER_AGENT = "Glean/${BuildConfig.LIBRARY_VERSION} (Android)"
         const val DEFAULT_CONNECTION_TIMEOUT = 10000L
         const val DEFAULT_READ_TIMEOUT = 30000L
-        const val DEFAULT_MAX_EVENTS = 500
         const val DEFAULT_LOG_PINGS = false
     }
 }
