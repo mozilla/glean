@@ -68,7 +68,7 @@ A [Timespan](../../../user/metrics/timespan.md) is represented as an object of t
 }
 ```
 
-## Timing Distribution
+### Timing Distribution
 
 A [Timing distribution](../../../user/metrics/timing_distribution.md) is represented as an object with the following fields.
 
@@ -149,6 +149,27 @@ When the application starts up again, there is no good way to determine if the d
 To get around this, on application startup, any queued events are immediately collected into pings and then cleared.
 These "startup-triggered pings" are likely to have a very short duration, as recorded in `ping_info.start_time` and `ping_info.end_time` (see [the `ping_info` section](../../../user/pings/index.md#The-ping_info-section)).
 The maximum timestamp of the events in these pings are quite likely to exceed the duration of the ping, but this is to be expected.
+
+### Custom Distribution
+
+A [Custom distribution](../../../user/metrics/custom_distribution.md) is represented as an object with the following fields.
+
+| Field name | Type | Description |
+|---|---|---|
+| `sum` | Integer | The sum of all recorded values. |
+| `values` | Map&lt;String, Integer&gt; | The values in each bucket. The key is the minimum value for the range of that bucket. All buckets [0, max) are reported, so that the histograms can be aggregated in the pipeline without the pipeline knowing anything about the distribution of the buckets. | 
+
+#### Example:
+
+```json
+{
+    "sum": 3,
+    "values": {
+        "0": 1,
+        "1": 3,
+    }
+}
+```
 
 ### Labeled metrics
 

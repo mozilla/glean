@@ -21,6 +21,7 @@
         - [UUID](user/metrics/uuid.md)
         - [Datetime](user/metrics/datetime.md)
         - [Event](user/metrics/event.md)
+        - [Custom Distribution](user/metrics/custom_distribution.md)
     - [Pings](user/pings/index.md)
         - [Baseline Ping](user/pings/baseline.md)
         - [Metrics Ping](user/pings/metrics.md)
