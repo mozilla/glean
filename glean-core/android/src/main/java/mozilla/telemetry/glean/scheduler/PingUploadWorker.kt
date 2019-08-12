@@ -64,6 +64,13 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
          * @return true if process was successful
          */
         internal fun uploadPings(): Boolean = HttpPingUploader().process()
+
+        /**
+         * Function to cancel any pending ping upload workers
+         */
+        internal fun cancel() {
+            WorkManager.getInstance().cancelUniqueWork(PING_WORKER_TAG)
+        }
     }
 
     /**

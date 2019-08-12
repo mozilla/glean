@@ -23,6 +23,7 @@ import mozilla.telemetry.glean.private.NoExtraKeys
 import mozilla.telemetry.glean.private.PingType
 import mozilla.telemetry.glean.private.StringMetricType
 import mozilla.telemetry.glean.scheduler.GleanLifecycleObserver
+import mozilla.telemetry.glean.scheduler.MetricsPingWorker
 import mozilla.telemetry.glean.scheduler.PingUploadWorker
 import mozilla.telemetry.glean.testing.GleanTestRule
 import mozilla.telemetry.glean.utils.getLanguageFromLocale
@@ -42,6 +43,7 @@ import org.mockito.Mockito.spy
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
+import java.util.Calendar
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
@@ -473,5 +475,38 @@ class GleanTest {
 
         Glean.setUploadEnabled(true)
         assertTrue(GleanInternalMetrics.os.testHasValue())
+    }
+
+    @Test
+    fun `Workers should be cancelled when disabling uploading`() {
+        // Force the MetricsPingScheduler to schedule the MetricsPingWorker
+        Glean.metricsPingScheduler.schedulePingCollection(Calendar.getInstance(), true)
+        // Enqueue a worker to send the baseline ping
+        Pings.baseline.send()
+
+        // Verify that the workers are enqueued
+        assertTrue("PingUploadWorker is enqueued",
+            getWorkerStatus(PingUploadWorker.PING_WORKER_TAG).isEnqueued)
+        assertTrue("MetricsPingWorker is enqueued",
+            getWorkerStatus(MetricsPingWorker.TAG).isEnqueued)
+
+        Glean.setUploadEnabled(true)
+
+        // Verify that the workers are still enqueued to show that setting upload enabled to true
+        // doesn't affect any already queued workers, since we ask consumers to set upload enabled
+        // before initializing glean.
+        assertTrue("PingUploadWorker is enqueued",
+            getWorkerStatus(PingUploadWorker.PING_WORKER_TAG).isEnqueued)
+        assertTrue("MetricsPingWorker is enqueued",
+            getWorkerStatus(MetricsPingWorker.TAG).isEnqueued)
+
+        // Toggle upload enabled to false
+        Glean.setUploadEnabled(false)
+
+        // Verify workers have been cancelled
+        assertFalse("PingUploadWorker is not enqueued",
+            getWorkerStatus(PingUploadWorker.PING_WORKER_TAG).isEnqueued)
+        assertFalse("MetricsPingWorker is not enqueued",
+            getWorkerStatus(MetricsPingWorker.TAG).isEnqueued)
     }
 }
