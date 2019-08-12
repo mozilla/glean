@@ -2,21 +2,12 @@
 
 Timing distributions are used to accumulate and store time measurement, for analyzing distributions of the timing data.
 
-To measure the distribution of multiple timespans, see [Timing Distributions](timing_distribution.md). To record absolute times, see [Datetimes](datetime.md).
+To measure the distribution of single timespans, see [Timespans](timespan.md). To record absolute times, see [Datetimes](datetime.md).
+
+Timing distributions are recorded in a histogram where the buckets have an exponential distribution, specifically with 8 buckets for every power of 2.
+This makes them suitable for measuring timings on a number of time scales without any configuration.
 
 ## Configuration
-
-Timing distributions have a required `time_unit` parameter to specify the resolution and range of the values that are recorded. The allowed values for `time_unit` are:
-
-  - `nanosecond`
-  - `microsecond`
-  - `millisecond`
-  - `second`
-  - `minute`
-  - `hour`
-  - `day`
-
-Which range of values is recorded in detail depends on the `time_unit`, e.g. for milliseconds, all values greater 60000 are recorded as overflow values.
 
 If you wanted to create a timing distribution to measure page load times, first you need to add an entry for it to the `metrics.yaml` file:
 
@@ -24,11 +15,12 @@ If you wanted to create a timing distribution to measure page load times, first 
 pages:
   page_load:
     type: timing_distribution
-    time_unit: millisecond
     description: >
       Counts how long each page takes to load
     ...
 ```
+
+> Note: Timing distributions have an optional `time_unit` parameter that is only used when samples are provided directly from an external tool in a unit other than nanoseconds.
 
 ## API
 
@@ -74,7 +66,10 @@ assertEquals(2L, snapshot.count())
 
 ## Limits
 
-* Which range of values is recorded in detail depends on the `time_unit`, e.g. for milliseconds, all values greater 60000 are recorded as overflow values.
+* Timings are recorded in nanoseconds.
+  On Android, the [SystemClock.getElapsedNanos()](https://developer.android.com/reference/android/os/SystemClock.html#elapsedRealtimeNanos()) function is used, so it is limited by the accuracy and performance of that timer.
+
+* The maxmimum timing value that will be recorded is 10 minutes. Longer times will be truncated to 10 minutes and an error will be recorded.
 
 ## Examples
 
@@ -84,9 +79,8 @@ assertEquals(2L, snapshot.count())
 
 * `invalid_value`: If recording a negative timespan.
 * `invalid_value`: If a non-existing/stopped timer is stopped again.
+* `invalid_value`: If recording a time longer than 10 minutes.
 
 ## Reference
 
 * See [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-timing-distribution-metric-type/index.html)
-
- 

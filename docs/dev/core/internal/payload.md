@@ -74,21 +74,14 @@ A [Timing distribution](../../../user/metrics/timing_distribution.md) is represe
 
 | Field name | Type | Description |
 |---|---|---|
-| `bucket_count` | Integer | The bucket count of the histogram. |
-| `range` | Array&lt;Integer&gt; | The range indicated by its minimum and maxium value. |
 | `sum` | Integer | The sum of all recorded values. |
-| `time_unit` | String | The timespan's time unit, see the [time distribution's configuration](../../../user/metrics/timing_distribution.md#configuration) for valid values. |
 | `values` | Map&lt;String, Integer&gt; | The values in each bucket. The key is the minimum value for the range of that bucket. Buckets with no values are not reported. |
 
 #### Example:
 
 ```json
 {
-    "bucket_count": 100,
-    "range": [0, 60000],
-    "histogram_type": "expontential",
     "sum": 3,
-    "time_unit": "milliseconds",
     "values": {
         "0": 1,
         "1": 3,
