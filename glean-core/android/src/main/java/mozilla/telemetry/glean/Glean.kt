@@ -201,6 +201,13 @@ open class GleanInternalAPI internal constructor () {
                 // iterating over and deleting the pings doesn't happen at the same time.
                 synchronized(PingUploader.pingQueueLock) {
                     LibGleanFFI.INSTANCE.glean_set_upload_enabled(handle, enabled.toByte())
+
+                    // Cancel any pending workers here so that we don't accidentally upload or
+                    // collect data after the upload has been disabled.
+                    if (!enabled) {
+                        MetricsPingScheduler.cancel()
+                        PingUploadWorker.cancel()
+                    }
                 }
 
                 if (!originalEnabled && getUploadEnabled()) {

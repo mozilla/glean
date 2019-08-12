@@ -464,6 +464,24 @@ class MetricsPingSchedulerTest {
         verify(mpsSpy, times(1)).schedule()
     }
 
+    @Test
+    fun `cancel() correctly cancels worker`() {
+        val mps = MetricsPingScheduler(ApplicationProvider.getApplicationContext())
+
+        mps.schedulePingCollection(Calendar.getInstance(), true)
+
+        // Verify that the worker is enqueued
+        assertTrue("MetricsPingWorker is enqueued",
+            getWorkerStatus(MetricsPingWorker.TAG).isEnqueued)
+
+        // Cancel the worker
+        MetricsPingScheduler.cancel()
+
+        // Verify worker has been cancelled
+        assertFalse("MetricsPingWorker is not enqueued",
+            getWorkerStatus(MetricsPingWorker.TAG).isEnqueued)
+    }
+
     // @Test
     // fun `Glean should close the measurement window for overdue pings before recording new data`() {
     //     // This test is a bit tricky: we want to make sure that, when our metrics ping is overdue
