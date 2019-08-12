@@ -46,7 +46,7 @@ assertEquals("login_opened", first.name)
 
 ## Limits
 
-* When 500 events are queued on the client an events pings is immediately sent.
+* When 500 events are queued on the client an events ping is immediately sent.
 
 * The keys in the `extra_keys` list must be in dotted snake case, with a maximum length of 40.  For the original Kotlin implementation of the Glean SDK, this is measured in Unicode characters. For the Rust implementation, this is measured in the number of bytes when the string is encoded in UTF-8.
 
