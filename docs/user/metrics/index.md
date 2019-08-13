@@ -18,6 +18,8 @@ There are different metrics to choose from, depending on what you want to achiev
 
 * [Timing Distribution](timing_distribution.md): Used to record the distribution of multiple time measurements.
 
+* [Memory Distribution](memory_distribution.md): Used to record the distribution of memory sizes.
+
 * [UUID](uuid.md): Used to record universally unique identifiers (UUIDs), such as a client ID.
 
 * [Datetime](datetime.md): Used to record an absolute date and time, such as the time the user first ran the application.

@@ -75,7 +75,28 @@ A [Timing distribution](../../../user/metrics/timing_distribution.md) is represe
 | Field name | Type | Description |
 |---|---|---|
 | `sum` | Integer | The sum of all recorded values. |
-| `values` | Map&lt;String, Integer&gt; | The values in each bucket. The key is the minimum value for the range of that bucket. Buckets with no values are not reported. |
+| `values` | Map&lt;String, Integer&gt; | The values in each bucket. The key is the minimum value for the range of that bucket. All contiguous buckets between the minimum non-zero bucket and the maximum non-zero bucket are included. |
+
+#### Example:
+
+```json
+{
+    "sum": 3,
+    "values": {
+        "0": 1,
+        "1": 3,
+    }
+}
+```
+
+### Memory Distribution
+
+A [Memory distribution](../../../user/metrics/memory_distribution.md) is represented as an object with the following fields.
+
+| Field name | Type | Description |
+|---|---|---|
+| `sum` | Integer | The sum of all recorded values. |
+| `values` | Map&lt;String, Integer&gt; | The values in each bucket. The key is the minimum value for the range of that bucket. All contiguous buckets between the minimum non-zero bucket and the maximum non-zero bucket are included. |
 
 #### Example:
 
@@ -157,7 +178,7 @@ A [Custom distribution](../../../user/metrics/custom_distribution.md) is represe
 | Field name | Type | Description |
 |---|---|---|
 | `sum` | Integer | The sum of all recorded values. |
-| `values` | Map&lt;String, Integer&gt; | The values in each bucket. The key is the minimum value for the range of that bucket. All buckets [0, max) are reported, so that the histograms can be aggregated in the pipeline without the pipeline knowing anything about the distribution of the buckets. | 
+| `values` | Map&lt;String, Integer&gt; | The values in each bucket. The key is the minimum value for the range of that bucket. All buckets [min, max + 1] are reported, so that the histograms can be aggregated in the pipeline without the pipeline knowing anything about the distribution of the buckets. | 
 
 #### Example:
 

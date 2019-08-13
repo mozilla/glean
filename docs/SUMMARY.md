@@ -18,6 +18,7 @@
         - [String List](user/metrics/string_list.md)
         - [Timespan](user/metrics/timespan.md)
         - [Timing Distribution](user/metrics/timing_distribution.md)
+        - [Memory Distribution](user/metrics/memory_distribution.md)
         - [UUID](user/metrics/uuid.md)
         - [Datetime](user/metrics/datetime.md)
         - [Event](user/metrics/event.md)
