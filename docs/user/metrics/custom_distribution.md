@@ -24,7 +24,7 @@ In addition, the metric should specify:
 
   - `unit`: (String) The unit of the values in the metric. For documentation purposes only -- does not affect data collection.
 
-If you wanted to create a custom distribution to the fraction of memory that is overhead as a percentage, first you need to add an entry for it to the `metrics.yaml` file:
+If you wanted to create a custom distribution of the peak number of pixels used during a checkerboard event, first you need to add an entry for it to the `metrics.yaml` file:
 
 ```YAML
 graphics:
@@ -37,7 +37,7 @@ graphics:
     bucket_count: 50
     histogram_type: exponential
     unit: pixels
-    gecko_datapoint: MEMORY_HEAP_OVERHEAD_FRACTION
+    gecko_datapoint: CHECKERBOARD_PEAK
     ...
 ```
 
