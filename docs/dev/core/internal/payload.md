@@ -75,7 +75,17 @@ A [Timing distribution](../../../user/metrics/timing_distribution.md) is represe
 | Field name | Type | Description |
 |---|---|---|
 | `sum` | Integer | The sum of all recorded values. |
-| `values` | Map&lt;String, Integer&gt; | The values in each bucket. The key is the minimum value for the range of that bucket. All contiguous buckets between the minimum non-zero bucket and the maximum non-zero bucket are included. |
+| `values` | Map&lt;String, Integer&gt; | The values in each bucket. The key is the minimum value for the range of that bucket. |
+
+A contiguous range of buckets is always sent, so that the server can aggregate and visualize distributions, without knowing anything about the specific bucketing function used.
+This range starts with the first bucket with a non-zero accumulation, and ends at one bucket beyond the last bucket with a non-zero accumulation (so that the upper bound on the last bucket is retained).
+
+For example, the following shows the recorded values vs. what is sent in the payload.
+
+```
+recorded:  1024: 2, 1116: 1,                   1448: 1,
+sent:      1024: 2, 1116: 1, 1217: 0, 1327: 0, 1448: 1, 1579: 0
+```
 
 #### Example:
 
@@ -83,8 +93,12 @@ A [Timing distribution](../../../user/metrics/timing_distribution.md) is represe
 {
     "sum": 3,
     "values": {
-        "0": 1,
-        "1": 3,
+        "1024": 2,
+        "1116": 1,
+        "1217": 0,
+        "1327": 0,
+        "1448": 1,
+        "1579": 0
     }
 }
 ```
@@ -96,7 +110,10 @@ A [Memory distribution](../../../user/metrics/memory_distribution.md) is represe
 | Field name | Type | Description |
 |---|---|---|
 | `sum` | Integer | The sum of all recorded values. |
-| `values` | Map&lt;String, Integer&gt; | The values in each bucket. The key is the minimum value for the range of that bucket. All contiguous buckets between the minimum non-zero bucket and the maximum non-zero bucket are included. |
+| `values` | Map&lt;String, Integer&gt; | The values in each bucket. The key is the minimum value for the range of that bucket. |
+
+A contiguous range of buckets is always sent.
+See [timing distribution](#timing-distribution) for more details.
 
 #### Example:
 
@@ -178,7 +195,24 @@ A [Custom distribution](../../../user/metrics/custom_distribution.md) is represe
 | Field name | Type | Description |
 |---|---|---|
 | `sum` | Integer | The sum of all recorded values. |
-| `values` | Map&lt;String, Integer&gt; | The values in each bucket. The key is the minimum value for the range of that bucket. All buckets [min, max + 1] are reported, so that the histograms can be aggregated in the pipeline without the pipeline knowing anything about the distribution of the buckets. | 
+| `values` | Map&lt;String, Integer&gt; | The values in each bucket. The key is the minimum value for the range of that bucket. |
+
+A contiguous range of buckets is always sent, so that the server can aggregate and visualize distributions, without knowing anything about the specific bucketing function used.
+This range starts with the first bucket (as specified in the `range_min` parmater), and ends at one bucket beyond the last bucket with a non-zero accumulation (so that the upper bound on the last bucket is retained).
+
+For example, suppose you had a custom distribution defined by the following parameters:
+
+  - `range_min`: 10
+  - `range_max`: 200
+  - `bucket_count`: 80
+  - `histogram_type`: `'linear'`
+
+The following shows the recorded values vs. what is sent in the payload.
+
+```
+recorded:        12: 2,                      22: 1
+sent:     10: 0, 12: 2, 14: 0, 17: 0, 19: 0, 22: 1, 24: 0
+```
 
 #### Example:
 
@@ -186,8 +220,13 @@ A [Custom distribution](../../../user/metrics/custom_distribution.md) is represe
 {
     "sum": 3,
     "values": {
-        "0": 1,
-        "1": 3,
+        "10": 0,
+        "12": 2,
+        "14": 0,
+        "17": 0,
+        "19": 0,
+        "22": 1,
+        "24": 0
     }
 }
 ```
