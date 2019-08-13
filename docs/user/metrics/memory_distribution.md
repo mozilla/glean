@@ -23,7 +23,7 @@ memory:
 
 Now you can use the memory distribution from the application's code.
 
-For example, to measure page load time on a number of tabs that are loading at the same time, each tab object needs to store the running timer ID.
+For example, to measure size of heap allocations:
 
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.Memory
@@ -55,7 +55,7 @@ assertEquals(2L, snapshot.count())
 
 ## Limits
 
-* The maxmimum memory size that can be recorded is 1 Terabyte (2^40 bytes). Longer times will be truncated to 1 Terabyte.
+* The maxmimum memory size that can be recorded is 1 Terabyte (2^40 bytes). Larger sizes will be truncated to 1 Terabyte.
 
 ## Examples
 
