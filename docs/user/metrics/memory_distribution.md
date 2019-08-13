@@ -23,19 +23,20 @@ memory:
 
 Now you can use the memory distribution from the application's code.
 
-For example, to measure size of heap allocations:
+For example, to measure the distribution of heap allocations:
 
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.Memory
 
 fun allocateMemory(nbytes: Int) {
+    // ...
     Memory.heapAllocated.accumulate(nbytes / 1024)
 }
 ```
 
 There are test APIs available too.  For convenience, properties `sum` and `count` are exposed to facilitate validating that data was recorded correctly.
 
-Continuing the `pageLoad` example above, at this point the metric should have a `sum == 11` and a `count == 2`:
+Continuing the `heapAllocated` example above, at this point the metric should have a `sum == 11` and a `count == 2`:
 
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.Memory
@@ -59,12 +60,12 @@ assertEquals(2L, snapshot.count())
 
 ## Examples
 
-* How much memory was allocated by a given process?
+* What is the distribution of the size of heap allocations?
 
 ## Recorded errors
 
 * `invalid_value`: If recording a negative memory size.
-* `invalid_value`: If recording a size larger than 1TB. 
+* `invalid_value`: If recording a size larger than 1TB.
 
 ## Reference
 
