@@ -15,18 +15,12 @@ import mozilla.components.support.ktx.android.org.json.tryGetLong
  * is meant to help serialize and deserialize data to the correct format for transport and storage,
  * as well as including a helper function to calculate the bucket sizes.
  *
- * @param bucketCount total number of buckets
- * @param rangeMin the minimum bucket value
- * @param rangeMax the maximum bucket value
  * @param histogramType the [HistogramType] representing the bucket layout
  * @param values a map containing the bucket index mapped to the accumulated count
  * @param sum the accumulated sum of all the samples in the timing distribution
  */
 @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
 data class TimingDistributionData(
-    val bucketCount: Int,
-    val rangeMin: Long,
-    val rangeMax: Long,
     val values: MutableMap<Int, Long>,
     var sum: Long
 ) {
@@ -48,27 +42,6 @@ data class TimingDistributionData(
                 return null
             }
 
-            // Category can be empty so it may be possible to be a null value so try and allow this
-            // by using `orEmpty()` to fill in the value.  Other values should be present or else
-            // something is wrong and we should return null.
-            val bucketCount = jsonObject.tryGetInt("bucket_count") ?: return null
-            // If 'range' isn't present, JSONException is thrown
-            val range = try {
-                val array = jsonObject.getJSONArray("range")
-                // Range must have exactly 2 values
-                if (array.length() == 2) {
-                    // The getLong() function throws JSONException if we can't convert to a Long, so
-                    // the catch should return null if either value isn't a valid Long
-                    array.getLong(0)
-                    array.getLong(1)
-                    // This returns the JSONArray to the assignment if everything checks out
-                    array
-                } else {
-                    return null
-                }
-            } catch (e: org.json.JSONException) {
-                return null
-            }
             // Attempt to parse the values map, if it fails then something is wrong and we need to
             // return null.
             val values = try {
@@ -85,9 +58,6 @@ data class TimingDistributionData(
             val sum = jsonObject.tryGetLong("sum") ?: return null
 
             return TimingDistributionData(
-                bucketCount = bucketCount,
-                rangeMin = range.getLong(0),
-                rangeMax = range.getLong(1),
                 values = values,
                 sum = sum
             )

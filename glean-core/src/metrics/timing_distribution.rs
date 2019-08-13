@@ -8,7 +8,7 @@ use std::time::Duration;
 use serde::Serialize;
 
 use crate::error_recording::{record_error, ErrorType};
-use crate::histogram::{Histogram, Type};
+use crate::histogram::{Exponential, Histogram};
 use crate::metrics::time_unit::TimeUnit;
 use crate::metrics::Metric;
 use crate::metrics::MetricType;
@@ -87,9 +87,6 @@ pub struct TimingDistributionMetric {
 /// A serializable representation of a snapshotted histogram with a time unit.
 #[derive(Debug, Serialize)]
 pub struct Snapshot {
-    bucket_count: usize,
-    range: [u64; 2],
-    histogram_type: Type,
     values: HashMap<u64, u64>,
     sum: u64,
     time_unit: TimeUnit,
@@ -98,20 +95,9 @@ pub struct Snapshot {
 /// Create a snapshot of the histogram with a time unit.
 ///
 /// The snapshot can be serialized into the payload format.
-pub(crate) fn snapshot(hist: &Histogram, time_unit: TimeUnit) -> Snapshot {
-    let values = hist
-        .bucket_ranges()
-        .iter()
-        .cloned()
-        .zip(hist.values().iter().cloned())
-        .filter(|(_, v)| *v != 0)
-        .collect();
-
+pub(crate) fn snapshot(hist: &Histogram<Exponential>, time_unit: TimeUnit) -> Snapshot {
     Snapshot {
-        bucket_count: hist.bucket_count(),
-        range: [hist.min(), hist.max()],
-        histogram_type: hist.typ(),
-        values,
+        values: hist.values().clone(),
         sum: hist.sum(),
         time_unit,
     }
@@ -261,7 +247,11 @@ impl TimingDistributionMetric {
     /// Get the currently stored value as an integer.
     ///
     /// This doesn't clear the stored value.
-    pub fn test_get_value(&self, glean: &Glean, storage_name: &str) -> Option<Histogram> {
+    pub fn test_get_value(
+        &self,
+        glean: &Glean,
+        storage_name: &str,
+    ) -> Option<Histogram<Exponential>> {
         match StorageManager.snapshot_metric(glean.storage(), storage_name, &self.meta.identifier())
         {
             Some(Metric::TimingDistribution(hist, _)) => Some(hist),
@@ -301,9 +291,6 @@ mod test {
         let snap = snapshot(&hist, TimeUnit::Millisecond);
 
         let expected_json = json!({
-            "bucket_count": 10,
-            "histogram_type": "exponential",
-            "range": [1, 500],
             "sum": 55,
             "time_unit": "millisecond",
             "values": {

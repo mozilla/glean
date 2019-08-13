@@ -171,9 +171,9 @@ fn the_accumulate_samples_api_correctly_stores_timing_values() {
     assert_eq!(val.count(), 3);
 
     // We should get a sample in each of the first 3 buckets.
-    assert_eq!(1, val.values()[1]);
-    assert_eq!(1, val.values()[2]);
-    assert_eq!(1, val.values()[3]);
+    assert_eq!(1, val.values()[&1]);
+    assert_eq!(1, val.values()[&2]);
+    assert_eq!(1, val.values()[&3]);
 
     // No errors should be reported.
     assert!(test_get_num_recorded_errors(
@@ -212,9 +212,9 @@ fn the_accumulate_samples_api_correctly_handles_negative_values() {
     assert_eq!(val.count(), 3);
 
     // We should get a sample in each of the first 3 buckets.
-    assert_eq!(1, val.values()[1]);
-    assert_eq!(1, val.values()[2]);
-    assert_eq!(1, val.values()[3]);
+    assert_eq!(1, val.values()[&1]);
+    assert_eq!(1, val.values()[&2]);
+    assert_eq!(1, val.values()[&3]);
 
     // 1 error should be reported.
     assert_eq!(
