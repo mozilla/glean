@@ -49,6 +49,8 @@ assertEquals(listOf("Google", "DuckDuckGo"), Search.engines.testGetValue())
 
 ## Limits
 
+* Empty string lists are not accepted by the `set()` method. Attempting to record an empty string list will result in an `invalid_value` error and nothing being recorded.
+
 * Fixed maximum string length: 50. Longer strings are truncated. For the original Kotlin implementation of the Glean SDK, this is measured in Unicode characters. For the Rust implementation, this is measured in the number of bytes when the string is encoded in UTF-8.
 
 * Fixed maximum list length: 20 items. Additional strings are dropped.
@@ -58,6 +60,8 @@ assertEquals(listOf("Google", "DuckDuckGo"), Search.engines.testGetValue())
 * The names of the enabled search engines.
 
 ## Recorded errors
+
+* `invalid_value`: if an empty list is passed to `set()`
 
 * `invalid_value`: if the string is too long
 

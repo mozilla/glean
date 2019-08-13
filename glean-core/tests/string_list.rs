@@ -193,9 +193,6 @@ fn string_lists_dont_exceed_max_items() {
         test_get_num_recorded_errors(&glean, metric.meta(), ErrorType::InvalidValue, None)
     );
 
-    // Clear the metric.
-    metric.set(&glean, vec![]);
-
     // Try to set it to a list that's too long. Ensure it cuts off at 20 elements.
     let too_many: Vec<String> = "test_string "
         .repeat(21)
@@ -207,6 +204,30 @@ fn string_lists_dont_exceed_max_items() {
 
     assert_eq!(
         Ok(2),
+        test_get_num_recorded_errors(&glean, metric.meta(), ErrorType::InvalidValue, None)
+    );
+}
+
+#[test]
+fn set_records_error_when_receiving_empty_list() {
+    let (glean, _t) = new_glean();
+
+    let metric = StringListMetric::new(CommonMetricData {
+        name: "string_list_metric".into(),
+        category: "telemetry.test".into(),
+        send_in_pings: vec!["store1".into()],
+        disabled: false,
+        lifetime: Lifetime::Ping,
+    });
+
+    metric.set(&glean, vec![]);
+
+    // Ensure the empty list wasn't added
+    assert_eq!(None, metric.test_get_value(&glean, "store1"));
+
+    // Ensure we recorded the error.
+    assert_eq!(
+        Ok(1),
         test_get_num_recorded_errors(&glean, metric.meta(), ErrorType::InvalidValue, None)
     );
 }
