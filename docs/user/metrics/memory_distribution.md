@@ -56,7 +56,7 @@ assertEquals(2L, snapshot.count())
 
 ## Limits
 
-* The maxmimum memory size that can be recorded is 1 Terabyte (2^40 bytes). Larger sizes will be truncated to 1 Terabyte.
+* The maxmimum memory size that can be recorded is 1 Terabyte (2<sup>40</sup> bytes). Larger sizes will be truncated to 1 Terabyte.
 
 ## Examples
 
