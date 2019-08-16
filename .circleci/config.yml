@@ -59,6 +59,12 @@ commands:
           name: Install missing Android SDK
           command: |
               sdkmanager 'build-tools;21.0.0'
+      # The Debian container in use is shipping libtinfo.so.6, but the Clang deployed in the NDK requires v5.
+      # We hack around that by symlinking the new to the old version, they seem to be mostly compatible.
+      - run:
+          name: "HACK: Fix up missing libtinfo.so.5"
+          command: |
+              sudo ln -s /lib/x86_64-linux-gnu/libtinfo.so.6 /lib/x86_64-linux-gnu/libtinfo.so.5
 
 jobs:
   Check Rust formatting:
