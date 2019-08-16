@@ -16,8 +16,8 @@ mod functional;
 
 /// A histogram.
 ///
-/// Stores the ranges of buckets as well as counts per buckets.
-/// It tracks the count of added values and the total sum.
+/// Stores the counts per buckets and tracks the count of added values and the total sum.
+/// The bucketing algorithm can be changed.
 ///
 /// ## Example
 ///
