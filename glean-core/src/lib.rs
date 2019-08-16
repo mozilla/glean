@@ -597,6 +597,61 @@ mod test {
     }
 
     #[test]
+    fn limits_on_experiments_extras_are_applied_correctly() {
+        let t = tempfile::tempdir().unwrap();
+        let name = t.path().display().to_string();
+        let glean = Glean::with_options(&name, "org.mozilla.glean.tests", true).unwrap();
+
+        let experiment_id = "test-experiment_id".to_string();
+        let branch_id = "test-branch-id".to_string();
+        let mut extras = HashMap::new();
+
+        let too_long_key = "0123456789".repeat(5);
+        let too_long_value = "0123456789".repeat(6);
+
+        // Build and extras HashMap that's a little too long in every way
+        for n in 0..21 {
+            extras.insert(format!("{}-{}", n, too_long_key), too_long_value.clone());
+        }
+
+        // Mark the experiment as active.
+        glean.set_experiment_active(experiment_id.clone(), branch_id.clone(), Some(extras));
+
+        // Make sure it is active
+        assert!(
+            glean.test_is_experiment_active(experiment_id.clone()),
+            "An experiment with the truncated id should be available"
+        );
+
+        // Get the data
+        let experiment_data = glean.test_get_experiment_data_as_json(experiment_id.clone());
+        assert!(
+            !experiment_data.is_none(),
+            "Experiment data must be available"
+        );
+
+        // Parse the JSON and validate the lengths
+        let parsed_json: RecordedExperimentData =
+            ::serde_json::from_str(&experiment_data.unwrap()).unwrap();
+        assert_eq!(
+            20,
+            parsed_json.clone().extra.unwrap().len(),
+            "Experiments extra must be less than max length"
+        );
+
+        for (key, value) in parsed_json.extra.as_ref().unwrap().iter() {
+            assert!(
+                key.len() <= 30,
+                "Experiments extra key must be less than max length"
+            );
+            assert!(
+                value.len() <= 50,
+                "Experiments extra value must be less than max length"
+            );
+        }
+    }
+
+    #[test]
     fn experiments_status_is_correctly_toggled() {
         let t = tempfile::tempdir().unwrap();
         let name = t.path().display().to_string();

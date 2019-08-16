@@ -18,9 +18,16 @@ use crate::Lifetime;
 // An internal ping name, not to be touched by anything else
 const INTERNAL_STORAGE: &str = "glean_internal_info";
 
-/// The maximum length of the experiment id and the branch id. Identifiers
-/// longer than this number of characters are truncated.
+/// The maximum length of the experiment id, the branch id, and the keys of the
+/// `extra` map. Identifiers longer than this number of characters are truncated.
 const MAX_EXPERIMENTS_IDS_LEN: usize = 30;
+/// The maximum length of the experiment `extra` values.  Values longer than this
+/// limit will be truncated.
+const MAX_EXPERIMENT_VALUE_LEN: usize = 50;
+/// The maximum number of extras allowed in the `extra` hash map.  Any items added
+/// beyond this limit will be dropped. Note that truncation of a hash map is
+/// nondeterministic in which items are truncated.
+const MAX_EXPERIMENTS_EXTRAS_SIZE: usize = 20;
 
 /// The data for a single experiment.
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -112,12 +119,47 @@ impl ExperimentMetric {
             branch
         };
 
-        // TODO (bug 1566001): add sane limits for the extra keys and
-        // values as well.
+        // Apply limits to extras
+        let truncated_extras = extra.and_then(|extra| {
+            if extra.len() > MAX_EXPERIMENTS_EXTRAS_SIZE {
+                log::warn!(
+                    "Extra hash map length {} exceeds maximum of {}",
+                    extra.len(),
+                    MAX_EXPERIMENTS_EXTRAS_SIZE
+                );
+            }
+
+            let mut temp_map = HashMap::new();
+            for (key, value) in extra.into_iter().take(MAX_EXPERIMENTS_EXTRAS_SIZE) {
+                let truncated_key = if key.len() > MAX_EXPERIMENTS_IDS_LEN {
+                    log::warn!(
+                        "Extra key length {} exceeds maximum of {}",
+                        key.len(),
+                        MAX_EXPERIMENTS_IDS_LEN
+                    );
+                    truncate_string_at_boundary(key, MAX_EXPERIMENTS_IDS_LEN)
+                } else {
+                    key
+                };
+                let truncated_value = if value.len() > MAX_EXPERIMENT_VALUE_LEN {
+                    log::warn!(
+                        "Extra value length {} exceeds maximum of {}",
+                        value.len(),
+                        MAX_EXPERIMENT_VALUE_LEN
+                    );
+                    truncate_string_at_boundary(value, MAX_EXPERIMENT_VALUE_LEN)
+                } else {
+                    value
+                };
+
+                temp_map.insert(truncated_key, truncated_value);
+            }
+            Some(temp_map)
+        });
 
         let value = Metric::Experiment(RecordedExperimentData {
             branch: truncated_branch,
-            extra,
+            extra: truncated_extras,
         });
         glean.storage().record(&self.meta, &value)
     }
