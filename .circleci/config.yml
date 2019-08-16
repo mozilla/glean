@@ -270,7 +270,8 @@ workflows:
   run-tests:
     jobs:
       - Rust tests - stable
-      - Rust tests - beta
+      # FIXME: Disabled due to failing to often, bug 1574424
+      #- Rust tests - beta
       - Rust tests - minimum version
       - Android tests
       - C tests
