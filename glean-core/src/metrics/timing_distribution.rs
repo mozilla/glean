@@ -349,4 +349,32 @@ mod test {
 
         assert_eq!(expected_json, json!(snap));
     }
+
+    #[test]
+    fn can_snapshot_sparse() {
+        use serde_json::json;
+
+        let mut hist = Histogram::functional(2.0, 8.0);
+
+        hist.accumulate(1024);
+        hist.accumulate(1024);
+        hist.accumulate(1116);
+        hist.accumulate(1448);
+
+        let snap = snapshot(&hist);
+
+        let expected_json = json!({
+            "sum": 4612,
+            "values": {
+                "1024": 2,
+                "1116": 1,
+                "1217": 0,
+                "1327": 0,
+                "1448": 1,
+                "1579": 0,
+            },
+        });
+
+        assert_eq!(expected_json, json!(snap));
+    }
 }
