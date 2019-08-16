@@ -46,6 +46,10 @@ fn exponential_range(min: u64, max: u64, bucket_count: usize) -> Vec<u64> {
     ranges
 }
 
+/// An exponential bucketing algorithm.
+///
+/// Buckets are pre-computed at instantiation with an exponential distribution from `min` to `max`
+/// and `bucket_count` buckets.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PrecomputedExponential {
     bucket_ranges: Vec<u64>,
