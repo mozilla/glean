@@ -51,7 +51,7 @@ impl Histogram<Functional> {
         }
     }
 
-    /// Get a snapshot of _all_ values.
+    /// Get a snapshot of all contiguous values.
     pub fn snapshot_values(&self) -> HashMap<u64, u64> {
         if self.values.is_empty() {
             return HashMap::new();
