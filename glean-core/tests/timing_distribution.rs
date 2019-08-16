@@ -74,7 +74,7 @@ fn set_value_properly_sets_the_value_in_all_stores() {
     let (glean, _t) = new_glean();
     let store_names: Vec<String> = vec!["store1".into(), "store2".into()];
 
-    let duration = 60;
+    let duration = 1;
 
     let mut metric = TimingDistributionMetric::new(
         CommonMetricData {
@@ -101,7 +101,7 @@ fn set_value_properly_sets_the_value_in_all_stores() {
         );
         assert_eq!(
             json!(1),
-            snapshot["timing_distribution"]["telemetry.distribution"]["values"]["56"]
+            snapshot["timing_distribution"]["telemetry.distribution"]["values"]["1"]
         );
     }
 }
@@ -166,14 +166,18 @@ fn the_accumulate_samples_api_correctly_stores_timing_values() {
         .test_get_value(&glean, "store1")
         .expect("Value should be stored");
 
+    let seconds_to_nanos = 1000 * 1000 * 1000;
+
     // Check that we got the right sum and number of samples.
-    assert_eq!(val.sum(), 6);
+    assert_eq!(val.sum(), 6 * seconds_to_nanos);
     assert_eq!(val.count(), 3);
 
-    // We should get a sample in each of the first 3 buckets.
-    assert_eq!(1, val.values()[&1]);
-    assert_eq!(1, val.values()[&2]);
-    assert_eq!(1, val.values()[&3]);
+    // We should get a sample in 3 buckets.
+    // These numbers are a bit magic, but they correspond to
+    // `hist.sample_to_bucket_minimum(i * seconds_to_nanos)` for `i = 1..=3`.
+    assert_eq!(1, val.values()[&984_625_593]);
+    assert_eq!(1, val.values()[&1_969_251_187]);
+    assert_eq!(1, val.values()[&2_784_941_737]);
 
     // No errors should be reported.
     assert!(test_get_num_recorded_errors(
@@ -197,7 +201,7 @@ fn the_accumulate_samples_api_correctly_handles_negative_values() {
             disabled: false,
             lifetime: Lifetime::Ping,
         },
-        TimeUnit::Second,
+        TimeUnit::Nanosecond,
     );
 
     // Accumulate the samples.

@@ -3,18 +3,27 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use std::collections::HashMap;
-use std::time::Duration;
 
 use serde::Serialize;
 
 use crate::error_recording::{record_error, ErrorType};
-use crate::histogram::{Exponential, Histogram};
+use crate::histogram::{Functional, Histogram};
 use crate::metrics::time_unit::TimeUnit;
 use crate::metrics::Metric;
 use crate::metrics::MetricType;
 use crate::storage::StorageManager;
 use crate::CommonMetricData;
 use crate::Glean;
+
+// The base of the logarithm used to determine bucketing
+const LOG_BASE: f64 = 2.0;
+
+// The buckets per each order of magnitude of the logarithm.
+const BUCKETS_PER_MAGNITUDE: f64 = 8.0;
+
+// Maximum time of 10 minutes in nanoseconds. This maximum means we
+// retain a maximum of 313 buckets.
+const MAX_SAMPLE_TIME: u64 = 1000 * 1000 * 1000 * 60 * 10;
 
 /// Identifier for a running timer.
 pub type TimerId = u64;
@@ -89,17 +98,15 @@ pub struct TimingDistributionMetric {
 pub struct Snapshot {
     values: HashMap<u64, u64>,
     sum: u64,
-    time_unit: TimeUnit,
 }
 
 /// Create a snapshot of the histogram with a time unit.
 ///
 /// The snapshot can be serialized into the payload format.
-pub(crate) fn snapshot(hist: &Histogram<Exponential>, time_unit: TimeUnit) -> Snapshot {
+pub(crate) fn snapshot(hist: &Histogram<Functional>) -> Snapshot {
     Snapshot {
-        values: hist.values().clone(),
+        values: hist.snapshot_values(),
         sum: hist.sum(),
-        time_unit,
     }
 }
 
@@ -155,15 +162,20 @@ impl TimingDistributionMetric {
     ///   same timespan metric.
     /// * `stop_time` - Timestamp in nanoseconds.
     pub fn set_stop_and_accumulate(&mut self, glean: &Glean, id: TimerId, stop_time: u64) {
-        let duration = match self.timings.set_stop(id, stop_time) {
+        // Duration is in nanoseconds.
+        let mut duration = match self.timings.set_stop(id, stop_time) {
             Err(error) => {
                 record_error(glean, &self.meta, ErrorType::InvalidValue, error, None);
                 return;
             }
             Ok(duration) => duration,
         };
-        let duration = Duration::from_nanos(duration);
-        let duration = self.time_unit.duration_convert(duration);
+
+        if duration > MAX_SAMPLE_TIME {
+            let msg = "Sample is longer than 10 minutes";
+            record_error(glean, &self.meta, ErrorType::InvalidValue, msg, None);
+            duration = MAX_SAMPLE_TIME;
+        }
 
         if !self.should_record(glean) {
             return;
@@ -172,14 +184,14 @@ impl TimingDistributionMetric {
         glean
             .storage()
             .record_with(&self.meta, |old_value| match old_value {
-                Some(Metric::TimingDistribution(mut hist, time_unit)) => {
+                Some(Metric::TimingDistribution(mut hist)) => {
                     hist.accumulate(duration);
-                    Metric::TimingDistribution(hist, time_unit)
+                    Metric::TimingDistribution(hist)
                 }
                 _ => {
-                    let mut hist = Histogram::default();
+                    let mut hist = Histogram::functional(LOG_BASE, BUCKETS_PER_MAGNITUDE);
                     hist.accumulate(duration);
-                    Metric::TimingDistribution(hist, self.time_unit)
+                    Metric::TimingDistribution(hist)
                 }
             });
     }
@@ -218,27 +230,55 @@ impl TimingDistributionMetric {
     /// Discards any negative value in `samples` and report an `ErrorType::InvalidValue`
     /// for each of them.
     pub fn accumulate_samples_signed(&mut self, glean: &Glean, samples: Vec<i64>) {
-        let mut num_errors = 0;
+        let mut num_negative_samples = 0;
+        let mut num_too_log_samples = 0;
 
         glean.storage().record_with(&self.meta, |old_value| {
-            let (mut hist, time_unit) = match old_value {
-                Some(Metric::TimingDistribution(hist, time_unit)) => (hist, time_unit),
-                _ => (Histogram::default(), self.time_unit),
+            let mut hist = match old_value {
+                Some(Metric::TimingDistribution(hist)) => hist,
+                _ => Histogram::functional(LOG_BASE, BUCKETS_PER_MAGNITUDE),
             };
 
-            for sample in samples.iter() {
-                if *sample >= 0 {
-                    hist.accumulate(*sample as u64);
+            for &sample in samples.iter() {
+                if sample < 0 {
+                    num_negative_samples += 1;
                 } else {
-                    num_errors += 1;
+                    let sample = sample as u64;
+                    let mut sample = self.time_unit.as_nanos(sample);
+                    if sample > MAX_SAMPLE_TIME {
+                        num_too_log_samples += 1;
+                        sample = MAX_SAMPLE_TIME;
+                    }
+
+                    hist.accumulate(sample);
                 }
             }
-            Metric::TimingDistribution(hist, time_unit)
+            Metric::TimingDistribution(hist)
         });
 
-        if num_errors > 0 {
-            let msg = format!("Accumulated {} negative samples", num_errors);
-            record_error(glean, &self.meta, ErrorType::InvalidValue, msg, num_errors);
+        if num_negative_samples > 0 {
+            let msg = format!("Accumulated {} negative samples", num_negative_samples);
+            record_error(
+                glean,
+                &self.meta,
+                ErrorType::InvalidValue,
+                msg,
+                num_negative_samples,
+            );
+        }
+
+        if num_too_log_samples > 0 {
+            let msg = format!(
+                "Accumulated {} samples longer than 10 minutes",
+                num_too_log_samples
+            );
+            record_error(
+                glean,
+                &self.meta,
+                ErrorType::InvalidValue,
+                msg,
+                num_too_log_samples,
+            );
         }
     }
 
@@ -251,10 +291,10 @@ impl TimingDistributionMetric {
         &self,
         glean: &Glean,
         storage_name: &str,
-    ) -> Option<Histogram<Exponential>> {
+    ) -> Option<Histogram<Functional>> {
         match StorageManager.snapshot_metric(glean.storage(), storage_name, &self.meta.identifier())
         {
-            Some(Metric::TimingDistribution(hist, _)) => Some(hist),
+            Some(Metric::TimingDistribution(hist)) => Some(hist),
             _ => None,
         }
     }
@@ -270,7 +310,7 @@ impl TimingDistributionMetric {
         storage_name: &str,
     ) -> Option<String> {
         self.test_get_value(glean, storage_name)
-            .map(|hist| serde_json::to_string(&snapshot(&hist, self.time_unit)).unwrap())
+            .map(|hist| serde_json::to_string(&snapshot(&hist)).unwrap())
     }
 }
 
@@ -282,22 +322,28 @@ mod test {
     fn can_snapshot() {
         use serde_json::json;
 
-        let mut hist = Histogram::exponential(1, 500, 10);
+        let mut hist = Histogram::functional(2.0, 8.0);
 
         for i in 1..=10 {
             hist.accumulate(i);
         }
 
-        let snap = snapshot(&hist, TimeUnit::Millisecond);
+        let snap = snapshot(&hist);
 
         let expected_json = json!({
             "sum": 55,
-            "time_unit": "millisecond",
             "values": {
                 "1": 1,
-                "2": 2,
-                "4": 5,
-                "9": 2,
+                "2": 1,
+                "3": 1,
+                "4": 1,
+                "5": 1,
+                "6": 1,
+                "7": 1,
+                "8": 1,
+                "9": 1,
+                "10": 1,
+                "11": 0,
             },
         });
 

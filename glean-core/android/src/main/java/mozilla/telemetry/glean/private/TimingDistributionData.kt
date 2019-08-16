@@ -7,7 +7,6 @@ package mozilla.telemetry.glean.private
 import androidx.annotation.VisibleForTesting
 import org.json.JSONObject
 
-import mozilla.components.support.ktx.android.org.json.tryGetInt
 import mozilla.components.support.ktx.android.org.json.tryGetLong
 
 /**
@@ -21,7 +20,7 @@ import mozilla.components.support.ktx.android.org.json.tryGetLong
  */
 @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
 data class TimingDistributionData(
-    val values: MutableMap<Int, Long>,
+    val values: MutableMap<Long, Long>,
     var sum: Long
 ) {
     companion object {
@@ -46,9 +45,9 @@ data class TimingDistributionData(
             // return null.
             val values = try {
                 val mapData = jsonObject.getJSONObject("values")
-                val valueMap: MutableMap<Int, Long> = mutableMapOf()
+                val valueMap: MutableMap<Long, Long> = mutableMapOf()
                 mapData.keys().forEach { key ->
-                    valueMap[key.toInt()] = mapData.tryGetLong(key) ?: 0L
+                    valueMap[key.toLong()] = mapData.tryGetLong(key) ?: 0L
                 }
                 valueMap
             } catch (e: org.json.JSONException) {
