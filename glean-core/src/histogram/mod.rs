@@ -42,7 +42,12 @@ pub struct Histogram<B> {
     bucketing: B,
 }
 
+/// A bucketing algorithm for histograms.
+///
+/// It's responsible to calculate the bucket a sample goes into.
+/// It can calculate buckets on-the-fly or pre-calculate buckets and re-use that when needed.
 pub trait Bucketing {
+    /// Get the bucket's minimum value the sample falls into.
     fn sample_to_bucket_minimum(&self, sample: u64) -> u64;
 }
 
