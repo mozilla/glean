@@ -8,13 +8,6 @@ use serde::{Deserialize, Serialize};
 
 use super::{Bucketing, Histogram};
 
-// The following are defaults for a simple timing distribution for the default time unit
-// of millisecond.  The values arrived at were approximated using existing "_MS"
-// telemetry probes as a guide.
-const DEFAULT_BUCKET_COUNT: usize = 100;
-const DEFAULT_RANGE_MIN: u64 = 0;
-const DEFAULT_RANGE_MAX: u64 = 60_000;
-
 /// Create the possible ranges in an exponential distribution from `min` to `max` with
 /// `bucket_count` buckets.
 ///
@@ -75,12 +68,6 @@ impl Bucketing for Exponential {
     }
 }
 
-impl Default for Histogram<Exponential> {
-    fn default() -> Histogram<Exponential> {
-        Histogram::exponential(DEFAULT_RANGE_MIN, DEFAULT_RANGE_MAX, DEFAULT_BUCKET_COUNT)
-    }
-}
-
 impl Histogram<Exponential> {
     /// Create a histogram with `count` exponential buckets in the range `min` to `max`.
     pub fn exponential(min: u64, max: u64, bucket_count: usize) -> Histogram<Exponential> {
@@ -110,6 +97,10 @@ impl Histogram<Exponential> {
 mod test {
     use super::*;
 
+    const DEFAULT_BUCKET_COUNT: usize = 100;
+    const DEFAULT_RANGE_MIN: u64 = 0;
+    const DEFAULT_RANGE_MAX: u64 = 60_000;
+
     #[test]
     fn can_count() {
         let mut hist = Histogram::exponential(1, 500, 10);
@@ -125,7 +116,8 @@ mod test {
 
     #[test]
     fn overflow_values_accumulate_in_the_last_bucket() {
-        let mut hist = Histogram::default();
+        let mut hist =
+            Histogram::exponential(DEFAULT_RANGE_MIN, DEFAULT_RANGE_MAX, DEFAULT_BUCKET_COUNT);
 
         hist.accumulate(DEFAULT_RANGE_MAX + 100);
         assert_eq!(1, hist.values[&DEFAULT_RANGE_MAX]);
@@ -163,7 +155,8 @@ mod test {
 
     #[test]
     fn default_buckets_correctly_accumulate() {
-        let mut hist = Histogram::default();
+        let mut hist =
+            Histogram::exponential(DEFAULT_RANGE_MIN, DEFAULT_RANGE_MAX, DEFAULT_BUCKET_COUNT);
 
         for i in &[1, 10, 100, 1000, 10000] {
             hist.accumulate(*i);

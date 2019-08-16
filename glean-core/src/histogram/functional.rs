@@ -8,10 +8,6 @@ use serde::{Deserialize, Serialize};
 
 use super::{Bucketing, Histogram};
 
-// Maximum time of 10 minutes in nanoseconds. This maximum means we
-// retain a maximum of 313 buckets.
-const MAX_SAMPLE_TIME: u64 = 1000 * 1000 * 1000 * 60 * 10;
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Functional {
     exponent: f64,
