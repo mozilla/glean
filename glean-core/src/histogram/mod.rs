@@ -16,7 +16,7 @@ mod functional;
 
 /// A histogram.
 ///
-/// Stores the counts per buckets and tracks the count of added values and the total sum.
+/// Stores the counts per bucket and tracks the count of added samples and the total sum.
 /// The bucketing algorithm can be changed.
 ///
 /// ## Example
@@ -33,12 +33,15 @@ mod functional;
 /// ```
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Histogram<B> {
-    // bucket minimum -> value
+    /// Mapping bucket's minimum to sample count.
     values: HashMap<u64, u64>,
 
+    /// The count of samples added.
     count: u64,
+    /// The total sum of samples.
     sum: u64,
 
+    /// The bucketing algorithm used.
     bucketing: B,
 }
 
