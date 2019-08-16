@@ -47,11 +47,11 @@ fn exponential_range(min: u64, max: u64, bucket_count: usize) -> Vec<u64> {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Exponential {
+pub struct PrecomputedExponential {
     bucket_ranges: Vec<u64>,
 }
 
-impl Bucketing for Exponential {
+impl Bucketing for PrecomputedExponential {
     /// Get the bucket for the sample.
     ///
     /// This uses a binary search to locate the index `i` of the bucket such that:
@@ -68,16 +68,20 @@ impl Bucketing for Exponential {
     }
 }
 
-impl Histogram<Exponential> {
+impl Histogram<PrecomputedExponential> {
     /// Create a histogram with `count` exponential buckets in the range `min` to `max`.
-    pub fn exponential(min: u64, max: u64, bucket_count: usize) -> Histogram<Exponential> {
+    pub fn exponential(
+        min: u64,
+        max: u64,
+        bucket_count: usize,
+    ) -> Histogram<PrecomputedExponential> {
         let bucket_ranges = exponential_range(min, max, bucket_count);
 
         Histogram {
             values: HashMap::new(),
             count: 0,
             sum: 0,
-            bucketing: Exponential { bucket_ranges },
+            bucketing: PrecomputedExponential { bucket_ranges },
         }
     }
 

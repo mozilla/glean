@@ -8,7 +8,7 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-pub use exponential::Exponential;
+pub use exponential::PrecomputedExponential;
 pub use functional::Functional;
 
 mod exponential;
