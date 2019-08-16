@@ -29,6 +29,7 @@
         - [Events Ping](user/pings/events.md)
         - [Custom Pings](user/pings/custom.md)
         - [Testing custom pings](user/pings/testing-custom-pings.md)
+    - [Android build configuration options](user/android-build-configuration-options.md)
 - [Developing the Glean SDK](dev/index.md)
     - [Testing](dev/testing.md)
     - [Android bindings](dev/android/index.md)
