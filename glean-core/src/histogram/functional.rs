@@ -48,8 +48,6 @@ impl Histogram<Functional> {
     /// Create a histogram with functional buckets.
     pub fn functional(log_base: f64, buckets_per_magnitutde: f64) -> Histogram<Functional> {
         Histogram {
-            min: 0,
-            max: MAX_SAMPLE_TIME,
             values: HashMap::new(),
             count: 0,
             sum: 0,

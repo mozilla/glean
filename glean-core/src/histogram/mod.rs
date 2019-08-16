@@ -33,8 +33,6 @@ mod functional;
 /// ```
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Histogram<B> {
-    min: u64,
-    max: u64,
     // bucket minimum -> value
     values: HashMap<u64, u64>,
 
@@ -78,30 +76,8 @@ impl<B: Bucketing> Histogram<B> {
         &self.values
     }
 
-    /// Get the minimal recordable value.
-    pub fn min(&self) -> u64 {
-        self.min
-    }
-
-    /// Get the maximal recordable value.
-    ///
-    /// Samples bigger than  the `max` will be recorded into the overflow bucket.
-    pub fn max(&self) -> u64 {
-        self.max
-    }
-
     /// Check if this histogram recorded any values.
     pub fn is_empty(&self) -> bool {
         self.count() == 0
-    }
-}
-
-#[cfg(test)]
-mod test {
-    use super::*;
-
-    #[test]
-    fn it_works() {
-        let _h = Histogram::default();
     }
 }

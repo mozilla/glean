@@ -87,8 +87,6 @@ impl Histogram<Exponential> {
         let bucket_ranges = exponential_range(min, max, bucket_count);
 
         Histogram {
-            min,
-            max,
             values: HashMap::new(),
             count: 0,
             sum: 0,
