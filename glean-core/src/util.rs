@@ -17,7 +17,7 @@ pub fn sanitize_application_id(application_id: &str) -> String {
     application_id
         .chars()
         .filter_map(|x| match x {
-            'A'...'Z' | 'a'...'z' | '0'...'9' => {
+            'A'..='Z' | 'a'..='z' | '0'..='9' => {
                 last_dash = false;
                 Some(x)
             }
