@@ -8,6 +8,14 @@ use serde::{Deserialize, Serialize};
 
 use super::{Bucketing, Histogram};
 
+/// A functional bucketing algorithm.
+///
+/// Bucketing is performed by a function, rather than pre-computed buckets.
+/// The bucket index of a given sample is determined with the following function:
+///
+/// i = ⌊n log<sub>base</sub>(𝑥)⌋
+///
+/// In other words, there are n buckets for each power of `base` magnitude.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Functional {
     exponent: f64,
