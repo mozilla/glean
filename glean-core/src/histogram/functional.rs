@@ -60,6 +60,8 @@ impl Histogram<Functional> {
         let mut min_key = None;
         let mut max_key = None;
 
+        // `Iterator#min` and `Iterator#max` would do the same job independently,
+        // but we want to avoid iterating the keys twice, so we loop ourselves.
         for key in self.values.keys() {
             let key = *key;
 
