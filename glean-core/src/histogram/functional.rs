@@ -22,16 +22,22 @@ pub struct Functional {
 }
 
 impl Functional {
+    /// Instantiate a new functional bucketing.
     fn new(log_base: f64, buckets_per_magnitutde: f64) -> Functional {
         let exponent = log_base.powf(1.0 / buckets_per_magnitutde);
 
         Functional { exponent }
     }
 
+    /// Maps a sample to a "bucket index" that it belongs in.
+    /// A "bucket index" is the consecutive integer index of each bucket, useful as a
+    /// mathematical concept, even though the internal representation is stored and
+    /// sent using the minimum value in each bucket.
     fn sample_to_bucket_index(&self, sample: u64) -> u64 {
         ((sample + 1) as f64).log(self.exponent) as u64
     }
 
+    /// Determines the minimum value of a bucket, given a bucket index.
     fn bucket_index_to_bucket_minimum(&self, index: u64) -> u64 {
         self.exponent.powf(index as f64) as u64
     }
