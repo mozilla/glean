@@ -4,6 +4,7 @@
 
 use std::collections::HashMap;
 
+use once_cell::unsync::OnceCell;
 use serde::{Deserialize, Serialize};
 
 use super::{Bucketing, Histogram};
@@ -52,7 +53,13 @@ fn exponential_range(min: u64, max: u64, bucket_count: usize) -> Vec<u64> {
 /// and `bucket_count` buckets.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PrecomputedExponential {
-    bucket_ranges: Vec<u64>,
+    // Don't serialize the (potentially large) array of ranges, instead compute them on first
+    // access.
+    #[serde(skip)]
+    bucket_ranges: OnceCell<Vec<u64>>,
+    min: u64,
+    max: u64,
+    bucket_count: usize,
 }
 
 impl Bucketing for PrecomputedExponential {
@@ -61,14 +68,20 @@ impl Bucketing for PrecomputedExponential {
     /// This uses a binary search to locate the index `i` of the bucket such that:
     /// bucket[i] <= sample < bucket[i+1]
     fn sample_to_bucket_minimum(&self, sample: u64) -> u64 {
-        let limit = match self.bucket_ranges.binary_search(&sample) {
+        let limit = match self.ranges().binary_search(&sample) {
             // Found an exact match to fit it in
             Ok(i) => i,
             // Sorted it fits after the bucket's limit, therefore it fits into the previous bucket
             Err(i) => i - 1,
         };
 
-        self.bucket_ranges[limit]
+        self.ranges()[limit]
+    }
+
+    fn ranges(&self) -> &[u64] {
+        // Create the exponential range on first access.
+        self.bucket_ranges
+            .get_or_init(|| exponential_range(self.min, self.max, self.bucket_count))
     }
 }
 
@@ -79,31 +92,17 @@ impl Histogram<PrecomputedExponential> {
         max: u64,
         bucket_count: usize,
     ) -> Histogram<PrecomputedExponential> {
-        let bucket_ranges = exponential_range(min, max, bucket_count);
-
         Histogram {
             values: HashMap::new(),
             count: 0,
             sum: 0,
-            bucketing: PrecomputedExponential { bucket_ranges },
+            bucketing: PrecomputedExponential {
+                bucket_ranges: OnceCell::new(),
+                min,
+                max,
+                bucket_count,
+            },
         }
-    }
-
-    /// Get a snapshot of _all_ values.
-    pub fn snapshot_values(&self) -> HashMap<u64, u64> {
-        let mut res = self.values.clone();
-
-        let max_bucket = self.values.keys().max().cloned().unwrap_or(0);
-
-        for &min_bucket in &self.bucketing.bucket_ranges {
-            // Fill in missing entries.
-            let _ = res.entry(min_bucket).or_insert(0);
-            // stop one after the last filled bucket
-            if min_bucket > max_bucket {
-                break;
-            }
-        }
-        res
     }
 }
 

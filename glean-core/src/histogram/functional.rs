@@ -52,6 +52,10 @@ impl Bucketing for Functional {
         let index = self.sample_to_bucket_index(sample);
         self.bucket_index_to_bucket_minimum(index)
     }
+
+    fn ranges(&self) -> &[u64] {
+        unimplemented!("Bucket ranges for functional bucketing are not precomputed")
+    }
 }
 
 impl Histogram<Functional> {
@@ -66,7 +70,11 @@ impl Histogram<Functional> {
     }
 
     /// Get a snapshot of all contiguous values.
-    pub fn snapshot_values(&self) -> HashMap<u64, u64> {
+    ///
+    /// **Caution** This is a more specific implemenation of `snapshot_values` on functional
+    /// histograms. `snapshot_values` cannot be used with those, due to buckets not being
+    /// precomputed.
+    pub fn snapshot(&self) -> HashMap<u64, u64> {
         if self.values.is_empty() {
             return HashMap::new();
         }

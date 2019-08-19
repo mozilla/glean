@@ -10,6 +10,7 @@ use serde_json::{json, Value as JsonValue};
 
 mod boolean;
 mod counter;
+mod custom_distribution;
 mod datetime;
 mod event;
 mod experiment;
@@ -25,7 +26,7 @@ mod timespan;
 mod timing_distribution;
 mod uuid;
 
-use crate::histogram::{Functional, Histogram};
+use crate::histogram::{Functional, Histogram, PrecomputedExponential, PrecomputedLinear};
 use crate::util::get_iso_time_string;
 use crate::CommonMetricData;
 use crate::Glean;
@@ -35,8 +36,10 @@ pub use self::counter::CounterMetric;
 pub use self::datetime::DatetimeMetric;
 pub use self::event::EventMetric;
 pub(crate) use self::experiment::ExperimentMetric;
+pub use crate::histogram::HistogramType;
 // Note: only expose RecordedExperimentData to tests in
 // the next line, so that glean-core\src\lib.rs won't fail to build.
+pub use self::custom_distribution::CustomDistributionMetric;
 #[cfg(test)]
 pub(crate) use self::experiment::RecordedExperimentData;
 pub use self::labeled::LabeledMetric;
@@ -61,6 +64,12 @@ pub enum Metric {
     Boolean(bool),
     /// A counter metric. See [`CounterMetric`](struct.CounterMetric.html) for more information.
     Counter(i32),
+    /// A custom distribution with precomputed exponential bucketing.
+    /// See [`CustomDistributionMetric`](struct.CustomDistributionMetric.html) for more information.
+    CustomDistributionExponential(Histogram<PrecomputedExponential>),
+    /// A custom distribution with precomputed linear bucketing.
+    /// See [`CustomDistributionMetric`](struct.CustomDistributionMetric.html) for more information.
+    CustomDistributionLinear(Histogram<PrecomputedLinear>),
     /// A datetime metric. See [`DatetimeMetric`](struct.DatetimeMetric.html) for more information.
     Datetime(DateTime<FixedOffset>, TimeUnit),
     /// An experiment metric. See [`ExperimentMetric`](struct.ExperimentMetric.html) for more information.
@@ -107,6 +116,9 @@ impl Metric {
         match self {
             Metric::Boolean(_) => "boolean",
             Metric::Counter(_) => "counter",
+            // Custom distributions are in the same section, no matter what bucketing.
+            Metric::CustomDistributionExponential(_) => "custom_distribution",
+            Metric::CustomDistributionLinear(_) => "custom_distribution",
             Metric::Datetime(_, _) => "datetime",
             Metric::Experiment(_) => panic!("Experiments should not be serialized through this"),
             Metric::Quantity(_) => "quantity",
@@ -124,6 +136,13 @@ impl Metric {
         match self {
             Metric::Boolean(b) => json!(b),
             Metric::Counter(c) => json!(c),
+            Metric::CustomDistributionExponential(hist) => json!(custom_distribution::snapshot(
+                hist,
+                HistogramType::Exponential
+            )),
+            Metric::CustomDistributionLinear(hist) => {
+                json!(custom_distribution::snapshot(hist, HistogramType::Linear))
+            }
             Metric::Datetime(d, time_unit) => json!(get_iso_time_string(*d, *time_unit)),
             Metric::Experiment(e) => json!(e),
             Metric::Quantity(q) => json!(q),
