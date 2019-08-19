@@ -19,21 +19,21 @@ import mozilla.components.support.ktx.android.org.json.tryGetLong
  * @param sum the accumulated sum of all the samples in the timing distribution
  */
 @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-data class TimingDistributionData(
+data class DistributionData(
     val values: MutableMap<Long, Long>,
     var sum: Long
 ) {
     companion object {
         /**
          * Factory function that takes stringified JSON and converts it back into a
-         * [TimingDistributionData].  This tries to read all values and attempts to
+         * [DistributionData].  This tries to read all values and attempts to
          * use a default where no value exists.
          *
-         * @param json Stringified JSON value representing a [TimingDistributionData] object
-         * @return A [TimingDistributionData] or null if unable to rebuild from the string.
+         * @param json Stringified JSON value representing a [DistributionData] object
+         * @return A [DistributionData] or null if unable to rebuild from the string.
          */
         @Suppress("ReturnCount", "ComplexMethod")
-        internal fun fromJsonString(json: String): TimingDistributionData? {
+        internal fun fromJsonString(json: String): DistributionData? {
             val jsonObject: JSONObject
             try {
                 jsonObject = JSONObject(json)
@@ -56,7 +56,7 @@ data class TimingDistributionData(
             }
             val sum = jsonObject.tryGetLong("sum") ?: return null
 
-            return TimingDistributionData(
+            return DistributionData(
                 values = values,
                 sum = sum
             )
