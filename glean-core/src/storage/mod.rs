@@ -212,7 +212,7 @@ mod test {
             .cloned()
             .collect();
 
-        let metric = ExperimentMetric::new("some-experiment".to_string());
+        let metric = ExperimentMetric::new(&glean, "some-experiment".to_string());
 
         metric.set_active(&glean, "test-branch".to_string(), Some(extra));
         let snapshot = StorageManager
