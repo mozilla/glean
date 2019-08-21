@@ -474,7 +474,7 @@ impl Glean {
         branch: String,
         extra: Option<HashMap<String, String>>,
     ) {
-        let metric = metrics::ExperimentMetric::new(experiment_id);
+        let metric = metrics::ExperimentMetric::new(&self, experiment_id);
         metric.set_active(&self, branch, extra);
     }
 
@@ -484,7 +484,7 @@ impl Glean {
     ///
     /// * `experiment_id` - The id of the active experiment to deactivate (maximum 30 bytes).
     pub fn set_experiment_inactive(&self, experiment_id: String) {
-        let metric = metrics::ExperimentMetric::new(experiment_id);
+        let metric = metrics::ExperimentMetric::new(&self, experiment_id);
         metric.set_inactive(&self);
     }
 
@@ -518,7 +518,7 @@ impl Glean {
     /// { 'branch': 'the-branch-name', 'extra': {'key': 'value', ...}}
     /// Otherwise, None.
     pub fn test_get_experiment_data_as_json(&self, experiment_id: String) -> Option<String> {
-        let metric = metrics::ExperimentMetric::new(experiment_id);
+        let metric = metrics::ExperimentMetric::new(&self, experiment_id);
         metric.test_get_value_as_json_string(&self)
     }
 

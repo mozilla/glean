@@ -42,6 +42,8 @@ assertEquals(
 * `experimentId`, `branch`, and the keys of the 'extra' field are fixed at a maximum length of 30. Length for the values of the `extra` field is fixed at 50. Longer strings used as ids, keys, or values are truncated to their respective maximum length. For the original Kotlin implementation of the Glean SDK, this is measured in Unicode characters. For the Rust implementation, this is measured in the number of bytes when the string is encoded in UTF-8.
 * `extra` map is limited to 20 entries. If passed a map which contains more elements than this, it is truncated to 20 elements.  **WARNING** Which items are truncated is nondeterministic due to the unordered nature of maps and what's left may not necessarily be the first elements added.
 
+**NOTE:** Any truncation that occurs when recording to the Experiments API will result in an `invalid_value` error being recorded. See [Error Reporting](error-reporting.md) for more information about this type of error.
+
 ## Reference
 
 * [Kotlin API docs](../../javadoc/glean/mozilla.telemetry.glean/-glean.html).

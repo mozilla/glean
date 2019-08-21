@@ -6,10 +6,11 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 use std::collections::HashMap;
 
+use crate::error_recording::{record_error, ErrorType};
 use crate::metrics::Metric;
 use crate::metrics::MetricType;
 use crate::storage::StorageManager;
-use crate::util::truncate_string_at_boundary;
+use crate::util::{truncate_string_at_boundary, truncate_string_at_boundary_with_error};
 use crate::CommonMetricData;
 use crate::Glean;
 use crate::Lifetime;
@@ -63,20 +64,23 @@ impl ExperimentMetric {
     ///
     /// * `id` - the id of the experiment. Please note that this will be
     ///          truncated to `MAX_EXPERIMENTS_IDS_LEN`, if needed.
-    pub fn new(id: String) -> Self {
+    pub fn new(glean: &Glean, id: String) -> Self {
+        let mut error = None;
+
         // Make sure that experiment id is within the expected limit.
         let truncated_id = if id.len() > MAX_EXPERIMENTS_IDS_LEN {
-            log::warn!(
+            let msg = format!(
                 "Value length {} for experiment id exceeds maximum of {}",
                 id.len(),
                 MAX_EXPERIMENTS_IDS_LEN
             );
+            error = Some(msg);
             truncate_string_at_boundary(id, MAX_EXPERIMENTS_IDS_LEN)
         } else {
             id
         };
 
-        Self {
+        let new_experiment = Self {
             meta: CommonMetricData {
                 name: format!("{}#experiment", truncated_id),
                 // We don't need a category, the name is already unique
@@ -85,7 +89,20 @@ impl ExperimentMetric {
                 lifetime: Lifetime::Application,
                 ..Default::default()
             },
+        };
+
+        // Check for a truncation error to record
+        if let Some(msg) = error {
+            record_error(
+                glean,
+                &new_experiment.meta,
+                ErrorType::InvalidValue,
+                msg,
+                None,
+            );
         }
+
+        new_experiment
     }
 
     /// Record an experiment as active.
@@ -109,12 +126,12 @@ impl ExperimentMetric {
 
         // Make sure that branch id is within the expected limit.
         let truncated_branch = if branch.len() > MAX_EXPERIMENTS_IDS_LEN {
-            log::warn!(
-                "Value length {} for branch exceeds maximum of {}",
-                branch.len(),
-                MAX_EXPERIMENTS_IDS_LEN
-            );
-            truncate_string_at_boundary(branch, MAX_EXPERIMENTS_IDS_LEN)
+            truncate_string_at_boundary_with_error(
+                glean,
+                &self.meta,
+                branch,
+                MAX_EXPERIMENTS_IDS_LEN,
+            )
         } else {
             branch
         };
@@ -122,32 +139,33 @@ impl ExperimentMetric {
         // Apply limits to extras
         let truncated_extras = extra.and_then(|extra| {
             if extra.len() > MAX_EXPERIMENTS_EXTRAS_SIZE {
-                log::warn!(
+                let msg = format!(
                     "Extra hash map length {} exceeds maximum of {}",
                     extra.len(),
                     MAX_EXPERIMENTS_EXTRAS_SIZE
                 );
+                record_error(glean, &self.meta, ErrorType::InvalidValue, msg, None);
             }
 
             let mut temp_map = HashMap::new();
             for (key, value) in extra.into_iter().take(MAX_EXPERIMENTS_EXTRAS_SIZE) {
                 let truncated_key = if key.len() > MAX_EXPERIMENTS_IDS_LEN {
-                    log::warn!(
-                        "Extra key length {} exceeds maximum of {}",
-                        key.len(),
-                        MAX_EXPERIMENTS_IDS_LEN
-                    );
-                    truncate_string_at_boundary(key, MAX_EXPERIMENTS_IDS_LEN)
+                    truncate_string_at_boundary_with_error(
+                        glean,
+                        &self.meta,
+                        key,
+                        MAX_EXPERIMENTS_IDS_LEN,
+                    )
                 } else {
                     key
                 };
                 let truncated_value = if value.len() > MAX_EXPERIMENT_VALUE_LEN {
-                    log::warn!(
-                        "Extra value length {} exceeds maximum of {}",
-                        value.len(),
-                        MAX_EXPERIMENT_VALUE_LEN
-                    );
-                    truncate_string_at_boundary(value, MAX_EXPERIMENT_VALUE_LEN)
+                    truncate_string_at_boundary_with_error(
+                        glean,
+                        &self.meta,
+                        value,
+                        MAX_EXPERIMENT_VALUE_LEN,
+                    )
                 } else {
                     value
                 };
