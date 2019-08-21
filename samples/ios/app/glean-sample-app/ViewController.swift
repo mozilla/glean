@@ -9,6 +9,10 @@
 import UIKit
 import Glean
 
+public enum CorePing {
+    static let seq = Counter(name: "seq", disabled: false)
+}
+
 class ViewController: UIViewController {
 
     override func viewDidLoad() {
@@ -16,7 +20,7 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view, typically from a nib.
 
         let g = Glean.shared
-        g.inc()
+        CorePing.seq.add()
     }
 
 
