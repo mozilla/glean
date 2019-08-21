@@ -126,7 +126,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = BF3DE3A52243A2F20018E23F /* Build configuration list for PBXNativeTarget "Glean" */;
 			buildPhases = (
-				BF6F2DA5224BF2E000394062 /* ShellScript */,
+				BF6F2DA5224BF2E000394062 /* Run Script */,
 				BF3DE38C2243A2F20018E23F /* Headers */,
 				BF3DE38D2243A2F20018E23F /* Sources */,
 				BF3DE38E2243A2F20018E23F /* Frameworks */,
@@ -217,7 +217,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		BF6F2DA5224BF2E000394062 /* ShellScript */ = {
+		BF6F2DA5224BF2E000394062 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -226,13 +226,14 @@
 			);
 			inputPaths = (
 			);
+			name = "Run Script";
 			outputFileListPaths = (
 			);
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "bash $PWD/../../build-scripts/xc-universal-binary.sh libglean_ffi.a glean_ffi $PWD/../.. $buildvariant\n";
+			shellScript = "bash $PWD/../../build-scripts/xc-universal-binary.sh libglean_ffi.a glean-ffi $PWD/../.. $buildvariant\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
