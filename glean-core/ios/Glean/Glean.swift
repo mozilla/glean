@@ -9,21 +9,14 @@
 import Foundation
 
 public class Counter {
-    var count: Int = 0
-    var name: String
-    var disabled: Bool
+    var handle: UInt64
 
     public init(name: String, disabled: Bool) {
-        self.name = name
-        self.disabled = disabled
+        self.handle = glean_new_counter_metric("glean", name, nil, 0, 0, 0)
     }
 
-    public func add(amount: Int = 1) {
-        if (!self.disabled) {
-            return
-        }
-
-        self.count += amount
+    public func add(amount: Int32 = 1) {
+        glean_counter_add(Glean.shared.handle, self.handle, amount)
     }
 }
 
@@ -31,16 +24,16 @@ public class Glean {
     public static let shared = Glean()
 
     private var initialized: Bool = false
+    public let handle: UInt64
+
     private init() {
+        var cfg = FfiConfiguration(data_dir: "/tmp", package_name: "ios", upload_enabled: 1, max_events: nil)
+        self.handle = glean_initialize(&cfg)
+
         self.initialized = true
     }
 
     deinit {
         self.initialized = false
-    }
-
-    func t() {
-        let c = Counter(name: "hello", disabled: true)
-        c.add(amount: 3)
     }
 }
