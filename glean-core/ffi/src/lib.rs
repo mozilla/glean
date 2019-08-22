@@ -55,10 +55,25 @@ pub extern "C" fn glean_enable_logging() {
             log::debug!("Android logging should be hooked up!")
         });
     }
+
+    // On iOS always enable Debug logging
+    #[cfg(target_os = "ios")]
+    {
+        let mut builder = env_logger::Builder::new();
+        builder.filter(None, log::LevelFilter::Debug);
+        match builder.try_init() {
+            Ok(_) => log::debug!("stdout logging should be hooked up!"),
+            // Please note that this is only expected to fail during unit tests,
+            // where the logger might have already been initialized by a previous
+            // test. So it's fine to print with the "logger".
+            Err(_) => log::debug!("stdout was already initialized"),
+        };
+    }
+
     // Make sure logging does something on non Android platforms as well. Use
     // the RUST_LOG environment variable to set the desired log level, e.g.
     // setting RUST_LOG=debug sets the log level to debug.
-    #[cfg(not(target_os = "android"))]
+    #[cfg(all(not(target_os = "android"), not(target_os = "ios")))]
     {
         match env_logger::try_init() {
             Ok(_) => log::debug!("stdout logging should be hooked up!"),
