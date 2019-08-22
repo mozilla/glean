@@ -8,6 +8,7 @@
 
 import UIKit
 import Glean
+import os.log
 
 public enum CorePing {
     static let seq = Counter(name: "seq", disabled: false)
@@ -19,8 +20,9 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
 
-        let g = Glean.shared
+        os_log("incrementing coreping.seq")
         CorePing.seq.add()
+        os_log("done incremeting coreping.seq")
     }
 
 

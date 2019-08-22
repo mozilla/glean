@@ -30,7 +30,7 @@ uint64_t glean_initialize(const FfiConfiguration *cfg);
 
 uint64_t glean_new_counter_metric(FfiStr category,
                                   FfiStr name,
-                                  RawStringArray send_in_pings,
+                                  char *const * send_in_ping,
                                   int32_t send_in_pings_len,
                                   int32_t lifetime,
                                   uint8_t disabled);
