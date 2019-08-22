@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
-import mozilla.telemetry.glean.Glean
 import org.mozilla.samples.gleancore.GleanMetrics.Test
 
 private const val TAG = "Glean"
@@ -24,10 +23,6 @@ open class MainActivity : AppCompatActivity() {
         buttonGenerateData.setOnClickListener {
             Test.testCounter.add(1)
             Log.i(TAG, "increment happened")
-        }
-
-        buttonSendPing.setOnClickListener {
-            Glean.handleBackgroundEvent()
         }
     }
 }

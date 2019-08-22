@@ -413,7 +413,7 @@ open class GleanInternalAPI internal constructor () {
     /**
      * Handle the background event and send the appropriate pings.
      */
-    fun handleBackgroundEvent() {
+    internal fun handleBackgroundEvent() {
         sendPings(listOf(Pings.baseline, Pings.events))
     }
 
