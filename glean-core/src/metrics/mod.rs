@@ -15,6 +15,7 @@ mod event;
 mod experiment;
 mod labeled;
 mod ping;
+mod quantity;
 mod string;
 mod string_list;
 mod time_unit;
@@ -38,6 +39,7 @@ pub(crate) use self::experiment::ExperimentMetric;
 pub(crate) use self::experiment::RecordedExperimentData;
 pub use self::labeled::LabeledMetric;
 pub use self::ping::PingType;
+pub use self::quantity::QuantityMetric;
 pub use self::string::StringMetric;
 pub use self::string_list::StringListMetric;
 pub use self::time_unit::TimeUnit;
@@ -59,6 +61,8 @@ pub enum Metric {
     Datetime(DateTime<FixedOffset>, TimeUnit),
     /// An experiment metric. See [`ExperimentMetric`](struct.ExperimentMetric.html) for more information.
     Experiment(experiment::RecordedExperimentData),
+    /// A quantity metric. See [`QuantityMetric`](struct.QuantityMetric.html) for more information.
+    Quantity(i64),
     /// A string metric. See [`StringMetric`](struct.StringMetric.html) for more information.
     String(String),
     /// A string list metric. See [`StringListMetric`](struct.StringListMetric.html) for more information.
@@ -99,11 +103,12 @@ impl Metric {
             Metric::Counter(_) => "counter",
             Metric::Datetime(_, _) => "datetime",
             Metric::Experiment(_) => panic!("Experiments should not be serialized through this"),
+            Metric::Quantity(_) => "quantity",
             Metric::String(_) => "string",
             Metric::StringList(_) => "string_list",
-            Metric::Uuid(_) => "uuid",
             Metric::Timespan(..) => "timespan",
             Metric::TimingDistribution(..) => "timing_distribution",
+            Metric::Uuid(_) => "uuid",
         }
     }
 
@@ -114,15 +119,16 @@ impl Metric {
             Metric::Counter(c) => json!(c),
             Metric::Datetime(d, time_unit) => json!(get_iso_time_string(*d, *time_unit)),
             Metric::Experiment(e) => json!(e),
+            Metric::Quantity(q) => json!(q),
             Metric::String(s) => json!(s),
             Metric::StringList(v) => json!(v),
-            Metric::Uuid(s) => json!(s),
             Metric::Timespan(time, time_unit) => {
                 json!({"value": time_unit.duration_convert(*time), "time_unit": time_unit})
             }
             Metric::TimingDistribution(hist, time_unit) => {
                 json!(timing_distribution::snapshot(hist, *time_unit))
             }
+            Metric::Uuid(s) => json!(s),
         }
     }
 }
