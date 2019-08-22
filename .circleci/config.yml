@@ -86,6 +86,7 @@ jobs:
   Rust tests - stable:
     docker:
       - image: circleci/rust:latest
+    resource_class: "medium+"
     steps:
       - rust-tests
   Rust tests - beta:
