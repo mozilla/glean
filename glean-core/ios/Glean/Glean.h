@@ -19,6 +19,11 @@ FOUNDATION_EXPORT const unsigned char GleanVersionString[];
 typedef const char *FfiStr;
 typedef const char *const *RawStringArray;
 
+typedef struct ExternError {
+    int32_t code;
+    char *message; // note: nullable
+} ExternError;
+
 typedef struct {
     FfiStr data_dir;
     FfiStr package_name;
@@ -30,9 +35,10 @@ uint64_t glean_initialize(const FfiConfiguration *cfg);
 
 uint64_t glean_new_counter_metric(FfiStr category,
                                   FfiStr name,
-                                  char *const * send_in_ping,
+                                  RawStringArray send_in_ping,
                                   int32_t send_in_pings_len,
                                   int32_t lifetime,
                                   uint8_t disabled);
 
 void glean_counter_add(uint64_t glean_handle, uint64_t metric_id, int32_t amount);
+void glean_destroy_glean(uint64_t v, ExternError *err);

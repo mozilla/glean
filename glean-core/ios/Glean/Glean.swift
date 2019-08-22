@@ -8,52 +8,31 @@
 
 import Foundation
 
-func scan<
-    S : Sequence, U
-    >(_ seq: S, _ initial: U, _ combine: (U, S.Iterator.Element) -> U) -> [U] {
-    var result: [U] = []
-    result.reserveCapacity(seq.underestimatedCount)
-    var runningResult = initial
-    for element in seq {
-        runningResult = combine(runningResult, element)
-        result.append(runningResult)
-    }
-    return result
+public enum Lifetime: Int32 {
+    case ping = 0
+    case application = 1
+    case user = 2
 }
 
-func withArrayOfCStrings<R>(
+public func withArrayOfCStrings<R>(
     _ args: [String],
-    _ body: ([UnsafeMutablePointer<CChar>?]) -> R
-    ) -> R {
-    let argsCounts = Array(args.map { $0.utf8.count + 1 })
-    let argsOffsets = [ 0 ] + scan(argsCounts, 0, +)
-    let argsBufferSize = argsOffsets.last!
-
-    var argsBuffer: [UInt8] = []
-    argsBuffer.reserveCapacity(argsBufferSize)
-    for arg in args {
-        argsBuffer.append(contentsOf: arg.utf8)
-        argsBuffer.append(0)
+    _ body: ([UnsafePointer<CChar>?]) -> R
+) -> R {
+    var cStrings = args.map { strdup($0) }
+    cStrings.append(nil)
+    defer {
+        cStrings.forEach { free($0) }
     }
-
-    return argsBuffer.withUnsafeMutableBufferPointer {
-        (argsBuffer) in
-        let ptr = UnsafeMutableRawPointer(argsBuffer.baseAddress!).bindMemory(
-            to: CChar.self, capacity: argsBuffer.count)
-        var cStrings: [UnsafeMutablePointer<CChar>?] = argsOffsets.map { ptr + $0 }
-        cStrings[cStrings.count - 1] = nil
-        return body(cStrings)
-    }
+    return body(cStrings)
 }
 
-public class Counter {
+public class CounterMetricType {
     var handle: UInt64
 
-    public init(name: String, disabled: Bool) {
-        let sendInPings = ["baseline"]
+    public init(category: String, name: String, sendInPings: [String], lifetime: Lifetime, disabled: Bool) {
         self.handle = withArrayOfCStrings(sendInPings) {
             args in
-            glean_new_counter_metric("glean", name, args, Int32(sendInPings.count), 0, 0)
+            glean_new_counter_metric(category, name, args, Int32(sendInPings.count), lifetime.rawValue, disabled ? 1 : 0)
         }
     }
 
@@ -65,17 +44,21 @@ public class Counter {
 public class Glean {
     public static let shared = Glean()
 
-    private var initialized: Bool = false
-    public let handle: UInt64
+    public var handle: UInt64 = 0
 
     private init() {
-        var cfg = FfiConfiguration(data_dir: "/tmp", package_name: "ios", upload_enabled: 1, max_events: nil)
-        self.handle = glean_initialize(&cfg)
-
-        self.initialized = true
+        // intentionally left blank
     }
 
     deinit {
-        self.initialized = false
+        if self.handle != 0 {
+            var err = ExternError(code: 0, message: nil)
+            glean_destroy_glean(self.handle, &err)
+        }
+    }
+
+    public func initialize(uploadEnabled: Bool = true) {
+        var cfg = FfiConfiguration(data_dir: "/tmp", package_name: "ios", upload_enabled: uploadEnabled ? 1 : 0, max_events: nil)
+        self.handle = glean_initialize(&cfg)
     }
 }
