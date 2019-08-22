@@ -166,7 +166,7 @@ internal interface LibGleanFFI : Library {
 
     fun glean_destroy_quantity_metric(handle: Long, error: RustError.ByReference)
 
-    fun glean_quantity_set(glean_handle: Long, metric_id: Long, amount: Long)
+    fun glean_quantity_set(glean_handle: Long, metric_id: Long, value: Long)
 
     fun glean_quantity_test_get_value(glean_handle: Long, metric_id: Long, storage_name: String): Long
 

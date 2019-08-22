@@ -41,6 +41,11 @@ typedef struct {
 
 typedef const int64_t *RawInt64Array;
 
+/**
+ * Identifier for a running timer.
+ */
+typedef uint64_t TimerId;
+
 void glean_boolean_set(uint64_t glean_handle, uint64_t metric_id, uint8_t value);
 
 uint8_t glean_boolean_test_get_value(uint64_t glean_handle,
@@ -97,6 +102,8 @@ void glean_destroy_labeled_counter_metric(uint64_t v, ExternError *err);
 void glean_destroy_labeled_string_metric(uint64_t v, ExternError *err);
 
 void glean_destroy_ping_type(uint64_t v, ExternError *err);
+
+void glean_destroy_quantity_metric(uint64_t v, ExternError *err);
 
 void glean_destroy_string_list_metric(uint64_t v, ExternError *err);
 
@@ -219,6 +226,13 @@ uint64_t glean_new_labeled_string_metric(FfiStr category,
 
 uint64_t glean_new_ping_type(FfiStr ping_name, uint8_t include_client_id);
 
+uint64_t glean_new_quantity_metric(FfiStr category,
+                                   FfiStr name,
+                                   RawStringArray send_in_pings,
+                                   int32_t send_in_pings_len,
+                                   int32_t lifetime,
+                                   uint8_t disabled);
+
 uint64_t glean_new_string_list_metric(FfiStr category,
                                       FfiStr name,
                                       RawStringArray send_in_pings,
@@ -259,6 +273,16 @@ uint64_t glean_new_uuid_metric(FfiStr category,
 void glean_on_ready_to_send_pings(uint64_t glean_handle);
 
 char *glean_ping_collect(uint64_t glean_handle, uint64_t ping_type_handle);
+
+void glean_quantity_set(uint64_t glean_handle, uint64_t metric_id, int64_t value);
+
+int64_t glean_quantity_test_get_value(uint64_t glean_handle,
+                                      uint64_t metric_id,
+                                      FfiStr storage_name);
+
+uint8_t glean_quantity_test_has_value(uint64_t glean_handle,
+                                      uint64_t metric_id,
+                                      FfiStr storage_name);
 
 void glean_register_ping_type(uint64_t glean_handle, uint64_t ping_type_handle);
 

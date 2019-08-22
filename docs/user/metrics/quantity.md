@@ -1,7 +1,9 @@
 # Quantity
 
-Used record a single non-negative integer value.
+Used to record a single non-negative integer value.
 For example, the width of the display in pixels.
+
+> Quantities are only available for metrics that come from Gecko.
 
 ## Configuration
 
@@ -14,6 +16,7 @@ gfx:
     description: >
       The width of the display, in pixels.
     unit: pixels
+    gecko_datapoint: DISPLAY_W_PIXELS
     ...
 ```
 
@@ -42,13 +45,15 @@ assertEquals(6, Gfx.displayWidth.testGetValue())
 
 * Quantities must be non-negative integers.
 
+* Quantities are only available for metrics that come from Gecko.
+
 ## Examples
 
 * What is the width of the display, in pixels?
 
 ## Recorded errors
 
-* `invalid_value`: If a negative is passed in.
+* `invalid_value`: If a negative value is passed in.
 
 ## Reference
 

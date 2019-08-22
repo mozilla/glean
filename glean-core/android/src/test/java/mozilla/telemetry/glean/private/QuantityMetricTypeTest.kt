@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-/* This file is based on the tests in the Glean android-components implentation.
+/* This file is based on the tests in the Glean android-components implementation.
  *
  * Care should be taken to not reorder elements in this file so it will be easier
  * to track changes in Glean android-components.
