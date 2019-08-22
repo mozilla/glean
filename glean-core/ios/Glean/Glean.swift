@@ -18,10 +18,9 @@ public func withArrayOfCStrings<R>(
     _ args: [String],
     _ body: ([UnsafePointer<CChar>?]) -> R
 ) -> R {
-    var cStrings = args.map { strdup($0) }
-    cStrings.append(nil)
+    var cStrings = args.map { UnsafePointer(strdup($0)) }
     defer {
-        cStrings.forEach { free($0) }
+        cStrings.forEach { free(UnsafeMutableRawPointer(mutating: $0)) }
     }
     return body(cStrings)
 }
@@ -39,6 +38,25 @@ public class CounterMetricType {
     public func add(amount: Int32 = 1) {
         glean_counter_add(Glean.shared.handle, self.handle, amount)
     }
+
+    public func testGetValue() -> Int32 {
+        return glean_counter_test_get_value(Glean.shared.handle, self.handle, "metrics")
+    }
+
+    public func testHasValue() -> Bool {
+        return glean_counter_test_has_value(Glean.shared.handle, self.handle, "metrics") != 0
+    }
+}
+
+func withConfig<R>(data_dir: String, package_name: String, upload_enabled: Bool, _ body: (FfiConfiguration) -> R) -> R {
+    let data_dir = strdup(data_dir)
+    let package_name = strdup(package_name)
+    defer {
+        free(data_dir)
+        free(package_name)
+    }
+    let cfg = FfiConfiguration(data_dir: data_dir, package_name: package_name, upload_enabled: upload_enabled ? 1 : 0, max_events: nil)
+    return body(cfg)
 }
 
 public class Glean {
@@ -58,7 +76,17 @@ public class Glean {
     }
 
     public func initialize(uploadEnabled: Bool = true) {
-        var cfg = FfiConfiguration(data_dir: "/tmp", package_name: "ios", upload_enabled: uploadEnabled ? 1 : 0, max_events: nil)
-        self.handle = glean_initialize(&cfg)
+        self.handle = withConfig(data_dir: "/tmp/ios-glean", package_name: "ios", upload_enabled: uploadEnabled) { cfg in
+            var cfg = cfg
+            return glean_initialize(&cfg)
+        }
+    }
+
+    public func testClearAllStores() {
+        glean_test_clear_all_stores(self.handle)
+    }
+
+    public func setUploadEnabled(_ upload: Bool) {
+        glean_set_upload_enabled(self.handle, upload ? 1 : 0)
     }
 }
