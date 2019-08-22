@@ -93,9 +93,15 @@ impl Histogram<PrecomputedExponential> {
     pub fn snapshot_values(&self) -> HashMap<u64, u64> {
         let mut res = self.values.clone();
 
+        let max_bucket = self.values.keys().max().cloned().unwrap_or(0);
+
         for &min_bucket in &self.bucketing.bucket_ranges {
             // Fill in missing entries.
             let _ = res.entry(min_bucket).or_insert(0);
+            // stop one after the last filled bucket
+            if min_bucket > max_bucket {
+                break;
+            }
         }
         res
     }
