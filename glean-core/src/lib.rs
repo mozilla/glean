@@ -139,6 +139,10 @@ impl Glean {
             max_events: cfg.max_events.unwrap_or(DEFAULT_MAX_EVENTS),
         };
         glean.on_change_upload_enabled(cfg.upload_enabled);
+
+        glean.register_ping_type(&PingType::new("baseline", true));
+        glean.register_ping_type(&PingType::new("metrics", true));
+
         Ok(glean)
     }
 

@@ -35,4 +35,10 @@ class GleanTests: XCTestCase {
         XCTAssertFalse(testCounter.testHasValue())
     }
 
+    func testSendPings() {
+        let testCounter = CounterMetricType(category: "telemetry.test", name: "count", sendInPings: ["metrics"], lifetime: .ping, disabled: false)
+        testCounter.add(amount: 42)
+        XCTAssertTrue(Glean.shared.sendPings(["metrics"]))
+    }
+
 }

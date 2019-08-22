@@ -34,6 +34,13 @@ typedef struct {
 uint64_t glean_initialize(const FfiConfiguration *cfg);
 void glean_test_clear_all_stores(uint64_t glean_handle);
 void glean_set_upload_enabled(uint64_t glean_handle, uint8_t flag);
+uint8_t glean_send_pings_by_name(uint64_t glean_handle,
+                                 RawStringArray ping_names,
+                                 int32_t ping_names_len,
+                                 uint8_t log_ping);
+void glean_enable_logging(void);
+
+
 
 uint64_t glean_new_counter_metric(FfiStr category,
                                   FfiStr name,

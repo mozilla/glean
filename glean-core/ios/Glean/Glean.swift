@@ -76,6 +76,7 @@ public class Glean {
     }
 
     public func initialize(uploadEnabled: Bool = true) {
+        glean_enable_logging();
         self.handle = withConfig(data_dir: "/tmp/ios-glean", package_name: "ios", upload_enabled: uploadEnabled) { cfg in
             var cfg = cfg
             return glean_initialize(&cfg)
@@ -88,5 +89,11 @@ public class Glean {
 
     public func setUploadEnabled(_ upload: Bool) {
         glean_set_upload_enabled(self.handle, upload ? 1 : 0)
+    }
+
+    public func sendPings(_ pings: [String]) -> Bool {
+        return withArrayOfCStrings(pings) { pingNames in
+            return glean_send_pings_by_name(self.handle, pingNames, Int32(pings.count), 1) != 0
+        }
     }
 }
