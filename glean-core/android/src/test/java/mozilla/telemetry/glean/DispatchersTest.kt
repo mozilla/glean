@@ -4,10 +4,10 @@
 
 package mozilla.telemetry.glean
 
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.joinAll
+// import kotlinx.coroutines.GlobalScope
+// import kotlinx.coroutines.Job
+// import kotlinx.coroutines.delay
+// import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
@@ -66,6 +66,8 @@ class DispatchersTest {
         assertEquals("Task queue is cleared", 0, Dispatchers.API.taskQueue.size)
     }
 
+    /*
+        FIXME: Test is flaky, fix tracked in https://bugzilla.mozilla.org/show_bug.cgi?id=1576741
     @Test
     fun `queued tasks are executed in the order they are received`() {
         val orderedList = mutableListOf<Int>()
@@ -110,4 +112,5 @@ class DispatchersTest {
             assertEquals(num, orderedList[num])
         }
     }
+    */
 }
