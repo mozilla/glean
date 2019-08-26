@@ -11,6 +11,7 @@ import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeoutOrNull
 import mozilla.components.support.base.log.logger.Logger
 import java.util.concurrent.ConcurrentLinkedQueue
 
@@ -36,6 +37,10 @@ internal object Dispatchers {
             // setUploadEnabled(false) is not called so that we don't continue to queue tasks and
             // waste memory.
             const val MAX_QUEUE_SIZE = 100
+
+            // This is the number of milliseconds that are allowed for the initial tasks queue to
+            // process all of the queued tasks.
+            const val QUEUE_PROCESSING_TIMEOUT_MS = 5000L
         }
 
         /**
@@ -111,13 +116,27 @@ internal object Dispatchers {
             // NOTE: This has the potential for causing a task to execute out of order in certain
             // situations. If a library or thread that runs before init happens to record
             // between when the queueInitialTasks is set to false and the taskQueue finishing
-            // launching, then that task could be executed out of the queued order. See the bugzilla
-            // bug tracking this for more info: https://bugzilla.mozilla.org/show_bug.cgi?id=1568503
-            queueInitialTasks = false
-            taskQueue.forEach { task ->
-                task.invoke()
+            // launching, then that task could be executed out of the queued order.
+            val job = coroutineScope.launch {
+                taskQueue.forEach { task ->
+                    task.invoke()
+                }
+                queueInitialTasks = false
+                taskQueue.clear()
             }
-            taskQueue.clear()
+
+            // In order to ensure that the queued tasks are executed in the proper order, we will
+            // wait up to 5 seconds for it to complete, otherwise we will reset the flag so that
+            // new tasks may continue to run.
+            runBlocking {
+                withTimeoutOrNull(QUEUE_PROCESSING_TIMEOUT_MS) {
+                    job.join()
+                }?.let {
+                    logger.error("Timeout processing initial tasks queue")
+                    queueInitialTasks = false
+                    taskQueue.clear()
+                }
+            }
         }
 
         /**

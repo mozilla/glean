@@ -4,6 +4,11 @@
 
 package mozilla.telemetry.glean
 
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 
@@ -59,5 +64,50 @@ class DispatchersTest {
 
         assertEquals("Tasks have executed", 3, threadCanary)
         assertEquals("Task queue is cleared", 0, Dispatchers.API.taskQueue.size)
+    }
+
+    @Test
+    fun `queued tasks are executed in the order they are received`() {
+        val orderedList = mutableListOf<Int>()
+        val addTasks = mutableListOf<Job>()
+
+        // Set testing mode to false as we want every call to `launch` to execute as a coroutine
+        Dispatchers.API.setTestingMode(false)
+        Dispatchers.API.setTaskQueueing(true)
+
+        // Spawn a coroutine that will add elements to the orderedList.  This will continue to add
+        // elements to the queue until there are at least 50 elements in the queue. At that point,
+        // the second coroutine below will flush and disable the queue.
+        val addJob = GlobalScope.launch {
+            (0..100).forEach { num ->
+                Dispatchers.API.launch {
+                    orderedList.add(num)
+                }?.let { job ->
+                    addTasks.add(job)
+                }
+
+                delay(1)
+            }
+        }
+
+        // This is coroutine will monitor the taskQueue.count() to toggle the flushing of the queued
+        // items when the queue is half full (50 elements).  This should give us 50 items in the
+        // queue and then 50 items that are launched after the queue is flushed.
+        val flushJob = GlobalScope.launch {
+            while (Dispatchers.API.taskQueue.count() < 50) { delay(5) }
+            Dispatchers.API.flushQueuedInitialTasks()
+        }
+
+        // Wait for all of the numbers to be added to the list by waiting for all the tasks to join.
+        runBlocking {
+            flushJob.join()
+            addJob.join()
+            addTasks.joinAll()
+        }
+
+        // Ensure elements match in the correct order
+        (0..100).forEach { num ->
+            assertEquals(num, orderedList[num])
+        }
     }
 }
