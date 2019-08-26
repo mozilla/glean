@@ -71,7 +71,7 @@ impl MemoryDistributionMetric {
     ///
     /// ## Arguments
     ///
-    /// - `sample` - The sample to be recorded by the metric. The sample is assumed to be in the
+    /// * `sample` - The sample to be recorded by the metric. The sample is assumed to be in the
     ///   configured memory unit of the metric.
     ///
     /// ## Notes
@@ -121,7 +121,7 @@ impl MemoryDistributionMetric {
     ///
     /// ## Arguments
     ///
-    /// - `samples` - The vector holding the samples to be recorded by the metric.
+    /// * `samples` - The vector holding the samples to be recorded by the metric.
     ///
     /// ## Notes
     ///
