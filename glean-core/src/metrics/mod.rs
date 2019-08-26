@@ -14,6 +14,8 @@ mod datetime;
 mod event;
 mod experiment;
 mod labeled;
+mod memory_distribution;
+mod memory_unit;
 mod ping;
 mod quantity;
 mod string;
@@ -38,6 +40,8 @@ pub(crate) use self::experiment::ExperimentMetric;
 #[cfg(test)]
 pub(crate) use self::experiment::RecordedExperimentData;
 pub use self::labeled::LabeledMetric;
+pub use self::memory_distribution::MemoryDistributionMetric;
+pub use self::memory_unit::MemoryUnit;
 pub use self::ping::PingType;
 pub use self::quantity::QuantityMetric;
 pub use self::string::StringMetric;
@@ -73,6 +77,8 @@ pub enum Metric {
     Timespan(std::time::Duration, TimeUnit),
     /// A timing distribution. See [`TimingDistributionMetric`](struct.TimingDistributionMetric.html) for more information.
     TimingDistribution(Histogram<Functional>),
+    /// A memory distribution. See [`MemoryDistributionMetric`](struct.MemoryDistributionMetric.html) for more information.
+    MemoryDistribution(Histogram<Functional>),
 }
 
 /// A `MetricType` describes common behavior across all metrics.
@@ -109,6 +115,7 @@ impl Metric {
             Metric::Timespan(..) => "timespan",
             Metric::TimingDistribution(_) => "timing_distribution",
             Metric::Uuid(_) => "uuid",
+            Metric::MemoryDistribution(_) => "memory_distribution",
         }
     }
 
@@ -127,6 +134,7 @@ impl Metric {
             }
             Metric::TimingDistribution(hist) => json!(timing_distribution::snapshot(hist)),
             Metric::Uuid(s) => json!(s),
+            Metric::MemoryDistribution(hist) => json!(memory_distribution::snapshot(hist)),
         }
     }
 }

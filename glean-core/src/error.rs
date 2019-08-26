@@ -52,6 +52,10 @@ pub enum ErrorKind {
     #[fail(display = "TimeUnit conversion from {} failed", _0)]
     TimeUnit(i32),
 
+    /// MemoryUnit conversion failed
+    #[fail(display = "MemoryUnit conversion from {} failed", _0)]
+    MemoryUnit(i32),
+
     /// OsString conversion failed
     #[fail(display = "OsString conversion from {:?} failed", _0)]
     OsString(OsString),

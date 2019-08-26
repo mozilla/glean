@@ -22,6 +22,7 @@ mod ffi_string_ext;
 mod from_raw;
 mod handlemap_ext;
 mod labeled;
+mod memory_distribution;
 mod ping_type;
 mod quantity;
 mod string;

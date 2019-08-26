@@ -41,11 +41,6 @@ typedef struct {
 
 typedef const int64_t *RawInt64Array;
 
-/**
- * Identifier for a running timer.
- */
-typedef uint64_t TimerId;
-
 void glean_boolean_set(uint64_t glean_handle, uint64_t metric_id, uint8_t value);
 
 uint8_t glean_boolean_test_get_value(uint64_t glean_handle,
@@ -100,6 +95,8 @@ void glean_destroy_labeled_boolean_metric(uint64_t v, ExternError *err);
 void glean_destroy_labeled_counter_metric(uint64_t v, ExternError *err);
 
 void glean_destroy_labeled_string_metric(uint64_t v, ExternError *err);
+
+void glean_destroy_memory_distribution_metric(uint64_t v, ExternError *err);
 
 void glean_destroy_ping_type(uint64_t v, ExternError *err);
 
@@ -156,6 +153,23 @@ uint64_t glean_labeled_counter_metric_get(uint64_t glean_handle, uint64_t handle
  * Create a new instance of the sub-metric of this labeled metric.
  */
 uint64_t glean_labeled_string_metric_get(uint64_t glean_handle, uint64_t handle, FfiStr label);
+
+void glean_memory_distribution_accumulate(uint64_t glean_handle,
+                                          uint64_t metric_id,
+                                          uint64_t sample);
+
+void glean_memory_distribution_accumulate_samples(uint64_t glean_handle,
+                                                  uint64_t metric_id,
+                                                  RawInt64Array raw_samples,
+                                                  int32_t num_samples);
+
+char *glean_memory_distribution_test_get_value_as_json_string(uint64_t glean_handle,
+                                                              uint64_t metric_id,
+                                                              FfiStr storage_name);
+
+uint8_t glean_memory_distribution_test_has_value(uint64_t glean_handle,
+                                                 uint64_t metric_id,
+                                                 FfiStr storage_name);
 
 uint64_t glean_new_boolean_metric(FfiStr category,
                                   FfiStr name,
@@ -223,6 +237,14 @@ uint64_t glean_new_labeled_string_metric(FfiStr category,
                                          uint8_t disabled,
                                          RawStringArray labels,
                                          int32_t label_count);
+
+uint64_t glean_new_memory_distribution_metric(FfiStr category,
+                                              FfiStr name,
+                                              RawStringArray send_in_pings,
+                                              int32_t send_in_pings_len,
+                                              int32_t lifetime,
+                                              uint8_t disabled,
+                                              int32_t memory_unit);
 
 uint64_t glean_new_ping_type(FfiStr ping_name, uint8_t include_client_id);
 

@@ -223,7 +223,7 @@ impl TimingDistributionMetric {
     ///
     /// ## Arguments
     ///
-    /// - `samples` - The vector holding the samples to be recorded by the metric.
+    /// * `samples` - The vector holding the samples to be recorded by the metric.
     ///
     /// ## Notes
     ///

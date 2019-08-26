@@ -98,6 +98,7 @@ jobs:
   Rust tests - minimum version:
     docker:
       - image: circleci/rust:latest
+    resource_class: "medium+"
     steps:
       - rust-tests:
           rust-version: "1.34.2"
