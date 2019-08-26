@@ -23,6 +23,7 @@ mod from_raw;
 mod handlemap_ext;
 mod labeled;
 mod ping_type;
+mod quantity;
 mod string;
 mod string_list;
 mod timespan;

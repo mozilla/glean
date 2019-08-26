@@ -32,6 +32,16 @@ A [Counter](../../../user/metrics/counter.md) is represented by its integer valu
 17
 ```
 
+### Quantity
+
+A [Quantity](../../../user/metrics/quantity.md) is represented by its integer value.
+
+#### Example
+
+```json
+42
+```
+
 ### String
 
 A [String](../../../user/metrics/string.md) is represented by its string value.

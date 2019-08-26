@@ -153,6 +153,25 @@ internal interface LibGleanFFI : Library {
 
     fun glean_counter_test_has_value(glean_handle: Long, metric_id: Long, storage_name: String): Byte
 
+    // Quantity
+
+    fun glean_new_quantity_metric(
+        category: String,
+        name: String,
+        send_in_pings: StringArray,
+        send_in_pings_len: Int,
+        lifetime: Int,
+        disabled: Byte
+    ): Long
+
+    fun glean_destroy_quantity_metric(handle: Long, error: RustError.ByReference)
+
+    fun glean_quantity_set(glean_handle: Long, metric_id: Long, value: Long)
+
+    fun glean_quantity_test_get_value(glean_handle: Long, metric_id: Long, storage_name: String): Long
+
+    fun glean_quantity_test_has_value(glean_handle: Long, metric_id: Long, storage_name: String): Byte
+
     // String
 
     fun glean_new_string_metric(
