@@ -67,6 +67,30 @@ impl TimeUnit {
             Day => duration.as_secs() / 60 / 60 / 24,
         }
     }
+
+    /// Convert a duration in the given unit to nanoseconds.
+    ///
+    /// ## Arguments
+    ///
+    /// * `duration` - the duration to convert.
+    ///
+    /// ## Return value
+    ///
+    /// The integer representation of the nanosecond duration.
+    pub fn as_nanos(self, duration: u64) -> u64 {
+        use TimeUnit::*;
+        let duration = match self {
+            Nanosecond => Duration::from_nanos(duration),
+            Microsecond => Duration::from_micros(duration),
+            Millisecond => Duration::from_millis(duration),
+            Second => Duration::from_secs(duration),
+            Minute => Duration::from_secs(duration * 60),
+            Hour => Duration::from_secs(duration * 60 * 60),
+            Day => Duration::from_secs(duration * 60 * 60 * 24),
+        };
+
+        duration.as_nanos() as u64
+    }
 }
 
 /// Trait implementation for converting an integer value

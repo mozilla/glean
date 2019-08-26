@@ -39,7 +39,7 @@ class TimingDistributionMetricTypeTest {
         for (i in 1L..3L) {
             `when`(metric.getElapsedTimeNanos()).thenReturn(0L)
             val id = metric.start()
-            `when`(metric.getElapsedTimeNanos()).thenReturn(i * 1000000L) // ms to ns
+            `when`(metric.getElapsedTimeNanos()).thenReturn(i)
             metric.stopAndAccumulate(id)
         }
 
@@ -108,7 +108,7 @@ class TimingDistributionMetricTypeTest {
         for (i in 1L..3L) {
             `when`(metric.getElapsedTimeNanos()).thenReturn(0L)
             val id = metric.start()
-            `when`(metric.getElapsedTimeNanos()).thenReturn(i * 1000000L) // ms to ns
+            `when`(metric.getElapsedTimeNanos()).thenReturn(i)
             metric.stopAndAccumulate(id)
         }
 
@@ -156,13 +156,16 @@ class TimingDistributionMetricTypeTest {
         // Check that data was properly recorded in the second ping.
         assertTrue(metric.testHasValue("store1"))
         val snapshot = metric.testGetValue("store1")
+        val secondsToNanos = 1000L * 1000L * 1000L
         // Check the sum
-        assertEquals(6L, snapshot.sum)
-        // Check that the 1L fell into the first bucket
-        assertEquals(1L, snapshot.values[1])
-        // Check that the 2L fell into the second bucket
-        assertEquals(1L, snapshot.values[2])
-        // Check that the 3L fell into the third bucket
-        assertEquals(1L, snapshot.values[3])
+        assertEquals(6L * secondsToNanos, snapshot.sum)
+
+        // We should get a sample in 3 buckets.
+        // These numbers are a bit magic, but they correspond to
+        // `hist.sample_to_bucket_minimum(i * seconds_to_nanos)` for `i = 1..=3`,
+        // which lives in the Rust code.
+        assertEquals(1L, snapshot.values[984625593])
+        assertEquals(1L, snapshot.values[1969251187])
+        assertEquals(1L, snapshot.values[2784941737])
     }
 }

@@ -23,7 +23,7 @@ mod timespan;
 mod timing_distribution;
 mod uuid;
 
-use crate::histogram::Histogram;
+use crate::histogram::{Functional, Histogram};
 use crate::util::get_iso_time_string;
 use crate::CommonMetricData;
 use crate::Glean;
@@ -72,7 +72,7 @@ pub enum Metric {
     /// A timespan metric. See [`TimespanMetric`](struct.TimespanMetric.html) for more information.
     Timespan(std::time::Duration, TimeUnit),
     /// A timing distribution. See [`TimingDistributionMetric`](struct.TimingDistributionMetric.html) for more information.
-    TimingDistribution(Histogram, TimeUnit),
+    TimingDistribution(Histogram<Functional>),
 }
 
 /// A `MetricType` describes common behavior across all metrics.
@@ -107,7 +107,7 @@ impl Metric {
             Metric::String(_) => "string",
             Metric::StringList(_) => "string_list",
             Metric::Timespan(..) => "timespan",
-            Metric::TimingDistribution(..) => "timing_distribution",
+            Metric::TimingDistribution(_) => "timing_distribution",
             Metric::Uuid(_) => "uuid",
         }
     }
@@ -125,9 +125,7 @@ impl Metric {
             Metric::Timespan(time, time_unit) => {
                 json!({"value": time_unit.duration_convert(*time), "time_unit": time_unit})
             }
-            Metric::TimingDistribution(hist, time_unit) => {
-                json!(timing_distribution::snapshot(hist, *time_unit))
-            }
+            Metric::TimingDistribution(hist) => json!(timing_distribution::snapshot(hist)),
             Metric::Uuid(s) => json!(s),
         }
     }

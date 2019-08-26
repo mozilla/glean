@@ -2,16 +2,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-//! A simple histogram implementation for exponential histograms.
+use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-// The following are defaults for a simple timing distribution for the default time unit
-// of millisecond.  The values arrived at were approximated using existing "_MS"
-// telemetry probes as a guide.
-const DEFAULT_BUCKET_COUNT: usize = 100;
-const DEFAULT_RANGE_MIN: u64 = 0;
-const DEFAULT_RANGE_MAX: u64 = 60_000;
+use super::{Bucketing, Histogram};
 
 /// Create the possible ranges in an exponential distribution from `min` to `max` with
 /// `bucket_count` buckets.
@@ -51,91 +46,21 @@ fn exponential_range(min: u64, max: u64, bucket_count: usize) -> Vec<u64> {
     ranges
 }
 
-/// The type of a histogram.
-#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
-#[serde(rename_all = "lowercase")]
-pub enum Type {
-    Exponential,
-}
-
-/// A histogram.
+/// An exponential bucketing algorithm.
 ///
-/// Stores the ranges of buckets as well as counts per buckets.
-/// It tracks the count of added values and the total sum.
-///
-/// ## Example
-///
-/// ```rust,ignore
-/// let mut hist = Histogram::exponential(1, 500, 10);
-///
-/// for i in 1..=10 {
-///     hist.accumulate(i);
-/// }
-///
-/// assert_eq!(10, hist.count());
-/// assert_eq!(55, hist.sum());
-/// ```
+/// Buckets are pre-computed at instantiation with an exponential distribution from `min` to `max`
+/// and `bucket_count` buckets.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Histogram {
-    min: u64,
-    max: u64,
+pub struct PrecomputedExponential {
     bucket_ranges: Vec<u64>,
-    values: Vec<u64>,
-
-    count: u64,
-    sum: u64,
-    typ: Type,
 }
 
-impl Default for Histogram {
-    fn default() -> Histogram {
-        Histogram::exponential(DEFAULT_RANGE_MIN, DEFAULT_RANGE_MAX, DEFAULT_BUCKET_COUNT)
-    }
-}
-
-impl Histogram {
-    /// Create a histogram with `count` exponential buckets in the range `min` to `max`.
-    pub fn exponential(min: u64, max: u64, bucket_count: usize) -> Histogram {
-        let bucket_ranges = exponential_range(min, max, bucket_count);
-
-        Histogram {
-            min,
-            max,
-            bucket_ranges,
-            values: vec![0; bucket_count],
-            count: 0,
-            sum: 0,
-            typ: Type::Exponential,
-        }
-    }
-
-    /// Get the number of buckets in this histogram.
-    pub fn bucket_count(&self) -> usize {
-        self.values.len()
-    }
-
-    /// Add a single value to this histogram.
-    pub fn accumulate(&mut self, sample: u64) {
-        *self.get_bucket_for_sample(sample) += 1;
-        self.sum = self.sum.saturating_add(sample);
-        self.count += 1;
-    }
-
-    /// Get the total sum of values recorded in this histogram.
-    pub fn sum(&self) -> u64 {
-        self.sum
-    }
-
-    /// Get the total count of values recorded in this histogram.
-    pub fn count(&self) -> u64 {
-        self.count
-    }
-
+impl Bucketing for PrecomputedExponential {
     /// Get the bucket for the sample.
     ///
     /// This uses a binary search to locate the index `i` of the bucket such that:
     /// bucket[i] <= sample < bucket[i+1]
-    fn get_bucket_for_sample(&mut self, sample: u64) -> &mut u64 {
+    fn sample_to_bucket_minimum(&self, sample: u64) -> u64 {
         let limit = match self.bucket_ranges.binary_search(&sample) {
             // Found an exact match to fit it in
             Ok(i) => i,
@@ -143,39 +68,42 @@ impl Histogram {
             Err(i) => i - 1,
         };
 
-        &mut self.values[limit]
+        self.bucket_ranges[limit]
+    }
+}
+
+impl Histogram<PrecomputedExponential> {
+    /// Create a histogram with `count` exponential buckets in the range `min` to `max`.
+    pub fn exponential(
+        min: u64,
+        max: u64,
+        bucket_count: usize,
+    ) -> Histogram<PrecomputedExponential> {
+        let bucket_ranges = exponential_range(min, max, bucket_count);
+
+        Histogram {
+            values: HashMap::new(),
+            count: 0,
+            sum: 0,
+            bucketing: PrecomputedExponential { bucket_ranges },
+        }
     }
 
-    /// Get the list of ranges.
-    pub fn bucket_ranges(&self) -> &[u64] {
-        &self.bucket_ranges
-    }
+    /// Get a snapshot of _all_ values.
+    pub fn snapshot_values(&self) -> HashMap<u64, u64> {
+        let mut res = self.values.clone();
 
-    /// Get the filled values.
-    pub fn values(&self) -> &[u64] {
-        &self.values
-    }
+        let max_bucket = self.values.keys().max().cloned().unwrap_or(0);
 
-    /// Get the minimal recordable value.
-    pub fn min(&self) -> u64 {
-        self.min
-    }
-
-    /// Get the maximal recordable value.
-    ///
-    /// Samples bigger than  the `max` will be recorded into the overflow bucket.
-    pub fn max(&self) -> u64 {
-        self.max
-    }
-
-    /// Get this histogram's type.
-    pub fn typ(&self) -> Type {
-        self.typ
-    }
-
-    /// Check if this histogram recorded any values.
-    pub fn is_empty(&self) -> bool {
-        self.count() == 0
+        for &min_bucket in &self.bucketing.bucket_ranges {
+            // Fill in missing entries.
+            let _ = res.entry(min_bucket).or_insert(0);
+            // stop one after the last filled bucket
+            if min_bucket > max_bucket {
+                break;
+            }
+        }
+        res
     }
 }
 
@@ -183,10 +111,9 @@ impl Histogram {
 mod test {
     use super::*;
 
-    #[test]
-    fn it_works() {
-        let _h = Histogram::default();
-    }
+    const DEFAULT_BUCKET_COUNT: usize = 100;
+    const DEFAULT_RANGE_MIN: u64 = 0;
+    const DEFAULT_RANGE_MAX: u64 = 60_000;
 
     #[test]
     fn can_count() {
@@ -203,10 +130,11 @@ mod test {
 
     #[test]
     fn overflow_values_accumulate_in_the_last_bucket() {
-        let mut hist = Histogram::default();
+        let mut hist =
+            Histogram::exponential(DEFAULT_RANGE_MIN, DEFAULT_RANGE_MAX, DEFAULT_BUCKET_COUNT);
 
         hist.accumulate(DEFAULT_RANGE_MAX + 100);
-        assert_eq!(1, hist.values[DEFAULT_BUCKET_COUNT as usize - 1]);
+        assert_eq!(1, hist.values[&DEFAULT_RANGE_MAX]);
     }
 
     #[test]
@@ -241,7 +169,8 @@ mod test {
 
     #[test]
     fn default_buckets_correctly_accumulate() {
-        let mut hist = Histogram::default();
+        let mut hist =
+            Histogram::exponential(DEFAULT_RANGE_MIN, DEFAULT_RANGE_MAX, DEFAULT_BUCKET_COUNT);
 
         for i in &[1, 10, 100, 1000, 10000] {
             hist.accumulate(*i);
@@ -250,12 +179,12 @@ mod test {
         assert_eq!(11111, hist.sum());
         assert_eq!(5, hist.count());
 
-        assert_eq!(0, hist.values[0]); // underflow is empty
-        assert_eq!(1, hist.values[1]); // bucket_ranges[1]  = 1
-        assert_eq!(1, hist.values[10]); // bucket_ranges[10] = 10
-        assert_eq!(1, hist.values[33]); // bucket_ranges[33] = 92
-        assert_eq!(1, hist.values[57]); // bucket_ranges[57] = 964
-        assert_eq!(1, hist.values[80]); // bucket_ranges[80] = 9262
+        assert_eq!(None, hist.values.get(&0)); // underflow is empty
+        assert_eq!(1, hist.values[&1]); // bucket_ranges[1]  = 1
+        assert_eq!(1, hist.values[&10]); // bucket_ranges[10] = 10
+        assert_eq!(1, hist.values[&92]); // bucket_ranges[33] = 92
+        assert_eq!(1, hist.values[&964]); // bucket_ranges[57] = 964
+        assert_eq!(1, hist.values[&9262]); // bucket_ranges[80] = 9262
     }
 
     #[test]
@@ -268,6 +197,6 @@ mod test {
         assert_eq!(2, hist.count());
         // Saturate before overflowing
         assert_eq!(u64::max_value(), hist.sum());
-        assert_eq!(2, hist.values[9]);
+        assert_eq!(2, hist.values[&500]);
     }
 }
