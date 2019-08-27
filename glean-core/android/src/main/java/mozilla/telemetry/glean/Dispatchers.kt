@@ -11,7 +11,6 @@ import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withTimeoutOrNull
 import mozilla.components.support.base.log.logger.Logger
 import java.util.concurrent.ConcurrentLinkedQueue
 
@@ -110,33 +109,11 @@ internal object Dispatchers {
          * on the couroutine scope rather than added to the queue.
          */
         internal fun flushQueuedInitialTasks() {
-            // Setting this to false first should cause any new tasks to just be executed (see
-            // launch() above) making it safer to process the queue.
-            //
-            // NOTE: This has the potential for causing a task to execute out of order in certain
-            // situations. If a library or thread that runs before init happens to record
-            // between when the queueInitialTasks is set to false and the taskQueue finishing
-            // launching, then that task could be executed out of the queued order.
-            val job = coroutineScope.launch {
-                taskQueue.forEach { task ->
-                    task.invoke()
-                }
-                queueInitialTasks = false
-                taskQueue.clear()
+            taskQueue.forEach { task ->
+                task.invoke()
             }
-
-            // In order to ensure that the queued tasks are executed in the proper order, we will
-            // wait up to 5 seconds for it to complete, otherwise we will reset the flag so that
-            // new tasks may continue to run.
-            runBlocking {
-                withTimeoutOrNull(QUEUE_PROCESSING_TIMEOUT_MS) {
-                    job.join()
-                }?.let {
-                    logger.error("Timeout processing initial tasks queue")
-                    queueInitialTasks = false
-                    taskQueue.clear()
-                }
-            }
+            queueInitialTasks = false
+            taskQueue.clear()
         }
 
         /**
