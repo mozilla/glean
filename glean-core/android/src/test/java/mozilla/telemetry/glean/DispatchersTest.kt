@@ -5,6 +5,9 @@
 package mozilla.telemetry.glean
 
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
@@ -66,34 +69,40 @@ class DispatchersTest {
     @Test
     fun `queued tasks are executed in the order they are received`() {
         val orderedList = mutableListOf<Int>()
+        val jobs = mutableListOf<Job>()
 
-        Dispatchers.API.setTestingMode(true)
+        Dispatchers.API.setTestingMode(false)
         Dispatchers.API.setTaskQueueing(true)
 
         // This coroutine will monitor the taskQueue.count() to toggle the flushing of the queued
         // items when the queue is half full (50 elements).  This should give us 50 items in the
         // queue and then 50 items that are launched after the queue is flushed.
-        val flushJob = GlobalScope.launch {
+        jobs.add(GlobalScope.launch {
             while (Dispatchers.API.taskQueue.count() < 50) { Thread.yield() }
             Dispatchers.API.flushQueuedInitialTasks()
-        }
+        })
 
         // This coroutine will add elements to the orderedList.  This will continue to
         // add elements to the queue until there are at least 50 elements in the queue. At that
         // point, the coroutine above will flush and disable the queuing and this coroutine will
         // continue launching tasks directly.
-        val addJob = GlobalScope.launch {
+        jobs.add(GlobalScope.launch {
             (0..99).forEach { num ->
                 Dispatchers.API.launch {
                     orderedList.add(num)
+                }?.let {
+                    jobs.add(it)
                 }
             }
-        }
+        })
 
         // Wait for the numbers to be added to the list by waiting for the tasks to join.
         runBlocking {
-            flushJob.join()
-            addJob.join()
+            jobs.joinAll()
+
+            // This delay seems to be necessary to allow all of the coroutines time to finish.  This
+            // is unexpected as I would think that the `joinAll()` above should accomplish this.
+            delay(10)
         }
 
         // Ensure elements match in the correct order
