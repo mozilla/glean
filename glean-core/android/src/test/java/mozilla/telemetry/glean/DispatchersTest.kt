@@ -4,17 +4,20 @@
 
 package mozilla.telemetry.glean
 
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers as KotlinDispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeoutOrNull
 import org.junit.Test
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotSame
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
+import java.util.concurrent.atomic.AtomicInteger
 
 @Suppress("EXPERIMENTAL_API_USAGE")
 class DispatchersTest {
@@ -74,35 +77,47 @@ class DispatchersTest {
         Dispatchers.API.setTestingMode(false)
         Dispatchers.API.setTaskQueueing(true)
 
+        val coroutineScope = CoroutineScope(KotlinDispatchers.Default)
+
         // This coroutine will monitor the taskQueue.count() to toggle the flushing of the queued
         // items when the queue is half full (50 elements).  This should give us 50 items in the
         // queue and then 50 items that are launched after the queue is flushed.
-        jobs.add(GlobalScope.launch {
+        val flushJob = coroutineScope.launch {
             while (Dispatchers.API.taskQueue.count() < 50) { Thread.yield() }
             Dispatchers.API.flushQueuedInitialTasks()
-        })
+        }
 
         // This coroutine will add elements to the orderedList.  This will continue to
         // add elements to the queue until there are at least 50 elements in the queue. At that
         // point, the coroutine above will flush and disable the queuing and this coroutine will
         // continue launching tasks directly.
-        jobs.add(GlobalScope.launch {
+        // Note: we need a counter to make sure that all the jobs are added to the `jobs` array.
+        // we can't simply check the array size as it might change while we're checking.
+        val counter = AtomicInteger()
+        val listJob = coroutineScope.launch(KotlinDispatchers.Default) {
             (0..99).forEach { num ->
                 Dispatchers.API.launch {
                     orderedList.add(num)
+                    counter.incrementAndGet()
                 }?.let {
                     jobs.add(it)
                 }
             }
-        })
+        }
 
         // Wait for the numbers to be added to the list by waiting for the tasks to join.
         runBlocking {
-            jobs.joinAll()
+            // Ensure that all the required jobs have been added to the list.
+            withTimeoutOrNull(2000) {
+                while (counter.get() < 100) {
+                    delay(1)
+                }
+            } ?: assertEquals("Timed out waiting for tasks to execute", 100, counter.get())
 
-            // This delay seems to be necessary to allow all of the coroutines time to finish.  This
-            // is unexpected as I would think that the `joinAll()` above should accomplish this.
-            delay(10)
+            // Wait for them to execute.
+            flushJob.join()
+            listJob.join()
+            jobs.joinAll()
         }
 
         // Ensure elements match in the correct order
@@ -111,7 +126,7 @@ class DispatchersTest {
                 "Index [$num] is less than size of list [${orderedList.size}]",
                 num < orderedList.size
             )
-            assertEquals(num, orderedList[num])
+            assertEquals("This list is out of order $orderedList", num, orderedList[num])
         }
     }
 }
