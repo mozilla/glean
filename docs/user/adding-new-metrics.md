@@ -70,7 +70,15 @@ The `lifetime` parameter of a metric defines when it will be reset. There are th
 
 ### Naming things
 
-Choose the category and names of metrics to be as specific as possible.
+Metric identifiers (the combination of a metric's category and name) must be unique across all metrics that are sent by an application.
+This includes not only the metrics defined in the app's `metrics.yaml`, but the `metrics.yaml` of any Glean-using library that that application uses, including Glean itself.
+Therefore, care should be taken to name things specifically enough so as to avoid namespace collisions.
+In practice, this generally involves thinking carefully about the `category` of the metric, more than the `name`.
+
+> **Note:** Duplicate metric identifiers are not currently detected at build time.
+However, the [probe_scraper](https://github.com/mozilla/probe-scraper) process, which runs nightly, will detect this case and e-mail the `notification_emails` associated with the given metrics.
+
+More broadly, you should choose the category and names of metrics to be as specific as possible.
 It is not necessary to put the type of the metric in the category or name, since this information is retained in other ways through the entire end-to-end system.
 
 For example, if defining a set of events related to search, put them in a category called `search`, rather than just `events` or `search_events`.
