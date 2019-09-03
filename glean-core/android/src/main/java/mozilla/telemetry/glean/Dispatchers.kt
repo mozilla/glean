@@ -116,7 +116,7 @@ internal object Dispatchers {
             // situations. If a library or thread that runs before init happens to record
             // between when the queueInitialTasks is set to false and the taskQueue finishing
             // launching, then that task could be executed out of the queued order.
-            val that = this
+            val dispatcherObject = this
             val job = coroutineScope.launch {
                 // Set the flag first as the first thing in this job. This will guarantee new jobs
                 // are after this one, thus executed in order. The new jobs won't be added to
@@ -128,7 +128,7 @@ internal object Dispatchers {
                 // access to the queue. However, we can't simply wrap the task execution in a sync
                 // block: suspending functions are not allowed inside critical sections.
                 val queueCopy: ConcurrentLinkedQueue<suspend CoroutineScope.() -> Unit> = ConcurrentLinkedQueue()
-                synchronized(that) {
+                synchronized(dispatcherObject) {
                     queueCopy.addAll(taskQueue)
                     taskQueue.clear()
                 }
