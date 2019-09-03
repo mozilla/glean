@@ -75,8 +75,8 @@ This includes not only the metrics defined in the app's `metrics.yaml`, but the 
 Therefore, care should be taken to name things specifically enough so as to avoid namespace collisions.
 In practice, this generally involves thinking carefully about the `category` of the metric, more than the `name`.
 
-> **Note:** Duplicate metric identifiers are not currently detected at build time.
-However, the [probe_scraper](https://github.com/mozilla/probe-scraper) process, which runs nightly, will detect this case and e-mail the `notification_emails` associated with the given metrics.
+> **Note:** Duplicate metric identifiers are not currently detected at build time. See [bug 1578383](https://bugzilla.mozilla.org/show_bug.cgi?id=1578383) for progress on that.
+However, the [probe_scraper](https://github.com/mozilla/probe-scraper) process, which runs nightly, will detect duplicate metrics and e-mail the `notification_emails` associated with the given metrics.
 
 More broadly, you should choose the category and names of metrics to be as specific as possible.
 It is not necessary to put the type of the metric in the category or name, since this information is retained in other ways through the entire end-to-end system.
