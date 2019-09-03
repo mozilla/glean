@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.annotation.VisibleForTesting
 import android.text.format.DateUtils
+import android.util.Log
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
@@ -20,7 +21,6 @@ import androidx.work.WorkerParameters
 import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.GleanMetrics.Pings
-import mozilla.components.support.base.log.logger.Logger
 import mozilla.telemetry.glean.utils.getISOTimeString
 import mozilla.telemetry.glean.utils.parseISOTimeString
 import mozilla.telemetry.glean.private.TimeUnit
@@ -41,12 +41,12 @@ import java.util.concurrent.TimeUnit as AndroidTimeUnit
  */
 @Suppress("TooManyFunctions")
 internal class MetricsPingScheduler(val applicationContext: Context) : LifecycleObserver {
-    private val logger = Logger("glean/MetricsPingScheduler")
     internal val sharedPreferences: SharedPreferences by lazy {
         applicationContext.getSharedPreferences(this.javaClass.canonicalName, Context.MODE_PRIVATE)
     }
 
     companion object {
+        private const val LOG_TAG = "MetricsPingScheduler"
         const val LAST_METRICS_PING_SENT_DATETIME = "last_metrics_ping_iso_datetime"
         const val DUE_HOUR_OF_THE_DAY = 4
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -78,7 +78,7 @@ internal class MetricsPingScheduler(val applicationContext: Context) : Lifecycle
         // Compute how many milliseconds until the next time the metrics ping
         // needs to collect data.
         val millisUntilNextDueTime = getMillisecondsUntilDueTime(sendTheNextCalendarDay, now)
-        logger.debug("Scheduling the 'metrics' ping in ${millisUntilNextDueTime}ms")
+        Log.d(LOG_TAG, "Scheduling the 'metrics' ping in ${millisUntilNextDueTime}ms")
 
         // Build a work request: we don't use use a `PeriodicWorkRequest`, which
         // is more suitable for this task, because of the inherent drifting. See
@@ -183,7 +183,7 @@ internal class MetricsPingScheduler(val applicationContext: Context) : Lifecycle
         val lastSentDate = getLastCollectedDate()
 
         if (lastSentDate != null) {
-            logger.debug("The 'metrics' ping was last sent on $lastSentDate")
+            Log.d(LOG_TAG, "The 'metrics' ping was last sent on $lastSentDate")
         }
 
         // We expect to cover 3 cases here:
@@ -200,13 +200,13 @@ internal class MetricsPingScheduler(val applicationContext: Context) : Lifecycle
             alreadySentToday -> {
                 // The metrics ping was already sent today. Schedule it for the next
                 // calendar day. This addresses (1).
-                logger.info("The 'metrics' ping was already sent today, ${now.time}.")
+                Log.i(LOG_TAG, "The 'metrics' ping was already sent today, ${now.time}.")
                 schedulePingCollection(now, sendTheNextCalendarDay = true)
             }
             // The ping wasn't already sent today. Are we overdue or just waiting for
             // the right time?
             isAfterDueTime(now) -> {
-                logger.info("The 'metrics' ping is scheduled for immediate collection, ${now.time}")
+                Log.i(LOG_TAG, "The 'metrics' ping is scheduled for immediate collection, ${now.time}")
                 // The reason why we're collecting the "metrics" ping in the `Dispatchers.API`
                 // context is that we want to make sure no other metric API adds data before
                 // the ping is collected. All the exposed metrics API dispatch calls to the
@@ -220,7 +220,7 @@ internal class MetricsPingScheduler(val applicationContext: Context) : Lifecycle
             }
             else -> {
                 // This covers (3).
-                logger.info("The 'metrics' collection is scheduled for today, ${now.time}")
+                Log.i(LOG_TAG, "The 'metrics' collection is scheduled for today, ${now.time}")
                 schedulePingCollection(now, sendTheNextCalendarDay = false)
             }
         }
@@ -234,7 +234,7 @@ internal class MetricsPingScheduler(val applicationContext: Context) : Lifecycle
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     internal fun collectPingAndReschedule(now: Calendar) {
-        logger.info("Collecting the 'metrics' ping, now = ${now.time}")
+        Log.i(LOG_TAG, "Collecting the 'metrics' ping, now = ${now.time}")
         Pings.metrics.send()
         // Update the collection date: we don't really care if we have data or not, let's
         // always update the sent date.
@@ -263,7 +263,7 @@ internal class MetricsPingScheduler(val applicationContext: Context) : Lifecycle
         }
 
         if (loadedDate == null) {
-            logger.error("MetricsPingScheduler last stored ping time was not valid")
+            Log.e(LOG_TAG, "MetricsPingScheduler last stored ping time was not valid")
         }
 
         return loadedDate?.let { parseISOTimeString(it) }
@@ -322,9 +322,8 @@ internal class MetricsPingScheduler(val applicationContext: Context) : Lifecycle
  * "metrics" ping at the due hour.
  */
 internal class MetricsPingWorker(context: Context, params: WorkerParameters) : Worker(context, params) {
-    private val logger = Logger("glean/MetricsPingWorker")
-
     companion object {
+        private const val LOG_TAG = "MetricsPingWorker"
         const val TAG = "mozac_service_glean_metrics_ping_tick"
     }
 
@@ -342,7 +341,7 @@ internal class MetricsPingWorker(context: Context, params: WorkerParameters) : W
         val metricsScheduler = Glean.metricsPingScheduler
         // Perform the actual work.
         val now = metricsScheduler.getCalendarInstance()
-        logger.debug("MetricsPingWorker doWork(), now = ${now.time}")
+        Log.d(LOG_TAG, "MetricsPingWorker doWork(), now = ${now.time}")
         metricsScheduler.collectPingAndReschedule(now)
         // We don't expect to fail at collection: we might fail at upload, but that's handled
         // separately by the upload worker.

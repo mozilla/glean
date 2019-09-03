@@ -6,8 +6,8 @@ package mozilla.telemetry.glean.debug
 
 import android.app.Activity
 import android.os.Bundle
+import android.util.Log
 import mozilla.telemetry.glean.Glean
-import mozilla.components.support.base.log.logger.Logger
 
 /**
  * Debugging activity exported by Glean to allow easier debugging.
@@ -20,9 +20,9 @@ import mozilla.components.support.base.log.logger.Logger
  * https://developer.android.com/studio/command-line/adb#am
  */
 class GleanDebugActivity : Activity() {
-    private val logger = Logger("glean/GleanDebugActivity")
-
     companion object {
+        private const val LOG_TAG = "GleanDebugActivity"
+
         // This is a list of the currently accepted commands
         /**
          * Sends the ping with the given name immediately
@@ -55,7 +55,7 @@ class GleanDebugActivity : Activity() {
         super.onCreate(savedInstanceState)
 
         if (!Glean.isInitialized()) {
-            logger.error(
+            Log.e(LOG_TAG,
                 "Glean is not initialized. " +
                 "It may be disabled by the application."
             )
@@ -64,7 +64,7 @@ class GleanDebugActivity : Activity() {
         }
 
         if (intent.extras == null) {
-            logger.error("No debugging option was provided, doing nothing.")
+            Log.e(LOG_TAG, "No debugging option was provided, doing nothing.")
             finish()
             return
         }
@@ -77,7 +77,7 @@ class GleanDebugActivity : Activity() {
         intent.extras?.let {
             it.keySet().forEach { cmd ->
                 if (!supportedCommands.contains(cmd)) {
-                    logger.error("Unknown command '$cmd'.")
+                    Log.e(LOG_TAG, "Unknown command '$cmd'.")
                 }
             }
 
@@ -88,7 +88,7 @@ class GleanDebugActivity : Activity() {
             // Validate the ping tag against the regex pattern
             pingTag?.let {
                 if (!pingTagPattern.matches(it)) {
-                    logger.error("tagPings value $it does not match accepted pattern $pingTagPattern")
+                    Log.e(LOG_TAG, "tagPings value $it does not match accepted pattern $pingTagPattern")
                     pingTag = null
                 }
             }
@@ -100,7 +100,7 @@ class GleanDebugActivity : Activity() {
 
             // Finally set the default configuration before starting
             // the real product's activity.
-            logger.info("Setting debug config $debugConfig")
+            Log.i(LOG_TAG, "Setting debug config $debugConfig")
             Glean.configuration = debugConfig
 
             intent.getStringExtra(SEND_PING_EXTRA_KEY)?.let {

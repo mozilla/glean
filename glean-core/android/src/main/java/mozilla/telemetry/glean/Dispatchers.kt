@@ -4,6 +4,7 @@
 
 package mozilla.telemetry.glean
 
+import android.util.Log
 import androidx.annotation.VisibleForTesting
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -12,7 +13,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeoutOrNull
-import mozilla.components.support.base.log.logger.Logger
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -29,9 +29,9 @@ internal object Dispatchers {
         // Use a [ConcurrentLinkedQueue] to take advantage of it's thread safety and no locking
         internal val taskQueue: ConcurrentLinkedQueue<suspend CoroutineScope.() -> Unit> = ConcurrentLinkedQueue()
 
-        private val logger = Logger("glean/Dispatchers")
-
         companion object {
+            private const val LOG_TAG = "Dispatchers"
+
             // This value was chosen in order to allow several tasks to be queued for execution but
             // still be conservative of memory. This queue size is important for cases where
             // setUploadEnabled(false) is not called so that we don't continue to queue tasks and
@@ -147,7 +147,7 @@ internal object Dispatchers {
                 withTimeoutOrNull(QUEUE_PROCESSING_TIMEOUT_MS) {
                     job.join()
                 }?.let {
-                    logger.error("Timeout processing initial tasks queue")
+                    Log.e(LOG_TAG, "Timeout processing initial tasks queue")
                     queueInitialTasks.set(false)
                     taskQueue.clear()
                 }
@@ -161,14 +161,14 @@ internal object Dispatchers {
         @Synchronized
         private fun addTaskToQueue(block: suspend CoroutineScope.() -> Unit) {
             if (taskQueue.size >= MAX_QUEUE_SIZE) {
-                logger.error("Exceeded maximum queue size, discarding task")
+                Log.e(LOG_TAG, "Exceeded maximum queue size, discarding task")
                 return
             }
 
             if (testingMode) {
-                logger.info("Task queued for execution in test mode")
+                Log.i(LOG_TAG, "Task queued for execution in test mode")
             } else {
-                logger.info("Task queued for execution and delayed until flushed")
+                Log.i(LOG_TAG, "Task queued for execution and delayed until flushed")
             }
 
             taskQueue.add(block)
