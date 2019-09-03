@@ -21,4 +21,4 @@ path = ".."
 android_logger = "0.7.0"
 
 [target.'cfg(not(target_os = "android"))'.dependencies]
-env_logger = "0.6.1"
+env_logger = { version = "0.6.2", default-features = false, features = ["termcolor", "atty", "humantime"] }
