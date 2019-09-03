@@ -11,8 +11,10 @@ import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeoutOrNull
 import mozilla.components.support.base.log.logger.Logger
 import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.concurrent.atomic.AtomicBoolean
 
 @ObsoleteCoroutinesApi
 internal object Dispatchers {
@@ -22,11 +24,10 @@ internal object Dispatchers {
 
         // When true, jobs will be queued and not ran until triggered by calling
         // flushQueuedInitialTasks()
-        @Volatile
-        private var queueInitialTasks = true
+        private var queueInitialTasks = AtomicBoolean(true)
 
         // Use a [ConcurrentLinkedQueue] to take advantage of it's thread safety and no locking
-        internal val taskQueue: ConcurrentLinkedQueue<() -> Unit> = ConcurrentLinkedQueue()
+        internal val taskQueue: ConcurrentLinkedQueue<suspend CoroutineScope.() -> Unit> = ConcurrentLinkedQueue()
 
         private val logger = Logger("glean/Dispatchers")
 
@@ -56,12 +57,11 @@ internal object Dispatchers {
         fun launch(
             block: suspend CoroutineScope.() -> Unit
         ): Job? {
-            return when {
-                queueInitialTasks -> {
-                    addTaskToQueue(block)
-                    null
-                }
-                else -> executeTask(block)
+            return if (queueInitialTasks.get()) {
+                addTaskToQueue(block)
+                null
+            } else {
+                executeTask(block)
             }
         }
 
@@ -100,7 +100,7 @@ internal object Dispatchers {
          */
         @VisibleForTesting(otherwise = VisibleForTesting.NONE)
         fun setTaskQueueing(enabled: Boolean) {
-            queueInitialTasks = enabled
+            queueInitialTasks.set(enabled)
         }
 
         /**
@@ -109,17 +109,56 @@ internal object Dispatchers {
          * on the couroutine scope rather than added to the queue.
          */
         internal fun flushQueuedInitialTasks() {
-            taskQueue.forEach { task ->
-                task.invoke()
+            // Setting this to false first should cause any new tasks to just be executed (see
+            // launch() above) making it safer to process the queue.
+            //
+            // NOTE: This has the potential for causing a task to execute out of order in certain
+            // situations. If a library or thread that runs before init happens to record
+            // between when the queueInitialTasks is set to false and the taskQueue finishing
+            // launching, then that task could be executed out of the queued order.
+            val that = this
+            val job = coroutineScope.launch {
+                // Set the flag first as the first thing in this job. This will guarantee new jobs
+                // are after this one, thus executed in order. The new jobs won't be added to
+                // `taskQueue` but, rather, handled by the coroutineScope itself.
+                queueInitialTasks.set(false)
+
+                // Nothing should be added to this list. However, the flush could get called
+                // while a `addTaskToQueue` is being executed. For this reason, we need synchronized
+                // access to the queue. However, we can't simply wrap the task execution in a sync
+                // block: suspending functions are not allowed inside critical sections.
+                val queueCopy: ConcurrentLinkedQueue<suspend CoroutineScope.() -> Unit> = ConcurrentLinkedQueue()
+                synchronized(that) {
+                    queueCopy.addAll(taskQueue)
+                    taskQueue.clear()
+                }
+
+                // Execute the tasks.
+                queueCopy.forEach { task ->
+                    // Task is a suspending function.
+                    task()
+                }
             }
-            queueInitialTasks = false
-            taskQueue.clear()
+
+            // In order to ensure that the queued tasks are executed in the proper order, we will
+            // wait up to 5 seconds for it to complete, otherwise we will reset the flag so that
+            // new tasks may continue to run.
+            runBlocking {
+                withTimeoutOrNull(QUEUE_PROCESSING_TIMEOUT_MS) {
+                    job.join()
+                }?.let {
+                    logger.error("Timeout processing initial tasks queue")
+                    queueInitialTasks.set(false)
+                    taskQueue.clear()
+                }
+            }
         }
 
         /**
          * Helper function to add task to queue as either a synchronous or asynchronous operation,
          * depending on whether [testingMode] is true.
          */
+        @Synchronized
         private fun addTaskToQueue(block: suspend CoroutineScope.() -> Unit) {
             if (taskQueue.size >= MAX_QUEUE_SIZE) {
                 logger.error("Exceeded maximum queue size, discarding task")
@@ -128,17 +167,11 @@ internal object Dispatchers {
 
             if (testingMode) {
                 logger.info("Task queued for execution in test mode")
-                taskQueue.add {
-                    runBlocking {
-                        block()
-                    }
-                }
             } else {
                 logger.info("Task queued for execution and delayed until flushed")
-                taskQueue.add {
-                    coroutineScope.launch(block = block)
-                }
             }
+
+            taskQueue.add(block)
         }
 
         /**
