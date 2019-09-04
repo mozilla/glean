@@ -164,7 +164,6 @@ android {
 dependencies {
     api "org.mozilla.components:concept-fetch:$versions.android_components"
     implementation "org.mozilla.components:lib-fetch-httpurlconnection:$versions.android_components"
-    implementation "org.mozilla.components:support-ktx:$versions.android_components"
 
     jnaForTest "net.java.dev.jna:jna:$versions.jna@jar"
     implementation "net.java.dev.jna:jna:$versions.jna@aar"

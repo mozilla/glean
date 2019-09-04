@@ -6,7 +6,6 @@ package mozilla.telemetry.glean.private
 
 import androidx.annotation.VisibleForTesting
 import com.sun.jna.StringArray
-import mozilla.components.support.ktx.android.org.json.toList
 import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.rust.getAndConsumeRustString
@@ -14,6 +13,7 @@ import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.RustError
 import mozilla.telemetry.glean.rust.toBoolean
 import mozilla.telemetry.glean.rust.toByte
+import mozilla.telemetry.glean.utils.toList
 import org.json.JSONArray
 
 /**
@@ -153,6 +153,6 @@ class StringListMetricType(
         } catch (e: org.json.JSONException) {
             throw NullPointerException()
         }
-        return jsonRes.toList<String>()
+        return jsonRes.toList()
     }
 }
