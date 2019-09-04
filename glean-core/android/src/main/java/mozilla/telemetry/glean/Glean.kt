@@ -48,7 +48,7 @@ typealias GleanTimerId = Long
 @Suppress("TooManyFunctions")
 open class GleanInternalAPI internal constructor () {
     companion object {
-        private val LOG_TAG: String = "glean/Glean"
+        private const val LOG_TAG: String = "glean/Glean"
         internal const val GLEAN_DATA_DIR: String = "glean_data"
     }
 

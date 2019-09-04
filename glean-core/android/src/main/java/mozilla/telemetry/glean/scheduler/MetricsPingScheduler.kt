@@ -46,7 +46,7 @@ internal class MetricsPingScheduler(val applicationContext: Context) : Lifecycle
     }
 
     companion object {
-        private const val LOG_TAG = "MetricsPingScheduler"
+        private const val LOG_TAG = "glean/MetricsPingSched"
         const val LAST_METRICS_PING_SENT_DATETIME = "last_metrics_ping_iso_datetime"
         const val DUE_HOUR_OF_THE_DAY = 4
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -323,7 +323,7 @@ internal class MetricsPingScheduler(val applicationContext: Context) : Lifecycle
  */
 internal class MetricsPingWorker(context: Context, params: WorkerParameters) : Worker(context, params) {
     companion object {
-        private const val LOG_TAG = "MetricsPingWorker"
+        private const val LOG_TAG = "glean/MetricsPingWorker"
         const val TAG = "mozac_service_glean_metrics_ping_tick"
     }
 
