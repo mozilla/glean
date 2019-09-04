@@ -30,7 +30,7 @@ internal object Dispatchers {
         internal val taskQueue: ConcurrentLinkedQueue<suspend CoroutineScope.() -> Unit> = ConcurrentLinkedQueue()
 
         companion object {
-            private const val LOG_TAG = "Dispatchers"
+            private const val LOG_TAG = "glean/Dispatchers"
 
             // This value was chosen in order to allow several tasks to be queued for execution but
             // still be conservative of memory. This queue size is important for cases where

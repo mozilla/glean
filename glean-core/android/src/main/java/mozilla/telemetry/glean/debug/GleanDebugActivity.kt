@@ -21,7 +21,7 @@ import mozilla.telemetry.glean.Glean
  */
 class GleanDebugActivity : Activity() {
     companion object {
-        private const val LOG_TAG = "GleanDebugActivity"
+        private const val LOG_TAG = "glean/DebugActivity"
 
         // This is a list of the currently accepted commands
         /**
