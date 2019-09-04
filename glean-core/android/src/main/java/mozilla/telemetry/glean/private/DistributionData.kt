@@ -5,16 +5,14 @@
 package mozilla.telemetry.glean.private
 
 import androidx.annotation.VisibleForTesting
+import mozilla.telemetry.glean.utils.tryGetLong
 import org.json.JSONObject
-
-import mozilla.components.support.ktx.android.org.json.tryGetLong
 
 /**
  * This class represents the structure of a timing distribution according to the pipeline schema. It
  * is meant to help serialize and deserialize data to the correct format for transport and storage,
  * as well as including a helper function to calculate the bucket sizes.
  *
- * @param histogramType the [HistogramType] representing the bucket layout
  * @param values a map containing the bucket index mapped to the accumulated count
  * @param sum the accumulated sum of all the samples in the timing distribution
  */

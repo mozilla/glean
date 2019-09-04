@@ -4,15 +4,16 @@
 
 package mozilla.telemetry.glean
 
+import android.app.ActivityManager
 import android.util.Log
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
+import android.os.Process
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.sun.jna.StringArray
 import kotlinx.coroutines.Job
-import mozilla.components.support.ktx.android.content.isMainProcess
 import mozilla.telemetry.glean.config.Configuration
 import mozilla.telemetry.glean.config.FfiConfiguration
 import mozilla.telemetry.glean.utils.getLocaleTag
@@ -73,6 +74,10 @@ open class GleanInternalAPI internal constructor () {
     // Keep track of ping types that have been registered before Glean is initialized.
     private val pingTypeQueue: MutableList<PingType> = mutableListOf()
 
+    // This is used to cache the process state and is used by the function `isMainProcess()`
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    internal var isMainProcess: Boolean? = null
+
     /**
      * Initialize the Glean SDK.
      *
@@ -96,7 +101,7 @@ open class GleanInternalAPI internal constructor () {
     ) {
         // In certain situations Glean.initialize may be called from a process other than the main
         // process.  In this case we want initialize to be a no-op and just return.
-        if (!applicationContext.isMainProcess()) {
+        if (!isMainProcess(applicationContext)) {
             Log.e(LOG_TAG, "Attempted to initialize Glean on a process other than the main process")
             return
         }
@@ -511,6 +516,8 @@ open class GleanInternalAPI internal constructor () {
             LibGleanFFI.INSTANCE.glean_test_clear_all_stores(handle)
         }
 
+        isMainProcess = null
+
         // Init Glean.
         Glean.testDestroyGleanHandle()
         Glean.setUploadEnabled(true)
@@ -555,6 +562,23 @@ open class GleanInternalAPI internal constructor () {
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     internal fun testHasPingType(pingName: String): Boolean {
         return LibGleanFFI.INSTANCE.glean_test_has_ping_type(handle, pingName).toBoolean()
+    }
+
+    /**
+     *  Returns true if we are running in the main process false otherwise.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    internal fun isMainProcess(context: Context): Boolean {
+        if (isMainProcess != null) return isMainProcess as Boolean
+
+        val pid = Process.myPid()
+        val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+
+        isMainProcess = (activityManager.runningAppProcesses?.any { processInfo ->
+            (processInfo.pid == pid && processInfo.processName == context.packageName)
+        }) ?: false
+
+        return isMainProcess as Boolean
     }
 }
 

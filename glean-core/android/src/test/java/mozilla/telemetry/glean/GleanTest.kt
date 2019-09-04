@@ -40,6 +40,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.spy
+import org.robolectric.shadows.ShadowProcess
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
@@ -508,5 +509,18 @@ class GleanTest {
             getWorkerStatus(PingUploadWorker.PING_WORKER_TAG).isEnqueued)
         assertFalse("MetricsPingWorker is not enqueued",
             getWorkerStatus(MetricsPingWorker.TAG).isEnqueued)
+    }
+
+    @Test
+    fun `isMainProcess must only return true if we are in the main process`() {
+        val context: Context = ApplicationProvider.getApplicationContext()
+        val myPid = Int.MAX_VALUE
+
+        assertTrue(Glean.isMainProcess(context))
+
+        ShadowProcess.setPid(myPid)
+        Glean.isMainProcess = null
+
+        assertFalse(Glean.isMainProcess(context))
     }
 }
