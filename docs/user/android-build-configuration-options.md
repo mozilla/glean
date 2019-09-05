@@ -3,13 +3,13 @@
 This chapter describes build configuration options that control the behavior of Glean's `sdk_generator.gradle` script.
 These options are not usually required for normal use.
 
+Options can be turned on by setting a variable on the Gradle [ext](https://docs.gradle.org/current/dsl/org.gradle.api.plugins.ExtraPropertiesExtension.html) object.
+
 ## `allowMetricsFromAAR`
 
 Normally, Glean looks for `metrics.yaml` and `pings.yaml` files in the root directory of the Glean-using project.
 However, in some cases, these files may need to ship inside the dependencies of the project.
 For example, this is used in the `engine-gecko` component to grab the `metrics.yaml` from the `geckoview` AAR.
-
-To turn on this behavior, set a variable on the Gradle [ext](https://docs.gradle.org/current/dsl/org.gradle.api.plugins.ExtraPropertiesExtension.html) object:
 
 ```groovy
 ext.allowMetricsFromAAR = true
@@ -22,4 +22,21 @@ The `metrics.yaml` can be added to the dependency itself by calling this on each
 
 ```groovy
 variant.packageLibraryProvider.get().from("${topsrcdir}/path/metrics.yaml")
+```
+
+## `gleanGenerateMarkdownDocs`
+
+The Glaen SDK can automatically generate Markdown documentation for metrics and pings defined in the registry files.
+
+```groovy
+ext.gleanGenerateMarkdownDocs = true
+```
+
+Flipping the feature to `true` will generate a `metrics.md` file in `$projectDir/docs` at build-time.
+
+The `gleanDocsDirectory` can be used to customise the path of the documentation output directory.
+Please note that only the `metrics.md` will be overwritten: any other file available in the target directory will be preserved.
+
+```groovy
+ext.gleanDocsDirectory = "$rootDir/docs/user/telemetry"
 ```
