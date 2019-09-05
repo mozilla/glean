@@ -174,7 +174,7 @@ def gleanTaskNamePrefix = "generateMetricsSourceFor"
 
 // A shared function to get the Python command line executable.
 ext.gleanGetPythonCommand = {
-    // Note that the command line is OS dependant: on linux/mac is Miniconda3/bin/python.
+    // Note that the command line is OS dependent: on Linux/macOS it is `Miniconda3/bin/python`.
     if (Os.isFamily(Os.FAMILY_WINDOWS)) {
         return new File(GLEAN_MINICONDA_DIR, "python")
     }

@@ -3,7 +3,7 @@
 This chapter describes build configuration options that control the behavior of Glean's `sdk_generator.gradle` script.
 These options are not usually required for normal use.
 
-Options can be turned on by setting a variable on the Gradle [ext](https://docs.gradle.org/current/dsl/org.gradle.api.plugins.ExtraPropertiesExtension.html) object.
+Options can be turned on by setting a variable on the Gradle [`ext`](https://docs.gradle.org/current/dsl/org.gradle.api.plugins.ExtraPropertiesExtension.html) object.
 
 ## `allowMetricsFromAAR`
 
@@ -26,7 +26,7 @@ variant.packageLibraryProvider.get().from("${topsrcdir}/path/metrics.yaml")
 
 ## `gleanGenerateMarkdownDocs`
 
-The Glaen SDK can automatically generate Markdown documentation for metrics and pings defined in the registry files.
+The Glaen SDK can automatically generate Markdown documentation for metrics and pings defined in the registry files, in addition to the metrics API code.
 
 ```groovy
 ext.gleanGenerateMarkdownDocs = true
@@ -34,7 +34,10 @@ ext.gleanGenerateMarkdownDocs = true
 
 Flipping the feature to `true` will generate a `metrics.md` file in `$projectDir/docs` at build-time.
 
+## `gleanDocsDirectory`
+
 The `gleanDocsDirectory` can be used to customise the path of the documentation output directory.
+If `gleanGenerateMarkdownDocs` is disabled, it does nothing.
 Please note that only the `metrics.md` will be overwritten: any other file available in the target directory will be preserved.
 
 ```groovy
