@@ -26,7 +26,7 @@ variant.packageLibraryProvider.get().from("${topsrcdir}/path/metrics.yaml")
 
 ## `gleanGenerateMarkdownDocs`
 
-The Glaen SDK can automatically generate Markdown documentation for metrics and pings defined in the registry files, in addition to the metrics API code.
+The Glean SDK can automatically generate Markdown documentation for metrics and pings defined in the registry files, in addition to the metrics API code.
 
 ```groovy
 ext.gleanGenerateMarkdownDocs = true
