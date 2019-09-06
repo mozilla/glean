@@ -56,6 +56,10 @@ pub enum ErrorKind {
     #[fail(display = "MemoryUnit conversion from {} failed", _0)]
     MemoryUnit(i32),
 
+    /// HistogramType conversion failed
+    #[fail(display = "HistogramType conversion from {} failed", _0)]
+    HistogramType(i32),
+
     /// OsString conversion failed
     #[fail(display = "OsString conversion from {:?} failed", _0)]
     OsString(OsString),
@@ -163,5 +167,14 @@ impl From<OsString> for Error {
         Error {
             inner: Context::new(ErrorKind::OsString(error)),
         }
+    }
+}
+
+/// To satisfy integer conversion done by the macros on the FFI side, we need to be able to turn
+/// something infallible into an error.
+/// This will never actually be reached, as an integer-to-integer conversion is infallible.
+impl From<std::convert::Infallible> for Error {
+    fn from(_: std::convert::Infallible) -> Error {
+        unreachable!()
     }
 }

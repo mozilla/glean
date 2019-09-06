@@ -23,13 +23,16 @@ typedef uint64_t TimerId;
 #include <stdint.h>
 #include <stdlib.h>
 
+typedef const int64_t *RawInt64Array;
+
 typedef const int32_t *RawIntArray;
 
 typedef const char *const *RawStringArray;
 
 /**
  * Configuration over FFI.
- * CAUTION**: This must match _exactly_ the definition on the Kotlin side.
+ *
+ * **CAUTION**: This must match _exactly_ the definition on the Kotlin side.
  * If this side is changed, the Kotlin side need to be changed, too.
  */
 typedef struct {
@@ -38,8 +41,6 @@ typedef struct {
   uint8_t upload_enabled;
   const int32_t *max_events;
 } FfiConfiguration;
-
-typedef const int64_t *RawInt64Array;
 
 void glean_boolean_set(uint64_t glean_handle, uint64_t metric_id, uint8_t value);
 
@@ -60,6 +61,19 @@ int32_t glean_counter_test_get_value(uint64_t glean_handle,
 uint8_t glean_counter_test_has_value(uint64_t glean_handle,
                                      uint64_t metric_id,
                                      FfiStr storage_name);
+
+void glean_custom_distribution_accumulate_samples(uint64_t glean_handle,
+                                                  uint64_t metric_id,
+                                                  RawInt64Array raw_samples,
+                                                  int32_t num_samples);
+
+char *glean_custom_distribution_test_get_value_as_json_string(uint64_t glean_handle,
+                                                              uint64_t metric_id,
+                                                              FfiStr storage_name);
+
+uint8_t glean_custom_distribution_test_has_value(uint64_t glean_handle,
+                                                 uint64_t metric_id,
+                                                 FfiStr storage_name);
 
 void glean_datetime_set(uint64_t glean_handle,
                         uint64_t metric_id,
@@ -83,6 +97,8 @@ uint8_t glean_datetime_test_has_value(uint64_t glean_handle,
 void glean_destroy_boolean_metric(uint64_t v, ExternError *err);
 
 void glean_destroy_counter_metric(uint64_t v, ExternError *err);
+
+void glean_destroy_custom_distribution_metric(uint64_t v, ExternError *err);
 
 void glean_destroy_datetime_metric(uint64_t v, ExternError *err);
 
@@ -184,6 +200,17 @@ uint64_t glean_new_counter_metric(FfiStr category,
                                   int32_t send_in_pings_len,
                                   int32_t lifetime,
                                   uint8_t disabled);
+
+uint64_t glean_new_custom_distribution_metric(FfiStr category,
+                                              FfiStr name,
+                                              RawStringArray send_in_pings,
+                                              int32_t send_in_pings_len,
+                                              int32_t lifetime,
+                                              uint8_t disabled,
+                                              uint64_t range_min,
+                                              uint64_t range_max,
+                                              uint64_t bucket_count,
+                                              int32_t histogram_type);
 
 uint64_t glean_new_datetime_metric(FfiStr category,
                                    FfiStr name,
@@ -325,7 +352,7 @@ void glean_set_experiment_inactive(uint64_t glean_handle, FfiStr experiment_id);
 void glean_set_upload_enabled(uint64_t glean_handle, uint8_t flag);
 
 /**
- * Public destructor for strings managed by the other side of the FFI.
+ *Public destructor for strings managed by the other side of the FFI.
  */
 void glean_str_free(char *s);
 

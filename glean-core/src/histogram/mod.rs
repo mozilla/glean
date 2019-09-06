@@ -5,8 +5,11 @@
 //! A simple histogram implementation for exponential histograms.
 
 use std::collections::HashMap;
+use std::convert::TryFrom;
 
 use serde::{Deserialize, Serialize};
+
+use crate::error::{Error, ErrorKind};
 
 pub use exponential::PrecomputedExponential;
 pub use functional::Functional;
@@ -24,6 +27,18 @@ pub enum HistogramType {
     Linear,
     /// A histogram with exponential distributed buckets.
     Exponential,
+}
+
+impl TryFrom<i32> for HistogramType {
+    type Error = Error;
+
+    fn try_from(value: i32) -> Result<HistogramType, Self::Error> {
+        match value {
+            0 => Ok(HistogramType::Linear),
+            1 => Ok(HistogramType::Exponential),
+            e => Err(ErrorKind::HistogramType(e))?,
+        }
+    }
 }
 
 /// A histogram.
