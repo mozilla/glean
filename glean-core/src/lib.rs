@@ -537,5 +537,5 @@ impl Glean {
 // Split unit tests to a separate file, to reduce the file of this one.
 #[cfg(test)]
 #[cfg(test)]
-#[path="lib_unit_tests.rs"]
+#[path = "lib_unit_tests.rs"]
 mod tests;
