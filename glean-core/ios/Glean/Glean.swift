@@ -19,8 +19,4 @@ public class Glean {
     deinit {
         self.initialized = false
     }
-
-    public func inc() -> Int {
-        return increment()
-    }
 }
