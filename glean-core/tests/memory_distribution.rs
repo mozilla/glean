@@ -89,10 +89,6 @@ fn set_value_properly_sets_the_value_in_all_stores() {
             .snapshot_as_json(glean.storage(), &store_name, true)
             .unwrap();
 
-        eprintln!(
-            "snapshot: {}",
-            snapshot["memory_distribution"]["telemetry.distribution"]
-        );
         assert_eq!(
             json!(100_000),
             snapshot["memory_distribution"]["telemetry.distribution"]["sum"]
