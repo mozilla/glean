@@ -19,4 +19,9 @@ public class Glean {
     deinit {
         self.initialized = false
     }
+
+    /// Handle background event and send appropriate pings
+    internal func handleBackgroundEvent() {
+        // sendPings()
+    }
 }
