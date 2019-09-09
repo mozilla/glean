@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1F60589723148BF800307A9F /* GleanLifecycleObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F60589623148BF800307A9F /* GleanLifecycleObserver.swift */; };
 		BF3DE39B2243A2F20018E23F /* Glean.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF3DE3912243A2F20018E23F /* Glean.framework */; };
 		BF3DE3A02243A2F20018E23F /* GleanTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF3DE39F2243A2F20018E23F /* GleanTests.swift */; };
 		BF6F2DA8224BF8F100394062 /* libglean_ffi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BF6F2DA7224BF8F100394062 /* libglean_ffi.a */; };
@@ -24,6 +25,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1F60589623148BF800307A9F /* GleanLifecycleObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GleanLifecycleObserver.swift; sourceTree = "<group>"; };
 		BF3DE3912243A2F20018E23F /* Glean.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Glean.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF3DE3942243A2F20018E23F /* Glean.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Glean.h; sourceTree = "<group>"; };
 		BF3DE3952243A2F20018E23F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -57,6 +59,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1F60588D231483D600307A9F /* Scheduler */ = {
+			isa = PBXGroup;
+			children = (
+				1F60589623148BF800307A9F /* GleanLifecycleObserver.swift */,
+			);
+			path = Scheduler;
+			sourceTree = "<group>";
+		};
 		BF3DE3872243A2F20018E23F = {
 			isa = PBXGroup;
 			children = (
@@ -85,6 +95,7 @@
 				BF3DE3942243A2F20018E23F /* Glean.h */,
 				BF3DE3952243A2F20018E23F /* Info.plist */,
 				BF93C697224BFC57006CE7D8 /* Glean.swift */,
+				1F60588D231483D600307A9F /* Scheduler */,
 			);
 			path = Glean;
 			sourceTree = "<group>";
@@ -239,6 +250,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BF93C698224BFC57006CE7D8 /* Glean.swift in Sources */,
+				1F60589723148BF800307A9F /* GleanLifecycleObserver.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
