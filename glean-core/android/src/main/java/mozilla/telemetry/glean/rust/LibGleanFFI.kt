@@ -353,6 +353,33 @@ internal interface LibGleanFFI : Library {
         storage_name: String
     ): Pointer?
 
+    // CustomDistribution
+
+    fun glean_new_custom_distribution_metric(
+        category: String,
+        name: String,
+        send_in_pings: StringArray,
+        send_in_pings_len: Int,
+        lifetime: Int,
+        disabled: Byte,
+        range_min: Long,
+        range_max: Long,
+        bucket_count: Long,
+        histogram_type: Int
+    ): Long
+
+    fun glean_destroy_custom_distribution_metric(handle: Long, error: RustError.ByReference)
+
+    fun glean_custom_distribution_accumulate_samples(glean_handle: Long, metric_id: Long, samples: LongArray?, len: Int)
+
+    fun glean_custom_distribution_test_has_value(glean_handle: Long, metric_id: Long, storage_name: String): Byte
+
+    fun glean_custom_distribution_test_get_value_as_json_string(
+        glean_handle: Long,
+        metric_id: Long,
+        storage_name: String
+    ): Pointer?
+
     // Event
 
     fun glean_new_event_metric(
