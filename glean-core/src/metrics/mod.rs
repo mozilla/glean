@@ -136,13 +136,10 @@ impl Metric {
         match self {
             Metric::Boolean(b) => json!(b),
             Metric::Counter(c) => json!(c),
-            Metric::CustomDistributionExponential(hist) => json!(custom_distribution::snapshot(
-                hist,
-                HistogramType::Exponential
-            )),
-            Metric::CustomDistributionLinear(hist) => {
-                json!(custom_distribution::snapshot(hist, HistogramType::Linear))
+            Metric::CustomDistributionExponential(hist) => {
+                json!(custom_distribution::snapshot(hist))
             }
+            Metric::CustomDistributionLinear(hist) => json!(custom_distribution::snapshot(hist)),
             Metric::Datetime(d, time_unit) => json!(get_iso_time_string(*d, *time_unit)),
             Metric::Experiment(e) => json!(e),
             Metric::Quantity(q) => json!(q),

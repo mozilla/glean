@@ -31,17 +31,15 @@ pub struct CustomDistributionMetric {
 pub struct Snapshot {
     values: HashMap<u64, u64>,
     sum: u64,
-    histogram_type: HistogramType,
 }
 
 /// Create a snapshot of the histogram.
 ///
 /// The snapshot can be serialized into the payload format.
-pub(crate) fn snapshot<B: Bucketing>(hist: &Histogram<B>, typ: HistogramType) -> Snapshot {
+pub(crate) fn snapshot<B: Bucketing>(hist: &Histogram<B>) -> Snapshot {
     Snapshot {
         values: hist.snapshot_values(),
         sum: hist.sum(),
-        histogram_type: typ,
     }
 }
 
@@ -188,6 +186,6 @@ impl CustomDistributionMetric {
         storage_name: &str,
     ) -> Option<String> {
         self.test_get_value(glean, storage_name)
-            .map(|hist| serde_json::to_string(&snapshot(&hist, self.histogram_type)).unwrap())
+            .map(|hist| serde_json::to_string(&snapshot(&hist)).unwrap())
     }
 }
