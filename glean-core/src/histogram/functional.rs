@@ -71,7 +71,7 @@ impl Histogram<Functional> {
 
     /// Get a snapshot of all contiguous values.
     ///
-    /// **Caution** This is a more specific implemenation of `snapshot_values` on functional
+    /// **Caution** This is a more specific implementation of `snapshot_values` on functional
     /// histograms. `snapshot_values` cannot be used with those, due to buckets not being
     /// precomputed.
     pub fn snapshot(&self) -> HashMap<u64, u64> {
