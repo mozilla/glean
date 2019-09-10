@@ -46,7 +46,9 @@ pub struct Snapshot {
 /// The snapshot can be serialized into the payload format.
 pub(crate) fn snapshot(hist: &Histogram<Functional>) -> Snapshot {
     Snapshot {
-        values: hist.snapshot_values(),
+        // **Caution**: This cannot use `Histogram::snapshot_values` and needs to use the more
+        // specialized snapshot function.
+        values: hist.snapshot(),
         sum: hist.sum(),
     }
 }

@@ -16,6 +16,7 @@ mod macros;
 
 mod boolean;
 mod counter;
+mod custom_distribution;
 mod datetime;
 mod event;
 mod ffi_string_ext;

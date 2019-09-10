@@ -5,14 +5,41 @@
 //! A simple histogram implementation for exponential histograms.
 
 use std::collections::HashMap;
+use std::convert::TryFrom;
 
 use serde::{Deserialize, Serialize};
 
+use crate::error::{Error, ErrorKind};
+
 pub use exponential::PrecomputedExponential;
 pub use functional::Functional;
+pub use linear::PrecomputedLinear;
 
 mod exponential;
 mod functional;
+mod linear;
+
+/// Different kinds of histograms.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum HistogramType {
+    /// A histogram with linear distributed buckets.
+    Linear,
+    /// A histogram with exponential distributed buckets.
+    Exponential,
+}
+
+impl TryFrom<i32> for HistogramType {
+    type Error = Error;
+
+    fn try_from(value: i32) -> Result<HistogramType, Self::Error> {
+        match value {
+            0 => Ok(HistogramType::Linear),
+            1 => Ok(HistogramType::Exponential),
+            e => Err(ErrorKind::HistogramType(e))?,
+        }
+    }
+}
 
 /// A histogram.
 ///
@@ -52,6 +79,21 @@ pub struct Histogram<B> {
 pub trait Bucketing {
     /// Get the bucket's minimum value the sample falls into.
     fn sample_to_bucket_minimum(&self, sample: u64) -> u64;
+
+    /// The computed bucket ranges for this bucketing algorithm.
+    fn ranges(&self) -> &[u64];
+}
+
+/// Implement the bucketing algorithm on every object that has that algorithm using dynamic
+/// dispatch.
+impl Bucketing for Box<dyn Bucketing> {
+    fn sample_to_bucket_minimum(&self, sample: u64) -> u64 {
+        (**self).sample_to_bucket_minimum(sample)
+    }
+
+    fn ranges(&self) -> &[u64] {
+        (**self).ranges()
+    }
 }
 
 impl<B: Bucketing> Histogram<B> {
@@ -87,5 +129,35 @@ impl<B: Bucketing> Histogram<B> {
     /// Check if this histogram recorded any values.
     pub fn is_empty(&self) -> bool {
         self.count() == 0
+    }
+
+    /// Get a snapshot of all values from the first bucket until one past the last filled bucket,
+    /// filling in empty buckets with 0.
+    pub fn snapshot_values(&self) -> HashMap<u64, u64> {
+        let mut res = self.values.clone();
+
+        let max_bucket = self.values.keys().max().cloned().unwrap_or(0);
+
+        for &min_bucket in self.bucketing.ranges() {
+            // Fill in missing entries.
+            let _ = res.entry(min_bucket).or_insert(0);
+            // stop one after the last filled bucket
+            if min_bucket > max_bucket {
+                break;
+            }
+        }
+        res
+    }
+}
+
+impl<B: Bucketing + 'static> Histogram<B> {
+    /// Box the contained bucketing algorithm to allow for dynamic dispatch.
+    pub fn boxed(self) -> Histogram<Box<dyn Bucketing>> {
+        Histogram {
+            values: self.values,
+            count: self.count,
+            sum: self.sum,
+            bucketing: Box::new(self.bucketing),
+        }
     }
 }
