@@ -33,16 +33,10 @@ class ConfigurationTests: XCTestCase {
             "Default connection timeout is set"
         )
         XCTAssertEqual(
-            config?.readTimeout,
-            Configuration.DEFAULT_READ_TIMEOUT,
-            "Default read timeout is set"
-        )
-        XCTAssertEqual(
             config?.logPings,
             Configuration.DEFAULT_LOG_PINGS,
             "Default log pings is set"
         )
-        // TODO: test config?.httpClient
         XCTAssertNil(
             config?.maxEvents,
             "Default max events are set"
