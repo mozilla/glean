@@ -43,6 +43,9 @@ commands:
           name: Setup custom environment variables
           command: |
               echo "export PATH=$HOME/.cargo/bin:$PATH" >> $BASH_ENV
+
+  install-android-targets:
+    steps:
       - run:
           command: |
             rustup target add aarch64-linux-android
@@ -53,6 +56,7 @@ commands:
   android-setup:
     steps:
       - install-rustup
+      - install-android-targets
       - test-setup:
           rust-version: stable
       - run:
@@ -66,7 +70,23 @@ commands:
           command: |
               sudo ln -s /lib/x86_64-linux-gnu/libtinfo.so.6 /lib/x86_64-linux-gnu/libtinfo.so.5
 
+  install-xcpretty:
+    steps:
+      - run:
+          name: Install xcpretty
+          command: |
+            gem install --user-install xcpretty
+            echo 'export PATH="$HOME/.gem/ruby/2.3.0/bin:$PATH"' >> $BASH_ENV
+
 jobs:
+  Check Swift formatting:
+    macos:
+      xcode: "11.0.0"
+    steps:
+      - checkout
+      - run: brew install swiftlint swiftformat
+      - run: swiftlint --strict
+      - run: swiftformat glean-core/ios samples/ios --lint --swiftversion 5 --verbose
   Check Rust formatting:
     docker:
       - image: circleci/rust:latest
@@ -145,6 +165,31 @@ jobs:
               zip -0 ccov.zip `find . \( -name "glean*.gc*" \) -print`
               ./grcov ccov.zip -s . -t lcov --llvm --branch --ignore-not-existing --ignore-dir "/*" --ignore-dir "glean-core/ffi/*" -o lcov.info
               ./codecov.sh -f lcov.info;
+  iOS build and test:
+    macos:
+      xcode: "11.0.0"
+    steps:
+      - install-xcpretty
+      - install-rustup
+      - setup-rust-toolchain
+      - checkout
+      - run:
+          name: Setup build environment
+          command: |
+            sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /
+            rustup target add aarch64-apple-ios x86_64-apple-ios
+            if [ -z "${CIRCLE_TAG}" ]; then
+              # On non-release builds do not update brew (takes ages).
+              echo 'export HOMEBREW_NO_AUTO_UPDATE=1' >> $BASH_ENV
+            fi
+            # TODO: reenable when we have carthage
+            #brew outdated carthage || brew upgrade carthage
+            #carthage bootstrap --platform iOS
+            # See https://circleci.com/docs/2.0/testing-ios/#pre-starting-the-simulator
+            xcrun instruments -w "iPhone 8 (13.0) [" || true
+      - run:
+          name: Run XCode tests
+          command: bash bin/run-ios-tests.sh
 
   Lint Android with ktlint and detekt:
     docker:
@@ -265,6 +310,7 @@ workflows:
   check-formating:
     jobs:
       - Check Rust formatting
+      - Check Swift formatting
   lint:
     jobs:
       - Lint Rust with clippy
@@ -277,6 +323,7 @@ workflows:
       - Rust tests - minimum version
       - Android tests
       - C tests
+      - iOS build and test
   coverage:
     jobs:
       - Rust code coverage

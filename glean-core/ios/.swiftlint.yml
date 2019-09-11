@@ -1,0 +1,4 @@
+excluded:
+  - ./Carthage
+disabled_rules:
+  - todo

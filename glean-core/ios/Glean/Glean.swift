@@ -13,7 +13,7 @@ public class Glean {
 
     private var initialized: Bool = false
     private init() {
-        self.initialized = true
+        initialized = true
     }
 
     deinit {

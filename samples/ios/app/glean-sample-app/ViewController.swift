@@ -6,18 +6,14 @@
 //  Copyright © 2019 Jan-Erik Rediger. All rights reserved.
 //
 
-import UIKit
 import Glean
+import UIKit
 
 class ViewController: UIViewController {
-
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
 
-        let g = Glean.shared
+        let glean = Glean.shared
     }
-
-
 }
-
