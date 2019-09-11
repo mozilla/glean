@@ -22,9 +22,18 @@ ktlint:
 lint: clippy ktlint
 .PHONY: lint
 
+swiftlint:
+	swiftlint --strict
+	swiftformat glean-core/ios samples/ios --swiftversion 5 --verbose --lint
+.PHONY: swiftlint
+
 fmt:
 	cargo fmt --all
 .PHONY: fmt
+
+swiftfmt:
+	swiftformat glean-core/ios samples/ios --swiftversion 5 --verbose
+.PHONY: swiftfmt
 
 test:
 	cargo test --all
