@@ -19,12 +19,12 @@ class GleanLifecycleObserver {
         )
     }
 
-    @objc func appWillEnterForeground(notification: NSNotification) {
-        // TODO start duration
+    @objc func appWillEnterForeground(notification _: NSNotification) {
+        // TODO: start duration
     }
 
-    @objc func appDidEnterBackground(notification: NSNotification) {
-        // TODO stop duration
+    @objc func appDidEnterBackground(notification _: NSNotification) {
+        // TODO: stop duration
 
         Glean.shared.handleBackgroundEvent()
     }

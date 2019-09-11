@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import XCTest
 @testable import Glean
+import XCTest
 
 class ConfigurationTests: XCTestCase {
     private var config: Configuration?
@@ -42,7 +42,7 @@ class ConfigurationTests: XCTestCase {
             Configuration.DEFAULT_LOG_PINGS,
             "Default log pings is set"
         )
-        // TODO test config?.httpClient
+        // TODO: test config?.httpClient
         XCTAssertNil(
             config?.maxEvents,
             "Default max events are set"

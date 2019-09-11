@@ -29,11 +29,13 @@ struct Configuration {
     let pingTag: String? = nil
     let channel: String? = nil
 
+    // swiftlint:disable identifier_name
     static let DEFAULT_TELEMETRY_ENDPOINT = "https://incoming.telemetry.mozilla.org"
     static let DEFAULT_USER_AGENT = "Glean/\(getGleanVersion()) (iOS)"
     static let DEFAULT_CONNECTION_TIMEOUT = 10000
     static let DEFAULT_READ_TIMEOUT = 30000
     static let DEFAULT_LOG_PINGS = false
+    // swiftlint:enable identifier_name
 
     /// Returns the current Glean version from the Bundle as a `String`
     ///
