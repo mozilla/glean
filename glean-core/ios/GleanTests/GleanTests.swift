@@ -1,10 +1,6 @@
-//
-//  GleanTests.swift
-//  GleanTests
-//
-//  Created by Jan-Erik Rediger on 21.03.19.
-//  Copyright © 2019 Jan-Erik Rediger. All rights reserved.
-//
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 @testable import Glean
 import XCTest
@@ -15,18 +11,14 @@ class GleanTests: XCTestCase {
     }
 
     override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+        Glean.shared.setUploadEnabled(true)
     }
 
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-    }
+    func testInitializeGlean() {
+        let glean = Glean.shared
 
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        measure {
-            // Put the code you want to measure the time of here.
-        }
+        glean.initialize()
+        XCTAssert(glean.isInitialized())
+        XCTAssert(glean.getUploadEnabled())
     }
 }
