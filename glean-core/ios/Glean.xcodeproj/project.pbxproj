@@ -20,6 +20,7 @@
 		BF3DE3A02243A2F20018E23F /* GleanTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF3DE39F2243A2F20018E23F /* GleanTests.swift */; };
 		BF6F2DA8224BF8F100394062 /* libglean_ffi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BF6F2DA7224BF8F100394062 /* libglean_ffi.a */; };
 		BF93C698224BFC57006CE7D8 /* Glean.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF93C697224BFC57006CE7D8 /* Glean.swift */; };
+		BFFE33A92328F4EF005348FE /* GleanFfi.h in Headers */ = {isa = PBXBuildFile; fileRef = BFFE33A82328F4EF005348FE /* GleanFfi.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,6 +53,7 @@
 		BF51C3BB224BF19F0014CBAF /* base.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = base.xcconfig; sourceTree = "<group>"; };
 		BF6F2DA7224BF8F100394062 /* libglean_ffi.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libglean_ffi.a; path = ../../target/universal/release/libglean_ffi.a; sourceTree = "<group>"; };
 		BF93C697224BFC57006CE7D8 /* Glean.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Glean.swift; sourceTree = "<group>"; };
+		BFFE33A82328F4EF005348FE /* GleanFfi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GleanFfi.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,15 +97,15 @@
 		1F6058912314861B00307A9F /* Config */ = {
 			isa = PBXGroup;
 			children = (
-				1F6058922314863400307A9F /* Configuration.swift */,
+				1F60589623148BF800307A9F /* GleanLifecycleObserver.swift */,
 			);
-			path = Config;
+			path = Scheduler;
 			sourceTree = "<group>";
 		};
-		1FB8F8392326EBA500618E47 /* Config */ = {
+		1F6058912314861B00307A9F /* Config */ = {
 			isa = PBXGroup;
 			children = (
-				1FB8F8372326EABD00618E47 /* ConfigurationTests.swift */,
+				1F6058922314863400307A9F /* Configuration.swift */,
 			);
 			path = Config;
 			sourceTree = "<group>";
@@ -114,6 +116,14 @@
 				1FB8F8412326F74400618E47 /* HttpPingUploaderTests.swift */,
 			);
 			path = Net;
+			sourceTree = "<group>";
+		};
+		1FB8F8392326EBA500618E47 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				1FB8F8372326EABD00618E47 /* ConfigurationTests.swift */,
+			);
+			path = Config;
 			sourceTree = "<group>";
 		};
 		BF3DE3872243A2F20018E23F = {
@@ -146,6 +156,7 @@
 				1F6058912314861B00307A9F /* Config */,
 				1F60588E2314840B00307A9F /* Net */,
 				BF3DE3942243A2F20018E23F /* Glean.h */,
+				BFFE33A82328F4EF005348FE /* GleanFfi.h */,
 				BF3DE3952243A2F20018E23F /* Info.plist */,
 				BF93C697224BFC57006CE7D8 /* Glean.swift */,
 				1F60588D231483D600307A9F /* Scheduler */,
@@ -180,6 +191,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BFFE33A92328F4EF005348FE /* GleanFfi.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
