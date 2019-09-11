@@ -182,9 +182,8 @@ jobs:
               # On non-release builds do not update brew (takes ages).
               echo 'export HOMEBREW_NO_AUTO_UPDATE=1' >> $BASH_ENV
             fi
-            # TODO: reenable when we have carthage
-            #brew outdated carthage || brew upgrade carthage
-            #carthage bootstrap --platform iOS
+            brew outdated carthage || brew upgrade carthage
+            cd glean-core/ios && carthage bootstrap --platform iOS
             # See https://circleci.com/docs/2.0/testing-ios/#pre-starting-the-simulator
             xcrun instruments -w "iPhone 8 (13.0) [" || true
       - run:
