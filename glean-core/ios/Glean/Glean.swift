@@ -21,7 +21,7 @@ public class Glean {
     private var initialized: Bool = false
     private var handle: UInt64 = 0
     private var uploadEnabled: Bool = true
-    private var configuration: Configuration? = nil
+    private var configuration: Configuration?
 
     private init() {
         // intentionally left private, no external user can instantiate a new global object.

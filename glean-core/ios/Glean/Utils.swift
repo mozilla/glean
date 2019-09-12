@@ -4,7 +4,6 @@
 
 import Foundation
 
-
 /// Helper function to retrive the application's Documents directory for persistent file storage
 ///
 /// - returns: `String` representation of the path to the Documents directory
@@ -17,7 +16,13 @@ func getDocumentsDirectory() -> String {
 /// Create a temporary FFI configuration for the span of the closure.
 ///
 /// We need to ensure strings exist across the FFI call, so we `strdup` them and clean up afterwards.
-func withFfiConfiguration<R>(dataDir: String, packageName: String, uploadEnabled: Bool, configuration: Configuration, _ body: (FfiConfiguration) -> R) -> R {
+func withFfiConfiguration<R>(
+    dataDir: String,
+    packageName: String,
+    uploadEnabled: Bool,
+    configuration: Configuration,
+    _ body: (FfiConfiguration) -> R
+) -> R {
     let dataDir = strdup(dataDir)
     let packageName = strdup(packageName)
 
