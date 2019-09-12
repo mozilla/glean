@@ -76,25 +76,24 @@ public func withArrayOfCStrings<R>(
 ///
 /// This makes use of synchronization tools from Grand Central Dispatch (GCD)
 /// in order to synchronize access.
-let q = DispatchQueue(label: "AtomicBoolean")
 struct AtomicBoolean {
     private var semaphore = DispatchSemaphore(value: 1)
-    private var b: Bool
-    var val: Bool {
+    private var val: Bool
+    var value: Bool {
         get {
             semaphore.wait()
-            let tmp = b
+            let tmp = val
             semaphore.signal()
             return tmp
         }
         set {
             semaphore.wait()
-            b = newValue
+            val = newValue
             semaphore.signal()
         }
     }
 
     init(_ initialValue: Bool = false) {
-        b = initialValue
+        val = initialValue
     }
 }

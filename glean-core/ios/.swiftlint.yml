@@ -2,4 +2,3 @@ excluded:
   - Carthage
 disabled_rules:
   - todo
-  - identifier_name
