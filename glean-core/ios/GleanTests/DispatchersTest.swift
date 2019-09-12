@@ -26,7 +26,7 @@ class DispatchersTest: XCTestCase {
         XCTAssertEqual(
             Dispatchers.shared.preInitOperations.count,
             3,
-            "Task queue continas the correct number of tasks"
+            "Task queue contains the correct number of tasks"
         )
         XCTAssertEqual(
             threadCanary,
@@ -67,7 +67,7 @@ class DispatchersTest: XCTestCase {
         // This should give us 50 items in the queued items and 50 that are
         // executed in the background normally.
         let op1 = Dispatchers.GleanOperation {
-            while !flushTasks.val { sleep(1) }
+            while !flushTasks.value { sleep(1) }
             Dispatchers.shared.flushQueuedInitialTasks()
         }
         testQueue.addOperation(op1)
@@ -80,7 +80,7 @@ class DispatchersTest: XCTestCase {
         let op2 = Dispatchers.GleanOperation {
             for num in 0 ... 99 {
                 if num == 50 {
-                    flushTasks.val = true
+                    flushTasks.value = true
                 }
                 _ = Dispatchers.shared.launch {
                     orderedList.append(num)

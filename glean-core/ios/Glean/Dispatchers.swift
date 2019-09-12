@@ -70,7 +70,7 @@ class Dispatchers {
     func launch(block: @escaping () -> Void) -> Operation {
         let operation = GleanOperation(block)
 
-        if queueInitialTasks.val {
+        if queueInitialTasks.value {
             // If we are queuing tasks, typically before Glean has been initialized, then we should
             // just add the created Operation to the preInitOperations array, provided there are
             // less than the max queued operations stored.
@@ -111,7 +111,7 @@ class Dispatchers {
         self.operationQueue.addOperations(preInitOperations, waitUntilFinished: testingMode)
 
         // Turn off queuing to allow for normal background execution mode
-        queueInitialTasks.val = false
+        queueInitialTasks.value = false
 
         // Clear the cached operations
         preInitOperations.removeAll()
@@ -146,7 +146,7 @@ class Dispatchers {
     ///
     /// When enabled, tasks are queued until launched by calling `flushQueuedInitialTasks()`
     func setTaskQueuing(enabled: Bool) {
-        queueInitialTasks.val = enabled
+        queueInitialTasks.value = enabled
     }
 
     /// This is an internal class that represents a Glean background task
