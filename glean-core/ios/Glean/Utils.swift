@@ -11,13 +11,22 @@ extension String: Error {
     public var errorDescription: String? { return self }
 }
 
+/// Checks to see if a string matches a regex
+///
+/// - returns: true if the string matches the regex
+extension String {
+    func matches(_ regex: String) -> Bool {
+        return self.range(of: regex, options: .regularExpression, range: nil, locale: nil) != nil
+    }
+}
+
 /// Helper function to retrive the application's Documents directory for persistent file storage
 ///
 /// - returns: `String` representation of the path to the Documents directory
-func getDocumentsDirectory() -> String {
+func getDocumentsDirectory() -> URL {
     let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
     let documentsDirectory = paths[0]
-    return documentsDirectory.appendingPathComponent("glean_data").absoluteString
+    return documentsDirectory.appendingPathComponent("glean_data")
 }
 
 /// Create a temporary FFI configuration for the span of the closure.
