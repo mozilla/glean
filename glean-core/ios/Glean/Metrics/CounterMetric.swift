@@ -60,8 +60,7 @@ public class CounterMetricType {
     ///     * pingName: represents the name of the ping to retrieve the metric for.
     ///                 Defaults to the first value in `sendInPings`.
     /// - returns: true if metric value exists, otherwise false
-    // TODO(bug 1580780): Allow for tests only
-    public func testHasValue(_ pingName: String? = nil) -> Bool {
+    func testHasValue(_ pingName: String? = nil) -> Bool {
         // TODO(bug 1580783): Assert testing mode
 
         let pingName = pingName ?? self.sendInPings[0]
@@ -78,9 +77,7 @@ public class CounterMetricType {
     ///                 Defaults to the first value in `sendInPings`.
     ///
     /// - returns:  value of the stored metric
-    ///
-    // TODO(bug 1580780): Allow for tests only
-    public func testGetValue(_ pingName: String? = nil) throws -> Int32 {
+    func testGetValue(_ pingName: String? = nil) throws -> Int32 {
         // TODO(bug 1580783): Assert testing mode
         let pingName = pingName ?? self.sendInPings[0]
 

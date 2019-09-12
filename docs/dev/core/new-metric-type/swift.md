@@ -42,12 +42,12 @@ public class CounterMetricType {
         glean_counter_add(Glean.shared.handle, self.handle, amount)
     }
 
-    public func testHasValue(_ pingName: String? = nil) -> Bool {
+    func testHasValue(_ pingName: String? = nil) -> Bool {
         let pingName = pingName ?? self.sendInPings[0]
         return glean_counter_test_has_value(Glean.shared.handle, self.handle, pingName) != 0
     }
 
-    public func testGetValue(_ pingName: String? = nil) throws -> Int32 {
+    func testGetValue(_ pingName: String? = nil) throws -> Int32 {
         let pingName = pingName ?? self.sendInPings[0]
 
         if !testHasValue(pingName) {
