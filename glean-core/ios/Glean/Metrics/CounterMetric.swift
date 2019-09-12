@@ -35,8 +35,7 @@ public class CounterMetricType {
     /// Destroy this metric.
     deinit {
         if self.handle != 0 {
-            // TODO(bug 1580777): needs the error object.
-            // glean_destroy_counter_metric(this.handle, error)
+            glean_destroy_counter_metric(self.handle)
         }
     }
 
