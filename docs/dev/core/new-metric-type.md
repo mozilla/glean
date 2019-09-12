@@ -130,4 +130,4 @@ Metric::Datetime(d, time_unit) => json!(get_iso_time_string(*d, *time_unit)),
 
 ---
 
-In the next steps we will create the FFI wrappers and platform-specific wrappers.
+In the next step we will create the FFI wrapper and platform-specific wrappers.
