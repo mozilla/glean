@@ -5,10 +5,14 @@
 /// This class represents a ping uploader via HTTP.
 ///
 /// This will typically be invoked by the appropriate scheduling mechanism to upload a ping to the server.
-class HttpPingUploader {
+public class HttpPingUploader {
     // This struct is used for organizational purposes to keep the class constants in a single place
     struct Constants {
         static let logTag = "glean/HttpPingUploader"
+    }
+
+    public init() {
+        // intentionally left empty to allow public instantiation
     }
 
     /// A function to aid in logging the ping to the console via `NSLog`.

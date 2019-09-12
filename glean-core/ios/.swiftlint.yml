@@ -1,4 +1,4 @@
 excluded:
-  - ./Carthage
+  - Carthage
 disabled_rules:
   - todo

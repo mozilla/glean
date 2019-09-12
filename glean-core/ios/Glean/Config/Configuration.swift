@@ -4,7 +4,7 @@
 
 /// The Configuration struct describes how to configure Glean as well as providing convenience
 /// property for calculating the `FfiConfiguration`
-struct Configuration {
+public struct Configuration {
     let serverEndpoint: String
     let userAgent: String
     let connectionTimeout: Int
@@ -17,7 +17,7 @@ struct Configuration {
     // swiftlint:disable identifier_name
     static let DEFAULT_TELEMETRY_ENDPOINT = "https://incoming.telemetry.mozilla.org"
     static let DEFAULT_USER_AGENT = "Glean/\(getGleanVersion()) (iOS)"
-    static let DEFAULT_CONNECTION_TIMEOUT = 10000
+    public static let DEFAULT_CONNECTION_TIMEOUT = 10000
     static let DEFAULT_LOG_PINGS = false
     // swiftlint:enable identifier_name
 
@@ -85,14 +85,5 @@ struct Configuration {
     /// - returns: The `String` representation of the version
     static func getGleanVersion() -> String {
         return "\(GleanVersionNumber)"
-    }
-
-    /// Helper function to retrive the application's Documents directory for persistent file storage
-    ///
-    /// - returns: `String` representation of the path to the Documents directory
-    static func getDocumentsDirectory() -> String {
-        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-        let documentsDirectory = paths[0]
-        return documentsDirectory.appendingPathComponent("glean_data").absoluteString
     }
 }
