@@ -26,6 +26,10 @@ import java.util.concurrent.TimeUnit
 internal open class HttpPingUploader : PingUploader {
     companion object {
         val LOG_TAG: String = "glean/HttpPingUploader"
+        // The timeout, in milliseconds, to use when connecting to the server.
+        const val DEFAULT_CONNECTION_TIMEOUT = 10000L
+        // The timeout, in milliseconds, to use when reading from the server.
+        const val DEFAULT_READ_TIMEOUT = 30000L
     }
 
     /**
@@ -99,8 +103,8 @@ internal open class HttpPingUploader : PingUploader {
         return Request(
             url = endpoint + path,
             method = Request.Method.POST,
-            connectTimeout = Pair(config.connectionTimeout, TimeUnit.MILLISECONDS),
-            readTimeout = Pair(config.readTimeout, TimeUnit.MILLISECONDS),
+            connectTimeout = Pair(DEFAULT_CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS),
+            readTimeout = Pair(DEFAULT_READ_TIMEOUT, TimeUnit.MILLISECONDS),
             headers = headers,
             // Make sure we are not sending cookies. Unfortunately, HttpURLConnection doesn't
             // offer a better API to do that, so we nuke all cookies going to our telemetry
