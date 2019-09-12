@@ -8,7 +8,10 @@
 public class HttpPingUploader {
     // This struct is used for organizational purposes to keep the class constants in a single place
     struct Constants {
+        // Since ping file names are UUIDs, this matches UUIDs for filtering purposes
+        static let filePattern = "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
         static let logTag = "glean/HttpPingUploader"
+        static let pingsDir = "pings"
     }
 
     public init() {
@@ -121,5 +124,64 @@ public class HttpPingUploader {
         dateFormatter.timeZone = TimeZone(abbreviation: "GMT")
         dateFormatter.setLocalizedDateFormatFromTemplate("EEE, dd MMM yyyy HH:mm:ss z")
         return dateFormatter.string(from: date)
+    }
+
+    /// This function deserializes and processes all of the serialized ping files.
+    ///
+    /// This function will ignore files that don't match the UUID regex and just delete them to
+    /// prevent files from polluting the ping storage directory.
+    func process() {
+        let pingDirectory = getDocumentsDirectory().appendingPathComponent(Constants.pingsDir)
+
+        do {
+            let storageDirectory = try FileManager.default.contentsOfDirectory(
+                at: pingDirectory,
+                includingPropertiesForKeys: nil
+            )
+
+            for file in storageDirectory {
+                if file.absoluteString.matches(Constants.filePattern) {
+                    NSLog("\(Constants.logTag) : Processing ping: \(file)")
+                    processFile(file) { success, error in
+                        if !success {
+                            NSLog(
+                                "\(Constants.logTag) : Error processing ping file: \(file) - \(error.debugDescription)"
+                            )
+                        }
+                    }
+                } else {
+                    // Delete files that don't match the UUID filePattern regex
+                    NSLog("\(Constants.logTag) : Pattern mismatch. Deleting \(file)")
+                    try FileManager.default.removeItem(at: file)
+                }
+            }
+        } catch {
+            NSLog("\(Constants.logTag) : Error while enumerating files in ping directory")
+        }
+    }
+
+    /// This function encapsulates processing of a single ping file
+    ///
+    /// - parameters:
+    ///   * file: The `URL` of the file to process
+    ///   * callback: Allows for an action to occur as the result of the async upload operation
+    func processFile(_ file: URL, callback: @escaping (Bool, Error?) -> Void) {
+        do {
+            let data = try String(contentsOf: file, encoding: .utf8)
+            let lines = data.components(separatedBy: .newlines)
+
+            if lines.count == 2 {
+                let path = lines[0]
+                let serializedPing = lines[1]
+
+                self.upload(path: path, data: serializedPing, config: Glean.shared.configuration!, callback: callback)
+            } else {
+                NSLog("\(Constants.logTag) : Error while processing file: \(file) - File corrupted")
+                callback(false, nil)
+            }
+        } catch {
+            NSLog("\(Constants.logTag) : Error while processing file: \(file) - \(error.localizedDescription)")
+            callback(false, nil)
+        }
     }
 }

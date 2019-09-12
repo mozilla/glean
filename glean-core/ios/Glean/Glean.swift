@@ -23,6 +23,11 @@ public class Glean {
     private var uploadEnabled: Bool = true
     private var configuration: Configuration?
 
+    // This struct is used for organizational purposes to keep the class constants in a single place
+    struct Constants {
+        static let logTag = "glean/Glean"
+    }
+
     private init() {
         // intentionally left private, no external user can instantiate a new global object.
 
@@ -56,7 +61,7 @@ public class Glean {
         self.configuration = configuration
 
         self.handle = withFfiConfiguration(
-            dataDir: getDocumentsDirectory(),
+            dataDir: getDocumentsDirectory().absoluteString,
             packageName: Bundle.main.bundleIdentifier!,
             uploadEnabled: uploadEnabled,
             configuration: configuration
@@ -108,7 +113,47 @@ public class Glean {
 
     /// Handle background event and send appropriate pings
     func handleBackgroundEvent() {
-        // sendPings()
+        // Perform task on a background thread
+        _ = Dispatchers.shared.launch {
+            Glean.backgroundTaskID = UIApplication.shared.beginBackgroundTask(withName: "Glean Upload Task") {
+                // End the task if time expires
+                UIApplication.shared.endBackgroundTask(Glean.backgroundTaskID)
+                Glean.backgroundTaskID = UIBackgroundTaskIdentifier.invalid
+            }
+
+            self.sendPingsByName(pingNames: ["baseline", "events"])
+
+            // End task assertion
+            UIApplication.shared.endBackgroundTask(Glean.backgroundTaskID)
+            Glean.backgroundTaskID = UIBackgroundTaskIdentifier.invalid
+        }
+    }
+
+    func sendPingsByName(pingNames: [String]) {
+        _ = Dispatchers.shared.launch {
+            if !self.isInitialized() {
+                NSLog("\(Constants.logTag) : Glean must be initialized before sending pings")
+                return
+            }
+
+            if !self.getUploadEnabled() {
+                NSLog("\(Constants.logTag) : Glean must be enabled before sending pings")
+                return
+            }
+
+            withArrayOfCStrings(pingNames) { pingNames in
+                let sentPing = glean_send_pings_by_name(
+                    self.handle,
+                    pingNames,
+                    Int32(pingNames.count),
+                    self.configuration!.logPings ? 1 : 0
+                )
+
+                if sentPing != 0 {
+                    HttpPingUploader().process()
+                }
+            }
+        }
     }
 
     /// Test-only method to destroy the owned glean-core handle.
