@@ -32,9 +32,7 @@ class Dispatchers {
     private var queueInitialTasks = AtomicBoolean(true)
 
     // This array will hold the queued initial tasks that are launched before Glean is initialized
-    lazy var preInitOperations: [Operation] = {
-        [Operation]()
-    }()
+    lazy var preInitOperations: [Operation] = [Operation]()
 
     // When true, jobs will be run synchronously
     var testingMode = false
