@@ -9,7 +9,6 @@ import com.sun.jna.StringArray
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.toByte
-import mozilla.telemetry.glean.rust.RustError
 
 import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.rust.toBoolean
@@ -52,8 +51,7 @@ class QuantityMetricType internal constructor(
      */
     protected fun finalize() {
         if (this.handle != 0L) {
-            val error = RustError.ByReference()
-            LibGleanFFI.INSTANCE.glean_destroy_quantity_metric(this.handle, error)
+            LibGleanFFI.INSTANCE.glean_destroy_quantity_metric(this.handle)
         }
     }
 

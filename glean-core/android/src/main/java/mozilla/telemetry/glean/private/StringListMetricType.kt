@@ -10,7 +10,6 @@ import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.rust.getAndConsumeRustString
 import mozilla.telemetry.glean.rust.LibGleanFFI
-import mozilla.telemetry.glean.rust.RustError
 import mozilla.telemetry.glean.rust.toBoolean
 import mozilla.telemetry.glean.rust.toByte
 import mozilla.telemetry.glean.utils.toList
@@ -57,8 +56,7 @@ class StringListMetricType(
      */
     protected fun finalize() {
         if (this.handle != 0L) {
-            val error = RustError.ByReference()
-            LibGleanFFI.INSTANCE.glean_destroy_string_list_metric(this.handle, error)
+            LibGleanFFI.INSTANCE.glean_destroy_string_list_metric(this.handle)
         }
         // Do nothing with the error, for now.
         // It is expected to only ever error if this.handle's invalid.

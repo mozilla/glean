@@ -20,7 +20,6 @@ import mozilla.telemetry.glean.utils.getLocaleTag
 import java.io.File
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.MetricHandle
-import mozilla.telemetry.glean.rust.RustError
 import mozilla.telemetry.glean.rust.getAndConsumeRustString
 import mozilla.telemetry.glean.rust.toBoolean
 import mozilla.telemetry.glean.rust.toByte
@@ -534,8 +533,7 @@ open class GleanInternalAPI internal constructor () {
             return
         }
 
-        val e = RustError.ByReference()
-        LibGleanFFI.INSTANCE.glean_destroy_glean(handle, e)
+        LibGleanFFI.INSTANCE.glean_destroy_glean(handle)
         handle = 0L
     }
 
