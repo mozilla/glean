@@ -1,3 +1,18 @@
+#[macro_export]
+macro_rules! define_infallible_handle_map_deleter {
+    ($HANDLE_MAP_NAME:ident, $destructor_name:ident) => {
+        #[no_mangle]
+        pub extern "C" fn $destructor_name(v: u64) {
+            let mut error = ffi_support::ExternError::success();
+            let res = ffi_support::abort_on_panic::call_with_result(&mut error, || {
+                let map: &$crate::ConcurrentHandleMap<_> = &*$HANDLE_MAP_NAME;
+                map.delete_u64(v)
+            });
+            $crate::handlemap_ext::log_if_error(error);
+            res
+        }
+    };
+}
 /// Define the global handle map, constructor and destructor functions and any user-defined
 /// functions for a new metric
 ///
@@ -29,7 +44,7 @@ macro_rules! define_metric {
         lazy_static::lazy_static! {
             pub static ref $metric_map: ffi_support::ConcurrentHandleMap<glean_core::metrics::$metric_type> = ffi_support::ConcurrentHandleMap::new();
         }
-        ffi_support::define_handle_map_deleter!($metric_map, $destroy_fn);
+        $crate::define_infallible_handle_map_deleter!($metric_map, $destroy_fn);
 
         $(
         #[no_mangle]

@@ -2,21 +2,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-typedef struct ExternError {
-    int32_t code;
-    char *message; // note: nullable
-} ExternError;
-typedef const char *FfiStr;
-typedef uint64_t TimerId;
-
-
-
 /* DO NOT MODIFY THIS MANUALLY! This file was generated using cbindgen.
  * To generate this file:
  *   1. Get the latest cbindgen using `cargo install --force cbindgen`
  *      a. Alternatively, you can clone `https://github.com/eqrion/cbindgen` and use a tagged release
  *   2. Run `RUSTUP_TOOLCHAIN=nightly cbindgen glean-core/ffi --lockfile Cargo.lock -o glean-core/ffi/examples/glean.h`
  */
+
+typedef const char *FfiStr;
+typedef uint64_t TimerId;
+
 
 #include <stdarg.h>
 #include <stdbool.h>
@@ -94,39 +89,39 @@ uint8_t glean_datetime_test_has_value(uint64_t glean_handle,
                                       uint64_t metric_id,
                                       FfiStr storage_name);
 
-void glean_destroy_boolean_metric(uint64_t v, ExternError *err);
+void glean_destroy_boolean_metric(uint64_t v);
 
-void glean_destroy_counter_metric(uint64_t v, ExternError *err);
+void glean_destroy_counter_metric(uint64_t v);
 
-void glean_destroy_custom_distribution_metric(uint64_t v, ExternError *err);
+void glean_destroy_custom_distribution_metric(uint64_t v);
 
-void glean_destroy_datetime_metric(uint64_t v, ExternError *err);
+void glean_destroy_datetime_metric(uint64_t v);
 
-void glean_destroy_event_metric(uint64_t v, ExternError *err);
+void glean_destroy_event_metric(uint64_t v);
 
-void glean_destroy_glean(uint64_t v, ExternError *err);
+void glean_destroy_glean(uint64_t v);
 
-void glean_destroy_labeled_boolean_metric(uint64_t v, ExternError *err);
+void glean_destroy_labeled_boolean_metric(uint64_t v);
 
-void glean_destroy_labeled_counter_metric(uint64_t v, ExternError *err);
+void glean_destroy_labeled_counter_metric(uint64_t v);
 
-void glean_destroy_labeled_string_metric(uint64_t v, ExternError *err);
+void glean_destroy_labeled_string_metric(uint64_t v);
 
-void glean_destroy_memory_distribution_metric(uint64_t v, ExternError *err);
+void glean_destroy_memory_distribution_metric(uint64_t v);
 
-void glean_destroy_ping_type(uint64_t v, ExternError *err);
+void glean_destroy_ping_type(uint64_t v);
 
-void glean_destroy_quantity_metric(uint64_t v, ExternError *err);
+void glean_destroy_quantity_metric(uint64_t v);
 
-void glean_destroy_string_list_metric(uint64_t v, ExternError *err);
+void glean_destroy_string_list_metric(uint64_t v);
 
-void glean_destroy_string_metric(uint64_t v, ExternError *err);
+void glean_destroy_string_metric(uint64_t v);
 
-void glean_destroy_timespan_metric(uint64_t v, ExternError *err);
+void glean_destroy_timespan_metric(uint64_t v);
 
-void glean_destroy_timing_distribution_metric(uint64_t v, ExternError *err);
+void glean_destroy_timing_distribution_metric(uint64_t v);
 
-void glean_destroy_uuid_metric(uint64_t v, ExternError *err);
+void glean_destroy_uuid_metric(uint64_t v);
 
 /**
  * Initialize the logging system based on the target platform. This ensures

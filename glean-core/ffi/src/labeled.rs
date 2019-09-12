@@ -34,7 +34,7 @@ macro_rules! impl_labeled_metric {
             static ref $global: ConcurrentHandleMap<LabeledMetric<$metric>> =
                 ConcurrentHandleMap::new();
         }
-        define_handle_map_deleter!($global, $destroy_name);
+        $crate::define_infallible_handle_map_deleter!($global, $destroy_name);
 
         /// Create a new labeled metric.
         #[no_mangle]
