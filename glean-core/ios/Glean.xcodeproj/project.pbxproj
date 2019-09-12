@@ -18,6 +18,9 @@
 		AC0C2B60232809C400A50CC8 /* OHHTTPStubs.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC0C2B5F232809C400A50CC8 /* OHHTTPStubs.framework */; };
 		BF3DE39B2243A2F20018E23F /* Glean.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF3DE3912243A2F20018E23F /* Glean.framework */; };
 		BF3DE3A02243A2F20018E23F /* GleanTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF3DE39F2243A2F20018E23F /* GleanTests.swift */; };
+		BF43A8C7232A4BA400545310 /* CounterMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF43A8C6232A4BA400545310 /* CounterMetric.swift */; };
+		BF43A8C9232A4CB200545310 /* Lifetime.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF43A8C8232A4CB200545310 /* Lifetime.swift */; };
+		BF43A8CD232A615200545310 /* CounterMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF43A8CC232A615200545310 /* CounterMetricTests.swift */; };
 		BF6F2DA8224BF8F100394062 /* libglean_ffi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BF6F2DA7224BF8F100394062 /* libglean_ffi.a */; };
 		BF93C698224BFC57006CE7D8 /* Glean.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF93C697224BFC57006CE7D8 /* Glean.swift */; };
 		BFFE33A92328F4EF005348FE /* GleanFfi.h in Headers */ = {isa = PBXBuildFile; fileRef = BFFE33A82328F4EF005348FE /* GleanFfi.h */; };
@@ -49,6 +52,9 @@
 		BF3DE39A2243A2F20018E23F /* GleanTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GleanTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF3DE39F2243A2F20018E23F /* GleanTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GleanTests.swift; sourceTree = "<group>"; };
 		BF3DE3A12243A2F20018E23F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BF43A8C6232A4BA400545310 /* CounterMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CounterMetric.swift; sourceTree = "<group>"; };
+		BF43A8C8232A4CB200545310 /* Lifetime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lifetime.swift; sourceTree = "<group>"; };
+		BF43A8CC232A615200545310 /* CounterMetricTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CounterMetricTests.swift; sourceTree = "<group>"; };
 		BF51C3B9224BF19F0014CBAF /* debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = debug.xcconfig; sourceTree = "<group>"; };
 		BF51C3BA224BF19F0014CBAF /* release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = release.xcconfig; sourceTree = "<group>"; };
 		BF51C3BB224BF19F0014CBAF /* base.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = base.xcconfig; sourceTree = "<group>"; };
@@ -148,6 +154,7 @@
 			isa = PBXGroup;
 			children = (
 				1F6058912314861B00307A9F /* Config */,
+				BF43A8C5232A4B5F00545310 /* Metrics */,
 				1F60588E2314840B00307A9F /* Net */,
 				1F60588D231483D600307A9F /* Scheduler */,
 				BF3DE3942243A2F20018E23F /* Glean.h */,
@@ -162,12 +169,30 @@
 		BF3DE39E2243A2F20018E23F /* GleanTests */ = {
 			isa = PBXGroup;
 			children = (
+				BF43A8CB232A613100545310 /* Metrics */,
 				1FB8F8402326F69400618E47 /* Net */,
 				1FB8F8392326EBA500618E47 /* Config */,
 				BF3DE39F2243A2F20018E23F /* GleanTests.swift */,
 				BF3DE3A12243A2F20018E23F /* Info.plist */,
 			);
 			path = GleanTests;
+			sourceTree = "<group>";
+		};
+		BF43A8C5232A4B5F00545310 /* Metrics */ = {
+			isa = PBXGroup;
+			children = (
+				BF43A8C6232A4BA400545310 /* CounterMetric.swift */,
+				BF43A8C8232A4CB200545310 /* Lifetime.swift */,
+			);
+			path = Metrics;
+			sourceTree = "<group>";
+		};
+		BF43A8CB232A613100545310 /* Metrics */ = {
+			isa = PBXGroup;
+			children = (
+				BF43A8CC232A615200545310 /* CounterMetricTests.swift */,
+			);
+			path = Metrics;
 			sourceTree = "<group>";
 		};
 		BF6F2DA6224BF8F000394062 /* Frameworks */ = {
@@ -357,7 +382,9 @@
 				1F6058932314863400307A9F /* Configuration.swift in Sources */,
 				BF93C698224BFC57006CE7D8 /* Glean.swift in Sources */,
 				1F60589723148BF800307A9F /* GleanLifecycleObserver.swift in Sources */,
+				BF43A8C9232A4CB200545310 /* Lifetime.swift in Sources */,
 				1F605895231489AB00307A9F /* HttpPingUploader.swift in Sources */,
+				BF43A8C7232A4BA400545310 /* CounterMetric.swift in Sources */,
 				BFFE33AB232927C3005348FE /* Utils.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -368,6 +395,7 @@
 			files = (
 				1FB8F8382326EABD00618E47 /* ConfigurationTests.swift in Sources */,
 				1FB8F8422326F74400618E47 /* HttpPingUploaderTests.swift in Sources */,
+				BF43A8CD232A615200545310 /* CounterMetricTests.swift in Sources */,
 				BF3DE3A02243A2F20018E23F /* GleanTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
