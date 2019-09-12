@@ -15,7 +15,6 @@ import kotlinx.coroutines.runBlocking
 import mozilla.telemetry.glean.GleanMetrics.GleanInternalMetrics
 import mozilla.telemetry.glean.GleanMetrics.Pings
 import mozilla.telemetry.glean.config.Configuration
-import mozilla.telemetry.glean.net.PingUploader
 import mozilla.telemetry.glean.private.CounterMetricType
 import mozilla.telemetry.glean.private.EventMetricType
 import mozilla.telemetry.glean.private.Lifetime
@@ -313,7 +312,7 @@ class GleanTest {
 
         // We should only have a baseline ping and no events or metrics pings since nothing was
         // recorded
-        val files = File(Glean.getDataDir(), PingUploader.PINGS_DIR).listFiles()!!
+        val files = File(Glean.getDataDir(), PingUploadWorker.PINGS_DIR).listFiles()!!
 
         // Make sure only the baseline ping is present and no events or metrics pings
         assertEquals(1, files.count())
