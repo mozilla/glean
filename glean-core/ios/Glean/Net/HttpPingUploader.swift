@@ -12,7 +12,7 @@ public class HttpPingUploader {
     }
 
     public init() {
-        // intentionally left empty
+        // intentionally left empty to allow public instantiation
     }
 
     /// A function to aid in logging the ping to the console via `NSLog`.
