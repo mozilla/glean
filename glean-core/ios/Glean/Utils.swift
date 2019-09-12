@@ -71,3 +71,30 @@ public func withArrayOfCStrings<R>(
     }
     return body(cStrings)
 }
+
+/// This struct creates a Boolean with atomic or synchronized access.
+///
+/// This makes use of synchronization tools from Grand Central Dispatch (GCD)
+/// in order to synchronize access.
+let q = DispatchQueue(label: "AtomicBoolean")
+struct AtomicBoolean {
+    private var semaphore = DispatchSemaphore(value: 1)
+    private var b: Bool
+    var val: Bool {
+        get {
+            semaphore.wait()
+            let tmp = b
+            semaphore.signal()
+            return tmp
+        }
+        set {
+            semaphore.wait()
+            b = newValue
+            semaphore.signal()
+        }
+    }
+
+    init(_ initialValue: Bool = false) {
+        b = initialValue
+    }
+}
