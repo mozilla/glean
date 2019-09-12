@@ -18,7 +18,7 @@ class GleanTests: XCTestCase {
         let glean = Glean.shared
 
         glean.initialize()
-        XCTAssert(glean.isInitialized())
-        XCTAssert(glean.getUploadEnabled())
+        XCTAssert(glean.isInitialized(), "Glean should be initialized")
+        XCTAssert(glean.getUploadEnabled(), "Upload is enabled by default")
     }
 }
