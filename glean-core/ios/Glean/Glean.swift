@@ -18,10 +18,11 @@ public class Glean {
     /// ```
     public static let shared = Glean()
 
+    var handle: UInt64 = 0
     private var initialized: Bool = false
-    private var handle: UInt64 = 0
     private var uploadEnabled: Bool = true
     private var configuration: Configuration?
+    private var testingMode = false
 
     private init() {
         // intentionally left private, no external user can instantiate a new global object.
@@ -98,12 +99,55 @@ public class Glean {
     }
 
     /// Returns true if the Glean SDK has been initialized.
-    internal func isInitialized() -> Bool {
+    func isInitialized() -> Bool {
         return handle != 0
     }
 
     /// Handle background event and send appropriate pings
-    internal func handleBackgroundEvent() {
+    func handleBackgroundEvent() {
         // sendPings()
+    }
+
+    /// Test-only method to destroy the owned glean-core handle.
+    func testDestroyGleanHandle() {
+        if !isInitialized() {
+            // We don't need to destroy the Glean handle: it wasn't initialized.
+            return
+        }
+
+        // TODO(bug 1580777): needs the error object.
+        // glean_destroy_glean(handle, e)
+        handle = 0
+    }
+
+    /// TEST ONLY FUNCTION.
+    ///
+    /// Enable test mode.
+    ///
+    /// This makes all asynchronous work synchronous so we can test the results of the
+    /// API synchronously.
+    func enableTestingMode() {
+        testingMode = true
+    }
+
+    /// TEST ONLY FUNCTION.
+    ///
+    /// Resets the Glean state and trigger init again.
+    ///
+    /// - parameters:
+    ///     * configuration: the `Configuration` to init Glean with
+    ///     * clearStores: if true, clear the contents of all stores
+    func resetGlean(configuration: Configuration = Configuration(), clearStores: Bool) {
+        enableTestingMode()
+
+        if isInitialized() && clearStores {
+            // Clear all the stored data.
+            glean_test_clear_all_stores(handle)
+        }
+
+        // Init Glean.
+        testDestroyGleanHandle()
+        setUploadEnabled(true)
+        initialize(configuration: configuration)
     }
 }

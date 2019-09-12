@@ -4,6 +4,13 @@
 
 import Foundation
 
+/// Turn a string into an error, so that it can be thrown as an exception.
+///
+/// This should only be used in tests.
+extension String: Error {
+    public var errorDescription: String? { return self }
+}
+
 /// Helper function to retrive the application's Documents directory for persistent file storage
 ///
 /// - returns: `String` representation of the path to the Documents directory
@@ -45,4 +52,22 @@ func withFfiConfiguration<R>(
         max_events: maxEventsPtr
     )
     return body(cfg)
+}
+
+/// Create a temporary array of C-compatible (null-terminated) strings to pass over FFI.
+///
+/// The strings are deallocated after the closure returns.
+///
+/// - parameters:
+///     * args: The array of strings to use
+///     * body: The closure that gets an array of C-compatible strings
+public func withArrayOfCStrings<R>(
+    _ args: [String],
+    _ body: ([UnsafePointer<CChar>?]) -> R
+) -> R {
+    var cStrings = args.map { UnsafePointer(strdup($0)) }
+    defer {
+        cStrings.forEach { free(UnsafeMutableRawPointer(mutating: $0)) }
+    }
+    return body(cStrings)
 }
