@@ -35,7 +35,7 @@ public class CounterMetricType {
     /// Destroy this metric.
     deinit {
         if self.handle != 0 {
-            // TODO: needs the error object.
+            // TODO(bug 1580777): needs the error object.
             // glean_destroy_counter_metric(this.handle, error)
         }
     }
@@ -48,7 +48,7 @@ public class CounterMetricType {
     public func add(_ amount: Int32 = 1) {
         guard !self.disabled else { return }
 
-        // TODO: Move this off the main thread.
+        // TODO(bug 1580779): Move this off the main thread.
         glean_counter_add(Glean.shared.handle, self.handle, amount)
     }
 
@@ -60,9 +60,9 @@ public class CounterMetricType {
     ///     * pingName: represents the name of the ping to retrieve the metric for.
     ///                 Defaults to the first value in `sendInPings`.
     /// - returns: true if metric value exists, otherwise false
-    // TODO: Allow for tests only
+    // TODO(bug 1580780): Allow for tests only
     public func testHasValue(_ pingName: String? = nil) -> Bool {
-        // TODO: Assert testing mode
+        // TODO(bug 1580783): Assert testing mode
 
         let pingName = pingName ?? self.sendInPings[0]
         return glean_counter_test_has_value(Glean.shared.handle, self.handle, pingName) != 0
@@ -79,9 +79,9 @@ public class CounterMetricType {
     ///
     /// - returns:  value of the stored metric
     ///
-    // TODO: Allow for tests only
+    // TODO(bug 1580780): Allow for tests only
     public func testGetValue(_ pingName: String? = nil) throws -> Int32 {
-        // TODO: Assert testing mode
+        // TODO(bug 1580783): Assert testing mode
         let pingName = pingName ?? self.sendInPings[0]
 
         if !testHasValue(pingName) {

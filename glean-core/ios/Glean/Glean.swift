@@ -115,7 +115,7 @@ public class Glean {
             return
         }
 
-        // TODO: needs the error object.
+        // TODO(bug 1580777): needs the error object.
         // glean_destroy_glean(handle, e)
         handle = 0
     }
