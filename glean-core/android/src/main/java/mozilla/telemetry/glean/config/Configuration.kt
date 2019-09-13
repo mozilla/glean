@@ -4,13 +4,13 @@
 
 package mozilla.telemetry.glean.config
 
-import mozilla.components.concept.fetch.Client
-import mozilla.components.lib.fetch.httpurlconnection.HttpURLConnectionClient
 import mozilla.telemetry.glean.BuildConfig
 import mozilla.telemetry.glean.rust.toByte
 
 import com.sun.jna.Structure
 import com.sun.jna.ptr.IntByReference
+import mozilla.telemetry.glean.net.HttpURLConnectionUploader
+import mozilla.telemetry.glean.net.PingUploader
 
 /**
  * Define the order of fields as laid out in memory.
@@ -50,10 +50,6 @@ internal class FfiConfiguration(
  * @property serverEndpoint the server pings are sent to. Please note that this is
  *           is only meant to be changed for tests.
  * @property userAgent the user agent used when sending pings, only to be used internally.
- * @property connectionTimeout the timeout, in milliseconds, to use when connecting to
- *           the [serverEndpoint]
- * @property readTimeout the timeout, in milliseconds, to use when connecting to
- *           the [serverEndpoint]
  * @property maxEvents the number of events to store before the events ping is sent
  * @property logPings whether to log ping contents to the console. This is only meant to be used
  *           internally by the `GleanDebugActivity`.
@@ -66,24 +62,18 @@ internal class FfiConfiguration(
 data class Configuration internal constructor(
     val serverEndpoint: String,
     val userAgent: String = DEFAULT_USER_AGENT,
-    val connectionTimeout: Long = DEFAULT_CONNECTION_TIMEOUT,
-    val readTimeout: Long = DEFAULT_READ_TIMEOUT,
     val maxEvents: Int? = null,
     val logPings: Boolean = DEFAULT_LOG_PINGS,
     // NOTE: since only simple object or strings can be made `const val`s, if the
     // default values for the lines below are ever changed, they are required
     // to change in the public constructor below.
-    val httpClient: Lazy<Client> = lazy { HttpURLConnectionClient() },
+    val httpClient: PingUploader = HttpURLConnectionUploader(),
     val pingTag: String? = null,
     val channel: String? = null
 ) {
     /**
      * Configuration for Glean.
      *
-     * @param connectionTimeout the timeout, in milliseconds, to use when connecting to
-     *           the [serverEndpoint]
-     * @param readTimeout the timeout, in milliseconds, to use when connecting to
-     *           the [serverEndpoint]
      * @param maxEvents the number of events to store before the events ping is sent
      * @param httpClient The HTTP client implementation to use for uploading pings.
      * @param channel the release channel the application is on, if known. This will be
@@ -95,16 +85,12 @@ data class Configuration internal constructor(
     // constructor and only initialized with a proper default when calling the primary
     // constructor from the secondary, public one, below.
     constructor(
-        connectionTimeout: Long = DEFAULT_CONNECTION_TIMEOUT,
-        readTimeout: Long = DEFAULT_READ_TIMEOUT,
         maxEvents: Int? = null,
-        httpClient: Lazy<Client> = lazy { HttpURLConnectionClient() },
+        httpClient: PingUploader = HttpURLConnectionUploader(),
         channel: String? = null
     ) : this (
         serverEndpoint = DEFAULT_TELEMETRY_ENDPOINT,
         userAgent = DEFAULT_USER_AGENT,
-        connectionTimeout = connectionTimeout,
-        readTimeout = readTimeout,
         maxEvents = maxEvents,
         logPings = DEFAULT_LOG_PINGS,
         httpClient = httpClient,
@@ -121,14 +107,6 @@ data class Configuration internal constructor(
          * The default user agent used when sending pings.
          */
         const val DEFAULT_USER_AGENT = "Glean/${BuildConfig.LIBRARY_VERSION} (Android)"
-        /**
-         * The default connection timeout when sending pings.
-         */
-        const val DEFAULT_CONNECTION_TIMEOUT = 10000L
-        /**
-         * The default read timeout when sending pings.
-         */
-        const val DEFAULT_READ_TIMEOUT = 30000L
         /**
          * Whether to log pings by default.
          */

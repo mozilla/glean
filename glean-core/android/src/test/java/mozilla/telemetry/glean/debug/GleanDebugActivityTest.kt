@@ -20,12 +20,30 @@ import mozilla.telemetry.glean.private.BooleanMetricType
 import mozilla.telemetry.glean.private.Lifetime
 import mozilla.telemetry.glean.resetGlean
 import mozilla.telemetry.glean.triggerWorkManager
-import mozilla.telemetry.glean.TestPingTagClient
 import mozilla.telemetry.glean.getMockWebServer
+import mozilla.telemetry.glean.net.HeadersList
+import mozilla.telemetry.glean.net.PingUploader
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Rule
 import org.robolectric.Shadows.shadowOf
 import java.util.concurrent.TimeUnit
+
+/**
+ * This is a helper class to facilitate testing of ping tagging
+ */
+private class TestPingTagClient(
+    private val responseUrl: String = Configuration.DEFAULT_TELEMETRY_ENDPOINT,
+    private val debugHeaderValue: String? = null
+) : PingUploader {
+    override fun upload(url: String, data: String, headers: HeadersList): Boolean {
+        assertTrue("URL must be redirected for tagged pings",
+            url.startsWith(responseUrl))
+        assertEquals("Debug headers must match what the ping tag was set to",
+            debugHeaderValue, headers.find { it.first == "X-Debug-ID" }!!.second)
+
+        return true
+    }
+}
 
 @RunWith(AndroidJUnit4::class)
 class GleanDebugActivityTest {
@@ -200,14 +218,9 @@ class GleanDebugActivityTest {
     fun `pings are correctly tagged using tagPings`() {
         val pingTag = "test-debug-ID"
 
-        // The TestClient class found in TestUtil is used to intercept the request in order to check
-        // that the header has been added correctly for the tagged ping.
-        val testClient = TestPingTagClient(
-            debugHeaderValue = pingTag)
-
         // Use the test client in the Glean configuration
         resetGlean(config = Glean.configuration.copy(
-            httpClient = lazy { testClient }
+            httpClient = TestPingTagClient(debugHeaderValue = pingTag)
         ))
 
         // Put some metric data in the store, otherwise we won't get a ping out

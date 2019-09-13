@@ -26,7 +26,7 @@ import mozilla.telemetry.glean.rust.toByte
 import mozilla.telemetry.glean.GleanMetrics.GleanBaseline
 import mozilla.telemetry.glean.GleanMetrics.GleanInternalMetrics
 import mozilla.telemetry.glean.GleanMetrics.Pings
-import mozilla.telemetry.glean.net.PingUploader
+import mozilla.telemetry.glean.net.BaseUploader
 import mozilla.telemetry.glean.private.PingType
 import mozilla.telemetry.glean.private.RecordedExperimentData
 import mozilla.telemetry.glean.scheduler.GleanLifecycleObserver
@@ -56,6 +56,11 @@ open class GleanInternalAPI internal constructor () {
     internal var handle: MetricHandle = 0L
 
     internal lateinit var configuration: Configuration
+
+    // This is the wrapped http uploading mechanism: provides base functionalities
+    // for logging and delegates the actual upload to the implementation in
+    // the `Configuration`.
+    internal val httpClient by lazy { BaseUploader(configuration.httpClient) }
 
     private lateinit var applicationContext: Context
 
@@ -203,7 +208,7 @@ open class GleanInternalAPI internal constructor () {
                 // glean_set_upload_enabled might delete all of the queued pings. We
                 // therefore need to obtain the lock from the PingUploader so that
                 // iterating over and deleting the pings doesn't happen at the same time.
-                synchronized(PingUploader.pingQueueLock) {
+                synchronized(PingUploadWorker.pingQueueLock) {
                     LibGleanFFI.INSTANCE.glean_set_upload_enabled(handle, enabled.toByte())
 
                     // Cancel any pending workers here so that we don't accidentally upload or
