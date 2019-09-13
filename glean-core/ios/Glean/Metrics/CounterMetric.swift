@@ -47,8 +47,9 @@ public class CounterMetricType {
     public func add(_ amount: Int32 = 1) {
         guard !self.disabled else { return }
 
-        // TODO(bug 1580779): Move this off the main thread.
-        glean_counter_add(Glean.shared.handle, self.handle, amount)
+        _ = Dispatchers.shared.launch {
+            glean_counter_add(Glean.shared.handle, self.handle, amount)
+        }
     }
 
     /// Tests whether a value is stored for the metric for testing purposes only. This function will
@@ -60,7 +61,7 @@ public class CounterMetricType {
     ///                 Defaults to the first value in `sendInPings`.
     /// - returns: true if metric value exists, otherwise false
     func testHasValue(_ pingName: String? = nil) -> Bool {
-        // TODO(bug 1580783): Assert testing mode
+        Dispatchers.shared.assertInTestingMode()
 
         let pingName = pingName ?? self.sendInPings[0]
         return glean_counter_test_has_value(Glean.shared.handle, self.handle, pingName) != 0
@@ -77,7 +78,8 @@ public class CounterMetricType {
     ///
     /// - returns:  value of the stored metric
     func testGetValue(_ pingName: String? = nil) throws -> Int32 {
-        // TODO(bug 1580783): Assert testing mode
+        Dispatchers.shared.assertInTestingMode()
+
         let pingName = pingName ?? self.sendInPings[0]
 
         if !testHasValue(pingName) {

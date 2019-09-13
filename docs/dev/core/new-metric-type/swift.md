@@ -39,7 +39,9 @@ public class CounterMetricType {
     public func add(amount: Int32 = 1) {
         guard !self.disabled else { return }
 
-        glean_counter_add(Glean.shared.handle, self.handle, amount)
+        _ = Dispatchers.shared.launch {
+            glean_counter_add(Glean.shared.handle, self.handle, amount)
+        }
     }
 
     func testHasValue(_ pingName: String? = nil) -> Bool {

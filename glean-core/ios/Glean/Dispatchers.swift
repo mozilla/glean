@@ -123,7 +123,7 @@ class Dispatchers {
     func assertInTestingMode() {
         assert(
             testingMode,
-            "To use the testing API, Glean must be in testing mode by calling Glean.enableTestingMode()"
+            "To use the testing API, Glean must be in testing mode by calling Glean.shared.enableTestingMode()"
         )
     }
 
