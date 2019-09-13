@@ -4,13 +4,13 @@
 
 package mozilla.telemetry.glean.config
 
-import mozilla.components.concept.fetch.Client
-import mozilla.components.lib.fetch.httpurlconnection.HttpURLConnectionClient
 import mozilla.telemetry.glean.BuildConfig
 import mozilla.telemetry.glean.rust.toByte
 
 import com.sun.jna.Structure
 import com.sun.jna.ptr.IntByReference
+import mozilla.telemetry.glean.net.HttpURLConnectionUploader
+import mozilla.telemetry.glean.net.PingUploader
 
 /**
  * Define the order of fields as laid out in memory.
@@ -67,7 +67,7 @@ data class Configuration internal constructor(
     // NOTE: since only simple object or strings can be made `const val`s, if the
     // default values for the lines below are ever changed, they are required
     // to change in the public constructor below.
-    val httpClient: Lazy<Client> = lazy { HttpURLConnectionClient() },
+    val httpClient: PingUploader = HttpURLConnectionUploader(),
     val pingTag: String? = null,
     val channel: String? = null
 ) {
@@ -86,7 +86,7 @@ data class Configuration internal constructor(
     // constructor from the secondary, public one, below.
     constructor(
         maxEvents: Int? = null,
-        httpClient: Lazy<Client> = lazy { HttpURLConnectionClient() },
+        httpClient: PingUploader = HttpURLConnectionUploader(),
         channel: String? = null
     ) : this (
         serverEndpoint = DEFAULT_TELEMETRY_ENDPOINT,
