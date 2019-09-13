@@ -54,11 +54,18 @@ pub extern "C" fn glean_enable_logging() {
         });
     }
 
-    // On iOS always enable Debug logging
+    // On iOS enable logging with a level filter.
     #[cfg(target_os = "ios")]
     {
+        // Debug logging in debug mode.
+        // (Note: `debug_assertions` is the next best thing to determine if this is a debug build)
+        #[cfg(debug_assertions)]
+        let level = log::LevelFilter::Debug;
+        #[cfg(not(debug_assertions))]
+        let level = log::LevelFilter::Info;
+
         let mut builder = env_logger::Builder::new();
-        builder.filter(None, log::LevelFilter::Debug);
+        builder.filter(None, level);
         match builder.try_init() {
             Ok(_) => log::debug!("stdout logging should be hooked up!"),
             // Please note that this is only expected to fail during unit tests,
