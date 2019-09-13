@@ -186,7 +186,8 @@ jobs:
               chmod +x codecov.sh;
               zip -0 ccov.zip `find . \( -name "glean*.gc*" \) -print`
               ./grcov ccov.zip -s . -t lcov --llvm --branch --ignore-not-existing --ignore-dir "/*" --ignore-dir "glean-core/ffi/*" -o lcov.info
-              ./codecov.sh -f lcov.info;
+              CODECOV_CMD="./codecov.sh -f lcov.info"
+              $CODECOV_CMD || (sleep 5 && $CODECOV_CMD) || (sleep 5 && $CODECOV_CMD)
   iOS build and test:
     macos:
       xcode: "11.0.0"
@@ -243,7 +244,8 @@ jobs:
           command: |
               curl -L https://codecov.io/bash > codecov.sh;
               chmod +x codecov.sh;
-              ./codecov.sh -f glean-core/android/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml
+              CODECOV_CMD="./codecov.sh -f glean-core/android/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml"
+              $CODECOV_CMD || (sleep 5 && $CODECOV_CMD) || (sleep 5 && $CODECOV_CMD)
       - store_artifacts:
           path: glean-core/android/build/reports/tests
 
