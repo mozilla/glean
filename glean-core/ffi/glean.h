@@ -6,7 +6,7 @@
  * To generate this file:
  *   1. Get the latest cbindgen using `cargo install --force cbindgen`
  *      a. Alternatively, you can clone `https://github.com/eqrion/cbindgen` and use a tagged release
- *   2. Run `RUSTUP_TOOLCHAIN=nightly cbindgen glean-core/ffi --lockfile Cargo.lock -o glean-core/ffi/examples/glean.h`
+ *   2. Run `make cbindgen`
  */
 
 typedef const char *FfiStr;
