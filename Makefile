@@ -49,8 +49,8 @@ test-ios:
 
 cbindgen:
 	RUSTUP_TOOLCHAIN=nightly \
-	cbindgen glean-core/ffi --lockfile Cargo.lock -o glean-core/ffi/examples/glean.h
-	cp glean-core/ffi/examples/glean.h glean-core/ios/Glean/GleanFfi.h
+	cbindgen glean-core/ffi --lockfile Cargo.lock -o glean-core/ffi/glean.h
+	cp glean-core/ffi/glean.h glean-core/ios/Glean/GleanFfi.h
 .PHONY: cbindgen
 
 docs:

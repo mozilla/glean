@@ -1,5 +1,5 @@
 SRC = glean_app.c
-HEADERS = glean.h
+HEADERS = ../glean.h
 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
@@ -12,10 +12,10 @@ ifeq ($(UNAME_S),Darwin)
 endif
 
 glean_app: $(SRC) $(OBJECTS_DEBUG) $(HEADERS)
-	$(CC) $(CFLAGS) -o $@ $(SRC) $(OBJECTS_DEBUG)
+	$(CC) $(CFLAGS) -I.. -o $@ $(SRC) $(OBJECTS_DEBUG)
 
 glean_app_release: $(SRC) $(OBJECTS_RELEASE) $(HEADERS)
-	$(CC) $(CFLAGS) -o $@ $(SRC) $(OBJECTS_RELEASE)
+	$(CC) $(CFLAGS) -I.. -o $@ $(SRC) $(OBJECTS_RELEASE)
 
 $(OBJECTS_DEBUG): ../src/lib.rs
 	cargo build
