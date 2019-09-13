@@ -13,11 +13,6 @@ import androidx.work.WorkManager
 import androidx.work.testing.WorkManagerTestInitHelper
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
-import mozilla.components.concept.fetch.Client
-import mozilla.components.concept.fetch.Headers
-import mozilla.components.concept.fetch.MutableHeaders
-import mozilla.components.concept.fetch.Request
-import mozilla.components.concept.fetch.Response
 import org.json.JSONObject
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito
@@ -213,31 +208,6 @@ internal fun triggerWorkManager() {
     // Trigger WorkManager using TestDriver
     val workManagerTestInitHelper = WorkManagerTestInitHelper.getTestDriver()
     workManagerTestInitHelper.setAllConstraintsMet(status.workerId!!)
-}
-
-/**
- * This is a helper class to facilitate testing of ping tagging
- */
-internal class TestPingTagClient(
-    private val responseUrl: String = Configuration.DEFAULT_TELEMETRY_ENDPOINT,
-    private val responseStatus: Int = 200,
-    private val responseHeaders: Headers = MutableHeaders(),
-    private val responseBody: Response.Body = Response.Body.empty(),
-    private val debugHeaderValue: String? = null
-) : Client() {
-    override fun fetch(request: Request): Response {
-        Assert.assertTrue("URL must be redirected for tagged pings",
-            request.url.startsWith(responseUrl))
-        Assert.assertEquals("Debug headers must match what the ping tag was set to",
-            debugHeaderValue, request.headers!!["X-Debug-ID"])
-
-        // Have to return a response here.
-        return Response(
-            responseUrl,
-            responseStatus,
-            request.headers ?: responseHeaders,
-            responseBody)
-    }
 }
 
 /**
