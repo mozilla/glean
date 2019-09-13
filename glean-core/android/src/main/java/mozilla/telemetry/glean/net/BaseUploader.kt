@@ -25,24 +25,20 @@ class BaseUploader(d: PingUploader) : PingUploader by d {
     }
 
     /**
-     * Log the contents of a ping to the console, if configured to do so in
-     * [Configuration.logPings].
+     * Log the contents of a ping to the console.
      *
      * @param path the URL path to append to the server address
      * @param data the serialized text data to send
-     * @param config the Glean configuration object
      */
-    private fun logPing(path: String, data: String, config: Configuration) {
-        if (config.logPings) {
-            // Parse and reserialize the JSON so it has indentation and is human-readable.
-            try {
-                val json = JSONObject(data)
-                val indented = json.toString(2)
+    private fun logPing(path: String, data: String) {
+        // Parse and reserialize the JSON so it has indentation and is human-readable.
+        try {
+            val json = JSONObject(data)
+            val indented = json.toString(2)
 
-                Log.d(LOG_TAG, "Glean ping to URL: $path\n$indented")
-            } catch (e: JSONException) {
-                Log.d(LOG_TAG, "Exception parsing ping as JSON: $e") // $COVERAGE-IGNORE$
-            }
+            Log.d(LOG_TAG, "Glean ping to URL: $path\n$indented")
+        } catch (e: JSONException) {
+            Log.d(LOG_TAG, "Exception parsing ping as JSON: $e") // $COVERAGE-IGNORE$
         }
     }
 
@@ -101,7 +97,9 @@ class BaseUploader(d: PingUploader) : PingUploader by d {
      *         error callers can deal with.
      */
     internal fun doUpload(path: String, data: String, config: Configuration): Boolean {
-        logPing(path, data, config)
+        if (config.logPings) {
+            logPing(path, data)
+        }
 
         return upload(
             url = config.serverEndpoint + path,
