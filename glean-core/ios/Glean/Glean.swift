@@ -19,7 +19,6 @@ public class Glean {
     public static let shared = Glean()
 
     var handle: UInt64 = 0
-    private var initialized: Bool = false
     private var uploadEnabled: Bool = true
     private var configuration: Configuration?
     static var backgroundTaskId = UIBackgroundTaskIdentifier.invalid
@@ -40,7 +39,6 @@ public class Glean {
 
     deinit {
         self.handle = 0
-        self.initialized = false
     }
 
     /// Initialize the Glean SDK.
@@ -75,6 +73,10 @@ public class Glean {
             return glean_initialize(&cfg)
         }
 
+        if handle == 0 {
+            return
+        }
+
         // If any pings were registered before initializing, do so now
         for ping in self.pingTypeQueue {
             self.registerPingType(ping)
@@ -84,10 +86,18 @@ public class Glean {
             self.pingTypeQueue.removeAll()
         }
 
+        initializeCoreMetrics()
+
+        // Deal with any pending events so we can start recording new ones
+        glean_on_ready_to_send_pings(self.handle)
+
         // Signal Dispatcher that init is complete
         Dispatchers.shared.flushQueuedInitialTasks()
+    }
 
-        self.initialized = true
+    /// Initialize the core metrics internally managed by Glean (e.g. client id).
+    private func initializeCoreMetrics() {
+        /// left empty for now, we don't have additional core metrics
     }
 
     /// Enable or disable Glean collection and upload.
