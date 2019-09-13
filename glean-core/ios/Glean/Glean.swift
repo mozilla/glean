@@ -113,20 +113,17 @@ public class Glean {
 
     /// Handle background event and send appropriate pings
     func handleBackgroundEvent() {
-        // Perform task on a background thread
-        _ = Dispatchers.shared.launch {
-            Glean.backgroundTaskID = UIApplication.shared.beginBackgroundTask(withName: "Glean Upload Task") {
-                // End the task if time expires
-                UIApplication.shared.endBackgroundTask(Glean.backgroundTaskID)
-                Glean.backgroundTaskID = UIBackgroundTaskIdentifier.invalid
-            }
-
-            self.sendPingsByName(pingNames: ["baseline", "events"])
-
-            // End task assertion
+        Glean.backgroundTaskID = UIApplication.shared.beginBackgroundTask(withName: "Glean Upload Task") {
+            // End the task if time expires
             UIApplication.shared.endBackgroundTask(Glean.backgroundTaskID)
             Glean.backgroundTaskID = UIBackgroundTaskIdentifier.invalid
         }
+
+        self.sendPingsByName(pingNames: ["baseline", "events"])
+
+        // End task assertion
+        UIApplication.shared.endBackgroundTask(Glean.backgroundTaskID)
+        Glean.backgroundTaskID = UIBackgroundTaskIdentifier.invalid
     }
 
     func sendPingsByName(pingNames: [String]) {

@@ -24,10 +24,8 @@ public class HttpPingUploader {
     ///     * path: The URL path to append to the server address
     ///     * data: The serialized text data to send
     ///     * config: The Glean `Configuration` object
-    func logPing(path: String, data: String, config: Configuration) {
-        if config.logPings {
-            NSLog("\(Constants.logTag) : \(path)\n\(data)")
-        }
+    func logPing(path: String, data: String) {
+        NSLog("\(Constants.logTag) : \(path)\n\(data)")
     }
 
     /// Synchronously upload a ping to Mozilla servers.
@@ -42,7 +40,9 @@ public class HttpPingUploader {
     /// headers are added to the HTTP request in addition to the UserAgent. This allows
     /// us to easily handle pings coming from Glean on the legacy Mozilla pipeline.
     func upload(path: String, data: String, config: Configuration, callback: @escaping (Bool, Error?) -> Void) {
-        logPing(path: path, data: data, config: config)
+        if config.logPings {
+            logPing(path: path, data: data)
+        }
 
         if let request = buildRequest(path: path, data: data, config: config) {
             let task = URLSession.shared.dataTask(with: request) { _, response, error in
