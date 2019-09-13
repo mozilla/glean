@@ -22,6 +22,7 @@ public class Glean {
     private var initialized: Bool = false
     private var uploadEnabled: Bool = true
     private var configuration: Configuration?
+    static var backgroundTaskId = UIBackgroundTaskIdentifier.invalid
 
     // This struct is used for organizational purposes to keep the class constants in a single place
     struct Constants {
@@ -113,17 +114,17 @@ public class Glean {
 
     /// Handle background event and send appropriate pings
     func handleBackgroundEvent() {
-        Glean.backgroundTaskID = UIApplication.shared.beginBackgroundTask(withName: "Glean Upload Task") {
+        Glean.backgroundTaskId = UIApplication.shared.beginBackgroundTask(withName: "Glean Upload Task") {
             // End the task if time expires
-            UIApplication.shared.endBackgroundTask(Glean.backgroundTaskID)
-            Glean.backgroundTaskID = UIBackgroundTaskIdentifier.invalid
+            UIApplication.shared.endBackgroundTask(Glean.backgroundTaskId)
+            Glean.backgroundTaskId = UIBackgroundTaskIdentifier.invalid
         }
 
         self.sendPingsByName(pingNames: ["baseline", "events"])
 
         // End task assertion
-        UIApplication.shared.endBackgroundTask(Glean.backgroundTaskID)
-        Glean.backgroundTaskID = UIBackgroundTaskIdentifier.invalid
+        UIApplication.shared.endBackgroundTask(Glean.backgroundTaskId)
+        Glean.backgroundTaskId = UIBackgroundTaskIdentifier.invalid
     }
 
     func sendPingsByName(pingNames: [String]) {
