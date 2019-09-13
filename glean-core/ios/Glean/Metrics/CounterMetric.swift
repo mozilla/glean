@@ -47,8 +47,9 @@ public class CounterMetricType {
     public func add(_ amount: Int32 = 1) {
         guard !self.disabled else { return }
 
-        // TODO(bug 1580779): Move this off the main thread.
-        glean_counter_add(Glean.shared.handle, self.handle, amount)
+        _ = Dispatchers.shared.launch {
+            glean_counter_add(Glean.shared.handle, self.handle, amount)
+        }
     }
 
     /// Tests whether a value is stored for the metric for testing purposes only. This function will
