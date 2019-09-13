@@ -18,6 +18,18 @@ extension String {
     func matches(_ regex: String) -> Bool {
         return self.range(of: regex, options: .regularExpression, range: nil, locale: nil) != nil
     }
+
+    var fileURL: URL {
+        return URL(fileURLWithPath: self)
+    }
+
+    var pathExtension: String {
+        return fileURL.pathExtension
+    }
+
+    var lastPathComponent: String {
+        return fileURL.lastPathComponent
+    }
 }
 
 /// Helper function to retrive the application's Documents directory for persistent file storage

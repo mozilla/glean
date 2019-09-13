@@ -9,7 +9,6 @@ public struct Configuration {
     let userAgent: String
     let connectionTimeout: Int
     let logPings: Bool
-    let httpClient: HttpPingUploader
     let maxEvents: Int32?
     let pingTag: String?
     let channel: String?
@@ -41,7 +40,6 @@ public struct Configuration {
         userAgent: String = DEFAULT_USER_AGENT,
         connectionTimeout: Int = DEFAULT_CONNECTION_TIMEOUT,
         logPings: Bool = DEFAULT_LOG_PINGS,
-        httpClient: HttpPingUploader = HttpPingUploader(),
         maxEvents: Int32? = nil,
         pingTag: String? = nil,
         channel: String? = nil
@@ -50,7 +48,6 @@ public struct Configuration {
         self.userAgent = userAgent
         self.connectionTimeout = connectionTimeout
         self.logPings = logPings
-        self.httpClient = httpClient
         self.maxEvents = maxEvents
         self.pingTag = pingTag
         self.channel = channel
@@ -67,14 +64,12 @@ public struct Configuration {
     public init(
         connectionTimeout: Int = DEFAULT_CONNECTION_TIMEOUT,
         maxEvents: Int32? = nil,
-        httpClient: HttpPingUploader = HttpPingUploader(),
         channel: String? = nil
     ) {
         self.serverEndpoint = Configuration.DEFAULT_TELEMETRY_ENDPOINT
         self.userAgent = Configuration.DEFAULT_USER_AGENT
         self.connectionTimeout = connectionTimeout
         self.logPings = Configuration.DEFAULT_LOG_PINGS
-        self.httpClient = httpClient
         self.maxEvents = maxEvents
         self.pingTag = nil
         self.channel = channel

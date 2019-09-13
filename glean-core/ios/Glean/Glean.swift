@@ -147,7 +147,9 @@ public class Glean {
                 )
 
                 if sentPing != 0 {
-                    HttpPingUploader().process()
+                    if let config = self.configuration {
+                        HttpPingUploader(configuration: config).process()
+                    }
                 }
             }
         }
