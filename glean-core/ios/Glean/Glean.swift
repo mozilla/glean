@@ -114,10 +114,29 @@ public class Glean {
     /// - parameters:
     ///     * enabled: When true, enable metric collection.
     public func setUploadEnabled(_ enabled: Bool) {
-        uploadEnabled = enabled
-
         if isInitialized() {
-            glean_set_upload_enabled(handle, enabled.toByte())
+            let originalEnabled = getUploadEnabled()
+
+            _ = Dispatchers.shared.launch {
+                // glean_set_upload_enabled might delete all of the queued pings.
+                // Currently a ping uploader could be scheduled ahead of this,
+                // at which point it wil pick up scheduled pings before the setting was toggled.
+                // Or it is scheduled afterwards and will not schedule or find any left-over pings to send.
+
+                glean_set_upload_enabled(self.handle, enabled.toByte())
+
+                if !enabled {
+                    // TODO: cancel schedulers and upload worker
+                }
+
+                if !originalEnabled && self.getUploadEnabled() {
+                    // If uploading is being re-enabled, we have to restore the
+                    // application-lifetime metrics.
+                    self.initializeCoreMetrics()
+                }
+            }
+        } else {
+            self.uploadEnabled = enabled
         }
     }
 
