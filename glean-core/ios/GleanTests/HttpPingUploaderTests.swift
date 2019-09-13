@@ -33,14 +33,36 @@ class HttpPingUploaderTests: XCTestCase {
         }
     }
 
+    private func getAndClearPingDirectory() -> URL {
+        // Get the ping directory
+        let pingDir = HttpPingUploader.getOrCreatePingDirectory()
+
+        // Clear the directory to ensure we start fresh
+        // Verify all the files were removed, including the bad ones
+        do {
+            let directoryContents = try FileManager.default.contentsOfDirectory(
+                atPath: pingDir.absoluteString
+            )
+            for file in directoryContents {
+                try FileManager.default.removeItem(
+                    atPath: pingDir.appendingPathComponent(file).absoluteString
+                )
+            }
+        } catch {
+            // Do nothing
+        }
+
+        return pingDir
+    }
+
     func test2XX() {
         var testValue = false
         setupHttpResponseStub(statusCode: 200)
 
         expectation = expectation(description: "Completed upload")
 
-        let httpPingUploader = HttpPingUploader()
-        httpPingUploader.upload(path: testPath, data: testPing, config: testConfig) { success, _ in
+        let httpPingUploader = HttpPingUploader(configuration: testConfig)
+        httpPingUploader.upload(path: testPath, data: testPing) { success, _ in
             testValue = success
             self.expectation?.fulfill()
         }
@@ -57,8 +79,8 @@ class HttpPingUploaderTests: XCTestCase {
 
         expectation = expectation(description: "Completed upload")
 
-        let httpPingUploader = HttpPingUploader()
-        httpPingUploader.upload(path: testPath, data: testPing, config: testConfig) { success, _ in
+        let httpPingUploader = HttpPingUploader(configuration: testConfig)
+        httpPingUploader.upload(path: testPath, data: testPing) { success, _ in
             testValue = success
             self.expectation?.fulfill()
         }
@@ -75,8 +97,8 @@ class HttpPingUploaderTests: XCTestCase {
 
         expectation = expectation(description: "Completed upload")
 
-        let httpPingUploader = HttpPingUploader()
-        httpPingUploader.upload(path: testPath, data: testPing, config: testConfig) { success, _ in
+        let httpPingUploader = HttpPingUploader(configuration: testConfig)
+        httpPingUploader.upload(path: testPath, data: testPing) { success, _ in
             testValue = success
             self.expectation?.fulfill()
         }
@@ -93,8 +115,8 @@ class HttpPingUploaderTests: XCTestCase {
 
         expectation = expectation(description: "Completed upload")
 
-        let httpPingUploader = HttpPingUploader()
-        httpPingUploader.upload(path: testPath, data: testPing, config: testConfig) { success, _ in
+        let httpPingUploader = HttpPingUploader(configuration: testConfig)
+        httpPingUploader.upload(path: testPath, data: testPing) { success, _ in
             testValue = success
             self.expectation?.fulfill()
         }
@@ -106,7 +128,8 @@ class HttpPingUploaderTests: XCTestCase {
     }
 
     func testRequestParameters() {
-        let request = HttpPingUploader().buildRequest(path: testPath, data: testPing, config: testConfig)
+        let request = HttpPingUploader(configuration: testConfig)
+            .buildRequest(path: testPath, data: testPing)
 
         XCTAssertEqual(
             request?.url?.path,
@@ -153,5 +176,68 @@ class HttpPingUploaderTests: XCTestCase {
             Configuration.getGleanVersion(),
             "Request X-Client-Version set correctly"
         )
+    }
+
+    func testProcessingOfPingFiles() {
+        // Get the ping directory
+        let pingDir = getAndClearPingDirectory()
+
+        // Write some simulated ping files into the directory for testing
+        let fileContents = "\(testPath)\n\(testPing)\n".data(using: .utf8)
+        let expectedFilesUploaded = 3
+        for _ in 0 ..< expectedFilesUploaded {
+            let fileName = UUID().description
+            let file = pingDir.appendingPathComponent(fileName)
+
+            if !FileManager.default.createFile(
+                atPath: file.absoluteString,
+                contents: fileContents,
+                attributes: nil
+            ) {
+                print("Argh!!")
+            }
+        }
+
+        // Now let's write a ping with a non-conforming filename to ensure that they get
+        // handled by the processor correctly
+        let badFileName = "BadFileName"
+        let badFile = pingDir.appendingPathComponent(badFileName)
+        FileManager.default.createFile(
+            atPath: badFile.absoluteString,
+            contents: fileContents,
+            attributes: nil
+        )
+
+        // Now set up our test server
+        var countFilesUploaded = 0
+
+        stub(condition: isHost("incoming.telemetry.mozilla.org")) { data in
+            let body = (data as NSURLRequest).ohhttpStubs_HTTPBody()
+            let json = try! JSONSerialization.jsonObject(with: body!, options: []) as? [String: Any]
+            XCTAssert(json != nil)
+            XCTAssertEqual(json?["ping"] as? String, "test")
+
+            countFilesUploaded += 1
+            if expectedFilesUploaded == countFilesUploaded {
+                DispatchQueue.main.async {
+                    // let the response get processed before we mark the expectation fulfilled
+                    self.expectation?.fulfill()
+                }
+            }
+
+            return OHHTTPStubsResponse(
+                jsonObject: [],
+                statusCode: 200,
+                headers: ["Content-Type": "application/json"]
+            )
+        }
+
+        // Set our expectation that will be fulfilled by the stub above
+        expectation = expectation(description: "Completed upload")
+
+        // Trigger file processing and wait for the expectation to be fulfilled.  This will cause
+        // a test failure if the expectation times out.
+        HttpPingUploader(configuration: testConfig).process()
+        wait(for: [expectation!], timeout: TimeInterval(5.0))
     }
 }

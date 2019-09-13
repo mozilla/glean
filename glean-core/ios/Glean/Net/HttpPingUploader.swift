@@ -6,6 +6,8 @@
 ///
 /// This will typically be invoked by the appropriate scheduling mechanism to upload a ping to the server.
 public class HttpPingUploader {
+    var config: Configuration
+
     // This struct is used for organizational purposes to keep the class constants in a single place
     struct Constants {
         // Since ping file names are UUIDs, this matches UUIDs for filtering purposes
@@ -14,8 +16,8 @@ public class HttpPingUploader {
         static let pingsDir = "pings"
     }
 
-    public init() {
-        // intentionally left empty to allow public instantiation
+    public init(configuration: Configuration) {
+        config = configuration
     }
 
     /// A function to aid in logging the ping to the console via `NSLog`.
@@ -39,12 +41,12 @@ public class HttpPingUploader {
     /// Note that the `X-Client-Type`: `Glean` and `X-Client-Version`: <SDK version>
     /// headers are added to the HTTP request in addition to the UserAgent. This allows
     /// us to easily handle pings coming from Glean on the legacy Mozilla pipeline.
-    func upload(path: String, data: String, config: Configuration, callback: @escaping (Bool, Error?) -> Void) {
+    func upload(path: String, data: String, callback: @escaping (Bool, Error?) -> Void) {
         if config.logPings {
             logPing(path: path, data: data)
         }
 
-        if let request = buildRequest(path: path, data: data, config: config) {
+        if let request = buildRequest(path: path, data: data) {
             let task = URLSession.shared.dataTask(with: request) { _, response, error in
                 let httpResponse = response as? HTTPURLResponse
                 let statusCode = httpResponse?.statusCode ?? 0
@@ -89,7 +91,7 @@ public class HttpPingUploader {
     ///     * callback: A callback to return the success/failure of the upload
     ///
     /// - returns: Optional `URLRequest` object with the configured headings set.
-    func buildRequest(path: String, data: String, config: Configuration) -> URLRequest? {
+    func buildRequest(path: String, data: String) -> URLRequest? {
         if let url = URL(string: config.serverEndpoint + path) {
             var request = URLRequest(url: url)
             request.addValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
@@ -131,28 +133,37 @@ public class HttpPingUploader {
     /// This function will ignore files that don't match the UUID regex and just delete them to
     /// prevent files from polluting the ping storage directory.
     func process() {
-        let pingDirectory = getDocumentsDirectory().appendingPathComponent(Constants.pingsDir)
+        let pingDirectory = HttpPingUploader.getOrCreatePingDirectory()
 
         do {
             let storageDirectory = try FileManager.default.contentsOfDirectory(
-                at: pingDirectory,
-                includingPropertiesForKeys: nil
+                atPath: pingDirectory.absoluteString
             )
 
             for file in storageDirectory {
-                if file.absoluteString.matches(Constants.filePattern) {
+                if file.lastPathComponent.matches(Constants.filePattern) {
                     NSLog("\(Constants.logTag) : Processing ping: \(file)")
-                    processFile(file) { success, error in
+                    processFile(pingDirectory.appendingPathComponent(file)) { success, error in
                         if !success {
                             NSLog(
                                 "\(Constants.logTag) : Error processing ping file: \(file) - \(error.debugDescription)"
                             )
+                        } else {
+                            do {
+                                try FileManager.default.removeItem(
+                                    atPath: pingDirectory.appendingPathComponent(file).absoluteString
+                                )
+                            } catch {
+                                print("\(Constants.logTag) : Error deleting ping file: \(file)")
+                            }
                         }
                     }
                 } else {
                     // Delete files that don't match the UUID filePattern regex
                     NSLog("\(Constants.logTag) : Pattern mismatch. Deleting \(file)")
-                    try FileManager.default.removeItem(at: file)
+                    try FileManager.default.removeItem(
+                        atPath: pingDirectory.appendingPathComponent(file).absoluteString
+                    )
                 }
             }
         } catch {
@@ -167,14 +178,15 @@ public class HttpPingUploader {
     ///   * callback: Allows for an action to occur as the result of the async upload operation
     func processFile(_ file: URL, callback: @escaping (Bool, Error?) -> Void) {
         do {
-            let data = try String(contentsOf: file, encoding: .utf8)
+            let data = try String(contentsOfFile: file.absoluteString, encoding: .utf8)
+            // let data = try String(contentsOf: file, encoding: .utf8)
             let lines = data.components(separatedBy: .newlines)
 
-            if lines.count == 2 {
+            if lines.count >= 2 {
                 let path = lines[0]
                 let serializedPing = lines[1]
 
-                self.upload(path: path, data: serializedPing, config: Glean.shared.configuration!, callback: callback)
+                self.upload(path: path, data: serializedPing, callback: callback)
             } else {
                 NSLog("\(Constants.logTag) : Error while processing file: \(file) - File corrupted")
                 callback(false, nil)
@@ -183,5 +195,23 @@ public class HttpPingUploader {
             NSLog("\(Constants.logTag) : Error while processing file: \(file) - \(error.localizedDescription)")
             callback(false, nil)
         }
+    }
+
+    static func getOrCreatePingDirectory() -> URL {
+        let dataPath = getDocumentsDirectory().appendingPathComponent(Constants.pingsDir)
+
+        if !FileManager.default.fileExists(atPath: dataPath.absoluteString) {
+            do {
+                try FileManager.default.createDirectory(
+                    atPath: dataPath.absoluteString,
+                    withIntermediateDirectories: true,
+                    attributes: nil
+                )
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+
+        return dataPath
     }
 }
