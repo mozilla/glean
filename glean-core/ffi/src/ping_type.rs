@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use ffi_support::{define_handle_map_deleter, ConcurrentHandleMap, FfiStr};
+use ffi_support::{ConcurrentHandleMap, FfiStr};
 use lazy_static::lazy_static;
 
 use glean_core::metrics::PingType;
@@ -14,7 +14,7 @@ use crate::GLEAN;
 lazy_static! {
     pub static ref PING_TYPES: ConcurrentHandleMap<PingType> = ConcurrentHandleMap::new();
 }
-define_handle_map_deleter!(PING_TYPES, glean_destroy_ping_type);
+crate::define_infallible_handle_map_deleter!(PING_TYPES, glean_destroy_ping_type);
 
 #[no_mangle]
 pub extern "C" fn glean_new_ping_type(ping_name: FfiStr, include_client_id: u8) -> u64 {

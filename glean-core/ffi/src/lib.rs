@@ -5,9 +5,7 @@
 use std::convert::TryFrom;
 use std::os::raw::c_char;
 
-use ffi_support::{
-    define_handle_map_deleter, define_string_destructor, ConcurrentHandleMap, FfiStr,
-};
+use ffi_support::{define_string_destructor, ConcurrentHandleMap, FfiStr};
 use lazy_static::lazy_static;
 
 use glean_core::Glean;
@@ -230,5 +228,5 @@ pub extern "C" fn glean_test_clear_all_stores(glean_handle: u64) {
     GLEAN.call_infallible(glean_handle, |glean| glean.test_clear_all_stores());
 }
 
-define_handle_map_deleter!(GLEAN, glean_destroy_glean);
+define_infallible_handle_map_deleter!(GLEAN, glean_destroy_glean);
 define_string_destructor!(glean_str_free);

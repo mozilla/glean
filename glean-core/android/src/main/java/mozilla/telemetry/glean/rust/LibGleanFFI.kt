@@ -71,7 +71,7 @@ internal interface LibGleanFFI : Library {
 
     fun glean_test_clear_all_stores(handle: Long)
 
-    fun glean_destroy_glean(handle: Long, error: RustError.ByReference)
+    fun glean_destroy_glean(handle: Long)
 
     fun glean_on_ready_to_send_pings(handle: Long)
 
@@ -109,7 +109,7 @@ internal interface LibGleanFFI : Library {
 
     fun glean_new_ping_type(name: String, include_client_id: Byte): Long
 
-    fun glean_destroy_ping_type(handle: Long, error: RustError.ByReference)
+    fun glean_destroy_ping_type(handle: Long)
 
     fun glean_register_ping_type(glean_handle: Long, ping_type_id: Long)
 
@@ -126,7 +126,7 @@ internal interface LibGleanFFI : Library {
         disabled: Byte
     ): Long
 
-    fun glean_destroy_boolean_metric(handle: Long, error: RustError.ByReference)
+    fun glean_destroy_boolean_metric(handle: Long)
 
     fun glean_boolean_set(glean_handle: Long, metric_id: Long, value: Byte)
 
@@ -145,7 +145,7 @@ internal interface LibGleanFFI : Library {
         disabled: Byte
     ): Long
 
-    fun glean_destroy_counter_metric(handle: Long, error: RustError.ByReference)
+    fun glean_destroy_counter_metric(handle: Long)
 
     fun glean_counter_add(glean_handle: Long, metric_id: Long, amount: Int)
 
@@ -164,7 +164,7 @@ internal interface LibGleanFFI : Library {
         disabled: Byte
     ): Long
 
-    fun glean_destroy_quantity_metric(handle: Long, error: RustError.ByReference)
+    fun glean_destroy_quantity_metric(handle: Long)
 
     fun glean_quantity_set(glean_handle: Long, metric_id: Long, value: Long)
 
@@ -183,7 +183,7 @@ internal interface LibGleanFFI : Library {
         disabled: Byte
     ): Long
 
-    fun glean_destroy_string_metric(handle: Long, error: RustError.ByReference)
+    fun glean_destroy_string_metric(handle: Long)
 
     fun glean_string_set(glean_handle: Long, metric_id: Long, value: String)
 
@@ -203,7 +203,7 @@ internal interface LibGleanFFI : Library {
         time_unit: Int
     ): Long
 
-    fun glean_destroy_datetime_metric(handle: Long, error: RustError.ByReference)
+    fun glean_destroy_datetime_metric(handle: Long)
 
     fun glean_datetime_set(
         glean_handle: Long,
@@ -233,7 +233,7 @@ internal interface LibGleanFFI : Library {
         disabled: Byte
     ): Long
 
-    fun glean_destroy_string_list_metric(handle: Long, error: RustError.ByReference)
+    fun glean_destroy_string_list_metric(handle: Long)
 
     fun glean_string_list_add(glean_handle: Long, metric_id: Long, value: String)
 
@@ -258,7 +258,7 @@ internal interface LibGleanFFI : Library {
         disabled: Byte
     ): Long
 
-    fun glean_destroy_uuid_metric(handle: Long, error: RustError.ByReference)
+    fun glean_destroy_uuid_metric(handle: Long)
 
     fun glean_uuid_set(glean_handle: Long, metric_id: Long, value: String)
 
@@ -278,7 +278,7 @@ internal interface LibGleanFFI : Library {
         time_unit: Int
     ): Long
 
-    fun glean_destroy_timespan_metric(handle: Long, error: RustError.ByReference)
+    fun glean_destroy_timespan_metric(handle: Long)
 
     fun glean_timespan_set_start(glean_handle: Long, metric_id: Long, start_time: Long)
 
@@ -304,7 +304,7 @@ internal interface LibGleanFFI : Library {
         time_unit: Int
     ): Long
 
-    fun glean_destroy_timing_distribution_metric(handle: Long, error: RustError.ByReference)
+    fun glean_destroy_timing_distribution_metric(handle: Long)
 
     fun glean_timing_distribution_set_start(glean_handle: Long, metric_id: Long, start_time: Long): GleanTimerId
 
@@ -339,7 +339,7 @@ internal interface LibGleanFFI : Library {
         memory_unit: Int
     ): Long
 
-    fun glean_destroy_memory_distribution_metric(handle: Long, error: RustError.ByReference)
+    fun glean_destroy_memory_distribution_metric(handle: Long)
 
     fun glean_memory_distribution_accumulate(glean_handle: Long, metric_id: Long, sample: Long)
 
@@ -368,7 +368,7 @@ internal interface LibGleanFFI : Library {
         histogram_type: Int
     ): Long
 
-    fun glean_destroy_custom_distribution_metric(handle: Long, error: RustError.ByReference)
+    fun glean_destroy_custom_distribution_metric(handle: Long)
 
     fun glean_custom_distribution_accumulate_samples(glean_handle: Long, metric_id: Long, samples: LongArray?, len: Int)
 

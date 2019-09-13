@@ -7,7 +7,7 @@ For Kotlin this is in `glean-core/android/src/main/java/mozilla/telemetry/glean/
 
 ```kotlin
 fun glean_new_counter_metric(category: String, name: String, send_in_pings: StringArray, send_in_pings_len: Int, lifetime: Int, disabled: Byte): Long
-fun glean_destroy_counter_metric(handle: Long, error: RustError.ByReference)
+fun glean_destroy_counter_metric(handle: Long)
 fun glean_counter_add(glean_handle: Long, metric_id: Long, amount: Int)
 ```
 
@@ -44,8 +44,7 @@ class CounterMetricType(
 
     protected fun finalize() {
         if (this.handle != 0L) {
-            val error = RustError.ByReference()
-            LibGleanFFI.INSTANCE.glean_destroy_counter_metric(this.handle, error)
+            LibGleanFFI.INSTANCE.glean_destroy_counter_metric(this.handle)
         }
     }
 

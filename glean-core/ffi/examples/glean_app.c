@@ -35,10 +35,9 @@ int main(void)
   printf("Payload:\n%s\n", payload);
   glean_str_free(payload);
 
-  ExternError err;
-  glean_destroy_counter_metric(metric, &err);
+  glean_destroy_counter_metric(metric);
 
-  glean_destroy_glean(glean, &err);
+  glean_destroy_glean(glean);
 
   return 0;
 }

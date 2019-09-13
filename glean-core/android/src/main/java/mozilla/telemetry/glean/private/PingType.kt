@@ -6,7 +6,6 @@ package mozilla.telemetry.glean.private
 
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.rust.LibGleanFFI
-import mozilla.telemetry.glean.rust.RustError
 import mozilla.telemetry.glean.rust.toByte
 
 /**
@@ -35,8 +34,7 @@ class PingType(
      */
     protected fun finalize() {
         if (this.handle != 0L) {
-            val error = RustError.ByReference()
-            LibGleanFFI.INSTANCE.glean_destroy_ping_type(this.handle, error)
+            LibGleanFFI.INSTANCE.glean_destroy_ping_type(this.handle)
         }
     }
 

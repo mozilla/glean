@@ -8,7 +8,6 @@ import androidx.annotation.VisibleForTesting
 import com.sun.jna.StringArray
 import mozilla.telemetry.glean.utils.parseISOTimeString
 import mozilla.telemetry.glean.rust.LibGleanFFI
-import mozilla.telemetry.glean.rust.RustError
 import mozilla.telemetry.glean.rust.toByte
 import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.Glean
@@ -57,8 +56,7 @@ class DatetimeMetricType internal constructor(
      */
     protected fun finalize() {
         if (this.handle != 0L) {
-            val error = RustError.ByReference()
-            LibGleanFFI.INSTANCE.glean_destroy_datetime_metric(this.handle, error)
+            LibGleanFFI.INSTANCE.glean_destroy_datetime_metric(this.handle)
         }
     }
 
