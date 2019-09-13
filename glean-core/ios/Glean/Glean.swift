@@ -64,6 +64,10 @@ public class Glean {
             var cfg = cfg
             return glean_initialize(&cfg)
         }
+
+        // Signal Dispatcher that init is complete
+        Dispatchers.shared.flushQueuedInitialTasks()
+
         self.initialized = true
     }
 
