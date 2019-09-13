@@ -136,7 +136,7 @@ class HttpURLConnectionUploader : PingUploader {
     }
 
     @Throws(IOException::class)
-    fun doUpload(connection: HttpURLConnection, data: String): Int {
+    internal fun doUpload(connection: HttpURLConnection, data: String): Int {
         connection.outputStream.bufferedWriter().use {
             it.write(data)
             it.flush()
@@ -146,7 +146,7 @@ class HttpURLConnectionUploader : PingUploader {
     }
 
     @VisibleForTesting @Throws(IOException::class)
-    fun openConnection(url: String): HttpURLConnection {
+    internal fun openConnection(url: String): HttpURLConnection {
         return URL(url).openConnection() as HttpURLConnection
     }
 }
