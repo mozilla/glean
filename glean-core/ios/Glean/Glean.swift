@@ -22,7 +22,6 @@ public class Glean {
     private var initialized: Bool = false
     private var uploadEnabled: Bool = true
     private var configuration: Configuration?
-    private var testingMode = false
 
     private init() {
         // intentionally left private, no external user can instantiate a new global object.
@@ -126,7 +125,7 @@ public class Glean {
     /// This makes all asynchronous work synchronous so we can test the results of the
     /// API synchronously.
     func enableTestingMode() {
-        testingMode = true
+        Dispatchers.shared.setTestingMode(enabled: true)
     }
 
     /// TEST ONLY FUNCTION.
