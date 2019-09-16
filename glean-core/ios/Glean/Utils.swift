@@ -11,22 +11,24 @@ extension String: Error {
     public var errorDescription: String? { return self }
 }
 
-/// Checks to see if a string matches a regex
-///
-/// - returns: true if the string matches the regex
 extension String {
+    /// Checks to see if a string matches a regex
+    ///
+    /// - returns: true if the string matches the regex
     func matches(_ regex: String) -> Bool {
         return self.range(of: regex, options: .regularExpression, range: nil, locale: nil) != nil
     }
 
+    /// Conveniently convert a string path to a file URL
+    ///
+    /// - returns: File `URL` represeting the path contained in the string
     var fileURL: URL {
         return URL(fileURLWithPath: self)
     }
 
-    var pathExtension: String {
-        return fileURL.pathExtension
-    }
-
+    /// Gets the last path components, such as the file name from a string path
+    ///
+    /// - returns: `String` representing the last path component
     var lastPathComponent: String {
         return fileURL.lastPathComponent
     }
