@@ -26,7 +26,6 @@ public class HttpPingUploader {
     /// - parameters:
     ///     * path: The URL path to append to the server address
     ///     * data: The serialized text data to send
-    ///     * config: The Glean `Configuration` object
     func logPing(path: String, data: String) {
         NSLog("\(Constants.logTag) : \(path)\n\(data)")
     }
@@ -36,7 +35,6 @@ public class HttpPingUploader {
     /// - parameters:
     ///     * path: The URL path to append to the server address
     ///     * data: The serialized text data to send
-    ///     * config: The Glean configuration object
     ///     * callback: A callback to return the success/failure of the upload
     ///
     /// Note that the `X-Client-Type`: `Glean` and `X-Client-Version`: <SDK version>
@@ -88,7 +86,6 @@ public class HttpPingUploader {
     /// - parameters:
     ///     * path: The URL path to append to the server address
     ///     * data: The serialized text data to send
-    ///     * config: The Glean configuration object
     ///     * callback: A callback to return the success/failure of the upload
     ///
     /// - returns: Optional `URLRequest` object with the configured headings set.
@@ -180,7 +177,6 @@ public class HttpPingUploader {
     func processFile(_ file: URL, callback: @escaping (Bool, Error?) -> Void) {
         do {
             let data = try String(contentsOfFile: file.absoluteString, encoding: .utf8)
-            // let data = try String(contentsOf: file, encoding: .utf8)
             let lines = data.components(separatedBy: .newlines)
 
             if lines.count >= 2 {
@@ -198,6 +194,9 @@ public class HttpPingUploader {
         }
     }
 
+    /// Helper function that will return the ping directory, or create it if it doesn't exist
+    ///
+    /// - returns: File `URL` representing the ping directory
     static func getOrCreatePingDirectory() -> URL {
         let dataPath = getDocumentsDirectory().appendingPathComponent(Constants.pingsDir)
 

@@ -114,6 +114,8 @@ public class Glean {
 
     /// Handle background event and send appropriate pings
     func handleBackgroundEvent() {
+        // This asks the OS for more time when going to background to perform critical tasks.
+        // This will be signaled complete when `sendPingsByName` is done.
         Glean.backgroundTaskId = UIApplication.shared.beginBackgroundTask(withName: "Glean Upload Task") {
             // End the task if time expires
             UIApplication.shared.endBackgroundTask(Glean.backgroundTaskId)
@@ -127,6 +129,17 @@ public class Glean {
         Glean.backgroundTaskId = UIBackgroundTaskIdentifier.invalid
     }
 
+    /// Send a list of pings by name
+    ///
+    /// - parameters:
+    ///     * pingNames: List of ping names to send
+    ///
+    /// The ping content is assembled as soon as possible, but upload is not
+    /// guaranteed to happen immediately, as that depends on the upload
+    /// policies.
+    ///
+    /// If the ping currently contains no content, it will not be assembled and
+    /// queued for sending.
     func sendPingsByName(pingNames: [String]) {
         _ = Dispatchers.shared.launch {
             if !self.isInitialized() {
