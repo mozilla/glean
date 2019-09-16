@@ -17,6 +17,8 @@ public class HttpPingUploader {
         static let connectionTimeout = 10000
     }
 
+    private let logger = Logger(tag: Constants.logTag)
+
     public init(configuration: Configuration) {
         config = configuration
     }
@@ -27,7 +29,7 @@ public class HttpPingUploader {
     ///     * path: The URL path to append to the server address
     ///     * data: The serialized text data to send
     func logPing(path: String, data: String) {
-        NSLog("\(Constants.logTag) : \(path)\n\(data)")
+        logger.debug("Glean ping to URL: \(path)\n\(data)")
     }
 
     /// Synchronously upload a ping to Mozilla servers.
@@ -140,32 +142,30 @@ public class HttpPingUploader {
 
             for file in storageDirectory {
                 if file.lastPathComponent.matches(Constants.filePattern) {
-                    NSLog("\(Constants.logTag) : Processing ping: \(file)")
+                    logger.debug("Processing ping: \(file)")
                     processFile(pingDirectory.appendingPathComponent(file)) { success, error in
                         if !success {
-                            NSLog(
-                                "\(Constants.logTag) : Error processing ping file: \(file) - \(error.debugDescription)"
-                            )
+                            self.logger.error("Error processing ping file: \(file)\n\(error.debugDescription)")
                         } else {
                             do {
                                 try FileManager.default.removeItem(
                                     atPath: pingDirectory.appendingPathComponent(file).absoluteString
                                 )
                             } catch {
-                                print("\(Constants.logTag) : Error deleting ping file: \(file)")
+                                self.logger.error("Error deleting ping file: \(file)")
                             }
                         }
                     }
                 } else {
                     // Delete files that don't match the UUID filePattern regex
-                    NSLog("\(Constants.logTag) : Pattern mismatch. Deleting \(file)")
+                    logger.debug("Pattern mismatch. Deleting \(file)")
                     try FileManager.default.removeItem(
                         atPath: pingDirectory.appendingPathComponent(file).absoluteString
                     )
                 }
             }
         } catch {
-            NSLog("\(Constants.logTag) : Error while enumerating files in ping directory")
+            logger.error("Error while enumerating files in ping directory")
         }
     }
 
@@ -185,11 +185,11 @@ public class HttpPingUploader {
 
                 self.upload(path: path, data: serializedPing, callback: callback)
             } else {
-                NSLog("\(Constants.logTag) : Error while processing file: \(file) - File corrupted")
+                logger.error("Error while processing ping file: \(file): File corrupted")
                 callback(false, nil)
             }
         } catch {
-            NSLog("\(Constants.logTag) : Error while processing file: \(file) - \(error.localizedDescription)")
+            logger.error("Error while processing ping file: \(file): \(error.localizedDescription)")
             callback(false, nil)
         }
     }
