@@ -29,6 +29,8 @@ public class Glean {
         static let logTag = "glean/Glean"
     }
 
+    private var pingTypeQueue: [Ping] = []
+
     private init() {
         // intentionally left private, no external user can instantiate a new global object.
 
@@ -59,6 +61,8 @@ public class Glean {
             return
         }
 
+        self.registerPings(Pings.shared)
+
         self.configuration = configuration
 
         self.handle = withFfiConfiguration(
@@ -69,6 +73,15 @@ public class Glean {
         ) { cfg in
             var cfg = cfg
             return glean_initialize(&cfg)
+        }
+
+        // If any pings were registered before initializing, do so now
+        for ping in self.pingTypeQueue {
+            self.registerPingType(ping)
+        }
+
+        if !Dispatchers.shared.testingMode {
+            self.pingTypeQueue.removeAll()
         }
 
         // Signal Dispatcher that init is complete
@@ -167,6 +180,40 @@ public class Glean {
             UIApplication.shared.endBackgroundTask(Glean.backgroundTaskId)
             Glean.backgroundTaskId = UIBackgroundTaskIdentifier.invalid
         }
+    }
+
+    func sendPings(_ pings: [Ping]) {
+        let pingNames = pings.map { $0.name }
+        return self.sendPingsByName(pingNames: pingNames)
+    }
+
+    /// Register the pings generated from `pings.yaml` with the Glean SDK.
+    ///
+    /// - parameters:
+    ///     * pings: The `Pings` object generated for your library or application
+    ///              by the Glean SDK.
+    public func registerPings(_: Any) {
+        // Instantiating the Pings object to send this function is enough to
+        // call the constructor and have it registered through [Glean.registerPingType].
+        NSLog("Registering pings")
+    }
+
+    /// Register a `Ping` in the registry associated with this `Glean` object.
+    func registerPingType(_ pingType: Ping) {
+        // TODO: This might need to synchronized across multiple threads,
+        // `initialize()` will read and clear the ping type queue.
+        if !self.isInitialized() {
+            self.pingTypeQueue.append(pingType)
+        } else {
+            glean_register_ping_type(self.handle, pingType.handle)
+        }
+    }
+
+    /// TEST ONLY FUNCTION.
+    ///
+    /// Returns true if a ping by this name is in the ping registry.
+    func testHasPingType(_ pingName: String) -> Bool {
+        return glean_test_has_ping_type(self.handle, pingName) != 0
     }
 
     /// Test-only method to destroy the owned glean-core handle.
