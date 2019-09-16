@@ -14,6 +14,7 @@ public class HttpPingUploader {
         static let filePattern = "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
         static let logTag = "glean/HttpPingUploader"
         static let pingsDir = "pings"
+        static let connectionTimeout = 10000
     }
 
     public init(configuration: Configuration) {
@@ -99,7 +100,7 @@ public class HttpPingUploader {
             request.addValue(createDateHeaderValue(), forHTTPHeaderField: "Date")
             request.addValue("Glean", forHTTPHeaderField: "X-Client-Type")
             request.addValue(Configuration.getGleanVersion(), forHTTPHeaderField: "X-Client-Version")
-            request.timeoutInterval = TimeInterval(config.connectionTimeout)
+            request.timeoutInterval = TimeInterval(Constants.connectionTimeout)
             request.httpMethod = "POST"
             request.httpBody = Data(data.utf8)
             request.httpShouldHandleCookies = false

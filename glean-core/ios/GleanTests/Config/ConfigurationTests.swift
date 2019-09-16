@@ -19,22 +19,17 @@ class ConfigurationTests: XCTestCase {
     func testInit() {
         XCTAssertEqual(
             config?.serverEndpoint,
-            Configuration.DEFAULT_TELEMETRY_ENDPOINT,
+            Configuration.Constants.defaultTelemetryEndpoint,
             "Default endpoint is set"
         )
         XCTAssertEqual(
             config?.userAgent,
-            Configuration.DEFAULT_USER_AGENT,
+            Configuration.Constants.defaultUserAgent,
             "Default UserAgent is set"
         )
         XCTAssertEqual(
-            config?.connectionTimeout,
-            Configuration.DEFAULT_CONNECTION_TIMEOUT,
-            "Default connection timeout is set"
-        )
-        XCTAssertEqual(
             config?.logPings,
-            Configuration.DEFAULT_LOG_PINGS,
+            Configuration.Constants.defaultLogPings,
             "Default log pings is set"
         )
         XCTAssertNil(

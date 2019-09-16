@@ -12,7 +12,6 @@ class HttpPingUploaderTests: XCTestCase {
     private let testPing = "{ \"ping\": \"test\" }"
     private let testConfig = Configuration(
         userAgent: "Glean/Test 25.0.2",
-        connectionTimeout: 3050,
         logPings: true,
         pingTag: "Tag"
     )
@@ -145,11 +144,6 @@ class HttpPingUploaderTests: XCTestCase {
             request?.value(forHTTPHeaderField: "User-Agent"),
             testConfig.userAgent,
             "Request User-Agent set correctly"
-        )
-        XCTAssertEqual(
-            request?.timeoutInterval,
-            TimeInterval(testConfig.connectionTimeout),
-            "Request timeout value set correctly"
         )
         XCTAssertEqual(
             request?.httpBody,
