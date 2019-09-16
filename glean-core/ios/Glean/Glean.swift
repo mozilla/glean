@@ -123,10 +123,6 @@ public class Glean {
         }
 
         self.sendPingsByName(pingNames: ["baseline", "events"])
-
-        // End task assertion
-        UIApplication.shared.endBackgroundTask(Glean.backgroundTaskId)
-        Glean.backgroundTaskId = UIBackgroundTaskIdentifier.invalid
     }
 
     /// Send a list of pings by name
@@ -166,6 +162,10 @@ public class Glean {
                     }
                 }
             }
+
+            // End background task assertion to let the OS know we are done with our tasks
+            UIApplication.shared.endBackgroundTask(Glean.backgroundTaskId)
+            Glean.backgroundTaskId = UIBackgroundTaskIdentifier.invalid
         }
     }
 
