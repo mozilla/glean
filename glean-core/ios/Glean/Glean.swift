@@ -31,6 +31,8 @@ public class Glean {
 
     private var pingTypeQueue = [Ping]()
 
+    private let logger = Logger(tag: Constants.logTag)
+
     private init() {
         // intentionally left private, no external user can instantiate a new global object.
 
@@ -57,7 +59,7 @@ public class Glean {
     ///     * configuration: A Glean `Configuration` object with global settings.
     public func initialize(configuration: Configuration = Configuration()) {
         if self.isInitialized() {
-            NSLog("Glean: Glean should not be initialized multiple times")
+            logger.error("Glean should not be initialized multiple times")
             return
         }
 
@@ -152,12 +154,12 @@ public class Glean {
     func sendPingsByName(pingNames: [String]) {
         _ = Dispatchers.shared.launch {
             if !self.isInitialized() {
-                NSLog("\(Constants.logTag) : Glean must be initialized before sending pings")
+                self.logger.error("Glean must be initialized before sending pings")
                 return
             }
 
             if !self.getUploadEnabled() {
-                NSLog("\(Constants.logTag) : Glean must be enabled before sending pings")
+                self.logger.error("Glean must be enabled before sending pings")
                 return
             }
 

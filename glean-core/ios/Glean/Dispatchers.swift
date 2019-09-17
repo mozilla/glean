@@ -18,6 +18,8 @@ class Dispatchers {
         static let maxQueueSize = 100
     }
 
+    private let logger = Logger(tag: Constants.logTag)
+
     // This is the task queue that all Glean background operations will be executed on.  It is currently
     // set to be a serial queue by setting the `maxConcurrentOperationsCount` to 1, but could allow for
     // concurrent operations by increasing the parameter.
@@ -76,12 +78,12 @@ class Dispatchers {
                 preInitOperations.append(operation)
 
                 if testingMode {
-                    NSLog("\(Constants.logTag) : Task queued for execution in test mode")
+                    logger.info("Task queued for execution in test mode")
                 } else {
-                    NSLog("\(Constants.logTag) : Task queued for execution and delayed until flushed")
+                    logger.info("Task queued for execution and delayed until flushed")
                 }
             } else {
-                NSLog("\(Constants.logTag) : Exceeded maximum queue size, discarding task")
+                logger.error("Exceeded maximum queue size, discarding task")
             }
         } else {
             // If we are not queuing initial tasks, we can go ahead and execute the Operation by

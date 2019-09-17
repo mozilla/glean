@@ -15,6 +15,7 @@
 		1F60589723148BF800307A9F /* GleanLifecycleObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F60589623148BF800307A9F /* GleanLifecycleObserver.swift */; };
 		1F70B786232995A9007395FB /* Dispatchers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F70B785232995A9007395FB /* Dispatchers.swift */; };
 		1F70B788232A81A4007395FB /* DispatchersTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F70B787232A81A4007395FB /* DispatchersTest.swift */; };
+		1FB70AEF23301C1D00C7CF09 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB70AEE23301C1D00C7CF09 /* Logger.swift */; };
 		1FB8F8382326EABD00618E47 /* ConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB8F8372326EABD00618E47 /* ConfigurationTests.swift */; };
 		1FB8F8422326F74400618E47 /* HttpPingUploaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB8F8412326F74400618E47 /* HttpPingUploaderTests.swift */; };
 		AC0C2B60232809C400A50CC8 /* OHHTTPStubs.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC0C2B5F232809C400A50CC8 /* OHHTTPStubs.framework */; };
@@ -50,6 +51,7 @@
 		1F60589623148BF800307A9F /* GleanLifecycleObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GleanLifecycleObserver.swift; sourceTree = "<group>"; };
 		1F70B785232995A9007395FB /* Dispatchers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dispatchers.swift; sourceTree = "<group>"; };
 		1F70B787232A81A4007395FB /* DispatchersTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DispatchersTest.swift; path = GleanTests/DispatchersTest.swift; sourceTree = SOURCE_ROOT; };
+		1FB70AEE23301C1D00C7CF09 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		1FB8F8372326EABD00618E47 /* ConfigurationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigurationTests.swift; sourceTree = "<group>"; };
 		1FB8F8412326F74400618E47 /* HttpPingUploaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = HttpPingUploaderTests.swift; path = GleanTests/HttpPingUploaderTests.swift; sourceTree = SOURCE_ROOT; };
 		AC0C2B5F232809C400A50CC8 /* OHHTTPStubs.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OHHTTPStubs.framework; path = Carthage/Build/iOS/OHHTTPStubs.framework; sourceTree = "<group>"; };
@@ -120,6 +122,15 @@
 			path = Config;
 			sourceTree = "<group>";
 		};
+		1FB70AED23301BFC00C7CF09 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				BFFE33AA232927C3005348FE /* Utils.swift */,
+				1FB70AEE23301C1D00C7CF09 /* Logger.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
 		1FB8F8392326EBA500618E47 /* Config */ = {
 			isa = PBXGroup;
 			children = (
@@ -171,7 +182,7 @@
 				BFFE33A82328F4EF005348FE /* GleanFfi.h */,
 				BF3DE3952243A2F20018E23F /* Info.plist */,
 				BF93C697224BFC57006CE7D8 /* Glean.swift */,
-				BFFE33AA232927C3005348FE /* Utils.swift */,
+				1FB70AED23301BFC00C7CF09 /* Utils */,
 				1F70B785232995A9007395FB /* Dispatchers.swift */,
 				BF6C53B7232F8CA700E3B43A /* BuiltinPings.swift */,
 			);
@@ -399,6 +410,7 @@
 				1F60589723148BF800307A9F /* GleanLifecycleObserver.swift in Sources */,
 				BF6C53B8232F8CA700E3B43A /* BuiltinPings.swift in Sources */,
 				BF43A8C9232A4CB200545310 /* Lifetime.swift in Sources */,
+				1FB70AEF23301C1D00C7CF09 /* Logger.swift in Sources */,
 				1F70B786232995A9007395FB /* Dispatchers.swift in Sources */,
 				1F605895231489AB00307A9F /* HttpPingUploader.swift in Sources */,
 				BF6C53B2232F870C00E3B43A /* Ping.swift in Sources */,
