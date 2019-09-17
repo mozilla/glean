@@ -107,7 +107,7 @@ public class Glean {
         uploadEnabled = enabled
 
         if isInitialized() {
-            glean_set_upload_enabled(handle, enabled ? 1 : 0)
+            glean_set_upload_enabled(handle, enabled.toByte())
         }
     }
 
@@ -166,7 +166,7 @@ public class Glean {
                     self.handle,
                     pingNames,
                     Int32(pingNames.count),
-                    self.configuration!.logPings ? 1 : 0
+                    self.configuration!.logPings.toByte()
                 )
 
                 if sentPing != 0 {

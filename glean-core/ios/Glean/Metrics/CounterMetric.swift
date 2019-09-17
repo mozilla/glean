@@ -27,7 +27,7 @@ public class CounterMetricType {
                 pingArray,
                 Int32(sendInPings.count),
                 lifetime.rawValue,
-                disabled ? 1 : 0
+                disabled.toByte()
             )
         }
     }
