@@ -4,6 +4,13 @@
 
 import Foundation
 
+extension Bool {
+    /// Convert a bool to its byte equivalent.
+    func toByte() -> UInt8 {
+        return self ? 1 : 0
+    }
+}
+
 /// Turn a string into an error, so that it can be thrown as an exception.
 ///
 /// This should only be used in tests.
@@ -71,7 +78,7 @@ func withFfiConfiguration<R>(
     let cfg = FfiConfiguration(
         data_dir: dataDir,
         package_name: packageName,
-        upload_enabled: uploadEnabled ? 1 : 0,
+        upload_enabled: uploadEnabled.toByte(),
         max_events: maxEventsPtr
     )
     return body(cfg)

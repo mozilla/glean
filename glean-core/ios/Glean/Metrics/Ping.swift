@@ -18,7 +18,7 @@ public class Ping {
     public init(name: String, includeClientId: Bool) {
         self.name = name
         self.includeClientId = includeClientId
-        self.handle = glean_new_ping_type(name, includeClientId ? 1 : 0)
+        self.handle = glean_new_ping_type(name, includeClientId.toByte())
         NSLog("Registering this ping: \(name)")
         Glean.shared.registerPingType(self)
     }
