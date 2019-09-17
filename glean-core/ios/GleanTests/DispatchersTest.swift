@@ -106,4 +106,76 @@ class DispatchersTest: XCTestCase {
             )
         }
     }
+
+    func testCancelBackgroundTasks() {
+        // Set testing mode to false to allow for background execution
+        Dispatchers.shared.setTestingMode(enabled: false)
+
+        // Set task queueing to true to ensure that we clear out the queued tasks when we cancel
+        Dispatchers.shared.setTaskQueuing(enabled: true)
+
+        // Add a task that should be queued
+        Dispatchers.shared.launch {
+            print("A queued task")
+        }
+
+        // Assert the task was queued
+        XCTAssertEqual(Dispatchers.shared.preInitOperations.count, 1, "Task must be queued")
+
+        // Now cancel the tasks
+        Dispatchers.shared.cancelBackgroundTasks()
+
+        // Assert the task was removed from the queue
+        XCTAssertEqual(Dispatchers.shared.preInitOperations.count, 0, "Task must be removed")
+
+        // Set up our test conditions for normal execution by setting queuing to false
+        Dispatchers.shared.setTaskQueuing(enabled: false)
+
+        // Create some counters to use to determine if the tasks were actually cancelled
+        var syncCounter = 0
+        var asyncCounter = 0
+
+        // Create a sync and an async task to add to the Dispatchers that handle the
+        // `isCancelled` property so that they can be cancelled
+        let serialOperation = BlockOperation()
+        serialOperation.addExecutionBlock {
+            while !serialOperation.isCancelled {
+                syncCounter += 1
+            }
+        }
+        Dispatchers.shared.serialOperationQueue.addOperation(serialOperation)
+
+        let concurrentOperation = BlockOperation()
+        concurrentOperation.addExecutionBlock {
+            while !concurrentOperation.isCancelled {
+                asyncCounter += 1
+            }
+        }
+        Dispatchers.shared.launchAsync(operation: concurrentOperation)
+
+        // Let the tasks run for 1 second
+        sleep(1)
+
+        // Check that the counters have incremented
+        XCTAssertTrue(syncCounter > 0, "Sync task must execute")
+        XCTAssertTrue(asyncCounter > 0, "Async task must execute")
+
+        // Now cancel the background tasks
+        Dispatchers.shared.cancelBackgroundTasks()
+
+        // Wait for the tasks to be cancelled/finished
+        Dispatchers.shared.concurrentOperationsQueue.waitUntilAllOperationsAreFinished()
+        Dispatchers.shared.serialOperationQueue.waitUntilAllOperationsAreFinished()
+
+        // Grab the current counter values. These shouldn't change after the tasks were cancelled
+        let syncTest = syncCounter
+        let asyncTest = asyncCounter
+
+        // Wait for one second to ensure tasks are truly cancelled
+        sleep(1)
+
+        // Make sure counters haven't changed
+        XCTAssertEqual(syncCounter, syncTest, "Sync task must be cancelled")
+        XCTAssertEqual(asyncCounter, asyncTest, "Async task must be cancelled")
+    }
 }
