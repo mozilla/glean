@@ -163,6 +163,11 @@ public class Glean {
         } else {
             self.uploadEnabled = enabled
         }
+
+        // Cancel background metric recording and upload tasks
+        if !uploadEnabled {
+            Dispatchers.shared.cancelBackgroundTasks()
+        }
     }
 
     /// Get whether or not Glean is allowed to record and upload data.
