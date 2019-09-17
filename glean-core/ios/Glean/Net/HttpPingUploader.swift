@@ -48,39 +48,11 @@ public class HttpPingUploader {
             logPing(path: path, data: data)
         }
 
+        // Build the request and create an async upload operation and launch it through the
+        // Dispatchers
         if let request = buildRequest(path: path, data: data) {
-            let task = URLSession.shared.dataTask(with: request) { _, response, error in
-                let httpResponse = response as? HTTPURLResponse
-                let statusCode = httpResponse?.statusCode ?? 0
-                switch statusCode {
-                case 200 ..< 300:
-                    // Known success errors (2xx):
-                    // 200 - OK. Request accepted into the pipeline.
-
-                    // We treat all success codes as successful upload even though we only expect 200.
-                    callback(true, nil)
-                case 400 ..< 500:
-                    // Known client (4xx) errors:
-                    // 404 - not found - POST/PUT to an unknown namespace
-                    // 405 - wrong request type (anything other than POST/PUT)
-                    // 411 - missing content-length header
-                    // 413 - request body too large (Note that if we have badly-behaved clients that
-                    //       retry on 4XX, we should send back 202 on body/path too long).
-                    // 414 - request path too long (See above)
-
-                    // Something our client did is not correct. It's unlikely that the client is going
-                    // to recover from this by re-trying again, so we just log an error and report a
-                    // successful upload to the service.
-                    callback(true, error)
-                default:
-                    // Known other errors:
-                    // 500 - internal error
-
-                    // For all other errors we log a warning and try again at a later time.
-                    callback(false, error)
-                }
-            }
-            task.resume()
+            let uploadOperation = PingUploadOperation(request: request, callback: callback)
+            Dispatchers.shared.launchAsync(operation: uploadOperation)
         }
     }
 

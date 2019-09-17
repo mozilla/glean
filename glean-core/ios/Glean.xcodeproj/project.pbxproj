@@ -23,6 +23,8 @@
 		BF30FDC82332640400840607 /* TimeUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF30FDC72332640400840607 /* TimeUnit.swift */; };
 		BF3227D923336DDA00CD0111 /* GleanBaseline.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF3227D823336DDA00CD0111 /* GleanBaseline.swift */; };
 		BF3227DB23336DE300CD0111 /* GleanInternalMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF3227DA23336DE300CD0111 /* GleanInternalMetrics.swift */; };
+		AC54D225233133DB0019319A /* PingUploadOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC54D224233133DB0019319A /* PingUploadOperation.swift */; };
+		AC54D227233134A30019319A /* GleanOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC54D226233134A30019319A /* GleanOperation.swift */; };
 		BF3DE39B2243A2F20018E23F /* Glean.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF3DE3912243A2F20018E23F /* Glean.framework */; };
 		BF3DE3A02243A2F20018E23F /* GleanTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF3DE39F2243A2F20018E23F /* GleanTests.swift */; };
 		BF43A8C7232A4BA400545310 /* CounterMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF43A8C6232A4BA400545310 /* CounterMetric.swift */; };
@@ -80,6 +82,8 @@
 		BF30FDC72332640400840607 /* TimeUnit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeUnit.swift; sourceTree = "<group>"; };
 		BF3227D823336DDA00CD0111 /* GleanBaseline.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GleanBaseline.swift; sourceTree = "<group>"; };
 		BF3227DA23336DE300CD0111 /* GleanInternalMetrics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GleanInternalMetrics.swift; sourceTree = "<group>"; };
+		AC54D224233133DB0019319A /* PingUploadOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PingUploadOperation.swift; sourceTree = "<group>"; };
+		AC54D226233134A30019319A /* GleanOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GleanOperation.swift; sourceTree = "<group>"; };
 		BF3DE3912243A2F20018E23F /* Glean.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Glean.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF3DE3942243A2F20018E23F /* Glean.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Glean.h; sourceTree = "<group>"; };
 		BF3DE3952243A2F20018E23F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -128,6 +132,8 @@
 			isa = PBXGroup;
 			children = (
 				1F60589623148BF800307A9F /* GleanLifecycleObserver.swift */,
+				AC54D224233133DB0019319A /* PingUploadOperation.swift */,
+				AC54D226233134A30019319A /* GleanOperation.swift */,
 			);
 			path = Scheduler;
 			sourceTree = "<group>";
@@ -449,9 +455,11 @@
 				BF3227DB23336DE300CD0111 /* GleanInternalMetrics.swift in Sources */,
 				BF93C698224BFC57006CE7D8 /* Glean.swift in Sources */,
 				BF30FDC22332312300840607 /* Sysctl.swift in Sources */,
+				AC54D227233134A30019319A /* GleanOperation.swift in Sources */,
 				1F60589723148BF800307A9F /* GleanLifecycleObserver.swift in Sources */,
 				BF6C53B8232F8CA700E3B43A /* BuiltinPings.swift in Sources */,
 				BF30FDC82332640400840607 /* TimeUnit.swift in Sources */,
+				AC54D225233133DB0019319A /* PingUploadOperation.swift in Sources */,
 				BF43A8C9232A4CB200545310 /* Lifetime.swift in Sources */,
 				1FB70AEF23301C1D00C7CF09 /* Logger.swift in Sources */,
 				BF3227D923336DDA00CD0111 /* GleanBaseline.swift in Sources */,
