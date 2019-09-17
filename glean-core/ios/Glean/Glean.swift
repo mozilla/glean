@@ -204,7 +204,10 @@ public class Glean {
     /// If the ping currently contains no content, it will not be assembled and
     /// queued for sending.
     func sendPingsByName(pingNames: [String]) {
-        _ = Dispatchers.shared.launch {
+        // This runs in the background to allow for processing of pings off of the
+        // main thread. Please note that the ping uploader will spawn other async
+        // operations if there are pings to upload.
+        Dispatchers.shared.launchAsync {
             if !self.isInitialized() {
                 self.logger.error("Glean must be initialized before sending pings")
                 return

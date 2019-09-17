@@ -47,7 +47,7 @@ public class CounterMetricType {
     public func add(_ amount: Int32 = 1) {
         guard !self.disabled else { return }
 
-        _ = Dispatchers.shared.launch {
+        Dispatchers.shared.launch {
             glean_counter_add(Glean.shared.handle, self.handle, amount)
         }
     }

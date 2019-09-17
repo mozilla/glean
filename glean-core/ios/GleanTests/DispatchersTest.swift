@@ -18,7 +18,7 @@ class DispatchersTest: XCTestCase {
 
         // Add 3 tasks to the queue, each one incrementing threadCanary to indicate the task has executed
         for _ in 0 ..< 3 {
-            _ = Dispatchers.shared.launch {
+            Dispatchers.shared.launch {
                 threadCanary += 1
             }
         }
@@ -66,7 +66,7 @@ class DispatchersTest: XCTestCase {
         // operations and attempt to flush it when it reaches 50 elements.
         // This should give us 50 items in the queued items and 50 that are
         // executed in the background normally.
-        let op1 = Dispatchers.GleanOperation {
+        let op1 = BlockOperation {
             while !flushTasks.value { sleep(1) }
             Dispatchers.shared.flushQueuedInitialTasks()
         }
@@ -77,7 +77,7 @@ class DispatchersTest: XCTestCase {
         // point, the background task above will flush and disable the queuing and this task will
         // continue launching tasks directly.
         var counter = 0
-        let op2 = Dispatchers.GleanOperation {
+        let op2 = BlockOperation {
             for num in 0 ... 99 {
                 if num == 50 {
                     flushTasks.value = true

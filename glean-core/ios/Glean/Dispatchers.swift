@@ -20,13 +20,21 @@ class Dispatchers {
 
     private let logger = Logger(tag: Constants.logTag)
 
-    // This is the task queue that all Glean background operations will be executed on.  It is currently
-    // set to be a serial queue by setting the `maxConcurrentOperationsCount` to 1, but could allow for
-    // concurrent operations by increasing the parameter.
-    lazy var operationQueue: OperationQueue = {
+    // This is a task queue for all Glean background operations that are required to be executed in order.
+    // It is currently set to be a serial queue by setting the `maxConcurrentOperationsCount` to 1
+    lazy var serialOperationQueue: OperationQueue = {
         var queue = OperationQueue()
-        queue.name = "Glean dispatch queue"
+        queue.name = "Glean serial dispatch queue"
         queue.maxConcurrentOperationCount = 1
+        return queue
+    }()
+
+    // This is a task queue for all Glean background operations that need be executed concurrently.
+    // It is currently set to use a maximum of 4 concurrent operations at a time.
+    lazy var concurrentOperationsQueue: OperationQueue = {
+        var queue = OperationQueue()
+        queue.name = "Glean concurrent dispatch queue"
+        queue.maxConcurrentOperationCount = 4
         return queue
     }()
 
@@ -34,7 +42,7 @@ class Dispatchers {
     private var queueInitialTasks = AtomicBoolean(true)
 
     // This array will hold the queued initial tasks that are launched before Glean is initialized
-    lazy var preInitOperations: [Operation] = [Operation]()
+    lazy var preInitOperations = [Operation]()
 
     // When true, jobs will be run synchronously
     var testingMode = false
@@ -43,39 +51,27 @@ class Dispatchers {
     // property
     private init() {}
 
-    /// This function launches a background `Operation`
+    /// This function launches a background `Operation` on a serially executed queue.
     ///
     /// - parameters:
     ///   * block: The block of code to execute, as a Closure that accepts no arugments and returns Void
     ///
     /// This function is used throughout Glean in order to launch tasks in the background, typically
-    /// recording of metrics, uploading of pings, etc.  This function returns an `Operation` which can
-    /// be used in conjunction with a completion handler to perform work after the task is complete.
+    /// recording of metrics and things that need to execute in order. Since this executes the tasks on
+    /// a non-concurrent (serial) queue, the tasks are executed in the order that they are launched.
     ///
-    /// For example:
-    /// ```
-    /// Dispatchers.shared.launch {
-    ///     // Do some work here
-    /// }.completionBlock = {
-    ///     print("Done!")
-    /// }
-    /// ```
+    /// If `queueInitialTasks` is enabled, then the operation will be created and added to the
+    /// `preInitOperations` array but not executed until flushed.
     ///
-    /// You could also use the returned `Operation` to await that specific task like this:
-    /// ```
-    /// let operation = Dispatchers.shared.launch {
-    ///     // Do some work here
-    /// }
-    /// operation.waitUntilFinished()
-    func launch(block: @escaping () -> Void) -> Operation {
-        let operation = GleanOperation(block)
-
+    /// If `testingMode` is enabled, then launch will await the execution of the task (unless queuing is
+    /// enabled)
+    func launch(block: @escaping () -> Void) {
         if queueInitialTasks.value {
             // If we are queuing tasks, typically before Glean has been initialized, then we should
             // just add the created Operation to the preInitOperations array, provided there are
             // less than the max queued operations stored.
             if preInitOperations.count < Constants.maxQueueSize {
-                preInitOperations.append(operation)
+                preInitOperations.append(BlockOperation(block: block))
 
                 if testingMode {
                     logger.info("Task queued for execution in test mode")
@@ -88,17 +84,66 @@ class Dispatchers {
         } else {
             // If we are not queuing initial tasks, we can go ahead and execute the Operation by
             // adding it to the `operationQueue`
+            serialOperationQueue.addOperation(block)
+
+            // If we are in testing mode, go ahead and wait until it is finished before continuing
+            // to ensure synchronous execution of the task.
             if testingMode {
-                // If we are in testing mode, go ahead and execute the operation and wait until it
-                // is finished before continuing to give us synchronous execution of the task.
-                operation.start()
-                operation.waitUntilFinished()
-            } else {
-                operationQueue.addOperation(operation)
+                serialOperationQueue.waitUntilAllOperationsAreFinished()
             }
         }
+    }
 
-        return operation
+    /// This function launches a background `Operation` on a concurrently executed queue.
+    ///
+    /// - parameters:
+    ///   * operation: The `Operation` to execute
+    ///
+    /// This function is used to execute tasks in an asynchrounous manner and still give us the ability
+    /// to cancel the tasks by creating them as `Operation`s rather than using GCD.
+    ///
+    /// This function specifically ignores the `queueInitialTasks` flag because the only tasks that
+    /// should be launched by this are the ping upload schedulers and those should run regardless of
+    /// the initialized state.
+    ///
+    /// If `testingMode` is enabled, then launch will just execute the task rather than adding it to the
+    /// concurrent queue to avoid asynchronous issues while testing
+    func launchAsync(operation: Operation) {
+        if testingMode {
+            operation.start()
+            operation.waitUntilFinished()
+        } else {
+            concurrentOperationsQueue.addOperation(operation)
+        }
+    }
+
+    /// This function launches a background block of code on a concurrently executed queue.
+    ///
+    /// - parameters:
+    ///   * block: The block of code to execute, as a Closure that accepts no arugments and returns Void
+    ///
+    /// This function is used to execute tasks in an asynchrounous manner and still give us the ability
+    /// to cancel the tasks by creating them as `Operation`s rather than using GCD.
+    ///
+    /// This function specifically ignores the `queueInitialTasks` flag because the only tasks that
+    /// should be launched by this are the ping upload schedulers and those should run regardless of
+    /// the initialized state.
+    ///
+    /// If `testingMode` is enabled, then launch will just execute the task rather than adding it to the
+    /// concurrent queue to avoid asynchronous issues while testing
+    func launchAsync(block: @escaping () -> Void) {
+        if testingMode {
+            block()
+        } else {
+            concurrentOperationsQueue.addOperation(block)
+        }
+    }
+
+    /// Cancel any pending background tasks
+    func cancelBackgroundTasks() {
+        serialOperationQueue.cancelAllOperations()
+        concurrentOperationsQueue.cancelAllOperations()
+        preInitOperations.removeAll()
     }
 
     /// Stop queuing tasks and process any tasks in the queue.
@@ -108,7 +153,7 @@ class Dispatchers {
         // `waitUntilFinished` parameter since this is a serial queue and any newly queued tasks
         // should execute after the `preInitOperations` that are being added here. For tests, we
         // need to await all of the tasks to finish execution, so we set this to true.
-        self.operationQueue.addOperations(preInitOperations, waitUntilFinished: testingMode)
+        self.serialOperationQueue.addOperations(preInitOperations, waitUntilFinished: testingMode)
 
         // Turn off queuing to allow for normal background execution mode
         queueInitialTasks.value = false
@@ -147,22 +192,5 @@ class Dispatchers {
     /// When enabled, tasks are queued until launched by calling `flushQueuedInitialTasks()`
     func setTaskQueuing(enabled: Bool) {
         queueInitialTasks.value = enabled
-    }
-
-    /// This is an internal class that represents a Glean background task
-    class GleanOperation: Operation {
-        let backgroundTask: () -> Void
-
-        init(_ block: @escaping () -> Void) {
-            backgroundTask = block
-        }
-
-        override func main() {
-            if isCancelled {
-                return
-            }
-
-            backgroundTask()
-        }
     }
 }
