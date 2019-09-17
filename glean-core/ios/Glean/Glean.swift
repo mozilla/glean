@@ -97,7 +97,7 @@ public class Glean {
 
     /// Initialize the core metrics internally managed by Glean (e.g. client id).
     private func initializeCoreMetrics() {
-        /// left empty for now, we don't have additional core metrics
+        /// TODO(bug 1581083): left empty for now, we don't have additional core metrics
     }
 
     /// Enable or disable Glean collection and upload.
@@ -126,7 +126,7 @@ public class Glean {
                 glean_set_upload_enabled(self.handle, enabled.toByte())
 
                 if !enabled {
-                    // TODO: cancel schedulers and upload worker
+                    // TODO(bug 1581815): cancel schedulers and upload worker
                 }
 
                 if !originalEnabled && self.getUploadEnabled() {
