@@ -44,6 +44,7 @@ import org.mozilla.yourApplication.GleanMetrics.Search
 // Was anything recorded?
 assertTrue(Search.engines.testHasValue())
 // Does it have the expected value?
+// IMPORTANT: It may have been truncated -- see "Limits" below
 assertEquals(listOf("Google", "DuckDuckGo"), Search.engines.testGetValue())
 ```
 

@@ -28,14 +28,15 @@ This will ensure that metrics are done recording when the other test functions a
 To check if a value exists (i.e. it has been recorded), there is a `testHasValue()` function on each of the metric instances:
 
 ```kotlin
-assertTrue(GleanMetrics.Foo.UriCount.testHasValue())
+assertTrue(GleanMetrics.Search.defaultSearchEngineUrl.testHasValue())
 ```
 
 To check the actual values, there is a `testGetValue()` function on each of the metric instances.
+It is important to check that the values are recorded as expected, since many of the metric types may truncate or error-correct the value.
 This function will return a datatype appropriate to the specific type of the metric it is being used with:
 
 ```kotlin
-assertEquals(5, GleanMetrics.Foo.UriCount.testGetValue())
+assertEquals("https://example.com/search?", GleanMetrics.Search.defaultSearchEngineUrl.testGetValue())
 ```
 
 Note that each of these functions has its visibility limited to the scope of unit tests by making use of the `@VisibleForTesting` annotation, so the IDE should complain if you attempt to use them inside of client code.
