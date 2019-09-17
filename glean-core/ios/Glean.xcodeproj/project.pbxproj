@@ -23,6 +23,9 @@
 		BF43A8C7232A4BA400545310 /* CounterMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF43A8C6232A4BA400545310 /* CounterMetric.swift */; };
 		BF43A8C9232A4CB200545310 /* Lifetime.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF43A8C8232A4CB200545310 /* Lifetime.swift */; };
 		BF43A8CD232A615200545310 /* CounterMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF43A8CC232A615200545310 /* CounterMetricTests.swift */; };
+		BF6C53B2232F870C00E3B43A /* Ping.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF6C53B1232F870C00E3B43A /* Ping.swift */; };
+		BF6C53B4232F872B00E3B43A /* PingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF6C53B3232F872B00E3B43A /* PingTests.swift */; };
+		BF6C53B8232F8CA700E3B43A /* BuiltinPings.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF6C53B7232F8CA700E3B43A /* BuiltinPings.swift */; };
 		BF6F2DA8224BF8F100394062 /* libglean_ffi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BF6F2DA7224BF8F100394062 /* libglean_ffi.a */; };
 		BF93C698224BFC57006CE7D8 /* Glean.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF93C697224BFC57006CE7D8 /* Glean.swift */; };
 		BFFE33A92328F4EF005348FE /* GleanFfi.h in Headers */ = {isa = PBXBuildFile; fileRef = BFFE33A82328F4EF005348FE /* GleanFfi.h */; };
@@ -62,6 +65,9 @@
 		BF51C3B9224BF19F0014CBAF /* debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = debug.xcconfig; sourceTree = "<group>"; };
 		BF51C3BA224BF19F0014CBAF /* release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = release.xcconfig; sourceTree = "<group>"; };
 		BF51C3BB224BF19F0014CBAF /* base.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = base.xcconfig; sourceTree = "<group>"; };
+		BF6C53B1232F870C00E3B43A /* Ping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ping.swift; sourceTree = "<group>"; };
+		BF6C53B3232F872B00E3B43A /* PingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PingTests.swift; sourceTree = "<group>"; };
+		BF6C53B7232F8CA700E3B43A /* BuiltinPings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuiltinPings.swift; sourceTree = "<group>"; };
 		BF6F2DA7224BF8F100394062 /* libglean_ffi.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libglean_ffi.a; path = ../../target/universal/release/libglean_ffi.a; sourceTree = "<group>"; };
 		BF93C697224BFC57006CE7D8 /* Glean.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Glean.swift; sourceTree = "<group>"; };
 		BFFE33A82328F4EF005348FE /* GleanFfi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GleanFfi.h; sourceTree = "<group>"; };
@@ -167,6 +173,7 @@
 				BF93C697224BFC57006CE7D8 /* Glean.swift */,
 				BFFE33AA232927C3005348FE /* Utils.swift */,
 				1F70B785232995A9007395FB /* Dispatchers.swift */,
+				BF6C53B7232F8CA700E3B43A /* BuiltinPings.swift */,
 			);
 			path = Glean;
 			sourceTree = "<group>";
@@ -189,6 +196,7 @@
 			children = (
 				BF43A8C6232A4BA400545310 /* CounterMetric.swift */,
 				BF43A8C8232A4CB200545310 /* Lifetime.swift */,
+				BF6C53B1232F870C00E3B43A /* Ping.swift */,
 			);
 			path = Metrics;
 			sourceTree = "<group>";
@@ -197,6 +205,7 @@
 			isa = PBXGroup;
 			children = (
 				BF43A8CC232A615200545310 /* CounterMetricTests.swift */,
+				BF6C53B3232F872B00E3B43A /* PingTests.swift */,
 			);
 			path = Metrics;
 			sourceTree = "<group>";
@@ -388,9 +397,11 @@
 				1F6058932314863400307A9F /* Configuration.swift in Sources */,
 				BF93C698224BFC57006CE7D8 /* Glean.swift in Sources */,
 				1F60589723148BF800307A9F /* GleanLifecycleObserver.swift in Sources */,
+				BF6C53B8232F8CA700E3B43A /* BuiltinPings.swift in Sources */,
 				BF43A8C9232A4CB200545310 /* Lifetime.swift in Sources */,
 				1F70B786232995A9007395FB /* Dispatchers.swift in Sources */,
 				1F605895231489AB00307A9F /* HttpPingUploader.swift in Sources */,
+				BF6C53B2232F870C00E3B43A /* Ping.swift in Sources */,
 				BF43A8C7232A4BA400545310 /* CounterMetric.swift in Sources */,
 				BFFE33AB232927C3005348FE /* Utils.swift in Sources */,
 			);
@@ -401,6 +412,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1FB8F8382326EABD00618E47 /* ConfigurationTests.swift in Sources */,
+				BF6C53B4232F872B00E3B43A /* PingTests.swift in Sources */,
 				1FB8F8422326F74400618E47 /* HttpPingUploaderTests.swift in Sources */,
 				BF43A8CD232A615200545310 /* CounterMetricTests.swift in Sources */,
 				1F70B788232A81A4007395FB /* DispatchersTest.swift in Sources */,
