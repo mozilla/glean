@@ -17,7 +17,8 @@ class HttpPingUploaderTests: XCTestCase {
     )
 
     private func setupHttpResponseStub(statusCode: Int32 = 200) {
-        stub(condition: isHost("incoming.telemetry.mozilla.org")) { data in
+        let host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
+        stub(condition: isHost(host)) { data in
             let body = (data as NSURLRequest).ohhttpStubs_HTTPBody()
             // swiftlint:disable force_try
             let json = try! JSONSerialization.jsonObject(with: body!, options: []) as? [String: Any]
@@ -205,7 +206,8 @@ class HttpPingUploaderTests: XCTestCase {
         // Now set up our test server
         var countFilesUploaded = 0
 
-        stub(condition: isHost("incoming.telemetry.mozilla.org")) { data in
+        let host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
+        stub(condition: isHost(host)) { data in
             let body = (data as NSURLRequest).ohhttpStubs_HTTPBody()
             let json = try! JSONSerialization.jsonObject(with: body!, options: []) as? [String: Any]
             XCTAssert(json != nil)
