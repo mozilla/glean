@@ -29,7 +29,7 @@ public class Glean {
         static let logTag = "glean/Glean"
     }
 
-    private var pingTypeQueue: [Ping] = []
+    private var pingTypeQueue = [Ping]()
 
     private init() {
         // intentionally left private, no external user can instantiate a new global object.
