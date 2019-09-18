@@ -5,6 +5,9 @@
 /// Base class for other Glean Operations that contains the management of
 /// the executing and finished key-value coding/observers
 class GleanOperation: Operation {
+    
+    // This takes advantage of the property observers to signal the
+    // key value observers for `isExecuting`
     private var _executing = false {
         willSet {
             willChangeValue(forKey: "isExecuting")
@@ -18,6 +21,8 @@ class GleanOperation: Operation {
         return _executing
     }
 
+    // This takes advandage of the property observers to signal the
+    // key value observers for `isFinished`
     private var _finished = false {
         willSet {
             willChangeValue(forKey: "isFinished")

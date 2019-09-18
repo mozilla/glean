@@ -2,21 +2,32 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+/// Represents an `Operation` encapsulating an HTTP request that uploads a
+/// ping to the server. This implements the recommended pieces for execution
+/// on a concurrent queue per the documentation for the `Operation` class
+/// found [here](https://developer.apple.com/documentation/foundation/operation)
 class PingUploadOperation: GleanOperation {
     var dataTask: URLSessionDataTask?
     let request: URLRequest
     let callback: (Bool, Error?) -> Void
 
+    /// Create a new PingUploadOperation
+    ///
+    /// - parameters:
+    ///     * request: The `URLRequest` used to upload the ping to the server
+    ///     * callback: The callback that the underlying data task returns results through
     init(request: URLRequest, callback: @escaping (Bool, Error?) -> Void) {
         self.request = request
         self.callback = callback
     }
 
+    /// Handles cancelling the underlying data task
     public override func cancel() {
         dataTask?.cancel()
         super.cancel()
     }
 
+    /// Starts the data task to upload the ping to the server
     override func start() {
         if self.isCancelled {
             finish(true)
