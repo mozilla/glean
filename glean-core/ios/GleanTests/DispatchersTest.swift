@@ -128,17 +128,17 @@ class DispatchersTest: XCTestCase {
         // Assert the task was removed from the queue
         XCTAssertEqual(Dispatchers.shared.preInitOperations.count, 0, "Task must be removed")
     }
-    
+
     func testCancelBackgroundTasksSerialQueue() {
         // Set testing mode to false to allow for background execution
         Dispatchers.shared.setTestingMode(enabled: false)
-        
+
         // Set up our test conditions for normal execution by setting queuing to false
         Dispatchers.shared.setTaskQueuing(enabled: false)
-        
+
         // Create a counter to use to determine if the task is actually cancelled
         var counter = 0
-        
+
         // Create a task to add to the Dispatchers serial queue that looks at the
         // `isCancelled` property so that it can be cancelled
         let serialOperation = BlockOperation()
@@ -148,43 +148,43 @@ class DispatchersTest: XCTestCase {
             }
         }
         Dispatchers.shared.serialOperationQueue.addOperation(serialOperation)
-        
+
         // Let the task run for 1 second in order to it time to accumulate to the counter
         sleep(1)
-        
+
         // Check that the counter has incremented
         XCTAssertTrue(counter > 0, "Serial task must execute")
-        
+
         // Now cancel the background task
         Dispatchers.shared.cancelBackgroundTasks()
-        
+
         // Wait for the task to be cancelled/finished, the OperationQueue will set
         // `isFinished` for cancelled tasks
         Dispatchers.shared.serialOperationQueue.waitUntilAllOperationsAreFinished()
-        
+
         // Grab the current counter value. This shouldn't change after the task was cancelled
         let testValue = counter
-        
+
         // Wait for one second to ensure task is truly cancelled. This gives the background task
         // time to continue to run and accumulate to the counter in the case that it wasn't
         // actually cancelled, that way we can detect the failure to cancel by comparing to the
         // snapshot of the counter value we just captured.
         sleep(1)
-        
+
         // Make sure counters haven't changed
         XCTAssertEqual(counter, testValue, "Serial task must be cancelled")
     }
-    
+
     func testCancelBackgroundTasksClearsConcurrentQueue() {
         // Set testing mode to false to allow for background execution
         Dispatchers.shared.setTestingMode(enabled: false)
-        
+
         // Set up our test conditions for normal execution by setting queuing to false
         Dispatchers.shared.setTaskQueuing(enabled: false)
-        
+
         // Create a counter to use to determine if the task is actually cancelled
         var counter = 0
-        
+
         // Create a task to add to the concurrently executed queue that looks at the
         // `isCancelled` property so that it can be cancelled
         let concurrentOperation = BlockOperation()
@@ -194,29 +194,29 @@ class DispatchersTest: XCTestCase {
             }
         }
         Dispatchers.shared.launchConcurrent(operation: concurrentOperation)
-        
+
         // Let the task run for 1 second in order to give it time accumulate to the counter
         sleep(1)
-        
+
         // Check that the counter has incremented
         XCTAssertTrue(counter > 0, "Concurrent task must execute")
-        
+
         // Now cancel the background tasks
         Dispatchers.shared.cancelBackgroundTasks()
-        
+
         // Wait for the task to be cancelled/finished, the OperationQueue will set
         // `isFinished` for cancelled tasks
         Dispatchers.shared.concurrentOperationsQueue.waitUntilAllOperationsAreFinished()
-        
+
         // Grab the current counter value. This shouldn't change after the task is cancelled
         let asyncTest = counter
-        
+
         // Wait for one second to ensure task is truly cancelled. This gives the background task
         // time to continue to run and accumulate to the counter in the case that it wasn't
         // actually cancelled, that way we can detect the failure to cancel by comparing to the
         // snapshot of the counter value we just captured.
         sleep(1)
-        
+
         // Make sure counter hasn't changed
         XCTAssertEqual(counter, asyncTest, "Concurrent task must be cancelled")
     }
