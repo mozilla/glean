@@ -17,6 +17,8 @@ controls:
 
 ## API
 
+### Kotlin
+
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.Controls
 
@@ -33,6 +35,24 @@ import org.mozilla.yourApplication.GleanMetrics.Controls
 assertTrue(Controls.refreshPressed.testHasValue())
 // Does the counter have the expected value?
 assertEquals(6, Controls.refreshPressed.testGetValue())
+```
+
+### Swift
+
+```Swift
+Controls.refreshPressed.add() // Adds 1 to the counter.
+Controls.refreshPressed.add(5) // Adds 5 to the counter.
+```
+
+There are test APIs available too:
+
+```Swift
+@testable import Glean
+
+// Was anything recorded?
+XCTAssert(Controls.refreshPressed.testHasValue())
+// Does the counter have the expected value?
+XCTAssertEqual(6, try Controls.refreshPressed.testGetValue())
 ```
 
 ## Limits
