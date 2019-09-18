@@ -8,3 +8,5 @@ build-dir = "book"
 create-missing = false
 
 [output.html]
+additional-css = ["tabs.css"]
+additional-js = ["tabs.js"]
