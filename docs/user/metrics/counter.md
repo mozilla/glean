@@ -17,7 +17,9 @@ controls:
 
 ## API
 
-### Kotlin
+{{#include ../../tab_header.md}}
+
+<div id="Kotlin" class="tab">
 
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.Controls
@@ -37,7 +39,9 @@ assertTrue(Controls.refreshPressed.testHasValue())
 assertEquals(6, Controls.refreshPressed.testGetValue())
 ```
 
-### Swift
+</div>
+
+<div id="Swift" class="tab">
 
 ```Swift
 Controls.refreshPressed.add() // Adds 1 to the counter.
@@ -54,6 +58,10 @@ XCTAssert(Controls.refreshPressed.testHasValue())
 // Does the counter have the expected value?
 XCTAssertEqual(6, try Controls.refreshPressed.testGetValue())
 ```
+
+</div>
+
+{{#include ../../tab_footer.md}}
 
 ## Limits
 
