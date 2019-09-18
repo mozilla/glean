@@ -21,7 +21,6 @@ class PingTests: XCTestCase {
         let host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
         stub(condition: isHost(host)) { data in
             let body = (data as NSURLRequest).ohhttpStubs_HTTPBody()
-            // swiftlint:disable force_try
             let json = try! JSONSerialization.jsonObject(with: body!, options: []) as? [String: Any]
             XCTAssert(json != nil)
             self.lastPingJson = json
