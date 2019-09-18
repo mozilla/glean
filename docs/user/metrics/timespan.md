@@ -32,22 +32,22 @@ auth:
 
 ## API
 
-Each time interval that the timespan metric records must be associated with an object provided by the user. This is so that intervals can be measured concurrently. In our example using login time, this might be an object representing the login UI page.
+### Kotlin
 
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.Auth
 
-fun onShowLogin(e: Event) {
+fun onShowLogin() {
     Auth.loginTime.start()
     // ...
 }
 
-fun onLogin(e: Event) {
+fun onLogin() {
     Auth.loginTime.stop()
     // ...
 }
 
-fun onLoginCancel(e: Event) {
+fun onLoginCancel() {
     Auth.loginTime.cancel()
     // ...
 }
@@ -66,13 +66,49 @@ assertTrue(Auth.loginTime.testHasValue())
 assertTrue(Auth.loginTime.testGetValue() > 0)
 ```
 
-### Raw API
+### Swift
+
+```Swift
+func onShowLogin() {
+    Auth.loginTime.start()
+    // ...
+}
+
+func onLogin() {
+    Auth.loginTime.stop()
+    // ...
+}
+
+func onLoginCancel() {
+    Auth.loginTime.cancel()
+    // ...
+}
+```
+
+The time reported in the telemetry ping will be timespan recorded during the lifetime of the ping.
+
+There are test APIs available too:
+
+```Swift
+@testable import Glean
+
+// Was anything recorded?
+XCTAssert(Auth.loginTime.testHasValue())
+// Does the timer have the expected value
+XCTAssert(Auth.loginTime.testGetValue() > 0)
+```
+
+## Raw API
 
 > **Note**: The raw API was designed to support a specific set of use-cases.
 > Please consider using the higher level APIs listed above.
 
 It's possible to explicitly set the timespan value, in nanoseconds.
 This API should only be used if your library or application requires recording times in a way that can not make use of `start`/`stop`/`cancel`.
+
+The raw API will not overwrite a running timer or existing timespan value.
+
+### Kotlin
 
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.HistorySync
@@ -81,7 +117,12 @@ val duration = SyncResult.status.syncs.took.toLong()
 HistorySync.setRawNanos(duration)
 ```
 
-The raw API will not overwrite a running timer or existing timespan value.
+### Swift
+
+```Swift
+let duration = SyncResult.status.syncs.took.toLong()
+HistorySync.setRawNanos(duration)
+```
 
 ## Limits
 
