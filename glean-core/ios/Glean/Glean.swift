@@ -120,7 +120,7 @@ public class Glean {
             _ = Dispatchers.shared.launch {
                 // glean_set_upload_enabled might delete all of the queued pings.
                 // Currently a ping uploader could be scheduled ahead of this,
-                // at which point it wil pick up scheduled pings before the setting was toggled.
+                // at which point it will pick up scheduled pings before the setting was toggled.
                 // Or it is scheduled afterwards and will not schedule or find any left-over pings to send.
 
                 glean_set_upload_enabled(self.handle, enabled.toByte())
