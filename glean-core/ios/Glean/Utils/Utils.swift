@@ -141,3 +141,36 @@ func timestampNanos() -> UInt64 {
     let nanos = currentTime * UInt64(info.numer) / UInt64(info.denom)
     return nanos
 }
+
+/// Gets a gecko-compatible locale string (e.g. "es-ES")
+///
+/// - returns: a locale string that supports custom injected locale/languages.
+func getLocaleTag() -> String {
+    if NSLocale.current.languageCode == nil {
+        return "??"
+    } else {
+        if NSLocale.current.regionCode == nil {
+            return NSLocale.current.languageCode!
+        } else {
+            return "\(NSLocale.current.languageCode!)-\(NSLocale.current.regionCode!)"
+        }
+    }
+}
+
+/// Gather information about the running application
+struct AppInfo {
+    /// The application's identifier name
+    public static var name: String {
+        return Bundle.main.bundleIdentifier!
+    }
+
+    /// The application's display version string
+    public static var displayVersion: String {
+        return Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
+    }
+
+    /// The application's build ID
+    public static var buildId: String {
+        return Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "Unknown"
+    }
+}

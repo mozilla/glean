@@ -67,7 +67,7 @@ public class Glean {
 
         self.handle = withFfiConfiguration(
             dataDir: getDocumentsDirectory().absoluteString,
-            packageName: Bundle.main.bundleIdentifier!,
+            packageName: AppInfo.name,
             uploadEnabled: uploadEnabled,
             configuration: configuration
         ) { cfg in
