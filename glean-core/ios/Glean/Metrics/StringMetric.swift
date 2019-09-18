@@ -47,7 +47,7 @@ public class StringMetricType {
     public func set(_ value: String) {
         guard !self.disabled else { return }
 
-        _ = Dispatchers.shared.launch {
+        _ = Dispatchers.shared.launchAPI {
             self.setSync(value)
         }
     }

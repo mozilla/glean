@@ -52,7 +52,7 @@ public class HttpPingUploader {
         // Dispatchers
         if let request = buildRequest(path: path, data: data) {
             let uploadOperation = PingUploadOperation(request: request, callback: callback)
-            Dispatchers.shared.launchAsync(operation: uploadOperation)
+            Dispatchers.shared.launchConcurrent(operation: uploadOperation)
         }
     }
 
