@@ -153,7 +153,8 @@ class DispatchersTest: XCTestCase {
         }
         Dispatchers.shared.launchAsync(operation: concurrentOperation)
 
-        // Let the tasks run for 1 second
+        // Let the tasks run for 1 second in order to give the background tasks time to
+        // run and accumulate to the counters.
         sleep(1)
 
         // Check that the counters have incremented
@@ -171,7 +172,10 @@ class DispatchersTest: XCTestCase {
         let syncTest = syncCounter
         let asyncTest = asyncCounter
 
-        // Wait for one second to ensure tasks are truly cancelled
+        // Wait for one second to ensure tasks are truly cancelled. This gives the background tasks
+        // time to continue to run and accumulate to the counters in the case that they weren't
+        // actually cancelled, that way we can detect the failure to cancel by comparing to the
+        // snapshot of the counter values we just captured.
         sleep(1)
 
         // Make sure counters haven't changed
