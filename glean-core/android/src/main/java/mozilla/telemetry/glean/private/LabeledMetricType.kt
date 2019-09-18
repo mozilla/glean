@@ -27,7 +27,7 @@ class LabeledMetricType<T>(
     category: String,
     lifetime: Lifetime,
     name: String,
-    labels: Set<String>? = null,
+    private val labels: Set<String>? = null,
     private val sendInPings: List<String>,
     private val subMetric: T
 ) {
@@ -93,5 +93,26 @@ class LabeledMetricType<T>(
                 "Can not create a labeled version of this metric type"
             )
         }
+    }
+
+    /**
+     * Get the specific metric for a given label index.
+     *
+     * This only works if a set of acceptable labels were specified in the
+     * metrics.yaml file. If static labels were not defined in that file or
+     * the index of the given label is not in the set, it will be recorded under
+     * the special `OTHER_LABEL`.
+     *
+     * @param labelIndex The label
+     * @return The specific metric for that label
+     */
+    operator fun get(labelIndex: Int): T {
+        val actualLabel = if (labels != null && labelIndex < labels.size) {
+            labels.elementAt(labelIndex)
+        } else {
+            "__other__"
+        }
+
+        return this[actualLabel]
     }
 }

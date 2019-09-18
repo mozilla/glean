@@ -303,4 +303,40 @@ class LabeledMetricTypeTest {
 
     // SKIPPED `test seen labels get reloaded from disk`
     // REASON This is tested on the Rust side. The Kotlin side has no way to inject data into the database.
+
+    @Test
+    fun `test recording to static labels by label index`() {
+        val counterMetric = CounterMetricType(
+            disabled = false,
+            category = "telemetry",
+            lifetime = Lifetime.Application,
+            name = "labeled_counter_metric",
+            sendInPings = listOf("metrics")
+        )
+
+        val labeledCounterMetric = LabeledMetricType(
+            disabled = false,
+            category = "telemetry",
+            lifetime = Lifetime.Application,
+            name = "labeled_counter_metric",
+            sendInPings = listOf("metrics"),
+            subMetric = counterMetric,
+            labels = setOf("foo", "bar", "baz")
+        )
+
+        // Increment using a label name first.
+        labeledCounterMetric["foo"].add(2)
+
+        // Now only use label indices: "foo" first.
+        labeledCounterMetric[0].add(1)
+        // Then "bar".
+        labeledCounterMetric[1].add(1)
+        // Then some out of bound index: will go to "__other__".
+        labeledCounterMetric[100].add(100)
+
+        // Use the testing API to get the values for the labels.
+        assertEquals(3, labeledCounterMetric["foo"].testGetValue())
+        assertEquals(1, labeledCounterMetric["bar"].testGetValue())
+        assertEquals(100, labeledCounterMetric["__other__"].testGetValue())
+    }
 }
