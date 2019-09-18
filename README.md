@@ -2,8 +2,6 @@
 
 ![Glean logo](docs/glean.jpeg)
 
-_Modern telemetry for mobile platforms_
-
 ## Documentation
 
 All documentation is available online:
