@@ -151,7 +151,7 @@ public class Glean {
                 glean_set_upload_enabled(self.handle, enabled.toByte())
 
                 if !enabled {
-                    // TODO(bug 1581815): cancel schedulers and upload worker
+                    Dispatchers.shared.cancelBackgroundTasks()
                 }
 
                 if !originalEnabled && self.getUploadEnabled() {
@@ -162,11 +162,6 @@ public class Glean {
             }
         } else {
             self.uploadEnabled = enabled
-        }
-
-        // Cancel background metric recording and upload tasks
-        if !uploadEnabled {
-            Dispatchers.shared.cancelBackgroundTasks()
         }
     }
 
