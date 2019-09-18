@@ -99,7 +99,24 @@ public class Glean {
 
     /// Initialize the core metrics internally managed by Glean (e.g. client id).
     private func initializeCoreMetrics() {
-        /// TODO(bug 1581083): left empty for now, we don't have additional core metrics
+        // Set a few more metrics that will be sent as part of every ping.
+        // Please note that the following metrics must be set synchronously, so
+        // that they are guaranteed to be available with the first ping that is
+        // generated. We use an internal only API to do that.
+
+        GleanBaseline.locale.setSync(getLocaleTag())
+        GleanInternalMetrics.os.setSync(Sysctl.os)
+        GleanInternalMetrics.osVersion.setSync(UIDevice.current.systemVersion)
+        GleanInternalMetrics.deviceManufacturer.setSync(Sysctl.manufacturer)
+        GleanInternalMetrics.deviceModel.setSync(Sysctl.model)
+        GleanInternalMetrics.architecture.setSync(Sysctl.machine)
+
+        if let channel = self.configuration?.channel {
+            GleanInternalMetrics.appChannel.setSync(channel)
+        }
+
+        GleanInternalMetrics.appBuild.setSync(AppInfo.buildId)
+        GleanInternalMetrics.appDisplayVersion.setSync(AppInfo.displayVersion)
     }
 
     /// Enable or disable Glean collection and upload.
