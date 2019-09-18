@@ -18,7 +18,7 @@ class DispatchersTest: XCTestCase {
 
         // Add 3 tasks to the queue, each one incrementing threadCanary to indicate the task has executed
         for _ in 0 ..< 3 {
-            Dispatchers.shared.launch {
+            Dispatchers.shared.launchAPI {
                 threadCanary += 1
             }
         }
@@ -82,7 +82,7 @@ class DispatchersTest: XCTestCase {
                 if num == 50 {
                     flushTasks.value = true
                 }
-                _ = Dispatchers.shared.launch {
+                _ = Dispatchers.shared.launchAPI {
                     orderedList.append(num)
                     counter += 1
                 }
@@ -115,7 +115,7 @@ class DispatchersTest: XCTestCase {
         Dispatchers.shared.setTaskQueuing(enabled: true)
 
         // Add a task to the pre-init queue
-        Dispatchers.shared.launch {
+        Dispatchers.shared.launchAPI {
             print("A queued task")
         }
 
@@ -193,7 +193,7 @@ class DispatchersTest: XCTestCase {
                 counter += 1
             }
         }
-        Dispatchers.shared.launchAsync(operation: concurrentOperation)
+        Dispatchers.shared.launchConcurrent(operation: concurrentOperation)
         
         // Let the task run for 1 second in order to give it time accumulate to the counter
         sleep(1)

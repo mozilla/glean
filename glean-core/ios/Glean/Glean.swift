@@ -142,7 +142,7 @@ public class Glean {
         if isInitialized() {
             let originalEnabled = getUploadEnabled()
 
-            _ = Dispatchers.shared.launch {
+            _ = Dispatchers.shared.launchAPI {
                 // glean_set_upload_enabled might delete all of the queued pings.
                 // Currently a ping uploader could be scheduled ahead of this,
                 // at which point it will pick up scheduled pings before the setting was toggled.
@@ -207,7 +207,7 @@ public class Glean {
         // This runs in the background to allow for processing of pings off of the
         // main thread. Please note that the ping uploader will spawn other async
         // operations if there are pings to upload.
-        Dispatchers.shared.launchAsync {
+        Dispatchers.shared.launchConcurrent {
             if !self.isInitialized() {
                 self.logger.error("Glean must be initialized before sending pings")
                 return

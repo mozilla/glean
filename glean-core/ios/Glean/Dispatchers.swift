@@ -64,7 +64,7 @@ class Dispatchers {
     ///
     /// If `testingMode` is enabled, then launch will await the execution of the task (unless queuing is
     /// enabled)
-    func launch(block: @escaping () -> Void) {
+    func launchAPI(block: @escaping () -> Void) {
         if queueInitialTasks.value {
             // If we are queuing tasks, typically before Glean has been initialized, then we should
             // just add the created Operation to the preInitOperations array, provided there are
@@ -107,7 +107,7 @@ class Dispatchers {
     ///
     /// If `testingMode` is enabled, then launch will just execute the task rather than adding it to the
     /// concurrent queue to avoid asynchronous issues while testing
-    func launchAsync(operation: Operation) {
+    func launchConcurrent(operation: Operation) {
         if testingMode {
             operation.start()
             operation.waitUntilFinished()
@@ -130,12 +130,8 @@ class Dispatchers {
     ///
     /// If `testingMode` is enabled, then launch will just execute the task rather than adding it to the
     /// concurrent queue to avoid asynchronous issues while testing
-    func launchAsync(block: @escaping () -> Void) {
-        if testingMode {
-            block()
-        } else {
-            concurrentOperationsQueue.addOperation(block)
-        }
+    func launchConcurrent(block: @escaping () -> Void) {
+        launchConcurrent(operation: BlockOperation(block: block))
     }
 
     /// Cancel any pending background tasks
