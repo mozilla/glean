@@ -127,3 +127,11 @@ struct AtomicBoolean {
         val = initialValue
     }
 }
+
+func timestampNanos() -> UInt64 {
+    var info = mach_timebase_info()
+    guard mach_timebase_info(&info) == KERN_SUCCESS else { return 0 }
+    let currentTime = mach_absolute_time()
+    let nanos = currentTime * UInt64(info.numer) / UInt64(info.denom)
+    return nanos
+}

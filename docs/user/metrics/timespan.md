@@ -95,7 +95,7 @@ There are test APIs available too:
 // Was anything recorded?
 XCTAssert(Auth.loginTime.testHasValue())
 // Does the timer have the expected value
-XCTAssert(Auth.loginTime.testGetValue() > 0)
+XCTAssert(try Auth.loginTime.testGetValue() > 0)
 ```
 
 ## Raw API
