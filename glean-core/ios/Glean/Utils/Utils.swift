@@ -19,6 +19,12 @@ extension String: Error {
 }
 
 extension String {
+    /// Create a string from a Rust-allocated char pointer and deallocate the char pointer.
+    public init(freeingRustString rustString: UnsafeMutablePointer<CChar>) {
+        defer { glean_str_free(rustString) }
+        self.init(cString: rustString)
+    }
+
     /// Checks to see if a string matches a regex
     ///
     /// - returns: true if the string matches the regex

@@ -31,6 +31,8 @@
 		BF6C53B4232F872B00E3B43A /* PingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF6C53B3232F872B00E3B43A /* PingTests.swift */; };
 		BF6C53B8232F8CA700E3B43A /* BuiltinPings.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF6C53B7232F8CA700E3B43A /* BuiltinPings.swift */; };
 		BF6F2DA8224BF8F100394062 /* libglean_ffi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BF6F2DA7224BF8F100394062 /* libglean_ffi.a */; };
+		BF89055F232BC213003CA2BA /* StringMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF89055E232BC213003CA2BA /* StringMetric.swift */; };
+		BF890561232BC227003CA2BA /* StringMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF890560232BC227003CA2BA /* StringMetricTests.swift */; };
 		BF93C698224BFC57006CE7D8 /* Glean.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF93C697224BFC57006CE7D8 /* Glean.swift */; };
 		BFFE33A92328F4EF005348FE /* GleanFfi.h in Headers */ = {isa = PBXBuildFile; fileRef = BFFE33A82328F4EF005348FE /* GleanFfi.h */; };
 		BFFE33AB232927C3005348FE /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFFE33AA232927C3005348FE /* Utils.swift */; };
@@ -77,6 +79,8 @@
 		BF6C53B3232F872B00E3B43A /* PingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PingTests.swift; sourceTree = "<group>"; };
 		BF6C53B7232F8CA700E3B43A /* BuiltinPings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuiltinPings.swift; sourceTree = "<group>"; };
 		BF6F2DA7224BF8F100394062 /* libglean_ffi.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libglean_ffi.a; path = ../../target/universal/release/libglean_ffi.a; sourceTree = "<group>"; };
+		BF89055E232BC213003CA2BA /* StringMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringMetric.swift; sourceTree = "<group>"; };
+		BF890560232BC227003CA2BA /* StringMetricTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringMetricTests.swift; sourceTree = "<group>"; };
 		BF93C697224BFC57006CE7D8 /* Glean.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Glean.swift; sourceTree = "<group>"; };
 		BFFE33A82328F4EF005348FE /* GleanFfi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GleanFfi.h; sourceTree = "<group>"; };
 		BFFE33AA232927C3005348FE /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
@@ -216,6 +220,7 @@
 				BF6C53B1232F870C00E3B43A /* Ping.swift */,
 				BF30FDC3233260B500840607 /* TimespanMetric.swift */,
 				BF30FDC72332640400840607 /* TimeUnit.swift */,
+				BF89055E232BC213003CA2BA /* StringMetric.swift */,
 			);
 			path = Metrics;
 			sourceTree = "<group>";
@@ -226,6 +231,7 @@
 				BF43A8CC232A615200545310 /* CounterMetricTests.swift */,
 				BF6C53B3232F872B00E3B43A /* PingTests.swift */,
 				BF30FDC5233260C400840607 /* TimespanMetricTests.swift */,
+				BF890560232BC227003CA2BA /* StringMetricTests.swift */,
 			);
 			path = Metrics;
 			sourceTree = "<group>";
@@ -421,6 +427,7 @@
 				BF30FDC82332640400840607 /* TimeUnit.swift in Sources */,
 				BF43A8C9232A4CB200545310 /* Lifetime.swift in Sources */,
 				1FB70AEF23301C1D00C7CF09 /* Logger.swift in Sources */,
+				BF89055F232BC213003CA2BA /* StringMetric.swift in Sources */,
 				1F70B786232995A9007395FB /* Dispatchers.swift in Sources */,
 				1F605895231489AB00307A9F /* HttpPingUploader.swift in Sources */,
 				BF30FDC4233260B500840607 /* TimespanMetric.swift in Sources */,
@@ -434,6 +441,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BF890561232BC227003CA2BA /* StringMetricTests.swift in Sources */,
 				1FB8F8382326EABD00618E47 /* ConfigurationTests.swift in Sources */,
 				BF6C53B4232F872B00E3B43A /* PingTests.swift in Sources */,
 				1FB8F8422326F74400618E47 /* HttpPingUploaderTests.swift in Sources */,

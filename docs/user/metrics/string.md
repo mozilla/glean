@@ -22,6 +22,8 @@ search.default:
 
 ## API
 
+### Kotlin
+
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.SearchDefault
 
@@ -41,6 +43,27 @@ assertTrue(SearchDefault.name.testHasValue())
 // Does the string metric have the expected value?
 // IMPORTANT: It may have been truncated -- see "Limits" below
 assertEquals("wikipedia", SearchDefault.name.testGetValue())
+```
+
+### Swift
+
+```Swift
+// Record a value into the metric.
+SearchDefault.name.set("duck duck go")
+// If it changed later, you can record the new value:
+SearchDefault.name.set("wikipedia")
+```
+
+There are test APIs available too:
+
+```Kotlin
+@testable import Glean
+
+// Was anything recorded?
+XCTAssert(SearchDefault.name.testHasValue())
+// Does the string metric have the expected value?
+// IMPORTANT: It may have been truncated -- see "Limits" below
+XCTAssertEqual("wikipedia", try SearchDefault.name.testGetValue())
 ```
 
 ## Limits
