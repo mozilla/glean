@@ -6,7 +6,7 @@
 
 //! Glean is a modern approach for recording and sending Telemetry data.
 //!
-//! It's in use at Mozilla for their mobile products.
+//! It's in use at Mozilla.
 //!
 //! All documentation can be found online:
 //!
