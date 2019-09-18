@@ -5,6 +5,8 @@
 @testable import Glean
 import XCTest
 
+// swiftlint:disable force_cast
+// REASON: Used in a test
 class CounterMetricTypeTests: XCTestCase {
     override func setUp() {
         Glean.shared.resetGlean(clearStores: true)
@@ -61,11 +63,8 @@ class CounterMetricTypeTests: XCTestCase {
             disabled: false
         )
 
-        do {
-            _ = try counterMetric.testGetValue()
-            XCTAssert(false, "testGetValue should have thrown an exception")
-        } catch {
-            XCTAssert(true, "testGetValue throws an exception if nothing is stored")
+        XCTAssertThrowsError(try counterMetric.testGetValue()) { error in
+            XCTAssertEqual(error as! String, "Missing value")
         }
     }
 
