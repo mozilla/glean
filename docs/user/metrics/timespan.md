@@ -32,7 +32,9 @@ auth:
 
 ## API
 
-### Kotlin
+{{#include ../../tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
 
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.Auth
@@ -66,7 +68,9 @@ assertTrue(Auth.loginTime.testHasValue())
 assertTrue(Auth.loginTime.testGetValue() > 0)
 ```
 
-### Swift
+</div>
+
+<div data-lang="Swift" class="tab">
 
 ```Swift
 func onShowLogin() {
@@ -98,6 +102,10 @@ XCTAssert(Auth.loginTime.testHasValue())
 XCTAssert(try Auth.loginTime.testGetValue() > 0)
 ```
 
+</div>
+
+{{#include ../../tab_footer.md}}
+
 ## Raw API
 
 > **Note**: The raw API was designed to support a specific set of use-cases.
@@ -108,7 +116,9 @@ This API should only be used if your library or application requires recording t
 
 The raw API will not overwrite a running timer or existing timespan value.
 
-### Kotlin
+{{#include ../../tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
 
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.HistorySync
@@ -117,12 +127,18 @@ val duration = SyncResult.status.syncs.took.toLong()
 HistorySync.setRawNanos(duration)
 ```
 
-### Swift
+</div>
+
+<div data-lang="Swift" class="tab">
 
 ```Swift
 let duration = SyncResult.status.syncs.took.toLong()
 HistorySync.setRawNanos(duration)
 ```
+
+</div>
+
+{{#include ../../tab_footer.md}}
 
 ## Limits
 
