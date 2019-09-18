@@ -19,7 +19,7 @@ controls:
 
 {{#include ../../tab_header.md}}
 
-<div id="Kotlin" class="tab">
+<div data-lang="Kotlin" class="tab">
 
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.Controls
@@ -41,7 +41,7 @@ assertEquals(6, Controls.refreshPressed.testGetValue())
 
 </div>
 
-<div id="Swift" class="tab">
+<div data-lang="Swift" class="tab">
 
 ```Swift
 Controls.refreshPressed.add() // Adds 1 to the counter.

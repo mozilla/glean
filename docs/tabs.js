@@ -10,11 +10,11 @@ function supportsHTML5Storage() {
 }
 
 /**
- * Event handler for when a tab is clicked. 
+ * Event handler for when a tab is clicked.
  */
 function onClickTab(event) {
     var target = event.currentTarget;
-    var language = target.id;
+    var language = target.dataset.lang;
 
     switchAllTabs(language);
 }
@@ -29,7 +29,7 @@ function onClickTab(event) {
 function switchTab(container, language) {
     for (i = 1; i < container.children.length; ++i) {
         var tab = container.children[i];
-        if (tab.id === language) {
+        if (tab.dataset.lang === language) {
             tab.style.display = "block";
         } else {
             tab.style.display = "none";
@@ -40,7 +40,7 @@ function switchTab(container, language) {
     for (i = 0; i < tab_container.children.length; ++i) {
         var button = tab_container.children[i];
         button.className = button.className.replace(" active", "");
-        if (button.id === language) {
+        if (button.dataset.lang === language) {
             button.className += " active";
         }
     }
@@ -53,7 +53,7 @@ function switchTab(container, language) {
  */
 function switchAllTabs(language) {
     var containers = document.getElementsByClassName("tabs");
-    for (i = 0; i < containers.length; ++i) {
+    for (let i = 0; i < containers.length; ++i) {
         switchTab(containers[i], language);
     }
 

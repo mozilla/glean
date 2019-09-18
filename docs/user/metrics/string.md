@@ -22,7 +22,9 @@ search.default:
 
 ## API
 
-### Kotlin
+{{#include ../../tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
 
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.SearchDefault
@@ -45,7 +47,9 @@ assertTrue(SearchDefault.name.testHasValue())
 assertEquals("wikipedia", SearchDefault.name.testGetValue())
 ```
 
-### Swift
+</div>
+
+<div data-lang="Swift" class="tab">
 
 ```Swift
 // Record a value into the metric.
@@ -56,7 +60,7 @@ SearchDefault.name.set("wikipedia")
 
 There are test APIs available too:
 
-```Kotlin
+```Swift
 @testable import Glean
 
 // Was anything recorded?
@@ -65,6 +69,10 @@ XCTAssert(SearchDefault.name.testHasValue())
 // IMPORTANT: It may have been truncated -- see "Limits" below
 XCTAssertEqual("wikipedia", try SearchDefault.name.testGetValue())
 ```
+
+</div>
+
+{{#include ../../tab_footer.md}}
 
 ## Limits
 
