@@ -34,7 +34,6 @@ class Dispatchers {
     lazy var concurrentOperationsQueue: OperationQueue = {
         var queue = OperationQueue()
         queue.name = "Glean concurrent dispatch queue"
-        queue.maxConcurrentOperationCount = 4
         return queue
     }()
 
