@@ -21,6 +21,7 @@ public class Glean {
     var handle: UInt64 = 0
     private var uploadEnabled: Bool = true
     private var configuration: Configuration?
+    private var observer: GleanLifecycleObserver?
     static var backgroundTaskId = UIBackgroundTaskIdentifier.invalid
 
     // This struct is used for organizational purposes to keep the class constants in a single place
@@ -66,7 +67,10 @@ public class Glean {
         self.configuration = configuration
 
         self.handle = withFfiConfiguration(
-            dataDir: getDocumentsDirectory().absoluteString,
+            // The FileManager returns `file://` URLS with absolute paths.
+            // The Rust side expects normal path strings to be used.
+            // `relativePath` for a file URL gives us the absolute filesystem path.
+            dataDir: getDocumentsDirectory().relativePath,
             packageName: AppInfo.name,
             uploadEnabled: uploadEnabled,
             configuration: configuration
@@ -95,6 +99,8 @@ public class Glean {
 
         // Signal Dispatcher that init is complete
         Dispatchers.shared.flushQueuedInitialTasks()
+
+        self.observer = GleanLifecycleObserver()
     }
 
     /// Initialize the core metrics internally managed by Glean (e.g. client id).

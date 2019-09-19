@@ -1,5 +1,6 @@
 excluded:
   - Carthage
+  - samples/ios/app/Carthage
 disabled_rules:
   - file_length
   # We're pretty careful about this already, but it's a pain to disable

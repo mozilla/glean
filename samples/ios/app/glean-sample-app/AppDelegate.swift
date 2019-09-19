@@ -6,6 +6,7 @@
 //  Copyright © 2019 Jan-Erik Rediger. All rights reserved.
 //
 
+import Glean
 import UIKit
 
 @UIApplicationMain
@@ -14,7 +15,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     // swiftlint:disable line_length
     func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        let glean = Glean.shared
+        glean.setUploadEnabled(true)
+        glean.initialize()
+
         return true
     }
 

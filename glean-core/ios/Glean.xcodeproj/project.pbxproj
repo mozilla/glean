@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1F0A7DB523281C1A00B310DD /* Cartfile in Resources */ = {isa = PBXBuildFile; fileRef = 1F0A7DB423281C1A00B310DD /* Cartfile */; };
-		1F0A7DB6232821DC00B310DD /* OHHTTPStubs.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC0C2B5F232809C400A50CC8 /* OHHTTPStubs.framework */; };
 		1F6058932314863400307A9F /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6058922314863400307A9F /* Configuration.swift */; };
 		1F605895231489AB00307A9F /* HttpPingUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F605894231489AB00307A9F /* HttpPingUploader.swift */; };
 		1F60589723148BF800307A9F /* GleanLifecycleObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F60589623148BF800307A9F /* GleanLifecycleObserver.swift */; };
@@ -17,7 +15,8 @@
 		1FB70AEF23301C1D00C7CF09 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB70AEE23301C1D00C7CF09 /* Logger.swift */; };
 		1FB8F8382326EABD00618E47 /* ConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB8F8372326EABD00618E47 /* ConfigurationTests.swift */; };
 		1FB8F8422326F74400618E47 /* HttpPingUploaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB8F8412326F74400618E47 /* HttpPingUploaderTests.swift */; };
-		AC0C2B60232809C400A50CC8 /* OHHTTPStubs.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC0C2B5F232809C400A50CC8 /* OHHTTPStubs.framework */; };
+		BF1BF3FB23337B600036F4CC /* OHHTTPStubs.framework in Copy Files */ = {isa = PBXBuildFile; fileRef = BF1BF3FA23337B600036F4CC /* OHHTTPStubs.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		BF1BF400233382E20036F4CC /* OHHTTPStubs.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF1BF3FA23337B600036F4CC /* OHHTTPStubs.framework */; };
 		BF30FDC22332312300840607 /* Sysctl.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF30FDC12332312300840607 /* Sysctl.swift */; };
 		BF30FDC4233260B500840607 /* TimespanMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF30FDC3233260B500840607 /* TimespanMetric.swift */; };
 		BF30FDC6233260C400840607 /* TimespanMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF30FDC5233260C400840607 /* TimespanMetricTests.swift */; };
@@ -50,8 +49,21 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		BF1BF3F923337B410036F4CC /* Copy Files */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				BF1BF3FB23337B600036F4CC /* OHHTTPStubs.framework in Copy Files */,
+			);
+			name = "Copy Files";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
-		1F0A7DB423281C1A00B310DD /* Cartfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Cartfile; sourceTree = "<group>"; };
 		1F6058922314863400307A9F /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
 		1F605894231489AB00307A9F /* HttpPingUploader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HttpPingUploader.swift; sourceTree = "<group>"; };
 		1F60589623148BF800307A9F /* GleanLifecycleObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GleanLifecycleObserver.swift; sourceTree = "<group>"; };
@@ -60,7 +72,8 @@
 		1FB70AEE23301C1D00C7CF09 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		1FB8F8372326EABD00618E47 /* ConfigurationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigurationTests.swift; sourceTree = "<group>"; };
 		1FB8F8412326F74400618E47 /* HttpPingUploaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = HttpPingUploaderTests.swift; path = GleanTests/HttpPingUploaderTests.swift; sourceTree = SOURCE_ROOT; };
-		AC0C2B5F232809C400A50CC8 /* OHHTTPStubs.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OHHTTPStubs.framework; path = Carthage/Build/iOS/OHHTTPStubs.framework; sourceTree = "<group>"; };
+		BF1BF3F72333787E0036F4CC /* OHHTTPStubs.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OHHTTPStubs.framework; path = ../../Carthage/Build/iOS/OHHTTPStubs.framework; sourceTree = "<group>"; };
+		BF1BF3FA23337B600036F4CC /* OHHTTPStubs.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OHHTTPStubs.framework; path = ../../Carthage/Build/iOS/OHHTTPStubs.framework; sourceTree = "<group>"; };
 		BF30FDC12332312300840607 /* Sysctl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sysctl.swift; sourceTree = "<group>"; };
 		BF30FDC3233260B500840607 /* TimespanMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimespanMetric.swift; sourceTree = "<group>"; };
 		BF30FDC5233260C400840607 /* TimespanMetricTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimespanMetricTests.swift; sourceTree = "<group>"; };
@@ -95,7 +108,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AC0C2B60232809C400A50CC8 /* OHHTTPStubs.framework in Frameworks */,
+				BF1BF400233382E20036F4CC /* OHHTTPStubs.framework in Frameworks */,
 				BF6F2DA8224BF8F100394062 /* libglean_ffi.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -104,7 +117,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1F0A7DB6232821DC00B310DD /* OHHTTPStubs.framework in Frameworks */,
 				BF3DE39B2243A2F20018E23F /* Glean.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -174,7 +186,7 @@
 		BF3DE3872243A2F20018E23F = {
 			isa = PBXGroup;
 			children = (
-				1F0A7DB423281C1A00B310DD /* Cartfile */,
+				BF1BF3FA23337B600036F4CC /* OHHTTPStubs.framework */,
 				BF51C3BB224BF19F0014CBAF /* base.xcconfig */,
 				BF51C3B9224BF19F0014CBAF /* debug.xcconfig */,
 				BF51C3BA224BF19F0014CBAF /* release.xcconfig */,
@@ -253,7 +265,7 @@
 		BF6F2DA6224BF8F000394062 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				AC0C2B5F232809C400A50CC8 /* OHHTTPStubs.framework */,
+				BF1BF3F72333787E0036F4CC /* OHHTTPStubs.framework */,
 				BF6F2DA7224BF8F100394062 /* libglean_ffi.a */,
 			);
 			name = Frameworks;
@@ -301,6 +313,7 @@
 				BF3DE3962243A2F20018E23F /* Sources */,
 				BF3DE3972243A2F20018E23F /* Frameworks */,
 				BF3DE3982243A2F20018E23F /* Resources */,
+				BF1BF3F923337B410036F4CC /* Copy Files */,
 			);
 			buildRules = (
 			);
@@ -356,7 +369,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1F0A7DB523281C1A00B310DD /* Cartfile in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -378,7 +390,7 @@
 			inputFileListPaths = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/Carthage/Build/iOS/OHHTTPStubs.framework",
+				../../Carthage/Build/iOS/OHHTTPStubs.framework,
 			);
 			name = "Copy Carthage Dependencies";
 			outputFileListPaths = (
@@ -397,7 +409,7 @@
 			inputFileListPaths = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/Carthage/Build/iOS/OHHTTPStubs.framework",
+				../../Carthage/Build/iOS/OHHTTPStubs.framework,
 			);
 			name = "Copy Carthage Dependencies";
 			outputFileListPaths = (
@@ -615,7 +627,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
+					../../Carthage/Build/iOS,
 				);
 				INFOPLIST_FILE = Glean/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -648,7 +660,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
+					../../Carthage/Build/iOS,
 				);
 				INFOPLIST_FILE = Glean/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -676,7 +688,7 @@
 				DEVELOPMENT_TEAM = 99QSBDSJN4;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
+					../../Carthage/Build/iOS,
 				);
 				INFOPLIST_FILE = GleanTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -700,7 +712,7 @@
 				DEVELOPMENT_TEAM = 99QSBDSJN4;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
+					../../Carthage/Build/iOS,
 				);
 				INFOPLIST_FILE = GleanTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
