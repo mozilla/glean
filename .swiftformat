@@ -1,3 +1,4 @@
 --exclude Carthage
+--exclude samples/ios/app/Carthage
 --disable redundantSelf
 --disable andOperator
