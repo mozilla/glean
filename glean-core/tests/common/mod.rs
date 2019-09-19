@@ -87,7 +87,7 @@ pub fn iso8601_to_chrono(datetime: &iso8601::DateTime) -> chrono::DateTime<chron
 /// `url` is the endpoint the ping will go to, and `json_data` is the JSON
 /// payload.
 pub fn get_queued_pings(data_path: &Path) -> Result<Vec<(String, JsonValue)>> {
-    let pings_dir = data_path.join("pings");
+    let pings_dir = data_path.join("pending_pings");
     let entries = read_dir(&pings_dir)?;
     Ok(entries
         .filter_map(|entry| entry.ok())

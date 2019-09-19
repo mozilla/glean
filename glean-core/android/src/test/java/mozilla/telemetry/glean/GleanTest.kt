@@ -98,7 +98,7 @@ class GleanTest {
 
         Glean.handleBackgroundEvent()
         // Make sure the file is on the disk
-        val pingPath = File(context.applicationInfo.dataDir, "glean_data/pings")
+        val pingPath = File(Glean.getDataDir(), PingUploadWorker.PINGS_DIR)
         // Only the baseline ping should have been written
         assertEquals(1, pingPath.listFiles()?.size)
 

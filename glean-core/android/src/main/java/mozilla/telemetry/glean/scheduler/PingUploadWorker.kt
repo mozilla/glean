@@ -33,7 +33,8 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
         // Since ping file names are UUIDs, this matches UUIDs for filtering purposes
         private const val FILE_PATTERN = "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
         private const val LOG_TAG = "glean/PingUploadWorker"
-        internal const val PINGS_DIR = "pings"
+        // NOTE: The `PINGS_DIR` must be kept in sync with the one in the Rust implementation.
+        internal const val PINGS_DIR = "pending_pings"
         // A lock to prevent simultaneous writes in the ping queue directory.
         // In particular, there are issues if the pings are cleared (as part of
         // disabling telemetry), while the ping uploader is trying to upload queued pings.
