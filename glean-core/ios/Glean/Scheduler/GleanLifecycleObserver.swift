@@ -20,12 +20,16 @@ class GleanLifecycleObserver {
     }
 
     @objc func appWillEnterForeground(notification _: NSNotification) {
-        // TODO: start duration
+        // Note that this is sending the length of the last foreground session
+        // because it belongs to the baseline ping and that ping is sent every
+        // time the app goes to background.
+        GleanBaseline.duration.start()
     }
 
     @objc func appDidEnterBackground(notification _: NSNotification) {
-        // TODO: stop duration
-
+        // We're going to background, so store how much time we spent
+        // on foreground.
+        GleanBaseline.duration.stop()
         Glean.shared.handleBackgroundEvent()
     }
 }

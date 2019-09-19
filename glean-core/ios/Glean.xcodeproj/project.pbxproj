@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		1F0A7DB523281C1A00B310DD /* Cartfile in Resources */ = {isa = PBXBuildFile; fileRef = 1F0A7DB423281C1A00B310DD /* Cartfile */; };
 		1F0A7DB6232821DC00B310DD /* OHHTTPStubs.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC0C2B5F232809C400A50CC8 /* OHHTTPStubs.framework */; };
-		1F0A7DB923282B1700B310DD /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = 1F0A7DB823282B1700B310DD /* .swiftlint.yml */; };
 		1F6058932314863400307A9F /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6058922314863400307A9F /* Configuration.swift */; };
 		1F605895231489AB00307A9F /* HttpPingUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F605894231489AB00307A9F /* HttpPingUploader.swift */; };
 		1F60589723148BF800307A9F /* GleanLifecycleObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F60589623148BF800307A9F /* GleanLifecycleObserver.swift */; };
@@ -19,9 +18,12 @@
 		1FB8F8382326EABD00618E47 /* ConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB8F8372326EABD00618E47 /* ConfigurationTests.swift */; };
 		1FB8F8422326F74400618E47 /* HttpPingUploaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB8F8412326F74400618E47 /* HttpPingUploaderTests.swift */; };
 		AC0C2B60232809C400A50CC8 /* OHHTTPStubs.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC0C2B5F232809C400A50CC8 /* OHHTTPStubs.framework */; };
+		BF30FDC22332312300840607 /* Sysctl.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF30FDC12332312300840607 /* Sysctl.swift */; };
 		BF30FDC4233260B500840607 /* TimespanMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF30FDC3233260B500840607 /* TimespanMetric.swift */; };
 		BF30FDC6233260C400840607 /* TimespanMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF30FDC5233260C400840607 /* TimespanMetricTests.swift */; };
 		BF30FDC82332640400840607 /* TimeUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF30FDC72332640400840607 /* TimeUnit.swift */; };
+		BF3227D923336DDA00CD0111 /* GleanBaseline.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF3227D823336DDA00CD0111 /* GleanBaseline.swift */; };
+		BF3227DB23336DE300CD0111 /* GleanInternalMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF3227DA23336DE300CD0111 /* GleanInternalMetrics.swift */; };
 		BF3DE39B2243A2F20018E23F /* Glean.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF3DE3912243A2F20018E23F /* Glean.framework */; };
 		BF3DE3A02243A2F20018E23F /* GleanTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF3DE39F2243A2F20018E23F /* GleanTests.swift */; };
 		BF43A8C7232A4BA400545310 /* CounterMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF43A8C6232A4BA400545310 /* CounterMetric.swift */; };
@@ -50,7 +52,6 @@
 
 /* Begin PBXFileReference section */
 		1F0A7DB423281C1A00B310DD /* Cartfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Cartfile; sourceTree = "<group>"; };
-		1F0A7DB823282B1700B310DD /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text; path = .swiftlint.yml; sourceTree = "<group>"; };
 		1F6058922314863400307A9F /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
 		1F605894231489AB00307A9F /* HttpPingUploader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HttpPingUploader.swift; sourceTree = "<group>"; };
 		1F60589623148BF800307A9F /* GleanLifecycleObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GleanLifecycleObserver.swift; sourceTree = "<group>"; };
@@ -60,9 +61,12 @@
 		1FB8F8372326EABD00618E47 /* ConfigurationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigurationTests.swift; sourceTree = "<group>"; };
 		1FB8F8412326F74400618E47 /* HttpPingUploaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = HttpPingUploaderTests.swift; path = GleanTests/HttpPingUploaderTests.swift; sourceTree = SOURCE_ROOT; };
 		AC0C2B5F232809C400A50CC8 /* OHHTTPStubs.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OHHTTPStubs.framework; path = Carthage/Build/iOS/OHHTTPStubs.framework; sourceTree = "<group>"; };
+		BF30FDC12332312300840607 /* Sysctl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sysctl.swift; sourceTree = "<group>"; };
 		BF30FDC3233260B500840607 /* TimespanMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimespanMetric.swift; sourceTree = "<group>"; };
 		BF30FDC5233260C400840607 /* TimespanMetricTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimespanMetricTests.swift; sourceTree = "<group>"; };
 		BF30FDC72332640400840607 /* TimeUnit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeUnit.swift; sourceTree = "<group>"; };
+		BF3227D823336DDA00CD0111 /* GleanBaseline.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GleanBaseline.swift; sourceTree = "<group>"; };
+		BF3227DA23336DE300CD0111 /* GleanInternalMetrics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GleanInternalMetrics.swift; sourceTree = "<group>"; };
 		BF3DE3912243A2F20018E23F /* Glean.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Glean.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF3DE3942243A2F20018E23F /* Glean.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Glean.h; sourceTree = "<group>"; };
 		BF3DE3952243A2F20018E23F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -137,6 +141,7 @@
 			children = (
 				BFFE33AA232927C3005348FE /* Utils.swift */,
 				1FB70AEE23301C1D00C7CF09 /* Logger.swift */,
+				BF30FDC12332312300840607 /* Sysctl.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -157,10 +162,18 @@
 			path = Net;
 			sourceTree = "<group>";
 		};
+		BF3227D723336CF800CD0111 /* Generated */ = {
+			isa = PBXGroup;
+			children = (
+				BF3227D823336DDA00CD0111 /* GleanBaseline.swift */,
+				BF3227DA23336DE300CD0111 /* GleanInternalMetrics.swift */,
+			);
+			path = Generated;
+			sourceTree = "<group>";
+		};
 		BF3DE3872243A2F20018E23F = {
 			isa = PBXGroup;
 			children = (
-				1F0A7DB823282B1700B310DD /* .swiftlint.yml */,
 				1F0A7DB423281C1A00B310DD /* Cartfile */,
 				BF51C3BB224BF19F0014CBAF /* base.xcconfig */,
 				BF51C3B9224BF19F0014CBAF /* debug.xcconfig */,
@@ -185,6 +198,7 @@
 			isa = PBXGroup;
 			children = (
 				1F6058912314861B00307A9F /* Config */,
+				BF3227D723336CF800CD0111 /* Generated */,
 				BF43A8C5232A4B5F00545310 /* Metrics */,
 				1F60588E2314840B00307A9F /* Net */,
 				1F60588D231483D600307A9F /* Scheduler */,
@@ -342,7 +356,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1F0A7DB923282B1700B310DD /* .swiftlint.yml in Resources */,
 				1F0A7DB523281C1A00B310DD /* Cartfile in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -421,12 +434,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				1F6058932314863400307A9F /* Configuration.swift in Sources */,
+				BF3227DB23336DE300CD0111 /* GleanInternalMetrics.swift in Sources */,
 				BF93C698224BFC57006CE7D8 /* Glean.swift in Sources */,
+				BF30FDC22332312300840607 /* Sysctl.swift in Sources */,
 				1F60589723148BF800307A9F /* GleanLifecycleObserver.swift in Sources */,
 				BF6C53B8232F8CA700E3B43A /* BuiltinPings.swift in Sources */,
 				BF30FDC82332640400840607 /* TimeUnit.swift in Sources */,
 				BF43A8C9232A4CB200545310 /* Lifetime.swift in Sources */,
 				1FB70AEF23301C1D00C7CF09 /* Logger.swift in Sources */,
+				BF3227D923336DDA00CD0111 /* GleanBaseline.swift in Sources */,
 				BF89055F232BC213003CA2BA /* StringMetric.swift in Sources */,
 				1F70B786232995A9007395FB /* Dispatchers.swift in Sources */,
 				1F605895231489AB00307A9F /* HttpPingUploader.swift in Sources */,
