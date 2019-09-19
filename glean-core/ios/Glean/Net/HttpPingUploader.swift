@@ -138,7 +138,7 @@ public class HttpPingUploader {
 
         do {
             let storageDirectory = try FileManager.default.contentsOfDirectory(
-                atPath: pingDirectory.absoluteString
+                atPath: pingDirectory.relativePath
             )
 
             for file in storageDirectory {
@@ -150,7 +150,7 @@ public class HttpPingUploader {
                         } else {
                             do {
                                 try FileManager.default.removeItem(
-                                    atPath: pingDirectory.appendingPathComponent(file).absoluteString
+                                    atPath: pingDirectory.appendingPathComponent(file).relativePath
                                 )
                             } catch {
                                 self.logger.error("Error deleting ping file: \(file)")
@@ -161,7 +161,7 @@ public class HttpPingUploader {
                     // Delete files that don't match the UUID filePattern regex
                     logger.debug("Pattern mismatch. Deleting \(file)")
                     try FileManager.default.removeItem(
-                        atPath: pingDirectory.appendingPathComponent(file).absoluteString
+                        atPath: pingDirectory.appendingPathComponent(file).relativePath
                     )
                 }
             }
@@ -177,7 +177,7 @@ public class HttpPingUploader {
     ///   * callback: Allows for an action to occur as the result of the async upload operation
     func processFile(_ file: URL, callback: @escaping (Bool, Error?) -> Void) {
         do {
-            let data = try String(contentsOfFile: file.absoluteString, encoding: .utf8)
+            let data = try String(contentsOfFile: file.relativePath, encoding: .utf8)
             let lines = data.components(separatedBy: .newlines)
 
             if lines.count >= 2 {
@@ -201,10 +201,10 @@ public class HttpPingUploader {
     static func getOrCreatePingDirectory() -> URL {
         let dataPath = getDocumentsDirectory().appendingPathComponent(Constants.pingsDir)
 
-        if !FileManager.default.fileExists(atPath: dataPath.absoluteString) {
+        if !FileManager.default.fileExists(atPath: dataPath.relativePath) {
             do {
                 try FileManager.default.createDirectory(
-                    atPath: dataPath.absoluteString,
+                    atPath: dataPath.relativePath,
                     withIntermediateDirectories: true,
                     attributes: nil
                 )

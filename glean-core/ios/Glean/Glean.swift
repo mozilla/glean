@@ -66,7 +66,10 @@ public class Glean {
         self.configuration = configuration
 
         self.handle = withFfiConfiguration(
-            dataDir: getDocumentsDirectory().absoluteString,
+            // The FileManager returns `file://` URLS with absolute paths.
+            // The Rust side expects normal path strings to be used.
+            // `relativePath` for a file URL gives us the absolute filesystem path.
+            dataDir: getDocumentsDirectory().relativePath,
             packageName: AppInfo.name,
             uploadEnabled: uploadEnabled,
             configuration: configuration

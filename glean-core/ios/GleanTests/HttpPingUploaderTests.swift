@@ -40,11 +40,11 @@ class HttpPingUploaderTests: XCTestCase {
         // Verify all the files were removed, including the bad ones
         do {
             let directoryContents = try FileManager.default.contentsOfDirectory(
-                atPath: pingDir.absoluteString
+                atPath: pingDir.relativePath
             )
             for file in directoryContents {
                 try FileManager.default.removeItem(
-                    atPath: pingDir.appendingPathComponent(file).absoluteString
+                    atPath: pingDir.appendingPathComponent(file).relativePath
                 )
             }
         } catch {
@@ -184,7 +184,7 @@ class HttpPingUploaderTests: XCTestCase {
             let file = pingDir.appendingPathComponent(fileName)
 
             if !FileManager.default.createFile(
-                atPath: file.absoluteString,
+                atPath: file.relativePath,
                 contents: fileContents,
                 attributes: nil
             ) {
@@ -197,7 +197,7 @@ class HttpPingUploaderTests: XCTestCase {
         let badFileName = "BadFileName"
         let badFile = pingDir.appendingPathComponent(badFileName)
         FileManager.default.createFile(
-            atPath: badFile.absoluteString,
+            atPath: badFile.relativePath,
             contents: fileContents,
             attributes: nil
         )
