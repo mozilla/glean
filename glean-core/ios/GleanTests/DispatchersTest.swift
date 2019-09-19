@@ -82,7 +82,7 @@ class DispatchersTest: XCTestCase {
                 if num == 50 {
                     flushTasks.value = true
                 }
-                _ = Dispatchers.shared.launchAPI {
+                Dispatchers.shared.launchAPI {
                     orderedList.append(num)
                     counter += 1
                 }
