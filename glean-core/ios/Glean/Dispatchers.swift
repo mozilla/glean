@@ -29,8 +29,7 @@ class Dispatchers {
         return queue
     }()
 
-    // This is a task queue for all Glean background operations that need be executed concurrently.
-    // It is currently set to use a maximum of 4 concurrent operations at a time.
+    // This is a task queue for all Glean background operations that can be executed concurrently.
     lazy var concurrentOperationsQueue: OperationQueue = {
         var queue = OperationQueue()
         queue.name = "Glean concurrent dispatch queue"
@@ -50,10 +49,10 @@ class Dispatchers {
     // property
     private init() {}
 
-    /// This function launches a background `Operation` on a serially executed queue.
+    /// This function launches an `Operation` on a serially executed queue.
     ///
     /// - parameters:
-    ///   * block: The block of code to execute, as a Closure that accepts no arugments and returns Void
+    ///   * block: The block of code to execute
     ///
     /// This function is used throughout Glean in order to launch tasks in the background, typically
     /// recording of metrics and things that need to execute in order. Since this executes the tasks on
@@ -62,7 +61,7 @@ class Dispatchers {
     /// If `queueInitialTasks` is enabled, then the operation will be created and added to the
     /// `preInitOperations` array but not executed until flushed.
     ///
-    /// If `testingMode` is enabled, then launch will await the execution of the task (unless queuing is
+    /// If `testingMode` is enabled, then `launchAPI` will await the execution of the task (unless queuing is
     /// enabled)
     func launchAPI(block: @escaping () -> Void) {
         if queueInitialTasks.value {
@@ -93,7 +92,7 @@ class Dispatchers {
         }
     }
 
-    /// This function launches a background `Operation` on a concurrently executed queue.
+    /// This function launches an `Operation` on a concurrently executed queue.
     ///
     /// - parameters:
     ///   * operation: The `Operation` to execute
@@ -105,8 +104,8 @@ class Dispatchers {
     /// should be launched by this are the ping upload schedulers and those should run regardless of
     /// the initialized state.
     ///
-    /// If `testingMode` is enabled, then launch will just execute the task rather than adding it to the
-    /// concurrent queue to avoid asynchronous issues while testing
+    /// If `testingMode` is enabled, then `launchConcurrent` will just execute the task rather than
+    /// adding it to the concurrent queue to avoid asynchronous issues while testing
     func launchConcurrent(operation: Operation) {
         if testingMode {
             operation.start()
@@ -116,7 +115,7 @@ class Dispatchers {
         }
     }
 
-    /// This function launches a background block of code on a concurrently executed queue.
+    /// This function launches an `Operation` on a concurrently executed queue.
     ///
     /// - parameters:
     ///   * block: The block of code to execute, as a Closure that accepts no arugments and returns Void
@@ -128,17 +127,28 @@ class Dispatchers {
     /// should be launched by this are the ping upload schedulers and those should run regardless of
     /// the initialized state.
     ///
-    /// If `testingMode` is enabled, then launch will just execute the task rather than adding it to the
-    /// concurrent queue to avoid asynchronous issues while testing
+    /// If `testingMode` is enabled, then `launchConcurrent will just execute the task rather than
+    /// adding it to the concurrent queue to avoid asynchronous issues while testing
     func launchConcurrent(block: @escaping () -> Void) {
         launchConcurrent(operation: BlockOperation(block: block))
     }
 
     /// Cancel any pending background tasks
     func cancelBackgroundTasks() {
-        serialOperationQueue.cancelAllOperations()
-        concurrentOperationsQueue.cancelAllOperations()
+        // This will remove all queued operations prior to Glean.initialize() so that they won't be
+        // executed if flushQueuedInitialTasks() is called
         preInitOperations.removeAll()
+
+        // This will cancel operations in the serially executed queue. This includes most of the
+        // metrics recording and things that need to execute in order. This would not stop the currently
+        // executing operation, but would prevent all remaining operations from executing.
+        serialOperationQueue.cancelAllOperations()
+
+        // This will cancel operations that are executing concurrently. This doesn't abort running
+        // operations immediately and it is up to the operation to handle the cancel request,
+        // otherwise it will just run to completion, so we shouldn't have to worry about cancellation
+        // causing undefined behavior.
+        concurrentOperationsQueue.cancelAllOperations()
     }
 
     /// Stop queuing tasks and process any tasks in the queue.
