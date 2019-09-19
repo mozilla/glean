@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BF1BF3FD23337CD00036F4CC /* OHHTTPStubs.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF1BF3FC23337CD00036F4CC /* OHHTTPStubs.framework */; };
+		BF1BF3FF23337E6F0036F4CC /* Glean.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF1BF3FE23337E6F0036F4CC /* Glean.framework */; };
 		BFD3AB2E224D475E00AD9255 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFD3AB2D224D475E00AD9255 /* AppDelegate.swift */; };
 		BFD3AB30224D475E00AD9255 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFD3AB2F224D475E00AD9255 /* ViewController.swift */; };
 		BFD3AB33224D475E00AD9255 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BFD3AB31224D475E00AD9255 /* Main.storyboard */; };
@@ -17,7 +19,6 @@
 		BFD3AB5E224D490000AD9255 /* debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = BFD3AB5B224D490000AD9255 /* debug.xcconfig */; };
 		BFD3AB5F224D490000AD9255 /* base.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = BFD3AB5C224D490000AD9255 /* base.xcconfig */; };
 		BFD3AB60224D490000AD9255 /* release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = BFD3AB5D224D490000AD9255 /* release.xcconfig */; };
-		BFD3AB6A224D4FC500AD9255 /* Glean.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BFD3AB64224D4F4C00AD9255 /* Glean.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,6 +39,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		BF1BF3FC23337CD00036F4CC /* OHHTTPStubs.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OHHTTPStubs.framework; path = Carthage/Build/iOS/OHHTTPStubs.framework; sourceTree = "<group>"; };
+		BF1BF3FE23337E6F0036F4CC /* Glean.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Glean.framework; path = Carthage/Build/iOS/Glean.framework; sourceTree = "<group>"; };
 		BFD3AB2A224D475E00AD9255 /* glean-sample-app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "glean-sample-app.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BFD3AB2D224D475E00AD9255 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		BFD3AB2F224D475E00AD9255 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -54,7 +57,6 @@
 		BFD3AB5B224D490000AD9255 /* debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = debug.xcconfig; sourceTree = "<group>"; };
 		BFD3AB5C224D490000AD9255 /* base.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = base.xcconfig; sourceTree = "<group>"; };
 		BFD3AB5D224D490000AD9255 /* release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = release.xcconfig; sourceTree = "<group>"; };
-		BFD3AB64224D4F4C00AD9255 /* Glean.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Glean.framework; path = Carthage/Build/iOS/Glean.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,7 +64,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BFD3AB6A224D4FC500AD9255 /* Glean.framework in Frameworks */,
+				BF1BF3FF23337E6F0036F4CC /* Glean.framework in Frameworks */,
+				BF1BF3FD23337CD00036F4CC /* OHHTTPStubs.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -86,7 +89,6 @@
 		BFD3AB21224D475E00AD9255 = {
 			isa = PBXGroup;
 			children = (
-				BFD3AB64224D4F4C00AD9255 /* Glean.framework */,
 				BFD3AB5C224D490000AD9255 /* base.xcconfig */,
 				BFD3AB5B224D490000AD9255 /* debug.xcconfig */,
 				BFD3AB5D224D490000AD9255 /* release.xcconfig */,
@@ -142,6 +144,8 @@
 		BFD3AB68224D4F9500AD9255 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				BF1BF3FE23337E6F0036F4CC /* Glean.framework */,
+				BF1BF3FC23337CD00036F4CC /* OHHTTPStubs.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -286,12 +290,14 @@
 			);
 			inputPaths = (
 				"$(SRCROOT)/Carthage/Build/iOS/Glean.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/OHHTTPStubs.framework",
 			);
 			name = "Run Script";
 			outputFileListPaths = (
 			);
 			outputPaths = (
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Glean.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/OHHTTPStubs.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
