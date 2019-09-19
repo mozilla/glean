@@ -21,6 +21,7 @@ public class Glean {
     var handle: UInt64 = 0
     private var uploadEnabled: Bool = true
     private var configuration: Configuration?
+    private var observer: GleanLifecycleObserver?
     static var backgroundTaskId = UIBackgroundTaskIdentifier.invalid
 
     // This struct is used for organizational purposes to keep the class constants in a single place
@@ -98,6 +99,8 @@ public class Glean {
 
         // Signal Dispatcher that init is complete
         Dispatchers.shared.flushQueuedInitialTasks()
+
+        self.observer = GleanLifecycleObserver()
     }
 
     /// Initialize the core metrics internally managed by Glean (e.g. client id).
