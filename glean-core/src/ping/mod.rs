@@ -214,7 +214,7 @@ impl PingMaker {
     /// The directory will be created inside the `data_path`.
     /// The `pings` directory (and its parents) is created if it does not exist.
     fn get_pings_dir(&self, data_path: &Path) -> std::io::Result<PathBuf> {
-        let pings_dir = data_path.join("pings");
+        let pings_dir = data_path.join("pending_pings");
         create_dir_all(&pings_dir)?;
         Ok(pings_dir)
     }
