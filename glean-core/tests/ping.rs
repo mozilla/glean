@@ -10,7 +10,7 @@ use glean_core::CommonMetricData;
 
 #[test]
 fn write_ping_to_disk() {
-    let (mut glean, temp) = new_glean();
+    let (mut glean, _temp) = new_glean();
 
     let ping = PingType::new("metrics", true);
     glean.register_ping_type(&ping);
@@ -26,14 +26,7 @@ fn write_ping_to_disk() {
 
     assert!(ping.send(&glean, true).unwrap());
 
-    let path = temp.path().join("pings");
-
-    let mut count = 0;
-    for entry in std::fs::read_dir(path).unwrap() {
-        assert!(entry.unwrap().path().is_file());
-        count += 1;
-    }
-    assert_eq!(1, count);
+    assert_eq!(1, get_queued_pings(glean.get_data_path()).unwrap().len());
 }
 
 #[test]
