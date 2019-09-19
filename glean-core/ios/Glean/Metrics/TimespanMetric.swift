@@ -56,7 +56,7 @@ public class TimespanMetricType {
 
         let startTime = timestampNanos()
 
-        _ = Dispatchers.shared.launchAPI {
+        Dispatchers.shared.launchAPI {
             glean_timespan_set_start(Glean.shared.handle, self.handle, startTime)
         }
     }
@@ -71,7 +71,7 @@ public class TimespanMetricType {
 
         let stopTime = timestampNanos()
 
-        _ = Dispatchers.shared.launchAPI {
+        Dispatchers.shared.launchAPI {
             glean_timespan_set_stop(Glean.shared.handle, self.handle, stopTime)
         }
     }
@@ -80,7 +80,7 @@ public class TimespanMetricType {
     public func cancel() {
         guard !self.disabled else { return }
 
-        _ = Dispatchers.shared.launchAPI {
+        Dispatchers.shared.launchAPI {
             glean_timespan_cancel(self.handle)
         }
     }
@@ -97,7 +97,7 @@ public class TimespanMetricType {
     public func setRawNanos(_ elapsedNanos: UInt64) {
         guard !self.disabled else { return }
 
-        _ = Dispatchers.shared.launchAPI {
+        Dispatchers.shared.launchAPI {
             glean_timespan_set_raw_nanos(Glean.shared.handle, self.handle, elapsedNanos)
         }
     }
