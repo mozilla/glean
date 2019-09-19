@@ -13,7 +13,8 @@ public class HttpPingUploader {
         // Since ping file names are UUIDs, this matches UUIDs for filtering purposes
         static let filePattern = "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
         static let logTag = "glean/HttpPingUploader"
-        static let pingsDir = "pings"
+        // NOTE: The `PINGS_DIR` must be kept in sync with the one in the Rust implementation.
+        static let pingsDir = "pending_pings"
         static let connectionTimeout = 10000
     }
 
