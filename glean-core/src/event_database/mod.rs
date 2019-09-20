@@ -106,7 +106,7 @@ impl EventDatabase {
         match self.load_events_from_disk() {
             Ok(_) => self.send_all_events(glean),
             Err(err) => {
-                log::error!("Error loading pings from disk: {}", err);
+                log::error!("Error loading events from disk: {}", err);
                 false
             }
         }
