@@ -281,14 +281,7 @@ impl PingMaker {
 #[cfg(test)]
 mod test {
     use super::*;
-
-    const GLOBAL_APPLICATION_ID: &str = "org.mozilla.glean.test.app";
-    pub fn new_glean() -> (Glean, tempfile::TempDir) {
-        let dir = tempfile::tempdir().unwrap();
-        let tmpname = dir.path().display().to_string();
-        let glean = Glean::with_options(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
-        (glean, dir)
-    }
+    use crate::tests::new_glean;
 
     #[test]
     fn sequence_numbers_should_be_reset_when_toggling_uploading() {
