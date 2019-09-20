@@ -37,11 +37,11 @@ impl Database {
 
     /// Creates the storage directories and inits rkv.
     fn open_rkv(path: &str) -> Result<Rkv> {
-        let path = std::path::Path::new(path);
+        let path = std::path::Path::new(path).join("db");
         log::debug!("Database path: {:?}", path.display());
         fs::create_dir_all(&path)?;
 
-        let rkv = Rkv::new(path)?;
+        let rkv = Rkv::new(&path)?;
         log::info!("Database initialized");
         Ok(rkv)
     }
@@ -298,7 +298,7 @@ mod test {
 
     #[test]
     fn test_panicks_if_fails_dir_creation() {
-        assert!(Database::new("").is_err());
+        assert!(Database::new("/!#\"'@#°ç").is_err());
     }
 
     #[test]
