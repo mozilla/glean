@@ -16,9 +16,6 @@
 		BFD3AB38224D475E00AD9255 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BFD3AB36224D475E00AD9255 /* LaunchScreen.storyboard */; };
 		BFD3AB43224D475E00AD9255 /* glean_sample_appTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFD3AB42224D475E00AD9255 /* glean_sample_appTests.swift */; };
 		BFD3AB4E224D475E00AD9255 /* glean_sample_appUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFD3AB4D224D475E00AD9255 /* glean_sample_appUITests.swift */; };
-		BFD3AB5E224D490000AD9255 /* debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = BFD3AB5B224D490000AD9255 /* debug.xcconfig */; };
-		BFD3AB5F224D490000AD9255 /* base.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = BFD3AB5C224D490000AD9255 /* base.xcconfig */; };
-		BFD3AB60224D490000AD9255 /* release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = BFD3AB5D224D490000AD9255 /* release.xcconfig */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -214,18 +211,21 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1010;
-				LastUpgradeCheck = 1010;
+				LastUpgradeCheck = 1030;
 				ORGANIZATIONNAME = "Jan-Erik Rediger";
 				TargetAttributes = {
 					BFD3AB29224D475E00AD9255 = {
 						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1030;
 					};
 					BFD3AB3D224D475E00AD9255 = {
 						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1030;
 						TestTargetID = BFD3AB29224D475E00AD9255;
 					};
 					BFD3AB48224D475E00AD9255 = {
 						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1030;
 						TestTargetID = BFD3AB29224D475E00AD9255;
 					};
 				};
@@ -255,9 +255,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BFD3AB60224D490000AD9255 /* release.xcconfig in Resources */,
-				BFD3AB5F224D490000AD9255 /* base.xcconfig in Resources */,
-				BFD3AB5E224D490000AD9255 /* debug.xcconfig in Resources */,
 				BFD3AB38224D475E00AD9255 /* LaunchScreen.storyboard in Resources */,
 				BFD3AB35224D475E00AD9255 /* Assets.xcassets in Resources */,
 				BFD3AB33224D475E00AD9255 /* Main.storyboard in Resources */,
@@ -488,7 +485,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 99QSBDSJN4;
+				DEVELOPMENT_TEAM = G9EAK7RA89;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
@@ -498,9 +495,9 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "rediger.net.glean-sample-app";
+				PRODUCT_BUNDLE_IDENTIFIER = "net.tlong.glean-sample-app";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -511,7 +508,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 99QSBDSJN4;
+				DEVELOPMENT_TEAM = G9EAK7RA89;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
@@ -521,9 +518,10 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "rediger.net.glean-sample-app";
+				PRODUCT_BUNDLE_IDENTIFIER = "net.tlong.glean-sample-app";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -535,7 +533,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 99QSBDSJN4;
+				DEVELOPMENT_TEAM = G9EAK7RA89;
 				INFOPLIST_FILE = "glean-sample-appTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -544,7 +542,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "rediger.net.glean-sample-appTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/glean-sample-app.app/glean-sample-app";
 			};
@@ -557,7 +555,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 99QSBDSJN4;
+				DEVELOPMENT_TEAM = G9EAK7RA89;
 				INFOPLIST_FILE = "glean-sample-appTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -566,7 +564,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "rediger.net.glean-sample-appTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/glean-sample-app.app/glean-sample-app";
 			};
@@ -577,17 +576,19 @@
 			baseConfigurationReference = BFD3AB5B224D490000AD9255 /* debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 99QSBDSJN4;
+				DEVELOPMENT_TEAM = G9EAK7RA89;
 				INFOPLIST_FILE = "glean-sample-appUITests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "rediger.net.glean-sample-appUITests";
+				PRODUCT_BUNDLE_IDENTIFIER = "net.tlong.glean-sample-appUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = "glean-sample-app";
 			};
@@ -598,17 +599,20 @@
 			baseConfigurationReference = BFD3AB5D224D490000AD9255 /* release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 99QSBDSJN4;
+				DEVELOPMENT_TEAM = G9EAK7RA89;
 				INFOPLIST_FILE = "glean-sample-appUITests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "rediger.net.glean-sample-appUITests";
+				PRODUCT_BUNDLE_IDENTIFIER = "net.tlong.glean-sample-appUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = "glean-sample-app";
 			};
