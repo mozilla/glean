@@ -1,10 +1,6 @@
-//
-//  glean_sample_appUITests.swift
-//  glean-sample-appUITests
-//
-//  Created by Jan-Erik Rediger on 28.03.19.
-//  Copyright © 2019 Jan-Erik Rediger. All rights reserved.
-//
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import XCTest
 
