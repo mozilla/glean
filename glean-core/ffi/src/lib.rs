@@ -138,6 +138,36 @@ pub unsafe extern "C" fn glean_initialize(cfg: *const FfiConfiguration) -> u64 {
 }
 
 #[no_mangle]
+pub unsafe extern "C" fn glean_initialize_migration(
+    cfg: *const FfiConfiguration,
+    seq_num_keys: RawStringArray,
+    seq_num_values: RawIntArray,
+    seq_num_len: i32,
+) -> u64 {
+    assert!(!cfg.is_null());
+
+    GLEAN.insert_with_log(|| {
+        // We can create a reference to the FfiConfiguration struct:
+        // 1. We did a null check
+        // 2. We're not holding on to it beyond this function
+        //    and we copy out all data when needed.
+        let glean_cfg = glean_core::Configuration::try_from(&*cfg)?;
+
+        let seq_nums =
+            from_raw_string_array_and_int_array(seq_num_keys, seq_num_values, seq_num_len);
+
+        let glean = if let Ok(Some(seq_nums)) = seq_nums {
+            Glean::with_sequence_numbers(glean_cfg, seq_nums)
+        } else {
+            Glean::new(glean_cfg)
+        }?;
+
+        log::info!("Glean initialized");
+        Ok(glean)
+    })
+}
+
+#[no_mangle]
 pub extern "C" fn glean_on_ready_to_send_pings(glean_handle: u64) {
     GLEAN.call_infallible(glean_handle, |glean| glean.on_ready_to_send_pings())
 }
