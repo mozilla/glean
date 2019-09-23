@@ -333,3 +333,23 @@ fn disabling_when_already_disabled_is_a_noop() {
 
     assert!(!glean.set_upload_enabled(false));
 }
+
+#[test]
+fn glean_inits_with_migration_when_no_db_dir_exists() {
+    let dir = tempfile::tempdir().unwrap();
+    let tmpname = dir.path().display().to_string();
+
+    let cfg = Configuration {
+        data_path: tmpname.into(),
+        application_id: GLOBAL_APPLICATION_ID.to_string(),
+        upload_enabled: false,
+        max_events: None,
+    };
+
+    let mut ac_seq_numbers = HashMap::new();
+    ac_seq_numbers.insert(String::from("custom_seq"), 3);
+
+    let mut glean = Glean::with_sequence_numbers(cfg, ac_seq_numbers).unwrap();
+
+    assert!(!glean.set_upload_enabled(false));
+}
