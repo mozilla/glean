@@ -15,6 +15,10 @@
 		1FB70AEF23301C1D00C7CF09 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB70AEE23301C1D00C7CF09 /* Logger.swift */; };
 		1FB8F8382326EABD00618E47 /* ConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB8F8372326EABD00618E47 /* ConfigurationTests.swift */; };
 		1FB8F8422326F74400618E47 /* HttpPingUploaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB8F8412326F74400618E47 /* HttpPingUploaderTests.swift */; };
+		1FD4527523395B4500F4C7E8 /* UuidMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FD4527423395B4500F4C7E8 /* UuidMetric.swift */; };
+		1FD4527723395EEB00F4C7E8 /* UuidMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FD4527623395EEB00F4C7E8 /* UuidMetricTests.swift */; };
+		AC54D225233133DB0019319A /* PingUploadOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC54D224233133DB0019319A /* PingUploadOperation.swift */; };
+		AC54D227233134A30019319A /* GleanOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC54D226233134A30019319A /* GleanOperation.swift */; };
 		BF1BF3FB23337B600036F4CC /* OHHTTPStubs.framework in Copy Files */ = {isa = PBXBuildFile; fileRef = BF1BF3FA23337B600036F4CC /* OHHTTPStubs.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BF1BF400233382E20036F4CC /* OHHTTPStubs.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF1BF3FA23337B600036F4CC /* OHHTTPStubs.framework */; };
 		BF30FDC22332312300840607 /* Sysctl.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF30FDC12332312300840607 /* Sysctl.swift */; };
@@ -23,8 +27,6 @@
 		BF30FDC82332640400840607 /* TimeUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF30FDC72332640400840607 /* TimeUnit.swift */; };
 		BF3227D923336DDA00CD0111 /* GleanBaseline.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF3227D823336DDA00CD0111 /* GleanBaseline.swift */; };
 		BF3227DB23336DE300CD0111 /* GleanInternalMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF3227DA23336DE300CD0111 /* GleanInternalMetrics.swift */; };
-		AC54D225233133DB0019319A /* PingUploadOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC54D224233133DB0019319A /* PingUploadOperation.swift */; };
-		AC54D227233134A30019319A /* GleanOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC54D226233134A30019319A /* GleanOperation.swift */; };
 		BF3DE39B2243A2F20018E23F /* Glean.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF3DE3912243A2F20018E23F /* Glean.framework */; };
 		BF3DE3A02243A2F20018E23F /* GleanTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF3DE39F2243A2F20018E23F /* GleanTests.swift */; };
 		BF43A8C7232A4BA400545310 /* CounterMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF43A8C6232A4BA400545310 /* CounterMetric.swift */; };
@@ -74,6 +76,10 @@
 		1FB70AEE23301C1D00C7CF09 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		1FB8F8372326EABD00618E47 /* ConfigurationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigurationTests.swift; sourceTree = "<group>"; };
 		1FB8F8412326F74400618E47 /* HttpPingUploaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = HttpPingUploaderTests.swift; path = GleanTests/HttpPingUploaderTests.swift; sourceTree = SOURCE_ROOT; };
+		1FD4527423395B4500F4C7E8 /* UuidMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UuidMetric.swift; sourceTree = "<group>"; };
+		1FD4527623395EEB00F4C7E8 /* UuidMetricTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UuidMetricTests.swift; sourceTree = "<group>"; };
+		AC54D224233133DB0019319A /* PingUploadOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PingUploadOperation.swift; sourceTree = "<group>"; };
+		AC54D226233134A30019319A /* GleanOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GleanOperation.swift; sourceTree = "<group>"; };
 		BF1BF3F72333787E0036F4CC /* OHHTTPStubs.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OHHTTPStubs.framework; path = ../../Carthage/Build/iOS/OHHTTPStubs.framework; sourceTree = "<group>"; };
 		BF1BF3FA23337B600036F4CC /* OHHTTPStubs.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OHHTTPStubs.framework; path = ../../Carthage/Build/iOS/OHHTTPStubs.framework; sourceTree = "<group>"; };
 		BF30FDC12332312300840607 /* Sysctl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sysctl.swift; sourceTree = "<group>"; };
@@ -82,8 +88,6 @@
 		BF30FDC72332640400840607 /* TimeUnit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeUnit.swift; sourceTree = "<group>"; };
 		BF3227D823336DDA00CD0111 /* GleanBaseline.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GleanBaseline.swift; sourceTree = "<group>"; };
 		BF3227DA23336DE300CD0111 /* GleanInternalMetrics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GleanInternalMetrics.swift; sourceTree = "<group>"; };
-		AC54D224233133DB0019319A /* PingUploadOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PingUploadOperation.swift; sourceTree = "<group>"; };
-		AC54D226233134A30019319A /* GleanOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GleanOperation.swift; sourceTree = "<group>"; };
 		BF3DE3912243A2F20018E23F /* Glean.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Glean.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF3DE3942243A2F20018E23F /* Glean.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Glean.h; sourceTree = "<group>"; };
 		BF3DE3952243A2F20018E23F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -253,6 +257,7 @@
 				BF30FDC3233260B500840607 /* TimespanMetric.swift */,
 				BF30FDC72332640400840607 /* TimeUnit.swift */,
 				BF89055E232BC213003CA2BA /* StringMetric.swift */,
+				1FD4527423395B4500F4C7E8 /* UuidMetric.swift */,
 			);
 			path = Metrics;
 			sourceTree = "<group>";
@@ -264,6 +269,7 @@
 				BF6C53B3232F872B00E3B43A /* PingTests.swift */,
 				BF30FDC5233260C400840607 /* TimespanMetricTests.swift */,
 				BF890560232BC227003CA2BA /* StringMetricTests.swift */,
+				1FD4527623395EEB00F4C7E8 /* UuidMetricTests.swift */,
 			);
 			path = Metrics;
 			sourceTree = "<group>";
@@ -457,6 +463,7 @@
 				BF30FDC22332312300840607 /* Sysctl.swift in Sources */,
 				AC54D227233134A30019319A /* GleanOperation.swift in Sources */,
 				1F60589723148BF800307A9F /* GleanLifecycleObserver.swift in Sources */,
+				1FD4527523395B4500F4C7E8 /* UuidMetric.swift in Sources */,
 				BF6C53B8232F8CA700E3B43A /* BuiltinPings.swift in Sources */,
 				BF30FDC82332640400840607 /* TimeUnit.swift in Sources */,
 				AC54D225233133DB0019319A /* PingUploadOperation.swift in Sources */,
@@ -478,6 +485,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BF890561232BC227003CA2BA /* StringMetricTests.swift in Sources */,
+				1FD4527723395EEB00F4C7E8 /* UuidMetricTests.swift in Sources */,
 				1FB8F8382326EABD00618E47 /* ConfigurationTests.swift in Sources */,
 				BF6C53B4232F872B00E3B43A /* PingTests.swift in Sources */,
 				1FB8F8422326F74400618E47 /* HttpPingUploaderTests.swift in Sources */,
