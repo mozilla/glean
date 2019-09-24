@@ -155,10 +155,9 @@ open class GleanInternalAPI internal constructor () {
             return
         }
 
-        // TODO:
-        // - mark as migrated.
-        // - land a patch on a-c soon-ish to set wasMigrated to false, so that if we
-        //   need to roll back, we can restart the migration again.
+        // TODO: uncomment the line below once all migration dependencies have landed.
+        // See bug 1583454.
+        // migrator.markAsMigrated()
 
         // If any pings were registered before initializing, do so now
         this.pingTypeQueue.forEach { this.registerPingType(it) }

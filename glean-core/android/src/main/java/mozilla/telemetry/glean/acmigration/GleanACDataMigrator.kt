@@ -118,8 +118,7 @@ internal class GleanACDataMigrator(
     /**
      * Mark the current client as migrated.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    internal fun markAsMigrated() {
+    fun markAsMigrated() {
         migrationPrefs?.edit()?.putBoolean("wasMigrated", true)?.apply()
     }
 
@@ -150,6 +149,7 @@ internal class GleanACDataMigrator(
         }
 
         // TODO: check if we have any previous a-c data (i.e. client_id). If so, migrate.
+        // This will happen as part of bug 1582102.
 
         return true
     }
