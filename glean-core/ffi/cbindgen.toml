@@ -15,6 +15,9 @@ typedef uint64_t TimerId;
 
 language = "C"
 
+[export]
+exclude = ["glean_initialize_migration"]
+
 [parse.expand]
 crates = ["glean-ffi"]
 
