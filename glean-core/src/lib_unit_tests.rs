@@ -340,7 +340,7 @@ fn glean_inits_with_migration_when_no_db_dir_exists() {
     let tmpname = dir.path().display().to_string();
 
     let cfg = Configuration {
-        data_path: tmpname.into(),
+        data_path: tmpname,
         application_id: GLOBAL_APPLICATION_ID.to_string(),
         upload_enabled: false,
         max_events: None,
