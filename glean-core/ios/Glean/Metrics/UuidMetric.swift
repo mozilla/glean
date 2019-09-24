@@ -81,7 +81,7 @@ public class UuidMetricType {
     /// Returns the stored value for testing purposes only. This function will attempt to await the
     /// last task (if any) writing to the the metric's storage engine before returning a value.
     ///
-    /// Throws a `String` exception if no value is stored
+    /// Throws a `Missing value` exception if no value is stored
     ///
     /// - parameters:
     ///     * pingName: represents the name of the ping to retrieve the metric for.
