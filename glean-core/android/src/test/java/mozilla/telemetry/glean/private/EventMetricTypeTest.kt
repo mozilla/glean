@@ -18,7 +18,6 @@ import mozilla.telemetry.glean.checkPingSchema
 import mozilla.telemetry.glean.getContextWithMockedInfo
 import mozilla.telemetry.glean.getMockWebServer
 import mozilla.telemetry.glean.resetGlean
-import mozilla.telemetry.glean.scheduler.PingUploadWorker
 import mozilla.telemetry.glean.testing.GleanTestRule
 import mozilla.telemetry.glean.triggerWorkManager
 import org.json.JSONObject
@@ -259,8 +258,6 @@ class EventMetricTypeTest {
             clearStores = false
         )
 
-        // Trigger worker task to upload the pings in the background
-        PingUploadWorker.enqueueWorker()
         triggerWorkManager()
 
         val request = server.takeRequest(1L, TimeUnit.SECONDS)

@@ -95,7 +95,11 @@ public class Glean {
         initializeCoreMetrics()
 
         // Deal with any pending events so we can start recording new ones
-        glean_on_ready_to_send_pings(self.handle)
+        if glean_on_ready_to_send_pings(self.handle) != 0 {
+            Dispatchers.shared.launchConcurrent {
+                HttpPingUploader(configuration: configuration).process()
+            }
+        }
 
         // Signal Dispatcher that init is complete
         Dispatchers.shared.flushQueuedInitialTasks()

@@ -168,7 +168,7 @@ pub unsafe extern "C" fn glean_initialize_migration(
 }
 
 #[no_mangle]
-pub extern "C" fn glean_on_ready_to_send_pings(glean_handle: u64) {
+pub extern "C" fn glean_on_ready_to_send_pings(glean_handle: u64) -> u8 {
     GLEAN.call_infallible(glean_handle, |glean| glean.on_ready_to_send_pings())
 }
 
