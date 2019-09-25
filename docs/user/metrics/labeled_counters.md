@@ -1,4 +1,4 @@
-# Labeled Counters 
+# Labeled Counters
 
 Labeled counters are used to record different related counts that should sum up to a total.
 
@@ -22,6 +22,10 @@ stability:
 
 Now you can use the labeled counter from the application's code:
 
+{{#include ../../tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
+
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.Stability
 Stability.crashCount["uncaught_exception"].add() // Adds 1 to the "uncaught_exception" counter.
@@ -39,6 +43,32 @@ assertTrue(Stability.crashCount["native_code_crash"].testHasValue())
 assertEquals(1, Stability.crashCount["uncaught_exception"].testGetValue())
 assertEquals(3, Stability.crashCount["native_code_crash"].testGetValue())
 ```
+
+</div>
+
+<div data-lang="Swift" class="tab">
+
+```Swift
+Stability.crashCount["uncaught_exception"].add() // Adds 1 to the "uncaught_exception" counter.
+Stability.crashCount["native_code_crash"].add(3) // Adds 3 to the "native_code_crash" counter.
+```
+
+There are test APIs available too:
+
+```Swift
+@testable import Glean
+
+// Was anything recorded?
+XCTAssert(Stability.crashCount["uncaught_exception"].testHasValue())
+XCTAssert(Stability.crashCount["native_code_crash"].testHasValue())
+// Do the counters have the expected values?
+XCTAssertEqual(1, try Stability.crashCount["uncaught_exception"].testGetValue())
+XCTAssertEqual(3, try Stability.crashCount["native_code_crash"].testGetValue())
+```
+
+</div>
+
+{{#include ../../tab_footer.md}}
 
 ## Limits
 

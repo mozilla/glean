@@ -1,4 +1,4 @@
-# Labeled Strings 
+# Labeled Strings
 
 Labeled strings record multiple Unicode string values, each under a different label.
 
@@ -21,6 +21,10 @@ login:
 
 Now you can use the labeled string from the application's code:
 
+{{#include ../../tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
+
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.Login
 
@@ -35,6 +39,27 @@ import org.mozilla.yourApplication.GleanMetrics.Login
 // Was anything recorded?
 assertTrue(Login.errorsByStage["server_auth"].testHasValue())
 ```
+
+</div>
+
+<div data-lang="Swift" class="tab">
+
+```Swift
+Login.errorsByStage["server_auth"].set("Invalid password")
+```
+
+There are test APIs available too:
+
+```Swift
+@testable import Glean
+
+// Was anything recorded?
+XCTAssert(Login.errorsByStage["server_auth"].testHasValue())
+```
+
+</div>
+
+{{#include ../../tab_footer.md}}
 
 ## Limits
 
@@ -51,7 +76,7 @@ assertTrue(Login.errorsByStage["server_auth"].testHasValue())
 
 ## Examples
 
-* What kind of errors occurred at each step in the login process? 
+* What kind of errors occurred at each step in the login process?
 
 ## Recorded Errors
 

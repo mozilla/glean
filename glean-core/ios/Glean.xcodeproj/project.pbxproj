@@ -42,6 +42,9 @@
 		BF890561232BC227003CA2BA /* StringMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF890560232BC227003CA2BA /* StringMetricTests.swift */; };
 		BF93C698224BFC57006CE7D8 /* Glean.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF93C697224BFC57006CE7D8 /* Glean.swift */; };
 		BFE1CDCE233B989A0019EE47 /* GleanMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFE1CDCD233B989A0019EE47 /* GleanMetrics.swift */; };
+		BFE1CDC4233B63A70019EE47 /* LabeledMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFE1CDC3233B63A70019EE47 /* LabeledMetric.swift */; };
+		BFE1CDC6233B6B6D0019EE47 /* LabeledMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFE1CDC5233B6B6D0019EE47 /* LabeledMetricTests.swift */; };
+		BFE1CDC8233B73B30019EE47 /* Unreachable.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFE1CDC7233B73B30019EE47 /* Unreachable.swift */; };
 		BFFE33A92328F4EF005348FE /* GleanFfi.h in Headers */ = {isa = PBXBuildFile; fileRef = BFFE33A82328F4EF005348FE /* GleanFfi.h */; };
 		BFFE33AB232927C3005348FE /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFFE33AA232927C3005348FE /* Utils.swift */; };
 /* End PBXBuildFile section */
@@ -113,6 +116,9 @@
 		BF890560232BC227003CA2BA /* StringMetricTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringMetricTests.swift; sourceTree = "<group>"; };
 		BF93C697224BFC57006CE7D8 /* Glean.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Glean.swift; sourceTree = "<group>"; };
 		BFE1CDCD233B989A0019EE47 /* GleanMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GleanMetrics.swift; sourceTree = "<group>"; };
+		BFE1CDC3233B63A70019EE47 /* LabeledMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabeledMetric.swift; sourceTree = "<group>"; };
+		BFE1CDC5233B6B6D0019EE47 /* LabeledMetricTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabeledMetricTests.swift; sourceTree = "<group>"; };
+		BFE1CDC7233B73B30019EE47 /* Unreachable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Unreachable.swift; sourceTree = "<group>"; };
 		BFFE33A82328F4EF005348FE /* GleanFfi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GleanFfi.h; sourceTree = "<group>"; };
 		BFFE33AA232927C3005348FE /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -170,6 +176,7 @@
 				BFFE33AA232927C3005348FE /* Utils.swift */,
 				1FB70AEE23301C1D00C7CF09 /* Logger.swift */,
 				BF30FDC12332312300840607 /* Sysctl.swift */,
+				BFE1CDC7233B73B30019EE47 /* Unreachable.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -266,6 +273,7 @@
 				BF89055E232BC213003CA2BA /* StringMetric.swift */,
 				1FD4527423395B4500F4C7E8 /* UuidMetric.swift */,
 				BF2E57042334B77D00364D92 /* EventMetric.swift */,
+				BFE1CDC3233B63A70019EE47 /* LabeledMetric.swift */,
 			);
 			path = Metrics;
 			sourceTree = "<group>";
@@ -279,6 +287,7 @@
 				BF890560232BC227003CA2BA /* StringMetricTests.swift */,
 				1FD4527623395EEB00F4C7E8 /* UuidMetricTests.swift */,
 				BF2E57062334BD7600364D92 /* EventMetricTests.swift */,
+				BFE1CDC5233B6B6D0019EE47 /* LabeledMetricTests.swift */,
 			);
 			path = Metrics;
 			sourceTree = "<group>";
@@ -474,6 +483,7 @@
 				AC54D227233134A30019319A /* GleanOperation.swift in Sources */,
 				1F60589723148BF800307A9F /* GleanLifecycleObserver.swift in Sources */,
 				1FD4527523395B4500F4C7E8 /* UuidMetric.swift in Sources */,
+				BFE1CDC8233B73B30019EE47 /* Unreachable.swift in Sources */,
 				BF6C53B8232F8CA700E3B43A /* BuiltinPings.swift in Sources */,
 				BF30FDC82332640400840607 /* TimeUnit.swift in Sources */,
 				AC54D225233133DB0019319A /* PingUploadOperation.swift in Sources */,
@@ -488,6 +498,7 @@
 				BF6C53B2232F870C00E3B43A /* Ping.swift in Sources */,
 				BF43A8C7232A4BA400545310 /* CounterMetric.swift in Sources */,
 				BFFE33AB232927C3005348FE /* Utils.swift in Sources */,
+				BFE1CDC4233B63A70019EE47 /* LabeledMetric.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -502,6 +513,7 @@
 				1FB8F8422326F74400618E47 /* HttpPingUploaderTests.swift in Sources */,
 				BF43A8CD232A615200545310 /* CounterMetricTests.swift in Sources */,
 				1F70B788232A81A4007395FB /* DispatchersTest.swift in Sources */,
+				BFE1CDC6233B6B6D0019EE47 /* LabeledMetricTests.swift in Sources */,
 				BF30FDC6233260C400840607 /* TimespanMetricTests.swift in Sources */,
 				BF3DE3A02243A2F20018E23F /* GleanTests.swift in Sources */,
 				BF2E57072334BD7600364D92 /* EventMetricTests.swift in Sources */,
