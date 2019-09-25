@@ -11,6 +11,13 @@ extension Bool {
     }
 }
 
+extension UInt8 {
+    /// Convert a byte to its Bool equivalen.
+    func toBool() -> Bool {
+        return self != 0
+    }
+}
+
 /// Turn a string into an error, so that it can be thrown as an exception.
 ///
 /// This should only be used in tests.
