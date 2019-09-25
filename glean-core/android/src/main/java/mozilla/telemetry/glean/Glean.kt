@@ -26,6 +26,7 @@ import mozilla.telemetry.glean.rust.toByte
 import mozilla.telemetry.glean.GleanMetrics.GleanBaseline
 import mozilla.telemetry.glean.GleanMetrics.GleanInternalMetrics
 import mozilla.telemetry.glean.GleanMetrics.Pings
+import mozilla.telemetry.glean.acmigration.GleanACDataMigrator
 import mozilla.telemetry.glean.net.BaseUploader
 import mozilla.telemetry.glean.private.PingType
 import mozilla.telemetry.glean.private.RecordedExperimentData
@@ -130,12 +131,33 @@ open class GleanInternalAPI internal constructor () {
             maxEvents = this.configuration.maxEvents
         )
 
-        handle = LibGleanFFI.INSTANCE.glean_initialize(cfg)
+        // Start the migration from glean-ac, if needed.
+        val migrator = GleanACDataMigrator(applicationContext)
+
+        // TODO: like we do in glean-ac, we should check if we already have a client id.
+        // If we don't, then we don't need to go through migration and this is likely a new
+        // client.
+        val newSequenceNums = if (migrator.shouldMigrateData()) {
+            migrator.getACMetadata().toFfi()
+        } else {
+            Triple(null, null, 0)
+        }
+
+        handle = LibGleanFFI.INSTANCE.glean_initialize_migration(
+            cfg,
+            newSequenceNums.first,
+            newSequenceNums.second,
+            newSequenceNums.third
+        )
 
         // If initialization of Glean fails we bail out and don't initialize further.
         if (handle == 0L) {
             return
         }
+
+        // TODO: uncomment the line below once all migration dependencies have landed.
+        // See bug 1583454.
+        // migrator.markAsMigrated()
 
         // If any pings were registered before initializing, do so now
         this.pingTypeQueue.forEach { this.registerPingType(it) }

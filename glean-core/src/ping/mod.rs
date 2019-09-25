@@ -48,7 +48,33 @@ impl PingMaker {
         Self
     }
 
-    fn get_ping_seq(&self, glean: &Glean, storage_name: &str) -> usize {
+    /// Set the next ping sequence number to the provided one.
+    ///
+    /// This function stores the next sequence number (the one that
+    /// will be returned next time `get_ping_seq` is called) in the
+    /// glean-core store. The main purpose of this function is to allow
+    /// overriding sequence numbers with migration data coming from
+    /// glean-ac.
+    pub(super) fn set_ping_seq(&self, glean: &Glean, storage_name: &str, next_seq: i32) {
+        // Sequence numbers are stored as a counter under a name that includes the storage name
+        let seq = CounterMetric::new(CommonMetricData {
+            name: format!("{}#sequence", storage_name),
+            // We don't need a category, the name is already unique
+            category: "".into(),
+            send_in_pings: vec![INTERNAL_STORAGE.into()],
+            lifetime: Lifetime::User,
+            ..Default::default()
+        });
+
+        // It's safe to add `next_seq` because the glean-ac migration code
+        // clears the glean-core database before the migration starts.
+        seq.add(glean, next_seq);
+    }
+
+    /// Get, and then increment, the sequence number for a given ping.
+    ///
+    /// This is crate-internal exclusively for enabling the migration tests.
+    pub(super) fn get_ping_seq(&self, glean: &Glean, storage_name: &str) -> usize {
         // Sequence numbers are stored as a counter under a name that includes the storage name
         let seq = CounterMetric::new(CommonMetricData {
             name: format!("{}#sequence", storage_name),
@@ -281,14 +307,7 @@ impl PingMaker {
 #[cfg(test)]
 mod test {
     use super::*;
-
-    const GLOBAL_APPLICATION_ID: &str = "org.mozilla.glean.test.app";
-    pub fn new_glean() -> (Glean, tempfile::TempDir) {
-        let dir = tempfile::tempdir().unwrap();
-        let tmpname = dir.path().display().to_string();
-        let glean = Glean::with_options(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
-        (glean, dir)
-    }
+    use crate::tests::new_glean;
 
     #[test]
     fn sequence_numbers_should_be_reset_when_toggling_uploading() {
@@ -307,4 +326,16 @@ mod test {
         assert_eq!(1, ping_maker.get_ping_seq(&glean, "custom"));
     }
 
+    #[test]
+    fn set_ping_seq_must_correctly_set_sequence_numbers() {
+        let (glean, _) = new_glean();
+        let ping_maker = PingMaker::new();
+
+        ping_maker.set_ping_seq(&glean, "custom", 3);
+        assert_eq!(3, ping_maker.get_ping_seq(&glean, "custom"));
+
+        ping_maker.set_ping_seq(&glean, "other", 7);
+        assert_eq!(7, ping_maker.get_ping_seq(&glean, "other"));
+        assert_eq!(8, ping_maker.get_ping_seq(&glean, "other"));
+    }
 }

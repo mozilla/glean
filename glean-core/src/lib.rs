@@ -19,6 +19,7 @@ use chrono::{DateTime, FixedOffset};
 use lazy_static::lazy_static;
 use uuid::Uuid;
 
+pub mod ac_migration;
 mod common_metric_data;
 mod database;
 mod error;
@@ -31,6 +32,7 @@ pub mod ping;
 pub mod storage;
 mod util;
 
+use crate::ac_migration::migrate_sequence_numbers;
 pub use crate::common_metric_data::{CommonMetricData, Lifetime};
 use crate::database::Database;
 pub use crate::error::{Error, Result};
@@ -139,6 +141,39 @@ impl Glean {
             max_events: cfg.max_events.unwrap_or(DEFAULT_MAX_EVENTS),
         };
         glean.on_change_upload_enabled(cfg.upload_enabled);
+        Ok(glean)
+    }
+
+    /// Create and initialize a new Glean object.
+    ///
+    /// This will attempt to delete any previously existing database and
+    /// then create the necessary directories and files in `data_path`.
+    /// This will also initialize the core metrics.
+    ///
+    /// # Arguments
+    ///
+    /// * `cfg` - an instance of the Glean `Configuration`.
+    /// * `new_sequence_nums` - a map of ("<pingName>_seq", sequence number)
+    ///   used to initialize Glean with sequence numbers imported from glean-ac.
+    pub fn with_sequence_numbers(
+        cfg: Configuration,
+        new_sequence_nums: HashMap<String, i32>,
+    ) -> Result<Self> {
+        log::info!("Creating new Glean (migrating data)");
+
+        // Delete the database directory, if it exists. Bail out if there's
+        // errors, as I'm not sure what else could be done if we can't even
+        // delete a directory we own.
+        let db_path = Path::new(&cfg.data_path).join("db");
+        if db_path.exists() {
+            std::fs::remove_dir_all(db_path)?;
+        }
+
+        let glean = Self::new(cfg)?;
+
+        // Set sequence numbers coming through the FFI.
+        migrate_sequence_numbers(&glean, new_sequence_nums);
+
         Ok(glean)
     }
 
