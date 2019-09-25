@@ -191,6 +191,21 @@ class MetricsPingSchedulerTest {
     }
 
     @Test
+    fun `getLastCollectedDate must report the migrated a-c date, if available`() {
+        val testDate = "2018-12-19T12:36:00-06:00"
+        val mps = MetricsPingScheduler(
+            ApplicationProvider.getApplicationContext(),
+            testDate
+        )
+
+        // Wrong key type should trigger returning null.
+        assertEquals(
+            parseISOTimeString(testDate),
+            mps.getLastCollectedDate()
+        )
+    }
+
+    @Test
     fun `getLastCollectedDate must report the stored last collected date, if available`() {
         val testDate = "2018-12-19T12:36:00-06:00"
         val mps = MetricsPingScheduler(ApplicationProvider.getApplicationContext())
