@@ -6,28 +6,28 @@
 import OHHTTPStubs
 import XCTest
 
-enum ClickKeys: Int, ExtraKeys {
+enum ClickKeys: Int32, ExtraKeys {
     case objectId = 0
     case other = 1
 
     public func index() -> Int32 {
-        return Int32(self.rawValue)
+        return self.rawValue
     }
 }
 
-enum TestNameKeys: Int, ExtraKeys {
+enum TestNameKeys: Int32, ExtraKeys {
     case testName = 0
 
     public func index() -> Int32 {
-        return Int32(self.rawValue)
+        return self.rawValue
     }
 }
 
-enum SomeExtraKeys: Int, ExtraKeys {
+enum SomeExtraKeys: Int32, ExtraKeys {
     case someExtra = 0
 
     public func index() -> Int32 {
-        return Int32(self.rawValue)
+        return self.rawValue
     }
 }
 
