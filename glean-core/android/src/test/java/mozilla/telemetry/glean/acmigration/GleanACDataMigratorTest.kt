@@ -11,6 +11,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -68,6 +69,39 @@ class GleanACDataMigratorTest {
 
         // If SharedPreferences throws when we try to load, just return null.
         assertEquals(0, migratedData.size)
+    }
+
+    @Test
+    fun `metrics ping last sent date is null for corrupted data`() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        context
+            .getSharedPreferences(
+                GleanACDataMigrator.METRICS_SCHEDULER_PREFS_FILE,
+                Context.MODE_PRIVATE
+            )
+            .edit()
+            .putLong("last_metrics_ping_iso_datetime", 123L)
+            .apply()
+
+        val migrator = GleanACDataMigrator(context)
+        assertNull(migrator.getACMetadata().metricsPingLastSentDate)
+    }
+
+    @Test
+    fun `metrics ping last sent date is valid if available`() {
+        val testDate = "2018-12-19T12:36:00-06:00"
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        context
+            .getSharedPreferences(
+                GleanACDataMigrator.METRICS_SCHEDULER_PREFS_FILE,
+                Context.MODE_PRIVATE
+            )
+            .edit()
+            .putString("last_metrics_ping_iso_datetime", testDate)
+            .apply()
+
+        val migrator = GleanACDataMigrator(context)
+        assertEquals(testDate, migrator.getACMetadata().metricsPingLastSentDate)
     }
 
     @Test
@@ -131,6 +165,7 @@ class GleanACDataMigratorTest {
             0,
             meta.sequenceNumbers.size
         )
+        assertNull(meta.metricsPingLastSentDate)
     }
 
     @Test
