@@ -18,6 +18,15 @@ extension String: Error {
     public var errorDescription: String? { return self }
 }
 
+/// Convenience function to convert ISO8901 string to a Date
+extension Date {
+    static func fromISO8901String(dateString: String) -> Date? {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
+        return dateFormatter.date(from: dateString)
+    }
+}
+
 extension String {
     /// Create a string from a Rust-allocated char pointer and deallocate the char pointer.
     public init(freeingRustString rustString: UnsafeMutablePointer<CChar>) {
