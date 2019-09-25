@@ -33,7 +33,6 @@ pub mod storage;
 mod util;
 
 use crate::ac_migration::migrate_sequence_numbers;
-pub use crate::ac_migration::ACMetadata;
 pub use crate::common_metric_data::{CommonMetricData, Lifetime};
 use crate::database::Database;
 pub use crate::error::{Error, Result};

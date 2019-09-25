@@ -15,13 +15,6 @@ use super::PingMaker;
 
 const GLEAN_AC_SEQUENCE_SUFFIX: &str = "_seq";
 
-/// The Glean A-C metadata migration object.
-#[derive(Debug, Clone)]
-pub struct ACMetadata {
-    /// A map in which entries are (`<ping_name>_seq`, nextSequenceNumber)..
-    pub sequence_numbers: HashMap<String, i32>,
-}
-
 /// Stores the sequence numbers from glean-ac in glean-core.
 pub(super) fn migrate_sequence_numbers(glean: &Glean, seq_numbers: HashMap<String, i32>) {
     let ping_maker = PingMaker::new();
