@@ -80,7 +80,7 @@ internal interface LibGleanFFI : Library {
 
     fun glean_destroy_glean(handle: Long)
 
-    fun glean_on_ready_to_send_pings(handle: Long)
+    fun glean_on_ready_to_send_pings(handle: Long): Byte
 
     fun glean_enable_logging()
 

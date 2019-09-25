@@ -222,8 +222,12 @@ impl Glean {
     /// assemble pings. Usually called from the language specific layer after all
     /// of the core metrics have been set and the ping types have been
     /// registered.
-    pub fn on_ready_to_send_pings(&self) {
-        self.event_data_store.flush_pending_events_on_startup(&self);
+    ///
+    /// # Return value
+    ///
+    /// `true` if at least one ping was generated, `false` otherwise.
+    pub fn on_ready_to_send_pings(&self) -> bool {
+        self.event_data_store.flush_pending_events_on_startup(&self)
     }
 
     /// Set whether upload is enabled or not.

@@ -21,6 +21,8 @@
 		AC54D227233134A30019319A /* GleanOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC54D226233134A30019319A /* GleanOperation.swift */; };
 		BF1BF3FB23337B600036F4CC /* OHHTTPStubs.framework in Copy Files */ = {isa = PBXBuildFile; fileRef = BF1BF3FA23337B600036F4CC /* OHHTTPStubs.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BF1BF400233382E20036F4CC /* OHHTTPStubs.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF1BF3FA23337B600036F4CC /* OHHTTPStubs.framework */; };
+		BF2E57052334B77D00364D92 /* EventMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF2E57042334B77D00364D92 /* EventMetric.swift */; };
+		BF2E57072334BD7600364D92 /* EventMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF2E57062334BD7600364D92 /* EventMetricTests.swift */; };
 		BF30FDC22332312300840607 /* Sysctl.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF30FDC12332312300840607 /* Sysctl.swift */; };
 		BF30FDC4233260B500840607 /* TimespanMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF30FDC3233260B500840607 /* TimespanMetric.swift */; };
 		BF30FDC6233260C400840607 /* TimespanMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF30FDC5233260C400840607 /* TimespanMetricTests.swift */; };
@@ -82,6 +84,8 @@
 		AC54D226233134A30019319A /* GleanOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GleanOperation.swift; sourceTree = "<group>"; };
 		BF1BF3F72333787E0036F4CC /* OHHTTPStubs.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OHHTTPStubs.framework; path = ../../Carthage/Build/iOS/OHHTTPStubs.framework; sourceTree = "<group>"; };
 		BF1BF3FA23337B600036F4CC /* OHHTTPStubs.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OHHTTPStubs.framework; path = ../../Carthage/Build/iOS/OHHTTPStubs.framework; sourceTree = "<group>"; };
+		BF2E57042334B77D00364D92 /* EventMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventMetric.swift; sourceTree = "<group>"; };
+		BF2E57062334BD7600364D92 /* EventMetricTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventMetricTests.swift; sourceTree = "<group>"; };
 		BF30FDC12332312300840607 /* Sysctl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sysctl.swift; sourceTree = "<group>"; };
 		BF30FDC3233260B500840607 /* TimespanMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimespanMetric.swift; sourceTree = "<group>"; };
 		BF30FDC5233260C400840607 /* TimespanMetricTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimespanMetricTests.swift; sourceTree = "<group>"; };
@@ -258,6 +262,7 @@
 				BF30FDC72332640400840607 /* TimeUnit.swift */,
 				BF89055E232BC213003CA2BA /* StringMetric.swift */,
 				1FD4527423395B4500F4C7E8 /* UuidMetric.swift */,
+				BF2E57042334B77D00364D92 /* EventMetric.swift */,
 			);
 			path = Metrics;
 			sourceTree = "<group>";
@@ -270,6 +275,7 @@
 				BF30FDC5233260C400840607 /* TimespanMetricTests.swift */,
 				BF890560232BC227003CA2BA /* StringMetricTests.swift */,
 				1FD4527623395EEB00F4C7E8 /* UuidMetricTests.swift */,
+				BF2E57062334BD7600364D92 /* EventMetricTests.swift */,
 			);
 			path = Metrics;
 			sourceTree = "<group>";
@@ -459,6 +465,7 @@
 			files = (
 				1F6058932314863400307A9F /* Configuration.swift in Sources */,
 				BF3227DB23336DE300CD0111 /* GleanInternalMetrics.swift in Sources */,
+				BF2E57052334B77D00364D92 /* EventMetric.swift in Sources */,
 				BF93C698224BFC57006CE7D8 /* Glean.swift in Sources */,
 				BF30FDC22332312300840607 /* Sysctl.swift in Sources */,
 				AC54D227233134A30019319A /* GleanOperation.swift in Sources */,
@@ -493,6 +500,7 @@
 				1F70B788232A81A4007395FB /* DispatchersTest.swift in Sources */,
 				BF30FDC6233260C400840607 /* TimespanMetricTests.swift in Sources */,
 				BF3DE3A02243A2F20018E23F /* GleanTests.swift in Sources */,
+				BF2E57072334BD7600364D92 /* EventMetricTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

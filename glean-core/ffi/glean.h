@@ -314,7 +314,7 @@ uint64_t glean_new_uuid_metric(FfiStr category,
                                int32_t lifetime,
                                uint8_t disabled);
 
-void glean_on_ready_to_send_pings(uint64_t glean_handle);
+uint8_t glean_on_ready_to_send_pings(uint64_t glean_handle);
 
 char *glean_ping_collect(uint64_t glean_handle, uint64_t ping_type_handle);
 

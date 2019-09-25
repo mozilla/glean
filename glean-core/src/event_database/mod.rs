@@ -98,10 +98,17 @@ impl EventDatabase {
     /// # Arguments
     ///
     /// * `glean` - The Glean instance.
-    pub fn flush_pending_events_on_startup(&self, glean: &Glean) {
+    ///
+    /// # Return value
+    ///
+    /// `true` if at least one ping was generated, `false` otherwise.
+    pub fn flush_pending_events_on_startup(&self, glean: &Glean) -> bool {
         match self.load_events_from_disk() {
             Ok(_) => self.send_all_events(glean),
-            Err(err) => log::error!("Error loading pings from disk: {}", err),
+            Err(err) => {
+                log::error!("Error loading events from disk: {}", err);
+                false
+            }
         }
     }
 
@@ -125,12 +132,13 @@ impl EventDatabase {
         Ok(())
     }
 
-    fn send_all_events(&self, glean: &Glean) {
+    fn send_all_events(&self, glean: &Glean) -> bool {
         let store_names = {
             let db = self.event_stores.read().unwrap();
             db.keys().cloned().collect::<Vec<String>>()
         };
 
+        let mut ping_sent = false;
         for store_name in store_names {
             if let Err(err) = glean.send_ping_by_name(&store_name, false) {
                 log::error!(
@@ -138,8 +146,12 @@ impl EventDatabase {
                     store_name,
                     err
                 );
+            } else {
+                ping_sent = true;
             }
         }
+
+        ping_sent
     }
 
     /// Record an event in the desired stores.

@@ -95,17 +95,22 @@ func withFfiConfiguration<R>(
 /// The strings are deallocated after the closure returns.
 ///
 /// - parameters:
-///     * args: The array of strings to use
+///     * args: The array of strings to use.
+//              If `nil` no output array will be allocated and `nil` will be passed to `body`.
 ///     * body: The closure that gets an array of C-compatible strings
 public func withArrayOfCStrings<R>(
-    _ args: [String],
-    _ body: ([UnsafePointer<CChar>?]) -> R
+    _ args: [String]?,
+    _ body: ([UnsafePointer<CChar>?]?) -> R
 ) -> R {
-    var cStrings = args.map { UnsafePointer(strdup($0)) }
-    defer {
-        cStrings.forEach { free(UnsafeMutableRawPointer(mutating: $0)) }
+    if let args = args {
+        var cStrings = args.map { UnsafePointer(strdup($0)) }
+        defer {
+            cStrings.forEach { free(UnsafeMutableRawPointer(mutating: $0)) }
+        }
+        return body(cStrings)
+    } else {
+        return body(nil)
     }
-    return body(cStrings)
 }
 
 /// This struct creates a Boolean with atomic or synchronized access.
@@ -134,6 +139,9 @@ struct AtomicBoolean {
     }
 }
 
+/// Get a timestamp in nanos.
+///
+/// This is a monotonic clock.
 func timestampNanos() -> UInt64 {
     var info = mach_timebase_info()
     guard mach_timebase_info(&info) == KERN_SUCCESS else { return 0 }
