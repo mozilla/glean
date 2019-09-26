@@ -18,6 +18,10 @@ flags:
 
 ## API
 
+{{#include ../../tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
+
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.Flags
 
@@ -34,6 +38,29 @@ assertTrue(Flags.a11yEnabled.testHasValue())
 // Does it have the expected value?
 assertTrue(Flags.a11yEnabled.testGetValue())
 ```
+
+</div>
+
+<div data-lang="Swift" class="tab">
+
+```Swift
+Flags.a11yEnabled.set(self.isAccesibilityElement)
+```
+
+There are test APIs available too:
+
+```Swift
+@testable import Glean
+
+// Was anything recorded?
+XCTAssertTrue(Flags.a11yEnabled.testHasValue())
+// Does the counter have the expected value?
+XCTAssertTrue(try Flags.a11yEnabled.testGetValue())
+```
+
+</div>
+
+{{#include ../../tab_footer.md}}
 
 ## Limits
 
