@@ -15,6 +15,7 @@ public class DatetimeMetricType {
     let handle: UInt64
     let disabled: Bool
     let sendInPings: [String]
+    let timeUnit: TimeUnit
 
     /// The public constructor used by automatically generated metrics.
     public init(
@@ -27,6 +28,7 @@ public class DatetimeMetricType {
     ) {
         self.disabled = disabled
         self.sendInPings = sendInPings
+        self.timeUnit = timeUnit
         self.handle = withArrayOfCStrings(sendInPings) { pingArray in
             glean_new_datetime_metric(
                 category,
@@ -51,7 +53,7 @@ public class DatetimeMetricType {
     ///
     /// - parameters:
     ///      * value: The [Date] value to set.  If not provided, will record the current time.
-    internal func set(_ value: Date = Date()) {
+    public func set(_ value: Date = Date()) {
         let calendar = Calendar.current
         let components = calendar.dateComponents(in: TimeZone.current, from: value)
         set(components: components)
@@ -65,7 +67,7 @@ public class DatetimeMetricType {
     ///
     /// - parameters:
     ///     * components: The [DateComponents] value to set.
-    internal func set(components: DateComponents) {
+    func set(components: DateComponents) {
         guard !self.disabled else { return }
 
         Dispatchers.shared.launchAPI {
@@ -138,7 +140,10 @@ public class DatetimeMetricType {
     ///                 Defaults to the first value in `sendInPings`.
     ///
     /// - returns:  value of the stored metric
-    func testGetValue(_: String? = nil) throws -> Date {
-        return Date.fromISO8901String(dateString: try testGetValueAsString())!
+    func testGetValue(_ pingName: String? = nil) throws -> Date {
+        return Date.fromISO8601String(
+            dateString: try testGetValueAsString(pingName),
+            precision: timeUnit
+        )!
     }
 }
