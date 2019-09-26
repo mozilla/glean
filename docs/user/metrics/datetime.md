@@ -35,6 +35,10 @@ install:
 
 ## API
 
+{{#include ../../tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
+
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.Install
 
@@ -54,6 +58,35 @@ assertTrue(Install.firstRun.testHasValue())
 // "-05:00" suffix.
 assertEquals("2019-03-25-05:00", Install.firstRun.testGetValueAsString())
 ```
+
+</div>
+
+<div data-lang="Swift" class="tab">
+
+```Swift
+Install.firstRun.set() // Records "now"
+
+let dateComponents = DateComponents(
+                        calendar: Calendar.current,
+                        year: 2004, month: 12, day: 9, hour: 8, minute: 3, second: 29
+                     )
+Install.firstRun.set(dateComponents.date!) // Adds 5 to the counter.
+```
+
+There are test APIs available too:
+
+```Swift
+@testable import Glean
+
+// Was anything recorded?
+XCTAssert(Controls.refreshPressed.testHasValue())
+// Does the counter have the expected value?
+XCTAssertEqual(6, try Controls.refreshPressed.testGetValue())
+```
+
+</div>
+
+{{#include ../../tab_footer.md}}
 
 ## Limits
 
