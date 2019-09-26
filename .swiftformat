@@ -2,3 +2,4 @@
 --exclude samples/ios/app/Carthage
 --disable redundantSelf
 --disable andOperator
+--disable trailingCommas
