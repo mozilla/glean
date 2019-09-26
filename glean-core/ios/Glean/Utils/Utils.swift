@@ -18,11 +18,29 @@ extension String: Error {
     public var errorDescription: String? { return self }
 }
 
-/// Convenience function to convert ISO8901 string to a Date
 extension Date {
-    static func fromISO8901String(dateString: String) -> Date? {
+    /// Convenience function to convert ISO8601 string to a Date.
+    ///
+    /// Note that passing in a `dateString` that has more precision than the `precision` parameter will
+    /// result in a `nil` value being returned.  Passing in a `dateString` with less precision than `precision`
+    /// will still result in a valid `Date` being returned.
+    ///
+    /// - parameters:
+    ///     * dateString: The `String` representing the date to convert, i.e.: `2004-12-09T08:03-08:00`
+    ///     * precision: The `TimeUnit` precision to use for selecting the correct format to parse against
+    static func fromISO8601String(dateString: String, precision: TimeUnit) -> Date? {
+        let dateFormatPatterns: [TimeUnit: String] = [
+            .nanosecond: "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ",
+            .microsecond: "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ",
+            .millisecond: "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ",
+            .second: "yyyy-MM-dd'T'HH:mm:ssZZZZZ",
+            .minute: "yyyy-MM-dd'T'HH:mmZZZZZ",
+            .hour: "yyyy-MM-dd'T'HHZZZZZ",
+            .day: "yyyy-MM-ddZZZZZ"
+        ]
+
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
+        dateFormatter.dateFormat = dateFormatPatterns[precision]
         return dateFormatter.date(from: dateString)
     }
 }
