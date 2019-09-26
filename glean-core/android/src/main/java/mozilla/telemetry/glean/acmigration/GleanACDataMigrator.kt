@@ -10,10 +10,6 @@ import androidx.annotation.VisibleForTesting
 import com.sun.jna.StringArray
 import java.lang.NullPointerException
 
-// The name of the Glean AC package, used to build the name of the files
-// of the preferences files that contain data to be migrated.
-private const val GLEAN_AC_PACKAGE_NAME = "mozilla.components.service.glean"
-
 /**
  * A class encapsulating the code used for migrating data from glean-ac
  * to glean-core. This class, along with all the migration code, should be removed
@@ -24,6 +20,10 @@ internal class GleanACDataMigrator(
     private val applicationContext: Context
 ) {
     companion object {
+        // The name of the Glean AC package, used to build the name of the files
+        // of the preferences files that contain data to be migrated.
+        private const val GLEAN_AC_PACKAGE_NAME = "mozilla.components.service.glean"
+
         internal const val METRICS_SCHEDULER_PREFS_FILE =
             "$GLEAN_AC_PACKAGE_NAME.scheduler.MetricsPingScheduler"
         internal const val MIGRATION_PREFS_FILE = "$GLEAN_AC_PACKAGE_NAME.GleanACDataMigrator"
