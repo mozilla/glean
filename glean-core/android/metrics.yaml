@@ -221,6 +221,8 @@ glean.error:
    expires: never
    send_in_pings:
      - all_pings
+   no_lint:
+     - COMMON_PREFIX
 
  invalid_label:
    type: labeled_counter
@@ -236,3 +238,5 @@ glean.error:
    expires: never
    send_in_pings:
      - all_pings
+   no_lint:
+     - COMMON_PREFIX
