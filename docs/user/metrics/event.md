@@ -21,6 +21,10 @@ views:
 
 ## API
 
+{{#include ../../tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
+
 Note that an `enum` has been generated for handling the `extra_keys`: it has the same name as the event metric, with `Keys` added.
 
 ```Kotlin
@@ -43,6 +47,35 @@ assertEquals(2, snapshot.size)
 val first = snapshot.single()
 assertEquals("login_opened", first.name)
 ```
+
+</div>
+
+<div data-lang="Swift" class="tab">
+
+Note that an `enum` has been generated for handling the `extra_keys`: it has the same name as the event metric, with `Keys` added.
+
+```Swift
+Views.loginOpened.record(extra: [.sourceOfLogin: "toolbar"])
+```
+
+There are test APIs available too, for example:
+
+```Kotlin
+@testable import Glean
+
+// Was any event recorded?
+XCTAssert(Views.loginOpened.testHasValue())
+// Get a List of the recorded events.
+val snapshot = try! Views.loginOpened.testGetValue()
+// Check that two events were recorded.
+XCTAssertEqual(2, snapshot.size)
+val first = snapshot[0]
+XCTAssertEqual("login_opened", first.name)
+```
+
+</div>
+
+{{#include ../../tab_footer.md}}
 
 ## Limits
 
