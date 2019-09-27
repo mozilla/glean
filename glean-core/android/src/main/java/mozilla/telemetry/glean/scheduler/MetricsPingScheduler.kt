@@ -40,7 +40,10 @@ import java.util.concurrent.TimeUnit as AndroidTimeUnit
  * the [MetricsPingWorker].
  */
 @Suppress("TooManyFunctions")
-internal class MetricsPingScheduler(val applicationContext: Context) : LifecycleObserver {
+internal class MetricsPingScheduler(
+    private val applicationContext: Context,
+    migratedLastSentDate: String? = null
+) : LifecycleObserver {
     internal val sharedPreferences: SharedPreferences by lazy {
         applicationContext.getSharedPreferences(this.javaClass.canonicalName, Context.MODE_PRIVATE)
     }
@@ -61,6 +64,13 @@ internal class MetricsPingScheduler(val applicationContext: Context) : Lifecycle
     }
 
     init {
+        // When performing the data migration from glean-ac, this scheduler might be
+        // provided with a date the 'metrics' ping was last sent. If so, save that in
+        // the new storage and use it in this scheduler.
+        migratedLastSentDate?.let { acLastSentDate ->
+            updateSentDate(acLastSentDate)
+        }
+
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
     }
 

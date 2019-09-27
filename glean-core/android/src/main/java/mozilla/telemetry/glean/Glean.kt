@@ -133,12 +133,13 @@ open class GleanInternalAPI internal constructor () {
 
         // Start the migration from glean-ac, if needed.
         val migrator = GleanACDataMigrator(applicationContext)
+        val acMetadata = migrator.getACMetadata()
 
         // TODO: like we do in glean-ac, we should check if we already have a client id.
         // If we don't, then we don't need to go through migration and this is likely a new
         // client.
         val newSequenceNums = if (migrator.shouldMigrateData()) {
-            migrator.getACMetadata().toFfi()
+            acMetadata.toFfi()
         } else {
             Triple(null, null, 0)
         }
@@ -181,7 +182,10 @@ open class GleanInternalAPI internal constructor () {
         // Set up information and scheduling for Glean owned pings. Ideally, the "metrics"
         // ping startup check should be performed before any other ping, since it relies
         // on being dispatched to the API context before any other metric.
-        metricsPingScheduler = MetricsPingScheduler(applicationContext)
+        metricsPingScheduler = MetricsPingScheduler(
+            applicationContext,
+            acMetadata.metricsPingLastSentDate
+        )
         metricsPingScheduler.schedule()
 
         // Signal Dispatcher that init is complete

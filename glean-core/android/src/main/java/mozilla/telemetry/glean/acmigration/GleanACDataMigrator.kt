@@ -20,8 +20,14 @@ internal class GleanACDataMigrator(
     private val applicationContext: Context
 ) {
     companion object {
-        internal const val SEQUENCE_NUMBERS_FILENAME = "mozilla.components.service.glean.ping.PingMaker"
-        internal const val MIGRATION_PREFS_FILE = "mozilla.components.service.glean.GleanACDataMigrator"
+        // The name of the Glean AC package, used to build the name of the files
+        // of the preferences files that contain data to be migrated.
+        private const val GLEAN_AC_PACKAGE_NAME = "mozilla.components.service.glean"
+
+        internal const val METRICS_SCHEDULER_PREFS_FILE =
+            "$GLEAN_AC_PACKAGE_NAME.scheduler.MetricsPingScheduler"
+        internal const val MIGRATION_PREFS_FILE = "$GLEAN_AC_PACKAGE_NAME.GleanACDataMigrator"
+        internal const val SEQUENCE_NUMBERS_FILENAME = "$GLEAN_AC_PACKAGE_NAME.ping.PingMaker"
     }
 
     internal val migrationPrefs: SharedPreferences? by lazy {
@@ -38,13 +44,19 @@ internal class GleanACDataMigrator(
      *        the remaining metadata is not loaded and will be `null`.
      * @param sequenceNumbers the mapping between AC storage names and their sequence
      *        numbers.
-     * @return a [Triple] containing the keys and the values representing the sequence
-     *         numbers map, with the addition of the number of elements in the map.
+     * @param metricsPingLastSentDate the last time the metrics ping was sent (if ever).
      */
     internal data class ACMetadata(
         val alreadyMigrated: Boolean,
-        val sequenceNumbers: Map<String, Int>
+        val sequenceNumbers: Map<String, Int>,
+        val metricsPingLastSentDate: String?
     ) {
+        /**
+         * Get a [Triple] containing data to be passed to the FFI layer.
+         *
+         * @return a [Triple] containing the keys and the values representing the sequence
+         *         numbers map, with the addition of the number of elements in the map.
+         */
         fun toFfi(): Triple<StringArray?, IntArray?, Int> {
             // The Map is sent over FFI as a pair of arrays, one containing the
             // keys, and the other containing the values.
@@ -72,13 +84,36 @@ internal class GleanACDataMigrator(
      */
     fun getACMetadata(): ACMetadata {
         if (wasMigrated()) {
-            return ACMetadata(true, emptyMap())
+            return ACMetadata(true, emptyMap(), null)
         }
 
         return ACMetadata(
             alreadyMigrated = false,
-            sequenceNumbers = getSequenceNumbers()
+            sequenceNumbers = getSequenceNumbers(),
+            metricsPingLastSentDate = getMetricsPingLastSentDate()
         )
+    }
+
+    /**
+     * Load the last time 'metrics' ping was sent in glean-ac [SharedPreferences].
+     *
+     * @return a `String?` that contains the date or `null` if there was a problem.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    internal fun getMetricsPingLastSentDate(): String? {
+        val metricsPingPrefs = applicationContext.getSharedPreferences(
+            METRICS_SCHEDULER_PREFS_FILE,
+            Context.MODE_PRIVATE
+        )
+
+        return try {
+            metricsPingPrefs?.getString("last_metrics_ping_iso_datetime", null)
+        } catch (e: ClassCastException) {
+            // If another pref in this file exists with a non string value,
+            // something probably went wrong in the migration. Forget about this
+            // and do not migrate.
+            null
+        }
     }
 
     /**
