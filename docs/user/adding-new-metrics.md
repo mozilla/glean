@@ -71,7 +71,7 @@ The `lifetime` parameter of a metric defines when it will be reset. There are th
 ### Naming things
 
 Metric identifiers (the combination of a metric's category and name) must be unique across all metrics that are sent by an application.
-This includes not only the metrics defined in the app's `metrics.yaml`, but the `metrics.yaml` of any Glean-using library that that application uses, including Glean itself.
+This includes not only the metrics defined in the app's `metrics.yaml`, but the `metrics.yaml` of any Glean-using library that the application uses, including Glean itself.
 Therefore, care should be taken to name things specifically enough so as to avoid namespace collisions.
 In practice, this generally involves thinking carefully about the `category` of the metric, more than the `name`.
 
