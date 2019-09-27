@@ -24,6 +24,7 @@ import mozilla.telemetry.glean.GleanMetrics.Pings
 import mozilla.telemetry.glean.utils.getISOTimeString
 import mozilla.telemetry.glean.utils.parseISOTimeString
 import mozilla.telemetry.glean.private.TimeUnit
+import mozilla.telemetry.glean.utils.ThreadUtils
 import java.util.Calendar
 import java.util.Date
 import java.util.concurrent.TimeUnit as AndroidTimeUnit
@@ -64,6 +65,15 @@ internal class MetricsPingScheduler(
     }
 
     init {
+        // This should only be called from the main thread.
+        // We can't enforce this at build time here, since the @MainThread
+        // decorator can not be applied to a contructor.  However, in practice
+        // this is only called from Glean.initialize which does have that
+        // decorator.  For good measure, we also perform this run time check
+        // here.
+        // See https://bugzilla.mozilla.org/show_bug.cgi?id=1581556
+        ThreadUtils.assertOnUiThread()
+
         // When performing the data migration from glean-ac, this scheduler might be
         // provided with a date the 'metrics' ping was last sent. If so, save that in
         // the new storage and use it in this scheduler.
