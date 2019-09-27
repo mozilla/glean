@@ -98,7 +98,7 @@ open class GleanInternalAPI internal constructor () {
      * as shared preferences
      * @param configuration A Glean [Configuration] object with global settings.
      */
-    @Suppress("ReturnCount")
+    @Suppress("ReturnCount", "LongMethod")
     @JvmOverloads
     @Synchronized
     fun initialize(
