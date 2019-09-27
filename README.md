@@ -10,7 +10,7 @@ All documentation is available online:
 
 ## Overview
 
-Refer to the documentation for [using and developing the Glean SDK](book).
+Refer to the documentation for [using and developing the Glean SDK][book].
 
 For an overview of Glean beyond just the SDK, see the [section in the Firefox data docs](https://docs.telemetry.mozilla.org/concepts/glean/glean.html).
 
