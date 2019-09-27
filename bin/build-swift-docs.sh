@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eo pipefail
+
 # Build Swift with one command
 # Requires jazzy from https://github.com/realm/jazzy
 
