@@ -27,7 +27,7 @@ class GleanDataMigrationTest {
 
     companion object {
         private const val TEST_CLIENT_ID = "94f94db0-fdf8-4bbc-943f-e43e6de1164f"
-        private const val TEST_FIRST_RUN_DATE = "2019-09-30-04:00"
+        private const val TEST_FIRST_RUN_DATE = "2015-07-11-04:00"
         private const val TEST_BASELINE_SEQ = 37
     }
 
@@ -57,7 +57,7 @@ class GleanDataMigrationTest {
         // Set a previously existing first_run_date.
         context
             .getSharedPreferences(
-                "${GleanACDataMigrator.GLEAN_AC_PACKAGE_NAME}.storages.DatetimeStorageEngine",
+                "${GleanACDataMigrator.GLEAN_AC_PACKAGE_NAME}.storages.DatetimesStorageEngine",
                 Context.MODE_PRIVATE
             )
             .edit()
