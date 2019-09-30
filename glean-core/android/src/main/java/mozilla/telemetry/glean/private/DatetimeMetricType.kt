@@ -79,6 +79,10 @@ class DatetimeMetricType internal constructor(
      * @param value The [Date] value to set. If not provided, will record the current time.
      */
     internal fun setSync(value: Date = Date()) {
+        if (disabled) {
+            return
+        }
+
         val cal = Calendar.getInstance()
         cal.time = value
 
