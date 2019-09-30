@@ -58,6 +58,10 @@ docs:
 	./gradlew docs
 .PHONY: docs
 
+docs-swift:
+	bin/build-swift-docs.sh
+.PHONY: docs
+
 linkcheck: docs
 	# Requires https://wummel.github.io/linkchecker/
 	linkchecker --ignore-url javadoc --ignore-url docs/glean_core build/docs

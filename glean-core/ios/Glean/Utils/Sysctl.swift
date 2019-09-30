@@ -29,9 +29,9 @@ import Foundation
 // REASON: Used on infallible operations
 
 /// A "static"-only namespace around a series of functions that operate on buffers returned from the `Darwin.sysctl` function
-public struct Sysctl {
+struct Sysctl {
     /// Possible errors.
-    public enum Error: Swift.Error {
+    enum Error: Swift.Error {
         case unknown
         case malformedUTF8
         case invalidSize

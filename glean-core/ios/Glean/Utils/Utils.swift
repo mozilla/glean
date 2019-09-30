@@ -125,7 +125,7 @@ func withFfiConfiguration<R>(
 ///     * args: The array of strings to use.
 //              If `nil` no output array will be allocated and `nil` will be passed to `body`.
 ///     * body: The closure that gets an array of C-compatible strings
-public func withArrayOfCStrings<R>(
+func withArrayOfCStrings<R>(
     _ args: [String]?,
     _ body: ([UnsafePointer<CChar>?]?) -> R
 ) -> R {

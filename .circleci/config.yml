@@ -70,14 +70,6 @@ commands:
           command: |
               sudo ln -s /lib/x86_64-linux-gnu/libtinfo.so.6 /lib/x86_64-linux-gnu/libtinfo.so.5
 
-  install-xcpretty:
-    steps:
-      - run:
-          name: Install xcpretty
-          command: |
-            gem install --user-install xcpretty
-            echo 'export PATH="$HOME/.gem/ruby/2.3.0/bin:$PATH"' >> $BASH_ENV
-
 jobs:
   Check Swift formatting:
     macos:
@@ -192,7 +184,6 @@ jobs:
     macos:
       xcode: "11.0.0"
     steps:
-      - install-xcpretty
       - install-rustup
       - setup-rust-toolchain
       - checkout
@@ -285,6 +276,31 @@ jobs:
       - persist_to_workspace:
           root: build/
           paths: docs/javadoc
+  Generate Swift documentation:
+    macos:
+      xcode: "11.0.0"
+    steps:
+      - install-rustup
+      - setup-rust-toolchain
+      - checkout
+      - restore_cache:
+          name: Restore rubygems cache
+          key: swift-docs-gems-v1
+      - run:
+          name: Build Swift documentation
+          command: |
+            export PATH="$HOME/.gem/ruby/2.6.3/bin:$PATH"
+            gem install jazzy
+            bin/build-swift-docs.sh
+      - save_cache:
+          name: Save rubygems cache
+          # NEEDS TO CHANGE WHEN JAZZY IS UPDATED
+          key: swift-docs-gems-v1
+          paths:
+            - ~/.gem/ruby/2.6.3
+      - persist_to_workspace:
+          root: build/
+          paths: docs/swift
 
   docs-linkcheck:
     docker:
@@ -355,10 +371,12 @@ workflows:
     jobs:
       - Generate Rust documentation
       - Generate Kotlin documentation
+      - Generate Swift documentation
       - docs-linkcheck:
           requires:
             - Generate Rust documentation
             - Generate Kotlin documentation
+            - Generate Swift documentation
       - docs-deploy:
           requires:
             - docs-linkcheck

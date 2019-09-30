@@ -49,7 +49,7 @@ public class TimespanMetricType {
 
     /// Start tracking time for the provided metric.
     /// This records an error if it’s already tracking time (i.e. start was already
-    /// called with no corresponding `stop`): in that case the original
+    /// called with no corresponding `stop()`): in that case the original
     /// start time will be preserved.
     public func start() {
         guard !self.disabled else { return }
@@ -64,7 +64,7 @@ public class TimespanMetricType {
     /// Stop tracking time for the provided metric.
     /// Sets the metric to the elapsed time, but does not overwrite an already
     /// existing value.
-    /// This will record an error if no `start` was called or there is an already
+    /// This will record an error if no `start()` was called or there is an already
     /// existing value.
     public func stop() {
         guard !self.disabled else { return }
@@ -76,7 +76,7 @@ public class TimespanMetricType {
         }
     }
 
-    /// Abort a previous `start` call. No error is recorded if no `start` was called.
+    /// Abort a previous `start()` call. No error is recorded if no `start()` was called.
     public func cancel() {
         guard !self.disabled else { return }
 
@@ -88,7 +88,7 @@ public class TimespanMetricType {
     /// Explicitly set the timespan value, in nanoseconds.
     ///
     /// This API should only be used if your library or application requires recording
-    /// times in a way that can not make use of `start`/`stop`/`cancel`.
+    /// times in a way that can not make use of `start()` / `stop()` / `cancel()`.
     ///
     /// `setRawNanos` does not overwrite a running timer or an already existing value.
     ///
