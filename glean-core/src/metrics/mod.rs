@@ -145,9 +145,7 @@ impl Metric {
             Metric::Quantity(q) => json!(q),
             Metric::String(s) => json!(s),
             Metric::StringList(v) => json!(v),
-            Metric::Timespan(time, time_unit) => {
-                json!({"value": time_unit.duration_convert(*time), "time_unit": time_unit})
-            }
+            Metric::Timespan(time, time_unit) => json!({"value": time_unit.duration_convert(*time), "time_unit": time_unit}),
             Metric::TimingDistribution(hist) => json!(timing_distribution::snapshot(hist)),
             Metric::Uuid(s) => json!(s),
             Metric::MemoryDistribution(hist) => json!(memory_distribution::snapshot(hist)),

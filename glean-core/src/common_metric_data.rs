@@ -44,7 +44,7 @@ impl TryFrom<i32> for Lifetime {
             0 => Ok(Lifetime::Ping),
             1 => Ok(Lifetime::Application),
             2 => Ok(Lifetime::User),
-            e => Err(ErrorKind::Lifetime(e))?,
+            e => Err(ErrorKind::Lifetime(e).into()),
         }
     }
 }

@@ -109,7 +109,7 @@ impl TryFrom<i32> for TimeUnit {
             4 => Ok(TimeUnit::Minute),
             5 => Ok(TimeUnit::Hour),
             6 => Ok(TimeUnit::Day),
-            e => Err(ErrorKind::TimeUnit(e))?,
+            e => Err(ErrorKind::TimeUnit(e).into()),
         }
     }
 }
