@@ -2,28 +2,20 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package mozilla.components.service.glean.storages
+package mozilla.telemetry.glean.acmigration.engines
 
-import android.annotation.SuppressLint
-import android.content.SharedPreferences
-import mozilla.components.service.glean.private.CommonMetricData
-import mozilla.components.support.base.log.logger.Logger
+import android.content.Context
+import mozilla.telemetry.glean.private.Lifetime
+import mozilla.telemetry.glean.private.UuidMetricType
 import java.util.UUID
 
-/**
- * This singleton handles the in-memory storage logic for uuids. It is meant to be used by
- * the Specific UUID API and the ping assembling objects.
- *
- * This class contains a reference to the Android application Context. While the IDE warns
- * us that this could leak, the application context lives as long as the application and this
- * object. For this reason, we should be safe to suppress the IDE warning.
- */
-@SuppressLint("StaticFieldLeak")
-internal object UuidsStorageEngine : UuidsStorageEngineImplementation()
-
-internal open class UuidsStorageEngineImplementation(
-    override val logger: Logger = Logger("glean/UuidsStorageEngine")
+internal class UuidsStorageEngine(
+    applicationContext: Context
 ) : GenericStorageEngine<UUID>() {
+
+    init {
+        this.applicationContext = applicationContext
+    }
 
     override fun deserializeSingleMetric(metricName: String, value: Any?): UUID? {
         return try {
@@ -33,25 +25,37 @@ internal open class UuidsStorageEngineImplementation(
         }
     }
 
-    override fun serializeSingleMetric(
-        userPreferences: SharedPreferences.Editor?,
-        storeName: String,
-        value: UUID,
-        extraSerializationData: Any?
-    ) {
-        userPreferences?.putString(storeName, value.toString())
-    }
-
     /**
-     * Record a uuid in the desired stores.
-     *
-     * @param metricData object with metric settings
-     * @param value the uuid value to record
+     * Perform the data migration.
      */
-    fun record(
-        metricData: CommonMetricData,
-        value: UUID
-    ) {
-        super.recordMetric(metricData, value)
+    override fun migrateToGleanCore(lifetime: Lifetime) {
+        super.migrateToGleanCore(lifetime)
+
+        // Get the stored data.
+        val storedData = dataStores[lifetime.ordinal]
+        for ((storeName, data) in storedData) {
+            // Get each storage for the specified lifetime
+            for ((metricId, metricData) in data) {
+                // HACK HACK HACK HACK! Hic sunt leones!
+                // It would be tricky to break apart the category and the name of each metric,
+                // given that categories might contain dots themselves. Just leave the category
+                // blank and provide the full metric identifier through the "name".
+                val metric = UuidMetricType(
+                    name = metricId,
+                    category = "",
+                    sendInPings = listOf(storeName),
+                    lifetime = lifetime,
+                    disabled = false
+                )
+
+                if (lifetime == Lifetime.User) {
+                    // User lifetime metrics are migrated very early: we don't want them
+                    // to be batched but, rather, set immediately.
+                    metric.setSync(metricData)
+                } else {
+                    metric.set(metricData)
+                }
+            }
+        }
     }
 }

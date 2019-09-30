@@ -94,6 +94,22 @@ class UuidMetricType(
     }
 
     /**
+     * Explicitly set a value synchronously.
+     *
+     * This is only to be used for the glean-ac to glean-core data migration.
+     */
+    internal fun setSync(value: UUID) {
+        if (disabled) {
+            return
+        }
+
+        LibGleanFFI.INSTANCE.glean_uuid_set(
+            Glean.handle,
+            this@UuidMetricType.handle,
+            value.toString())
+    }
+
+    /**
      * Tests whether a value is stored for the metric for testing purposes only. This function will
      * attempt to await the last task (if any) writing to the the metric's storage engine before
      * returning a value.

@@ -8,7 +8,10 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.annotation.VisibleForTesting
 import com.sun.jna.StringArray
+import mozilla.telemetry.glean.acmigration.engines.UuidsStorageEngine
+import mozilla.telemetry.glean.private.Lifetime
 import java.lang.NullPointerException
+import java.util.UUID
 
 /**
  * A class encapsulating the code used for migrating data from glean-ac
@@ -22,7 +25,8 @@ internal class GleanACDataMigrator(
     companion object {
         // The name of the Glean AC package, used to build the name of the files
         // of the preferences files that contain data to be migrated.
-        private const val GLEAN_AC_PACKAGE_NAME = "mozilla.components.service.glean"
+        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+        internal const val GLEAN_AC_PACKAGE_NAME = "mozilla.components.service.glean"
 
         internal const val METRICS_SCHEDULER_PREFS_FILE =
             "$GLEAN_AC_PACKAGE_NAME.scheduler.MetricsPingScheduler"
@@ -36,6 +40,9 @@ internal class GleanACDataMigrator(
             Context.MODE_PRIVATE
         )
     }
+
+    // The storage engines data is migrated from.
+    private val uuidStorageEngine by lazy { UuidsStorageEngine(applicationContext) }
 
     /**
      * A data class representing the metadata from glean-ac.
@@ -158,6 +165,30 @@ internal class GleanACDataMigrator(
     }
 
     /**
+     * Migrate all the metrics that have User lifetime.
+     */
+    fun migrateUserLifetimeMetrics() {
+        uuidStorageEngine.migrateToGleanCore(Lifetime.User)
+    }
+
+    /**
+     * Migrate all the metrics that have Ping lifetime.
+     */
+    fun migratePingLifetimeMetrics() {
+        uuidStorageEngine.migrateToGleanCore(Lifetime.Ping)
+    }
+
+    /**
+     * Return any previously stored AC client id.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    internal fun getStoredClientId(): UUID? {
+        return uuidStorageEngine
+            .getSnapshot("glean_client_info", false)
+            ?.get("client_id")
+    }
+
+    /**
      * Get if the current client was migrated.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -183,10 +214,8 @@ internal class GleanACDataMigrator(
             return false
         }
 
-        // TODO: check if we have any previous a-c data (i.e. client_id). If so, migrate.
-        // This will happen as part of bug 1582102.
-
-        return true
+        // Only migrate if we have a previously generated client id.
+        return getStoredClientId() != null
     }
 
     /**
