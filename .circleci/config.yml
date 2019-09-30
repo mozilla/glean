@@ -205,14 +205,14 @@ jobs:
           command: bash bin/run-ios-tests.sh
       - restore_cache:
           name: Restore rubygems cache
-          key: swift-docs-gems-v1
+          key: swift-docs-gems-v2
       - run:
           name: Install jazzy
           command: gem install jazzy
       - save_cache:
           name: Save rubygems cache
           # NEEDS TO CHANGE WHEN JAZZY IS UPDATED
-          key: swift-docs-gems-v1
+          key: swift-docs-gems-v2
           paths:
             - ~/.gem/ruby/2.6.3
       - run:
