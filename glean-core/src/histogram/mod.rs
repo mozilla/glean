@@ -36,7 +36,7 @@ impl TryFrom<i32> for HistogramType {
         match value {
             0 => Ok(HistogramType::Linear),
             1 => Ok(HistogramType::Exponential),
-            e => Err(ErrorKind::HistogramType(e))?,
+            e => Err(ErrorKind::HistogramType(e).into()),
         }
     }
 }

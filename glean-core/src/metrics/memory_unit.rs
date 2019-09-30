@@ -57,7 +57,7 @@ impl TryFrom<i32> for MemoryUnit {
             1 => Ok(MemoryUnit::Kilobyte),
             2 => Ok(MemoryUnit::Megabyte),
             3 => Ok(MemoryUnit::Gigabyte),
-            e => Err(ErrorKind::MemoryUnit(e))?,
+            e => Err(ErrorKind::MemoryUnit(e).into()),
         }
     }
 }
