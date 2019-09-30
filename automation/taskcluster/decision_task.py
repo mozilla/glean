@@ -338,7 +338,7 @@ def linux_build_task(name):
         """)
         .with_repo()
         .with_script("""
-            ./libs/verify-android-environment.sh
+            ./automation/verify-android-environment.sh
         """)
     )
     # Send email notifications for failures on master.
