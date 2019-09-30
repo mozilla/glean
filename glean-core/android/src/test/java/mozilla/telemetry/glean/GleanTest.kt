@@ -10,6 +10,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import kotlinx.coroutines.Dispatchers as KotlinDispatchers
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import mozilla.telemetry.glean.GleanMetrics.GleanInternalMetrics
@@ -521,5 +522,14 @@ class GleanTest {
         Glean.isMainProcess = null
 
         assertFalse(Glean.isMainProcess(context))
+    }
+
+    @Test(expected = IllegalThreadStateException::class)
+    fun `Glean initialize must be called on the main thread`() {
+        runBlocking(KotlinDispatchers.IO) {
+            val context: Context = ApplicationProvider.getApplicationContext()
+
+            Glean.initialize(context)
+        }
     }
 }

@@ -91,6 +91,7 @@ The following steps are required for applications using the Glean SDK, but not l
 
 The Glean SDK should only be initialized from the main application, not individual libraries.  If you are adding Glean support to a library, you can safely skip this section.
 Please also note that the Glean SDK does not support use across multiple processes, and must only be initialized on the application's main process. Initializing in other processes is a no-op.
+Additionally, Glean must be initialized on the main (UI) thread of the applications main process. Failure to do so will throw an `IllegalThreadStateException`.
 
 Before any data collection can take place, the Glean SDK **must** be initialized from the application.
 An excellent place to perform this operation is within the `onCreate` method of the class that extends Android's `Application` class.
