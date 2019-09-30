@@ -187,6 +187,18 @@ jobs:
       - install-rustup
       - setup-rust-toolchain
       - checkout
+      - restore_cache:
+          name: Restore rubygems cache
+          key: swift-docs-gems-v2
+      - run:
+          name: Install jazzy
+          command: gem install jazzy
+      - save_cache:
+          name: Save rubygems cache
+          # NEEDS TO CHANGE WHEN JAZZY IS UPDATED
+          key: swift-docs-gems-v2
+          paths:
+            - ~/.gem/ruby/2.6.3
       - run:
           name: Setup build environment
           command: |
@@ -196,13 +208,20 @@ jobs:
               # On non-release builds do not update brew (takes ages).
               echo 'export HOMEBREW_NO_AUTO_UPDATE=1' >> $BASH_ENV
             fi
+            echo "export PATH=$HOME/.gem/ruby/2.6.3/bin:$PATH" >> $BASH_ENV
             brew outdated carthage || brew upgrade carthage
             bin/bootstrap.sh
             # See https://circleci.com/docs/2.0/testing-ios/#pre-starting-the-simulator
             xcrun instruments -w "iPhone 8 (13.0) [" || true
       - run:
-          name: Run XCode tests
-          command: bash bin/run-ios-tests.sh
+          name: Run XCode build, tests and generate documentation
+          command: |
+              bash bin/run-ios-build.sh
+              bash bin/run-ios-tests.sh
+              bash bin/build-swift-docs.sh
+      - persist_to_workspace:
+          root: build/
+          paths: docs/swift
 
   Lint Android with ktlint and detekt:
     docker:
@@ -276,31 +295,6 @@ jobs:
       - persist_to_workspace:
           root: build/
           paths: docs/javadoc
-  Generate Swift documentation:
-    macos:
-      xcode: "11.0.0"
-    steps:
-      - install-rustup
-      - setup-rust-toolchain
-      - checkout
-      - restore_cache:
-          name: Restore rubygems cache
-          key: swift-docs-gems-v1
-      - run:
-          name: Build Swift documentation
-          command: |
-            export PATH="$HOME/.gem/ruby/2.6.3/bin:$PATH"
-            gem install jazzy
-            bin/build-swift-docs.sh
-      - save_cache:
-          name: Save rubygems cache
-          # NEEDS TO CHANGE WHEN JAZZY IS UPDATED
-          key: swift-docs-gems-v1
-          paths:
-            - ~/.gem/ruby/2.6.3
-      - persist_to_workspace:
-          root: build/
-          paths: docs/swift
 
   docs-linkcheck:
     docker:
@@ -355,7 +349,7 @@ workflows:
       - Lint Rust with clippy
       - Lint Android with ktlint and detekt
       - Rust FFI header check
-  run-tests:
+  ci:
     jobs:
       - Rust tests - stable
       # FIXME: Disabled due to failing to often, bug 1574424
@@ -364,22 +358,19 @@ workflows:
       - Android tests
       - C tests
       - iOS build and test
-  coverage:
-    jobs:
-      - Rust code coverage
-  documentation:
-    jobs:
       - Generate Rust documentation
       - Generate Kotlin documentation
-      - Generate Swift documentation
       - docs-linkcheck:
           requires:
             - Generate Rust documentation
             - Generate Kotlin documentation
-            - Generate Swift documentation
+            - iOS build and test
       - docs-deploy:
           requires:
             - docs-linkcheck
           filters:
             branches:
               only: master
+  coverage:
+    jobs:
+      - Rust code coverage
