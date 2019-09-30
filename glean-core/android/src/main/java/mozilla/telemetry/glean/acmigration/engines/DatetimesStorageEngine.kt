@@ -7,6 +7,7 @@ package mozilla.telemetry.glean.acmigration.engines
 import android.content.Context
 import mozilla.telemetry.glean.private.DatetimeMetricType
 import mozilla.telemetry.glean.private.Lifetime
+import mozilla.telemetry.glean.private.TimeUnit
 import mozilla.telemetry.glean.utils.parseISOTimeString
 
 internal class DatetimesStorageEngine(
@@ -15,6 +16,16 @@ internal class DatetimesStorageEngine(
 
     init {
         this.applicationContext = applicationContext
+    }
+
+    companion object {
+        // Unfortunately we have no way to tell, at run time, what is the precision
+        // with which metrics were recorded in glean-ac. To work around this problem
+        // we generate the following map from all the metrics.yaml files listed in
+        // https://github.com/mozilla/probe-scraper/blob/master/repositories.yaml
+        val datePrecisionMap: Map<String, TimeUnit> = mapOf(
+            "first_run_date" to TimeUnit.Day
+        )
     }
 
     override fun deserializeSingleMetric(metricName: String, value: Any?): String? {
@@ -40,6 +51,12 @@ internal class DatetimesStorageEngine(
         for ((storeName, data) in storedData) {
             // Get each storage for the specified lifetime
             for ((metricId, metricData) in data) {
+                // Hotfix the prevision of metrics we know about. Otherwise,
+                // use the highest possible precision.
+                val precision = datePrecisionMap[metricId]?.let {
+                    it
+                } ?: TimeUnit.Nanosecond
+
                 // HACK HACK HACK HACK! Hic sunt leones!
                 // It would be tricky to break apart the category and the name of each metric,
                 // given that categories might contain dots themselves. Just leave the category
@@ -49,7 +66,8 @@ internal class DatetimesStorageEngine(
                     category = "",
                     sendInPings = listOf(storeName),
                     lifetime = lifetime,
-                    disabled = false
+                    disabled = false,
+                    timeUnit = precision
                 )
 
                 // `metricData` should always successfully parse as a `Date`: we

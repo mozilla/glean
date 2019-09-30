@@ -13,11 +13,13 @@ import mozilla.telemetry.glean.GleanMetrics.Pings
 import mozilla.telemetry.glean.config.Configuration
 import mozilla.telemetry.glean.getMockWebServer
 import mozilla.telemetry.glean.triggerWorkManager
+import mozilla.telemetry.glean.utils.getISOTimeString
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 @RunWith(AndroidJUnit4::class)
@@ -27,8 +29,16 @@ class GleanDataMigrationTest {
 
     companion object {
         private const val TEST_CLIENT_ID = "94f94db0-fdf8-4bbc-943f-e43e6de1164f"
-        private const val TEST_FIRST_RUN_DATE = "2015-07-11-04:00"
         private const val TEST_BASELINE_SEQ = 37
+        private val TEST_FIRST_RUN_DATE = generateFirstRunDateWithOffset()
+
+        private fun generateFirstRunDateWithOffset(): String {
+            val cal = Calendar.getInstance()
+            // Generate a first run day that is 7 days earlier than the
+            // test run.
+            cal.add(Calendar.DAY_OF_MONTH, -7)
+            return getISOTimeString(cal, mozilla.telemetry.glean.private.TimeUnit.Day)
+        }
     }
 
     private fun setFakeSequenceNumber(context: Context, pingName: String, number: Int) {
