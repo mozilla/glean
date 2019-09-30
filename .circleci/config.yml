@@ -187,22 +187,6 @@ jobs:
       - install-rustup
       - setup-rust-toolchain
       - checkout
-      - run:
-          name: Setup build environment
-          command: |
-            sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /
-            rustup target add aarch64-apple-ios x86_64-apple-ios
-            if [ -z "${CIRCLE_TAG}" ]; then
-              # On non-release builds do not update brew (takes ages).
-              echo 'export HOMEBREW_NO_AUTO_UPDATE=1' >> $BASH_ENV
-            fi
-            brew outdated carthage || brew upgrade carthage
-            bin/bootstrap.sh
-            # See https://circleci.com/docs/2.0/testing-ios/#pre-starting-the-simulator
-            xcrun instruments -w "iPhone 8 (13.0) [" || true
-      - run:
-          name: Run XCode tests
-          command: bash bin/run-ios-tests.sh
       - restore_cache:
           name: Restore rubygems cache
           key: swift-docs-gems-v2
@@ -216,10 +200,25 @@ jobs:
           paths:
             - ~/.gem/ruby/2.6.3
       - run:
-          name: Build Swift documentation
+          name: Setup build environment
           command: |
-            export PATH="$HOME/.gem/ruby/2.6.3/bin:$PATH"
-            bin/build-swift-docs.sh
+            sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /
+            rustup target add aarch64-apple-ios x86_64-apple-ios
+            if [ -z "${CIRCLE_TAG}" ]; then
+              # On non-release builds do not update brew (takes ages).
+              echo 'export HOMEBREW_NO_AUTO_UPDATE=1' >> $BASH_ENV
+            fi
+            echo "export PATH=$HOME/.gem/ruby/2.6.3/bin:$PATH" >> $BASH_ENV
+            brew outdated carthage || brew upgrade carthage
+            bin/bootstrap.sh
+            # See https://circleci.com/docs/2.0/testing-ios/#pre-starting-the-simulator
+            xcrun instruments -w "iPhone 8 (13.0) [" || true
+      - run:
+          name: Run XCode build, tests and generate documentation
+          command: |
+              bash bin/run-ios-build.sh
+              bash bin/run-ios-tests.sh
+              bash bin/build-swift-docs.sh
       - persist_to_workspace:
           root: build/
           paths: docs/swift
