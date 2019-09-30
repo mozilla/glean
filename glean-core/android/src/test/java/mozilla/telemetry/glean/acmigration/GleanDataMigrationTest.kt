@@ -27,6 +27,7 @@ class GleanDataMigrationTest {
 
     companion object {
         private const val TEST_CLIENT_ID = "94f94db0-fdf8-4bbc-943f-e43e6de1164f"
+        private const val TEST_FIRST_RUN_DATE = "2019-09-30-04:00"
         private const val TEST_BASELINE_SEQ = 37
     }
 
@@ -44,16 +45,23 @@ class GleanDataMigrationTest {
         setFakeSequenceNumber(context, "baseline", TEST_BASELINE_SEQ)
 
         // Set a previously existing client id.
-        val clientIdPrefsFile =
-            "${GleanACDataMigrator.GLEAN_AC_PACKAGE_NAME}.storages.UuidsStorageEngine"
-
         context
             .getSharedPreferences(
-                clientIdPrefsFile,
+                "${GleanACDataMigrator.GLEAN_AC_PACKAGE_NAME}.storages.UuidsStorageEngine",
                 Context.MODE_PRIVATE
             )
             .edit()
             .putString("glean_client_info#client_id", TEST_CLIENT_ID)
+            .apply()
+
+        // Set a previously existing first_run_date.
+        context
+            .getSharedPreferences(
+                "${GleanACDataMigrator.GLEAN_AC_PACKAGE_NAME}.storages.DatetimeStorageEngine",
+                Context.MODE_PRIVATE
+            )
+            .edit()
+            .putString("glean_client_info#first_run_date", TEST_FIRST_RUN_DATE)
             .apply()
     }
 
@@ -100,5 +108,6 @@ class GleanDataMigrationTest {
         assertEquals("baseline", baselineJson.getJSONObject("ping_info")["ping_type"])
         assertEquals(TEST_BASELINE_SEQ, baselineJson.getJSONObject("ping_info")["seq"])
         assertEquals(TEST_CLIENT_ID, baselineJson.getJSONObject("client_info")["client_id"])
+        assertEquals(TEST_FIRST_RUN_DATE, baselineJson.getJSONObject("client_info")["first_run_date"])
     }
 }
