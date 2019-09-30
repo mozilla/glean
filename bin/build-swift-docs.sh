@@ -7,6 +7,7 @@ set -eo pipefail
 
 jazzy --version
 jazzy \
+    --clean \
     --output build/docs/swift \
     --sdk iphone \
     --module Glean \

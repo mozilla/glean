@@ -203,6 +203,26 @@ jobs:
       - run:
           name: Run XCode tests
           command: bash bin/run-ios-tests.sh
+      - restore_cache:
+          name: Restore rubygems cache
+          key: swift-docs-gems-v1
+      - run:
+          name: Install jazzy
+          command: gem install jazzy
+      - save_cache:
+          name: Save rubygems cache
+          # NEEDS TO CHANGE WHEN JAZZY IS UPDATED
+          key: swift-docs-gems-v1
+          paths:
+            - ~/.gem/ruby/2.6.3
+      - run:
+          name: Build Swift documentation
+          command: |
+            export PATH="$HOME/.gem/ruby/2.6.3/bin:$PATH"
+            bin/build-swift-docs.sh
+      - persist_to_workspace:
+          root: build/
+          paths: docs/swift
 
   Lint Android with ktlint and detekt:
     docker:
@@ -276,31 +296,6 @@ jobs:
       - persist_to_workspace:
           root: build/
           paths: docs/javadoc
-  Generate Swift documentation:
-    macos:
-      xcode: "11.0.0"
-    steps:
-      - install-rustup
-      - setup-rust-toolchain
-      - checkout
-      - restore_cache:
-          name: Restore rubygems cache
-          key: swift-docs-gems-v1
-      - run:
-          name: Build Swift documentation
-          command: |
-            export PATH="$HOME/.gem/ruby/2.6.3/bin:$PATH"
-            gem install jazzy
-            bin/build-swift-docs.sh
-      - save_cache:
-          name: Save rubygems cache
-          # NEEDS TO CHANGE WHEN JAZZY IS UPDATED
-          key: swift-docs-gems-v1
-          paths:
-            - ~/.gem/ruby/2.6.3
-      - persist_to_workspace:
-          root: build/
-          paths: docs/swift
 
   docs-linkcheck:
     docker:
@@ -355,7 +350,7 @@ workflows:
       - Lint Rust with clippy
       - Lint Android with ktlint and detekt
       - Rust FFI header check
-  run-tests:
+  ci:
     jobs:
       - Rust tests - stable
       # FIXME: Disabled due to failing to often, bug 1574424
@@ -364,22 +359,19 @@ workflows:
       - Android tests
       - C tests
       - iOS build and test
-  coverage:
-    jobs:
-      - Rust code coverage
-  documentation:
-    jobs:
       - Generate Rust documentation
       - Generate Kotlin documentation
-      - Generate Swift documentation
       - docs-linkcheck:
           requires:
             - Generate Rust documentation
             - Generate Kotlin documentation
-            - Generate Swift documentation
+            - iOS build and test
       - docs-deploy:
           requires:
             - docs-linkcheck
           filters:
             branches:
               only: master
+  coverage:
+    jobs:
+      - Rust code coverage
