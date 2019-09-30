@@ -102,7 +102,7 @@ open class GleanInternalAPI internal constructor () {
      * as shared preferences
      * @param configuration A Glean [Configuration] object with global settings.
      */
-    @Suppress("ReturnCount", "LongMethod")
+    @Suppress("ReturnCount", "LongMethod", "ComplexMethod")
     @JvmOverloads
     @Synchronized
     @MainThread
@@ -167,9 +167,10 @@ open class GleanInternalAPI internal constructor () {
             return
         }
 
-        // TODO: uncomment the line below once all migration dependencies have landed.
-        // See bug 1583454.
-        // migrator.markAsMigrated()
+        // With Glean instance fully initialized, start migrating data.
+        if (migrator.shouldMigrateData()) {
+            migrator.migrateUserLifetimeMetrics()
+        }
 
         // If any pings were registered before initializing, do so now
         this.pingTypeQueue.forEach { this.registerPingType(it) }
@@ -207,6 +208,12 @@ open class GleanInternalAPI internal constructor () {
         // This should only be called from the main thread. This is enforced by
         // the @MainThread decorator and the `assertOnUiThread` call.
         ProcessLifecycleOwner.get().lifecycle.addObserver(gleanLifecycleObserver)
+
+        // Migrate the remaining metrics and mark the migration as complete.
+        if (migrator.shouldMigrateData()) {
+            migrator.migratePingLifetimeMetrics()
+            // migrator.markAsMigrated() // TODO Uncomment when all engines are merged
+        }
     }
 
     /**
