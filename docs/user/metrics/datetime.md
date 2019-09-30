@@ -70,7 +70,7 @@ let dateComponents = DateComponents(
                         calendar: Calendar.current,
                         year: 2004, month: 12, day: 9, hour: 8, minute: 3, second: 29
                      )
-Install.firstRun.set(dateComponents.date!) // Adds 5 to the counter.
+Install.firstRun.set(dateComponents.date!) // Records a custom datetime
 ```
 
 There are test APIs available too:
