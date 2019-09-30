@@ -24,7 +24,13 @@ internal class DatetimesStorageEngine(
         // we generate the following map from all the metrics.yaml files listed in
         // https://github.com/mozilla/probe-scraper/blob/master/repositories.yaml
         val datePrecisionMap: Map<String, TimeUnit> = mapOf(
-            "first_run_date" to TimeUnit.Day
+            // from glean's metrics.yaml
+            "first_run_date" to TimeUnit.Day,
+            // from support-sync-telemetry's metrics.yaml
+            "history_sync.started_at" to TimeUnit.Millisecond,
+            "history_sync.finished_at" to TimeUnit.Millisecond,
+            "bookmarks_sync.started_at" to TimeUnit.Millisecond,
+            "bookmarks_sync.finished_at" to TimeUnit.Millisecond
         )
     }
 
