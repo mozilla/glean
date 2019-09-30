@@ -58,6 +58,12 @@ internal abstract class GenericStorageEngine<MetricType> {
     protected abstract fun deserializeSingleMetric(metricName: String, value: Any?): MetricType?
 
     /**
+     * Get the `canonicalName` as if this was living in glean-ac.
+     */
+    private fun getACClassName(): String =
+        "mozilla.components.service.glean.storages.${this.javaClass.simpleName}"
+
+    /**
      * Deserialize the metrics with a particular lifetime that are on disk.
      * This will be called the first time a metric is used or before a snapshot is
      * taken.
@@ -73,9 +79,9 @@ internal abstract class GenericStorageEngine<MetricType> {
         }
 
         val prefsName = if (lifetime == Lifetime.Ping) {
-            "${this.javaClass.canonicalName}.PingLifetime"
+            "${this.getACClassName()}.PingLifetime"
         } else {
-            this.javaClass.canonicalName
+            this.getACClassName()
         }
         val prefs = applicationContext.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
 
