@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.annotation.VisibleForTesting
 import com.sun.jna.StringArray
+import mozilla.telemetry.glean.acmigration.engines.DatetimesStorageEngine
 import mozilla.telemetry.glean.acmigration.engines.UuidsStorageEngine
 import mozilla.telemetry.glean.private.Lifetime
 import java.lang.NullPointerException
@@ -43,6 +44,7 @@ internal class GleanACDataMigrator(
 
     // The storage engines data is migrated from.
     private val uuidStorageEngine by lazy { UuidsStorageEngine(applicationContext) }
+    private val dateTimeStorageEngine by lazy { DatetimesStorageEngine(applicationContext) }
 
     /**
      * A data class representing the metadata from glean-ac.
@@ -169,6 +171,7 @@ internal class GleanACDataMigrator(
      */
     fun migrateUserLifetimeMetrics() {
         uuidStorageEngine.migrateToGleanCore(Lifetime.User)
+        dateTimeStorageEngine.migrateToGleanCore(Lifetime.User)
     }
 
     /**
@@ -176,6 +179,7 @@ internal class GleanACDataMigrator(
      */
     fun migratePingLifetimeMetrics() {
         uuidStorageEngine.migrateToGleanCore(Lifetime.Ping)
+        dateTimeStorageEngine.migrateToGleanCore(Lifetime.Ping)
     }
 
     /**

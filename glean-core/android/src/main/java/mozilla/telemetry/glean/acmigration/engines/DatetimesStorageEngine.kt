@@ -2,35 +2,20 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package mozilla.components.service.glean.storages
+package mozilla.telemetry.glean.acmigration.engines
 
-import android.annotation.SuppressLint
-import android.content.SharedPreferences
-import mozilla.components.service.glean.private.CommonMetricData
-import mozilla.components.service.glean.private.DatetimeMetricType
-import mozilla.components.service.glean.utils.getISOTimeString
-import mozilla.components.service.glean.utils.parseISOTimeString
-import mozilla.components.support.base.log.logger.Logger
-import java.util.Calendar
-import java.util.Date
+import android.content.Context
+import mozilla.telemetry.glean.private.DatetimeMetricType
+import mozilla.telemetry.glean.private.Lifetime
+import mozilla.telemetry.glean.utils.parseISOTimeString
 
-/**
- * This singleton handles the in-memory storage logic for datetimes. It is meant to be used by
- * the Specific Datetime API and the ping assembling objects.
- *
- * This stores dates both in-memory and on-disk as Strings, not Date objects. We do
- * this because we need to preserve the timezone offset value at the time the value
- * was set.  The [Date]/[Calendar] API in pre-Java 8 unfortunately does not allow
- * round-tripping the timezone offset when parsing a datetime string.  Since we don't
- * actually ever need to operate on the datetime's in a meaningful way, it's easiest
- * to just store the strings and treat them as opaque for everything but the testing API.
- */
-@SuppressLint("StaticFieldLeak")
-internal object DatetimesStorageEngine : DatetimesStorageEngineImplementation()
-
-internal open class DatetimesStorageEngineImplementation(
-    override val logger: Logger = Logger("glean/DatetimesStorageEngine")
+internal class DatetimesStorageEngine(
+    applicationContext: Context
 ) : GenericStorageEngine<String>() {
+
+    init {
+        this.applicationContext = applicationContext
+    }
 
     override fun deserializeSingleMetric(metricName: String, value: Any?): String? {
         // This parses the date strings on ingestion as a sanity check, but we
@@ -44,40 +29,41 @@ internal open class DatetimesStorageEngineImplementation(
         return null
     }
 
-    override fun serializeSingleMetric(
-        userPreferences: SharedPreferences.Editor?,
-        storeName: String,
-        value: String,
-        extraSerializationData: Any?
-    ) {
-        userPreferences?.putString(storeName, value)
-    }
-
     /**
-     * Set the metric to the provided date/time, truncating it to the
-     * metric's resolution.
-     *
-     * @param metricData the metric information for the datetime
-     * @param date the date value to set this metric to
+     * Perform the data migration.
      */
-    fun set(metricData: DatetimeMetricType, date: Date = Date()) {
-        super.recordMetric(
-            metricData as CommonMetricData,
-            getISOTimeString(date, metricData.timeUnit)
-        )
-    }
+    override fun migrateToGleanCore(lifetime: Lifetime) {
+        super.migrateToGleanCore(lifetime)
 
-    /**
-     * Set the metric to the provided date/time, truncating it to the
-     * metric's resolution.
-     *
-     * @param metricData the metric information for the datetime
-     * @param date the date value to set this metric to
-     */
-    fun set(metricData: DatetimeMetricType, calendar: Calendar) {
-        super.recordMetric(
-            metricData as CommonMetricData,
-            getISOTimeString(calendar, metricData.timeUnit)
-        )
+        // Get the stored data.
+        val storedData = dataStores[lifetime.ordinal]
+        for ((storeName, data) in storedData) {
+            // Get each storage for the specified lifetime
+            for ((metricId, metricData) in data) {
+                // HACK HACK HACK HACK! Hic sunt leones!
+                // It would be tricky to break apart the category and the name of each metric,
+                // given that categories might contain dots themselves. Just leave the category
+                // blank and provide the full metric identifier through the "name".
+                val metric = DatetimeMetricType(
+                    name = metricId,
+                    category = "",
+                    sendInPings = listOf(storeName),
+                    lifetime = lifetime,
+                    disabled = false
+                )
+
+                // `metricData` should always successfully parse as a `Date`: we
+                // already discard all the invalid stuff in `deserializeSingleMetric`.
+                parseISOTimeString(metricData)?.let {
+                    if (lifetime == Lifetime.User) {
+                        // User lifetime metrics are migrated very early: we don't want them
+                        // to be batched but, rather, set immediately.
+                        metric.setSync(it)
+                    } else {
+                        metric.set(it)
+                    }
+                }
+            }
+        }
     }
 }

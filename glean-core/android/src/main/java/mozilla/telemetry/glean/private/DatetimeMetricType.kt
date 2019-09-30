@@ -72,6 +72,33 @@ class DatetimeMetricType internal constructor(
     }
 
     /**
+     * Explicitly set a value synchronously.
+     *
+     * This is only to be used for the glean-ac to glean-core data migration.
+     *
+     * @param value The [Date] value to set. If not provided, will record the current time.
+     */
+    internal fun setSync(value: Date = Date()) {
+        val cal = Calendar.getInstance()
+        cal.time = value
+
+        LibGleanFFI.INSTANCE.glean_datetime_set(
+            Glean.handle,
+            this@DatetimeMetricType.handle,
+            year = cal.get(Calendar.YEAR),
+            month = cal.get(Calendar.MONTH) + 1,
+            day = cal.get(Calendar.DAY_OF_MONTH),
+            hour = cal.get(Calendar.HOUR_OF_DAY),
+            minute = cal.get(Calendar.MINUTE),
+            second = cal.get(Calendar.SECOND),
+            nano = AndroidTimeUnit.MILLISECONDS.toNanos(cal.get(Calendar.MILLISECOND).toLong()),
+            offset_seconds = AndroidTimeUnit.MILLISECONDS.toSeconds(
+                cal.get(Calendar.ZONE_OFFSET).toLong()
+            ).toInt()
+        )
+    }
+
+    /**
      * Set a datetime value, truncating it to the metric's resolution.
      *
      * This is provided as an internal-only function for convenience and so that we can
