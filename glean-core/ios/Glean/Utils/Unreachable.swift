@@ -30,7 +30,7 @@
 /// This can be used for whenever the compiler can't determine that a
 /// path is unreachable, such as dynamically terminating an iterator.
 @inline(__always)
-public func unreachable() -> Never {
+func unreachable() -> Never {
     return unsafeBitCast((), to: Never.self)
 }
 
@@ -42,9 +42,9 @@ public func unreachable() -> Never {
 /// - parameter file: The file name to print with the message. The default is the file where this function is called.
 /// - parameter line: The line number to print with the message. The default is the line where this function is called.
 @inline(__always)
-public func assertUnreachable(_ message: @autoclosure () -> String = "Encountered unreachable path",
-                              file: StaticString = #file,
-                              line: UInt = #line) -> Never {
+func assertUnreachable(_ message: @autoclosure () -> String = "Encountered unreachable path",
+                       file: StaticString = #file,
+                       line: UInt = #line) -> Never {
     var isDebug = false
     assert({ isDebug = true; return true }())
 
