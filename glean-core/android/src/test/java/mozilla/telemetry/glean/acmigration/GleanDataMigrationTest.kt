@@ -25,6 +25,11 @@ class GleanDataMigrationTest {
     // NOTE: do not use the Glean test rule in these tests, as they are testing
     // part of the initialization sequence.
 
+    companion object {
+        private const val TEST_CLIENT_ID = "94f94db0-fdf8-4bbc-943f-e43e6de1164f"
+        private const val TEST_BASELINE_SEQ = 37
+    }
+
     private fun setFakeSequenceNumber(context: Context, pingName: String, number: Int) {
         val prefs = context.getSharedPreferences(
             GleanACDataMigrator.SEQUENCE_NUMBERS_FILENAME,
@@ -32,6 +37,24 @@ class GleanDataMigrationTest {
         )
 
         prefs?.edit()?.putInt("${pingName}_seq", number)?.apply()
+    }
+
+    private fun setInitianlDataToMigrate(context: Context) {
+        // Set a fake sequence number for the baseline ping.
+        setFakeSequenceNumber(context, "baseline", TEST_BASELINE_SEQ)
+
+        // Set a previously existing client id.
+        val clientIdPrefsFile =
+            "${GleanACDataMigrator.GLEAN_AC_PACKAGE_NAME}.storages.UuidsStorageEngine"
+
+        context
+            .getSharedPreferences(
+                clientIdPrefsFile,
+                Context.MODE_PRIVATE
+            )
+            .edit()
+            .putString("glean_client_info#client_id", TEST_CLIENT_ID)
+            .apply()
     }
 
     @Before
@@ -53,7 +76,7 @@ class GleanDataMigrationTest {
         migrator.testResetMigrationStatus()
 
         // Set a fake sequence number for the baseline ping.
-        setFakeSequenceNumber(context, "baseline", 37)
+        setInitianlDataToMigrate(context)
 
         // Start Glean and point it to a local ping server.
         Glean.resetGlean(
@@ -75,6 +98,7 @@ class GleanDataMigrationTest {
         // Check that we received the expected sequence number for the baseline ping.
         val baselineJson = JSONObject(request.body.readUtf8())
         assertEquals("baseline", baselineJson.getJSONObject("ping_info")["ping_type"])
-        assertEquals(37, baselineJson.getJSONObject("ping_info")["seq"])
+        assertEquals(TEST_BASELINE_SEQ, baselineJson.getJSONObject("ping_info")["seq"])
+        assertEquals(TEST_CLIENT_ID, baselineJson.getJSONObject("client_info")["client_id"])
     }
 }
