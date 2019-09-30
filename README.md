@@ -35,7 +35,7 @@ To contact us you can:
 * Find us on the Mozilla Slack in *#glean*, on [Mozilla IRC][mozirc] in *#telemetry*.
 * To report issues or request changes, file a bug in [Bugzilla in Data Platform & Tools :: Glean: SDK][newbugzilla].
 * Send an email to *glean-team@mozilla.com*.
-* The Glean Core team is: *:dexter*, *:janerik*, *:mdroettboom*, *:gfritzsche*
+* The Glean Core team is: *:dexter*, *:janerik*, *:mdroettboom*, *:travis_*, *:gfritzsche*
 
 ## Credits
 
