@@ -20,7 +20,7 @@ def Upload_Symbols(zip_file):
     zip_name = os.path.basename(zip_file)
 
     # Fetch the symbol server token from Taskcluster secrets.
-    secrets_url = "http://taskcluster/secrets/v1/secret/{}".format("project/application-services/symbols-token")
+    secrets_url = "http://taskcluster/secrets/v1/secret/{}".format("project/glean/symbols-token")
     res = requests.get(secrets_url)
     res.raise_for_status()
     secret = res.json()

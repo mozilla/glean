@@ -41,7 +41,7 @@ class Config:
     """
     def __init__(self):
         self.task_name_template = "%s"
-        self.index_prefix = "garbage.application-services-decisionlib"
+        self.index_prefix = "garbage.glean-decisionlib"
         self.scopes_for_all_subtasks = []
         self.routes_for_all_subtasks = []
         self.docker_images_expire_in = "1 month"
@@ -56,9 +56,9 @@ class Config:
         self.task_source = os.environ.get("TASK_SOURCE")
         self.build_worker_type = os.environ.get("BUILD_WORKER_TYPE")
         self.images_worker_type = os.environ.get("IMAGES_WORKER_TYPE")
-        self.git_url = os.environ.get("APPSERVICES_HEAD_REPOSITORY")
-        self.git_ref = os.environ.get("APPSERVICES_HEAD_BRANCH")
-        self.git_sha = os.environ.get("APPSERVICES_HEAD_REV")
+        self.git_url = os.environ.get("GLEAN_HEAD_REPOSITORY")
+        self.git_ref = os.environ.get("GLEAN_HEAD_BRANCH")
+        self.git_sha = os.environ.get("GLEAN_HEAD_REV")
 
         # Map directory string to git sha for that directory.
         self._git_sha_for_directory = {}
@@ -443,8 +443,8 @@ class DockerWorkerTask(Task):
         .with_env(**git_env()) \
         .with_early_script("""
             cd repo
-            git fetch --quiet --tags "$APPSERVICES_HEAD_REPOSITORY" "$APPSERVICES_HEAD_BRANCH"
-            git reset --hard "$APPSERVICES_HEAD_REV"
+            git fetch --quiet --tags "$GLEAN_HEAD_REPOSITORY" "$GLEAN_HEAD_BRANCH"
+            git reset --hard "$GLEAN_HEAD_REV"
         """)
 
     def with_dockerfile(self, dockerfile, use_indexed_task=True):
@@ -526,9 +526,9 @@ def git_env():
     assert CONFIG.git_ref
     assert CONFIG.git_sha
     return {
-        "APPSERVICES_HEAD_REPOSITORY": CONFIG.git_url,
-        "APPSERVICES_HEAD_BRANCH": CONFIG.git_ref,
-        "APPSERVICES_HEAD_REV": CONFIG.git_sha,
+        "GLEAN_HEAD_REPOSITORY": CONFIG.git_url,
+        "GLEAN_HEAD_BRANCH": CONFIG.git_ref,
+        "GLEAN_HEAD_REV": CONFIG.git_sha,
     }
 
 def dict_update_if_truthy(d, **kwargs):

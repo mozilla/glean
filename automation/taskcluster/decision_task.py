@@ -196,7 +196,7 @@ def gradle_module_task(libs_tasks, module_info, deploy_environment):
         for artifact in publication.to_artifacts(('', '.sha1', '.md5')):
             task.with_artifacts(artifact['build_fs_path'], artifact['taskcluster_path'])
     if deploy_environment == DeployEnvironment.RELEASE and module_info['uploadSymbols']:
-        task.with_scopes("secrets:get:project/application-services/symbols-token")
+        task.with_scopes("secrets:get:project/glean/symbols-token")
         task.with_script("./automation/upload_android_symbols.sh {}".format(module_info['path']))
     return task.create()
 
@@ -236,7 +236,7 @@ def android_multiarch_release(is_staging):
                 "taskType": "build"
             })
             .with_scopes(
-                "project:mozilla:application-services:releng:signing:cert:{}-signing".format(
+                "project:mozilla:glean:releng:signing:cert:{}-signing".format(
                     "dep" if is_staging else "release")
             )
             .create()
@@ -287,8 +287,8 @@ def android_multiarch_release(is_staging):
             }])
             .with_app_version(version)
             .with_scopes(
-                "project:mozilla:application-services:releng:beetmover:bucket:{}".format(bucket_name),
-                "project:mozilla:application-services:releng:beetmover:action:push-to-maven"
+                "project:mozilla:glean:releng:beetmover:bucket:{}".format(bucket_name),
+                "project:mozilla:glean:releng:beetmover:action:push-to-maven"
             )
             .with_routes("notify.email.a-s-ci-failures@mozilla.com.on-failed")
             .create()
@@ -311,14 +311,14 @@ def linux_build_task(name):
     task = (
         linux_task(name)
         # https://docs.taskcluster.net/docs/reference/workers/docker-worker/docs/caches
-        .with_scopes("docker-worker:cache:application-services-*")
+        .with_scopes("docker-worker:cache:glean-*")
         .with_caches(**{
-            "application-services-cargo-registry": "/root/.cargo/registry",
-            "application-services-cargo-git": "/root/.cargo/git",
-            "application-services-sccache": "/root/.cache/sccache",
-            "application-services-gradle": "/root/.gradle",
-            "application-services-rustup": "/root/.rustup",
-            "application-services-android-ndk-toolchain": "/root/.android-ndk-r15c-toolchain",
+            "glean-cargo-registry": "/root/.cargo/registry",
+            "glean-cargo-git": "/root/.cargo/git",
+            "glean-sccache": "/root/.cache/sccache",
+            "glean-gradle": "/root/.gradle",
+            "glean-rustup": "/root/.rustup",
+            "glean-android-ndk-toolchain": "/root/.android-ndk-r15c-toolchain",
         })
         .with_index_and_artifacts_expire_in(build_artifacts_expire_in)
         .with_artifacts("/build/sccache.log")
@@ -380,8 +380,8 @@ def linux_cross_compile_build_task(name):
         """)
     )
 
-CONFIG.task_name_template = "Application Services - %s"
-CONFIG.index_prefix = "project.application-services.application-services"
+CONFIG.task_name_template = "Glean - %s"
+CONFIG.index_prefix = "project.glean.glean"
 CONFIG.docker_images_expire_in = build_dependencies_artifacts_expire_in
 CONFIG.repacked_msi_files_expire_in = build_dependencies_artifacts_expire_in
 

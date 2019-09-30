@@ -1,4 +1,11 @@
-# Testing Application Services on Taskcluster
+# Testing Glean on Taskcluster
+
+---
+
+This is mostly copied from the [application-services documentation](https://github.com/mozilla/application-services/blob/496e5b54911fc4d2db2287e297e6391710353121/automation/taskcluster/README.md).
+
+
+---
 
 ## Taskcluster − GitHub integration
 
@@ -20,7 +27,7 @@ to build an arbitrary [task graph].
 [task graph]: https://docs.taskcluster.net/docs/manual/using/task-graph
 
 
-## Application Service’s decision task
+## Glean’s decision task
 
 This repository’s [`.taskcluster.yml`][tc.yml] schedules a single task
 that runs the Python 3 script [`etc/taskcluster/decision_task.py`](decision_task.py).
@@ -41,7 +48,7 @@ as it only needs to clone the repository and run Python.
 
 ## In-tree Docker images
 
-[Similar to Firefox][firefox], Application Service’s decision task supports running other tasks in
+[Similar to Firefox][firefox], Glean’s decision task supports running other tasks in
 Docker images built on-demand, based on `Dockerfile`s in the main repository.  Modifying a
 `Dockerfile` and relying on those new changes can be done in the same pull request or commit.
 
@@ -98,7 +105,7 @@ or the web UI for modifying the worker type definitions.
 However some changes like adding a new worker type still require Taskcluster admin access.
 For those, file requests on Bugzilla under [Taskcluster :: Service Request][req].
 
-For asking for help less formally, try the `#app-services` or `#rust-components` channels on Mozilla Slack.
+For asking for help less formally, try the `#glean` channel on Mozilla Slack.
 
 [req]: https://bugzilla.mozilla.org/enter_bug.cgi?product=Taskcluster&component=Service%20Request
 

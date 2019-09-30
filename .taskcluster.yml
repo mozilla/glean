@@ -36,7 +36,7 @@ tasks:
 
     is_repo_trusted:
       # Pull requests on main repository can't be trusted because anybody can open a PR on it, without a review
-      $if: 'tasks_for in ["github-push", "github-release"] && event.repository.html_url == "https://github.com/mozilla/application-services"'
+      $if: 'tasks_for in ["github-push", "github-release"] && event.repository.html_url == "https://github.com/mozilla/glean"'
       then: true
       else: false
 
@@ -83,9 +83,9 @@ tasks:
             - queue:route:notify.email.*
             - queue:scheduler-id:${scheduler_id}
             # So that we can cache task outputs for re-use.
-            - "queue:route:index.project.application-services.*"
+            - "queue:route:index.project.glean.*"
             # So that we can re-use Gradle/Cargo/sccache bits between tasks.
-            - "docker-worker:cache:application-services-*"
+            - "docker-worker:cache:glean-*"
             # So that we can fetch the macOS SDK from internal tooltool.
             - project:releng:services/tooltool/api/download/internal
           routes:
@@ -149,18 +149,18 @@ tasks:
                     env:
                       GITHUB_PR_TITLE: ${pull_request_title}
                 - metadata:
-                    name: 'Application Services - Decision task (Pull Request #${pull_request_number})'
-                    description: 'Building and testing Application Services - triggered by [#${pull_request_number}](${pull_request_url})'
+                    name: 'Glean - Decision task (Pull Request #${pull_request_number})'
+                    description: 'Building and testing Glean - triggered by [#${pull_request_number}](${pull_request_url})'
           "tasks_for == 'github-push' && head_branch == 'refs/heads/master'":
             $mergeDeep:
               - {$eval: 'default_task_definition'}
               - metadata:
-                  name: Application Services - Decision task (master)
-                  description: Schedules the build and test tasks for Application Services.
+                  name: Glean - Decision task (master)
+                  description: Schedules the build and test tasks for Glean.
           "tasks_for == 'github-release' && event['action'] == 'published'":
             $let:
               is_staging:
-                $if: 'event.repository.html_url != "https://github.com/mozilla/application-services"'
+                $if: 'event.repository.html_url != "https://github.com/mozilla/glean"'
                 then: true
                 else: false
             in:
@@ -184,7 +184,7 @@ tasks:
                       chainOfTrust: true
                   scopes:
                     # So that we can publish on Maven using beetmover
-                    - project:mozilla:application-services:releng:beetmover:action:push-to-maven
+                    - project:mozilla:glean:releng:beetmover:action:push-to-maven
               in:
                 $mergeDeep:
                   - {$eval: 'default_task_definition'}
@@ -192,14 +192,14 @@ tasks:
                   - $if: 'is_staging'
                     then:
                       scopes:
-                        - project:mozilla:application-services:releng:signing:cert:dep-signing
+                        - project:mozilla:glean:releng:signing:cert:dep-signing
                         - queue:create-task:scriptworker-prov-v1/appsv-signing-dep-v1
                     else:
                       scopes:
-                        - project:mozilla:application-services:releng:signing:cert:release-signing
+                        - project:mozilla:glean:releng:signing:cert:release-signing
                         - queue:create-task:scriptworker-prov-v1/appsv-signing-v1
                         # So that we can upload symbols to Socorro
-                        - "secrets:get:project/application-services/symbols-token"
+                        - "secrets:get:project/glean/symbols-token"
                   - payload:
                       env:
                         IS_STAGING: ${is_staging}
@@ -208,8 +208,8 @@ tasks:
                         BEETMOVER_BUCKET_PUBLIC_URL: ${beetmover_bucket_public_url}
                   - scopes:
                     # So that we can publish on Maven using beetmover
-                    - project:mozilla:application-services:releng:beetmover:bucket:${beetmover_bucket}
+                    - project:mozilla:glean:releng:beetmover:bucket:${beetmover_bucket}
                     - queue:create-task:${tasks_priority}:scriptworker-prov-v1/${beetmover_worker_type}
                   - metadata:
-                      name: Application Services - Decision task (${tag})
+                      name: Glean - Decision task (${tag})
                       description: Build and publish release versions.
