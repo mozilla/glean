@@ -82,65 +82,9 @@ def android_libs(deploy_environment):
     else:
         return task.create()
 
-def desktop_linux_libs(deploy_environment):
-    task = (
-        linux_build_task("Desktop libs (Linux): build")
-        .with_script("""
-            pushd libs
-            ./build-all.sh desktop
-            popd
-            tar -czf /build/repo/target.tar.gz libs/desktop
-        """)
-        .with_artifacts(
-            "/build/repo/target.tar.gz",
-        )
-    )
-    if deploy_environment == DeployEnvironment.NONE:
-        return task.find_or_create("build.libs.desktop.linux." + CONFIG.git_sha_for_directory("libs"))
-    else:
-        return task.create()
-
-
-def desktop_macos_libs(deploy_environment):
-    task = (
-        linux_cross_compile_build_task("Desktop libs (macOS): build")
-        .with_script("""
-            pushd libs
-            ./build-all.sh darwin
-            popd
-            tar -czf /build/repo/target.tar.gz libs/desktop
-        """)
-        .with_artifacts(
-            "/build/repo/target.tar.gz",
-        )
-    )
-    if deploy_environment == DeployEnvironment.NONE:
-        return task.find_or_create("build.libs.desktop.macos." + CONFIG.git_sha_for_directory("libs"))
-    else:
-        return task.create()
-
-
-def desktop_win32_x86_64_libs(deploy_environment):
-    task = (
-        linux_build_task("Desktop libs (win32-x86-64): build")
-        .with_script("""
-            pushd libs
-            ./build-all.sh win32-x86-64
-            popd
-            tar -czf /build/repo/target.tar.gz libs/desktop
-        """)
-        .with_artifacts(
-            "/build/repo/target.tar.gz",
-        )
-    )
-    if deploy_environment == DeployEnvironment.NONE:
-        return task.find_or_create("build.libs.desktop.win32-x86-64." + CONFIG.git_sha_for_directory("libs"))
-    else:
-        return task.create()
-
 
 def android_task(task_name, libs_tasks):
-    task = linux_cross_compile_build_task(task_name)
+    task = linux_build_task(task_name)
     for libs_task in libs_tasks:
         task.with_curl_artifact_script(libs_task, "target.tar.gz")
         task.with_script("tar -xzf target.tar.gz")
@@ -152,7 +96,7 @@ def ktlint_detekt():
 
 def android_linux_x86_64():
     ktlint_detekt()
-    libs_tasks = libs_for(DeployEnvironment.NONE, "android", "desktop_linux", "desktop_macos", "desktop_win32_x86_64")
+    libs_tasks = libs_for(DeployEnvironment.NONE, "android")
     task = (
         android_task("Build and test (Android - linux-x86-64)", libs_tasks)
         .with_script("""
@@ -175,7 +119,7 @@ def gradle_module_task(libs_tasks, module_info, deploy_environment):
     module = module_info['name']
     task = android_task("{} - Build and test".format(module), libs_tasks)
     # This is important as by default the Rust plugin will only cross-compile for Android + host platform.
-    task.with_script('echo "rust.targets=arm,arm64,x86_64,x86,darwin,linux-x86-64,win32-x86-64-gnu\n" > local.properties')
+    task.with_script('echo "rust.targets=arm,arm64,x86_64,x86,linux-x86-64\n" > local.properties')
     (
         task
         .with_script("""
@@ -197,7 +141,7 @@ def gradle_module_task(libs_tasks, module_info, deploy_environment):
     return task.create()
 
 def build_gradle_modules_tasks(deploy_environment):
-    libs_tasks = libs_for(deploy_environment, "android", "desktop_linux", "desktop_macos", "desktop_win32_x86_64")
+    libs_tasks = libs_for(deploy_environment, "android")
     module_build_tasks = {}
     for module_info in module_definitions():
         module_build_tasks[module_info['name']] = gradle_module_task(libs_tasks, module_info, deploy_environment)
@@ -314,7 +258,7 @@ def linux_build_task(name):
             "glean-sccache": "/root/.cache/sccache",
             "glean-gradle": "/root/.gradle",
             "glean-rustup": "/root/.rustup",
-            "glean-android-ndk-toolchain": "/root/.android-ndk-r15c-toolchain",
+            "glean-android-ndk-toolchain": "/root/.android-ndk-r19c-toolchain",
         })
         .with_index_and_artifacts_expire_in(build_artifacts_expire_in)
         .with_artifacts("/build/sccache.log")
@@ -327,10 +271,10 @@ def linux_build_task(name):
             rustup target add x86_64-linux-android i686-linux-android armv7-linux-androideabi aarch64-linux-android
         """)
         .with_script("""
-            test -d $ANDROID_NDK_TOOLCHAIN_DIR/arm-$ANDROID_NDK_API_VERSION    || $ANDROID_NDK_ROOT/build/tools/make_standalone_toolchain.py --arch="arm"   --api="$ANDROID_NDK_API_VERSION" --install-dir="$ANDROID_NDK_TOOLCHAIN_DIR/arm-$ANDROID_NDK_API_VERSION" --deprecated-headers --force
-            test -d $ANDROID_NDK_TOOLCHAIN_DIR/arm64-$ANDROID_NDK_API_VERSION  || $ANDROID_NDK_ROOT/build/tools/make_standalone_toolchain.py --arch="arm64" --api="$ANDROID_NDK_API_VERSION" --install-dir="$ANDROID_NDK_TOOLCHAIN_DIR/arm64-$ANDROID_NDK_API_VERSION" --deprecated-headers --force
-            test -d $ANDROID_NDK_TOOLCHAIN_DIR/x86-$ANDROID_NDK_API_VERSION    || $ANDROID_NDK_ROOT/build/tools/make_standalone_toolchain.py --arch="x86"   --api="$ANDROID_NDK_API_VERSION" --install-dir="$ANDROID_NDK_TOOLCHAIN_DIR/x86-$ANDROID_NDK_API_VERSION" --deprecated-headers --force
-            test -d $ANDROID_NDK_TOOLCHAIN_DIR/x86_64-$ANDROID_NDK_API_VERSION || $ANDROID_NDK_ROOT/build/tools/make_standalone_toolchain.py --arch="x86_64"   --api="$ANDROID_NDK_API_VERSION" --install-dir="$ANDROID_NDK_TOOLCHAIN_DIR/x86_64-$ANDROID_NDK_API_VERSION" --deprecated-headers --force
+            test -d $ANDROID_NDK_TOOLCHAIN_DIR/arm-$ANDROID_NDK_API_VERSION    || $ANDROID_NDK_ROOT/build/tools/make_standalone_toolchain.py --arch="arm"   --api="$ANDROID_NDK_API_VERSION" --install-dir="$ANDROID_NDK_TOOLCHAIN_DIR/arm-$ANDROID_NDK_API_VERSION" --force
+            test -d $ANDROID_NDK_TOOLCHAIN_DIR/arm64-$ANDROID_NDK_API_VERSION  || $ANDROID_NDK_ROOT/build/tools/make_standalone_toolchain.py --arch="arm64" --api="$ANDROID_NDK_API_VERSION" --install-dir="$ANDROID_NDK_TOOLCHAIN_DIR/arm64-$ANDROID_NDK_API_VERSION" --force
+            test -d $ANDROID_NDK_TOOLCHAIN_DIR/x86-$ANDROID_NDK_API_VERSION    || $ANDROID_NDK_ROOT/build/tools/make_standalone_toolchain.py --arch="x86"   --api="$ANDROID_NDK_API_VERSION" --install-dir="$ANDROID_NDK_TOOLCHAIN_DIR/x86-$ANDROID_NDK_API_VERSION" --force
+            test -d $ANDROID_NDK_TOOLCHAIN_DIR/x86_64-$ANDROID_NDK_API_VERSION || $ANDROID_NDK_ROOT/build/tools/make_standalone_toolchain.py --arch="x86_64"   --api="$ANDROID_NDK_API_VERSION" --install-dir="$ANDROID_NDK_TOOLCHAIN_DIR/x86_64-$ANDROID_NDK_API_VERSION" --force
         """)
         .with_repo()
         .with_script("""
@@ -342,39 +286,6 @@ def linux_build_task(name):
         task.with_routes("notify.email.a-s-ci-failures@mozilla.com.on-failed")
     return task
 
-def linux_cross_compile_build_task(name):
-    return (
-        linux_build_task(name)
-        .with_scopes('project:releng:services/tooltool/api/download/internal')
-        .with_features('taskclusterProxy') # So we can fetch from tooltool.
-        .with_script("""
-            rustup target add x86_64-apple-darwin
-
-            pushd libs
-            ./cross-compile-macos-on-linux-desktop-libs.sh
-            popd
-
-            # Rust requires dsymutil on the PATH: https://github.com/rust-lang/rust/issues/52728.
-            export PATH=$PATH:/tmp/clang/bin
-
-            export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_NSS_STATIC=1
-            export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_NSS_DIR=/build/repo/libs/desktop/darwin/nss
-            export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_SQLCIPHER_LIB_DIR=/build/repo/libs/desktop/darwin/sqlcipher/lib
-            export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_CC=/tmp/clang/bin/clang
-            export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_TOOLCHAIN_PREFIX=/tmp/cctools/bin
-            export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_AR=/tmp/cctools/bin/x86_64-darwin11-ar
-            export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_RANLIB=/tmp/cctools/bin/x86_64-darwin11-ranlib
-            export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_LD_LIBRARY_PATH=/tmp/clang/lib
-            export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_RUSTFLAGS="-C linker=/tmp/clang/bin/clang -C link-arg=-B -C link-arg=/tmp/cctools/bin -C link-arg=-target -C link-arg=x86_64-darwin11 -C link-arg=-isysroot -C link-arg=/tmp/MacOSX10.11.sdk -C link-arg=-Wl,-syslibroot,/tmp/MacOSX10.11.sdk -C link-arg=-Wl,-dead_strip"
-            # For ring's use of `cc`.
-            export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_CFLAGS_x86_64_apple_darwin="-B /tmp/cctools/bin -target x86_64-darwin11 -isysroot /tmp/MacOSX10.11.sdk -Wl,-syslibroot,/tmp/MacOSX10.11.sdk -Wl,-dead_strip"
-
-            rustup target add x86_64-pc-windows-gnu
-            export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_PC_WINDOWS_GNU_RUSTFLAGS="-C linker=x86_64-w64-mingw32-gcc"
-            export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_PC_WINDOWS_GNU_AR=x86_64-w64-mingw32-ar
-            export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_PC_WINDOWS_GNU_CC=x86_64-w64-mingw32-gcc
-        """)
-    )
 
 CONFIG.task_name_template = "Glean - %s"
 CONFIG.index_prefix = "project.glean.glean"
