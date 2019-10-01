@@ -20,6 +20,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.util.Calendar
+import java.util.TimeZone
 import java.util.concurrent.TimeUnit
 
 @RunWith(AndroidJUnit4::class)
@@ -30,10 +31,14 @@ class GleanDataMigrationTest {
     companion object {
         private const val TEST_CLIENT_ID = "94f94db0-fdf8-4bbc-943f-e43e6de1164f"
         private const val TEST_BASELINE_SEQ = 37
-        private val TEST_FIRST_RUN_DATE = generateFirstRunDateWithOffset()
 
-        private fun generateFirstRunDateWithOffset(): String {
-            val cal = Calendar.getInstance()
+        private fun generateFirstRunDateWithOffset(tz: TimeZone? = null): String {
+            val cal = if (tz != null) {
+                Calendar.getInstance(tz)
+            } else {
+                Calendar.getInstance()
+            }
+
             // Generate a first run day that is 7 days earlier than the
             // test run.
             cal.add(Calendar.DAY_OF_MONTH, -7)
@@ -50,7 +55,7 @@ class GleanDataMigrationTest {
         prefs?.edit()?.putInt("${pingName}_seq", number)?.apply()
     }
 
-    private fun setInitialDataToMigrate(context: Context) {
+    private fun setInitialDataToMigrate(context: Context, firstRunDate: String) {
         // Set a fake sequence number for the baseline ping.
         setFakeSequenceNumber(context, "baseline", TEST_BASELINE_SEQ)
 
@@ -71,7 +76,7 @@ class GleanDataMigrationTest {
                 Context.MODE_PRIVATE
             )
             .edit()
-            .putString("glean_client_info#first_run_date", TEST_FIRST_RUN_DATE)
+            .putString("glean_client_info#first_run_date", firstRunDate)
             .apply()
     }
 
@@ -94,7 +99,8 @@ class GleanDataMigrationTest {
         migrator.testResetMigrationStatus()
 
         // Set a fake sequence number for the baseline ping.
-        setInitialDataToMigrate(context)
+        val testFirstRunDate = generateFirstRunDateWithOffset()
+        setInitialDataToMigrate(context, testFirstRunDate)
 
         // Start Glean and point it to a local ping server.
         Glean.resetGlean(
@@ -118,6 +124,48 @@ class GleanDataMigrationTest {
         assertEquals("baseline", baselineJson.getJSONObject("ping_info")["ping_type"])
         assertEquals(TEST_BASELINE_SEQ, baselineJson.getJSONObject("ping_info")["seq"])
         assertEquals(TEST_CLIENT_ID, baselineJson.getJSONObject("client_info")["client_id"])
-        assertEquals(TEST_FIRST_RUN_DATE, baselineJson.getJSONObject("client_info")["first_run_date"])
+        assertEquals(testFirstRunDate, baselineJson.getJSONObject("client_info")["first_run_date"])
+    }
+
+    @Test
+    fun `first_run_date is consistent across timezones when migrated`() {
+        // Set a different system default for this test.
+        TimeZone.setDefault(TimeZone.getTimeZone("America/New_York"))
+
+        val pingServer = getMockWebServer()
+
+        val context = ApplicationProvider.getApplicationContext<Context>()
+
+        // Make sure we did not migrate so that a new migration process starts.
+        val migrator = GleanACDataMigrator(context)
+        migrator.testResetMigrationStatus()
+
+        // Set a fake sequence number for the baseline ping.
+        val testFirstRunDate = generateFirstRunDateWithOffset(TimeZone.getTimeZone("Europe/Berlin"))
+        setInitialDataToMigrate(context, testFirstRunDate)
+
+        // Start Glean and point it to a local ping server.
+        Glean.resetGlean(
+            context,
+            Configuration().copy(
+                serverEndpoint = "http://" + pingServer.hostName + ":" + pingServer.port,
+                logPings = true
+            ),
+            true
+        )
+
+        // Trigger a baseline and a metrics ping.
+        Pings.baseline.send()
+        triggerWorkManager()
+
+        // Get the pending pings from the ping server.
+        val request = pingServer.takeRequest(20L, TimeUnit.SECONDS)
+
+        // Check that we received the expected sequence number for the baseline ping.
+        val baselineJson = JSONObject(request.body.readUtf8())
+        assertEquals("baseline", baselineJson.getJSONObject("ping_info")["ping_type"])
+        assertEquals(TEST_BASELINE_SEQ, baselineJson.getJSONObject("ping_info")["seq"])
+        assertEquals(TEST_CLIENT_ID, baselineJson.getJSONObject("client_info")["client_id"])
+        assertEquals(testFirstRunDate, baselineJson.getJSONObject("client_info")["first_run_date"])
     }
 }
