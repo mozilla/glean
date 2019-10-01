@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.annotation.VisibleForTesting
 import com.sun.jna.StringArray
+import mozilla.telemetry.glean.acmigration.engines.BooleansStorageEngine
 import mozilla.telemetry.glean.acmigration.engines.DatetimesStorageEngine
 import mozilla.telemetry.glean.acmigration.engines.UuidsStorageEngine
 import mozilla.telemetry.glean.private.Lifetime
@@ -43,6 +44,7 @@ internal class GleanACDataMigrator(
     }
 
     // The storage engines data is migrated from.
+    private val booleanStorageEngine by lazy { BooleansStorageEngine(applicationContext) }
     private val uuidStorageEngine by lazy { UuidsStorageEngine(applicationContext) }
     private val dateTimeStorageEngine by lazy { DatetimesStorageEngine(applicationContext) }
 
@@ -170,6 +172,7 @@ internal class GleanACDataMigrator(
      * Migrate all the metrics that have User lifetime.
      */
     fun migrateUserLifetimeMetrics() {
+        booleanStorageEngine.migrateToGleanCore(Lifetime.User)
         uuidStorageEngine.migrateToGleanCore(Lifetime.User)
         dateTimeStorageEngine.migrateToGleanCore(Lifetime.User)
     }
@@ -178,6 +181,7 @@ internal class GleanACDataMigrator(
      * Migrate all the metrics that have Ping lifetime.
      */
     fun migratePingLifetimeMetrics() {
+        booleanStorageEngine.migrateToGleanCore(Lifetime.Ping)
         uuidStorageEngine.migrateToGleanCore(Lifetime.Ping)
         dateTimeStorageEngine.migrateToGleanCore(Lifetime.Ping)
     }
