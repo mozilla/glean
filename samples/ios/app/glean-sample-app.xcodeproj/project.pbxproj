@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		BF1BF3FF23337E6F0036F4CC /* Glean.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF1BF3FE23337E6F0036F4CC /* Glean.framework */; };
+		BF6F41CC23434A4C00E222A8 /* SampleMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF6F41CB23434A4C00E222A8 /* SampleMetrics.swift */; };
 		BFD3AB2E224D475E00AD9255 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFD3AB2D224D475E00AD9255 /* AppDelegate.swift */; };
 		BFD3AB30224D475E00AD9255 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFD3AB2F224D475E00AD9255 /* ViewController.swift */; };
 		BFD3AB33224D475E00AD9255 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BFD3AB31224D475E00AD9255 /* Main.storyboard */; };
@@ -36,6 +37,8 @@
 
 /* Begin PBXFileReference section */
 		BF1BF3FE23337E6F0036F4CC /* Glean.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Glean.framework; path = Carthage/Build/iOS/Glean.framework; sourceTree = "<group>"; };
+		BF6F41C4234346A000E222A8 /* metrics.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = metrics.yaml; sourceTree = "<group>"; };
+		BF6F41CB23434A4C00E222A8 /* SampleMetrics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SampleMetrics.swift; sourceTree = "<group>"; };
 		BFD3AB2A224D475E00AD9255 /* glean-sample-app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "glean-sample-app.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BFD3AB2D224D475E00AD9255 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		BFD3AB2F224D475E00AD9255 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -52,6 +55,7 @@
 		BFD3AB5B224D490000AD9255 /* debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = debug.xcconfig; sourceTree = "<group>"; };
 		BFD3AB5C224D490000AD9255 /* base.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = base.xcconfig; sourceTree = "<group>"; };
 		BFD3AB5D224D490000AD9255 /* release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = release.xcconfig; sourceTree = "<group>"; };
+		BFE1E7D523435A600067A12A /* sdk_generator.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = sdk_generator.sh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,9 +84,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		BF6F41CA23434A1700E222A8 /* Generated */ = {
+			isa = PBXGroup;
+			children = (
+				BF6F41CB23434A4C00E222A8 /* SampleMetrics.swift */,
+			);
+			path = Generated;
+			sourceTree = "<group>";
+		};
 		BFD3AB21224D475E00AD9255 = {
 			isa = PBXGroup;
 			children = (
+				BF6F41C4234346A000E222A8 /* metrics.yaml */,
+				BFE1E7D523435A600067A12A /* sdk_generator.sh */,
 				BFD3AB5C224D490000AD9255 /* base.xcconfig */,
 				BFD3AB5B224D490000AD9255 /* debug.xcconfig */,
 				BFD3AB5D224D490000AD9255 /* release.xcconfig */,
@@ -107,6 +121,7 @@
 		BFD3AB2C224D475E00AD9255 /* glean-sample-app */ = {
 			isa = PBXGroup;
 			children = (
+				BF6F41CA23434A1700E222A8 /* Generated */,
 				BFD3AB2D224D475E00AD9255 /* AppDelegate.swift */,
 				BFD3AB2F224D475E00AD9255 /* ViewController.swift */,
 				BFD3AB31224D475E00AD9255 /* Main.storyboard */,
@@ -151,6 +166,7 @@
 			buildConfigurationList = BFD3AB52224D475E00AD9255 /* Build configuration list for PBXNativeTarget "glean-sample-app" */;
 			buildPhases = (
 				BFD3AB63224D4D5100AD9255 /* Run Script */,
+				BF6F41C6234346AA00E222A8 /* ShellScript */,
 				BFD3AB26224D475E00AD9255 /* Sources */,
 				BFD3AB27224D475E00AD9255 /* Frameworks */,
 				BFD3AB28224D475E00AD9255 /* Resources */,
@@ -274,6 +290,25 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		BF6F41C6234346AA00E222A8 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/metrics.yaml",
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(SRCROOT)/glean-sample-app/Generated/SampleMetrics.swift",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "bash $PWD/sdk_generator.sh\n";
+		};
 		BFD3AB63224D4D5100AD9255 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -302,6 +337,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BFD3AB30224D475E00AD9255 /* ViewController.swift in Sources */,
+				BF6F41CC23434A4C00E222A8 /* SampleMetrics.swift in Sources */,
 				BFD3AB2E224D475E00AD9255 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
