@@ -199,4 +199,27 @@ class GleanACDataMigratorTest {
         assertEquals(2, meta.sequenceNumbers["ping_two_seq"])
         assertEquals(3, meta.sequenceNumbers["ping_three_seq"])
     }
+
+    @Test
+    fun `shouldMigrate must return true if not migrated and there is an existing client id`() {
+        val testClientId = "94f94db0-fdf8-4bbc-943f-e43e6de1164f"
+        val clientIdPrefsFile =
+            "${GleanACDataMigrator.GLEAN_AC_PACKAGE_NAME}.storages.UuidsStorageEngine"
+
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        context
+            .getSharedPreferences(
+                clientIdPrefsFile,
+                Context.MODE_PRIVATE
+            )
+            .edit()
+            .putString("glean_client_info#client_id", testClientId)
+            .apply()
+
+        val migrator =
+            spy<GleanACDataMigrator>(GleanACDataMigrator(ApplicationProvider.getApplicationContext()))
+        `when`(migrator.wasMigrated()).thenReturn(false)
+
+        assertTrue(migrator.shouldMigrateData())
+    }
 }
