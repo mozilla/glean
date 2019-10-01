@@ -106,6 +106,28 @@ class StringListMetricType(
     }
 
     /**
+     * Sets a string list to one or more metric stores in a synchronous way.
+     *
+     * This is only to be used for the glean-ac to glean-core data migration.
+     *
+     * @param value This is a user defined string list.
+     */
+    internal fun setSync(value: List<String>) {
+        if (disabled) {
+            return
+        }
+
+        val ffiValueList = StringArray(value.toTypedArray(), "utf-8")
+
+        LibGleanFFI.INSTANCE.glean_string_list_set(
+            Glean.handle,
+            this@StringListMetricType.handle,
+            ffiValueList,
+            value.size
+        )
+    }
+
+    /**
      * Tests whether a value is stored for the metric for testing purposes only. This function will
      * attempt to await the last task (if any) writing to the the metric's storage engine before
      * returning a value.
