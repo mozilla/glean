@@ -8,7 +8,7 @@ import android.content.Context
 import mozilla.telemetry.glean.private.DatetimeMetricType
 import mozilla.telemetry.glean.private.Lifetime
 import mozilla.telemetry.glean.private.TimeUnit
-import mozilla.telemetry.glean.utils.parseISOTimeString
+import mozilla.telemetry.glean.utils.parseISOTimeStringAsCalendar
 
 internal class DatetimesStorageEngine(
     applicationContext: Context
@@ -39,7 +39,7 @@ internal class DatetimesStorageEngine(
         // don't actually need their results, and that would throw away the
         // timezone offset information.
         (value as? String)?.let {
-            stringValue -> parseISOTimeString(stringValue)?.let {
+            stringValue -> parseISOTimeStringAsCalendar(stringValue)?.let {
                 return stringValue
             }
         }
@@ -49,6 +49,7 @@ internal class DatetimesStorageEngine(
     /**
      * Perform the data migration.
      */
+    @Suppress("NestedBlockDepth")
     override fun migrateToGleanCore(lifetime: Lifetime) {
         super.migrateToGleanCore(lifetime)
 
@@ -78,7 +79,7 @@ internal class DatetimesStorageEngine(
 
                 // `metricData` should always successfully parse as a `Date`: we
                 // already discard all the invalid stuff in `deserializeSingleMetric`.
-                parseISOTimeString(metricData)?.let {
+                parseISOTimeStringAsCalendar(metricData)?.let {
                     if (lifetime == Lifetime.User) {
                         // User lifetime metrics are migrated very early: we don't want them
                         // to be batched but, rather, set immediately.

@@ -76,15 +76,12 @@ class DatetimeMetricType internal constructor(
      *
      * This is only to be used for the glean-ac to glean-core data migration.
      *
-     * @param value The [Date] value to set. If not provided, will record the current time.
+     * @param cal The [Calendar] value to set.
      */
-    internal fun setSync(value: Date = Date()) {
+    internal fun setSync(cal: Calendar) {
         if (disabled) {
             return
         }
-
-        val cal = Calendar.getInstance()
-        cal.time = value
 
         LibGleanFFI.INSTANCE.glean_datetime_set(
             Glean.handle,
