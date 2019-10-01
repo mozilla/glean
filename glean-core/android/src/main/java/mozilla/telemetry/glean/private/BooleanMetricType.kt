@@ -75,6 +75,25 @@ class BooleanMetricType internal constructor(
     }
 
     /**
+     * Set a boolean value synchronously.
+     *
+     * This is only to be used for the glean-ac to glean-core data migration.
+     *
+     * @param value This is a user defined boolean value.
+     */
+    internal fun setSync(value: Boolean) {
+        if (disabled) {
+            return
+        }
+
+        LibGleanFFI.INSTANCE.glean_boolean_set(
+            Glean.handle,
+            this@BooleanMetricType.handle,
+            value.toByte()
+        )
+    }
+
+    /**
      * Tests whether a value is stored for the metric for testing purposes only. This function will
      * attempt to await the last task (if any) writing to the the metric's storage engine before
      * returning a value.
