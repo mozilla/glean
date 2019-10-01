@@ -9,5 +9,5 @@ xcodebuild \
   -sdk iphonesimulator \
   -destination 'platform=iOS Simulator,name=iPhone 8' \
   build | \
-tee raw_xcodetest.log | \
+tee raw_xcodebuild.log | \
 xcpretty && exit "${PIPESTATUS[0]}"
