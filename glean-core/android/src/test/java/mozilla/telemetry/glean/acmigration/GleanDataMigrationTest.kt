@@ -50,7 +50,7 @@ class GleanDataMigrationTest {
         prefs?.edit()?.putInt("${pingName}_seq", number)?.apply()
     }
 
-    private fun setInitianlDataToMigrate(context: Context) {
+    private fun setInitialDataToMigrate(context: Context) {
         // Set a fake sequence number for the baseline ping.
         setFakeSequenceNumber(context, "baseline", TEST_BASELINE_SEQ)
 
@@ -94,7 +94,7 @@ class GleanDataMigrationTest {
         migrator.testResetMigrationStatus()
 
         // Set a fake sequence number for the baseline ping.
-        setInitianlDataToMigrate(context)
+        setInitialDataToMigrate(context)
 
         // Start Glean and point it to a local ping server.
         Glean.resetGlean(

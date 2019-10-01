@@ -224,7 +224,7 @@ class GleanACDataMigratorTest {
     }
 
     @Test
-    fun `shouldMigrate must return false if not migrated and client id is a knonw value`() {
+    fun `shouldMigrate must return false if not migrated and client id is a canary value`() {
         val testClientId = GleanACDataMigrator.KNOWN_CLIENT_ID
         val clientIdPrefsFile =
             "${GleanACDataMigrator.GLEAN_AC_PACKAGE_NAME}.storages.UuidsStorageEngine"
