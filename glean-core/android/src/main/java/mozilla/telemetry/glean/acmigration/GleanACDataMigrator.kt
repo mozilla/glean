@@ -29,12 +29,6 @@ internal class GleanACDataMigrator(
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
         internal const val GLEAN_AC_PACKAGE_NAME = "mozilla.components.service.glean"
 
-        // A known client id clients with disabled telemetry are set to.
-        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-        internal val KNOWN_CLIENT_ID = UUID.fromString(
-            "c0ffeec0-ffee-c0ff-eec0-ffeec0ffeec0"
-        )
-
         internal const val METRICS_SCHEDULER_PREFS_FILE =
             "$GLEAN_AC_PACKAGE_NAME.scheduler.MetricsPingScheduler"
         internal const val MIGRATION_PREFS_FILE = "$GLEAN_AC_PACKAGE_NAME.GleanACDataMigrator"
@@ -193,17 +187,9 @@ internal class GleanACDataMigrator(
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     internal fun getStoredClientId(): UUID? {
-        val clientId = uuidStorageEngine
+        return uuidStorageEngine
             .getSnapshot("glean_client_info", false)
             ?.get("client_id")
-
-        return if (clientId == KNOWN_CLIENT_ID) {
-            // Having a KNOWN_CLIENT_ID is like having no client id for
-            // migration purposes.
-            null
-        } else {
-            clientId
-        }
     }
 
     /**

@@ -222,27 +222,4 @@ class GleanACDataMigratorTest {
 
         assertTrue(migrator.shouldMigrateData())
     }
-
-    @Test
-    fun `shouldMigrate must return false if not migrated and client id is a canary value`() {
-        val testClientId = GleanACDataMigrator.KNOWN_CLIENT_ID
-        val clientIdPrefsFile =
-            "${GleanACDataMigrator.GLEAN_AC_PACKAGE_NAME}.storages.UuidsStorageEngine"
-
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        context
-            .getSharedPreferences(
-                clientIdPrefsFile,
-                Context.MODE_PRIVATE
-            )
-            .edit()
-            .putString("glean_client_info#client_id", testClientId.toString())
-            .apply()
-
-        val migrator =
-            spy<GleanACDataMigrator>(GleanACDataMigrator(ApplicationProvider.getApplicationContext()))
-        `when`(migrator.wasMigrated()).thenReturn(false)
-
-        assertFalse(migrator.shouldMigrateData())
-    }
 }
