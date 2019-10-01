@@ -13,6 +13,7 @@ captures
 
 # iOS stuff.
 xcuserdata
+raw_xcode*log
 /glean-core/ios/Glean/Generated
 /glean-core/ios/Pipfile
 /glean-core/ios/Pipfile.lock
