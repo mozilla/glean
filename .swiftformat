@@ -1,5 +1,7 @@
 --exclude Carthage
+--exclude glean-core/ios/Glean/Generated
 --exclude samples/ios/app/Carthage
+--exclude samples/ios/app/glean-sample-app/Generated
 --disable redundantSelf
 --disable andOperator
 --disable trailingCommas

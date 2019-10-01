@@ -13,6 +13,11 @@ captures
 
 # iOS stuff.
 xcuserdata
+raw_xcode*log
+/glean-core/ios/Glean/Generated
+/glean-core/ios/Pipfile
+/glean-core/ios/Pipfile.lock
+/glean-core/ios/.venv
 
 # Due to a bug in Carthage, we ignore this file.
 # See `tests-only-Cartfile` for more info.

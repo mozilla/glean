@@ -219,6 +219,10 @@ jobs:
               bash bin/run-ios-build.sh
               bash bin/run-ios-tests.sh
               bash bin/build-swift-docs.sh
+      - store_artifacts:
+          path: raw_xcodebuild.log
+      - store_artifacts:
+          path: raw_xcodetest.log
       - persist_to_workspace:
           root: build/
           paths: docs/swift
