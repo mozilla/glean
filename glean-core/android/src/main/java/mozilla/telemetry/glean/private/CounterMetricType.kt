@@ -79,6 +79,26 @@ class CounterMetricType internal constructor(
     }
 
     /**
+     * Add to counter value synchronously.
+     *
+     * This is only to be used for the glean-ac to glean-core data migration.
+     *
+     * @param amount This is the amount to increment the counter by, defaulting to 1 if called
+     * without parameters.
+     */
+    internal fun addSync(amount: Int = 1) {
+        if (disabled) {
+            return
+        }
+
+        LibGleanFFI.INSTANCE.glean_counter_add(
+            Glean.handle,
+            this@CounterMetricType.handle,
+            amount
+        )
+    }
+
+    /**
      * Tests whether a value is stored for the metric for testing purposes only. This function will
      * attempt to await the last task (if any) writing to the the metric's storage engine before
      * returning a value.
