@@ -11,6 +11,7 @@ import com.sun.jna.StringArray
 import mozilla.telemetry.glean.acmigration.engines.BooleansStorageEngine
 import mozilla.telemetry.glean.acmigration.engines.CountersStorageEngine
 import mozilla.telemetry.glean.acmigration.engines.DatetimesStorageEngine
+import mozilla.telemetry.glean.acmigration.engines.StringsStorageEngine
 import mozilla.telemetry.glean.acmigration.engines.StringListsStorageEngine
 import mozilla.telemetry.glean.acmigration.engines.UuidsStorageEngine
 import mozilla.telemetry.glean.private.Lifetime
@@ -48,6 +49,7 @@ internal class GleanACDataMigrator(
     // The storage engines data is migrated from.
     private val booleanStorageEngine by lazy { BooleansStorageEngine(applicationContext) }
     private val counterStorageEngine by lazy { CountersStorageEngine(applicationContext) }
+    private val stringStorageEngine by lazy { StringsStorageEngine(applicationContext) }
     private val stringListStorageEngine by lazy { StringListsStorageEngine(applicationContext) }
     private val uuidStorageEngine by lazy { UuidsStorageEngine(applicationContext) }
     private val dateTimeStorageEngine by lazy { DatetimesStorageEngine(applicationContext) }
@@ -178,6 +180,7 @@ internal class GleanACDataMigrator(
     fun migrateUserLifetimeMetrics() {
         booleanStorageEngine.migrateToGleanCore(Lifetime.User)
         counterStorageEngine.migrateToGleanCore(Lifetime.User)
+        stringStorageEngine.migrateToGleanCore(Lifetime.User)
         stringListStorageEngine.migrateToGleanCore(Lifetime.User)
         uuidStorageEngine.migrateToGleanCore(Lifetime.User)
         dateTimeStorageEngine.migrateToGleanCore(Lifetime.User)
@@ -189,6 +192,7 @@ internal class GleanACDataMigrator(
     fun migratePingLifetimeMetrics() {
         booleanStorageEngine.migrateToGleanCore(Lifetime.Ping)
         counterStorageEngine.migrateToGleanCore(Lifetime.Ping)
+        stringStorageEngine.migrateToGleanCore(Lifetime.Ping)
         stringListStorageEngine.migrateToGleanCore(Lifetime.Ping)
         uuidStorageEngine.migrateToGleanCore(Lifetime.Ping)
         dateTimeStorageEngine.migrateToGleanCore(Lifetime.Ping)
