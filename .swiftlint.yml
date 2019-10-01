@@ -1,6 +1,8 @@
 excluded:
   - Carthage
+  - glean-core/ios/Glean/Generated
   - samples/ios/app/Carthage
+  - samples/ios/app/glean-sample-app/Generated
 disabled_rules:
   - file_length
   # We're pretty careful about this already, but it's a pain to disable
