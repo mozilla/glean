@@ -13,6 +13,7 @@ package mozilla.telemetry.glean.private
 import android.os.SystemClock
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.checkPingSchema
 import mozilla.telemetry.glean.getContextWithMockedInfo
@@ -273,6 +274,88 @@ class EventMetricTypeTest {
         assertEquals(
             1,
             pingJson.getJSONArray("events").length()
+        )
+    }
+
+    // Moved from EventsStorageEngineTest.kt in glean-ac
+    @kotlinx.coroutines.ObsoleteCoroutinesApi
+    @Test
+    fun `flush queued events on startup and correctly handle pre-init events`() {
+        val server = getMockWebServer()
+
+        resetGlean(getContextWithMockedInfo(), Glean.configuration.copy(
+            serverEndpoint = "http://" + server.hostName + ":" + server.port,
+            logPings = true
+        ))
+
+        val event = EventMetricType<SomeExtraKeys>(
+            disabled = false,
+            category = "telemetry",
+            name = "test_event",
+            lifetime = Lifetime.Ping,
+            sendInPings = listOf("events"),
+            allowedExtraKeys = listOf("someExtra")
+        )
+
+        event.record(extra = mapOf(SomeExtraKeys.SomeExtra to "run1"))
+        assertEquals(1, event.testGetValue().size)
+
+        Dispatchers.API.setTaskQueueing(true)
+        event.record(extra = mapOf(SomeExtraKeys.SomeExtra to "pre-init"))
+
+        resetGlean(
+            getContextWithMockedInfo(),
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
+                logPings = true
+            ),
+            clearStores = false
+        )
+
+        event.record(extra = mapOf(SomeExtraKeys.SomeExtra to "post-init"))
+
+        // Trigger worker task to upload the pings in the background
+        triggerWorkManager()
+
+        var request = server.takeRequest(20L, TimeUnit.SECONDS)
+        var pingJsonData = request.body.readUtf8()
+        var pingJson = JSONObject(pingJsonData)
+        checkPingSchema(pingJson)
+        assertNotNull(pingJson.opt("events"))
+
+        // This event comes from disk from the prior "run"
+        assertEquals(
+            1,
+            pingJson.getJSONArray("events").length()
+        )
+        assertEquals(
+            "run1",
+            pingJson.getJSONArray("events").getJSONObject(0).getJSONObject("extra").getString("someExtra")
+        )
+
+        Glean.sendPingsByName(listOf("events"))
+
+        // Trigger worker task to upload the pings in the background
+        triggerWorkManager()
+
+        request = server.takeRequest(20L, TimeUnit.SECONDS)
+        pingJsonData = request.body.readUtf8()
+        pingJson = JSONObject(pingJsonData)
+        checkPingSchema(pingJson)
+        assertNotNull(pingJson.opt("events"))
+
+        // This event comes from the pre-initialization event
+        assertEquals(
+            2,
+            pingJson.getJSONArray("events").length()
+        )
+        assertEquals(
+            "pre-init",
+            pingJson.getJSONArray("events").getJSONObject(0).getJSONObject("extra").getString("someExtra")
+        )
+        assertEquals(
+            "post-init",
+            pingJson.getJSONArray("events").getJSONObject(1).getJSONObject("extra").getString("someExtra")
         )
     }
 }

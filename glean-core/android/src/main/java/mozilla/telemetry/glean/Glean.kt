@@ -186,9 +186,12 @@ open class GleanInternalAPI internal constructor () {
         initializeCoreMetrics(applicationContext)
 
         // Deal with any pending events so we can start recording new ones
-        val pingSent = LibGleanFFI.INSTANCE.glean_on_ready_to_send_pings(this.handle).toBoolean()
-        if (pingSent) {
-            PingUploadWorker.enqueueWorker()
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        Dispatchers.API.executeTask {
+            val pingSent = LibGleanFFI.INSTANCE.glean_on_ready_to_send_pings(this@GleanInternalAPI.handle).toBoolean()
+            if (pingSent) {
+                PingUploadWorker.enqueueWorker()
+            }
         }
 
         // Set up information and scheduling for Glean owned pings. Ideally, the "metrics"
