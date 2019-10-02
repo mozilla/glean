@@ -192,7 +192,7 @@ class LabeledMetricTypeTests: XCTestCase {
     func testLabeledEventsThrowAnException() {
         let eventMetric = EventMetricType<NoExtraKeys>(
             category: "telemetry",
-            name: "labeled_counter_metric",
+            name: "labeled_event",
             sendInPings: ["metrics"],
             lifetime: .application,
             disabled: false
@@ -200,7 +200,7 @@ class LabeledMetricTypeTests: XCTestCase {
 
         XCTAssertThrowsError(try LabeledMetricType<EventMetricType<NoExtraKeys>>(
             category: "telemetry",
-            name: "labeled_counter_metric",
+            name: "labeled_event_metric",
             sendInPings: ["metrics"],
             lifetime: .application,
             disabled: false,
