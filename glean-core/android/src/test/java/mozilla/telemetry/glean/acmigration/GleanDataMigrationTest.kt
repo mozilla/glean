@@ -151,6 +151,10 @@ class GleanDataMigrationTest {
             true
         )
 
+        // We should be marked as migrated. TODO: Uncomment this once bug 1583454 is
+        // merged, otherwise this test will fail.
+        // assertTrue(GleanCoreMigration.successful.testGetValue())
+
         // Trigger a baseline and a metrics ping.
         Pings.baseline.send()
         triggerWorkManager()
