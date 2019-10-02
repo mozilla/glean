@@ -164,31 +164,30 @@ class LabeledMetricTypeTests: XCTestCase {
         XCTAssertEqual("bar", try labeledStringMetric["label2"].testGetValue())
     }
 
-    // TODO(bug 1583772): Requires the BooleanMetricType first
-    // func testLabeledBooleanType() {
-    //    let counterMetric = BooleanMetricType(
-    //        category: "telemetry",
-    //        name: "labeled_counter_metric",
-    //        sendInPings: ["metrics"],
-    //        lifetime: .application,
-    //        disabled: false
-    //    )
+    func testLabeledBooleanType() {
+        let booleanMetric = BooleanMetricType(
+            category: "telemetry",
+            name: "labeled_boolean_metric",
+            sendInPings: ["metrics"],
+            lifetime: .application,
+            disabled: false
+        )
 
-    //    let labeledBooleanMetric = try! LabeledMetricType<BooleanMetricType>(
-    //        category: "telemetry",
-    //        name: "labeled_counter_metric",
-    //        sendInPings: ["metrics"],
-    //        lifetime: .application,
-    //        disabled: false,
-    //        subMetric: counterMetric
-    //    )
+        let labeledBooleanMetric = try! LabeledMetricType<BooleanMetricType>(
+            category: "telemetry",
+            name: "labeled_boolean_metric",
+            sendInPings: ["metrics"],
+            lifetime: .application,
+            disabled: false,
+            subMetric: booleanMetric
+        )
 
-    //    labeledBooleanMetric["label1"].set(false)
-    //    labeledBooleanMetric["label2"].set(true)
+        labeledBooleanMetric["label1"].set(false)
+        labeledBooleanMetric["label2"].set(true)
 
-    //    XCTAssertEqual(false, try labeledBooleanMetric["label1"].testGetValue())
-    //    XCTAssertEqual(true, try labeledBooleanMetric["label2"].testGetValue())
-    // }
+        XCTAssertEqual(false, try labeledBooleanMetric["label1"].testGetValue())
+        XCTAssertEqual(true, try labeledBooleanMetric["label2"].testGetValue())
+    }
 
     func testLabeledEventsThrowAnException() {
         let eventMetric = EventMetricType<NoExtraKeys>(
