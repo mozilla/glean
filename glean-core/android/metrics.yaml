@@ -254,4 +254,4 @@ glean.core.migration:
     notification_emails:
       - glean-team@mozilla.com
       - aplacitelli@mozilla.com
-    expires: 2020-03-01
+    expires: 2020-03-31
