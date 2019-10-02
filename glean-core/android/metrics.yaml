@@ -250,7 +250,7 @@ glean.core.migration:
     bugs:
       - 1582099
     data_reviews:
-      - TODOs
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1582099#c4
     notification_emails:
       - glean-team@mozilla.com
       - aplacitelli@mozilla.com
