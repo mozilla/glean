@@ -5,6 +5,7 @@
 package mozilla.telemetry.glean.acmigration
 
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.work.testing.WorkManagerTestInitHelper
@@ -55,29 +56,41 @@ class GleanDataMigrationTest {
         prefs?.edit()?.putInt("${pingName}_seq", number)?.apply()
     }
 
+    /**
+     * A convenience function to make `setInitialDataToMigrate` more readable.
+     */
+    private fun setSharedPrefsData(
+        context: Context,
+        storageName: String,
+        putFunc: (SharedPreferences.Editor) -> SharedPreferences.Editor
+    ) {
+        context.getSharedPreferences(
+                "${GleanACDataMigrator.GLEAN_AC_PACKAGE_NAME}.storages.$storageName",
+                Context.MODE_PRIVATE)
+            .edit()
+            .let { putFunc(it) }
+            .apply()
+    }
+
     private fun setInitialDataToMigrate(context: Context, firstRunDate: String) {
         // Set a fake sequence number for the baseline ping.
         setFakeSequenceNumber(context, "baseline", TEST_BASELINE_SEQ)
 
         // Set a previously existing client id.
-        context
-            .getSharedPreferences(
-                "${GleanACDataMigrator.GLEAN_AC_PACKAGE_NAME}.storages.UuidsStorageEngine",
-                Context.MODE_PRIVATE
-            )
-            .edit()
-            .putString("glean_client_info#client_id", TEST_CLIENT_ID)
-            .apply()
+        setSharedPrefsData(context, "UuidsStorageEngine") {
+            it.putString("glean_client_info#client_id", TEST_CLIENT_ID)
+        }
 
         // Set a previously existing first_run_date.
-        context
-            .getSharedPreferences(
-                "${GleanACDataMigrator.GLEAN_AC_PACKAGE_NAME}.storages.DatetimesStorageEngine",
-                Context.MODE_PRIVATE
-            )
-            .edit()
-            .putString("glean_client_info#first_run_date", firstRunDate)
-            .apply()
+        setSharedPrefsData(context, "DatetimesStorageEngine") {
+            it.putString("glean_client_info#first_run_date", firstRunDate)
+        }
+
+        // Set some metrics in the baseline ping, for convenience.
+        // Set a test boolean
+        setSharedPrefsData(context, "BooleansStorageEngine") {
+            it.putBoolean("baseline#test.glean.boolean", true)
+        }
     }
 
     @Before
@@ -125,6 +138,10 @@ class GleanDataMigrationTest {
         assertEquals(TEST_BASELINE_SEQ, baselineJson.getJSONObject("ping_info")["seq"])
         assertEquals(TEST_CLIENT_ID, baselineJson.getJSONObject("client_info")["client_id"])
         assertEquals(testFirstRunDate, baselineJson.getJSONObject("client_info")["first_run_date"])
+
+        val metrics = baselineJson.getJSONObject("metrics")
+
+        assertEquals(true, metrics.getJSONObject("boolean").getBoolean("test.glean.boolean"))
     }
 
     @Test
