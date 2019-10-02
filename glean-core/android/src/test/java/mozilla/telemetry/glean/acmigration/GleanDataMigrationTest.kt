@@ -91,6 +91,10 @@ class GleanDataMigrationTest {
         setSharedPrefsData(context, "BooleansStorageEngine") {
             it.putBoolean("baseline#test.glean.boolean", true)
         }
+        // Set a test counter
+        setSharedPrefsData(context, "CountersStorageEngine") {
+            it.putInt("baseline#test.glean.counter", 10)
+        }
     }
 
     @Before
@@ -142,6 +146,7 @@ class GleanDataMigrationTest {
         val metrics = baselineJson.getJSONObject("metrics")
 
         assertEquals(true, metrics.getJSONObject("boolean").getBoolean("test.glean.boolean"))
+        assertEquals(10, metrics.getJSONObject("counter").getInt("test.glean.counter"))
     }
 
     @Test

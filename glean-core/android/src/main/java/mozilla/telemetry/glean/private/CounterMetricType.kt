@@ -83,10 +83,9 @@ class CounterMetricType internal constructor(
      *
      * This is only to be used for the glean-ac to glean-core data migration.
      *
-     * @param amount This is the amount to increment the counter by, defaulting to 1 if called
-     * without parameters.
+     * @param amount This is the amount to increment the counter by.
      */
-    internal fun addSync(amount: Int = 1) {
+    internal fun addSync(amount: Int) {
         if (disabled) {
             return
         }
