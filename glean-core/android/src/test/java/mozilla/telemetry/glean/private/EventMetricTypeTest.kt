@@ -279,6 +279,7 @@ class EventMetricTypeTest {
 
     // Moved from EventsStorageEngineTest.kt in glean-ac
     @kotlinx.coroutines.ObsoleteCoroutinesApi
+    @Suppress("LongMethod")
     @Test
     fun `flush queued events on startup and correctly handle pre-init events`() {
         val server = getMockWebServer()
