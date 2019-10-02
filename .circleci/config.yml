@@ -226,6 +226,12 @@ jobs:
       - persist_to_workspace:
           root: build/
           paths: docs/swift
+      - run:
+          name: Create and upload code coverage
+          command: |
+              curl -L https://codecov.io/bash > codecov.sh
+              chmod +x codecov.sh
+              ./codecov.sh -J '^Glean$' -X gcov -X coveragepy
 
   Lint Android with ktlint and detekt:
     docker:
