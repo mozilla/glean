@@ -15,6 +15,7 @@ import mozilla.telemetry.glean.config.Configuration
 import mozilla.telemetry.glean.getMockWebServer
 import mozilla.telemetry.glean.triggerWorkManager
 import mozilla.telemetry.glean.utils.getISOTimeString
+import mozilla.telemetry.glean.utils.toList
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -95,6 +96,10 @@ class GleanDataMigrationTest {
         setSharedPrefsData(context, "CountersStorageEngine") {
             it.putInt("baseline#test.glean.counter", 10)
         }
+        // Set a test stringlist
+        setSharedPrefsData(context, "StringListsStorageEngine") {
+            it.putString("baseline#test.glean.stringlist", "[\"a\",\"b\",\"c\"]")
+        }
     }
 
     @Before
@@ -147,6 +152,12 @@ class GleanDataMigrationTest {
 
         assertEquals(true, metrics.getJSONObject("boolean").getBoolean("test.glean.boolean"))
         assertEquals(10, metrics.getJSONObject("counter").getInt("test.glean.counter"))
+        val stringList = metrics.getJSONObject("string_list")
+            .getJSONArray("test.glean.stringlist")
+            .toList<String>()
+        assertEquals("a", stringList[0])
+        assertEquals("b", stringList[1])
+        assertEquals("c", stringList[2])
     }
 
     @Test
