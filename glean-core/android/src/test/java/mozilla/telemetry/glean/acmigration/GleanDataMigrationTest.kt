@@ -18,6 +18,7 @@ import mozilla.telemetry.glean.utils.getISOTimeString
 import mozilla.telemetry.glean.utils.toList
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -92,9 +93,13 @@ class GleanDataMigrationTest {
         setSharedPrefsData(context, "BooleansStorageEngine") {
             it.putBoolean("baseline#test.glean.boolean", true)
         }
-        // Set a test counter
+        // Set a test counter and some labels for a labeled_counter
         setSharedPrefsData(context, "CountersStorageEngine") {
-            it.putInt("baseline#test.glean.counter", 10)
+            it
+                .putInt("baseline#test.glean.counter", 10)
+                .putInt("baseline#test.glean.labeled_counter_sample/label1", 1)
+                .putInt("baseline#test.glean.labeled_counter_sample/label2", 2)
+                .putInt("baseline#test.glean.labeled_counter_sample/label3", 3)
         }
         // Set a test string
         setSharedPrefsData(context, "StringsStorageEngine") {
@@ -163,6 +168,15 @@ class GleanDataMigrationTest {
         assertEquals("a", stringList[0])
         assertEquals("b", stringList[1])
         assertEquals("c", stringList[2])
+
+        // Verify the labeled_counter data was ported over.
+        val labeledCounterData = metrics
+            .getJSONObject("labeled_counter")
+            .getJSONObject("test.glean.labeled_counter_sample")
+        assertNotNull(labeledCounterData)
+        assertEquals(1, labeledCounterData.getInt("label1"))
+        assertEquals(2, labeledCounterData.getInt("label2"))
+        assertEquals(3, labeledCounterData.getInt("label3"))
     }
 
     @Test
