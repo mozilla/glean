@@ -107,7 +107,11 @@ class GleanDataMigrationTest {
         }
         // Set a test string
         setSharedPrefsData(context, "StringsStorageEngine") {
-            it.putString("baseline#test.glean.string", "Glean")
+            it
+                .putString("baseline#test.glean.string", "Glean")
+                .putString("baseline#test.glean.labeled_string_sample/label1", "some")
+                .putString("baseline#test.glean.labeled_string_sample/label2", "random")
+                .putString("baseline#test.glean.labeled_string_sample/label3", "stuff")
         }
         // Set a test stringlist
         setSharedPrefsData(context, "StringListsStorageEngine") {
@@ -190,6 +194,15 @@ class GleanDataMigrationTest {
         assertEquals(false, labeledBooleanData.getBoolean("label1"))
         assertEquals(true, labeledBooleanData.getBoolean("label2"))
         assertEquals(false, labeledBooleanData.getBoolean("label3"))
+
+        // Verify the labeled_string data was ported over.
+        val labeledStringData = metrics
+            .getJSONObject("labeled_string")
+            .getJSONObject("test.glean.labeled_string_sample")
+        assertNotNull(labeledStringData)
+        assertEquals("some", labeledStringData.getString("label1"))
+        assertEquals("random", labeledStringData.getString("label2"))
+        assertEquals("stuff", labeledStringData.getString("label3"))
     }
 
     @Test
