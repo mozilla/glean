@@ -224,7 +224,6 @@
 			attributes = {
 				LastSwiftUpdateCheck = 1010;
 				LastUpgradeCheck = 1030;
-				ORGANIZATIONNAME = "Jan-Erik Rediger";
 				TargetAttributes = {
 					BFD3AB29224D475E00AD9255 = {
 						CreatedOnToolsVersion = 10.1;
@@ -525,7 +524,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "net.tlong.glean-sample-app";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.mozilla.glean-sample-app";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -548,7 +547,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "net.tlong.glean-sample-app";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.mozilla.glean-sample-app";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_VERSION = 5.0;
@@ -570,7 +569,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "rediger.net.glean-sample-appTests";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.mozilla.glean-sample-appTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -592,7 +591,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "rediger.net.glean-sample-appTests";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.mozilla.glean-sample-appTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_VERSION = 5.0;
@@ -615,7 +614,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "net.tlong.glean-sample-appUITests";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.mozilla.glean-sample-appUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
@@ -638,7 +637,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "net.tlong.glean-sample-appUITests";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.mozilla.glean-sample-appUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_COMPILATION_MODE = wholemodule;

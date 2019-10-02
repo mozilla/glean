@@ -2,7 +2,7 @@
 name = "glean-ffi"
 edition = "2018"
 version = "0.1.0"
-authors = ["Jan-Erik Rediger <jrediger@mozilla.com>"]
+authors = ["Jan-Erik Rediger <jrediger@mozilla.com>", "The Glean Team <glean-team@mozilla.com>"]
 
 [lib]
 name = "glean_ffi"
