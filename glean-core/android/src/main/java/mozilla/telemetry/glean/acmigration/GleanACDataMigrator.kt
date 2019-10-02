@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.annotation.VisibleForTesting
 import com.sun.jna.StringArray
+import mozilla.telemetry.glean.GleanMetrics.GleanCoreMigration
 import mozilla.telemetry.glean.acmigration.engines.BooleansStorageEngine
 import mozilla.telemetry.glean.acmigration.engines.CountersStorageEngine
 import mozilla.telemetry.glean.acmigration.engines.DatetimesStorageEngine
@@ -172,6 +173,7 @@ internal class GleanACDataMigrator(
      */
     fun markAsMigrated() {
         migrationPrefs?.edit()?.putBoolean("wasMigrated", true)?.apply()
+        GleanCoreMigration.successful.set(true)
     }
 
     /**

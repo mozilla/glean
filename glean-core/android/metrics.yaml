@@ -240,3 +240,18 @@ glean.error:
      - all_pings
    no_lint:
      - COMMON_PREFIX
+
+glean.core.migration:
+  successful:
+    type: boolean
+    description:
+      Reports `true` if the client was successfully migrated from the Android-specific
+      implementation of the Glean SDK to the cross-platform one.
+    bugs:
+      - 1582099
+    data_reviews:
+      - TODOs
+    notification_emails:
+      - glean-team@mozilla.com
+      - aplacitelli@mozilla.com
+    expires: 2020-03-01
