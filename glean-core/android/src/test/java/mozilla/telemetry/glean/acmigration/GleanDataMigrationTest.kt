@@ -96,6 +96,10 @@ class GleanDataMigrationTest {
         setSharedPrefsData(context, "CountersStorageEngine") {
             it.putInt("baseline#test.glean.counter", 10)
         }
+        // Set a test string
+        setSharedPrefsData(context, "StringsStorageEngine") {
+            it.putString("baseline#test.glean.string", "Glean")
+        }
         // Set a test stringlist
         setSharedPrefsData(context, "StringListsStorageEngine") {
             it.putString("baseline#test.glean.stringlist", "[\"a\",\"b\",\"c\"]")
@@ -152,6 +156,7 @@ class GleanDataMigrationTest {
 
         assertEquals(true, metrics.getJSONObject("boolean").getBoolean("test.glean.boolean"))
         assertEquals(10, metrics.getJSONObject("counter").getInt("test.glean.counter"))
+        assertEquals("Glean", metrics.getJSONObject("string").getString("test.glean.string"))
         val stringList = metrics.getJSONObject("string_list")
             .getJSONArray("test.glean.stringlist")
             .toList<String>()
