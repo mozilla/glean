@@ -91,7 +91,11 @@ class GleanDataMigrationTest {
         // Set some metrics in the baseline ping, for convenience.
         // Set a test boolean
         setSharedPrefsData(context, "BooleansStorageEngine") {
-            it.putBoolean("baseline#test.glean.boolean", true)
+            it
+                .putBoolean("baseline#test.glean.boolean", true)
+                .putBoolean("baseline#test.glean.labeled_boolean_sample/label1", false)
+                .putBoolean("baseline#test.glean.labeled_boolean_sample/label2", true)
+                .putBoolean("baseline#test.glean.labeled_boolean_sample/label3", false)
         }
         // Set a test counter and some labels for a labeled_counter
         setSharedPrefsData(context, "CountersStorageEngine") {
@@ -177,6 +181,15 @@ class GleanDataMigrationTest {
         assertEquals(1, labeledCounterData.getInt("label1"))
         assertEquals(2, labeledCounterData.getInt("label2"))
         assertEquals(3, labeledCounterData.getInt("label3"))
+
+        // Verify the labeled_boolean data was ported over.
+        val labeledBooleanData = metrics
+            .getJSONObject("labeled_boolean")
+            .getJSONObject("test.glean.labeled_boolean_sample")
+        assertNotNull(labeledBooleanData)
+        assertEquals(false, labeledBooleanData.getBoolean("label1"))
+        assertEquals(true, labeledBooleanData.getBoolean("label2"))
+        assertEquals(false, labeledBooleanData.getBoolean("label3"))
     }
 
     @Test
