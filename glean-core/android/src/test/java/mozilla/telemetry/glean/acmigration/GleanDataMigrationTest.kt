@@ -18,6 +18,7 @@ import mozilla.telemetry.glean.utils.getISOTimeString
 import mozilla.telemetry.glean.utils.toList
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -90,15 +91,27 @@ class GleanDataMigrationTest {
         // Set some metrics in the baseline ping, for convenience.
         // Set a test boolean
         setSharedPrefsData(context, "BooleansStorageEngine") {
-            it.putBoolean("baseline#test.glean.boolean", true)
+            it
+                .putBoolean("baseline#test.glean.boolean", true)
+                .putBoolean("baseline#test.glean.labeled_boolean_sample/label1", false)
+                .putBoolean("baseline#test.glean.labeled_boolean_sample/label2", true)
+                .putBoolean("baseline#test.glean.labeled_boolean_sample/label3", false)
         }
-        // Set a test counter
+        // Set a test counter and some labels for a labeled_counter
         setSharedPrefsData(context, "CountersStorageEngine") {
-            it.putInt("baseline#test.glean.counter", 10)
+            it
+                .putInt("baseline#test.glean.counter", 10)
+                .putInt("baseline#test.glean.labeled_counter_sample/label1", 1)
+                .putInt("baseline#test.glean.labeled_counter_sample/label2", 2)
+                .putInt("baseline#test.glean.labeled_counter_sample/label3", 3)
         }
         // Set a test string
         setSharedPrefsData(context, "StringsStorageEngine") {
-            it.putString("baseline#test.glean.string", "Glean")
+            it
+                .putString("baseline#test.glean.string", "Glean")
+                .putString("baseline#test.glean.labeled_string_sample/label1", "some")
+                .putString("baseline#test.glean.labeled_string_sample/label2", "random")
+                .putString("baseline#test.glean.labeled_string_sample/label3", "stuff")
         }
         // Set a test stringlist
         setSharedPrefsData(context, "StringListsStorageEngine") {
@@ -163,6 +176,33 @@ class GleanDataMigrationTest {
         assertEquals("a", stringList[0])
         assertEquals("b", stringList[1])
         assertEquals("c", stringList[2])
+
+        // Verify the labeled_counter data was ported over.
+        val labeledCounterData = metrics
+            .getJSONObject("labeled_counter")
+            .getJSONObject("test.glean.labeled_counter_sample")
+        assertNotNull(labeledCounterData)
+        assertEquals(1, labeledCounterData.getInt("label1"))
+        assertEquals(2, labeledCounterData.getInt("label2"))
+        assertEquals(3, labeledCounterData.getInt("label3"))
+
+        // Verify the labeled_boolean data was ported over.
+        val labeledBooleanData = metrics
+            .getJSONObject("labeled_boolean")
+            .getJSONObject("test.glean.labeled_boolean_sample")
+        assertNotNull(labeledBooleanData)
+        assertEquals(false, labeledBooleanData.getBoolean("label1"))
+        assertEquals(true, labeledBooleanData.getBoolean("label2"))
+        assertEquals(false, labeledBooleanData.getBoolean("label3"))
+
+        // Verify the labeled_string data was ported over.
+        val labeledStringData = metrics
+            .getJSONObject("labeled_string")
+            .getJSONObject("test.glean.labeled_string_sample")
+        assertNotNull(labeledStringData)
+        assertEquals("some", labeledStringData.getString("label1"))
+        assertEquals("random", labeledStringData.getString("label2"))
+        assertEquals("stuff", labeledStringData.getString("label3"))
     }
 
     @Test
