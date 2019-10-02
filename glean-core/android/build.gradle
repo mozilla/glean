@@ -129,7 +129,7 @@ cargo {
 
     targets = rootProject.ext.rustTargets
 
-    profile = rootProject.ext.nonMegazordProfile
+    profile = rootProject.ext.cargoProfile
 
     exec = rootProject.ext.cargoExec
 
@@ -223,8 +223,7 @@ apply from: "$rootDir/publish.gradle"
 // please also update the corresponding .buildconfig-android.yml
 // `publishedArtifacts` property.
 ext.configurePublish(
-        /* jnaForTestConfiguration= */ configurations.jnaForTest,
-        /* variantWithoutLib= */ 'androidWithoutLib',
+        /* jnaForTestConfiguration= */ configurations.jnaForTest
 )
 
 task docs(type: org.jetbrains.dokka.gradle.DokkaAndroidTask, overwrite: true) {
