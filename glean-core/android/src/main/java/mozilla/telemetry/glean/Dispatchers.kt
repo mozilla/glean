@@ -180,6 +180,11 @@ internal object Dispatchers {
          *
          * WARNING: THIS SHOULD ALMOST NEVER BE USED. IF IN DOUBT, USE [launch] INSTEAD.
          *
+         * [launch] is useful for running tasks that might be called before initialization, but
+         * need to actually run after initialization (which is true for most tasks in Glean).
+         * This should only be called directly for tasks that must run immediately after
+         * initialization.
+         *
          * This has internal visibility only so that it can be called directly to
          * send queued events immediately at startup before any metric recording.
          */
