@@ -26,7 +26,6 @@ public class Glean {
     private var uploadEnabled: Bool = true
     private var configuration: Configuration?
     private var observer: GleanLifecycleObserver?
-    static var backgroundTaskId = UIBackgroundTaskIdentifier.invalid
 
     // This struct is used for organizational purposes to keep the class constants in a single place
     struct Constants {
@@ -191,14 +190,6 @@ public class Glean {
 
     /// Handle background event and send appropriate pings
     func handleBackgroundEvent() {
-        // This asks the OS for more time when going to background to perform critical tasks.
-        // This will be signaled complete when `sendPingsByName` is done.
-        Glean.backgroundTaskId = UIApplication.shared.beginBackgroundTask(withName: "Glean Upload Task") {
-            // End the task if time expires
-            UIApplication.shared.endBackgroundTask(Glean.backgroundTaskId)
-            Glean.backgroundTaskId = UIBackgroundTaskIdentifier.invalid
-        }
-
         self.sendPingsByName(pingNames: ["baseline", "events"])
     }
 
@@ -242,10 +233,6 @@ public class Glean {
                     }
                 }
             }
-
-            // End background task assertion to let the OS know we are done with our tasks
-            UIApplication.shared.endBackgroundTask(Glean.backgroundTaskId)
-            Glean.backgroundTaskId = UIBackgroundTaskIdentifier.invalid
         }
     }
 

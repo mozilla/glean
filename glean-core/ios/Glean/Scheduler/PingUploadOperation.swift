@@ -12,6 +12,8 @@ class PingUploadOperation: GleanOperation {
     let data: Data?
     let callback: (Bool, Error?) -> Void
 
+    var backgroundTaskId = UIBackgroundTaskIdentifier.invalid
+
     /// Create a new PingUploadOperation
     ///
     /// - parameters:
@@ -41,7 +43,15 @@ class PingUploadOperation: GleanOperation {
         config.requestCachePolicy = NSURLRequest.CachePolicy.reloadIgnoringLocalCacheData
         config.urlCache = nil
         let session = URLSession(configuration: config)
-        
+
+        // This asks the OS for more time when going to background in order to allow for background
+        // uploading of the pings.
+        backgroundTaskId = UIApplication.shared.beginBackgroundTask(withName: "Glean Upload Task") {
+            // End the task if time expires
+            UIApplication.shared.endBackgroundTask(self.backgroundTaskId)
+            self.backgroundTaskId = .invalid
+        }
+
         // Create an URLSessionUploadTask to upload our ping in the background and handle the
         // server responses.
         uploadTask = session.uploadTask(with: request, from: data) { _, response, error in
@@ -77,6 +87,10 @@ class PingUploadOperation: GleanOperation {
 
             self.executing(false)
             self.finish(true)
+
+            // End background task assertion to let the OS know we are done with our tasks
+            UIApplication.shared.endBackgroundTask(self.backgroundTaskId)
+            self.backgroundTaskId = UIBackgroundTaskIdentifier.invalid
         }
 
         executing(true)
