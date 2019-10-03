@@ -303,8 +303,14 @@ jobs:
                echo "=================================================="
                exit 1
             fi
-            ARTIFACTS="./build/maven/org/mozilla/telemetry/glean/${RAWVERSION}/"
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${VERSION} ${ARTIFACTS}
+
+            PKGDIR=./build/package/
+            # Collect all files into a single directory
+            mkdir -p ${PKGDIR}
+            find ./build/maven/org/mozilla/telemetry/ \( -name "*.aar*" -or -name "*.jar*" -or -name "*.pom*" \) \
+              -exec cp {} ${PKGDIR} \;
+            # Upload to GitHub
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${VERSION} ${PKGDIR}
 
   # via https://circleci.com/blog/deploying-documentation-to-github-pages-with-continuous-integration/
   Generate Rust documentation:
