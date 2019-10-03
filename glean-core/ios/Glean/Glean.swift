@@ -99,9 +99,11 @@ public class Glean {
         initializeCoreMetrics()
 
         // Deal with any pending events so we can start recording new ones
-        if glean_on_ready_to_send_pings(self.handle) != 0 {
-            Dispatchers.shared.launchConcurrent {
-                HttpPingUploader(configuration: configuration).process()
+        Dispatchers.shared.serialOperationQueue.addOperation {
+            if glean_on_ready_to_send_pings(self.handle) != 0 {
+                Dispatchers.shared.launchConcurrent {
+                    HttpPingUploader(configuration: configuration).process()
+                }
             }
         }
 
