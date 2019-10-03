@@ -60,3 +60,8 @@ After that you'll find an HTML report at the following location:
 ```
 report/index.html
 ```
+
+## Generating Swift reports locally
+
+Xcode automatically generates code coverage when running tests.
+You can find the report in the Report Navigator (`View -> Navigators -> Show Report Navigator -> Coverage`).
