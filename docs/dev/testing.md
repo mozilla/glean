@@ -57,16 +57,33 @@ You can save this task permanently by opening the task dropdown in the toolbar a
 
 To run a single Android test, navigate to the file containing the test, and right click on the green arrow in the left margin next to the test.  There you have a choice of running or debugging the test.
 
+## Running the Swift/iOS tests
+
+### From the command line
+
+The full iOS test suite may be run from the command line with:
+
+```
+make test-swift
+```
+
+### From Xcode
+
+To run the full iOS test suite, run tests in Xcode (`Product -> Test`).
+To run a single Swift test, navigate to the file containing the test,
+and click on the arrow in the left margin next to the test.
+
 ## Testing in CI
 
 We run multiple tests on CI for every Pull Request and every commit to the `master` branch.
 These include:
 
 * Full Android tests
+* Full iOS tests
 * Rust tests
-* Rust source code formatting
-* Rust and Android source code linting
-* Generating documentation from Rust & Kotlin code and the book
+* Rust, Kotlin and Swift source code formatting
+* Rust, Kotlin and Swift source code linting
+* Generating documentation from Rust, Kotlin, Swift and the book
 * Checking link validity of documentation
 * Deploying generated documentation
 
