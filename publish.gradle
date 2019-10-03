@@ -23,6 +23,38 @@ ext.configurePublish = { jnaForTestConfiguration = null ->
     def theArtifactId = project.ext.artifactId
     def theDescription = project.ext.description
 
+    task extractJnaResources(type: Sync) {
+        dependsOn jnaForTestConfiguration
+
+        from {
+            // Defer the resolution of the configuration.  This helps to
+            // avoid a nasty issue with the Android-Gradle plugin 3.2.1,
+            // like `Cannot change attributes of configuration
+            // ':PROJECT:kapt' after it has been resolved`.
+            zipTree(jnaForTestConfiguration.singleFile)
+        }
+
+        into "${buildDir}/jnaResources/"
+
+        eachFile { FileCopyDetails fcp ->
+            // The intention is to just keep the various `*jnidispatch.*` files.
+            if (fcp.relativePath.pathString.startsWith("META-INFO") || fcp.relativePath.pathString.endsWith(".class")) {
+                fcp.exclude()
+            }
+        }
+
+        includeEmptyDirs false
+    }
+
+    def forUnitTestsJarTask = task forUnitTestsJar(type: Jar) {
+        from extractJnaResources
+        from "$buildDir/rustJniLibs/desktop"
+    }
+
+    project.afterEvaluate {
+        forUnitTestsJarTask.dependsOn(tasks["cargoBuild"])
+    }
+
     task sourcesJar(type: Jar) {
         from android.sourceSets.main.java.srcDirs
         classifier = 'sources'
@@ -45,7 +77,7 @@ ext.configurePublish = { jnaForTestConfiguration = null ->
                     from components.findByName("androidRelease")
                 }
                 artifact sourcesJar
-                // Can't publish Javadoc yet: fxaclient isn't well behaved.
+                // Can't publish Javadoc yet: Glean isn't well behaved.
                 // artifact javadocJar
 
                 // If this goes haywire with
@@ -79,6 +111,41 @@ ext.configurePublish = { jnaForTestConfiguration = null ->
                         url = libUrl
                     }
                 }
+            }
+
+            forUnitTestsJar(MavenPublication) {
+                artifact tasks['forUnitTestsJar']
+                pom {
+                    groupId = theGroupId
+                    artifactId = "${theArtifactId}-forUnitTests"
+                    description = theDescription
+                    version = rootProject.ext.library.version
+                    packaging = "jar"
+
+                    licenses {
+                        license {
+                            name = libLicense
+                            url = libLicenseUrl
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            name = 'Mozilla Glean Team'
+                            email = 'glean-team@mozilla.com'
+                        }
+                    }
+
+                    scm {
+                        connection = libVcsUrl
+                        developerConnection = libVcsUrl
+                        url = libUrl
+                    }
+                }
+
+                // This is never the publication we want to use when publishing a
+                // parent project with us as a child `project()` dependency.
+                alias = true
             }
         }
     }
