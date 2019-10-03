@@ -270,7 +270,10 @@ jobs:
           path: glean-core/android/build/reports/tests
       - run:
           name: Package a release artifact
-          command: ./gradlew --no-daemon publish
+          command: |
+            ./gradlew --no-daemon assembleRelease
+            ./gradlew --no-daemon publish
+            ./gradlew --no-daemon checkMavenArtifacts
           environment:
             GRADLE_OPTS: -Xmx2048m
       - persist_to_workspace:
