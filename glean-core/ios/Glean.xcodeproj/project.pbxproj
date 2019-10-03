@@ -365,7 +365,6 @@
 			attributes = {
 				LastSwiftUpdateCheck = 1010;
 				LastUpgradeCheck = 1030;
-				ORGANIZATIONNAME = "Jan-Erik Rediger";
 				TargetAttributes = {
 					BF3DE3902243A2F20018E23F = {
 						CreatedOnToolsVersion = 10.1;
