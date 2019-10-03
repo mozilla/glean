@@ -3,9 +3,13 @@ groupId: org.mozilla.telemetry
 projects:
   glean-core:
     path: glean-core/android
-    artifactId: glean-core
-    publishedArtifacts: [glean-core, glean-core-forUnitTests, glean-core-withoutLib]
-    description: 'The Glean core library'
+    artifactId: glean
+    publications:
+      - name: glean
+        type: aar
+      - name: glean-forUnitTests
+        type: jar
+    description: 'The Glean SDK is a modern approach for a Telemetry library and is part of the Glean project.'
   glean-sample-app:
     path: samples/android/app
     artifactId: glean-core-sample-app

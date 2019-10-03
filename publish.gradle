@@ -9,63 +9,19 @@ def libProjectName = properties.libProjectName
 def libUrl = properties.libUrl
 def libVcsUrl = properties.libVcsUrl
 
-// If using jnaForTestConfiguration or variantWithoutLib,
-// please also update the corresponding .buildconfig-android.yml
-// `publishedArtifacts` property.
-ext.configurePublish = { jnaForTestConfiguration = null,
-                         variantWithoutLib = null ->
+// `jnaForTestConfiguration` is a hacky way to say yes, I'm using JNA and want
+// to pack the JNA dispatch libraries and my Rust libraries into a single JAR
+// for use in unit tests that run on a development host (and not an Android
+// target device).  We extract the JNA libraries and our local Rust libraries
+// and stick them into a JAR that consumers augment their test configuration
+// with.
+//
+// It's only used for megazords, for which it's required. Passing it in for a
+// non-megazord is allowed, but will trigger a warning.
+ext.configurePublish = { jnaForTestConfiguration = null ->
     def theGroupId = rootProject.ext.library.groupId
     def theArtifactId = project.ext.artifactId
     def theDescription = project.ext.description
-    // `jnaForTestConfiguration` is a hacky way to say yes, I'm using JNA and
-    // want to pack the JNA dispatch libraries and my Rust libraries into a
-    // single JAR for use in unit tests that run on a development host (and not
-    // an Android target device).  We extract the JNA libraries and our local
-    // Rust libraries and stick them into a JAR that consumers augment their
-    // test configuration with.
-    //
-    // `variantWithoutLib` says to publish an AAR that doesn't have native Rust
-    // libraries packed into it.  Such an AAR will be aggregated into another
-    // Maven publication that has a single megazord Rust library that provides
-    // the native code functionality.
-    if (jnaForTestConfiguration != null) {
-        task extractJnaResources(type: Sync) {
-            dependsOn jnaForTestConfiguration
-
-            from {
-                // Defer the resolution of the configuration.  This helps to
-                // avoid a nasty issue with the Android-Gradle plugin 3.2.1,
-                // like `Cannot change attributes of configuration
-                // ':PROJECT:kapt' after it has been resolved`.
-                zipTree(jnaForTestConfiguration.singleFile)
-            }
-
-            into "${buildDir}/jnaResources/"
-
-            eachFile { FileCopyDetails fcp ->
-                // The intention is to just keep the various `*jnidispatch.*` files.
-                if (fcp.relativePath.pathString.startsWith("META-INFO") || fcp.relativePath.pathString.endsWith(".class")) {
-                    fcp.exclude()
-                }
-            }
-
-            includeEmptyDirs false
-        }
-
-        def forUnitTestsJarTask = task forUnitTestsJar(type: Jar) {
-            from extractJnaResources
-            from "$buildDir/rustJniLibs/desktop"
-            from "$buildDir/nativeLibs/desktop"
-        }
-
-        project.afterEvaluate {
-            def copyNativeLibsTask = tasks.findByName("copyNativeLibs")
-            if (copyNativeLibsTask != null) {
-                forUnitTestsJarTask.dependsOn(copyNativeLibsTask)
-            }
-            forUnitTestsJarTask.dependsOn(tasks["cargoBuild"])
-        }
-    }
 
     task sourcesJar(type: Jar) {
         from android.sourceSets.main.java.srcDirs
@@ -101,6 +57,7 @@ ext.configurePublish = { jnaForTestConfiguration = null,
                     artifactId = theArtifactId
                     description = theDescription
                     version = rootProject.ext.library.version
+                    packaging = "aar"
 
                     licenses {
                         license {
@@ -111,7 +68,7 @@ ext.configurePublish = { jnaForTestConfiguration = null,
 
                     developers {
                         developer {
-                            name = 'Firefox Telemetry'
+                            name = 'Mozilla Glean Team'
                             email = 'glean-team@mozilla.com'
                         }
                     }
@@ -122,111 +79,9 @@ ext.configurePublish = { jnaForTestConfiguration = null,
                         url = libUrl
                     }
                 }
-
-                if (variantWithoutLib != null) {
-                    // If we are publishing a `-withoutLib` publication, we
-                    // never want to choose the real one when a parent project
-                    // has us as a child `project()` dependency.
-                    alias = true
-                }
-            }
-
-            if (variantWithoutLib != null) {
-                aarWithoutLib(MavenPublication) {
-                    project.afterEvaluate {
-                        from components.findByName(variantWithoutLib)
-                    }
-                    artifact sourcesJar
-                    // Can't publish Javadoc yet: fxaclient isn't well behaved.
-                    // artifact javadocJar
-
-                    pom {
-                        groupId = theGroupId
-                        artifactId = "${theArtifactId}-withoutLib"
-                        description = theDescription
-                        version = rootProject.ext.library.version
-
-                        licenses {
-                            license {
-                                name = properties.libLicense
-                                url = properties.libLicenseUrl
-                            }
-                        }
-
-                        developers {
-                            developer {
-                                name = 'Firefox Telemetry'
-                                email = 'glean-team@mozilla.com'
-                            }
-                        }
-
-                        scm {
-                            connection = properties.libVcsUrl
-                            developerConnection = properties.libVcsUrl
-                            url = properties.libUrl
-                        }
-                    }
-                }
-            }
-
-            if (jnaForTestConfiguration != null) {
-                forUnitTestsJar(MavenPublication) {
-                    artifact tasks['forUnitTestsJar']
-
-                    pom {
-                        groupId = theGroupId
-                        artifactId = "${theArtifactId}-forUnitTests"
-                        description = theDescription
-                        version = rootProject.ext.library.version
-
-                        licenses {
-                            license {
-                                name = libLicense
-                                url = libLicenseUrl
-                            }
-                        }
-
-                        developers {
-                            developer {
-                                name = 'Firefox Telemetry'
-                                email = 'glean-team@mozilla.com'
-                            }
-                        }
-
-                        scm {
-                            connection = libVcsUrl
-                            developerConnection = libVcsUrl
-                            url = libUrl
-                        }
-                    }
-
-                    // This is never the publication we want to use when publishing a
-                    // parent project with us as a child `project()` dependency.
-                    alias = true
-                }
             }
         }
     }
 
-    task zipMavenArtifacts
-
-    publishing.publications.withType(MavenPublication).each {publication ->
-        def zipTask = task "zipMavenArtifact-${publication.artifactId}"(type: Zip) {
-            from "${project.buildDir}/maven"
-
-            include "**/${publication.artifactId}/**/*.aar"
-            include "**/${publication.artifactId}/**/*.md5"
-            include "**/${publication.artifactId}/**/*.sha1"
-            include "**/${publication.artifactId}/**/*.pom"
-            include "**/${publication.artifactId}/**/*.jar"
-
-            // Metadata is generated by maven.mozilla.org directly
-            exclude '**/*maven-metadata.xml*'
-
-            archiveName "${publication.artifactId}.maven.zip"
-            includeEmptyDirs = false
-            destinationDir(file("${project.buildDir}"))
-        }
-        zipMavenArtifacts.dependsOn(zipTask)
-    }
+    task checkMavenArtifacts
 }

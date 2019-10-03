@@ -268,6 +268,40 @@ jobs:
               $CODECOV_CMD || (sleep 5 && $CODECOV_CMD) || (sleep 5 && $CODECOV_CMD)
       - store_artifacts:
           path: glean-core/android/build/reports/tests
+      - run:
+          name: Package a release artifact
+          command: ./gradlew --no-daemon publish
+          environment:
+            GRADLE_OPTS: -Xmx2048m
+      - persist_to_workspace:
+          root: .
+          paths: build
+
+  android-release:
+    docker:
+      - image: circleci/golang:1.13
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: Publish a release on GitHub
+          command: |
+            go get github.com/tcnksm/ghr
+            VERSION=$(git describe --tag)
+            RAWVERSION="${VERSION#v}"
+            VERSIONFILE=.buildconfig.yml
+            if ! grep -q "libraryVersion: ${RAWVERSION}" "${VERSIONFILE}"; then
+               echo "=================================================="
+               echo "${VERSIONFILE} does not contain the expected tagged version ${RAWVERSION}"
+               echo "Instead it has:"
+               grep "libraryVersion:" "${VERSIONFILE}"
+               echo "Ensure the tag corresponds to the version in ${VERSIONFILE}"
+               echo "=================================================="
+               exit 1
+            fi
+            ARTIFACTS="./build/maven/org/mozilla/telemetry/glean/${RAWVERSION}/"
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${VERSION} ${ARTIFACTS}
 
   # via https://circleci.com/blog/deploying-documentation-to-github-pages-with-continuous-integration/
   Generate Rust documentation:
@@ -384,3 +418,20 @@ workflows:
   coverage:
     jobs:
       - Rust code coverage
+
+  release:
+    jobs:
+      - Android tests:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
+      - android-release:
+          requires:
+            - Android tests
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
