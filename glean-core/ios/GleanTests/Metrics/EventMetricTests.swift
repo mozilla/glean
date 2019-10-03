@@ -237,4 +237,52 @@ class EventMetricTypeTests: XCTestCase {
         XCTAssertNotNil(events)
         XCTAssertEqual(1, events?.count)
     }
+
+    func testFlushQueuedEventsOnStartupDroppingPreinitEvents() {
+        setupHttpResponseStub()
+        expectation = expectation(description: "Completed upload")
+
+        let event = EventMetricType<SomeExtraKeys>(
+            category: "telemetry",
+            name: "test_event",
+            sendInPings: ["events"],
+            lifetime: .ping,
+            disabled: false,
+            allowedExtraKeys: ["some_extra"]
+        )
+
+        event.record(extra: [.someExtra: "run1"])
+        XCTAssertEqual(1, try! event.testGetValue().count)
+
+        Dispatchers.shared.setTaskQueuing(enabled: true)
+        event.record(extra: [.someExtra: "pre-init"])
+
+        Glean.shared.resetGlean(clearStores: false)
+
+        event.record(extra: [.someExtra: "post-init"])
+
+        waitForExpectations(timeout: 5.0) { error in
+            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
+        }
+
+        let events = lastPingJson?["events"] as? [Any]
+        XCTAssertNotNil(events)
+        XCTAssertEqual(1, events?.count)
+        XCTAssertEqual("run1", (((events?[0] as? [String: Any])?["extra"] as? [String: Any])?["some_extra"] as? String))
+
+        setupHttpResponseStub()
+        expectation = expectation(description: "Completed upload")
+
+        Glean.shared.sendPingsByName(pingNames: ["events"])
+
+        waitForExpectations(timeout: 5.0) { error in
+            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
+        }
+
+        let events2 = lastPingJson?["events"] as? [Any]
+        XCTAssertNotNil(events2)
+        XCTAssertEqual(2, events2?.count)
+        XCTAssertEqual("pre-init", (((events2?[0] as? [String: Any])?["extra"] as? [String: Any])?["some_extra"] as? String))
+        XCTAssertEqual("post-init", (((events2?[1] as? [String: Any])?["extra"] as? [String: Any])?["some_extra"] as? String))
+    }
 }
