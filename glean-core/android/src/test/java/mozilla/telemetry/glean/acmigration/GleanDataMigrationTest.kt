@@ -10,6 +10,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.work.testing.WorkManagerTestInitHelper
 import mozilla.telemetry.glean.Glean
+import mozilla.telemetry.glean.GleanMetrics.GleanCoreMigration
 import mozilla.telemetry.glean.GleanMetrics.Pings
 import mozilla.telemetry.glean.config.Configuration
 import mozilla.telemetry.glean.getMockWebServer
@@ -19,6 +20,7 @@ import mozilla.telemetry.glean.utils.toList
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -151,9 +153,7 @@ class GleanDataMigrationTest {
             true
         )
 
-        // We should be marked as migrated. TODO: Uncomment this once bug 1583454 is
-        // merged, otherwise this test will fail.
-        // assertTrue(GleanCoreMigration.successful.testGetValue())
+        assertTrue(GleanCoreMigration.successful.testGetValue())
 
         // Trigger a baseline and a metrics ping.
         Pings.baseline.send()

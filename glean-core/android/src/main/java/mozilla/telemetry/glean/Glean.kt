@@ -146,9 +146,6 @@ open class GleanInternalAPI internal constructor () {
         val migrator = GleanACDataMigrator(applicationContext)
         val acMetadata = migrator.getACMetadata()
 
-        // TODO: like we do in glean-ac, we should check if we already have a client id.
-        // If we don't, then we don't need to go through migration and this is likely a new
-        // client.
         val newSequenceNums = if (migrator.shouldMigrateData()) {
             acMetadata.toFfi()
         } else {
@@ -212,7 +209,7 @@ open class GleanInternalAPI internal constructor () {
         // Migrate the remaining metrics and mark the migration as complete.
         if (migrator.shouldMigrateData()) {
             migrator.migratePingLifetimeMetrics()
-            // migrator.markAsMigrated() // TODO Uncomment when all engines are merged
+            migrator.markAsMigrated()
         }
     }
 
