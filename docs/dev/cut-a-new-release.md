@@ -18,7 +18,7 @@ These are the steps needed to cut a new release from latest master.
         4. Make sure the changelog follows the format of the other changelog entries.
             - Note that we try to provide PR or issue numbers (and links) for each change. Please add these if they are missing.
 
-    2. Add a new `# Unrelease Changes` on top
+    2. Add a new `# Unreleased Changes` on top
 
 2. Bump `libraryVersion` in the top-level [.buildconfig.yml](https://github.com/mozilla/glean/blob/master/.buildconfig.yml) file. Be sure you're following semver, and if in doubt, ask.
 3. Land the commits that perform the steps above. This takes a PR, typically, because of branch protection on master.
