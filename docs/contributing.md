@@ -44,6 +44,8 @@ To run all Kotlin tests:
 ./gradlew test
 ```
 
+or run tests in Android Studio.
+
 To run all Swift tests:
 
 ```
