@@ -7,8 +7,9 @@
 /// on a concurrent queue per the documentation for the `Operation` class
 /// found [here](https://developer.apple.com/documentation/foundation/operation)
 class PingUploadOperation: GleanOperation {
-    var dataTask: URLSessionDataTask?
+    var uploadTask: URLSessionUploadTask?
     let request: URLRequest
+    let data: Data?
     let callback: (Bool, Error?) -> Void
 
     /// Create a new PingUploadOperation
@@ -16,14 +17,15 @@ class PingUploadOperation: GleanOperation {
     /// - parameters:
     ///     * request: The `URLRequest` used to upload the ping to the server
     ///     * callback: The callback that the underlying data task returns results through
-    init(request: URLRequest, callback: @escaping (Bool, Error?) -> Void) {
+    init(request: URLRequest, data: Data?, callback: @escaping (Bool, Error?) -> Void) {
         self.request = request
+        self.data = data
         self.callback = callback
     }
 
     /// Handles cancelling the underlying data task
     public override func cancel() {
-        dataTask?.cancel()
+        uploadTask?.cancel()
         super.cancel()
     }
 
@@ -34,8 +36,15 @@ class PingUploadOperation: GleanOperation {
             return
         }
 
-        // Create the data task with appropriate status code handling
-        dataTask = URLSession.shared.dataTask(with: request) { _, response, error in
+        // Build a URLSession with no-caching suitable for uploading our pings
+        let config = URLSessionConfiguration.default
+        config.requestCachePolicy = NSURLRequest.CachePolicy.reloadIgnoringLocalCacheData
+        config.urlCache = nil
+        let session = URLSession(configuration: config)
+        
+        // Create an URLSessionUploadTask to upload our ping in the background and handle the
+        // server responses.
+        uploadTask = session.uploadTask(with: request, from: data) { _, response, error in
             let httpResponse = response as? HTTPURLResponse
             let statusCode = httpResponse?.statusCode ?? 0
             switch statusCode {
@@ -75,6 +84,6 @@ class PingUploadOperation: GleanOperation {
     }
 
     override func main() {
-        dataTask?.resume()
+        uploadTask?.resume()
     }
 }

@@ -51,7 +51,7 @@ public class HttpPingUploader {
         // Build the request and create an async upload operation and launch it through the
         // Dispatchers
         if let request = buildRequest(path: path, data: data) {
-            let uploadOperation = PingUploadOperation(request: request, callback: callback)
+            let uploadOperation = PingUploadOperation(request: request, data: Data(data.utf8), callback: callback)
             Dispatchers.shared.launchConcurrent(operation: uploadOperation)
         }
     }
