@@ -46,9 +46,8 @@ public class LabeledMetricType<T> {
         switch subMetric {
         case is CounterMetricType:
             metricTypeInstantiator = glean_new_labeled_counter_metric
-        // TODO(bug 1583772): Requires the BooleanMetricType first
-        // case is BooleanMetricType:
-        //     metricTypeInstantiator = glean_new_labeled_boolean_metric
+        case is BooleanMetricType:
+            metricTypeInstantiator = glean_new_labeled_boolean_metric
         case is StringMetricType:
             metricTypeInstantiator = glean_new_labeled_string_metric
         default:
@@ -77,9 +76,8 @@ public class LabeledMetricType<T> {
             switch self.subMetric {
             case is CounterMetricType:
                 glean_destroy_labeled_counter_metric(self.handle)
-            // TODO(bug 1583772): Requires the BooleanMetricType first
-            // case is BooleanMetricType:
-            //     glean_destroy_labeled_boolean_metric(self.handle)
+            case is BooleanMetricType:
+                glean_destroy_labeled_boolean_metric(self.handle)
             case is StringMetricType:
                 glean_destroy_labeled_string_metric(self.handle)
             default:
@@ -113,10 +111,9 @@ public class LabeledMetricType<T> {
         case is CounterMetricType:
             let handle = glean_labeled_counter_metric_get(Glean.shared.handle, self.handle, label)
             return CounterMetricType(withHandle: handle, disabled: self.disabled, sendInPings: self.sendInPings) as! T
-        // TODO(bug 1583772): Requires the BooleanMetricType first
-        // case is BooleanMetricType:
-        //     let handle = glean_labeled_boolean_metric_get(Glean.shared.handle, self.handle, label)
-        //    return BooleanMetricType(withHandle: handle, disabled: self.disabled, sendInPings: self.sendInPings) as! T
+        case is BooleanMetricType:
+            let handle = glean_labeled_boolean_metric_get(Glean.shared.handle, self.handle, label)
+            return BooleanMetricType(withHandle: handle, disabled: self.disabled, sendInPings: self.sendInPings) as! T
         case is StringMetricType:
             let handle = glean_labeled_string_metric_get(Glean.shared.handle, self.handle, label)
             return StringMetricType(withHandle: handle, disabled: self.disabled, sendInPings: self.sendInPings) as! T

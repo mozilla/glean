@@ -32,6 +32,13 @@ public class BooleanMetricType {
         }
     }
 
+    /// An internal constructor to be used by the `LabeledMetricType` directly.
+    init(withHandle handle: UInt64, disabled: Bool, sendInPings: [String]) {
+        self.handle = handle
+        self.disabled = disabled
+        self.sendInPings = sendInPings
+    }
+
     /// Destroy this metric.
     deinit {
         if self.handle != 0 {
