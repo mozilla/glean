@@ -238,6 +238,12 @@ class EventMetricTypeTests: XCTestCase {
         XCTAssertEqual(1, events?.count)
     }
 
+    private func getExtraValue(from event: Any?, for key: String) -> String {
+        let event = event! as! [String: Any]
+        let extras = event["extra"] as! [String: Any]
+        return extras[key] as! String
+    }
+
     func testFlushQueuedEventsOnStartupDroppingPreinitEvents() {
         setupHttpResponseStub()
         expectation = expectation(description: "Completed upload")
@@ -268,7 +274,7 @@ class EventMetricTypeTests: XCTestCase {
         let events = lastPingJson?["events"] as? [Any]
         XCTAssertNotNil(events)
         XCTAssertEqual(1, events?.count)
-        XCTAssertEqual("run1", ((events?[0] as? [String: Any])?["extra"] as? [String: Any])?["some_extra"] as? String)
+        XCTAssertEqual("run1", getExtraValue(from: events![0], for: "some_extra"))
 
         setupHttpResponseStub()
         expectation = expectation(description: "Completed upload")
@@ -282,17 +288,7 @@ class EventMetricTypeTests: XCTestCase {
         let events2 = lastPingJson?["events"] as? [Any]
         XCTAssertNotNil(events2)
         XCTAssertEqual(2, events2?.count)
-        XCTAssertEqual(
-            "pre-init",
-            (
-                (events2?[0] as? [String: Any])?["extra"] as? [String: Any]
-            )?["some_extra"] as? String
-        )
-        XCTAssertEqual(
-            "post-init",
-            (
-                (events2?[1] as? [String: Any])?["extra"] as? [String: Any]
-            )?["some_extra"] as? String
-        )
+        XCTAssertEqual("pre-init", getExtraValue(from: events2![0], for: "some_extra"))
+        XCTAssertEqual("post-init", getExtraValue(from: events2![1], for: "some_extra"))
     }
 }
