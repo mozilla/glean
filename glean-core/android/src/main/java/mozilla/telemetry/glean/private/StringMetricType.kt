@@ -93,6 +93,7 @@ class StringMetricType internal constructor(
      * @return true if metric value exists, otherwise false
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    @JvmOverloads
     fun testHasValue(pingName: String = sendInPings.first()): Boolean {
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.assertInTestingMode()
@@ -111,6 +112,7 @@ class StringMetricType internal constructor(
      * @throws [NullPointerException] if no value is stored
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    @JvmOverloads
     fun testGetValue(pingName: String = sendInPings.first()): String {
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.assertInTestingMode()
