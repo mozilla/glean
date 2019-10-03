@@ -177,8 +177,18 @@ internal object Dispatchers {
         /**
          * Helper function to execute the task as either an synchronous or asynchronous operation,
          * depending on whether [testingMode] is true.
+         *
+         * WARNING: THIS SHOULD ALMOST NEVER BE USED. IF IN DOUBT, USE [launch] INSTEAD.
+         *
+         * [launch] is useful for running tasks that might be called before initialization, but
+         * need to actually run after initialization (which is true for most tasks in Glean).
+         * This should only be called directly for tasks that must run immediately after
+         * initialization.
+         *
+         * This has internal visibility only so that it can be called directly to
+         * send queued events immediately at startup before any metric recording.
          */
-        private fun executeTask(block: suspend CoroutineScope.() -> Unit): Job? {
+        internal fun executeTask(block: suspend CoroutineScope.() -> Unit): Job? {
             return when {
                 testingMode -> {
                     runBlocking {
