@@ -38,14 +38,37 @@ cargo test --all
 If you plan to work on the Android component bindings, you should also review
 the instructions for [setting up an Android build environment](https://github.com/mozilla/glean/blob/master/docs/dev/setup-android-build-environment.md)
 
+To run all Kotlin tests:
+
+```
+./gradlew test
+```
+
+To run all Swift tests:
+
+```
+bin/run-ios-tests.sh
+```
+
+or run tests in Xcode.
+
 ## Sending Pull Requests
 
 Patches should be submitted as [pull requests](https://help.github.com/articles/about-pull-requests/) (PRs).
 
 Before submitting a PR:
-- Your code must run and pass all the automated tests before you submit your PR for review. "Work in progress" pull requests are allowed to be submitted, but should be clearly labeled as such and should not be merged until all tests pass and the code has been reviewed.
-  - Run `cargo test --all` to make sure all tests still pass and no warnings are emitted.
-  - Run `cargo fmt` to ensure the code is formatted correctly.
+- Your code must run and pass all the automated tests before you submit your PR for review.
+- "Work in progress" pull requests are allowed to be submitted, but should be clearly labeled as such and should not be merged until all tests pass and the code has been reviewed.
+- For changes to Rust code
+  - `cargo test --all` produces no test failures
+  - `cargo clippy --all --all-targets --all-features -- -D warnings` runs without emitting any warnings or errors.
+  - `cargo fmt` does not produce any changes to the code.
+- For changes to Kotlin code
+  - `./gradlew ktlint detekt` runs without emitting any warnings.
+  - `./gradlew test` runs without emitting any warnings or errors.
+- For changes to Swift code
+  - `swiftformat --swiftversion 5 glean-core/ios samples/ios && swiftlint` runs without emitting any warnings or producing changes.
+  - `bin/run-ios-tests.sh` (or running tests in Xcode) runs without emitting any warnings or errors.
 - Your patch should include new tests that cover your changes. It is your and your reviewer's responsibility to ensure your patch includes adequate tests.
 
 When submitting a PR:
@@ -57,4 +80,13 @@ When submitting a PR:
 
 ## Code Review
 
-This project is production Mozilla code and subject to our [engineering practices and quality standards](https://developer.mozilla.org/en-US/docs/Mozilla/Developer_guide/Committing_Rules_and_Responsibilities). Every patch must be peer reviewed by a member of the Application Services team.
+This project is production Mozilla code and subject to our
+[engineering practices and quality standards](https://developer.mozilla.org/en-US/docs/Mozilla/Developer_guide/Committing_Rules_and_Responsibilities).
+Every patch must be peer reviewed by a member of the Glean core team.
+
+Reviewers are defined in the [CODEOWNERS](https://github.com/mozilla/glean/blob/master/.github/CODEOWNERS) file
+and are automatically added for every pull request.
+Every pull request needs to be approved by at least one of these people before landing.
+
+The submitter needs to decide on their own discretion whether the changes require a look from more than a single reviewer or any outside developer.
+Reviewers can also ask for additional approval from other reviewers.
