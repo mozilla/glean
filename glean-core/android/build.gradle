@@ -64,6 +64,19 @@ android {
     // Uncomment to include debug symbols in native library builds.
     // packagingOptions { doNotStrip "**/*.so" }
 
+    // This is required to support new AndroidX support libraries.
+    // See mozilla-mobile/android-components#842
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+        kotlinOptions {
+            jvmTarget = "1.8"
+        }
+    }
+
     testOptions {
         unitTests.all {
             testLogging {
@@ -71,6 +84,10 @@ android {
             }
 
             maxHeapSize = "1024m"
+        }
+
+        unitTests {
+            includeAndroidResources = true
         }
     }
 }
@@ -151,14 +168,6 @@ configurations {
     // correct runtime classpath when invoked with Android Studio's built-in JUnit test runner.
     // Success!
     jnaForTest
-}
-
-android {
-  testOptions {
-    unitTests {
-      includeAndroidResources = true
-    }
-  }
 }
 
 dependencies {
