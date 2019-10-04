@@ -171,7 +171,7 @@ class GleanDataMigrationTest {
 
         // Trigger a baseline and a metrics ping.
         Pings.baseline.send()
-        triggerWorkManager()
+        triggerWorkManager(context)
 
         // Check that we received the expected sequence number for the baseline ping.
         val baselineJson = waitForSpecificPing(pingServer, "baseline")
@@ -249,7 +249,7 @@ class GleanDataMigrationTest {
 
         // Trigger a baseline and a metrics ping.
         Pings.baseline.send()
-        triggerWorkManager()
+        triggerWorkManager(context)
 
         // Check that we received the expected sequence number for the baseline ping.
         val baselineJson = waitForSpecificPing(pingServer, "baseline")

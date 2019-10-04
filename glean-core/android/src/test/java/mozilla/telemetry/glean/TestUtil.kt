@@ -155,11 +155,12 @@ internal class WorkerStatus(val isEnqueued: Boolean, val workerId: UUID? = null)
  * Helper function to check to see if a worker has been scheduled with the [WorkManager] and return
  * the status along with the worker ID in a [WorkerStatus] object.
  *
+ * @param context the application [Context] to get the [WorkManager] instance for
  * @param tag a string representing the worker tag
  * @return [WorkerStatus] that contains the enqueued state along with the ID
  */
-internal fun getWorkerStatus(tag: String): WorkerStatus {
-    val instance = WorkManager.getInstance()
+internal fun getWorkerStatus(context: Context, tag: String): WorkerStatus {
+    val instance = WorkManager.getInstance(context)
     val statuses = instance.getWorkInfosByTag(tag)
     try {
         val workInfoList = statuses.get()
@@ -181,18 +182,21 @@ internal fun getWorkerStatus(tag: String): WorkerStatus {
 /**
  * Wait for a specifically tagged [WorkManager]'s Worker to be enqueued.
  *
+ * @param context the application [Context] to get the [WorkManager] instance for
  * @param workTag the tag of the expected Worker
  * @param timeoutMillis how log before stopping the wait. This defaults to 5000ms (5 seconds).
  */
-internal fun waitForEnqueuedWorker(workTag: String, timeoutMillis: Long = 5000) = runBlocking {
-    runBlocking {
-        withTimeout(timeoutMillis) {
-            do {
-                if (getWorkerStatus(workTag).isEnqueued) {
-                    return@withTimeout
-                }
-            } while (true)
-        }
+internal fun waitForEnqueuedWorker(
+    context: Context,
+    workTag: String,
+    timeoutMillis: Long = 5000
+) = runBlocking {
+    withTimeout(timeoutMillis) {
+        do {
+            if (getWorkerStatus(context, workTag).isEnqueued) {
+                return@withTimeout
+            }
+        } while (true)
     }
 }
 
@@ -200,16 +204,18 @@ internal fun waitForEnqueuedWorker(workTag: String, timeoutMillis: Long = 5000) 
  * Helper function to simulate WorkManager being triggered since there appears to be a bug in
  * the current WorkManager test utilites that prevent it from being triggered by a test.  Once this
  * is fixed, the contents of this can be amended to trigger WorkManager directly.
+ *
+ * @param context the application [Context] to get the [WorkManager] instance for
  */
-internal fun triggerWorkManager() {
+internal fun triggerWorkManager(context: Context) {
     // Check that the work is scheduled
-    val status = getWorkerStatus(PingUploadWorker.PING_WORKER_TAG)
+    val status = getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG)
     Assert.assertTrue("A scheduled PingUploadWorker must exist",
         status.isEnqueued)
 
     // Trigger WorkManager using TestDriver
-    val workManagerTestInitHelper = WorkManagerTestInitHelper.getTestDriver()
-    workManagerTestInitHelper.setAllConstraintsMet(status.workerId!!)
+    val workManagerTestInitHelper = WorkManagerTestInitHelper.getTestDriver(context)
+    workManagerTestInitHelper!!.setAllConstraintsMet(status.workerId!!)
 }
 
 /**

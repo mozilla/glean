@@ -129,7 +129,8 @@ class GleanDebugActivityTest {
     fun `pings are sent using sendPing`() {
         val server = getMockWebServer()
 
-        resetGlean(config = Glean.configuration.copy(
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        resetGlean(context, Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port
         ))
 
@@ -159,7 +160,7 @@ class GleanDebugActivityTest {
             serverEndpoint = "http://" + server.hostName + ":" + server.port
         )
 
-        triggerWorkManager()
+        triggerWorkManager(context)
         val request = server.takeRequest(10L, TimeUnit.SECONDS)
 
         assertTrue(
@@ -173,7 +174,8 @@ class GleanDebugActivityTest {
     fun `tagPings filters ID's that don't match the pattern`() {
         val server = getMockWebServer()
 
-        resetGlean(config = Glean.configuration.copy(
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        resetGlean(context, Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port
         ))
 
@@ -202,7 +204,7 @@ class GleanDebugActivityTest {
         assertEquals("Server endpoint must be reset if tag didn't pass regex",
             "http://" + server.hostName + ":" + server.port, Glean.configuration.serverEndpoint)
 
-        triggerWorkManager()
+        triggerWorkManager(context)
         val request = server.takeRequest(10L, TimeUnit.SECONDS)
 
         assertTrue(
@@ -223,7 +225,8 @@ class GleanDebugActivityTest {
         val pingTag = "test-debug-ID"
 
         // Use the test client in the Glean configuration
-        resetGlean(config = Glean.configuration.copy(
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        resetGlean(context, Glean.configuration.copy(
             httpClient = TestPingTagClient(debugHeaderValue = pingTag)
         ))
 
@@ -249,6 +252,6 @@ class GleanDebugActivityTest {
 
         // This will trigger the call to `fetch()` in the TestPingTagClient which is where the
         // test assertions will occur
-        triggerWorkManager()
+        triggerWorkManager(context)
     }
 }

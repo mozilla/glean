@@ -24,10 +24,12 @@ class PingUploadWorkerTest {
 
     private var pingUploadWorker: PingUploadWorker? = null
 
+    private val context: Context
+        get() = ApplicationProvider.getApplicationContext()
+
     @Before
     @Throws(Exception::class)
     fun setUp() {
-        val context: Context = ApplicationProvider.getApplicationContext()
         MockitoAnnotations.initMocks(this)
         resetGlean(context, config = Configuration().copy(logPings = true))
         pingUploadWorker = PingUploadWorker(context, workerParams!!)
@@ -54,17 +56,17 @@ class PingUploadWorkerTest {
 
     @Test
     fun `cancel() correctly cancels worker`() {
-        PingUploadWorker.enqueueWorker()
+        PingUploadWorker.enqueueWorker(context)
 
         // Verify that the worker is enqueued
         Assert.assertTrue("PingUploadWorker is enqueued",
-            getWorkerStatus(PingUploadWorker.PING_WORKER_TAG).isEnqueued)
+            getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued)
 
         // Cancel the worker
-        PingUploadWorker.cancel()
+        PingUploadWorker.cancel(context)
 
         // Verify worker has been cancelled
         Assert.assertFalse("PingUploadWorker is not enqueued",
-            getWorkerStatus(PingUploadWorker.PING_WORKER_TAG).isEnqueued)
+            getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued)
     }
 }

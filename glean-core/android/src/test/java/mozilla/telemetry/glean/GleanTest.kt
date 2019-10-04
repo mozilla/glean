@@ -51,9 +51,11 @@ import java.util.concurrent.TimeUnit
 @ObsoleteCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 class GleanTest {
+    private val context: Context
+        get() = ApplicationProvider.getApplicationContext()
 
     @get:Rule
-    val gleanRule = GleanTestRule(ApplicationProvider.getApplicationContext())
+    val gleanRule = GleanTestRule(context)
 
     @After
     fun resetGlobalState() {
@@ -65,7 +67,6 @@ class GleanTest {
         // Can't use resetGlean directly
         Glean.testDestroyGleanHandle()
 
-        val context: Context = ApplicationProvider.getApplicationContext()
         val config = Configuration()
 
         Glean.setUploadEnabled(true)
@@ -77,7 +78,6 @@ class GleanTest {
         // Can't use resetGlean directly
         Glean.testDestroyGleanHandle()
 
-        val context: Context = ApplicationProvider.getApplicationContext()
         val config = Configuration()
 
         Glean.setUploadEnabled(true)
@@ -91,7 +91,6 @@ class GleanTest {
     @Test
     fun `send a ping`() {
         val server = getMockWebServer()
-        val context: Context = ApplicationProvider.getApplicationContext()
         resetGlean(context, Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port,
             logPings = true
@@ -104,7 +103,7 @@ class GleanTest {
         assertEquals(1, pingPath.listFiles()?.size)
 
         // Now trigger it to upload
-        triggerWorkManager()
+        triggerWorkManager(context)
 
         val request = server.takeRequest(20L, TimeUnit.SECONDS)
         val docType = request.path.split("/")[3]
@@ -114,7 +113,7 @@ class GleanTest {
     @Test
     fun `sending an empty ping doesn't queue work`() {
         Glean.sendPings(listOf(Pings.metrics))
-        assertFalse(getWorkerStatus(PingUploadWorker.PING_WORKER_TAG).isEnqueued)
+        assertFalse(getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued)
     }
 
     // Tests from glean-ac (706af1f).
@@ -169,7 +168,8 @@ class GleanTest {
             sendInPings = listOf("events")
         )
 
-        resetGlean(getContextWithMockedInfo(), Glean.configuration.copy(
+        val context = getContextWithMockedInfo()
+        resetGlean(context, Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port,
             logPings = true
         ))
@@ -188,7 +188,7 @@ class GleanTest {
             lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
 
             // Trigger worker task to upload the pings in the background
-            triggerWorkManager()
+            triggerWorkManager(context)
 
             val requests = mutableMapOf<String, String>()
             for (i in 0..1) {
@@ -224,7 +224,7 @@ class GleanTest {
     fun `initialize() must not crash the app if Glean's data dir is messed up`() {
         // Remove the Glean's data directory.
         val gleanDir = File(
-            ApplicationProvider.getApplicationContext<Context>().applicationInfo.dataDir,
+            context.applicationInfo.dataDir,
             GleanInternalAPI.GLEAN_DATA_DIR
         )
         assertTrue(gleanDir.deleteRecursively())
@@ -275,7 +275,7 @@ class GleanTest {
     fun `Initializing twice is a no-op`() {
         val beforeConfig = Glean.configuration
 
-        Glean.initialize(ApplicationProvider.getApplicationContext())
+        Glean.initialize(context)
 
         val afterConfig = Glean.configuration
 
@@ -290,7 +290,7 @@ class GleanTest {
         runBlocking {
             gleanSpy.handleBackgroundEvent()
         }
-        assertFalse(getWorkerStatus(PingUploadWorker.PING_WORKER_TAG).isEnqueued)
+        assertFalse(getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued)
     }
 
     @Test
@@ -300,7 +300,7 @@ class GleanTest {
         runBlocking {
             Glean.handleBackgroundEvent()
         }
-        assertFalse(getWorkerStatus(PingUploadWorker.PING_WORKER_TAG).isEnqueued)
+        assertFalse(getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued)
     }
 
     @Test
@@ -392,7 +392,8 @@ class GleanTest {
 
         val server = getMockWebServer()
 
-        resetGlean(getContextWithMockedInfo(), Glean.configuration.copy(
+        val context = getContextWithMockedInfo()
+        resetGlean(context, Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port,
             logPings = true
         ))
@@ -425,8 +426,8 @@ class GleanTest {
         // Trigger worker task to upload the pings in the background. We need
         // to wait for the work to be enqueued first, since this test runs
         // asynchronously.
-        waitForEnqueuedWorker(PingUploadWorker.PING_WORKER_TAG)
-        triggerWorkManager()
+        waitForEnqueuedWorker(context, PingUploadWorker.PING_WORKER_TAG)
+        triggerWorkManager(context)
 
         // Validate the received data.
         val request = server.takeRequest(20L, TimeUnit.SECONDS)
@@ -487,9 +488,9 @@ class GleanTest {
 
         // Verify that the workers are enqueued
         assertTrue("PingUploadWorker is enqueued",
-            getWorkerStatus(PingUploadWorker.PING_WORKER_TAG).isEnqueued)
+            getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued)
         assertTrue("MetricsPingWorker is enqueued",
-            getWorkerStatus(MetricsPingWorker.TAG).isEnqueued)
+            getWorkerStatus(context, MetricsPingWorker.TAG).isEnqueued)
 
         Glean.setUploadEnabled(true)
 
@@ -497,23 +498,22 @@ class GleanTest {
         // doesn't affect any already queued workers, since we ask consumers to set upload enabled
         // before initializing glean.
         assertTrue("PingUploadWorker is enqueued",
-            getWorkerStatus(PingUploadWorker.PING_WORKER_TAG).isEnqueued)
+            getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued)
         assertTrue("MetricsPingWorker is enqueued",
-            getWorkerStatus(MetricsPingWorker.TAG).isEnqueued)
+            getWorkerStatus(context, MetricsPingWorker.TAG).isEnqueued)
 
         // Toggle upload enabled to false
         Glean.setUploadEnabled(false)
 
         // Verify workers have been cancelled
         assertFalse("PingUploadWorker is not enqueued",
-            getWorkerStatus(PingUploadWorker.PING_WORKER_TAG).isEnqueued)
+            getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued)
         assertFalse("MetricsPingWorker is not enqueued",
-            getWorkerStatus(MetricsPingWorker.TAG).isEnqueued)
+            getWorkerStatus(context, MetricsPingWorker.TAG).isEnqueued)
     }
 
     @Test
     fun `isMainProcess must only return true if we are in the main process`() {
-        val context: Context = ApplicationProvider.getApplicationContext()
         val myPid = Int.MAX_VALUE
 
         assertTrue(Glean.isMainProcess(context))
@@ -527,8 +527,6 @@ class GleanTest {
     @Test(expected = IllegalThreadStateException::class)
     fun `Glean initialize must be called on the main thread`() {
         runBlocking(KotlinDispatchers.IO) {
-            val context: Context = ApplicationProvider.getApplicationContext()
-
             Glean.initialize(context)
         }
     }

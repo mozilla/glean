@@ -64,6 +64,19 @@ android {
     // Uncomment to include debug symbols in native library builds.
     // packagingOptions { doNotStrip "**/*.so" }
 
+    // This is required to support new AndroidX support libraries.
+    // See mozilla-mobile/android-components#842
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+        kotlinOptions {
+            jvmTarget = "1.8"
+        }
+    }
+
     testOptions {
         unitTests.all {
             testLogging {
@@ -71,6 +84,10 @@ android {
             }
 
             maxHeapSize = "1024m"
+        }
+
+        unitTests {
+            includeAndroidResources = true
         }
     }
 }
@@ -101,9 +118,9 @@ afterEvaluate {
         def javaDebugTree = fileTree(dir: "$project.buildDir/intermediates/classes/debug", excludes: fileFilter)
         def mainSrc = "$project.projectDir/src/main/java"
 
-        sourceDirectories = files([mainSrc])
-        classDirectories = files([kotlinDebugTree, javaDebugTree])
-        executionData = fileTree(dir: project.buildDir, includes: [
+        sourceDirectories.from = files([mainSrc])
+        classDirectories.from = files([kotlinDebugTree, javaDebugTree])
+        executionData.from = fileTree(dir: project.buildDir, includes: [
                 'jacoco/testDebugUnitTest.exec', 'outputs/code-coverage/connected/*coverage.ec'
         ])
     }
@@ -153,14 +170,6 @@ configurations {
     jnaForTest
 }
 
-android {
-  testOptions {
-    unitTests {
-      includeAndroidResources = true
-    }
-  }
-}
-
 dependencies {
     jnaForTest "net.java.dev.jna:jna:$versions.jna@jar"
     implementation "net.java.dev.jna:jna:$versions.jna@aar"
@@ -170,6 +179,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.coroutines"
 
     implementation "androidx.annotation:annotation:$versions.androidx_annotation"
+    implementation "androidx.lifecycle:lifecycle-extensions:$versions.androidx_lifecycle_extensions"
     implementation "androidx.work:work-runtime-ktx:$versions.androidx_work"
 
     // We need a compileOnly dependency on the following block of testing

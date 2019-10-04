@@ -36,7 +36,8 @@ class PingTypeTest {
     fun `test sending of custom pings`() {
         val server = getMockWebServer()
 
-        resetGlean(getContextWithMockedInfo(), Glean.configuration.copy(
+        val context = getContextWithMockedInfo()
+        resetGlean(context, Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port,
             logPings = true
         ))
@@ -59,7 +60,7 @@ class PingTypeTest {
 
         customPing.send()
         // Trigger worker task to upload the pings in the background
-        triggerWorkManager()
+        triggerWorkManager(context)
 
         val request = server.takeRequest(20L, TimeUnit.SECONDS)
         val docType = request.path.split("/")[3]
@@ -74,7 +75,8 @@ class PingTypeTest {
     fun `test sending of custom pings without client_id`() {
         val server = getMockWebServer()
 
-        resetGlean(getContextWithMockedInfo(), Glean.configuration.copy(
+        val context = getContextWithMockedInfo()
+        resetGlean(context, Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port,
             logPings = true
         ))
@@ -97,7 +99,7 @@ class PingTypeTest {
 
         customPing.send()
         // Trigger worker task to upload the pings in the background
-        triggerWorkManager()
+        triggerWorkManager(context)
 
         val request = server.takeRequest(20L, TimeUnit.SECONDS)
         val docType = request.path.split("/")[3]
@@ -120,7 +122,8 @@ class PingTypeTest {
             sendInPings = listOf("unknown")
         )
 
-        resetGlean(getContextWithMockedInfo(), Glean.configuration.copy(
+        val context = getContextWithMockedInfo()
+        resetGlean(context, Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port,
             logPings = true
         ))
@@ -131,7 +134,7 @@ class PingTypeTest {
         Glean.sendPingsByName(listOf("unknown"))
 
         assertFalse("We shouldn't have any pings scheduled",
-            getWorkerStatus(PingUploadWorker.PING_WORKER_TAG).isEnqueued
+            getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued
         )
     }
 
