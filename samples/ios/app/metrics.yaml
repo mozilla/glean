@@ -14,7 +14,7 @@ sample_metrics:
     description: >
       A simple counter defined in a sample app
     bugs:
-      - 123456789
+      - https://bugzilla.mozilla.org/123456789
     data_reviews:
       - N/A
     notification_emails:
