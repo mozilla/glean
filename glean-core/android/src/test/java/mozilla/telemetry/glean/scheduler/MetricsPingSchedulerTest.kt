@@ -9,6 +9,7 @@ import android.os.SystemClock
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.work.testing.WorkManagerTestInitHelper
+import mozilla.components.support.test.any
 import mozilla.telemetry.glean.getContextWithMockedInfo
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.private.Lifetime
@@ -30,7 +31,6 @@ import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.anyBoolean
 import org.mockito.Mockito.anyString
 import org.mockito.Mockito.doReturn
@@ -45,17 +45,6 @@ import java.util.concurrent.TimeUnit as AndroidTimeUnit
 
 @RunWith(AndroidJUnit4::class)
 class MetricsPingSchedulerTest {
-    private fun <T> kotlinFriendlyAny(): T {
-        // This is required to work around the Kotlin/ArgumentMatchers problem with using
-        // `verify` on non-nullable arguments (since `any` may return null). See
-        // https://github.com/nhaarman/mockito-kotlin/issues/241
-        ArgumentMatchers.any<T>()
-        // This weird cast was suggested as part of https://youtrack.jetbrains.com/issue/KT-8135 .
-        // See the related issue for why this is needed in mocks.
-        @Suppress("UNCHECKED_CAST")
-        return null as T
-    }
-
     private val context: Context
         get() = ApplicationProvider.getApplicationContext()
 
@@ -230,7 +219,7 @@ class MetricsPingSchedulerTest {
         // prior to |collectPingAndReschedule|.
         verify(mpsSpy, times(0)).updateSentDate(anyString())
         verify(mpsSpy, times(0)).schedulePingCollection(
-            kotlinFriendlyAny(),
+            any(),
             anyBoolean()
         )
 
@@ -239,7 +228,7 @@ class MetricsPingSchedulerTest {
         // Verify that we correctly called in the methods.
         verify(mpsSpy, times(1)).updateSentDate(anyString())
         verify(mpsSpy, times(1)).schedulePingCollection(
-            kotlinFriendlyAny(),
+            any(),
             anyBoolean()
         )
     }
@@ -311,7 +300,7 @@ class MetricsPingSchedulerTest {
 
         MetricsPingScheduler.isInForeground = true
 
-        verify(mpsSpy, never()).collectPingAndReschedule(kotlinFriendlyAny())
+        verify(mpsSpy, never()).collectPingAndReschedule(any())
 
         // Make sure to return the fake date when requested.
         doReturn(fakeNow).`when`(mpsSpy).getCalendarInstance()
@@ -342,7 +331,7 @@ class MetricsPingSchedulerTest {
             spy(MetricsPingScheduler(context))
         mpsSpy.updateSentDate(getISOTimeString(fakeNow, truncateTo = TimeUnit.Day))
 
-        verify(mpsSpy, never()).schedulePingCollection(kotlinFriendlyAny(), anyBoolean())
+        verify(mpsSpy, never()).schedulePingCollection(any(), anyBoolean())
 
         // Make sure to return the fake date when requested.
         doReturn(fakeNow).`when`(mpsSpy).getCalendarInstance()
@@ -353,7 +342,7 @@ class MetricsPingSchedulerTest {
         // Verify that we're scheduling for the next day and not collecting immediately.
         verify(mpsSpy, times(1)).schedulePingCollection(fakeNow, sendTheNextCalendarDay = true)
         verify(mpsSpy, never()).schedulePingCollection(fakeNow, sendTheNextCalendarDay = false)
-        verify(mpsSpy, never()).collectPingAndReschedule(kotlinFriendlyAny())
+        verify(mpsSpy, never()).collectPingAndReschedule(any())
     }
 
     @Test
@@ -376,7 +365,7 @@ class MetricsPingSchedulerTest {
         // Make sure to return the fake date when requested.
         doReturn(fakeNow).`when`(mpsSpy).getCalendarInstance()
 
-        verify(mpsSpy, never()).schedulePingCollection(kotlinFriendlyAny(), anyBoolean())
+        verify(mpsSpy, never()).schedulePingCollection(any(), anyBoolean())
 
         // Trigger the startup check.
         mpsSpy.schedule()
@@ -384,7 +373,7 @@ class MetricsPingSchedulerTest {
         // Verify that we're scheduling for today, but not collecting immediately.
         verify(mpsSpy, times(1)).schedulePingCollection(fakeNow, sendTheNextCalendarDay = false)
         verify(mpsSpy, never()).schedulePingCollection(fakeNow, sendTheNextCalendarDay = true)
-        verify(mpsSpy, never()).collectPingAndReschedule(kotlinFriendlyAny())
+        verify(mpsSpy, never()).collectPingAndReschedule(any())
     }
 
     @Test
@@ -399,7 +388,7 @@ class MetricsPingSchedulerTest {
             spy(MetricsPingScheduler(context))
         mpsSpy.sharedPreferences.edit().clear().apply()
 
-        verify(mpsSpy, never()).collectPingAndReschedule(kotlinFriendlyAny())
+        verify(mpsSpy, never()).collectPingAndReschedule(any())
 
         // Make sure to return the fake date when requested.
         doReturn(fakeNow).`when`(mpsSpy).getCalendarInstance()
@@ -424,7 +413,7 @@ class MetricsPingSchedulerTest {
             spy(MetricsPingScheduler(context))
         mpsSpy.sharedPreferences.edit().clear().apply()
 
-        verify(mpsSpy, never()).collectPingAndReschedule(kotlinFriendlyAny())
+        verify(mpsSpy, never()).collectPingAndReschedule(any())
 
         // Make sure to return the fake date when requested.
         doReturn(fakeNow).`when`(mpsSpy).getCalendarInstance()
