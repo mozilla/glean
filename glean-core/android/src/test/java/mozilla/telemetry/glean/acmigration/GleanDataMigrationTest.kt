@@ -67,11 +67,11 @@ class GleanDataMigrationTest {
             val request = pingServer.takeRequest(20L, TimeUnit.SECONDS)
 
             // Check that we received the expected sequence number for the baseline ping.
-            val baselineJson = JSONObject(request.body.readUtf8())
-            if (pingName == baselineJson.getJSONObject("ping_info")["ping_type"]) {
-                return baselineJson
+            val pingJson = JSONObject(request.body.readUtf8())
+            if (pingName == pingJson.getJSONObject("ping_info")["ping_type"]) {
+                return pingJson
             }
-        } while(true)
+        } while (true)
     }
 
     /**
