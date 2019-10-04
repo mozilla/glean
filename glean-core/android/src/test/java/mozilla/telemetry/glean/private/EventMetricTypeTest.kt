@@ -232,7 +232,8 @@ class EventMetricTypeTest {
     fun `flush queued events on startup`() {
         val server = getMockWebServer()
 
-        resetGlean(getContextWithMockedInfo(), Glean.configuration.copy(
+        val context = getContextWithMockedInfo()
+        resetGlean(context, Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port,
             logPings = true
         ))
@@ -251,7 +252,7 @@ class EventMetricTypeTest {
 
         // Start a new Glean instance to trigger the sending of "stale" events
         resetGlean(
-            getContextWithMockedInfo(),
+            context,
             Glean.configuration.copy(
                 serverEndpoint = "http://" + server.hostName + ":" + server.port,
                 logPings = true
@@ -259,7 +260,7 @@ class EventMetricTypeTest {
             clearStores = false
         )
 
-        triggerWorkManager()
+        triggerWorkManager(context)
 
         val request = server.takeRequest(1L, TimeUnit.SECONDS)
         assertEquals("POST", request.method)
@@ -284,7 +285,8 @@ class EventMetricTypeTest {
     fun `flush queued events on startup and correctly handle pre-init events`() {
         val server = getMockWebServer()
 
-        resetGlean(getContextWithMockedInfo(), Glean.configuration.copy(
+        val context = getContextWithMockedInfo()
+        resetGlean(context, Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port,
             logPings = true
         ))
@@ -305,7 +307,7 @@ class EventMetricTypeTest {
         event.record(extra = mapOf(SomeExtraKeys.SomeExtra to "pre-init"))
 
         resetGlean(
-            getContextWithMockedInfo(),
+            context,
             Glean.configuration.copy(
                 serverEndpoint = "http://" + server.hostName + ":" + server.port,
                 logPings = true
@@ -316,7 +318,7 @@ class EventMetricTypeTest {
         event.record(extra = mapOf(SomeExtraKeys.SomeExtra to "post-init"))
 
         // Trigger worker task to upload the pings in the background
-        triggerWorkManager()
+        triggerWorkManager(context)
 
         var request = server.takeRequest(20L, TimeUnit.SECONDS)
         var pingJsonData = request.body.readUtf8()
@@ -337,7 +339,7 @@ class EventMetricTypeTest {
         Glean.sendPingsByName(listOf("events"))
 
         // Trigger worker task to upload the pings in the background
-        triggerWorkManager()
+        triggerWorkManager(context)
 
         request = server.takeRequest(20L, TimeUnit.SECONDS)
         pingJsonData = request.body.readUtf8()
