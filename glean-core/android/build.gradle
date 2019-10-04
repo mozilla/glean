@@ -118,9 +118,9 @@ afterEvaluate {
         def javaDebugTree = fileTree(dir: "$project.buildDir/intermediates/classes/debug", excludes: fileFilter)
         def mainSrc = "$project.projectDir/src/main/java"
 
-        sourceDirectories = files([mainSrc])
-        classDirectories = files([kotlinDebugTree, javaDebugTree])
-        executionData = fileTree(dir: project.buildDir, includes: [
+        sourceDirectories.from = files([mainSrc])
+        classDirectories.from = files([kotlinDebugTree, javaDebugTree])
+        executionData.from = fileTree(dir: project.buildDir, includes: [
                 'jacoco/testDebugUnitTest.exec', 'outputs/code-coverage/connected/*coverage.ec'
         ])
     }
