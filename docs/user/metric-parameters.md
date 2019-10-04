@@ -8,7 +8,9 @@ All metric types must include the following required parameters:
   
 - `notification_emails`: **Required.** A list of email addresses to notify for important events with the metric or when people with context or ownership for the metric need to be contacted.
   
-- `bugs`: **Required.** A list of bugs (e.g. Bugzilla or Github) that are relevant to this metric. For example, bugs that track its original implementation or later changes to it. If a number, it is an ID to an issue in the default tracker (`bugzilla.mozilla.org`). If a string, it must be a URI to a bug page in a tracker.
+- `bugs`: **Required.** A list of bugs (e.g. Bugzilla or Github) that are relevant to this metric. For example, bugs that track its original implementation or later changes to it. 
+
+  Each entry should be the full URL to the bug in an issue tracker. The use of numbers alone is deprecated and will be an error in the future.
   
 - `data_reviews`: **Required.** A list of URIs to any data collection reviews relevant to the metric.
   
