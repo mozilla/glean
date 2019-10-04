@@ -17,6 +17,7 @@ import mozilla.telemetry.glean.getMockWebServer
 import mozilla.telemetry.glean.triggerWorkManager
 import mozilla.telemetry.glean.utils.getISOTimeString
 import mozilla.telemetry.glean.utils.toList
+import okhttp3.mockwebserver.MockWebServer
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -58,6 +59,19 @@ class GleanDataMigrationTest {
         )
 
         prefs?.edit()?.putInt("${pingName}_seq", number)?.apply()
+    }
+
+    private fun waitForSpecificPing(pingServer: MockWebServer, pingName: String): JSONObject {
+        do {
+            // Get the pending pings from the ping server.
+            val request = pingServer.takeRequest(20L, TimeUnit.SECONDS)
+
+            // Check that we received the expected sequence number for the baseline ping.
+            val pingJson = JSONObject(request.body.readUtf8())
+            if (pingName == pingJson.getJSONObject("ping_info")["ping_type"]) {
+                return pingJson
+            }
+        } while (true)
     }
 
     /**
@@ -159,11 +173,8 @@ class GleanDataMigrationTest {
         Pings.baseline.send()
         triggerWorkManager()
 
-        // Get the pending pings from the ping server.
-        val request = pingServer.takeRequest(20L, TimeUnit.SECONDS)
-
         // Check that we received the expected sequence number for the baseline ping.
-        val baselineJson = JSONObject(request.body.readUtf8())
+        val baselineJson = waitForSpecificPing(pingServer, "baseline")
         assertEquals("baseline", baselineJson.getJSONObject("ping_info")["ping_type"])
         assertEquals(TEST_BASELINE_SEQ, baselineJson.getJSONObject("ping_info")["seq"])
         assertEquals(TEST_CLIENT_ID, baselineJson.getJSONObject("client_info")["client_id"])
@@ -240,11 +251,8 @@ class GleanDataMigrationTest {
         Pings.baseline.send()
         triggerWorkManager()
 
-        // Get the pending pings from the ping server.
-        val request = pingServer.takeRequest(20L, TimeUnit.SECONDS)
-
         // Check that we received the expected sequence number for the baseline ping.
-        val baselineJson = JSONObject(request.body.readUtf8())
+        val baselineJson = waitForSpecificPing(pingServer, "baseline")
         assertEquals("baseline", baselineJson.getJSONObject("ping_info")["ping_type"])
         assertEquals(TEST_BASELINE_SEQ, baselineJson.getJSONObject("ping_info")["seq"])
         assertEquals(TEST_CLIENT_ID, baselineJson.getJSONObject("client_info")["client_id"])
