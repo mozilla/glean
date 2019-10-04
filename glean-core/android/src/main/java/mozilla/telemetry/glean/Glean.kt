@@ -187,7 +187,7 @@ open class GleanInternalAPI internal constructor () {
         Dispatchers.API.executeTask {
             val pingSent = LibGleanFFI.INSTANCE.glean_on_ready_to_send_pings(this@GleanInternalAPI.handle).toBoolean()
             if (pingSent) {
-                PingUploadWorker.enqueueWorker()
+                PingUploadWorker.enqueueWorker(applicationContext)
             }
         }
 
@@ -264,8 +264,8 @@ open class GleanInternalAPI internal constructor () {
                     // Cancel any pending workers here so that we don't accidentally upload or
                     // collect data after the upload has been disabled.
                     if (!enabled) {
-                        MetricsPingScheduler.cancel()
-                        PingUploadWorker.cancel()
+                        MetricsPingScheduler.cancel(applicationContext)
+                        PingUploadWorker.cancel(applicationContext)
                     }
                 }
 
@@ -533,7 +533,7 @@ open class GleanInternalAPI internal constructor () {
         ).toBoolean()
 
         if (sentPing) {
-            PingUploadWorker.enqueueWorker()
+            PingUploadWorker.enqueueWorker(applicationContext)
         }
     }
 
