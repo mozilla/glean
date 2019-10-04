@@ -170,6 +170,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.coroutines"
 
     implementation "androidx.annotation:annotation:$versions.androidx_annotation"
+    implementation "androidx.lifecycle:lifecycle-extensions:$versions.androidx_lifecycle_extensions"
     implementation "androidx.work:work-runtime-ktx:$versions.androidx_work"
 
     // We need a compileOnly dependency on the following block of testing
