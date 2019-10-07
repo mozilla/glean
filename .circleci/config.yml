@@ -101,6 +101,7 @@ jobs:
     resource_class: "medium+"
     steps:
       - rust-tests
+
   Rust tests - beta:
     docker:
       - image: circleci/rust:latest
@@ -269,8 +270,30 @@ jobs:
       - store_artifacts:
           path: glean-core/android/build/reports/tests
       - run:
+          name: Install packaging dependencies
+          command: |
+            sudo apt update
+            sudo apt install -y gcc-mingw-w64
+      - run:
+          name: Add Windows target
+          command: rustup target add x86_64-pc-windows-gnu
+      - run:
+          name: Fix broken mingw toolchain
+          command: |
+            # Fix broken libraries
+            # https://github.com/rust-lang/rust/issues/47048
+            # https://github.com/rust-lang/rust/issues/49078
+            # https://wiki.archlinux.org/index.php/Rust#Windows
+            for lib in crt2.o dllcrt2.o libmsvcrt.a; do cp -v /usr/x86_64-w64-mingw32/lib/$lib ~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-pc-windows-gnu/lib/; done
+      - run:
           name: Package a release artifact
           command: |
+            export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_PC_WINDOWS_GNU_RUSTFLAGS="-C linker=x86_64-w64-mingw32-gcc"
+            export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_PC_WINDOWS_GNU_AR=x86_64-w64-mingw32-ar
+            export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_PC_WINDOWS_GNU_CC=x86_64-w64-mingw32-gcc
+
+            echo "rust.targets=arm,arm64,x86_64,x86,linux-x86-64,win32-x86-64-gnu" > local.properties
+
             ./gradlew --no-daemon assembleRelease
             ./gradlew --no-daemon publish
             ./gradlew --no-daemon checkMavenArtifacts
@@ -318,7 +341,7 @@ jobs:
             find ./build/maven/org/mozilla/telemetry/ \( -name "*.aar*" -or -name "*.jar*" -or -name "*.pom*" \) \
               -exec cp {} ${PKGDIR} \;
             # Upload to GitHub
-            ./ghr ${VERSION} ${PKGDIR}
+            ./ghr -replace ${VERSION} ${PKGDIR}
 
   # via https://circleci.com/blog/deploying-documentation-to-github-pages-with-continuous-integration/
   Generate Rust documentation:
