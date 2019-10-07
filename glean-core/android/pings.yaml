@@ -17,7 +17,7 @@ baseline:
     the background.
   include_client_id: true
   bugs:
-    - 1512938
+    - https://bugzilla.mozilla.org/1512938
   data_reviews:
     - https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3
   notification_emails:
@@ -35,11 +35,12 @@ metrics:
     length of this window.
   include_client_id: true
   bugs:
-    - 1512938
+    - https://bugzilla.mozilla.org/1512938
   data_reviews:
     - https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3
   notification_emails:
     - telemetry-client-dev@mozilla.com
+    
 events:
   description: >
     The events ping's purpose is to transport all of the event metric information.
@@ -47,7 +48,7 @@ events:
     the background.
   include_client_id: true
   bugs:
-    - 1512938
+    - https://bugzilla.mozilla.org/1512938
   data_reviews:
     - https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3
   notification_emails:

@@ -17,7 +17,7 @@ test:
       - baseline
     lifetime: user
     bugs:
-      - 1234567890
+      - https://bugzilla.mozilla.org/1234567890
     data_reviews:
       - N/A
     notification_emails:
@@ -32,7 +32,7 @@ test:
       - baseline
     lifetime: application
     bugs:
-      - 1234567890
+      - https://bugzilla.mozilla.org/1234567890
     data_reviews:
       - N/A
     notification_emails:
