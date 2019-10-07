@@ -5,8 +5,15 @@
 1. Install Xcode 11.0
 2. Install [Carthage](https://github.com/Carthage/Carthage): `brew install carthage`
 3. Ensure you have Python 3 installed: `brew install python`
-4. Run `bin/bootstrap.sh` to download dependencies.
-5. (Optional, only required for building on the CLI) Install [xcpretty](https://github.com/xcpretty/xcpretty): `gem install xcpretty`
+4. Install linting and formatting tools: `brew install swiftlint swiftformat`
+5. Run `bin/bootstrap.sh` to download dependencies.
+6. (Optional, only required for building on the CLI) Install [xcpretty](https://github.com/xcpretty/xcpretty): `gem install xcpretty`
+
+To build the Swift documentation:
+
+1. Install the latest Ruby: `brew install ruby`
+2. Make the installed Ruby available: `export PATH=/usr/local/opt/ruby/bin:$PATH` (and add that line to your `.bashrc`)
+3. Install the documentation tool [jazzy](https://github.com/realm/jazzy): `gem install jazzy`
 
 ### Setting up Rust
 
