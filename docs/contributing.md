@@ -32,7 +32,7 @@ You can check that everything compiles by running the following from the
 root of your checkout:
 
 ```
-cargo test --all
+make test-rust
 ```
 
 If you plan to work on the Android component bindings, you should also review
@@ -41,7 +41,7 @@ the instructions for [setting up an Android build environment](https://github.co
 To run all Kotlin tests:
 
 ```
-./gradlew test
+make test-kotlin
 ```
 
 or run tests in Android Studio.
@@ -49,7 +49,7 @@ or run tests in Android Studio.
 To run all Swift tests:
 
 ```
-bin/run-ios-tests.sh
+make test-swift
 ```
 
 or run tests in Xcode.
@@ -62,22 +62,22 @@ Before submitting a PR:
 - Your code must run and pass all the automated tests before you submit your PR for review.
 - "Work in progress" pull requests are allowed to be submitted, but should be clearly labeled as such and should not be merged until all tests pass and the code has been reviewed.
 - For changes to Rust code
-  - `cargo test --all` produces no test failures
-  - `cargo clippy --all --all-targets --all-features -- -D warnings` runs without emitting any warnings or errors.
-  - `cargo fmt` does not produce any changes to the code.
+  - `make test-rust` produces no test failures
+  - `make clippy` runs without emitting any warnings or errors.
+  - `make rustfmt` does not produce any changes to the code.
 - For changes to Kotlin code
-  - `./gradlew ktlint detekt` runs without emitting any warnings.
-  - `./gradlew test` runs without emitting any warnings or errors.
+  - `make test-kotlin` runs without emitting any warnings or errors.
+  - `make ktlint` runs without emitting any warnings.
 - For changes to Swift code
-  - `swiftformat --swiftversion 5 glean-core/ios samples/ios && swiftlint` runs without emitting any warnings or producing changes.
-  - `bin/run-ios-tests.sh` (or running tests in Xcode) runs without emitting any warnings or errors.
+  - `make test-swift` (or running tests in Xcode) runs without emitting any warnings or errors.
+  - `make swiftlint` runs without emitting any warnings or errors.
+  - `make swiftfmt` runs without emitting any warnings or producing changes.
 - Your patch should include new tests that cover your changes. It is your and your reviewer's responsibility to ensure your patch includes adequate tests.
 
 When submitting a PR:
 - You agree to license your code under the project's open source license ([MPL 2.0](https://mozilla.org/MPL/2.0/)).
 - Base your branch off the current `master` (see below for an example workflow).
 - Add both your code and new tests if relevant.
-- Run `cargo test` to make sure your code passes linting and tests.
 - Please do not include merge commits in pull requests; include only commits with the new relevant code.
 
 ## Code Review
