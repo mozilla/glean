@@ -173,11 +173,11 @@ jobs:
       - run:
           name: Create and upload code coverage
           command: |
-              curl -L https://github.com/mozilla/grcov/releases/latest/download/grcov-linux-x86_64.tar.bz2 | tar jxf -;
-              curl -L https://codecov.io/bash > codecov.sh;
-              chmod +x codecov.sh;
+              curl -L https://github.com/mozilla/grcov/releases/download/v0.5.4/grcov-linux-x86_64.tar.bz2 | tar jxf -
+              curl -L https://codecov.io/bash > codecov.sh
+              chmod +x codecov.sh
               zip -0 ccov.zip `find . \( -name "glean*.gc*" \) -print`
-              ./grcov ccov.zip -s . -t lcov --llvm --branch --ignore-not-existing --ignore-dir "/*" --ignore-dir "glean-core/ffi/*" -o lcov.info
+              ./grcov ccov.zip -s . -t lcov --llvm --branch --ignore-not-existing --ignore "/*" --ignore "glean-core/ffi/*" -o lcov.info
               CODECOV_CMD="./codecov.sh -f lcov.info"
               $CODECOV_CMD || (sleep 5 && $CODECOV_CMD) || (sleep 5 && $CODECOV_CMD)
   iOS build and test:
