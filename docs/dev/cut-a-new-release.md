@@ -26,5 +26,5 @@ These are the steps needed to cut a new release from latest master.
     1. Click "Releases", and then "Draft a New Release" in the github UI.
     2. Enter `v<myversion>` as the tag. In the example above it would be `v0.1.0`. It's important this is the same as the tags you put in the links in the changelog.
     3. Under the description, paste the contents of the release notes from `CHANGELOG.md`.
-    4. Note that the release is not avaliable until the CI build completes for that tag.
+    4. Note that the release is not available until the CI build completes for that tag.
         - You can check [on CircleCI for the running build](https://circleci.com/gh/mozilla/glean).
