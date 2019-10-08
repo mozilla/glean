@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v0.0.1-TESTING1...master)
+[Full changelog](https://github.com/mozilla/glean/compare/v0.0.1-TESTING3...master)
+
+# v0.0.1-TESTING3 (2019-10-08)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v0.0.1-TESTING1...v0.0.1-TESTING3)
 
 # v0.0.1-TESTING1 (2019-10-02)
 
