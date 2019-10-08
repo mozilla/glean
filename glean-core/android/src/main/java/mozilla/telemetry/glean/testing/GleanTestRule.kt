@@ -5,8 +5,8 @@
 package mozilla.telemetry.glean.testing
 
 import android.content.Context
-import androidx.work.testing.WorkManagerTestInitHelper
 import androidx.annotation.VisibleForTesting
+import androidx.work.testing.WorkManagerTestInitHelper
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.config.Configuration
 import org.junit.rules.TestWatcher
@@ -25,14 +25,15 @@ import org.junit.runner.Description
  * @get:Rule
  * val gleanRule = GleanTestRule(ApplicationProvider.getApplicationContext())
  * ```
+ *
+ * @param context the application context
+ * @param configToUse an optional [Configuration] to initialize the Glean SDK with
  */
 @VisibleForTesting(otherwise = VisibleForTesting.NONE)
 class GleanTestRule(
-    private val context: Context
+    val context: Context,
+    val configToUse: Configuration = Configuration()
 ) : TestWatcher() {
-    /**
-     * Reset all Glean state before each test.
-     */
     override fun starting(description: Description?) {
         // We're using the WorkManager in a bunch of places, and Glean will crash
         // in tests without this line. Let's simply put it here.
@@ -40,7 +41,7 @@ class GleanTestRule(
 
         Glean.resetGlean(
             context = context,
-            config = Configuration(),
+            config = configToUse,
             clearStores = true
         )
     }
