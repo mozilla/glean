@@ -64,7 +64,7 @@ This should be relatively straightforward and painless:
 
 1. Ensure your repository is up-to-date.
 
-2. Ensure rust is up-to-date by running `rustup`
+2. Ensure rust is up-to-date by running `rustup update`.
 
 3. The builds are all performed by `./gradlew` and the general syntax used is
    `./gradlew project:task`

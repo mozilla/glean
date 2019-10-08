@@ -35,6 +35,8 @@
     - [Testing](dev/testing.md)
     - [Android bindings](dev/android/index.md)
         - [Setup Build Environment](dev/android/setup-android-build-environment.md)
+    - [iOS bindings](dev/ios/index.md)
+        - [Setup Build Environment](dev/ios/setup-ios-build-environment.md)
     - [Rust Component](dev/core/index.md)
         - [Dependency Management](dev/core/dependency-management.md)
         - [Adding a new metric type](dev/core/new-metric-type.md)
