@@ -20,7 +20,11 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.util.Calendar
+import java.util.Date
 import java.util.TimeZone
+
+const val MILLIS_PER_SEC = 1000L
+private fun Date.asSeconds() = time / MILLIS_PER_SEC
 
 @RunWith(AndroidJUnit4::class)
 class DatetimeMetricTypeTest {
@@ -89,5 +93,28 @@ class DatetimeMetricTypeTest {
         // Attempt to store the datetime.
         datetimeMetric.set()
         assertFalse(datetimeMetric.testHasValue())
+    }
+
+    @Test
+    fun `Regression test - setting date and reading results in the same`() {
+        // This test is adopted from `SyncTelemetryTest.kt` in android-components.
+        // Previously we failed to properly deal with DST when converting from `Calendar` into its pieces.
+
+        val datetimeMetric = DatetimeMetricType(
+            disabled = false,
+            category = "telemetry",
+            lifetime = Lifetime.Ping,
+            name = "datetimeMetric",
+            sendInPings = listOf("store1"),
+            timeUnit = TimeUnit.Millisecond
+        )
+
+        val nowDate = Date()
+        val now = nowDate.asSeconds()
+        val timestamp = Date(now * MILLIS_PER_SEC)
+
+        datetimeMetric.set(timestamp)
+
+        assertEquals(now, datetimeMetric.testGetValue().asSeconds())
     }
 }

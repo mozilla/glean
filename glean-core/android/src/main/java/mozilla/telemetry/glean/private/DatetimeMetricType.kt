@@ -95,7 +95,7 @@ class DatetimeMetricType internal constructor(
             second = cal.get(Calendar.SECOND),
             nano = AndroidTimeUnit.MILLISECONDS.toNanos(cal.get(Calendar.MILLISECOND).toLong()),
             offset_seconds = AndroidTimeUnit.MILLISECONDS.toSeconds(
-                cal.get(Calendar.ZONE_OFFSET).toLong()
+                cal.get(Calendar.ZONE_OFFSET).toLong() + cal.get(Calendar.DST_OFFSET)
             ).toInt()
         )
     }
@@ -127,7 +127,7 @@ class DatetimeMetricType internal constructor(
                 second = value.get(Calendar.SECOND),
                 nano = AndroidTimeUnit.MILLISECONDS.toNanos(value.get(Calendar.MILLISECOND).toLong()),
                 offset_seconds = AndroidTimeUnit.MILLISECONDS.toSeconds(
-                        value.get(Calendar.ZONE_OFFSET).toLong()
+                        value.get(Calendar.ZONE_OFFSET).toLong() + value.get(Calendar.DST_OFFSET)
                 ).toInt()
             )
         }
