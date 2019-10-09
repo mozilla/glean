@@ -29,7 +29,7 @@ If Android Studio asks you to upgrade the verison of gradle, decline.
 The following dependencies can be installed in Android Studio through `Tools > SDK Manager > SDK Tools`:
 
 - Android SDK Tools (may already be selected)
-- NDK
+- NDK r20
 - CMake
 - LLDB
 
@@ -37,6 +37,13 @@ With the dependencies installed, note down the `Android SDK Location` in `Tools 
 Set the `ANDROID_HOME` environment variable to that path.
 The `ANDROID_NDK_ROOT` can be set to `ANDROID_NDK_ROOT=$ANDROID_HOME/ndk-bundle`.
 Set `JAVA_HOME` to be the location of Android Studio's JDK which can be found in Glean's "Project Structure" menu. (You may need to escape spaces in the path).
+
+If you want to install the NDK manually:
+
+1. Download NDK r20 from <https://developer.android.com/ndk/downloads>.
+2. Extract it and put it somewhere (`$HOME/.android-ndk-r20` is a reasonable choice, but it doesn't matter).
+3. Set `ANDROID_NDK_ROOT` to this path.
+    * Set `ANDROID_NDK_HOME` to match `ANDROID_NDK_ROOT`, for compatibility with some android grandle plugins.
 
 ### Setting up Rust
 

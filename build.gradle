@@ -22,7 +22,7 @@ buildscript {
         mockwebserver: '3.10.0',
         kotlin: '1.3.50',
         robolectric: '4.2.1', // This is different than a-c, but we're fine, it's only tests.
-        rust_android_plugin: '0.8.1',
+        rust_android_plugin: '0.8.3',
 
         // Android X dependencies
         androidx_annotation: '1.1.0',
@@ -162,13 +162,6 @@ subprojects {
             }
         }
     }
-}
-
-// Configure some environment variables, per toolchain, that will apply during
-// the Cargo build.  We assume that the `libs/` directory has been populated
-// before invoking Gradle (or Cargo).
-ext.cargoExec = { spec, toolchain ->
-    // Intentionally empty. Removing this block breaks build.
 }
 
 detekt {
