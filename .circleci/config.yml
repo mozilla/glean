@@ -269,14 +269,47 @@ jobs:
               $CODECOV_CMD || (sleep 5 && $CODECOV_CMD) || (sleep 5 && $CODECOV_CMD)
       - store_artifacts:
           path: glean-core/android/build/reports/tests
+
+  iOS release build:
+    macos:
+      xcode: "11.0.0"
+    steps:
+      - install-rustup
+      - setup-rust-toolchain
+      - checkout
+      - run:
+          name: Setup build environment
+          command: |
+            sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /
+      - run:
+          name: Build for release
+          command: |
+              cargo build --release --all
+      - persist_to_workspace:
+          root: .
+          paths: target/release/libglean_ffi.dylib
+
+  android-packaging:
+    docker:
+      - image: circleci/android:api-28-ndk
+    steps:
+      - android-setup
       - run:
           name: Install packaging dependencies
           command: |
             sudo apt update
-            sudo apt install -y gcc-mingw-w64
+            sudo apt install -y gcc-mingw-w64 llvm-7
+            # We need this tool under its common name
+            sudo ln -s /usr/lib/llvm-7/bin/dsymutil /usr/bin/dsymutil
       - run:
-          name: Add Windows target
-          command: rustup target add x86_64-pc-windows-gnu
+          name: Add additional targets
+          command: |
+            rustup target add x86_64-pc-windows-gnu x86_64-apple-darwin
+            # A hack to force skipping the linking step (which will fail due to the missing macOS SDK).
+            # We re-use the dylib generated in the "iOS release build" step.
+            mkdir -p .cargo
+            echo '[target.x86_64-apple-darwin]' >> .cargo/config
+            echo 'linker = "true"' >> .cargo/config
       - run:
           name: Fix broken mingw toolchain
           command: |
@@ -285,6 +318,13 @@ jobs:
             # https://github.com/rust-lang/rust/issues/49078
             # https://wiki.archlinux.org/index.php/Rust#Windows
             for lib in crt2.o dllcrt2.o libmsvcrt.a; do cp -v /usr/x86_64-w64-mingw32/lib/$lib ~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-pc-windows-gnu/lib/; done
+      - attach_workspace:
+          at: macos
+      - run:
+          name: Put macOS build in place
+          command: |
+            mkdir -p target/x86_64-apple-darwin/release
+            cp -a macos/target/release/libglean_ffi.dylib target/x86_64-apple-darwin/release
       - run:
           name: Package a release artifact
           command: |
@@ -292,13 +332,15 @@ jobs:
             export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_PC_WINDOWS_GNU_AR=x86_64-w64-mingw32-ar
             export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_PC_WINDOWS_GNU_CC=x86_64-w64-mingw32-gcc
 
-            echo "rust.targets=arm,arm64,x86_64,x86,linux-x86-64,win32-x86-64-gnu" > local.properties
+            echo "rust.targets=arm,arm64,x86_64,x86,linux-x86-64,win32-x86-64-gnu,darwin" > local.properties
 
             ./gradlew --no-daemon assembleRelease
             ./gradlew --no-daemon publish
             ./gradlew --no-daemon checkMavenArtifacts
           environment:
             GRADLE_OPTS: -Xmx2048m
+      - store_artifacts:
+          path: build/maven
       - persist_to_workspace:
           root: .
           paths: build
@@ -467,9 +509,24 @@ workflows:
               ignore: /.*/
             tags:
               only: /^v.*/
-      - android-release:
+      - iOS release build:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
+      - android-packaging:
           requires:
             - Android tests
+            - iOS release build
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
+      - android-release:
+          requires:
+            - android-packaging
           filters:
             branches:
               ignore: /.*/
