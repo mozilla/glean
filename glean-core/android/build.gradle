@@ -47,7 +47,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            consumerProguardFiles "$rootDir/proguard-rules-consumer-jna.pro"
+            consumerProguardFiles "$projectDir/proguard-rules-consumer-jna.pro"
         }
 
         withoutLib {
