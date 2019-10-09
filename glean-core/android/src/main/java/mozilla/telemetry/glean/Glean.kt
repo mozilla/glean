@@ -79,7 +79,7 @@ open class GleanInternalAPI internal constructor () {
     internal lateinit var metricsPingScheduler: MetricsPingScheduler
 
     // Keep track of ping types that have been registered before Glean is initialized.
-    private val pingTypeQueue: MutableList<PingType> = mutableListOf()
+    private val pingTypeQueue: MutableSet<PingType> = mutableSetOf()
 
     // This is used to cache the process state and is used by the function `isMainProcess()`
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -605,6 +605,15 @@ open class GleanInternalAPI internal constructor () {
                 handle,
                 pingType.handle
             )
+
+            // In test mode we still need to keep track of pings, so they get re-registered after a reset.
+            // This state is kept across Glean resets (which only happen in test mode).
+            // This state is cleared in production-mode in `Glean.initialize`,
+            // as the ping objects themselves will live forever and Glean can't be reset.
+            @Suppress("EXPERIMENTAL_API_USAGE")
+            if (Dispatchers.API.testingMode) {
+                pingTypeQueue.add(pingType)
+            }
         }
     }
 
