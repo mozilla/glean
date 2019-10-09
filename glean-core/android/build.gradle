@@ -148,8 +148,6 @@ cargo {
 
     profile = rootProject.ext.cargoProfile
 
-    exec = rootProject.ext.cargoExec
-
     extraCargoBuildArguments = rootProject.ext.extraCargoBuildArguments
 }
 
