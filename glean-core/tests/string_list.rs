@@ -209,7 +209,7 @@ fn string_lists_dont_exceed_max_items() {
 }
 
 #[test]
-fn set_records_error_when_receiving_empty_list() {
+fn set_does_not_record_error_when_receiving_empty_list() {
     let (glean, _t) = new_glean();
 
     let metric = StringListMetric::new(CommonMetricData {
@@ -222,12 +222,11 @@ fn set_records_error_when_receiving_empty_list() {
 
     metric.set(&glean, vec![]);
 
-    // Ensure the empty list wasn't added
-    assert_eq!(None, metric.test_get_value(&glean, "store1"));
+    // Ensure the empty list was added
+    assert_eq!(Some(vec![]), metric.test_get_value(&glean, "store1"));
 
-    // Ensure we recorded the error.
-    assert_eq!(
-        Ok(1),
-        test_get_num_recorded_errors(&glean, metric.meta(), ErrorType::InvalidValue, None)
+    // Ensure we didn't record an error.
+    assert!(
+        test_get_num_recorded_errors(&glean, metric.meta(), ErrorType::InvalidValue, None).is_err()
     );
 }
