@@ -48,6 +48,9 @@
 		BFE1CDC6233B6B6D0019EE47 /* LabeledMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFE1CDC5233B6B6D0019EE47 /* LabeledMetricTests.swift */; };
 		BFE1CDC8233B73B30019EE47 /* Unreachable.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFE1CDC7233B73B30019EE47 /* Unreachable.swift */; };
 		BFE1CDCE233B989A0019EE47 /* GleanMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFE1CDCD233B989A0019EE47 /* GleanMetrics.swift */; };
+		BFFE18382350A5F50068D97B /* TimingDistributionMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFFE18372350A5F50068D97B /* TimingDistributionMetric.swift */; };
+		BFFE183A2350A61F0068D97B /* TimingDistributionMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFFE18392350A61F0068D97B /* TimingDistributionMetricTests.swift */; };
+		BFFE183C2350A9CC0068D97B /* DistributionData.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFFE183B2350A9CC0068D97B /* DistributionData.swift */; };
 		BFFE33A92328F4EF005348FE /* GleanFfi.h in Headers */ = {isa = PBXBuildFile; fileRef = BFFE33A82328F4EF005348FE /* GleanFfi.h */; };
 		BFFE33AB232927C3005348FE /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFFE33AA232927C3005348FE /* Utils.swift */; };
 /* End PBXBuildFile section */
@@ -115,6 +118,9 @@
 		BFE1E7CF234356260067A12A /* pings.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = pings.yaml; sourceTree = "<group>"; };
 		BFE1E7D0234356260067A12A /* metrics.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = metrics.yaml; sourceTree = "<group>"; };
 		BFE1E7D3234356320067A12A /* sdk_generator.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = sdk_generator.sh; sourceTree = "<group>"; };
+		BFFE18372350A5F50068D97B /* TimingDistributionMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimingDistributionMetric.swift; sourceTree = "<group>"; };
+		BFFE18392350A61F0068D97B /* TimingDistributionMetricTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimingDistributionMetricTests.swift; sourceTree = "<group>"; };
+		BFFE183B2350A9CC0068D97B /* DistributionData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DistributionData.swift; sourceTree = "<group>"; };
 		BFFE33A82328F4EF005348FE /* GleanFfi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GleanFfi.h; sourceTree = "<group>"; };
 		BFFE33AA232927C3005348FE /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -274,6 +280,8 @@
 				1FD4527423395B4500F4C7E8 /* UuidMetric.swift */,
 				BF2E57042334B77D00364D92 /* EventMetric.swift */,
 				BFE1CDC3233B63A70019EE47 /* LabeledMetric.swift */,
+				BFFE18372350A5F50068D97B /* TimingDistributionMetric.swift */,
+				BFFE183B2350A9CC0068D97B /* DistributionData.swift */,
 			);
 			path = Metrics;
 			sourceTree = "<group>";
@@ -290,6 +298,7 @@
 				1FD4527623395EEB00F4C7E8 /* UuidMetricTests.swift */,
 				BF2E57062334BD7600364D92 /* EventMetricTests.swift */,
 				BFE1CDC5233B6B6D0019EE47 /* LabeledMetricTests.swift */,
+				BFFE18392350A61F0068D97B /* TimingDistributionMetricTests.swift */,
 			);
 			path = Metrics;
 			sourceTree = "<group>";
@@ -515,7 +524,9 @@
 				1F6A8FF0233C049D007837D5 /* BooleanMetric.swift in Sources */,
 				BFB59A9E2342A24000F40CA8 /* Pings.swift in Sources */,
 				1F6A8FF4233C0A91007837D5 /* DatetimeMetric.swift in Sources */,
+				BFFE18382350A5F50068D97B /* TimingDistributionMetric.swift in Sources */,
 				BF89055F232BC213003CA2BA /* StringMetric.swift in Sources */,
+				BFFE183C2350A9CC0068D97B /* DistributionData.swift in Sources */,
 				1F70B786232995A9007395FB /* Dispatchers.swift in Sources */,
 				1F605895231489AB00307A9F /* HttpPingUploader.swift in Sources */,
 				BF30FDC4233260B500840607 /* TimespanMetric.swift in Sources */,
@@ -543,6 +554,7 @@
 				1F70B788232A81A4007395FB /* DispatchersTest.swift in Sources */,
 				BFE1CDC6233B6B6D0019EE47 /* LabeledMetricTests.swift in Sources */,
 				BF30FDC6233260C400840607 /* TimespanMetricTests.swift in Sources */,
+				BFFE183A2350A61F0068D97B /* TimingDistributionMetricTests.swift in Sources */,
 				BF3DE3A02243A2F20018E23F /* GleanTests.swift in Sources */,
 				BF2E57072334BD7600364D92 /* EventMetricTests.swift in Sources */,
 			);

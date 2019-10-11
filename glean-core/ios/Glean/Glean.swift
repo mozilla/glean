@@ -8,6 +8,9 @@ private typealias GleanBaseline = GleanMetrics.GleanBaseline
 private typealias GleanInternalMetrics = GleanMetrics.GleanInternalMetrics
 private typealias Pings = GleanMetrics.Pings
 
+/// Public exported type identifying individual timers for `TimingDistributionMetricType`
+public typealias GleanTimerId = UInt64
+
 /// The main Glean API.
 ///
 /// This is exposed through the global `Glean.shared` object.
