@@ -53,4 +53,5 @@
         - [Reserved ping names](dev/core/internal/reserved-ping-names.md).
         - [Clearing metrics when disabling/enabling Glean](dev/core/internal/clearing.md).
         - [Payload format](dev/core/internal/payload.md).
+        - [Directory structure](dev/core/internal/directory-structure.md)
 - [API Documentation](api/index.md)
