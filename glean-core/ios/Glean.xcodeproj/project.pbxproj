@@ -23,6 +23,9 @@
 		1FD4527723395EEB00F4C7E8 /* UuidMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FD4527623395EEB00F4C7E8 /* UuidMetricTests.swift */; };
 		AC54D225233133DB0019319A /* PingUploadOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC54D224233133DB0019319A /* PingUploadOperation.swift */; };
 		AC54D227233134A30019319A /* GleanOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC54D226233134A30019319A /* GleanOperation.swift */; };
+		BF10007E23548AF400064051 /* MemoryUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF10007D23548AF400064051 /* MemoryUnit.swift */; };
+		BF10008023548B0500064051 /* MemoryDistributionMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF10007F23548B0500064051 /* MemoryDistributionMetric.swift */; };
+		BF10008223548C4400064051 /* MemoryDistributionMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF10008123548C4400064051 /* MemoryDistributionMetricTests.swift */; };
 		BF2E57052334B77D00364D92 /* EventMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF2E57042334B77D00364D92 /* EventMetric.swift */; };
 		BF2E57072334BD7600364D92 /* EventMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF2E57062334BD7600364D92 /* EventMetricTests.swift */; };
 		BF30FDC22332312300840607 /* Sysctl.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF30FDC12332312300840607 /* Sysctl.swift */; };
@@ -82,6 +85,9 @@
 		1FD4527623395EEB00F4C7E8 /* UuidMetricTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UuidMetricTests.swift; sourceTree = "<group>"; };
 		AC54D224233133DB0019319A /* PingUploadOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PingUploadOperation.swift; sourceTree = "<group>"; };
 		AC54D226233134A30019319A /* GleanOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GleanOperation.swift; sourceTree = "<group>"; };
+		BF10007D23548AF400064051 /* MemoryUnit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryUnit.swift; sourceTree = "<group>"; };
+		BF10007F23548B0500064051 /* MemoryDistributionMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryDistributionMetric.swift; sourceTree = "<group>"; };
+		BF10008123548C4400064051 /* MemoryDistributionMetricTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryDistributionMetricTests.swift; sourceTree = "<group>"; };
 		BF1BF3F72333787E0036F4CC /* OHHTTPStubs.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OHHTTPStubs.framework; path = ../../Carthage/Build/iOS/OHHTTPStubs.framework; sourceTree = "<group>"; };
 		BF2E57042334B77D00364D92 /* EventMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventMetric.swift; sourceTree = "<group>"; };
 		BF2E57062334BD7600364D92 /* EventMetricTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventMetricTests.swift; sourceTree = "<group>"; };
@@ -276,11 +282,13 @@
 				BF6C53B1232F870C00E3B43A /* Ping.swift */,
 				BF30FDC3233260B500840607 /* TimespanMetric.swift */,
 				BF30FDC72332640400840607 /* TimeUnit.swift */,
+				BF10007D23548AF400064051 /* MemoryUnit.swift */,
 				BF89055E232BC213003CA2BA /* StringMetric.swift */,
 				1FD4527423395B4500F4C7E8 /* UuidMetric.swift */,
 				BF2E57042334B77D00364D92 /* EventMetric.swift */,
 				BFE1CDC3233B63A70019EE47 /* LabeledMetric.swift */,
 				BFFE18372350A5F50068D97B /* TimingDistributionMetric.swift */,
+				BF10007F23548B0500064051 /* MemoryDistributionMetric.swift */,
 				BFFE183B2350A9CC0068D97B /* DistributionData.swift */,
 			);
 			path = Metrics;
@@ -299,6 +307,7 @@
 				BF2E57062334BD7600364D92 /* EventMetricTests.swift */,
 				BFE1CDC5233B6B6D0019EE47 /* LabeledMetricTests.swift */,
 				BFFE18392350A61F0068D97B /* TimingDistributionMetricTests.swift */,
+				BF10008123548C4400064051 /* MemoryDistributionMetricTests.swift */,
 			);
 			path = Metrics;
 			sourceTree = "<group>";
@@ -511,6 +520,7 @@
 				1F6058932314863400307A9F /* Configuration.swift in Sources */,
 				BFB59A9C2342A24000F40CA8 /* GleanError.swift in Sources */,
 				BF2E57052334B77D00364D92 /* EventMetric.swift in Sources */,
+				BF10008023548B0500064051 /* MemoryDistributionMetric.swift in Sources */,
 				BF93C698224BFC57006CE7D8 /* Glean.swift in Sources */,
 				BF30FDC22332312300840607 /* Sysctl.swift in Sources */,
 				AC54D227233134A30019319A /* GleanOperation.swift in Sources */,
@@ -533,6 +543,7 @@
 				BFE1CDCE233B989A0019EE47 /* GleanMetrics.swift in Sources */,
 				BF6C53B2232F870C00E3B43A /* Ping.swift in Sources */,
 				BFB59A9F2342A24000F40CA8 /* GleanInternalMetrics.swift in Sources */,
+				BF10007E23548AF400064051 /* MemoryUnit.swift in Sources */,
 				BF43A8C7232A4BA400545310 /* CounterMetric.swift in Sources */,
 				BFFE33AB232927C3005348FE /* Utils.swift in Sources */,
 				BFE1CDC4233B63A70019EE47 /* LabeledMetric.swift in Sources */,
@@ -549,6 +560,7 @@
 				BF6C53B4232F872B00E3B43A /* PingTests.swift in Sources */,
 				1F6A8FF6233C1555007837D5 /* DatetimeMetricTypeTests.swift in Sources */,
 				1FB8F8422326F74400618E47 /* HttpPingUploaderTests.swift in Sources */,
+				BF10008223548C4400064051 /* MemoryDistributionMetricTests.swift in Sources */,
 				BF43A8CD232A615200545310 /* CounterMetricTests.swift in Sources */,
 				1F6A8FF2233C068A007837D5 /* BooleanMetricTypeTest.swift in Sources */,
 				1F70B788232A81A4007395FB /* DispatchersTest.swift in Sources */,
