@@ -29,6 +29,10 @@ Starting a timer returns a timer ID that needs to be used to stop or cancel the 
 Multiple intervals can be measured concurrently.
 For example, to measure page load time on a number of tabs that are loading at the same time, each tab object needs to store the running timer ID.
 
+{{#include ../../tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
+
 ```Kotlin
 import mozilla.components.service.glean.timing.GleanTimerId
 import org.mozilla.yourApplication.GleanMetrics.Pages
@@ -54,15 +58,57 @@ import org.mozilla.yourApplication.GleanMetrics.Pages
 // Was anything recorded?
 assertTrue(pages.pageLoad.testHasValue())
 
-// Get snapshot
+// Get snapshot.
 val snapshot = pages.pageLoad.testGetValue()
 
 // Does the sum have the expected value?
 assertEquals(11, snapshot.sum)
 
 // Usually you don't know the exact timing values, but how many should have been recorded.
-assertEquals(2L, snapshot.count())
+assertEquals(2L, snapshot.count)
 ```
+
+</div>
+
+<div data-lang="Swift" class="tab">
+
+```Swift
+import Glean
+
+var timerId : GleanTimerId
+
+func onPageStart() {
+    timerId = Pages.pageLoad.start()
+}
+
+func onPageLoaded() {
+    Pages.pageLoad.stopAndAccumulate(timerId)
+}
+```
+
+There are test APIs available too.  For convenience, properties `sum` and `count` are exposed to facilitate validating that data was recorded correctly.
+
+Continuing the `pageLoad` example above, at this point the metric should have a `sum == 11` and a `count == 2`:
+
+```Swift
+@testable import Glean
+
+// Was anything recorded?
+XCTAssert(pages.pageLoad.testHasValue())
+
+// Get snapshot.
+let snapshot = try! pages.pageLoad.testGetValue()
+
+// Does the sum have the expected value?
+XCTAssertEqual(11, snapshot.sum)
+
+// Usually you don't know the exact timing values, but how many should have been recorded.
+XCTAssertEqual(2, snapshot.count)
+```
+
+</div>
+
+{{#include ../../tab_footer.md}}
 
 ## Limits
 
