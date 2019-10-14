@@ -98,12 +98,6 @@ impl StringListMetric {
             return;
         }
 
-        if value.is_empty() {
-            let msg = "Attempt to set empty list to StringList";
-            record_error(glean, &self.meta, ErrorType::InvalidValue, msg, None);
-            return;
-        }
-
         let value = if value.len() > MAX_LIST_LENGTH {
             let msg = format!(
                 "StringList length {} exceeds maximum of {}",
