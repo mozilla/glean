@@ -7,6 +7,7 @@ package mozilla.telemetry.glean.private
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.work.testing.WorkManagerTestInitHelper
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.config.Configuration
 import org.junit.After
@@ -31,6 +32,7 @@ class AccumulationsBeforeGleanInitTest {
     @Before
     fun cleanup() {
         Glean.testDestroyGleanHandle()
+        WorkManagerTestInitHelper.initializeTestWorkManager(context)
     }
 
     fun forceInitGlean() {
