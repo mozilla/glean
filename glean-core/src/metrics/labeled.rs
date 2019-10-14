@@ -177,10 +177,21 @@ where
     ///
     /// Labels must be `snake_case` and less than 30 characters.
     /// If an invalid label is used, the metric will be recorded in the special `OTHER_LABEL` label.
-    pub fn get(&mut self, glean: &Glean, label: &str) -> T {
-        let label = match self.labels {
-            Some(_) => self.static_label(label),
-            None => self.dynamic_label(glean, label),
+    pub fn get<'a, G: Into<Option<&'a Glean>>>(&mut self, glean: G, label: &str) -> T {
+        // We have 3 scenarios to consider:
+        // * Static labels. No database access needed. We just look at what is in memory.
+        // * Dynamic labels, initialized Glean. We look up in the database all previously stored
+        //   labels in order to keep a maximum of allowed labels.
+        // * Dynamic labels, uninitialized Glean. We ignore potentially previously stored labels
+        //   and just take what the user passed in.
+        //   This potentially allows creating more than `MAX_LABELS` labels, but only before Glean
+        //   is initialized.
+        //   This behavior is not publicly documented and should not be abused/depended upon.
+        // The last case is buggy behavior, tracked in bug 1588451.
+        let label = match (&self.labels, glean) {
+            (Some(_), _) => self.static_label(label),
+            (None, Some(glean)) => self.dynamic_label(glean, label),
+            (None, None) => label,
         };
         let label = format!("{}/{}", self.submetric.meta().name, label);
 
