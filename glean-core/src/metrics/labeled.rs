@@ -38,6 +38,30 @@ lazy_static! {
     static ref LABEL_REGEX: Regex = Regex::new("^[a-z_][a-z0-9_-]{0,29}(\\.[a-z0-9_-]{0,29})*$").unwrap();
 }
 
+/// Validate a label against the restrictions.
+///
+/// * Shorter than the allowed `MAX_LABEL_LENGTH`.
+/// * Matches the label regex (only alphanumeric characters and dots, underscores, hyphens)
+///
+/// Returns an error message to be reported through Glean.
+fn validate_label(label: &str) -> Result<&str, String> {
+    if label.len() > MAX_LABEL_LENGTH {
+        let msg = format!(
+            "label length {} exceeds maximum of {}",
+            label.len(),
+            MAX_LABEL_LENGTH
+        );
+        return Err(msg);
+    }
+
+    if !LABEL_REGEX.is_match(label) {
+        let msg = format!("label must be snake_case, got '{}'", label);
+        return Err(msg);
+    }
+
+    Ok(label)
+}
+
 /// A labeled metric.
 ///
 /// Labeled metrics allow to record multiple sub-metrics of the same type under different string labels.
@@ -131,24 +155,7 @@ where
             if self.seen_labels.len() >= MAX_LABELS {
                 return OTHER_LABEL;
             } else {
-                if label.len() > MAX_LABEL_LENGTH {
-                    let msg = format!(
-                        "label length {} exceeds maximum of {}",
-                        label.len(),
-                        MAX_LABEL_LENGTH
-                    );
-                    record_error(
-                        glean,
-                        &self.submetric.meta(),
-                        ErrorType::InvalidLabel,
-                        msg,
-                        None,
-                    );
-                    return OTHER_LABEL;
-                }
-
-                if !LABEL_REGEX.is_match(label) {
-                    let msg = format!("label must be snake_case, got '{}'", label);
+                if let Err(msg) = validate_label(label) {
                     record_error(
                         glean,
                         &self.submetric.meta(),
@@ -188,10 +195,18 @@ where
         //   is initialized.
         //   This behavior is not publicly documented and should not be abused/depended upon.
         // The last case is buggy behavior, tracked in bug 1588451.
+        let glean = glean.into();
         let label = match (&self.labels, glean) {
             (Some(_), _) => self.static_label(label),
             (None, Some(glean)) => self.dynamic_label(glean, label),
-            (None, None) => label,
+            (None, None) => {
+                if let Ok(label) = validate_label(label) {
+                    label
+                } else {
+                    // We can't report any error, as we don't have a Glean instance.
+                    OTHER_LABEL
+                }
+            }
         };
         let label = format!("{}/{}", self.submetric.meta().name, label);
 
