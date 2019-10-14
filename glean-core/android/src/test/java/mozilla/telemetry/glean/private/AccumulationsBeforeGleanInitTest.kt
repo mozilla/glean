@@ -14,6 +14,7 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -67,6 +68,7 @@ class AccumulationsBeforeGleanInitTest {
         assertEquals(1, labeledCounterMetric["label1"].testGetValue())
     }
 
+    @Ignore("FIXME(bug 1588452): Timing distributions currently depend on a valid Glean instance to start")
     @Test
     fun `TimingDistributionMetricType must allow accumulation before Glean inits`() {
         val timingDistribution = TimingDistributionMetricType(
