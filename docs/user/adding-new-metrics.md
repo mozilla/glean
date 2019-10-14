@@ -83,6 +83,15 @@ It is not necessary to put the type of the metric in the category or name, since
 
 For example, if defining a set of events related to search, put them in a category called `search`, rather than just `events` or `search_events`.
 
+### Expiration
+
+You should think carefully about how long the metric will be needed, and set it to expire at the soonest time possible.
+When a metric is about to expire, emails will be sent to the `notification_emails` addresses associated with the metric.
+At that time, the metric should be removed, which involves removing it from the `metrics.yaml` file and removing uses of it in the source code.
+Removing a metric does not affect the availability of data already collected by the pipeline.
+
+If the metric is still needed, it should go back for [another round of data review](https://wiki.mozilla.org/Firefox/Data_Collection) to have its expiration date extended.
+
 ## A note about case inflection
 
 Category and metric names in the `metrics.yaml` are in `snake_case`, but given the Kotlin coding standards defined by [ktlint](https://github.com/pinterest/ktlint), these identifiers must be `camelCase` in Kotlin. For example, the metric defined in the `metrics.yaml` as:
