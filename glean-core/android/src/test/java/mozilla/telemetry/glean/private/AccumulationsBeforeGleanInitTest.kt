@@ -4,7 +4,15 @@
 
 package mozilla.telemetry.glean.private
 
+import android.content.Context
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import mozilla.telemetry.glean.Glean
+import mozilla.telemetry.glean.config.Configuration
+import org.junit.After
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -15,6 +23,21 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class AccumulationsBeforeGleanInitTest {
+
+    val context: Context
+        get() = ApplicationProvider.getApplicationContext()
+
+    @After
+    @Before
+    fun cleanup() {
+        Glean.testDestroyGleanHandle()
+    }
+
+    fun forceInitGlean() {
+        Glean.enableTestingMode()
+        Glean.setUploadEnabled(true)
+        Glean.initialize(context, Configuration())
+    }
 
     @Test
     fun `LabeledMetricTypes must allow accumulation before Glean inits`() {
@@ -36,6 +59,10 @@ class AccumulationsBeforeGleanInitTest {
         )
 
         labeledCounterMetric["label1"].add(1)
+
+        forceInitGlean()
+
+        assertEquals(1, labeledCounterMetric["label1"].testGetValue())
     }
 
     @Test
@@ -50,5 +77,9 @@ class AccumulationsBeforeGleanInitTest {
 
         val id = timingDistribution.start()
         timingDistribution.stopAndAccumulate(id)
+
+        forceInitGlean()
+
+        assertTrue(timingDistribution.testHasValue())
     }
 }
