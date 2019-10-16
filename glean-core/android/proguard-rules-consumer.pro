@@ -5,3 +5,6 @@
 -dontwarn java.awt.*
 -keep class com.sun.jna.* { *; }
 -keepclassmembers class * extends com.sun.jna.* { public *; }
+
+# Glean specific rules
+-keep class mozilla.telemetry.** { *; }
