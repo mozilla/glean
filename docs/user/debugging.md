@@ -5,6 +5,11 @@ Users can invoke this special activity, at run-time, using the following [`adb`]
 
 `adb shell am start -n [applicationId]/mozilla.telemetry.glean.debug.GleanDebugActivity [extra keys]`
 
+> **Note:** In previous versions of Glean the activity was available with the name `mozilla.components.service.glean.debug.GleanDebugActivity`.
+>
+> If you're debugging an old build, try running:
+> `adb shell am start -n [applicationId]/mozilla.components.service.glean.debug.GleanDebugActivity [extra keys]`
+
 In the above:
 
 - `[applicationId]` is the product's application id as defined in the manifest file and/or build script. For the Glean sample application, this is `org.mozilla.samples.glean` for a release build and `org.mozilla.samples.glean.debug` for a debug build.
@@ -26,6 +31,16 @@ adb shell am start -n org.mozilla.samples.glean/mozilla.telemetry.glean.debug.Gl
   --es sendPing metrics \
   --es tagPings test-metrics-ping
 ```
+
+> **Note:** In previous versions of Glean the activity was available with the name `mozilla.components.service.glean.debug.GleanDebugActivity`.
+>
+> If you're debugging an old build, try running:
+> ```
+> adb shell am start -n org.mozilla.samples.glean/mozilla.components.service.glean.debug.GleanDebugActivity \
+>   --ez logPings true \
+>   --es sendPing metrics \
+>   --es tagPings test-metrics-ping
+> ```
 
 ### Important GleanDebugActivity notes!
 
