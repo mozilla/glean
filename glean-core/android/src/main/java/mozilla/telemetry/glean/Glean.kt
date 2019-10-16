@@ -605,7 +605,7 @@ open class GleanInternalAPI internal constructor () {
         // This state is kept across Glean resets, which should only ever happen in test mode.
         // Or by the instrumentation tests (`connectedAndroidTest`), which relaunches the application activity,
         // but not the whole process, meaning globals, such as the ping types, still exist from the old run.
-        // It's a set and keeping them around forver should not have much of an impact.
+        // It's a set and keeping them around forever should not have much of an impact.
         pingTypeQueue.add(pingType)
     }
 
