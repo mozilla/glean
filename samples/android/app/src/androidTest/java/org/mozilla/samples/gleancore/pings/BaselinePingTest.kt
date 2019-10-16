@@ -22,13 +22,12 @@ import androidx.work.WorkManager
 import androidx.work.testing.WorkManagerTestInitHelper
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
-import mozilla.telemetry.glean.config.Configuration
-import mozilla.telemetry.glean.testing.GleanTestRule
+import mozilla.telemetry.glean.testing.GleanTestLocalServer
 import org.json.JSONObject
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
-import org.mozilla.samples.gleancore.getPingServerAddress
+import org.mozilla.samples.gleancore.getPingServerPort
 import java.util.concurrent.TimeUnit
 
 @RunWith(AndroidJUnit4::class)
@@ -37,10 +36,7 @@ class BaselinePingTest {
     val activityRule: ActivityTestRule<MainActivity> = ActivityTestRule(MainActivity::class.java)
 
     @get:Rule
-    val gleanRule = GleanTestRule(
-        ApplicationProvider.getApplicationContext(),
-        Configuration(serverEndpoint = getPingServerAddress())
-    )
+    val gleanRule = GleanTestLocalServer(getPingServerPort())
 
     private val context: Context
         get() = ApplicationProvider.getApplicationContext()
