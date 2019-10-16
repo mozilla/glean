@@ -31,6 +31,7 @@ fn set_up_basic_ping() -> (Glean, PingMaker, PingType, tempfile::TempDir) {
         send_in_pings: vec!["store1".into()],
         disabled: false,
         lifetime: Lifetime::User,
+        ..Default::default()
     });
     metric.set(&glean, true);
 
@@ -103,6 +104,7 @@ fn seq_number_must_be_sequential() {
         send_in_pings: vec!["store2".into()],
         disabled: false,
         lifetime: Lifetime::User,
+        ..Default::default()
     });
     metric.set(&glean, true);
 
@@ -165,6 +167,7 @@ fn test_clear_pending_pings() {
         send_in_pings: vec!["store1".into()],
         disabled: false,
         lifetime: Lifetime::User,
+        ..Default::default()
     });
     metric.set(&glean, true);
 

@@ -38,6 +38,7 @@ mod linear {
                     send_in_pings: vec!["store1".into()],
                     disabled: false,
                     lifetime: Lifetime::Ping,
+                    ..Default::default()
                 },
                 1,
                 100,
@@ -81,6 +82,7 @@ mod linear {
                 send_in_pings: store_names.clone(),
                 disabled: false,
                 lifetime: Lifetime::Ping,
+                ..Default::default()
             },
             1,
             100,
@@ -120,6 +122,7 @@ mod linear {
                 send_in_pings: vec!["store1".into()],
                 disabled: false,
                 lifetime: Lifetime::Ping,
+                ..Default::default()
             },
             1,
             100,
@@ -167,6 +170,7 @@ mod linear {
                 send_in_pings: vec!["store1".into()],
                 disabled: false,
                 lifetime: Lifetime::Ping,
+                ..Default::default()
             },
             1,
             100,
@@ -214,6 +218,7 @@ mod linear {
                 send_in_pings: vec!["store1".into()],
                 disabled: false,
                 lifetime: Lifetime::Ping,
+                ..Default::default()
             },
             1,
             100,
@@ -252,6 +257,7 @@ mod exponential {
                     send_in_pings: vec!["store1".into()],
                     disabled: false,
                     lifetime: Lifetime::Ping,
+                    ..Default::default()
                 },
                 1,
                 100,
@@ -295,6 +301,7 @@ mod exponential {
                 send_in_pings: store_names.clone(),
                 disabled: false,
                 lifetime: Lifetime::Ping,
+                ..Default::default()
             },
             1,
             100,
@@ -334,6 +341,7 @@ mod exponential {
                 send_in_pings: vec!["store1".into()],
                 disabled: false,
                 lifetime: Lifetime::Ping,
+                ..Default::default()
             },
             1,
             100,
@@ -381,6 +389,7 @@ mod exponential {
                 send_in_pings: vec!["store1".into()],
                 disabled: false,
                 lifetime: Lifetime::Ping,
+                ..Default::default()
             },
             1,
             100,
@@ -428,6 +437,7 @@ mod exponential {
                 send_in_pings: vec!["store1".into()],
                 disabled: false,
                 lifetime: Lifetime::Ping,
+                ..Default::default()
             },
             1,
             100,

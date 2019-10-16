@@ -19,6 +19,7 @@ impl CoreMetrics {
                 send_in_pings: vec!["glean_client_info".into()],
                 lifetime: Lifetime::User,
                 disabled: false,
+                dynamic_label: None,
             }),
 
             first_run_date: DatetimeMetric::new(
@@ -28,6 +29,7 @@ impl CoreMetrics {
                     send_in_pings: vec!["glean_client_info".into()],
                     lifetime: Lifetime::User,
                     disabled: false,
+                    dynamic_label: None,
                 },
                 TimeUnit::Day,
             ),

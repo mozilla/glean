@@ -36,6 +36,7 @@ fn quantity_serializer_should_correctly_serialize_quantities() {
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::User,
+            ..Default::default()
         });
 
         metric.set(&glean, 1);
@@ -74,6 +75,7 @@ fn set_value_properly_sets_the_value_in_all_stores() {
         send_in_pings: store_names.clone(),
         disabled: false,
         lifetime: Lifetime::Ping,
+        ..Default::default()
     });
 
     metric.set(&glean, 1);
@@ -103,6 +105,7 @@ fn quantities_must_not_set_when_passed_negative() {
         send_in_pings: vec!["store1".into()],
         disabled: false,
         lifetime: Lifetime::Application,
+        ..Default::default()
     });
 
     // Attempt to set the quantity with negative

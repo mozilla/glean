@@ -179,7 +179,7 @@ impl ExperimentMetric {
             branch: truncated_branch,
             extra: truncated_extras,
         });
-        glean.storage().record(&self.meta, &value)
+        glean.storage().record(glean, &self.meta, &value)
     }
 
     /// Record an experiment as inactive.
@@ -209,7 +209,7 @@ impl ExperimentMetric {
         match StorageManager.snapshot_metric(
             glean.storage(),
             INTERNAL_STORAGE,
-            &self.meta.identifier(),
+            &self.meta.identifier(glean),
         ) {
             Some(Metric::Experiment(e)) => Some(json!(e).to_string()),
             _ => None,

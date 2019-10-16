@@ -33,6 +33,7 @@ fn boolean_serializer_should_correctly_serialize_boolean() {
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::User,
+            ..Default::default()
         });
 
         metric.set(&glean, true);
@@ -71,6 +72,7 @@ fn set_properly_sets_the_value_in_all_stores() {
         send_in_pings: store_names.clone(),
         disabled: false,
         lifetime: Lifetime::Ping,
+        ..Default::default()
     });
 
     metric.set(&glean, true);

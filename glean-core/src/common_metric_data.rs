@@ -5,6 +5,8 @@
 use std::convert::TryFrom;
 
 use crate::error::{Error, ErrorKind};
+use crate::metrics::dynamic_label;
+use crate::Glean;
 
 /// The supported metrics' lifetimes.
 ///
@@ -64,6 +66,9 @@ pub struct CommonMetricData {
     ///
     /// Disabled metrics are never recorded.
     pub disabled: bool,
+    /// Dynamic label. These need to be looked up in the database to make sure
+    /// we aren't storing too many. (Static labels are stored as part of name).
+    pub dynamic_label: Option<String>,
 }
 
 impl CommonMetricData {
@@ -81,15 +86,33 @@ impl CommonMetricData {
         }
     }
 
-    /// The metric's unique identifier.
+    /// The metric's base identifier, including the category and name, but not the label.
     ///
-    /// If `category` is empty, it's just the name.
+    /// If `category` is empty, it's ommitted.
     /// Otherwise, it's the combination of the metric's `category` and `name`.
-    pub fn identifier(&self) -> String {
+    pub fn base_identifier(&self) -> String {
         if self.category.is_empty() {
             self.name.clone()
         } else {
             format!("{}.{}", self.category, self.name)
+        }
+    }
+
+    /// The metric's unique identifier, including the category, name and label.
+    ///
+    /// If `category` is empty, it's ommitted.
+    /// Otherwise, it's the combination of the metric's `category`, `name` and `label`.
+    pub fn identifier(&self, glean: &Glean) -> String {
+        let base_identifier = self.base_identifier();
+
+        if let Some(label) = &self.dynamic_label {
+            format!(
+                "{}/{}",
+                base_identifier,
+                dynamic_label(glean, self, &base_identifier, label)
+            )
+        } else {
+            base_identifier
         }
     }
 

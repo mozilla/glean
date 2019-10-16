@@ -46,6 +46,7 @@ pub extern "C" fn glean_new_event_metric(
                 send_in_pings,
                 lifetime,
                 disabled: disabled != 0,
+                ..Default::default()
             },
             extra_keys,
         ))

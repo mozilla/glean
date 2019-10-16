@@ -121,7 +121,7 @@ impl TimespanMetric {
         }
 
         let mut report_value_exists: bool = false;
-        glean.storage().record_with(&self.meta, |old_value| {
+        glean.storage().record_with(glean, &self.meta, |old_value| {
             if overwrite {
                 Metric::Timespan(elapsed, self.time_unit)
             } else {
@@ -155,8 +155,11 @@ impl TimespanMetric {
     ///
     /// This doesn't clear the stored value.
     pub fn test_get_value(&self, glean: &Glean, storage_name: &str) -> Option<u64> {
-        match StorageManager.snapshot_metric(glean.storage(), storage_name, &self.meta.identifier())
-        {
+        match StorageManager.snapshot_metric(
+            glean.storage(),
+            storage_name,
+            &self.meta.identifier(glean),
+        ) {
             Some(Metric::Timespan(time, time_unit)) => Some(time_unit.duration_convert(time)),
             _ => None,
         }

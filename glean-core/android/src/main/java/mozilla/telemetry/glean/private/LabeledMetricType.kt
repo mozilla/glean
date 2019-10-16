@@ -6,7 +6,6 @@ package mozilla.telemetry.glean.private
 
 import com.sun.jna.StringArray
 
-import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.toByte
 
@@ -78,15 +77,15 @@ class LabeledMetricType<T>(
     operator fun get(label: String): T {
         return when (subMetric) {
             is CounterMetricType -> {
-                val handle = LibGleanFFI.INSTANCE.glean_labeled_counter_metric_get(Glean.handle, this.handle, label)
+                val handle = LibGleanFFI.INSTANCE.glean_labeled_counter_metric_get(this.handle, label)
                 CounterMetricType(handle = handle, disabled = disabled, sendInPings = sendInPings) as T
             }
             is BooleanMetricType -> {
-                val handle = LibGleanFFI.INSTANCE.glean_labeled_boolean_metric_get(Glean.handle, this.handle, label)
+                val handle = LibGleanFFI.INSTANCE.glean_labeled_boolean_metric_get(this.handle, label)
                 BooleanMetricType(handle = handle, disabled = disabled, sendInPings = sendInPings) as T
             }
             is StringMetricType -> {
-                val handle = LibGleanFFI.INSTANCE.glean_labeled_string_metric_get(Glean.handle, this.handle, label)
+                val handle = LibGleanFFI.INSTANCE.glean_labeled_string_metric_get(this.handle, label)
                 StringMetricType(handle = handle, disabled = disabled, sendInPings = sendInPings) as T
             }
             else -> throw IllegalStateException(

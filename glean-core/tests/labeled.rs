@@ -22,11 +22,12 @@ fn can_create_labeled_counter_metric() {
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
+            ..Default::default()
         }),
         Some(vec!["label1".into()]),
     );
 
-    let metric = labeled.get(&glean, "label1");
+    let metric = labeled.get("label1");
     metric.add(&glean, 1);
 
     let snapshot = StorageManager
@@ -53,11 +54,12 @@ fn can_create_labeled_string_metric() {
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
+            ..Default::default()
         }),
         Some(vec!["label1".into()]),
     );
 
-    let metric = labeled.get(&glean, "label1");
+    let metric = labeled.get("label1");
     metric.set(&glean, "text");
 
     let snapshot = StorageManager
@@ -84,11 +86,12 @@ fn can_create_labeled_bool_metric() {
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
+            ..Default::default()
         }),
         Some(vec!["label1".into()]),
     );
 
-    let metric = labeled.get(&glean, "label1");
+    let metric = labeled.get("label1");
     metric.set(&glean, true);
 
     let snapshot = StorageManager
@@ -115,14 +118,15 @@ fn can_use_multiple_labels() {
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
+            ..Default::default()
         }),
         None,
     );
 
-    let metric = labeled.get(&glean, "label1");
+    let metric = labeled.get("label1");
     metric.add(&glean, 1);
 
-    let metric = labeled.get(&glean, "label2");
+    let metric = labeled.get("label2");
     metric.add(&glean, 2);
 
     let snapshot = StorageManager
@@ -152,20 +156,21 @@ fn labels_are_checked_against_static_list() {
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
+            ..Default::default()
         }),
         Some(vec!["label1".into(), "label2".into()]),
     );
 
-    let metric = labeled.get(&glean, "label1");
+    let metric = labeled.get("label1");
     metric.add(&glean, 1);
 
-    let metric = labeled.get(&glean, "label2");
+    let metric = labeled.get("label2");
     metric.add(&glean, 2);
 
     // All non-registed labels get mapped to the `other` label
-    let metric = labeled.get(&glean, "label3");
+    let metric = labeled.get("label3");
     metric.add(&glean, 3);
-    let metric = labeled.get(&glean, "label4");
+    let metric = labeled.get("label4");
     metric.add(&glean, 4);
 
     let snapshot = StorageManager
@@ -196,11 +201,12 @@ fn dynamic_labels_too_long() {
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
+            ..Default::default()
         }),
         None,
     );
 
-    let metric = labeled.get(&glean, "this_string_has_more_than_thirty_characters");
+    let metric = labeled.get("this_string_has_more_than_thirty_characters");
     metric.add(&glean, 1);
 
     let snapshot = StorageManager
@@ -230,6 +236,7 @@ fn dynamic_labels_regex_mimsatch() {
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
+            ..Default::default()
         }),
         None,
     );
@@ -245,7 +252,7 @@ fn dynamic_labels_regex_mimsatch() {
     let num_non_validating = labels_not_validating.len();
 
     for label in &labels_not_validating {
-        labeled.get(&glean, label).add(&glean, 1);
+        labeled.get(label).add(&glean, 1);
     }
 
     let snapshot = StorageManager
@@ -275,6 +282,7 @@ fn dynamic_labels_regex_allowed() {
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
+            ..Default::default()
         }),
         None,
     );
@@ -291,7 +299,7 @@ fn dynamic_labels_regex_allowed() {
     ];
 
     for label in &labels_validating {
-        labeled.get(&glean, label).add(&glean, 1);
+        labeled.get(label).add(&glean, 1);
     }
 
     let snapshot = StorageManager
@@ -336,6 +344,7 @@ fn seen_labels_get_reloaded_from_disk() {
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
+            ..Default::default()
         }),
         None,
     );
@@ -345,7 +354,7 @@ fn seen_labels_get_reloaded_from_disk() {
         // Set the maximum number of labels
         for i in 1..=16 {
             let label = format!("label{}", i);
-            labeled.get(&glean, &label).add(&glean, i);
+            labeled.get(&label).add(&glean, i);
         }
 
         let snapshot = StorageManager
@@ -369,7 +378,7 @@ fn seen_labels_get_reloaded_from_disk() {
         let glean = Glean::new(cfg.clone()).unwrap();
 
         // Try to store another label
-        labeled.get(&glean, "new_label").add(&glean, 40);
+        labeled.get("new_label").add(&glean, 40);
 
         let snapshot = StorageManager
             .snapshot_as_json(glean.storage(), "store1", false)

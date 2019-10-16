@@ -59,7 +59,9 @@ impl QuantityMetric {
             return;
         }
 
-        glean.storage().record(&self.meta, &Metric::Quantity(value))
+        glean
+            .storage()
+            .record(glean, &self.meta, &Metric::Quantity(value))
     }
 
     /// **Test-only API (exported for FFI purposes).**
@@ -68,8 +70,11 @@ impl QuantityMetric {
     ///
     /// This doesn't clear the stored value.
     pub fn test_get_value(&self, glean: &Glean, storage_name: &str) -> Option<i64> {
-        match StorageManager.snapshot_metric(glean.storage(), storage_name, &self.meta.identifier())
-        {
+        match StorageManager.snapshot_metric(
+            glean.storage(),
+            storage_name,
+            &self.meta.identifier(glean),
+        ) {
             Some(Metric::Quantity(i)) => Some(i),
             _ => None,
         }

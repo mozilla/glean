@@ -42,7 +42,7 @@ pub use crate::histogram::HistogramType;
 pub use self::custom_distribution::CustomDistributionMetric;
 #[cfg(test)]
 pub(crate) use self::experiment::RecordedExperimentData;
-pub use self::labeled::LabeledMetric;
+pub use self::labeled::{dynamic_label, LabeledMetric};
 pub use self::memory_distribution::MemoryDistributionMetric;
 pub use self::memory_unit::MemoryUnit;
 pub use self::ping::PingType;

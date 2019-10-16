@@ -54,7 +54,7 @@ impl StringMetric {
         let s = truncate_string_at_boundary_with_error(glean, &self.meta, value, MAX_LENGTH_VALUE);
 
         let value = Metric::String(s);
-        glean.storage().record(&self.meta, &value)
+        glean.storage().record(glean, &self.meta, &value)
     }
 
     /// **Test-only API (exported for FFI purposes).**
@@ -63,8 +63,11 @@ impl StringMetric {
     ///
     /// This doesn't clear the stored value.
     pub fn test_get_value(&self, glean: &Glean, storage_name: &str) -> Option<String> {
-        match StorageManager.snapshot_metric(glean.storage(), storage_name, &self.meta.identifier())
-        {
+        match StorageManager.snapshot_metric(
+            glean.storage(),
+            storage_name,
+            &self.meta.identifier(glean),
+        ) {
             Some(Metric::String(s)) => Some(s),
             _ => None,
         }

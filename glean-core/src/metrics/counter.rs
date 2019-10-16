@@ -62,7 +62,7 @@ impl CounterMetric {
 
         glean
             .storage()
-            .record_with(&self.meta, |old_value| match old_value {
+            .record_with(glean, &self.meta, |old_value| match old_value {
                 Some(Metric::Counter(old_value)) => {
                     Metric::Counter(old_value.saturating_add(amount))
                 }
@@ -76,8 +76,11 @@ impl CounterMetric {
     ///
     /// This doesn't clear the stored value.
     pub fn test_get_value(&self, glean: &Glean, storage_name: &str) -> Option<i32> {
-        match StorageManager.snapshot_metric(glean.storage(), storage_name, &self.meta.identifier())
-        {
+        match StorageManager.snapshot_metric(
+            glean.storage(),
+            storage_name,
+            &self.meta.identifier(glean),
+        ) {
             Some(Metric::Counter(i)) => Some(i),
             _ => None,
         }

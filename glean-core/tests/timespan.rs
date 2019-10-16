@@ -38,6 +38,7 @@ fn serializer_should_correctly_serialize_timespans() {
                 send_in_pings: vec!["store1".into()],
                 disabled: false,
                 lifetime: Lifetime::Ping,
+                ..Default::default()
             },
             TimeUnit::Nanosecond,
         );
@@ -77,6 +78,7 @@ fn single_elapsed_time_must_be_recorded() {
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
+            ..Default::default()
         },
         TimeUnit::Nanosecond,
     );
@@ -106,6 +108,7 @@ fn second_timer_run_is_skipped() {
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
+            ..Default::default()
         },
         TimeUnit::Nanosecond,
     );
@@ -147,6 +150,7 @@ fn recorded_time_conforms_to_resolution() {
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
+            ..Default::default()
         },
         TimeUnit::Nanosecond,
     );
@@ -158,6 +162,7 @@ fn recorded_time_conforms_to_resolution() {
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
+            ..Default::default()
         },
         TimeUnit::Minute,
     );
@@ -191,6 +196,7 @@ fn cancel_does_not_store() {
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
+            ..Default::default()
         },
         TimeUnit::Nanosecond,
     );
@@ -212,6 +218,7 @@ fn nothing_stored_before_stop() {
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
+            ..Default::default()
         },
         TimeUnit::Nanosecond,
     );
@@ -237,6 +244,7 @@ fn set_raw_time() {
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
+            ..Default::default()
         },
         TimeUnit::Nanosecond,
     );
@@ -259,6 +267,7 @@ fn set_raw_time_does_nothing_when_timer_running() {
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
+            ..Default::default()
         },
         TimeUnit::Nanosecond,
     );

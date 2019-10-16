@@ -94,9 +94,9 @@ impl StorageManager {
             }
         };
 
-        storage.iter_store_from(Lifetime::Ping, &store_name, &mut snapshotter);
-        storage.iter_store_from(Lifetime::Application, &store_name, &mut snapshotter);
-        storage.iter_store_from(Lifetime::User, &store_name, &mut snapshotter);
+        storage.iter_store_from(Lifetime::Ping, &store_name, None, &mut snapshotter);
+        storage.iter_store_from(Lifetime::Application, &store_name, None, &mut snapshotter);
+        storage.iter_store_from(Lifetime::User, &store_name, None, &mut snapshotter);
 
         if clear_store {
             storage.clear_ping_lifetime_storage(store_name);
@@ -137,9 +137,9 @@ impl StorageManager {
             }
         };
 
-        storage.iter_store_from(Lifetime::Ping, &store_name, &mut snapshotter);
-        storage.iter_store_from(Lifetime::Application, &store_name, &mut snapshotter);
-        storage.iter_store_from(Lifetime::User, &store_name, &mut snapshotter);
+        storage.iter_store_from(Lifetime::Ping, &store_name, None, &mut snapshotter);
+        storage.iter_store_from(Lifetime::Application, &store_name, None, &mut snapshotter);
+        storage.iter_store_from(Lifetime::User, &store_name, None, &mut snapshotter);
 
         snapshot
     }
@@ -183,7 +183,7 @@ impl StorageManager {
             }
         };
 
-        storage.iter_store_from(Lifetime::Application, store_name, &mut snapshotter);
+        storage.iter_store_from(Lifetime::Application, store_name, None, &mut snapshotter);
 
         if snapshot.is_empty() {
             None

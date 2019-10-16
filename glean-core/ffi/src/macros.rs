@@ -73,6 +73,7 @@ macro_rules! define_metric {
                     send_in_pings,
                     lifetime,
                     disabled: disabled != 0,
+                    ..Default::default()
                 }, $($new_argname),*))
             })
         }

@@ -67,6 +67,7 @@ macro_rules! impl_labeled_metric {
                         send_in_pings,
                         lifetime,
                         disabled: disabled != 0,
+                        ..Default::default()
                     }),
                     labels,
                 ))
@@ -75,23 +76,11 @@ macro_rules! impl_labeled_metric {
 
         /// Create a new instance of the sub-metric of this labeled metric.
         #[no_mangle]
-        pub extern "C" fn $get_name(glean_handle: u64, handle: u64, label: FfiStr) -> u64 {
-            // If Glean is not yet initialized on the platform side (no handle available),
-            // let's not crash, but let the core handle it by ignoring previously stored dynamic
-            // labels.
-            if glean_handle == 0 {
-                $global.call_infallible_mut(handle, |labeled| {
-                    let metric = labeled.get(None, label.as_str());
-                    $metric_global.insert_with_log(|| Ok(metric))
-                })
-            } else {
-                GLEAN.call_infallible(glean_handle, |glean| {
-                    $global.call_infallible_mut(handle, |labeled| {
-                        let metric = labeled.get(Some(glean), label.as_str());
-                        $metric_global.insert_with_log(|| Ok(metric))
-                    })
-                })
-            }
+        pub extern "C" fn $get_name(handle: u64, label: FfiStr) -> u64 {
+            $global.call_infallible_mut(handle, |labeled| {
+                let metric = labeled.get(label.as_str());
+                $metric_global.insert_with_log(|| Ok(metric))
+            })
         }
     };
 }

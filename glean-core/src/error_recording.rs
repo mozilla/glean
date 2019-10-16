@@ -62,9 +62,7 @@ pub fn record_error<O: Into<Option<i32>>>(
     message: impl Display,
     num_errors: O,
 ) {
-    // Split off any label of the identifier
-    let identifier = meta.identifier();
-    let name = identifier.splitn(2, '/').next().unwrap(); // safe unwrap, first field of a split always valid
+    let name = meta.base_identifier();
 
     // Record errors in the pings the metric is in, as well as the metrics ping.
     let mut send_in_pings = meta.send_in_pings.clone();
@@ -80,7 +78,7 @@ pub fn record_error<O: Into<Option<i32>>>(
         ..Default::default()
     });
 
-    log::warn!("{}: {}", identifier, message);
+    log::warn!("{}: {}", name, message);
     let to_report = num_errors.into().unwrap_or(1);
     debug_assert!(to_report > 0);
     metric.add(glean, to_report);
@@ -107,7 +105,7 @@ pub fn test_get_num_recorded_errors(
 ) -> Result<i32, String> {
     let use_ping_name = ping_name.unwrap_or(&meta.send_in_pings[0]);
     let metric = CounterMetric::new(CommonMetricData {
-        name: format!("{}/{}", error.to_string(), meta.identifier()),
+        name: format!("{}/{}", error.to_string(), meta.base_identifier()),
         category: "glean.error".into(),
         lifetime: Lifetime::Ping,
         ..meta.clone()
@@ -116,7 +114,7 @@ pub fn test_get_num_recorded_errors(
     metric.test_get_value(glean, use_ping_name).ok_or_else(|| {
         format!(
             "No error recorded for {} in '{}' store",
-            metric.meta().identifier(),
+            metric.meta().base_identifier(),
             use_ping_name
         )
     })
@@ -147,6 +145,7 @@ mod test {
             send_in_pings: vec!["store1".into(), "store2".into()],
             disabled: false,
             lifetime: Lifetime::User,
+            ..Default::default()
         });
 
         let expected_invalid_values_errors: i32 = 1;
