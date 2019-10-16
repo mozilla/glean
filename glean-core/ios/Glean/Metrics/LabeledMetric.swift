@@ -24,6 +24,7 @@ public class LabeledMetricType<T> {
     /// The public constructor used by automatically generated metrics.
     ///
     /// Supports the following types as sub-metrics:
+    /// * `BooleanMetricType`
     /// * `CounterMetricType`
     /// * `StringMetricType`
     ///
@@ -109,13 +110,13 @@ public class LabeledMetricType<T> {
 
         switch self.subMetric {
         case is CounterMetricType:
-            let handle = glean_labeled_counter_metric_get(Glean.shared.handle, self.handle, label)
+            let handle = glean_labeled_counter_metric_get(self.handle, label)
             return CounterMetricType(withHandle: handle, disabled: self.disabled, sendInPings: self.sendInPings) as! T
         case is BooleanMetricType:
-            let handle = glean_labeled_boolean_metric_get(Glean.shared.handle, self.handle, label)
+            let handle = glean_labeled_boolean_metric_get(self.handle, label)
             return BooleanMetricType(withHandle: handle, disabled: self.disabled, sendInPings: self.sendInPings) as! T
         case is StringMetricType:
-            let handle = glean_labeled_string_metric_get(Glean.shared.handle, self.handle, label)
+            let handle = glean_labeled_string_metric_get(self.handle, label)
             return StringMetricType(withHandle: handle, disabled: self.disabled, sendInPings: self.sendInPings) as! T
         default:
             // The constructor will already throw an exception on an unhandled sub-metric type
