@@ -169,13 +169,9 @@ open class GleanInternalAPI internal constructor () {
             migrator.migrateUserLifetimeMetrics()
         }
 
-        // If any pings were registered before initializing, do so now
+        // If any pings were registered before initializing, do so now.
+        // We're not clearing this queue in case Glean is reset by tests.
         this.pingTypeQueue.forEach { this.registerPingType(it) }
-
-        @Suppress("EXPERIMENTAL_API_USAGE")
-        if (!Dispatchers.API.testingMode) {
-            this.pingTypeQueue.clear()
-        }
 
         // TODO: on glean-legacy we perform other actions before initialize the metrics (e.g.
         // init the engines), then init the core metrics, and finally kick off the metrics
@@ -598,23 +594,19 @@ open class GleanInternalAPI internal constructor () {
      */
     @Synchronized
     internal fun registerPingType(pingType: PingType) {
-        if (!this.isInitialized()) {
-            pingTypeQueue.add(pingType)
-        } else {
+        if (this.isInitialized()) {
             LibGleanFFI.INSTANCE.glean_register_ping_type(
                 handle,
                 pingType.handle
             )
-
-            // In test mode we still need to keep track of pings, so they get re-registered after a reset.
-            // This state is kept across Glean resets (which only happen in test mode).
-            // This state is cleared in production-mode in `Glean.initialize`,
-            // as the ping objects themselves will live forever and Glean can't be reset.
-            @Suppress("EXPERIMENTAL_API_USAGE")
-            if (Dispatchers.API.testingMode) {
-                pingTypeQueue.add(pingType)
-            }
         }
+
+        // We need to keep track of pings, so they get re-registered after a reset.
+        // This state is kept across Glean resets, which should only ever happen in test mode.
+        // Or by the instrumentation tests (`connectedAndroidTest`), which relaunches the application activity,
+        // but not the whole process, meaning globals, such as the ping types, still exist from the old run.
+        // It's a set and keeping them around forever should not have much of an impact.
+        pingTypeQueue.add(pingType)
     }
 
     /**
