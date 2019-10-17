@@ -20,6 +20,10 @@ user:
 
 Now that the UUID is defined in `metrics.yaml`, you can use the metric to record values in the application's code.
 
+{{#include ../../tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
+
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.User
 
@@ -37,6 +41,30 @@ assertTrue(User.clientId.testHasValue())
 // Was it the expected value?
 assertEquals(uuid, User.clientId.testGetValue())
 ```
+
+</div>
+
+<div data-lang="Swift" class="tab">
+
+```Swift
+User.clientId.generateAndSet() // Generate a new UUID and record it
+User.clientId.set(UUID())  // Set a UUID explicitly
+```
+
+There are test APIs available too.
+
+```Swift
+@testable import Glean
+
+// Was anything recorded?
+XCTAssert(User.clientId.testHasValue())
+// Was it the expected value?
+XCTAssertEqual(uuid, try User.clientId.testGetValue())
+```
+
+</div>
+
+{{#include ../../tab_footer.md}}
 
 ## Limits
 
