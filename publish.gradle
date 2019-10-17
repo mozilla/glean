@@ -9,6 +9,11 @@ def libProjectName = properties.libProjectName
 def libUrl = properties.libUrl
 def libVcsUrl = properties.libVcsUrl
 
+// The note to be added at the end of the description for 'forUnitTests'
+// artifacts.
+def forUnitTestDescriptionSuffix =
+        "This artifact is to be used for running unit tests on developer's systems."
+
 // `jnaForTestConfiguration` is a hacky way to say yes, I'm using JNA and want
 // to pack the JNA dispatch libraries and my Rust libraries into a single JAR
 // for use in unit tests that run on a development host (and not an Android
@@ -118,7 +123,7 @@ ext.configurePublish = { jnaForTestConfiguration = null ->
                 pom {
                     groupId = theGroupId
                     artifactId = "${theArtifactId}-forUnitTests"
-                    description = theDescription
+                    description = theDescription + " " + forUnitTestDescriptionSuffix
                     version = rootProject.ext.library.version
                     packaging = "jar"
 
@@ -140,6 +145,20 @@ ext.configurePublish = { jnaForTestConfiguration = null ->
                         connection = libVcsUrl
                         developerConnection = libVcsUrl
                         url = libUrl
+                    }
+                }
+
+                pom.withXml {
+                    // The 'forUnitTest' JAR, used to run unit tests on the host system,
+                    // needs to declare any dependency it requires (e.g. JNA).
+                    def dependenciesNode = asNode().appendNode("dependencies")
+                    configurations["jnaForTest"].allDependencies.forEach {
+                        if (it.group != null) {
+                            def dependencyNode = dependenciesNode.appendNode("dependency")
+                            dependencyNode.appendNode("groupId", it.group)
+                            dependencyNode.appendNode("artifactId", it.name)
+                            dependencyNode.appendNode("version", it.version)
+                        }
                     }
                 }
 
