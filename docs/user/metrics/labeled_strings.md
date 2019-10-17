@@ -87,3 +87,4 @@ XCTAssert(Login.errorsByStage["server_auth"].testHasValue())
 ## Reference
 
 * Kotlin API docs: [LabeledMetricType](../../../javadoc/glean/mozilla.telemetry.glean.private/-labeled-metric-type/index.html), [StringMetricType](../../../javadoc/glean/mozilla.telemetry.glean.private/-string-metric-type/index.html)
+* Swift API docs: [LabeledMetricType](../../../swift/Classes/LabeledMetricType.html), [StringMetricType](../../../swift/Classes/StringMetricType.html)

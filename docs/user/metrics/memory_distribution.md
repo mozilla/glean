@@ -108,4 +108,5 @@ XCTAssertEqual(2, snapshot.count)
 
 ## Reference
 
-* See [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-memory-distribution-metric-type/index.html)
+* [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-memory-distribution-metric-type/index.html)
+* [Swift API docs](../../../swift/Classes/MemoryDistributionMetricType.html)

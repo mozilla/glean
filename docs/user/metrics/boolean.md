@@ -77,4 +77,4 @@ XCTAssertTrue(try Flags.a11yEnabled.testGetValue())
 ## Reference
 
 * [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-boolean-metric-type/index.html)
-
+* [Swift API docs](../../../swift/Classes/BooleanMetricType.html)

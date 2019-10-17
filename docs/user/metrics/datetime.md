@@ -25,8 +25,8 @@ You first need to add an entry for it to the `metrics.yaml` file:
 ```YAML
 install:
   first_run:
-    type: datetime 
-    time_unit: day 
+    type: datetime
+    time_unit: day
     description: >
       Records the date when the application was first run
     lifetime: user
@@ -54,7 +54,7 @@ import org.mozilla.yourApplication.GleanMetrics.Install
 // Was anything recorded?
 assertTrue(Install.firstRun.testHasValue())
 // Was it the expected value?
-// NOTE: Datetimes always include a timezone offset from UTC, hence the 
+// NOTE: Datetimes always include a timezone offset from UTC, hence the
 // "-05:00" suffix.
 assertEquals("2019-03-25-05:00", Install.firstRun.testGetValueAsString())
 ```
@@ -103,3 +103,4 @@ XCTAssertEqual(6, try Controls.refreshPressed.testGetValue())
 ## Reference
 
 * [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-datetime-metric-type/index.html)
+* [Swift API docs](../../../swift/Classes/DatetimeMetricType.html)

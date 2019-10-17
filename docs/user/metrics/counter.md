@@ -78,4 +78,4 @@ XCTAssertEqual(6, try Controls.refreshPressed.testGetValue())
 ## Reference
 
 * [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-counter-metric-type/index.html)
-
+* [Swift API docs](../../../swift/Classes/CounterMetricType.html)

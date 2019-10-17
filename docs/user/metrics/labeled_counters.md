@@ -95,3 +95,4 @@ XCTAssertEqual(3, try Stability.crashCount["native_code_crash"].testGetValue())
 ## Reference
 
 * Kotlin API docs [LabeledMetricType](../../../javadoc/glean/mozilla.telemetry.glean.private/-labeled-metric-type/index.html), [CounterMetricType](../../../javadoc/glean/mozilla.telemetry.glean.private/-counter-metric-type/index.html)
+* Swift API docs: [LabeledMetricType](../../../swift/Classes/LabeledMetricType.html), [CounterMetricType](../../../swift/Classes/CounterMetricType.html)

@@ -16,7 +16,7 @@ Custom distributions have the following required parameters:
   - `range_min`: (Integer) The minimum value of the first bucket
   - `range_max`: (Integer) The minimum value of the last bucket
   - `bucket_count`: (Integer) The number of buckets
-  - `histogram_type`: 
+  - `histogram_type`:
     - `linear`: The buckets are evenly spaced
     - `exponential`: The buckets follow a natural logarithmic distribution
 
@@ -81,6 +81,4 @@ assertEquals(2L, snapshot.count())
 
 ## Reference
 
-* See [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-custom-distribution-metric-type/index.html)
-
- 
+* [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-custom-distribution-metric-type/index.html)
