@@ -2,7 +2,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-//! Module documentation
 use lazy_static::lazy_static;
 use regex::Regex;
 
@@ -111,14 +110,28 @@ where
         match self.labels {
             Some(_) => {
                 let label = self.static_label(label).to_string();
-                self.new_metric_with_name(format!("{}/{}", self.submetric.meta().name, label))
+                self.new_metric_with_name(combine_base_identifier_and_label(
+                    &self.submetric.meta().name,
+                    &label,
+                ))
             }
             None => self.new_metric_with_dynamic_label(label.to_string()),
         }
     }
 }
 
-/// Correct a dynamic label
+/// Combines a metric's base identifier and label
+pub fn combine_base_identifier_and_label(base_identifer: &str, label: &str) -> String {
+    format!("{}/{}", base_identifer, label)
+}
+
+/// Strips the label off of a complete identifier
+pub fn strip_label(identifier: &str) -> &str {
+    // safe unwrap, first field of a split always valid
+    identifier.splitn(2, '/').next().unwrap()
+}
+
+/// Validate a dynamic label, changing it to OTHER_LABEL if it's invalid.
 ///
 /// Checks the requested label against limitations, such as the label length and allowed
 /// characters.
@@ -129,19 +142,19 @@ where
 ///
 /// ## Return value
 ///
-/// Returns the valid label if within the limitations,
-/// or `OTHER_LABEL` on any errors.
+/// Returns the entire identifier for the metric, including the base identifier and the
+/// corrected label.
 /// The errors are logged.
-pub fn dynamic_label<'a>(
+pub fn dynamic_label(
     glean: &Glean,
     meta: &CommonMetricData,
-    base_identifier: &'a str,
-    label: &'a str,
-) -> &'a str {
-    let key = format!("{}/{}", base_identifier, label);
+    base_identifier: &str,
+    label: &str,
+) -> String {
+    let key = combine_base_identifier_and_label(base_identifier, label);
     for store in &meta.send_in_pings {
         if glean.storage().has_metric(meta.lifetime, store, &key) {
-            return label;
+            return key;
         }
     }
 
@@ -158,25 +171,27 @@ pub fn dynamic_label<'a>(
             .iter_store_from(lifetime, store, Some(&prefix), &mut snapshotter);
     }
 
-    if label_count >= MAX_LABELS {
-        return OTHER_LABEL;
+    let error = if label_count >= MAX_LABELS {
+        true
+    } else if label.len() > MAX_LABEL_LENGTH {
+        let msg = format!(
+            "label length {} exceeds maximum of {}",
+            label.len(),
+            MAX_LABEL_LENGTH
+        );
+        record_error(glean, meta, ErrorType::InvalidLabel, msg, None);
+        true
+    } else if !LABEL_REGEX.is_match(label) {
+        let msg = format!("label must be snake_case, got '{}'", label);
+        record_error(glean, meta, ErrorType::InvalidLabel, msg, None);
+        true
     } else {
-        if label.len() > MAX_LABEL_LENGTH {
-            let msg = format!(
-                "label length {} exceeds maximum of {}",
-                label.len(),
-                MAX_LABEL_LENGTH
-            );
-            record_error(glean, meta, ErrorType::InvalidLabel, msg, None);
-            return OTHER_LABEL;
-        }
+        false
+    };
 
-        if !LABEL_REGEX.is_match(label) {
-            let msg = format!("label must be snake_case, got '{}'", label);
-            record_error(glean, meta, ErrorType::InvalidLabel, msg, None);
-            return OTHER_LABEL;
-        }
+    if error {
+        combine_base_identifier_and_label(base_identifier, OTHER_LABEL)
+    } else {
+        key
     }
-
-    label
 }

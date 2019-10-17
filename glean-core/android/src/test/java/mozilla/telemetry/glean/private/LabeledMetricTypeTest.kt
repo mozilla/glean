@@ -226,8 +226,7 @@ class LabeledMetricTypeTest {
         labeledCounterMetric["label_0"].add(1)
 
         // Initialize glean
-        val config = Configuration()
-        Glean.initialize(context, config)
+        Glean.initialize(context)
 
         assertEquals(2, labeledCounterMetric["label_0"].testGetValue())
         for (i in 1..15) {

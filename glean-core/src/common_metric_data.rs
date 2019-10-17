@@ -66,8 +66,10 @@ pub struct CommonMetricData {
     ///
     /// Disabled metrics are never recorded.
     pub disabled: bool,
-    /// Dynamic label. These need to be looked up in the database to make sure
-    /// we aren't storing too many. (Static labels are stored as part of name).
+    /// Dynamic label.
+    /// When a LabeledMetric<T> factory creates the specific metric to be
+    /// recorded to, dynamic labels are stored in the specific label so that we
+    /// can validate them when the Glean singleton is available.
     pub dynamic_label: Option<String>,
 }
 
@@ -106,11 +108,7 @@ impl CommonMetricData {
         let base_identifier = self.base_identifier();
 
         if let Some(label) = &self.dynamic_label {
-            format!(
-                "{}/{}",
-                base_identifier,
-                dynamic_label(glean, self, &base_identifier, label)
-            )
+            dynamic_label(glean, self, &base_identifier, label)
         } else {
             base_identifier
         }

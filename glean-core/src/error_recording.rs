@@ -15,7 +15,7 @@
 use std::fmt::Display;
 
 use crate::metrics::CounterMetric;
-use crate::metrics::MetricType;
+use crate::metrics::{combine_base_identifier_and_label, strip_label};
 use crate::CommonMetricData;
 use crate::Glean;
 use crate::Lifetime;
@@ -39,6 +39,28 @@ impl ErrorType {
     }
 }
 
+/// For a given metric, get the metric in which to record errors
+fn get_error_metric_for_metric(meta: &CommonMetricData, error: ErrorType) -> CounterMetric {
+    // Can't use meta.identifier here, since that might cause infinite recursion
+    // if the label on this metric needs to report an error.
+    let identifier = meta.base_identifier();
+    let name = strip_label(&identifier);
+
+    // Record errors in the pings the metric is in, as well as the metrics ping.
+    let mut send_in_pings = meta.send_in_pings.clone();
+    if !send_in_pings.contains(&"metrics".to_string()) {
+        send_in_pings.push("metrics".into());
+    }
+
+    CounterMetric::new(CommonMetricData {
+        name: combine_base_identifier_and_label(error.to_string(), name),
+        category: "glean.error".into(),
+        lifetime: Lifetime::Ping,
+        send_in_pings,
+        ..Default::default()
+    })
+}
+
 /// Records an error into Glean.
 ///
 /// Errors are recorded as labeled counters in the `glean.error` category.
@@ -54,7 +76,7 @@ impl ErrorType {
 /// * error -  The error type to record
 /// * message - The message to log. This message is not sent with the ping.
 ///             It does not need to include the metric name, as that is automatically prepended to the message.
-//  * num_errors - The number of errors of the same type to report.
+///  * num_errors - The number of errors of the same type to report.
 pub fn record_error<O: Into<Option<i32>>>(
     glean: &Glean,
     meta: &CommonMetricData,
@@ -62,23 +84,9 @@ pub fn record_error<O: Into<Option<i32>>>(
     message: impl Display,
     num_errors: O,
 ) {
-    let name = meta.base_identifier();
+    let metric = get_error_metric_for_metric(meta, error);
 
-    // Record errors in the pings the metric is in, as well as the metrics ping.
-    let mut send_in_pings = meta.send_in_pings.clone();
-    if !send_in_pings.contains(&"metrics".to_string()) {
-        send_in_pings.push("metrics".into());
-    }
-
-    let metric = CounterMetric::new(CommonMetricData {
-        name: format!("{}/{}", error.to_string(), name),
-        category: "glean.error".into(),
-        lifetime: Lifetime::Ping,
-        send_in_pings,
-        ..Default::default()
-    });
-
-    log::warn!("{}: {}", name, message);
+    log::warn!("{}: {}", meta.base_identifier(), message);
     let to_report = num_errors.into().unwrap_or(1);
     debug_assert!(to_report > 0);
     metric.add(glean, to_report);
@@ -104,17 +112,12 @@ pub fn test_get_num_recorded_errors(
     ping_name: Option<&str>,
 ) -> Result<i32, String> {
     let use_ping_name = ping_name.unwrap_or(&meta.send_in_pings[0]);
-    let metric = CounterMetric::new(CommonMetricData {
-        name: format!("{}/{}", error.to_string(), meta.base_identifier()),
-        category: "glean.error".into(),
-        lifetime: Lifetime::Ping,
-        ..meta.clone()
-    });
+    let metric = get_error_metric_for_metric(meta, error);
 
     metric.test_get_value(glean, use_ping_name).ok_or_else(|| {
         format!(
             "No error recorded for {} in '{}' store",
-            metric.meta().base_identifier(),
+            meta.base_identifier(),
             use_ping_name
         )
     })
