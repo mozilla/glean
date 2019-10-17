@@ -3,7 +3,12 @@
 The Glean SDK exports the `GleanDebugActivity` that can be used to toggle debugging features on or off.
 Users can invoke this special activity, at run-time, using the following [`adb`](https://developer.android.com/studio/command-line/adb) command:
 
-`adb shell am start -n [applicationId]/mozilla.components.service.glean.debug.GleanDebugActivity [extra keys]`
+`adb shell am start -n [applicationId]/mozilla.telemetry.glean.debug.GleanDebugActivity [extra keys]`
+
+> **Note:** In previous versions of Glean the activity was available with the name `mozilla.components.service.glean.debug.GleanDebugActivity`.
+>
+> If you're debugging an old build, try running:
+> `adb shell am start -n [applicationId]/mozilla.components.service.glean.debug.GleanDebugActivity [extra keys]`
 
 In the above:
 
@@ -21,11 +26,21 @@ In the above:
 For example, to direct a release build of the Glean sample application to (1) dump pings to logcat, (2) tag the ping with the `test-metrics-ping` tag, and (3) send the "metrics" ping immediately, the following command can be used:
 
 ```
-adb shell am start -n org.mozilla.samples.glean/mozilla.components.service.glean.debug.GleanDebugActivity \
+adb shell am start -n org.mozilla.samples.glean/mozilla.telemetry.glean.debug.GleanDebugActivity \
   --ez logPings true \
   --es sendPing metrics \
   --es tagPings test-metrics-ping
 ```
+
+> **Note:** In previous versions of Glean the activity was available with the name `mozilla.components.service.glean.debug.GleanDebugActivity`.
+>
+> If you're debugging an old build, try running:
+> ```
+> adb shell am start -n org.mozilla.samples.glean/mozilla.components.service.glean.debug.GleanDebugActivity \
+>   --ez logPings true \
+>   --es sendPing metrics \
+>   --es tagPings test-metrics-ping
+> ```
 
 ### Important GleanDebugActivity notes!
 
