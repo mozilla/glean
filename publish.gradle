@@ -12,7 +12,7 @@ def libVcsUrl = properties.libVcsUrl
 // The note to be added at the end of the description for 'forUnitTests'
 // artifacts.
 def forUnitTestDescriptionSuffix =
-        "This is artifact is to be used for running unit tests on developer's systems."
+        "This artifact is to be used for running unit tests on developer's systems."
 
 // `jnaForTestConfiguration` is a hacky way to say yes, I'm using JNA and want
 // to pack the JNA dispatch libraries and my Rust libraries into a single JAR
@@ -149,7 +149,7 @@ ext.configurePublish = { jnaForTestConfiguration = null ->
                 }
 
                 pom.withXml {
-                    // The 'forUnitTest' JAR used to run unit tests on the host system
+                    // The 'forUnitTest' JAR, used to run unit tests on the host system,
                     // needs to declare any dependency it requires (e.g. JNA).
                     def dependenciesNode = asNode().appendNode("dependencies")
                     configurations["jnaForTest"].allDependencies.forEach {
