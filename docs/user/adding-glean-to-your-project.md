@@ -40,20 +40,20 @@ Right before the end of the same file, the Glean SDK build script must be includ
 This script can be referenced directly from the GitHub repo, as shown below:
 
 ```Groovy
-apply from: 'https://github.com/mozilla-mobile/android-components/raw/v{latest-version}/components/service/scripts/sdk_generator.gradle'
+apply from: 'https://raw.githubusercontent.com/mozilla-mobile/android-components/v{latest-version}/components/service/glean/scripts/sdk_generator.gradle'
 ```
 
 > **Important:** the `{latest-version}` placeholder in the above link should be replaced with the version number of the Glean SDK used by the project.
 For example, if version *6.0.2* is used, then the include directive becomes:
 
 ```Groovy
-apply from: 'https://github.com/mozilla-mobile/android-components/raw/v6.0.2/components/service/scripts/sdk_generator.gradle'
+apply from: 'https://raw.githubusercontent.com/mozilla-mobile/android-components/v16.0.0/components/service/glean/scripts/sdk_generator.gradle'
 ```
 
 If you are using a `SNAPSHOT` build of `android-components`, it is best to use the master branch, for example:
 
 ```Groovy
-apply from: 'https://github.com/mozilla-mobile/android-components/raw/master/components/service/scripts/sdk_generator.gradle'
+apply from: 'https://raw.githubusercontent.com/mozilla-mobile/android-components/master/components/service/glean/scripts/sdk_generator.gradle'
 ```
 
 There are [additional parameters](android-build-configuration-options.md) that can be set to control the behavior of the `sdk_generator.gradle` script, but they are rarely used in normal use.
