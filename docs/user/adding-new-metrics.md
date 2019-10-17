@@ -1,7 +1,7 @@
 # Adding new metrics
 
-All metrics that your project collects must be defined in a `metrics.yaml` file. 
-This file should be at the root of the application or library module (the same directory as the `build.gradle` file you updated). 
+All metrics that your project collects must be defined in a `metrics.yaml` file.
+This file should be at the root of the application or library module (the same directory as the `build.gradle` file you updated).
 The format of that file is documented [here](https://mozilla.github.io/glean_parser/metrics-yaml.html).
 
 When adding a new metric, the workflow is:
@@ -15,7 +15,7 @@ This is also required for any new metric automatically collected by the Glean SD
 
 ## The `metrics.yaml` file
 
-The `metrics.yaml` file defines the metrics your application or library will send. 
+The `metrics.yaml` file defines the metrics your application or library will send.
 They are organized into categories.
 The overall organization is:
 
@@ -34,8 +34,7 @@ toolbar:
       - 123456789
     data_reviews:
       - http://example.com/path/to/data-review
-    expires:
-      - 2019-06-01  # <-- Update to a date in the future
+    expires: 2019-06-01  # <-- Update to a date in the future
 
   double_click:
     ...
