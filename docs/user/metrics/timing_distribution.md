@@ -34,7 +34,7 @@ For example, to measure page load time on a number of tabs that are loading at t
 <div data-lang="Kotlin" class="tab">
 
 ```Kotlin
-import mozilla.components.service.glean.timing.GleanTimerId
+import mozilla.components.service.glean.GleanTimerId
 import org.mozilla.yourApplication.GleanMetrics.Pages
 
 val timerId : GleanTimerId
