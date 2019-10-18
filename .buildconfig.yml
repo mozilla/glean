@@ -1,4 +1,4 @@
-libraryVersion: 0.0.1-TESTING5
+libraryVersion: 0.0.1-TESTING6
 groupId: org.mozilla.telemetry
 projects:
   glean-core:
