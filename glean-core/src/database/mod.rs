@@ -67,8 +67,21 @@ impl Database {
         }
     }
 
-    /// Iterates with the provided transaction function on the data from
-    /// the given storage.
+    /// Iterates with the provided transaction function over the requested data
+    /// from the given storage.
+    ///
+    /// ## Arguments
+    ///
+    /// * `lifetime`: The metric lifetime to iterate over.
+    /// * `storage_name`: The storage name to iterate over.
+    /// * `metric_key`: The metric key to iterate over. All metrics iterated over
+    ///   will have this prefix. For example, if `metric_key` is of the form `{category}.`,
+    ///   it will iterate over all metrics in the given category. If the `metric_key` is of the
+    ///   form `{category}.{name}/`, the iterator will iterate over all specific metrics for
+    ///   a given labeled metric. If not provided, the entire storage for the given lifetime
+    ///   will be iterated over.
+    /// * `transaction_fn`: Called for each entry being iterated over. It is
+    ///   passed two arguments: `(metric_name: &[u8], metric: &Metric)`.
     pub fn iter_store_from<F>(
         &self,
         lifetime: Lifetime,
@@ -115,9 +128,20 @@ impl Database {
         }
     }
 
-    /// Returns `True` if the storage has the given metric.
-    pub fn has_metric(&self, lifetime: Lifetime, storage_name: &str, metric_key: &str) -> bool {
-        let key = Self::get_storage_key(storage_name, Some(metric_key));
+    /// Determine if the storage has the given metric.
+    ///
+    /// ## Arguments
+    ///
+    /// * `lifetime`: The lifetime of the metric.
+    /// * `storage_name`: The storage name to look in.
+    /// * `metric_identifier`: The metric identifier.
+    pub fn has_metric(
+        &self,
+        lifetime: Lifetime,
+        storage_name: &str,
+        metric_identifier: &str,
+    ) -> bool {
+        let key = Self::get_storage_key(storage_name, Some(metric_identifier));
 
         // Lifetime::Application data is not persisted to disk
         if lifetime == Lifetime::Application {
