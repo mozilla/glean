@@ -116,7 +116,7 @@ where
         //   an initialized Glean object.
         match self.labels {
             Some(_) => {
-                let label = self.static_label(label).to_string();
+                let label = self.static_label(label);
                 self.new_metric_with_name(combine_base_identifier_and_label(
                     &self.submetric.meta().name,
                     &label,
