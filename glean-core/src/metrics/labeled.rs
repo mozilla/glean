@@ -58,12 +58,19 @@ where
         LabeledMetric { labels, submetric }
     }
 
+    /// Creates a new metric with a specific label.
+    ///
+    /// This is used for static labels where we can just set the name to be `name/label`.
     fn new_metric_with_name(&self, name: String) -> T {
         let mut t = self.submetric.clone();
         t.meta_mut().name = name;
         t
     }
 
+    /// Creates a new metric with a specific label.
+    ///
+    /// This is used for dynamic labels where we have to actually validate and correct the
+    /// label later when we have a Glean object.
     fn new_metric_with_dynamic_label(&self, label: String) -> T {
         let mut t = self.submetric.clone();
         t.meta_mut().dynamic_label = Some(label);
