@@ -92,7 +92,7 @@ impl CommonMetricData {
     ///
     /// If `category` is empty, it's ommitted.
     /// Otherwise, it's the combination of the metric's `category` and `name`.
-    pub fn base_identifier(&self) -> String {
+    pub(crate) fn base_identifier(&self) -> String {
         if self.category.is_empty() {
             self.name.clone()
         } else {
@@ -104,7 +104,7 @@ impl CommonMetricData {
     ///
     /// If `category` is empty, it's ommitted.
     /// Otherwise, it's the combination of the metric's `category`, `name` and `label`.
-    pub fn identifier(&self, glean: &Glean) -> String {
+    pub(crate) fn identifier(&self, glean: &Glean) -> String {
         let base_identifier = self.base_identifier();
 
         if let Some(label) = &self.dynamic_label {
