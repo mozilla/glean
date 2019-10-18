@@ -1,6 +1,21 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v0.0.1-TESTING4...master)
+[Full changelog](https://github.com/mozilla/glean/compare/v0.0.1-TESTING6...master)
+
+# v0.0.1-TESTING6 (2019-10-18)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v0.0.1-TESTING5...v0.0.1-TESTING6)
+
+* Ignore dynamically stored labels if Glean is not initialized ([#374](https://github.com/mozilla/glean/pull/374))
+* Make sure ProGuard doesn't remove Glean classes from the app ([#380](https://github.com/mozilla/glean/pull/380))
+* Keep track of pings in all modes ([#378](https://github.com/mozilla/glean/pull/378))
+* Add 'jnaTest' dependencies to the 'forUnitTest' JAR ([#382](https://github.com/mozilla/glean/pull/382))
+
+# v0.0.1-TESTING5 (2019-10-10)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v0.0.1-TESTING4...v0.0.1-TESTING5)
+
+* Upgrade to NDK r20 ([#365](https://github.com/mozilla/glean/pull/365))
 
 # v0.0.1-TESTING4 (2019-10-09)
 
