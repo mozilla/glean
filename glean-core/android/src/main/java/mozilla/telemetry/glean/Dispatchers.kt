@@ -144,12 +144,14 @@ internal object Dispatchers {
             // wait up to 5 seconds for it to complete, otherwise we will reset the flag so that
             // new tasks may continue to run.
             runBlocking {
-                withTimeoutOrNull(QUEUE_PROCESSING_TIMEOUT_MS) {
+                if (withTimeoutOrNull(QUEUE_PROCESSING_TIMEOUT_MS) {
                     job.join()
-                }?.let {
+                } == null) {
                     Log.e(LOG_TAG, "Timeout processing initial tasks queue")
                     queueInitialTasks.set(false)
                     taskQueue.clear()
+                } else {
+                    Log.i(LOG_TAG, "Initial tasks queue completed successfully")
                 }
             }
         }
