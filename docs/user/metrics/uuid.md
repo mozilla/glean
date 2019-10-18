@@ -80,5 +80,5 @@ XCTAssertEqual(uuid, try User.clientId.testGetValue())
 
 ## Reference
 
-* See [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-uuid-metric-type/index.html).
-
+* [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-uuid-metric-type/index.html).
+* [Swift API docs](../../../swift/Classes/UuidMetricType.html)

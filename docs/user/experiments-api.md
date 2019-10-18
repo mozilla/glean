@@ -7,6 +7,10 @@ The Glean SDK supports tagging all its pings with experiments annotations. The a
 
 ## API
 
+{{#include ../tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
+
 ```Kotlin
 // Annotate Glean pings with experiments data.
 Glean.setExperimentActive(
@@ -36,6 +40,16 @@ assertEquals(
   "branch-with-blue-button", Glean.testGetExperimentData("blue-button-effective")?.branch
 )
 ```
+
+</div>
+
+<div data-lang="Swift" class="tab">
+
+> **Note**: Experiments are currently not supported by Glean for iOS.
+
+</div>
+
+{{#include ../tab_footer.md}}
 
 ## Limits
 

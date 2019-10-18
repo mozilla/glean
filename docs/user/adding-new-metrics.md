@@ -1,7 +1,7 @@
 # Adding new metrics
 
 All metrics that your project collects must be defined in a `metrics.yaml` file.
-This file should be at the root of the application or library module (the same directory as the `build.gradle` file you updated).
+This file should be at the root of the application or library module.
 The format of that file is documented [here](https://mozilla.github.io/glean_parser/metrics-yaml.html).
 
 When adding a new metric, the workflow is:
@@ -47,7 +47,7 @@ category2.subcategory:  # Categories can contain subcategories
 
 The details of the metric parameters are described in [metric parameters](metric-parameters.md).
 
-The `metrics.yaml` file is used to generate `Kotlin` code that becomes the public API to access your application's metrics.
+The `metrics.yaml` file is used to generate code in the target language (e.g. Kotlin, Swift, ...) that becomes the public API to access your application's metrics.
 
 ## Recommendations for defining new metrics
 
@@ -93,7 +93,14 @@ If the metric is still needed, it should go back for [another round of data revi
 
 ## A note about case inflection
 
-Category and metric names in the `metrics.yaml` are in `snake_case`, but given the Kotlin coding standards defined by [ktlint](https://github.com/pinterest/ktlint), these identifiers must be `camelCase` in Kotlin. For example, the metric defined in the `metrics.yaml` as:
+{{#include ../tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
+
+Category and metric names in the `metrics.yaml` are in `snake_case`,
+but given the Kotlin coding standards defined by [ktlint](https://github.com/pinterest/ktlint),
+these identifiers must be `camelCase` in Kotlin.
+For example, the metric defined in the `metrics.yaml` as:
 
 
 ```YAML
@@ -106,5 +113,30 @@ is accessible in Kotlin as:
 
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.Views
-Views.loginOpened...
+GleanMetrics.Views.loginOpened...
 ```
+
+</div>
+
+<div data-lang="Swift" class="tab">
+
+Category and metric names in the `metrics.yaml` are in `snake_case`,
+but given the Swift coding standards defined by [swiftlint](https://github.com/realm/SwiftLint),
+these identifiers must be `camelCase` in Swift.
+For example, the metric defined in the `metrics.yaml` as:
+
+```YAML
+views:
+  login_opened:
+    ...
+```
+
+is accessible in Kotlin as:
+
+```Swift
+GleanMetrics.Views.loginOpened...
+```
+
+</div>
+
+{{#include ../tab_footer.md}}

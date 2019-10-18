@@ -95,5 +95,5 @@ XCTAssertEqual("login_opened", first.name)
  
 ## Reference
 
-* See [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-event-metric-type/index.html).
-
+* [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-event-metric-type/index.html).
+* [Swift API docs](../../../swift/Classes/EventMetricType.html)

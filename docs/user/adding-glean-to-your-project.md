@@ -13,6 +13,10 @@ Products using the Glean SDK to collect telemetry **must**:
 
 ### Integrating with your project
 
+{{#include ../tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
+
 #### Setting up the dependency
 
 Use Gradle to download the library from [maven.mozilla.org](https://maven.mozilla.org/) ([Setup repository](https://github.com/mozilla-mobile/android-components/blob/master/README.md#maven-repository)) by adding the following to your Gradle configuration:
@@ -58,20 +62,43 @@ apply from: 'https://raw.githubusercontent.com/mozilla-mobile/android-components
 
 There are [additional parameters](android-build-configuration-options.md) that can be set to control the behavior of the `sdk_generator.gradle` script, but they are rarely used in normal use.
 
+</div>
+
+<div data-lang="Swift" class="tab">
+
+#### Setting up the dependency
+
+Glean can be consumed through [Carthage](https://github.com/Carthage/Carthage), a dependency manager for macOS and iOS.
+For consuming the latest version of Glean, add the following line to your `Cartfile`::
+
+```
+github "mozilla/glean" "master"
+```
+
+#### Integrating with the build system
+
+> **Note:** This is not yet documented, as the exact mechanism is not finalized. See [Bug 1589383](https://bugzilla.mozilla.org/show_bug.cgi?id=1589383) for more information.
+
+</div>
+
+{{#include ../tab_footer.md}}
+
 ### Adding new metrics
 
 All metrics that your project collects must be defined in a `metrics.yaml` file.
-This file should be at the root of the module (the same directory as the `build.gradle` file you updated).
+Add this file to your project and define it as an input file for the `sdk_generator.sh` script in the `Run Script` step defined before.
 The format of that file is documented [with `glean_parser`](https://mozilla.github.io/glean_parser/metrics-yaml.html).
 To learn more, see [adding new metrics](adding-new-metrics.md).
 
-> **Important**: as stated [above](#before-using-glean), any new data collection requires documentation and data-review. This is also required for any new metric automatically collected by the Glean SDK.
+> **Important**: as stated [before](adding-glean-to-your-project.md#before-using-glean), any new data collection requires documentation and data-review.
+> This is also required for any new metric automatically collected by the Glean SDK.
 
 ### Adding custom pings
 
 Please refer to the [custom pings documentation](pings/custom.md).
 
-> **Important**: as stated [above](#before-using-glean), any new data collection, including new custom pings, requires documentation and data-review. This is also required for any new ping automatically collected by the Glean SDK.
+> **Important**: as stated [before](adding-glean-to-your-project.md#before-using-glean), any new data collection requires documentation and data-review.
+> This is also required for any new metric automatically collected by the Glean SDK.
 
 ### Testing metrics
 
@@ -87,14 +114,17 @@ These specific steps are described in [the `probe_scraper` documentation](https:
 
 The following steps are required for applications using the Glean SDK, but not libraries.
 
+{{#include ../tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
+
 ### Initializing the Glean SDK
 
 The Glean SDK should only be initialized from the main application, not individual libraries.  If you are adding Glean support to a library, you can safely skip this section.
 Please also note that the Glean SDK does not support use across multiple processes, and must only be initialized on the application's main process. Initializing in other processes is a no-op.
 Additionally, Glean must be initialized on the main (UI) thread of the applications main process. Failure to do so will throw an `IllegalThreadStateException`.
 
-Before any data collection can take place, the Glean SDK **must** be initialized from the application.
-An excellent place to perform this operation is within the `onCreate` method of the class that extends Android's `Application` class.
+An excellent place to initialize Glean is within the `onCreate` method of the class that extends Android's `Application` class.
 
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.Pings
@@ -140,3 +170,64 @@ The application should provide some form of user interface to call this method.
 
 When going from enabled to disabled, all pending events, metrics and pings are cleared, except for `first_run_date`.
 When re-enabling, core Glean metrics will be recomputed at that time.
+
+</div>
+
+<div data-lang="Swift" class="tab">
+
+### Initializing the Glean SDK
+
+The Glean SDK should only be initialized from the main application, not individual libraries.
+If you are adding Glean support to a library, you can safely skip this section.
+Please also note that the Glean SDK does not support use across multiple processes, and must only be initialized on the application's main process.
+
+An excellent place to initialize Glean is within the `application(_:)` method of the class that extends the `UIApplicationDelegate` class.
+
+```Swift
+import Glean
+import UIKit
+
+@UIApplicationMain
+class AppDelegate: UIResponder, UIApplicationDelegate {
+    func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        // If you have custom pings in your application, you must register them
+        // using the following command. This command should be omitted for
+        // applications not using custom pings.
+        Glean.shared.registerPings(GleanMetrics.Pings)
+
+        // Call setUploadEnabled first, since Glean.initialize
+        // might send pings if there are any metrics queued up
+        // from a previous run.
+        Glean.shared.setUploadEnabled(Settings.isTelemetryEnabled)
+
+        // Initialize the Glean library.
+        Glean.shared.initialize()
+    }
+}
+```
+
+Once initialized, if collection is enabled, the Glean SDK will automatically start collecting [baseline metrics](pings/metrics.md) and sending its [pings](pings/index.md).
+
+The Glean SDK should be initialized as soon as possible, and importantly, before any other libraries in the application start using Glean.
+Library code should never call `Glean.shared.initialize`, since it should be called exactly once per application.
+
+> **Note**: if the application has the concept of release channels and knows which channel it is on at run-time,
+>  then it can provide the Glean SDK with this information by setting it as part of the `Configuration` object parameter of the `Glean.shared.initialize` method. For example:
+
+```Swift
+Glean.shared.initialize(Configuration(channel: "beta"))
+```
+
+### Enabling and disabling metrics
+
+`Glean.shared.setUploadEnabled()` should be called in response to the user enabling or disabling telemetry.
+This method should also be called at least once prior to calling `Glean.shared.initialize()`.
+
+The application should provide some form of user interface to call this method.
+
+When going from enabled to disabled, all pending events, metrics and pings are cleared, except for `first_run_date`.
+When re-enabling, core Glean metrics will be recomputed at that time.
+
+</div>
+
+{{#include ../tab_footer.md}}

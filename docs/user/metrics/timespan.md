@@ -159,3 +159,4 @@ HistorySync.setRawNanos(duration)
 ## Reference
 
 * [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-timespan-metric-type/index.html)
+* [Swift API docs](../../../swift/Classes/TimespanMetricType.html)
