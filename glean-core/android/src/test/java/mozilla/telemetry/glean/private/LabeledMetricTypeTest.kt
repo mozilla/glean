@@ -11,7 +11,6 @@ import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.collectAndCheckPingSchema
 import mozilla.telemetry.glean.GleanMetrics.Pings
-import mozilla.telemetry.glean.config.Configuration
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Test
 import org.junit.runner.RunWith
