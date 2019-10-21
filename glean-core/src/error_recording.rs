@@ -48,8 +48,9 @@ fn get_error_metric_for_metric(meta: &CommonMetricData, error: ErrorType) -> Cou
 
     // Record errors in the pings the metric is in, as well as the metrics ping.
     let mut send_in_pings = meta.send_in_pings.clone();
-    if !send_in_pings.contains(&"metrics".to_string()) {
-        send_in_pings.push("metrics".into());
+    let ping_name = "metrics".to_string();
+    if !send_in_pings.contains(&ping_name) {
+        send_in_pings.push(ping_name);
     }
 
     CounterMetric::new(CommonMetricData {
