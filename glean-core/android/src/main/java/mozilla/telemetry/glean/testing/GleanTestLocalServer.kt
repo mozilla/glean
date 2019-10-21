@@ -2,10 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package mozilla.components.service.glean.testing
+package mozilla.telemetry.glean.testing
 
 import androidx.annotation.VisibleForTesting
-import mozilla.components.service.glean.Glean
+import mozilla.telemetry.glean.Glean
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 
