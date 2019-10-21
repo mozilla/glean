@@ -82,9 +82,9 @@ class TimingDistributionMetricType internal constructor(
 
         // No dispatcher, we need the return value
         return LibGleanFFI.INSTANCE.glean_timing_distribution_set_start(
-                Glean.handle,
-                this@TimingDistributionMetricType.handle,
-                startTime)
+            this@TimingDistributionMetricType.handle,
+            startTime
+        )
     }
 
     /**

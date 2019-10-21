@@ -4,8 +4,11 @@
 
 package mozilla.telemetry.glean.private
 
+import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import mozilla.telemetry.glean.Dispatchers
+import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -19,6 +22,9 @@ import org.mockito.Mockito.`when`
 
 @RunWith(AndroidJUnit4::class)
 class TimingDistributionMetricTypeTest {
+
+    val context: Context
+        get() = ApplicationProvider.getApplicationContext()
 
     @get:Rule
     val gleanRule = GleanTestRule(ApplicationProvider.getApplicationContext())
@@ -139,7 +145,7 @@ class TimingDistributionMetricTypeTest {
 
     @Test
     fun `The accumulateSamples API correctly stores timing values`() {
-        // Define a timing distribution metric which will be stored in multiple stores
+        // Define a timing distribution metric
         val metric = TimingDistributionMetricType(
             disabled = false,
             category = "telemetry",
@@ -167,5 +173,49 @@ class TimingDistributionMetricTypeTest {
         assertEquals(1L, snapshot.values[984625593])
         assertEquals(1L, snapshot.values[1969251187])
         assertEquals(1L, snapshot.values[2784941737])
+    }
+
+    @Test
+    fun `Starting a timer before initialization doesn't crash`() {
+        Glean.testDestroyGleanHandle()
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        Dispatchers.API.setTaskQueueing(true)
+
+        val metric = TimingDistributionMetricType(
+            disabled = false,
+            category = "telemetry",
+            lifetime = Lifetime.Ping,
+            name = "timing_distribution_samples",
+            sendInPings = listOf("store1"),
+            timeUnit = TimeUnit.Second
+        )
+
+        val timerId = metric.start()
+        Glean.initialize(context)
+        metric.stopAndAccumulate(timerId)
+
+        metric.testGetValue().sum >= 0
+    }
+
+    @Test
+    fun `Starting and stopping a timer before initialization doesn't crash`() {
+        Glean.testDestroyGleanHandle()
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        Dispatchers.API.setTaskQueueing(true)
+
+        val metric = TimingDistributionMetricType(
+            disabled = false,
+            category = "telemetry",
+            lifetime = Lifetime.Ping,
+            name = "timing_distribution_samples",
+            sendInPings = listOf("store1"),
+            timeUnit = TimeUnit.Second
+        )
+
+        val timerId = metric.start()
+        metric.stopAndAccumulate(timerId)
+        Glean.initialize(context)
+
+        metric.testGetValue().sum >= 0
     }
 }

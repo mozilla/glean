@@ -313,7 +313,7 @@ internal interface LibGleanFFI : Library {
 
     fun glean_destroy_timing_distribution_metric(handle: Long)
 
-    fun glean_timing_distribution_set_start(glean_handle: Long, metric_id: Long, start_time: Long): GleanTimerId
+    fun glean_timing_distribution_set_start(metric_id: Long, start_time: Long): GleanTimerId
 
     fun glean_timing_distribution_set_stop_and_accumulate(
         glean_handle: Long,

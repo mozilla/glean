@@ -45,7 +45,7 @@ fn serializer_should_correctly_serialize_timing_distribution() {
             time_unit,
         );
 
-        let id = metric.set_start(&glean, 0);
+        let id = metric.set_start(0);
         metric.set_stop_and_accumulate(&glean, id, duration);
 
         let val = metric
@@ -89,7 +89,7 @@ fn set_value_properly_sets_the_value_in_all_stores() {
         TimeUnit::Nanosecond,
     );
 
-    let id = metric.set_start(&glean, 0);
+    let id = metric.set_start(0);
     metric.set_stop_and_accumulate(&glean, id, duration);
 
     for store_name in store_names {
@@ -129,7 +129,7 @@ fn timing_distributions_must_not_accumulate_negative_values() {
 
     // Flip around the timestamps, this should result in a negative value which should be
     // discarded.
-    let id = metric.set_start(&glean, duration);
+    let id = metric.set_start(duration);
     metric.set_stop_and_accumulate(&glean, id, 0);
 
     assert!(metric.test_get_value(&glean, "store1").is_none());
@@ -256,7 +256,7 @@ fn large_nanoseconds_values() {
     let time = Duration::from_secs(10).as_nanos() as u64;
     assert!(time > u64::from(u32::max_value()));
 
-    let id = metric.set_start(&glean, 0);
+    let id = metric.set_start(0);
     metric.set_stop_and_accumulate(&glean, id, time);
 
     let val = metric

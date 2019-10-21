@@ -17,15 +17,9 @@ define_metric!(TimingDistributionMetric => TIMING_DISTRIBUTION_METRICS {
 });
 
 #[no_mangle]
-pub extern "C" fn glean_timing_distribution_set_start(
-    glean_handle: u64,
-    metric_id: u64,
-    start_time: u64,
-) -> TimerId {
-    GLEAN.call_infallible(glean_handle, |glean| {
-        TIMING_DISTRIBUTION_METRICS
-            .call_infallible_mut(metric_id, |metric| metric.set_start(glean, start_time))
-    })
+pub extern "C" fn glean_timing_distribution_set_start(metric_id: u64, start_time: u64) -> TimerId {
+    TIMING_DISTRIBUTION_METRICS
+        .call_infallible_mut(metric_id, |metric| metric.set_start(start_time))
 }
 
 #[no_mangle]
