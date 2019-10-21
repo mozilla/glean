@@ -20,7 +20,7 @@ android {
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "org.mozilla.samples.gleancore.GleanTestRunner"
     }
 
     buildTypes {
@@ -38,6 +38,15 @@ dependencies {
 
     implementation "androidx.appcompat:appcompat:$rootProject.versions.androidx_appcompat"
     implementation "androidx.browser:browser:$rootProject.versions.androidx_browser"
+
+    androidTestImplementation "androidx.test:core-ktx:$rootProject.versions.androidx_test"
+    androidTestImplementation "androidx.test:runner:$rootProject.versions.androidx_test"
+    androidTestImplementation "androidx.test:rules:$rootProject.versions.androidx_test"
+    androidTestImplementation "androidx.test.ext:junit:$rootProject.versions.androidx_junit"
+    androidTestImplementation "androidx.test.uiautomator:uiautomator:$rootProject.versions.androidx_uiautomator"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$rootProject.versions.androidx_espresso"
+    androidTestImplementation "androidx.work:work-testing:$rootProject.versions.androidx_work"
+    androidTestImplementation "com.squareup.okhttp3:mockwebserver:$rootProject.versions.mockwebserver"
 }
 
 ext.gleanNamespace = "mozilla.telemetry.glean"

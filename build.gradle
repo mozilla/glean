@@ -34,6 +34,7 @@ buildscript {
         androidx_lifecycle_extensions: '2.1.0',
         androidx_test: '1.2.0',
         androidx_work: '2.2.0',
+        androidx_uiautomator: '2.2.0',
     ]
 
     ext.build = [
