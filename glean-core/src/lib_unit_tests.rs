@@ -36,17 +36,17 @@ fn experiment_id_and_branch_get_truncated_if_too_long() {
     let glean = Glean::with_options(&name, "org.mozilla.glean.tests", true).unwrap();
 
     // Generate long strings for the used ids.
-    let very_long_id = "test-experiment-id".repeat(5);
-    let very_long_branch_id = "test-branch-id".repeat(5);
+    let very_long_id = "test-experiment-id".repeat(10);
+    let very_long_branch_id = "test-branch-id".repeat(10);
 
     // Mark the experiment as active.
     glean.set_experiment_active(very_long_id.clone(), very_long_branch_id.clone(), None);
 
     // Generate the expected id and branch strings.
     let mut expected_id = very_long_id.clone();
-    expected_id.truncate(30);
+    expected_id.truncate(100);
     let mut expected_branch_id = very_long_branch_id.clone();
-    expected_branch_id.truncate(30);
+    expected_branch_id.truncate(100);
 
     assert!(
         glean.test_is_experiment_active(expected_id.clone()),
@@ -75,8 +75,8 @@ fn limits_on_experiments_extras_are_applied_correctly() {
     let branch_id = "test-branch-id".to_string();
     let mut extras = HashMap::new();
 
-    let too_long_key = "0123456789".repeat(5);
-    let too_long_value = "0123456789".repeat(6);
+    let too_long_key = "0123456789".repeat(11);
+    let too_long_value = "0123456789".repeat(11);
 
     // Build and extras HashMap that's a little too long in every way
     for n in 0..21 {
@@ -110,11 +110,11 @@ fn limits_on_experiments_extras_are_applied_correctly() {
 
     for (key, value) in parsed_json.extra.as_ref().unwrap().iter() {
         assert!(
-            key.len() <= 30,
+            key.len() <= 100,
             "Experiments extra key must be less than max length"
         );
         assert!(
-            value.len() <= 50,
+            value.len() <= 100,
             "Experiments extra value must be less than max length"
         );
     }
