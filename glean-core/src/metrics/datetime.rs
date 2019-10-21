@@ -108,7 +108,7 @@ impl DatetimeMetric {
 
         let value = value.unwrap_or_else(local_now_with_offset);
         let value = Metric::Datetime(value, self.time_unit);
-        glean.storage().record(&self.meta, &value)
+        glean.storage().record(glean, &self.meta, &value)
     }
 
     /// Get the stored datetime value.
@@ -129,7 +129,7 @@ impl DatetimeMetric {
         match StorageManager.snapshot_metric(
             glean.storage(),
             storage_name,
-            &self.meta().identifier(),
+            &self.meta().identifier(glean),
         ) {
             Some(Metric::Datetime(dt, _)) => Some(dt),
             _ => None,
@@ -144,8 +144,11 @@ impl DatetimeMetric {
     ///
     /// This doesn't clear the stored value.
     pub fn test_get_value_as_string(&self, glean: &Glean, storage_name: &str) -> Option<String> {
-        match StorageManager.snapshot_metric(glean.storage(), storage_name, &self.meta.identifier())
-        {
+        match StorageManager.snapshot_metric(
+            glean.storage(),
+            storage_name,
+            &self.meta.identifier(glean),
+        ) {
             Some(Metric::Datetime(d, tu)) => Some(get_iso_time_string(d, tu)),
             _ => None,
         }

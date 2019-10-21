@@ -48,6 +48,7 @@ fn snapshot_correctly_clears_the_stores() {
         send_in_pings: store_names.clone(),
         disabled: false,
         lifetime: Lifetime::Ping,
+        ..Default::default()
     });
 
     metric.add(&glean, 1);

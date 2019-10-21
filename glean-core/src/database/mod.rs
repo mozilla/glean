@@ -11,6 +11,7 @@ use rkv::{Rkv, SingleStore, StoreOptions};
 
 use crate::metrics::Metric;
 use crate::CommonMetricData;
+use crate::Glean;
 use crate::Lifetime;
 use crate::Result;
 
@@ -66,13 +67,31 @@ impl Database {
         }
     }
 
-    /// Iterates with the provided transaction function on the data from
-    /// the given storage.
-    pub fn iter_store_from<F>(&self, lifetime: Lifetime, storage_name: &str, mut transaction_fn: F)
-    where
+    /// Iterates with the provided transaction function over the requested data
+    /// from the given storage.
+    ///
+    /// ## Arguments
+    ///
+    /// * `lifetime`: The metric lifetime to iterate over.
+    /// * `storage_name`: The storage name to iterate over.
+    /// * `metric_key`: The metric key to iterate over. All metrics iterated over
+    ///   will have this prefix. For example, if `metric_key` is of the form `{category}.`,
+    ///   it will iterate over all metrics in the given category. If the `metric_key` is of the
+    ///   form `{category}.{name}/`, the iterator will iterate over all specific metrics for
+    ///   a given labeled metric. If not provided, the entire storage for the given lifetime
+    ///   will be iterated over.
+    /// * `transaction_fn`: Called for each entry being iterated over. It is
+    ///   passed two arguments: `(metric_name: &[u8], metric: &Metric)`.
+    pub fn iter_store_from<F>(
+        &self,
+        lifetime: Lifetime,
+        storage_name: &str,
+        metric_key: Option<&str>,
+        mut transaction_fn: F,
+    ) where
         F: FnMut(&[u8], &Metric),
     {
-        let iter_start = Self::get_storage_key(storage_name, None);
+        let iter_start = Self::get_storage_key(storage_name, metric_key);
         let len = iter_start.len();
 
         // Lifetime::Application data is not persisted to disk
@@ -109,6 +128,35 @@ impl Database {
         }
     }
 
+    /// Determine if the storage has the given metric.
+    ///
+    /// ## Arguments
+    ///
+    /// * `lifetime`: The lifetime of the metric.
+    /// * `storage_name`: The storage name to look in.
+    /// * `metric_identifier`: The metric identifier.
+    pub fn has_metric(
+        &self,
+        lifetime: Lifetime,
+        storage_name: &str,
+        metric_identifier: &str,
+    ) -> bool {
+        let key = Self::get_storage_key(storage_name, Some(metric_identifier));
+
+        // Lifetime::Application data is not persisted to disk
+        if lifetime == Lifetime::Application {
+            let data = self.app_lifetime_data.read().unwrap();
+            return data.contains_key(&key);
+        }
+
+        let store: SingleStore = self
+            .rkv
+            .open_single(lifetime.as_str(), StoreOptions::create())
+            .unwrap();
+        let reader = self.rkv.read().unwrap();
+        store.get(&reader, &key).unwrap_or(None).is_some()
+    }
+
     pub fn write_with_store<F>(&self, store_name: Lifetime, mut transaction_fn: F)
     where
         F: FnMut(rkv::Writer, SingleStore),
@@ -126,8 +174,8 @@ impl Database {
     }
 
     /// Records a metric in the underlying storage system.
-    pub fn record(&self, data: &CommonMetricData, value: &Metric) {
-        let name = data.identifier();
+    pub fn record(&self, glean: &Glean, data: &CommonMetricData, value: &Metric) {
+        let name = data.identifier(glean);
 
         for ping_name in data.storage_names() {
             self.record_per_lifetime(data.lifetime, ping_name, &name, value);
@@ -167,11 +215,11 @@ impl Database {
 
     /// Records the provided value, with the given lifetime, after
     /// applying a transformation function.
-    pub fn record_with<F>(&self, data: &CommonMetricData, mut transform: F)
+    pub fn record_with<F>(&self, glean: &Glean, data: &CommonMetricData, mut transform: F)
     where
         F: FnMut(Option<Metric>) -> Metric,
     {
-        let name = data.identifier();
+        let name = data.identifier(glean);
         for ping_name in data.storage_names() {
             self.record_per_lifetime_with(data.lifetime, ping_name, &name, &mut transform);
         }
@@ -341,7 +389,7 @@ mod test {
             }
         };
 
-        db.iter_store_from(Lifetime::Ping, test_storage, &mut snapshotter);
+        db.iter_store_from(Lifetime::Ping, test_storage, None, &mut snapshotter);
         assert_eq!(1, found_metrics, "We only expect 1 Lifetime.Ping metric.");
     }
 
@@ -375,7 +423,7 @@ mod test {
             }
         };
 
-        db.iter_store_from(Lifetime::Application, test_storage, &mut snapshotter);
+        db.iter_store_from(Lifetime::Application, test_storage, None, &mut snapshotter);
         assert_eq!(
             1, found_metrics,
             "We only expect 1 Lifetime.Application metric."
@@ -412,7 +460,7 @@ mod test {
             }
         };
 
-        db.iter_store_from(Lifetime::User, test_storage, &mut snapshotter);
+        db.iter_store_from(Lifetime::User, test_storage, None, &mut snapshotter);
         assert_eq!(1, found_metrics, "We only expect 1 Lifetime.User metric.");
     }
 
@@ -455,9 +503,9 @@ mod test {
                 };
             };
 
-            db.iter_store_from(Lifetime::User, test_storage, &mut snapshotter);
-            db.iter_store_from(Lifetime::Ping, test_storage, &mut snapshotter);
-            db.iter_store_from(Lifetime::Application, test_storage, &mut snapshotter);
+            db.iter_store_from(Lifetime::User, test_storage, None, &mut snapshotter);
+            db.iter_store_from(Lifetime::Ping, test_storage, None, &mut snapshotter);
+            db.iter_store_from(Lifetime::Application, test_storage, None, &mut snapshotter);
 
             assert_eq!(3, snapshot.len(), "We expect all lifetimes to be present.");
             assert!(snapshot.contains_key("telemetry_test.test_name_user"));
@@ -479,9 +527,9 @@ mod test {
                 };
             };
 
-            db.iter_store_from(Lifetime::User, test_storage, &mut snapshotter);
-            db.iter_store_from(Lifetime::Ping, test_storage, &mut snapshotter);
-            db.iter_store_from(Lifetime::Application, test_storage, &mut snapshotter);
+            db.iter_store_from(Lifetime::User, test_storage, None, &mut snapshotter);
+            db.iter_store_from(Lifetime::Ping, test_storage, None, &mut snapshotter);
+            db.iter_store_from(Lifetime::Application, test_storage, None, &mut snapshotter);
 
             assert_eq!(2, snapshot.len(), "We only expect 2 metrics to be left.");
             assert!(snapshot.contains_key("telemetry_test.test_name_user"));
@@ -536,7 +584,7 @@ mod test {
             };
 
             // Check the User lifetime.
-            db.iter_store_from(*lifetime, test_storage, &mut snapshotter);
+            db.iter_store_from(*lifetime, test_storage, None, &mut snapshotter);
             assert_eq!(
                 1, found_metrics,
                 "We only expect 1 metric for this lifetime."

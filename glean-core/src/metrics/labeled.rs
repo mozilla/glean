@@ -2,15 +2,13 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use std::collections::HashSet;
-
 use lazy_static::lazy_static;
 use regex::Regex;
 
+use crate::common_metric_data::CommonMetricData;
 use crate::error_recording::{record_error, ErrorType};
 use crate::metrics::{Metric, MetricType};
 use crate::Glean;
-use crate::Lifetime;
 
 const MAX_LABELS: usize = 16;
 const OTHER_LABEL: &str = "__other__";
@@ -38,30 +36,6 @@ lazy_static! {
     static ref LABEL_REGEX: Regex = Regex::new("^[a-z_][a-z0-9_-]{0,29}(\\.[a-z0-9_-]{0,29})*$").unwrap();
 }
 
-/// Validate a label against the restrictions.
-///
-/// * Shorter than the allowed `MAX_LABEL_LENGTH`.
-/// * Matches the label regex (only alphanumeric characters and dots, underscores, hyphens)
-///
-/// Returns an error message to be reported through Glean.
-fn validate_label(label: &str) -> Result<&str, String> {
-    if label.len() > MAX_LABEL_LENGTH {
-        let msg = format!(
-            "label length {} exceeds maximum of {}",
-            label.len(),
-            MAX_LABEL_LENGTH
-        );
-        return Err(msg);
-    }
-
-    if !LABEL_REGEX.is_match(label) {
-        let msg = format!("label must be snake_case, got '{}'", label);
-        return Err(msg);
-    }
-
-    Ok(label)
-}
-
 /// A labeled metric.
 ///
 /// Labeled metrics allow to record multiple sub-metrics of the same type under different string labels.
@@ -71,8 +45,6 @@ pub struct LabeledMetric<T> {
     /// Type of the underlying metric
     /// We hold on to an instance of it, which is cloned to create new modified instances.
     submetric: T,
-
-    seen_labels: HashSet<String>,
 }
 
 impl<T> LabeledMetric<T>
@@ -83,16 +55,25 @@ where
     ///
     /// See [`get`](#method.get) for information on how static or dynamic labels are handled.
     pub fn new(submetric: T, labels: Option<Vec<String>>) -> LabeledMetric<T> {
-        LabeledMetric {
-            labels,
-            submetric,
-            seen_labels: HashSet::new(),
-        }
+        LabeledMetric { labels, submetric }
     }
 
+    /// Creates a new metric with a specific label.
+    ///
+    /// This is used for static labels where we can just set the name to be `name/label`.
     fn new_metric_with_name(&self, name: String) -> T {
         let mut t = self.submetric.clone();
         t.meta_mut().name = name;
+        t
+    }
+
+    /// Creates a new metric with a specific label.
+    ///
+    /// This is used for dynamic labels where we have to actually validate and correct the
+    /// label later when we have a Glean object.
+    fn new_metric_with_dynamic_label(&self, label: String) -> T {
+        let mut t = self.submetric.clone();
+        t.meta_mut().dynamic_label = Some(label);
         t
     }
 
@@ -115,64 +96,6 @@ where
         }
     }
 
-    /// Create a dynamic label
-    ///
-    /// Checkes the requested label against limitations, such as the label length and allowed
-    /// characters.
-    ///
-    /// ## Arguments
-    ///
-    /// * `label` - The requested label
-    ///
-    /// ## Return value
-    ///
-    /// Returns the valid label if within the limitations,
-    /// or `OTHER_LABEL` on any errors.
-    /// The errors are logged.
-    fn dynamic_label<'a>(&mut self, glean: &Glean, label: &'a str) -> &'a str {
-        if self.seen_labels.is_empty() && self.submetric.meta().lifetime != Lifetime::Application {
-            // Fetch all labels that are already stored by iterating through existing data.
-
-            let prefix = format!("{}/", self.submetric.meta().identifier());
-            let seen_labels = &mut self.seen_labels;
-            let mut snapshotter = |metric_name: &[u8], _: &Metric| {
-                let metric_name = String::from_utf8_lossy(metric_name);
-                if metric_name.starts_with(&prefix) {
-                    let label = metric_name.splitn(2, '/').nth(1).unwrap(); // safe unwrap, we know it contains a slash
-                    seen_labels.insert(label.into());
-                }
-            };
-
-            let lifetime = self.submetric.meta().lifetime;
-            for store in &self.submetric.meta().send_in_pings {
-                glean
-                    .storage()
-                    .iter_store_from(lifetime, store, &mut snapshotter);
-            }
-        }
-
-        if !self.seen_labels.contains(label) {
-            if self.seen_labels.len() >= MAX_LABELS {
-                return OTHER_LABEL;
-            } else {
-                if let Err(msg) = validate_label(label) {
-                    record_error(
-                        glean,
-                        &self.submetric.meta(),
-                        ErrorType::InvalidLabel,
-                        msg,
-                        None,
-                    );
-                    return OTHER_LABEL;
-                }
-
-                self.seen_labels.insert(label.into());
-            }
-        }
-
-        label
-    }
-
     /// Get a specific metric for a given label.
     ///
     /// If a set of acceptable labels were specified in the `metrics.yaml` file,
@@ -184,32 +107,98 @@ where
     ///
     /// Labels must be `snake_case` and less than 30 characters.
     /// If an invalid label is used, the metric will be recorded in the special `OTHER_LABEL` label.
-    pub fn get<'a, G: Into<Option<&'a Glean>>>(&mut self, glean: G, label: &str) -> T {
-        // We have 3 scenarios to consider:
+    pub fn get(&mut self, label: &str) -> T {
+        // We have 2 scenarios to consider:
         // * Static labels. No database access needed. We just look at what is in memory.
-        // * Dynamic labels, initialized Glean. We look up in the database all previously stored
-        //   labels in order to keep a maximum of allowed labels.
-        // * Dynamic labels, uninitialized Glean. We ignore potentially previously stored labels
-        //   and just take what the user passed in.
-        //   This potentially allows creating more than `MAX_LABELS` labels, but only before Glean
-        //   is initialized.
-        //   This behavior is not publicly documented and should not be abused/depended upon.
-        // The last case is buggy behavior, tracked in bug 1588451.
-        let glean = glean.into();
-        let label = match (&self.labels, glean) {
-            (Some(_), _) => self.static_label(label),
-            (None, Some(glean)) => self.dynamic_label(glean, label),
-            (None, None) => {
-                if let Ok(label) = validate_label(label) {
-                    label
-                } else {
-                    // We can't report any error, as we don't have a Glean instance.
-                    OTHER_LABEL
-                }
+        // * Dynamic labels. We look up in the database all previously stored
+        //   labels in order to keep a maximum of allowed labels. This is done later
+        //   when the specific metric is actually recorded, when we are guaranteed to have
+        //   an initialized Glean object.
+        match self.labels {
+            Some(_) => {
+                let label = self.static_label(label);
+                self.new_metric_with_name(combine_base_identifier_and_label(
+                    &self.submetric.meta().name,
+                    &label,
+                ))
             }
-        };
-        let label = format!("{}/{}", self.submetric.meta().name, label);
+            None => self.new_metric_with_dynamic_label(label.to_string()),
+        }
+    }
+}
 
-        self.new_metric_with_name(label)
+/// Combines a metric's base identifier and label
+pub fn combine_base_identifier_and_label(base_identifer: &str, label: &str) -> String {
+    format!("{}/{}", base_identifer, label)
+}
+
+/// Strips the label off of a complete identifier
+pub fn strip_label(identifier: &str) -> &str {
+    // safe unwrap, first field of a split always valid
+    identifier.splitn(2, '/').next().unwrap()
+}
+
+/// Validate a dynamic label, changing it to OTHER_LABEL if it's invalid.
+///
+/// Checks the requested label against limitations, such as the label length and allowed
+/// characters.
+///
+/// ## Arguments
+///
+/// * `label` - The requested label
+///
+/// ## Return value
+///
+/// Returns the entire identifier for the metric, including the base identifier and the
+/// corrected label.
+/// The errors are logged.
+pub fn dynamic_label(
+    glean: &Glean,
+    meta: &CommonMetricData,
+    base_identifier: &str,
+    label: &str,
+) -> String {
+    let key = combine_base_identifier_and_label(base_identifier, label);
+    for store in &meta.send_in_pings {
+        if glean.storage().has_metric(meta.lifetime, store, &key) {
+            return key;
+        }
+    }
+
+    let mut label_count = 0;
+    let prefix = &key[..=base_identifier.len()];
+    let mut snapshotter = |_: &[u8], _: &Metric| {
+        label_count += 1;
+    };
+
+    let lifetime = meta.lifetime;
+    for store in &meta.send_in_pings {
+        glean
+            .storage()
+            .iter_store_from(lifetime, store, Some(&prefix), &mut snapshotter);
+    }
+
+    let error = if label_count >= MAX_LABELS {
+        true
+    } else if label.len() > MAX_LABEL_LENGTH {
+        let msg = format!(
+            "label length {} exceeds maximum of {}",
+            label.len(),
+            MAX_LABEL_LENGTH
+        );
+        record_error(glean, meta, ErrorType::InvalidLabel, msg, None);
+        true
+    } else if !LABEL_REGEX.is_match(label) {
+        let msg = format!("label must be snake_case, got '{}'", label);
+        record_error(glean, meta, ErrorType::InvalidLabel, msg, None);
+        true
+    } else {
+        false
+    };
+
+    if error {
+        combine_base_identifier_and_label(base_identifier, OTHER_LABEL)
+    } else {
+        key
     }
 }

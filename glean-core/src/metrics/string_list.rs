@@ -59,7 +59,7 @@ impl StringListMetric {
         let mut error = None;
         glean
             .storage()
-            .record_with(&self.meta, |old_value| match old_value {
+            .record_with(glean, &self.meta, |old_value| match old_value {
                 Some(Metric::StringList(mut old_value)) => {
                     if old_value.len() == MAX_LIST_LENGTH {
                         let msg = format!(
@@ -128,7 +128,7 @@ impl StringListMetric {
             .collect();
 
         let value = Metric::StringList(value);
-        glean.storage().record(&self.meta, &value);
+        glean.storage().record(glean, &self.meta, &value);
     }
 
     /// **Test-only API (exported for FFI purposes).**
@@ -137,8 +137,11 @@ impl StringListMetric {
     ///
     /// This doesn't clear the stored value.
     pub fn test_get_value(&self, glean: &Glean, storage_name: &str) -> Option<Vec<String>> {
-        match StorageManager.snapshot_metric(glean.storage(), storage_name, &self.meta.identifier())
-        {
+        match StorageManager.snapshot_metric(
+            glean.storage(),
+            storage_name,
+            &self.meta.identifier(glean),
+        ) {
             Some(Metric::StringList(values)) => Some(values),
             _ => None,
         }

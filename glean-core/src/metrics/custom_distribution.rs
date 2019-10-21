@@ -111,7 +111,7 @@ impl CustomDistributionMetric {
             (num_negative_samples, metric(hist))
         }
 
-        glean.storage().record_with(&self.meta, |old_value| {
+        glean.storage().record_with(glean, &self.meta, |old_value| {
             let (num_negative, hist) = match self.histogram_type {
                 HistogramType::Linear => {
                     let hist = if let Some(Metric::CustomDistributionLinear(hist)) = old_value {
@@ -166,8 +166,11 @@ impl CustomDistributionMetric {
         glean: &Glean,
         storage_name: &str,
     ) -> Option<Histogram<Box<dyn Bucketing>>> {
-        match StorageManager.snapshot_metric(glean.storage(), storage_name, &self.meta.identifier())
-        {
+        match StorageManager.snapshot_metric(
+            glean.storage(),
+            storage_name,
+            &self.meta.identifier(glean),
+        ) {
             // Boxing the value, in order to return either of the possible buckets
             Some(Metric::CustomDistributionExponential(hist)) => Some(hist.boxed()),
             Some(Metric::CustomDistributionLinear(hist)) => Some(hist.boxed()),

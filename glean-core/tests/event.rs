@@ -24,6 +24,7 @@ fn record_properly_records_without_optional_arguments() {
             send_in_pings: store_names.clone(),
             disabled: false,
             lifetime: Lifetime::Ping,
+            ..Default::default()
         },
         vec![],
     );
@@ -52,6 +53,7 @@ fn record_properly_records_with_optional_arguments() {
             send_in_pings: store_names.clone(),
             disabled: false,
             lifetime: Lifetime::Ping,
+            ..Default::default()
         },
         vec!["key1".into(), "key2".into()],
     );
@@ -102,6 +104,7 @@ fn snapshot_correctly_clears_the_stores() {
             send_in_pings: store_names.clone(),
             disabled: false,
             lifetime: Lifetime::Ping,
+            ..Default::default()
         },
         vec![],
     );
@@ -159,6 +162,7 @@ fn test_sending_of_event_ping_when_it_fills_up() {
             send_in_pings: store_names.clone(),
             disabled: false,
             lifetime: Lifetime::Ping,
+            ..Default::default()
         },
         vec!["test_event_number".into()],
     );
@@ -206,6 +210,7 @@ fn extra_keys_must_be_recorded_and_truncated_if_needed() {
             send_in_pings: store_names.clone(),
             disabled: false,
             lifetime: Lifetime::Ping,
+            ..Default::default()
         },
         vec!["extra1".into(), "truncatedExtra".into()],
     );

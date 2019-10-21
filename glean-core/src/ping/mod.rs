@@ -88,7 +88,7 @@ impl PingMaker {
         let current_seq = match StorageManager.snapshot_metric(
             glean.storage(),
             INTERNAL_STORAGE,
-            &seq.meta().identifier(),
+            &seq.meta().identifier(glean),
         ) {
             Some(Metric::Counter(i)) => i,
             _ => 0,

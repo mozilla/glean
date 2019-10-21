@@ -38,6 +38,7 @@ fn serializer_should_correctly_serialize_memory_distribution() {
                 send_in_pings: vec!["store1".into()],
                 disabled: false,
                 lifetime: Lifetime::Ping,
+                ..Default::default()
             },
             memory_unit,
         );
@@ -78,6 +79,7 @@ fn set_value_properly_sets_the_value_in_all_stores() {
             send_in_pings: store_names.clone(),
             disabled: false,
             lifetime: Lifetime::Ping,
+            ..Default::default()
         },
         MemoryUnit::Byte,
     );
@@ -114,6 +116,7 @@ fn the_accumulate_samples_api_correctly_stores_memory_values() {
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
+            ..Default::default()
         },
         MemoryUnit::Kilobyte,
     );
@@ -160,6 +163,7 @@ fn the_accumulate_samples_api_correctly_handles_negative_values() {
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
+            ..Default::default()
         },
         MemoryUnit::Kilobyte,
     );

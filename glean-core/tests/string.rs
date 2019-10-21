@@ -34,6 +34,7 @@ fn string_serializer_should_correctly_serialize_strings() {
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::User,
+            ..Default::default()
         });
 
         metric.set(&glean, "test_string_value");
@@ -72,6 +73,7 @@ fn set_properly_sets_the_value_in_all_stores() {
         send_in_pings: store_names.clone(),
         disabled: false,
         lifetime: Lifetime::Ping,
+        ..Default::default()
     });
 
     metric.set(&glean, "test_string_value");
@@ -102,6 +104,7 @@ fn long_string_values_are_truncated() {
         send_in_pings: vec!["store1".into()],
         disabled: false,
         lifetime: Lifetime::Ping,
+        ..Default::default()
     });
 
     let test_sting = "01234567890".repeat(20);

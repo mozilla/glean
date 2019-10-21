@@ -47,7 +47,7 @@ impl UuidMetric {
 
         let s = value.to_string();
         let value = Metric::Uuid(s);
-        glean.storage().record(&self.meta, &value)
+        glean.storage().record(glean, &self.meta, &value)
     }
 
     /// Generate a new random UUID and set the metric to it.
@@ -75,7 +75,7 @@ impl UuidMetric {
         match StorageManager.snapshot_metric(
             glean.storage(),
             storage_name,
-            &self.meta().identifier(),
+            &self.meta().identifier(glean),
         ) {
             Some(Metric::Uuid(uuid)) => Uuid::parse_str(&uuid).ok(),
             _ => None,
@@ -88,8 +88,11 @@ impl UuidMetric {
     ///
     /// This doesn't clear the stored value.
     pub fn test_get_value(&self, glean: &Glean, storage_name: &str) -> Option<String> {
-        match StorageManager.snapshot_metric(glean.storage(), storage_name, &self.meta.identifier())
-        {
+        match StorageManager.snapshot_metric(
+            glean.storage(),
+            storage_name,
+            &self.meta.identifier(glean),
+        ) {
             Some(Metric::Uuid(s)) => Some(s),
             _ => None,
         }

@@ -4,8 +4,11 @@
 
 package mozilla.telemetry.glean.private
 
+import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import mozilla.telemetry.glean.Dispatchers
+import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.collectAndCheckPingSchema
 import mozilla.telemetry.glean.GleanMetrics.Pings
 import mozilla.telemetry.glean.testing.GleanTestRule
@@ -18,6 +21,8 @@ import org.junit.Rule
 
 @RunWith(AndroidJUnit4::class)
 class LabeledMetricTypeTest {
+    private val context: Context
+        get() = ApplicationProvider.getApplicationContext()
 
     @get:Rule
     val gleanRule = GleanTestRule(ApplicationProvider.getApplicationContext())
@@ -187,6 +192,46 @@ class LabeledMetricTypeTest {
                 .getJSONObject("telemetry.labeled_counter_metric")
                 .get("__other__")
         )
+    }
+
+    @Test
+    fun `test __other__ label without predefined labels before Glean initialization`() {
+        val counterMetric = CounterMetricType(
+            disabled = false,
+            category = "telemetry",
+            lifetime = Lifetime.Application,
+            name = "labeled_counter_metric",
+            sendInPings = listOf("metrics")
+        )
+
+        val labeledCounterMetric = LabeledMetricType<CounterMetricType>(
+            disabled = false,
+            category = "telemetry",
+            lifetime = Lifetime.Application,
+            name = "labeled_counter_metric",
+            sendInPings = listOf("metrics"),
+            subMetric = counterMetric
+        )
+
+        // Make sure Glean isn't initialized, and turn task queueing on
+        Glean.testDestroyGleanHandle()
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        Dispatchers.API.setTaskQueueing(true)
+
+        for (i in 0..20) {
+            labeledCounterMetric["label_$i"].add(1)
+        }
+        // Go back and record in one of the real labels again
+        labeledCounterMetric["label_0"].add(1)
+
+        // Initialize glean
+        Glean.initialize(context)
+
+        assertEquals(2, labeledCounterMetric["label_0"].testGetValue())
+        for (i in 1..15) {
+            assertEquals(1, labeledCounterMetric["label_$i"].testGetValue())
+        }
+        assertEquals(5, labeledCounterMetric["__other__"].testGetValue())
     }
 
     @Test

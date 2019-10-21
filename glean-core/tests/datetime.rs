@@ -36,6 +36,7 @@ fn datetime_serializer_should_correctly_serialize_datetime() {
                 send_in_pings: vec!["store1".into()],
                 disabled: false,
                 lifetime: Lifetime::User,
+                ..Default::default()
             },
             TimeUnit::Minute,
         );
@@ -81,6 +82,7 @@ fn set_value_properly_sets_the_value_in_all_stores() {
             send_in_pings: store_names.clone(),
             disabled: false,
             lifetime: Lifetime::Ping,
+            ..Default::default()
         },
         TimeUnit::Nanosecond,
     );
@@ -172,6 +174,7 @@ fn test_that_truncation_works() {
                 send_in_pings: vec![store_name.into()],
                 disabled: false,
                 lifetime: Lifetime::User,
+                ..Default::default()
             },
             t.desired_resolution,
         );

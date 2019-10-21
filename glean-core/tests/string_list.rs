@@ -60,6 +60,7 @@ fn stringlist_serializer_should_correctly_serialize_stringlists() {
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::User,
+            ..Default::default()
         });
         metric.set(&glean, vec!["test_string_1".into(), "test_string_2".into()]);
     }
@@ -88,6 +89,7 @@ fn set_properly_sets_the_value_in_all_stores() {
         send_in_pings: store_names.clone(),
         disabled: false,
         lifetime: Lifetime::Ping,
+        ..Default::default()
     });
 
     metric.set(&glean, vec!["test_string_1".into(), "test_string_2".into()]);
@@ -114,6 +116,7 @@ fn long_string_values_are_truncated() {
         send_in_pings: vec!["store1".into()],
         disabled: false,
         lifetime: Lifetime::Ping,
+        ..Default::default()
     });
 
     let test_string = "0123456789".repeat(20);
@@ -142,6 +145,7 @@ fn disabled_string_lists_dont_record() {
         send_in_pings: vec!["store1".into()],
         disabled: true,
         lifetime: Lifetime::Ping,
+        ..Default::default()
     });
 
     metric.add(&glean, "test_string".repeat(20));
@@ -170,6 +174,7 @@ fn string_lists_dont_exceed_max_items() {
         send_in_pings: vec!["store1".into()],
         disabled: false,
         lifetime: Lifetime::Ping,
+        ..Default::default()
     });
 
     for _n in 1..21 {
@@ -218,6 +223,7 @@ fn set_does_not_record_error_when_receiving_empty_list() {
         send_in_pings: vec!["store1".into()],
         disabled: false,
         lifetime: Lifetime::Ping,
+        ..Default::default()
     });
 
     metric.set(&glean, vec![]);

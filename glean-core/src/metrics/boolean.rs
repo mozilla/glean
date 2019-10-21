@@ -44,7 +44,7 @@ impl BooleanMetric {
         }
 
         let value = Metric::Boolean(value);
-        glean.storage().record(&self.meta, &value)
+        glean.storage().record(glean, &self.meta, &value)
     }
 
     /// **Test-only API (exported for FFI purposes).**
@@ -53,8 +53,11 @@ impl BooleanMetric {
     ///
     /// This doesn't clear the stored value.
     pub fn test_get_value(&self, glean: &Glean, storage_name: &str) -> Option<bool> {
-        match StorageManager.snapshot_metric(glean.storage(), storage_name, &self.meta.identifier())
-        {
+        match StorageManager.snapshot_metric(
+            glean.storage(),
+            storage_name,
+            &self.meta.identifier(glean),
+        ) {
             Some(Metric::Boolean(b)) => Some(b),
             _ => None,
         }

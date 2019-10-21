@@ -153,17 +153,17 @@ uint8_t glean_is_upload_enabled(uint64_t glean_handle);
 /**
  * Create a new instance of the sub-metric of this labeled metric.
  */
-uint64_t glean_labeled_boolean_metric_get(uint64_t glean_handle, uint64_t handle, FfiStr label);
+uint64_t glean_labeled_boolean_metric_get(uint64_t handle, FfiStr label);
 
 /**
  * Create a new instance of the sub-metric of this labeled metric.
  */
-uint64_t glean_labeled_counter_metric_get(uint64_t glean_handle, uint64_t handle, FfiStr label);
+uint64_t glean_labeled_counter_metric_get(uint64_t handle, FfiStr label);
 
 /**
  * Create a new instance of the sub-metric of this labeled metric.
  */
-uint64_t glean_labeled_string_metric_get(uint64_t glean_handle, uint64_t handle, FfiStr label);
+uint64_t glean_labeled_string_metric_get(uint64_t handle, FfiStr label);
 
 void glean_memory_distribution_accumulate(uint64_t glean_handle,
                                           uint64_t metric_id,

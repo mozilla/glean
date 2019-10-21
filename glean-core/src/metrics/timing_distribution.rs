@@ -185,7 +185,7 @@ impl TimingDistributionMetric {
 
         glean
             .storage()
-            .record_with(&self.meta, |old_value| match old_value {
+            .record_with(glean, &self.meta, |old_value| match old_value {
                 Some(Metric::TimingDistribution(mut hist)) => {
                     hist.accumulate(duration);
                     Metric::TimingDistribution(hist)
@@ -235,7 +235,7 @@ impl TimingDistributionMetric {
         let mut num_negative_samples = 0;
         let mut num_too_log_samples = 0;
 
-        glean.storage().record_with(&self.meta, |old_value| {
+        glean.storage().record_with(glean, &self.meta, |old_value| {
             let mut hist = match old_value {
                 Some(Metric::TimingDistribution(hist)) => hist,
                 _ => Histogram::functional(LOG_BASE, BUCKETS_PER_MAGNITUDE),
@@ -294,8 +294,11 @@ impl TimingDistributionMetric {
         glean: &Glean,
         storage_name: &str,
     ) -> Option<Histogram<Functional>> {
-        match StorageManager.snapshot_metric(glean.storage(), storage_name, &self.meta.identifier())
-        {
+        match StorageManager.snapshot_metric(
+            glean.storage(),
+            storage_name,
+            &self.meta.identifier(glean),
+        ) {
             Some(Metric::TimingDistribution(hist)) => Some(hist),
             _ => None,
         }

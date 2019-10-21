@@ -95,7 +95,7 @@ impl MemoryDistributionMetric {
 
         glean
             .storage()
-            .record_with(&self.meta, |old_value| match old_value {
+            .record_with(glean, &self.meta, |old_value| match old_value {
                 Some(Metric::MemoryDistribution(mut hist)) => {
                     hist.accumulate(sample);
                     Metric::MemoryDistribution(hist)
@@ -135,7 +135,7 @@ impl MemoryDistributionMetric {
         let mut num_negative_samples = 0;
         let mut num_too_log_samples = 0;
 
-        glean.storage().record_with(&self.meta, |old_value| {
+        glean.storage().record_with(glean, &self.meta, |old_value| {
             let mut hist = match old_value {
                 Some(Metric::MemoryDistribution(hist)) => hist,
                 _ => Histogram::functional(LOG_BASE, BUCKETS_PER_MAGNITUDE),
@@ -194,8 +194,11 @@ impl MemoryDistributionMetric {
         glean: &Glean,
         storage_name: &str,
     ) -> Option<Histogram<Functional>> {
-        match StorageManager.snapshot_metric(glean.storage(), storage_name, &self.meta.identifier())
-        {
+        match StorageManager.snapshot_metric(
+            glean.storage(),
+            storage_name,
+            &self.meta.identifier(glean),
+        ) {
             Some(Metric::MemoryDistribution(hist)) => Some(hist),
             _ => None,
         }

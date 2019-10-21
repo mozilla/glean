@@ -430,7 +430,7 @@ internal interface LibGleanFFI : Library {
         label_count: Int
     ): Long
 
-    fun glean_labeled_counter_metric_get(glean_handle: Long, handle: Long, label: String): Long
+    fun glean_labeled_counter_metric_get(handle: Long, label: String): Long
 
     // Labeled Boolean
 
@@ -445,7 +445,7 @@ internal interface LibGleanFFI : Library {
         label_count: Int
     ): Long
 
-    fun glean_labeled_boolean_metric_get(glean_handle: Long, handle: Long, label: String): Long
+    fun glean_labeled_boolean_metric_get(handle: Long, label: String): Long
 
     // Labeled string
 
@@ -460,7 +460,7 @@ internal interface LibGleanFFI : Library {
         label_count: Int
     ): Long
 
-    fun glean_labeled_string_metric_get(glean_handle: Long, handle: Long, label: String): Long
+    fun glean_labeled_string_metric_get(handle: Long, label: String): Long
 
     // Misc
 

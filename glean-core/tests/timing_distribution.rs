@@ -40,6 +40,7 @@ fn serializer_should_correctly_serialize_timing_distribution() {
                 send_in_pings: vec!["store1".into()],
                 disabled: false,
                 lifetime: Lifetime::Ping,
+                ..Default::default()
             },
             time_unit,
         );
@@ -83,6 +84,7 @@ fn set_value_properly_sets_the_value_in_all_stores() {
             send_in_pings: store_names.clone(),
             disabled: false,
             lifetime: Lifetime::Ping,
+            ..Default::default()
         },
         TimeUnit::Nanosecond,
     );
@@ -120,6 +122,7 @@ fn timing_distributions_must_not_accumulate_negative_values() {
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
+            ..Default::default()
         },
         time_unit,
     );
@@ -154,6 +157,7 @@ fn the_accumulate_samples_api_correctly_stores_timing_values() {
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
+            ..Default::default()
         },
         TimeUnit::Second,
     );
@@ -200,6 +204,7 @@ fn the_accumulate_samples_api_correctly_handles_negative_values() {
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
+            ..Default::default()
         },
         TimeUnit::Nanosecond,
     );
@@ -243,6 +248,7 @@ fn large_nanoseconds_values() {
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
+            ..Default::default()
         },
         TimeUnit::Nanosecond,
     );
