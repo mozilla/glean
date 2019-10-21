@@ -1,6 +1,16 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v0.0.1-TESTING6...master)
+[Full changelog](https://github.com/mozilla/glean/compare/v19.0.0...master)
+
+# v19.0.0 (2019-10-22)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v0.0.1-TESTING6...v19.0.0)
+
+First stable release of Glean in Rust (aka glean-core).
+This is a major milestone in using a cross-platform implementation of Glean on the Android platform.
+
+* Fix roundtripping of timezone offsets in dates ([#392](https://github.com/mozilla/glean/pull/392))
+* Handle dynamic labels in coroutine tasks ([#394](https://github.com/mozilla/glean/pull/384))
 
 # v0.0.1-TESTING6 (2019-10-18)
 
