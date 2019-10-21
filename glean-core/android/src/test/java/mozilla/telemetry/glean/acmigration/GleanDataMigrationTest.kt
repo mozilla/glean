@@ -16,6 +16,7 @@ import mozilla.telemetry.glean.config.Configuration
 import mozilla.telemetry.glean.getMockWebServer
 import mozilla.telemetry.glean.triggerWorkManager
 import mozilla.telemetry.glean.utils.getISOTimeString
+import mozilla.telemetry.glean.utils.parseISOTimeStringAsCalendar
 import mozilla.telemetry.glean.utils.toList
 import okhttp3.mockwebserver.MockWebServer
 import org.json.JSONObject
@@ -28,6 +29,7 @@ import org.junit.runner.RunWith
 import java.util.Calendar
 import java.util.TimeZone
 import java.util.concurrent.TimeUnit
+import mozilla.telemetry.glean.private.TimeUnit as GleanTimeUnit
 
 @RunWith(AndroidJUnit4::class)
 class GleanDataMigrationTest {
@@ -257,5 +259,17 @@ class GleanDataMigrationTest {
         assertEquals(TEST_BASELINE_SEQ, baselineJson.getJSONObject("ping_info")["seq"])
         assertEquals(TEST_CLIENT_ID, baselineJson.getJSONObject("client_info")["client_id"])
         assertEquals(testFirstRunDate, baselineJson.getJSONObject("client_info")["first_run_date"])
+    }
+
+    @Test
+    fun `test round tripping of time zone offset`() {
+        for (zone in listOf("America/New_York", "Europe/Berlin", "UTC")) {
+            // Make sure that the default timezone has no effect
+            TimeZone.setDefault(TimeZone.getTimeZone(zone))
+            for (timeValue in listOf("2019-09-13+03:00", "2019-09-18-04:00")) {
+                val cal = parseISOTimeStringAsCalendar(timeValue)!!
+                assertEquals(timeValue, getISOTimeString(cal, GleanTimeUnit.Day))
+            }
+        }
     }
 }
