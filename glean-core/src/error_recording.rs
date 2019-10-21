@@ -31,7 +31,7 @@ pub enum ErrorType {
 
 impl ErrorType {
     /// The error type's metric name
-    pub fn to_string(&self) -> &'static str {
+    pub fn as_str(&self) -> &'static str {
         match self {
             ErrorType::InvalidValue => "invalid_value",
             ErrorType::InvalidLabel => "invalid_label",
@@ -48,12 +48,13 @@ fn get_error_metric_for_metric(meta: &CommonMetricData, error: ErrorType) -> Cou
 
     // Record errors in the pings the metric is in, as well as the metrics ping.
     let mut send_in_pings = meta.send_in_pings.clone();
-    if !send_in_pings.contains(&"metrics".to_string()) {
-        send_in_pings.push("metrics".into());
+    let ping_name = "metrics".to_string();
+    if !send_in_pings.contains(&ping_name) {
+        send_in_pings.push(ping_name);
     }
 
     CounterMetric::new(CommonMetricData {
-        name: combine_base_identifier_and_label(error.to_string(), name),
+        name: combine_base_identifier_and_label(error.as_str(), name),
         category: "glean.error".into(),
         lifetime: Lifetime::Ping,
         send_in_pings,
