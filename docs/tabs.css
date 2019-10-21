@@ -26,10 +26,16 @@
     background-color: #ccc;
 }
 
-/* Style the tab content */
+
+/* The container that holds all of the tab contents */
+.tabcontents {
+    display: flex;
+}
+
+/* The container for each individual language */
 .tab {
-    display: none;
-    padding: 6px 12px;
+    visibility: hidden;
     border: 1px solid #ccc;
     border-top: none;
+    padding: 6px 12px;
 }

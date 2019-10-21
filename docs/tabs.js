@@ -13,8 +13,8 @@ function supportsHTML5Storage() {
  * Event handler for when a tab is clicked.
  */
 function onClickTab(event) {
-    var target = event.currentTarget;
-    var language = target.dataset.lang;
+    let target = event.currentTarget;
+    let language = target.dataset.lang;
 
     switchAllTabs(language);
 }
@@ -27,18 +27,19 @@ function onClickTab(event) {
  * :param language: The language to switch to.
  */
 function switchTab(container, language) {
-    for (i = 1; i < container.children.length; ++i) {
-        var tab = container.children[i];
+    let tab_contents_container = container.children[1];
+    for (i = 0; i < tab_contents_container.children.length; ++i) {
+        let tab = tab_contents_container.children[i];
         if (tab.dataset.lang === language) {
-            tab.style.display = "block";
+            tab.style.visibility = "visible";
         } else {
-            tab.style.display = "none";
+            tab.style.visibility = "hidden";
         }
     }
 
-    var tab_container = container.children[0]
+    let tab_container = container.children[0];
     for (i = 0; i < tab_container.children.length; ++i) {
-        var button = tab_container.children[i];
+        let button = tab_container.children[i];
         button.className = button.className.replace(" active", "");
         if (button.dataset.lang === language) {
             button.className += " active";
@@ -52,7 +53,7 @@ function switchTab(container, language) {
  * :param language: The language to switch to.
  */
 function switchAllTabs(language) {
-    var containers = document.getElementsByClassName("tabs");
+    let containers = document.getElementsByClassName("tabs");
     for (let i = 0; i < containers.length; ++i) {
         switchTab(containers[i], language);
     }
@@ -68,6 +69,18 @@ function switchAllTabs(language) {
 function openTabs() {
     if (!supportsHTML5Storage()) {
         return;
+    }
+
+    let containers = document.getElementsByClassName("tabs");
+    for (let i = 0; i < containers.length; ++i) {
+        let tabcontents = containers[i].children[1];
+        let numTabs = tabcontents.children.length;
+        tabcontents.style.width = `${numTabs * 100}%`;
+        for (let j = 0; j < numTabs; ++j) {
+            let tab = tabcontents.children[j];
+            tab.style.transform = `translateX(-${j * 100}%)`;
+            tab.style.width = `calc(${100 / numTabs}% - 26px)`;
+        }
     }
 
     var language = localStorage.getItem("glean-preferred-language");
