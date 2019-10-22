@@ -261,14 +261,24 @@ jobs:
           environment:
             GRADLE_OPTS: -Xmx2048m
       - run:
+          name: Save test results
+          command: |
+            mkdir -p ~/test-results/junit/
+            mkdir -p ~/test-results/tests/
+            cp -a glean-core/android/build/reports/tests ~/test-results/
+            find glean-core/android/build -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
+          when: always
+      - store_artifacts:
+          path: ~/test-results/tests
+      - store_test_results:
+          path: ~/test-results
+      - run:
           name: Upload Kotlin code coverage
           command: |
               curl -L https://codecov.io/bash > codecov.sh;
               chmod +x codecov.sh;
               CODECOV_CMD="./codecov.sh -f glean-core/android/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml"
               $CODECOV_CMD || (sleep 5 && $CODECOV_CMD) || (sleep 5 && $CODECOV_CMD)
-      - store_artifacts:
-          path: glean-core/android/build/reports/tests
 
   iOS release build:
     macos:
