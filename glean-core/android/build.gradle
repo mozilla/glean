@@ -92,11 +92,6 @@ android {
     }
 }
 
-configurations {
-    withoutLib {
-    }
-}
-
 afterEvaluate {
     android.sourceSets.debug.jniLibs.srcDirs = android.sourceSets.main.jniLibs.srcDirs
     android.sourceSets.release.jniLibs.srcDirs = android.sourceSets.main.jniLibs.srcDirs
@@ -217,9 +212,8 @@ afterEvaluate {
             productFlavor += "${it.name.capitalize()}"
         }
         def buildType = "${variant.buildType.name.capitalize()}"
-        if (variant.buildType.name != 'withoutLib') {
-            tasks["generate${productFlavor}${buildType}Assets"].dependsOn(tasks["cargoBuild"])
-        }
+
+        tasks["generate${productFlavor}${buildType}Assets"].dependsOn(tasks["cargoBuild"])
 
         // For unit tests.
         tasks["process${productFlavor}${buildType}UnitTestJavaRes"].dependsOn(tasks["cargoBuild"])
@@ -227,7 +221,7 @@ afterEvaluate {
 }
 
 apply from: "$rootDir/publish.gradle"
-// If using jnaForTestConfiguration or variantWithoutLib,
+// If using jnaForTestConfiguration
 // please also update the corresponding .buildconfig-android.yml
 // `publishedArtifacts` property.
 ext.configurePublish(
