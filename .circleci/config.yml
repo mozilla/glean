@@ -377,11 +377,17 @@ jobs:
                exit 1
             fi
 
-            PKGDIR=./build/package/
+            PKGDIR=./build/package
             # Collect all files into a single directory
             mkdir -p ${PKGDIR}
             find ./build/maven/org/mozilla/telemetry/ \( -name "*.aar*" -or -name "*.jar*" -or -name "*.pom*" \) \
               -exec cp {} ${PKGDIR} \;
+
+            # Bundle all release files up into a single zip file
+            ZIPFILE=glean-${VERSION}.zip
+            zip --junk-paths ${ZIPFILE} ${PKGDIR}/*
+            mv ${ZIPFILE} ${PKGDIR}
+
             # Upload to GitHub
             ./ghr -replace ${VERSION} ${PKGDIR}
 
