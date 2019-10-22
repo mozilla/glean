@@ -25,7 +25,7 @@
 
 set -e
 
-GLEAN_PARSER_VERSION=1.9.4
+GLEAN_PARSER_VERSION=1.9.5
 
 # When the special argument "internal" is passed, don't add a namespace import and also allow all reserved items.
 NAMESPACE=Glean
