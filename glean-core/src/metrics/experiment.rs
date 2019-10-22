@@ -21,10 +21,10 @@ const INTERNAL_STORAGE: &str = "glean_internal_info";
 
 /// The maximum length of the experiment id, the branch id, and the keys of the
 /// `extra` map. Identifiers longer than this number of characters are truncated.
-const MAX_EXPERIMENTS_IDS_LEN: usize = 30;
+const MAX_EXPERIMENTS_IDS_LEN: usize = 100;
 /// The maximum length of the experiment `extra` values.  Values longer than this
 /// limit will be truncated.
-const MAX_EXPERIMENT_VALUE_LEN: usize = 50;
+const MAX_EXPERIMENT_VALUE_LEN: usize = MAX_EXPERIMENTS_IDS_LEN;
 /// The maximum number of extras allowed in the `extra` hash map.  Any items added
 /// beyond this limit will be dropped. Note that truncation of a hash map is
 /// nondeterministic in which items are truncated.
