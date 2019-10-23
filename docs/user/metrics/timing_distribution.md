@@ -7,6 +7,10 @@ To measure the distribution of single timespans, see [Timespans](timespan.md). T
 Timing distributions are recorded in a histogram where the buckets have an exponential distribution, specifically with 8 buckets for every power of 2.
 This makes them suitable for measuring timings on a number of time scales without any configuration.
 
+The effect of Glean's "upload enabled" flag occurs when a timing is stopped. 
+Therefore, timings that start while upload is disabled but stop while upload is enabled are recorded using the full length of time between `start` and `stopAndAccumulate`.
+Conversely, timings that start while uploading is enabled, but stop when uploading is disabled are not recorded.
+
 ## Configuration
 
 If you wanted to create a timing distribution to measure page load times, first you need to add an entry for it to the `metrics.yaml` file:
