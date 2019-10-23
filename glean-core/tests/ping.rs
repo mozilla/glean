@@ -24,7 +24,7 @@ fn write_ping_to_disk() {
     });
     counter.add(&glean, 1);
 
-    assert!(ping.send(&glean, true).unwrap());
+    assert!(ping.send(&glean).unwrap());
 
     assert_eq!(1, get_queued_pings(glean.get_data_path()).unwrap().len());
 }
@@ -45,7 +45,7 @@ fn disabling_upload_clears_pending_pings() {
     });
 
     counter.add(&glean, 1);
-    assert!(ping.send(&glean, true).unwrap());
+    assert!(ping.send(&glean).unwrap());
     assert_eq!(1, get_queued_pings(glean.get_data_path()).unwrap().len());
 
     glean.set_upload_enabled(false);
@@ -55,6 +55,6 @@ fn disabling_upload_clears_pending_pings() {
     assert_eq!(0, get_queued_pings(glean.get_data_path()).unwrap().len());
 
     counter.add(&glean, 1);
-    assert!(ping.send(&glean, true).unwrap());
+    assert!(ping.send(&glean).unwrap());
     assert_eq!(1, get_queued_pings(glean.get_data_path()).unwrap().len());
 }

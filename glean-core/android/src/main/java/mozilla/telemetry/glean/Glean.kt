@@ -524,8 +524,7 @@ open class GleanInternalAPI internal constructor () {
         val sentPing = LibGleanFFI.INSTANCE.glean_send_pings_by_name(
             handle,
             pingArray,
-            pingArrayLen,
-            (configuration.logPings).toByte()
+            pingArrayLen
         ).toBoolean()
 
         if (sentPing) {

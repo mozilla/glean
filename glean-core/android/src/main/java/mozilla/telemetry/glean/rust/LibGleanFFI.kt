@@ -93,8 +93,7 @@ internal interface LibGleanFFI : Library {
     fun glean_send_pings_by_name(
         glean_handle: Long,
         ping_names: StringArray,
-        ping_names_len: Int,
-        log_ping: Byte
+        ping_names_len: Int
     ): Byte
 
     fun glean_set_experiment_active(
