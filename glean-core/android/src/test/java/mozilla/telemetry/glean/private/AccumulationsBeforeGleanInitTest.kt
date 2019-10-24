@@ -10,9 +10,12 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.work.testing.WorkManagerTestInitHelper
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.Dispatchers
+import mozilla.telemetry.glean.GleanMetrics.GleanError
 import mozilla.telemetry.glean.config.Configuration
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -67,5 +70,18 @@ class AccumulationsBeforeGleanInitTest {
         forceInitGlean()
 
         assertEquals(1, labeledCounterMetric["label1"].testGetValue())
+        assertFalse(GleanError.preinitTasksTimeout.testHasValue())
+    }
+
+    @Test
+    fun `queued tasks that time out record an error`() {
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        Dispatchers.API.launch {
+            Thread.sleep(6000)
+        }
+
+        forceInitGlean()
+
+        assertTrue(GleanError.preinitTasksTimeout.testGetValue())
     }
 }

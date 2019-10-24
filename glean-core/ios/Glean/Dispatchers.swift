@@ -158,6 +158,9 @@ class Dispatchers {
         // `waitUntilFinished` parameter since this is a serial queue and any newly queued tasks
         // should execute after the `preInitOperations` that are being added here. For tests, we
         // need to await all of the tasks to finish execution, so we set this to true.
+
+        // TODO 1591094: Android has a timeout of 5 seconds for running preinit tasks.
+
         self.serialOperationQueue.addOperations(preInitOperations, waitUntilFinished: testingMode)
 
         // Turn off queuing to allow for normal background execution mode
