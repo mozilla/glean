@@ -7,9 +7,9 @@ To measure the distribution of single timespans, see [Timespans](timespan.md). T
 Timing distributions are recorded in a histogram where the buckets have an exponential distribution, specifically with 8 buckets for every power of 2.
 This makes them suitable for measuring timings on a number of time scales without any configuration.
 
-The effect of Glean's "upload enabled" flag occurs when a timing is stopped. 
-Therefore, timings that start while upload is disabled but stop while upload is enabled are recorded using the full length of time between `start` and `stopAndAccumulate`.
-Conversely, timings that start while uploading is enabled, but stop when uploading is disabled are not recorded.
+Timings always span the full length between `start` and `stopAndAccumulate`.
+If the Glean upload is disabled when calling `start`, the timer is still started.
+If the Glean upload is disabled at the time `stopAndAccumulate` is called, nothing is recorded.
 
 ## Configuration
 

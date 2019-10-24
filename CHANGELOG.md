@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v19.0.0...master)
 
+* Fixed a crash calling `start` on a timing distribution metric before Glean is initialized.
+  Timings are always measured, but only recorded when upload is enabled.
+
 # v19.0.0 (2019-10-22)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v0.0.1-TESTING6...v19.0.0)
