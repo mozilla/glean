@@ -3,8 +3,8 @@
 [Full changelog](https://github.com/mozilla/glean/compare/v19.0.0...master)
 
 * Fixed a crash calling `start` on a timing distribution metric before Glean is initialized.
-  Timings are always measured, but only recorded when upload is enabled.
-* BUGFIX: When the Debug Activity is used to log pings, each ping is now logged only once.
+  Timings are always measured, but only recorded when upload is enabled ([#400](https://github.com/mozilla/glean/pull/400))
+* BUGFIX: When the Debug Activity is used to log pings, each ping is now logged only once ([#407](https://github.com/mozilla/glean/pull/407))
 * New `invalid state` error, used in timespan recording ([#230](https://github.com/mozilla/glean/pull/230))
 
 # v19.0.0 (2019-10-22)
