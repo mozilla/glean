@@ -280,7 +280,7 @@ jobs:
               CODECOV_CMD="./codecov.sh -f glean-core/android/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml"
               $CODECOV_CMD || (sleep 5 && $CODECOV_CMD) || (sleep 5 && $CODECOV_CMD)
 
-  iOS release build:
+  macOS release build:
     macos:
       xcode: "11.0.0"
     steps:
@@ -316,7 +316,7 @@ jobs:
           command: |
             rustup target add x86_64-pc-windows-gnu x86_64-apple-darwin
             # A hack to force skipping the linking step (which will fail due to the missing macOS SDK).
-            # We re-use the dylib generated in the "iOS release build" step.
+            # We re-use the dylib generated in the "macOS release build" step.
             mkdir -p .cargo
             echo '[target.x86_64-apple-darwin]' >> .cargo/config
             echo 'linker = "true"' >> .cargo/config
@@ -525,7 +525,7 @@ workflows:
               ignore: /.*/
             tags:
               only: /^v.*/
-      - iOS release build:
+      - macOS release build:
           filters:
             branches:
               ignore: /.*/
@@ -534,7 +534,7 @@ workflows:
       - android-packaging:
           requires:
             - Android tests
-            - iOS release build
+            - macOS release build
           filters:
             branches:
               ignore: /.*/
