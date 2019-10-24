@@ -27,6 +27,8 @@ pub enum ErrorType {
     InvalidValue,
     /// For when the label of a labeled metric does not match the restrictions
     InvalidLabel,
+    /// For when the metric caught an invalid state while recording
+    InvalidState,
 }
 
 impl ErrorType {
@@ -35,6 +37,7 @@ impl ErrorType {
         match self {
             ErrorType::InvalidValue => "invalid_value",
             ErrorType::InvalidLabel => "invalid_label",
+            ErrorType::InvalidState => "invalid_state",
         }
     }
 }

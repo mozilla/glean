@@ -119,7 +119,7 @@ fn second_timer_run_is_skipped() {
 
     // No error should be recorded here: we had no prior value stored.
     assert!(
-        test_get_num_recorded_errors(&glean, metric.meta(), ErrorType::InvalidValue, None).is_err()
+        test_get_num_recorded_errors(&glean, metric.meta(), ErrorType::InvalidState, None).is_err()
     );
 
     let first_value = metric.test_get_value(&glean, "store1").unwrap();
@@ -135,7 +135,7 @@ fn second_timer_run_is_skipped() {
     // new measurement was dropped.
     assert_eq!(
         Ok(1),
-        test_get_num_recorded_errors(&glean, metric.meta(), ErrorType::InvalidValue, None)
+        test_get_num_recorded_errors(&glean, metric.meta(), ErrorType::InvalidState, None)
     );
 }
 
@@ -284,6 +284,6 @@ fn set_raw_time_does_nothing_when_timer_running() {
     // Make sure that the error has been recorded
     assert_eq!(
         Ok(1),
-        test_get_num_recorded_errors(&glean, metric.meta(), ErrorType::InvalidValue, None)
+        test_get_num_recorded_errors(&glean, metric.meta(), ErrorType::InvalidState, None)
     );
 }

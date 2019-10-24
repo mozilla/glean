@@ -56,7 +56,7 @@ impl TimespanMetric {
             record_error(
                 glean,
                 &self.meta,
-                ErrorType::InvalidValue,
+                ErrorType::InvalidState,
                 "Timespan already started",
                 None,
             );
@@ -74,7 +74,7 @@ impl TimespanMetric {
             record_error(
                 glean,
                 &self.meta,
-                ErrorType::InvalidValue,
+                ErrorType::InvalidState,
                 "Timespan not running",
                 None,
             );
@@ -113,7 +113,7 @@ impl TimespanMetric {
             record_error(
                 glean,
                 &self.meta,
-                ErrorType::InvalidValue,
+                ErrorType::InvalidState,
                 "Timespan already running. Raw value not recorded.",
                 None,
             );
@@ -142,7 +142,7 @@ impl TimespanMetric {
             record_error(
                 glean,
                 &self.meta,
-                ErrorType::InvalidValue,
+                ErrorType::InvalidState,
                 "Timespan value already recorded. New value discarded.",
                 None,
             );
