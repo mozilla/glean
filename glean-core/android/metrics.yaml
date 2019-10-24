@@ -6,6 +6,7 @@
 # automatically converted to Kotlin code at build time using the `glean_parser`
 # PyPI package.
 
+---
 $schema: moz://mozilla.org/schemas/glean/metrics/1-0-0
 
 glean.baseline:
@@ -77,7 +78,8 @@ glean.internal.metrics:
     send_in_pings:
       - glean_client_info
     description: |
-      The optional Android specific SDK version of the software running on this hardware device.
+      The optional Android specific SDK version of the software running on this
+      hardware device.
     bugs:
       - https://bugzilla.mozilla.org/1525606
     data_reviews:
@@ -158,31 +160,31 @@ glean.internal.metrics:
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3
     notification_emails:
-     - telemetry-client-dev@mozilla.com
+      - telemetry-client-dev@mozilla.com
     expires: never
 
   app_display_version:
-   type: string
-   lifetime: application
-   send_in_pings:
-     - glean_client_info
-   description: |
-     The user visible version string (e.g. "1.0.3").
-   bugs:
-     - https://bugzilla.mozilla.org/1508305
-   data_reviews:
-     - https://bugzilla.mozilla.org/show_bug.cgi?id=1508305#c9
-   notification_emails:
-     - telemetry-client-dev@mozilla.com
-   expires: never
+    type: string
+    lifetime: application
+    send_in_pings:
+      - glean_client_info
+    description: |
+      The user visible version string (e.g. "1.0.3").
+    bugs:
+      - https://bugzilla.mozilla.org/1508305
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1508305#c9
+    notification_emails:
+      - telemetry-client-dev@mozilla.com
+    expires: never
 
   app_channel:
     type: string
     lifetime: application
     send_in_pings:
-     - glean_client_info
+      - glean_client_info
     description: |
-     The channel the application is being distributed on.
+      The channel the application is being distributed on.
     bugs:
       - https://bugzilla.mozilla.org/1520741
     data_reviews:
@@ -208,46 +210,47 @@ glean.internal.metrics:
     expires: never
 
 glean.error:
- invalid_value:
-   type: labeled_counter
-   description:
-     Counts the number of times a metric was set to an invalid value.
-     The labels are the `category.name` identifier of the metric.
-   bugs:
-     - https://bugzilla.mozilla.org/1499761
-   data_reviews:
-     - https://bugzilla.mozilla.org/show_bug.cgi?id=1499761#c5
-   notification_emails:
-     - telemetry-client-dev@mozilla.com
-   expires: never
-   send_in_pings:
-     - all_pings
-   no_lint:
-     - COMMON_PREFIX
+  invalid_value:
+    type: labeled_counter
+    description:
+      Counts the number of times a metric was set to an invalid value.
+      The labels are the `category.name` identifier of the metric.
+    bugs:
+      - https://bugzilla.mozilla.org/1499761
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1499761#c5
+    notification_emails:
+      - telemetry-client-dev@mozilla.com
+    expires: never
+    send_in_pings:
+      - all_pings
+    no_lint:
+      - COMMON_PREFIX
 
- invalid_label:
-   type: labeled_counter
-   description:
-     Counts the number of times a metric was set with an invalid label.
-     The labels are the `category.name` identifier of the metric.
-   bugs:
-     - https://bugzilla.mozilla.org/1499761
-   data_reviews:
-     - https://bugzilla.mozilla.org/show_bug.cgi?id=1499761#c5
-   notification_emails:
-     - telemetry-client-dev@mozilla.com
-   expires: never
-   send_in_pings:
-     - all_pings
-   no_lint:
-     - COMMON_PREFIX
+  invalid_label:
+    type: labeled_counter
+    description:
+      Counts the number of times a metric was set with an invalid label.
+      The labels are the `category.name` identifier of the metric.
+    bugs:
+      - https://bugzilla.mozilla.org/1499761
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1499761#c5
+    notification_emails:
+      - telemetry-client-dev@mozilla.com
+    expires: never
+    send_in_pings:
+      - all_pings
+    no_lint:
+      - COMMON_PREFIX
 
 glean.core.migration:
   successful:
     type: boolean
     description:
-      Reports `true` if the client was successfully migrated from the Android-specific
-      implementation of the Glean SDK to the cross-platform one.
+      Reports `true` if the client was successfully migrated from the
+      Android-specific implementation of the Glean SDK to the cross-platform
+      one.
     bugs:
       - https://bugzilla.mozilla.org/1582099
     data_reviews:
