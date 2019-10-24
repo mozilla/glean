@@ -20,7 +20,10 @@ These are the steps needed to cut a new release from latest master.
 
     2. Add a new `# Unreleased Changes` on top
 
-2. Bump `libraryVersion` in the top-level [.buildconfig.yml](https://github.com/mozilla/glean/blob/master/.buildconfig.yml) file. Be sure you're following semver, and if in doubt, ask.
+2. Bump the versions
+    * Rust crates: Bump `version` in [`glean-core/Cargo.toml`](https://github.com/mozilla/glean/blob/master/glean-core/Cargo.toml) and [`glean-core/Cargo.toml`](https://github.com/mozilla/glean/blob/master/glean-core/ffi/Cargo.toml).
+    * Kotlin package: Bump `libraryVersion` in the top-level [.buildconfig.yml](https://github.com/mozilla/glean/blob/master/.buildconfig.yml) file.
+    * Be sure you're following semver, and if in doubt, ask.
 3. Land the commits that perform the steps above. This takes a PR, typically, because of branch protection on master.
 4. Cut the actual release.
     1. Click "Releases", and then "Draft a New Release" in the github UI.
@@ -28,3 +31,6 @@ These are the steps needed to cut a new release from latest master.
     3. Under the description, paste the contents of the release notes from `CHANGELOG.md`.
     4. Note that the release is not available until the CI build completes for that tag.
         - You can check [on CircleCI for the running build](https://circleci.com/gh/mozilla/glean).
+5. After the release, bump the versions to the next pre-release:
+    * Rust crates: Use the next major version and append `-alpha.1`
+    * Kotlin package: Use the next major version and append `-SNAPSHOT`
