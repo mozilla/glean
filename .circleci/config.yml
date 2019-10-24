@@ -71,6 +71,13 @@ commands:
               sudo ln -s /lib/x86_64-linux-gnu/libtinfo.so.6 /lib/x86_64-linux-gnu/libtinfo.so.5
 
 jobs:
+  Lint YAML with yamllint:
+    docker:
+      - image: circleci/python:3.7.5
+    steps:
+      - checkout
+      - run: sudo pip install yamllint
+      - run: make yamllint
   Check Swift formatting:
     macos:
       xcode: "11.0.0"
@@ -491,6 +498,7 @@ workflows:
       - Lint Rust with clippy
       - Lint Android with ktlint and detekt
       - Rust FFI header check
+      - Lint YAML with yamllint
   ci:
     jobs:
       - Rust tests - stable

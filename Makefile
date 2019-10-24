@@ -54,6 +54,9 @@ ktlint: ## Run ktlint to lint Kotlin code
 swiftlint: ## Run swiftlint to lint Swift code
 	swiftlint --strict
 
+yamllint: ## Run yamllint to lint YAML files
+	yamllint glean-core
+
 .PHONY: lint clippy ktlint swiftlint
 
 # Formatting
