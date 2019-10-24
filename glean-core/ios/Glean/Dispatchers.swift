@@ -159,7 +159,7 @@ class Dispatchers {
         // should execute after the `preInitOperations` that are being added here. For tests, we
         // need to await all of the tasks to finish execution, so we set this to true.
 
-        // TODO 1591094: Android has a timeout of 5 seconds for running preinit tasks.
+        // TODO(bug 1591094) Android has a timeout of 5 seconds for running preinit tasks.
 
         self.serialOperationQueue.addOperations(preInitOperations, waitUntilFinished: testingMode)
 
