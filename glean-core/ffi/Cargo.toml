@@ -1,8 +1,12 @@
 [package]
 name = "glean-ffi"
-edition = "2018"
-version = "19.0.0"
+version = "20.0.0-alpha.0"
 authors = ["Jan-Erik Rediger <jrediger@mozilla.com>", "The Glean Team <glean-team@mozilla.com>"]
+description = "FFI layer for Glean, a modern Telemetry library"
+repository = "https://github.com/mozilla/glean"
+readme = "README.md"
+license = "MPL-2.0"
+edition = "2018"
 
 [lib]
 name = "glean_ffi"
