@@ -76,9 +76,17 @@ jobs:
       xcode: "11.0.0"
     steps:
       - checkout
-      - run: brew install swiftlint swiftformat
-      - run: swiftlint --strict
-      - run: swiftformat glean-core/ios samples/ios --lint --swiftversion 5 --verbose
+      - run:
+          name: Install lint tools
+          command: brew install swiftlint swiftformat
+      - run:
+          name: Run swiftlint
+          command: swiftlint --strict
+      - run:
+          name: Run swiftformat
+          command: |
+              swiftformat glean-core/ios samples/ios --swiftversion 5 --verbose
+              git diff --exit-code HEAD -- glean-core/ios samples/ios
   Check Rust formatting:
     docker:
       - image: circleci/rust:latest
