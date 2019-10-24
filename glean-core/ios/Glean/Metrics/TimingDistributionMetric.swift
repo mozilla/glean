@@ -59,7 +59,7 @@ public class TimingDistributionMetricType {
         let startTime = timestampNanos()
 
         // No dispatcher, we need the return value
-        return glean_timing_distribution_set_start(Glean.shared.handle, self.handle, startTime)
+        return glean_timing_distribution_set_start(self.handle, startTime)
     }
 
     /// Stop tracking time for the provided metric and associated timer id. Add a

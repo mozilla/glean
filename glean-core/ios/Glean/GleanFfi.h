@@ -401,9 +401,7 @@ void glean_timing_distribution_accumulate_samples(uint64_t glean_handle,
 
 void glean_timing_distribution_cancel(uint64_t metric_id, TimerId timer_id);
 
-TimerId glean_timing_distribution_set_start(uint64_t glean_handle,
-                                            uint64_t metric_id,
-                                            uint64_t start_time);
+TimerId glean_timing_distribution_set_start(uint64_t metric_id, uint64_t start_time);
 
 void glean_timing_distribution_set_stop_and_accumulate(uint64_t glean_handle,
                                                        uint64_t metric_id,
