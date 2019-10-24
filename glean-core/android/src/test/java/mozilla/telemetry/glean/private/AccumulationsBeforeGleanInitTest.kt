@@ -70,23 +70,4 @@ class AccumulationsBeforeGleanInitTest {
 
         assertEquals(1, labeledCounterMetric["label1"].testGetValue())
     }
-
-    @Ignore("FIXME(bug 1588452): Timing distributions currently depend on a valid Glean instance to start")
-    @Test
-    fun `TimingDistributionMetricType must allow accumulation before Glean inits`() {
-        val timingDistribution = TimingDistributionMetricType(
-            disabled = false,
-            category = "test.telemetry",
-            lifetime = Lifetime.Application,
-            name = "pre_init_counter",
-            sendInPings = listOf("metrics")
-        )
-
-        val id = timingDistribution.start()
-        timingDistribution.stopAndAccumulate(id)
-
-        forceInitGlean()
-
-        assertTrue(timingDistribution.testHasValue())
-    }
 }
