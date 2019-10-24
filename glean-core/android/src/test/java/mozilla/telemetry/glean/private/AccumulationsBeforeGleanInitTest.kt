@@ -13,9 +13,7 @@ import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.config.Configuration
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -69,24 +67,5 @@ class AccumulationsBeforeGleanInitTest {
         forceInitGlean()
 
         assertEquals(1, labeledCounterMetric["label1"].testGetValue())
-    }
-
-    @Ignore("FIXME(bug 1588452): Timing distributions currently depend on a valid Glean instance to start")
-    @Test
-    fun `TimingDistributionMetricType must allow accumulation before Glean inits`() {
-        val timingDistribution = TimingDistributionMetricType(
-            disabled = false,
-            category = "test.telemetry",
-            lifetime = Lifetime.Application,
-            name = "pre_init_counter",
-            sendInPings = listOf("metrics")
-        )
-
-        val id = timingDistribution.start()
-        timingDistribution.stopAndAccumulate(id)
-
-        forceInitGlean()
-
-        assertTrue(timingDistribution.testHasValue())
     }
 }
