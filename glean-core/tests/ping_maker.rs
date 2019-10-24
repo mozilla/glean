@@ -171,7 +171,7 @@ fn test_clear_pending_pings() {
     });
     metric.set(&glean, true);
 
-    assert!(glean.send_ping(&ping_type, false).is_ok());
+    assert!(glean.send_ping(&ping_type).is_ok());
     assert_eq!(1, get_queued_pings(glean.get_data_path()).unwrap().len());
 
     assert!(ping_maker

@@ -4,6 +4,8 @@
 
 * Fixed a crash calling `start` on a timing distribution metric before Glean is initialized.
   Timings are always measured, but only recorded when upload is enabled.
+  
+* BUGFIX: When the Debug Activity is used to log pings, each ping is now logged only once.
 
 # v19.0.0 (2019-10-22)
 

@@ -189,13 +189,11 @@ pub extern "C" fn glean_send_pings_by_name(
     glean_handle: u64,
     ping_names: RawStringArray,
     ping_names_len: i32,
-    log_ping: u8,
 ) -> u8 {
     GLEAN.call_with_log(glean_handle, |glean| {
-        let log_ping = log_ping != 0;
         let pings = from_raw_string_array(ping_names, ping_names_len)?;
 
-        Ok(glean.send_pings_by_name(&pings, log_ping))
+        Ok(glean.send_pings_by_name(&pings))
     })
 }
 

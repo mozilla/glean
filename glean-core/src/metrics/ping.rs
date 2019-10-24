@@ -38,12 +38,11 @@ impl PingType {
     /// ## Arguments
     ///
     /// * `glean` - the Glean instance to use to send the ping.
-    /// * `log_ping` - whether to log the ping after assembly.
     ///
     /// ## Return value
     ///
     /// See [`Glean#send_ping`](../struct.Glean.html#method.send_ping) for details.
-    pub fn send(&self, glean: &Glean, log_ping: bool) -> Result<bool> {
-        glean.send_ping(self, log_ping)
+    pub fn send(&self, glean: &Glean) -> Result<bool> {
+        glean.send_ping(self)
     }
 }

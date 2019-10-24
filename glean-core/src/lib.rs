@@ -94,7 +94,7 @@ pub struct Configuration {
 ///
 /// call_counter.add(&glean, 1);
 ///
-/// glean.send_ping(&ping, true).unwrap();
+/// glean.send_ping(&ping).unwrap();
 /// ```
 ///
 /// ## Note
@@ -401,7 +401,7 @@ impl Glean {
     ///
     /// Returns true if a ping was assembled and queued, false otherwise.
     /// Returns an error if collecting or writing the ping to disk failed.
-    pub fn send_ping(&self, ping: &PingType, log_ping: bool) -> Result<bool> {
+    pub fn send_ping(&self, ping: &PingType) -> Result<bool> {
         let ping_maker = PingMaker::new();
         let doc_id = Uuid::new_v4().to_string();
         let url_path = self.make_path(&ping.name, &doc_id);
@@ -414,11 +414,6 @@ impl Glean {
                 Ok(false)
             }
             Some(content) => {
-                if log_ping {
-                    // Use pretty-printing for log
-                    log::info!("{}", ::serde_json::to_string_pretty(&content)?);
-                }
-
                 if let Err(e) =
                     ping_maker.store_ping(&doc_id, &self.get_data_path(), &url_path, &content)
                 {
@@ -440,14 +435,14 @@ impl Glean {
     /// See `send_ping` for detailed information.
     ///
     /// Returns true if at least one ping was assembled and queued, false otherwise.
-    pub fn send_pings_by_name(&self, ping_names: &[String], log_ping: bool) -> bool {
+    pub fn send_pings_by_name(&self, ping_names: &[String]) -> bool {
         // TODO: 1553813: glean-ac collects and stores pings in parallel and then joins them all before queueing the worker.
         // This here is writing them out sequentially.
 
         let mut result = false;
 
         for ping_name in ping_names {
-            if let Ok(true) = self.send_ping_by_name(ping_name, log_ping) {
+            if let Ok(true) = self.send_ping_by_name(ping_name) {
                 result = true;
             }
         }
@@ -464,13 +459,13 @@ impl Glean {
     ///
     /// Returns true if a ping was assembled and queued, false otherwise.
     /// Returns an error if collecting or writing the ping to disk failed.
-    pub fn send_ping_by_name(&self, ping_name: &str, log_ping: bool) -> Result<bool> {
+    pub fn send_ping_by_name(&self, ping_name: &str) -> Result<bool> {
         match self.get_ping_by_name(ping_name) {
             None => {
                 log::error!("Attempted to send unknown ping '{}'", ping_name);
                 Ok(false)
             }
-            Some(ping) => self.send_ping(ping, log_ping),
+            Some(ping) => self.send_ping(ping),
         }
     }
 

@@ -226,8 +226,7 @@ public class Glean {
                 let sentPing = glean_send_pings_by_name(
                     self.handle,
                     pingNames,
-                    Int32(pingNames?.count ?? 0),
-                    self.configuration!.logPings.toByte()
+                    Int32(pingNames?.count ?? 0)
                 )
 
                 if sentPing != 0 {
