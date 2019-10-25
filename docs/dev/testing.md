@@ -1,7 +1,5 @@
 # Running the tests
 
-> **Note:** This document describes testing the cross-platform implementation of the Glean SDK. For information about testing Android-specific implementation, see [android-components](https://github.com/mozilla-mobile/android-components).
-
 ## Running all tests
 
 The tests for all languages may be run from the command line:
