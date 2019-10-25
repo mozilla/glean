@@ -73,7 +73,7 @@ commands:
 jobs:
   Check Swift formatting:
     macos:
-      xcode: "11.0.0"
+      xcode: "11.1.0"
     steps:
       - checkout
       - run:
@@ -191,34 +191,27 @@ jobs:
               $CODECOV_CMD || (sleep 5 && $CODECOV_CMD) || (sleep 5 && $CODECOV_CMD)
   iOS build and test:
     macos:
-      xcode: "11.0.0"
+      xcode: "11.1.0"
     steps:
       - install-rustup
       - setup-rust-toolchain
       - checkout
       - restore_cache:
           name: Restore rubygems cache
-          key: swift-docs-gems-v2
+          key: swift-docs-gems-v3
       - run:
           name: Install jazzy
           command: gem install jazzy
       - save_cache:
           name: Save rubygems cache
           # NEEDS TO CHANGE WHEN JAZZY IS UPDATED
-          key: swift-docs-gems-v2
+          key: swift-docs-gems-v3
           paths:
-            - ~/.gem/ruby/2.6.3
+            - ~/.gem/ruby/2.6.4
       - run:
           name: Setup build environment
           command: |
-            sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /
             rustup target add aarch64-apple-ios x86_64-apple-ios
-            if [ -z "${CIRCLE_TAG}" ]; then
-              # On non-release builds do not update brew (takes ages).
-              echo 'export HOMEBREW_NO_AUTO_UPDATE=1' >> $BASH_ENV
-            fi
-            echo "export PATH=$HOME/.gem/ruby/2.6.3/bin:$PATH" >> $BASH_ENV
-            brew outdated carthage || brew upgrade carthage
             bin/bootstrap.sh
             # See https://circleci.com/docs/2.0/testing-ios/#pre-starting-the-simulator
             xcrun instruments -w "iPhone 8 (13.0) [" || true
@@ -290,15 +283,11 @@ jobs:
 
   macOS release build:
     macos:
-      xcode: "11.0.0"
+      xcode: "11.1.0"
     steps:
       - install-rustup
       - setup-rust-toolchain
       - checkout
-      - run:
-          name: Setup build environment
-          command: |
-            sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /
       - run:
           name: Build for release
           command: |
