@@ -12,6 +12,12 @@ buildscript {
     }
 }
 
+// All projects in this repo need the gradle-plugin to be available as
+// a build dependency. This means we build the plugin twice: once for
+// internal use and once to publish for external use, but there doesn't
+// seem to be any way around that.
+includeBuild "gradle-plugin"
+
 // See https://docs.gradle.org/current/userguide/publishing_maven.html#publishing_maven:deferred_configuration.
 enableFeaturePreview('STABLE_PUBLISHING')
 

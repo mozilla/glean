@@ -43,9 +43,26 @@ The [android-components release page](https://github.com/mozilla-mobile/android-
 
 #### Integrating with the build system
 
-In order for the Glean SDK to generate an API for your metrics, a Python environment must be accessible at build time.
-This is done automatically by the [`com.jetbrains.python.envs`](https://github.com/JetBrains/gradle-python-envs/) plugin.
-The plugin **must** be manually enabled by adding the following `plugins` block at the top of the `build.gradle` file for your app module.
+In order for the Glean SDK to generate an API for your metrics, two Gradle plugins must be included in your build:
+
+- The [Glean Gradle plugin](https://github.com/mozilla/glean/tree/master/gradle-plugin/)
+- JetBrains' [Python envs plugin](https://github.com/JetBrains/gradle-python-envs/)
+
+The Glean Gradle plugin is distributed on Maven, so we need to tell your build where to look for it by adding the following to the top of your `build.gradle`:
+
+```
+buildscript {
+    repositories {
+        mavenLocal()
+
+        dependencies {
+            classpath "org.mozilla.telemetry:glean-gradle-plugin:{latest-version}"
+        }
+    }
+}
+```
+
+The JetBrains Python plugin is distributed in the Gradle plugin repository, so it can be included with:
 
 ```Groovy
 plugins {
@@ -53,27 +70,13 @@ plugins {
 }
 ```
 
-Right before the end of the same file, the Glean SDK build script must be included.
-This script can be referenced directly from the GitHub repo, as shown below:
+Right before the end of the same file, we need to apply the Glean Gradle plugin:
 
 ```Groovy
-apply from: 'https://raw.githubusercontent.com/mozilla-mobile/android-components/v{latest-version}/components/service/glean/scripts/sdk_generator.gradle'
+apply plugin: "org.mozilla.telemetry.glean-gradle-plugin"
 ```
 
-> **Important:** the `{latest-version}` placeholder in the above link should be replaced with the version number of the Glean SDK used by the project.
-For example, if version *6.0.2* is used, then the include directive becomes:
-
-```Groovy
-apply from: 'https://raw.githubusercontent.com/mozilla-mobile/android-components/v16.0.0/components/service/glean/scripts/sdk_generator.gradle'
-```
-
-If you are using a `SNAPSHOT` build of `android-components`, it is best to use the master branch, for example:
-
-```Groovy
-apply from: 'https://raw.githubusercontent.com/mozilla-mobile/android-components/master/components/service/glean/scripts/sdk_generator.gradle'
-```
-
-There are [additional parameters](android-build-configuration-options.md) that can be set to control the behavior of the `sdk_generator.gradle` script, but they are rarely used in normal use.
+There are [additional parameters](android-build-configuration-options.md) that can be set to control the behavior of the Glean Gradle plugin, but they are rarely used in normal use.
 
 </div>
 

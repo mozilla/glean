@@ -2,6 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+buildscript {
+    dependencies {
+        classpath "org.mozilla.telemetry.glean-gradle-plugin:gradle-plugin"
+    }
+}
+
 plugins {
     id "com.jetbrains.python.envs" version "0.0.26"
 }
@@ -51,4 +57,4 @@ dependencies {
 
 ext.gleanNamespace = "mozilla.telemetry.glean"
 
-apply from: '../../../glean-core/android/sdk_generator.gradle'
+apply plugin: 'org.mozilla.telemetry.glean-gradle-plugin'
