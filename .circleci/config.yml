@@ -173,10 +173,13 @@ jobs:
                 circleci-agent step halt
             fi
       - run:
+          name: Install LLVM lld
+          command: sudo apt install -y lld
+      - run:
           name: Setup custom environment variables
           command: |
               echo "export CARGO_INCREMENTAL=0" >> $BASH_ENV
-              echo "export RUSTFLAGS='-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Zno-landing-pads'" >> $BASH_ENV
+              echo "export RUSTFLAGS='-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Zno-landing-pads -C link-arg=-fuse-ld=lld'" >> $BASH_ENV
       - rust-tests:
           rust-version: "nightly"
       - run:
