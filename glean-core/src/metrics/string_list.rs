@@ -113,17 +113,7 @@ impl StringListMetric {
         let value = value
             .into_iter()
             .map(|elem| {
-                if elem.len() > MAX_STRING_LENGTH {
-                    let msg = format!(
-                        "Individual value length of {} exceeds maximum of {}",
-                        elem.len(),
-                        MAX_STRING_LENGTH
-                    );
-                    record_error(glean, &self.meta, ErrorType::InvalidValue, msg, None);
-                    elem[0..MAX_STRING_LENGTH].to_string()
-                } else {
-                    elem
-                }
+                truncate_string_at_boundary_with_error(glean, &self.meta, elem, MAX_LIST_LENGTH)
             })
             .collect();
 
