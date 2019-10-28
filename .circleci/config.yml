@@ -170,7 +170,7 @@ jobs:
     docker:
       - image: circleci/rust:latest
     # We have to use a machine with more RAM for tests so we don't run out of memory.
-    resource_class: "large"
+    resource_class: "xlarge"
     steps:
       - run:
           name: Check skip condition
@@ -180,19 +180,16 @@ jobs:
                 circleci-agent step halt
             fi
       - run:
-          name: Install LLVM lld
-          command: sudo apt install -y lld
-      - run:
           name: Setup custom environment variables
           command: |
               echo "export CARGO_INCREMENTAL=0" >> $BASH_ENV
-              echo "export RUSTFLAGS='-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Zno-landing-pads -C link-arg=-fuse-ld=lld'" >> $BASH_ENV
+              echo "export RUSTFLAGS='-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Zno-landing-pads'" >> $BASH_ENV
       - rust-tests:
           rust-version: "nightly"
       - run:
           name: Create and upload code coverage
           command: |
-              curl -L https://github.com/mozilla/grcov/releases/download/v0.5.4/grcov-linux-x86_64.tar.bz2 | tar jxf -
+              curl -L https://github.com/mozilla/grcov/releases/download/v0.5.5/grcov-linux-x86_64.tar.bz2 | tar jxf -
               curl -L https://codecov.io/bash > codecov.sh
               chmod +x codecov.sh
               zip -0 ccov.zip `find . \( -name "glean*.gc*" \) -print`
