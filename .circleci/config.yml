@@ -269,6 +269,9 @@ jobs:
           environment:
             GRADLE_OPTS: -Xmx2048m
             TARGET_CFLAGS: -DNDEBUG
+      - store_artifacts:
+          path: glean-core/android/build/rustJniLibs/android
+          destination: libs
       - run:
           name: Save test results
           command: |
