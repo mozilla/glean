@@ -2,10 +2,24 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import sys
 import weakref
 
 from cffi import FFI
 import pkg_resources
+
+
+def get_shared_object_extension():
+    """
+    Get the extension used for shared objects on the current platform.
+    """
+    if sys.platform == "linux":
+        return "so"
+    elif sys.platform == "darwin":
+        return "dylib"
+    elif sys.platform.startswith("win"):
+        return "dll"
+    raise ValueError(f"The platform {sys.platform} is not supported.")
 
 
 _global_weakkeydict = weakref.WeakKeyDictionary()
@@ -23,7 +37,11 @@ def _load_header(path):
 
 ffi = FFI()
 ffi.cdef(_load_header("glean.h"))
-lib = ffi.dlopen(pkg_resources.resource_filename(__name__, "libglean_ffi.so"))
+lib = ffi.dlopen(
+    pkg_resources.resource_filename(
+        __name__, f"libglean_ffi.{get_shared_object_extension()}"
+    )
+)
 
 
 def make_config(data_dir, package_name):
