@@ -90,7 +90,7 @@ apply plugin: "org.mozilla.telemetry.glean-gradle-plugin"
 
 There are [additional parameters](android-build-configuration-options.md) that can be set to control the behavior of the Glean Gradle plugin, but they are rarely used in normal use.
 
-> **Note:** Earlier versions of Glean used a Gradle script (`sdk_generator.gradle`) rather than a Gradle plugin. Its use is deprecated and should projects should be updated to use the Gradle plugin as described above.
+> **Note:** Earlier versions of Glean used a Gradle script (`sdk_generator.gradle`) rather than a Gradle plugin. Its use is deprecated and projects should be updated to use the Gradle plugin as described above.
 
 </div>
 
