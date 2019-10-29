@@ -326,11 +326,6 @@ jobs:
           name: Add additional targets
           command: |
             rustup target add x86_64-pc-windows-gnu x86_64-apple-darwin
-            # A hack to force skipping the linking step (which will fail due to the missing macOS SDK).
-            # We re-use the dylib generated in the "macOS release build" step.
-            mkdir -p .cargo
-            echo '[target.x86_64-apple-darwin]' >> .cargo/config
-            echo 'linker = "true"' >> .cargo/config
       - run:
           name: Fix broken mingw toolchain
           command: |
@@ -352,6 +347,11 @@ jobs:
             export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_PC_WINDOWS_GNU_RUSTFLAGS="-C linker=x86_64-w64-mingw32-gcc"
             export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_PC_WINDOWS_GNU_AR=x86_64-w64-mingw32-ar
             export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_PC_WINDOWS_GNU_CC=x86_64-w64-mingw32-gcc
+            # A hack to force-skip macOS builds.
+            # We re-use the dylib generated in the "macOS release build" step.
+            export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_AR=true
+            export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_CC=true
+            export RUSTC=$(pwd)/bin/rust-wrapper-hack.sh
 
             echo "rust.targets=arm,arm64,x86_64,x86,linux-x86-64,win32-x86-64-gnu,darwin" > local.properties
 
