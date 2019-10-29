@@ -4,6 +4,18 @@ help:
 	  sort | \
 	  awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
+GLEAN_PYENV = glean-core/python/.venv
+
+# Setup environments
+
+python-setup: $(GLEAN_PYENV)/bin/python3 ## Setup a Python virtual environment
+	@:
+
+$(GLEAN_PYENV)/bin/python3:
+	python3 -m venv $(GLEAN_PYENV)
+	$(GLEAN_PYENV)/bin/pip install --upgrade pip
+	$(GLEAN_PYENV)/bin/pip install -r glean-core/python/requirements_dev.txt
+
 # All builds
 
 build: build-rust
@@ -20,6 +32,9 @@ build-swift: ## Build all Swift code
 build-apk: ## Build an apk of the Glean sample app
 	./gradlew glean-core:build
 	./gradlew glean-sample-app:build
+
+build-python: python-setup build-rust ## Build the Python bindings
+	$(GLEAN_PYENV)/bin/python3 glean-core/python/setup.py install
 
 .PHONY: build build-rust build-kotlin build-swift build-apk
 
@@ -39,6 +54,9 @@ test-kotlin: ## Run all Kotlin tests
 test-swift: ## Run all Swift tests
 	bin/run-ios-tests.sh
 
+test-python: build-python ## Run all Python tests
+	$(GLEAN_PYENV)/bin/py.test glean-core/python/tests
+
 .PHONY: test test-rust test-rust-with-logs test-kotlin test-swift
 
 # Linting
@@ -57,7 +75,11 @@ swiftlint: ## Run swiftlint to lint Swift code
 yamllint: ## Run yamllint to lint YAML files
 	yamllint glean-core
 
-.PHONY: lint clippy ktlint swiftlint
+flake8: python-setup ## Run flake8 and black to lint Python code
+	$(GLEAN_PYENV)/bin/python3 -m flake8 glean-core/python/glean glean-core/python/tests
+	$(GLEAN_PYENV)/bin/python3 -m black --check glean-core/python/glean glean-core/python/tests
+
+.PHONY: lint clippy ktlint swiftlint yamllint
 
 # Formatting
 
@@ -68,6 +90,9 @@ rustfmt: ## Format all Rust code
 
 swiftfmt: ## Format all Swift code
 	swiftformat glean-core/ios samples/ios --swiftversion 5 --verbose
+
+pythonfmt: python-setup ## Run black to format Python code
+	$(GLEAN_PYENV)/bin/python3 -m black glean-core/python/glean glean-core/python/tests
 
 .PHONY: fmt rustfmt swiftfmt
 
@@ -83,6 +108,9 @@ kotlin-docs: ## Build the Kotlin documentation
 
 swift-docs: ## Build the Swift documentation
 	bin/build-swift-docs.sh
+
+python-docs: build-python ## Build the Python documentation
+	$(GLEAN_PYENV)/bin/python3 -m pdoc --html glean --force -o build/docs/python
 
 .PHONY: docs rust-docs kotlin-docs swift-docs
 

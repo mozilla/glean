@@ -243,4 +243,18 @@ When re-enabling, core Glean metrics will be recomputed at that time.
 
 </div>
 
+<div data-lang="Python" class="tab">
+
+> **Note**: This content is a placeholder.  The Python bindings are under development.
+
+### Initializing the Glean SDK
+
+```python
+import glean
+cfg = glean.Configuration()
+glean.Glean.initialize(cfg, "/path/to/datadir")
+```
+
+</div>
+
 {{#include ../tab_footer.md}}

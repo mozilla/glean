@@ -493,6 +493,43 @@ jobs:
             npm install -g --silent gh-pages@2.0.1
             gh-pages --dotfiles --message "[skip ci] Updates" --dist build/docs
 
+  Lint Python with flake8 and black:
+    docker:
+      - image: circleci/python:3.7.5
+    steps:
+      - checkout
+      - run:
+          name: Python lints
+          command: make flake8
+
+  Python tests:
+    docker:
+      - image: circleci/python:3.7.5
+    steps:
+      - install-rustup
+      - setup-rust-toolchain
+      - checkout
+      - run:
+          name: Python tests
+          command: make test-python
+      - persist_to_workspace:
+          root: glean-core/python/
+          paths: .venv
+
+  Generate Python documentation:
+    docker:
+      - image: circleci/python:3.7.5
+    steps:
+      - checkout
+      - attach_workspace:
+          at: glean-core/python/
+      - run:
+          name: Generate Python docs
+          command: glean-core/python/.venv/bin/python3 -m pdoc --html glean --force -o build/docs/python
+      - persist_to_workspace:
+          root: build/
+          paths: docs/python
+
 workflows:
   version: 2
   check-formating:
@@ -503,6 +540,7 @@ workflows:
     jobs:
       - Lint Rust with clippy
       - Lint Android with ktlint and detekt
+      - Lint Python with flake8 and black
       - Rust FFI header check
       - Lint YAML with yamllint
   ci:
@@ -514,12 +552,17 @@ workflows:
       - Android tests
       - C tests
       - iOS build and test
+      - Python tests
       - Generate Rust documentation
       - Generate Kotlin documentation
+      - Generate Python documentation:
+          requires:
+            - Python tests
       - docs-linkcheck:
           requires:
             - Generate Rust documentation
             - Generate Kotlin documentation
+            - Generate Python documentation
             - iOS build and test
       - docs-deploy:
           requires:
