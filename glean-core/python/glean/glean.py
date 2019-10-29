@@ -10,7 +10,11 @@ class Glean:
     """
     The main Glean API.
 
-    This is exposed through the global `Glean` object.
+    Before any data collection can take place, the Glean SDK **must** be
+    initialized from the application.
+
+    >>> Glean.set_upload_enabled(True)
+    >>> Glean.initialize(cfg, data_dir)
     """
 
     _handle = 0
