@@ -34,7 +34,7 @@ Other higher level tools exist to manage virtual environments, such as [pipenv](
 These will work just as well, but are not documented here.
 Using an alternative tool would replace the instructions in this section only, but all other instructions below would remain the same.
 
-To create a virtual environment, replacing `<venv>` with the path to the virtual environment you want to create.  You will need to do this only once.
+To create a virtual environment, enter the following command, replacing `<venv>` with the path to the virtual environment you want to create.  You will need to do this only once.
 
 ```bash
   $ python3 -m venv <venv>
