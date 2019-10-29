@@ -20,4 +20,4 @@ projects:
     publications:
       - name: glean-gradle-plugin
         type: aar
-    description: 'A Gradle plugin to generate Glean metrics from metrics.yaml files.'
+    description: 'A Gradle plugin to enable Glean SDK build-time support (metrics and pings API, docs, ...)'
