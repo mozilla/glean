@@ -1,12 +1,18 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v19.0.0...master)
+[Full changelog](https://github.com/mozilla/glean/compare/v19.1.0...master)
+
+# v19.1.0 (2019-10-29)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v19.0.0...v19.1.0)
 
 * Fixed a crash calling `start` on a timing distribution metric before Glean is initialized.
   Timings are always measured, but only recorded when upload is enabled ([#400](https://github.com/mozilla/glean/pull/400))
 * BUGFIX: When the Debug Activity is used to log pings, each ping is now logged only once ([#407](https://github.com/mozilla/glean/pull/407))
 * New `invalid state` error, used in timespan recording ([#230](https://github.com/mozilla/glean/pull/230))
 * Add an Android crash instrumentation walkthrough ([#399](https://github.com/mozilla/glean/pull/399))
+* Fix crashing bug by avoiding assert-printing in lmdb ([#422](https://github.com/mozilla/glean/pull/422))
+* Upgrade dependencies, including rkv ([#416](https://github.com/mozilla/glean/pull/416))
 
 # v19.0.0 (2019-10-22)
 
