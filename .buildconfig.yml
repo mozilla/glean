@@ -1,4 +1,4 @@
-libraryVersion: 19.1.0
+libraryVersion: 19.1.0-SNAPSHOT
 groupId: org.mozilla.telemetry
 projects:
   glean-core:
