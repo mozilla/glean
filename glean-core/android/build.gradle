@@ -254,7 +254,7 @@ apply plugin: 'org.mozilla.telemetry.glean-gradle-plugin'
 
 // Store the path to the Glean Miniconda installation in a buildConfigField
 // so that unit tests can validate JSON schema.
-pluginManager.withPlugin('mozilla.telemetry.glean-gradle-plugin') {
+pluginManager.withPlugin('org.mozilla.telemetry.glean-gradle-plugin') {
     android {
         defaultConfig {
             buildConfigField(
