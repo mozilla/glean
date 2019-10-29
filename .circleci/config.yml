@@ -230,8 +230,10 @@ jobs:
               bash bin/build-swift-docs.sh
       - store_artifacts:
           path: raw_xcodebuild.log
+          destination: log
       - store_artifacts:
           path: raw_xcodetest.log
+          destination: log
       - persist_to_workspace:
           root: build/
           paths: docs/swift
@@ -268,6 +270,10 @@ jobs:
           command: ./gradlew --no-daemon test
           environment:
             GRADLE_OPTS: -Xmx2048m
+            TARGET_CFLAGS: -DNDEBUG
+      - store_artifacts:
+          path: glean-core/android/build/rustJniLibs/android
+          destination: libs
       - run:
           name: Save test results
           command: |
@@ -278,6 +284,7 @@ jobs:
           when: always
       - store_artifacts:
           path: ~/test-results/tests
+          destination: test-results
       - store_test_results:
           path: ~/test-results
       - run:
@@ -353,8 +360,10 @@ jobs:
             ./gradlew --no-daemon checkMavenArtifacts
           environment:
             GRADLE_OPTS: -Xmx2048m
+            TARGET_CFLAGS: -DNDEBUG
       - store_artifacts:
           path: build/maven
+          destination: build
       - persist_to_workspace:
           root: .
           paths: build
