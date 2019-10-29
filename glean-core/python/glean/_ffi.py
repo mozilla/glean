@@ -12,6 +12,9 @@ _global_weakkeydict = weakref.WeakKeyDictionary()
 
 
 def _load_header(path):
+    """
+    Load a C header file and convert it to something parseable by cffi.
+    """
     data = pkg_resources.resource_string(__name__, path).decode("utf-8")
     return "\n".join(
         line for line in data.splitlines() if not line.startswith("#include")
@@ -24,6 +27,13 @@ lib = ffi.dlopen(pkg_resources.resource_filename(__name__, "libglean_ffi.so"))
 
 
 def make_config(data_dir, package_name):
+    """
+    Make an `FfiConfiguration` object.
+
+    Args:
+        data_dir (pathlib.Path): Path to the Glean data directory.
+        package_name (str): The name of the package to report in Glean's pings.
+    """
     data_dir = ffi.new("char[]", str(data_dir).encode("utf-8"))
     package_name = ffi.new("char[]", package_name.encode("utf-8"))
     cfg = ffi.new("FfiConfiguration *")
