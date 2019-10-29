@@ -12,7 +12,7 @@ Make sure it is installed on your system and accesible on the `PATH` as `python3
 
 ### Setting up Rust
 
-If you've already set up Rust for building Glean for Android or iOS, you already have everything yhou need and can skip this section.
+If you've already set up Rust for building Glean for Android or iOS, you already have everything you need and can skip this section.
 
 Rust can be installed using `rustup`, with the following commands:
 
@@ -25,7 +25,7 @@ It is recommended to do all Python development inside a virtual environment to m
 
 You may want to manage your own virtual environment if, for example, you are developing a library that is using Glean and you want to install Glean into it.  If you are just developing Glean itself, however, Glean's `Makefile` will handle the creation and use of a virtual environment automatically (though the `Makefile` unfortunately does not work on Microsoft Windows).
 
-The instructions below all have both the manual instructions and the `Makefile` shortcut.
+The instructions below all have both the manual instructions and the `Makefile` shortcuts.
 
 ### Manual method
 
