@@ -45,7 +45,7 @@ else:
 
 setup(
     author="The Glean Team",
-    author_email="telemetry-client-dev@mozilla.com",
+    author_email="glean-team@mozilla.com",
     classifiers=[
         "Intended Audience :: Developers",
         "Natural Language :: English",

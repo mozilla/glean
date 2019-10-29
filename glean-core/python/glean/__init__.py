@@ -13,7 +13,7 @@ except DistributionNotFound:
     pass
 
 __author__ = "The Glean Team"
-__email__ = "telemetry-client-dev@mozilla.com"
+__email__ = "glean-team@mozilla.com"
 
 from .glean import Glean
 from .config import Configuration
