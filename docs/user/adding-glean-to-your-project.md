@@ -56,7 +56,7 @@ In order for the Glean SDK to generate an API for your metrics, two Gradle plugi
 - The [Glean Gradle plugin](https://github.com/mozilla/glean/tree/master/gradle-plugin/)
 - JetBrains' [Python envs plugin](https://github.com/JetBrains/gradle-python-envs/)
 
-The Glean Gradle plugin is distributed on Maven, so we need to tell your build where to look for it by adding the following to the top of your `build.gradle`:
+The Glean Gradle plugin is distributed through Mozilla's Maven, so we need to tell your build where to look for it by adding the following to the top of your `build.gradle`:
 
 ```
 buildscript {
