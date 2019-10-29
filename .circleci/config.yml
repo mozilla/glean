@@ -268,6 +268,7 @@ jobs:
           command: ./gradlew --no-daemon test
           environment:
             GRADLE_OPTS: -Xmx2048m
+            TARGET_CFLAGS: -DNDEBUG
       - run:
           name: Save test results
           command: |
@@ -353,6 +354,7 @@ jobs:
             ./gradlew --no-daemon checkMavenArtifacts
           environment:
             GRADLE_OPTS: -Xmx2048m
+            TARGET_CFLAGS: -DNDEBUG
       - store_artifacts:
           path: build/maven
       - persist_to_workspace:
