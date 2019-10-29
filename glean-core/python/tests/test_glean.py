@@ -11,3 +11,4 @@ def test_smoke_test(tmpdir):
     A very simple smoke test.
     """
     glean.Glean.initialize(glean.Configuration(), tmpdir)
+    assert glean.Glean._handle != 0

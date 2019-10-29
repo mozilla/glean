@@ -40,9 +40,6 @@ class Glean:
 
         cls._handle = _ffi.lib.glean_initialize(cfg)
 
-        if cls._handle == 0:
-            raise RuntimeError("Did not successfully get a Glean handle")
-
     @classmethod
     def is_initialized(cls):
         """
