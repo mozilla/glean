@@ -24,6 +24,10 @@ search:
 
 ## API
 
+{{#include ../../tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
+
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.Search
 
@@ -47,6 +51,36 @@ assertTrue(Search.engines.testHasValue())
 // IMPORTANT: It may have been truncated -- see "Limits" below
 assertEquals(listOf("Google", "DuckDuckGo"), Search.engines.testGetValue())
 ```
+
+</div>
+
+<div data-lang="Swift" class="tab">
+
+```Swift
+// Add them one at a time
+for engine in engines {
+    Search.engines.add(engine)
+}
+
+// Set them in one go
+Search.engines.set(engines)
+```
+
+There are test APIs available too:
+
+```Kotlin
+@testable import Glean
+
+// Was anything recorded?
+XCTAssert(Search.engines.testHasValue())
+// Does it have the expected value?
+// IMPORTANT: It may have been truncated -- see "Limits" below
+XCTAssertEqual(["Google", "DuckDuckGo"], try Search.engines.testGetValue())
+```
+
+</div>
+
+{{#include ../../tab_footer.md}}
 
 ## Limits
 

@@ -43,6 +43,8 @@
 		BF89055F232BC213003CA2BA /* StringMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF89055E232BC213003CA2BA /* StringMetric.swift */; };
 		BF890561232BC227003CA2BA /* StringMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF890560232BC227003CA2BA /* StringMetricTests.swift */; };
 		BF93C698224BFC57006CE7D8 /* Glean.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF93C697224BFC57006CE7D8 /* Glean.swift */; };
+		BFAED5082369751100DF293D /* StringListMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFAED5072369751100DF293D /* StringListMetric.swift */; };
+		BFAED50A2369752400DF293D /* StringListMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFAED5092369752400DF293D /* StringListMetricTests.swift */; };
 		BFB59A9C2342A24000F40CA8 /* GleanError.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFB59A982342A24000F40CA8 /* GleanError.swift */; };
 		BFB59A9D2342A24000F40CA8 /* GleanBaseline.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFB59A992342A24000F40CA8 /* GleanBaseline.swift */; };
 		BFB59A9E2342A24000F40CA8 /* Pings.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFB59A9A2342A24000F40CA8 /* Pings.swift */; };
@@ -113,6 +115,8 @@
 		BF89055E232BC213003CA2BA /* StringMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringMetric.swift; sourceTree = "<group>"; };
 		BF890560232BC227003CA2BA /* StringMetricTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringMetricTests.swift; sourceTree = "<group>"; };
 		BF93C697224BFC57006CE7D8 /* Glean.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Glean.swift; sourceTree = "<group>"; };
+		BFAED5072369751100DF293D /* StringListMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringListMetric.swift; sourceTree = "<group>"; };
+		BFAED5092369752400DF293D /* StringListMetricTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringListMetricTests.swift; sourceTree = "<group>"; };
 		BFB59A982342A24000F40CA8 /* GleanError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GleanError.swift; sourceTree = "<group>"; };
 		BFB59A992342A24000F40CA8 /* GleanBaseline.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GleanBaseline.swift; sourceTree = "<group>"; };
 		BFB59A9A2342A24000F40CA8 /* Pings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Pings.swift; sourceTree = "<group>"; };
@@ -283,6 +287,7 @@
 				BF30FDC3233260B500840607 /* TimespanMetric.swift */,
 				BF30FDC72332640400840607 /* TimeUnit.swift */,
 				BF10007D23548AF400064051 /* MemoryUnit.swift */,
+				BFAED5072369751100DF293D /* StringListMetric.swift */,
 				BF89055E232BC213003CA2BA /* StringMetric.swift */,
 				1FD4527423395B4500F4C7E8 /* UuidMetric.swift */,
 				BF2E57042334B77D00364D92 /* EventMetric.swift */,
@@ -302,6 +307,7 @@
 				1F6A8FF5233C1555007837D5 /* DatetimeMetricTypeTests.swift */,
 				BF6C53B3232F872B00E3B43A /* PingTests.swift */,
 				BF30FDC5233260C400840607 /* TimespanMetricTests.swift */,
+				BFAED5092369752400DF293D /* StringListMetricTests.swift */,
 				BF890560232BC227003CA2BA /* StringMetricTests.swift */,
 				1FD4527623395EEB00F4C7E8 /* UuidMetricTests.swift */,
 				BF2E57062334BD7600364D92 /* EventMetricTests.swift */,
@@ -524,6 +530,7 @@
 				BF93C698224BFC57006CE7D8 /* Glean.swift in Sources */,
 				BF30FDC22332312300840607 /* Sysctl.swift in Sources */,
 				AC54D227233134A30019319A /* GleanOperation.swift in Sources */,
+				BFAED5082369751100DF293D /* StringListMetric.swift in Sources */,
 				1F60589723148BF800307A9F /* GleanLifecycleObserver.swift in Sources */,
 				1FD4527523395B4500F4C7E8 /* UuidMetric.swift in Sources */,
 				BFE1CDC8233B73B30019EE47 /* Unreachable.swift in Sources */,
@@ -554,6 +561,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BFAED50A2369752400DF293D /* StringListMetricTests.swift in Sources */,
 				BF890561232BC227003CA2BA /* StringMetricTests.swift in Sources */,
 				1FD4527723395EEB00F4C7E8 /* UuidMetricTests.swift in Sources */,
 				1FB8F8382326EABD00618E47 /* ConfigurationTests.swift in Sources */,
