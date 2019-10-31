@@ -353,3 +353,8 @@ subprocess.check_call([
         }
     }
 }
+
+// Put an instance of the plugin in ext so it can be used from the outside
+// by Glean's own projects. This is not used by third-parties when using the
+// plugin.
+ext.glean_plugin = new GleanPlugin()
