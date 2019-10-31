@@ -4,7 +4,8 @@
 
 buildscript {
     dependencies {
-        classpath "org.mozilla.telemetry.glean-gradle-plugin:gradle-plugin"
+        //classpath "org.mozilla.telemetry.glean-gradle-plugin:gradle-plugin"
+        classpath files('../../../gradle-plugin/build/libs/gradle-plugin.jar')
     }
 }
 
