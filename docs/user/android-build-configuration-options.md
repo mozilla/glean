@@ -1,9 +1,9 @@
 # Android build script configuration options
 
-This chapter describes build configuration options that control the behavior of Glean's `sdk_generator.gradle` script.
+This chapter describes build configuration options that control the behavior of Glean's Gradle plugin.
 These options are not usually required for normal use.
 
-Options can be turned on by setting a variable on the Gradle [`ext`](https://docs.gradle.org/current/dsl/org.gradle.api.plugins.ExtraPropertiesExtension.html) object.
+Options can be turned on by setting a variable on the Gradle [`ext`](https://docs.gradle.org/current/dsl/org.gradle.api.plugins.ExtraPropertiesExtension.html) object *before* applying the Glean Gradle plugin.
 
 ## `allowMetricsFromAAR`
 

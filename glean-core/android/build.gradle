@@ -5,6 +5,17 @@
 // This is based off:
 // https://github.com/mozilla/application-services/blob/c40e2ccb422cf4af9ffdf095149cec34de1d4bef/components/fxa-client/android/build.gradle
 
+import groovy.json.JsonOutput
+
+// Include the glean-gradle-plugin. This is slightly different than what is
+// recommended for external users since we are loading it from the same root Gradle
+// build.
+buildscript {
+    dependencies {
+        classpath "org.mozilla.telemetry.glean-gradle-plugin:gradle-plugin"
+    }
+}
+
 plugins {
     id "com.jetbrains.python.envs" version "0.0.26"
 }
@@ -239,4 +250,20 @@ task docs(type: org.jetbrains.dokka.gradle.DokkaAndroidTask, overwrite: true) {
 // Generate markdown docs for the collected metrics.
 ext.gleanGenerateMarkdownDocs = true
 ext.gleanDocsDirectory = "$rootDir/docs/user/collected-metrics"
-apply from: 'sdk_generator.gradle'
+apply plugin: 'org.mozilla.telemetry.glean-gradle-plugin'
+
+// Store the path to the Glean Miniconda installation in a buildConfigField
+// so that unit tests can validate JSON schema.
+pluginManager.withPlugin('org.mozilla.telemetry.glean-gradle-plugin') {
+    android {
+        defaultConfig {
+            buildConfigField(
+                "String",
+                "GLEAN_MINICONDA_DIR",
+                // Carefully escape the string here so it will support `\` in
+                // Windows paths correctly.
+                JsonOutput.toJson(project.ext.gleanCondaDir.path)
+            )
+        }
+    }
+}

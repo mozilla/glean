@@ -35,7 +35,7 @@ import java.util.concurrent.ExecutionException
  *
  * This uses the Python utility, glean_parser, to perform the actual checking.
  * This is installed in its own Miniconda environment as part of the build
- * configuration in sdk_generator.gradle.
+ * configuration by glean-gradle-plugin.
  *
  * @param content The JSON content of the ping
  * @throws AssertionError If the JSON content is not valid
@@ -78,7 +78,7 @@ internal fun checkPingSchema(content: JSONObject) {
  *
  * This uses the Python utility, glean_parser, to perform the actual checking.
  * This is installed in its own Miniconda environment as part of the build
- * configuration in sdk_generator.gradle.
+ * configuration by glean-gradle-plugin.
  *
  * @param content The JSON content of the ping
  * @return the content string, parsed into a JSONObject

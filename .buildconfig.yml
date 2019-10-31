@@ -14,3 +14,10 @@ projects:
     path: samples/android/app
     artifactId: glean-core-sample-app
     description: 'An app demoing how to use the Glean library to collect and send telemetry data.'
+  glean-gradle-plugin:
+    path: gradle-plugin
+    artifactId: glean-gradle-plugin
+    publications:
+      - name: glean-gradle-plugin
+        type: aar
+    description: 'A Gradle plugin to enable Glean SDK build-time support (metrics and pings API, docs, ...)'
