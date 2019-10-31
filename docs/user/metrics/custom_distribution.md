@@ -5,7 +5,8 @@ Custom distributions are used to record the distribution of arbitrary values.
 It should be used only when direct control over how the histogram buckets are computed is required.
 Otherwise, look at the standard distribution metric types:
 
-* [Timing Distributions](timing_distribution.md))
+* [Timing Distributions](timing_distribution.md)
+* [Memory Distributions](memory_distribution.md)
 
 > Note: Custom distributions are currently only allowed for GeckoView metrics (the `gecko_datapoint` parameter is present).
 
