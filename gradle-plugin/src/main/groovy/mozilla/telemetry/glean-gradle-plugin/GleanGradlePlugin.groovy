@@ -353,3 +353,5 @@ subprocess.check_call([
         }
     }
 }
+
+ext.glean_plugin = new GleanPlugin()
