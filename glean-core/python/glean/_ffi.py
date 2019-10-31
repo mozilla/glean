@@ -9,16 +9,16 @@ from cffi import FFI
 import pkg_resources
 
 
-def get_shared_object_extension():
+def get_shared_object_filename():
     """
     Get the extension used for shared objects on the current platform.
     """
     if sys.platform == "linux":
-        return "so"
+        return "libglean_ffi.so"
     elif sys.platform == "darwin":
-        return "dylib"
+        return "libglean_ffi.dylib"
     elif sys.platform.startswith("win"):
-        return "dll"
+        return "glean_ffi.dll"
     raise ValueError(f"The platform {sys.platform} is not supported.")
 
 
@@ -38,9 +38,7 @@ def _load_header(path):
 ffi = FFI()
 ffi.cdef(_load_header("glean.h"))
 lib = ffi.dlopen(
-    pkg_resources.resource_filename(
-        __name__, f"libglean_ffi.{get_shared_object_extension()}"
-    )
+    pkg_resources.resource_filename(__name__, get_shared_object_filename())
 )
 
 

@@ -35,11 +35,11 @@ requirements = ["cffi==1.13.1"]
 setup_requirements = []
 
 if sys.platform == "linux":
-    shared_object_extension = "so"
+    shared_object = "libglean_ffi.so"
 elif sys.platform == "darwin":
-    shared_object_extension = "dylib"
+    shared_object = "libglean_ffi.dylib"
 elif sys.platform.startswith("win"):
-    shared_object_extension = "dll"
+    shared_object = "glean_ffi.dll"
 else:
     raise ValueError(f"The platform {sys.platform} is not supported.")
 
@@ -69,13 +69,5 @@ setup(
     setup_requires=setup_requirements,
     url="https://github.com/mozilla/glean",
     zip_safe=False,
-    data_files=[
-        (
-            "glean",
-            [
-                "../ffi/glean.h",
-                f"../../target/debug/libglean_ffi.{shared_object_extension}",
-            ],
-        )
-    ],
+    data_files=[("glean", ["../ffi/glean.h", f"../../target/debug/{shared_object}",],)],
 )
