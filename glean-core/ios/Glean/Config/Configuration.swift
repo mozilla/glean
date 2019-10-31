@@ -55,9 +55,10 @@ public struct Configuration {
     ///     This will be sent along with all the pings, in the `client_info` section.
     public init(
         maxEvents: Int32? = nil,
-        channel: String? = nil
+        channel: String? = nil,
+        serverEndpoint: String? = nil
     ) {
-        self.serverEndpoint = Constants.defaultTelemetryEndpoint
+        self.serverEndpoint = serverEndpoint ?? Constants.defaultTelemetryEndpoint
         self.userAgent = Constants.defaultUserAgent
         self.logPings = Constants.defaultLogPings
         self.maxEvents = maxEvents
