@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeoutOrNull
+import mozilla.telemetry.glean.GleanMetrics.GleanError
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -148,6 +149,7 @@ internal object Dispatchers {
                     job.join()
                 } == null) {
                     Log.e(LOG_TAG, "Timeout processing initial tasks queue")
+                    GleanError.preinitTasksTimeout.set(true)
                     queueInitialTasks.set(false)
                     taskQueue.clear()
                 } else {
