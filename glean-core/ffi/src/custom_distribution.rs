@@ -12,6 +12,7 @@ use crate::{
 
 define_metric!(CustomDistributionMetric => CUSTOM_DISTRIBUTION_METRICS {
     new           -> glean_new_custom_distribution_metric(range_min: u64, range_max: u64, bucket_count: u64, histogram_type: i32),
+    test_get_num_recorded_errors -> glean_custom_distribution_test_get_num_recorded_errors,
     destroy       -> glean_destroy_custom_distribution_metric,
 });
 

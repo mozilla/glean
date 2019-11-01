@@ -4,16 +4,17 @@
 
 package mozilla.telemetry.glean.private
 
-import androidx.annotation.VisibleForTesting
 import android.os.SystemClock
+import androidx.annotation.VisibleForTesting
 import com.sun.jna.StringArray
+import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.GleanTimerId
-import mozilla.telemetry.glean.rust.getAndConsumeRustString
 import mozilla.telemetry.glean.rust.LibGleanFFI
-import mozilla.telemetry.glean.rust.toByte
-import mozilla.telemetry.glean.Dispatchers
+import mozilla.telemetry.glean.rust.getAndConsumeRustString
 import mozilla.telemetry.glean.rust.toBoolean
+import mozilla.telemetry.glean.rust.toByte
+import mozilla.telemetry.glean.testing.ErrorType
 
 /**
  * This implements the developer facing API for recording timing distribution metrics.
@@ -204,5 +205,24 @@ class TimingDistributionMetricType internal constructor(
                 pingName)!!
 
         return DistributionData.fromJsonString(ptr.getAndConsumeRustString())!!
+    }
+
+    /**
+     * Returns the number of errors recorded for the given metric.
+     *
+     * @param errorType The type of the error recorded.
+     * @param pingName represents the name of the ping to retrieve the metric for.
+     *                 Defaults to the first value in `sendInPings`.
+     * @return the number of errors recorded for the metric.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    @JvmOverloads
+    fun testGetNumRecordedErrors(errorType: ErrorType, pingName: String = sendInPings.first()): Int {
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        Dispatchers.API.assertInTestingMode()
+
+        return LibGleanFFI.INSTANCE.glean_timing_distribution_test_get_num_recorded_errors(
+            Glean.handle, this.handle, errorType.ordinal, pingName
+        )
     }
 }

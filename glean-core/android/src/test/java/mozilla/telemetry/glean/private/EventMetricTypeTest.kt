@@ -13,25 +13,26 @@ package mozilla.telemetry.glean.private
 import android.os.SystemClock
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import java.lang.NullPointerException
+import java.util.concurrent.TimeUnit
 import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.checkPingSchema
 import mozilla.telemetry.glean.getContextWithMockedInfo
 import mozilla.telemetry.glean.getMockWebServer
 import mozilla.telemetry.glean.resetGlean
+import mozilla.telemetry.glean.testing.ErrorType
 import mozilla.telemetry.glean.testing.GleanTestRule
 import mozilla.telemetry.glean.triggerWorkManager
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
-import org.junit.Test
 import org.junit.Rule
+import org.junit.Test
 import org.junit.runner.RunWith
-import java.lang.NullPointerException
-import java.util.concurrent.TimeUnit
 
 // Declared here, since Kotlin can not declare nested enum classes.
 enum class clickKeys {
@@ -360,5 +361,24 @@ class EventMetricTypeTest {
             "post-init",
             pingJson.getJSONArray("events").getJSONObject(1).getJSONObject("extra").getString("someExtra")
         )
+    }
+
+    @Test
+    fun `Long extra values record an error`() {
+        // Define a 'click' event, which will be stored in "store1"
+        val click = EventMetricType<clickKeys>(
+            disabled = false,
+            category = "ui",
+            lifetime = Lifetime.Ping,
+            name = "click",
+            sendInPings = listOf("store1"),
+            allowedExtraKeys = listOf("object_id", "other")
+        )
+
+        val longString = "0123456789".repeat(11)
+
+        click.record(extra = mapOf(clickKeys.objectId to longString))
+
+        assertEquals(1, click.testGetNumRecordedErrors(ErrorType.InvalidValue))
     }
 }

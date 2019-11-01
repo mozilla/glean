@@ -13,6 +13,7 @@ import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.getAndConsumeRustString
 import mozilla.telemetry.glean.rust.toBoolean
 import mozilla.telemetry.glean.rust.toByte
+import mozilla.telemetry.glean.testing.ErrorType
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -229,5 +230,24 @@ class EventMetricType<ExtraKeysEnum : Enum<ExtraKeysEnum>> internal constructor(
             result.add(deserializeEvent(jsonRes.getJSONObject(i)))
         }
         return result
+    }
+
+    /**
+     * Returns the number of errors recorded for the given metric.
+     *
+     * @param errorType The type of the error recorded.
+     * @param pingName represents the name of the ping to retrieve the metric for.
+     *                 Defaults to the first value in `sendInPings`.
+     * @return the number of errors recorded for the metric.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    @JvmOverloads
+    fun testGetNumRecordedErrors(errorType: ErrorType, pingName: String = sendInPings.first()): Int {
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        Dispatchers.API.assertInTestingMode()
+
+        return LibGleanFFI.INSTANCE.glean_event_test_get_num_recorded_errors(
+            Glean.handle, this.handle, errorType.ordinal, pingName
+        )
     }
 }

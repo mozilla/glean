@@ -8,6 +8,7 @@ use crate::{define_metric, handlemap_ext::HandleMapExtension, GLEAN};
 
 define_metric!(QuantityMetric => QUANTITY_METRICS {
     new           -> glean_new_quantity_metric(),
+    test_get_num_recorded_errors -> glean_quantity_test_get_num_recorded_errors,
     destroy       -> glean_destroy_quantity_metric,
 
     set -> glean_quantity_set(value: i64),

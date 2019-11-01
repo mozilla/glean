@@ -46,6 +46,8 @@ val snapshot = Views.loginOpened.testGetValue()
 assertEquals(2, snapshot.size)
 val first = snapshot.single()
 assertEquals("login_opened", first.name)
+// Check that no errors were recorded
+assertEquals(0, Views.loginOpened.testGetNumRecordedErrors(ErrorType.InvalidValue))
 ```
 
 </div>

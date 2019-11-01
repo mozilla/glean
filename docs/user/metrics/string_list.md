@@ -50,6 +50,8 @@ assertTrue(Search.engines.testHasValue())
 // Does it have the expected value?
 // IMPORTANT: It may have been truncated -- see "Limits" below
 assertEquals(listOf("Google", "DuckDuckGo"), Search.engines.testGetValue())
+// Were any of the values too long, and thus an error was recorded?
+assertEquals(1, Search.engines.testGetNumRecordedErrors(ErrorType.InvalidValue))
 ```
 
 </div>

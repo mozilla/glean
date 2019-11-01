@@ -39,6 +39,8 @@ import org.mozilla.yourApplication.GleanMetrics.Gfx
 assertTrue(Gfx.displayWidth.testHasValue())
 // Does the quantity have the expected value?
 assertEquals(6, Gfx.displayWidth.testGetValue())
+// Did it record an error due to a negative value?
+assertEquals(1, Gfx.displayWidth.testGetNumRecordedErrors(ErrorType.InvalidValue))
 ```
 
 ## Limits

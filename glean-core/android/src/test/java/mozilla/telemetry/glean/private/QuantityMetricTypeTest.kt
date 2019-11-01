@@ -12,6 +12,8 @@ package mozilla.telemetry.glean.private
 
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import java.lang.NullPointerException
+import mozilla.telemetry.glean.testing.ErrorType
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -19,7 +21,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.lang.NullPointerException
 
 @RunWith(AndroidJUnit4::class)
 class QuantityMetricTypeTest {
@@ -142,7 +143,6 @@ class QuantityMetricTypeTest {
         assertFalse(quantityMetric.testHasValue("store1"))
 
         // Make sure that the errors have been recorded
-        // TODO(bug 1556963)
-        // assertEquals(1, testGetNumRecordedErrors(quantityMetric, ErrorType.InvalidValue))
+        assertEquals(1, quantityMetric.testGetNumRecordedErrors(ErrorType.InvalidValue))
     }
 }

@@ -49,6 +49,11 @@ uint8_t glean_boolean_test_has_value(uint64_t glean_handle,
 
 void glean_counter_add(uint64_t glean_handle, uint64_t metric_id, int32_t amount);
 
+int32_t glean_counter_test_get_num_recorded_errors(uint64_t glean_handle,
+                                                   uint64_t metric_id,
+                                                   int32_t error_type,
+                                                   FfiStr storage_name);
+
 int32_t glean_counter_test_get_value(uint64_t glean_handle,
                                      uint64_t metric_id,
                                      FfiStr storage_name);
@@ -61,6 +66,11 @@ void glean_custom_distribution_accumulate_samples(uint64_t glean_handle,
                                                   uint64_t metric_id,
                                                   RawInt64Array raw_samples,
                                                   int32_t num_samples);
+
+int32_t glean_custom_distribution_test_get_num_recorded_errors(uint64_t glean_handle,
+                                                               uint64_t metric_id,
+                                                               int32_t error_type,
+                                                               FfiStr storage_name);
 
 char *glean_custom_distribution_test_get_value_as_json_string(uint64_t glean_handle,
                                                               uint64_t metric_id,
@@ -80,6 +90,11 @@ void glean_datetime_set(uint64_t glean_handle,
                         uint32_t second,
                         int64_t nano,
                         int32_t offset_seconds);
+
+int32_t glean_datetime_test_get_num_recorded_errors(uint64_t glean_handle,
+                                                    uint64_t metric_id,
+                                                    int32_t error_type,
+                                                    FfiStr storage_name);
 
 char *glean_datetime_test_get_value_as_string(uint64_t glean_handle,
                                               uint64_t metric_id,
@@ -136,6 +151,11 @@ void glean_event_record(uint64_t glean_handle,
                         RawStringArray extra_values,
                         int32_t extra_len);
 
+int32_t glean_event_test_get_num_recorded_errors(uint64_t glean_handle,
+                                                 uint64_t metric_id,
+                                                 int32_t error_type,
+                                                 FfiStr storage_name);
+
 char *glean_event_test_get_value_as_json_string(uint64_t glean_handle,
                                                 uint64_t metric_id,
                                                 FfiStr storage_name);
@@ -173,6 +193,11 @@ void glean_memory_distribution_accumulate_samples(uint64_t glean_handle,
                                                   uint64_t metric_id,
                                                   RawInt64Array raw_samples,
                                                   int32_t num_samples);
+
+int32_t glean_memory_distribution_test_get_num_recorded_errors(uint64_t glean_handle,
+                                                               uint64_t metric_id,
+                                                               int32_t error_type,
+                                                               FfiStr storage_name);
 
 char *glean_memory_distribution_test_get_value_as_json_string(uint64_t glean_handle,
                                                               uint64_t metric_id,
@@ -320,6 +345,11 @@ char *glean_ping_collect(uint64_t glean_handle, uint64_t ping_type_handle);
 
 void glean_quantity_set(uint64_t glean_handle, uint64_t metric_id, int64_t value);
 
+int32_t glean_quantity_test_get_num_recorded_errors(uint64_t glean_handle,
+                                                    uint64_t metric_id,
+                                                    int32_t error_type,
+                                                    FfiStr storage_name);
+
 int64_t glean_quantity_test_get_value(uint64_t glean_handle,
                                       uint64_t metric_id,
                                       FfiStr storage_name);
@@ -357,6 +387,11 @@ void glean_string_list_set(uint64_t glean_handle,
                            RawStringArray values,
                            int32_t values_len);
 
+int32_t glean_string_list_test_get_num_recorded_errors(uint64_t glean_handle,
+                                                       uint64_t metric_id,
+                                                       int32_t error_type,
+                                                       FfiStr storage_name);
+
 char *glean_string_list_test_get_value_as_json_string(uint64_t glean_handle,
                                                       uint64_t metric_id,
                                                       FfiStr storage_name);
@@ -366,6 +401,11 @@ uint8_t glean_string_list_test_has_value(uint64_t glean_handle,
                                          FfiStr storage_name);
 
 void glean_string_set(uint64_t glean_handle, uint64_t metric_id, FfiStr value);
+
+int32_t glean_string_test_get_num_recorded_errors(uint64_t glean_handle,
+                                                  uint64_t metric_id,
+                                                  int32_t error_type,
+                                                  FfiStr storage_name);
 
 char *glean_string_test_get_value(uint64_t glean_handle, uint64_t metric_id, FfiStr storage_name);
 
@@ -385,6 +425,11 @@ void glean_timespan_set_start(uint64_t glean_handle, uint64_t metric_id, uint64_
 
 void glean_timespan_set_stop(uint64_t glean_handle, uint64_t metric_id, uint64_t stop_time);
 
+int32_t glean_timespan_test_get_num_recorded_errors(uint64_t glean_handle,
+                                                    uint64_t metric_id,
+                                                    int32_t error_type,
+                                                    FfiStr storage_name);
+
 uint64_t glean_timespan_test_get_value(uint64_t glean_handle,
                                        uint64_t metric_id,
                                        FfiStr storage_name);
@@ -400,13 +445,17 @@ void glean_timing_distribution_accumulate_samples(uint64_t glean_handle,
 
 void glean_timing_distribution_cancel(uint64_t metric_id, TimerId timer_id);
 
-TimerId glean_timing_distribution_set_start(uint64_t metric_id,
-                                            uint64_t start_time);
+TimerId glean_timing_distribution_set_start(uint64_t metric_id, uint64_t start_time);
 
 void glean_timing_distribution_set_stop_and_accumulate(uint64_t glean_handle,
                                                        uint64_t metric_id,
                                                        TimerId timer_id,
                                                        uint64_t stop_time);
+
+int32_t glean_timing_distribution_test_get_num_recorded_errors(uint64_t glean_handle,
+                                                               uint64_t metric_id,
+                                                               int32_t error_type,
+                                                               FfiStr storage_name);
 
 char *glean_timing_distribution_test_get_value_as_json_string(uint64_t glean_handle,
                                                               uint64_t metric_id,

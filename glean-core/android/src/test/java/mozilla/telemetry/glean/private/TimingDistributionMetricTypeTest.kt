@@ -7,18 +7,19 @@ package mozilla.telemetry.glean.private
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import java.lang.NullPointerException
 import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.Glean
+import mozilla.telemetry.glean.testing.ErrorType
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.lang.NullPointerException
-import org.mockito.Mockito.spy
 import org.mockito.Mockito.`when`
+import org.mockito.Mockito.spy
 
 @RunWith(AndroidJUnit4::class)
 class TimingDistributionMetricTypeTest {
@@ -217,5 +218,20 @@ class TimingDistributionMetricTypeTest {
         Glean.initialize(context)
 
         metric.testGetValue().sum >= 0
+    }
+
+    @Test
+    fun `Stopping a non-existent timer records an error`() {
+        val metric = TimingDistributionMetricType(
+            disabled = false,
+            category = "telemetry",
+            lifetime = Lifetime.Ping,
+            name = "timing_distribution_samples",
+            sendInPings = listOf("store1"),
+            timeUnit = TimeUnit.Second
+        )
+
+        metric.stopAndAccumulate(-1)
+        assertEquals(1, metric.testGetNumRecordedErrors(ErrorType.InvalidValue))
     }
 }

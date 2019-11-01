@@ -12,6 +12,8 @@ package mozilla.telemetry.glean.private
 
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import java.lang.NullPointerException
+import mozilla.telemetry.glean.testing.ErrorType
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -19,7 +21,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.lang.NullPointerException
 
 @RunWith(AndroidJUnit4::class)
 class StringMetricTypeTest {
@@ -104,5 +105,21 @@ class StringMetricTypeTest {
         // Check that data was properly recorded in the second ping.
         assertTrue(stringMetric.testHasValue("store2"))
         assertEquals("overriddenValue", stringMetric.testGetValue("store2"))
+    }
+
+    @Test
+    fun `Setting a long string records an error`() {
+        // Define a 'stringMetric' string metric, which will be stored in "store1" and "store2"
+        val stringMetric = StringMetricType(
+            disabled = false,
+            category = "telemetry",
+            lifetime = Lifetime.Application,
+            name = "string_metric",
+            sendInPings = listOf("store1", "store2")
+        )
+
+        stringMetric.set("0123456789".repeat(11))
+
+        assertEquals(1, stringMetric.testGetNumRecordedErrors(ErrorType.InvalidValue))
     }
 }
