@@ -42,6 +42,8 @@ assertTrue(Stability.crashCount["native_code_crash"].testHasValue())
 // Do the counters have the expected values?
 assertEquals(1, Stability.crashCount["uncaught_exception"].testGetValue())
 assertEquals(3, Stability.crashCount["native_code_crash"].testGetValue())
+// Did we record any invalid labels?
+assertEquals(1, Stability.crashCount.testGetNumRecordedErrors(ErrorType.InvalidLabel))
 ```
 
 </div>

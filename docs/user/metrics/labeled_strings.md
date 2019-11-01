@@ -38,6 +38,9 @@ import org.mozilla.yourApplication.GleanMetrics.Login
 
 // Was anything recorded?
 assertTrue(Login.errorsByStage["server_auth"].testHasValue())
+
+// Were there any invalid labels?
+assertEquals(1, Login.errorsByStage.testGetNumRecordedErrors(ErrorType.InvalidLabel))
 ```
 
 </div>
