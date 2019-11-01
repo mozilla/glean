@@ -175,15 +175,30 @@ uint8_t glean_is_upload_enabled(uint64_t glean_handle);
  */
 uint64_t glean_labeled_boolean_metric_get(uint64_t handle, FfiStr label);
 
+int32_t glean_labeled_boolean_test_get_num_recorded_errors(uint64_t glean_handle,
+                                                           uint64_t metric_id,
+                                                           int32_t error_type,
+                                                           FfiStr storage_name);
+
 /**
  * Create a new instance of the sub-metric of this labeled metric.
  */
 uint64_t glean_labeled_counter_metric_get(uint64_t handle, FfiStr label);
 
+int32_t glean_labeled_counter_test_get_num_recorded_errors(uint64_t glean_handle,
+                                                           uint64_t metric_id,
+                                                           int32_t error_type,
+                                                           FfiStr storage_name);
+
 /**
  * Create a new instance of the sub-metric of this labeled metric.
  */
 uint64_t glean_labeled_string_metric_get(uint64_t handle, FfiStr label);
+
+int32_t glean_labeled_string_test_get_num_recorded_errors(uint64_t glean_handle,
+                                                          uint64_t metric_id,
+                                                          int32_t error_type,
+                                                          FfiStr storage_name);
 
 void glean_memory_distribution_accumulate(uint64_t glean_handle,
                                           uint64_t metric_id,
