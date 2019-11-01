@@ -37,6 +37,8 @@ import org.mozilla.yourApplication.GleanMetrics.Controls
 assertTrue(Controls.refreshPressed.testHasValue())
 // Does the counter have the expected value?
 assertEquals(6, Controls.refreshPressed.testGetValue())
+// Did the counter record an negative value?
+assertEquals(1, Controls.refreshPressed.testGetNumRecordedErrors(ErrorType.InvalidValue))
 ```
 
 </div>
@@ -73,7 +75,7 @@ XCTAssertEqual(6, try Controls.refreshPressed.testGetValue())
 
 ## Recorded errors
 
-* None.
+* If the counter is incremented by a non-positive value.
 
 ## Reference
 

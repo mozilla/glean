@@ -10,6 +10,7 @@ use crate::{define_metric, handlemap_ext::HandleMapExtension, GLEAN};
 
 define_metric!(TimespanMetric => TIMESPAN_METRICS {
     new           -> glean_new_timespan_metric(time_unit: i32),
+    test_get_num_recorded_errors -> glean_timespan_test_get_num_recorded_errors,
     destroy       -> glean_destroy_timespan_metric,
 });
 

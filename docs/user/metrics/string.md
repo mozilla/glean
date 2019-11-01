@@ -45,6 +45,8 @@ assertTrue(SearchDefault.name.testHasValue())
 // Does the string metric have the expected value?
 // IMPORTANT: It may have been truncated -- see "Limits" below
 assertEquals("wikipedia", SearchDefault.name.testGetValue())
+// Was the string truncated, and an error reported?
+assertEquals(1, SearchDefault.name.testGetNumRecordedErrors(ErrorType.InvalidValue))
 ```
 
 </div>

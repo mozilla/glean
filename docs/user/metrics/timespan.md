@@ -66,6 +66,8 @@ import org.mozilla.yourApplication.GleanMetrics.Auth
 assertTrue(Auth.loginTime.testHasValue())
 // Does the timer have the expected value
 assertTrue(Auth.loginTime.testGetValue() > 0)
+// Was the timing recorded incorrectly?
+assertEquals(1, Auth.loginTime.testGetNumRecordedErrors(ErrorType.InvalidValue))
 ```
 
 </div>

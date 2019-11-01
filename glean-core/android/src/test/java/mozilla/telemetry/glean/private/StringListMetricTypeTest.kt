@@ -12,14 +12,15 @@ package mozilla.telemetry.glean.private
 
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import java.lang.NullPointerException
+import mozilla.telemetry.glean.testing.ErrorType
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.lang.NullPointerException
 
 @RunWith(AndroidJUnit4::class)
 class StringListMetricTypeTest {
@@ -191,5 +192,26 @@ class StringListMetricTypeTest {
         assertEquals("other1", snapshot2[0])
         assertEquals("other2", snapshot2[1])
         assertEquals("other3", snapshot2[2])
+    }
+
+    @Test
+    fun `Long string lists are truncated`() {
+        // Define a 'stringMetric' string metric, which will be stored in "store1" and "store2"
+        val stringListMetric = StringListMetricType(
+            disabled = false,
+            category = "telemetry",
+            lifetime = Lifetime.Application,
+            name = "string_list_metric",
+            sendInPings = listOf("store1")
+        )
+
+        for (x in 0..20) {
+            stringListMetric.add("value$x")
+        }
+
+        val snapshot = stringListMetric.testGetValue("store1")
+        assertEquals(20, snapshot.size)
+
+        assertEquals(1, stringListMetric.testGetNumRecordedErrors(ErrorType.InvalidValue))
     }
 }

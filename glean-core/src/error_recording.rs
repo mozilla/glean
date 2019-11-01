@@ -12,8 +12,10 @@
 //! but are not actually used directly, since the `send_in_pings` value needs to match the pings of the metric that is erroring (plus the "metrics" ping),
 //! not some constant value that we could define in `metrics.yaml`.
 
+use std::convert::TryFrom;
 use std::fmt::Display;
 
+use crate::error::{Error, ErrorKind};
 use crate::metrics::CounterMetric;
 use crate::metrics::{combine_base_identifier_and_label, strip_label};
 use crate::CommonMetricData;
@@ -38,6 +40,19 @@ impl ErrorType {
             ErrorType::InvalidValue => "invalid_value",
             ErrorType::InvalidLabel => "invalid_label",
             ErrorType::InvalidState => "invalid_state",
+        }
+    }
+}
+
+impl TryFrom<i32> for ErrorType {
+    type Error = Error;
+
+    fn try_from(value: i32) -> Result<ErrorType, Self::Error> {
+        match value {
+            0 => Ok(ErrorType::InvalidValue),
+            1 => Ok(ErrorType::InvalidLabel),
+            2 => Ok(ErrorType::InvalidState),
+            e => Err(ErrorKind::Lifetime(e).into()),
         }
     }
 }

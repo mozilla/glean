@@ -70,6 +70,9 @@ assertEquals(11, snapshot.sum)
 
 // Usually you don't know the exact timing values, but how many should have been recorded.
 assertEquals(2L, snapshot.count)
+
+// Was an error recorded?
+assertEquals(1, pages.pageLoad.testGetNumRecordedErrors(ErrorType.InvalidValue))
 ```
 
 </div>

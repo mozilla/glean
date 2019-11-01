@@ -18,6 +18,7 @@ use crate::{
 };
 
 define_metric!(EventMetric => EVENT_METRICS {
+    test_get_num_recorded_errors -> glean_event_test_get_num_recorded_errors,
     destroy       -> glean_destroy_event_metric,
 });
 

@@ -5,17 +5,18 @@
 package mozilla.telemetry.glean.private
 
 import androidx.test.core.app.ApplicationProvider
+import java.lang.NullPointerException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
+import mozilla.telemetry.glean.testing.ErrorType
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import java.lang.NullPointerException
 
 @ObsoleteCoroutinesApi
 @ExperimentalCoroutinesApi
@@ -78,6 +79,8 @@ class MemoryDistributionMetricTypeTest {
         assertEquals(1L shl 40, snapshot.sum)
         // Check that the 1L fell into 1TB bucket
         assertEquals(1L, snapshot.values[(1L shl 40) - 1])
+        // Check that an error was recorded
+        assertEquals(1, metric.testGetNumRecordedErrors(ErrorType.InvalidValue))
     }
 
     @Test

@@ -159,6 +159,13 @@ internal interface LibGleanFFI : Library {
 
     fun glean_counter_test_has_value(glean_handle: Long, metric_id: Long, storage_name: String): Byte
 
+    fun glean_counter_test_get_num_recorded_errors(
+        glean_handle: Long,
+        metric_id: Long,
+        error_type: Int,
+        storage_name: String
+    ): Int
+
     // Quantity
 
     fun glean_new_quantity_metric(
@@ -178,6 +185,13 @@ internal interface LibGleanFFI : Library {
 
     fun glean_quantity_test_has_value(glean_handle: Long, metric_id: Long, storage_name: String): Byte
 
+    fun glean_quantity_test_get_num_recorded_errors(
+        glean_handle: Long,
+        metric_id: Long,
+        error_type: Int,
+        storage_name: String
+    ): Int
+
     // String
 
     fun glean_new_string_metric(
@@ -196,6 +210,13 @@ internal interface LibGleanFFI : Library {
     fun glean_string_test_get_value(glean_handle: Long, metric_id: Long, storage_name: String): Pointer?
 
     fun glean_string_test_has_value(glean_handle: Long, metric_id: Long, storage_name: String): Byte
+
+    fun glean_string_test_get_num_recorded_errors(
+        glean_handle: Long,
+        metric_id: Long,
+        error_type: Int,
+        storage_name: String
+    ): Int
 
     // Datetime
 
@@ -228,6 +249,13 @@ internal interface LibGleanFFI : Library {
 
     fun glean_datetime_test_get_value_as_string(glean_handle: Long, metric_id: Long, storage_name: String): Pointer?
 
+    fun glean_datetime_test_get_num_recorded_errors(
+        glean_handle: Long,
+        metric_id: Long,
+        error_type: Int,
+        storage_name: String
+    ): Int
+
     // String list
 
     fun glean_new_string_list_metric(
@@ -252,6 +280,13 @@ internal interface LibGleanFFI : Library {
         metric_id: Long,
         storage_name: String
     ): Pointer?
+
+    fun glean_string_list_test_get_num_recorded_errors(
+        glean_handle: Long,
+        metric_id: Long,
+        error_type: Int,
+        storage_name: String
+    ): Int
 
     // UUID
 
@@ -298,6 +333,13 @@ internal interface LibGleanFFI : Library {
 
     fun glean_timespan_test_get_value(glean_handle: Long, metric_id: Long, storage_name: String): Long
 
+    fun glean_timespan_test_get_num_recorded_errors(
+        glean_handle: Long,
+        metric_id: Long,
+        error_type: Int,
+        storage_name: String
+    ): Int
+
     // TimingDistribution
 
     fun glean_new_timing_distribution_metric(
@@ -333,6 +375,13 @@ internal interface LibGleanFFI : Library {
         storage_name: String
     ): Pointer?
 
+    fun glean_timing_distribution_test_get_num_recorded_errors(
+        glean_handle: Long,
+        metric_id: Long,
+        error_type: Int,
+        storage_name: String
+    ): Int
+
     // MemoryDistribution
 
     fun glean_new_memory_distribution_metric(
@@ -358,6 +407,13 @@ internal interface LibGleanFFI : Library {
         metric_id: Long,
         storage_name: String
     ): Pointer?
+
+    fun glean_memory_distribution_test_get_num_recorded_errors(
+        glean_handle: Long,
+        metric_id: Long,
+        error_type: Int,
+        storage_name: String
+    ): Int
 
     // CustomDistribution
 
@@ -385,6 +441,13 @@ internal interface LibGleanFFI : Library {
         metric_id: Long,
         storage_name: String
     ): Pointer?
+
+    fun glean_custom_distribution_test_get_num_recorded_errors(
+        glean_handle: Long,
+        metric_id: Long,
+        error_type: Int,
+        storage_name: String
+    ): Int
 
     // Event
 
@@ -415,6 +478,13 @@ internal interface LibGleanFFI : Library {
         handle: Long,
         storage_Name: String
     ): Pointer?
+
+    fun glean_event_test_get_num_recorded_errors(
+        glean_handle: Long,
+        metric_id: Long,
+        error_type: Int,
+        storage_name: String
+    ): Int
 
     // Labeled Counter
 

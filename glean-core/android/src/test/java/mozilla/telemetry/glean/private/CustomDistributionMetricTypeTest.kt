@@ -5,17 +5,18 @@
 package mozilla.telemetry.glean.private
 
 import androidx.test.core.app.ApplicationProvider
+import java.lang.NullPointerException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
+import mozilla.telemetry.glean.testing.ErrorType
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import java.lang.NullPointerException
 
 @ObsoleteCoroutinesApi
 @ExperimentalCoroutinesApi
@@ -172,5 +173,26 @@ class CustomDistributionMetricTypeTest {
         assertEquals(1L, snapshot.values[2])
         // Check that the 3L fell into the third bucket
         assertEquals(1L, snapshot.values[3])
+    }
+
+    @Test
+    fun `Accumulating negative values records an error`() {
+        // Define a custom distribution metric which will be stored in multiple stores
+        val metric = CustomDistributionMetricType(
+            disabled = false,
+            category = "telemetry",
+            lifetime = Lifetime.Ping,
+            name = "custom_distribution_samples",
+            sendInPings = listOf("store1"),
+            rangeMin = 0L,
+            rangeMax = 60000L,
+            bucketCount = 100,
+            histogramType = HistogramType.Exponential
+        )
+
+        // Accumulate a few values
+        metric.accumulateSamples(listOf(-1L).toLongArray())
+
+        assertEquals(1, metric.testGetNumRecordedErrors(ErrorType.InvalidValue))
     }
 }

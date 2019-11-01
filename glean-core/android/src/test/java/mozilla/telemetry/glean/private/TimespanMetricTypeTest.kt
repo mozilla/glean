@@ -8,15 +8,16 @@ package mozilla.telemetry.glean.private
 
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import java.lang.NullPointerException
+import mozilla.telemetry.glean.testing.ErrorType
 import mozilla.telemetry.glean.testing.GleanTestRule
-import org.junit.Test
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
+import org.junit.Test
 import org.junit.runner.RunWith
-import java.lang.NullPointerException
 
 @RunWith(AndroidJUnit4::class)
 class TimespanMetricTypeTest {
@@ -89,8 +90,7 @@ class TimespanMetricTypeTest {
         // Check that data was not recorded.
         assertFalse("The API should not record a counter if metric is cancelled",
             metric.testHasValue())
-        // TODO(bug 1556963)
-        // assertEquals(1, testGetNumRecordedErrors(metric, ErrorType.InvalidValue))
+        assertEquals(1, metric.testGetNumRecordedErrors(ErrorType.InvalidState))
     }
 
     @Test(expected = NullPointerException::class)
@@ -147,8 +147,7 @@ class TimespanMetricTypeTest {
         // Check that data was properly recorded in the second ping.
         assertTrue(metric.testHasValue("store2"))
         assertTrue(metric.testGetValue("store2") >= 0)
-        // TODO(bug 1556963)
-        // assertEquals(1, testGetNumRecordedErrors(metric, ErrorType.InvalidValue))
+        assertEquals(1, metric.testGetNumRecordedErrors(ErrorType.InvalidState))
     }
 
     @Test

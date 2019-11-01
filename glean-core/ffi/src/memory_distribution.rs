@@ -12,6 +12,7 @@ use crate::{
 
 define_metric!(MemoryDistributionMetric => MEMORY_DISTRIBUTION_METRICS {
     new           -> glean_new_memory_distribution_metric(memory_unit: i32),
+    test_get_num_recorded_errors -> glean_memory_distribution_test_get_num_recorded_errors,
     destroy       -> glean_destroy_memory_distribution_metric,
     accumulate    -> glean_memory_distribution_accumulate(sample: u64),
 });

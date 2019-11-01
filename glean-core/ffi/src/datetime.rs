@@ -10,6 +10,7 @@ use crate::{define_metric, handlemap_ext::HandleMapExtension, GLEAN};
 
 define_metric!(DatetimeMetric => DATETIME_METRICS {
     new           -> glean_new_datetime_metric(time_unit: i32),
+    test_get_num_recorded_errors -> glean_datetime_test_get_num_recorded_errors,
     destroy       -> glean_destroy_datetime_metric,
 });
 

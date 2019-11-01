@@ -56,6 +56,9 @@ assertEquals(11, snapshot.sum)
 
 // Usually you don't know the exact memory values, but how many should have been recorded.
 assertEquals(2L, snapshot.count)
+
+// Did this record a negative value?
+assertEquals(1, Memory.heapAllocated.testGetNumRecordedErrors(ErrorType.InvalidValue))
 ```
 
 </div>

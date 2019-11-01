@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v19.1.0...master)
 
+* In Kotlin, metrics that can record errors now have a new testing method,
+  `testGetNumRecordedErrors`.
+
 # v19.1.0 (2019-10-29)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v19.0.0...v19.1.0)

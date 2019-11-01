@@ -13,6 +13,7 @@ use crate::{
 
 define_metric!(StringListMetric => STRING_LIST_METRICS {
     new           -> glean_new_string_list_metric(),
+    test_get_num_recorded_errors -> glean_string_list_test_get_num_recorded_errors,
     destroy       -> glean_destroy_string_list_metric,
 });
 

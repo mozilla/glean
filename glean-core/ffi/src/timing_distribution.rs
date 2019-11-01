@@ -13,6 +13,7 @@ use glean_core::metrics::TimerId;
 
 define_metric!(TimingDistributionMetric => TIMING_DISTRIBUTION_METRICS {
     new           -> glean_new_timing_distribution_metric(time_unit: i32),
+    test_get_num_recorded_errors -> glean_timing_distribution_test_get_num_recorded_errors,
     destroy       -> glean_destroy_timing_distribution_metric,
 });
 

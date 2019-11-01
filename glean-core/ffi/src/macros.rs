@@ -24,6 +24,7 @@ macro_rules! define_infallible_handle_map_deleter {
 /// * `$metric_type` - metric type to use from glean_core, e.g. `CounterMetric`.
 /// * `$metric_map` - name to use for the global name, should be all uppercase, e.g. `COUNTER_METRICS`.
 /// * `$new_fn(...)` - (optional) name of the constructor function, followed by all additional (non-common) arguments.
+/// * `$test_get_num_recorded_errors` - (optional) name of the test_get_num_recorded_errors function
 /// * `$destroy` - name of the destructor function.
 ///
 /// Additional simple functions can be define as a mapping `$op -> $op_fn`:
@@ -35,6 +36,7 @@ macro_rules! define_infallible_handle_map_deleter {
 macro_rules! define_metric {
     ($metric_type:ident => $metric_map:ident {
         $(new -> $new_fn:ident($($new_argname:ident: $new_argtyp:ty),* $(,)*),)?
+        $(test_get_num_recorded_errors -> $test_get_num_recorded_errors_fn:ident,)?
         destroy -> $destroy_fn:ident,
 
         $(
@@ -75,6 +77,29 @@ macro_rules! define_metric {
                     disabled: disabled != 0,
                     ..Default::default()
                 }, $($new_argname),*))
+            })
+        }
+        )?
+
+        $(
+        #[no_mangle]
+        pub extern "C" fn $test_get_num_recorded_errors_fn(
+            glean_handle: u64,
+            metric_id: u64,
+            error_type: i32,
+            storage_name: FfiStr
+        ) -> i32 {
+            crate::HandleMapExtension::call_infallible(&*crate::GLEAN, glean_handle, |glean| {
+                crate::HandleMapExtension::call_infallible(&*$metric_map, metric_id, |metric| {
+                    let error_type = std::convert::TryFrom::try_from(error_type).unwrap();
+                    let storage_name = crate::FallibleToString::to_string_fallible(&storage_name).unwrap();
+                    glean_core::test_get_num_recorded_errors(
+                        glean,
+                        glean_core::metrics::MetricType::meta(metric),
+                        error_type,
+                        Some(&storage_name)
+                    ).unwrap_or(0)
+                })
             })
         }
         )?

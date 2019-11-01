@@ -57,6 +57,8 @@ assertTrue(Install.firstRun.testHasValue())
 // NOTE: Datetimes always include a timezone offset from UTC, hence the
 // "-05:00" suffix.
 assertEquals("2019-03-25-05:00", Install.firstRun.testGetValueAsString())
+// Was the value invalid?
+assertEquals(1, Install.firstRun.testGetNumRecordedErrors(ErrorType.InvalidValue))
 ```
 
 </div>
