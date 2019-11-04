@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		BF1BF3FF23337E6F0036F4CC /* Glean.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF1BF3FE23337E6F0036F4CC /* Glean.framework */; };
 		BF6F41CC23434A4C00E222A8 /* SampleMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF6F41CB23434A4C00E222A8 /* SampleMetrics.swift */; };
+		BF90C913236B43A10045BD0E /* Swifter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF90C911236B42F00045BD0E /* Swifter.framework */; };
 		BFD3AB2E224D475E00AD9255 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFD3AB2D224D475E00AD9255 /* AppDelegate.swift */; };
 		BFD3AB30224D475E00AD9255 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFD3AB2F224D475E00AD9255 /* ViewController.swift */; };
 		BFD3AB33224D475E00AD9255 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BFD3AB31224D475E00AD9255 /* Main.storyboard */; };
@@ -39,6 +40,7 @@
 		BF1BF3FE23337E6F0036F4CC /* Glean.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Glean.framework; path = Carthage/Build/iOS/Glean.framework; sourceTree = "<group>"; };
 		BF6F41C4234346A000E222A8 /* metrics.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = metrics.yaml; sourceTree = "<group>"; };
 		BF6F41CB23434A4C00E222A8 /* SampleMetrics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SampleMetrics.swift; sourceTree = "<group>"; };
+		BF90C911236B42F00045BD0E /* Swifter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Swifter.framework; path = Carthage/Build/iOS/Swifter.framework; sourceTree = "<group>"; };
 		BFD3AB2A224D475E00AD9255 /* glean-sample-app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "glean-sample-app.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BFD3AB2D224D475E00AD9255 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		BFD3AB2F224D475E00AD9255 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -78,6 +80,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BF90C913236B43A10045BD0E /* Swifter.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -153,6 +156,7 @@
 		BFD3AB68224D4F9500AD9255 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				BF90C911236B42F00045BD0E /* Swifter.framework */,
 				BF1BF3FE23337E6F0036F4CC /* Glean.framework */,
 			);
 			name = Frameworks;
@@ -165,7 +169,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = BFD3AB52224D475E00AD9255 /* Build configuration list for PBXNativeTarget "glean-sample-app" */;
 			buildPhases = (
-				BFD3AB63224D4D5100AD9255 /* Run Script */,
+				BFD3AB63224D4D5100AD9255 /* Copy Carthage frameworks */,
 				BF6F41C6234346AA00E222A8 /* ShellScript */,
 				BFD3AB26224D475E00AD9255 /* Sources */,
 				BFD3AB27224D475E00AD9255 /* Frameworks */,
@@ -202,6 +206,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = BFD3AB58224D475E00AD9255 /* Build configuration list for PBXNativeTarget "glean-sample-appUITests" */;
 			buildPhases = (
+				BF90C914236B43A60045BD0E /* Copy Carthage frameworks */,
 				BFD3AB45224D475E00AD9255 /* Sources */,
 				BFD3AB46224D475E00AD9255 /* Frameworks */,
 				BFD3AB47224D475E00AD9255 /* Resources */,
@@ -308,7 +313,27 @@
 			shellPath = /bin/sh;
 			shellScript = "bash $PWD/sdk_generator.sh\n";
 		};
-		BFD3AB63224D4D5100AD9255 /* Run Script */ = {
+		BF90C914236B43A60045BD0E /* Copy Carthage frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Carthage/Build/iOS/Swifter.framework",
+			);
+			name = "Copy Carthage frameworks";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Swifter.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/carthage copy-frameworks\n";
+		};
+		BFD3AB63224D4D5100AD9255 /* Copy Carthage frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -318,7 +343,7 @@
 			inputPaths = (
 				"$(SRCROOT)/Carthage/Build/iOS/Glean.framework",
 			);
-			name = "Run Script";
+			name = "Copy Carthage frameworks";
 			outputFileListPaths = (
 			);
 			outputPaths = (
@@ -608,6 +633,10 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = G9EAK7RA89;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = "glean-sample-appUITests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -631,6 +660,10 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = G9EAK7RA89;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = "glean-sample-appUITests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
