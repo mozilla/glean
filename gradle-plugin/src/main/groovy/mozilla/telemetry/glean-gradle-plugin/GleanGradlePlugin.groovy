@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import org.apache.tools.ant.taskdefs.condition.Os
-import groovy.json.JsonOutput
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -12,11 +11,16 @@ import org.gradle.api.artifacts.transform.ArtifactTransform
 import org.gradle.api.internal.artifacts.ArtifactAttributes
 import org.gradle.api.tasks.Exec
 import org.gradle.api.tasks.TaskProvider
-import org.gradle.platform.base.Variant
+
+// The suppression "GrPackage" is needed below since Android Studio wants this file to have
+// a package name, but adding one causes the build to fail with:
+//    "'.../GleanGradlePlugin.groovy' should not contain a package statement"
+// due to how this file is included directly in the local build.
 
 /*
  * A helper class to extract metrics.yaml files from AAR files.
  */
+@SuppressWarnings("GrPackage")
 class GleanMetricsYamlTransform extends ArtifactTransform {
     List<File> transform(File file) {
         def f = new File(file, "metrics.yaml")
@@ -27,6 +31,7 @@ class GleanMetricsYamlTransform extends ArtifactTransform {
     }
 }
 
+@SuppressWarnings("GrPackage")
 class GleanPlugin implements Plugin<Project> {
     // The version of glean_parser to install from PyPI.
     private String GLEAN_PARSER_VERSION = "1.9.5"
@@ -68,7 +73,7 @@ subprocess.check_call([
 ] + sys.argv[3:])
 """
 
-    File getPythonCommand(File condaDir) {
+    static File getPythonCommand(File condaDir) {
         // Note that the command line is OS dependant: on linux/mac is Miniconda3/bin/python.
         if (Os.isFamily(Os.FAMILY_WINDOWS)) {
             return new File(condaDir, "python")
