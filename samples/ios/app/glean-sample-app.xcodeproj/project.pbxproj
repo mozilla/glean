@@ -16,7 +16,7 @@
 		BFD3AB35224D475E00AD9255 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BFD3AB34224D475E00AD9255 /* Assets.xcassets */; };
 		BFD3AB38224D475E00AD9255 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BFD3AB36224D475E00AD9255 /* LaunchScreen.storyboard */; };
 		BFD3AB43224D475E00AD9255 /* glean_sample_appTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFD3AB42224D475E00AD9255 /* glean_sample_appTests.swift */; };
-		BFD3AB4E224D475E00AD9255 /* glean_sample_appUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFD3AB4D224D475E00AD9255 /* glean_sample_appUITests.swift */; };
+		BFD3AB4E224D475E00AD9255 /* BaselinePingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFD3AB4D224D475E00AD9255 /* BaselinePingTest.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,7 +52,7 @@
 		BFD3AB42224D475E00AD9255 /* glean_sample_appTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = glean_sample_appTests.swift; sourceTree = "<group>"; };
 		BFD3AB44224D475E00AD9255 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BFD3AB49224D475E00AD9255 /* glean-sample-appUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "glean-sample-appUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		BFD3AB4D224D475E00AD9255 /* glean_sample_appUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = glean_sample_appUITests.swift; sourceTree = "<group>"; };
+		BFD3AB4D224D475E00AD9255 /* BaselinePingTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaselinePingTest.swift; sourceTree = "<group>"; };
 		BFD3AB4F224D475E00AD9255 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BFD3AB5B224D490000AD9255 /* debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = debug.xcconfig; sourceTree = "<group>"; };
 		BFD3AB5C224D490000AD9255 /* base.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = base.xcconfig; sourceTree = "<group>"; };
@@ -147,7 +147,7 @@
 		BFD3AB4C224D475E00AD9255 /* glean-sample-appUITests */ = {
 			isa = PBXGroup;
 			children = (
-				BFD3AB4D224D475E00AD9255 /* glean_sample_appUITests.swift */,
+				BFD3AB4D224D475E00AD9255 /* BaselinePingTest.swift */,
 				BFD3AB4F224D475E00AD9255 /* Info.plist */,
 			);
 			path = "glean-sample-appUITests";
@@ -378,7 +378,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BFD3AB4E224D475E00AD9255 /* glean_sample_appUITests.swift in Sources */,
+				BFD3AB4E224D475E00AD9255 /* BaselinePingTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
