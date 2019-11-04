@@ -126,7 +126,7 @@ class TimingDistributionTypeTests: XCTestCase {
             timeUnit: .millisecond
         )
 
-        metric.stopAndAccumulate(-1)
+        metric.stopAndAccumulate(0)
 
         XCTAssertEqual(1, metric.testGetNumRecordedErrors(.invalidValue))
     }
