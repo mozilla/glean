@@ -29,7 +29,7 @@ use crate::*;
 /// * `destroy_name` - Function name to destroy the labeled metric.
 /// * `get_name` - Function name to get a new instance of the underlying metric.
 macro_rules! impl_labeled_metric {
-    ($metric:ty, $global:ident, $metric_global:ident, $new_name:ident, $destroy_name:ident, $get_name:ident) => {
+    ($metric:ty, $global:ident, $metric_global:ident, $new_name:ident, $destroy_name:ident, $get_name:ident, $test_get_num_recorded_errors:ident) => {
         lazy_static! {
             static ref $global: ConcurrentHandleMap<LabeledMetric<$metric>> =
                 ConcurrentHandleMap::new();
@@ -82,6 +82,29 @@ macro_rules! impl_labeled_metric {
                 $metric_global.insert_with_log(|| Ok(metric))
             })
         }
+
+        #[no_mangle]
+        pub extern "C" fn $test_get_num_recorded_errors(
+            glean_handle: u64,
+            metric_id: u64,
+            error_type: i32,
+            storage_name: FfiStr,
+        ) -> i32 {
+            crate::HandleMapExtension::call_infallible(&*crate::GLEAN, glean_handle, |glean| {
+                crate::HandleMapExtension::call_infallible(&*$global, metric_id, |metric| {
+                    let error_type = std::convert::TryFrom::try_from(error_type).unwrap();
+                    let storage_name =
+                        crate::FallibleToString::to_string_fallible(&storage_name).unwrap();
+                    glean_core::test_get_num_recorded_errors(
+                        glean,
+                        &metric.get_submetric().meta(),
+                        error_type,
+                        Some(&storage_name),
+                    )
+                    .unwrap_or(0)
+                })
+            })
+        }
     };
 }
 
@@ -92,7 +115,8 @@ impl_labeled_metric!(
     COUNTER_METRICS,
     glean_new_labeled_counter_metric,
     glean_destroy_labeled_counter_metric,
-    glean_labeled_counter_metric_get
+    glean_labeled_counter_metric_get,
+    glean_labeled_counter_test_get_num_recorded_errors
 );
 
 // Create the required FFI functions for LabeledMetric<BooleanMetric>
@@ -102,7 +126,8 @@ impl_labeled_metric!(
     BOOLEAN_METRICS,
     glean_new_labeled_boolean_metric,
     glean_destroy_labeled_boolean_metric,
-    glean_labeled_boolean_metric_get
+    glean_labeled_boolean_metric_get,
+    glean_labeled_boolean_test_get_num_recorded_errors
 );
 
 // Create the required FFI functions for LabeledMetric<StringMetric>
@@ -112,5 +137,6 @@ impl_labeled_metric!(
     STRING_METRICS,
     glean_new_labeled_string_metric,
     glean_destroy_labeled_string_metric,
-    glean_labeled_string_metric_get
+    glean_labeled_string_metric_get,
+    glean_labeled_string_test_get_num_recorded_errors
 );

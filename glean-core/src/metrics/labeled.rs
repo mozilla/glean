@@ -125,6 +125,14 @@ where
             None => self.new_metric_with_dynamic_label(label.to_string()),
         }
     }
+
+    /// Get the template submetric.
+    ///
+    /// The template submetric is the actual metric that is cloned and modified
+    /// to record for a specific label.
+    pub fn get_submetric(&self) -> &T {
+        &self.submetric
+    }
 }
 
 /// Combines a metric's base identifier and label

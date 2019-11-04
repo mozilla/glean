@@ -501,6 +501,13 @@ internal interface LibGleanFFI : Library {
 
     fun glean_labeled_counter_metric_get(handle: Long, label: String): Long
 
+    fun glean_labeled_counter_test_get_num_recorded_errors(
+        glean_handle: Long,
+        metric_id: Long,
+        error_type: Int,
+        storage_name: String
+    ): Int
+
     // Labeled Boolean
 
     fun glean_new_labeled_boolean_metric(
@@ -516,6 +523,13 @@ internal interface LibGleanFFI : Library {
 
     fun glean_labeled_boolean_metric_get(handle: Long, label: String): Long
 
+    fun glean_labeled_boolean_test_get_num_recorded_errors(
+        glean_handle: Long,
+        metric_id: Long,
+        error_type: Int,
+        storage_name: String
+    ): Int
+
     // Labeled string
 
     fun glean_new_labeled_string_metric(
@@ -530,6 +544,13 @@ internal interface LibGleanFFI : Library {
     ): Long
 
     fun glean_labeled_string_metric_get(handle: Long, label: String): Long
+
+    fun glean_labeled_string_test_get_num_recorded_errors(
+        glean_handle: Long,
+        metric_id: Long,
+        error_type: Int,
+        storage_name: String
+    ): Int
 
     // Misc
 

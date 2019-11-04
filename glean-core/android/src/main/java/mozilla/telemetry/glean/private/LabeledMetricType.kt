@@ -4,10 +4,13 @@
 
 package mozilla.telemetry.glean.private
 
+import androidx.annotation.VisibleForTesting
 import com.sun.jna.StringArray
-
+import mozilla.telemetry.glean.Dispatchers
+import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.toByte
+import mozilla.telemetry.glean.testing.ErrorType
 
 /**
  * This implements the developer facing API for labeled metrics.
@@ -113,5 +116,41 @@ class LabeledMetricType<T>(
         }
 
         return this[actualLabel]
+    }
+
+    /**
+     * Returns the number of errors recorded for the given metric.
+     *
+     * @param errorType The type of the error recorded.
+     * @param pingName represents the name of the ping to retrieve the metric for.
+     *                 Defaults to the first value in `sendInPings`.
+     * @return the number of errors recorded for the metric.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    @JvmOverloads
+    fun testGetNumRecordedErrors(errorType: ErrorType, pingName: String = sendInPings.first()): Int {
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        Dispatchers.API.assertInTestingMode()
+
+        return when (subMetric) {
+            is CounterMetricType -> {
+                LibGleanFFI.INSTANCE.glean_labeled_counter_test_get_num_recorded_errors(
+                    Glean.handle, this.handle, errorType.ordinal, pingName
+                )
+            }
+            is BooleanMetricType -> {
+                LibGleanFFI.INSTANCE.glean_labeled_boolean_test_get_num_recorded_errors(
+                    Glean.handle, this.handle, errorType.ordinal, pingName
+                )
+            }
+            is StringMetricType -> {
+                LibGleanFFI.INSTANCE.glean_labeled_string_test_get_num_recorded_errors(
+                    Glean.handle, this.handle, errorType.ordinal, pingName
+                )
+            }
+            else -> throw IllegalStateException(
+                "Can not create a labeled version of this metric type"
+            )
+        }
     }
 }

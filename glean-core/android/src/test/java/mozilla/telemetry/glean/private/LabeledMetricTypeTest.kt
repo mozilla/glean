@@ -11,6 +11,7 @@ import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.collectAndCheckPingSchema
 import mozilla.telemetry.glean.GleanMetrics.Pings
+import mozilla.telemetry.glean.testing.ErrorType
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -235,7 +236,7 @@ class LabeledMetricTypeTest {
     }
 
     @Test
-    fun `Ensure invalid labels go to __other__`() {
+    fun `Ensure invalid labels on labeled counter go to __other__`() {
         val counterMetric = CounterMetricType(
             disabled = false,
             category = "telemetry",
@@ -258,17 +259,87 @@ class LabeledMetricTypeTest {
         labeledCounterMetric["with/slash"].add(1)
         labeledCounterMetric["this_string_has_more_than_thirty_characters"].add(1)
 
-        // TODO: 1551975
-        /*assertEquals(*/
-            /*4,*/
-            /*ErrorRecording.testGetNumRecordedErrors(*/
-                /*labeledCounterMetric,*/
-                /*ErrorRecording.ErrorType.InvalidValue*/
-            /*)*/
-        /*)*/
+        assertEquals(
+            4,
+            labeledCounterMetric.testGetNumRecordedErrors(
+                ErrorType.InvalidLabel
+            )
+        )
         assertEquals(
             4,
             labeledCounterMetric["__other__"].testGetValue()
+        )
+    }
+
+    @Test
+    fun `Ensure invalid labels on labeled boolean go to __other__`() {
+        val booleanMetric = BooleanMetricType(
+            disabled = false,
+            category = "telemetry",
+            lifetime = Lifetime.Application,
+            name = "labeled_boolean_metric",
+            sendInPings = listOf("metrics")
+        )
+
+        val labeledBooleanMetric = LabeledMetricType<BooleanMetricType>(
+            disabled = false,
+            category = "telemetry",
+            lifetime = Lifetime.Application,
+            name = "labeled_boolean_metric",
+            sendInPings = listOf("metrics"),
+            subMetric = booleanMetric
+        )
+
+        labeledBooleanMetric["notSnakeCase"].set(true)
+        labeledBooleanMetric[""].set(true)
+        labeledBooleanMetric["with/slash"].set(true)
+        labeledBooleanMetric["this_string_has_more_than_thirty_characters"].set(true)
+
+        assertEquals(
+            4,
+            labeledBooleanMetric.testGetNumRecordedErrors(
+                ErrorType.InvalidLabel
+            )
+        )
+        assertEquals(
+            true,
+            labeledBooleanMetric["__other__"].testGetValue()
+        )
+    }
+
+    @Test
+    fun `Ensure invalid labels on labeled string go to __other__`() {
+        val stringMetric = StringMetricType(
+            disabled = false,
+            category = "telemetry",
+            lifetime = Lifetime.Application,
+            name = "labeled_string_metric",
+            sendInPings = listOf("metrics")
+        )
+
+        val labeledStringMetric = LabeledMetricType<StringMetricType>(
+            disabled = false,
+            category = "telemetry",
+            lifetime = Lifetime.Application,
+            name = "labeled_string_metric",
+            sendInPings = listOf("metrics"),
+            subMetric = stringMetric
+        )
+
+        labeledStringMetric["notSnakeCase"].set("foo")
+        labeledStringMetric[""].set("foo")
+        labeledStringMetric["with/slash"].set("foo")
+        labeledStringMetric["this_string_has_more_than_thirty_characters"].set("foo")
+
+        assertEquals(
+            4,
+            labeledStringMetric.testGetNumRecordedErrors(
+                ErrorType.InvalidLabel
+            )
+        )
+        assertEquals(
+            "foo",
+            labeledStringMetric["__other__"].testGetValue()
         )
     }
 
@@ -325,7 +396,7 @@ class LabeledMetricTypeTest {
     }
 
     @Test(expected = IllegalStateException::class)
-    fun `Test that we labeled events are an exception`() {
+    fun `Test that labeled events are an exception`() {
         val eventMetric = EventMetricType<NoExtraKeys>(
             disabled = false,
             category = "telemetry",
