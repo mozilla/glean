@@ -7,6 +7,19 @@ repository = "https://github.com/mozilla/glean"
 readme = "README.md"
 license = "MPL-2.0"
 edition = "2018"
+keywords = ["telemetry"]
+include = [
+  "README.md",
+  "LICENSE",
+  "src/**/*",
+  "examples/**/*",
+  "tests/**/*",
+  "Cargo.toml"
+]
+
+[badges]
+circle-ci = { repository = "mozilla/glean", branch = "master" }
+maintenance = { status = "actively-developed" }
 
 [dependencies]
 serde = { version = "1.0.102", features = ["derive"] }
