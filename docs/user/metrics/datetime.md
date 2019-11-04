@@ -81,9 +81,11 @@ There are test APIs available too:
 @testable import Glean
 
 // Was anything recorded?
-XCTAssert(Controls.refreshPressed.testHasValue())
-// Does the counter have the expected value?
-XCTAssertEqual(6, try Controls.refreshPressed.testGetValue())
+XCTAssert(Install.firstRun.testHasValue())
+// Does the datetime have the expected value?
+XCTAssertEqual(6, try Install.firstRun.testGetValue())
+// Was the value invalid?
+XCTAssertEqual(1, Install.firstRun.getNumRecordedErrors(.invalidValue))
 ```
 
 </div>
@@ -100,7 +102,7 @@ XCTAssertEqual(6, try Controls.refreshPressed.testGetValue())
 
 ## Recorded errors
 
-* None.
+* `invalid_value`: Setting the date time to an invalid value.
 
 ## Reference
 

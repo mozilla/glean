@@ -70,6 +70,8 @@ XCTAssert(SearchDefault.name.testHasValue())
 // Does the string metric have the expected value?
 // IMPORTANT: It may have been truncated -- see "Limits" below
 XCTAssertEqual("wikipedia", try SearchDefault.name.testGetValue())
+// Was the string truncated, and an error reported?
+XCTAssertEqual(1, SearchDefault.name.testGetNumRecordedErrors(.invalidValue))
 ```
 
 </div>

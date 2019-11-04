@@ -291,4 +291,18 @@ class EventMetricTypeTests: XCTestCase {
         XCTAssertEqual("pre-init", getExtraValue(from: events2![0], for: "some_extra"))
         XCTAssertEqual("post-init", getExtraValue(from: events2![1], for: "some_extra"))
     }
+
+    func testEventLongExtraRecordsError() {
+        let metric = EventMetricType<TestNameKeys>(
+            category: "ui",
+            name: "click",
+            sendInPings: ["store1", "store2"],
+            lifetime: .ping,
+            disabled: false,
+            allowedExtraKeys: ["test_name"]
+        )
+
+        metric.record(extra: [.testName: String(repeating: "0123456789", count: 11)])
+        XCTAssertEqual(1, metric.testGetNumRecordedErrors(.invalidValue))
+    }
 }

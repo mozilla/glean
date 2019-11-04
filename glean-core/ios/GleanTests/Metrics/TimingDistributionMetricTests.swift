@@ -115,4 +115,19 @@ class TimingDistributionTypeTests: XCTestCase {
         // Check that nothing was recorded.
         XCTAssertFalse(metric.testHasValue(), "TimingDistributions must not be recorded if canceled")
     }
+
+    func testStoppingNonexistentTimerRecordsAnError() {
+        let metric = TimingDistributionMetricType(
+            category: "telemetry",
+            name: "timing_distribution",
+            sendInPings: ["store1"],
+            lifetime: .ping,
+            disabled: false,
+            timeUnit: .millisecond
+        )
+
+        metric.stopAndAccumulate(-1)
+
+        XCTAssertEquals(1, metric.testGetNumRecordedErrors(.invalidValue))
+    }
 }

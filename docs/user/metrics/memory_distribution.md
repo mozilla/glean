@@ -90,6 +90,9 @@ XCTAssertEqual(11, snapshot.sum)
 
 // Usually you don't know the exact memory values, but how many should have been recorded.
 XCTAssertEqual(2, snapshot.count)
+
+// Did this record a negative value?
+XCTAssertEqual(1, Memory.heapAllocated.testGetNumRecordedErrors(.invalidValue))
 ```
 
 </div>

@@ -70,7 +70,7 @@ Search.engines.set(engines)
 
 There are test APIs available too:
 
-```Kotlin
+```Swift
 @testable import Glean
 
 // Was anything recorded?
@@ -78,6 +78,8 @@ XCTAssert(Search.engines.testHasValue())
 // Does it have the expected value?
 // IMPORTANT: It may have been truncated -- see "Limits" below
 XCTAssertEqual(["Google", "DuckDuckGo"], try Search.engines.testGetValue())
+// Were any of the values too long, and thus an error was recorded?
+XCTAssertEqual(1, Search.engines.testGetNumRecordedErrors(.invalidValue))
 ```
 
 </div>

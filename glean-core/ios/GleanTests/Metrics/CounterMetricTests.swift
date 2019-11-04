@@ -108,5 +108,6 @@ class CounterMetricTypeTests: XCTestCase {
         // Check that count was NOT incremented.
         XCTAssert(counterMetric.testHasValue("store1"))
         XCTAssertEqual(1, try counterMetric.testGetValue("store1"))
+        XCTAssertEqual(1, counterMetric.testGetNumRecordedErrors(.invalidValue))
     }
 }

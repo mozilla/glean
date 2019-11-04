@@ -63,6 +63,8 @@ class MemoryDistributionTypeTests: XCTestCase {
         XCTAssertEqual(1 << 40, snapshot.sum)
         // Check that the 1L fell into the first value bucket
         XCTAssertEqual(1, snapshot.values[(1 << 40) - 1])
+        // Check that an error was recorded
+        XCTAssertEqual(1, metric.testGetNumRecordedErrors(.invalidValue))
     }
 
     func testMemoryDistributionMustNotRecordIfDisabled() {

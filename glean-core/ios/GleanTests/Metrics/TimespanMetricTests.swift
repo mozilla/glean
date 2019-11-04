@@ -174,4 +174,21 @@ class TimespanMetricTypeTests: XCTestCase {
 
         XCTAssertNotEqual(timespanNanos, try metric.testGetValue())
     }
+
+    func testTimespanRecordsAnErrorIfStartedTwice() {
+        let metric = TimespanMetricType(
+            category: "telemetry",
+            name: "timespan_metric",
+            sendInPings: ["store1", "store2"],
+            lifetime: .application,
+            disabled: false,
+            timeUnit: .nanosecond
+        )
+
+        metric.start()
+        metric.start()
+        metric.stop()
+
+        XCTAssertEqual(1, metric.testGetNumRecordedErrors(.invalidState))
+    }
 }

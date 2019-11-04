@@ -111,6 +111,9 @@ XCTAssertEqual(11, snapshot.sum)
 
 // Usually you don't know the exact timing values, but how many should have been recorded.
 XCTAssertEqual(2, snapshot.count)
+
+// Was an error recorded?
+XCTAssertEqual(1, pages.pageLoad.testGetNumRecordedErrors(.invalidValue))
 ```
 
 </div>

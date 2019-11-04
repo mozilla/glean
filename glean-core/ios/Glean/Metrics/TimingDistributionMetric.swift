@@ -149,4 +149,25 @@ public class TimingDistributionMetricType {
 
         return DistributionData(fromJson: json)!
     }
+
+    /// Returns the number of errors recorded for the given metric.
+    ///
+    /// - parameters:
+    ///     * errorType: The type of error recorded.
+    ///     * pingName: represents the name of the ping to retrieve the metric for.
+    ///                 Defaults to the first value in `sendInPings`.
+    ///
+    /// - returns: The number of errors recorded for the metric for the given error type.
+    func testGetNumRecordedErrors(_ errorType: ErrorType, pingName: String? = nil) -> Int32 {
+        Dispatchers.shared.assertInTestingMode()
+
+        let pingName = pingName ?? self.sendInPings[0]
+
+        return glean_timing_distribution_test_get_num_recorded_errors(
+            Glean.shared.handle,
+            self.handle,
+            errorType.rawValue,
+            pingName
+        )
+    }
 }

@@ -102,6 +102,8 @@ There are test APIs available too:
 XCTAssert(Auth.loginTime.testHasValue())
 // Does the timer have the expected value
 XCTAssert(try Auth.loginTime.testGetValue() > 0)
+// Was the timing recorded incorrectly?
+XCTAssertEqual(1, Auth.loginTime.testGetNumRecordedErrors(.invalidValue))
 ```
 
 </div>
