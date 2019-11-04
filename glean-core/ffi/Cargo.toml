@@ -7,6 +7,21 @@ repository = "https://github.com/mozilla/glean"
 readme = "README.md"
 license = "MPL-2.0"
 edition = "2018"
+keywords = ["telemetry"]
+include = [
+  "README.md",
+  "LICENSE",
+  "src/**/*",
+  "examples/**/*",
+  "tests/**/*",
+  "Cargo.toml",
+  "cbindgen.toml",
+  "glean.h"
+]
+
+[badges]
+circle-ci = { repository = "mozilla/glean", branch = "master" }
+maintenance = { status = "actively-developed" }
 
 [lib]
 name = "glean_ffi"
@@ -20,6 +35,7 @@ uuid = { version = "0.8.1", features = ["v4"] }
 
 [dependencies.glean-core]
 path = ".."
+version = "20.0.0-alpha.0"
 
 [target.'cfg(target_os = "android")'.dependencies]
 android_logger = { version = "0.8.5", default-features = false }

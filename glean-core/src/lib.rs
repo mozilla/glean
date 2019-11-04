@@ -82,13 +82,13 @@ pub struct Configuration {
 ///     max_events: None,
 /// };
 /// let mut glean = Glean::new(cfg).unwrap();
-/// let ping = PingType::new("baseline", true);
+/// let ping = PingType::new("sample", true);
 /// glean.register_ping_type(&ping);
 ///
 /// let call_counter: CounterMetric = CounterMetric::new(CommonMetricData {
 ///     name: "calls".into(),
 ///     category: "local".into(),
-///     send_in_pings: vec!["baseline".into()],
+///     send_in_pings: vec!["sample".into()],
 ///     ..Default::default()
 /// });
 ///
