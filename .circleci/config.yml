@@ -194,8 +194,8 @@ jobs:
               chmod +x codecov.sh
               zip -0 ccov.zip `find . \( -name "glean*.gc*" \) -print`
               ./grcov ccov.zip -s . -t lcov --llvm --branch --ignore-not-existing --ignore "/*" --ignore "glean-core/ffi/*" -o lcov.info
-              CODECOV_CMD="./codecov.sh -f lcov.info"
-              $CODECOV_CMD || (sleep 5 && $CODECOV_CMD) || (sleep 5 && $CODECOV_CMD)
+              ./codecov.sh -Z -f lcov.info || echo 'Codecov upload failed'
+
   iOS build and test:
     macos:
       xcode: "11.1.0"
@@ -225,9 +225,9 @@ jobs:
       - run:
           name: Run XCode build, tests and generate documentation
           command: |
-              bash bin/run-ios-build.sh
-              bash bin/run-ios-tests.sh
-              bash bin/build-swift-docs.sh
+            bash bin/run-ios-build.sh
+            bash bin/run-ios-tests.sh
+            bash bin/build-swift-docs.sh
       - store_artifacts:
           path: raw_xcodebuild.log
           destination: log
@@ -242,7 +242,7 @@ jobs:
           command: |
               curl -L https://codecov.io/bash > codecov.sh
               chmod +x codecov.sh
-              ./codecov.sh -J '^Glean$' -X gcov -X coveragepy
+              ./codecov.sh -Z -J '^Glean$' -X gcov -X coveragepy || echo 'Codecov upload failed'
 
   Lint Android with ktlint and detekt:
     docker:
@@ -290,10 +290,9 @@ jobs:
       - run:
           name: Upload Kotlin code coverage
           command: |
-              curl -L https://codecov.io/bash > codecov.sh;
-              chmod +x codecov.sh;
-              CODECOV_CMD="./codecov.sh -f glean-core/android/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml"
-              $CODECOV_CMD || (sleep 5 && $CODECOV_CMD) || (sleep 5 && $CODECOV_CMD)
+              curl -L https://codecov.io/bash > codecov.sh
+              chmod +x codecov.sh
+              ./codecov.sh -Z -f glean-core/android/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml || echo 'Codecov upload failed'
 
   macOS release build:
     macos:
@@ -508,6 +507,7 @@ workflows:
   ci:
     jobs:
       - Rust tests - stable
+      - Rust code coverage
       # FIXME: Disabled due to failing to often, bug 1574424
       #- Rust tests - beta
       - Rust tests - minimum version
@@ -527,9 +527,6 @@ workflows:
           filters:
             branches:
               only: master
-  coverage:
-    jobs:
-      - Rust code coverage
 
   release:
     jobs:
