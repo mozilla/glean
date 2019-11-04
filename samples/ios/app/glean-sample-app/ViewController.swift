@@ -5,13 +5,12 @@
 import Glean
 import UIKit
 
-typealias SampleMetrics = GleanMetrics.SampleMetrics
-
 class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
 
-        SampleMetrics.test.add(1)
+        Test.isStarted.set(true)
+
+        Test.timespan.stop()
     }
 }

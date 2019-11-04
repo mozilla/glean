@@ -5,6 +5,11 @@
 import Glean
 import UIKit
 
+typealias Basic = GleanMetrics.Basic
+typealias Custom = GleanMetrics.Custom
+typealias Test = GleanMetrics.Test
+typealias Pings = GleanMetrics.Pings
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
@@ -12,6 +17,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // swiftlint:disable line_length
     func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         let glean = Glean.shared
+
+        glean.registerPings(Pings.shared)
         glean.setUploadEnabled(true)
 
         if ProcessInfo.processInfo.arguments.contains("USE_MOCK_SERVER") {
@@ -23,6 +30,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             print("using default config for Glean")
             glean.initialize()
         }
+
+        Test.timespan.start()
+
+        Custom.counter.add()
+
+        // Set a sample value for a metric.
+        Basic.os.set("iOS")
 
         return true
     }
