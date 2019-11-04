@@ -3,6 +3,11 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
+from pathlib import Path
+from typing import Optional
+
+
+from .config import Configuration
 from . import _ffi
 
 
@@ -17,10 +22,12 @@ class Glean:
     >>> Glean.initialize(cfg, data_dir)
     """
 
-    _handle = 0
+    _handle: int = 0
+    _configuration: Optional[Configuration] = None
+    _data_dir: Optional[Path] = None
 
     @classmethod
-    def initialize(cls, configuration, data_dir):
+    def initialize(cls, configuration: Configuration, data_dir: Path):
         """
         Initialize the Glean SDK.
 
@@ -45,7 +52,7 @@ class Glean:
         cls._handle = _ffi.lib.glean_initialize(cfg)
 
     @classmethod
-    def is_initialized(cls):
+    def is_initialized(cls) -> bool:
         """
         Returns True if the Glean SDK has been initialized.
         """

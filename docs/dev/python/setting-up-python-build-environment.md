@@ -21,7 +21,7 @@ Rust can be installed using `rustup`, with the following commands:
 
 ## Create a virtual environment
 
-It is recommended to do all Python development inside a virtual environment to make sure there are no interactions with other Python libraries installed on your system. 
+It is recommended to do all Python development inside a virtual environment to make sure there are no interactions with other Python libraries installed on your system.
 
 You may want to manage your own virtual environment if, for example, you are developing a library that is using Glean and you want to install Glean into it.  If you are just developing Glean itself, however, Glean's `Makefile` will handle the creation and use of a virtual environment automatically (though the `Makefile` unfortunately does not work on Microsoft Windows).
 
@@ -29,7 +29,7 @@ The instructions below all have both the manual instructions and the `Makefile` 
 
 ### Manual method
 
-The following instructions use the basic [virtual environment functionality that comes in the Python standard library](https://docs.python.org/3/library/venv.html). 
+The following instructions use the basic [virtual environment functionality that comes in the Python standard library](https://docs.python.org/3/library/venv.html).
 Other higher level tools exist to manage virtual environments, such as [pipenv](https://pipenv.kennethreitz.org/en/latest/) and [conda](https://docs.conda.io/en/latest/).
 These will work just as well, but are not documented here.
 Using an alternative tool would replace the instructions in this section only, but all other instructions below would remain the same.
@@ -106,9 +106,13 @@ The following will run the Python unit tests using `py.test`:
   $ make test-python
 ```
 
-## Linting and formatting
+## Linting, formatting and type checking
 
-Linting and formatting is done using the default settings of [flake8](http://flake8.pycqa.org/en/latest/) and [black](https://black.readthedocs.io/en/stable/).
+The Glean Python bindings use the following tools:
+
+- Linting: [flake8](http://flake8.pycqa.org/en/latest/)
+- Formatting: [black](https://black.readthedocs.io/en/stable/)
+- Type-checking: [mypy](http://mypy-lang.org/)
 
 ### Manual method
 
@@ -116,6 +120,7 @@ Linting and formatting is done using the default settings of [flake8](http://fla
   $ cd glean-core/python
   $ flake8 glean tests
   $ black glean tests
+  $ mypy glean
 ```
 
 ### Makefile method
@@ -123,7 +128,7 @@ Linting and formatting is done using the default settings of [flake8](http://fla
 To just check the lints:
 
 ```bash
-  $ make flake8
+  $ make pythonlint
 ```
 
 To reformat the Python files in-place:

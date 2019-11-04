@@ -57,25 +57,6 @@ class CounterMetricTypeTest {
     }
 
     @Test
-    fun `counters with no lifetime must not record data`() {
-        // Define a 'counterMetric' counter metric, which will be stored in "store1".
-        // It's disabled so it should not record anything.
-        val counterMetric = CounterMetricType(
-            disabled = true,
-            category = "telemetry",
-            lifetime = Lifetime.Ping,
-            name = "counter_metric",
-            sendInPings = listOf("store1")
-        )
-
-        // Attempt to increment the counter
-        counterMetric.add(1)
-        // Check that nothing was recorded.
-        assertFalse("Counters must not be recorded if they are disabled",
-            counterMetric.testHasValue())
-    }
-
-    @Test
     fun `disabled counters must not record data`() {
         // Define a 'counterMetric' counter metric, which will be stored in "store1".  It's disabled
         // so it should not record anything.

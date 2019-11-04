@@ -37,3 +37,4 @@ glean_app*
 !glean_app.c
 
 samples/ios/app/.venv/
+.mypy_cache/

@@ -65,7 +65,7 @@ setup(
     # below to automatically get the Rust project's version.
     version="0.0.1",
     # version=version,
-    packages=find_packages(include=["glean"]),
+    packages=find_packages(include=["glean", "glean.*"]),
     setup_requires=setup_requirements,
     url="https://github.com/mozilla/glean",
     zip_safe=False,
