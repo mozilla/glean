@@ -13,7 +13,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         let glean = Glean.shared
         glean.setUploadEnabled(true)
-        glean.initialize()
+
+        if ProcessInfo.processInfo.arguments.contains("USE_MOCK_SERVER") {
+            let address = "http://localhost:9080"
+            print("using a mock server, setting address: \(address)")
+            let cfg = Configuration(serverEndpoint: address)
+            glean.initialize(configuration: cfg)
+        } else {
+            print("using default config for Glean")
+            glean.initialize()
+        }
 
         return true
     }
