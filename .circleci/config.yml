@@ -507,6 +507,7 @@ workflows:
   ci:
     jobs:
       - Rust tests - stable
+      - Rust code coverage
       # FIXME: Disabled due to failing to often, bug 1574424
       #- Rust tests - beta
       - Rust tests - minimum version
@@ -526,9 +527,6 @@ workflows:
           filters:
             branches:
               only: master
-  coverage:
-    jobs:
-      - Rust code coverage
 
   release:
     jobs:
