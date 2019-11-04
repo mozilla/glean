@@ -41,6 +41,8 @@
     - [iOS bindings](dev/ios/index.md)
         - [Setup Build Environment](dev/ios/setup-ios-build-environment.md)
         - [Debugging Different Versions of Glean](dev/ios/debug-glean-on-ios.md)
+    - [Python bindings](dev/python/index.md)
+        - [Setup Build Environment](dev/python/setting-up-python-build-environment.md)
     - [Rust Component](dev/core/index.md)
         - [Dependency Management](dev/core/dependency-management.md)
         - [Adding a new metric type](dev/core/new-metric-type.md)

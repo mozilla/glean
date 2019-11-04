@@ -73,7 +73,19 @@ function openTabs() {
 
     let containers = document.getElementsByClassName("tabs");
     for (let i = 0; i < containers.length; ++i) {
+        // Create tabs for every language that has content
+        let tabs = containers[i].children[0];
         let tabcontents = containers[i].children[1];
+        for (let tabcontent of tabcontents.children) {
+            let button = document.createElement("button");
+            button.dataset.lang = tabcontent.dataset.lang;
+            button.className = "tablinks";
+            button.onclick = onClickTab;
+            button.innerText = tabcontent.dataset.lang;
+            tabs.appendChild(button);
+        }
+
+        // Set up the spacing and layout based on the number of active tabs
         let numTabs = tabcontents.children.length;
         tabcontents.style.width = `${numTabs * 100}%`;
         for (let j = 0; j < numTabs; ++j) {

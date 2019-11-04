@@ -26,6 +26,7 @@ The code in this repository is organized as follows:
 * [./glean-core/ffi](glean-core/ffi) contains the mapping into a C FFI.
 * [./glean-core/android](glean-core/android) contains the Kotlin bindings for use by Android applications.
 * [./glean-core/ios](glean-core/ios) contains the Swift bindings for use by iOS applications.
+* [./glean-core/python](glean-core/python) contains Python bindings (currently under development).
 
 **Note: The Glean SDK requires at least [Rust 1.34.2](https://blog.rust-lang.org/2019/05/14/Rust-1.34.2.html). Older versions are untested.**
 
