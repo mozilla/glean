@@ -234,6 +234,17 @@ jobs:
       - store_artifacts:
           path: raw_xcodetest.log
           destination: log
+      - run:
+          name: Build sample app and run tests
+          command: |
+            bash bin/run-ios-sample-app-build.sh
+            bash bin/run-ios-sample-app-test.sh
+      - store_artifacts:
+          path: raw_sample_xcodebuild.log
+          destination: log
+      - store_artifacts:
+          path: raw_sample_xcodetest.log
+          destination: log
       - persist_to_workspace:
           root: build/
           paths: docs/swift
