@@ -492,7 +492,7 @@ jobs:
             npm install -g --silent gh-pages@2.0.1
             gh-pages --dotfiles --message "[skip ci] Updates" --dist build/docs
 
-  Lint Python with flake8 and black and mypy:
+  Lint Python:
     docker:
       - image: circleci/python:3.7.5
     steps:
@@ -539,7 +539,7 @@ workflows:
     jobs:
       - Lint Rust with clippy
       - Lint Android with ktlint and detekt
-      - Lint Python with flake8 and black and mypy
+      - Lint Python
       - Rust FFI header check
       - Lint YAML with yamllint
   ci:
