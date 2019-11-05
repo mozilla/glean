@@ -62,7 +62,7 @@ class CounterMetricType:
         if self._disabled:
             return
 
-        # TODO: Run on the dispatcher
+        # TODO: 1594033 Run on the dispatcher
         _ffi.lib.glean_counter_add(Glean._handle, self._handle, amount)
 
     def test_has_value(self, ping_name: Optional[str] = None) -> bool:
