@@ -33,8 +33,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         Test.timespan.start()
 
-        Custom.counter.add()
-
         // Set a sample value for a metric.
         Basic.os.set("iOS")
 
