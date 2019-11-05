@@ -35,6 +35,9 @@ class ViewController: UIViewController {
         // Increments the test_counter metric from the metrics.yaml file.
         Test.counter.add()
 
+        // Increment the custom counter that goes into the sample ping
+        Custom.counter.add()
+
         // This is referencing the event ping named 'click' from the metrics.yaml file. In
         // order to illustrate adding extra information to the event, it is also adding to the
         // 'extras' field a dictionary of values.  Note that the dictionary keys must be
@@ -48,7 +51,6 @@ class ViewController: UIViewController {
     @IBAction func sendButtonTapped(_: Any) {
         // Increment the custom counter that goes into the sample ping
         Custom.counter.add()
-
         Pings.shared.sample.send()
     }
 }
