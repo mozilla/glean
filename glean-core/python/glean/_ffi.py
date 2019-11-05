@@ -2,14 +2,16 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+from pathlib import Path
 import sys
+from typing import Any, List
 import weakref
 
-from cffi import FFI
+from cffi import FFI  # type: ignore
 import pkg_resources
 
 
-def get_shared_object_filename():
+def get_shared_object_filename() -> str:
     """
     Get the extension used for shared objects on the current platform.
     """
@@ -22,10 +24,10 @@ def get_shared_object_filename():
     raise ValueError(f"The platform {sys.platform} is not supported.")
 
 
-_global_weakkeydict = weakref.WeakKeyDictionary()
+_global_weakkeydict: Any = weakref.WeakKeyDictionary()
 
 
-def _load_header(path):
+def _load_header(path: str) -> str:
     """
     Load a C header file and convert it to something parseable by cffi.
     """
@@ -42,7 +44,7 @@ lib = ffi.dlopen(
 )
 
 
-def make_config(data_dir, package_name):
+def make_config(data_dir: Path, package_name: str) -> Any:
     """
     Make an `FfiConfiguration` object.
 
@@ -50,8 +52,8 @@ def make_config(data_dir, package_name):
         data_dir (pathlib.Path): Path to the Glean data directory.
         package_name (str): The name of the package to report in Glean's pings.
     """
-    data_dir = ffi.new("char[]", str(data_dir).encode("utf-8"))
-    package_name = ffi.new("char[]", package_name.encode("utf-8"))
+    data_dir = ffi.new("char[]", ffi_string(str(data_dir)))
+    package_name = ffi.new("char[]", ffi_string(package_name))
     cfg = ffi.new("FfiConfiguration *")
 
     cfg.data_dir = data_dir
@@ -64,4 +66,25 @@ def make_config(data_dir, package_name):
     return cfg
 
 
-__all__ = ["ffi", "lib"]
+def ffi_string(value: str) -> bytes:
+    """
+    Convert a Python string to a UTF-8 encoded char* for sending over FFI.
+    """
+    return value.encode("utf-8")
+
+
+def ffi_vec_string(strings: List[str]) -> Any:
+    """
+    Convert a list of str in Python to a vector of char* suitable for sending over FFI.
+    """
+    values = [ffi.new("char[]", ffi_string(x)) for x in strings]
+    values.append(ffi.NULL)
+
+    result = ffi.new("char *[]", values)
+
+    _global_weakkeydict[result] = values
+
+    return result
+
+
+__all__ = ["ffi", "ffi_string", "ffi_vec_string", "lib", "make_config"]

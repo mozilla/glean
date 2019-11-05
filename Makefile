@@ -75,9 +75,10 @@ swiftlint: ## Run swiftlint to lint Swift code
 yamllint: ## Run yamllint to lint YAML files
 	yamllint glean-core
 
-flake8: python-setup ## Run flake8 and black to lint Python code
+pythonlint: python-setup ## Run flake8 and black to lint Python code
 	$(GLEAN_PYENV)/bin/python3 -m flake8 glean-core/python/glean glean-core/python/tests
 	$(GLEAN_PYENV)/bin/python3 -m black --check glean-core/python/glean glean-core/python/tests
+	$(GLEAN_PYENV)/bin/python3 -m mypy glean-core/python/glean
 
 .PHONY: lint clippy ktlint swiftlint yamllint
 
@@ -110,7 +111,7 @@ swift-docs: ## Build the Swift documentation
 	bin/build-swift-docs.sh
 
 python-docs: build-python ## Build the Python documentation
-	$(GLEAN_PYENV)/bin/python3 -m pdoc --html glean --force -o build/docs/python
+	$(GLEAN_PYENV)/bin/python3 -m pdoc --html glean --force -o build/docs/python --config show_type_annotations=True
 
 .PHONY: docs rust-docs kotlin-docs swift-docs
 

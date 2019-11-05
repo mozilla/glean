@@ -2,6 +2,7 @@ black
 coverage==4.5.2
 flake8==3.7.8
 m2r==0.2.1
+mypy==0.740
 pdoc3==0.7.1
 pip
 pytest-runner==4.4
