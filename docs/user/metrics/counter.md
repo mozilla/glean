@@ -59,6 +59,8 @@ There are test APIs available too:
 XCTAssert(Controls.refreshPressed.testHasValue())
 // Does the counter have the expected value?
 XCTAssertEqual(6, try Controls.refreshPressed.testGetValue())
+// Did the counter record a negative value?
+XCTAssertEqual(1, Controls.refreshPressed.testGetNumRecordedErrors(.invalidValue))
 ```
 
 </div>
@@ -75,7 +77,7 @@ XCTAssertEqual(6, try Controls.refreshPressed.testGetValue())
 
 ## Recorded errors
 
-* If the counter is incremented by a non-positive value.
+* `invalid_value`: If the counter is incremented by a non-positive value.
 
 ## Reference
 

@@ -133,4 +133,21 @@ class StringListMetricTests: XCTestCase {
         XCTAssertEqual("other2", snapshot2[1])
         XCTAssertEqual("other3", snapshot2[2])
     }
+
+    func testLongStringListsAreTruncated() {
+        let stringListMetric = StringListMetricType(
+            category: "telemetry",
+            name: "string_list_metric",
+            sendInPings: ["store1", "store2"],
+            lifetime: .application,
+            disabled: false
+        )
+
+        for n in 0 ... 20 {
+            stringListMetric.add(String(format: "value%02d", n))
+        }
+
+        XCTAssertEqual(20, try stringListMetric.testGetValue().count)
+        XCTAssertEqual(1, stringListMetric.testGetNumRecordedErrors(.invalidValue))
+    }
 }

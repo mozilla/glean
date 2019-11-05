@@ -82,4 +82,18 @@ class StringMetricTests: XCTestCase {
         XCTAssert(stringMetric.testHasValue("store2"))
         XCTAssertEqual("overridenValue", try stringMetric.testGetValue("store2"))
     }
+
+    func testLongStringRecordsAnError() {
+        let stringMetric = StringMetricType(
+            category: "telemetry",
+            name: "string_metric",
+            sendInPings: ["store1"],
+            lifetime: .application,
+            disabled: false
+        )
+
+        stringMetric.set(String(repeating: "0123456789", count: 11))
+
+        XCTAssertEqual(1, stringMetric.testGetNumRecordedErrors(.invalidValue))
+    }
 }

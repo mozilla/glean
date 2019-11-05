@@ -21,6 +21,7 @@
 		1FB8F8422326F74400618E47 /* HttpPingUploaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB8F8412326F74400618E47 /* HttpPingUploaderTests.swift */; };
 		1FD4527523395B4500F4C7E8 /* UuidMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FD4527423395B4500F4C7E8 /* UuidMetric.swift */; };
 		1FD4527723395EEB00F4C7E8 /* UuidMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FD4527623395EEB00F4C7E8 /* UuidMetricTests.swift */; };
+		97C5C1A423708C6700B79C93 /* ErrorType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97C5C1A323708C6700B79C93 /* ErrorType.swift */; };
 		AC54D225233133DB0019319A /* PingUploadOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC54D224233133DB0019319A /* PingUploadOperation.swift */; };
 		AC54D227233134A30019319A /* GleanOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC54D226233134A30019319A /* GleanOperation.swift */; };
 		BF10007E23548AF400064051 /* MemoryUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF10007D23548AF400064051 /* MemoryUnit.swift */; };
@@ -85,6 +86,7 @@
 		1FB8F8412326F74400618E47 /* HttpPingUploaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = HttpPingUploaderTests.swift; path = GleanTests/HttpPingUploaderTests.swift; sourceTree = SOURCE_ROOT; };
 		1FD4527423395B4500F4C7E8 /* UuidMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UuidMetric.swift; sourceTree = "<group>"; };
 		1FD4527623395EEB00F4C7E8 /* UuidMetricTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UuidMetricTests.swift; sourceTree = "<group>"; };
+		97C5C1A323708C6700B79C93 /* ErrorType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorType.swift; sourceTree = "<group>"; };
 		AC54D224233133DB0019319A /* PingUploadOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PingUploadOperation.swift; sourceTree = "<group>"; };
 		AC54D226233134A30019319A /* GleanOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GleanOperation.swift; sourceTree = "<group>"; };
 		BF10007D23548AF400064051 /* MemoryUnit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryUnit.swift; sourceTree = "<group>"; };
@@ -208,6 +210,14 @@
 			path = Net;
 			sourceTree = "<group>";
 		};
+		97C5C1A223708C1E00B79C93 /* Testing */ = {
+			isa = PBXGroup;
+			children = (
+				97C5C1A323708C6700B79C93 /* ErrorType.swift */,
+			);
+			path = Testing;
+			sourceTree = "<group>";
+		};
 		BF3227D723336CF800CD0111 /* Generated */ = {
 			isa = PBXGroup;
 			children = (
@@ -247,6 +257,7 @@
 		BF3DE3932243A2F20018E23F /* Glean */ = {
 			isa = PBXGroup;
 			children = (
+				97C5C1A223708C1E00B79C93 /* Testing */,
 				1F6058912314861B00307A9F /* Config */,
 				BF3227D723336CF800CD0111 /* Generated */,
 				BF43A8C5232A4B5F00545310 /* Metrics */,
@@ -550,6 +561,7 @@
 				BFE1CDCE233B989A0019EE47 /* GleanMetrics.swift in Sources */,
 				BF6C53B2232F870C00E3B43A /* Ping.swift in Sources */,
 				BFB59A9F2342A24000F40CA8 /* GleanInternalMetrics.swift in Sources */,
+				97C5C1A423708C6700B79C93 /* ErrorType.swift in Sources */,
 				BF10007E23548AF400064051 /* MemoryUnit.swift in Sources */,
 				BF43A8C7232A4BA400545310 /* CounterMetric.swift in Sources */,
 				BFFE33AB232927C3005348FE /* Utils.swift in Sources */,

@@ -73,6 +73,8 @@ val snapshot = try! Views.loginOpened.testGetValue()
 XCTAssertEqual(2, snapshot.size)
 val first = snapshot[0]
 XCTAssertEqual("login_opened", first.name)
+// Check that no errors were recorded
+XCTAssertEqual(0, Views.loginOpened.testGetNumRecordedErrors(.invalidValue))
 ```
 
 </div>
