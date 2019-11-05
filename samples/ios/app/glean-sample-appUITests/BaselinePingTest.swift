@@ -12,7 +12,6 @@ class BaselinePingTest: XCTestCase {
     var app: XCUIApplication!
     var expectation: XCTestExpectation?
     var lastPingJson: [String: Any]?
-    var server: HttpServer?
 
     override func setUp() {
         // In UI tests it is usually best to stop immediately when a failure occurs.
@@ -23,38 +22,16 @@ class BaselinePingTest: XCTestCase {
         app = XCUIApplication()
     }
 
-    override func tearDown() {
-        server?.stop()
-    }
-
-    func setupServer(expectPingType: String) {
-        server = HttpServer()
-
-        server!["/submit/:appid/:ping/:schema/:pinguuid"] = { request in
-            let pingName = request.params[":ping"]!
-            if pingName == expectPingType {
-                let body = String(bytes: request.body, encoding: .utf8)!
-                let data = body.data(using: .utf8)!
-                print("Received data: \(body)")
-                let json = try! JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
-                self.lastPingJson = json
-
-                // Fulfill test's expectation once we parsed the incoming data.
-                self.expectation?.fulfill()
-            }
-            return HttpResponse.ok(.text("OK"))
+    func setupServer(expectPingType: String) -> HttpServer {
+        return mockServer(expectPingType: expectPingType) { json in
+            self.lastPingJson = json
+            // Fulfill test's expectation once we parsed the incoming data.
+            self.expectation?.fulfill()
         }
-        // For logging purposes:
-        server!.middleware.append { request in
-            print("Middleware: \(request.address ?? "unknown address") -> \(request.method) -> \(request.path)")
-            return nil
-        }
-
-        try! server!.start(9080)
     }
 
     func testValidateBaselinePing() {
-        setupServer(expectPingType: "baseline")
+        let server = setupServer(expectPingType: "baseline")
         expectation = expectation(description: "Completed upload")
 
         app.launchArguments = ["USE_MOCK_SERVER"]
@@ -89,5 +66,7 @@ class BaselinePingTest: XCTestCase {
         for (id, _) in errors ?? [:] {
             XCTAssertFalse(id.starts(with: "glean.error."))
         }
+
+        server.stop()
     }
 }

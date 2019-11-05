@@ -23,6 +23,7 @@
 		BFDA7ACD2371C9B800575C7B /* Basic.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFDA7AC82371C9B800575C7B /* Basic.swift */; };
 		BFDA7ACE2371C9B800575C7B /* BrowserEngagement.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFDA7AC92371C9B800575C7B /* BrowserEngagement.swift */; };
 		BFDA7AD02371CE4900575C7B /* ViewControllerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFDA7ACF2371CE4900575C7B /* ViewControllerTest.swift */; };
+		BFDA7AD22371D2BA00575C7B /* MockServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFDA7AD12371D2BA00575C7B /* MockServer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,6 +70,7 @@
 		BFDA7AC82371C9B800575C7B /* Basic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Basic.swift; sourceTree = "<group>"; };
 		BFDA7AC92371C9B800575C7B /* BrowserEngagement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrowserEngagement.swift; sourceTree = "<group>"; };
 		BFDA7ACF2371CE4900575C7B /* ViewControllerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerTest.swift; sourceTree = "<group>"; };
+		BFDA7AD12371D2BA00575C7B /* MockServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockServer.swift; sourceTree = "<group>"; };
 		BFE1E7D523435A600067A12A /* sdk_generator.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = sdk_generator.sh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -167,6 +169,7 @@
 				BFD3AB4D224D475E00AD9255 /* BaselinePingTest.swift */,
 				BFDA7ACF2371CE4900575C7B /* ViewControllerTest.swift */,
 				BFD3AB4F224D475E00AD9255 /* Info.plist */,
+				BFDA7AD12371D2BA00575C7B /* MockServer.swift */,
 			);
 			path = "glean-sample-appUITests";
 			sourceTree = "<group>";
@@ -406,6 +409,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BFDA7AD22371D2BA00575C7B /* MockServer.swift in Sources */,
 				BFDA7AD02371CE4900575C7B /* ViewControllerTest.swift in Sources */,
 				BFD3AB4E224D475E00AD9255 /* BaselinePingTest.swift in Sources */,
 			);
