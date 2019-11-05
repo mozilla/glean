@@ -244,7 +244,7 @@ ext.gleanDocsDirectory = "$rootDir/docs/user/collected-metrics"
 // Include the glean-gradle-plugin. This is slightly different than what is
 // recommended for external users since we are loading it from the same root Gradle
 // build.
-apply from: '../../gradle-plugin/src/main/groovy/mozilla/telemetry/glean-gradle-plugin/GleanGradlePlugin.groovy'
+apply from: '../../gradle-plugin/GleanGradlePluginCore.groovy'
 ext.glean_plugin.apply(project)
 
 // Store the path to the Glean Miniconda installation in a buildConfigField
