@@ -8,6 +8,8 @@ import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.artifacts.DependencyResolveDetails
+import org.gradle.api.artifacts.component.ModuleComponentSelector
 import org.gradle.api.artifacts.transform.ArtifactTransform
 import org.gradle.api.internal.artifacts.ArtifactAttributes
 import org.gradle.api.tasks.Exec
@@ -343,6 +345,63 @@ subprocess.check_call([
     void apply(Project project) {
         File condaDir = setupPythonEnvironmentTasks(project)
         project.ext.set("gleanCondaDir", condaDir)
+
+        def gleanSdkVersion = "Not Found"
+        project.getConfigurations().all { config ->
+
+            // 1st pass
+            config.resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+                def group = details.requested.group
+                //if (group.startsWith("androidx.arch.core")) {
+                if (!group.startsWith("org.mozilla.telemetry")) {
+                    return
+                }
+
+                if (details.requested.name == "glean") {
+                    println("1st pass - Group: " + group + " Req module: " + details.requested.module + " req version: " + details.requested.getVersion())
+                    gleanSdkVersion = details.requested.version
+                }
+
+
+                /*if (details.requested.getVersion() == "default") {
+                    def key = details.requested.getGroup() + "." + details.requested.getName() + ".version.default"
+                    details.useVersion(project.ext.versionMap.get(key))
+                }*/
+            }
+
+            // Second pass?
+            config.resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+                def group = details.requested.group
+                //if (group.startsWith("androidx.arch.core")) {
+                if (!group.startsWith("org.mozilla.telemetry")) {
+                    return
+                }
+
+                if (details.requested.name == "glean-forUnitTests") {
+                    println("2nd pass - Group: " + group + " Req module: " + details.requested.module + " req version: " + details.requested.getVersion() + " Use: " + gleanSdkVersion)
+                }
+            }
+        }
+        /*
+        project.configurations { config ->
+            config.resolutionStrategy { strategy ->
+                all { dependency ->
+                    // We could restrict based on target architecture, but there doesn't seem to
+                    // be much advantage to doing so right now.
+
+                    if (!(dependency.requested instanceof ModuleComponentSelector)) {
+                        // We can only substitute for a module: we're never going to substitute
+                        // for a project.
+                        return
+                    }
+
+                    def group = dependency.requested.group
+                    if (group.startsWith("org.mozilla.telemetry")) {
+                        println("Group: " + group + " Req module: " + dependency.requested.module)
+                    }
+                }
+            }
+        }*/
 
         setupExtractMetricsFromAARTasks(project)
 
