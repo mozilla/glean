@@ -19,6 +19,9 @@ class GleanLifecycleObserver {
             name: UIApplication.didEnterBackgroundNotification,
             object: nil
         )
+
+        // On init we start the duration, as we won't get the enter-foreground notification.
+        GleanBaseline.duration.start()
     }
 
     @objc func appWillEnterForeground(notification _: NSNotification) {
