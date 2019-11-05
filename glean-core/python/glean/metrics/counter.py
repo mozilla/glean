@@ -7,8 +7,9 @@ from typing import List, Optional
 
 
 from .. import Glean
-from ..testing import ErrorType
 from .. import _ffi
+from .._dispatcher import Dispatcher
+from ..testing import ErrorType
 
 
 from .lifetime import Lifetime
@@ -51,6 +52,7 @@ class CounterMetricType:
         if getattr(self, "_handle", 0) != 0:
             _ffi.lib.glean_destroy_counter_metric(self._handle)
 
+    @Dispatcher.launch
     def add(self, amount: int = 1):
         """
         Add to counter value.
@@ -62,7 +64,6 @@ class CounterMetricType:
         if self._disabled:
             return
 
-        # TODO: 1594033 Run on the dispatcher
         _ffi.lib.glean_counter_add(Glean._handle, self._handle, amount)
 
     def test_has_value(self, ping_name: Optional[str] = None) -> bool:

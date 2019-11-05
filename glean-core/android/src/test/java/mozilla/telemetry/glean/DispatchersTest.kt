@@ -45,7 +45,7 @@ class DispatchersTest {
     }
 
     @Test
-    fun `launch correctly adds tests to queue if queueTasks is true`() {
+    fun `launch correctly adds tasks to queue if queueTasks is true`() {
         var threadCanary = 0
 
         Dispatchers.API.setTestingMode(true)

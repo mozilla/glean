@@ -97,7 +97,7 @@ internal object Dispatchers {
          * Enable queueing mode, which causes tasks to be queued until launched by calling
          * [flushQueuedInitialTasks].
          *
-         * @param enabled whether or not to enable the testing mode
+         * @param enabled whether or not to queue tasks
          */
         @VisibleForTesting(otherwise = VisibleForTesting.NONE)
         fun setTaskQueueing(enabled: Boolean) {
