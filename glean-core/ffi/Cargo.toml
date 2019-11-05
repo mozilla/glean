@@ -12,7 +12,6 @@ include = [
   "README.md",
   "LICENSE",
   "src/**/*",
-  "examples/**/*",
   "tests/**/*",
   "Cargo.toml",
   "cbindgen.toml",
