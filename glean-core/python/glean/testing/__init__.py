@@ -10,18 +10,12 @@ def reset_glean():
     """
     Resets the Glean singleton.
     """
-    from pathlib import Path
-    import shutil
-    import tempfile
-
     from glean import Configuration, Glean
+    from glean import _dispatcher
 
-    if Glean._handle != 0:
-        shutil.rmtree(Glean._data_dir)
-        Glean._handle = 0
-
-    tmpdir = Path(tempfile.TemporaryDirectory().name)
-    Glean.initialize(Configuration(), tmpdir)
+    Glean.reset()
+    _dispatcher.Dispatcher = _dispatcher.DispatcherInternal()
+    Glean.initialize(Configuration())
 
 
 __all__ = ["reset_glean", "ErrorType"]

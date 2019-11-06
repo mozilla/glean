@@ -44,7 +44,9 @@ lib = ffi.dlopen(
 )
 
 
-def make_config(data_dir: Path, package_name: str) -> Any:
+def make_config(
+    data_dir: Path, package_name: str, upload_enabled: bool, max_events: int
+) -> Any:
     """
     Make an `FfiConfiguration` object.
 
@@ -54,14 +56,16 @@ def make_config(data_dir: Path, package_name: str) -> Any:
     """
     data_dir = ffi.new("char[]", ffi_string(str(data_dir)))
     package_name = ffi.new("char[]", ffi_string(package_name))
+    max_events = ffi.new("int32_t *", max_events)
+
     cfg = ffi.new("FfiConfiguration *")
 
     cfg.data_dir = data_dir
     cfg.package_name = package_name
-    cfg.upload_enabled = 1
-    cfg.max_events = ffi.NULL
+    cfg.upload_enabled = upload_enabled
+    cfg.max_events = max_events
 
-    _global_weakkeydict[cfg] = (data_dir, package_name)
+    _global_weakkeydict[cfg] = (data_dir, package_name, max_events)
 
     return cfg
 

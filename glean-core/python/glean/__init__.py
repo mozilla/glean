@@ -6,16 +6,20 @@
 
 from pkg_resources import get_distribution, DistributionNotFound
 
+
+from .glean import Glean
+from .config import Configuration
+
+
+__version__: str = "unknown"
 try:
-    __version__ = get_distribution("glean-sdk").version
+    __version__ = str(get_distribution("glean-sdk").version)
 except DistributionNotFound:
-    # package is not installed
     pass
+
 
 __author__ = "The Glean Team"
 __email__ = "glean-team@mozilla.com"
 
-from .glean import Glean
-from .config import Configuration
 
 __all__ = ["__author__", "__email__", "__version__", "Glean", "Configuration"]
