@@ -206,7 +206,6 @@ class Glean:
         """
         from . import _builtins
 
-        # TODO: 1594184
         # Just make sure the metrics loaded for testing purposes.
         # Actual metrics will be filled in once we have the required
         # metric types implemented.
