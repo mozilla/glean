@@ -87,7 +87,7 @@ class BaselinePingTest: XCTestCase {
         let errors = metrics["labeled_counter"] as? [String: Any]
 
         for (id, _) in errors ?? [:] {
-            XCTAssert(id.starts(with: "glean.error."))
+            XCTAssertFalse(id.starts(with: "glean.error."))
         }
     }
 }
