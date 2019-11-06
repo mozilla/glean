@@ -5,6 +5,7 @@
 
 from .counter import CounterMetricType
 from .lifetime import Lifetime
+from .ping import PingType
 
 
-__all__ = ["CounterMetricType", "Lifetime"]
+__all__ = ["CounterMetricType", "Lifetime", "PingType"]
