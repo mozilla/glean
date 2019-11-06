@@ -4,7 +4,7 @@
 
 
 import functools
-from typing import Callable, List
+from typing import Callable, List, Tuple
 
 
 class DispatcherInternal:
@@ -21,7 +21,7 @@ class DispatcherInternal:
         afterward.
         """
         self._queue_initial_tasks: bool = True
-        self._task_queue: List[Callable] = []
+        self._task_queue: List[Tuple[Callable, tuple, dict]] = []
 
     def task(self, func: Callable):
         """
