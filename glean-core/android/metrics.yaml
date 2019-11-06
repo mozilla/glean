@@ -35,7 +35,7 @@ glean.error:
     bugs:
       - https://bugzilla.mozilla.org/1575848
     data_reviews:
-      - TBD
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1575848#c5
     notification_emails:
       - telemetry-client-dev@mozilla.com
     expires: never
