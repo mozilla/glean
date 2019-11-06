@@ -38,7 +38,9 @@ assertTrue(Controls.refreshPressed.testHasValue())
 // Does the counter have the expected value?
 assertEquals(6, Controls.refreshPressed.testGetValue())
 // Did the counter record an negative value?
-assertEquals(1, Controls.refreshPressed.testGetNumRecordedErrors(ErrorType.InvalidValue))
+assertEquals(
+    1, Controls.refreshPressed.testGetNumRecordedErrors(ErrorType.InvalidValue)
+)
 ```
 
 </div>
@@ -65,6 +67,32 @@ XCTAssertEqual(1, Controls.refreshPressed.testGetNumRecordedErrors(.invalidValue
 
 </div>
 
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+metrics.controls.refresh_pressed.add()  # Adds 1 to the counter.
+metrics.controls.refresh_pressed.add(5) # Adds 5 to the counter.
+```
+
+There are test APIs available too:
+
+```Python
+# Was anything recorded?
+assert metrics.controls.refresh_pressed.test_has_value()
+# Does the counter have the expected value?
+assert 6 == metrics.controls.refresh_pressed.test_get_value()
+# Did the counter record an negative value?
+from glean.testing import ErrorType
+assert 1 == metrics.controls.refresh_pressed.test_get_num_recorded_errors(
+    ErrorType.INVALID_VALUE
+)
+```
+
+</div>
+
 {{#include ../../tab_footer.md}}
 
 ## Limits
@@ -83,3 +111,4 @@ XCTAssertEqual(1, Controls.refreshPressed.testGetNumRecordedErrors(.invalidValue
 
 * [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-counter-metric-type/index.html)
 * [Swift API docs](../../../swift/Classes/CounterMetricType.html)
+* [Python API docs](../../../python/glean/metrics/counter.html)
