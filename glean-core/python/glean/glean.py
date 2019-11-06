@@ -105,7 +105,7 @@ class Glean:
         # have one.
 
         # Deal with any pending events so we can start recording new ones
-        @Dispatcher.queue_at_front
+        @Dispatcher.launch_at_front
         def send_pending_events():
             if _ffi.lib.glean_on_ready_to_send_pings(cls._handle):
                 # TODO: 1591192
@@ -170,8 +170,6 @@ class Glean:
 
                 if original_enabled is False and cls.get_upload_enabled() is True:
                     cls._initialize_core_metrics()
-
-            set_upload_enabled()
 
         else:
             cls._upload_enabled = enabled

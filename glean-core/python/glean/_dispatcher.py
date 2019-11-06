@@ -23,10 +23,14 @@ class DispatcherInternal:
         self._queue_initial_tasks: bool = True
         self._task_queue: List[Callable] = []
 
-    def launch(self, func: Callable):
+    def task(self, func: Callable):
         """
-        A decorator for coroutines that might either run in the task
-        queue or immediately.
+        A decorator for coroutines that might either run in the task queue or
+        immediately.
+
+        This should only be used to decorate functions that are evaluated at
+        import time and don't need to run immediately. To decorate a nested
+        function at run time, use `DispatcherInternal.launch`.
         """
 
         @functools.wraps(func)
@@ -40,20 +44,48 @@ class DispatcherInternal:
 
         return wrapper
 
-    def queue_at_front(self, func: Callable):
+    def launch(self, func: Callable):
         """
-        A decorator for coroutines that might either run at the front of the
-        task queue or immediately.
+        Either queue the function for running later, or run immediately,
+        depending on the state of `_queue_initial_tasks`.
+
+        This should only be used to decorate nested functions that are
+        evaluated at runtime.  To decorate a function evaluated at
+        import time, use `DispatcherInternal.task`.
+
+        Can be used as a decorator::
+
+            @Dispatcher.launch
+            def my_task():
+                # ... do work ...
+                pass
+
+        or as a function::
+
+            def my_task():
+                # ... do work ...
+                pass
+            Dispatcher.launch(my_task)
         """
 
-        @functools.wraps(func)
-        def wrapper():
-            if self._queue_initial_tasks:
-                self._task_queue.insert(0, func)
-            else:
-                func()
+        if self._queue_initial_tasks:
+            if len(self._task_queue) >= self.MAX_QUEUE_SIZE:
+                return
+            self._task_queue.append((func, (), {}))
+        else:
+            func()
 
-        return wrapper
+    def launch_at_front(self, func: Callable):
+        """
+        Either queue the function for running later (before all other queued
+        tasks), or run immediately, depending on the state of
+        `_queue_initial_tasks`.
+        """
+
+        if self._queue_initial_tasks:
+            self._task_queue.insert(0, (func, (), {}))
+        else:
+            func()
 
     def set_task_queueing(self, enabled: bool):
         """

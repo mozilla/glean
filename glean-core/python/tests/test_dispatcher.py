@@ -11,7 +11,7 @@ def test_launch_correctly_adds_tasks_to_queue_if_queue_tasks_is_true():
 
     Dispatcher.set_task_queueing(True)
 
-    @Dispatcher.launch
+    @Dispatcher.task
     def update():
         thread_canary[0] += 1
 

@@ -52,7 +52,6 @@ class CounterMetricType:
         if getattr(self, "_handle", 0) != 0:
             _ffi.lib.glean_destroy_counter_metric(self._handle)
 
-    @Dispatcher.launch
     def add(self, amount: int = 1):
         """
         Add to counter value.
@@ -64,7 +63,9 @@ class CounterMetricType:
         if self._disabled:
             return
 
-        _ffi.lib.glean_counter_add(Glean._handle, self._handle, amount)
+        @Dispatcher.launch
+        def add():
+            _ffi.lib.glean_counter_add(Glean._handle, self._handle, amount)
 
     def test_has_value(self, ping_name: Optional[str] = None) -> bool:
         """
