@@ -30,9 +30,11 @@ GLEAN_PARSER_VERSION=1.9.5
 # When the special argument "internal" is passed, don't add a namespace import and also allow all reserved items.
 NAMESPACE=Glean
 INTERNAL=""
+YAML_FILES="${SOURCE_ROOT}/metrics.yaml ${SOURCE_ROOT}/pings.yaml"
 if [ "$1" = "internal" ]; then
   NAMESPACE=""
   INTERNAL="--allow-reserved"
+  YAML_FILES="${SOURCE_ROOT}/../metrics.yaml ${SOURCE_ROOT}/../pings.yaml"
 fi
 
 VENVDIR="${SOURCE_ROOT}/.venv"
@@ -45,5 +47,4 @@ ${VENVDIR}/bin/python -m glean_parser \
     -o "${SOURCE_ROOT}/${PROJECT}/Generated" \
     -s glean_namespace=$NAMESPACE \
     $INTERNAL \
-    "${SOURCE_ROOT}/metrics.yaml" \
-    "${SOURCE_ROOT}/pings.yaml"
+    $YAML_FILES

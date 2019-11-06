@@ -43,3 +43,12 @@ Please note that only the `metrics.md` will be overwritten: any other file avail
 ```groovy
 ext.gleanDocsDirectory = "$rootDir/docs/user/telemetry"
 ```
+
+## `gleanYamlFiles`
+
+By default, the Glean Gradle plugin will look for `metrics.yaml` and `pings.yaml` files in the same directory that the plugin is included from in your application or library.
+To override this, `ext.gleanYamlFiles` may be set to a list of explicit paths.
+
+```groovy
+ext.gleanYamlFiles = ["$rootDir/glean-core/metrics.yaml", "$rootDir/glean-core/pings.yaml"]
+```
