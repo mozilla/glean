@@ -22,7 +22,7 @@ class Glean:
     initialized from the application.
 
     >>> Glean.set_upload_enabled(True)
-    >>> Glean.initialize(cfg, data_dir)
+    >>> Glean.initialize()
     """
 
     # The handle to the underlying Rust object
