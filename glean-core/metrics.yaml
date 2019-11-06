@@ -208,6 +208,8 @@ glean.error:
     expires: never
     send_in_pings:
       - all_pings
+    no_lint:
+      - COMMON_PREFIX
 
   invalid_label:
     type: labeled_counter
@@ -223,3 +225,22 @@ glean.error:
     expires: never
     send_in_pings:
       - all_pings
+    no_lint:
+      - COMMON_PREFIX
+
+  invalid_state:
+    type: labeled_counter
+    description:
+      Counts the number of times a timing metric was used incorrectly.
+      The labels are the `category.name` identifier of the metric.
+    bugs:
+      - https://bugzilla.mozilla.org/1566380
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1499761#c5
+    notification_emails:
+      - telemetry-client-dev@mozilla.com
+    expires: never
+    send_in_pings:
+      - all_pings
+    no_lint:
+      - COMMON_PREFIX

@@ -83,6 +83,20 @@ subprocess.check_call([
     }
 
     /*
+     * Get the list of metrics.yaml and pings.yaml files we should use.
+     */
+    def getYamlFiles(Project project) {
+        if (project.ext.has("gleanYamlFiles")) {
+            return project.ext.gleanYamlFiles
+        } else {
+            return [
+                "${project.projectDir}/metrics.yaml",
+                "${project.projectDir}/pings.yaml"
+            ]
+        }
+    }
+
+    /*
      * Adds tasks that generates the Glean metrics API for a project.
      */
     def setupTasks(Project project, File condaDir) {
@@ -132,10 +146,9 @@ subprocess.check_call([
                 args "namespace=$fullNamespace"
                 args "-s"
                 args "glean_namespace=$gleanNamespace"
-                // We intentionally don't let out the local metrics.yaml, even if another one will
-                // be extracted from the AAR file. The parser will just ignore this one, if not present.
-                args "${project.projectDir}/metrics.yaml"
-                args "${project.projectDir}/pings.yaml"
+                for (String item : getYamlFiles(project)) {
+                    args item
+                }
 
                 // If we're building the Glean library itself (rather than an
                 // application using Glean) pass the --allow-reserved flag so we can
@@ -197,8 +210,9 @@ subprocess.check_call([
                 args "markdown"
                 args "-o"
                 args gleanDocsDirectory
-                args "${project.projectDir}/metrics.yaml"
-                args "${project.projectDir}/pings.yaml"
+                for (String item : getYamlFiles(project)) {
+                    args item
+                }
 
                 // If we're building the Glean library itself (rather than an
                 // application using Glean) pass the --allow-reserved flag so we can
@@ -232,8 +246,15 @@ subprocess.check_call([
             // Only attach the generation task if the metrics file is available or we're requested
             // to fetch them from AAR files. We don't need to fail hard otherwise, as some 3rd party
             // project might just want metrics included in Glean and nothing more.
-            if (project.file("${project.projectDir}/metrics.yaml").exists()
-                || project.file("${project.projectDir}/pings.yaml").exists()
+            def yamlFileExists = false
+            for (String item : getYamlFiles(project)) {
+                if (project.file(item).exists()) {
+                    yamlFileExists = true
+                    break
+                }
+            }
+
+            if (yamlFileExists
                 || project.ext.has("allowMetricsFromAAR")) {
                 // Generate the metrics docs, if requested
                 if (project.ext.has("gleanGenerateMarkdownDocs")) {
