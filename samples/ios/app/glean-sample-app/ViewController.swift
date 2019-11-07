@@ -5,13 +5,52 @@
 import Glean
 import UIKit
 
-typealias SampleMetrics = GleanMetrics.SampleMetrics
+typealias BrowserEngagement = GleanMetrics.BrowserEngagement
 
 class ViewController: UIViewController {
+    @IBOutlet var dataInput: UITextField!
+    @IBOutlet var recordButton: UIButton!
+    @IBOutlet var sendButton: UIButton!
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
 
-        SampleMetrics.test.add(1)
+        Test.isStarted.set(true)
+
+        Test.timespan.stop()
+    }
+
+    @IBAction func recordButtonTapped(_: Any) {
+        // These first two actions, adding to the string list and incrementing the counter are
+        // tied to a user lifetime metric which is persistent from launch to launch.
+
+        // Adds the EditText's text content as a new string in the string list metric from the
+        // metrics.yaml file.
+        if let text = dataInput.text {
+            Test.stringList.add(text)
+            // Clear current text to help indicate something happened
+            dataInput.text = ""
+        }
+
+        // Increments the test_counter metric from the metrics.yaml file.
+        Test.counter.add()
+
+        // Increment the custom counter that goes into the sample ping
+        Custom.counter.add()
+
+        // This is referencing the event ping named 'click' from the metrics.yaml file. In
+        // order to illustrate adding extra information to the event, it is also adding to the
+        // 'extras' field a dictionary of values.  Note that the dictionary keys must be
+        // declared in the metrics.yaml file under the 'extra_keys' section of an event metric.
+        BrowserEngagement.click.record(extra: [
+            .key1: "extra_value_1",
+            .key2: "extra_value_2"
+        ])
+    }
+
+    @IBAction func sendButtonTapped(_: Any) {
+        // Increment the custom counter that goes into the sample ping
+        Custom.counter.add()
+        Pings.shared.sample.send()
     }
 }

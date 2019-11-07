@@ -8,10 +8,11 @@ import XCTest
 
 // swiftlint:disable force_cast
 // REASON: Used in below test cases to cause errors if data is missing
-class BaselinePingTest: XCTestCase {
+class ViewControllerTest: XCTestCase {
     var app: XCUIApplication!
     var expectation: XCTestExpectation?
     var lastPingJson: [String: Any]?
+    var server: HttpServer?
 
     override func setUp() {
         // In UI tests it is usually best to stop immediately when a failure occurs.
@@ -30,42 +31,49 @@ class BaselinePingTest: XCTestCase {
         }
     }
 
-    func testValidateBaselinePing() {
-        let server = setupServer(expectPingType: "baseline")
-        expectation = expectation(description: "Completed upload")
+    func checkCustomCounterData(expectedValue: UInt64) {
+        let pingInfo = lastPingJson!["ping_info"] as! [String: Any]
+        XCTAssertEqual(pingInfo["ping_type"] as! String, "sample")
+
+        let metrics = lastPingJson!["metrics"] as! [String: Any]
+        let counters = metrics["counter"] as! [String: Any]
+        let value = counters["custom.counter"] as! UInt64
+        XCTAssertEqual(value, expectedValue)
+    }
+
+    func testViewControllerInteraction() {
+        let server = setupServer(expectPingType: "sample")
 
         app.launchArguments = ["USE_MOCK_SERVER"]
         app.launch()
 
-        // Wait for 1 second: this should guarantee we have some valid duration in the
-        // ping.
-        sleep(1)
+        let sendButton = app.buttons["Send"]
+        let recordButton = app.buttons["Record"]
 
-        // Trigger baseline ping by putting app into the background
-        XCUIDevice.shared.press(XCUIDevice.Button.home)
+        // Send the sample ping
+        expectation = expectation(description: "Completed upload")
+        sendButton.tap()
 
         waitForExpectations(timeout: 5.0) { error in
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
         }
 
-        let pingInfo = lastPingJson!["ping_info"] as! [String: Any]
-        XCTAssertEqual(pingInfo["ping_type"] as! String, "baseline")
+        checkCustomCounterData(expectedValue: 1)
 
-        let metrics = lastPingJson!["metrics"] as! [String: Any]
+        // Record a bit more data
+        recordButton.tap()
+        recordButton.tap()
+        recordButton.tap()
 
-        // Make sure we have a 'duration' field with a reasonable value: it should be >= 1, since
-        // we slept for 1000ms.
-        let timespans = metrics["timespan"] as! [String: Any]
-        let duration = timespans["glean.baseline.duration"] as! [String: Any]
-        let durationValue = duration["value"] as! UInt64
-        XCTAssertTrue(durationValue >= 1)
+        // Send the sample ping
+        expectation = expectation(description: "Completed upload")
+        sendButton.tap()
 
-        // Make sure there's no errors.
-        let errors = metrics["labeled_counter"] as? [String: Any]
-
-        for (id, _) in errors ?? [:] {
-            XCTAssertFalse(id.starts(with: "glean.error."))
+        waitForExpectations(timeout: 5.0) { error in
+            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
         }
+
+        checkCustomCounterData(expectedValue: 4)
 
         server.stop()
     }
