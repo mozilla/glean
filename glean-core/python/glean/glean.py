@@ -14,6 +14,8 @@ from ._dispatcher import Dispatcher
 from . import _ffi
 
 
+# To avoid cyclical imports, but still make mypy type-checking work.
+# See https://mypy.readthedocs.io/en/latest/common_issues.html#import-cycles
 if TYPE_CHECKING:
     from .metrics import PingType
 
@@ -205,6 +207,9 @@ class Glean:
         from . import _builtins
 
         # TODO: 1594184
+        # Just make sure the metrics loaded for testing purposes.
+        # Actual metrics will be filled in once we have the required
+        # metric types implemented.
         _builtins.metrics.glean
 
     @classmethod

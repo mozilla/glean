@@ -4,8 +4,8 @@
 
 
 """
-Utilities for loading metrics.yaml and pings.yaml files and creating a tree of
-metric types.
+Utilities for loading metrics.yaml and pings.yaml files and creating a tree
+of metric types.
 """
 
 
@@ -96,7 +96,11 @@ def load_metrics(
             These are documented in glean_parser:
             https://mozilla.github.io/glean_parser/glean_parser.html#glean_parser.parser.parse_objects
     Returns:
-        metrics: A tree of metrics, as defined in the `metrics.yaml` file.
+        metrics (object): An object containing a tree of metrics, as defined in
+            the `metrics.yaml` file.
+    Example:
+        >>> metrics = load_metrics("metrics.yaml")
+        >>> metrics.category.name.set("value")
     """
     if not isinstance(filepath, list):
         filepath = [filepath]
@@ -139,7 +143,11 @@ def load_pings(
             These are documented in glean_parser:
             https://mozilla.github.io/glean_parser/glean_parser.html#glean_parser.parser.parse_objects
     Returns:
-        pings: A tree of pings, as defined in the `pings.yaml` file.
+        pings (object): An object where the attributes are pings, as defined in
+            the `pings.yaml` file.
+    Example:
+        >>> pings = load_pings("pings.yaml")
+        >>> pings.baseline.send()
     """
     metrics = load_metrics(filepath, config)
 

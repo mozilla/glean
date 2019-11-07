@@ -36,7 +36,12 @@ search:
 ## Loading custom ping metadata into your application or library
 
 The Glean SDK build generates code from `pings.yaml` in a `Pings` object, which must be instantiated so Glean can send pings by name.
-This object must be registered with Glean from your startup code (such as in your application's `onCreate` method or a function called from that method).
+
+{{#include ../tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
+
+In Kotlin, this object must be registered with Glean from your startup code (such as in your application's `onCreate` method or a function called from that method).
 
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.Pings
@@ -49,6 +54,20 @@ override fun onCreate() {
     ...
 }
 ```
+
+</div>
+
+<div data-lang="Python" class="tab">
+
+```
+from glean import load_pings
+
+pings = load_pings("pings.yaml")
+```
+
+</div>
+
+{{#include ../tab_footer.md}}
 
 ## Sending metrics in a custom ping
 
@@ -80,7 +99,23 @@ To send a custom ping, call the `send` method on the `PingType` object that the 
 
 For example, to send the custom ping defined above:
 
+{{#include ../tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
+
 ```kotlin
 import org.mozilla.yourApplication.GleanMetrics.Pings
 Pings.search.send()
 ```
+
+</div>
+
+<div data-lang="Python" class="tab">
+
+```Python
+pings.search.send()
+```
+
+</div>
+
+{{#include ../tab_footer.md}}
