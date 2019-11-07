@@ -30,7 +30,7 @@ with open(ROOT.parent / "Cargo.toml") as cargo:
     parsed_toml = toml.load(cargo)
     version = parsed_toml["package"]["version"]
 
-requirements = ["cffi==1.13.1"]
+requirements = ["cffi==1.13.1", "glean_parser==1.9.5"]
 
 setup_requirements = []
 
@@ -69,5 +69,15 @@ setup(
     setup_requires=setup_requirements,
     url="https://github.com/mozilla/glean",
     zip_safe=False,
-    data_files=[("glean", ["../ffi/glean.h", f"../../target/debug/{shared_object}",],)],
+    data_files=[
+        (
+            "glean",
+            [
+                "../ffi/glean.h",
+                f"../../target/debug/{shared_object}",
+                "../metrics.yaml",
+                "../pings.yaml",
+            ],
+        )
+    ],
 )

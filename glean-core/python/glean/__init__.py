@@ -9,6 +9,7 @@ from pkg_resources import get_distribution, DistributionNotFound
 
 from .glean import Glean
 from .config import Configuration
+from ._loader import load_metrics, load_pings
 
 
 __version__: str = "unknown"
@@ -22,4 +23,12 @@ __author__ = "The Glean Team"
 __email__ = "glean-team@mozilla.com"
 
 
-__all__ = ["__author__", "__email__", "__version__", "Glean", "Configuration"]
+__all__ = [
+    "__author__",
+    "__email__",
+    "__version__",
+    "Glean",
+    "Configuration",
+    "load_metrics",
+    "load_pings",
+]

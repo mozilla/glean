@@ -6,12 +6,18 @@
 from pathlib import Path
 import shutil
 import tempfile
-from typing import Optional
+from typing import Optional, Set, TYPE_CHECKING
 
 
 from .config import Configuration
 from ._dispatcher import Dispatcher
 from . import _ffi
+
+
+# To avoid cyclical imports, but still make mypy type-checking work.
+# See https://mypy.readthedocs.io/en/latest/common_issues.html#import-cycles
+if TYPE_CHECKING:
+    from .metrics import PingType
 
 
 class Glean:
@@ -40,7 +46,9 @@ class Glean:
     # Keep track of this setting before Glean is initialized
     _upload_enabled: bool = True
 
-    # TODO: 1594184 ping_type_queue
+    # The ping types, so they can be registered prior to Glean initialization,
+    # and saved between test runs.
+    _ping_type_queue: Set["PingType"] = set()
 
     @classmethod
     def initialize(
@@ -80,7 +88,8 @@ class Glean:
         cls._configuration = configuration
         cls._data_dir = data_dir
 
-        # TODO: 1594184 cls.register_pings(pings)
+        for ping in cls._ping_type_queue:
+            cls.register_ping_type(ping)
 
         cfg = _ffi.make_config(
             cls._data_dir,
@@ -137,12 +146,18 @@ class Glean:
         return cls._handle != 0
 
     @classmethod
-    def register_pings(cls):
+    def register_ping_type(cls, ping: "PingType"):
         """
-        Register the pings generated from pings.yaml with the Glean SDK.
+        Register the ping type in the registry.
         """
-        # TODO: 1594184
-        pass
+        if cls.is_initialized():
+            _ffi.lib.glean_register_ping_type(cls._handle, ping._handle)
+
+        # We need to keep track of pings, so they get re-registered after a
+        # reset. This state is kept across Glean resets, which should only ever
+        # happen in test mode. It's a set and keeping them around forever
+        # should not have much of an impact.
+        cls._ping_type_queue.add(ping)
 
     @classmethod
     def set_upload_enabled(cls, enabled: bool):
@@ -189,8 +204,13 @@ class Glean:
         """
         Set a few metrics that will be sent as part of every ping.
         """
+        from . import _builtins
+
         # TODO: 1594184
-        pass
+        # Just make sure the metrics loaded for testing purposes.
+        # Actual metrics will be filled in once we have the required
+        # metric types implemented.
+        _builtins.metrics.glean
 
     @classmethod
     def get_data_dir(cls) -> Path:
@@ -198,3 +218,6 @@ class Glean:
         Get the data directory for Glean.
         """
         return cls._data_dir
+
+
+__all__ = ["Glean"]

@@ -6,7 +6,7 @@
 from typing import List, Optional
 
 
-from .. import Glean
+from ..glean import Glean
 from .. import _ffi
 from .._dispatcher import Dispatcher
 from ..testing import ErrorType
