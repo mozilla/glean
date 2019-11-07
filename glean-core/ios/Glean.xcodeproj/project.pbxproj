@@ -475,7 +475,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ ! -e 'Cartfile' ]; then\n ln -s tests-only-Cartfile Cartfile\n carthage update --platform iOS\nfi\n/usr/local/bin/carthage copy-frameworks\n";
+			shellScript = "/usr/local/bin/carthage copy-frameworks\n";
 		};
 		AC0C2B5E2328090D00A50CC8 /* Copy Carthage Dependencies */ = {
 			isa = PBXShellScriptBuildPhase;
