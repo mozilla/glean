@@ -15,14 +15,22 @@ class PingType:
         The Ping API only exposes the `PingType.send` method, which schedules a
         ping for sending.
         """
+        self._name = name
         self._handle = _ffi.lib.glean_new_ping_type(
-            _ffi.ffi_string(name), include_client_id
+            _ffi.ffi_encode_string(name), include_client_id
         )
         Glean.register_ping_type(self)
 
     def __del__(self):
         if self._handle != 0:
             _ffi.lib.glean_destroy_ping_type(self._handle)
+
+    @property
+    def name(self):
+        """
+        Get the name of the ping.
+        """
+        return self._name
 
     def send(self):
         """

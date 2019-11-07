@@ -26,7 +26,7 @@ class Configuration:
     server_endpoint: str = DEFAULT_TELEMETRY_ENDPOINT
 
     # The user agent used when sending pings.
-    user_agent: str = Optional[None]
+    user_agent: Optional[str] = None
 
     # The release channel the application is on, if known.
     channel: Optional[str] = None
@@ -46,9 +46,9 @@ class Configuration:
         #   https://github.com/pdoc3/pdoc/issues/116
 
         if self.user_agent is None:
-            from glean import __version__
+            import glean
 
-            self.user_agent = f"Glean/{__version__} (Python on {sys.platform})"
+            self.user_agent = f"Glean/{glean.__version__} (Python on {sys.platform})"
 
 
 __all__ = ["Configuration"]

@@ -90,7 +90,7 @@ class HttpURLConnectionUploader : PingUploader {
                     // Known other errors:
                     // 500 - internal error
 
-                    // For all other errors we log a warning an try again at a later time.
+                    // For all other errors we log a warning and try again at a later time.
                     Log.w(LOG_TAG, "Server returned response code: $responseCode")
                     return false
                 }

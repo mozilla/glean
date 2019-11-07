@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
+import json
 import shutil
 
 
@@ -10,9 +11,10 @@ import pytest
 
 
 from glean import Glean
+from glean import _builtins
 from glean import testing
 from glean._dispatcher import Dispatcher
-from glean.metrics import CounterMetricType, Lifetime
+from glean.metrics import CounterMetricType, Lifetime, PingType
 
 
 def setup_function():
@@ -35,14 +37,35 @@ def test_getting_upload_enabled_before_initialization_should_not_crash():
     assert Glean.get_upload_enabled()
 
 
-@pytest.mark.skip
-def test_send_a_ping():
-    pass
+def test_send_a_ping(httpserver):
+    httpserver.serve_content(b"", code=200)
+
+    Glean._configuration.server_endpoint = httpserver.url
+    Glean._configuration.log_pings = True
+
+    counter_metric = CounterMetricType(
+        disabled=False,
+        category="telemetry",
+        lifetime=Lifetime.APPLICATION,
+        name="counter_metric",
+        send_in_pings=["baseline"],
+    )
+
+    counter_metric.add()
+
+    _builtins.pings.baseline.send()
+
+    assert 1 == len(httpserver.requests)
+
+    request = httpserver.requests[0]
+    assert "baseline" in request.url
 
 
-@pytest.mark.skip
-def test_sending_an_empty_ping_doesnt_queue_work():
-    pass
+def test_sending_an_empty_ping_doesnt_queue_work(httpserver):
+    httpserver.serve_content(b"", code=200)
+
+    Glean.send_pings_by_name(["metrics"])
+    assert 0 == len(httpserver.requests)
 
 
 def test_disabling_upload_should_disable_metrics_recording():
@@ -125,14 +148,36 @@ def test_dont_handle_events_when_uninitialized():
     pass
 
 
-@pytest.mark.skip
-def test_dont_schedule_pings_if_metrics_disabled():
-    pass
+def test_dont_schedule_pings_if_metrics_disabled(httpserver):
+    httpserver.serve_content(b"", code=200)
+
+    counter_metric = CounterMetricType(
+        disabled=False,
+        category="telemetry",
+        lifetime=Lifetime.APPLICATION,
+        name="counter_metric",
+        send_in_pings=["store1"],
+    )
+
+    custom_ping = PingType(name="store1", include_client_id=True)
+
+    counter_metric.add(10)
+
+    Glean.set_upload_enabled(False)
+
+    custom_ping.send()
+
+    assert 0 == len(httpserver.requests)
 
 
-@pytest.mark.skip
-def test_dont_schedule_pings_if_there_is_no_ping_content():
-    pass
+def test_dont_schedule_pings_if_there_is_no_ping_content(httpserver):
+    httpserver.serve_content(b"", code=200)
+
+    custom_ping = PingType(name="store1", include_client_id=True)
+
+    custom_ping.send()
+
+    assert 0 == len(httpserver.requests)
 
 
 @pytest.mark.skip
@@ -168,3 +213,25 @@ def test_basic_metrics_should_be_cleared_when_disabling_uploading():
 @pytest.mark.skip
 def test_core_metrics_should_be_cleared_with_disabling_and_enabling_uploading():
     pass
+
+
+def test_collect():
+    counter_metric = CounterMetricType(
+        disabled=False,
+        category="telemetry",
+        lifetime=Lifetime.APPLICATION,
+        name="counter_metric",
+        send_in_pings=["store1"],
+    )
+
+    custom_ping = PingType(name="store1", include_client_id=True)
+
+    counter_metric.add(10)
+
+    json_content = Glean.test_collect(custom_ping)
+
+    assert isinstance(json_content, str)
+
+    json_tree = json.loads(json_content)
+
+    assert 10 == json_tree["metrics"]["counter"]["telemetry.counter_metric"]

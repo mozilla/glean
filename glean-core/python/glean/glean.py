@@ -3,21 +3,26 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
+import logging
 from pathlib import Path
 import shutil
 import tempfile
-from typing import Optional, Set, TYPE_CHECKING
+from typing import List, Optional, Set, TYPE_CHECKING
 
 
 from .config import Configuration
 from ._dispatcher import Dispatcher
 from . import _ffi
+from .net import BaseUploader, HttpClientUploader, PingUploader, PingUploadWorker
 
 
 # To avoid cyclical imports, but still make mypy type-checking work.
 # See https://mypy.readthedocs.io/en/latest/common_issues.html#import-cycles
 if TYPE_CHECKING:
     from .metrics import PingType
+
+
+log = logging.getLogger(__name__)
 
 
 class Glean:
@@ -35,7 +40,7 @@ class Glean:
     _handle: int = 0
 
     # The Configuration that was passed to `initialize`
-    _configuration: Optional[Configuration] = None
+    _configuration: Configuration
 
     # The directory that Glean stores data in
     _data_dir: Path = Path()
@@ -50,12 +55,16 @@ class Glean:
     # and saved between test runs.
     _ping_type_queue: Set["PingType"] = set()
 
+    # The ping uploader implementation
+    _ping_uploader: BaseUploader = HttpClientUploader()
+
     @classmethod
     def initialize(
         cls,
         configuration: Optional[Configuration] = None,
         application_id: Optional[str] = None,
         data_dir: Optional[Path] = None,
+        ping_uploader: Optional[PingUploader] = None,
     ):
         """
         Initialize the Glean SDK.
@@ -72,6 +81,9 @@ class Glean:
                 sending pings. Defaults to 'glean-python'.
             data_dir (pathlib.Path): (optional) The path to the Glean data
                 directory. If not provided, uses a temporary directory.
+            ping_uploader (glean.net.PingUploader): The implementation of ping
+                uploader to use. Defaults to an implementation based on
+                Python stdlib's `http.client`.
         """
         if cls.is_initialized():
             return
@@ -85,11 +97,11 @@ class Glean:
         if data_dir is None:
             data_dir = Path(tempfile.TemporaryDirectory().name)
 
+        if ping_uploader is None:
+            ping_uploader = HttpClientUploader()
+
         cls._configuration = configuration
         cls._data_dir = data_dir
-
-        for ping in cls._ping_type_queue:
-            cls.register_ping_type(ping)
 
         cfg = _ffi.make_config(
             cls._data_dir,
@@ -105,7 +117,8 @@ class Glean:
         if cls._handle == 0:
             return
 
-        # TODO: 1594184 Flush the ping_type_queue
+        for ping in cls._ping_type_queue:
+            cls.register_ping_type(ping)
 
         # Initialize the core metrics
         cls._initialize_core_metrics()
@@ -117,9 +130,7 @@ class Glean:
         @Dispatcher.launch_at_front
         def send_pending_events():
             if _ffi.lib.glean_on_ready_to_send_pings(cls._handle):
-                # TODO: 1591192
-                # PingUploadWorker.enqueueWorker()
-                pass
+                PingUploadWorker.process()
 
         Dispatcher.flush_queued_initial_tasks()
 
@@ -158,6 +169,17 @@ class Glean:
         # happen in test mode. It's a set and keeping them around forever
         # should not have much of an impact.
         cls._ping_type_queue.add(ping)
+
+    @classmethod
+    def test_has_ping_type(cls, ping_name: str):
+        """
+        Returns True if a ping by this name is in the ping registry.
+        """
+        return bool(
+            _ffi.lib.glean_test_has_ping_type(
+                cls._handle, _ffi.ffi_encode_string(ping_name)
+            )
+        )
 
     @classmethod
     def set_upload_enabled(cls, enabled: bool):
@@ -217,6 +239,61 @@ class Glean:
         Get the data directory for Glean.
         """
         return cls._data_dir
+
+    @classmethod
+    def test_collect(cls, ping: "PingType") -> str:
+        """
+        Collect a ping and return as a string.
+        """
+        return _ffi.ffi_decode_string(
+            _ffi.lib.glean_ping_collect(cls._handle, ping._handle)
+        )
+
+    @classmethod
+    def send_pings(cls, pings: List["PingType"]):
+        """
+        Send a list of pings.
+
+        If the ping currently contains no content, it will not be assembled and
+        queued for sending.
+
+        Args:
+            pings (list of PingType): List of pings to send.
+        """
+        ping_names = [ping.name for ping in pings]
+
+        cls.send_pings_by_name(ping_names)
+
+    @classmethod
+    @Dispatcher.task
+    def send_pings_by_name(cls, ping_names: List[str]):
+        """
+        Send a list of pings by name.
+
+        Each ping will be looked up in the known instances of
+        `glean.metrics.PingType`. If the ping isn't known, an error is logged
+        and the ping isn't queued for uploading.
+
+        If the ping currently contains no content, it will not be assembled and
+        queued for sending.
+
+        Args:
+            ping_names (list of str): List of pings to send.
+        """
+        if not cls.is_initialized():
+            log.error("Glean must be initialized before sending pings.")
+            return
+
+        if not cls.get_upload_enabled():
+            log.error("Glean must be enabled before sending pings.")
+            return
+
+        sent_ping = _ffi.lib.glean_send_pings_by_name(
+            cls._handle, _ffi.ffi_encode_vec_string(ping_names), len(ping_names)
+        )
+
+        if sent_ping:
+            PingUploadWorker.process()
 
 
 __all__ = ["Glean"]
