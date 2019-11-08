@@ -76,6 +76,34 @@ XCTAssertEqual(1, SearchDefault.name.testGetNumRecordedErrors(.invalidValue))
 
 </div>
 
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+// Record a value into the metric.
+metrics.search_default.name.set("duck duck go")
+// If it changed later, you can record the new value:
+metrics.search_default.name.set("wikipedia")
+```
+
+There are test APIs available too:
+
+```Kotlin
+// Was anything recorded?
+assert metrics.search_default.name.test_has_value()
+// Does the string metric have the expected value?
+// IMPORTANT: It may have been truncated -- see "Limits" below
+assert "wikipedia" == metrics.search_default.name.test_get_value()
+// Was the string truncated, and an error reported?
+assert 1 == metrics.search_default.name.test_get_num_recorded_errors(
+    ErrorType.INVALID_VALUE
+)
+```
+
+</div>
+
 {{#include ../../tab_footer.md}}
 
 ## Limits
@@ -96,3 +124,4 @@ XCTAssertEqual(1, SearchDefault.name.testGetNumRecordedErrors(.invalidValue))
 
 * [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-string-metric-type/index.html).
 * [Swift API docs](../../../swift/Classes/StringMetricType.html)
+* [Python API docs](../../../python/glean/metrics/string.html)
