@@ -50,7 +50,7 @@ impl EventMetric {
     /// ## Arguments
     ///
     /// * `glean` - The Glean instance this metric belongs to.
-    /// * `timestamp` - A monotonically increasing timestamp, in nanoseconds.
+    /// * `timestamp` - A monotonically increasing timestamp, in milliseconds.
     ///   This must be provided since the actual recording of the event may
     ///   happen some time later than the moment the event occurred.
     /// * `extra` - A HashMap of (key, value) pairs. The key is an index into
