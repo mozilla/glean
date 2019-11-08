@@ -240,9 +240,16 @@ impl EventDatabase {
     /// The an array of events, JSON encoded, if any.
     pub fn snapshot_as_json(&self, store_name: &str, clear_store: bool) -> Option<JsonValue> {
         let result = {
-            let db = self.event_stores.read().unwrap();
-            db.get(&store_name.to_string()).and_then(|store| {
+            let mut db = self.event_stores.write().unwrap();
+            db.get_mut(&store_name.to_string()).and_then(|store| {
                 if !store.is_empty() {
+                    // Timestamps may have been recorded out-of-order, so sort the events
+                    // by the timestamp.
+                    // We can't insert events in order as-we-go, because we also append
+                    // events to a file on disk, where this would be expensive. Best to
+                    // handle this in every case (whether events came from disk or memory)
+                    // in a single location.
+                    store.sort_by(|a, b| a.timestamp.partial_cmp(&b.timestamp).unwrap());
                     let first_timestamp = store[0].timestamp;
                     Some(JsonValue::from_iter(
                         store.iter().map(|e| e.serialize_relative(first_timestamp)),

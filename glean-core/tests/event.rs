@@ -237,3 +237,48 @@ fn extra_keys_must_be_recorded_and_truncated_if_needed() {
         event["extra"]["truncatedExtra"]
     );
 }
+
+#[test]
+fn snapshot_sorts_the_timestamps() {
+    let (glean, _t) = new_glean();
+
+    let metric = EventMetric::new(
+        CommonMetricData {
+            name: "test_event_clear".into(),
+            category: "telemetry".into(),
+            send_in_pings: vec!["store1".into()],
+            disabled: false,
+            lifetime: Lifetime::Ping,
+            ..Default::default()
+        },
+        vec![],
+    );
+
+    metric.record(&glean, 1000, None);
+    metric.record(&glean, 100, None);
+    metric.record(&glean, 10000, None);
+
+    let snapshot = glean
+        .event_storage()
+        .snapshot_as_json("store1", true)
+        .unwrap();
+
+    assert_eq!(
+        0,
+        snapshot.as_array().unwrap()[0]["timestamp"]
+            .as_i64()
+            .unwrap()
+    );
+    assert_eq!(
+        900,
+        snapshot.as_array().unwrap()[1]["timestamp"]
+            .as_i64()
+            .unwrap()
+    );
+    assert_eq!(
+        9900,
+        snapshot.as_array().unwrap()[2]["timestamp"]
+            .as_i64()
+            .unwrap()
+    );
+}
