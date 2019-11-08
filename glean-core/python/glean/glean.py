@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
+import atexit
 import logging
 from pathlib import Path
 import shutil
@@ -89,9 +90,12 @@ class Glean:
 
         if data_dir is None:
             data_dir = Path(tempfile.TemporaryDirectory().name)
+            cls._destroy_data_dir = True
+        else:
+            cls._destroy_data_dir = False
+        cls._data_dir = data_dir
 
         cls._configuration = configuration
-        cls._data_dir = data_dir
 
         cfg = _ffi.make_config(
             cls._data_dir,
@@ -287,3 +291,6 @@ class Glean:
 
 
 __all__ = ["Glean"]
+
+
+atexit.register(Glean.reset)

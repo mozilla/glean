@@ -235,3 +235,11 @@ def test_collect():
     json_tree = json.loads(json_content)
 
     assert 10 == json_tree["metrics"]["counter"]["telemetry.counter_metric"]
+
+
+def test_tempdir_is_cleared():
+    tempdir = Glean._data_dir
+
+    Glean.reset()
+
+    assert not tempdir.exists()

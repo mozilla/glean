@@ -12,9 +12,14 @@ import pytest
 from glean import load_metrics
 from glean._loader import UnsupportedMetricType
 from glean import _builtins
+from glean import testing
 
 
 ROOT = Path(__file__).parent
+
+
+def setup_function():
+    testing.reset_glean()
 
 
 def test_builtin_pings():
