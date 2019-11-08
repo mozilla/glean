@@ -72,6 +72,49 @@ assertEquals(1, Auth.loginTime.testGetNumRecordedErrors(ErrorType.InvalidValue))
 
 </div>
 
+<div data-lang="Java" class="tab">
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Auth
+
+fun onShowLogin() {
+    Auth.INSTANCE.getLoginTime.start()
+    // ...
+}
+
+fun onLogin() {
+    Auth.INSTANCE.getLoginTime.stop()
+    // ...
+}
+
+fun onLoginCancel() {
+    Auth.INSTANCE.getLoginTime.cancel()
+    // ...
+}
+```
+
+The time reported in the telemetry ping will be timespan recorded during the lifetime of the ping.
+
+There are test APIs available too:
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Auth
+
+// Was anything recorded?
+assertTrue(Auth.INSTANCE.getLoginTime.testHasValue())
+// Does the timer have the expected value
+assertTrue(Auth.INSTANCE.getLoginTime.testGetValue() > 0)
+// Was the timing recorded incorrectly?
+assertEquals(
+    1, 
+    Auth.INSTANCE.getLoginTime.testGetNumRecordedErrors(
+        ErrorType.InvalidValue
+    )
+)
+```
+
+</div>
+
 <div data-lang="Swift" class="tab">
 
 ```Swift

@@ -77,6 +77,54 @@ assertEquals(1, pages.pageLoad.testGetNumRecordedErrors(ErrorType.InvalidValue))
 
 </div>
 
+<div data-lang="Java" class="tab">
+
+```Java
+import mozilla.components.service.glean.GleanTimerId
+import org.mozilla.yourApplication.GleanMetrics.Pages
+
+val timerId : GleanTimerId
+
+fun onPageStart(e: Event) {
+    timerId = Pages.INSTANCE.getPageLoad.start()
+}
+
+fun onPageLoaded(e: Event) {
+    Pages.INSTANCE.getPageLoad.stopAndAccumulate(timerId)
+}
+```
+
+There are test APIs available too.  For convenience, properties `sum` and `count` are exposed to facilitate validating that data was recorded correctly.
+
+Continuing the `pageLoad` example above, at this point the metric should have a `sum == 11` and a `count == 2`:
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Pages
+
+// Was anything recorded?
+assertTrue(pages.INSTANCE.getPageLoad.testHasValue())
+
+// Get snapshot.
+val snapshot = pages.INSTANCE.getPageLoad.testGetValue()
+
+// Does the sum have the expected value?
+assertEquals(11, snapshot.getSum)
+
+// Usually you don't know the exact timing values, but how many should have been recorded.
+assertEquals(2L, snapshot.getCount)
+
+// Was an error recorded?
+assertEquals(
+    1, 
+    pages.INSTANCE.getPageLoad.testGetNumRecordedErrors(
+        ErrorType.InvalidValue
+    )
+)
+```
+
+</div>
+
+
 <div data-lang="Swift" class="tab">
 
 ```Swift

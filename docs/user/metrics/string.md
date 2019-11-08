@@ -51,6 +51,38 @@ assertEquals(1, SearchDefault.name.testGetNumRecordedErrors(ErrorType.InvalidVal
 
 </div>
 
+<div data-lang="Java" class="tab">
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.SearchDefault
+
+// Record a value into the metric.
+SearchDefault.INSTANCE.getName.set("duck duck go")
+// If it changed later, you can record the new value:
+SearchDefault.INSTANCE.getName.set("wikipedia")
+```
+
+There are test APIs available too:
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.SearchDefault
+
+// Was anything recorded?
+assertTrue(SearchDefault.INSTANCE.getName.testHasValue())
+// Does the string metric have the expected value?
+// IMPORTANT: It may have been truncated -- see "Limits" below
+assertEquals("wikipedia", SearchDefault.INSTANCE.getName.testGetValue())
+// Was the string truncated, and an error reported?
+assertEquals(
+    1, 
+    SearchDefault.INSTANCE.getName.testGetNumRecordedErrors(
+        ErrorType.InvalidValue
+    )
+)
+```
+
+</div>
+
 <div data-lang="Swift" class="tab">
 
 ```Swift

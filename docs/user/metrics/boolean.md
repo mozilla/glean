@@ -41,6 +41,28 @@ assertTrue(Flags.a11yEnabled.testGetValue())
 
 </div>
 
+<div data-lang="Java" class="tab">
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Flags
+
+Flags.INSTANCE.getA11yEnabled.set(System.isAccesibilityEnabled())
+```
+
+There are test APIs available too:
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Flags
+
+// Was anything recorded?
+assertTrue(Flags.INSTANCE.getA11yEnabled.testHasValue())
+// Does it have the expected value?
+assertTrue(Flags.INSTANCE.getA11yEnabled.testGetValue())
+```
+
+</div>
+
+
 <div data-lang="Swift" class="tab">
 
 ```Swift
