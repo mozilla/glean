@@ -17,12 +17,16 @@ from glean_parser.parser import parse_objects  # type: ignore
 import glean_parser.metrics  # type: ignore
 
 
-from .metrics import CounterMetricType, PingType
+from . import metrics
 
 
 # A mapping from the name of the metric type as it appears in the metrics.yaml
 # to the Python class for that metric type.
-_TYPE_MAPPING = {"counter": CounterMetricType, "ping": PingType}
+_TYPE_MAPPING = {
+    "counter": metrics.CounterMetricType,
+    "ping": metrics.PingType,
+    "string": metrics.StringMetricType,
+}
 
 
 # The arguments that should be passed to the constructor for the metric types.
@@ -152,3 +156,6 @@ def load_pings(
     metrics = load_metrics(filepath, config)
 
     return metrics.pings
+
+
+__all__ = ["load_metrics", "load_pings"]
