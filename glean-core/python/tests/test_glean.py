@@ -64,7 +64,7 @@ def test_send_a_ping(httpserver):
 def test_sending_an_empty_ping_doesnt_queue_work(httpserver):
     httpserver.serve_content(b"", code=200)
 
-    Glean.send_pings_by_name(["metrics"])
+    Glean._send_pings_by_name(["metrics"])
     assert 0 == len(httpserver.requests)
 
 

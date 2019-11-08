@@ -38,4 +38,4 @@ class PingType:
 
         If the ping currently contains no content, it will not be sent.
         """
-        Glean.send_pings([self])
+        Glean._send_pings([self])

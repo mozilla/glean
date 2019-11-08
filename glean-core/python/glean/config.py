@@ -8,6 +8,9 @@ import sys
 from typing import Optional
 
 
+from . import net
+
+
 # The default server pings are sent to
 DEFAULT_TELEMETRY_ENDPOINT = "https://incoming.telemetry.mozilla.org"
 
@@ -39,6 +42,9 @@ class Configuration:
 
     # String tag to be applied to headers when uploading pings for debug view.
     ping_tag: Optional[str] = None
+
+    # The ping uploader implementation
+    ping_uploader: net.BaseUploader = net.HttpClientUploader()
 
     def __post_init__(self):
         # It would be preferable to use a field(default_factory=...) for this,

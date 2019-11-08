@@ -13,7 +13,7 @@ from typing import List, Optional, Set, TYPE_CHECKING
 from .config import Configuration
 from ._dispatcher import Dispatcher
 from . import _ffi
-from .net import BaseUploader, HttpClientUploader, PingUploader, PingUploadWorker
+from .net import PingUploadWorker
 
 
 # To avoid cyclical imports, but still make mypy type-checking work.
@@ -55,16 +55,12 @@ class Glean:
     # and saved between test runs.
     _ping_type_queue: Set["PingType"] = set()
 
-    # The ping uploader implementation
-    _ping_uploader: BaseUploader = HttpClientUploader()
-
     @classmethod
     def initialize(
         cls,
         configuration: Optional[Configuration] = None,
         application_id: Optional[str] = None,
         data_dir: Optional[Path] = None,
-        ping_uploader: Optional[PingUploader] = None,
     ):
         """
         Initialize the Glean SDK.
@@ -81,9 +77,6 @@ class Glean:
                 sending pings. Defaults to 'glean-python'.
             data_dir (pathlib.Path): (optional) The path to the Glean data
                 directory. If not provided, uses a temporary directory.
-            ping_uploader (glean.net.PingUploader): The implementation of ping
-                uploader to use. Defaults to an implementation based on
-                Python stdlib's `http.client`.
         """
         if cls.is_initialized():
             return
@@ -96,9 +89,6 @@ class Glean:
 
         if data_dir is None:
             data_dir = Path(tempfile.TemporaryDirectory().name)
-
-        if ping_uploader is None:
-            ping_uploader = HttpClientUploader()
 
         cls._configuration = configuration
         cls._data_dir = data_dir
@@ -250,7 +240,7 @@ class Glean:
         )
 
     @classmethod
-    def send_pings(cls, pings: List["PingType"]):
+    def _send_pings(cls, pings: List["PingType"]):
         """
         Send a list of pings.
 
@@ -262,11 +252,11 @@ class Glean:
         """
         ping_names = [ping.name for ping in pings]
 
-        cls.send_pings_by_name(ping_names)
+        cls._send_pings_by_name(ping_names)
 
     @classmethod
     @Dispatcher.task
-    def send_pings_by_name(cls, ping_names: List[str]):
+    def _send_pings_by_name(cls, ping_names: List[str]):
         """
         Send a list of pings by name.
 

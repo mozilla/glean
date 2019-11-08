@@ -78,7 +78,7 @@ class PingUploadWorker:
             log.error(f"IOError when reading {path.resolve()}: {e}")
             return False
 
-        processed = Glean._ping_uploader.do_upload(
+        processed = Glean._configuration.ping_uploader.do_upload(
             url_path, serialized_ping, Glean._configuration
         )
 
