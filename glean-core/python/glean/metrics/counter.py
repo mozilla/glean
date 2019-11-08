@@ -40,9 +40,9 @@ class CounterMetricType:
         self._send_in_pings = send_in_pings
 
         self._handle = _ffi.lib.glean_new_counter_metric(
-            _ffi.ffi_string(category),
-            _ffi.ffi_string(name),
-            _ffi.ffi_vec_string(send_in_pings),
+            _ffi.ffi_encode_string(category),
+            _ffi.ffi_encode_string(name),
+            _ffi.ffi_encode_vec_string(send_in_pings),
             len(send_in_pings),
             lifetime.value,
             disabled,
@@ -84,7 +84,7 @@ class CounterMetricType:
 
         return bool(
             _ffi.lib.glean_counter_test_has_value(
-                Glean._handle, self._handle, _ffi.ffi_string(ping_name)
+                Glean._handle, self._handle, _ffi.ffi_encode_string(ping_name)
             )
         )
 
@@ -106,7 +106,7 @@ class CounterMetricType:
             raise ValueError("metric has no value")
 
         return _ffi.lib.glean_counter_test_get_value(
-            Glean._handle, self._handle, _ffi.ffi_string(ping_name)
+            Glean._handle, self._handle, _ffi.ffi_encode_string(ping_name)
         )
 
     def test_get_num_recorded_errors(
@@ -128,5 +128,11 @@ class CounterMetricType:
             ping_name = self._send_in_pings[0]
 
         return _ffi.lib.glean_counter_test_get_num_recorded_errors(
-            Glean._handle, self._handle, error_type.value, _ffi.ffi_string(ping_name)
+            Glean._handle,
+            self._handle,
+            error_type.value,
+            _ffi.ffi_encode_string(ping_name),
         )
+
+
+__all__ = ["CounterMetricType"]

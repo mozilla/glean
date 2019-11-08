@@ -8,6 +8,9 @@ import sys
 from typing import Optional
 
 
+from . import net
+
+
 # The default server pings are sent to
 DEFAULT_TELEMETRY_ENDPOINT = "https://incoming.telemetry.mozilla.org"
 
@@ -26,7 +29,7 @@ class Configuration:
     server_endpoint: str = DEFAULT_TELEMETRY_ENDPOINT
 
     # The user agent used when sending pings.
-    user_agent: str = Optional[None]
+    user_agent: Optional[str] = None
 
     # The release channel the application is on, if known.
     channel: Optional[str] = None
@@ -40,15 +43,18 @@ class Configuration:
     # String tag to be applied to headers when uploading pings for debug view.
     ping_tag: Optional[str] = None
 
+    # The ping uploader implementation
+    ping_uploader: net.BaseUploader = net.HttpClientUploader()
+
     def __post_init__(self):
         # It would be preferable to use a field(default_factory=...) for this,
         # but that breaks our documentation generation due to this bug:
         #   https://github.com/pdoc3/pdoc/issues/116
 
         if self.user_agent is None:
-            from glean import __version__
+            import glean
 
-            self.user_agent = f"Glean/{__version__} (Python on {sys.platform})"
+            self.user_agent = f"Glean/{glean.__version__} (Python on {sys.platform})"
 
 
 __all__ = ["Configuration"]

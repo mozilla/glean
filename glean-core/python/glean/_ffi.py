@@ -54,8 +54,8 @@ def make_config(
         data_dir (pathlib.Path): Path to the Glean data directory.
         package_name (str): The name of the package to report in Glean's pings.
     """
-    data_dir = ffi.new("char[]", ffi_string(str(data_dir)))
-    package_name = ffi.new("char[]", ffi_string(package_name))
+    data_dir = ffi.new("char[]", ffi_encode_string(str(data_dir)))
+    package_name = ffi.new("char[]", ffi_encode_string(package_name))
     max_events = ffi.new("int32_t *", max_events)
 
     cfg = ffi.new("FfiConfiguration *")
@@ -70,18 +70,18 @@ def make_config(
     return cfg
 
 
-def ffi_string(value: str) -> bytes:
+def ffi_encode_string(value: str) -> bytes:
     """
     Convert a Python string to a UTF-8 encoded char* for sending over FFI.
     """
     return value.encode("utf-8")
 
 
-def ffi_vec_string(strings: List[str]) -> Any:
+def ffi_encode_vec_string(strings: List[str]) -> Any:
     """
     Convert a list of str in Python to a vector of char* suitable for sending over FFI.
     """
-    values = [ffi.new("char[]", ffi_string(x)) for x in strings]
+    values = [ffi.new("char[]", ffi_encode_string(x)) for x in strings]
     values.append(ffi.NULL)
 
     result = ffi.new("char *[]", values)
@@ -91,4 +91,22 @@ def ffi_vec_string(strings: List[str]) -> Any:
     return result
 
 
-__all__ = ["ffi", "ffi_string", "ffi_vec_string", "lib", "make_config"]
+def ffi_decode_string(cdata) -> str:
+    """
+    Convert a string returned from Rust to a Python string, and free the Rust
+    string.
+    """
+    try:
+        return ffi.string(cdata).decode("utf-8")
+    finally:
+        lib.glean_str_free(cdata)
+
+
+__all__ = [
+    "ffi",
+    "ffi_decode_string",
+    "ffi_encode_string",
+    "ffi_encode_vec_string",
+    "lib",
+    "make_config",
+]
