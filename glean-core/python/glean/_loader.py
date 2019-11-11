@@ -24,6 +24,7 @@ from . import metrics
 # to the Python class for that metric type.
 _TYPE_MAPPING = {
     "counter": metrics.CounterMetricType,
+    "labeled_counter": metrics.LabeledCounterMetricType,
     "ping": metrics.PingType,
     "string": metrics.StringMetricType,
 }
