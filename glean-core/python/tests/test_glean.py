@@ -3,11 +3,14 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
+import io
 import json
 import re
 import shutil
+import sys
 
 
+from glean_parser import validate_ping
 import pytest
 
 
@@ -268,6 +271,8 @@ def test_collect():
     json_tree = json.loads(json_content)
 
     assert 10 == json_tree["metrics"]["counter"]["telemetry.counter_metric"]
+
+    assert 0 == validate_ping.validate_ping(io.StringIO(json_content), sys.stdout)
 
 
 def test_tempdir_is_cleared():

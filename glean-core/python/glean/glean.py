@@ -62,7 +62,7 @@ class Glean:
     _application_id: str = "glean-python"
 
     # The version of the application sending Glean data.
-    _application_version: Optional[str] = None
+    _application_version: str = "unknown"
 
     @classmethod
     def initialize(
@@ -98,6 +98,9 @@ class Glean:
 
         if application_id is None:
             application_id = "glean-python"
+
+        if application_version is None:
+            application_version = "unknown"
 
         if data_dir is None:
             data_dir = Path(tempfile.TemporaryDirectory().name)
@@ -242,6 +245,8 @@ class Glean:
 
         # device_model and device_manufacturer aren't easily obtainable in this
         # context
+        metrics.glean.internal.metrics.device_manufacturer.set("unknown")
+        metrics.glean.internal.metrics.device_model.set("unknown")
 
         if cls._configuration.channel is not None:
             metrics.glean.internal.metrics.app_channel.set(cls._configuration.channel)
