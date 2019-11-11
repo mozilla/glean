@@ -15,6 +15,11 @@
 
 * The version of Glean is included in the Glean Gradle plugin.
 
+* When constructing a ping, events are now sorted by their timestamp. In practice,
+  it rarely happens that event timestamps are unsorted to begin with, but this 
+  guards against a potential race condition and incorrect usage of the lower-level
+  API.
+
 # v20.0.0 (2019-11-11)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v19.1.0...v20.0.0)
