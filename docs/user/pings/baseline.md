@@ -15,10 +15,10 @@ The baseline ping includes the following fields:
 
 | Field name | Type | Description |
 |---|---|---|
-| `duration` | Timespan | The duration, in seconds, of the last foreground session |
-| `locale` | String | The locale of the application |
+| `duration` | Timespan | The duration, in seconds, of the last foreground session. [^1]  |
+| `locale` | String | The locale of the application. |
 
-A quick note about the `duration` metric: it measures specifically the time that the user spent in the last foreground session.
+[^1]: A quick note about the `duration` metric: it measures specifically the time that the user spent in the last foreground session.
 This is distinct from the `start_time` and `end_time` values (on every ping), which measure the ping lifetime.  `start_time` is always set to be the time the previous ping of the same type was sent, so the span from `start_time` to `end_time` is normally longer than the span measured by `duration`.
 
 ```
