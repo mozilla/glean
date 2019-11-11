@@ -53,7 +53,7 @@ User.INSTANCE.getClientId.generateAndSet() // Generate a new UUID and record it
 User.INSTANCE.getClientId.set(UUID.randomUUID())  // Set a UUID explicitly
 ```
 
-There are test APIs available too.INSTANCE.get
+There are test APIs available too:
 
 ```Java
 import org.mozilla.yourApplication.GleanMetrics.User
