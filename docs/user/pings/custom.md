@@ -37,7 +37,7 @@ search:
 
 The Glean SDK build generates code from `pings.yaml` in a `Pings` object, which must be instantiated so Glean can send pings by name.
 
-{{#include ../tab_header.md}}
+{{#include ../../tab_header.md}}
 
 <div data-lang="Kotlin" class="tab">
 
@@ -67,7 +67,7 @@ pings = load_pings("pings.yaml")
 
 </div>
 
-{{#include ../tab_footer.md}}
+{{#include ../../tab_footer.md}}
 
 ## Sending metrics in a custom ping
 
@@ -99,7 +99,7 @@ To send a custom ping, call the `send` method on the `PingType` object that the 
 
 For example, to send the custom ping defined above:
 
-{{#include ../tab_header.md}}
+{{#include ../../tab_header.md}}
 
 <div data-lang="Kotlin" class="tab">
 
@@ -118,4 +118,4 @@ pings.search.send()
 
 </div>
 
-{{#include ../tab_footer.md}}
+{{#include ../../tab_footer.md}}

@@ -8,7 +8,13 @@ set -e
 CRATE_NAME=glean_core
 
 pushd docs &&
-    mdbook build &&
+    mdbook build |& grep "\[ERROR\]" &&
+    if [ $? -eq 0 ]
+    then
+        exit 1
+    else
+        exit 0
+    fi
     popd
 
 cargo doc --no-deps
