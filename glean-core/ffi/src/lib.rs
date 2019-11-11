@@ -122,6 +122,9 @@ impl TryFrom<&FfiConfiguration<'_>> for glean_core::Configuration {
     }
 }
 
+/// # Safety
+///
+/// A valid and non-null configuration object is required for this function.
 #[no_mangle]
 pub unsafe extern "C" fn glean_initialize(cfg: *const FfiConfiguration) -> u64 {
     assert!(!cfg.is_null());
@@ -138,6 +141,9 @@ pub unsafe extern "C" fn glean_initialize(cfg: *const FfiConfiguration) -> u64 {
     })
 }
 
+/// # Safety
+///
+/// A valid and non-null configuration object is required for this function.
 #[no_mangle]
 pub unsafe extern "C" fn glean_initialize_migration(
     cfg: *const FfiConfiguration,

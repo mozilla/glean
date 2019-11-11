@@ -166,6 +166,11 @@ char *glean_experiment_test_get_data(uint64_t glean_handle, FfiStr experiment_id
 
 uint8_t glean_experiment_test_is_active(uint64_t glean_handle, FfiStr experiment_id);
 
+/**
+ * # Safety
+ *
+ * A valid and non-null configuration object is required for this function.
+ */
 uint64_t glean_initialize(const FfiConfiguration *cfg);
 
 uint8_t glean_is_upload_enabled(uint64_t glean_handle);
