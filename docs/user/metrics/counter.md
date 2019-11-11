@@ -45,6 +45,32 @@ assertEquals(
 
 </div>
 
+<div data-lang="Java" class="tab">
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Controls
+
+Controls.INSTANCE.getRefreshPressed.add() // Adds 1 to the counter.
+Controls.INSTANCE.getRefreshPressed.add(5) // Adds 5 to the counter.
+```
+
+There are test APIs available too:
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Controls
+
+// Was anything recorded?
+assertTrue(Controls.INSTANCE.getRefreshPressed.testHasValue())
+// Does the counter have the expected value?
+assertEquals(6, Controls.INSTANCE.getRefreshPressed.testGetValue())
+// Did the counter record an negative value?
+assertEquals(
+    1, Controls.INSTANCE.getRefreshPressed.testGetNumRecordedErrors(ErrorType.InvalidValue)
+)
+```
+
+</div>
+
 <div data-lang="Swift" class="tab">
 
 ```Swift

@@ -44,6 +44,29 @@ assertEquals(uuid, User.clientId.testGetValue())
 
 </div>
 
+<div data-lang="Java" class="tab">
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.User
+
+User.INSTANCE.getClientId.generateAndSet() // Generate a new UUID and record it
+User.INSTANCE.getClientId.set(UUID.randomUUID())  // Set a UUID explicitly
+```
+
+There are test APIs available too:
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.User
+
+// Was anything recorded?
+assertTrue(User.INSTANCE.getClientId.testHasValue())
+// Was it the expected value?
+assertEquals(uuid, User.INSTANCE.getClientId.testGetValue())
+```
+
+</div>
+
+
 <div data-lang="Swift" class="tab">
 
 ```Swift
