@@ -161,7 +161,7 @@ impl EventDatabase {
     /// * `glean` - The Glean instance.
     /// * `meta` - The metadata about the event metric. Used to get the category,
     ///   name and stores for the metric.
-    /// * `timestamp` - The timestamp of the event, in nanoseconds. Must use a
+    /// * `timestamp` - The timestamp of the event, in milliseconds. Must use a
     ///   monotonically increasing timer (this value is obtained on the
     ///   platform-specific side).
     /// * `extra` - Extra data values, mapping strings to strings.
