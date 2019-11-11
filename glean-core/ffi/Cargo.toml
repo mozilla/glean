@@ -1,6 +1,6 @@
 [package]
 name = "glean-ffi"
-version = "20.0.0-alpha.0"
+version = "20.0.0"
 authors = ["Jan-Erik Rediger <jrediger@mozilla.com>", "The Glean Team <glean-team@mozilla.com>"]
 description = "FFI layer for Glean, a modern Telemetry library"
 repository = "https://github.com/mozilla/glean"
