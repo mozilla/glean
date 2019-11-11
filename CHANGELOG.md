@@ -1,6 +1,12 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v20.0.0...master)
+[Full changelog](https://github.com/mozilla/glean/compare/v20.1.0...master)
+
+# v20.1.0 (2019-11-11)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v20.0.0...v20.1.0)
+
+* The version of Glean is included in the Glean Gradle plugin.
 
 # v20.0.0 (2019-11-11)
 
