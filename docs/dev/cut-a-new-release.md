@@ -21,7 +21,7 @@ These are the steps needed to cut a new release from latest master.
     2. Add a new `# Unreleased Changes` on top
 
 2. Bump the versions
-    * Rust crates: Bump `version` in [`glean-core/Cargo.toml`](https://github.com/mozilla/glean/blob/master/glean-core/Cargo.toml) and [`glean-core/Cargo.toml`](https://github.com/mozilla/glean/blob/master/glean-core/ffi/Cargo.toml).
+    * Rust crates: Bump `version` in [`glean-core/Cargo.toml`](https://github.com/mozilla/glean/blob/master/glean-core/Cargo.toml) and [`glean-core/ffi/Cargo.toml`](https://github.com/mozilla/glean/blob/master/glean-core/ffi/Cargo.toml).
     * Kotlin package: Bump `libraryVersion` in the top-level [.buildconfig.yml](https://github.com/mozilla/glean/blob/master/.buildconfig.yml) file.
     * Be sure you're following semver, and if in doubt, ask.
 3. Land the commits that perform the steps above. This takes a PR, typically, because of branch protection on master.

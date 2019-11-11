@@ -1,9 +1,16 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v19.1.0...master)
+[Full changelog](https://github.com/mozilla/glean/compare/v20.0.0...master)
+
+# v20.0.0 (2019-11-11)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v19.1.0...v20.0.0)
+
+* Glean users should now use a Gradle plugin rather than a Gradle script. (#421)
+  See [integrating with the build system docs](https://mozilla.github.io/glean/book/user/adding-glean-to-your-project.html#integrating-with-the-build-system) for more information.
 
 * In Kotlin, metrics that can record errors now have a new testing method,
-  `testGetNumRecordedErrors`.
+  `testGetNumRecordedErrors`. (#401)
 
 # v19.1.0 (2019-10-29)
 
