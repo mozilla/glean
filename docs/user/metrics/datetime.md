@@ -72,7 +72,7 @@ Install.INSTANCE.getFirstRun.set() // Records "now"
 Install.INSTANCE.getFirstRun.set(Calendar(2019, 3, 25)) // Records a custom datetime
 ```
 
-There are test APIs available too.INSTANCE.get
+There are test APIs available too:
 
 ```Java
 import org.mozilla.yourApplication.GleanMetrics.Install
