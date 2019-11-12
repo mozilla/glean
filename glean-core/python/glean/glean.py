@@ -243,8 +243,8 @@ class Glean:
         metrics.glean.internal.metrics.os_version.set(platform.release())
         metrics.glean.internal.metrics.architecture.set(platform.machine())
 
-        # device_model and device_manufacturer aren't easily obtainable in this
-        # context
+        # device_model and device_manufacturer exist on desktop platforms,
+        # but aren't easily obtainable. See bug 1595751
         metrics.glean.internal.metrics.device_manufacturer.set("unknown")
         metrics.glean.internal.metrics.device_model.set("unknown")
 
