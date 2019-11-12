@@ -59,17 +59,17 @@ class Glean:
     _ping_type_queue: Set["PingType"] = set()
 
     # The application id to send in the ping.
-    _application_id: str = "glean-python"
+    _application_id: str
 
     # The version of the application sending Glean data.
-    _application_version: str = "unknown"
+    _application_version: str
 
     @classmethod
     def initialize(
         cls,
+        application_id: str,
+        application_version: str,
         configuration: Optional[Configuration] = None,
-        application_id: Optional[str] = None,
-        application_version: Optional[str] = None,
         data_dir: Optional[Path] = None,
     ):
         """
@@ -81,12 +81,11 @@ class Glean:
         once.
 
         Args:
-            configuration (glean.config.Configuration): An object with global
-                settings.
-            application_id (str): (optional) The application id to use when
-                sending pings. Defaults to 'glean-python'.
-            application_version (str): (optional) The version of the application
-                sending Glean data.
+            application_id (str): The application id to use when sending pings.
+            application_version (str): The version of the application sending
+                Glean data.
+            configuration (glean.config.Configuration): (optional) An object with
+                global settings.
             data_dir (pathlib.Path): (optional) The path to the Glean data
                 directory. If not provided, uses a temporary directory.
         """
@@ -95,12 +94,6 @@ class Glean:
 
         if configuration is None:
             configuration = Configuration()
-
-        if application_id is None:
-            application_id = "glean-python"
-
-        if application_version is None:
-            application_version = "unknown"
 
         if data_dir is None:
             data_dir = Path(tempfile.TemporaryDirectory().name)
@@ -153,6 +146,7 @@ class Glean:
         Resets the Glean singleton.
         """
         # TODO: 1594184 Send the metrics ping
+        Dispatcher.reset()
         if cls._handle != 0:
             _ffi.lib.glean_destroy_glean(cls._handle)
         cls._handle = 0

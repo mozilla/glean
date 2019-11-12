@@ -8,10 +8,6 @@ from glean.metrics import Lifetime
 from glean import testing
 
 
-def setup_function():
-    testing.reset_glean()
-
-
 def test_the_api_saves_to_its_storage_engine():
     string_metric = metrics.StringMetricType(
         disabled=False,

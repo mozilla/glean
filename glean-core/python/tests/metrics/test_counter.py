@@ -11,10 +11,6 @@ from glean.metrics import Lifetime
 from glean import testing
 
 
-def setup_function():
-    testing.reset_glean()
-
-
 def test_the_api_saves_to_its_storage_engine():
     # Define a counter metric, which will be stored in "store1"
     counter_metric = metrics.CounterMetricType(

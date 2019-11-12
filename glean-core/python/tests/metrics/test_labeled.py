@@ -12,16 +12,12 @@ from glean_parser import validate_ping
 
 
 from glean import Glean
+from glean import __version__ as glean_version
 from glean import _builtins
-from glean._dispatcher import Dispatcher
 from glean import metrics
+from glean._dispatcher import Dispatcher
 from glean.metrics import Lifetime
-from glean import testing
 from glean.testing import ErrorType
-
-
-def setup_function():
-    testing.reset_glean()
 
 
 def test_labeled_counter_type():
@@ -146,7 +142,7 @@ def test_other_label_without_predefined_labels_before_glean_init():
         labeled_counter_metric[f"label_{i}"].add(1)
     labeled_counter_metric["label_0"].add(1)
 
-    Glean.initialize()
+    Glean.initialize("glean-python", glean_version)
 
     assert 2 == labeled_counter_metric["label_0"].test_get_value()
     for i in range(1, 16):

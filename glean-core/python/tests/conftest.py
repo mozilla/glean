@@ -6,5 +6,14 @@
 import logging
 
 
+from glean import testing
+from glean import __version__ as glean_version
+
+
 # Turn on all logging when running the unit tests
 logging.getLogger(None).setLevel(logging.INFO)
+
+
+# This will be run before every test in the entire test suite
+def pytest_runtest_setup(item):
+    testing.reset_glean("glean-python", glean_version)

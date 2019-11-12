@@ -15,21 +15,20 @@ import pytest
 
 
 from glean import Configuration, Glean
+from glean import __version__ as glean_version
 from glean import _builtins
-from glean import testing
+from glean import util
 from glean._dispatcher import Dispatcher
 from glean.metrics import CounterMetricType, Lifetime, PingType
-from glean import util
 
 
-def setup_function():
-    testing.reset_glean()
+GLEAN_APP_ID = "glean-python"
 
 
 def test_setting_upload_enabled_before_initialization_should_not_crash():
     Glean.reset()
     Glean.set_upload_enabled(True)
-    Glean.initialize()
+    Glean.initialize(GLEAN_APP_ID, glean_version)
 
 
 def test_getting_upload_enabled_before_initialization_should_not_crash():
@@ -38,7 +37,7 @@ def test_getting_upload_enabled_before_initialization_should_not_crash():
     Glean.set_upload_enabled(True)
     assert Glean.get_upload_enabled()
 
-    Glean.initialize()
+    Glean.initialize(GLEAN_APP_ID, glean_version)
     assert Glean.get_upload_enabled()
 
 
@@ -109,7 +108,7 @@ def test_initialize_must_not_crash_if_data_dir_is_messed_up(tmpdir):
     assert False is Glean.is_initialized()
 
     # Pass in the filename as the data_dir
-    Glean.initialize(data_dir=filename)
+    Glean.initialize(GLEAN_APP_ID, glean_version, data_dir=filename)
 
     # This should cause initialization to fail
     assert False is Glean.is_initialized()
@@ -134,7 +133,7 @@ def test_queued_recorded_metrics_correctly_during_init():
     for i in range(2):
         counter_metric.add()
 
-    Glean.initialize()
+    Glean.initialize(GLEAN_APP_ID, glean_version)
 
     assert counter_metric.test_has_value()
     assert 2 == counter_metric.test_get_value()
@@ -143,7 +142,7 @@ def test_queued_recorded_metrics_correctly_during_init():
 def test_initializing_twice_is_a_no_op():
     before_config = Glean._configuration
 
-    Glean.initialize()
+    Glean.initialize(GLEAN_APP_ID, glean_version)
 
     assert before_config is Glean._configuration
 
@@ -187,7 +186,9 @@ def test_dont_schedule_pings_if_there_is_no_ping_content(httpserver):
 
 def test_the_app_channel_must_be_correctly_set():
     Glean.reset()
-    Glean.initialize(Configuration(channel="my-test-channel"))
+    Glean.initialize(
+        GLEAN_APP_ID, glean_version, Configuration(channel="my-test-channel")
+    )
     assert (
         "my-test-channel"
         == _builtins.metrics.glean.internal.metrics.app_channel.test_get_value()

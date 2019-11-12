@@ -106,6 +106,12 @@ The following will run the Python unit tests using `py.test`:
   $ make test-python
 ```
 
+You can send extra parameters to the `py.test` command by setting the `PYTEST_ARGS` variable:
+
+```bash
+  $ make test-python PYTEST_ARGS="-s --pdb"
+```
+
 ## Linting, formatting and type checking
 
 The Glean Python bindings use the following tools:
