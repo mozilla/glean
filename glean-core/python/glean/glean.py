@@ -6,6 +6,7 @@
 import atexit
 import logging
 from pathlib import Path
+import platform
 import shutil
 import tempfile
 from typing import List, Optional, Set, TYPE_CHECKING
@@ -15,6 +16,7 @@ from .config import Configuration
 from ._dispatcher import Dispatcher
 from . import _ffi
 from .net import PingUploadWorker
+from . import util
 
 
 # To avoid cyclical imports, but still make mypy type-checking work.
@@ -56,11 +58,18 @@ class Glean:
     # and saved between test runs.
     _ping_type_queue: Set["PingType"] = set()
 
+    # The application id to send in the ping.
+    _application_id: str = "glean-python"
+
+    # The version of the application sending Glean data.
+    _application_version: str = "unknown"
+
     @classmethod
     def initialize(
         cls,
         configuration: Optional[Configuration] = None,
         application_id: Optional[str] = None,
+        application_version: Optional[str] = None,
         data_dir: Optional[Path] = None,
     ):
         """
@@ -76,6 +85,8 @@ class Glean:
                 settings.
             application_id (str): (optional) The application id to use when
                 sending pings. Defaults to 'glean-python'.
+            application_version (str): (optional) The version of the application
+                sending Glean data.
             data_dir (pathlib.Path): (optional) The path to the Glean data
                 directory. If not provided, uses a temporary directory.
         """
@@ -88,6 +99,9 @@ class Glean:
         if application_id is None:
             application_id = "glean-python"
 
+        if application_version is None:
+            application_version = "unknown"
+
         if data_dir is None:
             data_dir = Path(tempfile.TemporaryDirectory().name)
             cls._destroy_data_dir = True
@@ -96,6 +110,8 @@ class Glean:
         cls._data_dir = data_dir
 
         cls._configuration = configuration
+        cls._application_id = application_id
+        cls._application_version = application_version
 
         cfg = _ffi.make_config(
             cls._data_dir,
@@ -220,12 +236,27 @@ class Glean:
         """
         Set a few metrics that will be sent as part of every ping.
         """
-        from . import _builtins
+        from ._builtins import metrics
 
-        # Just make sure the metrics loaded for testing purposes.
-        # Actual metrics will be filled in once we have the required
-        # metric types implemented.
-        _builtins.metrics.glean
+        metrics.glean.baseline.locale.set(util.get_locale_tag())
+        metrics.glean.internal.metrics.os.set(platform.system())
+        metrics.glean.internal.metrics.os_version.set(platform.release())
+        metrics.glean.internal.metrics.architecture.set(platform.machine())
+
+        # device_model and device_manufacturer exist on desktop platforms,
+        # but aren't easily obtainable. See bug 1595751
+        metrics.glean.internal.metrics.device_manufacturer.set("unknown")
+        metrics.glean.internal.metrics.device_model.set("unknown")
+
+        if cls._configuration.channel is not None:
+            metrics.glean.internal.metrics.app_channel.set(cls._configuration.channel)
+
+        metrics.glean.internal.metrics.app_build.set(cls._application_id)
+
+        if cls._application_version is not None:
+            metrics.glean.internal.metrics.app_display_version.set(
+                cls._application_version
+            )
 
     @classmethod
     def get_data_dir(cls) -> Path:

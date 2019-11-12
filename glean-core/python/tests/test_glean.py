@@ -3,18 +3,23 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
+import io
 import json
+import re
 import shutil
+import sys
 
 
+from glean_parser import validate_ping
 import pytest
 
 
-from glean import Glean
+from glean import Configuration, Glean
 from glean import _builtins
 from glean import testing
 from glean._dispatcher import Dispatcher
 from glean.metrics import CounterMetricType, Lifetime, PingType
+from glean import util
 
 
 def setup_function():
@@ -180,23 +185,33 @@ def test_dont_schedule_pings_if_there_is_no_ping_content(httpserver):
     assert 0 == len(httpserver.requests)
 
 
-@pytest.mark.skip
 def test_the_app_channel_must_be_correctly_set():
-    pass
+    Glean.reset()
+    Glean.initialize(Configuration(channel="my-test-channel"))
+    assert (
+        "my-test-channel"
+        == _builtins.metrics.glean.internal.metrics.app_channel.test_get_value()
+    )
 
 
-@pytest.mark.skip
 def test_get_language_tag_reports_the_tag_for_the_default_locale():
-    pass
+    tag = util.get_locale_tag()
+    assert re.match("[a-z][a-z]-[A-Z][A-Z]", tag)
 
 
 @pytest.mark.skip
 def test_get_language_tag_reports_the_correct_tag_for_a_non_default_language():
+    """
+    Not relevant for non-Java platforms.
+    """
     pass
 
 
 @pytest.mark.skip
 def test_get_language_reports_the_modern_translation_for_some_languages():
+    """
+    Not relevant for non-Java platforms.
+    """
     pass
 
 
@@ -205,14 +220,35 @@ def test_ping_collection_must_happen_after_currently_scheduled_metrics_recording
     pass
 
 
-@pytest.mark.skip
 def test_basic_metrics_should_be_cleared_when_disabling_uploading():
-    pass
+    counter_metric = CounterMetricType(
+        disabled=False,
+        category="telemetry",
+        lifetime=Lifetime.APPLICATION,
+        name="counter_metric",
+        send_in_pings=["store1"],
+    )
+
+    counter_metric.add(10)
+    assert counter_metric.test_has_value()
+
+    Glean.set_upload_enabled(False)
+    assert not counter_metric.test_has_value()
+    counter_metric.add(10)
+    assert not counter_metric.test_has_value()
+
+    Glean.set_upload_enabled(True)
+    assert not counter_metric.test_has_value()
+    counter_metric.add(10)
+    assert counter_metric.test_has_value()
 
 
-@pytest.mark.skip
 def test_core_metrics_should_be_cleared_with_disabling_and_enabling_uploading():
-    pass
+    assert _builtins.metrics.glean.internal.metrics.os.test_has_value()
+    Glean.set_upload_enabled(False)
+    assert not _builtins.metrics.glean.internal.metrics.os.test_has_value()
+    Glean.set_upload_enabled(True)
+    assert _builtins.metrics.glean.internal.metrics.os.test_has_value()
 
 
 def test_collect():
@@ -236,6 +272,8 @@ def test_collect():
 
     assert 10 == json_tree["metrics"]["counter"]["telemetry.counter_metric"]
 
+    assert 0 == validate_ping.validate_ping(io.StringIO(json_content), sys.stdout)
+
 
 def test_tempdir_is_cleared():
     tempdir = Glean._data_dir
@@ -243,3 +281,17 @@ def test_tempdir_is_cleared():
     Glean.reset()
 
     assert not tempdir.exists()
+
+
+def test_set_application_id_and_version():
+    Glean.reset()
+
+    Glean.initialize(application_id="my-id", application_version="my-version")
+
+    assert (
+        "my-id" == _builtins.metrics.glean.internal.metrics.app_build.test_get_value()
+    )
+    assert (
+        "my-version"
+        == _builtins.metrics.glean.internal.metrics.app_display_version.test_get_value()
+    )
