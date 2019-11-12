@@ -413,7 +413,9 @@ jobs:
             PKGDIR=./build/package
             # Collect all files into a single directory
             mkdir -p ${PKGDIR}
-            find ./build/maven/org/mozilla/telemetry/ \( -name "*.aar*" -or -name "*.jar*" -or -name "*.pom*" \) \
+            # The glean-gradle-plugin also creates releases with an "unspecified" version
+            # when used internally. We don't need to ship those.
+            find ./build/maven/org/mozilla/telemetry/ \( \( -name "*.aar*" -or -name "*.jar*" -or -name "*.pom*" \) -and -not -name "*unspecified*" \) \
               -exec cp {} ${PKGDIR} \;
 
             # Bundle all release files up into a single zip file
