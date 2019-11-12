@@ -540,6 +540,22 @@ jobs:
           root: build/
           paths: docs/python
 
+  pypi-linux-release:
+    docker:
+      - image: circleci/python:3.7.5
+    steps:
+      - checkout
+      - attach_workspace:
+          at: glean-core/python/
+      - run:
+          # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
+          # variables are configured in CircleCI's environment variables.
+          name: Build Linux wheel
+          command: |
+            cd glean-core/python
+            .venv/bin/python3 setup.py sdist bdist_wheel
+            .venv/bin/python3 -m twine upload dist/*
+
 workflows:
   version: 2
   check-formating:
@@ -608,6 +624,20 @@ workflows:
       - android-release:
           requires:
             - android-packaging
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
+      - Python tests:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
+      - pypi-linux-release:
+          requires:
+            - Python tests
           filters:
             branches:
               ignore: /.*/

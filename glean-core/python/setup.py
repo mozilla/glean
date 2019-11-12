@@ -5,9 +5,10 @@
 """The setup script."""
 
 import os
+import shutil
 import sys
 
-from setuptools import setup, find_packages
+from setuptools import setup, Distribution, find_packages
 
 if sys.version_info < (3, 7):
     print("glean requires at least Python 3.7", file=sys.stderr)
@@ -43,6 +44,18 @@ elif sys.platform.startswith("win"):
 else:
     raise ValueError(f"The platform {sys.platform} is not supported.")
 
+
+shutil.copyfile("../ffi/glean.h", "glean/glean.h")
+shutil.copyfile("../metrics.yaml", "glean/metrics.yaml")
+shutil.copyfile("../pings.yaml", "glean/pings.yaml")
+shutil.copyfile(f"../../target/debug/{shared_object}", f"glean/{shared_object}")
+
+
+class BinaryDistribution(Distribution):
+    def has_ext_modules(foo):
+        return True
+
+
 setup(
     author="The Glean Team",
     author_email="glean-team@mozilla.com",
@@ -63,21 +76,12 @@ setup(
     # While the Python bindings are still in "pre-release", let's not
     # follow the main project version.  Afterward, uncomment the line
     # below to automatically get the Rust project's version.
-    version="0.0.1",
+    version="0.0.2",
     # version=version,
     packages=find_packages(include=["glean", "glean.*"]),
     setup_requires=setup_requirements,
     url="https://github.com/mozilla/glean",
     zip_safe=False,
-    data_files=[
-        (
-            "glean",
-            [
-                "../ffi/glean.h",
-                f"../../target/debug/{shared_object}",
-                "../metrics.yaml",
-                "../pings.yaml",
-            ],
-        )
-    ],
+    package_data={"glean": ["glean.h", shared_object, "metrics.yaml", "pings.yaml"]},
+    distclass=BinaryDistribution,
 )

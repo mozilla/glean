@@ -7,6 +7,8 @@ __pycache__/
 
 # C extensions
 *.so
+*.dylib
+*.dll
 
 # Distribution / packaging
 .Python
@@ -28,3 +30,7 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+
+glean/glean.h
+glean/metrics.yaml
+glean/pings.yaml

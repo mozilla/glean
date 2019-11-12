@@ -3,12 +3,12 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from pathlib import Path
+import pkgutil
 import sys
 from typing import Any, List
 import weakref
 
 from cffi import FFI  # type: ignore
-import pkg_resources
 
 
 def get_shared_object_filename() -> str:
@@ -31,17 +31,18 @@ def _load_header(path: str) -> str:
     """
     Load a C header file and convert it to something parseable by cffi.
     """
-    data = pkg_resources.resource_string(__name__, path).decode("utf-8")
+    data = pkgutil.get_data(__name__, path)
+    if data is None:
+        raise RuntimeError("Couldn't load 'glean.h'")
+    data_str = data.decode("utf-8")
     return "\n".join(
-        line for line in data.splitlines() if not line.startswith("#include")
+        line for line in data_str.splitlines() if not line.startswith("#include")
     )
 
 
 ffi = FFI()
 ffi.cdef(_load_header("glean.h"))
-lib = ffi.dlopen(
-    pkg_resources.resource_filename(__name__, get_shared_object_filename())
-)
+lib = ffi.dlopen(str(Path(__file__).parent / get_shared_object_filename()))
 
 
 def make_config(
