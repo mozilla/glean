@@ -4,12 +4,13 @@
 
 
 import atexit
+import json
 import logging
 from pathlib import Path
 import platform
 import shutil
 import tempfile
-from typing import List, Optional, Set, TYPE_CHECKING
+from typing import Dict, List, Optional, Set, TYPE_CHECKING
 
 
 from .config import Configuration
@@ -22,7 +23,7 @@ from . import util
 # To avoid cyclical imports, but still make mypy type-checking work.
 # See https://mypy.readthedocs.io/en/latest/common_issues.html#import-cycles
 if TYPE_CHECKING:
-    from .metrics import PingType
+    from .metrics import PingType, RecordedExperimentData
 
 
 log = logging.getLogger(__name__)
@@ -230,6 +231,99 @@ class Glean:
             return bool(_ffi.lib.glean_is_upload_enabled(cls._handle))
         else:
             return cls._upload_enabled
+
+    @classmethod
+    def set_experiment_active(
+        cls, experiment_id: str, branch: str, extra: Optional[Dict[str, str]] = None
+    ):
+        """
+        Indicate that an experiment is running. Glean will then add an
+        experiment annotation to the environment which is sent with pings. This
+        information is not persisted between runs.
+
+        Args:
+            experiment_id (str): The id of the active experiment (maximum 100
+                bytes)
+            branch (str): The experiment branch (maximum 100 bytes)
+            extra (dict of str -> str): Optional metadata to output with the
+                ping
+        """
+        if not cls.is_initialized():
+            log.error("Please call Glean.initialize() before using this API.")
+            return
+
+        if extra is None:
+            keys: List[str] = []
+            values: List[str] = []
+        else:
+            keys, values = zip(*extra.items())  # type: ignore
+
+        _ffi.lib.glean_set_experiment_active(
+            cls._handle,
+            _ffi.ffi_encode_string(experiment_id),
+            _ffi.ffi_encode_string(branch),
+            _ffi.ffi_encode_vec_string(keys),
+            _ffi.ffi_encode_vec_string(values),
+            len(keys),
+        )
+
+    @classmethod
+    def set_experiment_inactive(cls, experiment_id: str):
+        """
+        Indicate that the experiment is no longer running.
+
+        Args:
+            experiment_id (str): The id of the experiment to deactivate.
+        """
+        if not cls.is_initialized():
+            log.error("Please call Glean.initialize() before using this API.")
+            return
+
+        _ffi.lib.glean_set_experiment_inactive(
+            cls._handle, _ffi.ffi_encode_string(experiment_id)
+        )
+
+    @classmethod
+    def test_is_experiment_active(cls, experiment_id: str) -> bool:
+        """
+        Tests whether an experiment is active, for testing purposes only.
+
+        Args:
+            experiment_id (str): The id of the experiment to look for.
+
+        Returns:
+            is_active (bool): If the experiement is active and reported in
+                pings.
+        """
+        return bool(
+            _ffi.lib.glean_experiment_test_is_active(
+                cls._handle, _ffi.ffi_encode_string(experiment_id)
+            )
+        )
+
+    @classmethod
+    def test_get_experiment_data(cls, experiment_id: str) -> "RecordedExperimentData":
+        """
+        Returns the stored data for the requested active experiment, for testing purposes only.
+
+        Args:
+            experiment_id (str): The id of the experiment to look for.
+
+        Returns:
+            experiment_data (RecordedExperimentData): The data associated with
+                the experiment.
+        """
+        from .metrics import RecordedExperimentData
+
+        json_string = _ffi.ffi_decode_string(
+            _ffi.lib.glean_experiment_test_get_data(
+                cls._handle, _ffi.ffi_encode_string(experiment_id)
+            )
+        )
+
+        json_tree = json.loads(json_string)
+
+        return RecordedExperimentData(**json_tree)  # type: ignore
 
     @classmethod
     def _initialize_core_metrics(cls):

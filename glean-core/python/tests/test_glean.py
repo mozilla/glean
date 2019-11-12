@@ -88,9 +88,22 @@ def test_disabling_upload_should_disable_metrics_recording():
     assert False is counter_metric.test_has_value()
 
 
-@pytest.mark.skip
 def test_experiments_recording():
-    pass
+    Glean.set_experiment_active("experiment_test", "branch_a")
+    Glean.set_experiment_active("experiment_api", "branch_b", {"test_key": "value"})
+
+    assert Glean.test_is_experiment_active("experiment_api")
+    assert Glean.test_is_experiment_active("experiment_test")
+
+    Glean.set_experiment_inactive("experiment_test")
+
+    assert Glean.test_is_experiment_active("experiment_api")
+    assert not Glean.test_is_experiment_active("experiment_test")
+
+    stored_data = Glean.test_get_experiment_data("experiment_api")
+    assert "branch_b" == stored_data.branch
+    assert 1 == len(stored_data.extra)
+    assert "value" == stored_data.extra["test_key"]
 
 
 @pytest.mark.skip
