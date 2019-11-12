@@ -659,8 +659,6 @@ open class GleanInternalAPI internal constructor () {
 /**
  * The main Glean object.
  *
- * Before any data collection can take place, the Glean SDK **must** be initialized from the application.
- *
  * ```
  * Glean.setUploadEnabled(true)
  * Glean.initialize(applicationContext)
