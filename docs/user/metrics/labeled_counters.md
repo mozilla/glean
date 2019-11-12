@@ -70,6 +70,35 @@ XCTAssertEqual(3, try Stability.crashCount["native_code_crash"].testGetValue())
 
 </div>
 
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+# Adds 1 to the "uncaught_exception" counter.
+metrics.stability.crash_count["uncaught_exception"].add()
+# Adds 3 to the "native_code_crash" counter.
+metrics.stability.crash_count["native_code_crash"].add(3)
+```
+
+There are test APIs available too:
+
+```Python
+# Was anything recorded?
+assert metrics.stability.crash_count["uncaught_exception"].test_has_value()
+assert metrics.stability.crash_count["native_code_crash"].test_has_value()
+# Do the counters have the expected values?
+assert 1 == metrics.stability.crash_count["uncaught_exception"].test_get_value()
+assert 3 == metrics.stability.crash_count["native_code_crash"].test_get_value()
+# Did we record any invalid labels?
+assert 1 == metrics.stability.crash_count.test_get_num_recorded_errors(
+    ErrorType.INVALID_LABEL
+)
+```
+
+</div>
+
 {{#include ../../tab_footer.md}}
 
 ## Limits
@@ -98,3 +127,4 @@ XCTAssertEqual(3, try Stability.crashCount["native_code_crash"].testGetValue())
 
 * Kotlin API docs [LabeledMetricType](../../../javadoc/glean/mozilla.telemetry.glean.private/-labeled-metric-type/index.html), [CounterMetricType](../../../javadoc/glean/mozilla.telemetry.glean.private/-counter-metric-type/index.html)
 * Swift API docs: [LabeledMetricType](../../../swift/Classes/LabeledMetricType.html), [CounterMetricType](../../../swift/Classes/CounterMetricType.html)
+* [Python API docs](../../../python/glean/metrics/labeled.html)
