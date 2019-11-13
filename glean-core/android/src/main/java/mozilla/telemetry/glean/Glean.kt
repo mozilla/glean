@@ -255,7 +255,7 @@ open class GleanInternalAPI internal constructor () {
      */
     fun setUploadEnabled(enabled: Boolean) {
         if (isInitialized()) {
-            val originalEnabled = getUploadEnabled()
+            val originalEnabled = uploadEnabled.get()
 
             @Suppress("EXPERIMENTAL_API_USAGE")
             Dispatchers.API.launch {
@@ -273,7 +273,7 @@ open class GleanInternalAPI internal constructor () {
                     }
                 }
 
-                if (!originalEnabled && getUploadEnabled()) {
+                if (!originalEnabled && uploadEnabled.get()) {
                     // If uploading is being re-enabled, we have to restore the
                     // application-lifetime metrics.
                     initializeCoreMetrics((this@GleanInternalAPI).applicationContext)
@@ -504,7 +504,7 @@ open class GleanInternalAPI internal constructor () {
             return@launch
         }
 
-        if (!getUploadEnabled()) {
+        if (!uploadEnabled.get()) {
             Log.e(LOG_TAG, "Glean must be enabled before sending pings.")
             return@launch
         }
