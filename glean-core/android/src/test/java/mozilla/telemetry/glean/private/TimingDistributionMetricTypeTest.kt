@@ -10,6 +10,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import java.lang.NullPointerException
 import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.Glean
+import mozilla.telemetry.glean.GleanTimerId
 import mozilla.telemetry.glean.testing.ErrorType
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Assert.assertEquals
@@ -231,7 +232,7 @@ class TimingDistributionMetricTypeTest {
             timeUnit = TimeUnit.Second
         )
 
-        metric.stopAndAccumulate(-1)
+        metric.stopAndAccumulate(GleanTimerId(-1))
         assertEquals(1, metric.testGetNumRecordedErrors(ErrorType.InvalidValue))
     }
 }
