@@ -22,7 +22,7 @@ from glean._dispatcher import Dispatcher
 from glean.metrics import CounterMetricType, Lifetime, PingType
 
 
-GLEAN_APP_ID = "glean-python"
+GLEAN_APP_ID = "glean-python-test"
 
 
 def test_setting_upload_enabled_before_initialization_should_not_crash():
