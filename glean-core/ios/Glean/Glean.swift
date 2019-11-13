@@ -17,8 +17,6 @@ public typealias GleanTimerId = UInt64
 public class Glean {
     /// The main Glean object.
     ///
-    /// Before any data collection can take place, the Glean SDK **must** be initialized from the application.
-    ///
     /// ```swift
     /// Glean.shared.setUploadEnabled(true)
     /// Glean.shared.initialize()
