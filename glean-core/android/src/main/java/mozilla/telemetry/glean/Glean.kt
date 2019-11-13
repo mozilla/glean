@@ -70,9 +70,17 @@ open class GleanInternalAPI internal constructor () {
     private val gleanLifecycleObserver by lazy { GleanLifecycleObserver() }
 
     private lateinit var gleanDataDir: File
+       internal get
 
     // Keep track of this flag before Glean is initialized
     private var uploadEnabled: Boolean = true
+        public get() {
+            if (isInitialized()) {
+                return LibGleanFFI.INSTANCE.glean_is_upload_enabled(handle).toBoolean()
+            } else {
+                return uploadEnabled
+            }
+        }
 
     // This object holds data related to any persistent information about the metrics ping,
     // such as the last time it was sent and the store name
@@ -277,17 +285,6 @@ open class GleanInternalAPI internal constructor () {
     }
 
     /**
-     * Get whether or not Glean is allowed to record and upload data.
-     */
-    fun getUploadEnabled(): Boolean {
-        if (isInitialized()) {
-            return LibGleanFFI.INSTANCE.glean_is_upload_enabled(handle).toBoolean()
-        } else {
-            return uploadEnabled
-        }
-    }
-
-    /**
      * Indicate that an experiment is running. Glean will then add an
      * experiment annotation to the environment which is sent with pings. This
      * information is not persisted between runs.
@@ -449,13 +446,6 @@ open class GleanInternalAPI internal constructor () {
             )
             throw AssertionError("Could not get own package info, aborting init")
         }
-    }
-
-    /**
-     * Get the data directory for Glean.
-     */
-    internal fun getDataDir(): File {
-        return this.gleanDataDir
     }
 
     /**
