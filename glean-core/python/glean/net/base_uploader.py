@@ -96,7 +96,7 @@ class BaseUploader(ping_uploader.PingUploader):
         Args:
             path (str): The URL path to append to the server address.
             data (str): The serialized text data to send.
-            config (glean.Congfiguration): The Glean Configuration object.
+            config (glean.Configuration): The Glean Configuration object.
 
         Returns:
             sent (bool): True if the ping was correctly dealt with (sent
