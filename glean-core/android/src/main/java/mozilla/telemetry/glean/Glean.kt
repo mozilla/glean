@@ -448,6 +448,13 @@ open class GleanInternalAPI internal constructor () {
     }
 
     /**
+     * Get the data directory for Glean.
+     */
+    internal fun getDataDir(): File {
+        return this.gleanDataDir
+    }
+
+    /**
      * Collect a ping and return a string
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
