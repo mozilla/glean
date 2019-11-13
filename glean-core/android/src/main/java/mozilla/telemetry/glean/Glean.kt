@@ -70,7 +70,6 @@ open class GleanInternalAPI internal constructor () {
     private val gleanLifecycleObserver by lazy { GleanLifecycleObserver() }
 
     private lateinit var gleanDataDir: File
-       internal get
 
     // Keep track of this flag before Glean is initialized
     private var uploadEnabled: Boolean = true
