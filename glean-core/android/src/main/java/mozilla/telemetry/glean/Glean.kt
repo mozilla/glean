@@ -41,7 +41,7 @@ import org.json.JSONObject
  * Public exported type identifying individual timers for
  * [TimingDistributionMetricType][mozilla.telemetry.glean.private.TimingDistributionMetricType].
  */
-typealias GleanTimerId = Long
+data class GleanTimerId internal constructor(internal val id: Long)
 
 /**
  * The main Glean API.

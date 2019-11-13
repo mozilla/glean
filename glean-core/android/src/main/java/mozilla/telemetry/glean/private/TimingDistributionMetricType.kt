@@ -82,10 +82,10 @@ class TimingDistributionMetricType internal constructor(
         val startTime = getElapsedTimeNanos()
 
         // No dispatcher, we need the return value
-        return LibGleanFFI.INSTANCE.glean_timing_distribution_set_start(
+        return GleanTimerId(LibGleanFFI.INSTANCE.glean_timing_distribution_set_start(
             this@TimingDistributionMetricType.handle,
             startTime
-        )
+        ))
     }
 
     /**
@@ -113,7 +113,7 @@ class TimingDistributionMetricType internal constructor(
             LibGleanFFI.INSTANCE.glean_timing_distribution_set_stop_and_accumulate(
                     Glean.handle,
                     this@TimingDistributionMetricType.handle,
-                    timerId,
+                    timerId.id,
                     stopTime)
         }
     }
@@ -132,7 +132,7 @@ class TimingDistributionMetricType internal constructor(
 
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.launch {
-            LibGleanFFI.INSTANCE.glean_timing_distribution_cancel(this@TimingDistributionMetricType.handle, timerId)
+            LibGleanFFI.INSTANCE.glean_timing_distribution_cancel(this@TimingDistributionMetricType.handle, timerId.id)
         }
     }
 

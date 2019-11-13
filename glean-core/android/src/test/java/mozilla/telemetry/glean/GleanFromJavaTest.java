@@ -49,4 +49,11 @@ public class GleanFromJavaTest {
                 experimentProperties
         );
     }
+
+    @Test
+    public void testCanAccessGleanTimerId() {
+        // Users are not really meant to instantiate this. Moreover, the constructor
+        // visibility is `internal`, but looks like Java ignores it.
+        GleanTimerId testId = new GleanTimerId(100);
+    }
 }

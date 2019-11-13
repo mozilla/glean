@@ -11,7 +11,6 @@ import com.sun.jna.Native
 import com.sun.jna.Pointer
 import com.sun.jna.StringArray
 import java.lang.reflect.Proxy
-import mozilla.telemetry.glean.GleanTimerId
 import mozilla.telemetry.glean.config.FfiConfiguration
 
 // Turn a boolean into its Byte (u8) representation
@@ -354,16 +353,16 @@ internal interface LibGleanFFI : Library {
 
     fun glean_destroy_timing_distribution_metric(handle: Long)
 
-    fun glean_timing_distribution_set_start(metric_id: Long, start_time: Long): GleanTimerId
+    fun glean_timing_distribution_set_start(metric_id: Long, start_time: Long): Long
 
     fun glean_timing_distribution_set_stop_and_accumulate(
         glean_handle: Long,
         metric_id: Long,
-        timer_id: GleanTimerId,
+        timer_id: Long,
         stop_time: Long
     )
 
-    fun glean_timing_distribution_cancel(metric_id: Long, timer_id: GleanTimerId)
+    fun glean_timing_distribution_cancel(metric_id: Long, timer_id: Long)
 
     fun glean_timing_distribution_accumulate_samples(glean_handle: Long, metric_id: Long, samples: LongArray?, len: Int)
 
