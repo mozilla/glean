@@ -16,7 +16,7 @@ android {
     defaultConfig {
         applicationId "org.mozilla.samples.gleancore"
         minSdkVersion rootProject.ext.build['minSdkVersion']
-        targetSdkVersion rootProject.ext.build['minSdkVersion']
+        targetSdkVersion rootProject.ext.build['targetSdkVersion']
         versionCode 1
         versionName "1.0"
 
