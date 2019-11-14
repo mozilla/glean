@@ -3,6 +3,7 @@
 [Full changelog](https://github.com/mozilla/glean/compare/v20.1.0...master)
 
 * The `GleanTimerId` can now be accessed in Java and is no longer a `typealias`.
+* Bumped `glean_parser` to version 1.11.0.
 
 # v20.2.0 (2019-11-11)
 

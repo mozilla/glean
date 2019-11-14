@@ -30,7 +30,7 @@ with open(ROOT.parent / "Cargo.toml") as cargo:
     parsed_toml = toml.load(cargo)
     version = parsed_toml["package"]["version"]
 
-requirements = ["cffi==1.13.1", "glean_parser==1.9.5"]
+requirements = ["cffi==1.13.1", "glean_parser==1.11.0"]
 
 setup_requirements = []
 
