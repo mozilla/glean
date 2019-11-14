@@ -15,6 +15,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'org.mozilla.rust-android-gradle.rust-android'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 apply plugin: 'org.jetbrains.dokka-android'
 apply plugin: 'jacoco'
 
@@ -175,6 +176,7 @@ dependencies {
 
     implementation "androidx.annotation:annotation:$versions.androidx_annotation"
     implementation "androidx.lifecycle:lifecycle-extensions:$versions.androidx_lifecycle_extensions"
+    kapt "androidx.lifecycle:lifecycle-compiler:$versions.androidx_lifecycle_extensions"
     implementation "androidx.work:work-runtime-ktx:$versions.androidx_work"
 
     // We need a compileOnly dependency on the following block of testing
