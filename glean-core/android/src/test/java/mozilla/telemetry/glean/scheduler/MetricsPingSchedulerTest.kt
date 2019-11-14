@@ -461,13 +461,22 @@ class MetricsPingSchedulerTest {
         `when`(mpsSpy.onEnterForeground()).thenCallRealMethod()
         Glean.metricsPingScheduler = mpsSpy
 
-        // Make sure schedule() has not been called
+        // Make sure schedule() has not been called.  Since we are adding the spy after resetGlean
+        // has called Glean.initialize(), we won't see the first invocation of schedule().
         verify(mpsSpy, times(0)).schedule()
 
         // Simulate returning to the foreground with Glean initialized.
         Glean.metricsPingScheduler.onEnterForeground()
 
-        // Verify that schedule has been called once
+        // Verify that schedule hasn't been called since we don't schedule on the first foreground
+        // since Glean.initialize() ensures schedule is called before any queued tasks are executed
+        verify(mpsSpy, times(0)).schedule()
+
+        // Simulate going to background and then foreground
+        Glean.metricsPingScheduler.onEnterBackground()
+        Glean.metricsPingScheduler.onEnterForeground()
+
+        // Verify that schedule has been called on subsequent foreground events
         verify(mpsSpy, times(1)).schedule()
     }
 

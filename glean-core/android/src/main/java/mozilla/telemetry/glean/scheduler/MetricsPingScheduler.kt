@@ -55,6 +55,7 @@ internal class MetricsPingScheduler(
         const val DUE_HOUR_OF_THE_DAY = 4
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
         internal var isInForeground = false
+        internal var firstForeground = true
 
         /**
          * Function to cancel any pending metrics ping workers
@@ -327,11 +328,17 @@ internal class MetricsPingScheduler(
 
         // We check for the metrics ping schedule here because the app could have been in the
         // background and resumed in which case Glean would already be initialized but we still need
-        // to perform the check to determine whether or not to collect and schedule the metrics ping.
-        // If this is the first ON_START event since the app was launched, Glean wouldn't be
-        // initialized yet.
+        // to perform the check to determine whether to collect and schedule the metrics ping.
+        // Since Glean.initialize() is called in the Application.onCreate() function, we will get
+        // this after glean is initialized and thus will call schedule() twice. So we prevent this
+        // by using a flag to prevent scheduling from the lifecycle observer on the first foreground
+        // event. See https://bugzilla.mozilla.org/1590329
         if (Glean.isInitialized()) {
-            schedule()
+            if (!firstForeground) {
+                schedule()
+            } else {
+                firstForeground = false
+            }
         }
     }
 }
