@@ -22,6 +22,7 @@
 		1FD4527523395B4500F4C7E8 /* UuidMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FD4527423395B4500F4C7E8 /* UuidMetric.swift */; };
 		1FD4527723395EEB00F4C7E8 /* UuidMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FD4527623395EEB00F4C7E8 /* UuidMetricTests.swift */; };
 		97C5C1A423708C6700B79C93 /* ErrorType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97C5C1A323708C6700B79C93 /* ErrorType.swift */; };
+		AC1DB401237EF0ED005A0F8A /* Glean.h in Headers */ = {isa = PBXBuildFile; fileRef = BF3DE3942243A2F20018E23F /* Glean.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AC54D225233133DB0019319A /* PingUploadOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC54D224233133DB0019319A /* PingUploadOperation.swift */; };
 		AC54D227233134A30019319A /* GleanOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC54D226233134A30019319A /* GleanOperation.swift */; };
 		BF10007E23548AF400064051 /* MemoryUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF10007D23548AF400064051 /* MemoryUnit.swift */; };
@@ -341,6 +342,14 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		AC1DB400237EF0D6005A0F8A /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AC1DB401237EF0ED005A0F8A /* Glean.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BF3DE38C2243A2F20018E23F /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -380,6 +389,7 @@
 				1F0A7DB72328222C00B310DD /* Copy Carthage Dependencies */,
 				BF3DE3962243A2F20018E23F /* Sources */,
 				BF3DE3972243A2F20018E23F /* Frameworks */,
+				AC1DB400237EF0D6005A0F8A /* Headers */,
 				BF3DE3982243A2F20018E23F /* Resources */,
 			);
 			buildRules = (
