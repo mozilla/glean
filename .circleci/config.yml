@@ -542,19 +542,29 @@ jobs:
 
   pypi-linux-release:
     docker:
-      - image: circleci/python:3.7.5
+      # The official docker image for building manylinux1 wheels
+      - image: quay.io/pypa/manylinux1_x86_64
     steps:
+      - install-rustup
+      - setup-rust-toolchain
       - checkout
-      - attach_workspace:
-          at: glean-core/python/
       - run:
-          # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
-          # variables are configured in CircleCI's environment variables.
+          name: Setup default Python version
+          command: |
+            echo "export PATH=/opt/python/cp37-cp37m/bin:$PATH" >> $BASH_ENV
+      - run:
+          name: Build Python extension
+          command: |
+            make build-python
+      - run:
           name: Build Linux wheel
           command: |
             cd glean-core/python
-            .venv/bin/python3 setup.py sdist bdist_wheel
-            .venv/bin/python3 -m twine upload dist/*
+            .venv/bin/python3 setup.py bdist_wheel
+            .venv/bin/python3 -m auditwheel repair dist/*.whl
+            # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
+            # variables are configured in CircleCI's environment variables.
+            # .venv/bin/python3 -m twine upload wheelhouse/*
 
 workflows:
   version: 2
@@ -580,6 +590,7 @@ workflows:
       - C tests
       - iOS build and test
       - Python tests
+      - pypi-linux-release
       - Generate Rust documentation
       - Generate Kotlin documentation
       - Generate Python documentation:
@@ -629,17 +640,17 @@ workflows:
               ignore: /.*/
             tags:
               only: /^v.*/
-      - Python tests:
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v.*/
-      - pypi-linux-release:
-          requires:
-            - Python tests
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v.*/
+      # - Python tests:
+      #     filters:
+      #       branches:
+      #         ignore: /.*/
+      #       tags:
+      #         only: /^v.*/
+      # - pypi-linux-release:
+      #     requires:
+      #       - Python tests
+      #     filters:
+      #       branches:
+      #         ignore: /.*/
+      #       tags:
+      #         only: /^v.*/

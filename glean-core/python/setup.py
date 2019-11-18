@@ -9,6 +9,8 @@ import shutil
 import sys
 
 from setuptools import setup, Distribution, find_packages
+from setuptools.command.install import install
+
 
 if sys.version_info < (3, 7):
     print("glean requires at least Python 3.7", file=sys.stderr)
@@ -52,8 +54,18 @@ shutil.copyfile(f"../../target/debug/{shared_object}", f"glean/{shared_object}")
 
 
 class BinaryDistribution(Distribution):
-    def has_ext_modules(foo):
+    def is_pure(self):
+        return False
+
+    def has_ext_modules(self):
         return True
+
+
+class InstallPlatlib(install):
+    def finalize_options(self):
+        install.finalize_options(self)
+        if self.distribution.has_ext_modules():
+            self.install_lib = self.install_platlib
 
 
 setup(
@@ -76,7 +88,7 @@ setup(
     # While the Python bindings are still in "pre-release", let's not
     # follow the main project version.  Afterward, uncomment the line
     # below to automatically get the Rust project's version.
-    version="0.0.2",
+    version="0.0.3",
     # version=version,
     packages=find_packages(include=["glean", "glean.*"]),
     setup_requires=setup_requirements,
@@ -84,4 +96,5 @@ setup(
     zip_safe=False,
     package_data={"glean": ["glean.h", shared_object, "metrics.yaml", "pings.yaml"]},
     distclass=BinaryDistribution,
+    cmdclass={"install": InstallPlatlib},
 )
