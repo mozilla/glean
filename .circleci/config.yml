@@ -234,17 +234,6 @@ jobs:
       - store_artifacts:
           path: raw_xcodetest.log
           destination: log
-      - run:
-          name: Build sample app and run tests
-          command: |
-            bash bin/run-ios-sample-app-build.sh
-            bash bin/run-ios-sample-app-test.sh
-      - store_artifacts:
-          path: raw_sample_xcodebuild.log
-          destination: log
-      - store_artifacts:
-          path: raw_sample_xcodetest.log
-          destination: log
       - persist_to_workspace:
           root: build/
           paths: docs/swift
@@ -254,6 +243,35 @@ jobs:
               curl -L https://codecov.io/bash > codecov.sh
               chmod +x codecov.sh
               ./codecov.sh -Z -J '^Glean$' -X gcov -X coveragepy || echo 'Codecov upload failed'
+
+  iOS integration test:
+    macos:
+      xcode: "11.1.0"
+    steps:
+      - install-rustup
+      - setup-rust-toolchain
+      - checkout
+      - run:
+          name: Setup build environment
+          command: |
+            rustup target add aarch64-apple-ios x86_64-apple-ios
+            bin/bootstrap.sh
+            # See https://circleci.com/docs/2.0/testing-ios/#pre-starting-the-simulator
+            xcrun instruments -w "iPhone 8 (13.0) [" || true
+      - run:
+          name: Build sample app
+          command: |
+            bash bin/run-ios-sample-app-build.sh
+      - store_artifacts:
+          path: raw_sample_xcodebuild.log
+          destination: log
+      - run:
+          name: Run sample app tests
+          command: |
+            bash bin/run-ios-sample-app-test.sh
+      - store_artifacts:
+          path: raw_sample_xcodetest.log
+          destination: log
 
   Lint Android with ktlint and detekt:
     docker:
@@ -565,6 +583,7 @@ workflows:
       - Android tests
       - C tests
       - iOS build and test
+      - iOS integration test
       - Python tests
       - Generate Rust documentation
       - Generate Kotlin documentation
