@@ -1,13 +1,23 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v20.1.0...master)
+[Full changelog](https://github.com/mozilla/glean/compare/v21.0.0...master)
 
-* The `GleanTimerId` can now be accessed in Java and is no longer a `typealias`.
-* Bumped `glean_parser` to version 1.11.0.
+# v21.0.0 (2019-11-18)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v20.2.0...v21.0.0)
+
+* Android:
+
+  * The `GleanTimerId` can now be accessed in Java and is no longer a `typealias`.
+
+  * Fixed a bug where the metrics ping was getting scheduled twice on startup.
+* All platforms
+
+  * Bumped `glean_parser` to version 1.11.0.
 
 # v20.2.0 (2019-11-11)
 
-[Full changelog](https://github.com/mozilla/glean/compare/v20.0.0...v20.1.0)
+[Full changelog](https://github.com/mozilla/glean/compare/v20.1.0...v20.2.0)
 
 * In earlier 20.x.x releases, the version of glean-ffi was incorrectly built
   against the wrong version of glean-core.
