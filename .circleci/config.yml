@@ -560,6 +560,32 @@ jobs:
           root: build/
           paths: docs/python
 
+  pypi-linux-release:
+    docker:
+      # The official docker image for building manylinux1 wheels
+      - image: quay.io/pypa/manylinux1_x86_64
+    steps:
+      - install-rustup
+      - setup-rust-toolchain
+      - checkout
+      - run:
+          name: Setup default Python version
+          command: |
+            echo "export PATH=/opt/python/cp37-cp37m/bin:$PATH" >> $BASH_ENV
+      - run:
+          name: Build Python extension
+          command: |
+            make build-python
+      - run:
+          name: Build Linux wheel
+          command: |
+            cd glean-core/python
+            .venv/bin/python3 setup.py bdist_wheel
+            .venv/bin/python3 -m auditwheel repair dist/*.whl
+            # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
+            # variables are configured in CircleCI's environment variables.
+            .venv/bin/python3 -m twine upload wheelhouse/*
+
 workflows:
   version: 2
   check-formating:
@@ -629,6 +655,20 @@ workflows:
       - android-release:
           requires:
             - android-packaging
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
+      - Python tests:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
+      - pypi-linux-release:
+          requires:
+            - Python tests
           filters:
             branches:
               ignore: /.*/
