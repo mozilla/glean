@@ -564,7 +564,7 @@ jobs:
             .venv/bin/python3 -m auditwheel repair dist/*.whl
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
-            # .venv/bin/python3 -m twine upload wheelhouse/*
+            .venv/bin/python3 -m twine upload wheelhouse/*
 
 workflows:
   version: 2
@@ -590,7 +590,6 @@ workflows:
       - C tests
       - iOS build and test
       - Python tests
-      - pypi-linux-release
       - Generate Rust documentation
       - Generate Kotlin documentation
       - Generate Python documentation:
@@ -640,17 +639,17 @@ workflows:
               ignore: /.*/
             tags:
               only: /^v.*/
-      # - Python tests:
-      #     filters:
-      #       branches:
-      #         ignore: /.*/
-      #       tags:
-      #         only: /^v.*/
-      # - pypi-linux-release:
-      #     requires:
-      #       - Python tests
-      #     filters:
-      #       branches:
-      #         ignore: /.*/
-      #       tags:
-      #         only: /^v.*/
+      - Python tests:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
+      - pypi-linux-release:
+          requires:
+            - Python tests
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/

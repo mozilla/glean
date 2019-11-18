@@ -85,11 +85,7 @@ setup(
     include_package_data=True,
     keywords="glean",
     name="glean-sdk",
-    # While the Python bindings are still in "pre-release", let's not
-    # follow the main project version.  Afterward, uncomment the line
-    # below to automatically get the Rust project's version.
-    version="0.0.3",
-    # version=version,
+    version=version,
     packages=find_packages(include=["glean", "glean.*"]),
     setup_requires=setup_requirements,
     url="https://github.com/mozilla/glean",
