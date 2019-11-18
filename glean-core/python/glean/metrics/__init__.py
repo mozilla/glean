@@ -4,6 +4,7 @@
 
 
 from .counter import CounterMetricType
+from .experiment import RecordedExperimentData
 from .labeled import LabeledCounterMetricType
 from .lifetime import Lifetime
 from .ping import PingType
@@ -15,5 +16,6 @@ __all__ = [
     "LabeledCounterMetricType",
     "Lifetime",
     "PingType",
+    "RecordedExperimentData",
     "StringMetricType",
 ]

@@ -292,8 +292,8 @@ open class GleanInternalAPI internal constructor () {
      * experiment annotation to the environment which is sent with pings. This
      * information is not persisted between runs.
      *
-     * @param experimentId The id of the active experiment (maximum 30 bytes)
-     * @param branch The experiment branch (maximum 30 bytes)
+     * @param experimentId The id of the active experiment (maximum 100 bytes)
+     * @param branch The experiment branch (maximum 100 bytes)
      * @param extra Optional metadata to output with the ping
      */
     @JvmOverloads
