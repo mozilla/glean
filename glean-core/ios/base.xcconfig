@@ -2,4 +2,3 @@
 
 INFOPLIST_FILE = Glean/Info.plist
 LIBRARY_SEARCH_PATHS = "../../target/universal/$(buildvariant)"
-SWIFT_OBJC_BRIDGING_HEADER = Glean/Glean.h
