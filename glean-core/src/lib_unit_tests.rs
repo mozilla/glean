@@ -353,3 +353,67 @@ fn glean_inits_with_migration_when_no_db_dir_exists() {
 
     assert!(!glean.set_upload_enabled(false));
 }
+
+// Test that the enum variants keep a stable discriminant when serialized.
+// Discriminant values are taken from a stable ordering from v20.0.0.
+// New metrics after that should be added in order.
+#[test]
+#[rustfmt::skip] // Let's not add newlines unnecessary
+fn correct_order() {
+    use histogram::Histogram;
+    use metrics::{Metric::*, TimeUnit};
+    use std::time::Duration;
+    use util::local_now_with_offset;
+
+    // Extract the discriminant of the serialized value,
+    // that is: the first 4 bytes.
+    fn discriminant(metric: &metrics::Metric) -> u32 {
+        let ser = bincode::serialize(metric).unwrap();
+        (ser[0] as u32)
+        | (ser[1] as u32) << 8
+        | (ser[2] as u32) << 16
+        | (ser[3] as u32) << 24
+    }
+
+    // One of every metric type. The values are arbitrary and don't matter.
+    let all_metrics = vec![
+        Boolean(false),
+        Counter(0),
+        CustomDistributionExponential(Histogram::exponential(1, 500, 10)),
+        CustomDistributionLinear(Histogram::linear(1, 500, 10)),
+        Datetime(local_now_with_offset(), TimeUnit::Second),
+        Experiment(RecordedExperimentData { branch: "branch".into(), extra: None, }),
+        Quantity(0),
+        String("glean".into()),
+        StringList(vec!["glean".into()]),
+        Uuid("082c3e52-0a18-11ea-946f-0fe0c98c361c".into()),
+        Timespan(Duration::new(5, 0), TimeUnit::Second),
+        TimingDistribution(Histogram::functional(2.0, 8.0)),
+        MemoryDistribution(Histogram::functional(2.0, 8.0)),
+    ];
+
+    for metric in all_metrics {
+        let disc = discriminant(&metric);
+
+        // DO NOT TOUCH THE EXPECTED VALUE.
+        // If this test fails because of non-equal discriminants, that is a bug in the code, not
+        // the test.
+
+        // We're matching here, thus fail the build if new variants are added.
+        match metric {
+            Boolean(..)                       => assert_eq!( 0, disc),
+            Counter(..)                       => assert_eq!( 1, disc),
+            CustomDistributionExponential(..) => assert_eq!( 2, disc),
+            CustomDistributionLinear(..)      => assert_eq!( 3, disc),
+            Datetime(..)                      => assert_eq!( 4, disc),
+            Experiment(..)                    => assert_eq!( 5, disc),
+            Quantity(..)                      => assert_eq!( 6, disc),
+            String(..)                        => assert_eq!( 7, disc),
+            StringList(..)                    => assert_eq!( 8, disc),
+            Uuid(..)                          => assert_eq!( 9, disc),
+            Timespan(..)                      => assert_eq!(10, disc),
+            TimingDistribution(..)            => assert_eq!(11, disc),
+            MemoryDistribution(..)            => assert_eq!(12, disc),
+        }
+    }
+}
