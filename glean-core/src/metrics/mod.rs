@@ -60,6 +60,13 @@ pub use self::uuid::UuidMetric;
 /// The available metrics.
 ///
 /// This is the in-memory and persisted layout of a metric.
+///
+/// ## Note
+///
+/// The order of metrics in this enum is important, as it is used for serialization.
+/// Do not reorder the variants.
+///
+/// **Any new metric must be added at the end.**
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub enum Metric {
     /// A boolean metric. See [`BooleanMetric`](struct.BooleanMetric.html) for more information.
