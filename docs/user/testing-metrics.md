@@ -109,21 +109,14 @@ This temporary directory is automatically cleaned up the next time Glean is rese
 The instructions below assume you are using [pytest](https://pypi.org/project/pytest/) as the test runner.
 Other test-running libraries have similar features, but are different in the details.
 
-To have this function run before every unit test in a `pytest` module:
+Create a file `conftest.py` at the root of your test directory, and add the following to reset Glean at the start of every test in your suite:
 
 ```python
+import pytest
 from glean import testing
 
-def setup_module():
-    testing.reset_glean("my-app-id", "0.1.0")
-```
-
-To have this function run before every test in an entire test suite, add the following to a [`conftest.py` file](https://docs.pytest.org/en/latest/writing_plugins.html#conftest-py-local-per-directory-plugins) in the root directory of your tests:
-
-```python
-from glean import testing
-
-def pytest_runtest_setup():
+@pytest.fixture(name="reset_glean", scope="function", autouse=True)
+def reset_glean():
     testing.reset_glean("my-app-id", "0.1.0")
 ```
 
