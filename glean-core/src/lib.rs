@@ -17,6 +17,8 @@ use std::path::{Path, PathBuf};
 
 use chrono::{DateTime, FixedOffset};
 use lazy_static::lazy_static;
+use once_cell::sync::OnceCell;
+use std::sync::Mutex;
 use uuid::Uuid;
 
 // This needs to be included first, and the space below prevents rustfmt from
@@ -53,6 +55,33 @@ const DEFAULT_MAX_EVENTS: usize = 500;
 lazy_static! {
     static ref KNOWN_CLIENT_ID: Uuid =
         Uuid::parse_str("c0ffeec0-ffee-c0ff-eec0-ffeec0ffeec0").unwrap();
+}
+
+/// The global Glean instance.
+///
+/// This is the singleton used by all wrappers to allow for a nice API.
+/// All state for Glean is kept inside this object (such as the database handle and `upload_enabled` flag).
+///
+/// It should be initialized with `glean_core::initialize` at the start of the application using
+/// Glean.
+static GLEAN: OnceCell<Mutex<Glean>> = OnceCell::new();
+
+/// Get a reference to the global Glean object.
+///
+/// Panics if no global Glean object was set.
+pub fn global_glean() -> &'static Mutex<Glean> {
+    GLEAN.get().unwrap()
+}
+
+/// Set or replace the global Glean object.
+pub fn setup_glean(glean: Glean) -> Result<()> {
+    if GLEAN.get().is_none() {
+        GLEAN.set(Mutex::new(glean)).unwrap();
+    } else {
+        let mut lock = GLEAN.get().unwrap().lock().unwrap();
+        *lock = glean;
+    }
+    Ok(())
 }
 
 /// The Glean configuration.
