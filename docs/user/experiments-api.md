@@ -54,9 +54,9 @@ from glean import Glean
 
 # Annotate Glean pings with experiments data.
 Glean.set_experiment_active(
-  experiment_id = "blue-button-effective",
-  branch = "branch-with-blue-button",
-  extra: {
+  experiment_id="blue-button-effective",
+  branch="branch-with-blue-button",
+  extra={
     "buttonLabel": "test"
   }
 )
@@ -71,7 +71,7 @@ Please also note that the `extra` dict is non-nested arbitrary `str` to `str` ma
 
 There are test APIs available too:
 
-```Kotlin
+```Python
 from glean import Glean
 
 # Was the experiment annotated in Glean pings?

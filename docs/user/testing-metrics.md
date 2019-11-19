@@ -102,14 +102,14 @@ Note that each of these functions is marked as `internal`, you need to import `G
 
 It is generally a good practice to "reset" Glean prior to every unit test that uses Glean, to prevent side effects of one unit test impacting others.
 Glean contains a helper function `glean.testing.reset_glean()` for this purpose.
-It has two required arguments: the application id, and the application version.
+It has two required arguments: the application ID, and the application version.
 Each reset of Glean will create a new temporary directory for Glean to store its data in.
 This temporary directory is automatically cleaned up the next time Glean is reset or when the testing framework finishes.
 
-The instructions below assume using `py.test` as the test runner.
+The instructions below assume you are using [pytest](https://pypi.org/project/pytest/) as the test runner.
 Other test-running libraries have similar features, but are different in the details.
 
-To have this function run before every unit test in a `py.test` module:
+To have this function run before every unit test in a `pytest` module:
 
 ```python
 from glean import testing
@@ -118,12 +118,12 @@ def setup_module():
     testing.reset_glean("my-app-id", "0.1.0")
 ```
 
-To have this function run before every test in an entire test suite, add the following to the `conftest.py` file:
+To have this function run before every test in an entire test suite, add the following to a [`conftest.py` file](https://docs.pytest.org/en/latest/writing_plugins.html#conftest-py-local-per-directory-plugins) in the root directory of your tests:
 
 ```python
 from glean import testing
 
-def pytest_runtest_module():
+def pytest_runtest_setup():
     testing.reset_glean("my-app-id", "0.1.0")
 ```
 

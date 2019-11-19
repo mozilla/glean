@@ -115,7 +115,7 @@ github "mozilla/glean" "master"
 
 It is recommended that you use a virtual environment for your work to isolate the dependencies for your project. There are many popular abstractions on top of virtual environments in the Python ecosystem which should help manage your project dependencies.
 
-The Python Glean bindings currently have prebuilt wheels on PyPI for x86_64 Linux only.
+The Python Glean bindings currently have [prebuilt wheels on PyPI for x86_64 Linux only](https://pypi.org/project/glean-sdk/#files).
 
 If you're running that platform and have your virtual environment set up and activated, you can install Glean into it using:
 
@@ -199,7 +199,8 @@ These specific steps are described in [the `probe_scraper` documentation](https:
 
 The following steps are required for applications using the Glean SDK, but not libraries.
 
-The Glean SDK should only be initialized from the main application, not individual libraries.
+> **Important:** The Glean SDK should only be initialized from the main application, not individual libraries.
+
 If you are adding Glean support to a library, you can safely skip this section.
 
 {{#include ../tab_header.md}}
@@ -255,7 +256,7 @@ This method should also be called at least once prior to calling `Glean.initiali
 
 The application should provide some form of user interface to call this method.
 
-When going from enabled to disabled, all pending events, metrics and pings are cleared, except for `first_run_date`.
+When going from enabled to disabled, all pending events, metrics and pings are cleared, except for [`first_run_date`](pings/index.html#the-client_info-section).
 When re-enabling, core Glean metrics will be recomputed at that time.
 
 </div>
@@ -310,7 +311,7 @@ This method should also be called at least once prior to calling `Glean.shared.i
 
 The application should provide some form of user interface to call this method.
 
-When going from enabled to disabled, all pending events, metrics and pings are cleared, except for `first_run_date`.
+When going from enabled to disabled, all pending events, metrics and pings are cleared, except for [`first_run_date`](pings/index.html#the-client_info-section).
 When re-enabling, core Glean metrics will be recomputed at that time.
 
 </div>
@@ -350,7 +351,7 @@ This method should also be called at least once prior to calling `Glean.initiali
 
 The application should provide some form of user interface to call this method.
 
-When going from enabled to disabled, all pending events, metrics and pings are cleared, except for `first_run_date`.
+When going from enabled to disabled, all pending events, metrics and pings are cleared, except for [`first_run_date`](pings/index.html#the-client_info-section).
 When re-enabling, core Glean metrics will be recomputed at that time.
 
 </div>
