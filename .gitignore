@@ -38,3 +38,5 @@ glean_app*
 
 samples/ios/app/.venv/
 .mypy_cache/
+.coverage
+htmlcov/
