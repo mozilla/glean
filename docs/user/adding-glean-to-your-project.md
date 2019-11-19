@@ -334,8 +334,8 @@ from glean import Glean
 Glean.set_upload_enabled(True)
 
 Glean.initialize(
-    "my-app-id",  # The id of your application
-    "0.1.0",  # The version of your application
+    application_id="my-app-id",
+    application_version="0.1.0",
 )
 ```
 

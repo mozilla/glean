@@ -16,4 +16,6 @@ logging.getLogger(None).setLevel(logging.INFO)
 
 # This will be run before every test in the entire test suite
 def pytest_runtest_setup(item):
-    testing.reset_glean("glean-python-test", glean_version)
+    testing.reset_glean(
+        application_id="glean-python-test", application_version=glean_version
+    )

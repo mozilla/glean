@@ -11,6 +11,7 @@ from .error_type import ErrorType  # noqa
 
 
 def reset_glean(
+    *,
     application_id: str,
     application_version: str,
     configuration: Optional[Configuration] = None,
@@ -28,7 +29,11 @@ def reset_glean(
     from glean import Glean
 
     Glean.reset()
-    Glean.initialize(application_id, application_version, configuration)
+    Glean.initialize(
+        application_id=application_id,
+        application_version=application_version,
+        configuration=configuration,
+    )
 
 
 __all__ = ["reset_glean", "ErrorType"]

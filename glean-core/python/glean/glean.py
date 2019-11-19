@@ -37,7 +37,7 @@ class Glean:
     initialized from the application.
 
     >>> Glean.set_upload_enabled(True)
-    >>> Glean.initialize()
+    >>> Glean.initialize(application_id="my-app-id", application_version="0.0.0")
     """
 
     # The handle to the underlying Rust object
@@ -68,6 +68,7 @@ class Glean:
     @classmethod
     def initialize(
         cls,
+        *,
         application_id: str,
         application_version: str,
         configuration: Optional[Configuration] = None,
