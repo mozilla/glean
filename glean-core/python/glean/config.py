@@ -31,28 +31,28 @@ class Configuration:
     Configuration values for Glean.
     """
 
-    # The server pings are sent to.
     server_endpoint: str = DEFAULT_TELEMETRY_ENDPOINT
+    """The server pings are sent to."""
 
-    # The user agent used when sending pings.
     user_agent: Optional[str] = dataclasses.field(
         default_factory=_get_default_user_agent
     )
+    """The user agent used when sending pings."""
 
-    # The release channel the application is on, if known.
     channel: Optional[str] = None
+    """The release channel the application is on, if known."""
 
-    # The number of events to store before force-sending.
     max_events: int = DEFAULT_MAX_EVENTS
+    """The number of events to store before force-sending."""
 
-    # Whether to log ping contents to the console.
     log_pings: bool = False
+    """Whether to log ping contents to the console."""
 
-    # String tag to be applied to headers when uploading pings for debug view.
     ping_tag: Optional[str] = None
+    """String tag to be applied to headers when uploading pings for debug view."""
 
-    # The ping uploader implementation
     ping_uploader: net.BaseUploader = net.HttpClientUploader()
+    """The ping uploader implementation."""
 
 
 __all__ = ["Configuration"]
