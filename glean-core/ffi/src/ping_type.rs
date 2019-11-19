@@ -9,7 +9,6 @@ use glean_core::metrics::PingType;
 
 use crate::ffi_string_ext::FallibleToString;
 use crate::handlemap_ext::HandleMapExtension;
-use crate::GLEAN;
 
 lazy_static! {
     pub(crate) static ref PING_TYPES: ConcurrentHandleMap<PingType> = ConcurrentHandleMap::new();
@@ -33,15 +32,18 @@ pub extern "C" fn glean_new_ping_type(
 }
 
 #[no_mangle]
-pub extern "C" fn glean_test_has_ping_type(glean_handle: u64, ping_name: FfiStr) -> u8 {
-    GLEAN.call_infallible(glean_handle, |glean| {
-        glean.get_ping_by_name(ping_name.as_str()).is_some()
-    })
+pub extern "C" fn glean_test_has_ping_type(ping_name: FfiStr) -> u8 {
+    glean_core::global_glean()
+        .lock()
+        .unwrap()
+        .get_ping_by_name(ping_name.as_str())
+        .is_some() as u8
 }
 
 #[no_mangle]
-pub extern "C" fn glean_register_ping_type(glean_handle: u64, ping_type_handle: u64) {
+pub extern "C" fn glean_register_ping_type(ping_type_handle: u64) {
     PING_TYPES.call_infallible(ping_type_handle, |ping_type| {
-        GLEAN.call_infallible_mut(glean_handle, |glean| glean.register_ping_type(ping_type))
+        let mut glean = glean_core::global_glean().lock().unwrap();
+        glean.register_ping_type(ping_type)
     })
 }

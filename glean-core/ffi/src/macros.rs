@@ -84,32 +84,31 @@ macro_rules! define_metric {
         $(
         #[no_mangle]
         pub extern "C" fn $test_get_num_recorded_errors_fn(
-            glean_handle: u64,
+
             metric_id: u64,
             error_type: i32,
             storage_name: FfiStr
         ) -> i32 {
-            crate::HandleMapExtension::call_infallible(&*crate::GLEAN, glean_handle, |glean| {
                 crate::HandleMapExtension::call_infallible(&*$metric_map, metric_id, |metric| {
+                    let glean = glean_core::global_glean().lock().unwrap();
                     let error_type = std::convert::TryFrom::try_from(error_type).unwrap();
                     let storage_name = crate::FallibleToString::to_string_fallible(&storage_name).unwrap();
                     glean_core::test_get_num_recorded_errors(
-                        glean,
+                        &glean,
                         glean_core::metrics::MetricType::meta(metric),
                         error_type,
                         Some(&storage_name)
                     ).unwrap_or(0)
                 })
-            })
         }
         )?
 
         $(
             #[no_mangle]
-            pub extern "C" fn $op_fn(glean_handle: u64, metric_id: u64, $($op_argname: $op_argtyp),*) {
-                crate::HandleMapExtension::call_infallible(&*crate::GLEAN, glean_handle, |glean| {
+            pub extern "C" fn $op_fn( metric_id: u64, $($op_argname: $op_argtyp),*) {
+                crate::with_glean_value(|glean| {
                     crate::HandleMapExtension::call_infallible(&*$metric_map, metric_id, |metric| {
-                        metric.$op(glean, $($op_argname),*);
+                        metric.$op(&glean, $($op_argname),*);
                     })
                 })
             }

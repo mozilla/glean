@@ -70,30 +70,28 @@ internal interface LibGleanFFI : Library {
 
     fun glean_clear_application_lifetime_metrics(handle: Long)
 
-    fun glean_test_clear_all_stores(handle: Long)
+    fun glean_test_clear_all_stores()
 
-    fun glean_is_first_run(handle: Long): Byte
+    fun glean_is_first_run(): Byte
 
     fun glean_destroy_glean(handle: Long)
 
-    fun glean_on_ready_to_submit_pings(handle: Long): Byte
+    fun glean_on_ready_to_submit_pings(): Byte
 
     fun glean_enable_logging()
 
-    fun glean_set_upload_enabled(glean_handle: Long, flag: Byte)
+    fun glean_set_upload_enabled(flag: Byte)
 
-    fun glean_is_upload_enabled(glean_handle: Long): Byte
+    fun glean_is_upload_enabled(): Byte
 
-    fun glean_ping_collect(glean_handle: Long, ping_type_handle: Long): Pointer?
+    fun glean_ping_collect(ping_type_handle: Long): Pointer?
 
     fun glean_submit_pings_by_name(
-        glean_handle: Long,
         ping_names: StringArray,
         ping_names_len: Int
     ): Byte
 
     fun glean_set_experiment_active(
-        glean_handle: Long,
         experiment_id: String,
         branch: String,
         extra_keys: StringArray?,
@@ -101,11 +99,11 @@ internal interface LibGleanFFI : Library {
         extra_len: Int
     )
 
-    fun glean_set_experiment_inactive(glean_handle: Long, experiment_id: String)
+    fun glean_set_experiment_inactive(experiment_id: String)
 
-    fun glean_experiment_test_is_active(glean_handle: Long, experiment_id: String): Byte
+    fun glean_experiment_test_is_active(experiment_id: String): Byte
 
-    fun glean_experiment_test_get_data(glean_handle: Long, experiment_id: String): Pointer?
+    fun glean_experiment_test_get_data(experiment_id: String): Pointer?
 
     // Ping type
 
@@ -113,9 +111,9 @@ internal interface LibGleanFFI : Library {
 
     fun glean_destroy_ping_type(handle: Long)
 
-    fun glean_register_ping_type(glean_handle: Long, ping_type_id: Long)
+    fun glean_register_ping_type(ping_type_id: Long)
 
-    fun glean_test_has_ping_type(glean_handle: Long, name: String): Byte
+    fun glean_test_has_ping_type(name: String): Byte
 
     // Boolean
 

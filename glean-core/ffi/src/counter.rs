@@ -4,7 +4,7 @@
 
 use ffi_support::FfiStr;
 
-use crate::{define_metric, handlemap_ext::HandleMapExtension, GLEAN};
+use crate::{define_metric, handlemap_ext::HandleMapExtension};
 
 define_metric!(CounterMetric => COUNTER_METRICS {
     new           -> glean_new_counter_metric(),
@@ -15,29 +15,21 @@ define_metric!(CounterMetric => COUNTER_METRICS {
 });
 
 #[no_mangle]
-pub extern "C" fn glean_counter_test_has_value(
-    glean_handle: u64,
-    metric_id: u64,
-    storage_name: FfiStr,
-) -> u8 {
-    GLEAN.call_infallible(glean_handle, |glean| {
-        COUNTER_METRICS.call_infallible(metric_id, |metric| {
-            metric
-                .test_get_value(glean, storage_name.as_str())
-                .is_some()
-        })
+pub extern "C" fn glean_counter_test_has_value(metric_id: u64, storage_name: FfiStr) -> u8 {
+    let glean = glean_core::global_glean().lock().unwrap();
+    COUNTER_METRICS.call_infallible(metric_id, |metric| {
+        metric
+            .test_get_value(&glean, storage_name.as_str())
+            .is_some()
     })
 }
 
 #[no_mangle]
-pub extern "C" fn glean_counter_test_get_value(
-    glean_handle: u64,
-    metric_id: u64,
-    storage_name: FfiStr,
-) -> i32 {
-    GLEAN.call_infallible(glean_handle, |glean| {
-        COUNTER_METRICS.call_infallible(metric_id, |metric| {
-            metric.test_get_value(glean, storage_name.as_str()).unwrap()
-        })
+pub extern "C" fn glean_counter_test_get_value(metric_id: u64, storage_name: FfiStr) -> i32 {
+    let glean = glean_core::global_glean().lock().unwrap();
+    COUNTER_METRICS.call_infallible(metric_id, |metric| {
+        metric
+            .test_get_value(&glean, storage_name.as_str())
+            .unwrap()
     })
 }
