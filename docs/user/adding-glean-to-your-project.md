@@ -113,7 +113,7 @@ github "mozilla/glean" "master"
 
 <div data-lang="Python" class="tab">
 
-It is recommended that you use a virtual environment for your work to isolate the dependencies for your project. There are many popular abstractions on top of virtual environments in the Python ecosystem which should help manage your project dependencies.
+It is recommended that you use a virtual environment for your work to isolate the dependencies for your project. There are many popular abstractions on top of virtual environments in the Python ecosystem which can help manage your project dependencies.
 
 The Python Glean bindings currently have [prebuilt wheels on PyPI for x86_64 Linux only](https://pypi.org/project/glean-sdk/#files).
 
