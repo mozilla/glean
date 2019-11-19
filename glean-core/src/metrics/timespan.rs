@@ -70,6 +70,10 @@ impl TimespanMetric {
     ///
     /// This will record an error if no `start` was called.
     pub fn set_stop(&mut self, glean: &Glean, stop_time: u64) {
+        if !self.should_record(glean) {
+            return;
+        }
+
         if self.start_time.is_none() {
             record_error(
                 glean,
