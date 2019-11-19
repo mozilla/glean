@@ -98,11 +98,64 @@ Note that each of these functions is marked as `internal`, you need to import `G
 
 </div>
 
+<div data-lang="Python" class="tab">
+
+It is generally a good practice to "reset" Glean prior to every unit test that uses Glean, to prevent side effects of one unit test impacting others.
+Glean contains a helper function `glean.testing.reset_glean()` for this purpose.
+It has two required arguments: the application id, and the application version.
+Each reset of Glean will create a new temporary directory for Glean to store its data in.
+This temporary directory is automatically cleaned up the next time Glean is reset or when the testing framework finishes.
+
+The instructions below assume using `py.test` as the test runner.
+Other test-running libraries have similar features, but are different in the details.
+
+To have this function run before every unit test in a `py.test` module:
+
+```python
+from glean import testing
+
+def setup_module():
+    testing.reset_glean("my-app-id", "0.1.0")
+```
+
+To have this function run before every test in an entire test suite, add the following to the `conftest.py` file:
+
+```python
+from glean import testing
+
+def pytest_runtest_module():
+    testing.reset_glean("my-app-id", "0.1.0")
+```
+
+To check if a value exists (i.e. it has been recorded), there is a `test_has_value()` function on each of the metric instances:
+
+```python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+# ...
+
+assert metrics.search.search_engine_url.test_has_value()
+```
+
+To check the actual values, there is a `test_get_value()` function on each of the metric instances.
+It is important to check that the values are recorded as expected, since many of the metric types may truncate or error-correct the value.
+This function will return a datatype appropriate to the specific type of the metric it is being used with:
+
+```python
+assert (
+    "https://example.com/search?" ==
+    metrics.search.default_search_engine_url.test_get_value()
+)
+```
+
+</div>
+
 {{#include ../tab_footer.md}}
 
 ## Testing metrics for custom pings
 
-In order to test metrics where the metric is included in more than one ping, the test functions take an optional `pingName` argument.
+In order to test metrics where the metric is included in more than one ping, the test functions take an optional `pingName` argument (`ping_name` in Python).
 This is the name of the ping that the metric is being sent in, such as `"events"` for the [`events` ping](pings/events.md),
 or `"metrics"` for the [`metrics` ping](pings/metrics.md).
 This could also be a custom ping name that the metric is being sent in.
@@ -174,6 +227,26 @@ XCTAssertEqual(3, events.count)
 
 // Check extra key/value for first event in the list
 XCTAssertEqual("Courier", events[0].extra?["font"])
+```
+
+</div>
+
+<div data-lang="Python" class="tab">
+
+Here is a longer example to better illustrate the intended use of the test API:
+
+```python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+# Record a metric value with extra to validate against
+metrics.url.visit.add(1)
+
+# Check if we collected any events into the 'click' metric
+assert metrics.url.visit.test_has_value()
+
+# Retrieve a snapshot of the recorded events
+assert 1 == metrics.url.visit.test_get_value()
 ```
 
 </div>

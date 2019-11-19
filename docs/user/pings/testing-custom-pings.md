@@ -1,4 +1,4 @@
-# Unit testing Glean custom pings
+# Unit testing Glean custom pings for Android
 
 Applications defining [custom pings](custom.md) can use use the strategy defined in this document to test these pings in unit tests.
 

@@ -7,6 +7,8 @@ Ideally, this window is expected to be about 24 hours, given that the collection
 Data in the [`ping_info`](index.md#the-ping_info-section) section of the ping can be used to infer the length of this window.
 If the application crashes, unsent recorded metrics are sent along with the next `metrics` ping.
 
+As the `metrics` ping was specifically designed for mobile operating systems, it is not sent when using the Glean Python bindings.
+
 ## Scheduling
 The desired behaviour is to collect the ping at the first available opportunity after 4AM local time on a new calendar day. 
 This breaks down into three scenarios:

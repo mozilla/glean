@@ -111,17 +111,72 @@ github "mozilla/glean" "master"
 
 </div>
 
+<div data-lang="Python" class="tab">
+
+It is recommended that you use a virtual environment for your work to isolate the dependencies for your project. There are many popular abstractions on top of virtual environments in the Python ecosystem which should help manage your project dependencies.
+
+The Python Glean bindings currently have prebuilt wheels on PyPI for x86_64 Linux only.
+
+If you're running that platform and have your virtual environment set up and activated, you can install Glean into it using:
+
+```bash
+$ python -m pip install glean_sdk
+```
+
+If you are not on x86_64 Linux, you will need to build the Glean Python bindings from source using [these instructions](../dev/python/setting-up-python-build-environment.html).
+
+</div>
+
 {{#include ../tab_footer.md}}
 
 ### Adding new metrics
 
 All metrics that your project collects must be defined in a `metrics.yaml` file.
-Add this file to your project and define it as an input file for the `sdk_generator.sh` script in the `Run Script` step defined before.
+
 The format of that file is documented [with `glean_parser`](https://mozilla.github.io/glean_parser/metrics-yaml.html).
 To learn more, see [adding new metrics](adding-new-metrics.md).
 
 > **Important**: as stated [before](adding-glean-to-your-project.md#before-using-glean), any new data collection requires documentation and data-review.
 > This is also required for any new metric automatically collected by the Glean SDK.
+
+{{#include ../tab_header.md}}
+
+<div data-lang="Swift" class="tab">
+
+On iOS, add this file to your project and define it as an input file for the `sdk_generator.sh` script in the `Run Script` step defined before.
+
+</div>
+
+<div data-lang="Python" class="tab">
+
+For Python, the `metrics.yaml` file must be available and loaded at runtime.
+
+If your project is a script (i.e. just Python files in a directory), you can load the `metrics.yaml` using:
+
+```Python
+from glean import load_metrics
+
+metrics = load_metrics("metrics.yaml")
+
+# Use a metric on the returned object
+metrics.your_category.your_metric.set("value")
+```
+
+If your project is an distributable Python package, you need to include the `metrics.yaml` file using [one of the myriad ways to include data in a Python package](https://setuptools.readthedocs.io/en/latest/setuptools.html#including-data-files) and then use [`package_resources.resource_filename()`](https://setuptools.readthedocs.io/en/latest/pkg_resources.html#resource-extraction) to get the filename at runtime.
+
+```Python
+from glean import load_metrics
+from package_resources import resource_filename
+
+metrics = load_metrics(resource_filename(__name__, "metrics.yaml"))
+
+# Use a metric on the returned object
+metrics.your_category.your_metric.set("value")
+```
+
+</div>
+
+{{#include ../tab_footer.md}}
 
 ### Adding custom pings
 
@@ -144,13 +199,15 @@ These specific steps are described in [the `probe_scraper` documentation](https:
 
 The following steps are required for applications using the Glean SDK, but not libraries.
 
+The Glean SDK should only be initialized from the main application, not individual libraries.
+If you are adding Glean support to a library, you can safely skip this section.
+
 {{#include ../tab_header.md}}
 
 <div data-lang="Kotlin" class="tab">
 
 ### Initializing the Glean SDK
 
-The Glean SDK should only be initialized from the main application, not individual libraries.  If you are adding Glean support to a library, you can safely skip this section.
 Please also note that the Glean SDK does not support use across multiple processes, and must only be initialized on the application's main process. Initializing in other processes is a no-op.
 Additionally, Glean must be initialized on the main (UI) thread of the applications main process. Failure to do so will throw an `IllegalThreadStateException`.
 
@@ -207,8 +264,6 @@ When re-enabling, core Glean metrics will be recomputed at that time.
 
 ### Initializing the Glean SDK
 
-The Glean SDK should only be initialized from the main application, not individual libraries.
-If you are adding Glean support to a library, you can safely skip this section.
 Please also note that the Glean SDK does not support use across multiple processes, and must only be initialized on the application's main process.
 
 An excellent place to initialize Glean is within the `application(_:)` method of the class that extends the `UIApplicationDelegate` class.
@@ -262,15 +317,41 @@ When re-enabling, core Glean metrics will be recomputed at that time.
 
 <div data-lang="Python" class="tab">
 
-> **Note**: This content is a placeholder.  The Python bindings are under development.
-
 ### Initializing the Glean SDK
 
+The main control for Glean is on the `glean.Glean` singleton.
+
+The Glean SDK should be initialized as soon as possible, and importantly, before any other libraries in the application start using Glean.
+Library code should never call `Glean.initialize`, since it should be called exactly once per application.
+
+
 ```python
-import glean
-cfg = glean.Configuration()
-glean.Glean.initialize(cfg, "/path/to/datadir")
+from glean import Glean
+
+# Call Glean.set_upload_enabled first, since Glean.initialize might send pings
+# if there are any metrics queued up from a previous run.
+Glean.set_upload_enabled(True)
+
+Glean.initialize(
+    "my-app-id",  # The id of your application
+    "0.1.0",  # The version of your application
+)
 ```
+
+Additonal configuration is available on the `glean.Configuration` object, which can be passed into `Glean.initialize()`.
+
+Unlike Android and Swift, the Python bindings do not automatically send any pings. 
+See the [custom pings documentation](pings/custom.md) about adding custom pings and sending them.
+
+### Enabling and disabling metrics
+
+`Glean.set_upload_enabled()` should be called in response to the user enabling or disabling telemetry.
+This method should also be called at least once prior to calling `Glean.initialize()`.
+
+The application should provide some form of user interface to call this method.
+
+When going from enabled to disabled, all pending events, metrics and pings are cleared, except for `first_run_date`.
+When re-enabling, core Glean metrics will be recomputed at that time.
 
 </div>
 

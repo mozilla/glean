@@ -31,8 +31,6 @@ Please also note that the `extra` map is non-nested arbitrary `String` to `Strin
 There are test APIs available too:
 
 ```Kotlin
-import org.mozilla.yourApplication.GleanMetrics.SearchDefault
-
 // Was the experiment annotated in Glean pings?
 assertTrue(Glean.testIsExperimentActive("blue-button-effective"))
 // Was the correct branch reported?
@@ -49,6 +47,44 @@ assertEquals(
 
 </div>
 
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import Glean
+
+# Annotate Glean pings with experiments data.
+Glean.set_experiment_active(
+  experiment_id = "blue-button-effective",
+  branch = "branch-with-blue-button",
+  extra: {
+    "buttonLabel": "test"
+  }
+)
+
+# After the experiment terminates, the annotation
+# can be removed.
+Glean.set_experiment_inactive("blue-button-effective")
+```
+
+> **Important**: Experiment IDs and branch don't need to be pre-defined in the Glean SDK registry files.
+Please also note that the `extra` dict is non-nested arbitrary `str` to `str` mapping.
+
+There are test APIs available too:
+
+```Kotlin
+from glean import Glean
+
+# Was the experiment annotated in Glean pings?
+assert Glean.test_is_experiment_active("blue-button-effective")
+# Was the correct branch reported?
+assert (
+    "branch-with-blue-button" ==
+    Glean.test_get_experiment_data("blue-button-effective").branch
+)
+```
+
+</div>
+
 {{#include ../tab_footer.md}}
 
 ## Limits
@@ -61,3 +97,4 @@ assertEquals(
 ## Reference
 
 * [Kotlin API docs](../../javadoc/glean/mozilla.telemetry.glean/-glean.html).
+* [Python API docs](../../python/glean/glean.html)

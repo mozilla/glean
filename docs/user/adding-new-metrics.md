@@ -139,4 +139,10 @@ GleanMetrics.Views.loginOpened...
 
 </div>
 
+<div data-lang="Python" class="tab">
+
+Category and metric names in the `metrics.yaml` are in `snake_case`, which matches the [PEP8](https://www.python.org/dev/peps/pep-0008/) standard, so no translation is needed for Python.
+
+</div>
+
 {{#include ../tab_footer.md}}
