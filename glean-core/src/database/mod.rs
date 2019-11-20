@@ -138,6 +138,8 @@ impl Database {
 
     /// Determine if the storage has the given metric.
     ///
+    /// If data cannot be read it is assumed that the storage does not have the metric.
+    ///
     /// ## Arguments
     ///
     /// * `lifetime`: The lifetime of the metric.
@@ -153,18 +155,19 @@ impl Database {
 
         // Lifetime::Application data is not persisted to disk
         if lifetime == Lifetime::Application {
-            let data = self
+            return self
                 .app_lifetime_data
                 .read()
-                .expect("Can't read app lifetime data");
-            return data.contains_key(&key);
+                .map(|data| data.contains_key(&key))
+                .unwrap_or(false);
         }
 
-        let store: SingleStore = self
-            .rkv
-            .open_single(lifetime.as_str(), StoreOptions::create())
-            .expect("Can't open single store");
-        let reader = self.rkv.read().expect("Can't create rkv reader");
+        let store: SingleStore = unwrap_or!(
+            self.rkv
+                .open_single(lifetime.as_str(), StoreOptions::create()),
+            return false
+        );
+        let reader = unwrap_or!(self.rkv.read(), return false);
         store.get(&reader, &key).unwrap_or(None).is_some()
     }
 

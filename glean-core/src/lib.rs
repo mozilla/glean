@@ -19,6 +19,7 @@ use chrono::{DateTime, FixedOffset};
 use lazy_static::lazy_static;
 use uuid::Uuid;
 
+mod macros;
 pub mod ac_migration;
 mod common_metric_data;
 mod database;
