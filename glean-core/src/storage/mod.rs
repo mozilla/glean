@@ -99,8 +99,8 @@ impl StorageManager {
         storage.iter_store_from(Lifetime::User, &store_name, None, &mut snapshotter);
 
         if clear_store {
-            if let Err(_) = storage.clear_ping_lifetime_storage(store_name) {
-                log::error!("Failed to clear lifetime storage");
+            if let Err(e) = storage.clear_ping_lifetime_storage(store_name) {
+                log::error!("Failed to clear lifetime storage: {:?}", e);
             }
         }
 
