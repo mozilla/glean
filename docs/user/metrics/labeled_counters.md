@@ -107,7 +107,7 @@ assert 1 == metrics.stability.crash_count.test_get_num_recorded_errors(
 
 * Labels are limited to starting with either a letter or an underscore character.
 
-* Each label must have a maximum of 60 characters.
+* Each label must have a maximum of 60 bytes, when encoded as UTF-8.
 
 * If the labels are specified in the `metrics.yaml`, using a different label will be replaced with the special value `__other__`.
 

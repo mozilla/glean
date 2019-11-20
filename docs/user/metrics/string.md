@@ -114,21 +114,21 @@ XCTAssertEqual(1, SearchDefault.name.testGetNumRecordedErrors(.invalidValue))
 from glean import load_metrics
 metrics = load_metrics("metrics.yaml")
 
-// Record a value into the metric.
+# Record a value into the metric.
 metrics.search_default.name.set("duck duck go")
-// If it changed later, you can record the new value:
+# If it changed later, you can record the new value:
 metrics.search_default.name.set("wikipedia")
 ```
 
 There are test APIs available too:
 
-```Kotlin
-// Was anything recorded?
+```Python
+# Was anything recorded?
 assert metrics.search_default.name.test_has_value()
-// Does the string metric have the expected value?
-// IMPORTANT: It may have been truncated -- see "Limits" below
+# Does the string metric have the expected value?
+# IMPORTANT: It may have been truncated -- see "Limits" below
 assert "wikipedia" == metrics.search_default.name.test_get_value()
-// Was the string truncated, and an error reported?
+# Was the string truncated, and an error reported?
 assert 1 == metrics.search_default.name.test_get_num_recorded_errors(
     ErrorType.INVALID_VALUE
 )
@@ -140,7 +140,7 @@ assert 1 == metrics.search_default.name.test_get_num_recorded_errors(
 
 ## Limits
 
-* Fixed maximum string length: 50. Longer strings are truncated. For the original Kotlin implementation of the Glean SDK, this is measured in Unicode characters. For the Rust implementation, this is measured in the number of bytes when the string is encoded in UTF-8.
+* Fixed maximum string length: 50. Longer strings are truncated. This is measured in the number of bytes when the string is encoded in UTF-8.
 
 ## Examples
 

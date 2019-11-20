@@ -8,13 +8,15 @@ If the application crashes, an `events` ping is generated next time the applicat
 
 The `events` ping is sent under the following circumstances:
 
-- Normally, it is sent when the application goes into the [background](index.md#defining-background-state), if there are any recorded events to send.
+1. Normally, it is sent when the application goes into the [background](index.md#defining-background-state), if there are any recorded events to send.
 
-- When the queue of events exceeds `Glean.configuration.maxEvents` (default 500).
+2. When the queue of events exceeds `Glean.configuration.maxEvents` (default 500).
 
-- If there are any unsent events found on disk when starting the application. It would be impossible to coordinate the timestamps across a reboot, so it's best to just collect all events from the previous run into their own ping, and start over.
+3. If there are any unsent events found on disk when starting the application. It would be impossible to coordinate the timestamps across a reboot, so it's best to just collect all events from the previous run into their own ping, and start over.
 
 All of these cases are handled automatically, with no intervention or configuration required by the application.
+
+> **Note:** Since the Python bindings don't have a concept of "going to background", case (1) above does not apply.
 
 ## Contents
 At the top-level, this ping contains the following keys:

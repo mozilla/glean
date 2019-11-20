@@ -2,7 +2,7 @@
 
 This document describes how to set up an environment for the development of the Glean Python bindings.
 
-Instructions for installing a copy of the Glean Python bindings into your own environment for use in your project are TBD.
+Instructions for installing a copy of the Glean Python bindings into your own environment for use in your project are described in [adding Glean to your project](../../user/adding-glean-to-your-project.html).
 
 ## Prerequisites
 
