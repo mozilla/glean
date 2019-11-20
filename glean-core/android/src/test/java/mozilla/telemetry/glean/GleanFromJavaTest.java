@@ -4,8 +4,12 @@
 
 package mozilla.telemetry.glean;
 
-import androidx.test.core.app.ApplicationProvider;
+import android.content.Context;
 
+import androidx.test.core.app.ApplicationProvider;
+import androidx.work.testing.WorkManagerTestInitHelper;
+
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -21,16 +25,23 @@ public class GleanFromJavaTest {
     // callable from Java. If something goes wrong, it should complain about missing
     // methods at build-time.
 
+    private Context appContext = ApplicationProvider.getApplicationContext();
+
+    @Before
+    public void setup() {
+        WorkManagerTestInitHelper.initializeTestWorkManager(appContext);
+    }
+
     @Test
     public void testInitGleanWithDefaults() {
-        Glean.INSTANCE.initialize(ApplicationProvider.getApplicationContext());
+        Glean.INSTANCE.initialize(appContext);
     }
 
     @Test
     public void testInitGleanWithConfiguration() {
         Configuration config =
                 new Configuration(Configuration.DEFAULT_TELEMETRY_ENDPOINT, "test-channel");
-        Glean.INSTANCE.initialize(ApplicationProvider.getApplicationContext(), config);
+        Glean.INSTANCE.initialize(appContext, config);
     }
 
     @Test
