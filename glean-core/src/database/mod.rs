@@ -110,15 +110,14 @@ impl Database {
             return;
         }
 
-        let store: SingleStore = self
-            .rkv
-            .open_single(lifetime.as_str(), StoreOptions::create())
-            .expect("Can't open single store");
+        let store: SingleStore = unwrap_or!(
+            self.rkv
+                .open_single(lifetime.as_str(), StoreOptions::create()),
+            return
+        );
 
-        let reader = self.rkv.read().expect("Can't create rkv reader");
-        let mut iter = store
-            .iter_from(&reader, &iter_start)
-            .expect("Can't create iterator from reader");
+        let reader = unwrap_or!(self.rkv.read(), return);
+        let mut iter = unwrap_or!(store.iter_from(&reader, &iter_start), return);
 
         while let Some(Ok((metric_name, value))) = iter.next() {
             if !metric_name.starts_with(iter_start.as_bytes()) {
@@ -127,9 +126,7 @@ impl Database {
 
             let metric_name = &metric_name[len..];
             let metric: Metric = match value.expect("Value missing in iteration") {
-                rkv::Value::Blob(blob) => {
-                    bincode::deserialize(blob).expect("Can't deserialize value")
-                }
+                rkv::Value::Blob(blob) => unwrap_or!(bincode::deserialize(blob), continue),
                 _ => continue,
             };
             transaction_fn(metric_name, &metric);
@@ -171,9 +168,9 @@ impl Database {
         store.get(&reader, &key).unwrap_or(None).is_some()
     }
 
-    pub fn write_with_store<F>(&self, store_name: Lifetime, mut transaction_fn: F)
+    pub fn write_with_store<F>(&self, store_name: Lifetime, mut transaction_fn: F) -> Result<()>
     where
-        F: FnMut(rkv::Writer, SingleStore),
+        F: FnMut(rkv::Writer, SingleStore) -> Result<()>,
     {
         if store_name == Lifetime::Application {
             panic!("Can't write with store for application-lifetime data");
@@ -181,10 +178,10 @@ impl Database {
 
         let store: SingleStore = self
             .rkv
-            .open_single(store_name.as_str(), StoreOptions::create())
-            .expect("Can't open single store");
-        let writer = self.rkv.write().expect("Can't create rkv writer");
-        transaction_fn(writer, store);
+            .open_single(store_name.as_str(), StoreOptions::create())?;
+        let writer = self.rkv.write()?;
+        transaction_fn(writer, store)?;
+        Ok(())
     }
 
     /// Records a metric in the underlying storage system.
@@ -192,7 +189,9 @@ impl Database {
         let name = data.identifier(glean);
 
         for ping_name in data.storage_names() {
-            self.record_per_lifetime(data.lifetime, ping_name, &name, value);
+            if let Err(e) = self.record_per_lifetime(data.lifetime, ping_name, &name, value) {
+                log::error!("Failed to record metric into {}: {:?}", ping_name, e);
+            }
         }
     }
 
@@ -204,7 +203,7 @@ impl Database {
         storage_name: &str,
         key: &str,
         metric: &Metric,
-    ) {
+    ) -> Result<()> {
         let final_key = Self::get_storage_key(storage_name, Some(key));
 
         if lifetime == Lifetime::Application {
@@ -213,23 +212,19 @@ impl Database {
                 .write()
                 .expect("Can't read app lifetime data");
             data.insert(final_key, metric.clone());
-            return;
+            return Ok(());
         }
 
         let encoded = bincode::serialize(&metric).expect("IMPOSSIBLE: Serializing metric failed");
         let value = rkv::Value::Blob(&encoded);
 
         let store_name = lifetime.as_str();
-        let store = self
-            .rkv
-            .open_single(store_name, StoreOptions::create())
-            .expect("Can't open single store");
+        let store = self.rkv.open_single(store_name, StoreOptions::create())?;
 
-        let mut writer = self.rkv.write().expect("Can't create rkv writer");
-        store
-            .put(&mut writer, final_key, &value)
-            .expect("Can't put value into store");
-        let _ = writer.commit();
+        let mut writer = self.rkv.write()?;
+        store.put(&mut writer, final_key, &value)?;
+        writer.commit()?;
+        Ok(())
     }
 
     /// Records the provided value, with the given lifetime, after
@@ -240,7 +235,11 @@ impl Database {
     {
         let name = data.identifier(glean);
         for ping_name in data.storage_names() {
-            self.record_per_lifetime_with(data.lifetime, ping_name, &name, &mut transform);
+            if let Err(e) =
+                self.record_per_lifetime_with(data.lifetime, ping_name, &name, &mut transform)
+            {
+                log::error!("Failed to record metric into {}: {:?}", ping_name, e);
+            }
         }
     }
 
@@ -252,7 +251,8 @@ impl Database {
         storage_name: &str,
         key: &str,
         mut transform: F,
-    ) where
+    ) -> Result<()>
+    where
         F: FnMut(Option<Metric>) -> Metric,
     {
         let final_key = Self::get_storage_key(storage_name, Some(key));
@@ -272,20 +272,15 @@ impl Database {
                     entry.insert(transform(Some(old_value)));
                 }
             }
-            return;
+            return Ok(());
         }
 
         let store_name = lifetime.as_str();
-        let store = self
-            .rkv
-            .open_single(store_name, StoreOptions::create())
-            .expect("Can't open single store");
+        let store = self.rkv.open_single(store_name, StoreOptions::create())?;
 
-        let mut writer = self.rkv.write().expect("Can't create rkv writer");
+        let mut writer = self.rkv.write()?;
         let new_value: Metric = {
-            let old_value = store
-                .get(&writer, &final_key)
-                .expect("Can't get value from rkv");
+            let old_value = store.get(&writer, &final_key)?;
 
             match old_value {
                 Some(rkv::Value::Blob(blob)) => {
@@ -299,20 +294,17 @@ impl Database {
         let encoded =
             bincode::serialize(&new_value).expect("IMPOSSIBLE: Serializing metric failed");
         let value = rkv::Value::Blob(&encoded);
-        store
-            .put(&mut writer, final_key, &value)
-            .expect("Can't put value into store");
+        store.put(&mut writer, final_key, &value)?;
         let _ = writer.commit();
+        Ok(())
     }
 
     /// Clears a storage (only Ping Lifetime).
-    pub fn clear_ping_lifetime_storage(&self, storage_name: &str) {
+    pub fn clear_ping_lifetime_storage(&self, storage_name: &str) -> Result<()> {
         self.write_with_store(Lifetime::Ping, |mut writer, store| {
             let mut metrics = Vec::new();
             {
-                let mut iter = store
-                    .iter_from(&writer, &storage_name)
-                    .expect("Can't create rkv iterator");
+                let mut iter = store.iter_from(&writer, &storage_name)?;
                 while let Some(Ok((metric_name, _))) = iter.next() {
                     if let Ok(metric_name) = std::str::from_utf8(metric_name) {
                         if !metric_name.starts_with(&storage_name) {
@@ -324,13 +316,14 @@ impl Database {
             }
 
             for to_delete in metrics {
-                store
-                    .delete(&mut writer, to_delete)
-                    .expect("Can't delete from rkv");
+                if let Err(_) = store.delete(&mut writer, to_delete) {
+                    log::error!("Can't delete from store");
+                }
             }
 
-            writer.commit().expect("Commit to rkv failed");
-        });
+            writer.commit()?;
+            Ok(())
+        })
     }
 
     /// Removes a single metric from the storage.
@@ -340,7 +333,12 @@ impl Database {
     /// * `lifetime` - the lifetime of the storage in which to look for the metric.
     /// * `storage_name` - the name of the storage to store/fetch data from.
     /// * `metric_key` - the metric key/name.
-    pub fn remove_single_metric(&self, lifetime: Lifetime, storage_name: &str, metric_name: &str) {
+    pub fn remove_single_metric(
+        &self,
+        lifetime: Lifetime,
+        storage_name: &str,
+        metric_name: &str,
+    ) -> Result<()> {
         let final_key = Self::get_storage_key(storage_name, Some(metric_name));
 
         if lifetime == Lifetime::Application {
@@ -349,25 +347,33 @@ impl Database {
                 .write()
                 .expect("Can't access app lifetime data as writable");
             data.remove(&final_key);
-            return;
+            return Ok(());
         }
 
         self.write_with_store(lifetime, |mut writer, store| {
-            store
-                .delete(&mut writer, final_key.clone())
-                .expect("Can't delete single metric from rkv");
+            if let Err(_) = store.delete(&mut writer, final_key.clone()) {
+                log::error!("Can't delete single metric from rkv");
+            }
 
-            writer.commit().expect("Commit to rkv failed");
-        });
+            writer.commit()?;
+            Ok(())
+        })
     }
 
     /// Clears all metrics in the database.
     pub fn clear_all(&self) {
         for lifetime in [Lifetime::User, Lifetime::Ping].iter() {
-            self.write_with_store(*lifetime, |mut writer, store| {
-                store.clear(&mut writer).expect("Can't clear store");
-                writer.commit().expect("Commit to rkv failed");
+            let res = self.write_with_store(*lifetime, |mut writer, store| {
+                if let Err(_) = store.clear(&mut writer) {
+                    log::error!("Can't clear store");
+                }
+
+                writer.commit()?;
+                Ok(())
             });
+            if let Err(e) = res {
+                log::error!("Could not clear store for lifetime {:?}: {:?}", lifetime, e);
+            }
         }
 
         self.app_lifetime_data
