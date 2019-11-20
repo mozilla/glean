@@ -8,6 +8,8 @@ On Android, this directory lives inside the [`ApplicationInfo.dataDir`](https://
 
 On iOS, this directory lives inside the [`Documents`](https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/FileSystemProgrammingGuide/FileSystemOverview/FileSystemOverview.html) directory associated with the application.
 
+For the Python bindings, if no directory is specified, it is stored in a temporary directory and cleared at exit.
+
 Within the `glean_data` directory are the following contents:
 
 - `db`: Contains the [rkv](https://github.com/mozilla/rkv) database used to persist ping and user lifetime metrics.
