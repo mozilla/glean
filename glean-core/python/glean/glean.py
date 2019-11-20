@@ -267,6 +267,7 @@ class Glean:
         Args:
             experiment_id (str): The id of the experiment to deactivate.
         """
+
         @Dispatcher.launch
         def set_experiment_inactive():
             _ffi.lib.glean_set_experiment_inactive(
