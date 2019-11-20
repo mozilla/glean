@@ -87,16 +87,19 @@ impl Histogram<Functional> {
         for key in self.values.keys() {
             let key = *key;
 
+            // safe unwrap, we checked it's not none
             if min_key.is_none() || key < min_key.unwrap() {
                 min_key = Some(key);
             }
 
+            // safe unwrap, we checked it's not none
             if max_key.is_none() || key > max_key.unwrap() {
                 max_key = Some(key);
             }
         }
 
         // Non-empty values, therefore minimum/maximum exists.
+        // safe unwraps, we set it at least once.
         let min_bucket = self.bucketing.sample_to_bucket_index(min_key.unwrap());
         let max_bucket = self.bucketing.sample_to_bucket_index(max_key.unwrap()) + 1;
 
