@@ -249,7 +249,7 @@ impl EventDatabase {
                     // events to a file on disk, where this would be expensive. Best to
                     // handle this in every case (whether events came from disk or memory)
                     // in a single location.
-                    store.sort_by(|a, b| a.timestamp.partial_cmp(&b.timestamp).unwrap());
+                    store.sort_by(|a, b| a.timestamp.cmp(&b.timestamp));
                     let first_timestamp = store[0].timestamp;
                     Some(JsonValue::from_iter(
                         store.iter().map(|e| e.serialize_relative(first_timestamp)),
