@@ -65,3 +65,17 @@ report/index.html
 
 Xcode automatically generates code coverage when running tests.
 You can find the report in the Report Navigator (`View -> Navigators -> Show Report Navigator -> Coverage`).
+
+## Generating Python reports locally
+
+Python code coverage is determined using the [coverage.py](https://coverage.readthedocs.io/en/latest/) library.
+
+Run
+
+```bash
+make python-coverage
+```
+
+to generate code coverage reports in the Glean virtual environment.
+
+After running, the report will be in `htmlcov`.

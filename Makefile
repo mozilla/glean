@@ -147,3 +147,9 @@ rust-coverage: ## Generate code coverage information for Rust code
 	grcov ccov.zip -s . -t lcov --llvm --branch --ignore-not-existing --ignore "/*" --ignore "glean-core/ffi/*" -o lcov.info
 	genhtml -o report/ --show-details --highlight --ignore-errors source --legend lcov.info
 .PHONY: rust-coverage
+
+python-coverage: build-python ## Generate a code coverage report for Python
+	cd glean-core/python
+	$(GLEAN_PYENV)/bin/python3 -m coverage run --source glean -m pytest
+	$(GLEAN_PYENV)/bin/python3 -m coverage html
+.PHONY: python-coverage
