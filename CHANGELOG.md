@@ -2,6 +2,11 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v21.0.0...master)
 
+* Android:
+
+  * Two new metrics were added to investigate sending of metrics and baseline pings.
+    See [bug 1597980](https://bugzilla.mozilla.org/show_bug.cgi?id=1597980) for more information.
+
 # v21.0.0 (2019-11-18)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v20.2.0...v21.0.0)
