@@ -77,7 +77,11 @@ where
         t
     }
 
-    /// Create a static label
+    /// Create a static label.
+    ///
+    /// ## Safety
+    ///
+    /// Should only be called when static labels are available on this metric.
     ///
     /// ## Arguments
     ///
