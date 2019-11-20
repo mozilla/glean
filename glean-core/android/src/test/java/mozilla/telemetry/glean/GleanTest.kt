@@ -157,6 +157,29 @@ class GleanTest {
     }
 
     @Test
+    fun `test experiments recording before Glean inits`() {
+        // This test relies on Glean not being initialized and task queuing to be on.
+        Glean.testDestroyGleanHandle()
+        Dispatchers.API.setTaskQueueing(true)
+
+        Glean.setExperimentActive(
+            "experiment_set_preinit", "branch_a"
+        )
+
+        Glean.setExperimentActive(
+            "experiment_preinit_disabled", "branch_a"
+        )
+
+        Glean.setExperimentInactive("experiment_preinit_disabled")
+
+        // This will init glean and flush the dispatcher's queue.
+        resetGlean()
+
+        assertTrue(Glean.testIsExperimentActive("experiment_set_preinit"))
+        assertFalse(Glean.testIsExperimentActive("experiment_preinit_disabled"))
+    }
+
+    @Test
     fun `test sending of background pings`() {
         val server = getMockWebServer()
 
