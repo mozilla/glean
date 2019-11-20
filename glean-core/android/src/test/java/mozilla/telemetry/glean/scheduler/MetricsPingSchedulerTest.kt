@@ -6,6 +6,7 @@ package mozilla.telemetry.glean.scheduler
 
 import android.content.Context
 import android.os.SystemClock
+import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.work.testing.WorkManagerTestInitHelper
@@ -458,7 +459,7 @@ class MetricsPingSchedulerTest {
         // Initialize Glean
         resetGlean(clearStores = true)
         val mpsSpy = mock(MetricsPingScheduler::class.java)
-        `when`(mpsSpy.onEnterForeground()).thenCallRealMethod()
+        `when`(mpsSpy.onStart(ProcessLifecycleOwner.get())).thenCallRealMethod()
         Glean.metricsPingScheduler = mpsSpy
 
         // Make sure schedule() has not been called.  Since we are adding the spy after resetGlean
@@ -466,7 +467,7 @@ class MetricsPingSchedulerTest {
         verify(mpsSpy, times(0)).schedule()
 
         // Simulate returning to the foreground with Glean initialized.
-        Glean.metricsPingScheduler.onEnterForeground()
+        Glean.metricsPingScheduler.onStart(ProcessLifecycleOwner.get())
 
         // Verify that schedule hasn't been called since we don't schedule on the first foreground
         // since Glean.initialize() ensures schedule is called before any queued tasks are executed

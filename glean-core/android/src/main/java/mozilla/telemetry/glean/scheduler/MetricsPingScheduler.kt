@@ -9,9 +9,8 @@ import android.content.SharedPreferences
 import androidx.annotation.VisibleForTesting
 import android.text.format.DateUtils
 import android.util.Log
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
@@ -44,7 +43,7 @@ import java.util.concurrent.TimeUnit as AndroidTimeUnit
 internal class MetricsPingScheduler(
     private val applicationContext: Context,
     migratedLastSentDate: String? = null
-) : LifecycleObserver {
+) : DefaultLifecycleObserver {
     internal val sharedPreferences: SharedPreferences by lazy {
         applicationContext.getSharedPreferences(this.javaClass.canonicalName, Context.MODE_PRIVATE)
     }
@@ -313,8 +312,7 @@ internal class MetricsPingScheduler(
     /**
      * Update flag to show we are no longer in the foreground.
      */
-    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-    fun onEnterBackground() {
+    override fun onStop(owner: LifecycleOwner) {
         isInForeground = false
     }
 
@@ -322,8 +320,7 @@ internal class MetricsPingScheduler(
      * Update the flag to indicate we are moving to the foreground, and if Glean is initialized we
      * will check to see if the metrics ping needs to be scheduled for collection.
      */
-    @OnLifecycleEvent(Lifecycle.Event.ON_START)
-    fun onEnterForeground() {
+    override fun onStart(owner: LifecycleOwner) {
         isInForeground = true
 
         // We check for the metrics ping schedule here because the app could have been in the
