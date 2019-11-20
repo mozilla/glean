@@ -116,7 +116,7 @@ import pytest
 from glean import testing
 
 @pytest.fixture(name="reset_glean", scope="function", autouse=True)
-def reset_glean():
+def fixture_reset_glean():
     testing.reset_glean("my-app-id", "0.1.0")
 ```
 
