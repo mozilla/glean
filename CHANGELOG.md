@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v21.1.0...master)
+[Full changelog](https://github.com/mozilla/glean/compare/v21.1.1...master)
+
+# v21.1.1 (2019-11-20)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v21.1.0...v21.1.1)
 
 * Android:
 
