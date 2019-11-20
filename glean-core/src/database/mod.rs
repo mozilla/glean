@@ -70,6 +70,9 @@ impl Database {
     /// Iterates with the provided transaction function over the requested data
     /// from the given storage.
     ///
+    /// * If the storage is unavailable, the transaction function is never invoked.
+    /// * If the read data cannot be deserialized it will be silently skipped.
+    ///
     /// ## Arguments
     ///
     /// * `lifetime`: The metric lifetime to iterate over.
@@ -82,6 +85,10 @@ impl Database {
     ///   will be iterated over.
     /// * `transaction_fn`: Called for each entry being iterated over. It is
     ///   passed two arguments: `(metric_name: &[u8], metric: &Metric)`.
+    ///
+    /// ## Panics
+    ///
+    /// This function will **not** panic on database errors.
     pub fn iter_store_from<F>(
         &self,
         lifetime: Lifetime,
@@ -142,6 +149,10 @@ impl Database {
     /// * `lifetime`: The lifetime of the metric.
     /// * `storage_name`: The storage name to look in.
     /// * `metric_identifier`: The metric identifier.
+    ///
+    /// ## Panics
+    ///
+    /// This function will **not** panic on database errors.
     pub fn has_metric(
         &self,
         lifetime: Lifetime,
@@ -168,6 +179,14 @@ impl Database {
         store.get(&reader, &key).unwrap_or(None).is_some()
     }
 
+    /// Write to the specified storage with the provided transaction function.
+    ///
+    /// If the storage is unavailable, it will return an error.
+    ///
+    /// ## Panics
+    ///
+    /// * This function will panic for `Lifetime::Application`.
+    /// * This function will **not** panic on database errors.
     pub fn write_with_store<F>(&self, store_name: Lifetime, mut transaction_fn: F) -> Result<()>
     where
         F: FnMut(rkv::Writer, SingleStore) -> Result<()>,
@@ -195,8 +214,17 @@ impl Database {
         }
     }
 
-    /// Records a metric in the underlying storage system, for
-    /// a single lifetime.
+    /// Records a metric in the underlying storage system, for a single lifetime.
+    ///
+    /// ## Return value
+    ///
+    /// If the storage is unavailable or the write fails, no data will be stored and an error will be returned.
+    ///
+    /// Otherwise `Ok(())` is returned.
+    ///
+    /// ## Panics
+    ///
+    /// * This function will **not** panic on database errors.
     fn record_per_lifetime(
         &self,
         lifetime: Lifetime,
@@ -245,6 +273,16 @@ impl Database {
 
     /// Records a metric in the underlying storage system, after applying the
     /// given transformation function, for a single lifetime.
+    ///
+    /// ## Return value
+    ///
+    /// If the storage is unavailable or the write fails, no data will be stored and an error will be returned.
+    ///
+    /// Otherwise `Ok(())` is returned.
+    ///
+    /// ## Panics
+    ///
+    /// * This function will **not** panic on database errors.
     pub fn record_per_lifetime_with<F>(
         &self,
         lifetime: Lifetime,
@@ -300,6 +338,18 @@ impl Database {
     }
 
     /// Clears a storage (only Ping Lifetime).
+    ///
+    /// ## Return value
+    ///
+    /// * If the storage is unavailable an error is returned.
+    /// * If any individual delete fails, an error is returned, but other deletions might have
+    ///   happened.
+    ///
+    /// Otherwise `Ok(())` is returned.
+    ///
+    /// ## Panics
+    ///
+    /// * This function will **not** panic on database errors.
     pub fn clear_ping_lifetime_storage(&self, storage_name: &str) -> Result<()> {
         self.write_with_store(Lifetime::Ping, |mut writer, store| {
             let mut metrics = Vec::new();
@@ -315,14 +365,16 @@ impl Database {
                 }
             }
 
+            let mut res = Ok(());
             for to_delete in metrics {
-                if let Err(_) = store.delete(&mut writer, to_delete) {
-                    log::error!("Can't delete from store");
+                if let Err(e) = store.delete(&mut writer, to_delete) {
+                    log::error!("Can't delete from store: {:?}", e);
+                    res = Err(e);
                 }
             }
 
             writer.commit()?;
-            Ok(())
+            Ok(res?)
         })
     }
 
@@ -333,6 +385,17 @@ impl Database {
     /// * `lifetime` - the lifetime of the storage in which to look for the metric.
     /// * `storage_name` - the name of the storage to store/fetch data from.
     /// * `metric_key` - the metric key/name.
+    ///
+    /// ## Return value
+    ///
+    /// * If the storage is unavailable an error is returned.
+    /// * If the metric could not be deleted, an error is returned.
+    ///
+    /// Otherwise `Ok(())` is returned.
+    ///
+    /// ## Panics
+    ///
+    /// * This function will **not** panic on database errors.
     pub fn remove_single_metric(
         &self,
         lifetime: Lifetime,
@@ -351,23 +414,23 @@ impl Database {
         }
 
         self.write_with_store(lifetime, |mut writer, store| {
-            if let Err(_) = store.delete(&mut writer, final_key.clone()) {
-                log::error!("Can't delete single metric from rkv");
-            }
-
+            store.delete(&mut writer, final_key.clone())?;
             writer.commit()?;
             Ok(())
         })
     }
 
     /// Clears all metrics in the database.
+    ///
+    /// Errors are logged.
+    ///
+    /// ## Panics
+    ///
+    /// * This function will **not** panic on database errors.
     pub fn clear_all(&self) {
         for lifetime in [Lifetime::User, Lifetime::Ping].iter() {
             let res = self.write_with_store(*lifetime, |mut writer, store| {
-                if let Err(_) = store.clear(&mut writer) {
-                    log::error!("Can't clear store");
-                }
-
+                store.clear(&mut writer)?;
                 writer.commit()?;
                 Ok(())
             });
