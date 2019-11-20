@@ -1,11 +1,21 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v21.0.0...master)
+[Full changelog](https://github.com/mozilla/glean/compare/v21.1.0...master)
+
+# v21.1.0 (2019-11-20)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v21.0.0...v21.1.0)
 
 * Android:
 
   * Two new metrics were added to investigate sending of metrics and baseline pings.
     See [bug 1597980](https://bugzilla.mozilla.org/show_bug.cgi?id=1597980) for more information.
+
+  * Glean's two lifecycle observers were refactored to avoid the use of reflection.
+
+* All platforms:
+
+  * Timespans will now not record an error if stopping after setting upload enabled to false.
 
 # v21.0.0 (2019-11-18)
 
@@ -34,7 +44,7 @@
 * The version of Glean is included in the Glean Gradle plugin.
 
 * When constructing a ping, events are now sorted by their timestamp. In practice,
-  it rarely happens that event timestamps are unsorted to begin with, but this 
+  it rarely happens that event timestamps are unsorted to begin with, but this
   guards against a potential race condition and incorrect usage of the lower-level
   API.
 
