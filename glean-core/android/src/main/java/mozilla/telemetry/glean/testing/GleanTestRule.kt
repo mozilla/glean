@@ -34,6 +34,9 @@ class GleanTestRule(
     val context: Context,
     val configToUse: Configuration = Configuration()
 ) : TestWatcher() {
+    /**
+     * Invoked when a test is about to start.
+     */
     override fun starting(description: Description?) {
         // We're using the WorkManager in a bunch of places, and Glean will crash
         // in tests without this line. Let's simply put it here.

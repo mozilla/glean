@@ -33,6 +33,9 @@ import org.junit.runner.Description
 class GleanTestLocalServer(
     private val localPort: Int
 ) : TestWatcher() {
+    /**
+     * Invoked when a test is about to start.
+     */
     override fun starting(description: Description?) {
         Glean.testSetLocalEndpoint(localPort)
     }

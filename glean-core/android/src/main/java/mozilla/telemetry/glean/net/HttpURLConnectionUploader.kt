@@ -20,9 +20,13 @@ import java.net.URL
 class HttpURLConnectionUploader : PingUploader {
     companion object {
         private const val LOG_TAG: String = "glean/HttpConnUploader"
-        // The timeout, in milliseconds, to use when connecting to the server.
+        /**
+         * The timeout, in milliseconds, to use when connecting to the server.
+         */
         const val DEFAULT_CONNECTION_TIMEOUT = 10000
-        // The timeout, in milliseconds, to use when reading from the server.
+        /**
+         * The timeout, in milliseconds, to use when reading from the server.
+         */
         const val DEFAULT_READ_TIMEOUT = 30000
     }
 

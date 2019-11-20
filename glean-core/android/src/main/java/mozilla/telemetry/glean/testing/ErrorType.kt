@@ -5,10 +5,18 @@
 package mozilla.telemetry.glean.testing
 
 enum class ErrorType {
-    // For when the value to be recorded does not match the metric-specific restrictions
+    /**
+     * For when the value to be recorded does not match the metric-specific restrictions
+     */
     InvalidValue,
-    // For when the label of a labeled metric does not match the restrictions
+
+    /**
+     * For when the label of a labeled metric does not match the restrictions
+     */
     InvalidLabel,
-    // For when timings are recorded incorrectly
+
+    /**
+     * For when timings are recorded incorrectly
+     */
     InvalidState
 }

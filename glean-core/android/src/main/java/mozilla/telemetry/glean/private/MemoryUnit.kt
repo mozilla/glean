@@ -10,8 +10,23 @@ package mozilla.telemetry.glean.private
  * These use the power-of-2 values of these units, that is, Kilobyte is pedantically a Kibibyte.
  */
 enum class MemoryUnit {
-    Byte, // 1
-    Kilobyte, // 2^10
-    Megabyte, // 2^20
-    Gigabyte, // 2^30
+    /**
+     * Byte: 1 byte
+     */
+    Byte,
+
+    /**
+     * Kilobyte: 2^10 bytes
+     */
+    Kilobyte,
+
+    /**
+     * Megabyte: 2^20 bytes
+     */
+    Megabyte,
+
+    /**
+     * Gigabyte: 2^30 bytes
+     */
+    Gigabyte
 }

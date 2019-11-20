@@ -23,6 +23,9 @@ inline fun <V> JSONArray.asSequence(crossinline getter: JSONArray.(Int) -> V): S
     return indexRange.asSequence().map { i -> getter(i) }
 }
 
+/**
+ * Convenience method to convert a JSONArray into a sequence.
+ */
 fun JSONArray.asSequence(): Sequence<Any> = asSequence { i -> get(i) }
 
 /**
