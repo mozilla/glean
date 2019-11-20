@@ -2,6 +2,11 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v21.1.0...master)
 
+* Android:
+
+  * Use the `LifecycleEventObserver` interface, rather than the `DefaultLifecycleObserver` 
+    interface, since the latter isn't compatible with old SDK targets.
+
 # v21.1.0 (2019-11-20)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v21.0.0...v21.1.0)
