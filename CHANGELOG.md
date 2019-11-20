@@ -2,6 +2,11 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v21.0.0...master)
 
+* All platforms
+
+  * The experiments API is no longer ignored before the Glean SDK initialized. Calls are
+    recorded and played back once the Glean SDK is initialized.
+
 # v21.0.0 (2019-11-18)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v20.2.0...v21.0.0)

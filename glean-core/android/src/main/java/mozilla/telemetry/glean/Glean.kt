@@ -302,11 +302,6 @@ open class GleanInternalAPI internal constructor () {
         branch: String,
         extra: Map<String, String>? = null
     ) {
-        if (!isInitialized()) {
-            Log.e(LOG_TAG, "Please call Glean.initialize() before using this API")
-            return
-        }
-
         // The Map is sent over FFI as a pair of arrays, one containing the
         // keys, and the other containing the values.
         // In Kotlin, Map.keys and Map.values are not guaranteed to return the entries
@@ -323,14 +318,19 @@ open class GleanInternalAPI internal constructor () {
             values = StringArray(Array(extra.size) { extraList[it].second }, "utf-8")
         }
 
-        LibGleanFFI.INSTANCE.glean_set_experiment_active(
-            handle,
-            experimentId,
-            branch,
-            keys,
-            values,
-            numKeys
-        )
+        // We dispatch this asynchronously so that, if called before the Glean SDK is
+        // initialized, it doesn't get ignored and will be replayed after init.
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        Dispatchers.API.launch {
+            LibGleanFFI.INSTANCE.glean_set_experiment_active(
+                handle,
+                experimentId,
+                branch,
+                keys,
+                values,
+                numKeys
+            )
+        }
     }
 
     /**
@@ -339,12 +339,12 @@ open class GleanInternalAPI internal constructor () {
      * @param experimentId The id of the experiment to deactivate.
      */
     fun setExperimentInactive(experimentId: String) {
-        if (!isInitialized()) {
-            Log.e(LOG_TAG, "Please call Glean.initialize() before using this API")
-            return
+        // We dispatch this asynchronously so that, if called before the Glean SDK is
+        // initialized, it doesn't get ignored and will be replayed after init.
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        Dispatchers.API.launch {
+            LibGleanFFI.INSTANCE.glean_set_experiment_inactive(handle, experimentId)
         }
-
-        LibGleanFFI.INSTANCE.glean_set_experiment_inactive(handle, experimentId)
     }
 
     /**
