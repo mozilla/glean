@@ -6,6 +6,9 @@ package mozilla.telemetry.glean.utils
 
 import android.os.Looper
 
+/**
+ * Utilities related to threads.
+ */
 object ThreadUtils {
     private val uiThread = Looper.getMainLooper().thread
 

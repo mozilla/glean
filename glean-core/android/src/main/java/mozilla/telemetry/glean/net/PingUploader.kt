@@ -4,6 +4,10 @@
 
 package mozilla.telemetry.glean.net
 
+/**
+ * Store a list of headers as a String to String [Pair], with the first entry
+ * being the header name and the second its value.
+ */
 typealias HeadersList = List<Pair<String, String>>
 
 /**
@@ -15,8 +19,7 @@ interface PingUploader {
      *
      * @param url the URL path to upload the data to
      * @param data the serialized text data to send
-     * @param headers a [HeadersList] containing String to String [Pair] with
-     *        the first entry being the header name and the second its value.
+     * @param headers a [HeadersList] containing the headers to add.
      *
      * @return true if the ping was correctly dealt with (sent successfully
      *         or faced an unrecoverable error), false if there was a recoverable
