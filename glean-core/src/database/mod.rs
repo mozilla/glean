@@ -295,7 +295,7 @@ impl Database {
             bincode::serialize(&new_value).expect("IMPOSSIBLE: Serializing metric failed");
         let value = rkv::Value::Blob(&encoded);
         store.put(&mut writer, final_key, &value)?;
-        let _ = writer.commit();
+        writer.commit()?;
         Ok(())
     }
 
