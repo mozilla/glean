@@ -25,6 +25,7 @@ These are the steps needed to cut a new release from latest master.
     * Kotlin package: Bump `libraryVersion` in the top-level [.buildconfig.yml](https://github.com/mozilla/glean/blob/master/.buildconfig.yml) file.
     * Gradle plugin: Bump `project.ext.gleanVersion` in [`GleanGradlePlugin.groovy`](https://github.com/mozilla/glean/blob/master/gradle-plugin/src/main/groovy/mozilla/telemetry/glean-gradle-plugin/GleanGradlePlugin.groovy).
     * Be sure you're following semver, and if in doubt, ask.
+    * Run `make build` to make sure the `Cargo.lock` file is updated.
 3. Land the commits that perform the steps above. This takes a PR, typically, because of branch protection on master.
 4. Cut the actual release.
     1. Click "Releases", and then "Draft a New Release" in the github UI.
