@@ -60,7 +60,8 @@ glean.validation:
   baseline_ping_count:
     type: counter
     description:
-      The number of baseline pings sent during the lifetime of this metrics ping.
+      The number of baseline pings sent during the lifetime of this metrics
+      ping.
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1597980
     data_reviews:
@@ -73,7 +74,8 @@ glean.validation:
   metrics_ping_count:
     type: counter
     description:
-      The number of metrics pings sent during the lifetime of this baseline ping.
+      The number of metrics pings sent during the lifetime of this baseline
+      ping.
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1597980
     data_reviews:
