@@ -632,6 +632,7 @@ open class GleanInternalAPI internal constructor () {
             return
         }
 
+        LibGleanFFI.INSTANCE.glean_destroy_glean()
         handle = 0L
     }
 

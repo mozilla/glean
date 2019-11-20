@@ -140,7 +140,7 @@ pub struct Configuration {
 #[derive(Debug)]
 pub struct Glean {
     upload_enabled: bool,
-    data_store: Database,
+    data_store: Option<Database>,
     event_data_store: EventDatabase,
     core_metrics: CoreMetrics,
     internal_pings: InternalPings,
@@ -164,7 +164,7 @@ impl Glean {
 
         // Creating the data store creates the necessary path as well.
         // If that fails we bail out and don't initialize further.
-        let data_store = Database::new(&cfg.data_path, cfg.delay_ping_lifetime_io)?;
+        let data_store = Some(Database::new(&cfg.data_path, cfg.delay_ping_lifetime_io)?);
         let event_data_store = EventDatabase::new(&cfg.data_path)?;
 
         let mut glean = Self {
@@ -200,6 +200,12 @@ impl Glean {
         };
 
         Self::new(cfg)
+    }
+
+    /// Destroy the database.
+    /// After this Glean needs to be reinitialized.
+    pub fn destroy_db(&mut self) {
+        self.data_store = None;
     }
 
     /// Initialize the core metrics managed by Glean's Rust core.
@@ -324,7 +330,9 @@ impl Glean {
         // Delete all stored metrics.
         // Note that this also includes the ping sequence numbers, so it has
         // the effect of resetting those to their initial values.
-        self.data_store.clear_all();
+        if let Some(data) = self.data_store.as_ref() {
+            data.clear_all()
+        }
         if let Err(err) = self.event_data_store.clear_all() {
             log::error!("Error clearing pending events: {}", err);
         }
@@ -371,7 +379,7 @@ impl Glean {
 
     /// Get a handle to the database.
     pub fn storage(&self) -> &Database {
-        &self.data_store
+        &self.data_store.as_ref().expect("No database found")
     }
 
     /// Get a handle to the event database.
@@ -557,7 +565,11 @@ impl Glean {
     ///
     /// If there is no data to persist, this function does nothing.
     pub fn persist_ping_lifetime_data(&self) -> Result<()> {
-        self.data_store.persist_ping_lifetime_data()
+        if let Some(data) = self.data_store.as_ref() {
+            return data.persist_ping_lifetime_data();
+        }
+
+        Ok(())
     }
 
     /// ** This is not meant to be used directly.**
@@ -565,7 +577,9 @@ impl Glean {
     /// Clear all the metrics that have `Lifetime::Application`.
     pub fn clear_application_lifetime_metrics(&self) {
         log::debug!("Clearing Lifetime::Application metrics");
-        self.data_store.clear_lifetime(Lifetime::Application);
+        if let Some(data) = self.data_store.as_ref() {
+            data.clear_lifetime(Lifetime::Application);
+        }
     }
 
     /// Return whether or not this is the first run on this profile.
@@ -613,7 +627,9 @@ impl Glean {
     /// Note that this also includes the ping sequence numbers, so it has
     /// the effect of resetting those to their initial values.
     pub fn test_clear_all_stores(&self) {
-        self.data_store.clear_all();
+        if let Some(data) = self.data_store.as_ref() {
+            data.clear_all()
+        }
         // We don't care about this failing, maybe the data does just not exist.
         let _ = self.event_data_store.clear_all();
     }

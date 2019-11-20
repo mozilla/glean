@@ -283,8 +283,7 @@ pub extern "C" fn glean_test_clear_all_stores() {
 
 #[no_mangle]
 pub extern "C" fn glean_destroy_glean() {
-    // intentionally left empty
-    // currently used by the FFI in test mode
+    with_glean_value_mut(|glean| glean.destroy_db())
 }
 
 #[no_mangle]

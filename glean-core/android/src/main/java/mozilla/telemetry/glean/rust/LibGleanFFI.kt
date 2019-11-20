@@ -74,7 +74,7 @@ internal interface LibGleanFFI : Library {
 
     fun glean_is_first_run(): Byte
 
-    fun glean_destroy_glean(handle: Long)
+    fun glean_destroy_glean()
 
     fun glean_on_ready_to_submit_pings(): Byte
 
