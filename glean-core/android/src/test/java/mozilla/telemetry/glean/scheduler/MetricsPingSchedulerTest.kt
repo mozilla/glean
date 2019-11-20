@@ -474,8 +474,8 @@ class MetricsPingSchedulerTest {
         verify(mpsSpy, times(0)).schedule()
 
         // Simulate going to background and then foreground
-        Glean.metricsPingScheduler.onEnterBackground()
-        Glean.metricsPingScheduler.onEnterForeground()
+        Glean.metricsPingScheduler.onStop(ProcessLifecycleOwner.get())
+        Glean.metricsPingScheduler.onStart(ProcessLifecycleOwner.get())
 
         // Verify that schedule has been called on subsequent foreground events
         verify(mpsSpy, times(1)).schedule()
