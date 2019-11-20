@@ -9,7 +9,8 @@ import android.content.SharedPreferences
 import androidx.annotation.VisibleForTesting
 import android.text.format.DateUtils
 import android.util.Log
-import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.work.ExistingWorkPolicy
@@ -43,7 +44,7 @@ import java.util.concurrent.TimeUnit as AndroidTimeUnit
 internal class MetricsPingScheduler(
     private val applicationContext: Context,
     migratedLastSentDate: String? = null
-) : DefaultLifecycleObserver {
+) : LifecycleEventObserver {
     internal val sharedPreferences: SharedPreferences by lazy {
         applicationContext.getSharedPreferences(this.javaClass.canonicalName, Context.MODE_PRIVATE)
     }
@@ -310,31 +311,38 @@ internal class MetricsPingScheduler(
     internal fun getCalendarInstance(): Calendar = Calendar.getInstance()
 
     /**
-     * Update flag to show we are no longer in the foreground.
+     * Called when lifecycle events are triggered.
      */
-    override fun onStop(owner: LifecycleOwner) {
-        isInForeground = false
-    }
+    override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+        when (event) {
+            Lifecycle.Event.ON_STOP -> {
+                // Update flag to show we are no longer in the foreground.
+                isInForeground = false
+            }
+            Lifecycle.Event.ON_START -> {
+                // Update the flag to indicate we are moving to the foreground, and if Glean is
+                // initialized we will check to see if the metrics ping needs to be scheduled for
+                // collection.
+                isInForeground = true
 
-    /**
-     * Update the flag to indicate we are moving to the foreground, and if Glean is initialized we
-     * will check to see if the metrics ping needs to be scheduled for collection.
-     */
-    override fun onStart(owner: LifecycleOwner) {
-        isInForeground = true
-
-        // We check for the metrics ping schedule here because the app could have been in the
-        // background and resumed in which case Glean would already be initialized but we still need
-        // to perform the check to determine whether to collect and schedule the metrics ping.
-        // Since Glean.initialize() is called in the Application.onCreate() function, we will get
-        // this after glean is initialized and thus will call schedule() twice. So we prevent this
-        // by using a flag to prevent scheduling from the lifecycle observer on the first foreground
-        // event. See https://bugzilla.mozilla.org/1590329
-        if (Glean.isInitialized()) {
-            if (!firstForeground) {
-                schedule()
-            } else {
-                firstForeground = false
+                // We check for the metrics ping schedule here because the app could have been in
+                // the background and resumed in which case Glean would already be initialized but
+                // we still need to perform the check to determine whether to collect and schedule
+                // the metrics ping. Since Glean.initialize() is called in the
+                // Application.onCreate() function, we will get this after glean is initialized and
+                // thus will call schedule() twice. So we prevent this by using a flag to prevent
+                // scheduling from the lifecycle observer on the first foreground event.
+                // See https://bugzilla.mozilla.org/1590329
+                if (Glean.isInitialized()) {
+                    if (!firstForeground) {
+                        schedule()
+                    } else {
+                        firstForeground = false
+                    }
+                }
+            }
+            else -> {
+                // For other lifecycle events, do nothing
             }
         }
     }
