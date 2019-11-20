@@ -483,7 +483,8 @@ mod test {
             test_storage,
             test_metric_id,
             &Metric::String(test_value.to_string()),
-        );
+        )
+        .unwrap();
 
         // Verify that the data is correctly recorded.
         let mut found_metrics = 0;
@@ -517,7 +518,8 @@ mod test {
             test_storage,
             test_metric_id,
             &Metric::String(test_value.to_string()),
-        );
+        )
+        .unwrap();
 
         // Verify that the data is correctly recorded.
         let mut found_metrics = 0;
@@ -554,7 +556,8 @@ mod test {
             test_storage,
             test_metric_id,
             &Metric::String(test_value.to_string()),
-        );
+        )
+        .unwrap();
 
         // Verify that the data is correctly recorded.
         let mut found_metrics = 0;
@@ -586,19 +589,22 @@ mod test {
             test_storage,
             "telemetry_test.test_name_user",
             &Metric::String("test-value-user".to_string()),
-        );
+        )
+        .unwrap();
         db.record_per_lifetime(
             Lifetime::Ping,
             test_storage,
             "telemetry_test.test_name_ping",
             &Metric::String("test-value-ping".to_string()),
-        );
+        )
+        .unwrap();
         db.record_per_lifetime(
             Lifetime::Application,
             test_storage,
             "telemetry_test.test_name_application",
             &Metric::String("test-value-application".to_string()),
-        );
+        )
+        .unwrap();
 
         // Take a snapshot for the data, all the lifetimes.
         {
@@ -622,7 +628,7 @@ mod test {
         }
 
         // Clear the Ping lifetime.
-        db.clear_ping_lifetime_storage(test_storage);
+        db.clear_ping_lifetime_storage(test_storage).unwrap();
 
         // Take a snapshot again and check that we're only clearing the Ping lifetime.
         {
@@ -665,7 +671,8 @@ mod test {
                     test_storage,
                     &format!("{}_{}", metric_id_pattern, value),
                     &Metric::String(value.to_string()),
-                );
+                )
+                .unwrap();
             }
         }
 
@@ -675,7 +682,8 @@ mod test {
                 *lifetime,
                 test_storage,
                 &format!("{}_delete", metric_id_pattern),
-            );
+            )
+            .unwrap();
         }
 
         // Verify that "telemetry_test.single_metric_retain" is still around for all lifetimes.
