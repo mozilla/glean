@@ -18,3 +18,33 @@ These are the steps needed to cut a new release from latest master.
     3. Under the description, paste the contents of the release notes from `CHANGELOG.md`.
     4. Note that the release is not available until the CI build completes for that tag.
         - You can check [on CircleCI for the running build](https://circleci.com/gh/mozilla/glean).
+
+## New point-releases
+
+If the new release is based on the current master, just follow the above release process.
+
+Otherwise follow these steps to release a point-release on top an older release that is behind latest master:
+
+1. Ensure your fixes are landed on master first (if required).
+2. Create a new branch named `release-vX.Y` which will be used for all point-releases on the `vX.Y` series. Example:
+
+   ```
+   git checkout -b release-v19.1 v19.0.0
+   git push -u origin release-v19.1
+   ```
+
+3. Make a new branch with any fixes to be included in the release, *remembering not to make any breaking API changes.*.
+   This may involve cherry-picking fixes from master, or developing a new fix directly against the branch.
+   Example:
+
+   ```
+   git checkout -b fixes-for-v1.19.1 release-v19.1
+   git cherry-pick 37d35304a4d1d285c8f6f3ce3df3c412fcd2d6c6
+   git push -u origin fixes-for-v1.19.1
+   ```
+4. Follow the above steps for cuting a new release, except that:
+    * When opening a PR to land the commits, target the `release-vX.Y` branch rather than master.
+    * When cutting the new release via github's UI, target the `release-vX.Y` branch rather than master.
+
+> **Note:** Point-releases for older versions should be rarely required.
+> We support the last released version and fixes should go there whenver possible.
