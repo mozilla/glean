@@ -25,7 +25,7 @@ These are the steps needed to cut a new release from latest master.
 
 > **Important:**
 > The release process produces release artifacts for the Kotlin library.
-> Artifacts for iOS wil be [generated on release soon](https://bugzilla.mozilla.org/show_bug.cgi?id=1598276).
+> Artifacts for iOS will be [generated on release soon](https://bugzilla.mozilla.org/show_bug.cgi?id=1598276).
 
 ## New point-releases
 
@@ -50,9 +50,9 @@ Otherwise follow these steps to release a point-release on top an older release 
    git cherry-pick 37d35304a4d1d285c8f6f3ce3df3c412fcd2d6c6
    git push -u origin fixes-for-v1.19.1
    ```
-4. Follow the above steps for cuting a new release, except that:
+4. Follow the above steps for cutting a new release, except that:
     * When opening a PR to land the commits, target the `release-vX.Y` branch rather than master.
     * When cutting the new release via github's UI, target the `release-vX.Y` branch rather than master.
 
 > **Note:** Point-releases for older versions should be rarely required.
-> We support the last released version and fixes should go there whenver possible.
+> We support the last released version and fixes should go there whenever possible.
