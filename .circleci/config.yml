@@ -603,7 +603,7 @@ workflows:
       - Lint Python
       - Rust FFI header check
       - Lint YAML with yamllint
-  ci:
+  test:
     jobs:
       - Rust tests - stable
       - Rust code coverage
@@ -631,7 +631,7 @@ workflows:
             - docs-linkcheck
           filters:
             branches:
-              only: master
+              only: staging
 
   release:
     jobs:

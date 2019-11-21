@@ -1,0 +1,18 @@
+status = [
+  "check-formatting",
+  "lint",
+  "test"
+]
+block_labels = [
+  "needs:data-review",
+  "blocked",
+  "work in progress"
+]
+required_approvals = 1
+use_codeowners = true
+delete_merged_branches = true
+cut_body_after = "---"
+
+[committer]
+name = "glean-bors"
+email = "glean-team@mozilla.com"
