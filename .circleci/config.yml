@@ -238,6 +238,39 @@ jobs:
           root: build/
           paths: docs/swift
       - run:
+          name: Build Carthage archive
+          no_output_timeout: 20m
+          command: |
+            if [ -z "${CIRCLE_TAG}" ]; then
+              # XCode tests build in Debug configuration, save us a full
+              # Rust rebuild in Release mode by forcing Debug mode on
+              # non-release builds.
+              bash bin/build-carthage.sh Glean Debug
+            else
+              bash bin/build-carthage.sh Glean
+            fi
+      - run:
+          name: "Create Carthage bin-only project specification"
+          command: |
+            ZIP_URL=https://circleci.com/api/v1.1/project/github/mozilla/glean/$CIRCLE_BUILD_NUM/artifacts/0/dist/Glean.framework.zip
+            echo "{\"0.0.1\":\"$ZIP_URL\"}" > mozilla.glean.json
+      - store_artifacts:
+          path: Glean.framework.zip
+          destination: dist/Glean.framework.zip
+      - store_artifacts:
+          path: mozilla.glean.json
+          destination: dist/mozilla.glean.json
+      - run:
+          name: "Carthage binary snapshot URL"
+          command: |
+            JSON_URL=https://circleci.com/api/v1.1/project/github/mozilla/glean/$CIRCLE_BUILD_NUM/artifacts/0/dist/mozilla.glean.json
+            echo "Add the following line to your Cartfile:"
+            echo "binary \"$JSON_URL\" ~> 0.0.1-snapshot # mozilla/glean@$CIRCLE_SHA1"
+      - persist_to_workspace:
+          root: .
+          paths:
+            - Glean.framework.zip
+      - run:
           name: Create and upload code coverage
           command: |
               curl -L https://codecov.io/bash > codecov.sh
