@@ -145,7 +145,7 @@ impl PingMaker {
             StorageManager.snapshot_experiments_as_json(glean.storage(), INTERNAL_STORAGE)
         {
             map.as_object_mut()
-                .unwrap()
+                .unwrap() // safe unwrap, we created the object above
                 .insert("experiments".to_string(), experiment_data);
         };
 
@@ -163,7 +163,7 @@ impl PingMaker {
         if let Some(client_info) =
             StorageManager.snapshot_as_json(glean.storage(), "glean_client_info", true)
         {
-            let client_info_obj = client_info.as_object().unwrap(); // safe, snapshot always returns an object.
+            let client_info_obj = client_info.as_object().unwrap(); // safe unwrap, snapshot always returns an object.
             for (_key, value) in client_info_obj {
                 merge(&mut map, value);
             }
@@ -172,6 +172,7 @@ impl PingMaker {
         }
 
         if !include_client_id {
+            // safe unwrap, we created the object above
             map.as_object_mut().unwrap().remove("client_id");
         }
 

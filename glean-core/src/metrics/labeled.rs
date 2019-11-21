@@ -77,7 +77,11 @@ where
         t
     }
 
-    /// Create a static label
+    /// Create a static label.
+    ///
+    /// ## Safety
+    ///
+    /// Should only be called when static labels are available on this metric.
     ///
     /// ## Arguments
     ///
@@ -88,6 +92,7 @@ where
     /// If the requested label is in the list of allowed labels, it is returned.
     /// Otherwise the `OTHER_LABEL` is returned.
     fn static_label<'a>(&mut self, label: &'a str) -> &'a str {
+        debug_assert!(self.labels.is_some());
         let labels = self.labels.as_ref().unwrap();
         if labels.iter().any(|l| l == label) {
             label

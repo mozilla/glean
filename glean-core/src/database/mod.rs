@@ -70,6 +70,9 @@ impl Database {
     /// Iterates with the provided transaction function over the requested data
     /// from the given storage.
     ///
+    /// * If the storage is unavailable, the transaction function is never invoked.
+    /// * If the read data cannot be deserialized it will be silently skipped.
+    ///
     /// ## Arguments
     ///
     /// * `lifetime`: The metric lifetime to iterate over.
@@ -82,6 +85,10 @@ impl Database {
     ///   will be iterated over.
     /// * `transaction_fn`: Called for each entry being iterated over. It is
     ///   passed two arguments: `(metric_name: &[u8], metric: &Metric)`.
+    ///
+    /// ## Panics
+    ///
+    /// This function will **not** panic on database errors.
     pub fn iter_store_from<F>(
         &self,
         lifetime: Lifetime,
@@ -96,7 +103,10 @@ impl Database {
 
         // Lifetime::Application data is not persisted to disk
         if lifetime == Lifetime::Application {
-            let data = self.app_lifetime_data.read().unwrap();
+            let data = self
+                .app_lifetime_data
+                .read()
+                .expect("Can't read app lifetime data");
             for (key, value) in data.iter() {
                 if key.starts_with(&iter_start) {
                     let key = &key[len..];
@@ -107,12 +117,14 @@ impl Database {
             return;
         }
 
-        let store: SingleStore = self
-            .rkv
-            .open_single(lifetime.as_str(), StoreOptions::create())
-            .unwrap();
-        let reader = self.rkv.read().unwrap();
-        let mut iter = store.iter_from(&reader, &iter_start).unwrap();
+        let store: SingleStore = unwrap_or!(
+            self.rkv
+                .open_single(lifetime.as_str(), StoreOptions::create()),
+            return
+        );
+
+        let reader = unwrap_or!(self.rkv.read(), return);
+        let mut iter = unwrap_or!(store.iter_from(&reader, &iter_start), return);
 
         while let Some(Ok((metric_name, value))) = iter.next() {
             if !metric_name.starts_with(iter_start.as_bytes()) {
@@ -120,8 +132,8 @@ impl Database {
             }
 
             let metric_name = &metric_name[len..];
-            let metric: Metric = match value.unwrap() {
-                rkv::Value::Blob(blob) => bincode::deserialize(blob).unwrap(),
+            let metric: Metric = match value.expect("Value missing in iteration") {
+                rkv::Value::Blob(blob) => unwrap_or!(bincode::deserialize(blob), continue),
                 _ => continue,
             };
             transaction_fn(metric_name, &metric);
@@ -130,11 +142,17 @@ impl Database {
 
     /// Determine if the storage has the given metric.
     ///
+    /// If data cannot be read it is assumed that the storage does not have the metric.
+    ///
     /// ## Arguments
     ///
     /// * `lifetime`: The lifetime of the metric.
     /// * `storage_name`: The storage name to look in.
     /// * `metric_identifier`: The metric identifier.
+    ///
+    /// ## Panics
+    ///
+    /// This function will **not** panic on database errors.
     pub fn has_metric(
         &self,
         lifetime: Lifetime,
@@ -145,21 +163,33 @@ impl Database {
 
         // Lifetime::Application data is not persisted to disk
         if lifetime == Lifetime::Application {
-            let data = self.app_lifetime_data.read().unwrap();
-            return data.contains_key(&key);
+            return self
+                .app_lifetime_data
+                .read()
+                .map(|data| data.contains_key(&key))
+                .unwrap_or(false);
         }
 
-        let store: SingleStore = self
-            .rkv
-            .open_single(lifetime.as_str(), StoreOptions::create())
-            .unwrap();
-        let reader = self.rkv.read().unwrap();
+        let store: SingleStore = unwrap_or!(
+            self.rkv
+                .open_single(lifetime.as_str(), StoreOptions::create()),
+            return false
+        );
+        let reader = unwrap_or!(self.rkv.read(), return false);
         store.get(&reader, &key).unwrap_or(None).is_some()
     }
 
-    pub fn write_with_store<F>(&self, store_name: Lifetime, mut transaction_fn: F)
+    /// Write to the specified storage with the provided transaction function.
+    ///
+    /// If the storage is unavailable, it will return an error.
+    ///
+    /// ## Panics
+    ///
+    /// * This function will panic for `Lifetime::Application`.
+    /// * This function will **not** panic on database errors.
+    pub fn write_with_store<F>(&self, store_name: Lifetime, mut transaction_fn: F) -> Result<()>
     where
-        F: FnMut(rkv::Writer, SingleStore),
+        F: FnMut(rkv::Writer, SingleStore) -> Result<()>,
     {
         if store_name == Lifetime::Application {
             panic!("Can't write with store for application-lifetime data");
@@ -167,10 +197,10 @@ impl Database {
 
         let store: SingleStore = self
             .rkv
-            .open_single(store_name.as_str(), StoreOptions::create())
-            .unwrap();
-        let writer = self.rkv.write().unwrap();
-        transaction_fn(writer, store);
+            .open_single(store_name.as_str(), StoreOptions::create())?;
+        let writer = self.rkv.write()?;
+        transaction_fn(writer, store)?;
+        Ok(())
     }
 
     /// Records a metric in the underlying storage system.
@@ -178,39 +208,51 @@ impl Database {
         let name = data.identifier(glean);
 
         for ping_name in data.storage_names() {
-            self.record_per_lifetime(data.lifetime, ping_name, &name, value);
+            if let Err(e) = self.record_per_lifetime(data.lifetime, ping_name, &name, value) {
+                log::error!("Failed to record metric into {}: {:?}", ping_name, e);
+            }
         }
     }
 
-    /// Records a metric in the underlying storage system, for
-    /// a single lifetime.
+    /// Records a metric in the underlying storage system, for a single lifetime.
+    ///
+    /// ## Return value
+    ///
+    /// If the storage is unavailable or the write fails, no data will be stored and an error will be returned.
+    ///
+    /// Otherwise `Ok(())` is returned.
+    ///
+    /// ## Panics
+    ///
+    /// * This function will **not** panic on database errors.
     fn record_per_lifetime(
         &self,
         lifetime: Lifetime,
         storage_name: &str,
         key: &str,
         metric: &Metric,
-    ) {
+    ) -> Result<()> {
         let final_key = Self::get_storage_key(storage_name, Some(key));
 
         if lifetime == Lifetime::Application {
-            let mut data = self.app_lifetime_data.write().unwrap();
+            let mut data = self
+                .app_lifetime_data
+                .write()
+                .expect("Can't read app lifetime data");
             data.insert(final_key, metric.clone());
-            return;
+            return Ok(());
         }
 
-        let encoded = bincode::serialize(&metric).unwrap();
+        let encoded = bincode::serialize(&metric).expect("IMPOSSIBLE: Serializing metric failed");
         let value = rkv::Value::Blob(&encoded);
 
         let store_name = lifetime.as_str();
-        let store = self
-            .rkv
-            .open_single(store_name, StoreOptions::create())
-            .unwrap();
+        let store = self.rkv.open_single(store_name, StoreOptions::create())?;
 
-        let mut writer = self.rkv.write().unwrap();
-        store.put(&mut writer, final_key, &value).unwrap();
-        let _ = writer.commit();
+        let mut writer = self.rkv.write()?;
+        store.put(&mut writer, final_key, &value)?;
+        writer.commit()?;
+        Ok(())
     }
 
     /// Records the provided value, with the given lifetime, after
@@ -221,25 +263,43 @@ impl Database {
     {
         let name = data.identifier(glean);
         for ping_name in data.storage_names() {
-            self.record_per_lifetime_with(data.lifetime, ping_name, &name, &mut transform);
+            if let Err(e) =
+                self.record_per_lifetime_with(data.lifetime, ping_name, &name, &mut transform)
+            {
+                log::error!("Failed to record metric into {}: {:?}", ping_name, e);
+            }
         }
     }
 
     /// Records a metric in the underlying storage system, after applying the
     /// given transformation function, for a single lifetime.
+    ///
+    /// ## Return value
+    ///
+    /// If the storage is unavailable or the write fails, no data will be stored and an error will be returned.
+    ///
+    /// Otherwise `Ok(())` is returned.
+    ///
+    /// ## Panics
+    ///
+    /// * This function will **not** panic on database errors.
     pub fn record_per_lifetime_with<F>(
         &self,
         lifetime: Lifetime,
         storage_name: &str,
         key: &str,
         mut transform: F,
-    ) where
+    ) -> Result<()>
+    where
         F: FnMut(Option<Metric>) -> Metric,
     {
         let final_key = Self::get_storage_key(storage_name, Some(key));
 
         if lifetime == Lifetime::Application {
-            let mut data = self.app_lifetime_data.write().unwrap();
+            let mut data = self
+                .app_lifetime_data
+                .write()
+                .expect("Can't access app lifetime data as writable");
             let entry = data.entry(final_key);
             match entry {
                 Entry::Vacant(entry) => {
@@ -250,18 +310,15 @@ impl Database {
                     entry.insert(transform(Some(old_value)));
                 }
             }
-            return;
+            return Ok(());
         }
 
         let store_name = lifetime.as_str();
-        let store = self
-            .rkv
-            .open_single(store_name, StoreOptions::create())
-            .unwrap();
+        let store = self.rkv.open_single(store_name, StoreOptions::create())?;
 
-        let mut writer = self.rkv.write().unwrap();
+        let mut writer = self.rkv.write()?;
         let new_value: Metric = {
-            let old_value = store.get(&writer, &final_key).unwrap();
+            let old_value = store.get(&writer, &final_key)?;
 
             match old_value {
                 Some(rkv::Value::Blob(blob)) => {
@@ -272,18 +329,32 @@ impl Database {
             }
         };
 
-        let encoded = bincode::serialize(&new_value).unwrap();
+        let encoded =
+            bincode::serialize(&new_value).expect("IMPOSSIBLE: Serializing metric failed");
         let value = rkv::Value::Blob(&encoded);
-        store.put(&mut writer, final_key, &value).unwrap();
-        let _ = writer.commit();
+        store.put(&mut writer, final_key, &value)?;
+        writer.commit()?;
+        Ok(())
     }
 
     /// Clears a storage (only Ping Lifetime).
-    pub fn clear_ping_lifetime_storage(&self, storage_name: &str) {
+    ///
+    /// ## Return value
+    ///
+    /// * If the storage is unavailable an error is returned.
+    /// * If any individual delete fails, an error is returned, but other deletions might have
+    ///   happened.
+    ///
+    /// Otherwise `Ok(())` is returned.
+    ///
+    /// ## Panics
+    ///
+    /// * This function will **not** panic on database errors.
+    pub fn clear_ping_lifetime_storage(&self, storage_name: &str) -> Result<()> {
         self.write_with_store(Lifetime::Ping, |mut writer, store| {
             let mut metrics = Vec::new();
             {
-                let mut iter = store.iter_from(&writer, &storage_name).unwrap();
+                let mut iter = store.iter_from(&writer, &storage_name)?;
                 while let Some(Ok((metric_name, _))) = iter.next() {
                     if let Ok(metric_name) = std::str::from_utf8(metric_name) {
                         if !metric_name.starts_with(&storage_name) {
@@ -294,12 +365,17 @@ impl Database {
                 }
             }
 
+            let mut res = Ok(());
             for to_delete in metrics {
-                store.delete(&mut writer, to_delete).unwrap();
+                if let Err(e) = store.delete(&mut writer, to_delete) {
+                    log::error!("Can't delete from store: {:?}", e);
+                    res = Err(e);
+                }
             }
 
-            writer.commit().unwrap();
-        });
+            writer.commit()?;
+            Ok(res?)
+        })
     }
 
     /// Removes a single metric from the storage.
@@ -309,32 +385,64 @@ impl Database {
     /// * `lifetime` - the lifetime of the storage in which to look for the metric.
     /// * `storage_name` - the name of the storage to store/fetch data from.
     /// * `metric_key` - the metric key/name.
-    pub fn remove_single_metric(&self, lifetime: Lifetime, storage_name: &str, metric_name: &str) {
+    ///
+    /// ## Return value
+    ///
+    /// * If the storage is unavailable an error is returned.
+    /// * If the metric could not be deleted, an error is returned.
+    ///
+    /// Otherwise `Ok(())` is returned.
+    ///
+    /// ## Panics
+    ///
+    /// * This function will **not** panic on database errors.
+    pub fn remove_single_metric(
+        &self,
+        lifetime: Lifetime,
+        storage_name: &str,
+        metric_name: &str,
+    ) -> Result<()> {
         let final_key = Self::get_storage_key(storage_name, Some(metric_name));
 
         if lifetime == Lifetime::Application {
-            let mut data = self.app_lifetime_data.write().unwrap();
+            let mut data = self
+                .app_lifetime_data
+                .write()
+                .expect("Can't access app lifetime data as writable");
             data.remove(&final_key);
-            return;
+            return Ok(());
         }
 
         self.write_with_store(lifetime, |mut writer, store| {
-            store.delete(&mut writer, final_key.clone()).unwrap();
-
-            writer.commit().unwrap();
-        });
+            store.delete(&mut writer, final_key.clone())?;
+            writer.commit()?;
+            Ok(())
+        })
     }
 
     /// Clears all metrics in the database.
+    ///
+    /// Errors are logged.
+    ///
+    /// ## Panics
+    ///
+    /// * This function will **not** panic on database errors.
     pub fn clear_all(&self) {
         for lifetime in [Lifetime::User, Lifetime::Ping].iter() {
-            self.write_with_store(*lifetime, |mut writer, store| {
-                store.clear(&mut writer).unwrap();
-                writer.commit().unwrap();
+            let res = self.write_with_store(*lifetime, |mut writer, store| {
+                store.clear(&mut writer)?;
+                writer.commit()?;
+                Ok(())
             });
+            if let Err(e) = res {
+                log::error!("Could not clear store for lifetime {:?}: {:?}", lifetime, e);
+            }
         }
 
-        self.app_lifetime_data.write().unwrap().clear();
+        self.app_lifetime_data
+            .write()
+            .expect("Can't access app lifetime data as writable")
+            .clear();
     }
 }
 
@@ -375,7 +483,8 @@ mod test {
             test_storage,
             test_metric_id,
             &Metric::String(test_value.to_string()),
-        );
+        )
+        .unwrap();
 
         // Verify that the data is correctly recorded.
         let mut found_metrics = 0;
@@ -409,7 +518,8 @@ mod test {
             test_storage,
             test_metric_id,
             &Metric::String(test_value.to_string()),
-        );
+        )
+        .unwrap();
 
         // Verify that the data is correctly recorded.
         let mut found_metrics = 0;
@@ -446,7 +556,8 @@ mod test {
             test_storage,
             test_metric_id,
             &Metric::String(test_value.to_string()),
-        );
+        )
+        .unwrap();
 
         // Verify that the data is correctly recorded.
         let mut found_metrics = 0;
@@ -478,19 +589,22 @@ mod test {
             test_storage,
             "telemetry_test.test_name_user",
             &Metric::String("test-value-user".to_string()),
-        );
+        )
+        .unwrap();
         db.record_per_lifetime(
             Lifetime::Ping,
             test_storage,
             "telemetry_test.test_name_ping",
             &Metric::String("test-value-ping".to_string()),
-        );
+        )
+        .unwrap();
         db.record_per_lifetime(
             Lifetime::Application,
             test_storage,
             "telemetry_test.test_name_application",
             &Metric::String("test-value-application".to_string()),
-        );
+        )
+        .unwrap();
 
         // Take a snapshot for the data, all the lifetimes.
         {
@@ -514,7 +628,7 @@ mod test {
         }
 
         // Clear the Ping lifetime.
-        db.clear_ping_lifetime_storage(test_storage);
+        db.clear_ping_lifetime_storage(test_storage).unwrap();
 
         // Take a snapshot again and check that we're only clearing the Ping lifetime.
         {
@@ -557,7 +671,8 @@ mod test {
                     test_storage,
                     &format!("{}_{}", metric_id_pattern, value),
                     &Metric::String(value.to_string()),
-                );
+                )
+                .unwrap();
             }
         }
 
@@ -567,7 +682,8 @@ mod test {
                 *lifetime,
                 test_storage,
                 &format!("{}_delete", metric_id_pattern),
-            );
+            )
+            .unwrap();
         }
 
         // Verify that "telemetry_test.single_metric_retain" is still around for all lifetimes.

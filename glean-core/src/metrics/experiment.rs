@@ -192,11 +192,13 @@ impl ExperimentMetric {
             return;
         }
 
-        glean.storage().remove_single_metric(
+        if let Err(e) = glean.storage().remove_single_metric(
             Lifetime::Application,
             INTERNAL_STORAGE,
             &self.meta.name,
-        )
+        ) {
+            log::error!("Failed to set experiment as inactive: {:?}", e);
+        }
     }
 
     /// **Test-only API (exported for FFI purposes).**
