@@ -2,6 +2,11 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v21.1.1...master)
 
+* All platforms
+
+  * The experiments API is no longer ignored before the Glean SDK initialized. Calls are
+    recorded and played back once the Glean SDK is initialized.
+
 # v21.1.1 (2019-11-20)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v21.1.0...v21.1.1)
@@ -25,11 +30,6 @@
 * All platforms:
 
   * Timespans will now not record an error if stopping after setting upload enabled to false.
-
-* All platforms
-
-  * The experiments API is no longer ignored before the Glean SDK initialized. Calls are
-    recorded and played back once the Glean SDK is initialized.
 
 # v21.0.0 (2019-11-18)
 
