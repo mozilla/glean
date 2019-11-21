@@ -10,3 +10,4 @@ They could be release notes, documentation, hopes, dreams, or whatever: so long 
 * 2019-11-01: [A detective story](http://droettboom.com/blog/2019/11/01/this-week-in-glean-november-1-2019/)
 * 2019-11-08: [Instrumenting Android Crashes with Glean](https://blogoftravis.wordpress.com/2019/11/08/this-week-in-glean-2019-11-08/)
 * 2019-11-19: [GeckoView + Glean = Fenix performance metrics](https://www.a2p.it/wordpress/tech-stuff/mozilla/geckoview-glean-fenix-performance-metrics/)
+* 2019-11-21: [What is the Glean logo about?](https://dianaciufo.wordpress.com/2019/10/11/glean-graphic-identity-for-mozilla-firefox/)
