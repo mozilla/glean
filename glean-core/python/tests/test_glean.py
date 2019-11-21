@@ -41,10 +41,10 @@ def test_getting_upload_enabled_before_initialization_should_not_crash():
     assert Glean.get_upload_enabled()
 
 
-def test_send_a_ping(httpserver):
-    httpserver.serve_content(b"", code=200)
+def test_send_a_ping(safe_httpserver):
+    safe_httpserver.serve_content(b"", code=200)
 
-    Glean._configuration.server_endpoint = httpserver.url
+    Glean._configuration.server_endpoint = safe_httpserver.url
     Glean._configuration.log_pings = True
 
     counter_metric = CounterMetricType(
@@ -59,17 +59,17 @@ def test_send_a_ping(httpserver):
 
     _builtins.pings.baseline.send()
 
-    assert 1 == len(httpserver.requests)
+    assert 1 == len(safe_httpserver.requests)
 
-    request = httpserver.requests[0]
+    request = safe_httpserver.requests[0]
     assert "baseline" in request.url
 
 
-def test_sending_an_empty_ping_doesnt_queue_work(httpserver):
-    httpserver.serve_content(b"", code=200)
+def test_sending_an_empty_ping_doesnt_queue_work(safe_httpserver):
+    safe_httpserver.serve_content(b"", code=200)
 
     Glean._send_pings_by_name(["metrics"])
-    assert 0 == len(httpserver.requests)
+    assert 0 == len(safe_httpserver.requests)
 
 
 def test_disabling_upload_should_disable_metrics_recording():
@@ -186,8 +186,8 @@ def test_dont_handle_events_when_uninitialized():
     pass
 
 
-def test_dont_schedule_pings_if_metrics_disabled(httpserver):
-    httpserver.serve_content(b"", code=200)
+def test_dont_schedule_pings_if_metrics_disabled(safe_httpserver):
+    safe_httpserver.serve_content(b"", code=200)
 
     counter_metric = CounterMetricType(
         disabled=False,
@@ -205,17 +205,17 @@ def test_dont_schedule_pings_if_metrics_disabled(httpserver):
 
     custom_ping.send()
 
-    assert 0 == len(httpserver.requests)
+    assert 0 == len(safe_httpserver.requests)
 
 
-def test_dont_schedule_pings_if_there_is_no_ping_content(httpserver):
-    httpserver.serve_content(b"", code=200)
+def test_dont_schedule_pings_if_there_is_no_ping_content(safe_httpserver):
+    safe_httpserver.serve_content(b"", code=200)
 
     custom_ping = PingType(name="store1", include_client_id=True)
 
     custom_ping.send()
 
-    assert 0 == len(httpserver.requests)
+    assert 0 == len(safe_httpserver.requests)
 
 
 def test_the_app_channel_must_be_correctly_set():
