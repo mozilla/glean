@@ -60,3 +60,5 @@
         - [Payload format](dev/core/internal/payload.md).
         - [Directory structure](dev/core/internal/directory-structure.md)
 - [API Documentation](api/index.md)
+- [Appendix](appendix/index.md)
+  - [This Week in Glean](appendix/twig.md)
