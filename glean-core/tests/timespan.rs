@@ -323,4 +323,10 @@ fn timespan_is_not_tracked_across_upload_toggle() {
 
     // Nothing should have been recorded.
     assert_eq!(None, metric.test_get_value(&glean, "store1"));
+
+    // Make sure that the error has been recorded
+    assert_eq!(
+        Ok(1),
+        test_get_num_recorded_errors(&glean, metric.meta(), ErrorType::InvalidState, None)
+    );
 }
