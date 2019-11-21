@@ -192,6 +192,7 @@ jobs:
       - run:
           name: Create and upload code coverage
           command: |
+              set +eo pipefail # Don't fail on errors
               curl -L https://github.com/mozilla/grcov/releases/download/v0.5.5/grcov-linux-x86_64.tar.bz2 | tar jxf -
               curl -L https://codecov.io/bash > codecov.sh
               chmod +x codecov.sh
@@ -284,6 +285,7 @@ jobs:
       - run:
           name: Create and upload code coverage
           command: |
+              set +eo pipefail # Don't fail on errors
               curl -L https://codecov.io/bash > codecov.sh
               chmod +x codecov.sh
               ./codecov.sh -Z -J '^Glean$' -X gcov -X coveragepy || echo 'Codecov upload failed'
@@ -367,6 +369,7 @@ jobs:
       - run:
           name: Upload Kotlin code coverage
           command: |
+              set +eo pipefail # Don't fail on errors
               curl -L https://codecov.io/bash > codecov.sh
               chmod +x codecov.sh
               ./codecov.sh -Z -f glean-core/android/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml || echo 'Codecov upload failed'
