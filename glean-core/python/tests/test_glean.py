@@ -105,6 +105,23 @@ def test_experiments_recording():
     assert "value" == stored_data.extra["test_key"]
 
 
+def test_experiments_recording_before_glean_inits():
+    # This test relies on Glean not being initialized and task
+    # queuing to be on.
+    Glean.reset()
+
+    Glean.set_experiment_active("experiment_set_preinit", "branch_a")
+    Glean.set_experiment_active("experiment_preinit_disabled", "branch_a")
+
+    Glean.set_experiment_inactive("experiment_preinit_disabled")
+
+    # This will init Glean and flush the dispatcher's queue.
+    Glean.initialize(GLEAN_APP_ID, glean_version)
+
+    assert Glean.test_is_experiment_active("experiment_set_preinit")
+    assert not Glean.test_is_experiment_active("experiment_preinit_disabled")
+
+
 @pytest.mark.skip
 def test_sending_of_background_pings():
     pass
