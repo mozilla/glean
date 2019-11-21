@@ -7,7 +7,7 @@ These are the steps needed to cut a new release from latest master.
 2. Run `bin/prepare-release.sh <new version>`
     1. The new version should be the next patch, minor or major version of what is currently released.
     2. Let it create a commit for you.
-3. Land the new commit that perform the steps above. This takes a PR, typically, because of branch protection on master.
+3. Land the new commit that performs the steps above. This takes a PR, typically, because of branch protection on master.
 4. Cut the actual release.
     1. Click "Releases", and then "Draft a New Release" in the github UI.
     2. Enter `v<myversion>` as the tag. It's important this is the same as the tags you put in the links in the changelog.

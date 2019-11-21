@@ -137,14 +137,3 @@ fi
 
 run git add --update "${WORKSPACE_ROOT}"
 run git commit --message "Release version ${NEW_VERSION}"
-
-echo
-echo "Create tag v${NEW_VERSION} now? [y/N]"
-read -r RESP
-echo
-if [ "$RESP" != "y" ] && [ "$RESP" != "Y" ]; then
-    echo "No new tag. Proceed manually."
-    exit 0
-fi
-
-run git tag "v${NEW_VERSION}"
