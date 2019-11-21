@@ -133,6 +133,20 @@ fn long_string_values_are_truncated() {
         Ok(1),
         test_get_num_recorded_errors(&glean, metric.meta(), ErrorType::InvalidValue, None)
     );
+
+    metric.set(&glean, vec![test_string.clone()]);
+
+    // Ensure the string was truncated to the proper length.
+    assert_eq!(
+        vec![test_string[..50].to_string()],
+        metric.test_get_value(&glean, "store1").unwrap()
+    );
+
+    // Ensure the error has been recorded.
+    assert_eq!(
+        Ok(2),
+        test_get_num_recorded_errors(&glean, metric.meta(), ErrorType::InvalidValue, None)
+    );
 }
 
 #[test]

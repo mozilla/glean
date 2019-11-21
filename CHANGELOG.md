@@ -7,6 +7,10 @@
   * The experiments API is no longer ignored before the Glean SDK initialized. Calls are
     recorded and played back once the Glean SDK is initialized.
 
+  * String list items were being truncated to 20, rather than 50, bytes when using
+    `.set()` (rather than `.add()`). This has been corrected, but it may result
+    in changes in the sent data if using string list items longer than 20 bytes.
+
 # v21.1.1 (2019-11-20)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v21.1.0...v21.1.1)

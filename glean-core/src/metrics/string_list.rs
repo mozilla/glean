@@ -113,7 +113,7 @@ impl StringListMetric {
         let value = value
             .into_iter()
             .map(|elem| {
-                truncate_string_at_boundary_with_error(glean, &self.meta, elem, MAX_LIST_LENGTH)
+                truncate_string_at_boundary_with_error(glean, &self.meta, elem, MAX_STRING_LENGTH)
             })
             .collect();
 
