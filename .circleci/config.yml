@@ -261,6 +261,10 @@ jobs:
       - run:
           name: Build sample app
           command: |
+            # Build in Debug mode to speed it all up
+            pushd samples/ios/app
+            carthage bootstrap --platform iOS --no-use-binaries --cache-builds --configuration Debug --verbose
+            popd
             bash bin/run-ios-sample-app-build.sh
       - store_artifacts:
           path: raw_sample_xcodebuild.log
