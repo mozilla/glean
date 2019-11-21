@@ -14,6 +14,14 @@ These are the steps needed to cut a new release from latest master.
     3. Under the description, paste the contents of the release notes from `CHANGELOG.md`.
     4. Note that the release is not available until the CI build completes for that tag.
         - You can check [on CircleCI for the running build](https://circleci.com/gh/mozilla/glean).
+    5. Release the Rust crates:
+
+       ```
+       cd glean-core
+       cargo publish --verbose
+       cd ffi
+       cargo publish --verbose
+       ```
 
 > **Important:**
 > The release process produces release artifacts for the Kotlin library.
