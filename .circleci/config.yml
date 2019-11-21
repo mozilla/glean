@@ -200,21 +200,29 @@ jobs:
     macos:
       xcode: "11.2.0"
     steps:
+      - run:
+          name: Set Ruby Version
+          command: echo 'chruby ruby-2.6.5' >> ~/.bash_profile
+      - run:
+          name: Show Ruby environment
+          command: |
+            ruby --version
+            gem env
       - install-rustup
       - setup-rust-toolchain
       - checkout
       - restore_cache:
           name: Restore rubygems cache
-          key: swift-docs-gems-v3
+          key: swift-docs-gems-v6
       - run:
-          name: Install jazzy
-          command: gem install jazzy
+          name: Install jazzy and xcpretty
+          command: gem install jazzy xcpretty
       - save_cache:
           name: Save rubygems cache
           # NEEDS TO CHANGE WHEN JAZZY IS UPDATED
-          key: swift-docs-gems-v3
+          key: swift-docs-gems-v6
           paths:
-            - ~/.gem/ruby/2.6.4
+            - ~/.gem/ruby/2.6.5
       - run:
           name: Setup build environment
           command: |
