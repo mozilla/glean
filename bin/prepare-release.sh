@@ -86,6 +86,10 @@ run $SED -i.bak -E \
     "${WORKSPACE_ROOT}/${FILE}"
 run rm "${WORKSPACE_ROOT}/${FILE}.bak"
 
+### Update Cargo.lock
+
+cargo update -p glean-core -p glean-ffi
+
 ### KOTLIN PACKAGES ###
 
 FILE=.buildconfig.yml
