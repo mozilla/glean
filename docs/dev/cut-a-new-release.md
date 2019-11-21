@@ -1,9 +1,5 @@
 # Glean Release Process
 
-> **Important:** The Glean SDK does not yet have a fully streamlined release process. All information here is preliminary.
-> At this point the release process only produces release artifacts for the Kotlin library.
-> The Rust crate is not released on its own. No artifacts for iOS are generated.
-
 These are the steps needed to cut a new release from latest master.
 
 1. Update the changelog.
@@ -18,6 +14,10 @@ These are the steps needed to cut a new release from latest master.
     3. Under the description, paste the contents of the release notes from `CHANGELOG.md`.
     4. Note that the release is not available until the CI build completes for that tag.
         - You can check [on CircleCI for the running build](https://circleci.com/gh/mozilla/glean).
+
+> **Important:**
+> The release process produces release artifacts for the Kotlin library.
+> Artifacts for iOS wil be [generated on release soon](https://bugzilla.mozilla.org/show_bug.cgi?id=1598276).
 
 ## New point-releases
 
