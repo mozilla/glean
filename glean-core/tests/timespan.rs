@@ -287,3 +287,40 @@ fn set_raw_time_does_nothing_when_timer_running() {
         test_get_num_recorded_errors(&glean, metric.meta(), ErrorType::InvalidState, None)
     );
 }
+
+#[test]
+fn timespan_is_not_tracked_across_upload_toggle() {
+    let (mut glean, _t) = new_glean();
+
+    let mut metric = TimespanMetric::new(
+        CommonMetricData {
+            name: "timespan_metric".into(),
+            category: "telemetry".into(),
+            send_in_pings: vec!["store1".into()],
+            disabled: false,
+            lifetime: Lifetime::Ping,
+            ..Default::default()
+        },
+        TimeUnit::Nanosecond,
+    );
+
+    // Timer is started.
+    metric.set_start(&glean, 0);
+    // User disables telemetry upload.
+    glean.set_upload_enabled(false);
+    // App code eventually stops the timer.
+    // We should clear internal state as upload is disabled.
+    metric.set_stop(&glean, 40);
+
+    // App code eventually starts the timer again.
+    // Upload is disabled, so this should not have any effect.
+    metric.set_start(&glean, 100);
+    // User enables telemetry upload again.
+    glean.set_upload_enabled(true);
+    // App code eventually stops the timer.
+    // None should be running.
+    metric.set_stop(&glean, 200);
+
+    // Nothing should have been recorded.
+    assert_eq!(None, metric.test_get_value(&glean, "store1"));
+}
