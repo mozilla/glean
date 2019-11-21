@@ -23,9 +23,12 @@ These are the steps needed to cut a new release from latest master.
        cargo publish --verbose
        ```
 
-> **Important:**
-> The release process produces release artifacts for the Kotlin library.
-> Artifacts for iOS will be [generated on release soon](https://bugzilla.mozilla.org/show_bug.cgi?id=1598276).
+### Published artifacts
+
+* The Kotlin libaries are published: [GitHub Releases](https://github.com/mozilla/glean/releases), [Mozilla Maven](https://maven.mozilla.org/?prefix=maven2/org/mozilla/telemetry/).
+* Python bindings are published on PyPi: [glean-sdk](https://pypi.org/project/glean-sdk/).
+* Artifacts for iOS wil be [generated on release soon](https://bugzilla.mozilla.org/show_bug.cgi?id=1598276).
+* Rust crates are published on crates.io: [glean-core](https://crates.io/crates/glean-core), [glean-ffi](https://crates.io/crates/glean-ffi).
 
 ## New point-releases
 
