@@ -116,7 +116,7 @@ def test_experiments_recording_before_glean_inits():
     Glean.set_experiment_inactive("experiment_preinit_disabled")
 
     # This will init Glean and flush the dispatcher's queue.
-    Glean.initialize(GLEAN_APP_ID, glean_version)
+    Glean.initialize(application_id=GLEAN_APP_ID, application_version=glean_version)
 
     assert Glean.test_is_experiment_active("experiment_set_preinit")
     assert not Glean.test_is_experiment_active("experiment_preinit_disabled")
