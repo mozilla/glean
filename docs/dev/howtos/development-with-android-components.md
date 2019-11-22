@@ -79,6 +79,3 @@ This document is based on the equivalent documentation for application-services:
 [Development with the Reference Browser](https://github.com/mozilla/application-services/blob/master/docs/howtos/working-with-reference-browser.md)
 
 1. Transitive substitutions (as shown above) work but require newer Gradle versions (4.10+).
-1. Android Studio happily imports substitutions, but it doesn't appear to always do the right thing with transitive substitutions.  
-   Best to keep substitutions in the final project (i.e., in `reference-browser/settings.gradle`) or to duplicate them in all transitive links.
-1. Be aware that the project list can get very large!  At this time, there's no way to filter the project list.
