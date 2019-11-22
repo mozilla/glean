@@ -23,7 +23,7 @@ git clone https://github.com/mozilla-mobile/fenix/
 
 1. Inside the `glean` repository root:
     1. In [`.buildconfig.yml`][glean-yaml], change
-       `libraryVersion` to end in `-TESTING$N` <sup><a href="#note1">1</a></sup>,
+       `libraryVersion` to end in `-TESTING$N`[^1],
        where `$N` is some number that you haven't used for this before.
 
        Example: `libraryVersion: 22.0.0-TESTING1`
@@ -35,7 +35,7 @@ git clone https://github.com/mozilla-mobile/fenix/
 
 2. Inside the `android-components` repository root:
     1. In [`.buildconfig.yml`][android-components-yaml], change
-       `componentsVersion` to end in `-TESTING$N` <sup><a href="#note1">1</a></sup>,
+       `componentsVersion` to end in `-TESTING$N`[^1],
        where `$N` is some number that you haven't used for this before.
 
        Example: `componentsVersion: 24.0.0-TESTING1`
@@ -83,11 +83,11 @@ This document is based on the equivalent documentation for application-services:
 
 ---
 
-<b id="note1">[1]</b>: It doesn't have to end with `-TESTING$N`, it only needs to have the format `-someidentifier`.
+[^1]: It doesn't have to end with `-TESTING$N`, it only needs to have the format `-someidentifier`.
 `-SNAPSHOT$N` is also very common to use, however without the numeric suffix, this has specific meaning to gradle,
 so we avoid it.
 Additionally, while the `$N` we have used in our running example has matched
-(e.g. all of the identifiers ended in `-TESTING1`, this is not required, so long as you match everything up correctly at the end.).
+(e.g. all of the identifiers ended in `-TESTING1`, this is not required, so long as you match everything up correctly at the end).
 
 [glean-yaml]: https://github.com/mozilla/glean/blob/master/.buildconfig.yml#L1
 [android-components-yaml]: https://github.com/mozilla-mobile/android-components/blob/master/.buildconfig.yml#L1
