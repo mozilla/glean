@@ -61,6 +61,7 @@
         - [Directory structure](dev/core/internal/directory-structure.md)
     - [Howtos](dev/howtos/index.md)
         - [Development with android-components](dev/howtos/development-with-android-components.md)
+        - [Locally-published components in Fenix](dev/howtos/locally-published-components-in-fenix.md)
 - [API Documentation](api/index.md)
 - [Appendix](appendix/index.md)
   - [This Week in Glean](appendix/twig.md)
