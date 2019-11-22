@@ -1,7 +1,7 @@
 libraryVersion: 21.2.0
 groupId: org.mozilla.telemetry
 projects:
-  glean-core:
+  glean:
     path: glean-core/android
     artifactId: glean
     publications:
@@ -12,7 +12,7 @@ projects:
     description: 'The Glean SDK is a modern approach for a Telemetry library and is part of the Glean project.'
   glean-sample-app:
     path: samples/android/app
-    artifactId: glean-core-sample-app
+    artifactId: glean-sample-app
     description: 'An app demoing how to use the Glean library to collect and send telemetry data.'
   glean-gradle-plugin:
     path: gradle-plugin

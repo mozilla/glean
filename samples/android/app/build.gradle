@@ -32,7 +32,7 @@ android {
 }
 
 dependencies {
-    implementation project(':glean-core')
+    implementation project(':glean')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$rootProject.versions.kotlin"
 

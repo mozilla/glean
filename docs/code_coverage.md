@@ -19,7 +19,7 @@ Locally you can generate a coverage report with the following command:
 
 
 ```bash
-./gradlew -Pcoverage :glean-core:build
+./gradlew -Pcoverage :glean:build
 ```
 
 After that you'll find an HTML report at the following location:

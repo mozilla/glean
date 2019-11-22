@@ -51,8 +51,8 @@ In `android-components/settings.gradle`:
 ```groovy
 includeBuild('../glean') {
   dependencySubstitution {
-    substitute module('org.mozilla.telemetry:glean') with project(':glean-core')
-    substitute module('org.mozilla.telemetry:glean-forUnitTests') with project(':glean-core')
+    substitute module('org.mozilla.telemetry:glean') with project(':glean')
+    substitute module('org.mozilla.telemetry:glean-forUnitTests') with project(':glean')
   }
 }
 ```
@@ -62,8 +62,8 @@ Composite builds will ensure the Glean SDK is build as part of tasks inside `and
 ## Caveat
 
 There's a big gotcha with library substitutions: the Gradle build computes lazily, and AARs don't include their transitive dependencies' JNI libraries.
-This means that in `android-components`, `./gradlew :service-glean:assembleDebug` **does not** invoke `:glean-core:cargoBuild`,
-even though `:service-glean` depends on the substitution for `:glean-core` and even if the inputs to Cargo have changed!
+This means that in `android-components`, `./gradlew :service-glean:assembleDebug` **does not** invoke `:glean:cargoBuild`,
+even though `:service-glean` depends on the substitution for `:glean` and even if the inputs to Cargo have changed!
 It's the final consumer of the `:service-glean` project (or publication) that will incorporate the JNI libraries.
 
 In practice that means _you should always be targeting something that produces an APK_: a test or a sample module.
