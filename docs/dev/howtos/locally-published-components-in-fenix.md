@@ -55,11 +55,8 @@ git clone https://github.com/mozilla-mobile/fenix/
 3. Inside the `fenix` repository root:
     1. Inside [`build.gradle`](fenix-build-gradle-1), add
        `mavenLocal()` inside `allprojects { repositories { <here> } }`.
-        1. If you added a new project to the megazord (e.g. you went through the
-           parts of step 1) you must also add `mavenLocal()` to
-           [`buildscript { ... dependencies { <here> }}`](fenix-build-gradle-2)
 
-    3. Inside [`buildSrc/src/main/java/Dependencies.kt`](fenix-deps), change
+    2. Inside [`buildSrc/src/main/java/Dependencies.kt`](fenix-deps), change
        `mozilla_android_components` to the version you defined in step 3 part 1.
 
        Example: `const val mozilla_android_components = "24.0.0-TESTING1"`
