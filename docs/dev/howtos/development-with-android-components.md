@@ -57,6 +57,8 @@ includeBuild('../glean') {
 }
 ```
 
+Composite builds will ensure the Glean SDK is build as part of tasks inside `android-components`.
+
 ## Caveat
 
 There's a big gotcha with library substitutions: the Gradle build computes lazily, and AARs don't include their transitive dependencies' JNI libraries.
@@ -67,8 +69,8 @@ It's the final consumer of the `:service-glean` project (or publication) that wi
 In practice that means _you should always be targeting something that produces an APK_: a test or a sample module.
 Then you should find that the `cargoBuild` tasks are invoked as you expect.
 
-`./gradlew :samples-glean:connectedAndroidTest` should work.  
-Other tests like `:glean-core:testDebugUnitTest` or `:support-sync-telemetry:testDebugUnitTest` will currently fail, because the JNI libraries are not included.
+Inside the `android-components` repository `./gradlew :samples-glean:connectedAndroidTest` should work.
+Other tests like `:service-glean:testDebugUnitTest` or `:support-sync-telemetry:testDebugUnitTest` will currently fail, because the JNI libraries are not included.
 
 
 ## Notes
