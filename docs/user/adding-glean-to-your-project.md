@@ -149,6 +149,10 @@ On iOS, add this file to your project and define it as an input file for the `sd
 
 <div data-lang="Python" class="tab">
 
+> **Important:** The Python bindings are already being used internally for testing of Mozilla's data platform.
+> However, they are not ready for production or inclusion in applications that are distributed to end users.
+> Progress on this support is being [tracked in this bug](https://bugzilla.mozilla.org/show_bug.cgi?id=1598673).
+
 For Python, the `metrics.yaml` file must be available and loaded at runtime.
 
 If your project is a script (i.e. just Python files in a directory), you can load the `metrics.yaml` using:
