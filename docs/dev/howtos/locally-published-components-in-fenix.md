@@ -22,7 +22,7 @@ git clone https://github.com/mozilla-mobile/fenix/
 
 
 1. Inside the `glean` repository root:
-    1. In [`.buildconfig.yml`](glean-yaml), change
+    1. In [`.buildconfig.yml`][glean-yaml], change
        `libraryVersion` to end in `-TESTING$N` <sup><a href="#note1">1</a></sup>,
        where `$N` is some number that you haven't used for this before.
 
@@ -34,17 +34,17 @@ git clone https://github.com/mozilla-mobile/fenix/
     3. Run `./gradlew publishToMavenLocal`. This may take a few minutes.
 
 2. Inside the `android-components` repository root:
-    1. In [`.buildconfig.yml`](android-components-yaml), change
+    1. In [`.buildconfig.yml`][android-components-yaml], change
        `componentsVersion` to end in `-TESTING$N` <sup><a href="#note1">1</a></sup>,
        where `$N` is some number that you haven't used for this before.
 
        Example: `componentsVersion: 24.0.0-TESTING1`
-    2. Inside [`buildSrc/src/main/java/Dependencies.kt`](android-components-deps),
+    2. Inside [`buildSrc/src/main/java/Dependencies.kt`][android-components-deps],
        change `mozilla_glean` to reference the `libraryVersion` you published in step 2 part 1.
 
        Example: `const val mozilla_glean = "22.0.0-TESTING1"`
 
-    3. Inside [`build.gradle`](android-components-build-gradle), add
+    3. Inside [`build.gradle`][android-components-build-gradle], add
        `mavenLocal()` inside `allprojects { repositories { <here> } }`.
 
     4. Inside the android-component's `local.properties` file, ensure
@@ -53,10 +53,10 @@ git clone https://github.com/mozilla-mobile/fenix/
     5. Run `./gradlew publishToMavenLocal`.
 
 3. Inside the `fenix` repository root:
-    1. Inside [`build.gradle`](fenix-build-gradle-1), add
+    1. Inside [`build.gradle`][fenix-build-gradle-1], add
        `mavenLocal()` inside `allprojects { repositories { <here> } }`.
 
-    2. Inside [`buildSrc/src/main/java/Dependencies.kt`](fenix-deps), change
+    2. Inside [`buildSrc/src/main/java/Dependencies.kt`][fenix-deps], change
        `mozilla_android_components` to the version you defined in step 3 part 1.
 
        Example: `const val mozilla_android_components = "24.0.0-TESTING1"`
