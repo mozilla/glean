@@ -244,3 +244,18 @@ glean.error:
       - all_pings
     no_lint:
       - COMMON_PREFIX
+
+glean.deletion_request:
+  optout:
+    type: boolean
+    description:
+      Signals that the user opted out of sending technical and interaction data.
+    bugs:
+      - https://bugzilla.mozilla.org/1587095
+    data_reviews:
+      - https://bugzilla.mozilla.org/1587095#c3
+    notification_emails:
+      - telemetry-client-dev@mozilla.com
+    expires: never
+    send_in_pings:
+      - deletion_request
