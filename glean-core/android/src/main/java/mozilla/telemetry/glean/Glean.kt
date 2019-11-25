@@ -33,6 +33,7 @@ import mozilla.telemetry.glean.net.BaseUploader
 import mozilla.telemetry.glean.private.PingType
 import mozilla.telemetry.glean.private.RecordedExperimentData
 import mozilla.telemetry.glean.scheduler.GleanLifecycleObserver
+import mozilla.telemetry.glean.scheduler.DeletionPingUploadWorker
 import mozilla.telemetry.glean.scheduler.PingUploadWorker
 import mozilla.telemetry.glean.scheduler.MetricsPingScheduler
 import mozilla.telemetry.glean.utils.ThreadUtils
@@ -270,6 +271,9 @@ open class GleanInternalAPI internal constructor () {
                     // If uploading is being re-enabled, we have to restore the
                     // application-lifetime metrics.
                     initializeCoreMetrics((this@GleanInternalAPI).applicationContext)
+                } else {
+                    // If uploading is disabled, we need to send the deletion_request ping
+                    DeletionPingUploadWorker.enqueueWorker(applicationContext)
                 }
             }
         } else {
