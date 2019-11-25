@@ -7,6 +7,7 @@
 /// This will typically be invoked by the appropriate scheduling mechanism to upload a ping to the server.
 public class HttpPingUploader {
     var config: Configuration
+    var pingDirectory: String
 
     // This struct is used for organizational purposes to keep the class constants in a single place
     struct Constants {
@@ -20,8 +21,9 @@ public class HttpPingUploader {
 
     private let logger = Logger(tag: Constants.logTag)
 
-    public init(configuration: Configuration) {
-        config = configuration
+    public init(configuration: Configuration, pingDirectory: String? = nil) {
+        self.config = configuration
+        self.pingDirectory = pingDirectory ?? Constants.pingsDir
     }
 
     /// A function to aid in logging the ping to the console via `NSLog`.
@@ -106,7 +108,7 @@ public class HttpPingUploader {
     /// This function will ignore files that don't match the UUID regex and just delete them to
     /// prevent files from polluting the ping storage directory.
     func process() {
-        let pingDirectory = HttpPingUploader.getOrCreatePingDirectory()
+        let pingDirectory = self.getOrCreatePingDirectory()
 
         do {
             let storageDirectory = try FileManager.default.contentsOfDirectory(
@@ -170,8 +172,8 @@ public class HttpPingUploader {
     /// Helper function that will return the ping directory, or create it if it doesn't exist
     ///
     /// - returns: File `URL` representing the ping directory
-    static func getOrCreatePingDirectory() -> URL {
-        let dataPath = getDocumentsDirectory().appendingPathComponent(Constants.pingsDir)
+    func getOrCreatePingDirectory() -> URL {
+        let dataPath = getDocumentsDirectory().appendingPathComponent(self.pingDirectory)
 
         if !FileManager.default.fileExists(atPath: dataPath.relativePath) {
             do {

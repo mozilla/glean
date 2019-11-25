@@ -34,7 +34,7 @@ class HttpPingUploaderTests: XCTestCase {
 
     private func getAndClearPingDirectory() -> URL {
         // Get the ping directory
-        let pingDir = HttpPingUploader.getOrCreatePingDirectory()
+        let pingDir = HttpPingUploader(configuration: Configuration()).getOrCreatePingDirectory()
 
         // Clear the directory to ensure we start fresh
         // Verify all the files were removed, including the bad ones
