@@ -11,6 +11,8 @@ class ViewController: UIViewController {
     @IBOutlet var dataInput: UITextField!
     @IBOutlet var recordButton: UIButton!
     @IBOutlet var sendButton: UIButton!
+    @IBOutlet var enabledLabel: UILabel!
+    @IBOutlet var enableSwitch: UISwitch!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -52,5 +54,15 @@ class ViewController: UIViewController {
         // Increment the custom counter that goes into the sample ping
         Custom.counter.add()
         Pings.shared.sample.send()
+    }
+
+    @IBAction func enableToggled(_: Any) {
+        if enableSwitch.isOn {
+            Glean.shared.setUploadEnabled(true)
+            enabledLabel.text = "Glean is enabled"
+        } else {
+            Glean.shared.setUploadEnabled(false)
+            enabledLabel.text = "Glean is disabled"
+        }
     }
 }
