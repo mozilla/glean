@@ -14,4 +14,7 @@
         to attach a dictionary of values to the extras of the event ping. See MainActivity for
         where all of this is happening.
     </string>
+    <string name="glean_enabled_info">
+        Glean is enabled
+    </string>
 </resources>
