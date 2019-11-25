@@ -18,5 +18,7 @@ Within the `glean_data` directory are the following contents:
 
 - `pending_pings`: Pings are written here before they are picked up by the ping uploader to send to the submission endpoint.
 
+- `deletion_request`: The `deletion_request` ping is written here before it is picked up by the ping uploader. It is special in that it needs to get send once when the upload is disabled by the user.
+
 - `tmp`: Pings are written here and then moved to the `pending_pings` directory when finished to make sure that partially-written pings to not get queued for sending.  
   (The standard system temporary directory is not used for this because it is not guaranteed to be on the same volume as the `glean_data` directory on Android).

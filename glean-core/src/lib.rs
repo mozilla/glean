@@ -437,9 +437,13 @@ impl Glean {
                 Ok(false)
             }
             Some(content) => {
-                if let Err(e) =
-                    ping_maker.store_ping(&doc_id, &self.get_data_path(), &url_path, &content)
-                {
+                if let Err(e) = ping_maker.store_ping(
+                    &doc_id,
+                    &ping.name,
+                    &self.get_data_path(),
+                    &url_path,
+                    &content,
+                ) {
                     log::warn!("IO error while writing ping to file: {}", e);
                     return Err(e.into());
                 }

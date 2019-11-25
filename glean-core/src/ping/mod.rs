@@ -243,8 +243,15 @@ impl PingMaker {
     ///
     /// The directory will be created inside the `data_path`.
     /// The `pings` directory (and its parents) is created if it does not exist.
-    fn get_pings_dir(&self, data_path: &Path) -> std::io::Result<PathBuf> {
-        let pings_dir = data_path.join("pending_pings");
+    fn get_pings_dir(&self, data_path: &Path, ping_type: Option<&str>) -> std::io::Result<PathBuf> {
+        // Use a special directory for deletion_request pings
+        let pings_dir = match ping_type {
+            Some(ping_type) if ping_type == "deletion_request" => {
+                data_path.join("deletion_request")
+            }
+            _ => data_path.join("pending_pings"),
+        };
+
         create_dir_all(&pings_dir)?;
         Ok(pings_dir)
     }
@@ -263,11 +270,12 @@ impl PingMaker {
     pub fn store_ping(
         &self,
         doc_id: &str,
+        ping_name: &str,
         data_path: &Path,
         url_path: &str,
         ping_content: &JsonValue,
     ) -> std::io::Result<()> {
-        let pings_dir = self.get_pings_dir(data_path)?;
+        let pings_dir = self.get_pings_dir(data_path, Some(ping_name))?;
         let temp_dir = self.get_tmp_dir(data_path)?;
 
         // Write to a temporary location and then move when done,
@@ -298,7 +306,8 @@ impl PingMaker {
 
     /// Clear any pending pings in the queue.
     pub fn clear_pending_pings(&self, data_path: &Path) -> Result<()> {
-        let pings_dir = self.get_pings_dir(data_path)?;
+        let pings_dir = self.get_pings_dir(data_path, None)?;
+
         std::fs::remove_dir_all(&pings_dir)?;
         create_dir_all(&pings_dir)?;
 
