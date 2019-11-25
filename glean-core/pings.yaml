@@ -54,3 +54,15 @@ events:
     - https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3
   notification_emails:
     - telemetry-client-dev@mozilla.com
+
+deletion_request:
+  description: >
+    This ping is submitted when a user opts out of
+    sending technical and interaction data to Mozilla.
+  include_client_id: true
+  bugs:
+    - https://bugzilla.mozilla.org/1587095
+  data_reviews:
+    - https://bugzilla.mozilla.org/1587095#c3
+  notification_emails:
+    - telemetry-client-dev@mozilla.com

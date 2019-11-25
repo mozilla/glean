@@ -16,6 +16,7 @@ pub struct InternalPings {
     pub baseline: PingType,
     pub metrics: PingType,
     pub events: PingType,
+    pub deletion_request: PingType,
 }
 
 impl InternalPings {
@@ -24,6 +25,7 @@ impl InternalPings {
             baseline: PingType::new("baseline", true),
             metrics: PingType::new("metrics", true),
             events: PingType::new("events", true),
+            deletion_request: PingType::new("deletion_request", true),
         }
     }
 }
