@@ -28,6 +28,7 @@ mod error_recording;
 mod event_database;
 mod histogram;
 mod internal_metrics;
+mod internal_pings;
 pub mod metrics;
 pub mod ping;
 pub mod storage;
@@ -40,6 +41,7 @@ pub use crate::error::{Error, Result};
 pub use crate::error_recording::{test_get_num_recorded_errors, ErrorType};
 use crate::event_database::EventDatabase;
 use crate::internal_metrics::CoreMetrics;
+use crate::internal_pings::InternalPings;
 use crate::metrics::PingType;
 use crate::ping::PingMaker;
 use crate::storage::StorageManager;
@@ -108,6 +110,7 @@ pub struct Glean {
     data_store: Database,
     event_data_store: EventDatabase,
     core_metrics: CoreMetrics,
+    internal_pings: InternalPings,
     data_path: PathBuf,
     application_id: String,
     ping_registry: HashMap<String, PingType>,
@@ -135,6 +138,7 @@ impl Glean {
             data_store,
             event_data_store,
             core_metrics: CoreMetrics::new(),
+            internal_pings: InternalPings::new(),
             data_path: PathBuf::from(cfg.data_path),
             application_id,
             ping_registry: HashMap::new(),
