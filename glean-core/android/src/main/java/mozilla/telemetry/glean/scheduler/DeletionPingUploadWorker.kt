@@ -32,9 +32,9 @@ class DeletionPingUploadWorker(context: Context, params: WorkerParameters) : Wor
 
         // Since ping file names are UUIDs, this matches UUIDs for filtering purposes
         private const val FILE_PATTERN = "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
-        private const val LOG_TAG = "glean/DeletionPingUploadWorker"
+        private const val LOG_TAG = "glean/DeletionPing"
         // NOTE: The `PINGS_DIR` must be kept in sync with the one in the Rust implementation.
-        internal const val PINGS_DIR = "deletion_request"
+        internal const val DELETION_PING_DIR = "deletion_request"
         // A lock to prevent simultaneous writes in the ping queue directory.
         // In particular, there are issues if the pings are cleared (as part of
         // disabling telemetry), while the ping uploader is trying to upload queued pings.
@@ -106,7 +106,7 @@ class DeletionPingUploadWorker(context: Context, params: WorkerParameters) : Wor
 
             var success = true
             // TODO: 1551694 Get this directory from the rust side
-            val storageDirectory = File(Glean.getDataDir(), PINGS_DIR)
+            val storageDirectory = File(Glean.getDataDir(), DELETION_PING_DIR)
 
             Log.d(LOG_TAG, "Processing persisted pings at ${storageDirectory.absolutePath}")
 
