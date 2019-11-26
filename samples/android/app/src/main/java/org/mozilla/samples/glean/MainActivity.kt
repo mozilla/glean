@@ -44,6 +44,7 @@ open class MainActivity : AppCompatActivity() {
             )
         }
 
+        uploadSwitch.setChecked(Glean.getUploadEnabled())
         uploadSwitch.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 gleanEnabledText.setText("Glean is enabled")
