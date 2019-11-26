@@ -50,27 +50,20 @@ class DeletionRequestPingTest {
         WorkManagerTestInitHelper.initializeTestWorkManager(context)
     }
 
-    private fun waitForPingContent(
-        pingName: String,
-        maxAttempts: Int = 3
-    ): JSONObject?
-    {
+    @Suppress("ReturnCount")
+    private fun waitForPingContent(pingName: String): JSONObject? {
         val server = getPingServer()
 
-        var attempts = 0
-        do {
-            attempts += 1
-            val request = server.takeRequest(20L, TimeUnit.SECONDS)
-            if (request == null) {
-                continue
-            }
-            val docType = request.path.split("/")[3]
-            if (pingName == docType) {
-                return JSONObject(request.body.readUtf8())
-            }
-        } while (attempts < maxAttempts)
+        val request = server.takeRequest(20L, TimeUnit.SECONDS)
+        if (request == null) {
+            return null
+        }
+        val docType = request.path.split("/")[3]
+        if (pingName != docType) {
+            return null
+        }
 
-        return null
+        return JSONObject(request.body.readUtf8())
     }
 
     /**
