@@ -17,6 +17,8 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        enableSwitch.setOn(Glean.shared.getUploadEnabled(), animated: false)
+
         Test.isStarted.set(true)
 
         Test.timespan.stop()
