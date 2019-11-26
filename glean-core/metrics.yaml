@@ -250,6 +250,9 @@ glean.deletion_request:
     type: boolean
     description:
       Signals that the user opted out of sending technical and interaction data.
+      This will always be true and is currently a workaround
+      until Glean allows to send empty pings
+      (https://bugzilla.mozilla.org/show_bug.cgi?id=1599422).
     bugs:
       - https://bugzilla.mozilla.org/1587095
     data_reviews:
