@@ -196,7 +196,7 @@ impl PingMaker {
         let metrics_data = StorageManager.snapshot_as_json(glean.storage(), &ping.name, true);
         let events_data = glean.event_storage().snapshot_as_json(&ping.name, true);
 
-        if metrics_data.is_none() && events_data.is_none() {
+        if !ping.send_if_empty && metrics_data.is_none() && events_data.is_none() {
             info!("Storage for {} empty. Bailing out.", ping.name);
             return None;
         }

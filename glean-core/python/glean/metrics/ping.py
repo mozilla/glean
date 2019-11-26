@@ -17,7 +17,7 @@ class PingType:
         """
         self._name = name
         self._handle = _ffi.lib.glean_new_ping_type(
-            _ffi.ffi_encode_string(name), include_client_id
+            _ffi.ffi_encode_string(name), include_client_id, False
         )
         Glean.register_ping_type(self)
 

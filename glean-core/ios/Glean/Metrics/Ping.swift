@@ -15,10 +15,10 @@ public class Ping {
     let includeClientId: Bool
 
     /// The public constructor used by automatically generated metrics.
-    public init(name: String, includeClientId: Bool) {
+    public init(name: String, includeClientId: Bool, sendIfEmpty: Bool = false) {
         self.name = name
         self.includeClientId = includeClientId
-        self.handle = glean_new_ping_type(name, includeClientId.toByte())
+        self.handle = glean_new_ping_type(name, includeClientId.toByte(), sendIfEmpty.toByte())
         NSLog("Registering this ping: \(name)")
         Glean.shared.registerPingType(self)
     }

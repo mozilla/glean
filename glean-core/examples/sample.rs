@@ -25,8 +25,8 @@ fn main() {
         max_events: None,
     };
     let mut glean = Glean::new(cfg).unwrap();
-    glean.register_ping_type(&PingType::new("baseline", true));
-    glean.register_ping_type(&PingType::new("metrics", true));
+    glean.register_ping_type(&PingType::new("baseline", true, false));
+    glean.register_ping_type(&PingType::new("metrics", true, false));
 
     let local_metric: StringMetric = StringMetric::new(CommonMetricData {
         name: "local_metric".into(),

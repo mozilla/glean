@@ -112,7 +112,7 @@ internal interface LibGleanFFI : Library {
 
     // Ping type
 
-    fun glean_new_ping_type(name: String, include_client_id: Byte): Long
+    fun glean_new_ping_type(name: String, include_client_id: Byte, send_if_empty: Byte): Long
 
     fun glean_destroy_ping_type(handle: Long)
 

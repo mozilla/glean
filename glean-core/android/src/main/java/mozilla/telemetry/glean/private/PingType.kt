@@ -17,14 +17,16 @@ import mozilla.telemetry.glean.rust.toByte
  */
 class PingType(
     internal val name: String,
-    includeClientId: Boolean
+    includeClientId: Boolean,
+    sendIfEmpty: Boolean = false
 ) {
     internal var handle: Long
 
     init {
         this.handle = LibGleanFFI.INSTANCE.glean_new_ping_type(
             name = name,
-            include_client_id = includeClientId.toByte()
+            include_client_id = includeClientId.toByte(),
+            send_if_empty = sendIfEmpty.toByte()
         )
         Glean.registerPingType(this)
     }
