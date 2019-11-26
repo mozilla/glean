@@ -22,7 +22,7 @@ baseline:
   data_reviews:
     - https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3
   notification_emails:
-    - telemetry-client-dev@mozilla.com
+    - glean-team@mozilla.com
 
 metrics:
   description: >
@@ -40,7 +40,7 @@ metrics:
   data_reviews:
     - https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3
   notification_emails:
-    - telemetry-client-dev@mozilla.com
+    - glean-team@mozilla.com
 
 events:
   description: >
@@ -53,7 +53,7 @@ events:
   data_reviews:
     - https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3
   notification_emails:
-    - telemetry-client-dev@mozilla.com
+    - glean-team@mozilla.com
 
 deletion_request:
   description: >
@@ -65,4 +65,4 @@ deletion_request:
   data_reviews:
     - https://bugzilla.mozilla.org/1587095#c3
   notification_emails:
-    - telemetry-client-dev@mozilla.com
+    - glean-team@mozilla.com
