@@ -11,15 +11,10 @@ set -e
 
 CRATE_NAME=glean_core
 
-pushd docs &&
-    mdbook build |& grep "\[ERROR\]" &&
-    if [ $? -eq 0 ]
-    then
-        exit 1
-    else
-        exit 0
-    fi
-    popd
+output=$(mdbook build docs/ 2>&1)
+if echo "$output" | grep -q "\[ERROR\]" ; then
+    exit 1
+fi
 
 cargo doc --no-deps
 
