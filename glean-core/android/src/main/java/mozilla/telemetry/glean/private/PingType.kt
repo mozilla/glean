@@ -18,7 +18,7 @@ import mozilla.telemetry.glean.rust.toByte
 class PingType(
     internal val name: String,
     includeClientId: Boolean,
-    sendIfEmpty: Boolean = false
+    sendIfEmpty: Boolean
 ) {
     internal var handle: Long
 

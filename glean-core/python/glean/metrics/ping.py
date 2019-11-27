@@ -8,7 +8,7 @@ from .. import _ffi
 
 
 class PingType:
-    def __init__(self, name: str, include_client_id: bool, send_if_empty: bool = False):
+    def __init__(self, name: str, include_client_id: bool, send_if_empty: bool):
         """
         This implements the developer facing API for custom pings.
 
