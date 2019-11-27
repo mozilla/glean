@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v21.2.0...master)
+[Full changelog](https://github.com/mozilla/glean/compare/v21.2.1-alpha.1...master)
+
+# v21.2.1-alpha.1 (2019-11-27)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v21.2.0...21.2.1-alpha.1)
 
 # v21.2.0 (2019-11-21)
 
