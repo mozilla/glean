@@ -326,6 +326,18 @@ jobs:
             # See https://circleci.com/docs/2.0/testing-ios/#pre-starting-the-simulator
             xcrun instruments -w "iPhone 8 (13.0) [" || true
       - run:
+          name: Use local checkout through Carthage
+          command: |
+            GLEAN_PATH="$(pwd)"
+            GLEAN_COMMIT="${CIRCLE_SHA1}"
+            CARTFILE_PATH="${GLEAN_PATH}/samples/ios/app/Cartfile"
+            echo "Current Cartfile:"
+            cat "${CARTFILE_PATH}"
+            echo "================="
+            echo "New Cartfile:"
+            sed -i.bak "s#github \"mozilla/glean\" \"master\"#git \"file://${GLEAN_PATH}\" \"${GLEAN_COMMIT}\"#" "$CARTFILE_PATH"
+            cat "${CARTFILE_PATH}"
+      - run:
           name: Build sample app
           command: |
             # Build in Debug mode to speed it all up
