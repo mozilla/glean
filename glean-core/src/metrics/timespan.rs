@@ -71,6 +71,9 @@ impl TimespanMetric {
     /// This will record an error if no `start` was called.
     pub fn set_stop(&mut self, glean: &Glean, stop_time: u64) {
         if !self.should_record(glean) {
+            // Reset timer when disabled, so that we don't record timespans across
+            // disabled/enabled toggling.
+            self.start_time = None;
             return;
         }
 

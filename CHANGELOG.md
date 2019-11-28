@@ -2,6 +2,8 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v21.2.0...master)
 
+* Timers are reset when disabled. That avoids recording timespans across disabled/enabled toggling.
+
 # v21.2.0 (2019-11-21)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v21.1.1...21.2.0)
@@ -21,7 +23,7 @@
 
 * Android:
 
-  * Use the `LifecycleEventObserver` interface, rather than the `DefaultLifecycleObserver` 
+  * Use the `LifecycleEventObserver` interface, rather than the `DefaultLifecycleObserver`
     interface, since the latter isn't compatible with old SDK targets.
 
 # v21.1.0 (2019-11-20)
