@@ -259,16 +259,6 @@ impl Glean {
 
         // When upload is disabled, send a deletion-request ping
         if !flag {
-            // Add a single data point to ensure ping is non-empty
-            let metric = metrics::BooleanMetric::new(CommonMetricData {
-                name: "optout".into(),
-                category: "glean.deletion_request".into(),
-                send_in_pings: vec!["deletion_request".into()],
-                disabled: false,
-                lifetime: Lifetime::Ping,
-                ..Default::default()
-            });
-            metric.set(self, true);
             if let Err(err) = self.internal_pings.deletion_request.send(self) {
                 log::error!("Failed to send deletion-request ping on optout: {}", err);
             }

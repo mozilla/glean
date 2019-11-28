@@ -21,10 +21,10 @@ pub struct InternalPings {
 impl InternalPings {
     pub fn new() -> InternalPings {
         InternalPings {
-            baseline: PingType::new("baseline", true),
-            metrics: PingType::new("metrics", true),
-            events: PingType::new("events", true),
-            deletion_request: PingType::new("deletion_request", true),
+            baseline: PingType::new("baseline", true, false),
+            metrics: PingType::new("metrics", true, false),
+            events: PingType::new("events", true, false),
+            deletion_request: PingType::new("deletion_request", true, true),
         }
     }
 }

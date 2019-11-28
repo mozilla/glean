@@ -60,6 +60,7 @@ deletion_request:
     This ping is submitted when a user opts out of
     sending technical and interaction data to Mozilla.
   include_client_id: true
+  send_if_empty: true
   bugs:
     - https://bugzilla.mozilla.org/1587095
   data_reviews:
