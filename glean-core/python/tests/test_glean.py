@@ -197,7 +197,7 @@ def test_dont_schedule_pings_if_metrics_disabled(safe_httpserver):
         send_in_pings=["store1"],
     )
 
-    custom_ping = PingType(name="store1", include_client_id=True)
+    custom_ping = PingType(name="store1", include_client_id=True, send_if_empty=False)
 
     counter_metric.add(10)
 
@@ -211,7 +211,7 @@ def test_dont_schedule_pings_if_metrics_disabled(safe_httpserver):
 def test_dont_schedule_pings_if_there_is_no_ping_content(safe_httpserver):
     safe_httpserver.serve_content(b"", code=200)
 
-    custom_ping = PingType(name="store1", include_client_id=True)
+    custom_ping = PingType(name="store1", include_client_id=True, send_if_empty=False)
 
     custom_ping.send()
 
@@ -297,7 +297,7 @@ def test_collect():
         send_in_pings=["store1"],
     )
 
-    custom_ping = PingType(name="store1", include_client_id=True)
+    custom_ping = PingType(name="store1", include_client_id=True, send_if_empty=False)
 
     counter_metric.add(10)
 

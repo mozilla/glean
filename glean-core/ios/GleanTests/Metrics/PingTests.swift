@@ -38,7 +38,7 @@ class PingTests: XCTestCase {
     }
 
     func testSendingOfCustomPings() {
-        let customPing = Ping(name: "custom", includeClientId: true)
+        let customPing = Ping(name: "custom", includeClientId: true, sendIfEmpty: false)
 
         let counter = CounterMetricType(
             category: "telemetry",
@@ -68,7 +68,7 @@ class PingTests: XCTestCase {
     }
 
     func testSendingOfCustomPingsWithoutClientId() {
-        let customPing = Ping(name: "custom", includeClientId: false)
+        let customPing = Ping(name: "custom", includeClientId: false, sendIfEmpty: false)
 
         let counter = CounterMetricType(
             category: "telemetry",

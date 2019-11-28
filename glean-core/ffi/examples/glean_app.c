@@ -15,7 +15,7 @@ int main(void)
     NULL
   };
   uint64_t glean = glean_initialize(&cfg);
-  uint64_t store1 = glean_new_ping_type("store1", true);
+  uint64_t store1 = glean_new_ping_type("store1", true, false);
   glean_register_ping_type(glean, store1);
 
   printf("Glean upload enabled? %d\n", glean_is_upload_enabled(glean));

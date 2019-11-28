@@ -8,7 +8,7 @@ from .. import _ffi
 
 
 class PingType:
-    def __init__(self, name: str, include_client_id: bool):
+    def __init__(self, name: str, include_client_id: bool, send_if_empty: bool):
         """
         This implements the developer facing API for custom pings.
 
@@ -17,7 +17,7 @@ class PingType:
         """
         self._name = name
         self._handle = _ffi.lib.glean_new_ping_type(
-            _ffi.ffi_encode_string(name), include_client_id
+            _ffi.ffi_encode_string(name), include_client_id, send_if_empty
         )
         Glean.register_ping_type(self)
 

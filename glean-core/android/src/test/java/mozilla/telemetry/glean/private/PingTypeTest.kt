@@ -44,7 +44,8 @@ class PingTypeTest {
 
         val customPing = PingType(
             name = "custom",
-            includeClientId = true
+            includeClientId = true,
+            sendIfEmpty = false
         )
 
         val counter = CounterMetricType(
@@ -83,7 +84,8 @@ class PingTypeTest {
 
         val customPing = PingType(
             name = "custom",
-            includeClientId = false
+            includeClientId = false,
+            sendIfEmpty = false
         )
 
         val counter = CounterMetricType(

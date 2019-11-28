@@ -15,6 +15,8 @@ pub struct PingType {
     pub name: String,
     /// Whether the ping should include the client ID.
     pub include_client_id: bool,
+    /// Whether the ping should be sent if it is empty
+    pub send_if_empty: bool,
 }
 
 impl PingType {
@@ -26,10 +28,11 @@ impl PingType {
     /// * `name` - The name of the ping.
     /// * `include_client_id` - Whether to include the client ID in the assembled ping when.
     /// sending.
-    pub fn new<A: Into<String>>(name: A, include_client_id: bool) -> Self {
+    pub fn new<A: Into<String>>(name: A, include_client_id: bool, send_if_empty: bool) -> Self {
         Self {
             name: name.into(),
             include_client_id,
+            send_if_empty,
         }
     }
 

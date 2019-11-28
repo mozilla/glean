@@ -313,7 +313,7 @@ uint64_t glean_new_memory_distribution_metric(FfiStr category,
                                               uint8_t disabled,
                                               int32_t memory_unit);
 
-uint64_t glean_new_ping_type(FfiStr ping_name, uint8_t include_client_id);
+uint64_t glean_new_ping_type(FfiStr ping_name, uint8_t include_client_id, uint8_t send_if_empty);
 
 uint64_t glean_new_quantity_metric(FfiStr category,
                                    FfiStr name,

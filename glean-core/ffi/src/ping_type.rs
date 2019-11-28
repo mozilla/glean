@@ -17,10 +17,18 @@ lazy_static! {
 crate::define_infallible_handle_map_deleter!(PING_TYPES, glean_destroy_ping_type);
 
 #[no_mangle]
-pub extern "C" fn glean_new_ping_type(ping_name: FfiStr, include_client_id: u8) -> u64 {
+pub extern "C" fn glean_new_ping_type(
+    ping_name: FfiStr,
+    include_client_id: u8,
+    send_if_empty: u8,
+) -> u64 {
     PING_TYPES.insert_with_log(|| {
         let ping_name = ping_name.to_string_fallible()?;
-        Ok(PingType::new(ping_name, include_client_id != 0))
+        Ok(PingType::new(
+            ping_name,
+            include_client_id != 0,
+            send_if_empty != 0,
+        ))
     })
 }
 

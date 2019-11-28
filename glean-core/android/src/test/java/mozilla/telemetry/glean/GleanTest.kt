@@ -426,7 +426,8 @@ class GleanTest {
         val pingName = "custom_ping_1"
         val ping = PingType(
             name = pingName,
-            includeClientId = true
+            includeClientId = true,
+            sendIfEmpty = false
         )
         val stringMetric = StringMetricType(
             disabled = false,

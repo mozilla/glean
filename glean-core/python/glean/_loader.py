@@ -38,6 +38,7 @@ _ARGS = [
     "disabled",
     "histogram_type",
     "include_client_id",
+    "send_if_empty",
     "lifetime",
     "memory_unit",
     "name",

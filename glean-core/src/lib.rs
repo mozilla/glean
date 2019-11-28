@@ -83,7 +83,7 @@ pub struct Configuration {
 ///     max_events: None,
 /// };
 /// let mut glean = Glean::new(cfg).unwrap();
-/// let ping = PingType::new("sample", true);
+/// let ping = PingType::new("sample", true, false);
 /// glean.register_ping_type(&ping);
 ///
 /// let call_counter: CounterMetric = CounterMetric::new(CommonMetricData {

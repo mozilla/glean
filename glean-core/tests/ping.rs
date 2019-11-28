@@ -12,7 +12,7 @@ use glean_core::CommonMetricData;
 fn write_ping_to_disk() {
     let (mut glean, _temp) = new_glean();
 
-    let ping = PingType::new("metrics", true);
+    let ping = PingType::new("metrics", true, false);
     glean.register_ping_type(&ping);
 
     // We need to store a metric as an empty ping is not stored.
@@ -33,7 +33,7 @@ fn write_ping_to_disk() {
 fn disabling_upload_clears_pending_pings() {
     let (mut glean, _) = new_glean();
 
-    let ping = PingType::new("metrics", true);
+    let ping = PingType::new("metrics", true, false);
     glean.register_ping_type(&ping);
 
     // We need to store a metric as an empty ping is not stored.
@@ -56,5 +56,25 @@ fn disabling_upload_clears_pending_pings() {
 
     counter.add(&glean, 1);
     assert!(ping.send(&glean).unwrap());
+    assert_eq!(1, get_queued_pings(glean.get_data_path()).unwrap().len());
+}
+
+#[test]
+fn empty_pings_with_flag_are_sent() {
+    let (mut glean, _) = new_glean();
+
+    let ping1 = PingType::new("custom-ping1", true, true);
+    glean.register_ping_type(&ping1);
+    let ping2 = PingType::new("custom-ping2", true, false);
+    glean.register_ping_type(&ping2);
+
+    // No data is stored in either of the custom pings
+
+    // Sending this should succeed.
+    assert_eq!(true, ping1.send(&glean).unwrap());
+    assert_eq!(1, get_queued_pings(glean.get_data_path()).unwrap().len());
+
+    // Sending this should fail.
+    assert_eq!(false, ping2.send(&glean).unwrap());
     assert_eq!(1, get_queued_pings(glean.get_data_path()).unwrap().len());
 }

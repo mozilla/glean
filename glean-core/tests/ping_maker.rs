@@ -21,7 +21,7 @@ fn set_up_basic_ping() -> (Glean, PingMaker, PingType, tempfile::TempDir) {
     };
     let mut glean = Glean::new(cfg).unwrap();
     let ping_maker = PingMaker::new();
-    let ping_type = PingType::new("store1", true);
+    let ping_type = PingType::new("store1", true, false);
     glean.register_ping_type(&ping_type);
 
     // Record something, so the ping will have data
@@ -88,7 +88,7 @@ fn collect_must_report_none_when_no_data_is_stored() {
 
     let (mut glean, ping_maker, ping_type, _t) = set_up_basic_ping();
 
-    let unknown_ping_type = PingType::new("unknown", true);
+    let unknown_ping_type = PingType::new("unknown", true, false);
     glean.register_ping_type(&ping_type);
 
     assert!(ping_maker.collect(&glean, &unknown_ping_type).is_none());
@@ -110,7 +110,7 @@ fn seq_number_must_be_sequential() {
 
     for i in 0..=1 {
         for ping_name in ["store1", "store2"].iter() {
-            let ping_type = PingType::new(*ping_name, true);
+            let ping_type = PingType::new(*ping_name, true, false);
             let content = ping_maker.collect(&glean, &ping_type).unwrap();
             let seq_num = content["ping_info"]["seq"].as_i64().unwrap();
             // Ensure sequence numbers in different stores are independent of
@@ -121,7 +121,7 @@ fn seq_number_must_be_sequential() {
 
     // Test that ping sequence numbers increase independently.
     {
-        let ping_type = PingType::new("store1", true);
+        let ping_type = PingType::new("store1", true, false);
 
         // 3rd ping of store1
         let content = ping_maker.collect(&glean, &ping_type).unwrap();
@@ -135,7 +135,7 @@ fn seq_number_must_be_sequential() {
     }
 
     {
-        let ping_type = PingType::new("store2", true);
+        let ping_type = PingType::new("store2", true, false);
 
         // 3rd ping of store2
         let content = ping_maker.collect(&glean, &ping_type).unwrap();
@@ -144,7 +144,7 @@ fn seq_number_must_be_sequential() {
     }
 
     {
-        let ping_type = PingType::new("store1", true);
+        let ping_type = PingType::new("store1", true, false);
 
         // 5th ping of store1
         let content = ping_maker.collect(&glean, &ping_type).unwrap();
@@ -157,7 +157,7 @@ fn seq_number_must_be_sequential() {
 fn test_clear_pending_pings() {
     let (mut glean, _) = new_glean();
     let ping_maker = PingMaker::new();
-    let ping_type = PingType::new("store1", true);
+    let ping_type = PingType::new("store1", true, false);
     glean.register_ping_type(&ping_type);
 
     // Record something, so the ping will have data
