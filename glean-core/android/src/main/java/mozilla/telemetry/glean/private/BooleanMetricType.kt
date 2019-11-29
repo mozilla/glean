@@ -6,7 +6,6 @@ package mozilla.telemetry.glean.private
 
 import androidx.annotation.VisibleForTesting
 import com.sun.jna.StringArray
-import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.toByte
 
@@ -70,7 +69,7 @@ class BooleanMetricType internal constructor(
 
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.launch {
-            LibGleanFFI.INSTANCE.glean_boolean_set(Glean.handle, this@BooleanMetricType.handle, value.toByte())
+            LibGleanFFI.INSTANCE.glean_boolean_set(this@BooleanMetricType.handle, value.toByte())
         }
     }
 
@@ -87,7 +86,6 @@ class BooleanMetricType internal constructor(
         }
 
         LibGleanFFI.INSTANCE.glean_boolean_set(
-            Glean.handle,
             this@BooleanMetricType.handle,
             value.toByte()
         )
@@ -108,7 +106,7 @@ class BooleanMetricType internal constructor(
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.assertInTestingMode()
 
-        val res = LibGleanFFI.INSTANCE.glean_boolean_test_has_value(Glean.handle, this.handle, pingName)
+        val res = LibGleanFFI.INSTANCE.glean_boolean_test_has_value(this.handle, pingName)
         return res.toBoolean()
     }
 
@@ -130,6 +128,6 @@ class BooleanMetricType internal constructor(
         if (!testHasValue(pingName)) {
             throw NullPointerException()
         }
-        return LibGleanFFI.INSTANCE.glean_boolean_test_get_value(Glean.handle, this.handle, pingName).toBoolean()
+        return LibGleanFFI.INSTANCE.glean_boolean_test_get_value(this.handle, pingName).toBoolean()
     }
 }

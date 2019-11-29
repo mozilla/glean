@@ -8,7 +8,6 @@ import android.os.SystemClock
 import androidx.annotation.VisibleForTesting
 import com.sun.jna.StringArray
 import mozilla.telemetry.glean.Dispatchers
-import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.getAndConsumeRustString
 import mozilla.telemetry.glean.rust.toBoolean
@@ -133,7 +132,6 @@ class EventMetricType<ExtraKeysEnum : Enum<ExtraKeysEnum>> internal constructor(
             }
 
             LibGleanFFI.INSTANCE.glean_event_record(
-                Glean.handle,
                 this@EventMetricType.handle,
                 timestamp,
                 keys,
@@ -157,7 +155,6 @@ class EventMetricType<ExtraKeysEnum : Enum<ExtraKeysEnum>> internal constructor(
         Dispatchers.API.assertInTestingMode()
 
         return LibGleanFFI.INSTANCE.glean_event_test_has_value(
-            Glean.handle,
             this.handle,
             pingName
         ).toBoolean()
@@ -209,7 +206,6 @@ class EventMetricType<ExtraKeysEnum : Enum<ExtraKeysEnum>> internal constructor(
         Dispatchers.API.assertInTestingMode()
 
         val ptr = LibGleanFFI.INSTANCE.glean_event_test_get_value_as_json_string(
-            Glean.handle,
             this.handle,
             pingName
         )!!
@@ -245,7 +241,7 @@ class EventMetricType<ExtraKeysEnum : Enum<ExtraKeysEnum>> internal constructor(
         Dispatchers.API.assertInTestingMode()
 
         return LibGleanFFI.INSTANCE.glean_event_test_get_num_recorded_errors(
-            Glean.handle, this.handle, errorType.ordinal, pingName
+            this.handle, errorType.ordinal, pingName
         )
     }
 }

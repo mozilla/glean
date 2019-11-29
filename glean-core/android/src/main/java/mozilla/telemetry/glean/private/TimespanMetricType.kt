@@ -8,7 +8,6 @@ import android.os.SystemClock
 import androidx.annotation.VisibleForTesting
 import com.sun.jna.StringArray
 import mozilla.telemetry.glean.Dispatchers
-import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.toBoolean
 import mozilla.telemetry.glean.rust.toByte
@@ -74,7 +73,7 @@ class TimespanMetricType internal constructor(
 
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.launch {
-            LibGleanFFI.INSTANCE.glean_timespan_set_start(Glean.handle, this@TimespanMetricType.handle, startTime)
+            LibGleanFFI.INSTANCE.glean_timespan_set_start(this@TimespanMetricType.handle, startTime)
         }
     }
 
@@ -94,7 +93,7 @@ class TimespanMetricType internal constructor(
 
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.launch {
-            LibGleanFFI.INSTANCE.glean_timespan_set_stop(Glean.handle, this@TimespanMetricType.handle, stopTime)
+            LibGleanFFI.INSTANCE.glean_timespan_set_stop(this@TimespanMetricType.handle, stopTime)
         }
     }
 
@@ -130,7 +129,6 @@ class TimespanMetricType internal constructor(
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.launch {
             LibGleanFFI.INSTANCE.glean_timespan_set_raw_nanos(
-                Glean.handle,
                 this@TimespanMetricType.handle,
                 elapsedNanos)
         }
@@ -150,7 +148,7 @@ class TimespanMetricType internal constructor(
         Dispatchers.API.assertInTestingMode()
 
         return LibGleanFFI
-            .INSTANCE.glean_timespan_test_has_value(Glean.handle, this.handle, pingName)
+            .INSTANCE.glean_timespan_test_has_value(this.handle, pingName)
             .toBoolean()
     }
 
@@ -171,7 +169,7 @@ class TimespanMetricType internal constructor(
         if (!testHasValue(pingName)) {
             throw NullPointerException()
         }
-        return LibGleanFFI.INSTANCE.glean_timespan_test_get_value(Glean.handle, this.handle, pingName)
+        return LibGleanFFI.INSTANCE.glean_timespan_test_get_value(this.handle, pingName)
     }
 
     /**
@@ -189,7 +187,7 @@ class TimespanMetricType internal constructor(
         Dispatchers.API.assertInTestingMode()
 
         return LibGleanFFI.INSTANCE.glean_timespan_test_get_num_recorded_errors(
-            Glean.handle, this.handle, errorType.ordinal, pingName
+            this.handle, errorType.ordinal, pingName
         )
     }
 }

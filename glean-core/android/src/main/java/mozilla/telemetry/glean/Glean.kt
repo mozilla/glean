@@ -20,7 +20,6 @@ import mozilla.telemetry.glean.config.FfiConfiguration
 import mozilla.telemetry.glean.utils.getLocaleTag
 import java.io.File
 import mozilla.telemetry.glean.rust.LibGleanFFI
-import mozilla.telemetry.glean.rust.MetricHandle
 import mozilla.telemetry.glean.rust.getAndConsumeRustString
 import mozilla.telemetry.glean.rust.toBoolean
 import mozilla.telemetry.glean.rust.toByte
@@ -55,8 +54,7 @@ open class GleanInternalAPI internal constructor () {
         internal const val GLEAN_DATA_DIR: String = "glean_data"
     }
 
-    // `internal` so this can be modified for testing
-    internal var handle: MetricHandle = 0L
+    private var initialized: Boolean = false
 
     internal lateinit var configuration: Configuration
 
@@ -152,10 +150,10 @@ open class GleanInternalAPI internal constructor () {
             delayPingLifetimeIO = false
         )
 
-        handle = LibGleanFFI.INSTANCE.glean_initialize(cfg)
+        initialized = LibGleanFFI.INSTANCE.glean_initialize(cfg).toBoolean()
 
         // If initialization of Glean fails we bail out and don't initialize further.
-        if (handle == 0L) {
+        if (!initialized) {
             return
         }
 
@@ -166,7 +164,7 @@ open class GleanInternalAPI internal constructor () {
         // If this is the first time ever the Glean SDK runs, make sure to set
         // some initial core metrics in case we need to generate early pings.
         // The next times we start, we would have them around already.
-        val isFirstRun = LibGleanFFI.INSTANCE.glean_is_first_run(handle).toBoolean()
+        val isFirstRun = LibGleanFFI.INSTANCE.glean_is_first_run().toBoolean()
         if (isFirstRun) {
             initializeCoreMetrics(applicationContext)
         }
@@ -192,7 +190,7 @@ open class GleanInternalAPI internal constructor () {
         if (!isFirstRun) {
             @Suppress("EXPERIMENTAL_API_USAGE")
             Dispatchers.API.executeTask {
-                LibGleanFFI.INSTANCE.glean_clear_application_lifetime_metrics(handle)
+                LibGleanFFI.INSTANCE.glean_clear_application_lifetime_metrics()
                 initializeCoreMetrics(applicationContext)
             }
         }
@@ -218,7 +216,7 @@ open class GleanInternalAPI internal constructor () {
      * Returns true if the Glean SDK has been initialized.
      */
     internal fun isInitialized(): Boolean {
-        return handle != 0L
+        return initialized
     }
 
     /**
@@ -628,12 +626,12 @@ open class GleanInternalAPI internal constructor () {
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     internal fun testDestroyGleanHandle() {
         if (!isInitialized()) {
-            // We don't need to destroy the Glean handle: it wasn't initialized.
+            // We don't need to destroy Glean: it wasn't initialized.
             return
         }
 
         LibGleanFFI.INSTANCE.glean_destroy_glean()
-        handle = 0L
+        initialized = false
     }
 
     /**

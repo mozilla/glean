@@ -7,7 +7,6 @@ package mozilla.telemetry.glean.private
 import androidx.annotation.VisibleForTesting
 import com.sun.jna.StringArray
 import mozilla.telemetry.glean.Dispatchers
-import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.rust.getAndConsumeRustString
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.toBoolean
@@ -87,7 +86,6 @@ class UuidMetricType(
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.launch {
             LibGleanFFI.INSTANCE.glean_uuid_set(
-                Glean.handle,
                 this@UuidMetricType.handle,
                 value.toString())
         }
@@ -104,7 +102,6 @@ class UuidMetricType(
         }
 
         LibGleanFFI.INSTANCE.glean_uuid_set(
-            Glean.handle,
             this@UuidMetricType.handle,
             value.toString())
     }
@@ -124,7 +121,7 @@ class UuidMetricType(
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.assertInTestingMode()
 
-        val res = LibGleanFFI.INSTANCE.glean_uuid_test_has_value(Glean.handle, this.handle, pingName)
+        val res = LibGleanFFI.INSTANCE.glean_uuid_test_has_value(this.handle, pingName)
         return res.toBoolean()
     }
 
@@ -146,7 +143,7 @@ class UuidMetricType(
         if (!testHasValue(pingName)) {
             throw NullPointerException()
         }
-        val ptr = LibGleanFFI.INSTANCE.glean_uuid_test_get_value(Glean.handle, this.handle, pingName)!!
+        val ptr = LibGleanFFI.INSTANCE.glean_uuid_test_get_value(this.handle, pingName)!!
         return UUID.fromString(ptr.getAndConsumeRustString())
     }
 }
