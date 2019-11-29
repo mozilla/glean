@@ -68,7 +68,8 @@ open class GleanInternalAPI internal constructor () {
 
     private lateinit var applicationContext: Context
 
-    private val gleanLifecycleObserver by lazy { GleanLifecycleObserver() }
+    // Note: we set `applicationContext` early during startup so this should be fine.
+    private val gleanLifecycleObserver by lazy { GleanLifecycleObserver(applicationContext) }
 
     private lateinit var gleanDataDir: File
 

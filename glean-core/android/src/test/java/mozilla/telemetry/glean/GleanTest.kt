@@ -201,16 +201,23 @@ class GleanTest {
         // Fake calling the lifecycle observer.
         val lifecycleOwner = mock(LifecycleOwner::class.java)
         val lifecycleRegistry = LifecycleRegistry(lifecycleOwner)
-        val gleanLifecycleObserver = GleanLifecycleObserver()
+        val gleanLifecycleObserver = GleanLifecycleObserver(context)
         lifecycleRegistry.addObserver(gleanLifecycleObserver)
+
+        // Pretend that we have a dirty bit set.
+        gleanLifecycleObserver.sharedPreferences.edit().putBoolean("dirty", true).commit()
 
         try {
             // Simulate the first foreground event after the application starts.
             lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
             click.record()
+            assertEquals(1, GleanValidation.appForceclosedCount.testGetValue())
 
             // Simulate going to background.
             lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
+
+            // Check that the dirty bit gets cleared.
+            assertFalse(gleanLifecycleObserver.sharedPreferences.getBoolean("dirty", false))
 
             // Trigger worker task to upload the pings in the background
             triggerWorkManager(context)
