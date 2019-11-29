@@ -72,7 +72,6 @@ public class DatetimeMetricType {
 
         Dispatchers.shared.launchAPI {
             glean_datetime_set(
-                Glean.shared.handle,
                 self.handle,
                 Int32(components.year ?? 0),
                 UInt32(components.month ?? 0),
@@ -98,7 +97,7 @@ public class DatetimeMetricType {
         Dispatchers.shared.assertInTestingMode()
 
         let pingName = pingName ?? self.sendInPings[0]
-        return glean_datetime_test_has_value(Glean.shared.handle, self.handle, pingName) != 0
+        return glean_datetime_test_has_value(self.handle, pingName) != 0
     }
 
     /// Returns the string representation of the stored value for testing purposes only. This function
@@ -123,7 +122,6 @@ public class DatetimeMetricType {
 
         return String(
             freeingRustString: glean_datetime_test_get_value_as_string(
-                Glean.shared.handle,
                 self.handle,
                 pingName
             )
@@ -161,7 +159,6 @@ public class DatetimeMetricType {
         let pingName = pingName ?? self.sendInPings[0]
 
         return glean_datetime_test_get_num_recorded_errors(
-            Glean.shared.handle,
             self.handle,
             errorType.rawValue,
             pingName

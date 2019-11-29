@@ -59,7 +59,7 @@ public class UuidMetricType {
         guard !self.disabled else { return }
 
         Dispatchers.shared.launchAPI {
-            glean_uuid_set(Glean.shared.handle, self.handle, value.uuidString.lowercased())
+            glean_uuid_set(self.handle, value.uuidString.lowercased())
         }
     }
 
@@ -75,7 +75,7 @@ public class UuidMetricType {
         Dispatchers.shared.assertInTestingMode()
 
         let pingName = pingName ?? self.sendInPings[0]
-        return glean_uuid_test_has_value(Glean.shared.handle, self.handle, pingName) != 0
+        return glean_uuid_test_has_value(self.handle, pingName) != 0
     }
 
     /// Returns the stored value for testing purposes only. This function will attempt to await the
@@ -97,7 +97,7 @@ public class UuidMetricType {
             throw "Missing value"
         }
 
-        let uuid = String(freeingRustString: glean_uuid_test_get_value(Glean.shared.handle, self.handle, pingName))
+        let uuid = String(freeingRustString: glean_uuid_test_get_value(self.handle, pingName))
 
         return UUID(uuidString: uuid)!
     }

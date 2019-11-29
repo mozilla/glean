@@ -57,7 +57,7 @@ public class TimespanMetricType {
         let startTime = timestampNanos()
 
         Dispatchers.shared.launchAPI {
-            glean_timespan_set_start(Glean.shared.handle, self.handle, startTime)
+            glean_timespan_set_start(self.handle, startTime)
         }
     }
 
@@ -72,7 +72,7 @@ public class TimespanMetricType {
         let stopTime = timestampNanos()
 
         Dispatchers.shared.launchAPI {
-            glean_timespan_set_stop(Glean.shared.handle, self.handle, stopTime)
+            glean_timespan_set_stop(self.handle, stopTime)
         }
     }
 
@@ -98,7 +98,7 @@ public class TimespanMetricType {
         guard !self.disabled else { return }
 
         Dispatchers.shared.launchAPI {
-            glean_timespan_set_raw_nanos(Glean.shared.handle, self.handle, elapsedNanos)
+            glean_timespan_set_raw_nanos(self.handle, elapsedNanos)
         }
     }
 
@@ -114,7 +114,7 @@ public class TimespanMetricType {
         Dispatchers.shared.assertInTestingMode()
 
         let pingName = pingName ?? self.sendInPings[0]
-        return glean_timespan_test_has_value(Glean.shared.handle, self.handle, pingName) != 0
+        return glean_timespan_test_has_value(self.handle, pingName) != 0
     }
 
     /// Returns the stored value for testing purposes only. This function will attempt to await the
@@ -136,7 +136,7 @@ public class TimespanMetricType {
             throw "Missing value"
         }
 
-        return glean_timespan_test_get_value(Glean.shared.handle, self.handle, pingName)
+        return glean_timespan_test_get_value(self.handle, pingName)
     }
 
     /// Returns the number of errors recorded for the given metric.
@@ -153,7 +153,6 @@ public class TimespanMetricType {
         let pingName = pingName ?? self.sendInPings[0]
 
         return glean_timespan_test_get_num_recorded_errors(
-            Glean.shared.handle,
             self.handle,
             errorType.rawValue,
             pingName

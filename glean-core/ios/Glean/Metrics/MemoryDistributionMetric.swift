@@ -52,7 +52,7 @@ public class MemoryDistributionMetricType {
         guard !self.disabled else { return }
 
         Dispatchers.shared.launchAPI {
-            return glean_memory_distribution_accumulate(Glean.shared.handle, self.handle, sample)
+            return glean_memory_distribution_accumulate(self.handle, sample)
         }
     }
 
@@ -68,7 +68,7 @@ public class MemoryDistributionMetricType {
         Dispatchers.shared.assertInTestingMode()
 
         let pingName = pingName ?? self.sendInPings[0]
-        return glean_memory_distribution_test_has_value(Glean.shared.handle, self.handle, pingName).toBool()
+        return glean_memory_distribution_test_has_value(self.handle, pingName).toBool()
     }
 
     /// Returns the stored value for testing purposes only. This function will attempt to await the
@@ -92,7 +92,6 @@ public class MemoryDistributionMetricType {
 
         let json = String(
             freeingRustString: glean_memory_distribution_test_get_value_as_json_string(
-                Glean.shared.handle,
                 self.handle,
                 pingName
             )
@@ -115,7 +114,6 @@ public class MemoryDistributionMetricType {
         let pingName = pingName ?? self.sendInPings[0]
 
         return glean_memory_distribution_test_get_num_recorded_errors(
-            Glean.shared.handle,
             self.handle,
             errorType.rawValue,
             pingName

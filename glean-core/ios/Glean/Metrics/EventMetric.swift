@@ -128,7 +128,6 @@ public class EventMetricType<ExtraKeysEnum: ExtraKeys> {
 
             withArrayOfCStrings(values) { values in
                 glean_event_record(
-                    Glean.shared.handle,
                     self.handle,
                     timestamp,
                     keys,
@@ -151,7 +150,7 @@ public class EventMetricType<ExtraKeysEnum: ExtraKeys> {
         Dispatchers.shared.assertInTestingMode()
 
         let pingName = pingName ?? self.sendInPings[0]
-        return glean_event_test_has_value(Glean.shared.handle, self.handle, pingName) != 0
+        return glean_event_test_has_value(self.handle, pingName) != 0
     }
 
     /// Deserializes an event in JSON into a RecordedEventData object.
@@ -198,7 +197,7 @@ public class EventMetricType<ExtraKeysEnum: ExtraKeys> {
         }
 
         let res = String(
-            freeingRustString: glean_event_test_get_value_as_json_string(Glean.shared.handle, self.handle, pingName)
+            freeingRustString: glean_event_test_get_value_as_json_string(self.handle, pingName)
         )
 
         do {
@@ -240,7 +239,6 @@ public class EventMetricType<ExtraKeysEnum: ExtraKeys> {
         let pingName = pingName ?? self.sendInPings[0]
 
         return glean_event_test_get_num_recorded_errors(
-            Glean.shared.handle,
             self.handle,
             errorType.rawValue,
             pingName

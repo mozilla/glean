@@ -54,7 +54,7 @@ public class CounterMetricType {
         guard !self.disabled else { return }
 
         Dispatchers.shared.launchAPI {
-            glean_counter_add(Glean.shared.handle, self.handle, amount)
+            glean_counter_add(self.handle, amount)
         }
     }
 
@@ -70,7 +70,7 @@ public class CounterMetricType {
         Dispatchers.shared.assertInTestingMode()
 
         let pingName = pingName ?? self.sendInPings[0]
-        return glean_counter_test_has_value(Glean.shared.handle, self.handle, pingName) != 0
+        return glean_counter_test_has_value(self.handle, pingName) != 0
     }
 
     /// Returns the stored value for testing purposes only. This function will attempt to await the
@@ -92,7 +92,7 @@ public class CounterMetricType {
             throw "Missing value"
         }
 
-        return glean_counter_test_get_value(Glean.shared.handle, self.handle, pingName)
+        return glean_counter_test_get_value(self.handle, pingName)
     }
 
     /// Returns the number of errors recorded for the given metric.
@@ -109,7 +109,6 @@ public class CounterMetricType {
         let pingName = pingName ?? self.sendInPings[0]
 
         return glean_counter_test_get_num_recorded_errors(
-            Glean.shared.handle,
             self.handle,
             errorType.rawValue,
             pingName

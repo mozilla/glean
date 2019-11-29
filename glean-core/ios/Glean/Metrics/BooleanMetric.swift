@@ -54,7 +54,7 @@ public class BooleanMetricType {
         guard !self.disabled else { return }
 
         Dispatchers.shared.launchAPI {
-            glean_boolean_set(Glean.shared.handle, self.handle, value.toByte())
+            glean_boolean_set(self.handle, value.toByte())
         }
     }
 
@@ -70,7 +70,7 @@ public class BooleanMetricType {
         Dispatchers.shared.assertInTestingMode()
 
         let pingName = pingName ?? self.sendInPings[0]
-        return glean_boolean_test_has_value(Glean.shared.handle, self.handle, pingName) != 0
+        return glean_boolean_test_has_value(self.handle, pingName) != 0
     }
 
     /// Returns the stored value for testing purposes only. This function will attempt to await the
@@ -92,6 +92,6 @@ public class BooleanMetricType {
             throw "Missing value"
         }
 
-        return glean_boolean_test_get_value(Glean.shared.handle, self.handle, pingName).toBool()
+        return glean_boolean_test_get_value(self.handle, pingName).toBool()
     }
 }
