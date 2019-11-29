@@ -12,3 +12,4 @@ They could be release notes, documentation, hopes, dreams, or whatever: so long 
 * 2019-11-19: [GeckoView + Glean = Fenix performance metrics](https://www.a2p.it/wordpress/tech-stuff/mozilla/geckoview-glean-fenix-performance-metrics/)
 * 2019-11-21: [What is the Glean logo about?](https://dianaciufo.wordpress.com/2019/10/11/glean-graphic-identity-for-mozilla-firefox/)
 * 2019-11-22: [Glean in Private](https://chuttenblog.wordpress.com/2019/11/22/this-week-in-glean-glean-in-private/)
+* 2019-11-29: [Differences](https://fnordig.de/2019/11/29/this-week-in-glean/)
