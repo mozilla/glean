@@ -7,7 +7,6 @@ from typing import List, Optional
 import uuid
 
 
-from ..glean import Glean
 from .. import _ffi
 from .._dispatcher import Dispatcher
 from ..testing import ErrorType
@@ -75,9 +74,7 @@ class UuidMetricType:
 
         @Dispatcher.launch
         def set():
-            _ffi.lib.glean_uuid_set(
-                Glean._handle, self._handle, _ffi.ffi_encode_string(str(value))
-            )
+            _ffi.lib.glean_uuid_set(self._handle, _ffi.ffi_encode_string(str(value)))
 
     def test_has_value(self, ping_name: Optional[str] = None) -> bool:
         """
@@ -96,7 +93,7 @@ class UuidMetricType:
 
         return bool(
             _ffi.lib.glean_uuid_test_has_value(
-                Glean._handle, self._handle, _ffi.ffi_encode_string(ping_name)
+                self._handle, _ffi.ffi_encode_string(ping_name)
             )
         )
 
@@ -121,7 +118,7 @@ class UuidMetricType:
             "urn:uuid:"
             + _ffi.ffi_decode_string(
                 _ffi.lib.glean_uuid_test_get_value(
-                    Glean._handle, self._handle, _ffi.ffi_encode_string(ping_name)
+                    self._handle, _ffi.ffi_encode_string(ping_name)
                 )
             )
         )
@@ -145,10 +142,7 @@ class UuidMetricType:
             ping_name = self._send_in_pings[0]
 
         return _ffi.lib.glean_uuid_test_get_num_recorded_errors(
-            Glean._handle,
-            self._handle,
-            error_type.value,
-            _ffi.ffi_encode_string(ping_name),
+            self._handle, error_type.value, _ffi.ffi_encode_string(ping_name),
         )
 
 

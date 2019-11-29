@@ -6,7 +6,6 @@
 from typing import List, Optional
 
 
-from ..glean import Glean
 from .. import _ffi
 from .._dispatcher import Dispatcher
 from ..testing import ErrorType
@@ -65,9 +64,7 @@ class StringMetricType:
 
         @Dispatcher.launch
         def set():
-            _ffi.lib.glean_string_set(
-                Glean._handle, self._handle, _ffi.ffi_encode_string(value)
-            )
+            _ffi.lib.glean_string_set(self._handle, _ffi.ffi_encode_string(value))
 
     def test_has_value(self, ping_name: Optional[str] = None) -> bool:
         """
@@ -86,7 +83,7 @@ class StringMetricType:
 
         return bool(
             _ffi.lib.glean_string_test_has_value(
-                Glean._handle, self._handle, _ffi.ffi_encode_string(ping_name)
+                self._handle, _ffi.ffi_encode_string(ping_name)
             )
         )
 
@@ -109,7 +106,7 @@ class StringMetricType:
 
         return _ffi.ffi_decode_string(
             _ffi.lib.glean_string_test_get_value(
-                Glean._handle, self._handle, _ffi.ffi_encode_string(ping_name)
+                self._handle, _ffi.ffi_encode_string(ping_name)
             )
         )
 
@@ -132,10 +129,7 @@ class StringMetricType:
             ping_name = self._send_in_pings[0]
 
         return _ffi.lib.glean_string_test_get_num_recorded_errors(
-            Glean._handle,
-            self._handle,
-            error_type.value,
-            _ffi.ffi_encode_string(ping_name),
+            self._handle, error_type.value, _ffi.ffi_encode_string(ping_name),
         )
 
 
