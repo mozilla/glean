@@ -68,6 +68,6 @@ deletion_request:
   bugs:
     - https://bugzilla.mozilla.org/1587095
   data_reviews:
-    - https://bugzilla.mozilla.org/1587095#c3
+    - https://bugzilla.mozilla.org/show_bug.cgi?id=1587095#c6
   notification_emails:
     - glean-team@mozilla.com
