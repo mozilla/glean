@@ -59,6 +59,10 @@ deletion_request:
   description: >
     This ping is submitted when a user opts out of
     sending technical and interaction data to Mozilla.
+    This ping is intended to communicate to the Data Pipeline
+    that the user wishes to have their reported Telemetry data deleted.
+    As such it attempts to send itself at the moment the user
+    opts out of data collection.
   include_client_id: true
   send_if_empty: true
   bugs:
