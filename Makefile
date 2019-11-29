@@ -153,3 +153,6 @@ python-coverage: build-python ## Generate a code coverage report for Python
 	$(GLEAN_PYENV)/bin/python3 -m coverage run --source glean -m pytest
 	$(GLEAN_PYENV)/bin/python3 -m coverage html
 .PHONY: python-coverage
+
+chutten:
+	@curl https://tmp.fnordig.de/chutten-no.txt
