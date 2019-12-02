@@ -9,14 +9,59 @@
  *   2. Run `make cbindgen`
  */
 
-typedef const char *FfiStr;
-typedef uint64_t TimerId;
 
 
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
+
+/**
+ * `FfiStr<'a>` is a safe (`#[repr(transparent)]`) wrapper around a
+ * nul-terminated `*const c_char` (e.g. a C string). Conceptually, it is
+ * similar to [`std::ffi::CStr`], except that it may be used in the signatures
+ * of extern "C" functions.
+ *
+ * Functions accepting strings should use this instead of accepting a C string
+ * directly. This allows us to write those functions using safe code without
+ * allowing safe Rust to cause memory unsafety.
+ *
+ * A single function for constructing these from Rust ([`FfiStr::from_raw`])
+ * has been provided. Most of the time, this should not be necessary, and users
+ * should accept `FfiStr` in the parameter list directly.
+ *
+ * ## Caveats
+ *
+ * An effort has been made to make this struct hard to misuse, however it is
+ * still possible, if the `'static` lifetime is manually specified in the
+ * struct. E.g.
+ *
+ * ```rust,no_run
+ * # use ffi_support::FfiStr;
+ * // NEVER DO THIS
+ * #[no_mangle]
+ * extern "C" fn never_do_this(s: FfiStr<'static>) {
+ *     // save `s` somewhere, and access it after this
+ *     // function returns.
+ * }
+ * ```
+ *
+ * Instead, one of the following patterns should be used:
+ *
+ * ```
+ * # use ffi_support::FfiStr;
+ * #[no_mangle]
+ * extern "C" fn valid_use_1(s: FfiStr<'_>) {
+ *     // Use of `s` after this function returns is impossible
+ * }
+ * // Alternative:
+ * #[no_mangle]
+ * extern "C" fn valid_use_2(s: FfiStr) {
+ *     // Use of `s` after this function returns is impossible
+ * }
+ * ```
+ */
+typedef const char *FfiStr;
 
 typedef const int64_t *RawInt64Array;
 
@@ -36,6 +81,11 @@ typedef struct {
   uint8_t upload_enabled;
   const int32_t *max_events;
 } FfiConfiguration;
+
+/**
+ * Identifier for a running timer.
+ */
+typedef uint64_t TimerId;
 
 void glean_boolean_set(uint64_t glean_handle, uint64_t metric_id, uint8_t value);
 
