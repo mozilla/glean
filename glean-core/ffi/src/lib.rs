@@ -22,7 +22,7 @@ mod from_raw;
 mod handlemap_ext;
 mod labeled;
 mod memory_distribution;
-mod ping_type;
+pub mod ping_type;
 mod quantity;
 mod string;
 mod string_list;
@@ -97,11 +97,11 @@ pub extern "C" fn glean_enable_logging() {
 /// If this side is changed, the Kotlin side need to be changed, too.
 #[repr(C)]
 pub struct FfiConfiguration<'a> {
-    data_dir: FfiStr<'a>,
-    package_name: FfiStr<'a>,
-    upload_enabled: u8,
-    max_events: Option<&'a i32>,
-    delay_ping_lifetime_io: u8,
+    pub data_dir: FfiStr<'a>,
+    pub package_name: FfiStr<'a>,
+    pub upload_enabled: u8,
+    pub max_events: Option<&'a i32>,
+    pub delay_ping_lifetime_io: u8,
 }
 
 /// Convert the FFI-compatible configuration object into the proper Rust configuration object.

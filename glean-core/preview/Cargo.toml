@@ -1,0 +1,39 @@
+[package]
+name = "glean-preview"
+version = "0.0.1"
+authors = ["Jan-Erik Rediger <jrediger@mozilla.com>", "The Glean Team <glean-team@mozilla.com>"]
+description = "Nice Glean SDK Rust API"
+repository = "https://github.com/mozilla/glean"
+readme = "README.md"
+license = "MPL-2.0"
+edition = "2018"
+keywords = ["telemetry", "glean"]
+include = [
+  "README.md",
+  "LICENSE",
+  "src/**/*",
+  "tests/**/*",
+  "Cargo.toml",
+]
+
+[badges]
+circle-ci = { repository = "mozilla/glean", branch = "master" }
+maintenance = { status = "actively-developed" }
+
+[dependencies.glean-ffi]
+path = "../ffi"
+version = "21.3.0"
+
+[dependencies.glean-core]
+path = ".."
+version = "21.3.0"
+
+[dependencies]
+ffi-support = "0.3.5"
+lazy_static = "1.4.0"
+
+[dev-dependencies]
+once_cell = "1.2.0"
+env_logger = { version = "0.7.1", default-features = false, features = ["termcolor", "atty", "humantime"] }
+tempfile = "3.0.7"
+log = "0.4.8"
