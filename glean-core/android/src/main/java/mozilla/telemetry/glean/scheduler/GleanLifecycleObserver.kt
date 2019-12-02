@@ -22,10 +22,12 @@ internal class GleanLifecycleObserver(
 ) : LifecycleEventObserver {
     // Using SharedPreferences to track the status here should be less of an I/O hit
     // compared to plain file usage, given that most of its operations are off the main
-    // thread. This also gives us the nice guarantee that once the function is called
-    // the OS will keep SharedPreferences working, even though the process is being killed.
+    // thread. This also gives us the nice guarantee that once some I/O happens with
+    // SharedPreferences, the framework/OS will make sure in-flight `apply()`s are
+    // complete before switching application states, even though the process is being
+    // killed.
     internal val sharedPreferences: SharedPreferences by lazy {
-        applicationContext.getSharedPreferences("DirtyBitStatus", Context.MODE_PRIVATE)
+        applicationContext.getSharedPreferences("Glean.DirtyBitStatus", Context.MODE_PRIVATE)
     }
 
     /**
