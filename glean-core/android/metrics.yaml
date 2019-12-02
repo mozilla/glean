@@ -99,7 +99,7 @@ glean.validation:
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1600340
     data_reviews:
-      - TODO
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1600340#c3
     notification_emails:
       - glean-team@mozilla.com
       - aplacitelli@mozilla.com
