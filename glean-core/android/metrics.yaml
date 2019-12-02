@@ -86,3 +86,21 @@ glean.validation:
     expires: 2019-12-20
     send_in_pings:
       - baseline
+
+  app_forceclosed_count:
+    type: counter
+    description:
+      This metric counts how many times a dirty bit was detected when starting
+      the Glean SDK, on Android.
+      This dirty bit is set to `true` when Android's lifecycle `ON_START` is
+      hit and flipped back to false on `ON_STOP`. When an application is
+      force-closed, it might not get the `ON_STOP` and so the value would stay
+      `true`. The next time Glean starts, it will increment this counter.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1600340
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1600340#c3
+    notification_emails:
+      - glean-team@mozilla.com
+      - aplacitelli@mozilla.com
+    expires: 2019-12-31
