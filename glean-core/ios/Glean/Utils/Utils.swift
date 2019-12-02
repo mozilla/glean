@@ -119,7 +119,8 @@ func withFfiConfiguration<R>(
         data_dir: dataDir,
         package_name: packageName,
         upload_enabled: uploadEnabled.toByte(),
-        max_events: maxEventsPtr
+        max_events: maxEventsPtr,
+        delay_ping_lifetime_io: false.toByte()
     )
     return body(cfg)
 }

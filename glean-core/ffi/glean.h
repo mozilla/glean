@@ -80,6 +80,7 @@ typedef struct {
   FfiStr package_name;
   uint8_t upload_enabled;
   const int32_t *max_events;
+  uint8_t delay_ping_lifetime_io;
 } FfiConfiguration;
 
 /**

@@ -26,6 +26,7 @@ mod linear {
             application_id: GLOBAL_APPLICATION_ID.into(),
             upload_enabled: true,
             max_events: None,
+            delay_ping_lifetime_io: false,
         };
 
         {
@@ -245,6 +246,7 @@ mod exponential {
             application_id: GLOBAL_APPLICATION_ID.into(),
             upload_enabled: true,
             max_events: None,
+            delay_ping_lifetime_io: false,
         };
 
         {

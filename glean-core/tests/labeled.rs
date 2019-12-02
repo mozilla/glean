@@ -333,6 +333,7 @@ fn seen_labels_get_reloaded_from_disk() {
         application_id: GLOBAL_APPLICATION_ID.into(),
         upload_enabled: true,
         max_events: None,
+        delay_ping_lifetime_io: false,
     };
 
     let glean = Glean::new(cfg.clone()).unwrap();

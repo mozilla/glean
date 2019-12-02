@@ -54,6 +54,7 @@ pub fn new_glean() -> (Glean, tempfile::TempDir) {
         application_id: GLOBAL_APPLICATION_ID.into(),
         upload_enabled: true,
         max_events: None,
+        delay_ping_lifetime_io: false,
     };
     let glean = Glean::new(cfg).unwrap();
 

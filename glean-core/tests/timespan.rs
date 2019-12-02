@@ -24,6 +24,7 @@ fn serializer_should_correctly_serialize_timespans() {
         application_id: GLOBAL_APPLICATION_ID.into(),
         upload_enabled: true,
         max_events: None,
+        delay_ping_lifetime_io: false,
     };
 
     let duration = 60;
