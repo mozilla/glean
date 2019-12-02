@@ -9,8 +9,6 @@ header = """/* This Source Code Form is subject to the terms of the Mozilla Publ
  *   2. Run `make cbindgen`
  */
 
-typedef const char *FfiStr;
-typedef uint64_t TimerId;
 """
 
 language = "C"
