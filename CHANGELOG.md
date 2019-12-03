@@ -2,8 +2,8 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v21.2.0...master)
 
-* Timers are reset when disabled. That avoids recording timespans across disabled/enabled toggling.
-* Add a new flag to pings: `send_if_empty`
+* Timers are reset when disabled. That avoids recording timespans across disabled/enabled toggling ([#495](https://github.com/mozilla/glean/pull/495)).
+* Add a new flag to pings: `send_if_empty` ([#528](https://github.com/mozilla/glean/pull/528))
 * Upgrade `glean_parser` to v1.12.0
 * Implement the deletion request ping in Glean ([#526](https://github.com/mozilla/glean/pull/526))
 
