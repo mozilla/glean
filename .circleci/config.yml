@@ -304,7 +304,7 @@ jobs:
               GHR_SHA256=319988a001462f80b37cf40fbc41b9de60b0a1cffa2a338b47b9fe5eef25f60e
               curl -sfSL --retry 5 --retry-delay 10 -O "https://github.com/tcnksm/ghr/releases/download/v0.13.0/${GHR}.zip"
               echo "${GHR_SHA256} *${GHR}.zip" | shasum -a 256 -c -
-              unzip"${GHR}.zip"
+              unzip "${GHR}.zip"
               cp ./${GHR}/ghr ghr
       - run:
           name: Release Carthage archive on GitHub
