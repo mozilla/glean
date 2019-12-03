@@ -7,10 +7,9 @@ package org.mozilla.samples.gleancore
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
+import mozilla.telemetry.glean.Glean
 import org.mozilla.samples.gleancore.GleanMetrics.Test
 import org.mozilla.samples.gleancore.GleanMetrics.BrowserEngagement
-
-private const val TAG = "Glean"
 
 open class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,6 +42,17 @@ open class MainActivity : AppCompatActivity() {
                         BrowserEngagement.clickKeys.key2 to "extra_value_2"
                     )
             )
+        }
+
+        uploadSwitch.setChecked(Glean.getUploadEnabled())
+        uploadSwitch.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                gleanEnabledText.setText("Glean is enabled")
+                Glean.setUploadEnabled(true)
+            } else {
+                gleanEnabledText.setText("Glean is disabled")
+                Glean.setUploadEnabled(false)
+            }
         }
 
         Test.timespan.stop()

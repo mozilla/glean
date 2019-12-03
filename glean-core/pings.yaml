@@ -22,7 +22,7 @@ baseline:
   data_reviews:
     - https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3
   notification_emails:
-    - telemetry-client-dev@mozilla.com
+    - glean-team@mozilla.com
 
 metrics:
   description: >
@@ -40,7 +40,7 @@ metrics:
   data_reviews:
     - https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3
   notification_emails:
-    - telemetry-client-dev@mozilla.com
+    - glean-team@mozilla.com
 
 events:
   description: >
@@ -53,4 +53,21 @@ events:
   data_reviews:
     - https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3
   notification_emails:
-    - telemetry-client-dev@mozilla.com
+    - glean-team@mozilla.com
+
+deletion_request:
+  description: >
+    This ping is submitted when a user opts out of
+    sending technical and interaction data to Mozilla.
+    This ping is intended to communicate to the Data Pipeline
+    that the user wishes to have their reported Telemetry data deleted.
+    As such it attempts to send itself at the moment the user
+    opts out of data collection.
+  include_client_id: true
+  send_if_empty: true
+  bugs:
+    - https://bugzilla.mozilla.org/1587095
+  data_reviews:
+    - https://bugzilla.mozilla.org/show_bug.cgi?id=1587095#c6
+  notification_emails:
+    - glean-team@mozilla.com

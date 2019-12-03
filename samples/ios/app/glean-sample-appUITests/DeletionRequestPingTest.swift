@@ -1,0 +1,78 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+import Glean
+import Swifter
+import XCTest
+
+// swiftlint:disable force_cast
+// REASON: Used in below test cases to cause errors if data is missing
+class DeletionRequestPingTest: XCTestCase {
+    var app: XCUIApplication!
+    var expectation: XCTestExpectation?
+    var lastPingJson: [String: Any]?
+
+    override func setUp() {
+        // In UI tests it is usually best to stop immediately when a failure occurs.
+        continueAfterFailure = false
+
+        // UI tests must launch the application that they test.
+        // Doing this in setup will make sure it happens for each test method.
+        app = XCUIApplication()
+    }
+
+    func setupServer(expectPingType: String) -> HttpServer {
+        return mockServer(expectPingType: expectPingType) { json in
+            self.lastPingJson = json
+            // Fulfill test's expectation once we parsed the incoming data.
+            self.expectation?.fulfill()
+        }
+    }
+
+    func testDeletionRequestPing() {
+        var server = setupServer(expectPingType: "deletion_request")
+        expectation = expectation(description: "Completed upload")
+
+        app.launchArguments = ["USE_MOCK_SERVER"]
+        app.launch()
+
+        app.switches.firstMatch.tap()
+
+        waitForExpectations(timeout: 5.0) { error in
+            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
+        }
+
+        var pingInfo = lastPingJson!["ping_info"] as! [String: Any]
+        XCTAssertEqual(pingInfo["ping_type"] as! String, "deletion_request")
+
+        var clientInfo = lastPingJson!["client_info"] as! [String: Any]
+        let clientId = clientInfo["client_id"] as! String
+        XCTAssertNotEqual(clientId, "c0ffeec0-ffee-c0ff-eec0-ffeec0ffeec0")
+
+        server.stop()
+
+        // Try re-enabling and waiting for next baseline ping
+        server = setupServer(expectPingType: "baseline")
+        expectation = expectation(description: "Completed upload")
+
+        app.switches.firstMatch.tap()
+
+        // Trigger baseline ping by putting app into the background
+        XCUIDevice.shared.press(XCUIDevice.Button.home)
+
+        waitForExpectations(timeout: 5.0) { error in
+            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
+        }
+
+        pingInfo = lastPingJson!["ping_info"] as! [String: Any]
+        XCTAssertEqual(pingInfo["ping_type"] as! String, "baseline")
+
+        clientInfo = lastPingJson!["client_info"] as! [String: Any]
+        let newClientId = clientInfo["client_id"] as! String
+        XCTAssertNotEqual(newClientId, clientId)
+        XCTAssertNotEqual(newClientId, "c0ffeec0-ffee-c0ff-eec0-ffeec0ffeec0")
+
+        server.stop()
+    }
+}

@@ -162,6 +162,13 @@ public class Glean {
 
                 if !enabled {
                     Dispatchers.shared.cancelBackgroundTasks()
+                    // If uploading is disabled, we need to send the deletion_request ping
+                    Dispatchers.shared.launchConcurrent {
+                        HttpPingUploader(
+                            configuration: self.configuration!,
+                            pingDirectory: "deletion_request"
+                        ).process()
+                    }
                 }
 
                 if !originalEnabled && self.getUploadEnabled() {

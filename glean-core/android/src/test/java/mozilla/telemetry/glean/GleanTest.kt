@@ -25,6 +25,7 @@ import mozilla.telemetry.glean.private.PingType
 import mozilla.telemetry.glean.private.StringMetricType
 import mozilla.telemetry.glean.scheduler.GleanLifecycleObserver
 import mozilla.telemetry.glean.scheduler.MetricsPingWorker
+import mozilla.telemetry.glean.scheduler.DeletionPingUploadWorker
 import mozilla.telemetry.glean.scheduler.PingUploadWorker
 import mozilla.telemetry.glean.testing.GleanTestRule
 import mozilla.telemetry.glean.utils.getLanguageFromLocale
@@ -543,6 +544,9 @@ class GleanTest {
             getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued)
         assertFalse("MetricsPingWorker is not enqueued",
             getWorkerStatus(context, MetricsPingWorker.TAG).isEnqueued)
+        // Verify deletion ping upload worker has been scheduled
+        assertTrue("DeletionPingUploadWorker is not enqueued",
+            getWorkerStatus(context, DeletionPingUploadWorker.PING_WORKER_TAG).isEnqueued)
     }
 
     @Test
