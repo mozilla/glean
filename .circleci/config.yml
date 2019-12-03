@@ -233,7 +233,7 @@ jobs:
             rustup target add aarch64-apple-ios x86_64-apple-ios
             bin/bootstrap.sh
             # See https://circleci.com/docs/2.0/testing-ios/#pre-starting-the-simulator
-            xcrun instruments -w "iPhone 8 (13.0) [" || true
+            xcrun instruments -w "iPhone 11 (13.2) [" || true
       - run:
           name: Run XCode build, tests and generate documentation
           command: |
@@ -324,7 +324,7 @@ jobs:
             rustup target add aarch64-apple-ios x86_64-apple-ios
             bin/bootstrap.sh
             # See https://circleci.com/docs/2.0/testing-ios/#pre-starting-the-simulator
-            xcrun instruments -w "iPhone 8 (13.0) [" || true
+            xcrun instruments -w "iPhone 11 (13.2) [" || true
       - run:
           name: Use local checkout through Carthage
           command: |
