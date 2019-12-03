@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v21.2.0...master)
+[Full changelog](https://github.com/mozilla/glean/compare/v21.3.0...master)
+
+# v21.3.0 (2019-12-03)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v21.2.0...21.3.0)
 
 * Timers are reset when disabled. That avoids recording timespans across disabled/enabled toggling ([#495](https://github.com/mozilla/glean/pull/495)).
 * Add a new flag to pings: `send_if_empty` ([#528](https://github.com/mozilla/glean/pull/528))
