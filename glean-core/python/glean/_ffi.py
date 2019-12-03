@@ -43,6 +43,7 @@ def _load_header(path: str) -> str:
 ffi = FFI()
 ffi.cdef(_load_header("glean.h"))
 lib = ffi.dlopen(str(Path(__file__).parent / get_shared_object_filename()))
+lib.glean_enable_logging()
 
 
 def make_config(
