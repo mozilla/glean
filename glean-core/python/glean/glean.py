@@ -143,6 +143,12 @@ class Glean:
         # Glean Android sets up the lifecycle observer here. We don't really
         # have a lifecycle.
 
+        if cls._upload_enabled is False:
+
+            @Dispatcher.launch
+            def check_pending_deletion_request():
+                DeletionPingUploadWorker.process()
+
     @classmethod
     def reset(cls):
         """

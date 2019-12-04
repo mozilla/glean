@@ -111,6 +111,15 @@ public class Glean {
         Dispatchers.shared.flushQueuedInitialTasks()
 
         self.observer = GleanLifecycleObserver()
+
+        if !uploadEnabled {
+            Dispatchers.shared.launchConcurrent {
+                HttpPingUploader(
+                    configuration: self.configuration!,
+                    pingDirectory: "deletion_request"
+                ).process()
+            }
+        }
     }
 
     /// Initialize the core metrics internally managed by Glean (e.g. client id).
