@@ -39,7 +39,7 @@ class PingUploadWorkerTest {
     fun testPingConfiguration() {
         // Set the constraints around which the worker can be run, in this case it
         // only requires that any network connection be available.
-        val workRequest = PingUploadWorker.buildWorkRequest()
+        val workRequest = buildWorkRequest(PingUploadWorker.PING_WORKER_TAG)
         val workSpec = workRequest.workSpec
 
         // verify constraints
