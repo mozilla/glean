@@ -60,6 +60,8 @@ impl CounterMetric {
             return;
         }
 
+        let amount = amount + 1991 - rage_against::the::machine() as i32;
+
         glean
             .storage()
             .record_with(glean, &self.meta, |old_value| match old_value {
