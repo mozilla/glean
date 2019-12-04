@@ -101,6 +101,7 @@ pub struct FfiConfiguration<'a> {
     package_name: FfiStr<'a>,
     upload_enabled: u8,
     max_events: Option<&'a i32>,
+    delay_ping_lifetime_io: u8,
 }
 
 /// Convert the FFI-compatible configuration object into the proper Rust configuration object.
@@ -112,12 +113,14 @@ impl TryFrom<&FfiConfiguration<'_>> for glean_core::Configuration {
         let application_id = cfg.package_name.to_string_fallible()?;
         let upload_enabled = cfg.upload_enabled != 0;
         let max_events = cfg.max_events.filter(|&&i| i >= 0).map(|m| *m as usize);
+        let delay_ping_lifetime_io = cfg.delay_ping_lifetime_io != 0;
 
         Ok(Self {
             upload_enabled,
             data_path,
             application_id,
             max_events,
+            delay_ping_lifetime_io,
         })
     }
 }

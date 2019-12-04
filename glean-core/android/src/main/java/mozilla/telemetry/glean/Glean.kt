@@ -142,7 +142,8 @@ open class GleanInternalAPI internal constructor () {
             dataDir = this.gleanDataDir.path,
             packageName = applicationContext.packageName,
             uploadEnabled = uploadEnabled,
-            maxEvents = this.configuration.maxEvents
+            maxEvents = this.configuration.maxEvents,
+            delayPingLifetimeIO = false
         )
 
         // Start the migration from glean-ac, if needed.

@@ -67,6 +67,8 @@ pub struct Configuration {
     pub application_id: String,
     /// The maximum number of events to store before sending a ping containing events.
     pub max_events: Option<usize>,
+    /// Whether Glean should delay persistence of data from metrics with ping lifetime.
+    pub delay_ping_lifetime_io: bool,
 }
 
 /// The object holding meta information about a Glean instance.
@@ -83,6 +85,7 @@ pub struct Configuration {
 ///     application_id: "glean.sample.app".into(),
 ///     upload_enabled: true,
 ///     max_events: None,
+///     delay_ping_lifetime_io: false,
 /// };
 /// let mut glean = Glean::new(cfg).unwrap();
 /// let ping = PingType::new("sample", true, false);
@@ -130,7 +133,7 @@ impl Glean {
 
         // Creating the data store creates the necessary path as well.
         // If that fails we bail out and don't initialize further.
-        let data_store = Database::new(&cfg.data_path)?;
+        let data_store = Database::new(&cfg.data_path, cfg.delay_ping_lifetime_io)?;
         let event_data_store = EventDatabase::new(&cfg.data_path)?;
 
         let mut glean = Self {
@@ -194,6 +197,7 @@ impl Glean {
             application_id: application_id.into(),
             upload_enabled,
             max_events: None,
+            delay_ping_lifetime_io: false,
         };
 
         Self::new(cfg)

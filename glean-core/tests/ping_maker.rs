@@ -18,6 +18,7 @@ fn set_up_basic_ping() -> (Glean, PingMaker, PingType, tempfile::TempDir) {
         application_id: GLOBAL_APPLICATION_ID.into(),
         upload_enabled: true,
         max_events: None,
+        delay_ping_lifetime_io: false,
     };
     let mut glean = Glean::new(cfg).unwrap();
     let ping_maker = PingMaker::new();

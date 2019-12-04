@@ -17,12 +17,13 @@ import mozilla.telemetry.glean.net.PingUploader
  * **CAUTION**: This must match _exactly_ the definition on the Rust side.
  *  If this side is changed, the Rust side need to be changed, too.
  */
-@Structure.FieldOrder("dataDir", "packageName", "uploadEnabled", "maxEvents")
+@Structure.FieldOrder("dataDir", "packageName", "uploadEnabled", "maxEvents", "delayPingLifetimeIO")
 internal class FfiConfiguration(
     dataDir: String,
     packageName: String,
     uploadEnabled: Boolean,
-    maxEvents: Int? = null
+    maxEvents: Int? = null,
+    delayPingLifetimeIO: Boolean
 ) : Structure() {
     /**
      * Expose all structure fields as actual fields,
@@ -37,6 +38,8 @@ internal class FfiConfiguration(
     public var uploadEnabled: Byte = uploadEnabled.toByte()
     @JvmField
     public var maxEvents: IntByReference = if (maxEvents == null) IntByReference() else IntByReference(maxEvents)
+    @JvmField
+    public var delayPingLifetimeIO: Byte = delayPingLifetimeIO.toByte()
 
     init {
         // Force UTF-8 string encoding when passing strings over the FFI
@@ -64,6 +67,7 @@ data class Configuration internal constructor(
     val channel: String? = null,
     val userAgent: String = DEFAULT_USER_AGENT,
     val maxEvents: Int? = null,
+    val delayPingLifetimeIO: Boolean = false,
     val logPings: Boolean = DEFAULT_LOG_PINGS,
     // NOTE: since only simple object or strings can be made `const val`s, if the
     // default values for the lines below are ever changed, they are required
@@ -96,6 +100,7 @@ data class Configuration internal constructor(
         serverEndpoint = serverEndpoint,
         userAgent = DEFAULT_USER_AGENT,
         maxEvents = maxEvents,
+        delayPingLifetimeIO = false,
         logPings = DEFAULT_LOG_PINGS,
         httpClient = httpClient,
         pingTag = null,

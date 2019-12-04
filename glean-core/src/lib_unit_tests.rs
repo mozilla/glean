@@ -344,6 +344,7 @@ fn glean_inits_with_migration_when_no_db_dir_exists() {
         application_id: GLOBAL_APPLICATION_ID.to_string(),
         upload_enabled: false,
         max_events: None,
+        delay_ping_lifetime_io: false,
     };
 
     let mut ac_seq_numbers = HashMap::new();
