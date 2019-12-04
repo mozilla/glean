@@ -77,8 +77,8 @@ internal object Dispatchers {
             assert(
                 testingMode
             ) {
-                "To use the testing API, Glean must be in testing mode by calling " +
-                "Glean.enableTestingMode() (for example, in a @Before method)."
+                "To use the testing API, apply the GleanTestRule to set up a disposable Glean " +
+                "instance. e.g. GleanTestRule(ApplicationProvider.getApplicationContext())"
             }
         }
 
