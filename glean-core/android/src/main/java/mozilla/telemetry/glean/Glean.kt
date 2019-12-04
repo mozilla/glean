@@ -268,13 +268,13 @@ open class GleanInternalAPI internal constructor () {
                     }
                 }
 
-                if (!originalEnabled && getUploadEnabled()) {
+                if (!originalEnabled && enabled) {
                     // If uploading is being re-enabled, we have to restore the
                     // application-lifetime metrics.
                     initializeCoreMetrics((this@GleanInternalAPI).applicationContext)
                 }
 
-                if (originalEnabled && !getUploadEnabled()) {
+                if (originalEnabled && !enabled) {
                     // If uploading is disabled, we need to send the deletion_request ping
                     DeletionPingUploadWorker.enqueueWorker(applicationContext)
                 }

@@ -164,13 +164,13 @@ public class Glean {
                     Dispatchers.shared.cancelBackgroundTasks()
                 }
 
-                if !originalEnabled && self.getUploadEnabled() {
+                if !originalEnabled && enabled {
                     // If uploading is being re-enabled, we have to restore the
                     // application-lifetime metrics.
                     self.initializeCoreMetrics()
                 }
 
-                if originalEnabled && !self.getUploadEnabled() {
+                if originalEnabled && !enabled {
                     // If uploading is disabled, we need to send the deletion_request ping
                     Dispatchers.shared.launchConcurrent {
                         HttpPingUploader(
