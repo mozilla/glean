@@ -332,3 +332,15 @@ def test_set_application_id_and_version():
         "my-version"
         == _builtins.metrics.glean.internal.metrics.app_display_version.test_get_value()
     )
+
+
+def test_disabling_upload_sends_deletion_request(safe_httpserver):
+    safe_httpserver.serve_content(b"", code=200)
+    Glean._configuration.server_endpoint = safe_httpserver.url
+
+    # Ensure nothing was received yet
+    assert 0 == len(safe_httpserver.requests)
+
+    # Disabling upload will trigger a deletion_request ping
+    Glean.set_upload_enabled(False)
+    assert 1 == len(safe_httpserver.requests)

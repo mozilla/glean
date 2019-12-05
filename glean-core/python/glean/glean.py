@@ -17,6 +17,7 @@ from .config import Configuration
 from ._dispatcher import Dispatcher
 from . import _ffi
 from .net import PingUploadWorker
+from .net import DeletionPingUploadWorker
 from . import util
 
 
@@ -213,6 +214,10 @@ class Glean:
 
                 if original_enabled is False and cls.get_upload_enabled() is True:
                     cls._initialize_core_metrics()
+
+                if original_enabled is True and cls.get_upload_enabled() is False:
+                    # If uploading is disabled, we need to send the deletion_request ping
+                    DeletionPingUploadWorker.process()
 
         else:
             cls._upload_enabled = enabled
