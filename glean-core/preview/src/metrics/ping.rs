@@ -2,8 +2,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use crate::error::Result;
-use crate::Glean;
+use ffi_support::FfiStr;
+use std::ffi::CString;
 
 /// Stores information about a ping.
 ///
@@ -11,12 +11,8 @@ use crate::Glean;
 /// pings with the correct settings, e.g. whether it has a client_id.
 #[derive(Clone, Debug)]
 pub struct PingType {
-    /// The name of the ping.
-    pub name: String,
-    /// Whether the ping should include the client ID.
-    pub include_client_id: bool,
-    /// Whether the ping should be sent if it is empty
-    pub send_if_empty: bool,
+    pub(crate) name: String,
+    pub(crate) handle: u64,
 }
 
 impl PingType {
@@ -27,25 +23,24 @@ impl PingType {
     ///
     /// * `name` - The name of the ping.
     /// * `include_client_id` - Whether to include the client ID in the assembled ping when.
-    /// sending.
+    /// * `send_if_empty` - Whether the ping should be sent empty or not.
     pub fn new<A: Into<String>>(name: A, include_client_id: bool, send_if_empty: bool) -> Self {
-        Self {
-            name: name.into(),
-            include_client_id,
-            send_if_empty,
-        }
+        let name = name.into();
+        let ffi_name = CString::new(name.clone()).unwrap();
+        let handle = glean_ffi::ping_type::glean_new_ping_type(
+            FfiStr::from_cstr(&ffi_name),
+            include_client_id as u8,
+            send_if_empty as u8,
+        );
+        Self { name, handle }
     }
 
     /// Send the ping.
     ///
-    /// ## Arguments
-    ///
-    /// * `glean` - the Glean instance to use to send the ping.
-    ///
     /// ## Return value
     ///
-    /// See [`Glean#send_ping`](../struct.Glean.html#method.send_ping) for details.
-    pub fn send(&self, glean: &Glean) -> Result<bool> {
-        glean.send_ping(self)
+    /// Returns true if a ping was assembled and queued, false otherwise.
+    pub fn send(&self) -> bool {
+        crate::send_ping(self)
     }
 }

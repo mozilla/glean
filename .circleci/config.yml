@@ -577,7 +577,7 @@ jobs:
           at: build/
       - run:
           name: Check internal documentation links
-          command: linkchecker --ignore-url javadoc --ignore-url docs/glean_core build/docs
+          command: linkchecker --ignore-url javadoc --ignore-url docs/glean_core --ignore-url ErrorKind --ignore-url std.struct.Error build/docs
 
   docs-deploy:
     docker:

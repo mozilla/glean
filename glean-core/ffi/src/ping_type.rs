@@ -12,7 +12,7 @@ use crate::handlemap_ext::HandleMapExtension;
 use crate::GLEAN;
 
 lazy_static! {
-    pub static ref PING_TYPES: ConcurrentHandleMap<PingType> = ConcurrentHandleMap::new();
+    pub(crate) static ref PING_TYPES: ConcurrentHandleMap<PingType> = ConcurrentHandleMap::new();
 }
 crate::define_infallible_handle_map_deleter!(PING_TYPES, glean_destroy_ping_type);
 
