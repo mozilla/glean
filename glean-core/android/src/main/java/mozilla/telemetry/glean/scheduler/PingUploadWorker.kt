@@ -33,7 +33,7 @@ private const val LOG_TAG = "glean/PingUploadWorker"
  * @return [Constraints] object containing the required work constraints
  */
 @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-fun buildConstraints(): Constraints = Constraints.Builder()
+internal fun buildConstraints(): Constraints = Constraints.Builder()
     .setRequiredNetworkType(NetworkType.CONNECTED)
     .build()
 
