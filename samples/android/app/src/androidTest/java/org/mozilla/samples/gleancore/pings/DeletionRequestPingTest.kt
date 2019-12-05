@@ -109,8 +109,19 @@ class DeletionRequestPingTest {
         Thread.sleep(1000) // FIXME: for some reason, without this, WorkManager won't find the job
         triggerEnqueuedUpload("mozac_service_glean_deletion_ping_upload_worker")
 
+        // We might receive previous baseline or events ping, let's ignore that
+        var retries = 3
+        var ping: JSONObject? = null
+        while (retries > 0) {
+            ping = waitForPingContent("deletion_request")
+            if (ping != null) {
+                break
+            }
+            retries -= 1
+        }
+        val deletionPing = ping!!
+
         // Validate the received data.
-        val deletionPing = waitForPingContent("deletion_request")!!
         assertEquals("deletion_request", deletionPing.getJSONObject("ping_info")["ping_type"])
 
         var clientInfo = deletionPing.getJSONObject("client_info")
