@@ -12,7 +12,7 @@ class DeletionRequestPingTests: XCTestCase {
     var expectation: XCTestExpectation?
     var lastPingJson: [String: Any]?
 
-    private func setupHttpResponseStub(statusCode: Int32 = 200) {
+    private func setupHttpResponseStub() {
         let host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
         stub(condition: isHost(host)) { data in
             let body = (data as NSURLRequest).ohhttpStubs_HTTPBody()
@@ -26,13 +26,13 @@ class DeletionRequestPingTests: XCTestCase {
             // Ensure a response so that the uploader does its job.
             return OHHTTPStubsResponse(
                 jsonObject: [],
-                statusCode: statusCode,
+                statusCode: 200,
                 headers: ["Content-Type": "application/json"]
             )
         }
     }
 
-    override func setUp() {
+    override func tearDown() {
         lastPingJson = nil
         expectation = nil
     }
@@ -60,6 +60,7 @@ class DeletionRequestPingTests: XCTestCase {
     func testPendingDeletionRequestPingsAreSentOnStartup() {
         let glean = Glean.shared
         glean.testDestroyGleanHandle()
+        glean.enableTestingMode()
 
         // Create directory for pending deletion_request pings
         let pendingDeletionRequestDir = getDocumentsDirectory().appendingPathComponent("deletion_request")

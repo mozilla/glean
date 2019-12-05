@@ -11,10 +11,12 @@ class PingTests: XCTestCase {
     var lastPingJson: [String: Any]?
 
     override func setUp() {
+        Glean.shared.resetGlean(clearStores: true)
+    }
+
+    override func tearDown() {
         lastPingJson = nil
         expectation = nil
-
-        Glean.shared.resetGlean(clearStores: true)
     }
 
     private func setupHttpResponseStub(statusCode: Int32 = 200) {

@@ -61,6 +61,11 @@ class EventMetricTypeTests: XCTestCase {
         Glean.shared.resetGlean(clearStores: true)
     }
 
+    override func tearDown() {
+        lastPingJson = nil
+        expectation = nil
+    }
+
     func testEventSavesToStorage() {
         let metric = EventMetricType<ClickKeys>(
             category: "ui",
