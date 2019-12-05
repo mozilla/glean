@@ -5,22 +5,14 @@
 package mozilla.telemetry.glean.scheduler
 
 import android.content.Context
-import android.util.Log
-import androidx.annotation.VisibleForTesting
-import androidx.work.Constraints
 import androidx.work.ExistingWorkPolicy
-import androidx.work.NetworkType
-import androidx.work.OneTimeWorkRequest
-import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import mozilla.telemetry.glean.Glean
-import java.io.BufferedReader
 import java.io.File
-import java.io.FileNotFoundException
-import java.io.FileReader
-import java.io.IOException
+
+private const val LOG_TAG = "glean/DeletionPing"
 
 /**
  * This class is the worker class used by [WorkManager] to handle uploading the ping to the server.
@@ -30,9 +22,6 @@ class DeletionPingUploadWorker(context: Context, params: WorkerParameters) : Wor
     companion object {
         internal const val PING_WORKER_TAG = "mozac_service_glean_deletion_ping_upload_worker"
 
-        // Since ping file names are UUIDs, this matches UUIDs for filtering purposes
-        private const val FILE_PATTERN = "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
-        private const val LOG_TAG = "glean/DeletionPing"
         // NOTE: The `PINGS_DIR` must be kept in sync with the one in the Rust implementation.
         internal const val DELETION_PING_DIR = "deletion_request"
         // A lock to prevent simultaneous writes in the ping queue directory.
@@ -43,28 +32,6 @@ class DeletionPingUploadWorker(context: Context, params: WorkerParameters) : Wor
         internal val pingQueueLock = Any()
 
         /**
-         * Build the constraints around which the worker can be run, such as whether network
-         * connectivity is required.
-         *
-         * @return [Constraints] object containing the required work constraints
-         */
-        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-        fun buildConstraints(): Constraints = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.CONNECTED)
-            .build()
-
-        /**
-         * Build the [OneTimeWorkRequest] for enqueueing in the [WorkManager].  This also adds a tag
-         * by which enqueued requests can be identified.
-         *
-         * @return [OneTimeWorkRequest] representing the task for the [WorkManager] to enqueue and run
-         */
-        internal fun buildWorkRequest(): OneTimeWorkRequest = OneTimeWorkRequestBuilder<DeletionPingUploadWorker>()
-            .addTag(PING_WORKER_TAG)
-            .setConstraints(buildConstraints())
-            .build()
-
-        /**
          * Function to aid in properly enqueuing the worker in [WorkManager]
          *
          * @param context the application [Context] to get the [WorkManager] instance for
@@ -73,7 +40,7 @@ class DeletionPingUploadWorker(context: Context, params: WorkerParameters) : Wor
             WorkManager.getInstance(context).enqueueUniqueWork(
                 PING_WORKER_TAG,
                 ExistingWorkPolicy.KEEP,
-                buildWorkRequest())
+                buildWorkRequest<DeletionPingUploadWorker>(PING_WORKER_TAG))
         }
 
         /**
@@ -82,7 +49,6 @@ class DeletionPingUploadWorker(context: Context, params: WorkerParameters) : Wor
          *
          * @return true if process was successful
          */
-        internal fun uploadPings(): Boolean = process()
 
         /**
          * Function to cancel any pending ping upload workers
@@ -101,73 +67,10 @@ class DeletionPingUploadWorker(context: Context, params: WorkerParameters) : Wor
          * @return Boolean representing the success of the upload task. This may be the value bubbled up
          *         from the callback, or if there was an error reading the files.
          */
-        fun process(): Boolean {
-            // This function is from PingsStorageEngine in glean-ac
-
-            var success = true
-            // TODO: 1551694 Get this directory from the rust side
+        internal fun uploadPings(): Boolean {
             val storageDirectory = File(Glean.getDataDir(), DELETION_PING_DIR)
 
-            Log.d(LOG_TAG, "Processing persisted pings at ${storageDirectory.absolutePath}")
-
-            synchronized(pingQueueLock) {
-                storageDirectory.listFiles()?.forEach { file ->
-                    if (file.name.matches(Regex(FILE_PATTERN))) {
-                        Log.d(LOG_TAG, "Processing ping: ${file.name}")
-                        if (!processFile(file)) {
-                            Log.e(LOG_TAG, "Error processing ping file: ${file.name}")
-                            success = false
-                        }
-                    } else {
-                        // Delete files that don't match the UUID FILE_PATTERN regex
-                        Log.d(LOG_TAG, "Pattern mismatch. Deleting ${file.name}")
-                        file.delete()
-                    }
-                }
-            }
-
-            return success
-        }
-
-        /**
-         * This function encapsulates processing of a single ping file.
-         *
-         * @param file The [File] to process
-         *
-         */
-        @Suppress("ReturnCount")
-        private fun processFile(
-            file: File
-        ): Boolean {
-            // This function is from PingsStorageEngine in glean-ac
-
-            var processed = false
-            BufferedReader(FileReader(file)).use {
-                try {
-                    val path = it.readLine()
-                    val serializedPing = it.readLine()
-
-                    processed = serializedPing == null ||
-                        Glean.httpClient.doUpload(path, serializedPing, Glean.configuration)
-                } catch (e: FileNotFoundException) {
-                    // This shouldn't happen after we queried the directory.
-                    Log.e(LOG_TAG, "Could not find ping file ${file.name}")
-                    return false
-                } catch (e: IOException) {
-                    // Something is not right.
-                    Log.e(LOG_TAG, "IO Exception when reading file ${file.name}")
-                    return false
-                }
-            }
-
-            return if (processed) {
-                val fileWasDeleted = file.delete()
-                Log.d(LOG_TAG, "${file.name} was deleted: $fileWasDeleted")
-                true
-            } else {
-                // The callback couldn't process this file.
-                false
-            }
+            return processDirectory(pingQueueLock, storageDirectory)
         }
     }
 
