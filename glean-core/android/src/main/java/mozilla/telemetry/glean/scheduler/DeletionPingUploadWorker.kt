@@ -40,7 +40,7 @@ class DeletionPingUploadWorker(context: Context, params: WorkerParameters) : Wor
             WorkManager.getInstance(context).enqueueUniqueWork(
                 PING_WORKER_TAG,
                 ExistingWorkPolicy.KEEP,
-                buildWorkRequest(PING_WORKER_TAG))
+                buildWorkRequest<DeletionPingUploadWorker>(PING_WORKER_TAG))
         }
 
         /**

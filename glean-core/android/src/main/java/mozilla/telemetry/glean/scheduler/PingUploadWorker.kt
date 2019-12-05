@@ -43,10 +43,12 @@ fun buildConstraints(): Constraints = Constraints.Builder()
  *
  * @return [OneTimeWorkRequest] representing the task for the [WorkManager] to enqueue and run
  */
-internal fun buildWorkRequest(tag: String): OneTimeWorkRequest = OneTimeWorkRequestBuilder<PingUploadWorker>()
-    .addTag(tag)
-    .setConstraints(buildConstraints())
-    .build()
+internal inline fun <reified W : Worker> buildWorkRequest(tag: String): OneTimeWorkRequest {
+    return OneTimeWorkRequestBuilder<W>()
+        .addTag(tag)
+        .setConstraints(buildConstraints())
+        .build()
+}
 
 /**
  * This function encapsulates processing of a single ping file.
@@ -145,7 +147,7 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
             WorkManager.getInstance(context).enqueueUniqueWork(
                 PING_WORKER_TAG,
                 ExistingWorkPolicy.KEEP,
-                buildWorkRequest(PING_WORKER_TAG))
+                buildWorkRequest<PingUploadWorker>(PING_WORKER_TAG))
         }
 
         /**
