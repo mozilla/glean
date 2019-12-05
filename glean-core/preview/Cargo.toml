@@ -22,11 +22,11 @@ maintenance = { status = "actively-developed" }
 
 [dependencies.glean-ffi]
 path = "../ffi"
-version = "21.3.0"
+version = "22.0.0"
 
 [dependencies.glean-core]
 path = ".."
-version = "21.3.0"
+version = "22.0.0"
 
 [dependencies]
 ffi-support = "0.3.5"
