@@ -214,6 +214,13 @@ open class GleanInternalAPI internal constructor () {
             migrator.migratePingLifetimeMetrics()
             migrator.markAsMigrated()
         }
+
+        if (!uploadEnabled) {
+            @Suppress("EXPERIMENTAL_API_USAGE")
+            Dispatchers.API.launch {
+                DeletionPingUploadWorker.enqueueWorker(applicationContext)
+            }
+        }
     }
 
     /**
