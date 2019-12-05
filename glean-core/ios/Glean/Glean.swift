@@ -162,6 +162,15 @@ public class Glean {
 
                 if !enabled {
                     Dispatchers.shared.cancelBackgroundTasks()
+                }
+
+                if !originalEnabled && enabled {
+                    // If uploading is being re-enabled, we have to restore the
+                    // application-lifetime metrics.
+                    self.initializeCoreMetrics()
+                }
+
+                if originalEnabled && !enabled {
                     // If uploading is disabled, we need to send the deletion_request ping
                     Dispatchers.shared.launchConcurrent {
                         HttpPingUploader(
@@ -169,12 +178,6 @@ public class Glean {
                             pingDirectory: "deletion_request"
                         ).process()
                     }
-                }
-
-                if !originalEnabled && self.getUploadEnabled() {
-                    // If uploading is being re-enabled, we have to restore the
-                    // application-lifetime metrics.
-                    self.initializeCoreMetrics()
                 }
             }
         } else {
