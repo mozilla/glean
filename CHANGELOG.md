@@ -1,6 +1,14 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v21.3.0...master)
+[Full changelog](https://github.com/mozilla/glean/compare/v22.0.0...master)
+
+# v22.0.0 (2019-12-05)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v21.3.0...22.0.0)
+
+* Add option to defer ping lifetime metric persistence ([#530](https://github.com/mozilla/glean/pull/530))
+* Add a crate for the nice control API ([#542](https://github.com/mozilla/glean/pull/542))
+* Pending `deletion_request` pings are resent on start ([#545](https://github.com/mozilla/glean/pull/545))
 
 # v21.3.0 (2019-12-03)
 
