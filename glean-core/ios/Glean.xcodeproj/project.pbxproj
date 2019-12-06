@@ -539,7 +539,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "bash $PWD/sdk_generator.sh internal\n";
+			shellScript = "bash $PWD/sdk_generator.sh --allow-reserved\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
