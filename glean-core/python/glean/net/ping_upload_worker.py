@@ -25,6 +25,12 @@ class PingUploadWorker:
     _PINGS_DIR = "pending_pings"
 
     @classmethod
+    def storage_directory(cls) -> Path:
+        from .. import Glean
+
+        return Glean.get_data_dir() / cls._PINGS_DIR
+
+    @classmethod
     def process(cls) -> bool:
         """
         Function to deserialize and process all serialized ping files.
@@ -36,24 +42,26 @@ class PingUploadWorker:
         Returns:
             uploaded (bool): The success of the upload task.
         """
-        from .. import Glean
-
         success = True
 
-        storage_dir = Glean.get_data_dir() / cls._PINGS_DIR
+        storage_dir = cls.storage_directory()
 
         log.debug(f"Processing persisted pings at {storage_dir.resolve()}")
 
-        for path in storage_dir.iterdir():
-            if path.is_file():
-                if cls._FILE_PATTERN.match(path.name):
-                    log.debug(f"Processing ping: {path.name}")
-                    if not cls._process_file(path):
-                        log.error(f"Error processing ping file: {path.name}")
-                        success = False
-                else:
-                    log.debug(f"Pattern mismatch. Deleting {path.name}")
-                    path.unlink()
+        try:
+            for path in storage_dir.iterdir():
+                if path.is_file():
+                    if cls._FILE_PATTERN.match(path.name):
+                        log.debug(f"Processing ping: {path.name}")
+                        if not cls._process_file(path):
+                            log.error(f"Error processing ping file: {path.name}")
+                            success = False
+                    else:
+                        log.debug(f"Pattern mismatch. Deleting {path.name}")
+                        path.unlink()
+        except FileNotFoundError:
+            log.debug(f"File not found: {storage_dir.resolve()}")
+            success = False
 
         return success
 
