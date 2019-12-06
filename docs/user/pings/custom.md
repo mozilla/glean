@@ -10,6 +10,7 @@ Each ping has the following parameters:
 
 - `include_client_id` (required): A boolean indicating whether to include the
   `client_id` in the [`client_info` section](index.md#The-client_info-section)).
+- `send_if_empty` (optional, default: false): A boolean indicating if the ping is sent if it contains no metric data.
 
 In addition to these parameters, pings also support the parameters related to data review and expiration defined in [common metric parameters](../adding-new-metrics.md#common-metric-parameters): `description`, `notification_emails`, `bugs`, and `data_reviews`.
 
@@ -136,3 +137,5 @@ pings.search.send()
 </div>
 
 {{#include ../../tab_footer.md}}
+
+If none of the metrics for the ping contain data the ping is not sent (unless `send_if_empty` is set to true in the definition file)
