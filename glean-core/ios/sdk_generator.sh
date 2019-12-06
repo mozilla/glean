@@ -48,8 +48,7 @@ USAGE:
 
 ARGS:
     <PATH>...  Explicit list of definition files to parse.
-               If not speicified the plugin will look for metrics.yaml and pings.yaml
-               in the \$SOURCE_ROOT directory.
+               If not specified the plugin will use the \$SCRIPT_INPUT_FILE_{N} environment variables.
 
 OPTIONS:
     -a, --allow-reserved             Allow reserved names.
@@ -68,7 +67,7 @@ PARAMS=""
 ALLOW_RESERVED=""
 GLEAN_NAMESPACE=Glean
 DOCS_DIRECTORY=""
-YAML_FILES="${SOURCE_ROOT}/metrics.yaml ${SOURCE_ROOT}/pings.yaml"
+YAML_FILES=""
 OUTPUT_DIR="${SOURCE_ROOT}/${PROJECT}/Generated"
 
 while (( "$#" )); do
@@ -110,6 +109,17 @@ done
 
 if [ -n "$PARAMS" ]; then
     YAML_FILES="$PARAMS"
+else
+    if [ -z "$SCRIPT_INPUT_FILE_COUNT" ] || [ "$SCRIPT_INPUT_FILE_COUNT" -eq 0 ]; then
+        echo "warning: No input files specified."
+        exit 0
+    fi
+
+    for i in $(seq 0 $(expr $SCRIPT_INPUT_FILE_COUNT - 1)); do
+        infilevar="SCRIPT_INPUT_FILE_${i}"
+        infile="${!infilevar}"
+        YAML_FILES="${YAML_FILES} ${infile}"
+    done
 fi
 
 if [ -z "$SOURCE_ROOT" ]; then
