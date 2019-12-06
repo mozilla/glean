@@ -27,14 +27,101 @@ set -e
 
 GLEAN_PARSER_VERSION=1.13.0
 
-# When the special argument "internal" is passed, don't add a namespace import and also allow all reserved items.
-NAMESPACE=Glean
-INTERNAL=""
+CMDNAME=$(basename $0)
+USAGE=$(cat <<'HEREDOC'
+$(CMDNAME)
+Glean Team <glean-team@mozilla.com>
+
+Glean SDK metrics build script.
+
+More about Glean at https://mozilla.github.io/glean
+
+This script generates metrics and pings as defined in user-provided files
+and generates Swift code to be included in the final build.
+It uses the `glean_parser`.
+See https://mozilla.github.io/glean_parser/ for details.
+
+This script should be executed as a "Run Build Script" phase from Xcode.
+
+USAGE:
+    ${CMDNAME} [OPTIONS] [PATH ...]
+
+ARGS:
+    <PATH>...  Explicit list of definition files to parse.
+               If not speicified the plugin will look for metrics.yaml and pings.yaml
+               in the \$SOURCE_ROOT directory.
+
+OPTIONS:
+    -a, --allow-reserved             Allow reserved names.
+    -o, --output  <PATH>             Folder to place generated code in. Default: \$SOURCE_ROOT/\$PROJECT/Generated
+    -g, --glean-namespace <NAME>     The Glean namespace to use in generated code.
+    -m, --markdown <PATH>            Generate markdown documentation in provided directory.
+    -h, --help                       Display this help message.
+HEREDOC
+)
+
+helptext() {
+    echo "$USAGE"
+}
+
+PARAMS=""
+ALLOW_RESERVED=""
+GLEAN_NAMESPACE=Glean
+DOCS_DIRECTORY=""
 YAML_FILES="${SOURCE_ROOT}/metrics.yaml ${SOURCE_ROOT}/pings.yaml"
-if [ "$1" = "internal" ]; then
-  NAMESPACE=""
-  INTERNAL="--allow-reserved"
-  YAML_FILES="${SOURCE_ROOT}/../metrics.yaml ${SOURCE_ROOT}/../pings.yaml"
+OUTPUT_DIR="${SOURCE_ROOT}/${PROJECT}/Generated"
+
+while (( "$#" )); do
+    case "$1" in
+        -a|--allow-reserved)
+            ALLOW_RESERVED="--allow-reserved"
+            shift
+            ;;
+        -o|--output)
+            OUTPUT_DIR=$2
+            shift 2
+            ;;
+        -g|--glean-namespace)
+            GLEAN_NAMESPACE=$2
+            shift 2
+            ;;
+        -m|--markdown)
+            DOCS_DIRECTORY=$2
+            shift 2
+            ;;
+        -h|--help)
+            helptext
+            exit 0
+            ;;
+        --) # end argument parsing
+            shift
+            break
+            ;;
+        -*|--*=) # unsupported flags
+            echo "Error: Unsupported flag $1" >&2
+            exit 1
+            ;;
+        *) # preserve positional arguments
+            PARAMS="$PARAMS $1"
+            shift
+            ;;
+    esac
+done
+
+if [ -n "$PARAMS" ]; then
+    YAML_FILES="$PARAMS"
+fi
+
+if [ -z "$SOURCE_ROOT" ]; then
+    echo "Error: No \$SOURCE_ROOT defined."
+    echo "Execute this script as a build step in Xcode."
+    exit 2
+fi
+
+if [ -z "$PROJECT" ]; then
+    echo "Error: No \$PROJECT defined."
+    echo "Execute this script as a build step in Xcode."
+    exit 2
 fi
 
 VENVDIR="${SOURCE_ROOT}/.venv"
@@ -44,7 +131,18 @@ ${VENVDIR}/bin/pip install --upgrade glean_parser==$GLEAN_PARSER_VERSION
 ${VENVDIR}/bin/python -m glean_parser \
     translate \
     -f "swift" \
-    -o "${SOURCE_ROOT}/${PROJECT}/Generated" \
-    -s glean_namespace=$NAMESPACE \
-    $INTERNAL \
+    -o "${OUTPUT_DIR}" \
+    -s "glean_namespace=${GLEAN_NAMESPACE}" \
+    $ALLOW_RESERVED \
     $YAML_FILES
+
+if [ -n "$DOCS_DIRECTORY" ]; then
+    ${VENVDIR}/bin/python -m glean_parser \
+        translate \
+        -f "markdown" \
+        -o "${DOCS_DIRECTORY}" \
+        $ALLOW_RESERVED \
+        $YAML_FILES
+fi
+
+exit 0
