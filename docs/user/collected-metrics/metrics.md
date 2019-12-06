@@ -10,6 +10,7 @@ Sorry about that.
 
  - [all_pings](#all_pings)
  - [baseline](#baseline)
+ - [deletion_request](#deletion_request)
  - [metrics](#metrics)
 
 
@@ -33,6 +34,12 @@ The following metrics are added to the ping:
 | glean.baseline.duration |[timespan](https://mozilla.github.io/glean/book/user/metrics/timespan.html) |The duration of the last foreground session.  |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3)||never |
 | glean.baseline.locale |[string](https://mozilla.github.io/glean/book/user/metrics/string.html) |The locale of the application (e.g. "es-ES").  |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3)||never |
 | glean.validation.metrics_ping_count |[counter](https://mozilla.github.io/glean/book/user/metrics/counter.html) |The number of metrics pings sent during the lifetime of this baseline ping. |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1597980#c3)||2019-12-20 |
+
+## deletion_request
+This is a built-in ping that is assembled out of the box by the Glean SDK.
+See the Glean SDK documentation for the [`deletion_request` ping](https://mozilla.github.io/glean/book/user/pings/deletion_request.html).
+This ping is sent if empty.
+This ping contains no metrics.
 
 ## metrics
 This is a built-in ping that is assembled out of the box by the Glean SDK.
