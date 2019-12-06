@@ -71,7 +71,7 @@ public class UuidMetricType {
     ///     * pingName: represents the name of the ping to retrieve the metric for.
     ///                 Defaults to the first value in `sendInPings`.
     /// - returns: true if metric value exists, otherwise false
-    func testHasValue(_ pingName: String? = nil) -> Bool {
+    public func testHasValue(_ pingName: String? = nil) -> Bool {
         Dispatchers.shared.assertInTestingMode()
 
         let pingName = pingName ?? self.sendInPings[0]
@@ -88,7 +88,7 @@ public class UuidMetricType {
     ///                 Defaults to the first value in `sendInPings`.
     ///
     /// - returns:  value of the stored metric
-    func testGetValue(_ pingName: String? = nil) throws -> UUID {
+    public func testGetValue(_ pingName: String? = nil) throws -> UUID {
         Dispatchers.shared.assertInTestingMode()
 
         let pingName = pingName ?? self.sendInPings[0]

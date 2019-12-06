@@ -5,7 +5,7 @@
 import Foundation
 
 /// Deserialized event data.
-struct RecordedEventData {
+public struct RecordedEventData {
     /// The event's category, part of the full identifier
     let category: String
     /// The event's name, part of the full identifier
@@ -147,7 +147,7 @@ public class EventMetricType<ExtraKeysEnum: ExtraKeys> {
     ///     * pingName: represents the name of the ping to retrieve the metric for.
     ///                 Defaults to the first value in `sendInPings`.
     /// - returns: true if metric value exists, otherwise false
-    func testHasValue(_ pingName: String? = nil) -> Bool {
+    public func testHasValue(_ pingName: String? = nil) -> Bool {
         Dispatchers.shared.assertInTestingMode()
 
         let pingName = pingName ?? self.sendInPings[0]
@@ -188,7 +188,7 @@ public class EventMetricType<ExtraKeysEnum: ExtraKeys> {
     ///                 Defaults to the first value in `sendInPings`.
     ///
     /// - returns:  value of the stored metric
-    func testGetValue(_ pingName: String? = nil) throws -> [RecordedEventData] {
+    public func testGetValue(_ pingName: String? = nil) throws -> [RecordedEventData] {
         Dispatchers.shared.assertInTestingMode()
 
         let pingName = pingName ?? self.sendInPings[0]
@@ -234,7 +234,7 @@ public class EventMetricType<ExtraKeysEnum: ExtraKeys> {
     ///                 Defaults to the first value in `sendInPings`.
     ///
     /// - returns: The number of errors recorded for the metric for the given error type.
-    func testGetNumRecordedErrors(_ errorType: ErrorType, pingName: String? = nil) -> Int32 {
+    public func testGetNumRecordedErrors(_ errorType: ErrorType, pingName: String? = nil) -> Int32 {
         Dispatchers.shared.assertInTestingMode()
 
         let pingName = pingName ?? self.sendInPings[0]

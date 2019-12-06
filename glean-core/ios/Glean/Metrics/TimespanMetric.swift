@@ -110,7 +110,7 @@ public class TimespanMetricType {
     ///     * pingName: represents the name of the ping to retrieve the metric for.
     ///                 Defaults to the first value in `sendInPings`.
     /// - returns: true if metric value exists, otherwise false
-    func testHasValue(_ pingName: String? = nil) -> Bool {
+    public func testHasValue(_ pingName: String? = nil) -> Bool {
         Dispatchers.shared.assertInTestingMode()
 
         let pingName = pingName ?? self.sendInPings[0]
@@ -127,7 +127,7 @@ public class TimespanMetricType {
     ///                 Defaults to the first value in `sendInPings`.
     ///
     /// - returns:  value of the stored metric
-    func testGetValue(_ pingName: String? = nil) throws -> UInt64 {
+    public func testGetValue(_ pingName: String? = nil) throws -> UInt64 {
         Dispatchers.shared.assertInTestingMode()
 
         let pingName = pingName ?? self.sendInPings[0]
@@ -147,7 +147,7 @@ public class TimespanMetricType {
     ///                 Defaults to the first value in `sendInPings`.
     ///
     /// - returns: The number of errors recorded for the metric for the given error type.
-    func testGetNumRecordedErrors(_ errorType: ErrorType, pingName: String? = nil) -> Int32 {
+    public func testGetNumRecordedErrors(_ errorType: ErrorType, pingName: String? = nil) -> Int32 {
         Dispatchers.shared.assertInTestingMode()
 
         let pingName = pingName ?? self.sendInPings[0]
