@@ -4,7 +4,7 @@
 
 This ping is submitted when a user opts out of sending technical and interaction data.
 
-This ping contains the client id. This ping does not contain any environment data.
+This ping contains the client id.
 
 This ping is intended to communicate to the Data Pipeline that the user wishes to have their reported Telemetry data deleted.
 As such it attempts to send itself at the moment the user opts out of data collection, and continues to try and send itself.
