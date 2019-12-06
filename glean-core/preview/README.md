@@ -5,7 +5,7 @@ The `Glean SDK` is a modern approach for a Telemetry library and is part of the 
 ## `glean-preview`
 
 
-This library provides a Rust API on top of Glean, targetted to Rust consumers.
+This library provides a Rust API on top of Glean, targeted to Rust consumers.
 
 **Note: `glean-preview` is currently under development and not yet ready for use.**
 
