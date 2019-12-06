@@ -9,8 +9,12 @@ of metric types.
 """
 
 
+import enum
 from pathlib import Path
 from typing import Any, List, Union
+
+
+import inflection  # type: ignore
 
 
 from glean_parser.parser import parse_objects  # type: ignore
@@ -24,6 +28,7 @@ from . import metrics
 # to the Python class for that metric type.
 _TYPE_MAPPING = {
     "counter": metrics.CounterMetricType,
+    "event": metrics.EventMetricType,
     "labeled_counter": metrics.LabeledCounterMetricType,
     "ping": metrics.PingType,
     "string": metrics.StringMetricType,
@@ -68,10 +73,10 @@ class UnsupportedMetricType:
         )
 
 
-def _get_metric_object(metric: glean_parser.metrics.Metric) -> Any:
+def _get_metric_objects(name: str, metric: glean_parser.metrics.Metric) -> Any:
     """
-    Given a `glean_parser.metrics.Metric` instance, return a Glean Python
-    bindings metric instance.
+    Given a `glean_parser.metrics.Metric` instance, return the Glean Python
+    bindings metric instances for the metric.
     """
     args = {}
     for arg in _ARGS:
@@ -87,7 +92,15 @@ def _get_metric_object(metric: glean_parser.metrics.Metric) -> Any:
 
     glean_metric.__doc__ = metric.description
 
-    return glean_metric
+    yield name, glean_metric
+
+    # Events also need to define an enumeration
+    if metric.type == "event":
+        enum_name = name + "_keys"
+        class_name = inflection.camelize(enum_name, True)
+        values = dict((x.upper(), i) for (i, x) in enumerate(metric.allowed_extra_keys))
+        keys_enum = enum.Enum(class_name, values)  # type: ignore
+        yield enum_name, keys_enum
 
 
 def load_metrics(
@@ -132,7 +145,8 @@ def load_metrics(
                 setattr(cursor, part, type(category_name, (object,), {}))
             cursor = getattr(cursor, part)
         for name, metric in category.items():
-            setattr(cursor, name, _get_metric_object(metric))
+            for actual_name, glean_metric in _get_metric_objects(name, metric):
+                setattr(cursor, actual_name, glean_metric)
 
     return root
 

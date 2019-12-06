@@ -4,6 +4,7 @@
 
 
 import locale
+import time
 
 
 def get_locale_tag() -> str:
@@ -22,3 +23,10 @@ def get_locale_tag() -> str:
     value = value.replace("_", "-")
 
     return value
+
+
+def time_ms() -> int:
+    """
+    Get time from a monotonic timer in milliseconds.
+    """
+    return int(time.time_ns() / 1000)
