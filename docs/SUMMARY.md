@@ -26,6 +26,7 @@
         - [Quantity](user/metrics/quantity.md)
     - [Pings](user/pings/index.md)
         - [Baseline Ping](user/pings/baseline.md)
+        - [Deletion Request Ping](user/pings/deletion_request.md)
         - [Metrics Ping](user/pings/metrics.md)
         - [Events Ping](user/pings/events.md)
         - [Custom Pings](user/pings/custom.md)
