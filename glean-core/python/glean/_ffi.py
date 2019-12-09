@@ -11,7 +11,7 @@ import weakref
 from cffi import FFI  # type: ignore
 
 
-def get_shared_object_filename() -> str:
+def get_shared_object_filename() -> str:  # pragma: no cover
     """
     Get the extension used for shared objects on the current platform.
     """
@@ -32,7 +32,7 @@ def _load_header(path: str) -> str:
     Load a C header file and convert it to something parseable by cffi.
     """
     data = pkgutil.get_data(__name__, path)
-    if data is None:
+    if data is None:  # pragma: no cover
         raise RuntimeError("Couldn't load 'glean.h'")
     data_str = data.decode("utf-8")
     return "\n".join(

@@ -25,3 +25,21 @@ def test_launch_correctly_adds_tasks_to_queue_if_queue_tasks_is_true():
 
     assert 3 == thread_canary[0]
     assert 0 == len(Dispatcher._task_queue)
+
+
+def test_maximum_tasks():
+    Dispatcher.set_task_queueing(True)
+
+    for i in range(Dispatcher.MAX_QUEUE_SIZE + 10):
+        Dispatcher.task(lambda: 0)()
+
+    assert len(Dispatcher._task_queue) == Dispatcher.MAX_QUEUE_SIZE
+
+
+def test_maximum_queue():
+    Dispatcher.set_task_queueing(True)
+
+    for i in range(Dispatcher.MAX_QUEUE_SIZE + 10):
+        Dispatcher.launch(lambda: 0)
+
+    assert len(Dispatcher._task_queue) == Dispatcher.MAX_QUEUE_SIZE

@@ -42,18 +42,20 @@ def test_the_api_records_to_its_storage_engine():
     time.sleep(0.001)
 
     click.record({ClickKeys.OBJECT_ID: "buttonB", ClickKeys.OTHER: "bar"})
+    click.record()
 
     # Check that data was properly recorded
     snapshot = click.test_get_value()
     assert click.test_has_value()
-    assert 2 == len(snapshot)
+    assert 3 == len(snapshot)
 
-    first_event = [x for x in snapshot if x.extra["object_id"] == "buttonA"][0]
+    first_event = [x for x in snapshot if x.extra.get("object_id") == "buttonA"][0]
     assert "ui" == first_event.category
     assert "click" == first_event.name
+    assert "ui.click" == first_event.identifier
     assert "foo" == first_event.extra["other"]
 
-    second_event = [x for x in snapshot if x.extra["object_id"] == "buttonB"][0]
+    second_event = [x for x in snapshot if x.extra.get("object_id") == "buttonB"][0]
     assert "ui" == second_event.category
     assert "click" == second_event.name
     assert "bar" == second_event.extra["other"]
