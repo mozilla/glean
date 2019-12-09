@@ -58,7 +58,7 @@ elif sys.platform == "darwin":
             for line in sysinfo.splitlines():
                 line = line.strip()
                 if line.startswith(name):
-                    return line[len(name) :].decode("ascii", "replace").strip()
+                    return line[len(name) :].decode("ascii", "replace").strip()  # noqa
             return "error"
 
         import subprocess
@@ -95,6 +95,7 @@ elif sys.platform.startswith("win"):
         manufacturer = get_value("VENDOR")
 
         return SystemInformation(model=model, manufacturer=manufacturer)
+
 
 else:
 
