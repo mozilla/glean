@@ -138,13 +138,23 @@ VENVDIR="${SOURCE_ROOT}/.venv"
 
 [ -x "${VENVDIR}/bin/python" ] || python3 -m venv "${VENVDIR}"
 ${VENVDIR}/bin/pip install --upgrade glean_parser==$GLEAN_PARSER_VERSION
+
+# Run the glinter
+# Turn its warnings into warnings visible in Xcode (but don't do for the success message)
 ${VENVDIR}/bin/python -m glean_parser \
+    glinter \
+    $ALLOW_RESERVED \
+    $YAML_FILES 2>&1 \
+    | sed 's/^\(.\)/warning: \1/'  \
+    | sed '/Your metrics are Glean/s/^warning: //'
+
+PARSER_OUTPUT=$(${VENVDIR}/bin/python -m glean_parser \
     translate \
     -f "swift" \
     -o "${OUTPUT_DIR}" \
     -s "glean_namespace=${GLEAN_NAMESPACE}" \
     $ALLOW_RESERVED \
-    $YAML_FILES
+    $YAML_FILES 2>&1) || { echo "$PARSER_OUTPUT"; echo "error: glean_parser failed. See errors above."; exit 1; }
 
 if [ -n "$DOCS_DIRECTORY" ]; then
     ${VENVDIR}/bin/python -m glean_parser \
