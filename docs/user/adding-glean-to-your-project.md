@@ -99,16 +99,46 @@ There are [additional parameters](android-build-configuration-options.md) that c
 #### Setting up the dependency
 
 Glean can be consumed through [Carthage](https://github.com/Carthage/Carthage), a dependency manager for macOS and iOS.
-For consuming the latest version of Glean, add the following line to your `Cartfile`::
+For consuming the latest version of Glean, add the following line to your `Cartfile`:
 
 ```
-github "mozilla/glean" "master"
+github "mozilla/glean" "{latest-version}"
 ```
+
+> **Important:** the `{latest-version}` placeholder should be replaced with the version number of the latest Glean SDK release.
+> You can find the version number on the [release page](https://github.com/mozilla/glean/releases/latest).
+
+Then check out and build the new dependency:
+
+```
+carthage update --platform iOS
+```
+
 
 #### Integrating with the build system
 
-> **Note:** This is not yet documented, as the exact mechanism is not finalized. See [Bug 1589383](https://bugzilla.mozilla.org/show_bug.cgi?id=1589383) for more information.
+For integration with the build system you can follow the [Carthage Quick Start steps](https://github.com/Carthage/Carthage#quick-start).
 
+1. After building the dependency one drag the built `.framework` binaries from `Carthage/Build/iOS` into your application's Xcode project.
+2. On your application targets' Build Phases settings tab, click the `+` icon and choose `New Run Script Phase`.
+   If you already use Carthage for other dependencies, extend the existing step.
+   Create a Run Script in which you specify your shell (ex: `/bin/sh`), add the following contents to the script area below the shell:
+
+   ```
+   /usr/local/bin/carthage copy-frameworks
+   ```
+
+3. Add the path to the Glean framework under "Input Files":
+
+   ```
+   $(SRCROOT)/Carthage/Build/iOS/Glean.framework
+   ```
+
+4. Add the paths to the copied framework to the "Output Files":
+
+   ```
+   $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Glean.framework
+   ```
 </div>
 
 <div data-lang="Python" class="tab">
@@ -143,7 +173,49 @@ To learn more, see [adding new metrics](adding-new-metrics.md).
 
 <div data-lang="Swift" class="tab">
 
-On iOS, add this file to your project and define it as an input file for the `sdk_generator.sh` script in the `Run Script` step defined before.
+For Swift, the `metrics.yaml` file is parsed at build time and Swift code is generated.
+Add a new `metrics.yaml` file to your Xcode project.
+
+Follow these steps to automatically run the parser at build time:
+
+1. Download the `sdk_generator.sh` script from the Glean repository:
+   ```
+   https://raw.githubusercontent.com/mozilla/glean/{latest-release}/glean-core/ios/sdk_generator.sh
+   ```
+
+    > **Important:** as above, the `{latest-version}` placeholder should be replaced with the version number of Glean SDK release used in this project.
+
+2. Add the `sdk_generator.sh` file to your Xcode project.
+3. On your application targets' Build Phases settings tab, click the `+` icon and choose `New Run Script Phase`.
+   Create a Run Script in which you specify your shell (ex: `/bin/sh`), add the following contents to the script area below the shell:
+
+   ```
+   bash $PWD/sdk_generator.sh
+   ```
+
+3. Add the path to your `metrics.yaml` and (optionally) `pings.yaml` under "Input files":
+
+   ```
+   $(SRCROOT)/{project-name}/metrics.yaml
+   $(SRCROOT)/{project-name}/pings.yaml
+   ```
+
+4. Add the paths to the generated code files to the "Output Files":
+
+   ```
+   $(SRCROOT)/{project-name}/Generated/{YourCategory}.swift
+   ```
+
+   > **Important**: The parser generates one file per category.
+   > If you are unsure which files those are, skip this step and add the files after they are generated for the first time.
+
+5. If you are using Git, add the following line to your `.gitignore` file:
+
+   ```
+   {project-name}/Generated
+   ```
+
+
 
 </div>
 
@@ -345,7 +417,7 @@ Glean.initialize(
 
 Additonal configuration is available on the `glean.Configuration` object, which can be passed into `Glean.initialize()`.
 
-Unlike Android and Swift, the Python bindings do not automatically send any pings. 
+Unlike Android and Swift, the Python bindings do not automatically send any pings.
 See the [custom pings documentation](pings/custom.md) about adding custom pings and sending them.
 
 ### Enabling and disabling metrics
