@@ -64,9 +64,7 @@ elif sys.platform == "darwin":
         import subprocess
 
         try:
-            sysinfo = subprocess.check_output(
-                ["system_profiler", "SPHardwareDataType"]
-            )
+            sysinfo = subprocess.check_output(["system_profiler", "SPHardwareDataType"])
         except subprocess.CalledProcessError:
             sysinfo = ""
 
