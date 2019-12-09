@@ -10,12 +10,18 @@ class ErrorType(Enum):
     An enumeration for the types of metric errors that Glean records.
     """
 
-    # For when the value to be recorded does not match the metric-specific
-    # restrictions
     INVALID_VALUE = 0
+    """
+    For when the value to be recorded does not match the metric-specific
+    restrictions
+    """
 
-    # For when the label of a labeled metric does not match the restrictions
     INVALID_LABEL = 1
+    """
+    For when the label of a labeled metric does not match the restrictions
+    """
 
-    # For when timings are recorded incorrectly
     INVALID_STATE = 2
+    """
+    For when timings are recorded incorrectly
+    """

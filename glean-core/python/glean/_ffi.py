@@ -98,6 +98,13 @@ def ffi_encode_vec_string(strings: List[str]) -> Any:
     return result
 
 
+def ffi_encode_vec_int32(values: List[int]) -> Any:
+    """
+    Convert a list of int in Python to a vector of int32_t suitable for sending over FFI.
+    """
+    return ffi.new("int32_t []", values)
+
+
 def ffi_decode_string(cdata) -> str:
     """
     Convert a string returned from Rust to a Python string, and free the Rust

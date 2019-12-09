@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
+from pathlib import Path
 from typing import Optional
 
 
@@ -15,6 +16,7 @@ def reset_glean(
     application_id: str,
     application_version: str,
     configuration: Optional[Configuration] = None,
+    clear_stores: bool = True
 ):
     """
     Resets the Glean singleton.
@@ -28,11 +30,17 @@ def reset_glean(
     """
     from glean import Glean
 
+    data_dir: Optional[Path] = None
+    if not clear_stores:
+        Glean._destroy_data_dir = False
+        data_dir = Glean._data_dir
+
     Glean.reset()
     Glean.initialize(
         application_id=application_id,
         application_version=application_version,
         configuration=configuration,
+        data_dir=data_dir,
     )
 
 

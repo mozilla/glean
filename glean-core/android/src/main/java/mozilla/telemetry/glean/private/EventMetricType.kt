@@ -101,9 +101,9 @@ class EventMetricType<ExtraKeysEnum : Enum<ExtraKeysEnum>> internal constructor(
     /**
      * Record an event by using the information provided by the instance of this class.
      *
-     * @param extra optional. This is map, both keys and values need to be strings, keys are
+     * @param extra optional. This is a map, both keys and values need to be strings, keys are
      *              identifiers. This is used for events where additional richer context is needed.
-     *              The maximum length for values is defined by `MAX_LENGTH_EXTRA_KEY_VALUE`.
+     *              The maximum length for values is 100 bytes.
      */
     @JvmOverloads
     fun record(extra: Map<ExtraKeysEnum, String>? = null) {
@@ -144,9 +144,7 @@ class EventMetricType<ExtraKeysEnum : Enum<ExtraKeysEnum>> internal constructor(
     }
 
     /**
-     * Tests whether a value is stored for the metric for testing purposes only. This function will
-     * attempt to await the last task (if any) writing to the the metric's storage engine before
-     * returning a value.
+     * Tests whether a value is stored for the metric for testing purposes only.
      *
      * @param pingName represents the name of the ping to retrieve the metric for.
      *                 Defaults to the first value in `sendInPings`.
@@ -201,7 +199,7 @@ class EventMetricType<ExtraKeysEnum : Enum<ExtraKeysEnum>> internal constructor(
      *
      * @param pingName represents the name of the ping to retrieve the metric for.
      *                 Defaults to the first value in `sendInPings`.
-     * @return value of the stored metric
+     * @return value of the stored events
      * @throws [NullPointerException] if no value is stored
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)

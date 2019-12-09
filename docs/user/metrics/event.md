@@ -79,6 +79,40 @@ XCTAssertEqual(0, Views.loginOpened.testGetNumRecordedErrors(.invalidValue))
 
 </div>
 
+<div data-lang="Python" class="tab">
+
+Note that an `enum` has been generated for handling the `extra_keys`: it has the same name as the event metric, with `_keys` added.
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+metrics.views.login_opened.record(
+    {
+        metrics.views.login_opened_keys.SOURCE_OF_LOGIN: "toolbar"
+    }
+)
+```
+
+There are test APIs available too, for example:
+
+```Python
+# Was any event recorded?
+assert metrics.views.login_opened.test_has_value()
+# Get a List of the recorded events.
+snapshot = metrics.views.login_opened.test_get_value()
+# Check that two events were recorded.
+assert 2 == len(snapshot)
+first = snapshot[0]
+assert "login_opened" == first.name
+# Check that no errors were recorded
+assert 0 == metrics.views.login_opened.test_get_num_recorded_errors(
+    ErrorType.INVALID_VALUE
+)
+```
+
+</div>
+
 {{#include ../../tab_footer.md}}
 
 ## Limits

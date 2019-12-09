@@ -4,6 +4,7 @@
 
 
 from .counter import CounterMetricType
+from .event import EventMetricType, RecordedEventData
 from .experiment import RecordedExperimentData
 from .labeled import LabeledCounterMetricType
 from .lifetime import Lifetime
@@ -13,9 +14,11 @@ from .string import StringMetricType
 
 __all__ = [
     "CounterMetricType",
+    "EventMetricType",
     "LabeledCounterMetricType",
     "Lifetime",
     "PingType",
+    "RecordedEventData",
     "RecordedExperimentData",
     "StringMetricType",
 ]

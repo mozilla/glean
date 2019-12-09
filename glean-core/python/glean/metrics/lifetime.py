@@ -12,11 +12,17 @@ class Lifetime(Enum):
     Metric lifetimes define when a metric is reset.
     """
 
-    # The metric is reset with each sent ping
     PING = 0
+    """
+    The metric is reset with each sent ping
+    """
 
-    # The metric is reset on application restart
     APPLICATION = 1
+    """
+    The metric is reset on application restart
+    """
 
-    # The metric is reset with each user profile
     USER = 2
+    """
+    The metric is reset with each user profile
+    """
