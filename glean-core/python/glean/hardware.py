@@ -43,10 +43,10 @@ if sys.platform.startswith("linux"):
             except IOError:
                 return "error"
 
-        dmi_root = Path(b"/sys/devices/virtual/dmi/id")
+        dmi_root = Path("/sys/devices/virtual/dmi/id")
 
-        model = get_value(b"product_name")
-        manufacturer = get_value(b"sys_vendor")
+        model = get_value("product_name")
+        manufacturer = get_value("sys_vendor")
 
         return SystemInformation(model=model, manufacturer=manufacturer)
 
@@ -65,7 +65,7 @@ elif sys.platform == "darwin":
 
         try:
             sysinfo = subprocess.check_output(
-                [b"system_profiler", b"SPHardwareDataType"]
+                ["system_profiler", "SPHardwareDataType"]
             )
         except subprocess.CalledProcessError:
             sysinfo = ""
