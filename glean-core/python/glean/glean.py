@@ -16,6 +16,7 @@ from typing import Dict, List, Optional, Set, TYPE_CHECKING
 from .config import Configuration
 from ._dispatcher import Dispatcher
 from . import _ffi
+from . import hardware
 from .net import PingUploadWorker
 from .net import DeletionPingUploadWorker
 from . import util
@@ -342,8 +343,9 @@ class Glean:
 
         # device_model and device_manufacturer exist on desktop platforms,
         # but aren't easily obtainable. See bug 1595751
-        metrics.glean.internal.metrics.device_manufacturer.set("unknown")
-        metrics.glean.internal.metrics.device_model.set("unknown")
+        sysinfo = hardware.get_system_information()
+        metrics.glean.internal.metrics.device_manufacturer.set(sysinfo.manufacturer)
+        metrics.glean.internal.metrics.device_model.set(sysinfo.model)
 
         if cls._configuration.channel is not None:
             metrics.glean.internal.metrics.app_channel.set(cls._configuration.channel)
