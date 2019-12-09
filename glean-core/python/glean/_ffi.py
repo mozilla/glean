@@ -98,7 +98,7 @@ def ffi_encode_vec_string(strings: List[str]) -> Any:
     return result
 
 
-def ffi_encode_vec_int32(values: List[str]) -> Any:
+def ffi_encode_vec_int32(values: List[int]) -> Any:
     """
     Convert a list of int in Python to a vector of int32_t suitable for sending over FFI.
     """
