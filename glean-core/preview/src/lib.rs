@@ -37,64 +37,66 @@
 //! # }
 //! ```
 
-use ffi_support::FfiStr;
-use std::ffi::CString;
+use once_cell::sync::OnceCell;
 use std::sync::Mutex;
 
-pub use glean_core::{Configuration, Error, Result};
+pub use glean_core::{Configuration, Error, Glean, Result};
 
 pub mod metrics;
 
-lazy_static::lazy_static! {
-    static ref GLEAN_HANDLE: Mutex<u64> = Mutex::new(0);
+static GLEAN: OnceCell<Mutex<Glean>> = OnceCell::new();
+
+/// Get a reference to the global Glean object.
+///
+/// Panics if no global Glean object was set.
+fn global_glean() -> &'static Mutex<Glean> {
+    GLEAN.get().unwrap()
+}
+
+/// Set or replace the global Glean object.
+fn setup_glean(glean: Glean) -> Result<()> {
+    if GLEAN.get().is_none() {
+        GLEAN.set(Mutex::new(glean)).unwrap();
+    } else {
+        let mut lock = GLEAN.get().unwrap().lock().unwrap();
+        *lock = glean;
+    }
+    Ok(())
 }
 
 fn with_glean<F, R>(f: F) -> R
 where
-    F: Fn(u64) -> R,
+    F: Fn(&Glean) -> R,
 {
-    let lock = GLEAN_HANDLE.lock().unwrap();
-    debug_assert!(*lock != 0);
-    f(*lock)
+    let lock = global_glean().lock().unwrap();
+    f(&lock)
+}
+
+fn with_glean_mut<F, R>(f: F) -> R
+where
+    F: Fn(&mut Glean) -> R,
+{
+    let mut lock = global_glean().lock().unwrap();
+    f(&mut lock)
 }
 
 /// Create and initialize a new Glean object.
 ///
 /// See `glean_core::Glean::new`.
 pub fn initialize(cfg: Configuration) -> Result<()> {
-    unsafe {
-        let data_dir = CString::new(cfg.data_path).unwrap();
-        let package_name = CString::new(cfg.application_id).unwrap();
-        let upload_enabled = cfg.upload_enabled;
-        let max_events = cfg.max_events.map(|m| m as i32);
+    let glean = Glean::new(cfg)?;
+    setup_glean(glean)?;
 
-        let ffi_cfg = glean_ffi::FfiConfiguration {
-            data_dir: FfiStr::from_cstr(&data_dir),
-            package_name: FfiStr::from_cstr(&package_name),
-            upload_enabled: upload_enabled as u8,
-            max_events: max_events.as_ref(),
-            delay_ping_lifetime_io: false as u8,
-        };
-
-        let handle = glean_ffi::glean_initialize(&ffi_cfg);
-        if handle == 0 {
-            return Err(glean_core::Error::utf8_error());
-        }
-
-        let mut lock = GLEAN_HANDLE.lock().unwrap();
-        *lock = handle;
-
-        Ok(())
-    }
+    Ok(())
 }
 
 /// Set whether upload is enabled or not.
 ///
 /// See `glean_core::Glean.set_upload_enabled`.
 pub fn set_upload_enabled(flag: bool) -> bool {
-    with_glean(|glean_handle| {
-        glean_ffi::glean_set_upload_enabled(glean_handle, flag as u8);
-        glean_ffi::glean_is_upload_enabled(glean_handle) != 0
+    with_glean_mut(|glean| {
+        glean.set_upload_enabled(flag);
+        glean.is_upload_enabled()
     })
 }
 
@@ -102,13 +104,13 @@ pub fn set_upload_enabled(flag: bool) -> bool {
 ///
 /// See `glean_core::Glean.is_upload_enabled`.
 pub fn is_upload_enabled() -> bool {
-    with_glean(|glean_handle| glean_ffi::glean_is_upload_enabled(glean_handle) != 0)
+    with_glean(|glean| glean.is_upload_enabled())
 }
 
 /// Register a new [`PingType`](metrics/struct.PingType.html).
 pub fn register_ping_type(ping: &metrics::PingType) {
-    with_glean(|glean_handle| {
-        glean_ffi::ping_type::glean_register_ping_type(glean_handle, ping.handle);
+    with_glean_mut(|glean| {
+        glean.register_ping_type(&ping.ping_type);
     })
 }
 
@@ -131,7 +133,7 @@ pub fn send_ping(ping: &metrics::PingType) -> bool {
 ///
 /// Returns true if a ping was assembled and queued, false otherwise.
 pub fn send_ping_by_name(ping: &str) -> bool {
-    send_pings_by_name(&[ping])
+    send_pings_by_name(&[ping.to_string()])
 }
 
 /// Send multiple pings by name
@@ -139,15 +141,6 @@ pub fn send_ping_by_name(ping: &str) -> bool {
 /// ## Return value
 ///
 /// Returns true if at least one ping was assembled and queued, false otherwise.
-pub fn send_pings_by_name(pings: &[&str]) -> bool {
-    let array: Vec<CString> = pings.iter().map(|s| CString::new(*s).unwrap()).collect();
-    let ptr_array: Vec<*const _> = array.iter().map(|s| s.as_ptr()).collect();
-    with_glean(|glean_handle| {
-        let res = glean_ffi::glean_send_pings_by_name(
-            glean_handle,
-            ptr_array.as_ptr(),
-            array.len() as i32,
-        );
-        res != 0
-    })
+pub fn send_pings_by_name(pings: &[String]) -> bool {
+    with_glean(|glean| glean.send_pings_by_name(pings))
 }
