@@ -282,10 +282,10 @@ public class Glean {
         }
     }
 
-    /// TEST ONLY FUNCTION.
+    /// PUBLIC TEST ONLY FUNCTION.
     ///
     /// Returns true if a ping by this name is in the ping registry.
-    func testHasPingType(_ pingName: String) -> Bool {
+    public func testHasPingType(_ pingName: String) -> Bool {
         return glean_test_has_ping_type(self.handle, pingName) != 0
     }
 
@@ -300,24 +300,24 @@ public class Glean {
         handle = 0
     }
 
-    /// TEST ONLY FUNCTION.
+    /// PUBLIC TEST ONLY FUNCTION.
     ///
     /// Enable test mode.
     ///
     /// This makes all asynchronous work synchronous so we can test the results of the
     /// API synchronously.
-    func enableTestingMode() {
+    public func enableTestingMode() {
         Dispatchers.shared.setTestingMode(enabled: true)
     }
 
-    /// TEST ONLY FUNCTION.
+    /// PUBLIC TEST ONLY FUNCTION.
     ///
     /// Resets the Glean state and trigger init again.
     ///
     /// - parameters:
     ///     * configuration: the `Configuration` to init Glean with
     ///     * clearStores: if true, clear the contents of all stores
-    func resetGlean(configuration: Configuration = Configuration(), clearStores: Bool) {
+    public func resetGlean(configuration: Configuration = Configuration(), clearStores: Bool) {
         enableTestingMode()
 
         if isInitialized() && clearStores {

@@ -10,7 +10,7 @@ import Foundation
 ///
 /// @param values a map containing the bucket index mapped to the accumulated count
 /// @param sum the accumulated sum of all the samples in the timing distribution
-class DistributionData {
+public class DistributionData {
     let values: [UInt64: UInt64]
     let sum: UInt64
 
