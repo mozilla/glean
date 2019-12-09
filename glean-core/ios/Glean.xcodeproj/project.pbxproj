@@ -131,8 +131,6 @@
 		BFE1CDC5233B6B6D0019EE47 /* LabeledMetricTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabeledMetricTests.swift; sourceTree = "<group>"; };
 		BFE1CDC7233B73B30019EE47 /* Unreachable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Unreachable.swift; sourceTree = "<group>"; };
 		BFE1CDCD233B989A0019EE47 /* GleanMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GleanMetrics.swift; sourceTree = "<group>"; };
-		BFE1E7CF234356260067A12A /* pings.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = pings.yaml; sourceTree = "<group>"; };
-		BFE1E7D0234356260067A12A /* metrics.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = metrics.yaml; sourceTree = "<group>"; };
 		BFE1E7D3234356320067A12A /* sdk_generator.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = sdk_generator.sh; sourceTree = "<group>"; };
 		BFFE18372350A5F50068D97B /* TimingDistributionMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimingDistributionMetric.swift; sourceTree = "<group>"; };
 		BFFE18392350A61F0068D97B /* TimingDistributionMetricTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimingDistributionMetricTests.swift; sourceTree = "<group>"; };
@@ -231,8 +229,6 @@
 				BF51C3BB224BF19F0014CBAF /* base.xcconfig */,
 				BF51C3B9224BF19F0014CBAF /* debug.xcconfig */,
 				BF51C3BA224BF19F0014CBAF /* release.xcconfig */,
-				BFE1E7D0234356260067A12A /* metrics.yaml */,
-				BFE1E7CF234356260067A12A /* pings.yaml */,
 				BFE1E7D3234356320067A12A /* sdk_generator.sh */,
 				BF3DE3932243A2F20018E23F /* Glean */,
 				BF3DE39E2243A2F20018E23F /* GleanTests */,
@@ -371,7 +367,7 @@
 			buildConfigurationList = BF3DE3A52243A2F20018E23F /* Build configuration list for PBXNativeTarget "Glean" */;
 			buildPhases = (
 				BF6F2DA5224BF2E000394062 /* Run Script */,
-				BFB59A9723429FC000F40CA8 /* ShellScript */,
+				BFB59A9723429FC000F40CA8 /* Run Glean SDK generator */,
 				AC0C2B5E2328090D00A50CC8 /* Copy Carthage Dependencies */,
 				BF3DE38C2243A2F20018E23F /* Headers */,
 				BF3DE38D2243A2F20018E23F /* Sources */,
@@ -518,7 +514,7 @@
 			shellPath = /bin/sh;
 			shellScript = "bash $PWD/../../build-scripts/xc-universal-binary.sh libglean_ffi.a glean-ffi $PWD/../.. $buildvariant\n";
 		};
-		BFB59A9723429FC000F40CA8 /* ShellScript */ = {
+		BFB59A9723429FC000F40CA8 /* Run Glean SDK generator */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -526,9 +522,10 @@
 			inputFileListPaths = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/metrics.yaml",
-				"$(SRCROOT)/pings.yaml",
+				"$(SRCROOT)/../metrics.yaml",
+				"$(SRCROOT)/../pings.yaml",
 			);
+			name = "Run Glean SDK generator";
 			outputFileListPaths = (
 			);
 			outputPaths = (
@@ -539,7 +536,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "bash $PWD/sdk_generator.sh internal\n";
+			shellScript = "bash $PWD/sdk_generator.sh --allow-reserved\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
