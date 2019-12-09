@@ -54,7 +54,7 @@ class ViewControllerTest: XCTestCase {
         expectation = expectation(description: "Completed upload")
         sendButton.tap()
 
-        waitForExpectations(timeout: 5.0) { error in
+        waitForExpectations(timeout: 10.0) { error in
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
         }
 
@@ -69,7 +69,7 @@ class ViewControllerTest: XCTestCase {
         expectation = expectation(description: "Completed upload")
         sendButton.tap()
 
-        waitForExpectations(timeout: 5.0) { error in
+        waitForExpectations(timeout: 10.0) { error in
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
         }
 
