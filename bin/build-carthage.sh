@@ -12,3 +12,6 @@ CONFIGURATION="${2:-Release}"
 set -o pipefail && \
     carthage build --archive --platform iOS --cache-builds --verbose --configuration "${CONFIGURATION}" "${FRAMEWORK_NAME}" | \
     xcpretty
+
+# Add dependency information
+zip -u "${FRAMEWORK_NAME}.framework.zip" DEPENDENCIES.md
