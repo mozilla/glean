@@ -103,6 +103,15 @@ ext.configurePublish = { jnaForTestConfiguration = null ->
                         }
                     }
 
+                    def depLicenses = new XmlSlurper().parse(new File("${projectDir}/dependency-licenses.xml"))
+                    depLicenses.license.each { node ->
+                        license {
+                            name = node.name.text()
+                            url = node.url.text()
+                        }
+                    }
+
+
                     developers {
                         developer {
                             name = 'Mozilla Glean Team'
