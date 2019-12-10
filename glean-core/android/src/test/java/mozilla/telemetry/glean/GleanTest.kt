@@ -567,19 +567,4 @@ class GleanTest {
             Glean.initialize(context)
         }
     }
-
-    @Test
-    fun `sending a metrics ping records it in the baseline ping`() {
-        // Startup of Glean in a clean environment is enough to trigger a metrics ping
-        assertEquals(1, GleanValidation.metricsPingCount.testGetValue())
-        Glean.sendPings(listOf(Pings.metrics))
-        // Triggering another metrics ping, we should now have 2 recorded
-        assertEquals(2, GleanValidation.metricsPingCount.testGetValue())
-    }
-
-    @Test
-    fun `sending a baseline ping records it in the metrics ping`() {
-        Glean.sendPings(listOf(Pings.baseline))
-        assertEquals(1, GleanValidation.baselinePingCount.testGetValue())
-    }
 }
