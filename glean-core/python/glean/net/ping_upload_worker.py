@@ -77,8 +77,13 @@ class PingUploadWorker:
         try:
             with open(path, "r", encoding="utf-8") as fd:
                 lines = iter(fd)
-                url_path = next(lines).strip()
-                serialized_ping = next(lines)
+                try:
+                    url_path = next(lines).strip()
+                    serialized_ping = next(lines)
+                except StopIteration:
+                    path.unlink()
+                    log.error(f"Invalid ping content in {path.resolve()}")
+                    return False
         except FileNotFoundError:
             log.error(f"Could not find ping file {path.resolve()}")
             return False

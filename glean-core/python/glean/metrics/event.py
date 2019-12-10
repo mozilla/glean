@@ -36,6 +36,10 @@ class RecordedEventData:
     extra: Optional[Dict[str, str]] = None
     """Any extra data recorded for the event."""
 
+    def __post_init__(self):
+        if self.extra is None:
+            self.extra = {}
+
     @property
     def identifier(self):
         if self.category == "":

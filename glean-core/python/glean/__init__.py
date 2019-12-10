@@ -15,7 +15,7 @@ from ._loader import load_metrics, load_pings
 __version__: str = "unknown"
 try:
     __version__ = str(get_distribution("glean-sdk").version)
-except DistributionNotFound:
+except DistributionNotFound:  # pragma: no cover
     pass
 
 
