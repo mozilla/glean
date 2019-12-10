@@ -13,11 +13,10 @@ typealias Pings = GleanMetrics.Pings
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
+    let glean = Glean.shared
 
     // swiftlint:disable line_length
     func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        let glean = Glean.shared
-
         glean.registerPings(Pings.shared)
         glean.setUploadEnabled(true)
 
@@ -35,6 +34,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         // Set a sample value for a metric.
         Basic.os.set("iOS")
+
+        return true
+    }
+
+    func application(_: UIApplication,
+                     open url: URL,
+                     options _: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
+        // This does nothing if the url isn't meant for Glean.
+        glean.handleCustomUrl(url: url)
 
         return true
     }
