@@ -25,7 +25,7 @@ public class Glean {
 
     var handle: UInt64 = 0
     private var uploadEnabled: Bool = true
-    private var configuration: Configuration?
+    var configuration: Configuration?
     private var observer: GleanLifecycleObserver?
 
     // This struct is used for organizational purposes to keep the class constants in a single place
@@ -280,6 +280,38 @@ public class Glean {
         } else {
             glean_register_ping_type(self.handle, pingType.handle)
         }
+    }
+
+    /// When applications are launched using the custom URL scheme, this helper function will process
+    /// the URL and parse the debug commands
+    ///
+    /// - parameters:
+    ///     * url: A `URL` object containing the Glean debug commands as query parameters
+    ///
+    /// There are 3 available commands that you can use with the Glean SDK debug tools
+    ///
+    /// - `logPings`: If "true", will cause pings that are submitted to also be echoed to the device's log
+    /// - `tagPings`:  This command expects a string to tag the pings with and redirects them to the Glean Debug View
+    /// - `sendPing`: This command expects a string name of a ping to force immediate collection and submission of.
+    ///
+    /// The structure of the custom URL uses the following format:
+    ///
+    /// `<protocol>://glean?<command 1>=<paramter 1>&<command 2>=<parameter 2> ...`
+    ///
+    /// Where:
+    ///
+    /// - `<protocol>://` is the "Url Scheme" that has been added for the app and doesn't matter to Glean.
+    /// - `glean` is required for the Glean SDK to recognize the command is meant for it to process.
+    /// - `?` indicating the beginning of the query.
+    /// - `<command>=<parameter>` are instances of the commands listed above  separated by `&`.
+    ///
+    /// There are a few things to consider when creating the custom URL:
+    ///
+    /// - Invalid commands will trigger an error and be ignored.
+    /// - Not all commands are requred to be encoded in the URL, you can mix and match the commands that you need.
+    /// - Special characters should be properly URL encoded and escaped since this needs to represent a valid URL.
+    public func handleCustomUrl(url: URL) {
+        GleanDebugUtility.handleCustomUrl(url: url)
     }
 
     /// PUBLIC TEST ONLY FUNCTION.

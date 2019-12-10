@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1F39E7B0239F0505009B13B3 /* GleanDebugTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F39E7AF239F0505009B13B3 /* GleanDebugTools.swift */; };
+		1F39E7B3239F0777009B13B3 /* GleanDebugUtilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F39E7B2239F0777009B13B3 /* GleanDebugUtilityTests.swift */; };
 		1F6058932314863400307A9F /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6058922314863400307A9F /* Configuration.swift */; };
 		1F605895231489AB00307A9F /* HttpPingUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F605894231489AB00307A9F /* HttpPingUploader.swift */; };
 		1F60589723148BF800307A9F /* GleanLifecycleObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F60589623148BF800307A9F /* GleanLifecycleObserver.swift */; };
@@ -75,6 +77,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1F39E7AF239F0505009B13B3 /* GleanDebugTools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GleanDebugTools.swift; sourceTree = "<group>"; };
+		1F39E7B2239F0777009B13B3 /* GleanDebugUtilityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GleanDebugUtilityTests.swift; sourceTree = "<group>"; };
 		1F6058922314863400307A9F /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
 		1F605894231489AB00307A9F /* HttpPingUploader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HttpPingUploader.swift; sourceTree = "<group>"; };
 		1F60589623148BF800307A9F /* GleanLifecycleObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GleanLifecycleObserver.swift; sourceTree = "<group>"; };
@@ -159,6 +163,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1F39E7AE239F04D3009B13B3 /* Debug */ = {
+			isa = PBXGroup;
+			children = (
+				1F39E7AF239F0505009B13B3 /* GleanDebugTools.swift */,
+			);
+			path = Debug;
+			sourceTree = "<group>";
+		};
+		1F39E7B1239F0741009B13B3 /* Debug */ = {
+			isa = PBXGroup;
+			children = (
+				1F39E7B2239F0777009B13B3 /* GleanDebugUtilityTests.swift */,
+			);
+			path = Debug;
+			sourceTree = "<group>";
+		};
 		1F60588D231483D600307A9F /* Scheduler */ = {
 			isa = PBXGroup;
 			children = (
@@ -249,6 +269,7 @@
 		BF3DE3932243A2F20018E23F /* Glean */ = {
 			isa = PBXGroup;
 			children = (
+				1F39E7AE239F04D3009B13B3 /* Debug */,
 				97C5C1A223708C1E00B79C93 /* Testing */,
 				1F6058912314861B00307A9F /* Config */,
 				BF3227D723336CF800CD0111 /* Generated */,
@@ -269,6 +290,7 @@
 		BF3DE39E2243A2F20018E23F /* GleanTests */ = {
 			isa = PBXGroup;
 			children = (
+				1F39E7B1239F0741009B13B3 /* Debug */,
 				1FB8F8392326EBA500618E47 /* Config */,
 				BF43A8CB232A613100545310 /* Metrics */,
 				BF80AA5923992FFB00A8B172 /* Net */,
@@ -572,6 +594,7 @@
 				BF30FDC4233260B500840607 /* TimespanMetric.swift in Sources */,
 				BFE1CDCE233B989A0019EE47 /* GleanMetrics.swift in Sources */,
 				BF6C53B2232F870C00E3B43A /* Ping.swift in Sources */,
+				1F39E7B0239F0505009B13B3 /* GleanDebugTools.swift in Sources */,
 				BFB59A9F2342A24000F40CA8 /* GleanInternalMetrics.swift in Sources */,
 				97C5C1A423708C6700B79C93 /* ErrorType.swift in Sources */,
 				BF10007E23548AF400064051 /* MemoryUnit.swift in Sources */,
@@ -585,6 +608,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1F39E7B3239F0777009B13B3 /* GleanDebugUtilityTests.swift in Sources */,
 				BFAED50A2369752400DF293D /* StringListMetricTests.swift in Sources */,
 				BF890561232BC227003CA2BA /* StringMetricTests.swift in Sources */,
 				1FD4527723395EEB00F4C7E8 /* UuidMetricTests.swift in Sources */,

@@ -3,11 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 @testable import Glean
+import OHHTTPStubs
 import XCTest
 
 class GleanTests: XCTestCase {
     override func setUp() {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+        Glean.shared.resetGlean(clearStores: true)
+        Glean.shared.enableTestingMode()
     }
 
     override func tearDown() {
@@ -15,10 +17,8 @@ class GleanTests: XCTestCase {
     }
 
     func testInitializeGlean() {
-        let glean = Glean.shared
-
-        glean.initialize()
-        XCTAssert(glean.isInitialized(), "Glean should be initialized")
-        XCTAssert(glean.getUploadEnabled(), "Upload is enabled by default")
+        // Glean is already initialized by the `setUp()` function
+        XCTAssert(Glean.shared.isInitialized(), "Glean should be initialized")
+        XCTAssert(Glean.shared.getUploadEnabled(), "Upload is enabled by default")
     }
 }

@@ -7,9 +7,9 @@
 public struct Configuration {
     let serverEndpoint: String
     let userAgent: String
-    let logPings: Bool
+    var logPings: Bool
     let maxEvents: Int32?
-    let pingTag: String?
+    var pingTag: String?
     let channel: String?
 
     struct Constants {
