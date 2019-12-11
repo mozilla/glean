@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
 import argparse
 import csv
 import datetime
@@ -435,6 +440,7 @@ def analyse_by_day(data):
     data_by_day = sorted(list(data_by_day.items()))[2:-2]
 
     return data_by_day
+
 
 def plot_summary(data_by_day, output_filename="summary.svg"):
     """
