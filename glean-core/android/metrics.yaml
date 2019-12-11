@@ -57,36 +57,6 @@ glean.core.migration:
     expires: 2020-03-31
 
 glean.validation:
-  baseline_ping_count:
-    type: counter
-    description:
-      The number of baseline pings sent during the lifetime of this metrics
-      ping.
-    bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1597980
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1597980#c3
-    notification_emails:
-      - glean-team@mozilla.com
-      - mdroettboom@mozilla.com
-    expires: 2019-12-20
-
-  metrics_ping_count:
-    type: counter
-    description:
-      The number of metrics pings sent during the lifetime of this baseline
-      ping.
-    bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1597980
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1597980#c3
-    notification_emails:
-      - glean-team@mozilla.com
-      - mdroettboom@mozilla.com
-    expires: 2019-12-20
-    send_in_pings:
-      - baseline
-
   app_forceclosed_count:
     type: counter
     description:

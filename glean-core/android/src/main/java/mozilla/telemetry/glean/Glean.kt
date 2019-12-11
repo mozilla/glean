@@ -26,7 +26,6 @@ import mozilla.telemetry.glean.rust.toBoolean
 import mozilla.telemetry.glean.rust.toByte
 import mozilla.telemetry.glean.GleanMetrics.GleanBaseline
 import mozilla.telemetry.glean.GleanMetrics.GleanInternalMetrics
-import mozilla.telemetry.glean.GleanMetrics.GleanValidation
 import mozilla.telemetry.glean.GleanMetrics.Pings
 import mozilla.telemetry.glean.acmigration.GleanACDataMigrator
 import mozilla.telemetry.glean.net.BaseUploader
@@ -533,14 +532,6 @@ open class GleanInternalAPI internal constructor () {
         if (!getUploadEnabled()) {
             Log.e(LOG_TAG, "Glean must be enabled before sending pings.")
             return@launch
-        }
-
-        if (pingNames.contains("metrics")) {
-            GleanValidation.metricsPingCount.add()
-        }
-
-        if (pingNames.contains("baseline")) {
-            GleanValidation.baselinePingCount.add()
         }
 
         val pingArray = StringArray(pingNames.toTypedArray(), "utf-8")
