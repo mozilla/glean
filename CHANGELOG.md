@@ -6,6 +6,11 @@
 
   * Support for events was added.
 
+* All platforms
+
+  * The Glean Gradle Plugin correctly triggers docs and API updates when registry files
+    change, without requiring them to be deleted.
+
 # v22.0.0 (2019-12-05)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v21.3.0...22.0.0)

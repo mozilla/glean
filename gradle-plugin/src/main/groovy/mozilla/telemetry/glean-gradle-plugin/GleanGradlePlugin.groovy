@@ -123,6 +123,12 @@ subprocess.check_call([
                     }.files
                 }
 
+                // Add local registry files as input to this task. They will be turned
+                // into `arg`s later.
+                for (String item : getYamlFiles(project)) {
+                    inputs.file item
+                }
+
                 outputs.dir sourceOutputDir
 
                 workingDir project.rootDir
@@ -146,9 +152,6 @@ subprocess.check_call([
                 args "namespace=$fullNamespace"
                 args "-s"
                 args "glean_namespace=$gleanNamespace"
-                for (String item : getYamlFiles(project)) {
-                    args item
-                }
 
                 // If we're building the Glean library itself (rather than an
                 // application using Glean) pass the --allow-reserved flag so we can
@@ -160,11 +163,9 @@ subprocess.check_call([
                 doFirst {
                     // Add the potential 'metrics.yaml' files at evaluation-time, rather than
                     // configuration-time. Otherwise the Gradle build will fail.
-                    if (project.ext.has("allowMetricsFromAAR")) {
-                        inputs.files.forEach { file ->
-                            project.logger.lifecycle("Glean SDK - generating API from ${file.path}")
-                            args file.path
-                        }
+                    inputs.files.forEach { file ->
+                        project.logger.lifecycle("Glean SDK - generating API from ${file.path}")
+                        args file.path
                     }
                 }
 
@@ -197,6 +198,12 @@ subprocess.check_call([
                     }.files
                 }
 
+                // Add local registry files as input to this task. They will be turned
+                // into `arg`s later.
+                for (String item : getYamlFiles(project)) {
+                    inputs.file item
+                }
+
                 outputs.dir gleanDocsDirectory
                 workingDir project.rootDir
                 commandLine getPythonCommand(condaDir)
@@ -210,9 +217,6 @@ subprocess.check_call([
                 args "markdown"
                 args "-o"
                 args gleanDocsDirectory
-                for (String item : getYamlFiles(project)) {
-                    args item
-                }
 
                 // If we're building the Glean library itself (rather than an
                 // application using Glean) pass the --allow-reserved flag so we can
@@ -224,11 +228,9 @@ subprocess.check_call([
                 doFirst {
                     // Add the potential 'metrics.yaml' files at evaluation-time, rather than
                     // configuration-time. Otherwise the Gradle build will fail.
-                    if (project.ext.has("allowMetricsFromAAR")) {
-                        inputs.files.forEach{ file ->
-                            project.logger.lifecycle("Glean SDK - generating docs for ${file.path} in $gleanDocsDirectory")
-                            args file.path
-                        }
+                    inputs.files.forEach{ file ->
+                        project.logger.lifecycle("Glean SDK - generating docs for ${file.path} in $gleanDocsDirectory")
+                        args file.path
                     }
                 }
 
