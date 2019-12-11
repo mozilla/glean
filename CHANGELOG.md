@@ -5,9 +5,11 @@
 * Python bindings:
 
   * Support for events was added.
-  
-* The Glean Gradle Plugin correctly triggers docs and API updates when registry files
-  change, without requiring them to be deleted.
+
+* All platforms
+
+  * The Glean Gradle Plugin correctly triggers docs and API updates when registry files
+    change, without requiring them to be deleted.
 
 # v22.0.0 (2019-12-05)
 
