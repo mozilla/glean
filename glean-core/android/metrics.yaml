@@ -23,7 +23,7 @@ glean.internal.metrics:
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1525606#c14
     notification_emails:
-      - telemetry-client-dev@mozilla.com
+      - glean-team@mozilla.com
     expires: never
 
 glean.core.migration:

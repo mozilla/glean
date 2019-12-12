@@ -23,7 +23,7 @@ glean.baseline:
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3
     notification_emails:
-      - telemetry-client-dev@mozilla.com
+      - glean-team@mozilla.com
     expires: never
   locale:
     type: string
@@ -38,7 +38,7 @@ glean.baseline:
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3
     notification_emails:
-      - telemetry-client-dev@mozilla.com
+      - glean-team@mozilla.com
     expires: never
 
 glean.internal.metrics:
@@ -54,7 +54,7 @@ glean.internal.metrics:
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3
     notification_emails:
-      - telemetry-client-dev@mozilla.com
+      - glean-team@mozilla.com
     expires: never
 
   os_version:
@@ -69,7 +69,7 @@ glean.internal.metrics:
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3
     notification_emails:
-      - telemetry-client-dev@mozilla.com
+      - glean-team@mozilla.com
     expires: never
 
   device_manufacturer:
@@ -84,7 +84,7 @@ glean.internal.metrics:
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3
     notification_emails:
-      - telemetry-client-dev@mozilla.com
+      - glean-team@mozilla.com
     expires: never
 
   device_model:
@@ -99,7 +99,7 @@ glean.internal.metrics:
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3
     notification_emails:
-      - telemetry-client-dev@mozilla.com
+      - glean-team@mozilla.com
     expires: never
 
   architecture:
@@ -114,7 +114,7 @@ glean.internal.metrics:
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3
     notification_emails:
-      - telemetry-client-dev@mozilla.com
+      - glean-team@mozilla.com
     expires: never
 
   client_id:
@@ -129,7 +129,7 @@ glean.internal.metrics:
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3
     notification_emails:
-      - telemetry-client-dev@mozilla.com
+      - glean-team@mozilla.com
     expires: never
 
   app_build:
@@ -144,7 +144,7 @@ glean.internal.metrics:
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3
     notification_emails:
-      - telemetry-client-dev@mozilla.com
+      - glean-team@mozilla.com
     expires: never
 
   app_display_version:
@@ -159,7 +159,7 @@ glean.internal.metrics:
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1508305#c9
     notification_emails:
-      - telemetry-client-dev@mozilla.com
+      - glean-team@mozilla.com
     expires: never
 
   app_channel:
@@ -174,7 +174,7 @@ glean.internal.metrics:
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1520741#c18
     notification_emails:
-      - telemetry-client-dev@mozilla.com
+      - glean-team@mozilla.com
     expires: never
 
   first_run_date:
@@ -190,7 +190,7 @@ glean.internal.metrics:
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1525045#c18
     notification_emails:
-      - telemetry-client-dev@mozilla.com
+      - glean-team@mozilla.com
     expires: never
 
 glean.error:
@@ -204,7 +204,7 @@ glean.error:
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1499761#c5
     notification_emails:
-      - telemetry-client-dev@mozilla.com
+      - glean-team@mozilla.com
     expires: never
     send_in_pings:
       - all-pings
@@ -221,7 +221,7 @@ glean.error:
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1499761#c5
     notification_emails:
-      - telemetry-client-dev@mozilla.com
+      - glean-team@mozilla.com
     expires: never
     send_in_pings:
       - all-pings
@@ -238,7 +238,7 @@ glean.error:
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1499761#c5
     notification_emails:
-      - telemetry-client-dev@mozilla.com
+      - glean-team@mozilla.com
     expires: never
     send_in_pings:
       - all-pings
@@ -255,5 +255,5 @@ glean.error:
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1575848#c5
     notification_emails:
-      - telemetry-client-dev@mozilla.com
+      - glean-team@mozilla.com
     expires: never
