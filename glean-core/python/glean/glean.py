@@ -135,8 +135,8 @@ class Glean:
 
         # Deal with any pending events so we can start recording new ones
         @Dispatcher.launch_at_front
-        def send_pending_events():
-            if _ffi.lib.glean_on_ready_to_send_pings(cls._handle):
+        def submit_pending_events():
+            if _ffi.lib.glean_on_ready_to_submit_pings(cls._handle):
                 PingUploadWorker.process()
 
         Dispatcher.flush_queued_initial_tasks()
@@ -372,25 +372,25 @@ class Glean:
         )
 
     @classmethod
-    def _send_pings(cls, pings: List["PingType"]):
+    def _submit_pings(cls, pings: List["PingType"]):
         """
-        Send a list of pings.
+        Collect and submit a list of pings for eventual uploading.
 
         If the ping currently contains no content, it will not be assembled and
         queued for sending.
 
         Args:
-            pings (list of PingType): List of pings to send.
+            pings (list of PingType): List of pings to submit.
         """
         ping_names = [ping.name for ping in pings]
 
-        cls._send_pings_by_name(ping_names)
+        cls._submit_pings_by_name(ping_names)
 
     @classmethod
     @Dispatcher.task
-    def _send_pings_by_name(cls, ping_names: List[str]):
+    def _submit_pings_by_name(cls, ping_names: List[str]):
         """
-        Send a list of pings by name.
+        Collect and submit a list of pings for eventual uploading by name.
 
         Each ping will be looked up in the known instances of
         `glean.metrics.PingType`. If the ping isn't known, an error is logged
@@ -400,17 +400,17 @@ class Glean:
         queued for sending.
 
         Args:
-            ping_names (list of str): List of pings to send.
+            ping_names (list of str): List of ping names to submit.
         """
         if not cls.is_initialized():
-            log.error("Glean must be initialized before sending pings.")
+            log.error("Glean must be initialized before submitting pings.")
             return
 
         if not cls.get_upload_enabled():
-            log.error("Glean must be enabled before sending pings.")
+            log.error("Glean must be enabled before submitting pings.")
             return
 
-        sent_ping = _ffi.lib.glean_send_pings_by_name(
+        sent_ping = _ffi.lib.glean_submit_pings_by_name(
             cls._handle, _ffi.ffi_encode_vec_string(ping_names), len(ping_names)
         )
 

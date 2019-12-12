@@ -56,7 +56,7 @@ class PingTests: XCTestCase {
         counter.add()
         XCTAssert(counter.testHasValue())
 
-        customPing.send()
+        customPing.submit()
 
         waitForExpectations(timeout: 5.0) { error in
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
@@ -86,7 +86,7 @@ class PingTests: XCTestCase {
         counter.add()
         XCTAssert(counter.testHasValue())
 
-        customPing.send()
+        customPing.submit()
 
         waitForExpectations(timeout: 5.0) { error in
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
@@ -116,7 +116,7 @@ class PingTests: XCTestCase {
         expectation = expectation(description: "Completed unexpected upload")
         expectation?.isInverted = true
 
-        Glean.shared.sendPingsByName(pingNames: ["unknown"])
+        Glean.shared.submitPingsByName(pingNames: ["unknown"])
 
         /// We wait for a timeout to happen, as we don't expect any data to be sent.
         waitForExpectations(timeout: 5.0) { _ in

@@ -59,7 +59,7 @@ class PingTypeTest {
         counter.add()
         assertTrue(counter.testHasValue())
 
-        customPing.send()
+        customPing.submit()
         // Trigger worker task to upload the pings in the background
         triggerWorkManager(context)
 
@@ -99,7 +99,7 @@ class PingTypeTest {
         counter.add()
         assertTrue(counter.testHasValue())
 
-        customPing.send()
+        customPing.submit()
         // Trigger worker task to upload the pings in the background
         triggerWorkManager(context)
 
@@ -133,7 +133,7 @@ class PingTypeTest {
         counter.add()
         assertTrue(counter.testHasValue())
 
-        Glean.sendPingsByName(listOf("unknown"))
+        Glean.submitPingsByName(listOf("unknown"))
 
         assertFalse("We shouldn't have any pings scheduled",
             getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued

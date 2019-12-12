@@ -256,7 +256,7 @@ internal class MetricsPingScheduler(
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     internal fun collectPingAndReschedule(now: Calendar) {
         Log.i(LOG_TAG, "Collecting the 'metrics' ping, now = ${now.time}")
-        Pings.metrics.send()
+        Pings.metrics.submit()
         // Update the collection date: we don't really care if we have data or not, let's
         // always update the sent date.
         updateSentDate(getISOTimeString(now, truncateTo = TimeUnit.Day))

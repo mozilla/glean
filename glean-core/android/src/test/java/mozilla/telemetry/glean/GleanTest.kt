@@ -114,7 +114,7 @@ class GleanTest {
 
     @Test
     fun `sending an empty ping doesn't queue work`() {
-        Glean.sendPings(listOf(Pings.metrics))
+        Glean.submitPings(listOf(Pings.metrics))
         assertFalse(getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued)
     }
 
@@ -455,7 +455,7 @@ class GleanTest {
         // the order of the calls must be preserved.
         val testValue = "SomeTestValue"
         stringMetric.set(testValue)
-        ping.send()
+        ping.submit()
 
         // Trigger worker task to upload the pings in the background. We need
         // to wait for the work to be enqueued first, since this test runs
@@ -518,7 +518,7 @@ class GleanTest {
         // Force the MetricsPingScheduler to schedule the MetricsPingWorker
         Glean.metricsPingScheduler.schedulePingCollection(Calendar.getInstance(), true)
         // Enqueue a worker to send the baseline ping
-        Pings.baseline.send()
+        Pings.baseline.submit()
 
         // Verify that the workers are enqueued
         assertTrue("PingUploadWorker is enqueued",

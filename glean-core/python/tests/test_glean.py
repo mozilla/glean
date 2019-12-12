@@ -41,7 +41,7 @@ def test_getting_upload_enabled_before_initialization_should_not_crash():
     assert Glean.get_upload_enabled()
 
 
-def test_send_a_ping(safe_httpserver):
+def test_submit_a_ping(safe_httpserver):
     safe_httpserver.serve_content(b"", code=200)
 
     Glean._configuration.server_endpoint = safe_httpserver.url
@@ -57,7 +57,7 @@ def test_send_a_ping(safe_httpserver):
 
     counter_metric.add()
 
-    _builtins.pings.baseline.send()
+    _builtins.pings.baseline.submit()
 
     assert 1 == len(safe_httpserver.requests)
 
@@ -65,10 +65,10 @@ def test_send_a_ping(safe_httpserver):
     assert "baseline" in request.url
 
 
-def test_sending_an_empty_ping_doesnt_queue_work(safe_httpserver):
+def test_submiting_an_empty_ping_doesnt_queue_work(safe_httpserver):
     safe_httpserver.serve_content(b"", code=200)
 
-    Glean._send_pings_by_name(["metrics"])
+    Glean._submit_pings_by_name(["metrics"])
     assert 0 == len(safe_httpserver.requests)
 
 
@@ -203,7 +203,7 @@ def test_dont_schedule_pings_if_metrics_disabled(safe_httpserver):
 
     Glean.set_upload_enabled(False)
 
-    custom_ping.send()
+    custom_ping.submit()
 
     assert 0 == len(safe_httpserver.requests)
 
@@ -213,7 +213,7 @@ def test_dont_schedule_pings_if_there_is_no_ping_content(safe_httpserver):
 
     custom_ping = PingType(name="store1", include_client_id=True, send_if_empty=False)
 
-    custom_ping.send()
+    custom_ping.submit()
 
     assert 0 == len(safe_httpserver.requests)
 

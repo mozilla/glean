@@ -276,7 +276,7 @@ def test_flush_queued_events_on_startup_and_correctly_handle_preinit_events(
 
     assert 1 == len(event.test_get_value())
 
-    Glean._send_pings_by_name(["events"])
+    Glean._submit_pings_by_name(["events"])
 
     assert 2 == len(safe_httpserver.requests)
     request = safe_httpserver.requests[1]

@@ -410,7 +410,7 @@ uint64_t glean_new_uuid_metric(FfiStr category,
                                int32_t lifetime,
                                uint8_t disabled);
 
-uint8_t glean_on_ready_to_send_pings(uint64_t glean_handle);
+uint8_t glean_on_ready_to_submit_pings(uint64_t glean_handle);
 
 char *glean_ping_collect(uint64_t glean_handle, uint64_t ping_type_handle);
 
@@ -431,9 +431,9 @@ uint8_t glean_quantity_test_has_value(uint64_t glean_handle,
 
 void glean_register_ping_type(uint64_t glean_handle, uint64_t ping_type_handle);
 
-uint8_t glean_send_pings_by_name(uint64_t glean_handle,
-                                 RawStringArray ping_names,
-                                 int32_t ping_names_len);
+uint8_t glean_submit_pings_by_name(uint64_t glean_handle,
+                                   RawStringArray ping_names,
+                                   int32_t ping_names_len);
 
 void glean_set_experiment_active(uint64_t glean_handle,
                                  FfiStr experiment_id,

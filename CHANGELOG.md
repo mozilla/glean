@@ -4,10 +4,14 @@
 
 * Python bindings:
   * Support for events was added.
-* All platforms
+* Android:
   * The Glean Gradle Plugin correctly triggers docs and API updates when registry files
     change, without requiring them to be deleted.
-* Rename `deletion_request` ping to `deletion-request` ping after glean_parser update
+* All platforms:
+  * The public method `PingType.send()` (in all platforms) have been deprecated
+    and renamed to `PingType.submit()`.
+  * Rename `deletion_request` ping to `deletion-request` ping after glean_parser update
+
 
 # v22.0.0 (2019-12-05)
 

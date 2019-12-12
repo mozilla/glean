@@ -11,7 +11,7 @@ As such it attempts to send itself at the moment the user opts out of data colle
 
 ## Scheduling
 
-The `deletion-request` ping is automatically sent when uploda is disabled in Glean.
+The `deletion-request` ping is automatically submitted when upload is disabled in Glean.
 If upload fails, it is retried after Glean is initialized.
 
 ## Contents

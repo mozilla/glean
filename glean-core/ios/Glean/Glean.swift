@@ -55,7 +55,7 @@ public class Glean {
     /// changes are made to the state if initialize is called a more than
     /// once.
     ///
-    /// A LifecycleObserver will be added to send pings when the application goes
+    /// A LifecycleObserver will be added to submit pings when the application goes
     /// into the background.
     ///
     /// - parameters:
@@ -100,7 +100,7 @@ public class Glean {
 
         // Deal with any pending events so we can start recording new ones
         Dispatchers.shared.serialOperationQueue.addOperation {
-            if glean_on_ready_to_send_pings(self.handle) != 0 {
+            if glean_on_ready_to_submit_pings(self.handle) != 0 {
                 Dispatchers.shared.launchConcurrent {
                     HttpPingUploader(configuration: configuration).process()
                 }
@@ -208,12 +208,12 @@ public class Glean {
         return handle != 0
     }
 
-    /// Handle background event and send appropriate pings
+    /// Handle background event and submit appropriate pings
     func handleBackgroundEvent() {
-        self.sendPingsByName(pingNames: ["baseline", "events"])
+        self.submitPingsByName(pingNames: ["baseline", "events"])
     }
 
-    /// Send a list of pings by name
+    /// Collect and submit a list of pings by name for eventual uploading
     ///
     /// - parameters:
     ///     * pingNames: List of ping names to send
@@ -224,7 +224,7 @@ public class Glean {
     ///
     /// If the ping currently contains no content, it will not be assembled and
     /// queued for sending.
-    func sendPingsByName(pingNames: [String]) {
+    func submitPingsByName(pingNames: [String]) {
         // This runs in the background to allow for processing of pings off of the
         // main thread. Please note that the ping uploader will spawn other async
         // operations if there are pings to upload.
@@ -240,13 +240,13 @@ public class Glean {
             }
 
             withArrayOfCStrings(pingNames) { pingNames in
-                let sentPing = glean_send_pings_by_name(
+                let submittedPing = glean_submit_pings_by_name(
                     self.handle,
                     pingNames,
                     Int32(pingNames?.count ?? 0)
                 )
 
-                if sentPing != 0 {
+                if submittedPing != 0 {
                     if let config = self.configuration {
                         HttpPingUploader(configuration: config).process()
                     }
@@ -255,9 +255,9 @@ public class Glean {
         }
     }
 
-    func sendPings(_ pings: [Ping]) {
+    func submitPings(_ pings: [Ping]) {
         let pingNames = pings.map { $0.name }
-        return self.sendPingsByName(pingNames: pingNames)
+        return self.submitPingsByName(pingNames: pingNames)
     }
 
     /// Register the pings generated from `pings.yaml` with the Glean SDK.

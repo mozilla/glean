@@ -19,7 +19,10 @@ use chrono::{DateTime, FixedOffset};
 use lazy_static::lazy_static;
 use uuid::Uuid;
 
+// This needs to be included first, and the space below prevents rustfmt from
+// alphabetizing it.
 mod macros;
+
 pub mod ac_migration;
 mod common_metric_data;
 mod database;
@@ -235,7 +238,7 @@ impl Glean {
     /// # Return value
     ///
     /// `true` if at least one ping was generated, `false` otherwise.
-    pub fn on_ready_to_send_pings(&self) -> bool {
+    pub fn on_ready_to_submit_pings(&self) -> bool {
         self.event_data_store.flush_pending_events_on_startup(&self)
     }
 
@@ -261,9 +264,9 @@ impl Glean {
     pub fn set_upload_enabled(&mut self, flag: bool) -> bool {
         log::info!("Upload enabled: {:?}", flag);
 
-        // When upload is disabled, send a deletion-request ping
+        // When upload is disabled, submit a deletion-request ping
         if !flag {
-            if let Err(err) = self.internal_pings.deletion_request.send(self) {
+            if let Err(err) = self.internal_pings.deletion_request.submit(self) {
                 log::error!("Failed to send deletion-request ping on optout: {}", err);
             }
         }
@@ -408,7 +411,7 @@ impl Glean {
         )
     }
 
-    /// Send a ping.
+    /// Collect and submit a ping for eventual uploading.
     ///
     /// The ping content is assembled as soon as possible, but upload is not
     /// guaranteed to happen immediately, as that depends on the upload
@@ -418,7 +421,7 @@ impl Glean {
     ///
     /// Returns true if a ping was assembled and queued, false otherwise.
     /// Returns an error if collecting or writing the ping to disk failed.
-    pub fn send_ping(&self, ping: &PingType) -> Result<bool> {
+    pub fn submit_ping(&self, ping: &PingType) -> Result<bool> {
         if !self.is_upload_enabled() {
             log::error!("Glean must be enabled before sending pings.");
             return Ok(false);
@@ -456,26 +459,26 @@ impl Glean {
         }
     }
 
-    /// Send a list of pings by name.
+    /// Collect and submit a ping for eventual uploading by name.
     ///
-    /// See `send_ping` for detailed information.
+    /// See `submit_ping` for detailed information.
     ///
     /// Returns true if at least one ping was assembled and queued, false otherwise.
-    pub fn send_pings_by_name(&self, ping_names: &[String]) -> bool {
+    pub fn submit_pings_by_name(&self, ping_names: &[String]) -> bool {
         // TODO: 1553813: glean-ac collects and stores pings in parallel and then joins them all before queueing the worker.
         // This here is writing them out sequentially.
 
         let mut result = false;
 
         for ping_name in ping_names {
-            if let Ok(true) = self.send_ping_by_name(ping_name) {
+            if let Ok(true) = self.submit_ping_by_name(ping_name) {
                 result = true;
             }
         }
         result
     }
 
-    /// Send a ping by name.
+    /// Collect and submit a ping by name for eventual uploading.
     ///
     /// The ping content is assembled as soon as possible, but upload is not
     /// guaranteed to happen immediately, as that depends on the upload
@@ -485,13 +488,13 @@ impl Glean {
     ///
     /// Returns true if a ping was assembled and queued, false otherwise.
     /// Returns an error if collecting or writing the ping to disk failed.
-    pub fn send_ping_by_name(&self, ping_name: &str) -> Result<bool> {
+    pub fn submit_ping_by_name(&self, ping_name: &str) -> Result<bool> {
         match self.get_ping_by_name(ping_name) {
             None => {
-                log::error!("Attempted to send unknown ping '{}'", ping_name);
+                log::error!("Attempted to submit unknown ping '{}'", ping_name);
                 Ok(false)
             }
-            Some(ping) => self.send_ping(ping),
+            Some(ping) => self.submit_ping(ping),
         }
     }
 
