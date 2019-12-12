@@ -184,7 +184,9 @@ open class GleanInternalAPI internal constructor () {
         // Deal with any pending events so we can start recording new ones
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.executeTask {
-            val pingSubmitted = LibGleanFFI.INSTANCE.glean_on_ready_to_submit_pings(this@GleanInternalAPI.handle).toBoolean()
+            val pingSubmitted = LibGleanFFI.INSTANCE.glean_on_ready_to_submit_pings(
+                this@GleanInternalAPI.handle
+            ).toBoolean()
             if (pingSubmitted) {
                 PingUploadWorker.enqueueWorker(applicationContext)
             }
