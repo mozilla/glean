@@ -31,6 +31,8 @@ pub enum ErrorType {
     InvalidLabel,
     /// For when the metric caught an invalid state while recording
     InvalidState,
+    /// For when the value to be recorded overflows the metric-specific upper range
+    InvalidOverflow,
 }
 
 impl ErrorType {
@@ -40,6 +42,7 @@ impl ErrorType {
             ErrorType::InvalidValue => "invalid_value",
             ErrorType::InvalidLabel => "invalid_label",
             ErrorType::InvalidState => "invalid_state",
+            ErrorType::InvalidOverflow => "invalid_overflow",
         }
     }
 }
@@ -52,6 +55,7 @@ impl TryFrom<i32> for ErrorType {
             0 => Ok(ErrorType::InvalidValue),
             1 => Ok(ErrorType::InvalidLabel),
             2 => Ok(ErrorType::InvalidState),
+            4 => Ok(ErrorType::InvalidOverflow),
             e => Err(ErrorKind::Lifetime(e).into()),
         }
     }
