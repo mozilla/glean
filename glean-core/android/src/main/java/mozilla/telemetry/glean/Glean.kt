@@ -538,13 +538,13 @@ open class GleanInternalAPI internal constructor () {
 
         val pingArray = StringArray(pingNames.toTypedArray(), "utf-8")
         val pingArrayLen = pingNames.size
-        val sentPing = LibGleanFFI.INSTANCE.glean_submit_pings_by_name(
+        val submittedPing = LibGleanFFI.INSTANCE.glean_submit_pings_by_name(
             handle,
             pingArray,
             pingArrayLen
         ).toBoolean()
 
-        if (sentPing) {
+        if (submittedPing) {
             PingUploadWorker.enqueueWorker(applicationContext)
         }
     }
