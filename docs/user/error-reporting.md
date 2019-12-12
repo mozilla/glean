@@ -7,8 +7,10 @@ Additionally, error metrics are always sent in the [`metrics` ping](pings/metric
 
 The following categories of errors are recorded:
 
-- `invalid_value`: The metric value was invalid or out-of-range.
+- `invalid_value`: The metric value was invalid.
 - `invalid_label`: The label on a labeled metric was invalid.
+- `invalid_state`: The metric caught an invalid state while recording.
+- `invalid_overflow`: The metric value to be recorded overflows the metric-specific upper range.
 
 For example, if you had a string metric and passed it a string that was too long:
 
