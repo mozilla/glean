@@ -26,20 +26,6 @@ glean.internal.metrics:
       - telemetry-client-dev@mozilla.com
     expires: never
 
-glean.error:
-  preinit_tasks_timeout:
-    type: boolean
-    description:
-      Set to true if the tasks that are queued prior to Glean initialization
-      time out.
-    bugs:
-      - https://bugzilla.mozilla.org/1575848
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1575848#c5
-    notification_emails:
-      - telemetry-client-dev@mozilla.com
-    expires: never
-
 glean.core.migration:
   successful:
     type: boolean
