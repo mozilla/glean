@@ -238,6 +238,53 @@ fn the_accumulate_samples_api_correctly_handles_negative_values() {
 }
 
 #[test]
+fn the_accumulate_samples_api_correctly_handles_overflowing_values() {
+    let (glean, _t) = new_glean();
+
+    let mut metric = TimingDistributionMetric::new(
+        CommonMetricData {
+            name: "distribution".into(),
+            category: "telemetry".into(),
+            send_in_pings: vec!["store1".into()],
+            disabled: false,
+            lifetime: Lifetime::Ping,
+            ..Default::default()
+        },
+        TimeUnit::Nanosecond,
+    );
+
+    // The MAX_SAMPLE_TIME is the same from `metrics/timing_distribution.rs`.
+    const MAX_SAMPLE_TIME: u64 = 1000 * 1000 * 1000 * 60 * 10;
+    let overflowing_val = MAX_SAMPLE_TIME as i64 + 1;
+    // Accumulate the samples.
+    metric.accumulate_samples_signed(&glean, [overflowing_val, 1, 2, 3].to_vec());
+
+    let val = metric
+        .test_get_value(&glean, "store1")
+        .expect("Value should be stored");
+
+    // Overflowing values are truncated to MAX_SAMPLE_TIME and recorded.
+    assert_eq!(val.sum(), MAX_SAMPLE_TIME + 6);
+    assert_eq!(val.count(), 4);
+
+    // We should get a sample in each of the first 3 buckets.
+    assert_eq!(1, val.values()[&1]);
+    assert_eq!(1, val.values()[&2]);
+    assert_eq!(1, val.values()[&3]);
+
+    // 1 error should be reported.
+    assert_eq!(
+        Ok(1),
+        test_get_num_recorded_errors(
+            &glean,
+            metric.meta(),
+            ErrorType::InvalidOverflow,
+            Some("store1")
+        )
+    );
+}
+
+#[test]
 fn large_nanoseconds_values() {
     let (glean, _t) = new_glean();
 
