@@ -16,6 +16,10 @@ class Dispatchers {
     struct Constants {
         static let logTag = "glean/Dispatchers"
         static let maxQueueSize = 100
+
+        // This is the number of seconds that are allowed for the initial tasks queue to
+        // process all of the queued tasks.
+        static let queueProcessingTimeout = 5.0
     }
 
     private let logger = Logger(tag: Constants.logTag)
@@ -153,15 +157,27 @@ class Dispatchers {
 
     /// Stop queuing tasks and process any tasks in the queue.
     func flushQueuedInitialTasks() {
-        // Add all of the queued operations to the `operationQueue` which will cause them to be
-        // executed serially in the order they were collected.  We are passing `testingMode` to the
-        // `waitUntilFinished` parameter since this is a serial queue and any newly queued tasks
-        // should execute after the `preInitOperations` that are being added here. For tests, we
-        // need to await all of the tasks to finish execution, so we set this to true.
+        // Timeouts are easily accomplished in Swift using DispatchSemaphores and launching
+        // a block of code asynchronously.  This creates a semaphore that we can await with a
+        // timeout to prevent the queued initial tasks from hanging up or taking a long time.
+        let timeout = DispatchSemaphore(value: 0)
+        concurrentOperationsQueue.addOperation {
+            // Add all of the queued operations to the `operationQueue` which will cause them to be
+            // executed serially in the order they were collected.
+            self.serialOperationQueue.addOperations(self.preInitOperations, waitUntilFinished: true)
+            timeout.signal()
+        }
 
-        // TODO(bug 1591094) Android has a timeout of 5 seconds for running preinit tasks.
-
-        self.serialOperationQueue.addOperations(preInitOperations, waitUntilFinished: testingMode)
+        // Await the async task to complete up to the allowed time and log an error if it
+        // times out.
+        if timeout.wait(timeout: DispatchTime.now() + Constants.queueProcessingTimeout) == .timedOut {
+            logger.error("Timeout processing initial tasks queue")
+            // Turn off queuing to allow for normal background execution mode
+            queueInitialTasks.value = false
+            GleanMetrics.GleanError.preinitTasksTimeout.set(true)
+        } else {
+            logger.info("Initial tasks queue completed successfully")
+        }
 
         // Turn off queuing to allow for normal background execution mode
         queueInitialTasks.value = false
