@@ -6,6 +6,8 @@
 # automatically converted to Kotlin code at build time using the `glean_parser`
 # PyPI package.
 
+---
+
 $schema: moz://mozilla.org/schemas/glean/metrics/1-0-0
 
 browser.engagement:
