@@ -10,7 +10,7 @@ use glean_core::CommonMetricData;
 
 #[test]
 fn write_ping_to_disk() {
-    let (mut glean, _temp) = new_glean();
+    let (mut glean, _temp) = new_glean(None);
 
     let ping = PingType::new("metrics", true, false);
     glean.register_ping_type(&ping);
@@ -31,7 +31,7 @@ fn write_ping_to_disk() {
 
 #[test]
 fn disabling_upload_clears_pending_pings() {
-    let (mut glean, _) = new_glean();
+    let (mut glean, _) = new_glean(None);
 
     let ping = PingType::new("metrics", true, false);
     glean.register_ping_type(&ping);
@@ -66,7 +66,7 @@ fn disabling_upload_clears_pending_pings() {
 
 #[test]
 fn empty_pings_with_flag_are_sent() {
-    let (mut glean, _) = new_glean();
+    let (mut glean, _) = new_glean(None);
 
     let ping1 = PingType::new("custom-ping1", true, true);
     glean.register_ping_type(&ping1);
