@@ -183,7 +183,7 @@ XCTAssertEqual(1, pages.pageLoad.testGetNumRecordedErrors(.invalidValue))
 
 * `invalid_value`: If recording a negative timespan.
 * `invalid_value`: If a non-existing/stopped timer is stopped again.
-* `invalid_value`: If recording a time longer than 10 minutes.
+* `invalid_overflow`: If recording a time longer than 10 minutes.
 
 ## Reference
 
