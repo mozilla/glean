@@ -8,13 +8,13 @@ Sorry about that.
 
 # Pings
 
- - [all_pings](#all_pings)
+ - [all-pings](#all-pings)
  - [baseline](#baseline)
  - [deletion_request](#deletion_request)
  - [metrics](#metrics)
 
 
-## all_pings
+## all-pings
 These metrics are sent in every ping.
 The following metrics are added to the ping:
 
