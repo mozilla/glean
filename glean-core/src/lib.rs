@@ -419,6 +419,10 @@ impl Glean {
     /// Returns true if a ping was assembled and queued, false otherwise.
     /// Returns an error if collecting or writing the ping to disk failed.
     pub fn send_ping(&self, ping: &PingType) -> Result<bool> {
+        if !self.is_upload_enabled() {
+            return Ok(false);
+        }
+
         let ping_maker = PingMaker::new();
         let doc_id = Uuid::new_v4().to_string();
         let url_path = self.make_path(&ping.name, &doc_id);
