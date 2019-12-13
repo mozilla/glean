@@ -245,6 +245,23 @@ glean.error:
     no_lint:
       - COMMON_PREFIX
 
+  invalid_overflow:
+    type: labeled_counter
+    description:
+      Counts the number of times a metric was set a value that overflew.
+      The labels are the `category.name` identifier of the metric.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1591912
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1591912#c3
+    notification_emails:
+      - glean-team@mozilla.com
+    expires: never
+    send_in_pings:
+      - all_pings
+    no_lint:
+      - COMMON_PREFIX
+
   preinit_tasks_timeout:
     type: boolean
     description:
