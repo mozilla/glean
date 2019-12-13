@@ -22,9 +22,9 @@ fn counter_serializer_should_correctly_serialize_counters() {
     let (mut tempdir, _) = tempdir();
 
     {
-        // We give tempdir for the `new_glean` function...
+        // We give tempdir to the `new_glean` function...
         let (glean, dir) = new_glean(Some(tempdir));
-        // And then we get it back on that function returns.
+        // And then we get it back once that function returns.
         tempdir = dir;
 
         let metric = CounterMetric::new(CommonMetricData {

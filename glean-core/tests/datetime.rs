@@ -21,9 +21,9 @@ fn datetime_serializer_should_correctly_serialize_datetime() {
     let (mut tempdir, _) = tempdir();
 
     {
-        // We give tempdir for the `new_glean` function...
+        // We give tempdir to the `new_glean` function...
         let (glean, dir) = new_glean(Some(tempdir));
-        // And then we get it back on that function returns.
+        // And then we get it back once that function returns.
         tempdir = dir;
 
         let metric = DatetimeMetric::new(

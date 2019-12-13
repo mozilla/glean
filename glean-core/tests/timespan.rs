@@ -23,9 +23,9 @@ fn serializer_should_correctly_serialize_timespans() {
     let duration = 60;
 
     {
-        // We give tempdir for the `new_glean` function...
+        // We give tempdir to the `new_glean` function...
         let (glean, dir) = new_glean(Some(tempdir));
-        // And then we get it back on that function returns.
+        // And then we get it back once that function returns.
         tempdir = dir;
 
         let mut metric = TimespanMetric::new(
