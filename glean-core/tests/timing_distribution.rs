@@ -73,7 +73,7 @@ fn serializer_should_correctly_serialize_timing_distribution() {
 
 #[test]
 fn set_value_properly_sets_the_value_in_all_stores() {
-    let (glean, _t) = new_glean();
+    let (glean, _t) = new_glean(None);
     let store_names: Vec<String> = vec!["store1".into(), "store2".into()];
 
     let duration = 1;
@@ -111,7 +111,7 @@ fn set_value_properly_sets_the_value_in_all_stores() {
 
 #[test]
 fn timing_distributions_must_not_accumulate_negative_values() {
-    let (glean, _t) = new_glean();
+    let (glean, _t) = new_glean(None);
 
     let duration = 60;
     let time_unit = TimeUnit::Nanosecond;
@@ -149,7 +149,7 @@ fn timing_distributions_must_not_accumulate_negative_values() {
 
 #[test]
 fn the_accumulate_samples_api_correctly_stores_timing_values() {
-    let (glean, _t) = new_glean();
+    let (glean, _t) = new_glean(None);
 
     let mut metric = TimingDistributionMetric::new(
         CommonMetricData {
@@ -196,7 +196,7 @@ fn the_accumulate_samples_api_correctly_stores_timing_values() {
 
 #[test]
 fn the_accumulate_samples_api_correctly_handles_negative_values() {
-    let (glean, _t) = new_glean();
+    let (glean, _t) = new_glean(None);
 
     let mut metric = TimingDistributionMetric::new(
         CommonMetricData {
@@ -240,7 +240,7 @@ fn the_accumulate_samples_api_correctly_handles_negative_values() {
 
 #[test]
 fn large_nanoseconds_values() {
-    let (glean, _t) = new_glean();
+    let (glean, _t) = new_glean(None);
 
     let mut metric = TimingDistributionMetric::new(
         CommonMetricData {

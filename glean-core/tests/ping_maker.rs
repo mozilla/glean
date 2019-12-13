@@ -156,7 +156,7 @@ fn seq_number_must_be_sequential() {
 
 #[test]
 fn test_clear_pending_pings() {
-    let (mut glean, _) = new_glean();
+    let (mut glean, _) = new_glean(None);
     let ping_maker = PingMaker::new();
     let ping_type = PingType::new("store1", true, false);
     glean.register_ping_type(&ping_type);
