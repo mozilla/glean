@@ -113,7 +113,7 @@ class DeletionRequestPingTest {
         var retries = 3
         var ping: JSONObject? = null
         while (retries > 0) {
-            ping = waitForPingContent("deletion_request")
+            ping = waitForPingContent("deletion-request")
             if (ping != null) {
                 break
             }
@@ -122,7 +122,7 @@ class DeletionRequestPingTest {
         val deletionPing = ping!!
 
         // Validate the received data.
-        assertEquals("deletion_request", deletionPing.getJSONObject("ping_info")["ping_type"])
+        assertEquals("deletion-request", deletionPing.getJSONObject("ping_info")["ping_type"])
 
         var clientInfo = deletionPing.getJSONObject("client_info")
         val clientId = clientInfo.getString("client_id")

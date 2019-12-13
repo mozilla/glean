@@ -7,7 +7,7 @@
     <string name="generate_data">Record Text</string>
     <string name="string_list_input_hint">Enter some text here</string>
     <string name="counter_metric_info">
-        Every time you click on the button above, the text is added to the test_string_list metric
+        Every time you click on the button above, the text is added to the test-string-list metric
         and a counter metric type called testCounter is incremented. Both of these will be included
         when the ping is sent. The counter and the string list are utilizing the `user` lifetime
         and should persist from launch to launch of the app.\n\nAn event metric is also being used

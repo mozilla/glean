@@ -3,13 +3,11 @@
 [Full changelog](https://github.com/mozilla/glean/compare/v22.0.0...master)
 
 * Python bindings:
-
   * Support for events was added.
-
 * All platforms
-
   * The Glean Gradle Plugin correctly triggers docs and API updates when registry files
     change, without requiring them to be deleted.
+* Rename `deletion_request` ping to `deletion-request` ping after glean_parser update
 
 # v22.0.0 (2019-12-05)
 

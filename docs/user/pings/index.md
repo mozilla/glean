@@ -5,7 +5,7 @@ Every Glean ping is in JSON format and contains one or more of the [common secti
 If data collection is enabled, the Glean SDK provides a set of built-in pings that are assembled out of the box without any developer intervention.  The following is a list of these built-in pings:
 
 - [`baseline` ping](baseline.md)
-- [`deletion_request` ping](deletion_request.md)
+- [`deletion-request` ping](deletion_request.md)
 - [`metrics` ping](metrics.md)
 - [`events` ping](events.md)
 

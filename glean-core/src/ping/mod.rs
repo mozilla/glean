@@ -244,9 +244,9 @@ impl PingMaker {
     /// The directory will be created inside the `data_path`.
     /// The `pings` directory (and its parents) is created if it does not exist.
     fn get_pings_dir(&self, data_path: &Path, ping_type: Option<&str>) -> std::io::Result<PathBuf> {
-        // Use a special directory for deletion_request pings
+        // Use a special directory for deletion-request pings
         let pings_dir = match ping_type {
-            Some(ping_type) if ping_type == "deletion_request" => {
+            Some(ping_type) if ping_type == "deletion-request" => {
                 data_path.join("deletion_request")
             }
             _ => data_path.join("pending_pings"),

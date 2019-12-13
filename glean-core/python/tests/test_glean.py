@@ -341,6 +341,6 @@ def test_disabling_upload_sends_deletion_request(safe_httpserver):
     # Ensure nothing was received yet
     assert 0 == len(safe_httpserver.requests)
 
-    # Disabling upload will trigger a deletion_request ping
+    # Disabling upload will trigger a deletion-request ping
     Glean.set_upload_enabled(False)
     assert 1 == len(safe_httpserver.requests)

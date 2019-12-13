@@ -207,7 +207,7 @@ glean.error:
       - telemetry-client-dev@mozilla.com
     expires: never
     send_in_pings:
-      - all_pings
+      - all-pings
     no_lint:
       - COMMON_PREFIX
 
@@ -224,7 +224,7 @@ glean.error:
       - telemetry-client-dev@mozilla.com
     expires: never
     send_in_pings:
-      - all_pings
+      - all-pings
     no_lint:
       - COMMON_PREFIX
 
@@ -241,6 +241,6 @@ glean.error:
       - telemetry-client-dev@mozilla.com
     expires: never
     send_in_pings:
-      - all_pings
+      - all-pings
     no_lint:
       - COMMON_PREFIX
