@@ -67,7 +67,6 @@ data class Configuration internal constructor(
     val channel: String? = null,
     val userAgent: String = DEFAULT_USER_AGENT,
     val maxEvents: Int? = null,
-    val delayPingLifetimeIO: Boolean = false,
     val logPings: Boolean = DEFAULT_LOG_PINGS,
     // NOTE: since only simple object or strings can be made `const val`s, if the
     // default values for the lines below are ever changed, they are required
@@ -100,7 +99,6 @@ data class Configuration internal constructor(
         serverEndpoint = serverEndpoint,
         userAgent = DEFAULT_USER_AGENT,
         maxEvents = maxEvents,
-        delayPingLifetimeIO = false,
         logPings = DEFAULT_LOG_PINGS,
         httpClient = httpClient,
         pingTag = null,
