@@ -23,6 +23,9 @@ use crate::Glean;
 use crate::Lifetime;
 
 /// The possible error types for metric recording.
+/// Note: the cases in this enum must be kept in sync with the ones
+/// in the platform-specific code (e.g. ErrorType.kt) and with the
+/// metrics in the registry files.
 #[derive(Debug)]
 pub enum ErrorType {
     /// For when the value to be recorded does not match the metric-specific restrictions
