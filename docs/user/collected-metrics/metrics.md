@@ -9,7 +9,7 @@ This means you might have to go searching through the dependency tree to get a f
 
  - [all-pings](#all-pings)
  - [baseline](#baseline)
- - [deletion_request](#deletion_request)
+ - [deletion-request](#deletion-request)
  - [metrics](#metrics)
 
 
@@ -33,9 +33,9 @@ The following metrics are added to the ping:
 | glean.baseline.duration |[timespan](https://mozilla.github.io/glean/book/user/metrics/timespan.html) |The duration of the last foreground session.  |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3)||never |
 | glean.baseline.locale |[string](https://mozilla.github.io/glean/book/user/metrics/string.html) |The locale of the application (e.g. "es-ES").  |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3)||never |
 
-## deletion_request
-This is a built-in ping that is assembled out of the box by the Glean SDK.
-See the Glean SDK documentation for the [`deletion_request` ping](https://mozilla.github.io/glean/book/user/pings/deletion_request.html).
+## deletion-request
+This ping is submitted when a user opts out of sending technical and interaction data to Mozilla. This ping is intended to communicate to the Data Pipeline that the user wishes to have their reported Telemetry data deleted. As such it attempts to send itself at the moment the user opts out of data collection.
+
 This ping is sent if empty.
 This ping contains no metrics.
 

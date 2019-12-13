@@ -1,4 +1,4 @@
-# The `deletion_request` ping
+# The `deletion-request` ping
 
 ## Description
 
@@ -11,19 +11,19 @@ As such it attempts to send itself at the moment the user opts out of data colle
 
 ## Scheduling
 
-The `deletion_request` ping is automatically sent when uploda is disabled in Glean.
+The `deletion-request` ping is automatically sent when uploda is disabled in Glean.
 If upload fails, it is retried after Glean is initialized.
 
 ## Contents
 
-The `deletion_request` does not contain additional metrics.
+The `deletion-request` does not contain additional metrics.
 
-## Example `deletion_request` ping
+## Example `deletion-request` ping
 
 ```json
 {
   "ping_info": {
-    "ping_type": "deletion_request",
+    "ping_type": "deletion-request",
     "seq": 0,
     "start_time": "2019-12-06T09:50-04:00",
     "end_time": "2019-12-06T09:53-04:00"

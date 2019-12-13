@@ -31,7 +31,7 @@ class DeletionRequestPingTest: XCTestCase {
     }
 
     func testDeletionRequestPing() {
-        var server = setupServer(expectPingType: "deletion_request")
+        var server = setupServer(expectPingType: "deletion-request")
         expectation = expectation(description: "Completed upload")
 
         app.launchArguments = ["USE_MOCK_SERVER"]
@@ -44,7 +44,7 @@ class DeletionRequestPingTest: XCTestCase {
         }
 
         var pingInfo = lastPingJson!["ping_info"] as! [String: Any]
-        XCTAssertEqual(pingInfo["ping_type"] as! String, "deletion_request")
+        XCTAssertEqual(pingInfo["ping_type"] as! String, "deletion-request")
 
         var clientInfo = lastPingJson!["client_info"] as! [String: Any]
         let clientId = clientInfo["client_id"] as! String

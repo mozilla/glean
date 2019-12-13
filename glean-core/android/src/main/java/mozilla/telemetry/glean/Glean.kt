@@ -282,7 +282,7 @@ open class GleanInternalAPI internal constructor () {
                 }
 
                 if (originalEnabled && !enabled) {
-                    // If uploading is disabled, we need to send the deletion_request ping
+                    // If uploading is disabled, we need to send the deletion-request ping
                     DeletionPingUploadWorker.enqueueWorker(applicationContext)
                 }
             }

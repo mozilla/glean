@@ -55,7 +55,7 @@ events:
   notification_emails:
     - glean-team@mozilla.com
 
-deletion_request:
+deletion-request:
   description: >
     This ping is submitted when a user opts out of
     sending technical and interaction data to Mozilla.

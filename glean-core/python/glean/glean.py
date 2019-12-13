@@ -223,7 +223,7 @@ class Glean:
                     cls._initialize_core_metrics()
 
                 if original_enabled is True and cls.get_upload_enabled() is False:
-                    # If uploading is disabled, we need to send the deletion_request ping
+                    # If uploading is disabled, we need to send the deletion-request ping
                     DeletionPingUploadWorker.process()
 
         else:

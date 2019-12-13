@@ -180,7 +180,7 @@ public class Glean {
                 }
 
                 if originalEnabled && !enabled {
-                    // If uploading is disabled, we need to send the deletion_request ping
+                    // If uploading is disabled, we need to send the deletion-request ping
                     Dispatchers.shared.launchConcurrent {
                         HttpPingUploader(
                             configuration: self.configuration!,

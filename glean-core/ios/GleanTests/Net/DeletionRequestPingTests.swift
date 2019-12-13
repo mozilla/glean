@@ -50,7 +50,7 @@ class DeletionRequestPingTests: XCTestCase {
         }
 
         let pingInfo = lastPingJson!["ping_info"] as! [String: Any]
-        XCTAssertEqual(pingInfo["ping_type"] as! String, "deletion_request")
+        XCTAssertEqual(pingInfo["ping_type"] as! String, "deletion-request")
 
         let clientInfo = lastPingJson!["client_info"] as! [String: Any]
         let clientId = clientInfo["client_id"] as! String
@@ -62,7 +62,7 @@ class DeletionRequestPingTests: XCTestCase {
         glean.testDestroyGleanHandle()
         glean.enableTestingMode()
 
-        // Create directory for pending deletion_request pings
+        // Create directory for pending deletion-request pings
         let pendingDeletionRequestDir = getDocumentsDirectory().appendingPathComponent("deletion_request")
         try! FileManager.default.createDirectory(
             atPath: pendingDeletionRequestDir.path,
@@ -70,12 +70,12 @@ class DeletionRequestPingTests: XCTestCase {
             attributes: nil
         )
 
-        // Write a deletion_request ping file
+        // Write a deletion-request ping file
         let pingId = "b4e4ede0-8716-4691-a3fa-493c56c5be2d"
-        let submitPath = "/submit/org-mozilla-samples-gleancore/deletion_request/1/\(pingId)"
+        let submitPath = "/submit/org-mozilla-samples-gleancore/deletion-request/1/\(pingId)"
         // swiftlint:disable line_length
         // REASON: This is inline JSON
-        let json = "{\"ping_info\": {\"ping_type\": \"deletion_request\"}, \"client_info\": {\"client_id\": \"test-only\"}}"
+        let json = "{\"ping_info\": {\"ping_type\": \"deletion-request\"}, \"client_info\": {\"client_id\": \"test-only\"}}"
         // swiftlint:enable line_length
         let content = "\(submitPath)\n\(json)"
         let pingFile = pendingDeletionRequestDir.appendingPathComponent(pingId)
@@ -97,7 +97,7 @@ class DeletionRequestPingTests: XCTestCase {
         }
 
         let pingInfo = lastPingJson?["ping_info"] as? [String: Any]
-        XCTAssertEqual(pingInfo?["ping_type"] as? String, "deletion_request")
+        XCTAssertEqual(pingInfo?["ping_type"] as? String, "deletion-request")
 
         let clientInfo = lastPingJson!["client_info"] as! [String: Any]
         let clientId = clientInfo["client_id"] as! String
