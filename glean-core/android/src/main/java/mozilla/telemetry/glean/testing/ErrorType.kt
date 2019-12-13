@@ -18,5 +18,10 @@ enum class ErrorType {
     /**
      * For when timings are recorded incorrectly
      */
-    InvalidState
+    InvalidState,
+
+    /**
+     * For when the value to be recorded overflows the metric-specific upper range
+     */
+    InvalidOverflow
 }
