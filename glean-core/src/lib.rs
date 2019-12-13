@@ -420,6 +420,7 @@ impl Glean {
     /// Returns an error if collecting or writing the ping to disk failed.
     pub fn send_ping(&self, ping: &PingType) -> Result<bool> {
         if !self.is_upload_enabled() {
+            log::error!("Glean must be enabled before sending pings.");
             return Ok(false);
         }
 
