@@ -14,4 +14,7 @@ public enum ErrorType: Int32 {
 
     // For when timings are recorded incorrectly
     case invalidState = 2
+
+    // For when the value to be recorded overflows the metric-specific upper range
+    case invalidOverflow = 3
 }
