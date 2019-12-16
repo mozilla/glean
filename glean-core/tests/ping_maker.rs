@@ -189,16 +189,16 @@ fn test_no_pings_submitted_if_upload_disabled() {
     let ping_type = PingType::new("store1", true, true);
     glean.register_ping_type(&ping_type);
 
-    assert!(glean.send_ping(&ping_type).is_ok());
+    assert!(glean.submit_ping(&ping_type).is_ok());
     assert_eq!(1, get_queued_pings(glean.get_data_path()).unwrap().len());
 
-    // Disable upload, then try to send
+    // Disable upload, then try to sumbit
     glean.set_upload_enabled(false);
 
-    assert!(glean.send_ping(&ping_type).is_ok());
+    assert!(glean.submit_ping(&ping_type).is_ok());
     assert_eq!(0, get_queued_pings(glean.get_data_path()).unwrap().len());
 
     // Test again through the direct call
-    assert!(ping_type.send(&glean).is_ok());
+    assert!(ping_type.submit(&glean).is_ok());
     assert_eq!(0, get_queued_pings(glean.get_data_path()).unwrap().len());
 }
