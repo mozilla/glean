@@ -551,6 +551,15 @@ impl Glean {
         metric.set_inactive(&self);
     }
 
+    /// Persist Lifetime::Ping data that might be in memory
+    /// in case `delay_ping_lifetime_io` is set or was set
+    /// at a previous time.
+    ///
+    /// If there is no data to persist, this function does nothing.
+    pub fn persist_ping_lifetime_data(&self) -> Result<()> {
+        self.data_store.persist_ping_lifetime_data()
+    }
+
     /// **Test-only API (exported for FFI purposes).**
     ///
     /// Check if an experiment is currently active.

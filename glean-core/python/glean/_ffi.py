@@ -47,11 +47,7 @@ lib.glean_enable_logging()
 
 
 def make_config(
-    data_dir: Path,
-    package_name: str,
-    upload_enabled: bool,
-    max_events: int,
-    delay_ping_lifetime_io: bool = False,
+    data_dir: Path, package_name: str, upload_enabled: bool, max_events: int,
 ) -> Any:
     """
     Make an `FfiConfiguration` object.
@@ -70,7 +66,7 @@ def make_config(
     cfg.package_name = package_name
     cfg.upload_enabled = upload_enabled
     cfg.max_events = max_events
-    cfg.delay_ping_lifetime_io = delay_ping_lifetime_io
+    cfg.delay_ping_lifetime_io = False
 
     _global_weakkeydict[cfg] = (data_dir, package_name, max_events)
 
