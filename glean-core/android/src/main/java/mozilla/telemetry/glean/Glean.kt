@@ -184,8 +184,10 @@ open class GleanInternalAPI internal constructor () {
         // Deal with any pending events so we can start recording new ones
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.executeTask {
-            val pingSent = LibGleanFFI.INSTANCE.glean_on_ready_to_send_pings(this@GleanInternalAPI.handle).toBoolean()
-            if (pingSent) {
+            val pingSubmitted = LibGleanFFI.INSTANCE.glean_on_ready_to_submit_pings(
+                this@GleanInternalAPI.handle
+            ).toBoolean()
+            if (pingSubmitted) {
                 PingUploadWorker.enqueueWorker(applicationContext)
             }
         }
@@ -485,11 +487,11 @@ open class GleanInternalAPI internal constructor () {
      * Handle the background event and send the appropriate pings.
      */
     internal fun handleBackgroundEvent() {
-        sendPings(listOf(Pings.baseline, Pings.events))
+        submitPings(listOf(Pings.baseline, Pings.events))
     }
 
     /**
-     * Send a list of pings.
+     * Collect and submit a list of pings for eventual upload.
      *
      * The ping content is assembled as soon as possible, but upload is not
      * guaranteed to happen immediately, as that depends on the upload
@@ -498,16 +500,16 @@ open class GleanInternalAPI internal constructor () {
      * If the ping currently contains no content, it will not be assembled and
      * queued for sending.
      *
-     * @param pings List of pings to send.
+     * @param pings List of pings to submit.
      * @return The async [Job] performing the work of assembling the ping
      */
-    internal fun sendPings(pings: List<PingType>): Job? {
+    internal fun submitPings(pings: List<PingType>): Job? {
         val pingNames = pings.map { it.name }
-        return sendPingsByName(pingNames)
+        return submitPingsByName(pingNames)
     }
 
     /**
-     * Send a list of pings by name.
+     * Collect and submit a list of pings for eventual upload by name.
      *
      * Each ping will be looked up in the known instances of [PingType]. If the
      * ping isn't known, an error is logged and the ping isn't queued for uploading.
@@ -519,30 +521,30 @@ open class GleanInternalAPI internal constructor () {
      * If the ping currently contains no content, it will not be assembled and
      * queued for sending.
      *
-     * @param pingNames List of ping names to send.
+     * @param pingNames List of ping names to submit.
      * @return The async [Job] performing the work of assembling the ping
      */
     @Suppress("EXPERIMENTAL_API_USAGE")
-    internal fun sendPingsByName(pingNames: List<String>) = Dispatchers.API.launch {
+    internal fun submitPingsByName(pingNames: List<String>) = Dispatchers.API.launch {
         if (!isInitialized()) {
-            Log.e(LOG_TAG, "Glean must be initialized before sending pings.")
+            Log.e(LOG_TAG, "Glean must be initialized before submitting pings.")
             return@launch
         }
 
         if (!getUploadEnabled()) {
-            Log.e(LOG_TAG, "Glean must be enabled before sending pings.")
+            Log.e(LOG_TAG, "Glean must be enabled before submitting pings.")
             return@launch
         }
 
         val pingArray = StringArray(pingNames.toTypedArray(), "utf-8")
         val pingArrayLen = pingNames.size
-        val sentPing = LibGleanFFI.INSTANCE.glean_send_pings_by_name(
+        val submittedPing = LibGleanFFI.INSTANCE.glean_submit_pings_by_name(
             handle,
             pingArray,
             pingArrayLen
         ).toBoolean()
 
-        if (sentPing) {
+        if (submittedPing) {
             PingUploadWorker.enqueueWorker(applicationContext)
         }
     }

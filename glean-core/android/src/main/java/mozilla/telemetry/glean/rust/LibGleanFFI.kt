@@ -79,7 +79,7 @@ internal interface LibGleanFFI : Library {
 
     fun glean_destroy_glean(handle: Long)
 
-    fun glean_on_ready_to_send_pings(handle: Long): Byte
+    fun glean_on_ready_to_submit_pings(handle: Long): Byte
 
     fun glean_enable_logging()
 
@@ -89,7 +89,7 @@ internal interface LibGleanFFI : Library {
 
     fun glean_ping_collect(glean_handle: Long, ping_type_handle: Long): Pointer?
 
-    fun glean_send_pings_by_name(
+    fun glean_submit_pings_by_name(
         glean_handle: Long,
         ping_names: StringArray,
         ping_names_len: Int

@@ -167,7 +167,7 @@ def load_pings(
             the `pings.yaml` file.
     Example:
         >>> pings = load_pings("pings.yaml")
-        >>> pings.baseline.send()
+        >>> pings.baseline.submit()
     """
     metrics = load_metrics(filepath, config)
 

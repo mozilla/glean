@@ -41,7 +41,7 @@ class PingType(
     }
 
     /**
-     * Send the ping.
+     * Collect and submit the ping for eventual upload.
      *
      * While the collection of metrics into pings happens synchronously, the
      * ping queuing and ping uploading happens asyncronously.
@@ -49,7 +49,23 @@ class PingType(
      *
      * If the ping currently contains no content, it will not be queued.
      */
+    fun submit() {
+        Glean.submitPings(listOf(this))
+    }
+
+    /**
+     * Collect and submit the ping for eventual upload.
+     *
+     * **THIS METHOD IS DEPRECATED.**  Use `submit()` instead.
+     *
+     * While the collection of metrics into pings happens synchronously, the
+     * ping queuing and ping uploading happens asyncronously.
+     * There are no guarantees that this will happen immediately.
+     *
+     * If the ping currently contains no content, it will not be queued.
+     */
+    @Deprecated("Renamed to submit()")
     fun send() {
-        Glean.sendPings(listOf(this))
+        submit()
     }
 }

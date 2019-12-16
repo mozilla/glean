@@ -12,8 +12,8 @@ class PingType:
         """
         This implements the developer facing API for custom pings.
 
-        The Ping API only exposes the `PingType.send` method, which schedules a
-        ping for sending.
+        The Ping API only exposes the `PingType.submit` method, which schedules a
+        ping for eventual uploading.
         """
         self._name = name
         self._handle = _ffi.lib.glean_new_ping_type(
@@ -32,10 +32,10 @@ class PingType:
         """
         return self._name
 
-    def send(self):
+    def submit(self):
         """
-        Send the ping.
+        Collect and submit the ping for eventual uploading.
 
         If the ping currently contains no content, it will not be sent.
         """
-        Glean._send_pings([self])
+        Glean._submit_pings([self])

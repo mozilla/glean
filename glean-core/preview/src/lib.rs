@@ -32,7 +32,7 @@
 //!
 //! glean_preview::register_ping_type(&prototype_ping);
 //!
-//! prototype_ping.send();
+//! prototype_ping.submit();
 //! # Ok(())
 //! # }
 //! ```
@@ -114,33 +114,33 @@ pub fn register_ping_type(ping: &metrics::PingType) {
     })
 }
 
-/// Send a ping.
+/// Collect and submit a ping for eventual uploading.
 ///
-/// See `glean_core::Glean.send_ping`.
-///
-/// ## Return value
-///
-/// Returns true if a ping was assembled and queued, false otherwise.
-pub fn send_ping(ping: &metrics::PingType) -> bool {
-    send_ping_by_name(&ping.name)
-}
-
-/// Send a ping by name.
-///
-/// See `glean_core::Glean.send_ping_by_name`.
+/// See `glean_core::Glean.submit_ping`.
 ///
 /// ## Return value
 ///
 /// Returns true if a ping was assembled and queued, false otherwise.
-pub fn send_ping_by_name(ping: &str) -> bool {
-    send_pings_by_name(&[ping.to_string()])
+pub fn submit_ping(ping: &metrics::PingType) -> bool {
+    submit_ping_by_name(&ping.name)
 }
 
-/// Send multiple pings by name
+/// Collect and submit a ping for eventual uploading by name.
+///
+/// See `glean_core::Glean.submit_ping_by_name`.
+///
+/// ## Return value
+///
+/// Returns true if a ping was assembled and queued, false otherwise.
+pub fn submit_ping_by_name(ping: &str) -> bool {
+    submit_pings_by_name(&[ping.to_string()])
+}
+
+/// Collect and submit multiple pings by name for eventual uploading.
 ///
 /// ## Return value
 ///
 /// Returns true if at least one ping was assembled and queued, false otherwise.
-pub fn send_pings_by_name(pings: &[String]) -> bool {
-    with_glean(|glean| glean.send_pings_by_name(pings))
+pub fn submit_pings_by_name(pings: &[String]) -> bool {
+    with_glean(|glean| glean.submit_pings_by_name(pings))
 }

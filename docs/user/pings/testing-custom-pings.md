@@ -76,7 +76,7 @@ class MyCustomPingScheduler {
    */
   fun schedulePing() {
     // ... some scheduling logic that will end up calling the function below.
-    sendPing()
+    submitPing()
   }
 
   /**
@@ -84,8 +84,8 @@ class MyCustomPingScheduler {
    * calls the Glean SDK API to send custom pings.
    */
   @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-  internal fun sendPing() {
-    Pings.MyCustomPing.send()
+  internal fun submitPing() {
+    Pings.MyCustomPing.submit()
   }
 }
 ```

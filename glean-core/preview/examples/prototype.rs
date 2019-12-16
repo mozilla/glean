@@ -35,7 +35,7 @@ fn main() -> Result<(), Error> {
     glean::initialize(cfg)?;
     glean::register_ping_type(&PrototypePing);
 
-    if glean::send_ping_by_name("prototype") {
+    if glean::submit_ping_by_name("prototype") {
         log::info!("Successfully collected a prototype ping");
     } else {
         log::info!("Prototype ping failed");

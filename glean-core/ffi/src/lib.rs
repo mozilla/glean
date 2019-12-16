@@ -178,8 +178,8 @@ pub unsafe extern "C" fn glean_initialize_migration(
 }
 
 #[no_mangle]
-pub extern "C" fn glean_on_ready_to_send_pings(glean_handle: u64) -> u8 {
-    GLEAN.call_infallible(glean_handle, |glean| glean.on_ready_to_send_pings())
+pub extern "C" fn glean_on_ready_to_submit_pings(glean_handle: u64) -> u8 {
+    GLEAN.call_infallible(glean_handle, |glean| glean.on_ready_to_submit_pings())
 }
 
 #[no_mangle]
@@ -195,7 +195,7 @@ pub extern "C" fn glean_set_upload_enabled(glean_handle: u64, flag: u8) {
 }
 
 #[no_mangle]
-pub extern "C" fn glean_send_pings_by_name(
+pub extern "C" fn glean_submit_pings_by_name(
     glean_handle: u64,
     ping_names: RawStringArray,
     ping_names_len: i32,
@@ -203,7 +203,7 @@ pub extern "C" fn glean_send_pings_by_name(
     GLEAN.call_with_log(glean_handle, |glean| {
         let pings = from_raw_string_array(ping_names, ping_names_len)?;
 
-        Ok(glean.send_pings_by_name(&pings))
+        Ok(glean.submit_pings_by_name(&pings))
     })
 }
 

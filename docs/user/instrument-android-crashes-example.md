@@ -149,13 +149,13 @@ override fun uncaughtException(thread: Thread, exception: Throwable) {
             Crash.exceptionKeys.message to exception.message!!
         )
     )
-    Pings.crash.send()
+    Pings.crash.submit()
 }
 ```
 
 This records data to the `Crash.exception` metric from the `metrics.yaml`.  The category of the metric is `crash` and the name
 is `exception` so it is accessed it by calling `record()` on the `Crash.exception` object.  The extra information for the
-`cause` and the `message` is set as well.  Finally, calling `Pings.crash.send()` forces the `crash` ping to be scheduled to be
+`cause` and the `message` is set as well.  Finally, calling `Pings.crash.submit()` forces the `crash` ping to be scheduled to be
 sent.
 
 The final step is to register the custom `Application` as the default uncaught exception handler by adding the following to the

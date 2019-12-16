@@ -107,11 +107,11 @@ If this metric should also be sent in the default ping for the given metric type
       - default
 ```
 
-## Sending a custom ping
+## Submitting a custom ping
 
-To send a custom ping, call the `send` method on the `PingType` object that the Glean SDK generated for your ping.
+To collect and queue a custom ping for eventual uploading, call the `submit` method on the `PingType` object that the Glean SDK generated for your ping.
 
-For example, to send the custom ping defined above:
+For example, to submit the custom ping defined above:
 
 {{#include ../../tab_header.md}}
 
@@ -119,7 +119,7 @@ For example, to send the custom ping defined above:
 
 ```kotlin
 import org.mozilla.yourApplication.GleanMetrics.Pings
-Pings.search.send()
+Pings.search.submit()
 ```
 
 </div>
@@ -131,7 +131,7 @@ from glean import load_pings
 
 pings = load_pings("pings.yaml")
 
-pings.search.send()
+pings.search.submit()
 ```
 
 </div>
