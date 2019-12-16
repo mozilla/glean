@@ -269,7 +269,7 @@ In order to make testing metrics easier 'out of the box', all metrics include a 
 
 In order for data to be collected from your project, its application id must be registered in the pipeline.
 
-[File a data engineering bug][dataeng-bug] to enable your products application id.
+[File a data engineering bug][dataeng-bug] to enable your product's application id.
 
 [dataeng-bug]: https://bugzilla.mozilla.org/enter_bug.cgi?product=Data%20Platform%20and%20Tools&component=General&short_desc=Glean:%20Enable%20application%20id%20org.mozilla.myProduct
 
