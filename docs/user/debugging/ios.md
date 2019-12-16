@@ -1,4 +1,4 @@
-# Debugging the Glean SDK in iOS
+# Debugging iOS applications using the Glean SDK
 
 For debugging and validation purposes on iOS, Glean makes use of a custom URL scheme which is implemented _within the application_ that is consuming Glean.  Glean provides some convenience functions to facilitate this, but it's up to the consuming application to enable this functionality.  Applications that enable this Glean SDK feature will be able to launch the application from a URL with the Glean debug commands embedded in the URL itself.
 

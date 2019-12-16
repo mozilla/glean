@@ -2,8 +2,8 @@
 
 ## Platform-specific debugging
 
-1. [Debugging the Glean SDK in Android](android.md)
-2. [Debugging the Glean SDK in iOS](ios.md)
+1. [Debugging Android applications using the Glean SDK](android.md)
+2. [Debugging iOS applications using the Glean SDK](ios.md)
 
 ## General debugging information
 

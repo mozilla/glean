@@ -1,4 +1,4 @@
-# Debugging the Glean SDK in Android
+# Debugging Android applications using the Glean SDK
 
 The Glean SDK exports the `GleanDebugActivity` that can be used to toggle debugging features on or off.
 Users can invoke this special activity, at run-time, using the following [`adb`](https://developer.android.com/studio/command-line/adb) command:
