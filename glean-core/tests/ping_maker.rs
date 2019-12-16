@@ -180,3 +180,25 @@ fn test_clear_pending_pings() {
         .is_ok());
     assert_eq!(0, get_queued_pings(glean.get_data_path()).unwrap().len());
 }
+
+#[test]
+fn test_no_pings_submitted_if_upload_disabled() {
+    // Regression test, bug 1603571
+
+    let (mut glean, _) = new_glean();
+    let ping_type = PingType::new("store1", true, true);
+    glean.register_ping_type(&ping_type);
+
+    assert!(glean.send_ping(&ping_type).is_ok());
+    assert_eq!(1, get_queued_pings(glean.get_data_path()).unwrap().len());
+
+    // Disable upload, then try to send
+    glean.set_upload_enabled(false);
+
+    assert!(glean.send_ping(&ping_type).is_ok());
+    assert_eq!(0, get_queued_pings(glean.get_data_path()).unwrap().len());
+
+    // Test again through the direct call
+    assert!(ping_type.send(&glean).is_ok());
+    assert_eq!(0, get_queued_pings(glean.get_data_path()).unwrap().len());
+}
