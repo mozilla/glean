@@ -185,7 +185,7 @@ fn test_clear_pending_pings() {
 fn test_no_pings_submitted_if_upload_disabled() {
     // Regression test, bug 1603571
 
-    let (mut glean, _) = new_glean();
+    let (mut glean, _) = new_glean(None);
     let ping_type = PingType::new("store1", true, true);
     glean.register_ping_type(&ping_type);
 
