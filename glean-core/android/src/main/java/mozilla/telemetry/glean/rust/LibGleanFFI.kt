@@ -75,6 +75,8 @@ internal interface LibGleanFFI : Library {
         seq_num_len: Int
     ): Long
 
+    fun glean_clear_application_lifetime_metrics(handle: Long)
+
     fun glean_test_clear_all_stores(handle: Long)
 
     fun glean_destroy_glean(handle: Long)

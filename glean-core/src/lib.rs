@@ -560,6 +560,14 @@ impl Glean {
         self.data_store.persist_ping_lifetime_data()
     }
 
+    /// ** This is not meant to be used directly.**
+    /// 
+    /// Clear all the metrics that have `Lifetime::Application`.
+    pub fn clear_application_lifetime_metrics(&self) {
+        log::debug!("Clearing Lifetime::Application metrics");
+        self.data_store.clear_lifetime(Lifetime::Application);
+    }
+
     /// **Test-only API (exported for FFI purposes).**
     ///
     /// Check if an experiment is currently active.

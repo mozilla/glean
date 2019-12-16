@@ -488,6 +488,24 @@ impl Database {
         })
     }
 
+    /// Clears all the metrics in the database, for the provided lifetime.
+    ///
+    /// Errors are logged.
+    ///
+    /// ## Panics
+    ///
+    /// * This function will **not** panic on database errors.
+    pub fn clear_lifetime(&self, lifetime: Lifetime) {
+        let res = self.write_with_store(lifetime, |mut writer, store| {
+            store.clear(&mut writer)?;
+            writer.commit()?;
+            Ok(())
+        });
+        if let Err(e) = res {
+            log::error!("Could not clear store for lifetime {:?}: {:?}", lifetime, e);
+        }
+    }
+
     /// Clears all metrics in the database.
     ///
     /// Errors are logged.
