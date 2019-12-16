@@ -240,7 +240,7 @@ fn the_accumulate_samples_api_correctly_handles_negative_values() {
 
 #[test]
 fn the_accumulate_samples_api_correctly_handles_overflowing_values() {
-    let (glean, _t) = new_glean();
+    let (glean, _t) = new_glean(None);
 
     let mut metric = TimingDistributionMetric::new(
         CommonMetricData {
