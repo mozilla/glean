@@ -267,9 +267,11 @@ In order to make testing metrics easier 'out of the box', all metrics include a 
 
 ### Adding metadata about your project to the pipeline
 
-In order for data to be collected from your project, metadata must be added to `probe_scraper`.
+In order for data to be collected from your project, its application id must be registered in the pipeline.
 
-These specific steps are described in [the `probe_scraper` documentation](https://github.com/mozilla/probe-scraper#adding-a-new-glean-repository).
+[File a data engineering bug][dataeng-bug] to enable your products application id.
+
+[dataeng-bug]: https://bugzilla.mozilla.org/enter_bug.cgi?product=Data%20Platform%20and%20Tools&component=General&short_desc=Glean:%20Enable%20application%20id%20org.mozilla.myProduct
 
 ## Application-specific steps
 
