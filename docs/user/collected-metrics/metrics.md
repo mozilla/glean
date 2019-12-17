@@ -20,6 +20,7 @@ The following metrics are added to the ping:
 | Name | Type | Description | Data reviews | Extras | Expiration |
 | --- | --- | --- | --- | --- | --- |
 | glean.error.invalid_label |[labeled_counter](https://mozilla.github.io/glean/book/user/metrics/labeled_counters.html) |Counts the number of times a metric was set with an invalid label. The labels are the `category.name` identifier of the metric. |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1499761#c5)||never |
+| glean.error.invalid_overflow |[labeled_counter](https://mozilla.github.io/glean/book/user/metrics/labeled_counters.html) |Counts the number of times a metric was set a value that overflew. The labels are the `category.name` identifier of the metric. |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1591912#c3)||never |
 | glean.error.invalid_state |[labeled_counter](https://mozilla.github.io/glean/book/user/metrics/labeled_counters.html) |Counts the number of times a timing metric was used incorrectly. The labels are the `category.name` identifier of the metric. |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1499761#c5)||never |
 | glean.error.invalid_value |[labeled_counter](https://mozilla.github.io/glean/book/user/metrics/labeled_counters.html) |Counts the number of times a metric was set to an invalid value. The labels are the `category.name` identifier of the metric. |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1499761#c5)||never |
 

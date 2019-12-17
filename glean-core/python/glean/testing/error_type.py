@@ -19,3 +19,6 @@ class ErrorType(Enum):
 
     # For when timings are recorded incorrectly
     INVALID_STATE = 2
+
+    # For when the value to be recorded overflows the metric-specific upper range
+    INVALID_OVERFLOW = 3
