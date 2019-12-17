@@ -199,7 +199,7 @@ jobs:
           name: Check skip condition
           command: |
             if git log -1 "$CIRCLE_SHA1" | grep -q '\[doc only\]'; then
-                echo "Skipping this step. Last commit was tagged to not require Android tests."
+                echo "Skipping this step. Last commit was tagged to not require tests."
                 circleci-agent step halt
             fi
       - run:
@@ -335,6 +335,13 @@ jobs:
     macos:
       xcode: "11.2.1"
     steps:
+      - run:
+          name: Check skip condition
+          command: |
+            if git log -1 "$CIRCLE_SHA1" | grep -q '\[doc only\]'; then
+                echo "Skipping this step. Last commit was tagged to not require tests."
+                circleci-agent step halt
+            fi
       - install-rustup
       - setup-rust-toolchain
       - checkout
@@ -394,7 +401,7 @@ jobs:
           name: Check skip condition
           command: |
             if git log -1 "$CIRCLE_SHA1" | grep -q '\[doc only\]'; then
-                echo "Skipping this step. Last commit was tagged to not require Android tests."
+                echo "Skipping this step. Last commit was tagged to not require tests."
                 circleci-agent step halt
             fi
       - run:
