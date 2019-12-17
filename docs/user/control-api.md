@@ -1,16 +1,29 @@
 # Controlling Glean
 
 Glean has a minimal control API available on its top-level `Glean` object.
-This API allows to enable and disable upload, register [custom pings][] and set [experiment data][].
+This API allows to enable and disable upload, register [custom pings][] and set [experiment data][experiments-api].
 
 [custom pings]: pings/custom.md
-[experiment data]: experiments-api.md
+[experiments-api]: experiments-api.md
 
 The following steps are required for applications using the Glean SDK, but not libraries.
 
 > **Important:** The Glean SDK should only be initialized from the main application, not individual libraries.
 
 If you are adding Glean support to a library, you can safely skip this section.
+
+## General control API
+
+The Glean SDK provides a general control API, that supports the following operations. See below for language-specific details.
+
+| Operation | Description | Notes |
+| --------- | ----------- | ----- |
+| `initialize` | Configure and initialize the Glean SDK. | [Initializing the Glean SDK](#initializing-the-glean-sdk) |
+| `setUploadEnabled` | Enable or disable Glean collection and upload. | [Enabling and disabling Metrics](#enabling-and-disabling-metrics) |
+| `getUploadEnabled` | Get whether or not Glean is allowed to record and upload data. | |
+| `registerPings` | Register custom pings generated from `pings.yaml`. | [Custom pings][custom pings] |
+| `setExperimentActive` | Indicate that an experiment is running. | [Using the Experiments API][experiments-api] |
+| `setExperimentInactive` | Indicate that an experiment is no longer running.. | [Using the Experiments API][experiments-api] |
 
 ## Initializing the Glean SDK
 
@@ -129,21 +142,11 @@ Additonal configuration is available on the `glean.Configuration` object, which 
 Unlike Android and Swift, the Python bindings do not automatically send any pings.
 See the [custom pings documentation](pings/custom.md) about adding custom pings and sending them.
 
-## Enabling and disabling metrics
-
-`Glean.set_upload_enabled()` should be called in response to the user enabling or disabling telemetry.
-This method should also be called at least once prior to calling `Glean.initialize()`.
-
-The application should provide some form of user interface to call this method.
-
-When going from enabled to disabled, all pending events, metrics and pings are cleared, except for [`first_run_date`](pings/index.html#the-client_info-section).
-When re-enabling, core Glean metrics will be recomputed at that time.
-
 </div>
 
 {{#include ../tab_footer.md}}
 
-### Enabling and disabling metrics
+## Enabling and disabling metrics
 
 {{#include ../tab_header.md}}
 
