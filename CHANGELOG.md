@@ -16,6 +16,7 @@
     and renamed to `PingType.submit()`.
   * Rename `deletion_request` ping to `deletion-request` ping after glean_parser update
 
+* Add `InvalidOverflow` error to `TimingDistribution`s ([#583](https://github.com/mozilla/glean/pull/583))
 
 # v22.0.0 (2019-12-05)
 
