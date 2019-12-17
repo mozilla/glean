@@ -3,6 +3,7 @@
 - [Glean](README.md)
 - [Using the Glean SDK](user/index.md)
     - [Adding Glean to your project](user/adding-glean-to-your-project.md)
+    - [Controlling Glean](user/control-api.md)
     - [Adding new metrics](user/adding-new-metrics.md)
     - [Metric parameters](user/metric-parameters.md)
     - [Testing metrics](user/testing-metrics.md)
