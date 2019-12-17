@@ -19,7 +19,6 @@ commands:
         type: string
         default: "stable"
     steps:
-      - checkout
       - setup-rust-toolchain:
           rust-version: <<parameters.rust-version>>
   rust-tests:
@@ -28,8 +27,7 @@ commands:
         type: string
         default: "stable"
     steps:
-      - test-setup:
-          rust-version: <<parameters.rust-version>>
+      - checkout
       - run:
           name: Check skip condition
           command: |
@@ -37,6 +35,8 @@ commands:
                 echo "Skipping this step. Last commit was tagged to not require tests."
                 circleci-agent step halt
             fi
+      - test-setup:
+          rust-version: <<parameters.rust-version>>
       - run:
           name: Test
           command: cargo test --all --verbose
@@ -62,6 +62,7 @@ commands:
 
   android-setup:
     steps:
+      - checkout
       - install-rustup
       - install-android-targets
       - test-setup:
@@ -164,6 +165,7 @@ jobs:
     docker:
       - image: circleci/rust:latest
     steps:
+      - checkout
       - test-setup:
           rust-version: "nightly"
       - run:
@@ -186,6 +188,7 @@ jobs:
     docker:
       - image: circleci/rust:latest
     steps:
+      - checkout
       - test-setup:
           rust-version: stable
       - run: cargo build --release
