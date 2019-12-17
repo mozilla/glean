@@ -3,7 +3,8 @@
 These are the steps needed to cut a new release from latest master.
 
 1. Update the changelog.
-    1. Add any missing important changes under the `Unreleased changes` headline
+    1. Add any missing important changes under the `Unreleased changes` headline.
+    2. Commit any changes to the changelog file due to the previous step.
 2. Run `bin/prepare-release.sh <new version>`
     1. The new version should be the next patch, minor or major version of what is currently released.
     2. Let it create a commit for you.
@@ -34,6 +35,8 @@ These are the steps needed to cut a new release from latest master.
 
 If the new release is based on the current master, just follow the above release process.
 
+> **Note:** The rest of this section assumes that `upstream` points to the `mozilla/glean` repository, while `origin` points to the developer fork. For some developer workflows, `upstream` can be the same as `origin`.
+
 Otherwise follow these steps to release a point-release on top an older release that is behind latest master:
 
 1. Ensure your fixes are landed on master first (if required).
@@ -41,7 +44,7 @@ Otherwise follow these steps to release a point-release on top an older release 
 
    ```
    git checkout -b release-v19.1 v19.0.0
-   git push -u origin release-v19.1
+   git push -u upstream release-v19.1
    ```
 
 3. Make a new branch with any fixes to be included in the release, *remembering not to make any breaking API changes.*.
@@ -53,7 +56,7 @@ Otherwise follow these steps to release a point-release on top an older release 
    git cherry-pick 37d35304a4d1d285c8f6f3ce3df3c412fcd2d6c6
    git push -u origin fixes-for-v1.19.1
    ```
-4. Follow the above steps for cutting a new release, except that:
+4. Follow the [above steps](glean-release-process) for cutting a new release, except that:
     * When opening a PR to land the commits, target the `release-vX.Y` branch rather than master.
     * When cutting the new release via github's UI, target the `release-vX.Y` branch rather than master.
 
