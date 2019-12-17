@@ -1,6 +1,6 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v22.0.0...master)
+[Full changelog](https://github.com/mozilla/glean/compare/v22.1.0...master)
 
 * Python bindings:
   * Support for events and UUID metrics was added.
@@ -15,6 +15,10 @@
   * The public method `PingType.send()` (in all platforms) have been deprecated
     and renamed to `PingType.submit()`.
   * Rename `deletion_request` ping to `deletion-request` ping after glean_parser update
+
+# v22.1.0 (2019-12-17)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v22.0.0...22.1.0)
 
 * Add `InvalidOverflow` error to `TimingDistribution`s ([#583](https://github.com/mozilla/glean/pull/583))
 
