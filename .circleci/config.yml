@@ -261,7 +261,11 @@ jobs:
           name: Run XCode build, tests and generate documentation
           command: |
             bash bin/run-ios-build.sh
-            bash bin/run-ios-tests.sh
+            if git log -1 "$CIRCLE_SHA1" | grep -q '\[doc only\]'; then
+                true
+            else
+                bash bin/run-ios-tests.sh
+            fi
             bash bin/build-swift-docs.sh
       - store_artifacts:
           path: raw_xcodebuild.log
@@ -272,6 +276,13 @@ jobs:
       - persist_to_workspace:
           root: build/
           paths: docs/swift
+      - run:
+          name: Check skip condition before running more steps
+          command: |
+            if git log -1 "$CIRCLE_SHA1" | grep -q '\[doc only\]'; then
+                echo "Skipping this step. Last commit was tagged to not require tests."
+                circleci-agent step halt
+            fi
       - run:
           name: Build Carthage archive
           no_output_timeout: 20m
