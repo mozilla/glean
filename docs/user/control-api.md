@@ -1,9 +1,9 @@
-# Controlling Glean
+# The General API
 
 Glean has a minimal control API available on its top-level `Glean` object.
 This API allows to enable and disable upload, register [custom pings][] and set [experiment data][experiments-api].
 
-[custom pings]: pings/custom.md
+[custom-pings]: pings/custom.md
 [experiments-api]: experiments-api.md
 
 The following steps are required for applications using the Glean SDK, but not libraries.
@@ -12,9 +12,9 @@ The following steps are required for applications using the Glean SDK, but not l
 
 If you are adding Glean support to a library, you can safely skip this section.
 
-## General control API
+## The API
 
-The Glean SDK provides a general control API, that supports the following operations. See below for language-specific details.
+The Glean SDK provides a general API that supports the following operations. See below for language-specific details.
 
 | Operation | Description | Notes |
 | --------- | ----------- | ----- |
