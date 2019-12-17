@@ -32,4 +32,4 @@ Glean logs warnings and errors through the platform-specific logging frameworks.
 
 ### Implementation details
 
-See [Debug Pings](/dev/core/internal/debug-pings.md).
+See [Debug Pings](../../dev/core/internal/debug-pings.md).

@@ -10,6 +10,6 @@ X-Debug-ID: <tag>
 
 `<tag>` is a alphanumeric string with a maximum length of 20 characters, used to identify pings in the Debug Ping Viewer.
 
-See [Debugging products using the Glean SDK](/user/debugging/index.md) for detailed information how to use this mechanism in applications.
+See [Debugging products using the Glean SDK](../../../user/debugging/index.md) for detailed information how to use this mechanism in applications.
 
 [debug-ping-viewer]: https://glean-debug-view-dev-237806.firebaseapp.com/
