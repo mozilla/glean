@@ -18,7 +18,7 @@
 
 # v22.1.0 (2019-12-17)
 
-[Full changelog](https://github.com/mozilla/glean/compare/v22.0.0...22.1.0)
+[Full changelog](https://github.com/mozilla/glean/compare/v22.0.0...v22.1.0)
 
 * Add `InvalidOverflow` error to `TimingDistribution`s ([#583](https://github.com/mozilla/glean/pull/583))
 
