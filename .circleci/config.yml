@@ -31,6 +31,13 @@ commands:
       - test-setup:
           rust-version: <<parameters.rust-version>>
       - run:
+          name: Check skip condition
+          command: |
+            if git log -1 "$CIRCLE_SHA1" | grep -q '\[doc only\]'; then
+                echo "Skipping this step. Last commit was tagged to not require tests."
+                circleci-agent step halt
+            fi
+      - run:
           name: Test
           command: cargo test --all --verbose
 
@@ -196,13 +203,6 @@ jobs:
     resource_class: "xlarge"
     steps:
       - run:
-          name: Check skip condition
-          command: |
-            if git log -1 "$CIRCLE_SHA1" | grep -q '\[doc only\]'; then
-                echo "Skipping this step. Last commit was tagged to not require tests."
-                circleci-agent step halt
-            fi
-      - run:
           name: Setup custom environment variables
           command: |
               echo "export CARGO_INCREMENTAL=0" >> $BASH_ENV
@@ -335,6 +335,7 @@ jobs:
     macos:
       xcode: "11.2.1"
     steps:
+      - checkout
       - run:
           name: Check skip condition
           command: |
@@ -344,7 +345,6 @@ jobs:
             fi
       - install-rustup
       - setup-rust-toolchain
-      - checkout
       - run:
           name: Setup build environment
           command: |
