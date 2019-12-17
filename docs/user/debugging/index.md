@@ -29,3 +29,7 @@ Different platforms have different ways to send these commands.
 ### Glean Log messages
 
 Glean logs warnings and errors through the platform-specific logging frameworks.  See the platform-specific instructions for information on how to view the logs.
+
+### Implementation details
+
+See [Debug Pings](/dev/core/internal/debug-pings.md).
