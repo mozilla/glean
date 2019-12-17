@@ -20,8 +20,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         glean.registerPings(Pings.shared)
         glean.setUploadEnabled(true)
 
-        if ProcessInfo.processInfo.arguments.contains("USE_MOCK_SERVER") {
-            let address = "http://localhost:9080"
+        let mockServerIndex = ProcessInfo.processInfo.arguments.firstIndex(of: "USE_MOCK_SERVER")
+        if let idx = mockServerIndex {
+            let portIdx = idx + 1
+            var address = "http://localhost:9080"
+            if portIdx < ProcessInfo.processInfo.arguments.count {
+                let port = ProcessInfo.processInfo.arguments[portIdx]
+                address = "http://localhost:\(port)"
+            }
+
             print("using a mock server, setting address: \(address)")
             let cfg = Configuration(serverEndpoint: address)
             glean.initialize(configuration: cfg)

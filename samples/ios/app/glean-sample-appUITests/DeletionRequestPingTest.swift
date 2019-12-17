@@ -22,8 +22,8 @@ class DeletionRequestPingTest: XCTestCase {
         app = XCUIApplication()
     }
 
-    func setupServer(expectPingType: String) -> HttpServer {
-        return mockServer(expectPingType: expectPingType) { json in
+    func setupServer(expectPingType: String, port: Int = 0) -> HttpServer {
+        return mockServer(expectPingType: expectPingType, port: UInt16(port)) { json in
             self.lastPingJson = json
             // Fulfill test's expectation once we parsed the incoming data.
             self.expectation?.fulfill()
@@ -33,8 +33,9 @@ class DeletionRequestPingTest: XCTestCase {
     func testDeletionRequestPing() {
         var server = setupServer(expectPingType: "deletion-request")
         expectation = expectation(description: "Completed upload")
+        let port = try! server.port()
 
-        app.launchArguments = ["USE_MOCK_SERVER"]
+        app.launchArguments = ["USE_MOCK_SERVER", "\(port)"]
         app.launch()
 
         app.switches.firstMatch.tap()
@@ -53,7 +54,7 @@ class DeletionRequestPingTest: XCTestCase {
         server.stop()
 
         // Try re-enabling and waiting for next baseline ping
-        server = setupServer(expectPingType: "baseline")
+        server = setupServer(expectPingType: "baseline", port: port)
         expectation = expectation(description: "Completed upload")
 
         app.switches.firstMatch.tap()

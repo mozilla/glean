@@ -44,7 +44,7 @@ class ViewControllerTest: XCTestCase {
     func testViewControllerInteraction() {
         let server = setupServer(expectPingType: "sample")
 
-        app.launchArguments = ["USE_MOCK_SERVER"]
+        app.launchArguments = ["USE_MOCK_SERVER", "\(try! server.port())"]
         app.launch()
 
         let sendButton = app.buttons["Send"]
