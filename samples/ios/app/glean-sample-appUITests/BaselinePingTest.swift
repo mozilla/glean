@@ -22,6 +22,11 @@ class BaselinePingTest: XCTestCase {
         app = XCUIApplication()
     }
 
+    override func tearDown() {
+        self.lastPingJson = nil
+        self.expectation = nil
+    }
+
     func setupServer(expectPingType: String) -> HttpServer {
         return mockServer(expectPingType: expectPingType) { json in
             self.lastPingJson = json

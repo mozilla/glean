@@ -22,6 +22,11 @@ class DeletionRequestPingTest: XCTestCase {
         app = XCUIApplication()
     }
 
+    override func tearDown() {
+        self.lastPingJson = nil
+        self.expectation = nil
+    }
+
     func setupServer(expectPingType: String, port: Int = 0) -> HttpServer {
         return mockServer(expectPingType: expectPingType, port: UInt16(port)) { json in
             self.lastPingJson = json
