@@ -49,48 +49,6 @@ implementation "org.mozilla.components:service-glean:6.0.2"
 The Glean SDK is released as part of [android-components](https://github.com/mozilla-mobile/android-components).  Therefore, it follows android-components' versions.
 The [android-components release page](https://github.com/mozilla-mobile/android-components/releases/) can be used to determine the latest version.
 
-#### Integrating with the build system
-
-In order for the Glean SDK to generate an API for your metrics, two Gradle plugins must be included in your build:
-
-- The [Glean Gradle plugin](https://github.com/mozilla/glean/tree/master/gradle-plugin/)
-- JetBrains' [Python envs plugin](https://github.com/JetBrains/gradle-python-envs/)
-
-The Glean Gradle plugin is distributed through Mozilla's Maven, so we need to tell your build where to look for it by adding the following to the top of your `build.gradle`:
-
-```
-buildscript {
-    repositories {
-        maven {
-            url "https://maven.mozilla.org/maven2"
-        }
-
-        dependencies {
-            classpath "org.mozilla.telemetry:glean-gradle-plugin:{latest-version}"
-        }
-    }
-}
-```
-
-> **Important:** as above, the `{latest-version}` placeholder in the above link should be replaced with the version number of the Glean SDK used by the project.
-
-The JetBrains Python plugin is distributed in the Gradle plugin repository, so it can be included with:
-
-```Groovy
-plugins {
-    id "com.jetbrains.python.envs" version "0.0.26"
-}
-```
-
-Right before the end of the same file, we need to apply the Glean Gradle plugin:
-
-```Groovy
-apply plugin: "org.mozilla.telemetry.glean-gradle-plugin"
-```
-
-There are [additional parameters](android-build-configuration-options.md) that can be set to control the behavior of the Glean Gradle plugin, but they are rarely needed for normal use.
-
-> **Note:** Earlier versions of Glean used a Gradle script (`sdk_generator.gradle`) rather than a Gradle plugin. Its use is deprecated and projects should be updated to use the Gradle plugin as described above.
 
 </div>
 
@@ -171,9 +129,54 @@ To learn more, see [adding new metrics](adding-new-metrics.md).
 
 {{#include ../tab_header.md}}
 
+<div data-lang="Kotlin" class="tab">
+
+In order for the Glean SDK to generate an API for your metrics, two Gradle plugins must be included in your build:
+
+- The [Glean Gradle plugin](https://github.com/mozilla/glean/tree/master/gradle-plugin/)
+- JetBrains' [Python envs plugin](https://github.com/JetBrains/gradle-python-envs/)
+
+The Glean Gradle plugin is distributed through Mozilla's Maven, so we need to tell your build where to look for it by adding the following to the top of your `build.gradle`:
+
+```
+buildscript {
+    repositories {
+        maven {
+            url "https://maven.mozilla.org/maven2"
+        }
+
+        dependencies {
+            classpath "org.mozilla.telemetry:glean-gradle-plugin:{latest-version}"
+        }
+    }
+}
+```
+
+> **Important:** as above, the `{latest-version}` placeholder in the above link should be replaced with the version number of the Glean SDK used by the project.
+
+The JetBrains Python plugin is distributed in the Gradle plugin repository, so it can be included with:
+
+```Groovy
+plugins {
+    id "com.jetbrains.python.envs" version "0.0.26"
+}
+```
+
+Right before the end of the same file, we need to apply the Glean Gradle plugin:
+
+```Groovy
+apply plugin: "org.mozilla.telemetry.glean-gradle-plugin"
+```
+
+There are [additional parameters](android-build-configuration-options.md) that can be set to control the behavior of the Glean Gradle plugin, but they are rarely needed for normal use.
+
+> **Note:** Earlier versions of Glean used a Gradle script (`sdk_generator.gradle`) rather than a Gradle plugin. Its use is deprecated and projects should be updated to use the Gradle plugin as described above.
+
+</div>
+
 <div data-lang="Swift" class="tab">
 
-For Swift, the `metrics.yaml` file is parsed at build time and Swift code is generated.
+The `metrics.yaml` file is parsed at build time and Swift code is generated.
 Add a new `metrics.yaml` file to your Xcode project.
 
 Follow these steps to automatically run the parser at build time:
