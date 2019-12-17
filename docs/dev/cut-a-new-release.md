@@ -56,7 +56,7 @@ Otherwise follow these steps to release a point-release on top an older release 
    git cherry-pick 37d35304a4d1d285c8f6f3ce3df3c412fcd2d6c6
    git push -u origin fixes-for-v1.19.1
    ```
-4. Follow the [above steps](glean-release-process) for cutting a new release, except that:
+4. Follow the [above steps](#glean-release-process) for cutting a new release, except that:
     * When opening a PR to land the commits, target the `release-vX.Y` branch rather than master.
     * When cutting the new release via github's UI, target the `release-vX.Y` branch rather than master.
 

@@ -6,7 +6,7 @@ import Foundation
 import Swifter
 
 // Create a new Glean endpoint HTTP server on localhost and react only for the specified ping type
-func mockServer(expectPingType: String, callback: @escaping ([String: Any]?) -> Void) -> HttpServer {
+func mockServer(expectPingType: String, port: UInt16 = 0, callback: @escaping ([String: Any]?) -> Void) -> HttpServer {
     let server = HttpServer()
 
     server["/submit/:appid/:ping/:schema/:pinguuid"] = { request in
@@ -26,6 +26,6 @@ func mockServer(expectPingType: String, callback: @escaping ([String: Any]?) -> 
         return nil
     }
 
-    try! server.start(9080)
+    try! server.start(port)
     return server
 }

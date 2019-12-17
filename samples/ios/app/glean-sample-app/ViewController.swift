@@ -55,7 +55,7 @@ class ViewController: UIViewController {
     @IBAction func sendButtonTapped(_: Any) {
         // Increment the custom counter that goes into the sample ping
         Custom.counter.add()
-        Pings.shared.sample.send()
+        Pings.shared.sample.submit()
     }
 
     @IBAction func enableToggled(_: Any) {

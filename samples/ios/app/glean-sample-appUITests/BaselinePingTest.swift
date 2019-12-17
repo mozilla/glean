@@ -22,6 +22,11 @@ class BaselinePingTest: XCTestCase {
         app = XCUIApplication()
     }
 
+    override func tearDown() {
+        self.lastPingJson = nil
+        self.expectation = nil
+    }
+
     func setupServer(expectPingType: String) -> HttpServer {
         return mockServer(expectPingType: expectPingType) { json in
             self.lastPingJson = json
@@ -34,7 +39,7 @@ class BaselinePingTest: XCTestCase {
         let server = setupServer(expectPingType: "baseline")
         expectation = expectation(description: "Completed upload")
 
-        app.launchArguments = ["USE_MOCK_SERVER"]
+        app.launchArguments = ["USE_MOCK_SERVER", "\(try! server.port())"]
         app.launch()
 
         // Wait for 1 second: this should guarantee we have some valid duration in the
