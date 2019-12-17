@@ -115,7 +115,7 @@ run rm "${WORKSPACE_ROOT}/${FILE}.bak"
 FILE=CHANGELOG.md
 run $SED -i.bak -E \
     -e "s/# Unreleased changes/# v${NEW_VERSION} (${DATE})/" \
-    -e "s/\.\.\.master/...${NEW_VERSION}/" \
+    -e "s/\.\.\.master/...v${NEW_VERSION}/" \
     "${WORKSPACE_ROOT}/${FILE}"
 run rm "${WORKSPACE_ROOT}/${FILE}.bak"
 

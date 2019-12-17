@@ -15,7 +15,7 @@
 
 # v22.0.0 (2019-12-05)
 
-[Full changelog](https://github.com/mozilla/glean/compare/v21.3.0...22.0.0)
+[Full changelog](https://github.com/mozilla/glean/compare/v21.3.0...v22.0.0)
 
 * Add option to defer ping lifetime metric persistence ([#530](https://github.com/mozilla/glean/pull/530))
 * Add a crate for the nice control API ([#542](https://github.com/mozilla/glean/pull/542))
@@ -23,7 +23,7 @@
 
 # v21.3.0 (2019-12-03)
 
-[Full changelog](https://github.com/mozilla/glean/compare/v21.2.0...21.3.0)
+[Full changelog](https://github.com/mozilla/glean/compare/v21.2.0...v21.3.0)
 
 * Timers are reset when disabled. That avoids recording timespans across disabled/enabled toggling ([#495](https://github.com/mozilla/glean/pull/495)).
 * Add a new flag to pings: `send_if_empty` ([#528](https://github.com/mozilla/glean/pull/528))
@@ -32,7 +32,7 @@
 
 # v21.2.0 (2019-11-21)
 
-[Full changelog](https://github.com/mozilla/glean/compare/v21.1.1...21.2.0)
+[Full changelog](https://github.com/mozilla/glean/compare/v21.1.1...v21.2.0)
 
 * All platforms
 
