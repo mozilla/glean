@@ -8,7 +8,7 @@ use once_cell::sync::Lazy;
 use tempfile::Builder;
 
 use glean_preview as glean;
-use glean_preview::{metrics::PingType, Configuration, Error};
+use glean_preview::{metrics::PingType, ClientInfoMetrics, Configuration, Error};
 
 #[allow(non_upper_case_globals)]
 pub static PrototypePing: Lazy<PingType> = Lazy::new(|| PingType::new("prototype", true, true));
@@ -32,7 +32,27 @@ fn main() -> Result<(), Error> {
         max_events: None,
         delay_ping_lifetime_io: false,
     };
-    glean::initialize(cfg)?;
+
+    #[cfg(target_os = "windows")]
+    let os = "windows";
+    #[cfg(target_os = "linux")]
+    let os = "linux";
+    #[cfg(target_os = "macos")]
+    let os = "macOS";
+    #[cfg(not(any(target_os = "windows", target_os = "linux", target_os = "macos")))]
+    let os = "unknown";
+
+    let client_info = ClientInfoMetrics {
+        app_build: env!("CARGO_PKG_VERSION").to_string(),
+        app_display_version: env!("CARGO_PKG_VERSION").to_string(),
+        app_channel: None,
+        os: os.to_string(),
+        os_version: "unknown".to_string(),
+        device_manufacturer: "unknown".to_string(),
+        device_model: "unknown".to_string(),
+    };
+
+    glean::initialize(cfg, client_info)?;
     glean::register_ping_type(&PrototypePing);
 
     if glean::submit_ping_by_name("prototype") {

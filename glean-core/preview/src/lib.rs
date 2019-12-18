@@ -40,8 +40,10 @@
 use once_cell::sync::OnceCell;
 use std::sync::Mutex;
 
-pub use glean_core::{Configuration, Error, Glean, Result};
+pub use core_metrics::ClientInfoMetrics;
+pub use glean_core::{CommonMetricData, Configuration, Error, Glean, Lifetime, Result};
 
+mod core_metrics;
 pub mod metrics;
 
 static GLEAN: OnceCell<Mutex<Glean>> = OnceCell::new();
@@ -83,11 +85,35 @@ where
 /// Create and initialize a new Glean object.
 ///
 /// See `glean_core::Glean::new`.
-pub fn initialize(cfg: Configuration) -> Result<()> {
+pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) -> Result<()> {
     let glean = Glean::new(cfg)?;
+
+    // First initialize core metrics
+    initialize_core_metrics(&glean, client_info);
+    // Now make this the global object available to others.
     setup_glean(glean)?;
 
     Ok(())
+}
+
+fn initialize_core_metrics(glean: &Glean, client_info: ClientInfoMetrics) {
+    let core_metrics = core_metrics::InternalMetrics::new();
+
+    core_metrics.app_build.set(glean, client_info.app_build);
+    core_metrics
+        .app_display_version
+        .set(glean, client_info.app_display_version);
+    if let Some(app_channel) = client_info.app_channel {
+        core_metrics.app_channel.set(glean, app_channel);
+    }
+    core_metrics.os.set(glean, client_info.os);
+    core_metrics.os_version.set(glean, client_info.os_version);
+    core_metrics
+        .device_manufacturer
+        .set(glean, client_info.device_manufacturer);
+    core_metrics
+        .device_model
+        .set(glean, client_info.device_model);
 }
 
 /// Set whether upload is enabled or not.
