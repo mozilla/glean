@@ -21,7 +21,7 @@ use crate::Glean;
 use crate::Result;
 
 /// Represents the data for a single event.
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq)]
 pub struct RecordedEventData {
     pub timestamp: u64,
     pub category: String,
@@ -363,5 +363,77 @@ mod test {
             let events = &db.event_stores.read().unwrap()["events"];
             assert_eq!(1, events.len());
         }
+    }
+
+    #[test]
+    fn stable_serialization() {
+        let event_empty = RecordedEventData {
+            timestamp: 2,
+            category: "cat".to_string(),
+            name: "name".to_string(),
+            extra: None,
+        };
+
+        let mut data = HashMap::new();
+        data.insert("a key".to_string(), "a value".to_string());
+        let event_data = RecordedEventData {
+            timestamp: 2,
+            category: "cat".to_string(),
+            name: "name".to_string(),
+            extra: Some(data),
+        };
+
+        let event_empty_json = ::serde_json::to_string_pretty(&event_empty).unwrap();
+        let event_data_json = ::serde_json::to_string_pretty(&event_data).unwrap();
+
+        assert_eq!(
+            event_empty,
+            serde_json::from_str(&event_empty_json).unwrap()
+        );
+        assert_eq!(event_data, serde_json::from_str(&event_data_json).unwrap());
+    }
+
+    #[test]
+    fn deserialize_existing_data() {
+        let event_empty_json = r#"
+{
+  "timestamp": 2,
+  "category": "cat",
+  "name": "name"
+}
+            "#;
+
+        let event_data_json = r#"
+{
+  "timestamp": 2,
+  "category": "cat",
+  "name": "name",
+  "extra": {
+    "a key": "a value"
+  }
+}
+        "#;
+
+        let event_empty = RecordedEventData {
+            timestamp: 2,
+            category: "cat".to_string(),
+            name: "name".to_string(),
+            extra: None,
+        };
+
+        let mut data = HashMap::new();
+        data.insert("a key".to_string(), "a value".to_string());
+        let event_data = RecordedEventData {
+            timestamp: 2,
+            category: "cat".to_string(),
+            name: "name".to_string(),
+            extra: Some(data),
+        };
+
+        assert_eq!(
+            event_empty,
+            serde_json::from_str(&event_empty_json).unwrap()
+        );
+        assert_eq!(event_data, serde_json::from_str(&event_data_json).unwrap());
     }
 }
