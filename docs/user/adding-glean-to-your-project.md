@@ -212,7 +212,9 @@ Follow these steps to automatically run the parser at build time:
    > **Important**: The parser generates one file per category.
    > If you are unsure which files those are, skip this step and add the files after they are generated for the first time.
 
-5. If you are using Git, add the following line to your `.gitignore` file:
+5. Still on your application targets' Build Phases settings tab, add the files from the `/Generated` directory to the "Compile Sources" build phase.
+
+6. If you are using Git, add the following line to your `.gitignore` file:
 
    ```
    {project-name}/Generated
