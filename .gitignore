@@ -19,6 +19,10 @@ raw_xcode*log
 /glean-core/ios/Pipfile
 /glean-core/ios/Pipfile.lock
 /glean-core/ios/.venv
+/samples/ios/app/.venv
+/samples/ios/app/Generated
+/samples/ios/GleanSampleFramework/.venv
+/samples/ios/GleanSampleFramework/GleanSampleFramework/Generated
 
 # Due to a bug in Carthage, we ignore this file.
 # See `tests-only-Cartfile` for more info.
@@ -37,7 +41,6 @@ glean-core/data
 glean_app*
 !glean_app.c
 
-samples/ios/app/.venv/
 .mypy_cache/
 .coverage
 htmlcov/
