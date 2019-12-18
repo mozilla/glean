@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import Glean
+import GleanSampleFramework
 import UIKit
 
 typealias BrowserEngagement = GleanMetrics.BrowserEngagement
@@ -56,6 +57,10 @@ class ViewController: UIViewController {
         // Increment the custom counter that goes into the sample ping
         Custom.counter.add()
         Pings.shared.sample.submit()
+
+        // Activate the glean-sample-framework library function that triggers Glean metric
+        // recording
+        GleanSampleFramework.doTheThing(withIntensity: 9002)
     }
 
     @IBAction func enableToggled(_: Any) {
