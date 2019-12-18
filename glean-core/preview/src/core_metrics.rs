@@ -23,6 +23,21 @@ pub struct ClientInfoMetrics {
     pub device_model: String,
 }
 
+impl ClientInfoMetrics {
+    /// Create the client info with dummy values for all.
+    pub fn unknown() -> Self {
+        ClientInfoMetrics {
+            app_build: "unknown".to_string(),
+            app_display_version: "unknown".to_string(),
+            app_channel: None,
+            os: "unknown".to_string(),
+            os_version: "unknown".to_string(),
+            device_manufacturer: "unknown".to_string(),
+            device_model: "unknown".to_string(),
+        }
+    }
+}
+
 #[derive(Debug)]
 pub struct InternalMetrics {
     pub app_build: StringMetric,
