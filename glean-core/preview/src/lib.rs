@@ -45,6 +45,7 @@ pub use glean_core::{CommonMetricData, Configuration, Error, Glean, Lifetime, Re
 
 mod core_metrics;
 pub mod metrics;
+mod system;
 
 static GLEAN: OnceCell<Mutex<Glean>> = OnceCell::new();
 
@@ -106,8 +107,8 @@ fn initialize_core_metrics(glean: &Glean, client_info: ClientInfoMetrics) {
     if let Some(app_channel) = client_info.app_channel {
         core_metrics.app_channel.set(glean, app_channel);
     }
-    core_metrics.os.set(glean, client_info.os);
-    core_metrics.os_version.set(glean, client_info.os_version);
+    core_metrics.os.set(glean, system::OS.to_string());
+    core_metrics.os_version.set(glean, "unknown".to_string());
     core_metrics
         .device_manufacturer
         .set(glean, client_info.device_manufacturer);

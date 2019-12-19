@@ -33,21 +33,10 @@ fn main() -> Result<(), Error> {
         delay_ping_lifetime_io: false,
     };
 
-    #[cfg(target_os = "windows")]
-    let os = "windows";
-    #[cfg(target_os = "linux")]
-    let os = "linux";
-    #[cfg(target_os = "macos")]
-    let os = "macOS";
-    #[cfg(not(any(target_os = "windows", target_os = "linux", target_os = "macos")))]
-    let os = "unknown";
-
     let client_info = ClientInfoMetrics {
         app_build: env!("CARGO_PKG_VERSION").to_string(),
         app_display_version: env!("CARGO_PKG_VERSION").to_string(),
         app_channel: None,
-        os: os.to_string(),
-        os_version: "unknown".to_string(),
         device_manufacturer: "unknown".to_string(),
         device_model: "unknown".to_string(),
     };

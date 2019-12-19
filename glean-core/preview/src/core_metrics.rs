@@ -13,10 +13,6 @@ pub struct ClientInfoMetrics {
     pub app_display_version: String,
     /// The channel the application is being distributed on.
     pub app_channel: Option<String>,
-    /// The name of the operating system.
-    pub os: String,
-    /// The user-visible version of the operating system (e.g. "1.2.3").
-    pub os_version: String,
     /// The manufacturer of the device the application is running on.
     pub device_manufacturer: String,
     /// The model of the device the application is running on.
@@ -30,8 +26,6 @@ impl ClientInfoMetrics {
             app_build: "unknown".to_string(),
             app_display_version: "unknown".to_string(),
             app_channel: None,
-            os: "unknown".to_string(),
-            os_version: "unknown".to_string(),
             device_manufacturer: "unknown".to_string(),
             device_model: "unknown".to_string(),
         }
