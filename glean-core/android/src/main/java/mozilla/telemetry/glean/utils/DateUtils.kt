@@ -25,6 +25,8 @@ internal val DATE_FORMAT_PATTERNS = mapOf(
 
 // A mapping from the length of the date string to the format that would parse
 // it.
+// For example: "2018-12-19T12:36:00-0600" is 21 characters long and is parsed
+// by the format "yyyy-MM-dd'T'HH:mmZ".
 @Suppress("TopLevelPropertyNaming")
 internal val DATE_FORMAT_PATTERN_BY_LENGTH = mapOf(
     28 to "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
