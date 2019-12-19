@@ -58,6 +58,26 @@ override fun onCreate() {
 
 </div>
 
+<div data-lang="Swift" class="tab">
+
+In Swift, this object must be registered with Glean from your startup code
+(such as in your application's `application` method or a function called from that method).
+
+```swift
+import Glean
+
+@UIApplicationMain
+class AppDelegate: UIResponder, UIApplicationDelegate {
+func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+    // ...
+    Glean.shared.registerPings(GleanMetrics.Pings)
+    // ...
+}
+}
+```
+
+</div>
+
 <div data-lang="Python" class="tab">
 
 For Python, the `pings.yaml` file must be available and loaded at runtime.
@@ -120,6 +140,16 @@ For example, to submit the custom ping defined above:
 ```kotlin
 import org.mozilla.yourApplication.GleanMetrics.Pings
 Pings.search.submit()
+```
+
+</div>
+
+<div data-lang="Swift" class="tab">
+
+```swift
+import Glean
+
+GleanMetrics.Pings.shared.search.submit()
 ```
 
 </div>
