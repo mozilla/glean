@@ -176,10 +176,13 @@ open class GleanInternalAPI internal constructor () {
         // We're not clearing this queue in case Glean is reset by tests.
         this.pingTypeQueue.forEach { this.registerPingType(it) }
 
-        // TODO: on glean-legacy we perform other actions before initialize the metrics (e.g.
-        // init the engines), then init the core metrics, and finally kick off the metrics
-        // schedulers. We should do something similar here as well.
-        initializeCoreMetrics(applicationContext)
+        // If this is the first time ever the Glean SDK runs, make sure to set
+        // some initial core metrics in case we need to generate early pings.
+        // The next times we start, we would have them around already.
+        val isFirstRun = LibGleanFFI.INSTANCE.glean_is_first_run(handle).toBoolean()
+        if (isFirstRun) {
+            initializeCoreMetrics(applicationContext)
+        }
 
         // Deal with any pending events so we can start recording new ones
         @Suppress("EXPERIMENTAL_API_USAGE")
@@ -200,6 +203,17 @@ open class GleanInternalAPI internal constructor () {
             acMetadata.metricsPingLastSentDate
         )
         metricsPingScheduler.schedule(overduePingAsFirst = true)
+
+        // From the second time we run, after all startup pings are generated,
+        // make sure to clear `lifetime: application` metrics and set them again.
+        // Any new value will be sent in newly generted pings after startup.
+        if (!isFirstRun) {
+            @Suppress("EXPERIMENTAL_API_USAGE")
+            Dispatchers.API.executeTask {
+                LibGleanFFI.INSTANCE.glean_clear_application_lifetime_metrics(handle)
+                initializeCoreMetrics(applicationContext)
+            }
+        }
 
         // Signal Dispatcher that init is complete
         @Suppress("EXPERIMENTAL_API_USAGE")

@@ -79,6 +79,8 @@ internal interface LibGleanFFI : Library {
 
     fun glean_test_clear_all_stores(handle: Long)
 
+    fun glean_is_first_run(handle: Long): Byte
+
     fun glean_destroy_glean(handle: Long)
 
     fun glean_on_ready_to_submit_pings(handle: Long): Byte
