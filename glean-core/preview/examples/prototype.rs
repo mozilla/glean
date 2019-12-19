@@ -37,8 +37,6 @@ fn main() -> Result<(), Error> {
         app_build: env!("CARGO_PKG_VERSION").to_string(),
         app_display_version: env!("CARGO_PKG_VERSION").to_string(),
         app_channel: None,
-        device_manufacturer: "unknown".to_string(),
-        device_model: "unknown".to_string(),
     };
 
     glean::initialize(cfg, client_info)?;

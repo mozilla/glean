@@ -111,10 +111,8 @@ fn initialize_core_metrics(glean: &Glean, client_info: ClientInfoMetrics) {
     core_metrics.os_version.set(glean, "unknown".to_string());
     core_metrics
         .device_manufacturer
-        .set(glean, client_info.device_manufacturer);
-    core_metrics
-        .device_model
-        .set(glean, client_info.device_model);
+        .set(glean, "unknown".to_string());
+    core_metrics.device_model.set(glean, "unknown".to_string());
 }
 
 /// Set whether upload is enabled or not.
