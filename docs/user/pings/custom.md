@@ -6,7 +6,8 @@ Applications can define metrics that are sent in custom pings. Unlike the built-
 
 Custom pings must be defined in a `pings.yaml` file, which is in the same directory alongside your app's `metrics.yaml` file.
 
-Ping names are limited to lowercase ASCII characters and hyphens and a maximum of 30 characters.
+Ping names are limited to lowercase letters from the [ISO basic Latin alphabet](https://en.wikipedia.org/wiki/ISO_basic_Latin_alphabet)
+and hyphens and a maximum of 30 characters.
 
 Each ping has the following parameters:
 
