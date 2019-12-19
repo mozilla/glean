@@ -53,6 +53,10 @@ custom_ping_data:
 
 A potential usage of the Glean SDK generated API could be the following:
 
+{{#include ../../tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
+
 ```kotlin
 import my.component.GleanMetrics.Pings
 import my.component.GleanMetrics.CustomPingData
@@ -127,3 +131,19 @@ class MyCustomPingSchedulerTest {
     }
 }
 ```
+
+</div>
+
+<div data-lang="Swift" class="tab">
+
+> **Note:** Missing Swift example code ([Bug 1605055](https://bugzilla.mozilla.org/show_bug.cgi?id=1605055)).
+
+</div>
+
+<div data-lang="Python" class="tab">
+
+> **Note:** Missing Python example code ([Bug 1605055](https://bugzilla.mozilla.org/show_bug.cgi?id=1605055)).
+
+</div>
+
+{{#include ../../tab_footer.md}}
