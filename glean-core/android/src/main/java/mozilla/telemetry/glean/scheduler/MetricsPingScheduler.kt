@@ -198,8 +198,12 @@ internal class MetricsPingScheduler(
     /**
      * Performs startup checks to decide when to schedule the next metrics ping
      * collection.
+     *
+     * @param overduePingAsFirst if this value is `true`, and Dispatchers tasks are
+     *        being enqueued due to startup, collect any overdue `metrics` at the
+     *        beginning of the queue.
      */
-    fun schedule() {
+    fun schedule(overduePingAsFirst: Boolean) {
         val now = getCalendarInstance()
         val lastSentDate = getLastCollectedDate()
 
@@ -228,15 +232,31 @@ internal class MetricsPingScheduler(
             // the right time?
             isAfterDueTime(now) -> {
                 Log.i(LOG_TAG, "The 'metrics' ping is scheduled for immediate collection, ${now.time}")
+                // **IMPORTANT**
+                //
                 // The reason why we're collecting the "metrics" ping in the `Dispatchers.API`
                 // context is that we want to make sure no other metric API adds data before
                 // the ping is collected. All the exposed metrics API dispatch calls to the
                 // engines through the `Dispatchers.API` context, so this ensures we are enqueued
                 // before any other recording API call.
-                @Suppress("EXPERIMENTAL_API_USAGE")
-                Dispatchers.API.launch {
-                    // This addresses (2).
-                    collectPingAndReschedule(now)
+                //
+                // * Do not change `Dispatchers.API.executeTask` to `Dispatchers.API.launch` as
+                // this would break startup overdue ping collection. For more context, see bug
+                // 1604861 and the implementation of `collectPingAndReschedule`.
+                if (overduePingAsFirst) {
+                    @Suppress("EXPERIMENTAL_API_USAGE")
+                    Dispatchers.API.executeTask {
+                        // This addresses (2).
+                        collectPingAndReschedule(now, startupPing = true)
+                    }
+                } else {
+                    // This branch is hit outside of the Glean initialization function,
+                    // enqueue it as usual.
+                    @Suppress("EXPERIMENTAL_API_USAGE")
+                    Dispatchers.API.launch {
+                        // This addresses (2).
+                        collectPingAndReschedule(now)
+                    }
                 }
             }
             else -> {
@@ -254,9 +274,27 @@ internal class MetricsPingScheduler(
      * @param now a [Calendar] instance representing the current time.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    internal fun collectPingAndReschedule(now: Calendar) {
-        Log.i(LOG_TAG, "Collecting the 'metrics' ping, now = ${now.time}")
-        Pings.metrics.submit()
+    internal fun collectPingAndReschedule(now: Calendar, startupPing: Boolean = false) {
+        Log.i(LOG_TAG, "Collecting the 'metrics' ping, now = ${now.time}, startup = $startupPing")
+        if (startupPing) {
+            // **IMPORTANT**
+            //
+            // During the Glean initialization, we require any metric recording to be
+            // batched up and replayed after any startup metrics ping is sent. To guarantee
+            // that, we dispatch this function from `Dispatchers.API.executaTask`. However,
+            // Pings.metrics.submit() ends up calling `Dispatchers.API.launch` again which
+            // will delay the ping collection task after any pending metric recording is
+            // executed, breaking the 'metrics' ping promise of sending a startup 'metrics'
+            // ping only containing data from the previous session.
+            // To prevent that, we synchronously manually dispatch the 'metrics' ping, without
+            // going through our public API.
+            //
+            // * Do not change this line without checking what it implies for the above wall
+            // of text. *
+            Glean.submitPingsByNameSync(listOf("metrics"))
+        } else {
+            Pings.metrics.submit()
+        }
         // Update the collection date: we don't really care if we have data or not, let's
         // always update the sent date.
         updateSentDate(getISOTimeString(now, truncateTo = TimeUnit.Day))
@@ -335,7 +373,7 @@ internal class MetricsPingScheduler(
                 // See https://bugzilla.mozilla.org/1590329
                 if (Glean.isInitialized()) {
                     if (!firstForeground) {
-                        schedule()
+                        schedule(overduePingAsFirst = false)
                     } else {
                         firstForeground = false
                     }
