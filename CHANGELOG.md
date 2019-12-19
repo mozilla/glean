@@ -7,6 +7,8 @@
 * Android:
   * The Glean Gradle Plugin correctly triggers docs and API updates when registry files
     change, without requiring them to be deleted.
+  * parseISOTimeString has been made 4x faster. This had an impact on Glean
+    migration and initialization.
 * All platforms:
   * The public method `PingType.send()` (in all platforms) have been deprecated
     and renamed to `PingType.submit()`.

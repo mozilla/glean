@@ -23,7 +23,17 @@ internal val DATE_FORMAT_PATTERNS = mapOf(
     TimeUnit.Day to "yyyy-MM-ddZ"
 )
 
+// A mapping from the length of the date string to the format that would parse
+// it.
 @Suppress("TopLevelPropertyNaming")
+internal val DATE_FORMAT_PATTERN_BY_LENGTH = mapOf(
+    28 to "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
+    24 to "yyyy-MM-dd'T'HH:mm:ssZ",
+    21 to "yyyy-MM-dd'T'HH:mmZ",
+    18 to "yyyy-MM-dd'T'HHZ",
+    15 to "yyyy-MM-ddZ"
+)
+
 internal val DATE_FORMAT_PATTERN_VALUES = DATE_FORMAT_PATTERNS.values.toSet()
 
 /**
@@ -90,6 +100,17 @@ internal fun parseISOTimeString(date: String): Date? {
         date
     }
 
+    DATE_FORMAT_PATTERN_BY_LENGTH.get(correctedDate.length)?.let {
+        val dateFormat = SimpleDateFormat(it, Locale.US)
+        try {
+            return dateFormat.parse(correctedDate)
+        } catch (e: java.text.ParseException) {
+            // fall through
+        }
+    }
+
+    // Fall back to trying all formats if the obvious choice by length doesn't
+    // work
     for (format in DATE_FORMAT_PATTERN_VALUES) {
         val dateFormat = SimpleDateFormat(format, Locale.US)
         try {
