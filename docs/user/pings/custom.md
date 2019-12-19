@@ -64,7 +64,7 @@ override fun onCreate() {
 <div data-lang="Swift" class="tab">
 
 In Swift, this object must be registered with Glean from your startup code
-(such as in your application's `application` method or a function called from that method).
+(such as in your application's `UIApplicationDelegate` [`application(_:didFinishLaunchingWithOptions:)`](https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622921-application) method or a function called from that method).
 
 ```swift
 import Glean
