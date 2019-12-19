@@ -25,6 +25,7 @@
 //!     upload_enabled: true,
 //!     max_events: None,
 //!     delay_ping_lifetime_io: false,
+//!     channel: None,
 //! };
 //! glean_preview::initialize(cfg, ClientInfoMetrics::unknown())?;
 //!
@@ -40,9 +41,11 @@
 use once_cell::sync::OnceCell;
 use std::sync::Mutex;
 
+pub use configuration::Configuration;
 pub use core_metrics::ClientInfoMetrics;
-pub use glean_core::{CommonMetricData, Configuration, Error, Glean, Lifetime, Result};
+pub use glean_core::{CommonMetricData, Error, Glean, Lifetime, Result};
 
+mod configuration;
 mod core_metrics;
 pub mod metrics;
 mod system;
@@ -87,24 +90,32 @@ where
 ///
 /// See `glean_core::Glean::new`.
 pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) -> Result<()> {
+    let channel = cfg.channel;
+    let cfg = glean_core::Configuration {
+        upload_enabled: cfg.upload_enabled,
+        data_path: cfg.data_path,
+        application_id: cfg.application_id,
+        max_events: cfg.max_events,
+        delay_ping_lifetime_io: cfg.delay_ping_lifetime_io,
+    };
     let glean = Glean::new(cfg)?;
 
     // First initialize core metrics
-    initialize_core_metrics(&glean, client_info);
+    initialize_core_metrics(&glean, client_info, channel);
     // Now make this the global object available to others.
     setup_glean(glean)?;
 
     Ok(())
 }
 
-fn initialize_core_metrics(glean: &Glean, client_info: ClientInfoMetrics) {
+fn initialize_core_metrics(glean: &Glean, client_info: ClientInfoMetrics, channel: Option<String>) {
     let core_metrics = core_metrics::InternalMetrics::new();
 
     core_metrics.app_build.set(glean, client_info.app_build);
     core_metrics
         .app_display_version
         .set(glean, client_info.app_display_version);
-    if let Some(app_channel) = client_info.app_channel {
+    if let Some(app_channel) = channel {
         core_metrics.app_channel.set(glean, app_channel);
     }
     core_metrics.os.set(glean, system::OS.to_string());
