@@ -24,9 +24,9 @@ class DateUtilsTest {
             TimeUnit.Hour,
             TimeUnit.Day
         )) {
-            val dateString = getISOTimeString(truncateTo=timeUnit)
+            val dateString = getISOTimeString(truncateTo = timeUnit)
             val parsedDate = parseISOTimeString(dateString)!!
-            val regenDateString = getISOTimeString(parsedDate, truncateTo=timeUnit)
+            val regenDateString = getISOTimeString(parsedDate, truncateTo = timeUnit)
             assertEquals(dateString, regenDateString)
         }
     }
