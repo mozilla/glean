@@ -15,7 +15,7 @@ Let us start by defining a custom ping with a sample metric in it. Here is the `
 ```yaml
 $schema: moz://mozilla.org/schemas/glean/pings/1-0-0
 
-my_custom_ping:
+my-custom-ping:
   description: >
     This ping is intended to showcase the recommended testing strategy for
     custom pings.
@@ -41,7 +41,7 @@ custom_ping_data:
     description: >
       A sample string metric for demonstrating unit tests for custom pings.
     send_in_pings:
-      - my_custom_ping
+      - my-custom-ping
     bugs:
       - 1556985
     data_reviews:
