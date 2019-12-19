@@ -32,7 +32,7 @@ search:
     - http://example.com/path/to/data-review
 ```
 
-> Note: the names `baseline`, `metrics`, `events` and `all-pings` are reserved and may not be used as the name of a custom ping.
+> Note: the names `baseline`, `metrics`, `events`, `deletion-request` and `all-pings` are reserved and may not be used as the name of a custom ping.
 
 ## Loading custom ping metadata into your application or library
 
