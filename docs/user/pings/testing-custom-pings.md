@@ -15,7 +15,7 @@ Let us start by defining a custom ping with a sample metric in it. Here is the `
 ```yaml
 $schema: moz://mozilla.org/schemas/glean/pings/1-0-0
 
-my_custom_ping:
+my-custom-ping:
   description: >
     This ping is intended to showcase the recommended testing strategy for
     custom pings.
@@ -41,7 +41,7 @@ custom_ping_data:
     description: >
       A sample string metric for demonstrating unit tests for custom pings.
     send_in_pings:
-      - my_custom_ping
+      - my-custom-ping
     bugs:
       - 1556985
     data_reviews:
@@ -52,6 +52,10 @@ custom_ping_data:
 ```
 
 A potential usage of the Glean SDK generated API could be the following:
+
+{{#include ../../tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
 
 ```kotlin
 import my.component.GleanMetrics.Pings
@@ -127,3 +131,19 @@ class MyCustomPingSchedulerTest {
     }
 }
 ```
+
+</div>
+
+<div data-lang="Swift" class="tab">
+
+> **Note:** Missing Swift example code ([Bug 1605055](https://bugzilla.mozilla.org/show_bug.cgi?id=1605055)).
+
+</div>
+
+<div data-lang="Python" class="tab">
+
+> **Note:** Missing Python example code ([Bug 1605055](https://bugzilla.mozilla.org/show_bug.cgi?id=1605055)).
+
+</div>
+
+{{#include ../../tab_footer.md}}

@@ -6,6 +6,9 @@ Applications can define metrics that are sent in custom pings. Unlike the built-
 
 Custom pings must be defined in a `pings.yaml` file, which is in the same directory alongside your app's `metrics.yaml` file.
 
+Ping names are limited to lowercase letters from the [ISO basic Latin alphabet](https://en.wikipedia.org/wiki/ISO_basic_Latin_alphabet)
+and hyphens and a maximum of 30 characters.
+
 Each ping has the following parameters:
 
 - `include_client_id` (required): A boolean indicating whether to include the
@@ -32,7 +35,7 @@ search:
     - http://example.com/path/to/data-review
 ```
 
-> Note: the names `baseline`, `metrics`, `events` and `all-pings` are reserved and may not be used as the name of a custom ping.
+> Note: the names `baseline`, `metrics`, `events`, `deletion-request` and `all-pings` are reserved and may not be used as the name of a custom ping.
 
 ## Loading custom ping metadata into your application or library
 
@@ -53,6 +56,26 @@ override fun onCreate() {
     ...
     Glean.registerPings(Pings)
     ...
+}
+```
+
+</div>
+
+<div data-lang="Swift" class="tab">
+
+In Swift, this object must be registered with Glean from your startup code
+(such as in your application's `UIApplicationDelegate` [`application(_:didFinishLaunchingWithOptions:)`](https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622921-application) method or a function called from that method).
+
+```swift
+import Glean
+
+@UIApplicationMain
+class AppDelegate: UIResponder, UIApplicationDelegate {
+func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+    // ...
+    Glean.shared.registerPings(GleanMetrics.Pings)
+    // ...
+}
 }
 ```
 
@@ -120,6 +143,16 @@ For example, to submit the custom ping defined above:
 ```kotlin
 import org.mozilla.yourApplication.GleanMetrics.Pings
 Pings.search.submit()
+```
+
+</div>
+
+<div data-lang="Swift" class="tab">
+
+```swift
+import Glean
+
+GleanMetrics.Pings.shared.search.submit()
 ```
 
 </div>
