@@ -945,13 +945,13 @@ mod test {
             let db = Database::new(&str_dir, true).unwrap();
 
             // Attempt to record a known value.
-        db.record_per_lifetime(
-            Lifetime::Ping,
-            test_storage,
-            test_metric_id,
-            &Metric::String(test_value.to_string()),
-        )
-        .unwrap();
+            db.record_per_lifetime(
+                Lifetime::Ping,
+                test_storage,
+                test_metric_id,
+                &Metric::String(test_value.to_string()),
+            )
+            .unwrap();
 
             // Verify that test_value is in memory.
             let data = match &db.ping_lifetime_data {
@@ -976,7 +976,7 @@ mod test {
                 .get(&reader, format!("{}#{}", test_storage, test_metric_id))
                 .unwrap_or(None)
                 .is_some());
-            }
+        }
 
         // Now create a new instace of the db and check if data was
         // correctly loaded from rkv to memory.
@@ -987,7 +987,7 @@ mod test {
             let data = match &db.ping_lifetime_data {
                 Some(ping_lifetime_data) => ping_lifetime_data,
                 None => panic!("Expected `ping_lifetime_data` to exist here!"),
-        };
+            };
             let data = data.read().unwrap();
             assert!(data
                 .get(&format!("{}#{}", test_storage, test_metric_id))
@@ -999,9 +999,9 @@ mod test {
                 .open_single(Lifetime::Ping.as_str(), StoreOptions::create())
                 .unwrap();
             let reader = db.rkv.read().unwrap();
-        assert!(store
+            assert!(store
                 .get(&reader, format!("{}#{}", test_storage, test_metric_id))
-            .unwrap_or(None)
+                .unwrap_or(None)
                 .is_some());
         }
     }

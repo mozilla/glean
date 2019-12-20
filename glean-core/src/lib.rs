@@ -567,7 +567,7 @@ impl Glean {
     }
 
     /// ** This is not meant to be used directly.**
-    /// 
+    ///
     /// Clear all the metrics that have `Lifetime::Application`.
     pub fn clear_application_lifetime_metrics(&self) {
         log::debug!("Clearing Lifetime::Application metrics");

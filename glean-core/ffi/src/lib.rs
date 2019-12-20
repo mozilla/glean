@@ -270,7 +270,9 @@ pub extern "C" fn glean_experiment_test_get_data(
 
 #[no_mangle]
 pub extern "C" fn glean_clear_application_lifetime_metrics(glean_handle: u64) {
-    GLEAN.call_infallible(glean_handle, |glean| glean.clear_application_lifetime_metrics());
+    GLEAN.call_infallible(glean_handle, |glean| {
+        glean.clear_application_lifetime_metrics()
+    });
 }
 
 #[no_mangle]
