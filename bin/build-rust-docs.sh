@@ -11,6 +11,9 @@ set -e
 
 CRATE_NAME=glean_core
 
+# Add the changelog file
+cp -a CHANGELOG.md docs/appendix/changelog.md
+
 output=$(mdbook build docs/ 2>&1)
 if echo "$output" | grep -q "\[ERROR\]" ; then
     exit 1
