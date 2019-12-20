@@ -576,7 +576,7 @@ impl Glean {
 
     /// Return whether or not this is the first run on this profile.
     pub fn is_first_run(&self) -> bool {
-        return self.is_first_run;
+        self.is_first_run
     }
 
     /// **Test-only API (exported for FFI purposes).**
