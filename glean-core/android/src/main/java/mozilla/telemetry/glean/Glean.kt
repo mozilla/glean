@@ -199,7 +199,7 @@ open class GleanInternalAPI internal constructor () {
             applicationContext,
             acMetadata.metricsPingLastSentDate
         )
-        metricsPingScheduler.schedule()
+        metricsPingScheduler.schedule(overduePingAsFirst = true)
 
         // Signal Dispatcher that init is complete
         @Suppress("EXPERIMENTAL_API_USAGE")
@@ -519,21 +519,42 @@ open class GleanInternalAPI internal constructor () {
      * policies.
      *
      * If the ping currently contains no content, it will not be assembled and
-     * queued for sending.
+     * queued for sending, unless explicitly specified otherwise in the registry
+     * file.
      *
      * @param pingNames List of ping names to submit.
      * @return The async [Job] performing the work of assembling the ping
      */
     @Suppress("EXPERIMENTAL_API_USAGE")
     internal fun submitPingsByName(pingNames: List<String>) = Dispatchers.API.launch {
+        submitPingsByNameSync(pingNames)
+    }
+
+    /**
+     * Collect and submit a list of pings for eventual upload by name, synchronously.
+     *
+     * Each ping will be looked up in the known instances of [PingType]. If the
+     * ping isn't known, an error is logged and the ping isn't queued for uploading.
+     *
+     * The ping content is assembled as soon as possible, but upload is not
+     * guaranteed to happen immediately, as that depends on the upload
+     * policies.
+     *
+     * If the ping currently contains no content, it will not be assembled and
+     * queued for sending, unless explicitly specified otherwise in the registry
+     * file.
+     *
+     * @param pingNames List of ping names to submit.
+     */
+    internal fun submitPingsByNameSync(pingNames: List<String>) {
         if (!isInitialized()) {
             Log.e(LOG_TAG, "Glean must be initialized before submitting pings.")
-            return@launch
+            return
         }
 
         if (!getUploadEnabled()) {
             Log.e(LOG_TAG, "Glean must be enabled before submitting pings.")
-            return@launch
+            return
         }
 
         val pingArray = StringArray(pingNames.toTypedArray(), "utf-8")
