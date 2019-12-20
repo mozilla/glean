@@ -101,7 +101,7 @@ fn snapshot_correctly_clears_the_stores() {
         CommonMetricData {
             name: "test_event_clear".into(),
             category: "telemetry".into(),
-            send_in_pings: store_names.clone(),
+            send_in_pings: store_names,
             disabled: false,
             lifetime: Lifetime::Ping,
             ..Default::default()
@@ -159,7 +159,7 @@ fn test_sending_of_event_ping_when_it_fills_up() {
         CommonMetricData {
             name: "click".into(),
             category: "ui".into(),
-            send_in_pings: store_names.clone(),
+            send_in_pings: store_names,
             disabled: false,
             lifetime: Lifetime::Ping,
             ..Default::default()
@@ -207,7 +207,7 @@ fn extra_keys_must_be_recorded_and_truncated_if_needed() {
         CommonMetricData {
             name: "testEvent".into(),
             category: "ui".into(),
-            send_in_pings: store_names.clone(),
+            send_in_pings: store_names,
             disabled: false,
             lifetime: Lifetime::Ping,
             ..Default::default()
