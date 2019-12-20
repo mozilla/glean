@@ -241,8 +241,11 @@ internal class MetricsPingScheduler(
                 // before any other recording API call.
                 //
                 // * Do not change `Dispatchers.API.executeTask` to `Dispatchers.API.launch` as
-                // this would break startup overdue ping collection. For more context, see bug
-                // 1604861 and the implementation of `collectPingAndReschedule`.
+                // this would break startup overdue ping collection. *
+                // `executeTask` schedules the task for immediate execution on the
+                // `Dispatchers.API` thread pool, before any other enqueued task. For more
+                // context, see bug 1604861 and the implementation of
+                // `collectPingAndReschedule`.
                 if (overduePingAsFirst) {
                     @Suppress("EXPERIMENTAL_API_USAGE")
                     Dispatchers.API.executeTask {
@@ -281,7 +284,7 @@ internal class MetricsPingScheduler(
             //
             // During the Glean initialization, we require any metric recording to be
             // batched up and replayed after any startup metrics ping is sent. To guarantee
-            // that, we dispatch this function from `Dispatchers.API.executaTask`. However,
+            // that, we dispatch this function from `Dispatchers.API.executeTask`. However,
             // Pings.metrics.submit() ends up calling `Dispatchers.API.launch` again which
             // will delay the ping collection task after any pending metric recording is
             // executed, breaking the 'metrics' ping promise of sending a startup 'metrics'
