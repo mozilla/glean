@@ -98,6 +98,8 @@ uint8_t glean_boolean_test_has_value(uint64_t glean_handle,
                                      uint64_t metric_id,
                                      FfiStr storage_name);
 
+void glean_clear_application_lifetime_metrics(uint64_t glean_handle);
+
 void glean_counter_add(uint64_t glean_handle, uint64_t metric_id, int32_t amount);
 
 int32_t glean_counter_test_get_num_recorded_errors(uint64_t glean_handle,
@@ -223,6 +225,8 @@ uint8_t glean_experiment_test_is_active(uint64_t glean_handle, FfiStr experiment
  * A valid and non-null configuration object is required for this function.
  */
 uint64_t glean_initialize(const FfiConfiguration *cfg);
+
+uint8_t glean_is_first_run(uint64_t glean_handle);
 
 uint8_t glean_is_upload_enabled(uint64_t glean_handle);
 
