@@ -151,7 +151,9 @@ See the [custom pings documentation](pings/custom.md) about adding custom pings 
 Metric recording that happens before Glean is initialized is queued and applied when Glean is initialized.
 To avoid unbounded memory growth the queue is bounded (currently to a maximum of 100 tasks). Further recordings are dropped.
 
-Ping collection and upload as well as the built-in pings are only available after initialization.
+Custom ping submission will not fail before initialization.
+Collection and upload of the custom ping is delayed until Glean is initialized.
+Built-in pings are only available after initialization.
 
 ## Enabling and disabling metrics
 
