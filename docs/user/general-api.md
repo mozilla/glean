@@ -1,7 +1,7 @@
 # The General API
 
 Glean has a minimal API available on its top-level `Glean` object.
-This API allows to enable and disable upload, register [custom pings][] and set [experiment data][experiments-api].
+This API allows to enable and disable upload, register [custom pings][custom-pings] and set [experiment data][experiments-api].
 
 [custom-pings]: pings/custom.md
 [experiments-api]: experiments-api.md
@@ -145,6 +145,13 @@ See the [custom pings documentation](pings/custom.md) about adding custom pings 
 </div>
 
 {{#include ../tab_footer.md}}
+
+## Behavior when uninitialized
+
+Metric recording that happens before Glean is initialized is queued and applied when Glean is initialized.
+To avoid unbounded memory growth the queue is bounded (currently to a maximum of 100 tasks). Further recordings are dropped.
+
+Ping collection and upload as well as the built-in pings are only available after initialization.
 
 ## Enabling and disabling metrics
 
