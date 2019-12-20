@@ -121,6 +121,9 @@ fn initialize_core_metrics(glean: &Glean, client_info: ClientInfoMetrics, channe
     core_metrics.os.set(glean, system::OS.to_string());
     core_metrics.os_version.set(glean, "unknown".to_string());
     core_metrics
+        .architecture
+        .set(glean, system::ARCH.to_string());
+    core_metrics
         .device_manufacturer
         .set(glean, "unknown".to_string());
     core_metrics.device_model.set(glean, "unknown".to_string());

@@ -35,3 +35,31 @@ pub const OS: &str = "Windows";
     target_os = "windows",
 )))]
 pub const OS: &str = "unknown";
+
+// Detect and expose `target_arch` as a constant
+// Whether this is a good idea is somewhat debatable
+
+#[cfg(target_arch = "aarch64")]
+/// `target_arch` when building this crate: `aarch64`
+pub const ARCH: &str = "aarch64";
+
+#[cfg(target_arch = "arm")]
+/// `target_arch` when building this crate: `arm`
+pub const ARCH: &str = "arm";
+
+#[cfg(target_arch = "x86")]
+/// `target_arch` when building this crate: `x86`
+pub const ARCH: &str = "x86";
+
+#[cfg(target_arch = "x86_64")]
+/// `target_arch` when building this crate: `x86_64`
+pub const ARCH: &str = "x86_64";
+
+#[cfg(not(any(
+    target_arch = "aarch64",
+    target_arch = "arm",
+    target_arch = "x86",
+    target_arch = "x86_64"
+)))]
+/// `target_arch` when building this crate: unknown!
+pub const ARCH: &str = "unknown";

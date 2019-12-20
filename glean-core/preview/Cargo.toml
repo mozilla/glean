@@ -1,6 +1,6 @@
 [package]
 name = "glean-preview"
-version = "0.0.3"
+version = "0.0.4"
 authors = ["Jan-Erik Rediger <jrediger@mozilla.com>", "The Glean Team <glean-team@mozilla.com>"]
 description = "Nice Glean SDK Rust API"
 repository = "https://github.com/mozilla/glean"

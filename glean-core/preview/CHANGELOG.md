@@ -1,3 +1,7 @@
+# v0.0.4 (2019-12-20)
+
+* Set target architecture in `client_info` ([#603](https://github.com/mozilla/glean/pull/603))
+
 # v0.0.3 (2019-12-19)
 
 * **Breaking Change**: Stub out client info values and provide a way to set app version information ([#592](https://github.com/mozilla/glean/pull/592))

@@ -333,7 +333,7 @@ dependencies = [
 
 [[package]]
 name = "glean-preview"
-version = "0.0.3"
+version = "0.0.4"
 dependencies = [
  "env_logger 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "glean-core 22.0.0",
