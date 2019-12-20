@@ -45,7 +45,7 @@ fn snapshot_correctly_clears_the_stores() {
     let metric = CounterMetric::new(CommonMetricData {
         name: "metric".into(),
         category: "telemetry".into(),
-        send_in_pings: store_names.clone(),
+        send_in_pings: store_names,
         disabled: false,
         lifetime: Lifetime::Ping,
         ..Default::default()

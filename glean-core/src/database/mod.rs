@@ -849,7 +849,7 @@ mod test {
                     *lifetime,
                     test_storage,
                     &format!("{}_{}", metric_id_pattern, value),
-                    &Metric::String(value.to_string()),
+                    &Metric::String((*value).to_string()),
                 )
                 .unwrap();
             }

@@ -43,9 +43,9 @@ fn experiment_id_and_branch_get_truncated_if_too_long() {
     glean.set_experiment_active(very_long_id.clone(), very_long_branch_id.clone(), None);
 
     // Generate the expected id and branch strings.
-    let mut expected_id = very_long_id.clone();
+    let mut expected_id = very_long_id;
     expected_id.truncate(100);
-    let mut expected_branch_id = very_long_branch_id.clone();
+    let mut expected_branch_id = very_long_branch_id;
     expected_branch_id.truncate(100);
 
     assert!(
@@ -54,7 +54,7 @@ fn experiment_id_and_branch_get_truncated_if_too_long() {
     );
 
     // Make sure the branch id was truncated as well.
-    let experiment_data = glean.test_get_experiment_data_as_json(expected_id.clone());
+    let experiment_data = glean.test_get_experiment_data_as_json(expected_id);
     assert!(
         !experiment_data.is_none(),
         "Experiment data must be available"
@@ -84,7 +84,7 @@ fn limits_on_experiments_extras_are_applied_correctly() {
     }
 
     // Mark the experiment as active.
-    glean.set_experiment_active(experiment_id.clone(), branch_id.clone(), Some(extras));
+    glean.set_experiment_active(experiment_id.clone(), branch_id, Some(extras));
 
     // Make sure it is active
     assert!(
@@ -93,7 +93,7 @@ fn limits_on_experiments_extras_are_applied_correctly() {
     );
 
     // Get the data
-    let experiment_data = glean.test_get_experiment_data_as_json(experiment_id.clone());
+    let experiment_data = glean.test_get_experiment_data_as_json(experiment_id);
     assert!(
         !experiment_data.is_none(),
         "Experiment data must be available"
@@ -135,11 +135,7 @@ fn experiments_status_is_correctly_toggled() {
         .collect();
 
     // Activate an experiment.
-    glean.set_experiment_active(
-        experiment_id.clone(),
-        branch_id.clone(),
-        Some(extra.clone()),
-    );
+    glean.set_experiment_active(experiment_id.clone(), branch_id, Some(extra.clone()));
 
     // Check that the experiment is marekd as active.
     assert!(
@@ -156,12 +152,12 @@ fn experiments_status_is_correctly_toggled() {
 
     let parsed_data: RecordedExperimentData =
         ::serde_json::from_str(&experiment_data.unwrap()).unwrap();
-    assert_eq!(parsed_data.extra.unwrap(), extra.clone());
+    assert_eq!(parsed_data.extra.unwrap(), extra);
 
     // Disable the experiment and check that is no longer available.
     glean.set_experiment_inactive(experiment_id.clone());
     assert!(
-        !glean.test_is_experiment_active(experiment_id.clone()),
+        !glean.test_is_experiment_active(experiment_id),
         "The experiment must not be available any more."
     );
 }
