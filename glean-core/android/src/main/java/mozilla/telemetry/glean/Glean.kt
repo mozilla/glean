@@ -519,7 +519,8 @@ open class GleanInternalAPI internal constructor () {
      * policies.
      *
      * If the ping currently contains no content, it will not be assembled and
-     * queued for sending.
+     * queued for sending, unless explicitly specified otherwise in the registry
+     * file.
      *
      * @param pingNames List of ping names to submit.
      * @return The async [Job] performing the work of assembling the ping
@@ -540,7 +541,8 @@ open class GleanInternalAPI internal constructor () {
      * policies.
      *
      * If the ping currently contains no content, it will not be assembled and
-     * queued for sending.
+     * queued for sending, unless explicitly specified otherwise in the registry
+     * file.
      *
      * @param pingNames List of ping names to submit.
      */
