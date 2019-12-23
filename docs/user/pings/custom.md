@@ -93,11 +93,11 @@ from glean import load_pings
 pings = load_pings("pings.yaml")
 ```
 
-If your project is a distributable Python package, you need to include the `metrics.yaml` file using [one of the myriad ways to include data in a Python package](https://setuptools.readthedocs.io/en/latest/setuptools.html#including-data-files) and then use [`package_resources.resource_filename()`](https://setuptools.readthedocs.io/en/latest/pkg_resources.html#resource-extraction) to get the filename at runtime.
+If your project is a distributable Python package, you need to include the `metrics.yaml` file using [one of the myriad ways to include data in a Python package](https://setuptools.readthedocs.io/en/latest/setuptools.html#including-data-files) and then use [`pkg_resources.resource_filename()`](https://setuptools.readthedocs.io/en/latest/pkg_resources.html#resource-extraction) to get the filename at runtime.
 
 ```Python
 from glean import load_pings
-from package_resources import resource_filename
+from pkg_resources import resource_filename
 
 pings = load_pings(resource_filename(__name__, "pings.yaml"))
 ```
