@@ -9,6 +9,8 @@
     change, without requiring them to be deleted.
   * parseISOTimeString has been made 4x faster. This had an impact on Glean
     migration and initialization.
+  * Metrics with `lifetime: application` are now cleared when the application is started,
+    after startup Glean SDK pings are generated.
 * All platforms:
   * The public method `PingType.send()` (in all platforms) have been deprecated
     and renamed to `PingType.submit()`.
