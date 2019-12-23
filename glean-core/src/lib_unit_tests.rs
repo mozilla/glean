@@ -414,3 +414,20 @@ fn correct_order() {
         }
     }
 }
+
+#[test]
+fn test_first_run() {
+    let dir = tempfile::tempdir().unwrap();
+    let tmpname = dir.path().display().to_string();
+    {
+        let glean = Glean::with_options(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
+        // Check that this is indeed the first run.
+        assert!(glean.is_first_run());
+    }
+
+    {
+        // Other runs must be not marked as "first run".
+        let glean = Glean::with_options(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
+        assert!(!glean.is_first_run());
+    }
+}

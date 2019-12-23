@@ -122,6 +122,7 @@ pub struct Glean {
     ping_registry: HashMap<String, PingType>,
     start_time: DateTime<FixedOffset>,
     max_events: usize,
+    is_first_run: bool,
 }
 
 impl Glean {
@@ -150,6 +151,7 @@ impl Glean {
             ping_registry: HashMap::new(),
             start_time: local_now_with_offset(),
             max_events: cfg.max_events.unwrap_or(DEFAULT_MAX_EVENTS),
+            is_first_run: false,
         };
         glean.on_change_upload_enabled(cfg.upload_enabled);
         Ok(glean)
@@ -227,6 +229,10 @@ impl Glean {
             .is_none()
         {
             self.core_metrics.first_run_date.set(self, None);
+            // The `first_run_date` field is generated on the very first run
+            // and persisted across upload toggling. We can assume that, the only
+            // time it is set, that's indeed our "first run".
+            self.is_first_run = true;
         }
     }
 
@@ -558,6 +564,19 @@ impl Glean {
     /// If there is no data to persist, this function does nothing.
     pub fn persist_ping_lifetime_data(&self) -> Result<()> {
         self.data_store.persist_ping_lifetime_data()
+    }
+
+    /// ** This is not meant to be used directly.**
+    ///
+    /// Clear all the metrics that have `Lifetime::Application`.
+    pub fn clear_application_lifetime_metrics(&self) {
+        log::debug!("Clearing Lifetime::Application metrics");
+        self.data_store.clear_lifetime(Lifetime::Application);
+    }
+
+    /// Return whether or not this is the first run on this profile.
+    pub fn is_first_run(&self) -> bool {
+        self.is_first_run
     }
 
     /// **Test-only API (exported for FFI purposes).**

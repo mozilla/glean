@@ -19,10 +19,6 @@ use crate::Result;
 #[derive(Debug)]
 pub struct Database {
     rkv: Rkv,
-    // Metrics with 'application' lifetime only live as long
-    // as the application lives: they don't need to be persisted
-    // to disk using rkv. Store them in a map.
-    app_lifetime_data: RwLock<BTreeMap<String, Metric>>,
     // If the `delay_ping_lifetime_io` Glean config option is `true`,
     // we will save metrics with 'ping' lifetime data in a map temporarily
     // so as to persist them to disk using rkv in bulk on demand.
@@ -40,7 +36,6 @@ impl Database {
     pub fn new(data_path: &str, delay_ping_lifetime_io: bool) -> Result<Self> {
         let db = Self {
             rkv: Self::open_rkv(data_path)?,
-            app_lifetime_data: RwLock::new(BTreeMap::new()),
             ping_lifetime_data: if delay_ping_lifetime_io {
                 Some(RwLock::new(BTreeMap::new()))
             } else {
@@ -152,22 +147,6 @@ impl Database {
         let iter_start = Self::get_storage_key(storage_name, metric_key);
         let len = iter_start.len();
 
-        // Lifetime::Application data is not persisted to disk
-        if lifetime == Lifetime::Application {
-            let data = self
-                .app_lifetime_data
-                .read()
-                .expect("Can't read app lifetime data");
-            for (key, value) in data.iter() {
-                if key.starts_with(&iter_start) {
-                    let key = &key[len..];
-                    transaction_fn(key.as_bytes(), value);
-                }
-            }
-
-            return;
-        }
-
         // Lifetime::Ping data is not immediately persisted to disk if
         // Glean has `delay_ping_lifetime_io` set to true
         if lifetime == Lifetime::Ping {
@@ -229,15 +208,6 @@ impl Database {
     ) -> bool {
         let key = Self::get_storage_key(storage_name, Some(metric_identifier));
 
-        // Lifetime::Application data is not persisted to disk
-        if lifetime == Lifetime::Application {
-            return self
-                .app_lifetime_data
-                .read()
-                .map(|data| data.contains_key(&key))
-                .unwrap_or(false);
-        }
-
         // Lifetime::Ping data is not persisted to disk if
         // Glean has `delay_ping_lifetime_io` set to true
         if lifetime == Lifetime::Ping {
@@ -264,16 +234,11 @@ impl Database {
     ///
     /// ## Panics
     ///
-    /// * This function will panic for `Lifetime::Application`.
     /// * This function will **not** panic on database errors.
     pub fn write_with_store<F>(&self, store_name: Lifetime, mut transaction_fn: F) -> Result<()>
     where
         F: FnMut(rkv::Writer, SingleStore) -> Result<()>,
     {
-        if store_name == Lifetime::Application {
-            panic!("Can't write with store for application-lifetime data");
-        }
-
         let store: SingleStore = self
             .rkv
             .open_single(store_name.as_str(), StoreOptions::create())?;
@@ -312,15 +277,6 @@ impl Database {
         metric: &Metric,
     ) -> Result<()> {
         let final_key = Self::get_storage_key(storage_name, Some(key));
-
-        if lifetime == Lifetime::Application {
-            let mut data = self
-                .app_lifetime_data
-                .write()
-                .expect("Can't read app lifetime data");
-            data.insert(final_key, metric.clone());
-            return Ok(());
-        }
 
         // Lifetime::Ping data is not immediately persisted to disk if
         // Glean has `delay_ping_lifetime_io` set to true
@@ -386,25 +342,7 @@ impl Database {
     {
         let final_key = Self::get_storage_key(storage_name, Some(key));
 
-        if lifetime == Lifetime::Application {
-            let mut data = self
-                .app_lifetime_data
-                .write()
-                .expect("Can't access app lifetime data as writable");
-            let entry = data.entry(final_key);
-            match entry {
-                Entry::Vacant(entry) => {
-                    entry.insert(transform(None));
-                }
-                Entry::Occupied(mut entry) => {
-                    let old_value = entry.get().clone();
-                    entry.insert(transform(Some(old_value)));
-                }
-            }
-            return Ok(());
-        }
-
-        // Lifetime::Ping data is not immediately persisted to disk if
+        // Lifetime::Ping data is not persisted to disk if
         // Glean has `delay_ping_lifetime_io` set to true
         if lifetime == Lifetime::Ping {
             if let Some(ping_lifetime_data) = &self.ping_lifetime_data {
@@ -525,17 +463,8 @@ impl Database {
     ) -> Result<()> {
         let final_key = Self::get_storage_key(storage_name, Some(metric_name));
 
-        if lifetime == Lifetime::Application {
-            let mut data = self
-                .app_lifetime_data
-                .write()
-                .expect("Can't access app lifetime data as writable");
-            data.remove(&final_key);
-            return Ok(());
-        }
-
-        // Lifetime::Ping data will be saved to `ping_lifetime_data`
-        // in case `delay_ping_lifetime_io` is set to true
+        // Lifetime::Ping data is not persisted to disk if
+        // Glean has `delay_ping_lifetime_io` set to true
         if lifetime == Lifetime::Ping {
             if let Some(ping_lifetime_data) = &self.ping_lifetime_data {
                 let mut data = ping_lifetime_data
@@ -559,6 +488,24 @@ impl Database {
         })
     }
 
+    /// Clears all the metrics in the database, for the provided lifetime.
+    ///
+    /// Errors are logged.
+    ///
+    /// ## Panics
+    ///
+    /// * This function will **not** panic on database errors.
+    pub fn clear_lifetime(&self, lifetime: Lifetime) {
+        let res = self.write_with_store(lifetime, |mut writer, store| {
+            store.clear(&mut writer)?;
+            writer.commit()?;
+            Ok(())
+        });
+        if let Err(e) = res {
+            log::error!("Could not clear store for lifetime {:?}: {:?}", lifetime, e);
+        }
+    }
+
     /// Clears all metrics in the database.
     ///
     /// Errors are logged.
@@ -567,8 +514,6 @@ impl Database {
     ///
     /// * This function will **not** panic on database errors.
     pub fn clear_all(&self) {
-        // Lifetime::Ping might also have data saved to `ping_lifetime_data`
-        // in case `delay_ping_lifetime_io` is set to true
         if let Some(ping_lifetime_data) = &self.ping_lifetime_data {
             ping_lifetime_data
                 .write()
@@ -576,21 +521,9 @@ impl Database {
                 .clear();
         }
 
-        for lifetime in [Lifetime::User, Lifetime::Ping].iter() {
-            let res = self.write_with_store(*lifetime, |mut writer, store| {
-                store.clear(&mut writer)?;
-                writer.commit()?;
-                Ok(())
-            });
-            if let Err(e) = res {
-                log::error!("Could not clear store for lifetime {:?}: {:?}", lifetime, e);
-            }
+        for lifetime in [Lifetime::User, Lifetime::Ping, Lifetime::Application].iter() {
+            self.clear_lifetime(*lifetime);
         }
-
-        self.app_lifetime_data
-            .write()
-            .expect("Can't access app lifetime data as writable")
-            .clear();
     }
 
     /// Persist ping_lifetime_data to disk.

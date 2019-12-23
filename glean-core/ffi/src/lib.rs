@@ -269,8 +269,20 @@ pub extern "C" fn glean_experiment_test_get_data(
 }
 
 #[no_mangle]
+pub extern "C" fn glean_clear_application_lifetime_metrics(glean_handle: u64) {
+    GLEAN.call_infallible(glean_handle, |glean| {
+        glean.clear_application_lifetime_metrics()
+    });
+}
+
+#[no_mangle]
 pub extern "C" fn glean_test_clear_all_stores(glean_handle: u64) {
     GLEAN.call_infallible(glean_handle, |glean| glean.test_clear_all_stores());
+}
+
+#[no_mangle]
+pub extern "C" fn glean_is_first_run(glean_handle: u64) -> u8 {
+    GLEAN.call_infallible(glean_handle, |glean| glean.is_first_run())
 }
 
 define_infallible_handle_map_deleter!(GLEAN, glean_destroy_glean);

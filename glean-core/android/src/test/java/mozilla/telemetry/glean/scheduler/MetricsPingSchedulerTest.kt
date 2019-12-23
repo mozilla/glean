@@ -595,6 +595,86 @@ class MetricsPingSchedulerTest {
         }
     }
 
+    @Test
+    fun `Glean must preserve lifetime application metrics across runs`() {
+        // This test requires to use the glean instance (it's more an integration
+        // test than a unit test).
+        val context = getContextWithMockedInfo()
+
+        // Reset Glean and do not start it right away.
+        Glean.testDestroyGleanHandle()
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        Dispatchers.API.setTaskQueueing(true)
+
+        // Let's create a fake time the metrics ping was sent: this is required for
+        // us to not send a 'metrics' ping the first time we init glean.
+        val fakeNowDoNotSend = Calendar.getInstance()
+        fakeNowDoNotSend.clear()
+        fakeNowDoNotSend.set(2015, 6, 11, 4, 0, 0)
+        SystemClock.setCurrentTimeMillis(fakeNowDoNotSend.timeInMillis)
+
+        // Create a fake instance of the metrics ping scheduler just to set the last
+        // collection time.
+        val fakeMpsSetter = spy(MetricsPingScheduler(context))
+        fakeMpsSetter.updateSentDate(getISOTimeString(fakeNowDoNotSend, truncateTo = TimeUnit.Day))
+
+        // Create a metric with lifetime: application and set it. Put
+        // it in the metrics ping so that we can easily trigger it for
+        // the purpose of this test.
+        val testMetric = StringMetricType(
+            disabled = false,
+            category = "telemetry",
+            lifetime = Lifetime.Application,
+            name = "test_applifetime_metric",
+            sendInPings = listOf("metrics")
+        )
+        val expectedString = "I-will-survive!"
+
+        // Reset Glean and start it for the FIRST time, then record a value.
+        resetGlean(context)
+        testMetric.set(expectedString)
+
+        // Set the current system time to a known datetime: this should make the metrics ping
+        // overdue and trigger it at startup.
+        val fakeNowTriggerPing = Calendar.getInstance()
+        fakeNowTriggerPing.clear()
+        fakeNowTriggerPing.set(2015, 6, 12, 7, 0, 0)
+        SystemClock.setCurrentTimeMillis(fakeNowTriggerPing.timeInMillis)
+
+        // Start the web-server that will receive the metrics ping.
+        val server = getMockWebServer()
+
+        try {
+            // Initialize Glean the SECOND time: we won't clear the stored data, we expect
+            // the metric to be there and clear after the ping is generated.
+            resetGlean(
+                context,
+                Configuration(
+                    serverEndpoint = "http://" + server.hostName + ":" + server.port, logPings = true
+                ),
+                false
+            )
+
+            // Trigger worker task to upload the pings in the background.
+            triggerWorkManager(context)
+
+            // Wait for the metrics ping to be received.
+            val request = server.takeRequest(20L, AndroidTimeUnit.SECONDS)
+
+            val metricsJsonData = request.body.readUtf8()
+            val pingJson = JSONObject(metricsJsonData)
+
+            assertEquals("The received ping must be a 'metrics' ping",
+                "metrics", pingJson.getJSONObject("ping_info")["ping_type"])
+            assertTrue("The expected metric must be in this ping",
+                metricsJsonData.contains(expectedString))
+            assertFalse("The metric must be cleared after startup",
+                testMetric.testHasValue())
+        } finally {
+            server.shutdown()
+        }
+    }
+
     // @Test
     // fun `Glean should close the measurement window for overdue pings before recording new data`() {
     //     // This test is a bit tricky: we want to make sure that, when our metrics ping is overdue
