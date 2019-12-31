@@ -75,7 +75,7 @@ internal class MetricsPingScheduler(
         timer?.cancel()
 
         timer = Timer("glean.MetricsPingScheduler")
-        timer?.schedule(MetricsPingTimerTask(this), millisUntilNextDueTime)
+        timer?.schedule(MetricsPingTimer(this), millisUntilNextDueTime)
     }
 
     /**
@@ -316,9 +316,9 @@ internal class MetricsPingScheduler(
  * [MetricsPingScheduler.schedulePingCollection] for scheduling the collection of the
  * "metrics" ping at the due hour.
  */
-internal class MetricsPingTimerTask(val scheduler: MetricsPingScheduler) : TimerTask() {
+internal class MetricsPingTimer(val scheduler: MetricsPingScheduler) : TimerTask() {
     companion object {
-        private const val LOG_TAG = "glean/MetricsPingTimerTask"
+        private const val LOG_TAG = "glean/MetricsPingTimer"
     }
 
     /**
