@@ -58,25 +58,6 @@ class UuidMetricTypeTest {
     }
 
     @Test
-    fun `uuids with no lifetime must not record data`() {
-        // Define a 'uuidMetric' uuid metric, which will be stored in
-        // "store1". It's disabled so it should not record anything.
-        val uuidMetric = UuidMetricType(
-            disabled = true,
-            category = "telemetry",
-            lifetime = Lifetime.Ping,
-            name = "uuidMetric",
-            sendInPings = listOf("store1")
-        )
-
-        // Attempt to store the uuid.
-        uuidMetric.generateAndSet()
-        // Check that nothing was recorded.
-        assertFalse("Uuids must not be recorded if they have no lifetime",
-            uuidMetric.testHasValue())
-    }
-
-    @Test
     fun `disabled uuids must not record data`() {
         // Define a 'uuidMetric' uuid metric, which will be stored in "store1". It's disabled
         // so it should not record anything.
