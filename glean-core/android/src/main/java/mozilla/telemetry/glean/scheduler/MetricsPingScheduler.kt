@@ -43,6 +43,7 @@ internal class MetricsPingScheduler(
         private const val LOG_TAG = "glean/MetricsPingSched"
         const val LAST_METRICS_PING_SENT_DATETIME = "last_metrics_ping_iso_datetime"
         const val DUE_HOUR_OF_THE_DAY = 4
+        const val LAST_VERSION_OF_APP_USED = "last_version_of_app_used"
     }
 
     init {
@@ -76,6 +77,30 @@ internal class MetricsPingScheduler(
 
         timer = Timer("glean.MetricsPingScheduler")
         timer?.schedule(MetricsPingTimer(this), millisUntilNextDueTime)
+    }
+
+    /**
+     * Determines if the application is a different version from the last time it was run.
+     * This is used to prevent mixing data from multiple versions of the application in the
+     * same ping.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    internal fun isDifferentVersion(): Boolean {
+        // Determine if the version has changed since the last time we ran.
+        val packageInfo = applicationContext.packageManager.getPackageInfo(
+            applicationContext.packageName, 0
+        )
+        val currentVersion = packageInfo.versionName?.let { it } ?: "Unknown"
+        val lastVersion = try {
+            sharedPreferences.getString(LAST_VERSION_OF_APP_USED, null)
+        } catch (e: ClassCastException) {
+            null
+        }
+        if (currentVersion != lastVersion) {
+            sharedPreferences.edit()?.putString(LAST_VERSION_OF_APP_USED, currentVersion)?.apply()
+            return true
+        }
+        return false
     }
 
     /**
@@ -161,6 +186,19 @@ internal class MetricsPingScheduler(
      */
     fun schedule(overduePingAsFirst: Boolean) {
         val now = getCalendarInstance()
+
+        // If the version of the app is different from the last time we ran the app,
+        // schedule the metrics ping for immediate collection. We only need to perform
+        // this check at startup (when overduePingAsFirst is true).
+        if (overduePingAsFirst && isDifferentVersion()) {
+            @Suppress("EXPERIMENTAL_API_USAGE")
+            Dispatchers.API.executeTask {
+                // This addresses (2).
+                collectPingAndReschedule(now, startupPing = true)
+            }
+            return
+        }
+
         val lastSentDate = getLastCollectedDate()
 
         if (lastSentDate != null) {

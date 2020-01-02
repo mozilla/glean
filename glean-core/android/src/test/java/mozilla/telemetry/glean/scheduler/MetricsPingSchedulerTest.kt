@@ -328,6 +328,11 @@ class MetricsPingSchedulerTest {
         // Set the last sent date to now.
         val mpsSpy =
             spy(MetricsPingScheduler(context))
+
+        // Inject the application version as already recorded, so we don't hit the case
+        // where the ping is sent due to a version change.
+        mpsSpy.isDifferentVersion()
+
         mpsSpy.updateSentDate(getISOTimeString(fakeNow, truncateTo = TimeUnit.Day))
 
         verify(mpsSpy, never()).schedulePingCollection(any(), anyBoolean())
@@ -355,6 +360,10 @@ class MetricsPingSchedulerTest {
         // Set the last sent date to yesterday.
         val mpsSpy =
             spy(MetricsPingScheduler(context))
+
+        // Inject the application version as already recorded, so we don't hit the case
+        // where the ping is sent due to a version change.
+        mpsSpy.isDifferentVersion()
 
         val fakeYesterday = Calendar.getInstance()
         fakeYesterday.time = fakeNow.time
@@ -386,6 +395,9 @@ class MetricsPingSchedulerTest {
         val mpsSpy =
             spy(MetricsPingScheduler(context))
         mpsSpy.sharedPreferences.edit().clear().apply()
+        // Inject the application version as already recorded, so we don't hit the case
+        // where the ping is sent due to a version change.
+        mpsSpy.isDifferentVersion()
 
         verify(mpsSpy, never()).collectPingAndReschedule(any(), anyBoolean())
 
@@ -398,6 +410,23 @@ class MetricsPingSchedulerTest {
         // Verify that we're immediately collecting.
         verify(mpsSpy, never()).collectPingAndReschedule(fakeNow, true)
         verify(mpsSpy, times(1)).schedulePingCollection(fakeNow, sendTheNextCalendarDay = false)
+    }
+
+    @Test
+    fun `startupCheck must correctly handle a version change`() {
+        // Clear the last sent date.
+        val mpsSpy =
+            spy(MetricsPingScheduler(context))
+        mpsSpy.sharedPreferences.edit().clear().apply()
+
+        // Insert an old version identifier into shared preferences
+        mpsSpy.sharedPreferences.edit()?.putString("last_version_of_app_used", "old version")?.apply()
+
+        // Trigger the startup check.
+        mpsSpy.schedule(overduePingAsFirst = true)
+
+        // Verify that we're immediately collecting.
+        verify(mpsSpy, times(1)).collectPingAndReschedule(any(), anyBoolean())
     }
 
     @Test
