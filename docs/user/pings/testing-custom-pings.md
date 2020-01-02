@@ -84,7 +84,7 @@ class MyCustomPingScheduler {
   }
 
   /**
-   * Internal function to only be overriden in tests. This
+   * Internal function to only be overridden in tests. This
    * calls the Glean SDK API to send custom pings.
    */
   @VisibleForTesting(otherwise = VisibleForTesting.NONE)
@@ -124,7 +124,7 @@ class MyCustomPingSchedulerTest {
         // real Glean API is called in order to clear the ping store and to provide
         // consistent behaviour with respect to the application.
         it.callRealMethod()
-      }.`when`(scheduler).sendPing()
+      }.`when`(scheduler).submitPing()
 
       scheduler.addSomeData()
       scheduler.schedulePing()
@@ -142,7 +142,80 @@ class MyCustomPingSchedulerTest {
 
 <div data-lang="Python" class="tab">
 
-> **Note:** Missing Python example code ([Bug 1605055](https://bugzilla.mozilla.org/show_bug.cgi?id=1605055)).
+```python
+import glean
+
+metrics = glean.load_metrics("metrics.yaml")
+pings = glean.load_pings("pings.yaml")
+
+
+class MyCustomPingScheduler:
+    def add_some_data(self):
+        """
+        HERE ONLY TO KEEP THE EXAMPLE SIMPLE.
+
+        A function that consumes the Glean SDK generated metrics API to
+        record some data. It doesn't really need to be in a function, nor
+        in this class. The Glean SDK API can be called when the data is
+        generated.
+        """
+        # Record some sample data.
+        metrics.custom_ping_data.sample_string.set("test-data")
+
+    def schedule_ping(self):
+        """
+        Called to implement the ping scheduling logic for 'my_custom_ping'.
+        """
+        # ... some scheduling logic that will end up calling the function below.
+        self._submit_ping()
+
+    def _submit_ping(self):
+        """
+        Internal function to only be overridden in tests.
+        """
+        pings.my_custom_ping.submit()
+```
+
+Finally, here is a simple unit test that intercepts the `MyCustomPingScheduler.schedule_ping()` call in order to perform the validation on the data.
+
+```python
+from unittest.mock import MagicMock
+
+from glean import testing
+
+import custom_ping_scheduler
+
+
+# This will be run before every test in the entire test suite
+def pytest_runtest_setup(item):
+    testing.reset_glean(application_id="my-app", application_version="0.0.1")
+
+
+def test_verify_custom_ping_metrics():
+    scheduler = custom_ping_scheduler.MyCustomPingScheduler()
+
+    original_submit_ping = scheduler._submit_ping
+
+    def _submit_ping(self):
+        # Here we validate the content that goes into the ping.
+        assert (
+            custom_ping_scheduler.metrics.custom_ping_data.sample_string.test_has_value()
+        )
+        assert (
+            "test-data"
+            == custom_ping_scheduler.metrics.custom_ping_data.sample_string.test_get_value()
+        )
+
+        # We want to intercept this call, but we also want to make sure the
+        # real Glean API is called in order to clear the ping strong and to
+        # provide consistent behavior with respect to the application.
+        original_submit_ping(self)
+
+    scheduler._submit_ping = MagicMock(_submit_ping)
+
+    scheduler.add_some_data()
+    scheduler.schedule_ping()
+```
 
 </div>
 
