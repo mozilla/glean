@@ -21,7 +21,7 @@ my-custom-ping:
     custom pings.
   include_client_id: false
   bugs:
-    - 1556985
+    - https://bugzilla.mozilla.org/1556985/
   data_reviews:
     - https://bugzilla.mozilla.org/show_bug.cgi?id=1556985
   notification_emails:
@@ -43,7 +43,7 @@ custom_ping_data:
     send_in_pings:
       - my-custom-ping
     bugs:
-      - 1556985
+      - https://bugzilla.mozilla.org/1556985/
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1556985
     notification_emails:
