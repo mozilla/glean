@@ -40,7 +40,7 @@ This should be relatively straightforward and painless:
 
 1. Ensure your repository is up-to-date.
 
-2. Ensure rust is up-to-date by running `rustup update`.
+2. Ensure Rust is up-to-date by running `rustup update`.
 
 3. Run a build using the command `make build-swift`
     * To run tests use `make test-swift`

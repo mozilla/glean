@@ -4,7 +4,7 @@ Labeled strings record multiple Unicode string values, each under a different la
 
 ## Configuration
 
-For example to record which kind of error occured in different stages of a login process - `"RuntimeException"` in the `"server_auth"` stage or `"invalid_string"` in the `"enter_email"` stage:
+For example to record which kind of error occurred in different stages of a login process - `"RuntimeException"` in the `"server_auth"` stage or `"invalid_string"` in the `"enter_email"` stage:
 
 ```YAML
 login:
@@ -89,5 +89,5 @@ XCTAssert(Login.errorsByStage["server_auth"].testHasValue())
 
 ## Reference
 
-* Kotlin API docs: [LabeledMetricType](../../../javadoc/glean/mozilla.telemetry.glean.private/-labeled-metric-type/index.html), [StringMetricType](../../../javadoc/glean/mozilla.telemetry.glean.private/-string-metric-type/index.html)
-* Swift API docs: [LabeledMetricType](../../../swift/Classes/LabeledMetricType.html), [StringMetricType](../../../swift/Classes/StringMetricType.html)
+* Kotlin API docs: [`LabeledMetricType`](../../../javadoc/glean/mozilla.telemetry.glean.private/-labeled-metric-type/index.html), [`StringMetricType`](../../../javadoc/glean/mozilla.telemetry.glean.private/-string-metric-type/index.html)
+* Swift API docs: [`LabeledMetricType`](../../../swift/Classes/LabeledMetricType.html), [`StringMetricType`](../../../swift/Classes/StringMetricType.html)

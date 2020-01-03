@@ -16,16 +16,16 @@ The structure of the custom URL uses the following format:
 
 Where:
 
-- `<protocol>` is the "Url Scheme" that has been added for your app (see Instrumenting the application below), such as `glean-sample-app`.
+- `<protocol>` is the "URL Scheme" that has been added for your app (see Instrumenting the application below), such as `glean-sample-app`.
 - This is followed by `://` and then `glean` which is required for the Glean SDK to recognize the command is meant for it to process.
 - Following standard URL query format, the next character after `glean` is the `?` indicating the beginning of the query.
 - This is followed by one or more queries in the form of `<command>=<parameter>`, where the command is one of the commands listed above, followed by an `=` and then the value or parameter to be used with the command.
 
 There are a few things to consider when creating the custom URL:
 
-- Invalid commands will log an error and cause the entire url to be ignored.
+- Invalid commands will log an error and cause the entire URL to be ignored.
 - Not all commands are required to be encoded in the URL, you can mix and match the commands that you need.
-- Multiple instances of commands are not allowed in the same url and, if present, will cause the entire url to be ignored.
+- Multiple instances of commands are not allowed in the same URL and, if present, will cause the entire URL to be ignored.
 
 ### Instrumenting the application for Glean debug functionality
 
@@ -33,7 +33,7 @@ In order to enable the debugging features in a Glean SDK consuming iOS applicati
 
 #### Register custom URL scheme in `Info.plist`
 
-> **Note:** If your application already has a custom URL scheme implemented, there is no need to implement a second scheme, you can simply use that and skip to the next section about adding the convenience method.  If the app doesn't have a custom URL scheme implemented, then you will need to perform the following instructions to register your app to recieve custom URLs.
+> **Note:** If your application already has a custom URL scheme implemented, there is no need to implement a second scheme, you can simply use that and skip to the next section about adding the convenience method.  If the app doesn't have a custom URL scheme implemented, then you will need to perform the following instructions to register your app to receive custom URLs.
 
 Find and open the application's `Info.plist` and right click any blank area and select `Add Row` to create a new key.
 
@@ -43,7 +43,7 @@ Select `Item 0`, click on it and click the disclosure icon to expand it and show
 
 Right-click on `Item 0` and select `Add Row` from the context menu.  In the dropdown menu, select `URL Schemes` to add the item.
 
-Click on the disclosure icon of `URL Schemes` to expand the item, double-click the value field of `Item 0` and key in the value for your application's custom scheme.  For instance, the Glean sample app uses `glean-sample-app`, which allows for custom URL's to be crafted using that as a protocol, for example: `glean-sample-app://glean?logPings=true`
+Click on the disclosure icon of `URL Schemes` to expand the item, double-click the value field of `Item 0` and key in the value for your application's custom scheme.  For instance, the Glean sample app uses `glean-sample-app`, which allows for custom URLs to be crafted using that as a protocol, for example: `glean-sample-app://glean?logPings=true`
 
 #### Add the `Glean.handleCustomUrl()` convenience function and necessary overrides
 

@@ -10,7 +10,7 @@ These are the steps needed to cut a new release from latest master.
     2. Let it create a commit for you.
 3. Land the new commit that performs the steps above. This takes a PR, typically, because of branch protection on master.
 4. Cut the actual release.
-    1. Click "Releases", and then "Draft a New Release" in the github UI.
+    1. Click "Releases", and then "Draft a New Release" in the GitHub UI.
     2. Enter `v<myversion>` as the tag. It's important this is the same as the tags you put in the links in the changelog.
     3. Under the description, paste the contents of the release notes from `CHANGELOG.md`.
     4. Note that the release is not available until the CI build completes for that tag.
@@ -26,9 +26,9 @@ These are the steps needed to cut a new release from latest master.
 
 ### Published artifacts
 
-* The Kotlin libaries are published: [GitHub Releases](https://github.com/mozilla/glean/releases), [Mozilla Maven](https://maven.mozilla.org/?prefix=maven2/org/mozilla/telemetry/).
-* Python bindings are published on PyPi: [glean-sdk](https://pypi.org/project/glean-sdk/).
-* Artifacts for iOS wil be [generated on release soon](https://bugzilla.mozilla.org/show_bug.cgi?id=1598276).
+* The Kotlin libraries are published: [GitHub Releases](https://github.com/mozilla/glean/releases), [Mozilla Maven](https://maven.mozilla.org/?prefix=maven2/org/mozilla/telemetry/).
+* Python bindings are published on PyPI: [glean-sdk](https://pypi.org/project/glean-sdk/).
+* Artifacts for iOS will be [generated on release soon](https://bugzilla.mozilla.org/show_bug.cgi?id=1598276).
 * Rust crates are published on crates.io: [glean-core](https://crates.io/crates/glean-core), [glean-ffi](https://crates.io/crates/glean-ffi).
 
 ## New point-releases
@@ -58,7 +58,7 @@ Otherwise follow these steps to release a point-release on top an older release 
    ```
 4. Follow the [above steps](#glean-release-process) for cutting a new release, except that:
     * When opening a PR to land the commits, target the `release-vX.Y` branch rather than master.
-    * When cutting the new release via github's UI, target the `release-vX.Y` branch rather than master.
+    * When cutting the new release via GitHub's UI, target the `release-vX.Y` branch rather than master.
 
 > **Note:** Point-releases for older versions should be rarely required.
 > We support the last released version and fixes should go there whenever possible.

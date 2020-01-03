@@ -144,9 +144,9 @@ assert 1 == metrics.search_default.name.test_get_num_recorded_errors(
 
 ## Examples
 
-* Record the operating system name with a value of "android".
+* Record the operating system name with a value of `"android"`.
 
-* Recording the device model with a value of "SAMSUNG-SGH-I997".
+* Recording the device model with a value of `"SAMSUNG-SGH-I997"`.
 
 ## Recorded errors
 

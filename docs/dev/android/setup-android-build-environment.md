@@ -4,12 +4,12 @@
 
 This document describes how to make local builds of the Android bindings in
 this repository. Most consumers of these bindings *do not* need to follow
-this process, but will instead use pre-built bindings [todo: link to this]
+this process, but will instead use pre-built bindings [TODO: link to this]
 
 ## Prepare your build environment
 
 Typically, this process only needs to be run once, although periodically you
-may need to repeat some steps (eg, rust updates should be done periodically)
+may need to repeat some steps (eg., rust updates should be done periodically)
 
 ### Setting up Android dependencies
 
@@ -22,7 +22,7 @@ At the end of this process you should have the following environment variables s
 The easiest way to install all the dependencies (and automatically
 handle updates), is by using [Android Studio](https://developer.android.com/studio/index.html).
 Once this is installed, it must be run and the Glean project opened to complete initial setup.
-If Android Studio asks you to upgrade the verison of gradle, decline.
+If Android Studio asks you to upgrade the version of Gradle, decline.
 
 The following dependencies can be installed in Android Studio through `Tools > SDK Manager > SDK Tools`:
 
@@ -41,7 +41,7 @@ If you want to install the NDK manually:
 1. Download NDK r20 from <https://developer.android.com/ndk/downloads>.
 2. Extract it and put it somewhere (`$HOME/.android-ndk-r20` is a reasonable choice, but it doesn't matter).
 3. Set `ANDROID_NDK_ROOT` to this path.
-    * Set `ANDROID_NDK_HOME` to match `ANDROID_NDK_ROOT`, for compatibility with some android grandle plugins.
+    * Set `ANDROID_NDK_HOME` to match `ANDROID_NDK_ROOT`, for compatibility with some android Gradle plugins.
 
 ### Setting up Rust
 
@@ -69,7 +69,7 @@ This should be relatively straightforward and painless:
 
 1. Ensure your repository is up-to-date.
 
-2. Ensure rust is up-to-date by running `rustup update`.
+2. Ensure Rust is up-to-date by running `rustup update`.
 
 3. The builds are all performed by `./gradlew` and the general syntax used is
    `./gradlew project:task`

@@ -19,9 +19,9 @@ In the above:
 
 |key|type|description|
 |---|----|-----------|
-| logPings | boolean (--ez) | If set to `true`, pings are dumped to logcat; defaults to `false` |
-| sendPing | string (--es) | Sends the ping with the given name immediately |
-| tagPings | string (--es) | Tags all outgoing pings as debug pings to make them available for real-time validation, on the [Glean Debug View](https://docs.telemetry.mozilla.org/concepts/glean/debug_ping_view.html). The value must match the pattern `[a-zA-Z0-9-]{1,20}` |
+| `logPings` | boolean (`--ez`)  | If set to `true`, pings are dumped to logcat; defaults to `false` |
+| `sendPing` | string (`--es`)  | Sends the ping with the given name immediately |
+| `tagPings` | string (`--es`)  | Tags all outgoing pings as debug pings to make them available for real-time validation, on the [Glean Debug View](https://docs.telemetry.mozilla.org/concepts/glean/debug_ping_view.html). The value must match the pattern `[a-zA-Z0-9-]{1,20}` |
 
 For example, to direct a release build of the Glean sample application to (1) dump pings to logcat, (2) tag the ping with the `test-metrics-ping` tag, and (3) send the "metrics" ping immediately, the following command can be used:
 

@@ -37,7 +37,7 @@ rust.targets=x86
 ## Substituting projects
 
 android-components has custom build logic for dealing with composite builds,
-so you should be able to configure it by simply adding the path to the Glean repo in the correct `local.properties` file:
+so you should be able to configure it by simply adding the path to the Glean repository in the correct `local.properties` file:
 
 In `android-components/local.properties`:
 ```groovy

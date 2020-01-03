@@ -137,7 +137,7 @@ Glean.initialize(
 )
 ```
 
-Additonal configuration is available on the `glean.Configuration` object, which can be passed into `Glean.initialize()`.
+Additional configuration is available on the `glean.Configuration` object, which can be passed into `Glean.initialize()`.
 
 Unlike Android and Swift, the Python bindings do not automatically send any pings.
 See the [custom pings documentation](pings/custom.md) about adding custom pings and sending them.

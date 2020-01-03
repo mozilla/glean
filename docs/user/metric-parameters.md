@@ -8,7 +8,7 @@
   
 - `notification_emails`: **Required.** A list of email addresses to notify for important events with the metric or when people with context or ownership for the metric need to be contacted.
   
-- `bugs`: **Required.** A list of bugs (e.g. Bugzilla or Github) that are relevant to this metric. For example, bugs that track its original implementation or later changes to it. 
+- `bugs`: **Required.** A list of bugs (e.g. Bugzilla or GitHub) that are relevant to this metric. For example, bugs that track its original implementation or later changes to it. 
 
   Each entry should be the full URL to the bug in an issue tracker. The use of numbers alone is deprecated and will be an error in the future.
   

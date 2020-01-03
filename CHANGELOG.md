@@ -7,7 +7,7 @@
 * Android:
   * The Glean Gradle Plugin correctly triggers docs and API updates when registry files
     change, without requiring them to be deleted.
-  * parseISOTimeString has been made 4x faster. This had an impact on Glean
+  * `parseISOTimeString` has been made 4x faster. This had an impact on Glean
     migration and initialization.
   * Metrics with `lifetime: application` are now cleared when the application is started,
     after startup Glean SDK pings are generated.
@@ -120,8 +120,8 @@
   Timings are always measured, but only recorded when upload is enabled ([#400](https://github.com/mozilla/glean/pull/400))
 * BUGFIX: When the Debug Activity is used to log pings, each ping is now logged only once ([#407](https://github.com/mozilla/glean/pull/407))
 * New `invalid state` error, used in timespan recording ([#230](https://github.com/mozilla/glean/pull/230))
-* Add an Android crash instrumentation walkthrough ([#399](https://github.com/mozilla/glean/pull/399))
-* Fix crashing bug by avoiding assert-printing in lmdb ([#422](https://github.com/mozilla/glean/pull/422))
+* Add an Android crash instrumentation walk-through ([#399](https://github.com/mozilla/glean/pull/399))
+* Fix crashing bug by avoiding assert-printing in LMDB ([#422](https://github.com/mozilla/glean/pull/422))
 * Upgrade dependencies, including rkv ([#416](https://github.com/mozilla/glean/pull/416))
 
 # v19.0.0 (2019-10-22)
@@ -131,7 +131,7 @@
 First stable release of Glean in Rust (aka glean-core).
 This is a major milestone in using a cross-platform implementation of Glean on the Android platform.
 
-* Fix roundtripping of timezone offsets in dates ([#392](https://github.com/mozilla/glean/pull/392))
+* Fix round-tripping of timezone offsets in dates ([#392](https://github.com/mozilla/glean/pull/392))
 * Handle dynamic labels in coroutine tasks ([#394](https://github.com/mozilla/glean/pull/384))
 
 # v0.0.1-TESTING6 (2019-10-18)
@@ -141,7 +141,7 @@ This is a major milestone in using a cross-platform implementation of Glean on t
 * Ignore dynamically stored labels if Glean is not initialized ([#374](https://github.com/mozilla/glean/pull/374))
 * Make sure ProGuard doesn't remove Glean classes from the app ([#380](https://github.com/mozilla/glean/pull/380))
 * Keep track of pings in all modes ([#378](https://github.com/mozilla/glean/pull/378))
-* Add 'jnaTest' dependencies to the 'forUnitTest' JAR ([#382](https://github.com/mozilla/glean/pull/382))
+* Add `jnaTest` dependencies to the `forUnitTest` JAR ([#382](https://github.com/mozilla/glean/pull/382))
 
 # v0.0.1-TESTING5 (2019-10-10)
 
@@ -161,7 +161,7 @@ This is a major milestone in using a cross-platform implementation of Glean on t
 
 [Full changelog](https://github.com/mozilla/glean/compare/v0.0.1-TESTING2...v0.0.1-TESTING3)
 
-* Allow configuration of Glean through the GleanTestRule
+* Allow configuration of Glean through the `GleanTestRule`
 * Bump `glean_parser` version to 1.9.2
 
 # v0.0.1-TESTING2 (2019-10-07)

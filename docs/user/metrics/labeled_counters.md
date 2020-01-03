@@ -125,6 +125,6 @@ assert 1 == metrics.stability.crash_count.test_get_num_recorded_errors(
 
 ## Reference
 
-* Kotlin API docs [LabeledMetricType](../../../javadoc/glean/mozilla.telemetry.glean.private/-labeled-metric-type/index.html), [CounterMetricType](../../../javadoc/glean/mozilla.telemetry.glean.private/-counter-metric-type/index.html)
-* Swift API docs: [LabeledMetricType](../../../swift/Classes/LabeledMetricType.html), [CounterMetricType](../../../swift/Classes/CounterMetricType.html)
+* Kotlin API docs [`LabeledMetricType`](../../../javadoc/glean/mozilla.telemetry.glean.private/-labeled-metric-type/index.html), [`CounterMetricType`](../../../javadoc/glean/mozilla.telemetry.glean.private/-counter-metric-type/index.html)
+* Swift API docs: [`LabeledMetricType`](../../../swift/Classes/LabeledMetricType.html), [`CounterMetricType`](../../../swift/Classes/CounterMetricType.html)
 * [Python API docs](../../../python/glean/metrics/labeled.html)

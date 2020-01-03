@@ -36,7 +36,7 @@ Flipping the feature to `true` will generate a `metrics.md` file in `$projectDir
 
 ## `gleanDocsDirectory`
 
-The `gleanDocsDirectory` can be used to customise the path of the documentation output directory.
+The `gleanDocsDirectory` can be used to customize the path of the documentation output directory.
 If `gleanGenerateMarkdownDocs` is disabled, it does nothing.
 Please note that only the `metrics.md` will be overwritten: any other file available in the target directory will be preserved.
 

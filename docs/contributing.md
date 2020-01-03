@@ -22,7 +22,7 @@ If you don't have a Bugzilla account, we also accept [issues on GitHub](https://
 
 ## Making Code Changes
 
-To work on the code in this repo you will need to be familiar with
+To work on the code in this repository you will need to be familiar with
 the [Rust](https://www.rust-lang.org/) programming language.
 You can get a working rust compiler and toolchain via [rustup](https://rustup.rs/).
 
