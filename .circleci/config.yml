@@ -622,9 +622,13 @@ jobs:
 
   docs-spellcheck:
     docker:
-      - image: circleci/python
+      # Use Debian Sid so we get aspell 0.60.8 or later (which contains markdown support)
+      - image: circleci/buildpack-deps:sid
     steps:
       - checkout
+      - run:
+          name: Upgrade Debian packages
+          command: sudo apt update
       - run:
           name: Install aspell
           command: sudo apt install aspell aspell-en
