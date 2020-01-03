@@ -16,10 +16,10 @@ class Dispatcher:
 
     # When True, tasks will be queued for running later, otherwise, they
     # are run immediately
-    _queue_initial_tasks: bool = True
+    _queue_initial_tasks = True  # type: bool
 
     # The task queue
-    _task_queue: List[Tuple[Callable, tuple, dict]] = []
+    _task_queue = []  # type: List[Tuple[Callable, tuple, dict]]
 
     @classmethod
     def reset(cls):

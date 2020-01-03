@@ -43,11 +43,11 @@ class BaseUploader(ping_uploader.PingUploader):
         try:
             parsed_json = json.loads(data)
         except json.decoder.JSONDecodeError as e:
-            log.debug(f"Exception parsing ping as JSON: {e}")
+            log.debug("Exception parsing ping as JSON: " + str(e))
         else:
             indented = json.dumps(parsed_json, indent=2)
 
-            log.debug(f"Glean ping to URL: {path}\n{indented}")
+            log.debug("Glean ping to URL: {}\n{}".format(path, indented))
 
     @staticmethod
     def _create_date_header_value():

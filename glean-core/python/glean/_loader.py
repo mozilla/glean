@@ -69,8 +69,9 @@ class UnsupportedMetricType:
 
     def __getattr__(self, attr):
         raise TypeError(
-            f"The metric type '{self._type}' is not supported by the "
-            "Glean Python bindings"
+            "The metric type '{}' is not supported by the Glean Python bindings".format(
+                self._type
+            )
         )
 
 
@@ -135,7 +136,7 @@ def load_metrics(
 
     metrics = result.value
     if len(metrics) == 0:
-        raise ValueError(f"Didn't find any metrics in '{filepath}'")
+        raise ValueError("Didn't find any metrics in '{}'".format(filepath))
 
     root = type("Metrics", (object,), {})
 

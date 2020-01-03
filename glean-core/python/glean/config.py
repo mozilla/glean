@@ -3,7 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-import dataclasses
 import sys
 from typing import Optional
 
@@ -22,37 +21,115 @@ DEFAULT_MAX_EVENTS = 500
 def _get_default_user_agent():
     import glean
 
-    return f"Glean/{glean.__version__} (Python on {sys.platform})"
+    return "Glean/{} (Python on {})".format(glean.__version__, sys.platform)
 
 
-@dataclasses.dataclass
 class Configuration:
     """
     Configuration values for Glean.
     """
 
-    server_endpoint: str = DEFAULT_TELEMETRY_ENDPOINT
-    """The server pings are sent to."""
+    def __init__(
+        self,
+        server_endpoint: str = DEFAULT_TELEMETRY_ENDPOINT,
+        user_agent: Optional[str] = None,
+        channel: Optional[str] = None,
+        max_events: int = DEFAULT_MAX_EVENTS,
+        log_pings: bool = False,
+        ping_tag: Optional[str] = None,
+        ping_uploader: Optional[net.BaseUploader] = None,
+    ):
+        """
+        Args:
+            server_endpoint (str): Optional. The server pings are sent to.
+                Defaults to `DEFAULT_TELEMETRY_ENDPOINT`.
+            user_agent (str): Optional. The user agent used when sending pings.
+                Defaults to `Glean/x.x.x (Python on {sys.platform})`.
+            channel (str): Optional. The release channel the application is on,
+                if known.
+            max_events (int): Optional.The number of events to store before
+                force-sending. Defaults to `DEFAULT_MAX_EVENTS`.
+            log_pings (bool): Optional. Whether to log ping contents to the
+                console. Defaults to `False`.
+            ping_tag (str): Optional. String tag to be applied to headers when
+                uploading pings for debug view.
+            ping_uploader (glean.net.BaseUploader): Optional. The ping uploader
+                implementation. Defaults to `glean.net.HttpClientUploader`.
+        """
+        self._server_endpoint = server_endpoint
+        if user_agent is None:
+            user_agent = _get_default_user_agent()
+        self._user_agent = user_agent
+        self._channel = channel
+        self._max_events = max_events
+        self._log_pings = log_pings
+        self._ping_tag = ping_tag
+        if ping_uploader is None:
+            ping_uploader = net.HttpClientUploader()
+        self._ping_uploader = ping_uploader
 
-    user_agent: Optional[str] = dataclasses.field(
-        default_factory=_get_default_user_agent
-    )
-    """The user agent used when sending pings."""
+    @property
+    def server_endpoint(self) -> str:
+        """The server pings are sent to."""
+        return self._server_endpoint
 
-    channel: Optional[str] = None
-    """The release channel the application is on, if known."""
+    @server_endpoint.setter
+    def server_endpoint(self, value: str):
+        self._server_endpoint = value
 
-    max_events: int = DEFAULT_MAX_EVENTS
-    """The number of events to store before force-sending."""
+    @property
+    def user_agent(self) -> Optional[str]:
+        """The user agent used when sending pings."""
+        return self._user_agent
 
-    log_pings: bool = False
-    """Whether to log ping contents to the console."""
+    @user_agent.setter
+    def user_agent(self, value: str):
+        self._user_agent = value
 
-    ping_tag: Optional[str] = None
-    """String tag to be applied to headers when uploading pings for debug view."""
+    @property
+    def channel(self) -> Optional[str]:
+        """The release channel the application is on, if known."""
+        return self._channel
 
-    ping_uploader: net.BaseUploader = net.HttpClientUploader()
-    """The ping uploader implementation."""
+    @channel.setter
+    def channel(self, value: str):
+        self._channel = value
+
+    @property
+    def max_events(self) -> int:
+        """The number of events to store before force-sending."""
+        return self._max_events
+
+    @max_events.setter
+    def max_events(self, value: int):
+        self._max_events = value
+
+    @property
+    def log_pings(self) -> bool:
+        """Whether to log ping contents to the console."""
+        return self._log_pings
+
+    @log_pings.setter
+    def log_pings(self, value: bool):
+        self._log_pings = value
+
+    @property
+    def ping_tag(self) -> Optional[str]:
+        """String tag to be applied to headers when uploading pings for debug view."""
+        return self._ping_tag
+
+    @ping_tag.setter
+    def ping_tag(self, value: str):
+        self._ping_tag = value
+
+    @property
+    def ping_uploader(self) -> net.BaseUploader:
+        """The ping uploader implementation."""
+        return self._ping_uploader
+
+    @ping_uploader.setter
+    def ping_uploader(self, value: net.BaseUploader):
+        self._ping_uploader = value
 
 
 __all__ = ["Configuration"]

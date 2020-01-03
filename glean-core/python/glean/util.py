@@ -4,6 +4,7 @@
 
 
 import locale
+import sys
 import time
 
 
@@ -25,8 +26,23 @@ def get_locale_tag() -> str:
     return value
 
 
-def time_ms() -> int:
-    """
-    Get time from a monotonic timer in milliseconds.
-    """
-    return int(time.time_ns() / 1000)
+if sys.version_info >= (3, 7):
+
+    def time_ms() -> int:
+        """
+        Get time from a monotonic timer in milliseconds.
+
+        On Python prior to 3.7, this may have less than millisecond resolution.
+        """
+        return int(time.time_ns() / 1000)
+
+
+else:
+
+    def time_ms() -> int:
+        """
+        Get time from a monotonic timer in milliseconds.
+
+        On Python prior to 3.7, this may have less than millisecond resolution.
+        """
+        return int(time.time() * 1000.0)

@@ -48,14 +48,14 @@ class HttpClientUploader(base_uploader.BaseUploader):
                 timeout=cls._DEFAULT_TIMEOUT,
             )
         else:
-            raise ValueError(f"Unknown URL scheme {parsed_url.scheme}")
+            raise ValueError("Unknown URL scheme {}".format(parsed_url.scheme))
 
         conn.request(
             "POST", parsed_url.path, body=data.encode("utf-8"), headers=dict(headers),
         )
         response = conn.getresponse()
 
-        log.debug(f"Ping upload: {response.status}")
+        log.debug("Ping upload: {}".format(response.status))
 
         status_class = response.status // 100
 
@@ -64,7 +64,7 @@ class HttpClientUploader(base_uploader.BaseUploader):
         if status_class == 2:  # 2xx status
             # Known success
             # 200 - OK.  Request accepted into the pipeline
-            log.debug(f"Ping successfully sent ({response.status})")
+            log.debug("Ping successfully sent ({})".format(response.status))
             return True
         elif status_class == 4:  # 4xx status
             # Known client (4xx) errors:
@@ -79,14 +79,14 @@ class HttpClientUploader(base_uploader.BaseUploader):
             # Something our client did is not correct. It's unlikely that the
             # client is going to recover from this by re-trying again, so we
             # just log and error and report a successful upload to the service.
-            log.error(f"Server returned client error code: {response.status}")
+            log.error("Server returned client error code: {}".format(response.status))
             return True
         else:
             # Known other errors:
             # 500 - internal error
 
             # For all other errors, we log a warning and try again at a later time.
-            log.error(f"Server returned response code: {response.status}")
+            log.error("Server returned response code: {}".format(response.status))
             return False
 
 

@@ -21,10 +21,10 @@ def get_shared_object_filename() -> str:  # pragma: no cover
         return "libglean_ffi.dylib"
     elif sys.platform.startswith("win"):
         return "glean_ffi.dll"
-    raise ValueError(f"The platform {sys.platform} is not supported.")
+    raise ValueError("The platform {} is not supported.".format(sys.platform))
 
 
-_global_weakkeydict: Any = weakref.WeakKeyDictionary()
+_global_weakkeydict = weakref.WeakKeyDictionary()  # type: Any
 
 
 def _load_header(path: str) -> str:

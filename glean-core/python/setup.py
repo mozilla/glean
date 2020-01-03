@@ -12,8 +12,8 @@ from setuptools import setup, Distribution, find_packages
 from setuptools.command.install import install
 
 
-if sys.version_info < (3, 7):
-    print("glean requires at least Python 3.7", file=sys.stderr)
+if sys.version_info < (3, 5):
+    print("glean requires at least Python 3.5", file=sys.stderr)
     sys.exit(1)
 
 from pathlib import Path  # noqa
@@ -21,15 +21,15 @@ import toml  # noqa
 
 ROOT = Path(__file__).parent.absolute()
 
-os.chdir(ROOT)
+os.chdir(str(ROOT))
 
-with open(ROOT.parent.parent / "README.md") as readme_file:
+with (ROOT.parent.parent / "README.md").open() as readme_file:
     readme = readme_file.read()
 
-with open(ROOT.parent.parent / "CHANGELOG.md") as history_file:
+with (ROOT.parent.parent / "CHANGELOG.md").open() as history_file:
     history = history_file.read()
 
-with open(ROOT.parent / "Cargo.toml") as cargo:
+with (ROOT.parent / "Cargo.toml").open() as cargo:
     parsed_toml = toml.load(cargo)
     version = parsed_toml["package"]["version"]
 
@@ -44,13 +44,13 @@ elif sys.platform == "darwin":
 elif sys.platform.startswith("win"):
     shared_object = "glean_ffi.dll"
 else:
-    raise ValueError(f"The platform {sys.platform} is not supported.")
+    raise ValueError("The platform {} is not supported.".format(sys.platform))
 
 
 shutil.copyfile("../ffi/glean.h", "glean/glean.h")
 shutil.copyfile("../metrics.yaml", "glean/metrics.yaml")
 shutil.copyfile("../pings.yaml", "glean/pings.yaml")
-shutil.copyfile(f"../../target/debug/{shared_object}", f"glean/{shared_object}")
+shutil.copyfile("../../target/debug/" + shared_object, "glean/" + shared_object)
 
 
 class BinaryDistribution(Distribution):

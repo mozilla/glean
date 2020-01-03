@@ -3,27 +3,35 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-import dataclasses
 from typing import Dict
 
 
-@dataclasses.dataclass
 class RecordedExperimentData:
     """
     Deserialized experiment data.
     """
 
-    branch: str
-    """
-    The experiment's branch, as set through
-    `glean.Glean.set_experiment_active`.
-    """
+    def __init__(self, branch: str, extra: Dict[str, str] = None):
+        """
+        Args:
+            branch (str): The experiment's branch.
+            extra (dict of str->str): Any extra data associated with this
+                experiment.
+        """
+        self._branch = branch
+        if extra is None:
+            extra = {}
+        self._extra = extra
 
-    extra: Dict[str, str]
-    """
-    And extra data associated with this experiment through
-    `glean.Glean.set_experiment_active`.
-    """
+    @property
+    def branch(self):
+        """The experiment's branch."""
+        return self._branch
+
+    @property
+    def extra(self):
+        """Any extra data associated with this experiment."""
+        return self._extra
 
 
 __all__ = ["RecordedExperimentData"]

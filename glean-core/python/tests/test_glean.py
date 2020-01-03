@@ -131,7 +131,7 @@ def test_initialize_must_not_crash_if_data_dir_is_messed_up(tmpdir):
     filename = tmpdir / "dummy_file"
 
     # Create a file in a temporary directory
-    with open(filename, "w") as fd:
+    with filename.open("w") as fd:
         fd.write("Contents\n")
 
     Glean.reset()
@@ -147,7 +147,7 @@ def test_initialize_must_not_crash_if_data_dir_is_messed_up(tmpdir):
     # This should cause initialization to fail
     assert False is Glean.is_initialized()
 
-    shutil.rmtree(tmpdir)
+    shutil.rmtree(str(tmpdir))
 
 
 def test_queued_recorded_metrics_correctly_during_init():

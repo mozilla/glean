@@ -6,7 +6,7 @@ Instructions for installing a copy of the Glean Python bindings into your own en
 
 ## Prerequisites
 
-Glean requires Python 3.7 or later.
+Glean requires Python 3.5 or later.
 
 Make sure it is installed on your system and accessible on the `PATH` as `python3`.
 
