@@ -123,6 +123,10 @@ linkcheck: docs ## Run linkchecker on the generated docs
 	linkchecker --ignore-url javadoc --ignore-url docs/glean_core --ignore-url ErrorKind --ignore-url std.struct.Error build/docs
 .PHONY: linkcheck
 
+spellcheck: ## Spellcheck the docs
+	# Requires http://aspell.net/
+	bin/spellcheck.sh
+
 # Utilities
 
 android-emulator: ## Start the Android emulator with a predefined image
