@@ -9,12 +9,6 @@
 5. Run `bin/bootstrap.sh` to download dependencies.
 6. (Optional, only required for building on the CLI) Install [xcpretty](https://github.com/xcpretty/xcpretty): `gem install xcpretty`
 
-To build the Swift documentation:
-
-1. Install the latest Ruby: `brew install ruby`
-2. Make the installed Ruby available: `export PATH=/usr/local/opt/ruby/bin:$PATH` (and add that line to your `.bashrc`)
-3. Install the documentation tool [jazzy](https://github.com/realm/jazzy): `gem install jazzy`
-
 ### Setting up Rust
 
 Rust can be installed using `rustup`, with the following commands:
@@ -29,10 +23,6 @@ devices and iOS emulators, the following targets need to be installed:
 ```
 rustup target add aarch64-apple-ios x86_64-apple-ios
 ```
-
-The `mdbook` crate is required in order to build documentation:
-
-- `cargo install mdbook`
 
 ## Building
 

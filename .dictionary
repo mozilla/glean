@@ -1,4 +1,4 @@
-personal_ws-1.1 en 130 utf-8
+personal_ws-1.1 en 134 utf-8
 AAR
 AARs
 APIs
@@ -52,6 +52,7 @@ UUID
 UUIDs
 Xcode
 YAML
+aspell
 async
 backend
 barcode
@@ -70,6 +71,8 @@ csh
 destructor
 dexter
 distributable
+docstrings
+dokka
 dropdown
 eg
 enum
@@ -93,6 +96,7 @@ linux
 logcat
 macOS
 manylinux
+mdbook
 mdroettboom
 metric's
 mozilla

@@ -40,6 +40,7 @@
 - [Metrics collected by the Glean SDK](user/collected-metrics/metrics.md)
 - [Developing the Glean SDK](dev/index.md)
     - [Testing](dev/testing.md)
+    - [Developing documentation](dev/docs.md)
     - [Android bindings](dev/android/index.md)
         - [Setup Build Environment](dev/android/setup-android-build-environment.md)
     - [iOS bindings](dev/ios/index.md)
