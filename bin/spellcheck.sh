@@ -1,4 +1,7 @@
 #!/bin/bash
+# Copied, and modified, from the Rust Cookbook.
+# https://github.com/rust-lang-nursery/rust-cookbook/blob/master/ci/spellcheck.sh
+
 # Copyright 2016 The Rust Project Developers. See the COPYRIGHT
 # file at the top-level directory of this distribution and at
 # http://rust-lang.org/COPYRIGHT.
@@ -40,10 +43,12 @@ aspell --version
 # comments/strings etc.
 
 shopt -s nullglob
+shopt -s globstar
 
-dict_filename=./ci/dictionary.txt
-markdown_sources=(./src/*.md)
+dict_filename=./.dictionary
+markdown_sources=(./docs/**/*.md)
 mode="check"
+aspell_args="--lang en_US --mode=markdown"
 
 # aspell repeatedly modifies personal dictionary for some purpose,
 # so we should use a copy of our dictionary
@@ -62,7 +67,7 @@ if [[ ! -f "$dict_filename" ]]; then
     echo "Please check that it doesn't contain any misspellings."
 
     echo "personal_ws-1.1 en 0 utf-8" > "$dict_filename"
-    cat "${markdown_sources[@]}" | aspell --ignore 3 list | sort -u >> "$dict_filename"
+    cat "${markdown_sources[@]}" | aspell ${aspell_args} list | sort -u >> "$dict_filename"
 elif [[ "$mode" == "list" ]]; then
     # List (default) mode: scan all files, report errors
     declare -i retval=0
@@ -75,7 +80,7 @@ elif [[ "$mode" == "list" ]]; then
     fi
 
     for fname in "${markdown_sources[@]}"; do
-        command=$(aspell --ignore 3 --personal="$dict_path" "$mode" < "$fname")
+        command=$(aspell ${aspell_args} --personal="$dict_path" "$mode" < "$fname")
         if [[ -n "$command" ]]; then
             for error in $command; do
                 # FIXME: Find more correct way to get line number
@@ -88,15 +93,7 @@ elif [[ "$mode" == "list" ]]; then
     done
     exit "$retval"
 elif [[ "$mode" == "check" ]]; then
-    # Interactive mode: fix typos
-    cp "$dict_filename" "$dict_path"
-
-    if [ ! -f $dict_path ]; then
-        retval=1
-        exit "$retval"
-    fi
-
     for fname in "${markdown_sources[@]}"; do
-        aspell --ignore 3 --dont-backup --personal="$dict_path" "$mode" "$fname"
+        aspell --mode=markdown ${aspell_args} --dont-backup --personal="$dict_filename" "$mode" "$fname"
     done
 fi
