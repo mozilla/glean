@@ -23,8 +23,8 @@ apply plugin: 'jacoco'
  * created during unit testing.
  * This uses a specific version of the schema identified by a git commit hash.
  */
-String GLEAN_PING_SCHEMA_GIT_HASH = "f13ae39"
-String GLEAN_PING_SCHEMA_URL = "https://raw.githubusercontent.com/mozilla-services/mozilla-pipeline-schemas/$GLEAN_PING_SCHEMA_GIT_HASH/schemas/glean/baseline/baseline.1.schema.json"
+String GLEAN_PING_SCHEMA_GIT_HASH = "9c9903c"
+String GLEAN_PING_SCHEMA_URL = "https://raw.githubusercontent.com/mozilla-services/mozilla-pipeline-schemas/$GLEAN_PING_SCHEMA_GIT_HASH/schemas/glean/glean/glean.1.schema.json"
 
 // Set configuration for the glean_parser
 ext.allowGleanInternal = true

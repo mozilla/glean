@@ -73,6 +73,86 @@ class PingTypeTest {
     }
 
     @Test
+    fun `test sending of custom pings with snake_case`() {
+        val server = getMockWebServer()
+
+        val context = getContextWithMockedInfo()
+        resetGlean(context, Glean.configuration.copy(
+            serverEndpoint = "http://" + server.hostName + ":" + server.port,
+            logPings = true
+        ))
+
+        val customPing = PingType(
+            name = "custom_ping",
+            includeClientId = true,
+            sendIfEmpty = false
+        )
+
+        val counter = CounterMetricType(
+            disabled = false,
+            category = "test",
+            lifetime = Lifetime.Ping,
+            name = "counter",
+            sendInPings = listOf("custom_ping")
+        )
+
+        counter.add()
+        assertTrue(counter.testHasValue())
+
+        customPing.submit()
+        // Trigger worker task to upload the pings in the background
+        triggerWorkManager(context)
+
+        val request = server.takeRequest(20L, TimeUnit.SECONDS)
+        val docType = request.path.split("/")[3]
+        assertEquals("custom_ping", docType)
+
+        val pingJson = JSONObject(request.body.readUtf8())
+        assertNotNull(pingJson.getJSONObject("client_info")["client_id"])
+        checkPingSchema(pingJson)
+    }
+
+    @Test
+    fun `test sending of custom pings with kebab-case`() {
+        val server = getMockWebServer()
+
+        val context = getContextWithMockedInfo()
+        resetGlean(context, Glean.configuration.copy(
+            serverEndpoint = "http://" + server.hostName + ":" + server.port,
+            logPings = true
+        ))
+
+        val customPing = PingType(
+            name = "custom-ping",
+            includeClientId = true,
+            sendIfEmpty = false
+        )
+
+        val counter = CounterMetricType(
+            disabled = false,
+            category = "test",
+            lifetime = Lifetime.Ping,
+            name = "counter",
+            sendInPings = listOf("custom-ping")
+        )
+
+        counter.add()
+        assertTrue(counter.testHasValue())
+
+        customPing.submit()
+        // Trigger worker task to upload the pings in the background
+        triggerWorkManager(context)
+
+        val request = server.takeRequest(20L, TimeUnit.SECONDS)
+        val docType = request.path.split("/")[3]
+        assertEquals("custom-ping", docType)
+
+        val pingJson = JSONObject(request.body.readUtf8())
+        assertNotNull(pingJson.getJSONObject("client_info")["client_id"])
+        checkPingSchema(pingJson)
+    }
+
+    @Test
     fun `test sending of custom pings without client_id`() {
         val server = getMockWebServer()
 
