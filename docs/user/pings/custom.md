@@ -4,7 +4,7 @@ Applications can define metrics that are sent in custom pings. Unlike the built-
 
 ## Defining a custom ping
 
-Custom pings must be defined in a `pings.yaml` file, which is in the same directory alongside your app's `metrics.yaml` file.
+Custom pings must be defined in a [`pings.yaml` file](https://mozilla.github.io/glean_parser/pings-yaml.html), which is in the same directory alongside your app's `metrics.yaml` file.
 
 Ping names are limited to lowercase letters from the [ISO basic Latin alphabet](https://en.wikipedia.org/wiki/ISO_basic_Latin_alphabet)
 and hyphens and a maximum of 30 characters.
@@ -30,7 +30,7 @@ search:
   notification_emails:
     - CHANGE-ME@example.com
   bugs:
-    - 123456789
+    - http://bugzilla.mozilla.org/123456789/
   data_reviews:
     - http://example.com/path/to/data-review
 ```
@@ -133,6 +133,8 @@ If this metric should also be sent in the default ping for the given metric type
 ## Submitting a custom ping
 
 To collect and queue a custom ping for eventual uploading, call the `submit` method on the `PingType` object that the Glean SDK generated for your ping.
+
+By default, if the ping doesn't currently have any events or metrics set, `submit` will do nothing.  However, if the `send_if_empty` flag is set to true in the ping definition, it will always be submitted.
 
 For example, to submit the custom ping defined above:
 

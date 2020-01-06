@@ -15,7 +15,7 @@ This is also required for any new metric automatically collected by the Glean SD
 
 ## The `metrics.yaml` file
 
-The `metrics.yaml` file defines the metrics your application or library will send.
+The [`metrics.yaml` file](https://mozilla.github.io/glean_parser/metrics-yaml.html) defines the metrics your application or library will send.
 They are organized into categories.
 The overall organization is:
 
