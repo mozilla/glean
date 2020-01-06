@@ -160,13 +160,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1F37022123A4385200945D48 /* Build configuration list for PBXNativeTarget "GleanSampleFramework" */;
 			buildPhases = (
+				1F37023023A4428300945D48 /* Copy Carthage Dependencies */,
 				1F42F8A323A7D44C000CAA1C /* SDK Generator */,
 				1F37020823A4385200945D48 /* Headers */,
 				1F37020923A4385200945D48 /* Sources */,
 				1F37020A23A4385200945D48 /* Frameworks */,
 				1F37020B23A4385200945D48 /* Resources */,
 				1F37022C23A43FE900945D48 /* Embed Frameworks */,
-				1F37023023A4428300945D48 /* Copy Carthage Dependencies */,
 				1F37023123A4435F00945D48 /* Warn About Outdated Dependencies */,
 			);
 			buildRules = (
@@ -273,7 +273,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "/usr/local/bin/carthage copy-frameworks\n";
+			shellScript = "/usr/local/bin/carthage bootstrap --platform iOS --no-use-binaries --cache-builds\n/usr/local/bin/carthage copy-frameworks\n";
 		};
 		1F37023123A4435F00945D48 /* Warn About Outdated Dependencies */ = {
 			isa = PBXShellScriptBuildPhase;

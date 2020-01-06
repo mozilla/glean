@@ -6,12 +6,13 @@
 
 set -euvx
 
+pushd samples/ios/GleanSampleFramework
+
 set -o pipefail && \
-xcodebuild \
-  -workspace ./samples/ios/app/glean-sample-app.xcodeproj/project.xcworkspace \
-  -scheme glean-sample-app \
-  -sdk iphonesimulator \
-  -destination 'platform=iOS Simulator,name=iPhone 11' \
-  build | \
-tee raw_sample_xcodebuild.log | \
-xcpretty && exit "${PIPESTATUS[0]}"
+    carthage build --archive --platform iOS --cache-builds --verbose --configuration "Debug" "GleanSampleFramework" | \
+    xcpretty
+
+popd
+
+# Add dependency information
+zip -u "GleanSampleFramework.framework.zip" DEPENDENCIES.md

@@ -45,3 +45,4 @@ glean_app*
 .coverage
 htmlcov/
 *.log
+*.zip

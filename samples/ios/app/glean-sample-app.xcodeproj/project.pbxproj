@@ -7,10 +7,31 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1F2AA67023ABF251005366AE /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFD3AB2F224D475E00AD9255 /* ViewController.swift */; };
+		1F2AA67123ABF251005366AE /* Pings.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFDA7AC72371C9B800575C7B /* Pings.swift */; };
+		1F2AA67223ABF251005366AE /* Basic.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFDA7AC82371C9B800575C7B /* Basic.swift */; };
+		1F2AA67323ABF251005366AE /* Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFDA7AC62371C9B800575C7B /* Test.swift */; };
+		1F2AA67423ABF251005366AE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFD3AB2D224D475E00AD9255 /* AppDelegate.swift */; };
+		1F2AA67523ABF251005366AE /* Custom.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFDA7AC52371C9B800575C7B /* Custom.swift */; };
+		1F2AA67623ABF251005366AE /* BrowserEngagement.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFDA7AC92371C9B800575C7B /* BrowserEngagement.swift */; };
+		1F2AA67823ABF251005366AE /* Glean.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF1BF3FE23337E6F0036F4CC /* Glean.framework */; };
+		1F2AA67A23ABF251005366AE /* Cartfile in Resources */ = {isa = PBXBuildFile; fileRef = 1FC2DA4223A938FB0017ECBC /* Cartfile */; };
+		1F2AA67B23ABF251005366AE /* Cartfile.resolved in Resources */ = {isa = PBXBuildFile; fileRef = 1FC2DA4323A938FB0017ECBC /* Cartfile.resolved */; };
+		1F2AA67C23ABF251005366AE /* pings.yaml in Resources */ = {isa = PBXBuildFile; fileRef = BF8966592371C82E0097B7F2 /* pings.yaml */; };
+		1F2AA67D23ABF251005366AE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BFD3AB36224D475E00AD9255 /* LaunchScreen.storyboard */; };
+		1F2AA67E23ABF251005366AE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BFD3AB34224D475E00AD9255 /* Assets.xcassets */; };
+		1F2AA67F23ABF251005366AE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BFD3AB31224D475E00AD9255 /* Main.storyboard */; };
+		1F2AA68623ABF29F005366AE /* GleanSampleFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F2AA68523ABF29F005366AE /* GleanSampleFramework.framework */; };
+		1F2AA68723ABF29F005366AE /* GleanSampleFramework.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1F2AA68523ABF29F005366AE /* GleanSampleFramework.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		1F2AA68D23AC2956005366AE /* glean_sample_appTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFD3AB42224D475E00AD9255 /* glean_sample_appTests.swift */; };
+		1F2AA69A23AC2964005366AE /* MockServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFDA7AD12371D2BA00575C7B /* MockServer.swift */; };
+		1F2AA69B23AC2964005366AE /* ViewControllerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFDA7ACF2371CE4900575C7B /* ViewControllerTest.swift */; };
+		1F2AA69C23AC2964005366AE /* BaselinePingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFD3AB4D224D475E00AD9255 /* BaselinePingTest.swift */; };
+		1F2AA69D23AC2964005366AE /* DeletionRequestPingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFED6B2B238C1638006E2BC4 /* DeletionRequestPingTest.swift */; };
+		1F2AA69F23AC2964005366AE /* Swifter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF90C911236B42F00045BD0E /* Swifter.framework */; };
+		1F331C3223C3AC9D000C0C99 /* GleanSampleFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F331C3123C3AC9D000C0C99 /* GleanSampleFramework.framework */; };
 		1FC2DA4423A938FB0017ECBC /* Cartfile in Resources */ = {isa = PBXBuildFile; fileRef = 1FC2DA4223A938FB0017ECBC /* Cartfile */; };
 		1FC2DA4523A938FB0017ECBC /* Cartfile.resolved in Resources */ = {isa = PBXBuildFile; fileRef = 1FC2DA4323A938FB0017ECBC /* Cartfile.resolved */; };
-		1FC879C123AAA18400A1AD1F /* GleanSampleFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1FC879C023AAA18400A1AD1F /* GleanSampleFramework.framework */; };
-		1FC879C223AAA18400A1AD1F /* GleanSampleFramework.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1FC879C023AAA18400A1AD1F /* GleanSampleFramework.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BF1BF3FF23337E6F0036F4CC /* Glean.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF1BF3FE23337E6F0036F4CC /* Glean.framework */; };
 		BF89665A2371C82E0097B7F2 /* pings.yaml in Resources */ = {isa = PBXBuildFile; fileRef = BF8966592371C82E0097B7F2 /* pings.yaml */; };
 		BF90C913236B43A10045BD0E /* Swifter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF90C911236B42F00045BD0E /* Swifter.framework */; };
@@ -19,7 +40,7 @@
 		BFD3AB33224D475E00AD9255 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BFD3AB31224D475E00AD9255 /* Main.storyboard */; };
 		BFD3AB35224D475E00AD9255 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BFD3AB34224D475E00AD9255 /* Assets.xcassets */; };
 		BFD3AB38224D475E00AD9255 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BFD3AB36224D475E00AD9255 /* LaunchScreen.storyboard */; };
-		BFD3AB43224D475E00AD9255 /* GleanSampleAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFD3AB42224D475E00AD9255 /* GleanSampleAppTests.swift */; };
+		BFD3AB43224D475E00AD9255 /* glean_sample_appTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFD3AB42224D475E00AD9255 /* glean_sample_appTests.swift */; };
 		BFD3AB4E224D475E00AD9255 /* BaselinePingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFD3AB4D224D475E00AD9255 /* BaselinePingTest.swift */; };
 		BFDA7ACA2371C9B800575C7B /* Custom.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFDA7AC52371C9B800575C7B /* Custom.swift */; };
 		BFDA7ACB2371C9B800575C7B /* Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFDA7AC62371C9B800575C7B /* Test.swift */; };
@@ -32,6 +53,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		1F2AA6A623AC2974005366AE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BFD3AB22224D475E00AD9255 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1F2AA66C23ABF251005366AE;
+			remoteInfo = "glean-sample-app-ci";
+		};
+		1F2AA6A823AC2981005366AE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BFD3AB22224D475E00AD9255 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1F2AA66C23ABF251005366AE;
+			remoteInfo = "glean-sample-app-ci";
+		};
 		BFD3AB3F224D475E00AD9255 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BFD3AB22224D475E00AD9255 /* Project object */;
@@ -49,13 +84,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		1FC879C323AAA18400A1AD1F /* Embed Frameworks */ = {
+		1F2AA68823ABF29F005366AE /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				1FC879C223AAA18400A1AD1F /* GleanSampleFramework.framework in Embed Frameworks */,
+				1F2AA68723ABF29F005366AE /* GleanSampleFramework.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -63,10 +98,16 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1F2AA68323ABF251005366AE /* glean-sample-app-ci.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "glean-sample-app-ci.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1F2AA68523ABF29F005366AE /* GleanSampleFramework.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = GleanSampleFramework.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1F2AA69323AC2956005366AE /* glean-sample-appTests-ci.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "glean-sample-appTests-ci.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1F2AA6A423AC2964005366AE /* glean-sample-appUITests-ci.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "glean-sample-appUITests-ci.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1F331C3123C3AC9D000C0C99 /* GleanSampleFramework.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GleanSampleFramework.framework; path = Carthage/Build/iOS/GleanSampleFramework.framework; sourceTree = "<group>"; };
 		1FC2DA4223A938FB0017ECBC /* Cartfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Cartfile; sourceTree = "<group>"; };
 		1FC2DA4323A938FB0017ECBC /* Cartfile.resolved */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Cartfile.resolved; sourceTree = "<group>"; };
 		1FC3FAB823AA7A840045FCA3 /* glean_sample_framework.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = glean_sample_framework.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1FC879C023AAA18400A1AD1F /* GleanSampleFramework.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = GleanSampleFramework.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1FE6421623ABD82B006C0683 /* GleanSampleFramework.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = GleanSampleFramework.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF1BF3FE23337E6F0036F4CC /* Glean.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Glean.framework; path = Carthage/Build/iOS/Glean.framework; sourceTree = "<group>"; };
 		BF6F41C4234346A000E222A8 /* metrics.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = metrics.yaml; sourceTree = "<group>"; };
 		BF8966592371C82E0097B7F2 /* pings.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = pings.yaml; sourceTree = "<group>"; };
@@ -79,7 +120,7 @@
 		BFD3AB37224D475E00AD9255 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		BFD3AB39224D475E00AD9255 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BFD3AB3E224D475E00AD9255 /* glean-sample-appTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "glean-sample-appTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		BFD3AB42224D475E00AD9255 /* GleanSampleAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GleanSampleAppTests.swift; sourceTree = "<group>"; };
+		BFD3AB42224D475E00AD9255 /* glean_sample_appTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = glean_sample_appTests.swift; sourceTree = "<group>"; };
 		BFD3AB44224D475E00AD9255 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BFD3AB49224D475E00AD9255 /* glean-sample-appUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "glean-sample-appUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BFD3AB4D224D475E00AD9255 /* BaselinePingTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaselinePingTest.swift; sourceTree = "<group>"; };
@@ -99,12 +140,36 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		1F2AA67723ABF251005366AE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1F2AA67823ABF251005366AE /* Glean.framework in Frameworks */,
+				1F331C3223C3AC9D000C0C99 /* GleanSampleFramework.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1F2AA68E23AC2956005366AE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1F2AA69E23AC2964005366AE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1F2AA69F23AC2964005366AE /* Swifter.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BFD3AB27224D475E00AD9255 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				BF1BF3FF23337E6F0036F4CC /* Glean.framework in Frameworks */,
-				1FC879C123AAA18400A1AD1F /* GleanSampleFramework.framework in Frameworks */,
+				1F2AA68623ABF29F005366AE /* GleanSampleFramework.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -163,6 +228,9 @@
 				BFD3AB2A224D475E00AD9255 /* glean-sample-app.app */,
 				BFD3AB3E224D475E00AD9255 /* glean-sample-appTests.xctest */,
 				BFD3AB49224D475E00AD9255 /* glean-sample-appUITests.xctest */,
+				1F2AA68323ABF251005366AE /* glean-sample-app-ci.app */,
+				1F2AA69323AC2956005366AE /* glean-sample-appTests-ci.xctest */,
+				1F2AA6A423AC2964005366AE /* glean-sample-appUITests-ci.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -184,7 +252,7 @@
 		BFD3AB41224D475E00AD9255 /* glean-sample-appTests */ = {
 			isa = PBXGroup;
 			children = (
-				BFD3AB42224D475E00AD9255 /* GleanSampleAppTests.swift */,
+				BFD3AB42224D475E00AD9255 /* glean_sample_appTests.swift */,
 				BFD3AB44224D475E00AD9255 /* Info.plist */,
 			);
 			path = "glean-sample-appTests";
@@ -205,7 +273,10 @@
 		BFD3AB68224D4F9500AD9255 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				1F331C3123C3AC9D000C0C99 /* GleanSampleFramework.framework */,
 				BF90C911236B42F00045BD0E /* Swifter.framework */,
+				1F2AA68523ABF29F005366AE /* GleanSampleFramework.framework */,
+				1FE6421623ABD82B006C0683 /* GleanSampleFramework.framework */,
 				1FC879C023AAA18400A1AD1F /* GleanSampleFramework.framework */,
 				1FC3FAB823AA7A840045FCA3 /* glean_sample_framework.framework */,
 				BF1BF3FE23337E6F0036F4CC /* Glean.framework */,
@@ -216,6 +287,62 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		1F2AA66C23ABF251005366AE /* glean-sample-app-ci */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1F2AA68023ABF251005366AE /* Build configuration list for PBXNativeTarget "glean-sample-app-ci" */;
+			buildPhases = (
+				1F2AA66D23ABF251005366AE /* Copy Carthage frameworks */,
+				1F2AA66E23ABF251005366AE /* ShellScript */,
+				1F2AA66F23ABF251005366AE /* Sources */,
+				1F2AA67723ABF251005366AE /* Frameworks */,
+				1F2AA67923ABF251005366AE /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "glean-sample-app-ci";
+			productName = "glean-sample-app";
+			productReference = 1F2AA68323ABF251005366AE /* glean-sample-app-ci.app */;
+			productType = "com.apple.product-type.application";
+		};
+		1F2AA68923AC2956005366AE /* glean-sample-appTests-ci */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1F2AA69023AC2956005366AE /* Build configuration list for PBXNativeTarget "glean-sample-appTests-ci" */;
+			buildPhases = (
+				1F2AA68C23AC2956005366AE /* Sources */,
+				1F2AA68E23AC2956005366AE /* Frameworks */,
+				1F2AA68F23AC2956005366AE /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1F2AA6A923AC2981005366AE /* PBXTargetDependency */,
+			);
+			name = "glean-sample-appTests-ci";
+			productName = "glean-sample-appTests";
+			productReference = 1F2AA69323AC2956005366AE /* glean-sample-appTests-ci.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		1F2AA69523AC2964005366AE /* glean-sample-appUITests-ci */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1F2AA6A123AC2964005366AE /* Build configuration list for PBXNativeTarget "glean-sample-appUITests-ci" */;
+			buildPhases = (
+				1F2AA69823AC2964005366AE /* Copy Carthage frameworks */,
+				1F2AA69923AC2964005366AE /* Sources */,
+				1F2AA69E23AC2964005366AE /* Frameworks */,
+				1F2AA6A023AC2964005366AE /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1F2AA6A723AC2974005366AE /* PBXTargetDependency */,
+			);
+			name = "glean-sample-appUITests-ci";
+			productName = "glean-sample-appUITests";
+			productReference = 1F2AA6A423AC2964005366AE /* glean-sample-appUITests-ci.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		BFD3AB29224D475E00AD9255 /* glean-sample-app */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = BFD3AB52224D475E00AD9255 /* Build configuration list for PBXNativeTarget "glean-sample-app" */;
@@ -225,7 +352,7 @@
 				BFD3AB26224D475E00AD9255 /* Sources */,
 				BFD3AB27224D475E00AD9255 /* Frameworks */,
 				BFD3AB28224D475E00AD9255 /* Resources */,
-				1FC879C323AAA18400A1AD1F /* Embed Frameworks */,
+				1F2AA68823ABF29F005366AE /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -314,11 +441,41 @@
 				BFD3AB29224D475E00AD9255 /* glean-sample-app */,
 				BFD3AB3D224D475E00AD9255 /* glean-sample-appTests */,
 				BFD3AB48224D475E00AD9255 /* glean-sample-appUITests */,
+				1F2AA66C23ABF251005366AE /* glean-sample-app-ci */,
+				1F2AA68923AC2956005366AE /* glean-sample-appTests-ci */,
+				1F2AA69523AC2964005366AE /* glean-sample-appUITests-ci */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		1F2AA67923ABF251005366AE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1F2AA67A23ABF251005366AE /* Cartfile in Resources */,
+				1F2AA67B23ABF251005366AE /* Cartfile.resolved in Resources */,
+				1F2AA67C23ABF251005366AE /* pings.yaml in Resources */,
+				1F2AA67D23ABF251005366AE /* LaunchScreen.storyboard in Resources */,
+				1F2AA67E23ABF251005366AE /* Assets.xcassets in Resources */,
+				1F2AA67F23ABF251005366AE /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1F2AA68F23AC2956005366AE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1F2AA6A023AC2964005366AE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BFD3AB28224D475E00AD9255 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -349,6 +506,70 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		1F2AA66D23ABF251005366AE /* Copy Carthage frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Carthage/Build/iOS/Glean.framework",
+			);
+			name = "Copy Carthage frameworks";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Glean.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/carthage bootstrap --platform iOS --no-use-binaries --cache-builds\n/usr/local/bin/carthage copy-frameworks\n";
+		};
+		1F2AA66E23ABF251005366AE /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/metrics.yaml",
+				"$(SRCROOT)/pings.yaml",
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(SRCROOT)/glean-sample-app/Generated/Basic.swift",
+				"$(SRCROOT)/glean-sample-app/Generated/BrowserEngagement.swift",
+				"$(SRCROOT)/glean-sample-app/Generated/Custom.swift",
+				"$(SRCROOT)/glean-sample-app/Generated/Pings.swift",
+				"$(SRCROOT)/glean-sample-app/Generated/Test.swift",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "bash $PWD/sdk_generator.sh\n";
+		};
+		1F2AA69823AC2964005366AE /* Copy Carthage frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Carthage/Build/iOS/Swifter.framework",
+			);
+			name = "Copy Carthage frameworks";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Swifter.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/carthage copy-frameworks\n";
+		};
 		BF6F41C6234346AA00E222A8 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -416,6 +637,39 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		1F2AA66F23ABF251005366AE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1F2AA67023ABF251005366AE /* ViewController.swift in Sources */,
+				1F2AA67123ABF251005366AE /* Pings.swift in Sources */,
+				1F2AA67223ABF251005366AE /* Basic.swift in Sources */,
+				1F2AA67323ABF251005366AE /* Test.swift in Sources */,
+				1F2AA67423ABF251005366AE /* AppDelegate.swift in Sources */,
+				1F2AA67523ABF251005366AE /* Custom.swift in Sources */,
+				1F2AA67623ABF251005366AE /* BrowserEngagement.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1F2AA68C23AC2956005366AE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1F2AA68D23AC2956005366AE /* glean_sample_appTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1F2AA69923AC2964005366AE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1F2AA69A23AC2964005366AE /* MockServer.swift in Sources */,
+				1F2AA69B23AC2964005366AE /* ViewControllerTest.swift in Sources */,
+				1F2AA69C23AC2964005366AE /* BaselinePingTest.swift in Sources */,
+				1F2AA69D23AC2964005366AE /* DeletionRequestPingTest.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BFD3AB26224D475E00AD9255 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -434,7 +688,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BFD3AB43224D475E00AD9255 /* GleanSampleAppTests.swift in Sources */,
+				BFD3AB43224D475E00AD9255 /* glean_sample_appTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -452,6 +706,16 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		1F2AA6A723AC2974005366AE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1F2AA66C23ABF251005366AE /* glean-sample-app-ci */;
+			targetProxy = 1F2AA6A623AC2974005366AE /* PBXContainerItemProxy */;
+		};
+		1F2AA6A923AC2981005366AE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1F2AA66C23ABF251005366AE /* glean-sample-app-ci */;
+			targetProxy = 1F2AA6A823AC2981005366AE /* PBXContainerItemProxy */;
+		};
 		BFD3AB40224D475E00AD9255 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = BFD3AB29224D475E00AD9255 /* glean-sample-app */;
@@ -484,6 +748,147 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		1F2AA68123ABF251005366AE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BFD3AB5B224D490000AD9255 /* debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = G9EAK7RA89;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "org.mozilla.glean-sample-app";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		1F2AA68223ABF251005366AE /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BFD3AB5D224D490000AD9255 /* release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = G9EAK7RA89;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "org.mozilla.glean-sample-app";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		1F2AA69123AC2956005366AE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BFD3AB5B224D490000AD9255 /* debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = G9EAK7RA89;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "org.mozilla.glean-sample-appTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/glean-sample-app.app/glean-sample-app";
+			};
+			name = Debug;
+		};
+		1F2AA69223AC2956005366AE /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BFD3AB5D224D490000AD9255 /* release.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = G9EAK7RA89;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "org.mozilla.glean-sample-appTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/glean-sample-app.app/glean-sample-app";
+			};
+			name = Release;
+		};
+		1F2AA6A223AC2964005366AE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BFD3AB5B224D490000AD9255 /* debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = G9EAK7RA89;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "org.mozilla.glean-sample-appUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "glean-sample-app";
+			};
+			name = Debug;
+		};
+		1F2AA6A323AC2964005366AE /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BFD3AB5D224D490000AD9255 /* release.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = G9EAK7RA89;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "org.mozilla.glean-sample-appUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "glean-sample-app";
+			};
+			name = Release;
+		};
 		BFD3AB50224D475E00AD9255 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -747,6 +1152,33 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		1F2AA68023ABF251005366AE /* Build configuration list for PBXNativeTarget "glean-sample-app-ci" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1F2AA68123ABF251005366AE /* Debug */,
+				1F2AA68223ABF251005366AE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1F2AA69023AC2956005366AE /* Build configuration list for PBXNativeTarget "glean-sample-appTests-ci" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1F2AA69123AC2956005366AE /* Debug */,
+				1F2AA69223AC2956005366AE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1F2AA6A123AC2964005366AE /* Build configuration list for PBXNativeTarget "glean-sample-appUITests-ci" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1F2AA6A223AC2964005366AE /* Debug */,
+				1F2AA6A323AC2964005366AE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		BFD3AB25224D475E00AD9255 /* Build configuration list for PBXProject "glean-sample-app" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

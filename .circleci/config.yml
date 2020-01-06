@@ -610,25 +610,40 @@ jobs:
             # See https://circleci.com/docs/2.0/testing-ios/#pre-starting-the-simulator
             xcrun instruments -w "iPhone 11 (13.3) [" || true
       - run:
-          name: Use local checkout through Carthage
+          name: Build sample framework
+          command: |
+            # Build in Debug mode to speed it all up
+            bash bin/run-ios-sample-framework-build.sh
+      - store_artifacts:
+          path: GleanSampleFramework.framework.zip
+          destination: dist/GleanSampleFramework.framework.zip
+      - run:
+          name: "Create Carthage bin-only project specification"
+          command: |
+            GSF_URL=https://circleci.com/api/v1.1/project/github/mozilla/glean/$CIRCLE_BUILD_NUM/artifacts/0/dist/GleanSampleFramework.framework.zip
+            echo "{\"0.0.1\":\"$GSF_URL\"}" > GleanSampleFramework.json
+      - store_artifacts:
+          path: GleanSampleFramework.json
+          destination: dist/GleanSampleFramework.json
+      - run:
+          name: Use pre-built binaries when building sample app
           command: |
             GLEAN_PATH="$(pwd)"
             GLEAN_COMMIT="${CIRCLE_SHA1}"
             CARTFILE_PATH="${GLEAN_PATH}/samples/ios/app/Cartfile"
+            GSF_JSON_URL=https://circleci.com/api/v1.1/project/github/mozilla/glean/$CIRCLE_BUILD_NUM/artifacts/0/dist/GleanSampleFramework.json
             echo "Current Cartfile:"
             cat "${CARTFILE_PATH}"
             echo "================="
             echo "New Cartfile:"
-            sed -i.bak "s#github \"mozilla/glean\" \"master\"#git \"file://${GLEAN_PATH}\" \"${GLEAN_COMMIT}\"#" "$CARTFILE_PATH"
+            echo "binary \"$GSF_JSON_URL\" ~> 0.0.1" >> $CARTFILE_PATH
             cat "${CARTFILE_PATH}"
       - run:
           name: Build sample app
           command: |
             # Build in Debug mode to speed it all up
-            pushd samples/ios/app
-            carthage bootstrap --platform iOS --no-use-binaries --cache-builds --configuration Debug --verbose
-            popd
             bash bin/run-ios-sample-app-build.sh
+          no_output_timeout: 20m
       - store_artifacts:
           path: raw_sample_xcodebuild.log
           destination: raw_sample_xcodebuild.log
@@ -636,6 +651,7 @@ jobs:
           name: Run sample app tests
           command: |
             bash bin/run-ios-sample-app-test.sh
+          no_output_timeout: 20m
       - store_artifacts:
           path: raw_sample_xcodetest.log
           destination: raw_sample_xcodetest.log
