@@ -369,7 +369,7 @@ subprocess.check_call([
     }
 
     void apply(Project project) {
-        project.ext.glean_version = "22.1.0"
+        project.ext.glean_version = "23.0.0"
 
         File condaDir = setupPythonEnvironmentTasks(project)
         project.ext.set("gleanCondaDir", condaDir)
