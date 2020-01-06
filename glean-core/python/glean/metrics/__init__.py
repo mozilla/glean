@@ -10,6 +10,7 @@ from .labeled import LabeledCounterMetricType
 from .lifetime import Lifetime
 from .ping import PingType
 from .string import StringMetricType
+from .uuid import UuidMetricType
 
 
 __all__ = [
@@ -21,4 +22,5 @@ __all__ = [
     "RecordedEventData",
     "RecordedExperimentData",
     "StringMetricType",
+    "UuidMetricType",
 ]

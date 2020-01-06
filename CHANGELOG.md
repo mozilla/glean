@@ -3,7 +3,7 @@
 [Full changelog](https://github.com/mozilla/glean/compare/v22.0.0...master)
 
 * Python bindings:
-  * Support for events was added.
+  * Support for events and UUID metrics was added.
 * Android:
   * The Glean Gradle Plugin correctly triggers docs and API updates when registry files
     change, without requiring them to be deleted.
