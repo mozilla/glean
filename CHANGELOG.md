@@ -2,6 +2,10 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v23.0.0...master)
 
+* Android:
+  * BUGFIX: The Glean Gradle plugin will now work if an app or library doesn't
+    have a metrics.yaml or pings.yaml file.
+
 # v23.0.0 (2020-01-07)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v22.1.0...v23.0.0)
