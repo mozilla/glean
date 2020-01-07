@@ -274,3 +274,5 @@ glean.error:
     notification_emails:
       - glean-team@mozilla.com
     expires: never
+    no_lint:
+      - COMMON_PREFIX
