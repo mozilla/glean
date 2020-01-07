@@ -1,5 +1,8 @@
 # Developing documentation
 
+The documentation in this repository pertains to the Glean SDK.  That is, the client-side code for Glean telemetry.
+Documentation for Glean in general, and the Glean-specific parts of the data pipeline and analysis is [documented elsewhere](https://docs.telemetry.mozilla.org/concepts/glean/glean.html) in the [`firefox-data-docs` repository](https://github.com/mozilla/firefox-data-docs).
+
 The main narrative documentation is written in Markdown and converted to static HTML using [mdbook](https://rust-lang.github.io/mdBook/).
 
 API docs are also generated from docstrings for Rust, Kotlin, Swift and Python.
