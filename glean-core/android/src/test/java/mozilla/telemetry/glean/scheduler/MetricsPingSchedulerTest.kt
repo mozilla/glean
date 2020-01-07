@@ -307,7 +307,7 @@ class MetricsPingSchedulerTest {
         // Trigger the startup check. We need to wrap this in `blockDispatchersAPI` since
         // the immediate startup collection happens in the Dispatchers.API context. If we
         // don't, test will fail due to async weirdness.
-        mpsSpy.schedule(overduePingAsFirst = true)
+        mpsSpy.schedule()
 
         // And that we're storing the current date (this only reports the date, not the time).
         fakeNow.set(Calendar.HOUR_OF_DAY, 0)
@@ -341,7 +341,7 @@ class MetricsPingSchedulerTest {
         doReturn(fakeNow).`when`(mpsSpy).getCalendarInstance()
 
         // Trigger the startup check.
-        mpsSpy.schedule(overduePingAsFirst = true)
+        mpsSpy.schedule()
 
         // Verify that we're scheduling for the next day and not collecting immediately.
         verify(mpsSpy, times(1)).schedulePingCollection(fakeNow, sendTheNextCalendarDay = true)
@@ -376,7 +376,7 @@ class MetricsPingSchedulerTest {
         verify(mpsSpy, never()).schedulePingCollection(any(), anyBoolean())
 
         // Trigger the startup check.
-        mpsSpy.schedule(overduePingAsFirst = true)
+        mpsSpy.schedule()
 
         // Verify that we're scheduling for today, but not collecting immediately.
         verify(mpsSpy, times(1)).schedulePingCollection(fakeNow, sendTheNextCalendarDay = false)
@@ -405,7 +405,7 @@ class MetricsPingSchedulerTest {
         doReturn(fakeNow).`when`(mpsSpy).getCalendarInstance()
 
         // Trigger the startup check.
-        mpsSpy.schedule(overduePingAsFirst = true)
+        mpsSpy.schedule()
 
         // Verify that we're immediately collecting.
         verify(mpsSpy, never()).collectPingAndReschedule(fakeNow, true)
@@ -423,7 +423,7 @@ class MetricsPingSchedulerTest {
         mpsSpy.sharedPreferences.edit()?.putString("last_version_of_app_used", "old version")?.apply()
 
         // Trigger the startup check.
-        mpsSpy.schedule(overduePingAsFirst = true)
+        mpsSpy.schedule()
 
         // Verify that we're immediately collecting.
         verify(mpsSpy, times(1)).collectPingAndReschedule(any(), anyBoolean())
@@ -447,7 +447,7 @@ class MetricsPingSchedulerTest {
         doReturn(fakeNow).`when`(mpsSpy).getCalendarInstance()
 
         // Trigger the startup check.
-        mpsSpy.schedule(overduePingAsFirst = true)
+        mpsSpy.schedule()
 
         // And that we're storing the current date (this only reports the date, not the time).
         fakeNow.set(Calendar.HOUR_OF_DAY, 0)

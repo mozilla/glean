@@ -12,6 +12,11 @@
 * iOS:
   * The released iOS binaries are now built with XCode 11.3.
 
+* Android:
+  * The metrics ping scheduler will now only send metrics pings while the
+    application is running. The application will no longer "wake up" at 4am
+    using the Work Manager.
+
 # v23.0.0 (2020-01-07)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v22.1.0...v23.0.0)
@@ -25,9 +30,6 @@
     migration and initialization.
   * Metrics with `lifetime: application` are now cleared when the application is started,
     after startup Glean SDK pings are generated.
-  * The metrics ping scheduler will now only send metrics pings while the
-    application is running. The application will no longer "wake up" at 4am
-    using the Work Manager.
 * All platforms:
   * The public method `PingType.send()` (in all platforms) have been deprecated
     and renamed to `PingType.submit()`.

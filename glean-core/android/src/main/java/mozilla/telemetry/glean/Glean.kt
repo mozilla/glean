@@ -202,7 +202,7 @@ open class GleanInternalAPI internal constructor () {
             applicationContext,
             acMetadata.metricsPingLastSentDate
         )
-        metricsPingScheduler.schedule(overduePingAsFirst = true)
+        metricsPingScheduler.schedule()
 
         // From the second time we run, after all startup pings are generated,
         // make sure to clear `lifetime: application` metrics and set them again.

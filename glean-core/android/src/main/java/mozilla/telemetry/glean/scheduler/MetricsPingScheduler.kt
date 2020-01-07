@@ -73,7 +73,7 @@ internal class MetricsPingScheduler(
 
         // Cancel any existing scheduled work. Does not actually cancel a
         // currently-running task.
-        timer?.cancel()
+        cancel()
 
         timer = Timer("glean.MetricsPingScheduler")
         timer?.schedule(MetricsPingTimer(this), millisUntilNextDueTime)
@@ -179,21 +179,16 @@ internal class MetricsPingScheduler(
     /**
      * Performs startup checks to decide when to schedule the next metrics ping
      * collection.
-     *
-     * @param overduePingAsFirst if this value is `true`, and Dispatchers tasks are
-     *        being enqueued due to startup, collect any overdue `metrics` at the
-     *        beginning of the queue.
      */
-    fun schedule(overduePingAsFirst: Boolean) {
+    fun schedule() {
         val now = getCalendarInstance()
 
         // If the version of the app is different from the last time we ran the app,
         // schedule the metrics ping for immediate collection. We only need to perform
         // this check at startup (when overduePingAsFirst is true).
-        if (overduePingAsFirst && isDifferentVersion()) {
+        if (isDifferentVersion()) {
             @Suppress("EXPERIMENTAL_API_USAGE")
             Dispatchers.API.executeTask {
-                // This addresses (2).
                 collectPingAndReschedule(now, startupPing = true)
             }
             return
@@ -223,7 +218,7 @@ internal class MetricsPingScheduler(
                 schedulePingCollection(now, sendTheNextCalendarDay = true)
             }
             // The ping wasn't already sent today. Are we overdue or just waiting for
-            // the right time?
+            // the right time?  This covers (2)
             isAfterDueTime(now) -> {
                 Log.i(LOG_TAG, "The 'metrics' ping is scheduled for immediate collection, ${now.time}")
                 // **IMPORTANT**
@@ -240,20 +235,10 @@ internal class MetricsPingScheduler(
                 // `Dispatchers.API` thread pool, before any other enqueued task. For more
                 // context, see bug 1604861 and the implementation of
                 // `collectPingAndReschedule`.
-                if (overduePingAsFirst) {
-                    @Suppress("EXPERIMENTAL_API_USAGE")
-                    Dispatchers.API.executeTask {
-                        // This addresses (2).
-                        collectPingAndReschedule(now, startupPing = true)
-                    }
-                } else {
-                    // This branch is hit outside of the Glean initialization function,
-                    // enqueue it as usual.
-                    @Suppress("EXPERIMENTAL_API_USAGE")
-                    Dispatchers.API.launch {
-                        // This addresses (2).
-                        collectPingAndReschedule(now)
-                    }
+                @Suppress("EXPERIMENTAL_API_USAGE")
+                Dispatchers.API.executeTask {
+                    // This addresses (2).
+                    collectPingAndReschedule(now, startupPing = true)
                 }
             }
             else -> {
