@@ -23,7 +23,6 @@ import mozilla.telemetry.glean.private.NoExtraKeys
 import mozilla.telemetry.glean.private.PingType
 import mozilla.telemetry.glean.private.StringMetricType
 import mozilla.telemetry.glean.scheduler.GleanLifecycleObserver
-import mozilla.telemetry.glean.scheduler.MetricsPingWorker
 import mozilla.telemetry.glean.scheduler.DeletionPingUploadWorker
 import mozilla.telemetry.glean.scheduler.PingUploadWorker
 import mozilla.telemetry.glean.testing.GleanTestRule
@@ -516,7 +515,7 @@ class GleanTest {
         assertTrue("PingUploadWorker is enqueued",
             getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued)
         assertTrue("MetricsPingWorker is enqueued",
-            getWorkerStatus(context, MetricsPingWorker.TAG).isEnqueued)
+            Glean.metricsPingScheduler.timer != null)
 
         Glean.setUploadEnabled(true)
 
@@ -526,7 +525,7 @@ class GleanTest {
         assertTrue("PingUploadWorker is enqueued",
             getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued)
         assertTrue("MetricsPingWorker is enqueued",
-            getWorkerStatus(context, MetricsPingWorker.TAG).isEnqueued)
+            Glean.metricsPingScheduler.timer != null)
 
         // Toggle upload enabled to false
         Glean.setUploadEnabled(false)
@@ -534,8 +533,8 @@ class GleanTest {
         // Verify workers have been cancelled
         assertFalse("PingUploadWorker is not enqueued",
             getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued)
-        assertFalse("MetricsPingWorker is not enqueued",
-            getWorkerStatus(context, MetricsPingWorker.TAG).isEnqueued)
+        assertTrue("MetricsPingWorker is not enqueued",
+            Glean.metricsPingScheduler.timer == null)
         // Verify deletion ping upload worker has been scheduled
         assertTrue("DeletionPingUploadWorker is not enqueued",
             getWorkerStatus(context, DeletionPingUploadWorker.PING_WORKER_TAG).isEnqueued)
