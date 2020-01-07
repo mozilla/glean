@@ -6,6 +6,8 @@ package mozilla.telemetry.glean.scheduler
 
 import android.content.Context
 import android.os.SystemClock
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.work.testing.WorkManagerTestInitHelper
@@ -21,13 +23,13 @@ import mozilla.telemetry.glean.checkPingSchema
 import mozilla.telemetry.glean.triggerWorkManager
 import mozilla.telemetry.glean.config.Configuration
 import mozilla.telemetry.glean.getMockWebServer
+import mozilla.telemetry.glean.getWorkerStatus
 import mozilla.telemetry.glean.utils.getISOTimeString
 import mozilla.telemetry.glean.utils.parseISOTimeString
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
@@ -36,6 +38,7 @@ import org.mockito.Mockito.anyBoolean
 import org.mockito.Mockito.anyString
 import org.mockito.Mockito.doReturn
 import org.mockito.Mockito.eq
+import org.mockito.Mockito.mock
 import org.mockito.Mockito.never
 import org.mockito.Mockito.spy
 import org.mockito.Mockito.times
@@ -299,6 +302,8 @@ class MetricsPingSchedulerTest {
         val overdueTestDate = "2015-07-05T12:36:00-06:00"
         mpsSpy.updateSentDate(overdueTestDate)
 
+        MetricsPingScheduler.isInForeground = true
+
         verify(mpsSpy, never()).collectPingAndReschedule(any(), eq(true))
 
         // Make sure to return the fake date when requested.
@@ -328,11 +333,6 @@ class MetricsPingSchedulerTest {
         // Set the last sent date to now.
         val mpsSpy =
             spy(MetricsPingScheduler(context))
-
-        // Inject the application version as already recorded, so we don't hit the case
-        // where the ping is sent due to a version change.
-        mpsSpy.isDifferentVersion()
-
         mpsSpy.updateSentDate(getISOTimeString(fakeNow, truncateTo = TimeUnit.Day))
 
         verify(mpsSpy, never()).schedulePingCollection(any(), anyBoolean())
@@ -360,10 +360,6 @@ class MetricsPingSchedulerTest {
         // Set the last sent date to yesterday.
         val mpsSpy =
             spy(MetricsPingScheduler(context))
-
-        // Inject the application version as already recorded, so we don't hit the case
-        // where the ping is sent due to a version change.
-        mpsSpy.isDifferentVersion()
 
         val fakeYesterday = Calendar.getInstance()
         fakeYesterday.time = fakeNow.time
@@ -395,9 +391,6 @@ class MetricsPingSchedulerTest {
         val mpsSpy =
             spy(MetricsPingScheduler(context))
         mpsSpy.sharedPreferences.edit().clear().apply()
-        // Inject the application version as already recorded, so we don't hit the case
-        // where the ping is sent due to a version change.
-        mpsSpy.isDifferentVersion()
 
         verify(mpsSpy, never()).collectPingAndReschedule(any(), anyBoolean())
 
@@ -410,23 +403,6 @@ class MetricsPingSchedulerTest {
         // Verify that we're immediately collecting.
         verify(mpsSpy, never()).collectPingAndReschedule(fakeNow, true)
         verify(mpsSpy, times(1)).schedulePingCollection(fakeNow, sendTheNextCalendarDay = false)
-    }
-
-    @Test
-    fun `startupCheck must correctly handle a version change`() {
-        // Clear the last sent date.
-        val mpsSpy =
-            spy(MetricsPingScheduler(context))
-        mpsSpy.sharedPreferences.edit().clear().apply()
-
-        // Insert an old version identifier into shared preferences
-        mpsSpy.sharedPreferences.edit()?.putString("last_version_of_app_used", "old version")?.apply()
-
-        // Trigger the startup check.
-        mpsSpy.schedule(overduePingAsFirst = true)
-
-        // Verify that we're immediately collecting.
-        verify(mpsSpy, times(1)).collectPingAndReschedule(any(), anyBoolean())
     }
 
     @Test
@@ -467,17 +443,45 @@ class MetricsPingSchedulerTest {
         // Replacing the singleton's metricsPingScheduler here since doWork() refers to it when
         // the worker runs, otherwise we can get a lateinit property is not initialized error.
         Glean.metricsPingScheduler = MetricsPingScheduler(context)
+        MetricsPingScheduler.isInForeground = true
 
         // No work should be enqueued at the beginning of the test.
-        assertNull(Glean.metricsPingScheduler.timer)
+        assertFalse(getWorkerStatus(context, MetricsPingWorker.TAG).isEnqueued)
 
         // Manually schedule a collection task for today.
         Glean.metricsPingScheduler.schedulePingCollection(Calendar.getInstance(), sendTheNextCalendarDay = false)
 
         // We expect the worker to be scheduled.
-        assertNotNull(Glean.metricsPingScheduler.timer)
+        assertTrue(getWorkerStatus(context, MetricsPingWorker.TAG).isEnqueued)
 
         resetGlean(clearStores = true)
+    }
+
+    @Test
+    fun `schedule() happens when returning from background when Glean is already initialized`() {
+        // Initialize Glean
+        resetGlean(clearStores = true)
+        val mpsSpy = mock(MetricsPingScheduler::class.java)
+        `when`(mpsSpy.onStateChanged(ProcessLifecycleOwner.get(), Lifecycle.Event.ON_START)).thenCallRealMethod()
+        Glean.metricsPingScheduler = mpsSpy
+
+        // Make sure schedule() has not been called.  Since we are adding the spy after resetGlean
+        // has called Glean.initialize(), we won't see the first invocation of schedule().
+        verify(mpsSpy, times(0)).schedule(overduePingAsFirst = true)
+
+        // Simulate returning to the foreground with Glean initialized.
+        Glean.metricsPingScheduler.onStateChanged(ProcessLifecycleOwner.get(), Lifecycle.Event.ON_START)
+
+        // Verify that schedule hasn't been called since we don't schedule on the first foreground
+        // since Glean.initialize() ensures schedule is called before any queued tasks are executed
+        verify(mpsSpy, times(0)).schedule(overduePingAsFirst = false)
+
+        // Simulate going to background and then foreground
+        Glean.metricsPingScheduler.onStateChanged(ProcessLifecycleOwner.get(), Lifecycle.Event.ON_STOP)
+        Glean.metricsPingScheduler.onStateChanged(ProcessLifecycleOwner.get(), Lifecycle.Event.ON_START)
+
+        // Verify that schedule has been called on subsequent foreground events
+        verify(mpsSpy, times(1)).schedule(overduePingAsFirst = false)
     }
 
     @Test
@@ -488,15 +492,15 @@ class MetricsPingSchedulerTest {
         mps.schedulePingCollection(Calendar.getInstance(), true)
 
         // Verify that the worker is enqueued
-        assertNotNull("MetricsPingWorker is enqueued",
-            Glean.metricsPingScheduler.timer)
+        assertTrue("MetricsPingWorker is enqueued",
+            getWorkerStatus(context, MetricsPingWorker.TAG).isEnqueued)
 
         // Cancel the worker
-        Glean.metricsPingScheduler.cancel()
+        MetricsPingScheduler.cancel(context)
 
         // Verify worker has been cancelled
-        assertNull("MetricsPingWorker is not enqueued",
-            Glean.metricsPingScheduler.timer)
+        assertFalse("MetricsPingWorker is not enqueued",
+            getWorkerStatus(context, MetricsPingWorker.TAG).isEnqueued)
     }
 
     @Test
