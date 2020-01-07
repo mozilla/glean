@@ -286,7 +286,7 @@ open class GleanInternalAPI internal constructor () {
                     // Cancel any pending workers here so that we don't accidentally upload or
                     // collect data after the upload has been disabled.
                     if (!enabled) {
-                        MetricsPingScheduler.cancel(applicationContext)
+                        metricsPingScheduler.cancel()
                         PingUploadWorker.cancel(applicationContext)
                     }
                 }
