@@ -14,7 +14,6 @@ import kotlinx.coroutines.Dispatchers as KotlinDispatchers
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import mozilla.telemetry.glean.GleanMetrics.GleanInternalMetrics
-import mozilla.telemetry.glean.GleanMetrics.GleanValidation
 import mozilla.telemetry.glean.GleanMetrics.Pings
 import mozilla.telemetry.glean.config.Configuration
 import mozilla.telemetry.glean.private.CounterMetricType
@@ -205,20 +204,13 @@ class GleanTest {
         val gleanLifecycleObserver = GleanLifecycleObserver(context)
         lifecycleRegistry.addObserver(gleanLifecycleObserver)
 
-        // Pretend that we have a dirty bit set.
-        gleanLifecycleObserver.sharedPreferences.edit().putBoolean("dirty", true).commit()
-
         try {
             // Simulate the first foreground event after the application starts.
             lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
             click.record()
-            assertEquals(1, GleanValidation.appForceclosedCount.testGetValue())
 
             // Simulate going to background.
             lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
-
-            // Check that the dirty bit gets cleared.
-            assertFalse(gleanLifecycleObserver.sharedPreferences.getBoolean("dirty", false))
 
             // Trigger worker task to upload the pings in the background
             triggerWorkManager(context)
