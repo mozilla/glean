@@ -126,7 +126,9 @@ subprocess.check_call([
                 // Add local registry files as input to this task. They will be turned
                 // into `arg`s later.
                 for (String item : getYamlFiles(project)) {
-                    inputs.file item
+                    if (project.file(item).exists()) {
+                        inputs.file item
+                    }
                 }
 
                 outputs.dir sourceOutputDir
@@ -201,7 +203,9 @@ subprocess.check_call([
                 // Add local registry files as input to this task. They will be turned
                 // into `arg`s later.
                 for (String item : getYamlFiles(project)) {
-                    inputs.file item
+                    if (project.file(item).exists()) {
+                        inputs.file item
+                    }
                 }
 
                 outputs.dir gleanDocsDirectory
