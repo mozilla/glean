@@ -10,7 +10,7 @@ bindings](../../user/adding-glean-to-your-project.html).
 ## Prepare your build environment
 
 Typically, this process only needs to be run once, although periodically you
-may need to repeat some steps (eg., rust updates should be done periodically)
+may need to repeat some steps (e.g., rust updates should be done periodically)
 
 ### Setting up Android dependencies
 

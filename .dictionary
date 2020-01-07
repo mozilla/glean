@@ -1,4 +1,4 @@
-personal_ws-1.1 en 134 utf-8
+personal_ws-1.1 en 133 utf-8
 AAR
 AARs
 APIs
@@ -74,7 +74,6 @@ distributable
 docstrings
 dokka
 dropdown
-eg
 enum
 envs
 exe
