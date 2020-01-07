@@ -51,7 +51,7 @@ The full Android test suite may be run from the command line with:
 ### From Android Studio
 
 To run the full Android test suite, in the "Gradle" pane, navigate to `glean-core` -> `Tasks` -> `verification` and double-click either `testDebugUnitTest` or `testReleaseUnitTest` (depending on whether you want to run in Debug or Release mode).
-You can save this task permanently by opening the task dropdown in the toolbar and selecting "Save glean.rs:glean:android [testDebugUnitTest] Configuration".
+You can save this task permanently by opening the task dropdown in the toolbar and selecting `"Save glean.rs:glean:android [testDebugUnitTest] Configuration"`.
 
 To run a single Android test, navigate to the file containing the test, and right click on the green arrow in the left margin next to the test.  There you have a choice of running or debugging the test.
 

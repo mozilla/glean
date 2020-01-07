@@ -101,7 +101,7 @@ XCTAssertEqual(1, Memory.heapAllocated.testGetNumRecordedErrors(.invalidValue))
 
 ## Limits
 
-* The maxmimum memory size that can be recorded is 1 Terabyte (2<sup>40</sup> bytes). Larger sizes will be truncated to 1 Terabyte.
+* The maximum memory size that can be recorded is 1 Terabyte (2<sup>40</sup> bytes). Larger sizes will be truncated to 1 Terabyte.
 
 ## Examples
 

@@ -10,7 +10,7 @@ To contact us you can:
 - Send an email to *glean-team@mozilla.com*.
 - The Glean SDK team is: *:janerik*, *:dexter*, *:travis*, *:mdroettboom*, *:gfritzsche*, *:chutten*, *:brizental*.
 
-The source code is available [on Github](https://github.com/mozilla/glean/).
+The source code is available [on GitHub](https://github.com/mozilla/glean/).
 
 ## License
 

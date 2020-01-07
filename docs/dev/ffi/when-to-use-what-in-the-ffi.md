@@ -15,8 +15,8 @@ there are two kinds of values you may want to pass over the FFI.
 
 ## Types with identity
 
-Examples of this are things like database connections, the FirefoxAccounts
-struct, etc. These types are complex, implemented in rust, and it's not
+Examples of this are things like database connections, the `FirefoxAccounts`
+struct, etc. These types are complex, implemented in Rust, and it's not
 unreasonable for them to come to Java/Kotlin as a type representing a
 resource (e.g. implementing `Closable`/`AutoClosable`).
 
@@ -51,7 +51,7 @@ You have two choices here:
 
 ## Plain Old Data
 
-This includes both primitive values, strings, arrays, or arbitrarially nested
+This includes both primitive values, strings, arrays, or arbitrarily nested
 structures containing them.
 
 ### Primitives
@@ -75,7 +75,7 @@ good support for calling over the FFI), but it's our lowest common denominator.
    `Long`/`Int`. (You can also use `u64`/`u32` for `Long`/`Int`, if you're certain the
    value is not negative)
 
-3. `char`: I really don't see a reason you need to pass a single codepoint over the
+3. `char`: I really don't see a reason you need to pass a single code point over the
    FFI, but if someone needs to do this, they instead should just pass it as a `u32`.
 
     If you do this, you should probably be aware of the fact that Java chars are 16
@@ -84,7 +84,7 @@ good support for calling over the FFI), but it's our lowest common denominator.
 
 ### Strings
 
-These we pass as nul-terminated UTF-8 C-strings.
+These we pass as null-terminated UTF-8 C-strings.
 
 For return values, used `*mut c_char`, and for input, use
 [`ffi_support::FfiStr`](https://docs.rs/ffi-support/*/ffi_support/struct.FfiStr.html)
@@ -104,7 +104,7 @@ For return values, used `*mut c_char`, and for input, use
     as input must also be `Pointer`.
 
     Using `String` will *almost* work. JNA will convert the return value to
-    `String` automatically, leaking the value rust provides. Then, when passing
+    `String` automatically, leaking the value Rust provides. Then, when passing
     to the destructor, it will allocate a temporary buffer, pass it to Rust, which
     we'll free, corrupting both heaps 💥. Oops!
 
@@ -121,8 +121,8 @@ This is any type that's more complex than a primitive or a string (arrays,
 structures, and combinations there-in). There are two options we recommend for
 these cases:
 
-1. Passing data using protobufs. See the
-   "[Using protobuf-encoded data over Rust FFI](https://github.com/mozilla/application-services/blob/master/docs/howtos/passing-protobuf-data-over-ffi.md)"
+1. Passing data using Protobufs. See the
+   "[Using Protobufs-encoded data over Rust FFI](https://github.com/mozilla/application-services/blob/master/docs/howtos/passing-protobuf-data-over-ffi.md)"
    document for details on how to do this. We recommend this for all new use cases, unless
    you have a specific reason that JSON is better (e.g. semi-opaque JSON encoded data is
    desired on the other side).
@@ -136,4 +136,4 @@ these cases:
    into the crate that defines the type.
 
    For new non-test code this is not a recommended approach.
-   For test code, this can be a useful performance/simplicity tradeoff to make.
+   For test code, this can be a useful performance/simplicity trade off to make.

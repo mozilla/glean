@@ -24,7 +24,7 @@ There are different metrics to choose from, depending on what you want to achiev
 
 * [Datetime](datetime.md): Used to record an absolute date and time, such as the time the user first ran the application.
 
-* [Events](event.md): Records events e.g. individual occurences of user actions, say every time a view was open and from where.
+* [Events](event.md): Records events e.g. individual occurrences of user actions, say every time a view was open and from where.
 
 * [Custom Distribution](custom_distribution.md): Used to record the distribution of a value that needs fine-grained control of how the histogram buckets are computed.
 
@@ -34,7 +34,7 @@ There are two types of metrics listed above - *labeled* and *unlabeled* metrics.
 
 This is useful when you need to break down metrics by a label known at build time or run time. For example:
 
-- When you want to count a different set of subviews that users interact with, you could use `viewCount["view1"].add()` and `viewCount["view2"].add()`.
+- When you want to count a different set of sub-views that users interact with, you could use `viewCount["view1"].add()` and `viewCount["view2"].add()`.
 
 - When you want to count errors that might occur for a feature, you could use `errorCount[errorName].add()`.
 

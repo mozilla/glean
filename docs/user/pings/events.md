@@ -31,7 +31,7 @@ Each entry in the `events` array is an object with the following properties:
 
 - `"category"`: The category of the event, as defined by its location in the `metrics.yaml` file.
 
-- `"name"`: The name of the event, as definded in the `metrics.yaml` file.
+- `"name"`: The name of the event, as defined in the `metrics.yaml` file.
 
 - `"extra"` (optional): A mapping of strings to strings providing additional data about the event. The keys are restricted to 40 characters and values in this map will never exceed 100 characters.
   

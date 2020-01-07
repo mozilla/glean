@@ -8,7 +8,7 @@ Instructions for installing a copy of the Glean Python bindings into your own en
 
 Glean requires Python 3.7 or later.
 
-Make sure it is installed on your system and accesible on the `PATH` as `python3`.
+Make sure it is installed on your system and accessible on the `PATH` as `python3`.
 
 ### Setting up Rust
 

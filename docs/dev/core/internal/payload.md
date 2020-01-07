@@ -208,7 +208,7 @@ A [Custom distribution](../../../user/metrics/custom_distribution.md) is represe
 | `values` | Map&lt;String, Integer&gt; | The values in each bucket. The key is the minimum value for the range of that bucket. |
 
 A contiguous range of buckets is always sent, so that the server can aggregate and visualize distributions, without knowing anything about the specific bucketing function used.
-This range starts with the first bucket (as specified in the `range_min` parmater), and ends at one bucket beyond the last bucket with a non-zero accumulation (so that the upper bound on the last bucket is retained).
+This range starts with the first bucket (as specified in the `range_min` parameter), and ends at one bucket beyond the last bucket with a non-zero accumulation (so that the upper bound on the last bucket is retained).
 
 For example, suppose you had a custom distribution defined by the following parameters:
 

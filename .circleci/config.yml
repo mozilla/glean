@@ -620,6 +620,22 @@ jobs:
           name: Check internal documentation links
           command: linkchecker --ignore-url javadoc --ignore-url docs/glean_core --ignore-url ErrorKind --ignore-url std.struct.Error build/docs
 
+  docs-spellcheck:
+    docker:
+      # Use Debian Sid so we get aspell 0.60.8 or later (which contains markdown support)
+      - image: circleci/buildpack-deps:sid
+    steps:
+      - checkout
+      - run:
+          name: Upgrade Debian packages
+          command: sudo apt update
+      - run:
+          name: Install aspell
+          command: sudo apt install aspell aspell-en
+      - run:
+          name: Check documentation spelling
+          command: bin/spellcheck.sh list
+
   docs-deploy:
     docker:
       - image: node:8.10.0
@@ -737,7 +753,9 @@ workflows:
       - iOS build and test
       - iOS integration test
       - Python tests
-      - Generate Rust documentation
+      - Generate Rust documentation:
+          requires:
+            - docs-spellcheck
       - Generate Kotlin documentation
       - Generate Python documentation:
           requires:
@@ -748,6 +766,7 @@ workflows:
             - Generate Kotlin documentation
             - Generate Python documentation
             - iOS build and test
+      - docs-spellcheck
       - docs-deploy:
           requires:
             - docs-linkcheck

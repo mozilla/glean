@@ -11,7 +11,7 @@ Android Components is called [lib-crash](https://github.com/mozilla-mobile/andro
 ## Before You Start
 
 There are a few things that need to be installed in order to proceed, mainly [Android Studio](https://developer.android.com/studio/).  If you include the Android SDK,
-Android Studio can take a little while to download and get installed.  This walkthrough assumes some knowledge of Android
+Android Studio can take a little while to download and get installed.  This walk-through assumes some knowledge of Android
 application development.  Knowing where to go to create a new project and how to add dependencies to a Gradle file will be
 helpful in following this guide.
 
@@ -33,7 +33,7 @@ description, events let us do that easily (with [some limitations](metrics/event
 
 Now that a metric type has been chosen to represent the metric, the next step is creating the `metrics.yaml`.  Inside of the
 root application folder of the Android Studio project create a new file named `metrics.yaml`.  After adding the schema
-definition and event metric defninition, the `metrics.yaml` should look like this:
+definition and event metric definition, the `metrics.yaml` should look like this:
 
 ```YAML
 # Required to indicate this is a `metrics.yaml` file
@@ -108,7 +108,7 @@ import org.mozilla.gleancrashexample.GleanMetrics.Pings
 ```
 
 Next, register the custom ping by calling `Glean.registerPings(Pings)` in the `onCreate()` function, preferably before calling
-`Glean.initialize()`.  The completed fuction should look something like this:
+`Glean.initialize()`.  The completed function should look something like this:
 
 ```Kotlin
 override fun onCreate() {

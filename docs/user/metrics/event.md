@@ -1,6 +1,6 @@
 # Events
 
-Events allow recording of e.g. individual occurences of user actions, say every time a view was open and from where. Each time you record an event, it records a
+Events allow recording of e.g. individual occurrences of user actions, say every time a view was open and from where. Each time you record an event, it records a
 timestamp, the event's name and a set of custom values.
 
 ## Configuration

@@ -10,7 +10,7 @@ If the application crashes, unsent recorded metrics are sent along with the next
 > **Note:** As the `metrics` ping was specifically designed for mobile operating systems, it is not sent when using the Glean Python bindings.
 
 ## Scheduling
-The desired behaviour is to collect the ping at the first available opportunity after 4AM local time on a new calendar day. 
+The desired behavior is to collect the ping at the first available opportunity after 4AM local time on a new calendar day. 
 This breaks down into three scenarios:
 
 1. the application was just installed;
