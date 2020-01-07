@@ -39,7 +39,10 @@ commands:
           rust-version: <<parameters.rust-version>>
       - run:
           name: Test
-          command: cargo test --all --verbose
+          command: cargo test --all ---exclude glean-preview --verbose
+      - run:
+          name: Test glean-preview
+          command: cargo test -p glean-preview -- --test-threads=1
 
   install-rustup:
     steps:

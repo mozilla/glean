@@ -43,10 +43,13 @@ build-python: python-setup build-rust ## Build the Python bindings
 test: test-rust
 
 test-rust: ## Run all Rust tests
-	cargo test --all
+	cargo test --all --exclude glean-preview
 
 test-rust-with-logs: ## Run all Rust tests with debug logging and single-threaded
 	RUST_LOG=glean_core=debug cargo test --all -- --nocapture --test-threads=1
+
+test-preview: ## Run Rust tests for glean-preview
+	cargo test -p glean-preview -- --test-threads=1
 
 test-kotlin: ## Run all Kotlin tests
 	./gradlew test
