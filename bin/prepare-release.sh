@@ -75,6 +75,8 @@ fi
 
 ### GLEAN-CORE ###
 
+# Update the glean-core version
+
 FILE=glean-core/Cargo.toml
 run $SED -i.bak -E \
     -e "s/^version = \"[0-9a-z.-]+\"/version = \"${NEW_VERSION}\"/" \
@@ -82,6 +84,8 @@ run $SED -i.bak -E \
 run rm "${WORKSPACE_ROOT}/${FILE}.bak"
 
 ### GLEAN-FFI ###
+
+# Update the glean-ffi version, and its glean-core dependency
 
 FILE=glean-core/ffi/Cargo.toml
 run $SED -i.bak -E \
@@ -91,6 +95,8 @@ run $SED -i.bak -E \
 run rm "${WORKSPACE_ROOT}/${FILE}.bak"
 
 ### GLEAN-PREVIEW ###
+
+# Update the version of the glean-core dependency
 
 FILE=glean-core/preview/Cargo.toml
 run $SED -i.bak -E \
