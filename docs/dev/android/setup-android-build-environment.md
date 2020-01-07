@@ -2,9 +2,10 @@
 
 ## Doing a local build of the Android Components:
 
-This document describes how to make local builds of the Android bindings in
-this repository. Most consumers of these bindings *do not* need to follow
-this process, but will instead use pre-built bindings [TODO: link to this]
+This document describes how to make local builds of the Android bindings in this
+repository. Most consumers of these bindings *do not* need to follow this
+process, but will instead [use pre-built
+bindings](../../user/adding-glean-to-your-project.html).
 
 ## Prepare your build environment
 
