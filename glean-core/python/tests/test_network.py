@@ -17,7 +17,7 @@ def test_invalid_filename():
     pings_dir = PingUploadWorker.storage_directory()
     pings_dir.mkdir()
 
-    with open(pings_dir / "ping", "wb") as fd:
+    with (pings_dir / "ping").open("wb") as fd:
         fd.write(b"\n")
 
     assert PingUploadWorker.process()
@@ -29,7 +29,7 @@ def test_invalid_content():
     pings_dir = PingUploadWorker.storage_directory()
     pings_dir.mkdir()
 
-    with open(pings_dir / str(uuid.uuid4()), "wb") as fd:
+    with (pings_dir / str(uuid.uuid4())).open("wb") as fd:
         fd.write(b"\n")
 
     assert not PingUploadWorker.process()
@@ -44,7 +44,7 @@ def test_400_error(safe_httpserver):
     pings_dir = PingUploadWorker.storage_directory()
     pings_dir.mkdir()
 
-    with open(pings_dir / str(uuid.uuid4()), "wb") as fd:
+    with (pings_dir / str(uuid.uuid4())).open("wb") as fd:
         fd.write(b"/data/path/\n")
         fd.write(b"{}\n")
 
@@ -62,7 +62,7 @@ def test_500_error(safe_httpserver):
     pings_dir = PingUploadWorker.storage_directory()
     pings_dir.mkdir()
 
-    with open(pings_dir / str(uuid.uuid4()), "wb") as fd:
+    with (pings_dir / str(uuid.uuid4())).open("wb") as fd:
         fd.write(b"/data/path/\n")
         fd.write(b"{}\n")
 
@@ -79,7 +79,7 @@ def test_unknown_scheme():
     pings_dir = PingUploadWorker.storage_directory()
     pings_dir.mkdir()
 
-    with open(pings_dir / str(uuid.uuid4()), "wb") as fd:
+    with (pings_dir / str(uuid.uuid4())).open("wb") as fd:
         fd.write(b"/data/path/\n")
         fd.write(b"{}\n")
 

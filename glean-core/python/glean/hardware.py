@@ -7,7 +7,6 @@ This module provides a cross-platform abstraction to get system model and
 manufacturer information.
 """
 
-import dataclasses
 from pathlib import Path
 import sys
 
@@ -16,21 +15,29 @@ import sys
 #    https://github.com/oshi/oshi/pull/264
 
 
-@dataclasses.dataclass
 class SystemInformation:
     """
     Stores information about the model and manufacturer of the system.
     """
 
-    model: str
-    """
-    The model name of the current system
-    """
+    def __init__(self, model: str, manufacturer: str):
+        """
+        Args:
+            model (str): The model name of the current system.
+            manufacturer (str): The manufacturer of the current system.
+        """
+        self._model = model
+        self._manufacturer = manufacturer
 
-    manufacturer: str
-    """
-    The manufacturer of the current system
-    """
+    @property
+    def model(self):
+        """The model name of the current system."""
+        return self._model
+
+    @property
+    def manufacturer(self):
+        """The manufacturer of the current system."""
+        return self._manufacturer
 
 
 if sys.platform.startswith("linux"):  # pragma: no cover
@@ -38,7 +45,7 @@ if sys.platform.startswith("linux"):  # pragma: no cover
     def get_system_information():
         def get_value(path):
             try:
-                with open(dmi_root / path, "rb") as fd:
+                with (dmi_root / path).open("rb") as fd:
                     return fd.read().decode("ascii", "replace").strip()
             except IOError:
                 return "error"

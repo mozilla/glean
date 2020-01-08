@@ -34,16 +34,16 @@ class LabeledMetricBase(abc.ABC):
     # inheriting from LabeledMetricBase:
 
     # The class of the concrete metric type
-    _submetric_type: Type
+    _submetric_type = None  # type: Type
 
     # The FFI function to instantiate the labeled metric type
-    _metric_type_instantiator: Callable
+    _metric_type_instantiator = None  # type: Callable
 
     # The FFI function to get a concrete metric type from the labeled metric type
-    _submetric_type_instantiator: Callable
+    _submetric_type_instantiator = None  # type: Callable
 
     # The FFI function for test_get_num_recorded_errors
-    _test_get_num_recorded_errors_ffi: Callable
+    _test_get_num_recorded_errors_ffi = None  # type: Callable
 
     def __init__(
         self,

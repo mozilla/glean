@@ -3,7 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-import dataclasses
 import json
 from typing import Dict, List, Optional
 
@@ -18,34 +17,59 @@ from .. import util
 from .lifetime import Lifetime
 
 
-@dataclasses.dataclass
 class RecordedEventData:
     """
     Deserialized event data.
     """
 
-    category: str
-    """The event's category, part of the full identifier."""
+    def __init__(
+        self,
+        category: str,
+        name: str,
+        timestamp: int,
+        extra: Optional[Dict[str, str]] = None,
+    ):
+        """
+        Args:
+            category (str): The event's category, part of the full identifier.
+            name (str): The event's name, part of the full identifier.
+            timestamp (int): The event's timestamp, in milliseconds.
+            extra (dict of str->str): Optional. Any extra data recorded for
+                the event.
+        """
+        self._category = category
+        self._name = name
+        self._timestamp = timestamp
+        if extra is None:
+            extra = {}
+        self._extra = extra
 
-    name: str
-    """The event's name, part of the full identifier."""
+    @property
+    def category(self):
+        """The event's category, part of the full identifier."""
+        return self._category
 
-    timestamp: int
-    """The event's timestamp."""
+    @property
+    def name(self):
+        """The event's name, part of the full identifier."""
+        return self._name
 
-    extra: Optional[Dict[str, str]] = None
-    """Any extra data recorded for the event."""
+    @property
+    def timestamp(self):
+        """The event's timestamp."""
+        return self._timestamp
 
-    def __post_init__(self):
-        if self.extra is None:
-            self.extra = {}
+    @property
+    def extra(self):
+        """Any extra data recorded for the event."""
+        return self._extra
 
     @property
     def identifier(self):
         if self.category == "":
             return self.name
         else:
-            return f"{self.category}.{self.name}"
+            return ".".join([self.category, self.name])
 
 
 class EventMetricType:

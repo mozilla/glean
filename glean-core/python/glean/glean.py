@@ -43,34 +43,33 @@ class Glean:
     """
 
     # The handle to the underlying Rust object
-    _handle: int = 0
+    _handle = 0  # type: int
 
     # The Configuration that was passed to `initialize`
-    _configuration: Configuration
+    _configuration = None  # type: Configuration
 
     # The directory that Glean stores data in
-    _data_dir: Path = Path()
+    _data_dir = Path()  # type: Path
 
     # Whether Glean "owns" the data directory and should destroy it upon reset.
-    _destroy_data_dir: bool = False
+    _destroy_data_dir = False  # type: bool
 
     # Keep track of this setting before Glean is initialized
-    _upload_enabled: bool = True
+    _upload_enabled = True  # type: bool
 
     # The ping types, so they can be registered prior to Glean initialization,
     # and saved between test runs.
-    _ping_type_queue: Set["PingType"] = set()
+    _ping_type_queue = set()  # type: Set[PingType]
 
     # The application id to send in the ping.
-    _application_id: str
+    _application_id = None  # type: str
 
     # The version of the application sending Glean data.
-    _application_version: str
+    _application_version = None  # type: str
 
     @classmethod
     def initialize(
         cls,
-        *,
         application_id: str,
         application_version: str,
         configuration: Optional[Configuration] = None,
@@ -161,7 +160,7 @@ class Glean:
             _ffi.lib.glean_destroy_glean(cls._handle)
         cls._handle = 0
         if cls._destroy_data_dir and cls._data_dir.exists():
-            shutil.rmtree(cls._data_dir)
+            shutil.rmtree(str(cls._data_dir))
 
     @classmethod
     def is_initialized(cls) -> bool:
@@ -256,8 +255,8 @@ class Glean:
                 ping
         """
         if extra is None:
-            keys: List[str] = []
-            values: List[str] = []
+            keys = []  # type: List[str]
+            values = []  # type: List[str]
         else:
             keys, values = zip(*extra.items())  # type: ignore
 

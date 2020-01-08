@@ -12,7 +12,7 @@ from .config import Configuration
 from ._loader import load_metrics, load_pings
 
 
-__version__: str = "unknown"
+__version__ = "unknown"  # type: str
 try:
     __version__ = str(get_distribution("glean-sdk").version)
 except DistributionNotFound:  # pragma: no cover

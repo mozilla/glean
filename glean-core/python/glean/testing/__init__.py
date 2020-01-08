@@ -30,7 +30,7 @@ def reset_glean(
     """
     from glean import Glean
 
-    data_dir: Optional[Path] = None
+    data_dir = None  # type: Optional[Path]
     if not clear_stores:
         Glean._destroy_data_dir = False
         data_dir = Glean._data_dir

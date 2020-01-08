@@ -78,6 +78,16 @@ commands:
           command: |
               sudo ln -s /lib/x86_64-linux-gnu/libtinfo.so.6 /lib/x86_64-linux-gnu/libtinfo.so.5
 
+  test-python:
+    steps:
+      - install-rustup
+      - setup-rust-toolchain
+      - checkout
+      - run:
+          name: Python tests
+          command: make test-python
+
+
 jobs:
   License check:
     docker:
@@ -673,23 +683,30 @@ jobs:
           name: Python lints
           command: make pythonlint
 
-  Python tests:
+  Python 3_5 tests:
     docker:
-      - image: circleci/python:3.7.5
+      - image: circleci/python:3.5.9
     steps:
-      - install-rustup
-      - setup-rust-toolchain
-      - checkout
-      - run:
-          name: Python tests
-          command: make test-python
+      - test-python
+
+  Python 3_6 tests:
+    docker:
+      - image: circleci/python:3.6.9
+    steps:
+      - test-python
+
+  Python 3_7 tests:
+    docker:
+      - image: circleci/python:3.7.6
+    steps:
+      - test-python
       - persist_to_workspace:
           root: glean-core/python/
           paths: .venv
 
   Generate Python documentation:
     docker:
-      - image: circleci/python:3.7.5
+      - image: circleci/python:3.7.6
     steps:
       - checkout
       - attach_workspace:
@@ -752,14 +769,16 @@ workflows:
       - C tests
       - iOS build and test
       - iOS integration test
-      - Python tests
+      - Python 3_5 tests
+      - Python 3_6 tests
+      - Python 3_7 tests
       - Generate Rust documentation:
           requires:
             - docs-spellcheck
       - Generate Kotlin documentation
       - Generate Python documentation:
           requires:
-            - Python tests
+            - Python 3_7 tests
       - docs-linkcheck:
           requires:
             - Generate Rust documentation
@@ -805,7 +824,7 @@ workflows:
               ignore: /.*/
             tags:
               only: /^v.*/
-      - Python tests:
+      - Python 3_7 tests:
           filters:
             branches:
               ignore: /.*/
@@ -813,7 +832,7 @@ workflows:
               only: /^v.*/
       - pypi-linux-release:
           requires:
-            - Python tests
+            - Python 3_7 tests
           filters:
             branches:
               ignore: /.*/

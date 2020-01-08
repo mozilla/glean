@@ -46,21 +46,23 @@ class PingUploadWorker:
 
         storage_dir = cls.storage_directory()
 
-        log.debug(f"Processing persisted pings at {storage_dir.resolve()}")
+        log.debug("Processing persisted pings at {}".format(storage_dir.resolve()))
 
         try:
             for path in storage_dir.iterdir():
                 if path.is_file():
                     if cls._FILE_PATTERN.match(path.name):
-                        log.debug(f"Processing ping: {path.name}")
+                        log.debug("Processing ping: {}".format(path.name))
                         if not cls._process_file(path):
-                            log.error(f"Error processing ping file: {path.name}")
+                            log.error(
+                                "Error processing ping file: {}".format(path.name)
+                            )
                             success = False
                     else:
-                        log.debug(f"Pattern mismatch. Deleting {path.name}")
+                        log.debug("Pattern mismatch. Deleting {}".format(path.name))
                         path.unlink()
         except FileNotFoundError:
-            log.debug(f"File not found: {storage_dir.resolve()}")
+            log.debug("File not found: {}".format(storage_dir.resolve()))
             success = False
 
         return success
@@ -75,20 +77,20 @@ class PingUploadWorker:
         processed = False
 
         try:
-            with open(path, "r", encoding="utf-8") as fd:
+            with path.open("r", encoding="utf-8") as fd:
                 lines = iter(fd)
                 try:
                     url_path = next(lines).strip()
                     serialized_ping = next(lines)
                 except StopIteration:
                     path.unlink()
-                    log.error(f"Invalid ping content in {path.resolve()}")
+                    log.error("Invalid ping content in {}".format(path.resolve()))
                     return False
         except FileNotFoundError:
-            log.error(f"Could not find ping file {path.resolve()}")
+            log.error("Could not find ping file {}".format(path.resolve()))
             return False
         except IOError as e:
-            log.error(f"IOError when reading {path.resolve()}: {e}")
+            log.error("IOError when reading {}: {}".format(path.resolve(), e))
             return False
 
         processed = Glean._configuration.ping_uploader.do_upload(
@@ -97,7 +99,7 @@ class PingUploadWorker:
 
         if processed:
             path.unlink()
-            log.debug(f"{path.name} was deleted")
+            log.debug("{} was deleted".format(path.name))
 
         return processed
 

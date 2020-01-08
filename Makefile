@@ -15,6 +15,8 @@ $(GLEAN_PYENV)/bin/python3:
 	python3 -m venv $(GLEAN_PYENV)
 	$(GLEAN_PYENV)/bin/pip install --upgrade pip
 	$(GLEAN_PYENV)/bin/pip install -r glean-core/python/requirements_dev.txt
+	# black isn't installable on Python 3.5, but we can do without it
+	$(GLEAN_PYENV)/bin/pip install black || true
 
 # All builds
 
