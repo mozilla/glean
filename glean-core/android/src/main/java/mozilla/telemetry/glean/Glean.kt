@@ -202,7 +202,7 @@ open class GleanInternalAPI internal constructor () {
             applicationContext,
             acMetadata.metricsPingLastSentDate
         )
-        metricsPingScheduler.schedule(overduePingAsFirst = true)
+        metricsPingScheduler.schedule()
 
         // From the second time we run, after all startup pings are generated,
         // make sure to clear `lifetime: application` metrics and set them again.
@@ -286,7 +286,7 @@ open class GleanInternalAPI internal constructor () {
                     // Cancel any pending workers here so that we don't accidentally upload or
                     // collect data after the upload has been disabled.
                     if (!enabled) {
-                        MetricsPingScheduler.cancel(applicationContext)
+                        metricsPingScheduler.cancel()
                         PingUploadWorker.cancel(applicationContext)
                     }
                 }

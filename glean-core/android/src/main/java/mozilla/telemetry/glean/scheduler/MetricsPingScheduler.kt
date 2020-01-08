@@ -9,25 +9,16 @@ import android.content.SharedPreferences
 import androidx.annotation.VisibleForTesting
 import android.text.format.DateUtils
 import android.util.Log
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.ProcessLifecycleOwner
-import androidx.work.ExistingWorkPolicy
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.Worker
-import androidx.work.WorkManager
-import androidx.work.WorkerParameters
 import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.GleanMetrics.Pings
 import mozilla.telemetry.glean.utils.getISOTimeString
 import mozilla.telemetry.glean.utils.parseISOTimeString
 import mozilla.telemetry.glean.private.TimeUnit
-import mozilla.telemetry.glean.utils.ThreadUtils
 import java.util.Calendar
 import java.util.Date
-import java.util.concurrent.TimeUnit as AndroidTimeUnit
+import java.util.Timer
+import java.util.TimerTask
 
 /**
  * MetricsPingScheduler facilitates scheduling the periodic assembling of metrics pings,
@@ -36,53 +27,32 @@ import java.util.concurrent.TimeUnit as AndroidTimeUnit
  * - ping is overdue (due time already passed) for the current calendar day;
  * - ping is soon to be sent in the current calendar day;
  * - ping was already sent, and must be scheduled for the next calendar day.
- *
- * The scheduler also makes use of the [LifecycleObserver] in order to correctly schedule
- * the [MetricsPingWorker].
  */
 @Suppress("TooManyFunctions")
 internal class MetricsPingScheduler(
     private val applicationContext: Context,
     migratedLastSentDate: String? = null
-) : LifecycleEventObserver {
+) {
     internal val sharedPreferences: SharedPreferences by lazy {
         applicationContext.getSharedPreferences(this.javaClass.canonicalName, Context.MODE_PRIVATE)
     }
+
+    internal var timer: Timer? = null
 
     companion object {
         private const val LOG_TAG = "glean/MetricsPingSched"
         const val LAST_METRICS_PING_SENT_DATETIME = "last_metrics_ping_iso_datetime"
         const val DUE_HOUR_OF_THE_DAY = 4
-        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-        internal var isInForeground = false
-        internal var firstForeground = true
-
-        /**
-         * Function to cancel any pending metrics ping workers
-         */
-        internal fun cancel(context: Context) {
-            WorkManager.getInstance(context).cancelUniqueWork(MetricsPingWorker.TAG)
-        }
+        const val LAST_VERSION_OF_APP_USED = "last_version_of_app_used"
     }
 
     init {
-        // This should only be called from the main thread.
-        // We can't enforce this at build time here, since the @MainThread
-        // decorator can not be applied to a contructor.  However, in practice
-        // this is only called from Glean.initialize which does have that
-        // decorator.  For good measure, we also perform this run time check
-        // here.
-        // See https://bugzilla.mozilla.org/show_bug.cgi?id=1581556
-        ThreadUtils.assertOnUiThread()
-
         // When performing the data migration from glean-ac, this scheduler might be
         // provided with a date the 'metrics' ping was last sent. If so, save that in
         // the new storage and use it in this scheduler.
         migratedLastSentDate?.let { acLastSentDate ->
             updateSentDate(acLastSentDate)
         }
-
-        ProcessLifecycleOwner.get().lifecycle.addObserver(this)
     }
 
     /**
@@ -101,25 +71,36 @@ internal class MetricsPingScheduler(
         val millisUntilNextDueTime = getMillisecondsUntilDueTime(sendTheNextCalendarDay, now)
         Log.d(LOG_TAG, "Scheduling the 'metrics' ping in ${millisUntilNextDueTime}ms")
 
-        // Build a work request: we don't use use a `PeriodicWorkRequest`, which
-        // is more suitable for this task, because of the inherent drifting. See
-        // https://developer.android.com/reference/androidx/work/PeriodicWorkRequest.html
-        // for more details.
-        val workRequest = OneTimeWorkRequestBuilder<MetricsPingWorker>()
-            .addTag(MetricsPingWorker.TAG)
-            .setInitialDelay(millisUntilNextDueTime, AndroidTimeUnit.MILLISECONDS)
-            .build()
+        // Cancel any existing scheduled work. Does not actually cancel a
+        // currently-running task.
+        cancel()
 
-        // Enqueue the work request: replace older requests if needed. This is to cover
-        // the odd case in which:
-        // - Glean is killed, but the work request is still there;
-        // - Glean restarts;
-        // - the ping is overdue and is immediately collected at startup;
-        // - a new work is scheduled for the next calendar day.
-        WorkManager.getInstance(applicationContext).enqueueUniqueWork(
-            MetricsPingWorker.TAG,
-            ExistingWorkPolicy.REPLACE,
-            workRequest)
+        timer = Timer("glean.MetricsPingScheduler")
+        timer?.schedule(MetricsPingTimer(this), millisUntilNextDueTime)
+    }
+
+    /**
+     * Determines if the application is a different version from the last time it was run.
+     * This is used to prevent mixing data from multiple versions of the application in the
+     * same ping.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    internal fun isDifferentVersion(): Boolean {
+        // Determine if the version has changed since the last time we ran.
+        val packageInfo = applicationContext.packageManager.getPackageInfo(
+            applicationContext.packageName, 0
+        )
+        val currentVersion = packageInfo.versionName?.let { it } ?: "Unknown"
+        val lastVersion = try {
+            sharedPreferences.getString(LAST_VERSION_OF_APP_USED, null)
+        } catch (e: ClassCastException) {
+            null
+        }
+        if (currentVersion != lastVersion) {
+            sharedPreferences.edit()?.putString(LAST_VERSION_OF_APP_USED, currentVersion)?.apply()
+            return true
+        }
+        return false
     }
 
     /**
@@ -198,13 +179,21 @@ internal class MetricsPingScheduler(
     /**
      * Performs startup checks to decide when to schedule the next metrics ping
      * collection.
-     *
-     * @param overduePingAsFirst if this value is `true`, and Dispatchers tasks are
-     *        being enqueued due to startup, collect any overdue `metrics` at the
-     *        beginning of the queue.
      */
-    fun schedule(overduePingAsFirst: Boolean) {
+    fun schedule() {
         val now = getCalendarInstance()
+
+        // If the version of the app is different from the last time we ran the app,
+        // schedule the metrics ping for immediate collection. We only need to perform
+        // this check at startup (when overduePingAsFirst is true).
+        if (isDifferentVersion()) {
+            @Suppress("EXPERIMENTAL_API_USAGE")
+            Dispatchers.API.executeTask {
+                collectPingAndReschedule(now, startupPing = true)
+            }
+            return
+        }
+
         val lastSentDate = getLastCollectedDate()
 
         if (lastSentDate != null) {
@@ -229,7 +218,7 @@ internal class MetricsPingScheduler(
                 schedulePingCollection(now, sendTheNextCalendarDay = true)
             }
             // The ping wasn't already sent today. Are we overdue or just waiting for
-            // the right time?
+            // the right time?  This covers (2)
             isAfterDueTime(now) -> {
                 Log.i(LOG_TAG, "The 'metrics' ping is scheduled for immediate collection, ${now.time}")
                 // **IMPORTANT**
@@ -246,20 +235,10 @@ internal class MetricsPingScheduler(
                 // `Dispatchers.API` thread pool, before any other enqueued task. For more
                 // context, see bug 1604861 and the implementation of
                 // `collectPingAndReschedule`.
-                if (overduePingAsFirst) {
-                    @Suppress("EXPERIMENTAL_API_USAGE")
-                    Dispatchers.API.executeTask {
-                        // This addresses (2).
-                        collectPingAndReschedule(now, startupPing = true)
-                    }
-                } else {
-                    // This branch is hit outside of the Glean initialization function,
-                    // enqueue it as usual.
-                    @Suppress("EXPERIMENTAL_API_USAGE")
-                    Dispatchers.API.launch {
-                        // This addresses (2).
-                        collectPingAndReschedule(now)
-                    }
+                @Suppress("EXPERIMENTAL_API_USAGE")
+                Dispatchers.API.executeTask {
+                    // This addresses (2).
+                    collectPingAndReschedule(now, startupPing = true)
                 }
             }
             else -> {
@@ -301,13 +280,8 @@ internal class MetricsPingScheduler(
         // Update the collection date: we don't really care if we have data or not, let's
         // always update the sent date.
         updateSentDate(getISOTimeString(now, truncateTo = TimeUnit.Day))
-        // Reschedule the collection if we are in the foreground so that any metrics collected after
-        // this are sent in the next window.  If we are in the background, then we may stay there
-        // until the app is killed so we shouldn't reschedule unless the app is foregrounded again
-        // (see GleanLifecycleObserver).
-        if (isInForeground) {
-            schedulePingCollection(now, sendTheNextCalendarDay = true)
-        }
+        // Reschedule the collection.
+        schedulePingCollection(now, sendTheNextCalendarDay = true)
     }
 
     /**
@@ -332,6 +306,14 @@ internal class MetricsPingScheduler(
     }
 
     /**
+     * Function to cancel any pending metrics ping timers
+     */
+    fun cancel() {
+        timer?.cancel()
+        timer = null
+    }
+
+    /**
      * Update the persisted date when the metrics ping is sent.
      *
      * This is called after sending a metrics ping to timestamp when the last ping was
@@ -350,74 +332,25 @@ internal class MetricsPingScheduler(
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     internal fun getCalendarInstance(): Calendar = Calendar.getInstance()
-
-    /**
-     * Called when lifecycle events are triggered.
-     */
-    override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
-        when (event) {
-            Lifecycle.Event.ON_STOP -> {
-                // Update flag to show we are no longer in the foreground.
-                isInForeground = false
-            }
-            Lifecycle.Event.ON_START -> {
-                // Update the flag to indicate we are moving to the foreground, and if Glean is
-                // initialized we will check to see if the metrics ping needs to be scheduled for
-                // collection.
-                isInForeground = true
-
-                // We check for the metrics ping schedule here because the app could have been in
-                // the background and resumed in which case Glean would already be initialized but
-                // we still need to perform the check to determine whether to collect and schedule
-                // the metrics ping. Since Glean.initialize() is called in the
-                // Application.onCreate() function, we will get this after glean is initialized and
-                // thus will call schedule() twice. So we prevent this by using a flag to prevent
-                // scheduling from the lifecycle observer on the first foreground event.
-                // See https://bugzilla.mozilla.org/1590329
-                if (Glean.isInitialized()) {
-                    if (!firstForeground) {
-                        schedule(overduePingAsFirst = false)
-                    } else {
-                        firstForeground = false
-                    }
-                }
-            }
-            else -> {
-                // For other lifecycle events, do nothing
-            }
-        }
-    }
 }
 
 /**
- * The class representing the work to be done by the [WorkManager]. This is used by
+ * The class representing the task to be performed by the [Timer]. This is used by
  * [MetricsPingScheduler.schedulePingCollection] for scheduling the collection of the
  * "metrics" ping at the due hour.
  */
-internal class MetricsPingWorker(context: Context, params: WorkerParameters) : Worker(context, params) {
+internal class MetricsPingTimer(val scheduler: MetricsPingScheduler) : TimerTask() {
     companion object {
-        private const val LOG_TAG = "glean/MetricsPingWorker"
-        const val TAG = "mozac_service_glean_metrics_ping_tick"
+        private const val LOG_TAG = "glean/MetricsPingTimer"
     }
 
-    override fun doWork(): Result {
-        // This is getting the instance of the MetricsPingScheduler class instantiated by
-        // the [Glean] singleton. This is ugly. There are a few alternatives to this:
-        //
-        // 1. provide a custom WorkerFactory to the WorkManager; however this would require
-        //    us to prevent the application from initializing the WorkManager at startup in
-        //    order to manually init it ourselves and feed in our custom configuration with
-        //    the new factory.
-        // 2. make most functions of MetricsPingScheduler static and allow for calling them
-        //    from this worker; this makes testing much more complicated, due to the restrictions
-        //    related to static functions when testing.
-        val metricsScheduler = Glean.metricsPingScheduler
+    /**
+     * The callback to submit the metrics ping at the scheduled time.
+     */
+    override fun run() {
         // Perform the actual work.
-        val now = metricsScheduler.getCalendarInstance()
-        Log.d(LOG_TAG, "MetricsPingWorker doWork(), now = ${now.time}")
-        metricsScheduler.collectPingAndReschedule(now)
-        // We don't expect to fail at collection: we might fail at upload, but that's handled
-        // separately by the upload worker.
-        return Result.success()
+        val now = scheduler.getCalendarInstance()
+        Log.d(LOG_TAG, "MetricsPingTimerTask run(), now = ${now.time}")
+        scheduler.collectPingAndReschedule(now)
     }
 }

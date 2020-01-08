@@ -2,6 +2,11 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v23.0.1...master)
 
+* Android:
+  * The metrics ping scheduler will now only send metrics pings while the
+    application is running. The application will no longer "wake up" at 4am
+    using the Work Manager.
+
 # v23.0.1 (2020-01-08)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v23.0.0...v23.0.1)
