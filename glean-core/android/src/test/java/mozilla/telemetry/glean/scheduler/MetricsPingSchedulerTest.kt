@@ -566,9 +566,12 @@ class MetricsPingSchedulerTest {
             // Initialize Glean the SECOND time: it will send the expected string metric (stored
             // from the previous run) but must not send the canary string, which would be sent
             // next time the 'metrics' ping is collected after this one.
-            Glean.initialize(context, Configuration(
+            Glean.initialize(
+                context,
+                Configuration(
                     serverEndpoint = "http://" + server.hostName + ":" + server.port, logPings = true
-                )
+                ),
+                true
             )
 
             // Trigger worker task to upload the pings in the background.

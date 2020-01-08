@@ -40,10 +40,9 @@ class AccumulationsBeforeGleanInitTest {
         WorkManagerTestInitHelper.initializeTestWorkManager(context)
     }
 
-    fun forceInitGlean() {
+    private fun forceInitGlean() {
         Glean.enableTestingMode()
-        Glean.setUploadEnabled(true)
-        Glean.initialize(context, Configuration())
+        Glean.initialize(context, Configuration(), true)
     }
 
     @Test

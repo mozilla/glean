@@ -59,8 +59,7 @@ class DeletionPingUploadWorkerTest {
         Glean.enableTestingMode()
         // Init Glean.
         Glean.testDestroyGleanHandle()
-        Glean.setUploadEnabled(false)
-        Glean.initialize(context, Configuration())
+        Glean.initialize(context, Configuration(), false)
 
         assertTrue(getWorkerStatus(context, DeletionPingUploadWorker.PING_WORKER_TAG).isEnqueued)
     }
