@@ -42,7 +42,10 @@ commands:
           command: cargo test --all ---exclude glean-preview --verbose
       - run:
           name: Test glean-preview
-          command: cargo test -p glean-preview -- --test-threads=1
+          command:
+              # Because glean_preview is a global-singleton, we need to run the tests
+              # single-threaded to avoid different tests stomping over each other.
+              cargo test -p glean-preview -- --test-threads=1
 
   install-rustup:
     steps:

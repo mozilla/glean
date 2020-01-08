@@ -42,7 +42,7 @@ build-python: python-setup build-rust ## Build the Python bindings
 
 test: test-rust
 
-test-rust: ## Run all Rust tests
+test-rust: ## Run Rust tests for glean-core and glean-ffi
 	cargo test --all --exclude glean-preview
 
 test-rust-with-logs: ## Run all Rust tests with debug logging and single-threaded
