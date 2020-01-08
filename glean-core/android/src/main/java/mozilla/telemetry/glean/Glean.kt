@@ -102,6 +102,7 @@ open class GleanInternalAPI internal constructor () {
      * @param applicationContext [Context] to access application features, such
      * as shared preferences
      * @param configuration A Glean [Configuration] object with global settings.
+     * @param uploadEnabled A [Boolean] that determines the initial state of the uploader
      */
     @Suppress("ReturnCount", "LongMethod", "ComplexMethod")
     @JvmOverloads
@@ -109,8 +110,11 @@ open class GleanInternalAPI internal constructor () {
     @MainThread
     fun initialize(
         applicationContext: Context,
-        configuration: Configuration = Configuration()
+        configuration: Configuration = Configuration(),
+        uploadEnabled: Boolean
     ) {
+        this.uploadEnabled = uploadEnabled
+
         // Glean initialization must be called on the main thread, or lifecycle
         // registration may fail. This is also enforced at build time by the
         // @MainThread decorator, but this run time check is also performed to
@@ -592,8 +596,7 @@ open class GleanInternalAPI internal constructor () {
 
         // Init Glean.
         Glean.testDestroyGleanHandle()
-        Glean.setUploadEnabled(true)
-        Glean.initialize(context, config)
+        Glean.initialize(context, config, true)
     }
 
     /**

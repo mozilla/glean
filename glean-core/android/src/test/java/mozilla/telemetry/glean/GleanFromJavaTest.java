@@ -34,14 +34,14 @@ public class GleanFromJavaTest {
 
     @Test
     public void testInitGleanWithDefaults() {
-        Glean.INSTANCE.initialize(appContext);
+        Glean.INSTANCE.initialize(appContext, true);
     }
 
     @Test
     public void testInitGleanWithConfiguration() {
         Configuration config =
                 new Configuration(Configuration.DEFAULT_TELEMETRY_ENDPOINT, "test-channel");
-        Glean.INSTANCE.initialize(appContext, config);
+        Glean.INSTANCE.initialize(appContext, config, true);
     }
 
     @Test
