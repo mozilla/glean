@@ -28,6 +28,8 @@ There are different metrics to choose from, depending on what you want to achiev
 
 * [Custom Distribution](custom_distribution.md): Used to record the distribution of a value that needs fine-grained control of how the histogram buckets are computed.
 
+* [Quantity](quantity.md): Used to record a single non-negative integer value. For example, the width of the display in pixels.
+
 ## Labeled metrics
 
 There are two types of metrics listed above - *labeled* and *unlabeled* metrics. If a metric is *labeled*, it means that for a single metric entry you define in `metrics.yaml`, you can record into multiple metrics under the same name, each of the same type and identified by a different string label.
