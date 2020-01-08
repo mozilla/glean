@@ -744,6 +744,31 @@ jobs:
             # variables are configured in CircleCI's environment variables.
             .venv/bin/python3 -m twine upload wheelhouse/*
 
+  pypi-macos-release:
+    macos:
+      xcode: "11.3.0"
+    steps:
+      - run:
+          name: Set Ruby Version
+          command: echo 'chruby ruby-2.6.5' >> ~/.bash_profile
+      - run:
+          name: Show Ruby environment
+          command: |
+            ruby --version
+            gem env
+      - install-rustup
+      - setup-rust-toolchain
+      - checkout
+      - run:
+          name: Build Python extension
+          command: |
+            make build-python
+      - run:
+          name: Build macOS wheel
+          command: |
+            cd glean-core/python
+            .venv/bin/python3 setup.py bdist_wheel
+
 workflows:
   version: 2
   check-formating:
@@ -792,6 +817,7 @@ workflows:
           filters:
             branches:
               only: master
+      - pypi-macos-release
 
   release:
     jobs:
