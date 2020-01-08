@@ -27,7 +27,6 @@ import mozilla.telemetry.glean.rust.toByte
 import mozilla.telemetry.glean.GleanMetrics.GleanBaseline
 import mozilla.telemetry.glean.GleanMetrics.GleanInternalMetrics
 import mozilla.telemetry.glean.GleanMetrics.Pings
-import mozilla.telemetry.glean.acmigration.GleanACDataMigrator
 import mozilla.telemetry.glean.net.BaseUploader
 import mozilla.telemetry.glean.private.PingType
 import mozilla.telemetry.glean.private.RecordedExperimentData
@@ -145,31 +144,11 @@ open class GleanInternalAPI internal constructor () {
             delayPingLifetimeIO = false
         )
 
-        // Start the migration from glean-ac, if needed.
-        val migrator = GleanACDataMigrator(applicationContext)
-        val acMetadata = migrator.getACMetadata()
-
-        val newSequenceNums = if (migrator.shouldMigrateData()) {
-            acMetadata.toFfi()
-        } else {
-            Triple(null, null, 0)
-        }
-
-        handle = LibGleanFFI.INSTANCE.glean_initialize_migration(
-            cfg,
-            newSequenceNums.first,
-            newSequenceNums.second,
-            newSequenceNums.third
-        )
+        handle = LibGleanFFI.INSTANCE.glean_initialize(cfg)
 
         // If initialization of Glean fails we bail out and don't initialize further.
         if (handle == 0L) {
             return
-        }
-
-        // With Glean instance fully initialized, start migrating data.
-        if (migrator.shouldMigrateData()) {
-            migrator.migrateUserLifetimeMetrics()
         }
 
         // If any pings were registered before initializing, do so now.
@@ -198,10 +177,7 @@ open class GleanInternalAPI internal constructor () {
         // Set up information and scheduling for Glean owned pings. Ideally, the "metrics"
         // ping startup check should be performed before any other ping, since it relies
         // on being dispatched to the API context before any other metric.
-        metricsPingScheduler = MetricsPingScheduler(
-            applicationContext,
-            acMetadata.metricsPingLastSentDate
-        )
+        metricsPingScheduler = MetricsPingScheduler(applicationContext)
         metricsPingScheduler.schedule()
 
         // From the second time we run, after all startup pings are generated,
@@ -223,12 +199,6 @@ open class GleanInternalAPI internal constructor () {
         // This should only be called from the main thread. This is enforced by
         // the @MainThread decorator and the `assertOnUiThread` call.
         ProcessLifecycleOwner.get().lifecycle.addObserver(gleanLifecycleObserver)
-
-        // Migrate the remaining metrics and mark the migration as complete.
-        if (migrator.shouldMigrateData()) {
-            migrator.migratePingLifetimeMetrics()
-            migrator.markAsMigrated()
-        }
 
         if (!uploadEnabled) {
             @Suppress("EXPERIMENTAL_API_USAGE")

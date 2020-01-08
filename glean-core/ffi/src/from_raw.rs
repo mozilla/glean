@@ -110,38 +110,6 @@ pub fn from_raw_string_array_and_string_array(
     }
 }
 
-/// Create a HashMap<String, i32> from a pair of C string and int arrays.
-///
-/// Returns an error if any of the strings contain invalid UTF-8 characters.
-///
-/// ## Safety
-///
-/// * We check the array pointer for validity (non-null).
-/// * FfiStr checks each individual char pointer for validity (non-null).
-/// * We discard invalid char pointers (null pointer).
-/// * Invalid UTF-8 in any string will return an error from this function.
-pub fn from_raw_string_array_and_int_array(
-    keys: RawStringArray,
-    values: RawIntArray,
-    len: i32,
-) -> glean_core::Result<Option<HashMap<String, i32>>> {
-    unsafe {
-        if keys.is_null() || values.is_null() || len <= 0 {
-            return Ok(None);
-        }
-
-        let keys_ptrs = std::slice::from_raw_parts(keys, len as usize);
-        let values_ptrs = std::slice::from_raw_parts(values, len as usize);
-
-        let res: glean_core::Result<_> = keys_ptrs
-            .iter()
-            .zip(values_ptrs.iter())
-            .map(|(&k, &v)| FfiStr::from_raw(k).to_string_fallible().map(|s| (s, v)))
-            .collect();
-        res.map(Some)
-    }
-}
-
 /// Create a Vec<u32> from a raw C uint64 array.
 ///
 /// This will return an empty `Vec` if the input is empty.
@@ -368,81 +336,6 @@ mod test {
             let map = from_raw_string_array_and_string_array(
                 ptr_key_array.as_ptr(),
                 ptr_array.as_ptr(),
-                array.len() as i32,
-            );
-            assert!(map.is_err());
-        }
-    }
-
-    mod raw_string_int_array {
-        use super::*;
-
-        #[test]
-        fn parsing_valid_array() {
-            let mut expected_map = HashMap::new();
-            expected_map.insert("seven".to_string(), 7);
-            expected_map.insert("eight".to_string(), 8);
-
-            let int_array = vec![7, 8];
-            let str_array = vec![
-                CString::new("seven").unwrap(),
-                CString::new("eight").unwrap(),
-            ];
-            let ptr_array: Vec<*const _> = str_array.iter().map(|s| s.as_ptr()).collect();
-
-            let map = from_raw_string_array_and_int_array(
-                ptr_array.as_ptr(),
-                int_array.as_ptr(),
-                expected_map.len() as i32,
-            )
-            .unwrap();
-            assert_eq!(Some(expected_map), map);
-        }
-
-        #[test]
-        fn parsing_empty_array() {
-            // Testing a null pointer (length longer to ensure the null pointer is checked)
-            let result =
-                from_raw_string_array_and_int_array(std::ptr::null(), std::ptr::null(), 2).unwrap();
-            assert_eq!(None, result);
-
-            // Need a (filled) vector to obtain a valid pointer.
-            let int_array = vec![1];
-            let result =
-                from_raw_string_array_and_int_array(std::ptr::null(), int_array.as_ptr(), 2)
-                    .unwrap();
-            assert_eq!(None, result);
-
-            let array = vec![CString::new("glean").unwrap()];
-            let ptr_array: Vec<*const _> = array.iter().map(|s| s.as_ptr()).collect();
-            let result =
-                from_raw_string_array_and_int_array(ptr_array.as_ptr(), std::ptr::null(), 2)
-                    .unwrap();
-            assert_eq!(None, result);
-
-            // Check the length with valid pointers.
-            let result =
-                from_raw_string_array_and_int_array(ptr_array.as_ptr(), int_array.as_ptr(), 0)
-                    .unwrap();
-            assert_eq!(None, result);
-        }
-
-        #[test]
-        fn parsing_invalid_utf8_fails() {
-            // CAREFUL! We're manually constructing nul-terminated
-
-            // Need a (filled) vector to obtain a valid pointer.
-            let int_array = vec![1];
-            let array = vec![
-                // -1 is definitely an invalid UTF-8 codepoint
-                // Let's not break anything and append the nul terminator
-                vec![0x67, 0x6c, -1, 0x65, 0x61, 0x6e, 0x00],
-            ];
-            let ptr_array: Vec<*const _> = array.iter().map(|s| s.as_ptr()).collect();
-
-            let map = from_raw_string_array_and_int_array(
-                ptr_array.as_ptr(),
-                int_array.as_ptr(),
                 array.len() as i32,
             );
             assert!(map.is_err());

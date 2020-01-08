@@ -68,13 +68,6 @@ internal interface LibGleanFFI : Library {
 
     fun glean_initialize(cfg: FfiConfiguration): Long
 
-    fun glean_initialize_migration(
-        cfg: FfiConfiguration,
-        seq_num_keys: StringArray?,
-        seq_num_values: IntArray?,
-        seq_num_len: Int
-    ): Long
-
     fun glean_clear_application_lifetime_metrics(handle: Long)
 
     fun glean_test_clear_all_stores(handle: Long)

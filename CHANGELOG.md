@@ -6,6 +6,7 @@
   * The metrics ping scheduler will now only send metrics pings while the
     application is running. The application will no longer "wake up" at 4am
     using the Work Manager.
+  * The code for migrating data from Glean SDK before version 19 was removed.
 * Python:
   * The Python bindings now support Python 3.5 - 3.7.
 
