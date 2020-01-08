@@ -115,7 +115,7 @@ pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) -> Result<
     let glean = Glean::new(core_cfg)?;
 
     // First initialize core metrics
-    initialize_core_metrics(&glean, &client_info, &cfg.channel);
+    initialize_core_metrics(&glean, &client_info, cfg.channel.clone());
 
     // Now make this the global object available to others.
     let wrapper = GleanWrapper {
@@ -131,7 +131,7 @@ pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) -> Result<
 fn initialize_core_metrics(
     glean: &Glean,
     client_info: &ClientInfoMetrics,
-    channel: &Option<String>,
+    channel: Option<String>,
 ) {
     let core_metrics = core_metrics::InternalMetrics::new();
 
@@ -166,7 +166,7 @@ pub fn set_upload_enabled(enabled: bool) -> bool {
         if !old_enabled && enabled {
             // If uploading is being re-enabled, we have to restore the
             // application-lifetime metrics.
-            initialize_core_metrics(&glean.instance, &glean.client_info, &glean.channel);
+            initialize_core_metrics(&glean.instance, &glean.client_info, glean.channel.clone());
         }
 
         enabled
