@@ -817,6 +817,7 @@ workflows:
           filters:
             branches:
               only: master
+      - pypi-linux-release
       - pypi-macos-release
 
   release:
