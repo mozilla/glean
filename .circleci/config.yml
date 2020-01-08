@@ -108,7 +108,7 @@ jobs:
       - run: make yamllint
   Check Swift formatting:
     macos:
-      xcode: "11.2.1"
+      xcode: "11.3.0"
     steps:
       - checkout
       - run:
@@ -225,7 +225,7 @@ jobs:
 
   iOS build and test:
     macos:
-      xcode: "11.2.1"
+      xcode: "11.3.0"
     steps:
       - run:
           name: Set Ruby Version
@@ -326,7 +326,7 @@ jobs:
 
   Carthage release:
     macos:
-      xcode: "11.2.1"
+      xcode: "11.3.0"
     steps:
       - checkout
       - attach_workspace:
@@ -347,7 +347,7 @@ jobs:
 
   iOS integration test:
     macos:
-      xcode: "11.2.1"
+      xcode: "11.3.0"
     steps:
       - checkout
       - run:
@@ -450,7 +450,7 @@ jobs:
 
   macOS release build:
     macos:
-      xcode: "11.2.1"
+      xcode: "11.3.0"
     steps:
       - install-rustup
       - setup-rust-toolchain
