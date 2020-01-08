@@ -49,13 +49,8 @@ class SampleApplication : Application() {
         // applications not using custom pings.
         Glean.registerPings(Pings)
 
-        // Call setUploadEnabled first, since Glean.initialize
-        // might send pings if there are any metrics queued up
-        // from a previous run.
-        Glean.setUploadEnabled(Settings.isTelemetryEnabled)
-
         // Initialize the Glean library.
-        Glean.initialize(applicationContext)
+        Glean.initialize(applicationContext, uploadEnabled = true)
     }
 }
 ```
@@ -91,13 +86,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // applications not using custom pings.
         Glean.shared.registerPings(GleanMetrics.Pings)
 
-        // Call setUploadEnabled first, since Glean.initialize
-        // might send pings if there are any metrics queued up
-        // from a previous run.
-        Glean.shared.setUploadEnabled(Settings.isTelemetryEnabled)
-
         // Initialize the Glean library.
-        Glean.shared.initialize()
+        Glean.shared.initialize(uploadEnabled = Settings.isTelemetryEnabled)
     }
 }
 ```
@@ -127,13 +117,10 @@ Library code should never call `Glean.initialize`, since it should be called exa
 ```python
 from glean import Glean
 
-# Call Glean.set_upload_enabled first, since Glean.initialize might send pings
-# if there are any metrics queued up from a previous run.
-Glean.set_upload_enabled(True)
-
 Glean.initialize(
     application_id="my-app-id",
     application_version="0.1.0",
+    upload_enabled=True,
 )
 ```
 
@@ -162,7 +149,6 @@ Built-in pings are only available after initialization.
 <div data-lang="Kotlin" class="tab">
 
 `Glean.setUploadEnabled()` should be called in response to the user enabling or disabling telemetry.
-This method should also be called at least once prior to calling `Glean.initialize()`.
 
 The application should provide some form of user interface to call this method.
 
@@ -174,7 +160,6 @@ When re-enabling, core Glean metrics will be recomputed at that time.
 <div data-lang="Swift" class="tab">
 
 `Glean.shared.setUploadEnabled()` should be called in response to the user enabling or disabling telemetry.
-This method should also be called at least once prior to calling `Glean.shared.initialize()`.
 
 The application should provide some form of user interface to call this method.
 
@@ -186,7 +171,6 @@ When re-enabling, core Glean metrics will be recomputed at that time.
 <div data-lang="Python" class="tab">
 
 `Glean.set_upload_enabled()` should be called in response to the user enabling or disabling telemetry.
-This method should also be called at least once prior to calling `Glean.initialize()`.
 
 The application should provide some form of user interface to call this method.
 

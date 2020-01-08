@@ -2,6 +2,10 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v23.0.1...master)
 
+* General:
+  * **Breaking Change** An `enableUpload` parameter has been added to the `initialize()`
+    function. This removes the requirement to call `setUploadEnabled()` prior to calling
+    the `initialize()` function.
 * Android:
   * The metrics ping scheduler will now only send metrics pings while the
     application is running. The application will no longer "wake up" at 4am
