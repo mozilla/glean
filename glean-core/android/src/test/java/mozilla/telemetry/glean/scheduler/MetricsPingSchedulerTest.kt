@@ -500,6 +500,7 @@ class MetricsPingSchedulerTest {
     }
 
     @Test
+    @Suppress("LongMethod")
     fun `Data recorded before Glean inits must not get into overdue pings`() {
         val context = getContextWithMockedInfo()
 
