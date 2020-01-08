@@ -6,6 +6,8 @@
   * The metrics ping scheduler will now only send metrics pings while the
     application is running. The application will no longer "wake up" at 4am
     using the Work Manager.
+* Python:
+  * The Python bindings now support Python 3.5 - 3.7.
 
 # v23.0.1 (2020-01-08)
 
