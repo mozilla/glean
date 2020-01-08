@@ -18,7 +18,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // swiftlint:disable line_length
     func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         glean.registerPings(Pings.shared)
-        glean.setUploadEnabled(true)
 
         let mockServerIndex = ProcessInfo.processInfo.arguments.firstIndex(of: "USE_MOCK_SERVER")
         if let idx = mockServerIndex {
@@ -31,10 +30,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
             print("using a mock server, setting address: \(address)")
             let cfg = Configuration(serverEndpoint: address)
-            glean.initialize(configuration: cfg)
+            glean.initialize(configuration: cfg, uploadEnabled: true)
         } else {
             print("using default config for Glean")
-            glean.initialize()
+            glean.initialize(uploadEnabled: true)
         }
 
         Test.timespan.start()

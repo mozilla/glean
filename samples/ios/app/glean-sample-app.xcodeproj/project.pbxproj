@@ -252,7 +252,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1010;
-				LastUpgradeCheck = 1030;
+				LastUpgradeCheck = 1130;
 				TargetAttributes = {
 					BFD3AB29224D475E00AD9255 = {
 						CreatedOnToolsVersion = 10.1;
@@ -611,7 +611,6 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.mozilla.glean-sample-app";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -655,7 +654,6 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.mozilla.glean-sample-appTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/glean-sample-app.app/glean-sample-app";
@@ -710,7 +708,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.mozilla.glean-sample-appUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = "glean-sample-app";
