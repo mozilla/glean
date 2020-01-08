@@ -34,43 +34,16 @@ class BaseUploader(d: PingUploader) : PingUploader by d {
          */
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
         internal fun splitPingForLog(pingData: String, path: String): List<String> {
-            // Calculate the total number of chunks
-            var chunkCount = pingData.length / MAX_LOG_PAYLOAD_SIZE_BYTES
-            if (pingData.length % MAX_LOG_PAYLOAD_SIZE_BYTES > 0) {
-                chunkCount += 1
-            }
-
+            // Build the chunks with the header sequence messages
+            val rawChunks = pingData.chunked(MAX_LOG_PAYLOAD_SIZE_BYTES)
             val chunks = mutableListOf<String>()
-
-            for (curChunk in 0 until chunkCount) {
-                // Calculate the start index of the current chunk.  We are only using 4000 here
-                // instead of 4076 in order to leave room for a "message part" header.
-                val chunkStartIndex = curChunk * MAX_LOG_PAYLOAD_SIZE_BYTES
-                // Calculate the end index of the current chunk.
-                // **Note: The endIndex is not inclusive of the last element (i.e. "up to but not
-                //         including")
-                val chunkEndIndex =
-                    if (((curChunk + 1) * MAX_LOG_PAYLOAD_SIZE_BYTES) > pingData.length) {
-                        // The current chunk is the last one and is not a full payload so grab the
-                        // end index value.
-                        pingData.length
-                    } else {
-                        // The current chunk is a full 4000 bytes.
-                        (curChunk + 1) * MAX_LOG_PAYLOAD_SIZE_BYTES
-                    }
-
-                // Get the current message chunk from the indented JSON. In order to keep the
-                // messages linked together, a "message x of n" will be appended to the tag
-                val headerMsg = "Glean ping to URL: $path [Part ${curChunk + 1} of $chunkCount]"
-
-                val curChunkContent = pingData.subSequence(
-                    startIndex = chunkStartIndex,
-                    endIndex = chunkEndIndex
-                )
-
-                chunks.add("$headerMsg\n$curChunkContent")
+            for (curChunk in 0 until rawChunks.count()) {
+                // In order to keep the messages linked together, a "message x of n" will be
+                // appended to the message.
+                val headerMsg =
+                    "Glean ping to URL: $path [Part ${curChunk + 1} of ${rawChunks.count()}]\n"
+                chunks.add(headerMsg + rawChunks.elementAt(curChunk))
             }
-
             return chunks
         }
     }
