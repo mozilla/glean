@@ -13,6 +13,11 @@ from setuptools.command.install import install
 import wheel.bdist_wheel
 
 
+platform = sys.platform
+if os.environ.get("GLEAN_PYTHON_MINGW_BUILD") or platform.startswith("win"):
+    platform = "windows"
+
+
 if sys.version_info < (3, 5):
     print("glean requires at least Python 3.5", file=sys.stderr)
     sys.exit(1)
@@ -38,11 +43,16 @@ requirements = ["cffi==1.13.1", "glean_parser==1.15.5", "inflection==0.3.1"]
 
 setup_requirements = []
 
-if sys.platform == "linux":
+shared_object_build_dir = "../../target/debug/"
+if os.environ.get("GLEAN_PYTHON_MINGW_BUILD"):
+    shared_object_build_dir = "../../target/x86_64-pc-windows-gnu/debug/"
+
+
+if platform == "linux":
     shared_object = "libglean_ffi.so"
-elif sys.platform == "darwin":
+elif platform == "darwin":
     shared_object = "libglean_ffi.dylib"
-elif sys.platform.startswith("win"):
+elif platform == "windows":
     shared_object = "glean_ffi.dll"
 else:
     raise ValueError("The platform {} is not supported.".format(sys.platform))
@@ -51,7 +61,7 @@ else:
 shutil.copyfile("../ffi/glean.h", "glean/glean.h")
 shutil.copyfile("../metrics.yaml", "glean/metrics.yaml")
 shutil.copyfile("../pings.yaml", "glean/pings.yaml")
-shutil.copyfile("../../target/debug/" + shared_object, "glean/" + shared_object)
+shutil.copyfile(shared_object_build_dir + shared_object, "glean/" + shared_object)
 
 
 class BinaryDistribution(Distribution):
@@ -70,10 +80,12 @@ class BinaryDistribution(Distribution):
 # simple that only handles the cases we need.
 class bdist_wheel(wheel.bdist_wheel.bdist_wheel):
     def get_tag(self):
-        if sys.platform == "linux":
+        if platform == "linux":
             plat_name = "linux1_x86_64"
-        elif sys.platform == "darwin":
+        elif platform == "darwin":
             plat_name = "macosx_10_7_x86_64"
+        elif platform == "windows":
+            plat_name = "win_amd64"
 
         # This should be the minimum Python version supported
         impl = "cp35"
