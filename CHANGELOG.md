@@ -9,6 +9,7 @@
   * The code for migrating data from Glean SDK before version 19 was removed.
 * Python:
   * The Python bindings now support Python 3.5 - 3.7.
+  * The Python bindings are now distributed as a wheel on both Linux and macOS.
 
 # v23.0.1 (2020-01-08)
 

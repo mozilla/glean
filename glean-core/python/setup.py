@@ -10,6 +10,7 @@ import sys
 
 from setuptools import setup, Distribution, find_packages
 from setuptools.command.install import install
+import wheel.bdist_wheel
 
 
 if sys.version_info < (3, 5):
@@ -61,6 +62,29 @@ class BinaryDistribution(Distribution):
         return True
 
 
+# The logic for specifying wheel tags in setuptools/wheel is very complex, hard
+# to override, and is really meant for extensions that are compiled against
+# libpython.so, not this case where we have a fairly portable Rust-compiled
+# binary that should work across a number of Python versions. Therefore, we
+# just skip all of its logic be overriding the `get_tag` method with something
+# simple that only handles the cases we need.
+class bdist_wheel(wheel.bdist_wheel.bdist_wheel):
+    def get_tag(self):
+        if sys.platform == "linux":
+            plat_name = "linux1_x86_64"
+        elif sys.platform == "darwin":
+            plat_name = "macosx_10_7_x86_64"
+
+        # This should be the minimum Python version supported
+        impl = "cp35"
+
+        # Since we don't actually compile against libpython.so, but use cffi,
+        # just specify that anything with the stable Python 3.x ABI will work.
+        abi_tag = "abi3"
+
+        return (impl, abi_tag, plat_name)
+
+
 class InstallPlatlib(install):
     def finalize_options(self):
         install.finalize_options(self)
@@ -92,5 +116,5 @@ setup(
     zip_safe=False,
     package_data={"glean": ["glean.h", shared_object, "metrics.yaml", "pings.yaml"]},
     distclass=BinaryDistribution,
-    cmdclass={"install": InstallPlatlib},
+    cmdclass={"install": InstallPlatlib, "bdist_wheel": bdist_wheel},
 )

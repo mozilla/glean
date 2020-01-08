@@ -744,6 +744,26 @@ jobs:
             # variables are configured in CircleCI's environment variables.
             .venv/bin/python3 -m twine upload wheelhouse/*
 
+  pypi-macos-release:
+    macos:
+      xcode: "11.3.0"
+    steps:
+      - install-rustup
+      - setup-rust-toolchain
+      - checkout
+      - run:
+          name: Build and Test Python extension
+          command: |
+            make test-python
+      - run:
+          name: Build macOS wheel
+          command: |
+            cd glean-core/python
+            .venv/bin/python3 setup.py bdist_wheel
+            # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
+            # variables are configured in CircleCI's environment variables.
+            .venv/bin/python3 -m twine upload dist/*
+
 workflows:
   version: 2
   check-formating:
@@ -831,6 +851,14 @@ workflows:
             tags:
               only: /^v.*/
       - pypi-linux-release:
+          requires:
+            - Python 3_7 tests
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
+      - pypi-macos-release:
           requires:
             - Python 3_7 tests
           filters:
