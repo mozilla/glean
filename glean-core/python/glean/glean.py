@@ -38,8 +38,7 @@ class Glean:
     Before any data collection can take place, the Glean SDK **must** be
     initialized from the application.
 
-    >>> Glean.set_upload_enabled(True)
-    >>> Glean.initialize(application_id="my-app-id", application_version="0.0.0")
+    >>> Glean.initialize(application_id="my-app", application_version="0.0.0", upload_enabled=True)
     """
 
     # The handle to the underlying Rust object
@@ -72,6 +71,7 @@ class Glean:
         cls,
         application_id: str,
         application_version: str,
+        upload_enabled: bool,
         configuration: Optional[Configuration] = None,
         data_dir: Optional[Path] = None,
     ):
@@ -87,6 +87,8 @@ class Glean:
             application_id (str): The application id to use when sending pings.
             application_version (str): The version of the application sending
                 Glean data.
+            upload_enabled (bool): Controls the state of the uploaer during
+                Glean initialization.
             configuration (glean.config.Configuration): (optional) An object with
                 global settings.
             data_dir (pathlib.Path): (optional) The path to the Glean data
@@ -108,6 +110,8 @@ class Glean:
         cls._configuration = configuration
         cls._application_id = application_id
         cls._application_version = application_version
+
+        cls._upload_enabled = upload_enabled
 
         cfg = _ffi.make_config(
             cls._data_dir,

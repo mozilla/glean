@@ -39,6 +39,7 @@ def reset_glean(
     Glean.initialize(
         application_id=application_id,
         application_version=application_version,
+        upload_enabled=True,
         configuration=configuration,
         data_dir=data_dir,
     )

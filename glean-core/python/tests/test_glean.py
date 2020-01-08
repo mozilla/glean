@@ -28,7 +28,11 @@ GLEAN_APP_ID = "glean-python-test"
 def test_setting_upload_enabled_before_initialization_should_not_crash():
     Glean.reset()
     Glean.set_upload_enabled(True)
-    Glean.initialize(application_id=GLEAN_APP_ID, application_version=glean_version)
+    Glean.initialize(
+        application_id=GLEAN_APP_ID,
+        application_version=glean_version,
+        upload_enabled=True,
+    )
 
 
 def test_getting_upload_enabled_before_initialization_should_not_crash():
@@ -37,7 +41,11 @@ def test_getting_upload_enabled_before_initialization_should_not_crash():
     Glean.set_upload_enabled(True)
     assert Glean.get_upload_enabled()
 
-    Glean.initialize(application_id=GLEAN_APP_ID, application_version=glean_version)
+    Glean.initialize(
+        application_id=GLEAN_APP_ID,
+        application_version=glean_version,
+        upload_enabled=True,
+    )
     assert Glean.get_upload_enabled()
 
 
@@ -116,7 +124,11 @@ def test_experiments_recording_before_glean_inits():
     Glean.set_experiment_inactive("experiment_preinit_disabled")
 
     # This will init Glean and flush the dispatcher's queue.
-    Glean.initialize(application_id=GLEAN_APP_ID, application_version=glean_version)
+    Glean.initialize(
+        application_id=GLEAN_APP_ID,
+        application_version=glean_version,
+        upload_enabled=True,
+    )
 
     assert Glean.test_is_experiment_active("experiment_set_preinit")
     assert not Glean.test_is_experiment_active("experiment_preinit_disabled")
@@ -141,6 +153,7 @@ def test_initialize_must_not_crash_if_data_dir_is_messed_up(tmpdir):
     Glean.initialize(
         application_id=GLEAN_APP_ID,
         application_version=glean_version,
+        upload_enabled=True,
         data_dir=filename,
     )
 
@@ -167,7 +180,11 @@ def test_queued_recorded_metrics_correctly_during_init():
     for i in range(2):
         counter_metric.add()
 
-    Glean.initialize(application_id=GLEAN_APP_ID, application_version=glean_version)
+    Glean.initialize(
+        application_id=GLEAN_APP_ID,
+        application_version=glean_version,
+        upload_enabled=True,
+    )
 
     assert counter_metric.test_has_value()
     assert 2 == counter_metric.test_get_value()
@@ -176,7 +193,11 @@ def test_queued_recorded_metrics_correctly_during_init():
 def test_initializing_twice_is_a_no_op():
     before_config = Glean._configuration
 
-    Glean.initialize(application_id=GLEAN_APP_ID, application_version=glean_version)
+    Glean.initialize(
+        application_id=GLEAN_APP_ID,
+        application_version=glean_version,
+        upload_enabled=True,
+    )
 
     assert before_config is Glean._configuration
 
@@ -223,6 +244,7 @@ def test_the_app_channel_must_be_correctly_set():
     Glean.initialize(
         application_id=GLEAN_APP_ID,
         application_version=glean_version,
+        upload_enabled=True,
         configuration=Configuration(channel="my-test-channel"),
     )
     assert (
@@ -323,7 +345,9 @@ def test_tempdir_is_cleared():
 def test_set_application_id_and_version():
     Glean.reset()
 
-    Glean.initialize(application_id="my-id", application_version="my-version")
+    Glean.initialize(
+        application_id="my-id", application_version="my-version", upload_enabled=True
+    )
 
     assert (
         "my-id" == _builtins.metrics.glean.internal.metrics.app_build.test_get_value()
