@@ -22,6 +22,57 @@ import java.util.TimeZone
 class BaseUploader(d: PingUploader) : PingUploader by d {
     companion object {
         private const val LOG_TAG: String = "glean/BaseUploader"
+        // Since the logcat ring buffer size is configurable, but it's 'max payload' size
+        // is not, we must break apart long pings into chunks no larger than the max payload size
+        // of 4076b.
+        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+        internal const val MAX_LOG_PAYLOAD_SIZE_BYTES = 4000
+
+        /**
+         * Function used to break apart large pings into an array of "chunks" that are compatible with
+         * Logcat's max payload size
+         */
+        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+        internal fun splitPingForLog(pingData: String, path: String): List<String> {
+            // Calculate the total number of chunks
+            var chunkCount = pingData.length / MAX_LOG_PAYLOAD_SIZE_BYTES
+            if (pingData.length % MAX_LOG_PAYLOAD_SIZE_BYTES > 0) {
+                chunkCount += 1
+            }
+
+            val chunks = mutableListOf<String>()
+
+            for (curChunk in 0 until chunkCount) {
+                // Calculate the start index of the current chunk.  We are only using 4000 here
+                // instead of 4076 in order to leave room for a "message part" header.
+                val chunkStartIndex = curChunk * MAX_LOG_PAYLOAD_SIZE_BYTES
+                // Calculate the end index of the current chunk.
+                // **Note: The endIndex is not inclusive of the last element (i.e. "up to but not
+                //         including")
+                val chunkEndIndex =
+                    if (((curChunk + 1) * MAX_LOG_PAYLOAD_SIZE_BYTES) > pingData.length) {
+                        // The current chunk is the last one and is not a full payload so grab the
+                        // end index value.
+                        pingData.length
+                    } else {
+                        // The current chunk is a full 4000 bytes.
+                        (curChunk + 1) * MAX_LOG_PAYLOAD_SIZE_BYTES
+                    }
+
+                // Get the current message chunk from the indented JSON. In order to keep the
+                // messages linked together, a "message x of n" will be appended to the tag
+                val headerMsg = "Glean ping to URL: $path [Part ${curChunk + 1} of $chunkCount]"
+
+                val curChunkContent = pingData.subSequence(
+                    startIndex = chunkStartIndex,
+                    endIndex = chunkEndIndex
+                )
+
+                chunks.add("$headerMsg\n$curChunkContent")
+            }
+
+            return chunks
+        }
     }
 
     /**
@@ -36,7 +87,19 @@ class BaseUploader(d: PingUploader) : PingUploader by d {
             val json = JSONObject(data)
             val indented = json.toString(2)
 
-            Log.d(LOG_TAG, "Glean ping to URL: $path\n$indented")
+            // If the length of the ping will fit within one logcat payload, then we can
+            // short-circuit here and avoid some overhead, otherwise we must split up the
+            // message so that we don't truncate it.
+            if (indented.length + path.length <= MAX_LOG_PAYLOAD_SIZE_BYTES) {
+                Log.d(LOG_TAG, "Glean ping to URL: $path\n$indented")
+                return
+            }
+
+            val chunks = splitPingForLog(indented, path)
+
+            for (chunk in chunks) {
+                Log.d(LOG_TAG, chunk)
+            }
         } catch (e: JSONException) {
             Log.d(LOG_TAG, "Exception parsing ping as JSON: $e") // $COVERAGE-IGNORE$
         }
