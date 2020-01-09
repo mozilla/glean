@@ -86,6 +86,10 @@ open class GleanInternalAPI internal constructor () {
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     internal var isMainProcess: Boolean? = null
 
+    // When sending pings to localhost, we're probably in instrumented tests. In that
+    // case pings are to be immediately submitted by the WorkManager,
+    internal var isSendingToLocalhost: Boolean = false
+
     /**
      * Initialize the Glean SDK.
      *
@@ -603,13 +607,16 @@ open class GleanInternalAPI internal constructor () {
      * TEST ONLY FUNCTION.
      * Sets the server endpoint to a local address for ingesting test pings.
      *
-     * The endpoint will be set as "http://localhost:<port>".
+     * The endpoint will be set as "http://localhost:<port>" and pings will be
+     * immediately sent by the WorkManager.
      *
      * @param port the local address to send pings to
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     internal fun testSetLocalEndpoint(port: Int) {
         Glean.enableTestingMode()
+
+        isSendingToLocalhost = true
 
         // We can't set the configuration unless we're initialized.
         assert(isInitialized())
