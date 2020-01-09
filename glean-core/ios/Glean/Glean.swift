@@ -59,6 +59,7 @@ public class Glean {
     /// into the background.
     ///
     /// - parameters:
+    ///     * uploadEnabled: A `Bool` that enables or disables telemetry uploading.
     ///     * configuration: A Glean `Configuration` object with global settings.
     public func initialize(uploadEnabled: Bool,
                            configuration: Configuration = Configuration()) {

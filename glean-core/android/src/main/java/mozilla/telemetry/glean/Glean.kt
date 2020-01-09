@@ -101,8 +101,8 @@ open class GleanInternalAPI internal constructor () {
      *
      * @param applicationContext [Context] to access application features, such
      * as shared preferences
-     * @param configuration A Glean [Configuration] object with global settings.
      * @param uploadEnabled A [Boolean] that determines the initial state of the uploader
+     * @param configuration A Glean [Configuration] object with global settings.
      */
     @Suppress("ReturnCount", "LongMethod", "ComplexMethod")
     @JvmOverloads
