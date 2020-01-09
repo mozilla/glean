@@ -110,11 +110,9 @@ open class GleanInternalAPI internal constructor () {
     @MainThread
     fun initialize(
         applicationContext: Context,
-        configuration: Configuration = Configuration(),
-        uploadEnabled: Boolean
+        uploadEnabled: Boolean,
+        configuration: Configuration = Configuration()
     ) {
-        this.uploadEnabled = uploadEnabled
-
         // Glean initialization must be called on the main thread, or lifecycle
         // registration may fail. This is also enforced at build time by the
         // @MainThread decorator, but this run time check is also performed to
@@ -132,6 +130,8 @@ open class GleanInternalAPI internal constructor () {
             Log.e(LOG_TAG, "Glean should not be initialized multiple times")
             return
         }
+
+        setUploadEnabled(uploadEnabled)
 
         registerPings(Pings)
 
@@ -596,7 +596,7 @@ open class GleanInternalAPI internal constructor () {
 
         // Init Glean.
         Glean.testDestroyGleanHandle()
-        Glean.initialize(context, config, true)
+        Glean.initialize(context, true, config)
     }
 
     /**

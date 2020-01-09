@@ -69,7 +69,7 @@ class GleanTest {
 
         val config = Configuration()
 
-        Glean.initialize(context, config, true)
+        Glean.initialize(context, true, config)
     }
 
     @Test
@@ -82,7 +82,7 @@ class GleanTest {
         Glean.setUploadEnabled(true)
         assertTrue(Glean.getUploadEnabled())
 
-        Glean.initialize(context, config, true)
+        Glean.initialize(context, true, config)
         assertTrue(Glean.getUploadEnabled())
     }
 
@@ -298,7 +298,7 @@ class GleanTest {
     fun `Initializing twice is a no-op`() {
         val beforeConfig = Glean.configuration
 
-        Glean.initialize(context, uploadEnabled = true)
+        Glean.initialize(context, true)
 
         val afterConfig = Glean.configuration
 
@@ -554,7 +554,7 @@ class GleanTest {
     @Test(expected = IllegalThreadStateException::class)
     fun `Glean initialize must be called on the main thread`() {
         runBlocking(KotlinDispatchers.IO) {
-            Glean.initialize(context, uploadEnabled = true)
+            Glean.initialize(context, true)
         }
     }
 }

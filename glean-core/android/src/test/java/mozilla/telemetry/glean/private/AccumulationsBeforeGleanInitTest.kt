@@ -42,7 +42,7 @@ class AccumulationsBeforeGleanInitTest {
 
     private fun forceInitGlean() {
         Glean.enableTestingMode()
-        Glean.initialize(context, Configuration(), true)
+        Glean.initialize(context, true, Configuration())
     }
 
     @Test

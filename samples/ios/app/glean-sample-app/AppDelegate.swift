@@ -30,7 +30,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
             print("using a mock server, setting address: \(address)")
             let cfg = Configuration(serverEndpoint: address)
-            glean.initialize(configuration: cfg, uploadEnabled: true)
+            glean.initialize(uploadEnabled: true, configuration: cfg)
         } else {
             print("using default config for Glean")
             glean.initialize(uploadEnabled: true)

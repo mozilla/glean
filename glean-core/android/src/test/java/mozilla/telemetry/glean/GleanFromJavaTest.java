@@ -41,7 +41,7 @@ public class GleanFromJavaTest {
     public void testInitGleanWithConfiguration() {
         Configuration config =
                 new Configuration(Configuration.DEFAULT_TELEMETRY_ENDPOINT, "test-channel");
-        Glean.INSTANCE.initialize(appContext, config, true);
+        Glean.INSTANCE.initialize(appContext, true, config);
     }
 
     @Test

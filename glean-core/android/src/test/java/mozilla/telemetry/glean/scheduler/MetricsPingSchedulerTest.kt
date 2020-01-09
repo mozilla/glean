@@ -569,10 +569,10 @@ class MetricsPingSchedulerTest {
             // next time the 'metrics' ping is collected after this one.
             Glean.initialize(
                 context,
+                true,
                 Configuration(
                     serverEndpoint = "http://" + server.hostName + ":" + server.port, logPings = true
-                ),
-                true
+                )
             )
 
             // Trigger worker task to upload the pings in the background.

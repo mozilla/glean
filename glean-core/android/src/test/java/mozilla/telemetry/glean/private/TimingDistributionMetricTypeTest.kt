@@ -193,7 +193,7 @@ class TimingDistributionMetricTypeTest {
         )
 
         val timerId = metric.start()
-        Glean.initialize(context, uploadEnabled = true)
+        Glean.initialize(context, true)
         metric.stopAndAccumulate(timerId)
 
         metric.testGetValue().sum >= 0
@@ -216,7 +216,7 @@ class TimingDistributionMetricTypeTest {
 
         val timerId = metric.start()
         metric.stopAndAccumulate(timerId)
-        Glean.initialize(context, uploadEnabled = true)
+        Glean.initialize(context, true)
 
         metric.testGetValue().sum >= 0
     }
