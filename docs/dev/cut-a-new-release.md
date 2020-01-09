@@ -75,7 +75,7 @@ Releases can only be done by one of the Glean maintainers.
     ```
 5. Wait for CI to finish on that branch and ensure it's green: <https://circleci.com/gh/mozilla/glean/tree/release-v25.0.0>
 6. Apply additional commits for bug fixes to this branch.
-    * Adding large new features here is strictly prohibited. They need to go to the `master` branch and wait for the next relase.
+    * Adding large new features here is strictly prohibited. They need to go to the `master` branch and wait for the next release.
 
 ### Finish a release branch
 
