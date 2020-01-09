@@ -60,8 +60,8 @@ public class Glean {
     ///
     /// - parameters:
     ///     * configuration: A Glean `Configuration` object with global settings.
-    public func initialize(configuration: Configuration = Configuration(),
-                           uploadEnabled: Bool) {
+    public func initialize(uploadEnabled: Bool,
+                           configuration: Configuration = Configuration()) {
         if self.isInitialized() {
             logger.error("Glean should not be initialized multiple times")
             return
@@ -364,6 +364,6 @@ public class Glean {
 
         // Init Glean.
         testDestroyGleanHandle()
-        initialize(configuration: configuration, uploadEnabled: true)
+        initialize(uploadEnabled: true, configuration: configuration)
     }
 }
