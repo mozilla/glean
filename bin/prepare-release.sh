@@ -159,3 +159,15 @@ fi
 
 run git add --update "${WORKSPACE_ROOT}"
 run git commit --message "Bumped version to ${NEW_VERSION}"
+
+remote=$(git remote | grep upstream)
+if [ -z "$remote" ]; then
+    remote=origin
+fi
+branch=$(git rev-parse --abbrev-ref HEAD)
+
+echo "Don't forget to push this commit:"
+echo
+echo "    git push $remote $branch"
+echo
+echo "Once pushed, wait for the CI build to finish: https://circleci.com/gh/mozilla/glean/tree/$branch"
