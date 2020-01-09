@@ -778,6 +778,43 @@ jobs:
             # variables are configured in CircleCI's environment variables.
             .venv/bin/python3 -m twine upload dist/*
 
+  pypi-windows-release:
+    docker:
+      - image: circleci/python:3.7.6
+    steps:
+      - install-rustup
+      - setup-rust-toolchain
+      - run:
+          name: Setup mingw toolchain
+          command: |
+            # Install mingw target for rust
+            rustup target install x86_64-pc-windows-gnu
+            # Install mingw Debian packages
+            sudo apt install mingw-w64
+            # Set the linker to use for Rust/mingw
+            echo '[target.x86_64-pc-windows-gnu]' >> ~/.cargo/config
+            echo 'linker = "/usr/bin/x86_64-w64-mingw32-gcc"' >> ~/.cargo/config
+            # Copy a working crt2.o from Debian to the Rust toolchain
+            cp /usr/x86_64-w64-mingw32/lib/crt2.o ~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-pc-windows-gnu/lib/
+            cp /usr/x86_64-w64-mingw32/lib/dllcrt2.o ~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-pc-windows-gnu/lib/
+      - checkout
+      - run:
+          name: Install Python development tools for host
+          command:
+            make python-setup
+      - run:
+          name: Build Windows glean_ffi.dll
+          command:
+            cargo build --target x86_64-pc-windows-gnu
+      - run:
+          name: Build Windows wheel
+          command: |
+            cd glean-core/python
+            GLEAN_PYTHON_MINGW_BUILD=1 .venv/bin/python3 setup.py bdist_wheel
+            # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
+            # variables are configured in CircleCI's environment variables.
+            .venv/bin/python3 -m twine upload dist/*
+
 workflows:
   version: 2
   check-formating:
@@ -849,6 +886,10 @@ workflows:
             - Python 3_7 tests
           filters: *release-filters
       - pypi-macos-release:
+          requires:
+            - Python 3_7 tests
+          filters: *release-filters
+      - pypi-windows-release:
           requires:
             - Python 3_7 tests
           filters: *release-filters
