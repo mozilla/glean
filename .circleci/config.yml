@@ -1,3 +1,9 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+---
+
 version: 2.1
 
 definitions:
@@ -51,9 +57,9 @@ commands:
       - run:
           name: Test glean-preview
           command:
-              # Because glean_preview is a global-singleton, we need to run the tests
-              # single-threaded to avoid different tests stomping over each other.
-              cargo test -p glean-preview -- --test-threads=1
+            # Because glean_preview is a global-singleton, we need to run the tests
+            # single-threaded to avoid different tests stomping over each other.
+            cargo test -p glean-preview -- --test-threads=1
 
   install-rustup:
     steps:
@@ -834,7 +840,7 @@ workflows:
       - Rust tests - stable
       - Rust code coverage
       # FIXME: Disabled due to failing to often, bug 1574424
-      #- Rust tests - beta
+      # - Rust tests - beta
       - Rust tests - minimum version
       - Android tests
       - C tests
