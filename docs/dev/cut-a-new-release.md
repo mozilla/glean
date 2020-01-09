@@ -1,9 +1,9 @@
-# Glean development & release process
+# Glean release process
 
-Glean consists of multiple libraries for different platforms and targets.
+The Glean SDK consists of multiple libraries for different platforms and targets.
 The main supported libraries are released as one.
-The following document describes the development and release process.
 Development happens on the main repository <https://github.com/mozilla/glean>.
+See [Contributing](../contributing.md) for how to contribute changes to the Glean SDK.
 
 The development & release process roughly follows the [GitFlow model](https://nvie.com/posts/a-successful-git-branching-model/).
 
@@ -13,6 +13,7 @@ The development & release process roughly follows the [GitFlow model](https://nv
 
 **Table of Contents**:
 
+* [Published artifacts](#published-artifacts)
 * [Development](#development)
 * [Regular release](#regular-release)
 * [Hotfix release for latest version](#hotfix-release-for-latest-version)
@@ -24,29 +25,6 @@ The development & release process roughly follows the [GitFlow model](https://nv
 * Python bindings are published on PyPI: [glean-sdk](https://pypi.org/project/glean-sdk/).
 * iOS framework artifacts: [GitHub Releases](https://github.com/mozilla/glean/releases).
 * Rust crates are published on crates.io: [glean-core](https://crates.io/crates/glean-core), [glean-ffi](https://crates.io/crates/glean-ffi).
-
-## Development
-
-All finished features for Glean land on the `master` branch.
-Features should be developed in feature branches and are sent as pull requests to the upstream repository.
-
-1. Clone the Glean repository:
-    ```
-    git clone https://github.com/your-name/glean && cd glean
-    ```
-2. Check out a new feature branch:
-    ```
-    git checkout -b your-feature-branch
-    ```
-3. Implement your feature and add information about it to `CHANGELOG.md` under the `Unreleased changes` headline.
-4. Push your branch:
-    ```
-    git push origin your-feature-branch
-    ```
-5. Create a new pull request: <https://github.com/mozilla/glean/compare/master...your-name:your-feature-branch?expand=1>
-
-The Glean maintainers will review your code and merge it when ready.
-Make sure all tests pass.
 
 ## Regular Release
 

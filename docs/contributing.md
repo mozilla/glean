@@ -90,3 +90,7 @@ Every pull request needs to be approved by at least one of these people before l
 
 The submitter needs to decide on their own discretion whether the changes require a look from more than a single reviewer or any outside developer.
 Reviewers can also ask for additional approval from other reviewers.
+
+## Release
+
+See the [Release process](dev/cut-a-new-release.md) on how to release a new version of the Glean SDK.
