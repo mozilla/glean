@@ -39,7 +39,13 @@ commands:
           rust-version: <<parameters.rust-version>>
       - run:
           name: Test
-          command: cargo test --all --verbose
+          command: cargo test --all ---exclude glean-preview --verbose
+      - run:
+          name: Test glean-preview
+          command:
+              # Because glean_preview is a global-singleton, we need to run the tests
+              # single-threaded to avoid different tests stomping over each other.
+              cargo test -p glean-preview -- --test-threads=1
 
   install-rustup:
     steps:
