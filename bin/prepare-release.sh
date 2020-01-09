@@ -158,4 +158,4 @@ if [ "$RESP" != "y" ] && [ "$RESP" != "Y" ]; then
 fi
 
 run git add --update "${WORKSPACE_ROOT}"
-run git commit --message "Release version ${NEW_VERSION}"
+run git commit --message "Bumped version to ${NEW_VERSION}"
