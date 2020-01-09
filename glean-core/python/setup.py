@@ -81,20 +81,11 @@ class BinaryDistribution(Distribution):
 class bdist_wheel(wheel.bdist_wheel.bdist_wheel):
     def get_tag(self):
         if platform == "linux":
-            plat_name = "linux1_x86_64"
+            return ("cp35", "abi3", "linux_x86_64")
         elif platform == "darwin":
-            plat_name = "macosx_10_7_x86_64"
+            return ("cp35", "abi3", "macosx_10_7_x86_64")
         elif platform == "windows":
-            plat_name = "win_amd64"
-
-        # This should be the minimum Python version supported
-        impl = "cp35"
-
-        # Since we don't actually compile against libpython.so, but use cffi,
-        # just specify that anything with the stable Python 3.x ABI will work.
-        abi_tag = "abi3"
-
-        return (impl, abi_tag, plat_name)
+            return ("py3", "none", "win_amd64")
 
 
 class InstallPlatlib(install):
