@@ -148,7 +148,7 @@ When CI has finished and is green for your hotfix branch, you are ready to cut a
 7. Send a pull request to merge back the hotfix branch to the development branch: <https://github.com/mozilla/glean/compare/master...hotfix-v25.0.1?expand=1>
     * This is important so that no changes are lost.
     * This might have merge conflicts with the `master` branch, which you need to fix before it is merged.
-8. Once the above pull request land, delete the hotfix branch.
+8. Once the above pull request lands, delete the hotfix branch.
 
 ## Hotfix release for previous version
 
@@ -158,7 +158,7 @@ If you need to release a hotfix for a previously released version (that is: not 
 
 ### Create a support and hotfix branch
 
-1. If it does not exist yet, create a support branch from the version tag and push it:
+1. Create a support branch from the version tag and push it:
     ```
     git checkout -b support/v24.0 v24.0.0
     git push upstream support/v24.0
@@ -204,5 +204,4 @@ If you need to release a hotfix for a previously released version (that is: not 
 7. Send a pull request to merge back any bug fixes to the development branch: <https://github.com/mozilla/glean/compare/master...support/v24.0?expand=1>
     * This is important so that no changes are lost.
     * This might have merge conflicts with the `master` branch, which you need to fix before it is merged.
-8. **DO NOT** delete the support branch.
-    * This branch stays around forever.
+8. Once the above pull request lands, delete the support branch.
