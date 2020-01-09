@@ -6,6 +6,9 @@
 
 version: 2.1
 
+###########################################################################
+# DEFINITIONS
+
 definitions:
   - release_filters: &release-filters
       branches:
@@ -13,8 +16,20 @@ definitions:
       tags:
         only: /^v.*/
 
+##########################################################################
+# COMMANDS
 
 commands:
+  skip-if-doc-only:
+    steps:
+      - run:
+          name: Check doc only skip condition
+          command: |
+            if git log -1 "$CIRCLE_SHA1" | grep -q '\[doc only\]'; then
+                echo "Skipping this step. Last commit was tagged to not require tests."
+                circleci-agent step halt
+            fi
+
   setup-rust-toolchain:
     parameters:
       rust-version:
@@ -27,29 +42,16 @@ commands:
             rustup install <<parameters.rust-version>>
             rustup default <<parameters.rust-version>>
             rustc --version
-  test-setup:
-    parameters:
-      rust-version:
-        type: string
-        default: "stable"
-    steps:
-      - setup-rust-toolchain:
-          rust-version: <<parameters.rust-version>>
-  rust-tests:
+
+  test-rust:
     parameters:
       rust-version:
         type: string
         default: "stable"
     steps:
       - checkout
-      - run:
-          name: Check skip condition
-          command: |
-            if git log -1 "$CIRCLE_SHA1" | grep -q '\[doc only\]'; then
-                echo "Skipping this step. Last commit was tagged to not require tests."
-                circleci-agent step halt
-            fi
-      - test-setup:
+      - skip-if-doc-only
+      - setup-rust-toolchain:
           rust-version: <<parameters.rust-version>>
       - run:
           name: Test
@@ -85,7 +87,7 @@ commands:
       - checkout
       - install-rustup
       - install-android-targets
-      - test-setup:
+      - setup-rust-toolchain:
           rust-version: stable
       - run:
           name: Install missing Android SDK
@@ -102,13 +104,52 @@ commands:
     steps:
       - install-rustup
       - setup-rust-toolchain
-      - checkout
       - run:
           name: Python tests
           command: make test-python
 
+  install-mingw:
+    steps:
+      - run:
+          name: Install mingw
+          command: |
+            sudo apt update
+            sudo apt install -y gcc-mingw-w64 llvm-7
+      - run:
+          name: Add mingw target
+          command: |
+            rustup target add x86_64-pc-windows-gnu
+      - run:
+          name: Fix broken mingw toolchain
+          command: |
+            # Fix broken libraries
+            # https://github.com/rust-lang/rust/issues/47048
+            # https://github.com/rust-lang/rust/issues/49078
+            # https://wiki.archlinux.org/index.php/Rust#Windows
+            for lib in crt2.o dllcrt2.o libmsvcrt.a; do cp -v /usr/x86_64-w64-mingw32/lib/$lib ~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-pc-windows-gnu/lib/; done
+
+  install-ghr:
+    parameters:
+      ghr-filename:
+        type: string
+      ghr-sha256:
+        type: string
+    steps:
+      - run:
+          name: Get ghr release tool
+          command: |
+              GHR=<<parameters.ghr-filename>>
+              GHR_SHA256=<<parameters.ghr-sha256>>
+              curl -sfSL --retry 5 --retry-delay 10 -O "https://github.com/tcnksm/ghr/releases/download/v0.13.0/${GHR}.tar.gz"
+              echo "${GHR_SHA256} *${GHR}.tar.gz" | shasum -a 256 -c -
+              tar -xf "${GHR}.tar.gz"
+              cp ./${GHR}/ghr ghr
+
 
 jobs:
+  ###########################################################################
+  # Project-level
+
   License check:
     docker:
       - image: circleci/rust:latest
@@ -136,25 +177,10 @@ jobs:
       - checkout
       - run: sudo pip install yamllint
       - run: make yamllint
-  Check Swift formatting:
-    macos:
-      xcode: "11.3.0"
-    steps:
-      - checkout
-      - run:
-          name: Install lint tools
-          command: |
-            # do not update brew (might takes ages)
-            export HOMEBREW_NO_AUTO_UPDATE=1
-            brew install swiftlint swiftformat
-      - run:
-          name: Run swiftlint
-          command: swiftlint --strict
-      - run:
-          name: Run swiftformat
-          command: |
-              swiftformat glean-core/ios samples/ios --swiftversion 5 --verbose
-              git diff --exit-code HEAD -- glean-core/ios samples/ios
+
+  ###########################################################################
+  # Rust / C / FFI
+
   Check Rust formatting:
     docker:
       - image: circleci/rust:latest
@@ -163,6 +189,7 @@ jobs:
       - run: rustup component add rustfmt
       - run: rustfmt --version
       - run: cargo fmt -- --check
+
   Lint Rust with clippy:
     docker:
       - image: circleci/rust:latest
@@ -171,32 +198,36 @@ jobs:
       - run: rustup component add clippy
       - run: cargo clippy --version
       - run: cargo clippy --all --all-targets --all-features -- -D warnings
+
   Rust tests - stable:
     docker:
       - image: circleci/rust:latest
     resource_class: "medium+"
     steps:
-      - rust-tests
+      - test-rust
 
   Rust tests - beta:
     docker:
       - image: circleci/rust:latest
     steps:
-      - rust-tests:
+      - test-rust:
           rust-version: "beta"
+
   Rust tests - minimum version:
     docker:
       - image: circleci/rust:latest
     resource_class: "medium+"
     steps:
-      - rust-tests:
+      - test-rust:
           rust-version: "1.34.2"
+
   Rust FFI header check:
     docker:
       - image: circleci/rust:latest
     steps:
       - checkout
-      - test-setup:
+      - skip-if-doc-only
+      - setup-rust-toolchain:
           rust-version: "nightly"
       - run:
           name: FFI header consistency check
@@ -214,12 +245,14 @@ jobs:
               echo "=================================================="
               exit 1
             fi
+
   C tests:
     docker:
       - image: circleci/rust:latest
     steps:
       - checkout
-      - test-setup:
+      - skip-if-doc-only
+      - setup-rust-toolchain:
           rust-version: stable
       - run: cargo build --release
       # Just a basic smoke test for now to make sure it compiles and runs
@@ -240,7 +273,7 @@ jobs:
           command: |
               echo "export CARGO_INCREMENTAL=0" >> $BASH_ENV
               echo "export RUSTFLAGS='-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Zno-landing-pads'" >> $BASH_ENV
-      - rust-tests:
+      - test-rust:
           rust-version: "nightly"
       - run:
           name: Create and upload code coverage
@@ -253,10 +286,210 @@ jobs:
               ./grcov ccov.zip -s . -t lcov --llvm --branch --ignore-not-existing --ignore "/*" --ignore "glean-core/ffi/*" -o lcov.info
               ./codecov.sh -Z -f lcov.info || echo 'Codecov upload failed'
 
+  Generate Rust documentation:
+    docker:
+      - image: circleci/rust:latest
+    steps:
+      - checkout
+      - run:
+          name: Version information
+          command: rustc --version; cargo --version; rustup --version
+      - run:
+          name: Install mdbook
+          command: |
+              wget https://github.com/rust-lang-nursery/mdBook/releases/download/v0.3.0/mdbook-v0.3.0-x86_64-unknown-linux-gnu.tar.gz
+              tar -xvf mdbook-v0.3.0-x86_64-unknown-linux-gnu.tar.gz
+              mv mdbook /usr/local/cargo/bin/mdbook
+      - run:
+          name: Build Rust documentation
+          command: bin/build-rust-docs.sh
+      - persist_to_workspace:
+          root: build/
+          paths:
+            - docs/book
+            - docs/docs
+            - docs/index.html
+
+  ###########################################################################
+  # Android / Kotlin / Java
+
+  Lint Android with ktlint and detekt:
+    docker:
+      - image: circleci/android:api-28-ndk
+    steps:
+      - checkout
+      - run: ./gradlew --no-daemon lint
+      - run: ./gradlew --no-daemon ktlint
+      - run: ./gradlew --no-daemon detekt
+
+  Android tests:
+    docker:
+      - image: circleci/android:api-28-ndk
+    steps:
+      - android-setup
+      - skip-if-doc-only
+      - run:
+          name: Android tests
+          command: ./gradlew --no-daemon test
+          environment:
+            GRADLE_OPTS: -Xmx2048m
+            TARGET_CFLAGS: -DNDEBUG
+      - store_artifacts:
+          path: glean-core/android/build/rustJniLibs/android
+          destination: libs
+      - run:
+          name: Save test results
+          command: |
+            mkdir -p ~/test-results/junit/
+            mkdir -p ~/test-results/tests/
+            cp -a glean-core/android/build/reports/tests ~/test-results/
+            find glean-core/android/build -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
+          when: always
+      - store_artifacts:
+          path: ~/test-results/tests
+          destination: test-results
+      - store_test_results:
+          path: ~/test-results
+      - run:
+          name: Upload Kotlin code coverage
+          command: |
+              set +eo pipefail # Don't fail on errors
+              curl -L https://codecov.io/bash > codecov.sh
+              chmod +x codecov.sh
+              ./codecov.sh -Z -f glean-core/android/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml || echo 'Codecov upload failed'
+
+  android-packaging:
+    docker:
+      - image: circleci/android:api-28-ndk
+    steps:
+      - android-setup
+      - install-mingw
+      - run:
+          name: Install llvm
+          command: |
+            sudo apt install -y llvm-7
+            # We need this tool under its common name
+            sudo ln -s /usr/lib/llvm-7/bin/dsymutil /usr/bin/dsymutil
+      - run:
+          name: Add darwin target
+          command: |
+            rustup target add x86_64-apple-darwin
+      - attach_workspace:
+          at: macos
+      - run:
+          name: Put macOS build in place
+          command: |
+            mkdir -p target/x86_64-apple-darwin/release
+            cp -a macos/target/release/libglean_ffi.dylib target/x86_64-apple-darwin/release
+      - run:
+          name: Package a release artifact
+          command: |
+            export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_PC_WINDOWS_GNU_RUSTFLAGS="-C linker=x86_64-w64-mingw32-gcc"
+            export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_PC_WINDOWS_GNU_AR=x86_64-w64-mingw32-ar
+            export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_PC_WINDOWS_GNU_CC=x86_64-w64-mingw32-gcc
+            # A hack to force-skip macOS builds.
+            # We re-use the dylib generated in the "macOS release build" step.
+            export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_AR=true
+            export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_CC=true
+            export RUSTC=$(pwd)/bin/rust-wrapper-hack.sh
+
+            echo "rust.targets=arm,arm64,x86_64,x86,linux-x86-64,win32-x86-64-gnu,darwin" > local.properties
+
+            ./gradlew --no-daemon assembleRelease
+            ./gradlew --no-daemon publish
+            ./gradlew --no-daemon checkMavenArtifacts
+          environment:
+            GRADLE_OPTS: -Xmx2048m
+            TARGET_CFLAGS: -DNDEBUG
+      - store_artifacts:
+          path: build/maven
+          destination: build
+      - persist_to_workspace:
+          root: .
+          paths: build
+
+  android-release:
+    docker:
+      - image: circleci/rust:latest
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - install-ghr:
+          ghr-filename: ghr_v0.13.0_linux_amd64
+          ghr-sha256: c428627270ae26e206cb526cb8c7bdfba475dd278f6691ddaf863355adadfa13
+      - run:
+          name: Publish a release on GitHub
+          command: |
+            VERSION="${CIRCLE_TAG}"
+            RAWVERSION="${VERSION#v}"
+            VERSIONFILE=.buildconfig.yml
+            if ! grep -q "libraryVersion: ${RAWVERSION}" "${VERSIONFILE}"; then
+               echo "=================================================="
+               echo "${VERSIONFILE} does not contain the expected tagged version ${RAWVERSION}"
+               echo "Instead it has:"
+               grep "libraryVersion:" "${VERSIONFILE}"
+               echo "Ensure the tag corresponds to the version in ${VERSIONFILE}"
+               echo "=================================================="
+               exit 1
+            fi
+
+            PKGDIR=./build/package
+            # Collect all files into a single directory
+            mkdir -p ${PKGDIR}
+            # The glean-gradle-plugin also creates releases with an "unspecified" version
+            # when used internally. We don't need to ship those.
+            find ./build/maven/org/mozilla/telemetry/ \( \( -name "*.aar*" -or -name "*.jar*" -or -name "*.pom*" \) -and -not -name "*unspecified*" \) \
+              -exec cp {} ${PKGDIR} \;
+
+            # Bundle all release files up into a single zip file
+            ZIPFILE=glean-${VERSION}.zip
+            zip --junk-paths ${ZIPFILE} ${PKGDIR}/*
+            mv ${ZIPFILE} ${PKGDIR}
+
+            # Upload to GitHub
+            ./ghr -replace ${VERSION} ${PKGDIR}
+
+  Generate Kotlin documentation:
+    docker:
+      - image: circleci/android:api-28-ndk
+    steps:
+      - android-setup
+      - run:
+          name: Build Kotlin documentation
+          command: ./gradlew --no-daemon docs
+      - persist_to_workspace:
+          root: build/
+          paths: docs/javadoc
+
+  ###########################################################################
+  # Swift / iOS / macOS
+
+  Check Swift formatting:
+    macos:
+      xcode: "11.3.0"
+    steps:
+      - checkout
+      - run:
+          name: Install lint tools
+          command: |
+            # do not update brew (might takes ages)
+            export HOMEBREW_NO_AUTO_UPDATE=1
+            brew install swiftlint swiftformat
+      - run:
+          name: Run swiftlint
+          command: swiftlint --strict
+      - run:
+          name: Run swiftformat
+          command: |
+            swiftformat glean-core/ios samples/ios --swiftversion 5 --verbose
+            git diff --exit-code HEAD -- glean-core/ios samples/ios
+
   iOS build and test:
     macos:
       xcode: "11.3.0"
     steps:
+      - checkout
       - run:
           name: Set Ruby Version
           command: echo 'chruby ruby-2.6.5' >> ~/.bash_profile
@@ -267,7 +500,6 @@ jobs:
             gem env
       - install-rustup
       - setup-rust-toolchain
-      - checkout
       - restore_cache:
           name: Restore rubygems cache
           key: swift-docs-gems-v6
@@ -306,6 +538,7 @@ jobs:
       - persist_to_workspace:
           root: build/
           paths: docs/swift
+      - skip-if-doc-only
       - run:
           name: Check skip condition before running more steps
           command: |
@@ -354,39 +587,12 @@ jobs:
               chmod +x codecov.sh
               ./codecov.sh -Z -J '^Glean$' -X gcov -X coveragepy || echo 'Codecov upload failed'
 
-  Carthage release:
-    macos:
-      xcode: "11.3.0"
-    steps:
-      - checkout
-      - attach_workspace:
-          at: .
-      - run:
-          name: Get ghr release tool
-          command: |
-              GHR=ghr_v0.13.0_darwin_amd64
-              GHR_SHA256=319988a001462f80b37cf40fbc41b9de60b0a1cffa2a338b47b9fe5eef25f60e
-              curl -sfSL --retry 5 --retry-delay 10 -O "https://github.com/tcnksm/ghr/releases/download/v0.13.0/${GHR}.zip"
-              echo "${GHR_SHA256} *${GHR}.zip" | shasum -a 256 -c -
-              unzip "${GHR}.zip"
-              cp ./${GHR}/ghr ghr
-      - run:
-          name: Release Carthage archive on GitHub
-          command: |
-            ./ghr -replace "${CIRCLE_TAG}" Glean.framework.zip
-
   iOS integration test:
     macos:
       xcode: "11.3.0"
     steps:
       - checkout
-      - run:
-          name: Check skip condition
-          command: |
-            if git log -1 "$CIRCLE_SHA1" | grep -q '\[doc only\]'; then
-                echo "Skipping this step. Last commit was tagged to not require tests."
-                circleci-agent step halt
-            fi
+      - skip-if-doc-only
       - install-rustup
       - setup-rust-toolchain
       - run:
@@ -427,56 +633,20 @@ jobs:
           path: raw_sample_xcodetest.log
           destination: raw_sample_xcodetest.log
 
-  Lint Android with ktlint and detekt:
-    docker:
-      - image: circleci/android:api-28-ndk
+  Carthage release:
+    macos:
+      xcode: "11.3.0"
     steps:
       - checkout
-      - run: ./gradlew --no-daemon lint
-      - run: ./gradlew --no-daemon ktlint
-      - run: ./gradlew --no-daemon detekt
-
-  Android tests:
-    docker:
-      - image: circleci/android:api-28-ndk
-    steps:
-      - android-setup
+      - attach_workspace:
+          at: .
+      - install-ghr:
+          ghr-filename: ghr_v0.13.0_darwin_amd64
+          ghr-sha256: 319988a001462f80b37cf40fbc41b9de60b0a1cffa2a338b47b9fe5eef25f60e
       - run:
-          name: Check skip condition
+          name: Release Carthage archive on GitHub
           command: |
-            if git log -1 "$CIRCLE_SHA1" | grep -q '\[doc only\]'; then
-                echo "Skipping this step. Last commit was tagged to not require tests."
-                circleci-agent step halt
-            fi
-      - run:
-          name: Android tests
-          command: ./gradlew --no-daemon test
-          environment:
-            GRADLE_OPTS: -Xmx2048m
-            TARGET_CFLAGS: -DNDEBUG
-      - store_artifacts:
-          path: glean-core/android/build/rustJniLibs/android
-          destination: libs
-      - run:
-          name: Save test results
-          command: |
-            mkdir -p ~/test-results/junit/
-            mkdir -p ~/test-results/tests/
-            cp -a glean-core/android/build/reports/tests ~/test-results/
-            find glean-core/android/build -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
-          when: always
-      - store_artifacts:
-          path: ~/test-results/tests
-          destination: test-results
-      - store_test_results:
-          path: ~/test-results
-      - run:
-          name: Upload Kotlin code coverage
-          command: |
-              set +eo pipefail # Don't fail on errors
-              curl -L https://codecov.io/bash > codecov.sh
-              chmod +x codecov.sh
-              ./codecov.sh -Z -f glean-core/android/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml || echo 'Codecov upload failed'
+            ./ghr -replace "${CIRCLE_TAG}" Glean.framework.zip
 
   macOS release build:
     macos:
@@ -493,206 +663,8 @@ jobs:
           root: .
           paths: target/release/libglean_ffi.dylib
 
-  android-packaging:
-    docker:
-      - image: circleci/android:api-28-ndk
-    steps:
-      - android-setup
-      - run:
-          name: Install packaging dependencies
-          command: |
-            sudo apt update
-            sudo apt install -y gcc-mingw-w64 llvm-7
-            # We need this tool under its common name
-            sudo ln -s /usr/lib/llvm-7/bin/dsymutil /usr/bin/dsymutil
-      - run:
-          name: Add additional targets
-          command: |
-            rustup target add x86_64-pc-windows-gnu x86_64-apple-darwin
-      - run:
-          name: Fix broken mingw toolchain
-          command: |
-            # Fix broken libraries
-            # https://github.com/rust-lang/rust/issues/47048
-            # https://github.com/rust-lang/rust/issues/49078
-            # https://wiki.archlinux.org/index.php/Rust#Windows
-            for lib in crt2.o dllcrt2.o libmsvcrt.a; do cp -v /usr/x86_64-w64-mingw32/lib/$lib ~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-pc-windows-gnu/lib/; done
-      - attach_workspace:
-          at: macos
-      - run:
-          name: Put macOS build in place
-          command: |
-            mkdir -p target/x86_64-apple-darwin/release
-            cp -a macos/target/release/libglean_ffi.dylib target/x86_64-apple-darwin/release
-      - run:
-          name: Package a release artifact
-          command: |
-            export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_PC_WINDOWS_GNU_RUSTFLAGS="-C linker=x86_64-w64-mingw32-gcc"
-            export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_PC_WINDOWS_GNU_AR=x86_64-w64-mingw32-ar
-            export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_PC_WINDOWS_GNU_CC=x86_64-w64-mingw32-gcc
-            # A hack to force-skip macOS builds.
-            # We re-use the dylib generated in the "macOS release build" step.
-            export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_AR=true
-            export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_CC=true
-            export RUSTC=$(pwd)/bin/rust-wrapper-hack.sh
-
-            echo "rust.targets=arm,arm64,x86_64,x86,linux-x86-64,win32-x86-64-gnu,darwin" > local.properties
-
-            ./gradlew --no-daemon assembleRelease
-            ./gradlew --no-daemon publish
-            ./gradlew --no-daemon checkMavenArtifacts
-          environment:
-            GRADLE_OPTS: -Xmx2048m
-            TARGET_CFLAGS: -DNDEBUG
-      - store_artifacts:
-          path: build/maven
-          destination: build
-      - persist_to_workspace:
-          root: .
-          paths: build
-
-  android-release:
-    docker:
-      - image: circleci/rust:latest
-    steps:
-      - checkout
-      - attach_workspace:
-          at: .
-      - run:
-          name: Get ghr release tool
-          command: |
-              GHR=ghr_v0.13.0_linux_amd64
-              GHR_SHA256=c428627270ae26e206cb526cb8c7bdfba475dd278f6691ddaf863355adadfa13
-              curl -sfSL --retry 5 --retry-delay 10 -O "https://github.com/tcnksm/ghr/releases/download/v0.13.0/${GHR}.tar.gz"
-              echo "${GHR_SHA256} *${GHR}.tar.gz" | shasum -a 256 -c -
-              tar -xf "${GHR}.tar.gz"
-              cp ./${GHR}/ghr ghr
-      - run:
-          name: Publish a release on GitHub
-          command: |
-            VERSION="${CIRCLE_TAG}"
-            RAWVERSION="${VERSION#v}"
-            VERSIONFILE=.buildconfig.yml
-            if ! grep -q "libraryVersion: ${RAWVERSION}" "${VERSIONFILE}"; then
-               echo "=================================================="
-               echo "${VERSIONFILE} does not contain the expected tagged version ${RAWVERSION}"
-               echo "Instead it has:"
-               grep "libraryVersion:" "${VERSIONFILE}"
-               echo "Ensure the tag corresponds to the version in ${VERSIONFILE}"
-               echo "=================================================="
-               exit 1
-            fi
-
-            PKGDIR=./build/package
-            # Collect all files into a single directory
-            mkdir -p ${PKGDIR}
-            # The glean-gradle-plugin also creates releases with an "unspecified" version
-            # when used internally. We don't need to ship those.
-            find ./build/maven/org/mozilla/telemetry/ \( \( -name "*.aar*" -or -name "*.jar*" -or -name "*.pom*" \) -and -not -name "*unspecified*" \) \
-              -exec cp {} ${PKGDIR} \;
-
-            # Bundle all release files up into a single zip file
-            ZIPFILE=glean-${VERSION}.zip
-            zip --junk-paths ${ZIPFILE} ${PKGDIR}/*
-            mv ${ZIPFILE} ${PKGDIR}
-
-            # Upload to GitHub
-            ./ghr -replace ${VERSION} ${PKGDIR}
-
-  # via https://circleci.com/blog/deploying-documentation-to-github-pages-with-continuous-integration/
-  Generate Rust documentation:
-    docker:
-      - image: circleci/rust:latest
-    steps:
-      - checkout
-      - run:
-          name: Version information
-          command: rustc --version; cargo --version; rustup --version
-      - run:
-          name: Install mdbook
-          command: |
-              wget https://github.com/rust-lang-nursery/mdBook/releases/download/v0.3.0/mdbook-v0.3.0-x86_64-unknown-linux-gnu.tar.gz
-              tar -xvf mdbook-v0.3.0-x86_64-unknown-linux-gnu.tar.gz
-              mv mdbook /usr/local/cargo/bin/mdbook
-      - run:
-          name: Build Rust documentation
-          command: bin/build-rust-docs.sh
-      - persist_to_workspace:
-          root: build/
-          paths:
-            - docs/book
-            - docs/docs
-            - docs/index.html
-
-  Generate Kotlin documentation:
-    docker:
-      - image: circleci/android:api-28-ndk
-    steps:
-      - android-setup
-      - run:
-          name: Build Kotlin documentation
-          command: ./gradlew --no-daemon docs
-      - persist_to_workspace:
-          root: build/
-          paths: docs/javadoc
-
-  docs-linkcheck:
-    docker:
-      - image: circleci/python
-    steps:
-      - checkout
-      - run:
-          name: Install linkchecker
-          command: sudo apt install linkchecker
-      - attach_workspace:
-          at: build/
-      - run:
-          name: Check internal documentation links
-          command: linkchecker --ignore-url javadoc --ignore-url docs/glean_core --ignore-url ErrorKind --ignore-url std.struct.Error build/docs
-
-  docs-spellcheck:
-    docker:
-      # Use Debian Sid so we get aspell 0.60.8 or later (which contains markdown support)
-      - image: circleci/buildpack-deps:sid
-    steps:
-      - checkout
-      - run:
-          name: Upgrade Debian packages
-          command: sudo apt update
-      - run:
-          name: Install aspell
-          command: sudo apt install aspell aspell-en
-      - run:
-          name: Check documentation spelling
-          command: bin/spellcheck.sh list
-
-  docs-deploy:
-    docker:
-      - image: node:8.10.0
-    steps:
-      - checkout
-      - attach_workspace:
-          at: build/
-      - run:
-          name: Disable jekyll builds
-          command: touch build/docs/.nojekyll
-      - run:
-          name: Show contents
-          command: ls -R
-      # Needed for write access to the GitHub repository;
-      # see https://circleci.com/docs/2.0/gh-bb-integration/#deployment-keys-and-user-keys
-      - add_ssh_keys:
-          fingerprints:
-            - "84:e6:13:7e:94:8d:e2:bf:4f:93:1f:d9:52:80:bb:2c"
-      # The gh-pages npm package can be used to push a directory to a git branch;
-      # see https://www.npmjs.com/package/gh-pages
-      - run:
-          name: Deploy docs to gh-pages branch
-          command: |
-            git config user.email "jrediger@mozilla.com"
-            git config user.name "CircleCI docs-deploy job"
-            npm install -g --silent gh-pages@2.0.1
-            gh-pages --dotfiles --message "[skip ci] Updates" --dist build/docs
+  ###########################################################################
+  # Python
 
   Lint Python:
     docker:
@@ -707,18 +679,23 @@ jobs:
     docker:
       - image: circleci/python:3.5.9
     steps:
+      - checkout
+      - skip-if-doc-only
       - test-python
 
   Python 3_6 tests:
     docker:
       - image: circleci/python:3.6.9
     steps:
+      - checkout
+      - skip-if-doc-only
       - test-python
 
   Python 3_7 tests:
     docker:
       - image: circleci/python:3.7.6
     steps:
+      - checkout
       - test-python
       - persist_to_workspace:
           root: glean-core/python/
@@ -790,19 +767,7 @@ jobs:
     steps:
       - install-rustup
       - setup-rust-toolchain
-      - run:
-          name: Setup mingw toolchain
-          command: |
-            # Install mingw target for rust
-            rustup target install x86_64-pc-windows-gnu
-            # Install mingw Debian packages
-            sudo apt install mingw-w64
-            # Set the linker to use for Rust/mingw
-            echo '[target.x86_64-pc-windows-gnu]' >> ~/.cargo/config
-            echo 'linker = "/usr/bin/x86_64-w64-mingw32-gcc"' >> ~/.cargo/config
-            # Copy a working crt2.o from Debian to the Rust toolchain
-            cp /usr/x86_64-w64-mingw32/lib/crt2.o ~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-pc-windows-gnu/lib/
-            cp /usr/x86_64-w64-mingw32/lib/dllcrt2.o ~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-pc-windows-gnu/lib/
+      - install-mingw
       - checkout
       - run:
           name: Install Python development tools for host
@@ -821,20 +786,87 @@ jobs:
             # variables are configured in CircleCI's environment variables.
             .venv/bin/python3 -m twine upload dist/*
 
+  ###########################################################################
+  # Docs
+
+  docs-linkcheck:
+    docker:
+      - image: circleci/python
+    steps:
+      - checkout
+      - run:
+          name: Install linkchecker
+          command: sudo apt install linkchecker
+      - attach_workspace:
+          at: build/
+      - run:
+          name: Check internal documentation links
+          command: linkchecker --ignore-url javadoc --ignore-url docs/glean_core --ignore-url ErrorKind --ignore-url std.struct.Error build/docs
+
+  docs-spellcheck:
+    docker:
+      # Use Debian Sid so we get aspell 0.60.8 or later (which contains markdown support)
+      - image: circleci/buildpack-deps:sid
+    steps:
+      - checkout
+      - run:
+          name: Upgrade Debian packages
+          command: sudo apt update
+      - run:
+          name: Install aspell
+          command: sudo apt install aspell aspell-en
+      - run:
+          name: Check documentation spelling
+          command: bin/spellcheck.sh list
+
+  # via https://circleci.com/blog/deploying-documentation-to-github-pages-with-continuous-integration/
+  docs-deploy:
+    docker:
+      - image: node:8.10.0
+    steps:
+      - checkout
+      - attach_workspace:
+          at: build/
+      - run:
+          name: Disable jekyll builds
+          command: touch build/docs/.nojekyll
+      - run:
+          name: Show contents
+          command: ls -R
+      # Needed for write access to the GitHub repository;
+      # see https://circleci.com/docs/2.0/gh-bb-integration/#deployment-keys-and-user-keys
+      - add_ssh_keys:
+          fingerprints:
+            - "84:e6:13:7e:94:8d:e2:bf:4f:93:1f:d9:52:80:bb:2c"
+      # The gh-pages npm package can be used to push a directory to a git branch;
+      # see https://www.npmjs.com/package/gh-pages
+      - run:
+          name: Deploy docs to gh-pages branch
+          command: |
+            git config user.email "jrediger@mozilla.com"
+            git config user.name "CircleCI docs-deploy job"
+            npm install -g --silent gh-pages@2.0.1
+            gh-pages --dotfiles --message "[skip ci] Updates" --dist build/docs
+
+###########################################################################
+# Workflows
+
 workflows:
   version: 2
   check-formating:
     jobs:
       - Check Rust formatting
       - Check Swift formatting
+
   lint:
     jobs:
-      - Lint Rust with clippy
-      - Lint Android with ktlint and detekt
-      - Lint Python
-      - Rust FFI header check
       - Lint YAML with yamllint
       - License check
+      - Lint Rust with clippy
+      - Rust FFI header check
+      - Lint Android with ktlint and detekt
+      - Lint Python
+
   ci:
     jobs:
       - Rust tests - stable
@@ -842,13 +874,16 @@ workflows:
       # FIXME: Disabled due to failing to often, bug 1574424
       # - Rust tests - beta
       - Rust tests - minimum version
-      - Android tests
       - C tests
+      - Android tests
       - iOS build and test
       - iOS integration test
       - Python 3_5 tests
       - Python 3_6 tests
       - Python 3_7 tests
+
+  docs:
+    jobs:
       - Generate Rust documentation:
           requires:
             - docs-spellcheck
@@ -860,8 +895,8 @@ workflows:
           requires:
             - Generate Rust documentation
             - Generate Kotlin documentation
-            - Generate Python documentation
             - iOS build and test
+            - Generate Python documentation
       - docs-spellcheck
       - docs-deploy:
           requires:
@@ -874,8 +909,6 @@ workflows:
     jobs:
       - Android tests:
           filters: *release-filters
-      - macOS release build:
-          filters: *release-filters
       - android-packaging:
           requires:
             - Android tests
@@ -884,6 +917,8 @@ workflows:
       - android-release:
           requires:
             - android-packaging
+          filters: *release-filters
+      - macOS release build:
           filters: *release-filters
       - Python 3_7 tests:
           filters: *release-filters
