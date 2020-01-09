@@ -81,7 +81,7 @@ swiftlint: ## Run swiftlint to lint Swift code
 	swiftlint --strict
 
 yamllint: ## Run yamllint to lint YAML files
-	yamllint glean-core
+	yamllint glean-core .circleci
 
 pythonlint: python-setup ## Run flake8 and black to lint Python code
 	$(GLEAN_PYENV)/bin/python3 -m flake8 glean-core/python/glean glean-core/python/tests
