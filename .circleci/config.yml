@@ -1,5 +1,13 @@
 version: 2.1
 
+definitions:
+  - release_filters: &release-filters
+      branches:
+        ignore: /.*/
+      tags:
+        only: /^v.*/
+
+
 commands:
   setup-rust-toolchain:
     parameters:
@@ -822,67 +830,31 @@ workflows:
   release:
     jobs:
       - Android tests:
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v.*/
+          filters: *release-filters
       - macOS release build:
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v.*/
+          filters: *release-filters
       - android-packaging:
           requires:
             - Android tests
             - macOS release build
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v.*/
+          filters: *release-filters
       - android-release:
           requires:
             - android-packaging
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v.*/
+          filters: *release-filters
       - Python 3_7 tests:
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v.*/
+          filters: *release-filters
       - pypi-linux-release:
           requires:
             - Python 3_7 tests
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v.*/
+          filters: *release-filters
       - pypi-macos-release:
           requires:
             - Python 3_7 tests
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v.*/
+          filters: *release-filters
       - iOS build and test:
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v.*/
+          filters: *release-filters
       - Carthage release:
           requires:
             - iOS build and test
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v.*/
+          filters: *release-filters
