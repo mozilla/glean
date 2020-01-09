@@ -225,10 +225,8 @@ public class Glean {
     /// If the ping currently contains no content, it will not be assembled and
     /// queued for sending.
     func submitPingsByName(pingNames: [String]) {
-        // This runs in the background to allow for processing of pings off of the
-        // main thread. Please note that the ping uploader will spawn other async
-        // operations if there are pings to upload.
-        Dispatchers.shared.launchConcurrent {
+        // Queue submitting the ping behind all other metric operations to include them in the ping
+        Dispatchers.shared.launchAPI {
             if !self.isInitialized() {
                 self.logger.error("Glean must be initialized before sending pings")
                 return
@@ -248,7 +246,13 @@ public class Glean {
 
                 if submittedPing != 0 {
                     if let config = self.configuration {
-                        HttpPingUploader(configuration: config).process()
+                        // Run the upload in the background to not block other metric operations.
+                        // Upload is run off of the main thread.
+                        // Please note that the ping uploader will spawn other async
+                        // operations if there are pings to upload.
+                        Dispatchers.shared.launchConcurrent {
+                            HttpPingUploader(configuration: config).process()
+                        }
                     }
                 }
             }
