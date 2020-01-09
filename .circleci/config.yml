@@ -882,8 +882,6 @@ workflows:
       - Python 3_6 tests
       - Python 3_7 tests
 
-  docs:
-    jobs:
       - Generate Rust documentation:
           requires:
             - docs-spellcheck
