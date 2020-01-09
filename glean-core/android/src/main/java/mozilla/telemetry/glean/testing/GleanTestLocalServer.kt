@@ -4,10 +4,14 @@
 
 package mozilla.telemetry.glean.testing
 
+import android.content.Context
 import androidx.annotation.VisibleForTesting
+import androidx.work.Configuration
+import androidx.work.testing.WorkManagerTestInitHelper
 import mozilla.telemetry.glean.Glean
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
+import java.util.concurrent.Executors
 
 /**
  * This implements a JUnit rule for writing tests for Glean SDK metrics.
@@ -31,6 +35,7 @@ import org.junit.runner.Description
  */
 @VisibleForTesting(otherwise = VisibleForTesting.NONE)
 class GleanTestLocalServer(
+    val context: Context,
     private val localPort: Int
 ) : TestWatcher() {
     /**
@@ -38,5 +43,15 @@ class GleanTestLocalServer(
      */
     override fun starting(description: Description?) {
         Glean.testSetLocalEndpoint(localPort)
+
+        val config = Configuration.Builder()
+            // Use a single thread executor, we cannot make background upload
+            // tasks run on the main thread, otherwise the application will crash
+            // with a "networking on the main thread" exception.
+            .setExecutor(Executors.newSingleThreadExecutor())
+            .build()
+
+        // Initialize WorkManager for instrumentation tests.
+        WorkManagerTestInitHelper.initializeTestWorkManager(context, config)
     }
 }
