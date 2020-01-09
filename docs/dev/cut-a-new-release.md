@@ -14,7 +14,6 @@ The development & release process roughly follows the [GitFlow model](https://nv
 **Table of Contents**:
 
 * [Published artifacts](#published-artifacts)
-* [Development](#development)
 * [Standard release](#standard-release)
 * [Hotfix release for latest version](#hotfix-release-for-latest-version)
 * [Hotfix release for previous version](#hotfix-release-for-previous-version)
