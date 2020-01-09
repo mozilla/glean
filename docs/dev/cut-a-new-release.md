@@ -73,7 +73,7 @@ When CI has finished and is green for your specific release branch, you are read
     ```
 4. Tag the release on GitHub:
     1. [Draft a New Release](https://github.com/mozilla/glean/releases/new) in the GitHub UI (`Releases > Draft a New Release`).
-    2. Enter `v<myversion>` as the tag. It's important this is the same as the tags you put in the links in the changelog.
+    2. Enter `v<myversion>` as the tag. It's important this is the same as the version you specified to the `prepare_release.sh` script, with the `v` prefix added.
     3. Select the `release` branch as the target.
      4. Under the description, paste the contents of the release notes from `CHANGELOG.md`.
 5. Wait for the CI build to complete for the tag.
@@ -133,7 +133,7 @@ When CI has finished and is green for your hotfix branch, you are ready to cut a
     ```
 4. Tag the release on GitHub:
     1. [Draft a New Release](https://github.com/mozilla/glean/releases/new) in the GitHub UI (`Releases > Draft a New Release`).
-    2. Enter `v<myversion>` as the tag. It's important this is the same as the tags you put in the links in the changelog.
+    2. Enter `v<myversion>` as the tag. It's important this is the same as the version you specified to the `prepare_release.sh` script, with the `v` prefix added.
     3. Select the `release` branch as the target.
     4. Under the description, paste the contents of the release notes from `CHANGELOG.md`.
 5. Wait for the CI build to complete for the tag.
@@ -189,7 +189,7 @@ If you need to release a hotfix for a previously released version (that is: not 
     ```
 4. Tag the release on GitHub:
     1. [Draft a New Release](https://github.com/mozilla/glean/releases/new) in the GitHub UI (`Releases > Draft a New Release`).
-    2. Enter `v<myversion>` as the tag. It's important this is the same as the tags you put in the links in the changelog.
+    2. Enter `v<myversion>` as the tag. It's important this is the same as the version you specified to the `prepare_release.sh` script, with the `v` prefix added.
     3. Select the support branch (e.g. `support/v24.0`) as the target.
     4. Under the description, paste the contents of the release notes from `CHANGELOG.md`.
 5. Wait for the CI build to complete for the tag.
