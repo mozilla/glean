@@ -251,6 +251,14 @@ jobs:
     macos:
       xcode: "11.3.0"
     steps:
+      - run:
+          name: Set Ruby Version
+          command: echo 'chruby ruby-2.6.5' >> ~/.bash_profile
+      - run:
+          name: Show Ruby environment
+          command: |
+            ruby --version
+            gem env
       - install-rustup
       - setup-rust-toolchain
       - checkout
