@@ -1,7 +1,7 @@
 # Glean development & release process
 
 Glean consists of multiple libraries for different platforms and targets.
-The main supported libraries are releases as one.
+The main supported libraries are released as one.
 The following document describes the development and release process.
 Development happens on the main repository <https://github.com/mozilla/glean>.
 
@@ -20,7 +20,7 @@ The development & release process roughly follows the [GitFlow model](https://nv
 
 ## Published artifacts
 
-* The Kotlin libraries are published: [GitHub Releases](https://github.com/mozilla/glean/releases), [Mozilla Maven](https://maven.mozilla.org/?prefix=maven2/org/mozilla/telemetry/).
+* The Kotlin libraries are published to [GitHub Releases](https://github.com/mozilla/glean/releases) and [Mozilla Maven](https://maven.mozilla.org/?prefix=maven2/org/mozilla/telemetry/).
 * Python bindings are published on PyPI: [glean-sdk](https://pypi.org/project/glean-sdk/).
 * iOS framework artifacts: [GitHub Releases](https://github.com/mozilla/glean/releases).
 * Rust crates are published on crates.io: [glean-core](https://crates.io/crates/glean-core), [glean-ffi](https://crates.io/crates/glean-ffi).
@@ -97,7 +97,7 @@ When CI has finished and is green for your specific release branch, you are read
     1. [Draft a New Release](https://github.com/mozilla/glean/releases/new) in the GitHub UI (`Releases > Draft a New Release`).
     2. Enter `v<myversion>` as the tag. It's important this is the same as the tags you put in the links in the changelog.
     3. Select the `release` branch as the target.
-    3. Under the description, paste the contents of the release notes from `CHANGELOG.md`.
+     4. Under the description, paste the contents of the release notes from `CHANGELOG.md`.
 5. Wait for the CI build to complete for the tag.
     * You can check [on CircleCI for the running build](https://circleci.com/gh/mozilla/glean).
 6. Release the Rust crates:
@@ -157,7 +157,7 @@ When CI has finished and is green for your hotfix branch, you are ready to cut a
     1. [Draft a New Release](https://github.com/mozilla/glean/releases/new) in the GitHub UI (`Releases > Draft a New Release`).
     2. Enter `v<myversion>` as the tag. It's important this is the same as the tags you put in the links in the changelog.
     3. Select the `release` branch as the target.
-    3. Under the description, paste the contents of the release notes from `CHANGELOG.md`.
+    4. Under the description, paste the contents of the release notes from `CHANGELOG.md`.
 5. Wait for the CI build to complete for the tag.
     * You can check [on CircleCI for the running build](https://circleci.com/gh/mozilla/glean).
 6. Release the Rust crates:
@@ -213,7 +213,7 @@ If you need to release a hotfix for a previously released version (that is: not 
     1. [Draft a New Release](https://github.com/mozilla/glean/releases/new) in the GitHub UI (`Releases > Draft a New Release`).
     2. Enter `v<myversion>` as the tag. It's important this is the same as the tags you put in the links in the changelog.
     3. Select the support branch (e.g. `support/v24.0`) as the target.
-    3. Under the description, paste the contents of the release notes from `CHANGELOG.md`.
+    4. Under the description, paste the contents of the release notes from `CHANGELOG.md`.
 5. Wait for the CI build to complete for the tag.
     * You can check [on CircleCI for the running build](https://circleci.com/gh/mozilla/glean).
 6. Release the Rust crates:
