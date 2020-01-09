@@ -114,7 +114,7 @@ commands:
           name: Install mingw
           command: |
             sudo apt update
-            sudo apt install -y gcc-mingw-w64 llvm-7
+            sudo apt install -y gcc-mingw-w64
       - run:
           name: Add mingw target
           command: |
