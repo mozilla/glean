@@ -805,7 +805,7 @@ jobs:
             GLEAN_PYTHON_MINGW_BUILD=1 .venv/bin/python3 setup.py bdist_wheel
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
-            # .venv/bin/python3 -m twine upload dist/*
+            .venv/bin/python3 -m twine upload dist/*
 
 workflows:
   version: 2
@@ -855,7 +855,6 @@ workflows:
           filters:
             branches:
               only: master
-      - pypi-windows-release
 
   release:
     jobs:
@@ -879,6 +878,10 @@ workflows:
             - Python 3_7 tests
           filters: *release-filters
       - pypi-macos-release:
+          requires:
+            - Python 3_7 tests
+          filters: *release-filters
+      - pypi-windows-release:
           requires:
             - Python 3_7 tests
           filters: *release-filters
