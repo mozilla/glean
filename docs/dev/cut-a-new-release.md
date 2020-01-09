@@ -15,7 +15,7 @@ The development & release process roughly follows the [GitFlow model](https://nv
 
 * [Published artifacts](#published-artifacts)
 * [Development](#development)
-* [Regular release](#regular-release)
+* [Standard release](#standard-release)
 * [Hotfix release for latest version](#hotfix-release-for-latest-version)
 * [Hotfix release for previous version](#hotfix-release-for-previous-version)
 
@@ -26,7 +26,7 @@ The development & release process roughly follows the [GitFlow model](https://nv
 * iOS framework artifacts: [GitHub Releases](https://github.com/mozilla/glean/releases).
 * Rust crates are published on crates.io: [glean-core](https://crates.io/crates/glean-core), [glean-ffi](https://crates.io/crates/glean-ffi).
 
-## Regular Release
+## Standard Release
 
 Releases can only be done by one of the Glean maintainers.
 
