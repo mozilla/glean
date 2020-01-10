@@ -119,6 +119,9 @@ commands:
           name: Add mingw target
           command: |
             rustup target add x86_64-pc-windows-gnu
+            # Set the linker to use for Rust/mingw
+            echo '[target.x86_64-pc-windows-gnu]' >> ~/.cargo/config
+            echo 'linker = "/usr/bin/x86_64-w64-mingw32-gcc"' >> ~/.cargo/config
       - run:
           name: Fix broken mingw toolchain
           command: |
@@ -128,23 +131,29 @@ commands:
             # https://wiki.archlinux.org/index.php/Rust#Windows
             for lib in crt2.o dllcrt2.o libmsvcrt.a; do cp -v /usr/x86_64-w64-mingw32/lib/$lib ~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-pc-windows-gnu/lib/; done
 
-  install-ghr:
-    parameters:
-      ghr-filename:
-        type: string
-      ghr-sha256:
-        type: string
+  install-ghr-darwin:
     steps:
       - run:
           name: Get ghr release tool
           command: |
-              GHR=<<parameters.ghr-filename>>
-              GHR_SHA256=<<parameters.ghr-sha256>>
-              curl -sfSL --retry 5 --retry-delay 10 -O "https://github.com/tcnksm/ghr/releases/download/v0.13.0/${GHR}.tar.gz"
-              echo "${GHR_SHA256} *${GHR}.tar.gz" | shasum -a 256 -c -
-              tar -xf "${GHR}.tar.gz"
-              cp ./${GHR}/ghr ghr
+            GHR=ghr_v0.13.0_darwin_amd64
+            GHR_SHA256=319988a001462f80b37cf40fbc41b9de60b0a1cffa2a338b47b9fe5eef25f60e
+            curl -sfSL --retry 5 --retry-delay 10 -O "https://github.com/tcnksm/ghr/releases/download/v0.13.0/${GHR}.zip"
+            echo "${GHR_SHA256} *${GHR}.zip" | shasum -a 256 -c -
+            unzip "${GHR}.zip"
+            cp ./${GHR}/ghr ghr
 
+  install-ghr-linux:
+    steps:
+      - run:
+          name: Get ghr release tool
+          command: |
+            GHR=ghr_v0.13.0_linux_amd64
+            GHR_SHA256=c428627270ae26e206cb526cb8c7bdfba475dd278f6691ddaf863355adadfa13
+            curl -sfSL --retry 5 --retry-delay 10 -O "https://github.com/tcnksm/ghr/releases/download/v0.13.0/${GHR}.tar.gz"
+            echo "${GHR_SHA256} *${GHR}.tar.gz" | shasum -a 256 -c -
+            tar -xf "${GHR}.tar.gz"
+            cp ./${GHR}/ghr ghr
 
 jobs:
   ###########################################################################
@@ -415,9 +424,7 @@ jobs:
       - checkout
       - attach_workspace:
           at: .
-      - install-ghr:
-          ghr-filename: ghr_v0.13.0_linux_amd64
-          ghr-sha256: c428627270ae26e206cb526cb8c7bdfba475dd278f6691ddaf863355adadfa13
+      - install-ghr-linux
       - run:
           name: Publish a release on GitHub
           command: |
@@ -640,9 +647,7 @@ jobs:
       - checkout
       - attach_workspace:
           at: .
-      - install-ghr:
-          ghr-filename: ghr_v0.13.0_darwin_amd64
-          ghr-sha256: 319988a001462f80b37cf40fbc41b9de60b0a1cffa2a338b47b9fe5eef25f60e
+      - install-ghr-darwin
       - run:
           name: Release Carthage archive on GitHub
           command: |
