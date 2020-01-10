@@ -14,3 +14,4 @@ They could be release notes, documentation, hopes, dreams, or whatever: so long 
 * 2019-11-22: [Glean in Private](https://chuttenblog.wordpress.com/2019/11/22/this-week-in-glean-glean-in-private/)
 * 2019-11-29: [Differences](https://fnordig.de/2019/11/29/this-week-in-glean/)
 * 2019-12-06: [Migrations](https://brizental.github.io/2019/12/06/this-week-in-glean-migrations.html)
+* 2020-01-10: [Glossary](https://brizental.github.io/2020/01/10/this-week-in-glean-glossary.html)
