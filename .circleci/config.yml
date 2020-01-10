@@ -86,9 +86,9 @@ commands:
     steps:
       - checkout
       - install-rustup
-      - install-android-targets
       - setup-rust-toolchain:
           rust-version: stable
+      - install-android-targets
       - run:
           name: Install missing Android SDK
           command: |
