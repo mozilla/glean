@@ -29,7 +29,7 @@ crate-type = ["lib", "staticlib", "cdylib"]
 [dependencies]
 lazy_static = "1.4.0"
 ffi-support = "0.3.5"
-log = "0.4.6"
+log = "0.4.8"
 uuid = { version = "0.8.1", features = ["v4"] }
 
 [dependencies.glean-core]
@@ -37,7 +37,7 @@ path = ".."
 version = "23.0.1"
 
 [target.'cfg(target_os = "android")'.dependencies]
-android_logger = { version = "0.8.5", default-features = false }
+android_logger = { version = "0.8.6", default-features = false }
 
 [target.'cfg(not(target_os = "android"))'.dependencies]
 env_logger = { version = "0.7.1", default-features = false, features = ["termcolor", "atty", "humantime"] }
