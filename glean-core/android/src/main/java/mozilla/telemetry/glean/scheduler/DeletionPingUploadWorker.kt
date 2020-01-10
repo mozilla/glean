@@ -41,7 +41,7 @@ class DeletionPingUploadWorker(context: Context, params: WorkerParameters) : Wor
                 ExistingWorkPolicy.KEEP,
                 buildWorkRequest<DeletionPingUploadWorker>(PING_WORKER_TAG))
 
-            if (Glean.isSendingToLocalhost) {
+            if (Glean.isSendingToTestEndpoint) {
                 testFlushWorkManagerJob(context, PING_WORKER_TAG)
             }
         }

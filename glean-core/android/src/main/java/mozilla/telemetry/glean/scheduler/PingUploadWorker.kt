@@ -152,7 +152,7 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
             )
 
             // TODO: only do th9is in test mode
-            if (Glean.isSendingToLocalhost) {
+            if (Glean.isSendingToTestEndpoint) {
                 testFlushWorkManagerJob(context, PING_WORKER_TAG)
             }
         }
