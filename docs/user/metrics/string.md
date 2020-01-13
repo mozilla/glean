@@ -140,7 +140,7 @@ assert 1 == metrics.search_default.name.test_get_num_recorded_errors(
 
 ## Limits
 
-* Fixed maximum string length: 50. Longer strings are truncated. This is measured in the number of bytes when the string is encoded in UTF-8.
+* Fixed maximum string length: 100. Longer strings are truncated. This is measured in the number of bytes when the string is encoded in UTF-8.
 
 ## Examples
 
