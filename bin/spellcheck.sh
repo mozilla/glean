@@ -43,10 +43,9 @@ aspell --version
 # comments/strings etc.
 
 shopt -s nullglob
-shopt -s globstar
 
 dict_filename=./.dictionary
-markdown_sources=(./docs/**/*.md)
+markdown_sources="$(find ./docs -name '*.md')"
 mode="check"
 aspell_args="--lang en_US --mode=markdown"
 
@@ -67,7 +66,7 @@ if [[ ! -f "$dict_filename" ]]; then
     echo "Please check that it doesn't contain any misspellings."
 
     echo "personal_ws-1.1 en 0 utf-8" > "$dict_filename"
-    cat "${markdown_sources[@]}" | aspell ${aspell_args} list | sort -u >> "$dict_filename"
+    cat "${markdown_sources}" | aspell ${aspell_args} list | sort -u >> "$dict_filename"
 elif [[ "$mode" == "list" ]]; then
     # List (default) mode: scan all files, report errors
     declare -i retval=0
@@ -79,7 +78,7 @@ elif [[ "$mode" == "list" ]]; then
         exit "$retval"
     fi
 
-    for fname in "${markdown_sources[@]}"; do
+    for fname in $markdown_sources; do
         command=$(aspell ${aspell_args} --personal="$dict_path" "$mode" < "$fname")
         if [[ -n "$command" ]]; then
             for error in $command; do
@@ -93,7 +92,7 @@ elif [[ "$mode" == "list" ]]; then
     done
     exit "$retval"
 elif [[ "$mode" == "check" ]]; then
-    for fname in "${markdown_sources[@]}"; do
+    for fname in $markdown_sources; do
         aspell --mode=markdown ${aspell_args} --dont-backup --personal="$dict_filename" "$mode" "$fname"
     done
 fi
