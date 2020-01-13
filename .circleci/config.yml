@@ -745,6 +745,12 @@ jobs:
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
             .venv/bin/python3 -m twine upload wheelhouse/*
+      - install-ghr-linux
+      - run:
+          name: Publish to Github
+          command: |
+            # Upload to GitHub
+            ./ghr -replace ${CIRCLE_TAG} wheelhouse
 
   pypi-macos-release:
     macos:
@@ -765,6 +771,12 @@ jobs:
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
             .venv/bin/python3 -m twine upload dist/*
+      - install-ghr-darwin
+      - run:
+          name: Publish to Github
+          command: |
+            # Upload to GitHub
+            ./ghr -replace ${CIRCLE_TAG} dist
 
   pypi-windows-release:
     docker:
@@ -790,6 +802,12 @@ jobs:
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
             .venv/bin/python3 -m twine upload dist/*
+      - install-ghr-linux
+      - run:
+          name: Publish to Github
+          command: |
+            # Upload to GitHub
+            ./ghr -replace ${CIRCLE_TAG} dist
 
   ###########################################################################
   # Docs
