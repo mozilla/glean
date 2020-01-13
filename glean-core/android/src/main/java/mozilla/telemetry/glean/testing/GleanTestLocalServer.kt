@@ -45,8 +45,9 @@ class GleanTestLocalServer(
         Glean.testSetLocalEndpoint(localPort)
 
         val config = Configuration.Builder()
-            // Use a single thread executor, we cannot make background upload
-            // tasks run on the main thread, otherwise the application will crash
+            // Use a single thread executor rather than the default test
+            // executor which runs on the main thread as we cannot make background
+            // upload tasks run on that thread. Otherwise the application will crash
             // with a "networking on the main thread" exception.
             .setExecutor(Executors.newSingleThreadExecutor())
             .build()

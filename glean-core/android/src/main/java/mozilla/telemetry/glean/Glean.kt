@@ -86,8 +86,8 @@ open class GleanInternalAPI internal constructor () {
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     internal var isMainProcess: Boolean? = null
 
-    // When sending pings to localhost, we're probably in instrumented tests. In that
-    // case pings are to be immediately submitted by the WorkManager,
+    // When sending pings to a test endpoint, we're probably in instrumented tests. In that
+    // case pings are to be immediately submitted by the WorkManager.
     internal var isSendingToTestEndpoint: Boolean = false
 
     /**

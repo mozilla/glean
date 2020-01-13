@@ -151,7 +151,8 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
                 buildWorkRequest<PingUploadWorker>(PING_WORKER_TAG)
             )
 
-            // TODO: only do th9is in test mode
+            // Only flush pings immediately if sending to a test endpoint,
+            // which means we're probably in instrumented tests.
             if (Glean.isSendingToTestEndpoint) {
                 testFlushWorkManagerJob(context, PING_WORKER_TAG)
             }
