@@ -70,5 +70,6 @@
         - [Locally-published components in Fenix](dev/howtos/locally-published-components-in-fenix.md)
 - [API Documentation](api/index.md)
 - [Appendix](appendix/index.md)
+  - [Glossary](appendix/glossary.md)
   - [Changelog](appendix/changelog.md)
   - [This Week in Glean](appendix/twig.md)
