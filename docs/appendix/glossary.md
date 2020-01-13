@@ -8,7 +8,21 @@ According to the [dictionary](https://www.merriam-webster.com/dictionary/glean) 
 
 > to gather information or material bit by bit
 
-Glean is the name of the whole product, see [Glean - product analytics & telemetry](https://docs.telemetry.mozilla.org/concepts/glean/glean.html).
+Glean is the combination of the Glean SDK, the Glean pipeline & Glean tools.
+
+See also: [Glean - product analytics & telemetry](https://docs.telemetry.mozilla.org/concepts/glean/glean.html).
+
+## Glean Pipeline
+
+The general data pipeline is the infrastructure that collects, stores, and analyzes telemetry data from our products and logs from various services.
+See [An overview of Mozilla’s Data Pipeline](https://docs.telemetry.mozilla.org/concepts/pipeline/gcp_data_pipeline.html).
+
+The Glean pipeline additionally consists of
+
+* the [Probe Info Service](https://github.com/mozilla/probe-scraper#glean-metrics-data-files),
+* the [schema generator](https://github.com/mozilla/mozilla-schema-generator/),
+* the [JSON Schema transpiler](https://github.com/mozilla/jsonschema-transpiler),
+* the [ping schemas](https://github.com/mozilla-services/mozilla-pipeline-schemas).
 
 ## Glean SDK
 
@@ -18,6 +32,13 @@ The source code is available at <https://github.com/mozilla/glean>.
 ## Glean SDK book
 
 This documentation.
+
+## Glean tools
+
+Glean provides additional tools for its usage:
+
+* [Glean parser](https://mozilla.github.io/glean_parser/) (Source code: <https://github.com/mozilla/glean_parser/>)
+
 
 ## Metric
 
@@ -30,11 +51,6 @@ Glean itself provides [some metrics out of the box](../user/collected-metrics/me
 
 A ping is an entity used to bundle related metrics.
 The Glean SDK provides default pings and allows for custom ping, see [Glean Pings](../user/pings/index.md).
-
-## Pipeline
-
-The data pipeline is the infrastructure that collects, stores, and analyzes telemetry data from our products and logs from various services.
-See [An overview of Mozilla’s Data Pipeline](https://docs.telemetry.mozilla.org/concepts/pipeline/gcp_data_pipeline.html).
 
 ## Submission
 
