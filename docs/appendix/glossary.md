@@ -22,9 +22,9 @@ This documentation.
 ## Metric
 
 Metrics are the individual things being measured using Glean.
-They are defined in [metrics.yaml](https://mozilla.github.io/glean_parser/metrics-yaml.html) files.
+They are defined in [metrics.yaml](https://mozilla.github.io/glean_parser/metrics-yaml.html) files, also known as _registry files_.
 
-Glean itself provides some metrics out of the box.
+Glean itself provides [some metrics out of the box](../user/collected-metrics/metrics.md).
 
 ## Ping
 
@@ -33,7 +33,7 @@ The Glean SDK provides default pings and allows for custom ping, see [Glean Ping
 
 ## Pipeline
 
-The data pipeline is the infrastructure that collects, stores, and analyzes Telemetry data from our products and logs from various services.
+The data pipeline is the infrastructure that collects, stores, and analyzes telemetry data from our products and logs from various services.
 See [An overview of Mozilla’s Data Pipeline](https://docs.telemetry.mozilla.org/concepts/pipeline/gcp_data_pipeline.html).
 
 ## Submission
