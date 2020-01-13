@@ -13,20 +13,12 @@ the details of which are reproduced below.
     <url>https://github.com/mozilla/rkv</url>
   </license>
   <license>
-    <name>Apache License 2.0: color-backtrace</name>
-    <url>https://github.com/athre0z/color-backtrace</url>
-  </license>
-  <license>
     <name>Apache License 2.0: ryu</name>
     <url>https://github.com/dtolnay/ryu</url>
   </license>
   <license>
     <name>Apache License 2.0: winapi</name>
     <url>https://github.com/retep998/winapi-rs</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: fallible-iterator</name>
-    <url>https://github.com/sfackler/rust-fallible-iterator</url>
   </license>
   <license>
     <name>Apache License 2.0: humantime</name>
@@ -37,14 +29,6 @@ the details of which are reproduced below.
     <url>http://github.com/tailhook/quick-error</url>
   </license>
   <license>
-    <name>Apache License 2.0: dirs</name>
-    <url>https://github.com/soc/dirs-rs</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: dirs-sys</name>
-    <url>https://github.com/soc/dirs-sys-rs</url>
-  </license>
-  <license>
     <name>Apache License 2.0: c2-chacha</name>
     <url>https://github.com/cryptocorrosion/cryptocorrosion</url>
   </license>
@@ -53,32 +37,12 @@ the details of which are reproduced below.
     <url>https://github.com/cryptocorrosion/cryptocorrosion</url>
   </license>
   <license>
-    <name>Apache License 2.0: memmap</name>
-    <url>https://github.com/danburkert/memmap-rs</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: addr2line</name>
-    <url>https://github.com/gimli-rs/addr2line</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: arrayvec</name>
-    <url>https://github.com/bluss/arrayvec</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: arrayvec</name>
-    <url>https://github.com/bluss/arrayvec</url>
-  </license>
-  <license>
     <name>Apache License 2.0: autocfg</name>
     <url>https://github.com/cuviper/autocfg</url>
   </license>
   <license>
     <name>Apache License 2.0: backtrace</name>
     <url>https://github.com/rust-lang/backtrace-rs</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: base64</name>
-    <url>https://github.com/alicemaz/rust-base64</url>
   </license>
   <license>
     <name>Apache License 2.0: bitflags</name>
@@ -93,10 +57,6 @@ the details of which are reproduced below.
     <url>https://github.com/alexcrichton/cfg-if</url>
   </license>
   <license>
-    <name>Apache License 2.0: crossbeam-utils</name>
-    <url>https://github.com/crossbeam-rs/crossbeam</url>
-  </license>
-  <license>
     <name>Apache License 2.0: env_logger</name>
     <url>https://github.com/sebasmagri/env_logger/</url>
   </license>
@@ -109,12 +69,8 @@ the details of which are reproduced below.
     <url>https://github.com/mozilla/application-services</url>
   </license>
   <license>
-    <name>Apache License 2.0: findshlibs</name>
-    <url>https://github.com/gimli-rs/findshlibs</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: gimli</name>
-    <url>https://github.com/gimli-rs/gimli</url>
+    <name>Apache License 2.0: hermit-abi</name>
+    <url>https://github.com/hermitcore/rusty-hermit</url>
   </license>
   <license>
     <name>Apache License 2.0: idna</name>
@@ -129,24 +85,12 @@ the details of which are reproduced below.
     <url>https://github.com/rust-lang-nursery/lazy-static.rs</url>
   </license>
   <license>
-    <name>Apache License 2.0: lazycell</name>
-    <url>https://github.com/indiv0/lazycell</url>
-  </license>
-  <license>
     <name>Apache License 2.0: libc</name>
     <url>https://github.com/rust-lang/libc</url>
   </license>
   <license>
     <name>Apache License 2.0: log</name>
     <url>https://github.com/rust-lang/log</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: maybe-uninit</name>
-    <url>https://github.com/est31/maybe-uninit</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: nodrop</name>
-    <url>https://github.com/bluss/arrayvec</url>
   </license>
   <license>
     <name>Apache License 2.0: num-integer</name>
@@ -169,20 +113,8 @@ the details of which are reproduced below.
     <url>https://github.com/rust-lang/pkg-config-rs</url>
   </license>
   <license>
-    <name>Apache License 2.0: plain</name>
-    <url>https://github.com/randomites/plain</url>
-  </license>
-  <license>
     <name>Apache License 2.0: proc-macro2</name>
     <url>https://github.com/alexcrichton/proc-macro2</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: proc-macro2</name>
-    <url>https://github.com/alexcrichton/proc-macro2</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: quote</name>
-    <url>https://github.com/dtolnay/quote</url>
   </license>
   <license>
     <name>Apache License 2.0: quote</name>
@@ -197,24 +129,8 @@ the details of which are reproduced below.
     <url>https://github.com/rust-lang/regex</url>
   </license>
   <license>
-    <name>Apache License 2.0: rust-argon2</name>
-    <url>https://github.com/sru-systems/rust-argon2</url>
-  </license>
-  <license>
     <name>Apache License 2.0: rustc-demangle</name>
     <url>https://github.com/alexcrichton/rustc-demangle</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: rustc_version</name>
-    <url>https://github.com/Kimundi/rustc-version-rs</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: semver</name>
-    <url>https://github.com/steveklabnik/semver</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: semver-parser</name>
-    <url>https://github.com/steveklabnik/semver-parser</url>
   </license>
   <license>
     <name>Apache License 2.0: serde</name>
@@ -233,24 +149,12 @@ the details of which are reproduced below.
     <url>https://github.com/servo/rust-smallvec</url>
   </license>
   <license>
-    <name>Apache License 2.0: stable_deref_trait</name>
-    <url>https://github.com/storyyeller/stable_deref_trait</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: syn</name>
-    <url>https://github.com/dtolnay/syn</url>
-  </license>
-  <license>
     <name>Apache License 2.0: syn</name>
     <url>https://github.com/dtolnay/syn</url>
   </license>
   <license>
     <name>Apache License 2.0: tempfile</name>
     <url>https://github.com/Stebalien/tempfile</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: term</name>
-    <url>https://github.com/Stebalien/term</url>
   </license>
   <license>
     <name>Apache License 2.0: time</name>
@@ -263,10 +167,6 @@ the details of which are reproduced below.
   <license>
     <name>Apache License 2.0: unicode-normalization</name>
     <url>https://github.com/unicode-rs/unicode-normalization</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: unicode-xid</name>
-    <url>https://github.com/unicode-rs/unicode-xid</url>
   </license>
   <license>
     <name>Apache License 2.0: unicode-xid</name>
@@ -290,7 +190,7 @@ the details of which are reproduced below.
   </license>
   <license>
     <name>Apache License 2.0: wasi</name>
-    <url>https://github.com/CraneStation/rust-wasi</url>
+    <url>https://github.com/bytecodealliance/wasi</url>
   </license>
   <license>
     <name>Apache License 2.0: getrandom</name>
@@ -309,19 +209,7 @@ the details of which are reproduced below.
     <url>https://github.com/rust-random/rand</url>
   </license>
   <license>
-    <name>Apache License 2.0: rand_core</name>
-    <url>https://github.com/rust-random/rand</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: rand_core</name>
-    <url>https://github.com/rust-random/rand</url>
-  </license>
-  <license>
     <name>Apache License 2.0: rand_hc</name>
-    <url>https://github.com/rust-random/rand</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: rand_os</name>
     <url>https://github.com/rust-random/rand</url>
   </license>
   <license>
@@ -369,22 +257,6 @@ the details of which are reproduced below.
     <url>https://github.com/droundy/arrayref</url>
   </license>
   <license>
-    <name>BSD 2-Clause "Simplified" License: cloudabi</name>
-    <url>https://github.com/nuxinl/cloudabi</url>
-  </license>
-  <license>
-    <name>BSD 3-Clause "New" or "Revised" License: fuchsia-cprng</name>
-    <url>https://fuchsia.googlesource.com/fuchsia/+/master/garnet/public/rust/fuchsia-cprng</url>
-  </license>
-  <license>
-    <name>Creative Commons Zero v1.0 Universal: constant_time_eq</name>
-    <url>https://github.com/cesarb/constant_time_eq</url>
-  </license>
-  <license>
-    <name>ISC License: rdrand</name>
-    <url>https://github.com/nagisa/rust_rdrand/</url>
-  </license>
-  <license>
     <name>MIT License: matches</name>
     <url>https://github.com/SimonSapin/rust-std-candidates</url>
   </license>
@@ -413,18 +285,6 @@ the details of which are reproduced below.
     <url>https://github.com/mystor/synstructure</url>
   </license>
   <license>
-    <name>MIT License: scroll_derive</name>
-    <url>https://github.com/m4b/scroll_derive</url>
-  </license>
-  <license>
-    <name>MIT License: intervaltree</name>
-    <url>https://github.com/main--/rust-intervaltree</url>
-  </license>
-  <license>
-    <name>MIT License: blake2b_simd</name>
-    <url>https://github.com/oconnor663/blake2_simd</url>
-  </license>
-  <license>
     <name>MIT License: bincode</name>
     <url>https://github.com/servo/bincode</url>
   </license>
@@ -447,18 +307,6 @@ the details of which are reproduced below.
   <license>
     <name>MIT License: winapi-util</name>
     <url>https://github.com/BurntSushi/winapi-util</url>
-  </license>
-  <license>
-    <name>MIT License: redox_users</name>
-    <url>https://gitlab.redox-os.org/redox-os/users</url>
-  </license>
-  <license>
-    <name>MIT License: scroll</name>
-    <url>https://github.com/m4b/scroll</url>
-  </license>
-  <license>
-    <name>MIT License: goblin</name>
-    <url>https://github.com/m4b/goblin</url>
   </license>
   <license>
     <name>Mozilla Public License 2.0: glean-core</name>
