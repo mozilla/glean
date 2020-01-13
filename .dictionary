@@ -1,4 +1,4 @@
-personal_ws-1.1 en 133 utf-8
+personal_ws-1.1 en 136 utf-8
 AAR
 AARs
 APIs
@@ -52,6 +52,7 @@ UUID
 UUIDs
 Xcode
 YAML
+analytics
 aspell
 async
 backend
@@ -126,9 +127,11 @@ timespans
 timezones
 toolchain
 toolchains
+transpiler
 travis
 unhandled
 uploader
 vendored
 xcpretty
+yaml
 zsh
