@@ -1,0 +1,10 @@
+addReviewers: true
+addAssignees: false
+reviewers:
+  - badboy
+  - mdboom
+  - Dexterp37
+  - travis79
+  - brizental
+
+numberOfReviewers: 1
