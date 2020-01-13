@@ -12,7 +12,7 @@
 
   Each entry should be the full URL to the bug in an issue tracker. The use of numbers alone is deprecated and will be an error in the future.
   
-- `data_reviews`: **Required.** A list of URIs to any data collection reviews relevant to the metric.
+- `data_reviews`: **Required.** A list of URIs to any data collection reviews _responses_ relevant to the metric.
   
 - `expires`: **Required.** May be one of the following values:
   - `<build date>`: An ISO date `yyyy-mm-dd` in UTC on which the metric expires. For example, `2019-03-13`. This date is checked at build time. Except in special cases, this form should be used so that the metric automatically "sunsets" after a period of time.
