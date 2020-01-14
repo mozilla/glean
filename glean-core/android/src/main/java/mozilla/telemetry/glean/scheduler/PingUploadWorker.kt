@@ -16,6 +16,7 @@ import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import mozilla.telemetry.glean.Glean
+import mozilla.telemetry.glean.utils.testFlushWorkManagerJob
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileNotFoundException
@@ -147,7 +148,14 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
             WorkManager.getInstance(context).enqueueUniqueWork(
                 PING_WORKER_TAG,
                 ExistingWorkPolicy.KEEP,
-                buildWorkRequest<PingUploadWorker>(PING_WORKER_TAG))
+                buildWorkRequest<PingUploadWorker>(PING_WORKER_TAG)
+            )
+
+            // Only flush pings immediately if sending to a test endpoint,
+            // which means we're probably in instrumented tests.
+            if (Glean.isSendingToTestEndpoint) {
+                testFlushWorkManagerJob(context, PING_WORKER_TAG)
+            }
         }
 
         /**

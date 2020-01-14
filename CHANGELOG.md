@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v23.0.1...master)
+[Full changelog](https://github.com/mozilla/glean/compare/v24.0.0...master)
+
+# v24.0.0 (2020-01-14)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v23.0.1...v24.0.0)
 
 * General:
   * **Breaking Change** An `enableUpload` parameter has been added to the `initialize()`
@@ -11,6 +15,9 @@
     application is running. The application will no longer "wake up" at 4am
     using the Work Manager.
   * The code for migrating data from Glean SDK before version 19 was removed.
+  * When using the `GleanTestLocalServer` rule in instrumented tests, pings are
+    immediately flushed by the `WorkManager` and will reach the test endpoint as
+    soon as possible.
 * Python:
   * The Python bindings now support Python 3.5 - 3.7.
   * The Python bindings are now distributed as a wheel on Linux, macOS and
