@@ -1,64 +1,206 @@
-# Glean Release Process
+# Glean release process
 
-These are the steps needed to cut a new release from latest master.
+The Glean SDK consists of multiple libraries for different platforms and targets.
+The main supported libraries are released as one.
+Development happens on the main repository <https://github.com/mozilla/glean>.
+See [Contributing](../contributing.md) for how to contribute changes to the Glean SDK.
 
-1. Update the changelog.
-    1. Add any missing important changes under the `Unreleased changes` headline.
-    2. Commit any changes to the changelog file due to the previous step.
-2. Run `bin/prepare-release.sh <new version>`
-    1. The new version should be the next patch, minor or major version of what is currently released.
-    2. Let it create a commit for you.
-3. Land the new commit that performs the steps above. This takes a PR, typically, because of branch protection on master.
-4. Cut the actual release.
-    1. Click "Releases", and then "Draft a New Release" in the GitHub UI.
-    2. Enter `v<myversion>` as the tag. It's important this is the same as the tags you put in the links in the changelog.
-    3. Under the description, paste the contents of the release notes from `CHANGELOG.md`.
-    4. Note that the release is not available until the CI build completes for that tag.
-        - You can check [on CircleCI for the running build](https://circleci.com/gh/mozilla/glean).
-    5. Release the Rust crates:
+The development & release process roughly follows the [GitFlow model](https://nvie.com/posts/a-successful-git-branching-model/).
 
-       ```
-       cd glean-core
-       cargo publish --verbose
-       cd ffi
-       cargo publish --verbose
-       ```
+> **Note:** The rest of this section assumes that `upstream` points to the `https://github.com/mozilla/glean` repository,
+> while `origin` points to the developer fork.
+> For some developer workflows, `upstream` can be the same as `origin`.
 
-### Published artifacts
+**Table of Contents**:
 
-* The Kotlin libraries are published: [GitHub Releases](https://github.com/mozilla/glean/releases), [Mozilla Maven](https://maven.mozilla.org/?prefix=maven2/org/mozilla/telemetry/).
+* [Published artifacts](#published-artifacts)
+* [Standard release](#standard-release)
+* [Hotfix release for latest version](#hotfix-release-for-latest-version)
+* [Hotfix release for previous version](#hotfix-release-for-previous-version)
+
+## Published artifacts
+
+* The Kotlin libraries are published to [GitHub Releases](https://github.com/mozilla/glean/releases) and [Mozilla Maven](https://maven.mozilla.org/?prefix=maven2/org/mozilla/telemetry/).
 * Python bindings are published on PyPI: [glean-sdk](https://pypi.org/project/glean-sdk/).
-* Artifacts for iOS will be [generated on release soon](https://bugzilla.mozilla.org/show_bug.cgi?id=1598276).
+* iOS framework artifacts: [GitHub Releases](https://github.com/mozilla/glean/releases).
 * Rust crates are published on crates.io: [glean-core](https://crates.io/crates/glean-core), [glean-ffi](https://crates.io/crates/glean-ffi).
 
-## New point-releases
+## Standard Release
 
-If the new release is based on the current master, just follow the above release process.
+Releases can only be done by one of the Glean maintainers.
 
-> **Note:** The rest of this section assumes that `upstream` points to the `mozilla/glean` repository, while `origin` points to the developer fork. For some developer workflows, `upstream` can be the same as `origin`.
+* Main development branch: `master`
+* Main release branch: `release`
+* Specific release branch: `release-vX.Y.Z`
+* Hotfix branch: `hotfix-X.Y.(Z+1)`
 
-Otherwise follow these steps to release a point-release on top an older release that is behind latest master:
+### Create a release branch
 
-1. Ensure your fixes are landed on master first (if required).
-2. Create a new branch named `release-vX.Y` which will be used for all point-releases on the `vX.Y` series. Example:
+1. Create a release branch from the `master` branch:
+    ```
+    git checkout -b release-v25.0.0 master
+    ```
+2. Update the changelog .
+    1. Add any missing important changes under the `Unreleased changes` headline.
+    2. Commit any changes to the changelog file due to the previous step.
+3. Run `bin/prepare-release.sh <new version>` to bump the version number.
+    1. The new version should be the next patch, minor or major version of what is currently released.
+    2. Let it create a commit for you.
+4. Push the new release branch:
+    ```
+    git push upstream release-v25.0.0
+    ```
+5. Wait for CI to finish on that branch and ensure it's green: <https://circleci.com/gh/mozilla/glean/tree/release-v25.0.0>
+6. Apply additional commits for bug fixes to this branch.
+    * Adding large new features here is strictly prohibited. They need to go to the `master` branch and wait for the next release.
 
-   ```
-   git checkout -b release-v19.1 v19.0.0
-   git push -u upstream release-v19.1
-   ```
+### Finish a release branch
 
-3. Make a new branch with any fixes to be included in the release, *remembering not to make any breaking API changes.*.
-   This may involve cherry-picking fixes from master, or developing a new fix directly against the branch.
-   Example:
+When CI has finished and is green for your specific release branch, you are ready to cut a release.
 
-   ```
-   git checkout -b fixes-for-v1.19.1 release-v19.1
-   git cherry-pick 37d35304a4d1d285c8f6f3ce3df3c412fcd2d6c6
-   git push -u origin fixes-for-v1.19.1
-   ```
-4. Follow the [above steps](#glean-release-process) for cutting a new release, except that:
-    * When opening a PR to land the commits, target the `release-vX.Y` branch rather than master.
-    * When cutting the new release via GitHub's UI, target the `release-vX.Y` branch rather than master.
+1. Check out the main release branch:
+    ```
+    git checkout release
+    ```
+2. Merge the specific release branch:
+    ```
+    git merge --no-ff release-v25.0.0
+    ```
+3. Push the main release branch:
+    ```
+    git push upstream release
+    ```
+4. Tag the release on GitHub:
+    1. [Draft a New Release](https://github.com/mozilla/glean/releases/new) in the GitHub UI (`Releases > Draft a New Release`).
+    2. Enter `v<myversion>` as the tag. It's important this is the same as the version you specified to the `prepare_release.sh` script, with the `v` prefix added.
+    3. Select the `release` branch as the target.
+     4. Under the description, paste the contents of the release notes from `CHANGELOG.md`.
+5. Wait for the CI build to complete for the tag.
+    * You can check [on CircleCI for the running build](https://circleci.com/gh/mozilla/glean).
+6. Release the Rust crates:
+    ```
+    cd glean-core
+    cargo publish --verbose
+    cd ffi
+    cargo publish --verbose
+    ```
+7. Send a pull request to merge back the specific release branch to the development branch: <https://github.com/mozilla/glean/compare/master...release-v25.0.0?expand=1>
+    * This is important so that no changes are lost.
+    * This might have merge conflicts with the `master` branch, which you need to fix before it is merged.
+8. Once the above pull request lands, delete the specific release branch.
 
-> **Note:** Point-releases for older versions should be rarely required.
-> We support the last released version and fixes should go there whenever possible.
+## Hotfix release for latest version
+
+If the latest released version requires a bug fix, a hotfix branch is used.
+
+### Create a hotfix branch
+
+1. Create a hotfix branch from the main release branch:
+    ```
+    git checkout -b hotfix-v25.0.1 release
+    ```
+3. Run `bin/prepare-release.sh <new version>` to bump the version number.
+    1. The new version should be the next patch version of what is currently released.
+    2. Let it create a commit for you.
+4. Push the hotfix branch:
+    ```
+    git push upstream hotfix-v25.0.1
+    ```
+5. Create a local hotfix branch for bugfixes:
+    ```
+    git checkout -b bugfix hotfix-v25.0.1
+    ```
+5. Fix the bug and commit the fix in one or more separate commits.
+6. Push your bug fixes and create a pull request against the hotfix branch: <https://github.com/mozilla/glean/compare/hotfix-v25.0.1...your-name:bugfix?expand=1>
+7. When that pull request lands, wait for CI to finish on that branch and ensure it's green: <https://circleci.com/gh/mozilla/glean/tree/hotfix-v25.0.1>
+
+### Finish a hotfix branch
+
+When CI has finished and is green for your hotfix branch, you are ready to cut a release, similar to a normal release:
+
+1. Check out the main release branch:
+    ```
+    git checkout release
+    ```
+2. Merge the hotfix branch:
+    ```
+    git merge --no-ff hotfix-v25.0.1
+    ```
+3. Push the main release branch:
+    ```
+    git push upstream release
+    ```
+4. Tag the release on GitHub:
+    1. [Draft a New Release](https://github.com/mozilla/glean/releases/new) in the GitHub UI (`Releases > Draft a New Release`).
+    2. Enter `v<myversion>` as the tag. It's important this is the same as the version you specified to the `prepare_release.sh` script, with the `v` prefix added.
+    3. Select the `release` branch as the target.
+    4. Under the description, paste the contents of the release notes from `CHANGELOG.md`.
+5. Wait for the CI build to complete for the tag.
+    * You can check [on CircleCI for the running build](https://circleci.com/gh/mozilla/glean).
+6. Release the Rust crates:
+    ```
+    cd glean-core
+    cargo publish --verbose
+    cd ffi
+    cargo publish --verbose
+    ```
+7. Send a pull request to merge back the hotfix branch to the development branch: <https://github.com/mozilla/glean/compare/master...hotfix-v25.0.1?expand=1>
+    * This is important so that no changes are lost.
+    * This might have merge conflicts with the `master` branch, which you need to fix before it is merged.
+8. Once the above pull request lands, delete the hotfix branch.
+
+## Hotfix release for previous version
+
+If you need to release a hotfix for a previously released version (that is: not the latest released version), you need a support branch.
+
+> **Note**: This should rarely happen. We generally support only the latest released version of Glean.
+
+### Create a support and hotfix branch
+
+1. Create a support branch from the version tag and push it:
+    ```
+    git checkout -b support/v24.0 v24.0.0
+    git push upstream support/v24.0
+    ```
+2. Create a hotfix branch for this support branch:
+    ```
+    git checkout -b hotfix-v24.0.1 support/v24.0
+    ```
+3. Fix the bug and commit the fix in one or more separate commits into your hotfix branch.
+4. Push your bug fixes and create a pull request against the support branch: <https://github.com/mozilla/glean/compare/support/v24.0...your-name:hotfix-v24.0.1?expand=1>
+5. When that pull request lands, wait for CI to finish on that branch and ensure it's green: <https://circleci.com/gh/mozilla/glean/tree/support/v24.0>
+
+### Finish a support branch
+
+1. Check out the support branch:
+    ```
+    git checkout support/v24.0
+    ```
+2. Update the changelog .
+    1. Add any missing important changes under the `Unreleased changes` headline.
+    2. Commit any changes to the changelog file due to the previous step.
+3. Run `bin/prepare-release.sh <new version>` to bump the version number.
+    1. The new version should be the next patch version of the support branch.
+    2. Let it create a commit for you.
+3. Push the support branch:
+    ```
+    git push upstream support/v24.0
+    ```
+4. Tag the release on GitHub:
+    1. [Draft a New Release](https://github.com/mozilla/glean/releases/new) in the GitHub UI (`Releases > Draft a New Release`).
+    2. Enter `v<myversion>` as the tag. It's important this is the same as the version you specified to the `prepare_release.sh` script, with the `v` prefix added.
+    3. Select the support branch (e.g. `support/v24.0`) as the target.
+    4. Under the description, paste the contents of the release notes from `CHANGELOG.md`.
+5. Wait for the CI build to complete for the tag.
+    * You can check [on CircleCI for the running build](https://circleci.com/gh/mozilla/glean).
+6. Release the Rust crates:
+    ```
+    cd glean-core
+    cargo publish --verbose
+    cd ffi
+    cargo publish --verbose
+    ```
+7. Send a pull request to merge back any bug fixes to the development branch: <https://github.com/mozilla/glean/compare/master...support/v24.0?expand=1>
+    * This is important so that no changes are lost.
+    * This might have merge conflicts with the `master` branch, which you need to fix before it is merged.
+8. Once the above pull request lands, delete the support branch.
