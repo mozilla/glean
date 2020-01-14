@@ -10,9 +10,8 @@ import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import mozilla.telemetry.glean.Glean
+import mozilla.telemetry.glean.utils.testFlushWorkManagerJob
 import java.io.File
-
-private const val LOG_TAG = "glean/DeletionPing"
 
 /**
  * This class is the worker class used by [WorkManager] to handle uploading the ping to the server.
@@ -41,6 +40,10 @@ class DeletionPingUploadWorker(context: Context, params: WorkerParameters) : Wor
                 PING_WORKER_TAG,
                 ExistingWorkPolicy.KEEP,
                 buildWorkRequest<DeletionPingUploadWorker>(PING_WORKER_TAG))
+
+            if (Glean.isSendingToTestEndpoint) {
+                testFlushWorkManagerJob(context, PING_WORKER_TAG)
+            }
         }
 
         /**

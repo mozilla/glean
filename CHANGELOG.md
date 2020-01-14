@@ -11,6 +11,9 @@
     application is running. The application will no longer "wake up" at 4am
     using the Work Manager.
   * The code for migrating data from Glean SDK before version 19 was removed.
+  * When using the `GleanTestLocalServer` rule in instrumented tests, pings are
+    immediately flushed by the `WorkManager` and will reach the test endpoint as
+    soon as possible.
 * Python:
   * The Python bindings now support Python 3.5 - 3.7.
   * The Python bindings are now distributed as a wheel on Linux, macOS and
