@@ -343,6 +343,7 @@ class Glean:
         metrics.glean.internal.metrics.os.set(platform.system())
         metrics.glean.internal.metrics.os_version.set(platform.release())
         metrics.glean.internal.metrics.architecture.set(platform.machine())
+        metrics.glean.internal.metrics.locale.set(util.get_locale_tag())
 
         sysinfo = hardware.get_system_information()
         metrics.glean.internal.metrics.device_manufacturer.set(sysinfo.manufacturer)

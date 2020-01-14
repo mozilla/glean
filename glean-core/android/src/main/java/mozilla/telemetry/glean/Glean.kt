@@ -436,6 +436,7 @@ open class GleanInternalAPI internal constructor () {
         GleanInternalMetrics.deviceManufacturer.setSync(Build.MANUFACTURER)
         GleanInternalMetrics.deviceModel.setSync(Build.MODEL)
         GleanInternalMetrics.architecture.setSync(Build.SUPPORTED_ABIS[0])
+        GleanInternalMetrics.locale.setSync(getLocaleTag())
 
         configuration.channel?.let {
             GleanInternalMetrics.appChannel.setSync(it)
