@@ -527,15 +527,19 @@ jobs:
             # See https://circleci.com/docs/2.0/testing-ios/#pre-starting-the-simulator
             xcrun instruments -w "iPhone 11 (13.3) [" || true
       - run:
-          name: Run XCode build, tests and generate documentation
+          name: Run iOS build
+          command: bash bin/run-ios-build.sh
+      - run:
+          name: Run iOS tests
           command: |
-            bash bin/run-ios-build.sh
             if git log -1 "$CIRCLE_SHA1" | grep -q '\[doc only\]'; then
-                true
+                echo "Skipping this step. Last commit was tagged to not require tests."
             else
                 bash bin/run-ios-tests.sh
             fi
-            bash bin/build-swift-docs.sh
+      - run:
+          name: Generate Swift documentation
+          command: bash bin/build-swift-docs.sh
       - store_artifacts:
           path: raw_xcodebuild.log
           destination: raw_xcodebuild.log
@@ -546,13 +550,6 @@ jobs:
           root: build/
           paths: docs/swift
       - skip-if-doc-only
-      - run:
-          name: Check skip condition before running more steps
-          command: |
-            if git log -1 "$CIRCLE_SHA1" | grep -q '\[doc only\]'; then
-                echo "Skipping this step. Last commit was tagged to not require tests."
-                circleci-agent step halt
-            fi
       - run:
           name: Build Carthage archive
           no_output_timeout: 20m
