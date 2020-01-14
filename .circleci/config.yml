@@ -612,7 +612,6 @@ jobs:
           name: Setup build environment
           command: |
             rustup target add aarch64-apple-ios x86_64-apple-ios
-            bin/bootstrap.sh
             # See https://circleci.com/docs/2.0/testing-ios/#pre-starting-the-simulator
             xcrun instruments -w "iPhone 11 (13.3) [" || true
       - attach_workspace:
