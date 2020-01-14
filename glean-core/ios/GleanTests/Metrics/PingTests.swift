@@ -43,7 +43,12 @@ class PingTests: XCTestCase {
     }
 
     func testSendingOfCustomPings() {
-        let customPing = Ping(name: "custom", includeClientId: true, sendIfEmpty: false)
+        let customPing = Ping<NoReasonCodes>(
+            name: "custom",
+            includeClientId: true,
+            sendIfEmpty: false,
+            reasonCodes: []
+        )
 
         let counter = CounterMetricType(
             category: "telemetry",
@@ -73,7 +78,12 @@ class PingTests: XCTestCase {
     }
 
     func testSendingOfCustomPingsWithoutClientId() {
-        let customPing = Ping(name: "custom", includeClientId: false, sendIfEmpty: false)
+        let customPing = Ping<NoReasonCodes>(
+            name: "custom",
+            includeClientId: false,
+            sendIfEmpty: false,
+            reasonCodes: []
+        )
 
         let counter = CounterMetricType(
             category: "telemetry",
@@ -119,7 +129,7 @@ class PingTests: XCTestCase {
         expectation = expectation(description: "Completed unexpected upload")
         expectation?.isInverted = true
 
-        Glean.shared.submitPingsByName(pingNames: ["unknown"])
+        Glean.shared.submitPingByName(pingName: "unknown")
 
         // We wait for a timeout to happen, as we don't expect any data to be sent.
         waitForExpectations(timeout: 5.0) { _ in

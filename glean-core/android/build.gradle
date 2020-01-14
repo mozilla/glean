@@ -27,7 +27,7 @@ apply plugin: 'jacoco'
  * Everytime this hash is changed it should also be changed in
  * glean-core/python/tests/conftest.py
  */
-String GLEAN_PING_SCHEMA_GIT_HASH = "f2a7ce4"
+String GLEAN_PING_SCHEMA_GIT_HASH = "ee08e7c"
 String GLEAN_PING_SCHEMA_URL = "https://raw.githubusercontent.com/mozilla-services/mozilla-pipeline-schemas/$GLEAN_PING_SCHEMA_GIT_HASH/schemas/glean/glean/glean.1.schema.json"
 
 // Set configuration for the glean_parser

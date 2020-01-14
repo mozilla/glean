@@ -8,7 +8,11 @@
     in the baseline ping ([`glean.baseline.locale`](https://github.com/mozilla/glean/blob/c261205d6e84d2ab39c50003a8ffc3bd2b763768/glean-core/metrics.yaml#L28-L42))
     is redundant and will be removed by the end of the quarter.
   * Drop the Glean handle and move state into glean-core ([#664](https://github.com/mozilla/glean/pull/664))
-  * If an experiment includes no `extra` fields, it will no longer include `{"extra": null}` in the JSON paylod.
+  * If an experiment includes no `extra` fields, it will no longer include `{"extra": null}` in the JSON payload.
+  * Support for ping `reason` codes was added.
+  * The metrics ping will now include `reason` codes that indicate why it was
+    submitted.
+  * The version of `glean_parser` has been upgraded to 1.17.3
 * Android:
   * Collections performed before initialization (preinit tasks) are now dispatched off
     the main thread during initialization.

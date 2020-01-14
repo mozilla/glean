@@ -21,6 +21,14 @@ class MetricsPingScheduler {
 
     var timer: Timer?
 
+    init() {
+        // In testing mode, set the "last seen version" as the same as this one.
+        // Otherwise, all we will ever send is pings for the "upgrade" reason.
+        if Dispatchers.shared.testingMode {
+            isDifferentVersion()
+        }
+    }
+
     /// Schedules the metrics ping collection at the due time.
     ///
     /// - parameters:
@@ -29,7 +37,12 @@ class MetricsPingScheduler {
     ///                            or to attempt to schedule it for the current calendar day. If the latter and
     ///                            we're overdue for the expected collection time, the task is scheduled for
     ///                            immediate execution.
-    func schedulePingCollection(_ now: Date, sendTheNextCalendarDay: Bool) {
+    ///     * reason: The reason the ping is being submitted.
+    func schedulePingCollection(
+        _ now: Date,
+        sendTheNextCalendarDay: Bool,
+        reason: GleanMetrics.Pings.MetricsReasonCodes
+    ) {
         var fireDate = Calendar.current.date(
             bySettingHour: Constants.dueHourOfTheDay,
             minute: 0,
@@ -60,7 +73,7 @@ class MetricsPingScheduler {
             self.logger.debug("MetricsPingScheduler timer fired!")
             // When the timer fires, call `collectPingAndReschedule` with the current
             // date/time.
-            self.collectPingAndReschedule(Date(), startupPing: false)
+            self.collectPingAndReschedule(Date(), startupPing: false, reason: reason)
         }
     }
 
@@ -105,7 +118,11 @@ class MetricsPingScheduler {
         // this check at startup (when overduePingAsFirst is true).
         if isDifferentVersion() {
             Dispatchers.shared.serialOperationQueue.addOperation {
-                self.collectPingAndReschedule(now, startupPing: true)
+                self.collectPingAndReschedule(
+                    now,
+                    startupPing: true,
+                    reason: GleanMetrics.Pings.MetricsReasonCodes.upgrade
+                )
             }
             return
         }
@@ -127,7 +144,11 @@ class MetricsPingScheduler {
             // The metrics ping was already sent today. Schedule it for the next
             // calendar day. This addresses (1).
             logger.info("The 'metrics' ping was already sent today, \(now).")
-            schedulePingCollection(now, sendTheNextCalendarDay: true)
+            schedulePingCollection(
+                now,
+                sendTheNextCalendarDay: true,
+                reason: GleanMetrics.Pings.MetricsReasonCodes.tomorrow
+            )
         } else if isAfterDueTime(now) {
             logger.info("The 'metrics' ping is scheduled for immediate collection, \(now)")
             // **IMPORTANT**
@@ -146,12 +167,20 @@ class MetricsPingScheduler {
             // context, see bug 1604861 and the implementation of
             // `collectPingAndReschedule`.
             Dispatchers.shared.serialOperationQueue.addOperation {
-                self.collectPingAndReschedule(now, startupPing: true)
+                self.collectPingAndReschedule(
+                    now,
+                    startupPing: true,
+                    reason: GleanMetrics.Pings.MetricsReasonCodes.overdue
+                )
             }
         } else {
             // This covers (3).
             logger.info("The 'metrics' collection is scheduled for today, \(now)")
-            schedulePingCollection(now, sendTheNextCalendarDay: false)
+            schedulePingCollection(
+                now,
+                sendTheNextCalendarDay: false,
+                reason: GleanMetrics.Pings.MetricsReasonCodes.today
+            )
         }
     }
 
@@ -159,8 +188,14 @@ class MetricsPingScheduler {
     ///
     /// - parameters:
     ///     * now: A `Date` representing the current time
-    func collectPingAndReschedule(_ now: Date, startupPing: Bool = false) {
-        logger.info("Collecting the 'metrics' ping, now = \(now), startup = \(startupPing)")
+    ///     * reason: The reason the ping is being submitted.
+    func collectPingAndReschedule(
+        _ now: Date,
+        startupPing: Bool = false,
+        reason: GleanMetrics.Pings.MetricsReasonCodes
+    ) {
+        let reasonString = GleanMetrics.Pings.shared.metrics.reasonCodes[reason.rawValue]
+        logger.info("Collecting the 'metrics' ping, now = \(now), startup = \(startupPing), reason = \(reasonString)")
         if startupPing {
             // **IMPORTANT**
             //
@@ -176,15 +211,19 @@ class MetricsPingScheduler {
             //
             // * Do not change this line without checking what it implies for the above wall
             // of text. *
-            Glean.shared.submitPingsByNameSync(pingNames: ["metrics"])
+            Glean.shared.submitPingByNameSync(pingName: "metrics", reason: reasonString)
         } else {
-            GleanMetrics.Pings.shared.metrics.submit()
+            GleanMetrics.Pings.shared.metrics.submit(reason: reason)
         }
         // Update the collection date: we don't really care if we have data or not, let's
         // always update the sent date.
         updateSentDate(now)
         // Reschedule the collection.
-        schedulePingCollection(now, sendTheNextCalendarDay: true)
+        schedulePingCollection(
+            now,
+            sendTheNextCalendarDay: true,
+            reason: GleanMetrics.Pings.MetricsReasonCodes.reschedule
+        )
     }
 
     /// Get the date the metrics ping was last collected.

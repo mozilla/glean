@@ -27,7 +27,7 @@ import mozilla.telemetry.glean.GleanMetrics.GleanBaseline
 import mozilla.telemetry.glean.GleanMetrics.GleanInternalMetrics
 import mozilla.telemetry.glean.GleanMetrics.Pings
 import mozilla.telemetry.glean.net.BaseUploader
-import mozilla.telemetry.glean.private.PingType
+import mozilla.telemetry.glean.private.PingTypeBase
 import mozilla.telemetry.glean.private.RecordedExperimentData
 import mozilla.telemetry.glean.scheduler.GleanLifecycleObserver
 import mozilla.telemetry.glean.scheduler.DeletionPingUploadWorker
@@ -78,7 +78,7 @@ open class GleanInternalAPI internal constructor () {
     internal lateinit var metricsPingScheduler: MetricsPingScheduler
 
     // Keep track of ping types that have been registered before Glean is initialized.
-    private val pingTypeQueue: MutableSet<PingType> = mutableSetOf()
+    private val pingTypeQueue: MutableSet<PingTypeBase> = mutableSetOf()
 
     // This is used to cache the process state and is used by the function `isMainProcess()`
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -468,7 +468,7 @@ open class GleanInternalAPI internal constructor () {
      * Collect a ping and return a string
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    internal fun testCollect(ping: PingType): String? {
+    internal fun testCollect(ping: PingTypeBase): String? {
         return LibGleanFFI.INSTANCE.glean_ping_collect(ping.handle)?.getAndConsumeRustString()
     }
 
@@ -476,11 +476,12 @@ open class GleanInternalAPI internal constructor () {
      * Handle the background event and send the appropriate pings.
      */
     internal fun handleBackgroundEvent() {
-        submitPings(listOf(Pings.baseline, Pings.events))
+        Pings.baseline.submit()
+        Pings.events.submit()
     }
 
     /**
-     * Collect and submit a list of pings for eventual upload.
+     * Collect and submit a ping for eventual upload.
      *
      * The ping content is assembled as soon as possible, but upload is not
      * guaranteed to happen immediately, as that depends on the upload
@@ -489,18 +490,18 @@ open class GleanInternalAPI internal constructor () {
      * If the ping currently contains no content, it will not be assembled and
      * queued for sending.
      *
-     * @param pings List of pings to submit.
+     * @param ping Ping to submit.
+     * @param reason The reason the ping is being submitted.
      * @return The async [Job] performing the work of assembling the ping
      */
-    internal fun submitPings(pings: List<PingType>): Job? {
-        val pingNames = pings.map { it.name }
-        return submitPingsByName(pingNames)
+    internal fun submitPing(ping: PingTypeBase, reason: String? = null): Job? {
+        return submitPingByName(ping.name, reason)
     }
 
     /**
-     * Collect and submit a list of pings for eventual upload by name.
+     * Collect and submit a ping for eventual upload by name.
      *
-     * Each ping will be looked up in the known instances of [PingType]. If the
+     * The ping will be looked up in the known instances of [PingType]. If the
      * ping isn't known, an error is logged and the ping isn't queued for uploading.
      *
      * The ping content is assembled as soon as possible, but upload is not
@@ -511,18 +512,19 @@ open class GleanInternalAPI internal constructor () {
      * queued for sending, unless explicitly specified otherwise in the registry
      * file.
      *
-     * @param pingNames List of ping names to submit.
+     * @param pingName Name of the ping to submit.
+     * @param reason The reason the ping is being submitted.
      * @return The async [Job] performing the work of assembling the ping
      */
     @Suppress("EXPERIMENTAL_API_USAGE")
-    internal fun submitPingsByName(pingNames: List<String>) = Dispatchers.API.launch {
-        submitPingsByNameSync(pingNames)
+    internal fun submitPingByName(pingName: String, reason: String? = null) = Dispatchers.API.launch {
+        submitPingByNameSync(pingName, reason)
     }
 
     /**
-     * Collect and submit a list of pings for eventual upload by name, synchronously.
+     * Collect and submit a ping (by its name) for eventual upload, synchronously.
      *
-     * Each ping will be looked up in the known instances of [PingType]. If the
+     * The ping will be looked up in the known instances of [PingType]. If the
      * ping isn't known, an error is logged and the ping isn't queued for uploading.
      *
      * The ping content is assembled as soon as possible, but upload is not
@@ -533,9 +535,10 @@ open class GleanInternalAPI internal constructor () {
      * queued for sending, unless explicitly specified otherwise in the registry
      * file.
      *
-     * @param pingNames List of ping names to submit.
+     * @param pingName Name of the ping to submit.
+     * @param reason The reason the ping is being submitted.
      */
-    internal fun submitPingsByNameSync(pingNames: List<String>) {
+    internal fun submitPingByNameSync(pingName: String, reason: String? = null) {
         if (!isInitialized()) {
             Log.e(LOG_TAG, "Glean must be initialized before submitting pings.")
             return
@@ -546,11 +549,9 @@ open class GleanInternalAPI internal constructor () {
             return
         }
 
-        val pingArray = StringArray(pingNames.toTypedArray(), "utf-8")
-        val pingArrayLen = pingNames.size
-        val submittedPing = LibGleanFFI.INSTANCE.glean_submit_pings_by_name(
-            pingArray,
-            pingArrayLen
+        val submittedPing = LibGleanFFI.INSTANCE.glean_submit_ping_by_name(
+            pingName,
+            reason
         ).toBoolean()
 
         if (submittedPing) {
@@ -640,7 +641,7 @@ open class GleanInternalAPI internal constructor () {
      * Register a [PingType] in the registry associated with this [Glean] object.
      */
     @Synchronized
-    internal fun registerPingType(pingType: PingType) {
+    internal fun registerPingType(pingType: PingTypeBase) {
         if (this.isInitialized()) {
             LibGleanFFI.INSTANCE.glean_register_ping_type(
                 pingType.handle

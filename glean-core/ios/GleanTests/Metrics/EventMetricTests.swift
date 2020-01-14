@@ -287,7 +287,7 @@ class EventMetricTypeTests: XCTestCase {
         setupHttpResponseStub()
         expectation = expectation(description: "Completed upload")
 
-        Glean.shared.submitPingsByName(pingNames: ["events"])
+        Glean.shared.submitPingByName(pingName: "events")
 
         waitForExpectations(timeout: 5.0) { error in
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")

@@ -365,34 +365,39 @@ class Glean:
         return cls._data_dir
 
     @classmethod
-    def test_collect(cls, ping: "PingType") -> str:
+    def test_collect(cls, ping: "PingType", reason: Optional[str] = None) -> str:
         """
         Collect a ping and return as a string.
+
+        Args:
+            ping: The PingType to submit
+            reason (str, optional): The reason code to record in the ping.
         """
-        return _ffi.ffi_decode_string(_ffi.lib.glean_ping_collect(ping._handle))
+        return _ffi.ffi_decode_string(
+            _ffi.lib.glean_ping_collect(ping._handle, _ffi.ffi_encode_string(reason))
+        )
 
     @classmethod
-    def _submit_pings(cls, pings: List["PingType"]):
+    def _submit_ping(cls, ping: "PingType", reason: Optional[str] = None):
         """
-        Collect and submit a list of pings for eventual uploading.
+        Collect and submit a ping for eventual uploading.
 
         If the ping currently contains no content, it will not be assembled and
         queued for sending.
 
         Args:
-            pings (list of PingType): List of pings to submit.
+            ping (PingType): Ping to submit.
+            reason (str, optional): The reason the ping was submitted.
         """
-        ping_names = [ping.name for ping in pings]
-
-        cls._submit_pings_by_name(ping_names)
+        cls._submit_ping_by_name(ping.name, reason)
 
     @classmethod
     @Dispatcher.task
-    def _submit_pings_by_name(cls, ping_names: List[str]):
+    def _submit_ping_by_name(cls, ping_name: str, reason: Optional[str] = None):
         """
-        Collect and submit a list of pings for eventual uploading by name.
+        Collect and submit a ping by name for eventual uploading.
 
-        Each ping will be looked up in the known instances of
+        The ping will be looked up in the known instances of
         `glean.metrics.PingType`. If the ping isn't known, an error is logged
         and the ping isn't queued for uploading.
 
@@ -400,7 +405,8 @@ class Glean:
         queued for sending.
 
         Args:
-            ping_names (list of str): List of ping names to submit.
+            ping_name (str): Ping name to submit.
+            reason (str, optional): The reason code to include in the ping.
         """
         if not cls.is_initialized():
             log.error("Glean must be initialized before submitting pings.")
@@ -410,8 +416,8 @@ class Glean:
             log.error("Glean must be enabled before submitting pings.")
             return
 
-        sent_ping = _ffi.lib.glean_submit_pings_by_name(
-            _ffi.ffi_encode_vec_string(ping_names), len(ping_names)
+        sent_ping = _ffi.lib.glean_submit_ping_by_name(
+            _ffi.ffi_encode_string(ping_name), _ffi.ffi_encode_string(reason),
         )
 
         if sent_ping:

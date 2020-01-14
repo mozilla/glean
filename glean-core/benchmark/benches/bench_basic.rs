@@ -18,7 +18,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
 
     let mut glean = Glean::new(cfg).unwrap();
 
-    let ping = PingType::new("sample", true, false);
+    let ping = PingType::new("sample", true, false, vec![]);
     glean.register_ping_type(&ping);
 
     let call_counter: CounterMetric = CounterMetric::new(CommonMetricData {
@@ -39,7 +39,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
         b.iter(|| {
             call_counter.add(&glean, 1);
             string.set(&glean, "hello world");
-            glean.submit_ping(&ping).unwrap();
+            glean.submit_ping(&ping, None).unwrap();
         })
     });
 }

@@ -42,10 +42,11 @@ class PingTypeTest {
             logPings = true
         ))
 
-        val customPing = PingType(
+        val customPing = PingType<NoReasonCodes>(
             name = "custom",
             includeClientId = true,
-            sendIfEmpty = false
+            sendIfEmpty = false,
+            reasonCodes = listOf()
         )
 
         val counter = CounterMetricType(
@@ -82,10 +83,11 @@ class PingTypeTest {
             logPings = true
         ))
 
-        val customPing = PingType(
+        val customPing = PingType<NoReasonCodes>(
             name = "custom_ping",
             includeClientId = true,
-            sendIfEmpty = false
+            sendIfEmpty = false,
+            reasonCodes = listOf()
         )
 
         val counter = CounterMetricType(
@@ -122,10 +124,11 @@ class PingTypeTest {
             logPings = true
         ))
 
-        val customPing = PingType(
+        val customPing = PingType<NoReasonCodes>(
             name = "custom-ping",
             includeClientId = true,
-            sendIfEmpty = false
+            sendIfEmpty = false,
+            reasonCodes = listOf()
         )
 
         val counter = CounterMetricType(
@@ -162,10 +165,11 @@ class PingTypeTest {
             logPings = true
         ))
 
-        val customPing = PingType(
+        val customPing = PingType<NoReasonCodes>(
             name = "custom",
             includeClientId = false,
-            sendIfEmpty = false
+            sendIfEmpty = false,
+            reasonCodes = listOf()
         )
 
         val counter = CounterMetricType(
@@ -213,7 +217,7 @@ class PingTypeTest {
         counter.add()
         assertTrue(counter.testHasValue())
 
-        Glean.submitPingsByName(listOf("unknown"))
+        Glean.submitPingByName("unknown")
 
         assertFalse("We shouldn't have any pings scheduled",
             getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued

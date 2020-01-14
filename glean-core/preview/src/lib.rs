@@ -29,11 +29,11 @@
 //! };
 //! glean_preview::initialize(cfg, ClientInfoMetrics::unknown())?;
 //!
-//! let prototype_ping = PingType::new("prototype", true, true);
+//! let prototype_ping = PingType::new("prototype", true, true, vec!());
 //!
 //! glean_preview::register_ping_type(&prototype_ping);
 //!
-//! prototype_ping.submit();
+//! prototype_ping.submit(None);
 //! # Ok(())
 //! # }
 //! ```
@@ -191,8 +191,8 @@ pub fn register_ping_type(ping: &metrics::PingType) {
 /// ## Return value
 ///
 /// Returns true if a ping was assembled and queued, false otherwise.
-pub fn submit_ping(ping: &metrics::PingType) -> bool {
-    submit_ping_by_name(&ping.name)
+pub fn submit_ping(ping: &metrics::PingType, reason: Option<&str>) -> bool {
+    submit_ping_by_name(&ping.name, reason)
 }
 
 /// Collect and submit a ping for eventual uploading by name.
@@ -202,17 +202,8 @@ pub fn submit_ping(ping: &metrics::PingType) -> bool {
 /// ## Return value
 ///
 /// Returns true if a ping was assembled and queued, false otherwise.
-pub fn submit_ping_by_name(ping: &str) -> bool {
-    submit_pings_by_name(&[ping.to_string()])
-}
-
-/// Collect and submit multiple pings by name for eventual uploading.
-///
-/// ## Return value
-///
-/// Returns true if at least one ping was assembled and queued, false otherwise.
-pub fn submit_pings_by_name(pings: &[String]) -> bool {
-    with_glean(|glean| glean.submit_pings_by_name(pings))
+pub fn submit_ping_by_name(ping: &str, reason: Option<&str>) -> bool {
+    with_glean(|glean| glean.submit_ping_by_name(ping, reason).unwrap_or(false))
 }
 
 #[cfg(test)]

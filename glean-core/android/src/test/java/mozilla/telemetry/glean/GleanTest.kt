@@ -21,8 +21,11 @@ import mozilla.telemetry.glean.private.CounterMetricType
 import mozilla.telemetry.glean.private.EventMetricType
 import mozilla.telemetry.glean.private.Lifetime
 import mozilla.telemetry.glean.private.NoExtraKeys
+import mozilla.telemetry.glean.private.NoReasonCodes
 import mozilla.telemetry.glean.private.PingType
 import mozilla.telemetry.glean.private.StringMetricType
+import mozilla.telemetry.glean.rust.LibGleanFFI
+import mozilla.telemetry.glean.rust.toBoolean
 import mozilla.telemetry.glean.scheduler.GleanLifecycleObserver
 import mozilla.telemetry.glean.scheduler.DeletionPingUploadWorker
 import mozilla.telemetry.glean.scheduler.PingUploadWorker
@@ -112,7 +115,7 @@ class GleanTest {
 
     @Test
     fun `sending an empty ping doesn't queue work`() {
-        Glean.submitPings(listOf(Pings.metrics))
+        Pings.metrics.submit()
         assertFalse(getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued)
     }
 
@@ -312,9 +315,8 @@ class GleanTest {
 
         gleanSpy.testDestroyGleanHandle()
         runBlocking {
-            gleanSpy.handleBackgroundEvent()
+            assertFalse(LibGleanFFI.INSTANCE.glean_submit_ping_by_name("events", null).toBoolean())
         }
-        assertFalse(getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued)
     }
 
     @Test
@@ -423,10 +425,11 @@ class GleanTest {
         ))
 
         val pingName = "custom_ping_1"
-        val ping = PingType(
+        val ping = PingType<NoReasonCodes>(
             name = pingName,
             includeClientId = true,
-            sendIfEmpty = false
+            sendIfEmpty = false,
+            reasonCodes = listOf()
         )
         val stringMetric = StringMetricType(
             disabled = false,
@@ -507,7 +510,11 @@ class GleanTest {
     @Test
     fun `Workers should be cancelled when disabling uploading`() {
         // Force the MetricsPingScheduler to schedule the MetricsPingWorker
-        Glean.metricsPingScheduler.schedulePingCollection(Calendar.getInstance(), true)
+        Glean.metricsPingScheduler.schedulePingCollection(
+            Calendar.getInstance(),
+            true,
+            Pings.metricsReasonCodes.overdue
+        )
         // Enqueue a worker to send the baseline ping
         Pings.baseline.submit()
 

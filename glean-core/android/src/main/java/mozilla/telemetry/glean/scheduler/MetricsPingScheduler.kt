@@ -47,6 +47,13 @@ internal class MetricsPingScheduler(
     }
 
     init {
+        // In testing mode, set the "last seen version" as the same as this one.
+        // Otherwise, all we will ever send is pings for the "upgrade" reason.
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        if (Dispatchers.API.testingMode) {
+            isDifferentVersion()
+        }
+
         // When performing the data migration from glean-ac, this scheduler might be
         // provided with a date the 'metrics' ping was last sent. If so, save that in
         // the new storage and use it in this scheduler.
@@ -63,9 +70,14 @@ internal class MetricsPingScheduler(
      *        or to attempt to schedule it for the current calendar day. If the latter and
      *        we're overdue for the expected collection time, the task is scheduled for immediate
      *        execution.
+     * @param reason The reason the metrics ping is being submitted.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    internal fun schedulePingCollection(now: Calendar, sendTheNextCalendarDay: Boolean) {
+    internal fun schedulePingCollection(
+        now: Calendar,
+        sendTheNextCalendarDay: Boolean,
+        reason: Pings.metricsReasonCodes
+    ) {
         // Compute how many milliseconds until the next time the metrics ping
         // needs to collect data.
         val millisUntilNextDueTime = getMillisecondsUntilDueTime(sendTheNextCalendarDay, now)
@@ -76,7 +88,7 @@ internal class MetricsPingScheduler(
         cancel()
 
         timer = Timer("glean.MetricsPingScheduler")
-        timer?.schedule(MetricsPingTimer(this), millisUntilNextDueTime)
+        timer?.schedule(MetricsPingTimer(this, reason), millisUntilNextDueTime)
     }
 
     /**
@@ -187,9 +199,11 @@ internal class MetricsPingScheduler(
         // schedule the metrics ping for immediate collection. We only need to perform
         // this check at startup (when overduePingAsFirst is true).
         if (isDifferentVersion()) {
+            Log.i(LOG_TAG, "The application just updated. Send metrics ping now.")
+
             @Suppress("EXPERIMENTAL_API_USAGE")
             Dispatchers.API.executeTask {
-                collectPingAndReschedule(now, startupPing = true)
+                collectPingAndReschedule(now, startupPing = true, reason = Pings.metricsReasonCodes.upgrade)
             }
             return
         }
@@ -215,12 +229,13 @@ internal class MetricsPingScheduler(
                 // The metrics ping was already sent today. Schedule it for the next
                 // calendar day. This addresses (1).
                 Log.i(LOG_TAG, "The 'metrics' ping was already sent today, ${now.time}.")
-                schedulePingCollection(now, sendTheNextCalendarDay = true)
+                schedulePingCollection(now, sendTheNextCalendarDay = true, reason = Pings.metricsReasonCodes.tomorrow)
             }
             // The ping wasn't already sent today. Are we overdue or just waiting for
             // the right time?  This covers (2)
             isAfterDueTime(now) -> {
                 Log.i(LOG_TAG, "The 'metrics' ping is scheduled for immediate collection, ${now.time}")
+
                 // **IMPORTANT**
                 //
                 // The reason why we're collecting the "metrics" ping in the `Dispatchers.API`
@@ -235,16 +250,18 @@ internal class MetricsPingScheduler(
                 // `Dispatchers.API` thread pool, before any other enqueued task. For more
                 // context, see bug 1604861 and the implementation of
                 // `collectPingAndReschedule`.
+
                 @Suppress("EXPERIMENTAL_API_USAGE")
                 Dispatchers.API.executeTask {
                     // This addresses (2).
-                    collectPingAndReschedule(now, startupPing = true)
+                    collectPingAndReschedule(now, startupPing = true, reason = Pings.metricsReasonCodes.overdue)
                 }
             }
             else -> {
                 // This covers (3).
                 Log.i(LOG_TAG, "The 'metrics' collection is scheduled for today, ${now.time}")
-                schedulePingCollection(now, sendTheNextCalendarDay = false)
+
+                schedulePingCollection(now, sendTheNextCalendarDay = false, reason = Pings.metricsReasonCodes.today)
             }
         }
     }
@@ -254,10 +271,16 @@ internal class MetricsPingScheduler(
      * next collection.
      *
      * @param now a [Calendar] instance representing the current time.
+     * @param startupUp When true, this is a startup ping that should be submitted synchronously.
+     * @param reason The reason the ping is being submitted.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    internal fun collectPingAndReschedule(now: Calendar, startupPing: Boolean = false) {
-        Log.i(LOG_TAG, "Collecting the 'metrics' ping, now = ${now.time}, startup = $startupPing")
+    internal fun collectPingAndReschedule(now: Calendar, startupPing: Boolean, reason: Pings.metricsReasonCodes) {
+        val reasonString = Pings.metrics.reasonCodes[reason.ordinal]
+        Log.i(
+            LOG_TAG,
+            "Collecting the 'metrics' ping, now = ${now.time}, startup = $startupPing, reason = $reasonString"
+        )
         if (startupPing) {
             // **IMPORTANT**
             //
@@ -273,15 +296,15 @@ internal class MetricsPingScheduler(
             //
             // * Do not change this line without checking what it implies for the above wall
             // of text. *
-            Glean.submitPingsByNameSync(listOf("metrics"))
+            Glean.submitPingByNameSync("metrics", reasonString)
         } else {
-            Pings.metrics.submit()
+            Pings.metrics.submit(reason)
         }
         // Update the collection date: we don't really care if we have data or not, let's
         // always update the sent date.
         updateSentDate(getISOTimeString(now, truncateTo = TimeUnit.Day))
         // Reschedule the collection.
-        schedulePingCollection(now, sendTheNextCalendarDay = true)
+        schedulePingCollection(now, sendTheNextCalendarDay = true, reason = Pings.metricsReasonCodes.reschedule)
     }
 
     /**
@@ -339,7 +362,10 @@ internal class MetricsPingScheduler(
  * [MetricsPingScheduler.schedulePingCollection] for scheduling the collection of the
  * "metrics" ping at the due hour.
  */
-internal class MetricsPingTimer(val scheduler: MetricsPingScheduler) : TimerTask() {
+internal class MetricsPingTimer(
+    val scheduler: MetricsPingScheduler,
+    val reason: Pings.metricsReasonCodes
+) : TimerTask() {
     companion object {
         private const val LOG_TAG = "glean/MetricsPingTimer"
     }
@@ -351,6 +377,6 @@ internal class MetricsPingTimer(val scheduler: MetricsPingScheduler) : TimerTask
         // Perform the actual work.
         val now = scheduler.getCalendarInstance()
         Log.d(LOG_TAG, "MetricsPingTimerTask run(), now = ${now.time}")
-        scheduler.collectPingAndReschedule(now)
+        scheduler.collectPingAndReschedule(now, false, reason)
     }
 }
