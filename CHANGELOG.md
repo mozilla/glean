@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v23.0.1...master)
+[Full changelog](https://github.com/mozilla/glean/compare/v24.0.0...master)
+
+# v24.0.0 (2020-01-14)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v23.0.1...v24.0.0)
 
 * General:
   * **Breaking Change** An `enableUpload` parameter has been added to the `initialize()`

@@ -23,7 +23,7 @@ maintenance = { status = "actively-developed" }
 
 [dependencies.glean-core]
 path = ".."
-version = "23.0.1"
+version = "24.0.0"
 
 [dependencies]
 lazy_static = "1.4.0"
