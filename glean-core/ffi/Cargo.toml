@@ -28,7 +28,7 @@ crate-type = ["lib", "staticlib", "cdylib"]
 
 [dependencies]
 lazy_static = "1.4.0"
-ffi-support = "0.3.5"
+ffi-support = "0.4.0"
 log = "0.4.8"
 uuid = { version = "0.8.1", features = ["v4"] }
 
