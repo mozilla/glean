@@ -70,6 +70,48 @@ class DispatchersTest {
     }
 
     @Test
+    fun `queued tasks are flushed off the main thread`() {
+        val mainThread = Thread.currentThread()
+        var threadCanary = 0
+
+        // By setting testing mode to false, we make sure that things
+        // are executed asynchronously.
+        Dispatchers.API.setTestingMode(false)
+        Dispatchers.API.setTaskQueueing(true)
+
+        // Add 3 tasks to queue each one setting threadCanary to true
+        // to indicate if any task has ran.
+        repeat(3) {
+            Dispatchers.API.launch {
+                assertNotSame(
+                    "Pre-init tasks must be flushed off the main thread",
+                    mainThread,
+                    Thread.currentThread()
+                )
+                threadCanary += 1
+            }
+        }
+
+        assertEquals("Task queue contains the correct number of tasks",
+            3, Dispatchers.API.taskQueue.size)
+        assertEquals("Tasks have not run while in queue", 0, threadCanary)
+
+        // Now trigger execution to ensure the tasks fired
+        Dispatchers.API.flushQueuedInitialTasks()
+
+        // Wait for the flushed tasks to be executed.
+        runBlocking {
+            withTimeoutOrNull(2000) {
+                while (threadCanary == 2) {
+                    delay(1)
+                }
+            } ?: assertTrue("Timed out waiting for tasks to execute", false)
+        }
+
+        assertEquals("Task queue is cleared", 0, Dispatchers.API.taskQueue.size)
+    }
+
+    @Test
     fun `queued tasks are executed in the order they are received`() {
         val orderedList = mutableListOf<Int>()
         val jobs = mutableListOf<Job>()
