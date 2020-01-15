@@ -30,8 +30,6 @@ class GleanDebugUtilityTests: XCTestCase {
             let body = (data as NSURLRequest).ohhttpStubs_HTTPBody()
             let json = try! JSONSerialization.jsonObject(with: body!, options: []) as? [String: Any]
             XCTAssert(json != nil)
-            let pingType = (json?["ping_info"] as? [String: Any])!["ping_type"] as? String
-            XCTAssertTrue(Glean.shared.testHasPingType(pingType!))
 
             DispatchQueue.main.async {
                 // Let the response get processed before we mark the expectation fulfilled
