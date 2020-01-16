@@ -447,7 +447,15 @@ void glean_set_experiment_inactive(uint64_t glean_handle, FfiStr experiment_id);
 void glean_set_upload_enabled(uint64_t glean_handle, uint8_t flag);
 
 /**
- *Public destructor for strings managed by the other side of the FFI.
+ * Public destructor for strings managed by the other side of the FFI.
+ *
+ * # Safety
+ *
+ * This will free the string pointer it gets passed in as an argument,
+ * and thus can be wildly unsafe if misused.
+ *
+ * See the documentation of `ffi_support::destroy_c_string` and
+ * `ffi_support::define_string_destructor!` for further info.
  */
 void glean_str_free(char *s);
 

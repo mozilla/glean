@@ -13,6 +13,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.Dispatchers as KotlinDispatchers
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.runBlocking
+import mozilla.telemetry.glean.GleanMetrics.GleanError
 import mozilla.telemetry.glean.GleanMetrics.GleanInternalMetrics
 import mozilla.telemetry.glean.GleanMetrics.Pings
 import mozilla.telemetry.glean.config.Configuration
@@ -556,5 +557,49 @@ class GleanTest {
         runBlocking(KotlinDispatchers.IO) {
             Glean.initialize(context, true)
         }
+    }
+
+    @Test
+    fun `overflowing the task queue records telemetry`() {
+        val server = getMockWebServer()
+        Dispatchers.API.setTestingMode(true)
+        Dispatchers.API.setTaskQueueing(true)
+
+        repeat(110) {
+            Dispatchers.API.launch {
+            }
+        }
+
+        assertEquals("Task queue contains the maximum number of tasks",
+            100, Dispatchers.API.taskQueue.size)
+        assertEquals("overflowCount is correct", 10, Dispatchers.API.overflowCount)
+
+        Glean.handle = 0
+        // Now trigger execution to ensure the tasks fired
+        Glean.initialize(context, true, Glean.configuration.copy(
+            serverEndpoint = "http://" + server.hostName + ":" + server.port,
+            logPings = true
+        ))
+
+        assertEquals(110, GleanError.preinitTasksOverflow.testGetValue())
+
+        Pings.metrics.submit()
+
+        // We can't just test the value of the metric here, because initialize causes a submission
+        // of the metrics ping, and thus a reset of the ping-lifetime metric
+        // Now trigger it to upload
+        triggerWorkManager(context)
+
+        val request = server.takeRequest(20L, TimeUnit.SECONDS)
+        val jsonContent = JSONObject(request.body.readUtf8())
+        assertEquals(
+            110,
+            jsonContent
+                .getJSONObject("metrics")
+                .getJSONObject("counter")
+                .getInt("glean.error.preinit_tasks_overflow")
+        )
+
+        Dispatchers.API.overflowCount = 0
     }
 }
