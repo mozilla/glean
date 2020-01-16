@@ -287,7 +287,7 @@ glean.error:
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1609482
     data_reviews:
-      - TBD
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1609482#c3
     notification_emails:
       - glean-team@mozilla.com
     expires: never
