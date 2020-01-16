@@ -234,10 +234,14 @@ class EventMetricTypeTest {
         val server = getMockWebServer()
 
         val context = getContextWithMockedInfo()
-        resetGlean(context, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port,
-            logPings = true
-        ))
+        resetGlean(
+            context,
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
+                logPings = true
+            ),
+            clearStores = true
+        )
 
         val event = EventMetricType<SomeExtraKeys>(
             disabled = false,
@@ -287,10 +291,14 @@ class EventMetricTypeTest {
         val server = getMockWebServer()
 
         val context = getContextWithMockedInfo()
-        resetGlean(context, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port,
-            logPings = true
-        ))
+        resetGlean(
+            context,
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
+                logPings = true
+            ),
+            clearStores = true
+        )
 
         val event = EventMetricType<SomeExtraKeys>(
             disabled = false,

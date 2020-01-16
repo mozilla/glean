@@ -599,5 +599,7 @@ class GleanTest {
                 .getJSONObject("counter")
                 .getInt("glean.error.preinit_tasks_overflow")
         )
+
+        Dispatchers.API.overflowCount = 0
     }
 }
