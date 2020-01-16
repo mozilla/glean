@@ -30,44 +30,14 @@ class DispatchersTest: XCTestCase {
             "Tasks have not executed while in queue"
         )
 
-        // Now trigger the queue to fire the tasks
-        Dispatchers.shared.flushQueuedInitialTasks()
+        // Now trigger the queue to fire the tasks, we must use the `waitUntilFinished`
+        // parameter to prevent async issues.
+        Dispatchers.shared.flushQueuedInitialTasks(waitUntilFinished: true)
 
         XCTAssertEqual(
             threadCanary,
             3,
             "Tasks have executed"
-        )
-        XCTAssertEqual(
-            Dispatchers.shared.preInitOperations.count,
-            0,
-            "Task queue has cleared"
-        )
-    }
-
-    func testTaskQueuingTimeout() {
-        Dispatchers.shared.setTestingMode(enabled: true)
-        Dispatchers.shared.setTaskQueuing(enabled: true)
-
-        // Add a task to the queue that takes a little longer than the timeout
-        // The timeout is precise so any additional time added should cause it
-        // to time out.
-        Dispatchers.shared.launchAPI {
-            sleep(UInt32(Dispatchers.Constants.queueProcessingTimeout + 0.1))
-        }
-
-        XCTAssertEqual(
-            Dispatchers.shared.preInitOperations.count,
-            1,
-            "Task queue contains the correct number of tasks"
-        )
-
-        // Now trigger the queue to fire the too long task
-        Glean.shared.resetGlean(clearStores: false)
-
-        XCTAssertTrue(
-            (try? GleanMetrics.GleanError.preinitTasksTimeout.testGetValue()) ?? false,
-            "Expected error recorded"
         )
         XCTAssertEqual(
             Dispatchers.shared.preInitOperations.count,
