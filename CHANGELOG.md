@@ -2,6 +2,11 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v24.0.0...master)
 
+* Android:
+  * A new metric `glean.error.preinit_tasks_overflow` was added to report when
+    the preinit task queue overruns, leading to data loss. See [bug
+    1609482](https://bugzilla.mozilla.org/show_bug.cgi?id=1609482)
+
 # v24.0.0 (2020-01-14)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v23.0.1...v24.0.0)

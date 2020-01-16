@@ -44,6 +44,9 @@ internal object Dispatchers {
             const val QUEUE_PROCESSING_TIMEOUT_MS = 5000L
         }
 
+        // The number of items that were added to the queue after it filled up.
+        internal var overflowCount = 0
+
         /**
          * Launch a block of work asynchronously.
          *
@@ -156,6 +159,12 @@ internal object Dispatchers {
                     Log.i(LOG_TAG, "Initial tasks queue completed successfully")
                 }
             }
+
+            // This must happen after `queueInitialTasks.set(false)` is run, or it
+            // would be added to a full task queue and be silently dropped.
+            if (overflowCount > 0) {
+                GleanError.preinitTasksOverflow.add(MAX_QUEUE_SIZE + overflowCount)
+            }
         }
 
         /**
@@ -166,6 +175,12 @@ internal object Dispatchers {
         private fun addTaskToQueue(block: suspend CoroutineScope.() -> Unit) {
             if (taskQueue.size >= MAX_QUEUE_SIZE) {
                 Log.e(LOG_TAG, "Exceeded maximum queue size, discarding task")
+
+                // This value ends up in the `preinit_tasks_overflow` metric, but we
+                // can't record directly there, because that would only add
+                // the recording to an already-overflowing task queue and would be
+                // silently dropped.
+                overflowCount += 1
                 return
             }
 

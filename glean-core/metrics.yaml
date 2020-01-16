@@ -276,3 +276,20 @@ glean.error:
     expires: never
     no_lint:
       - COMMON_PREFIX
+
+  preinit_tasks_overflow:
+    type: counter
+    description:
+      The number of tasks queued in the pre-initialization buffer.
+      Only sent if the buffer overflows.
+    unit:
+      tasks
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1609482
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1609482#c3
+    notification_emails:
+      - glean-team@mozilla.com
+    expires: never
+    no_lint:
+      - COMMON_PREFIX
