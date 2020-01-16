@@ -156,28 +156,13 @@ class Dispatchers {
     }
 
     /// Stop queuing tasks and process any tasks in the queue.
-    func flushQueuedInitialTasks() {
-        // Timeouts are easily accomplished in Swift using DispatchSemaphores and launching
-        // a block of code asynchronously.  This creates a semaphore that we can await with a
-        // timeout to prevent the queued initial tasks from hanging up or taking a long time.
-        let timeout = DispatchSemaphore(value: 0)
-        concurrentOperationsQueue.addOperation {
-            // Add all of the queued operations to the `operationQueue` which will cause them to be
-            // executed serially in the order they were collected.
-            self.serialOperationQueue.addOperations(self.preInitOperations, waitUntilFinished: true)
-            timeout.signal()
-        }
-
-        // Await the async task to complete up to the allowed time and log an error if it
-        // times out.
-        if timeout.wait(timeout: DispatchTime.now() + Constants.queueProcessingTimeout) == .timedOut {
-            logger.error("Timeout processing initial tasks queue")
-            // Turn off queuing to allow for normal background execution mode
-            queueInitialTasks.value = false
-            GleanMetrics.GleanError.preinitTasksTimeout.set(true)
-        } else {
-            logger.info("Initial tasks queue completed successfully")
-        }
+    func flushQueuedInitialTasks(waitUntilFinished: Bool = false) {
+        // Add all of the queued operations to the `operationQueue` which will cause them to be
+        // executed serially in the order they were collected.
+        self.serialOperationQueue.addOperations(
+            self.preInitOperations,
+            waitUntilFinished: waitUntilFinished
+        )
 
         // Turn off queuing to allow for normal background execution mode
         queueInitialTasks.value = false
