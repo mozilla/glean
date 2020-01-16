@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v24.0.0...master)
+[Full changelog](https://github.com/mozilla/glean/compare/v24.1.0...master)
+
+# v24.1.0 (2020-01-16)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v24.0.0...v24.1.0)
 
 * Android:
   * A new metric `glean.error.preinit_tasks_overflow` was added to report when
