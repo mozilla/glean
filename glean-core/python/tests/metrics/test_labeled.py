@@ -20,7 +20,7 @@ from glean.metrics import Lifetime
 from glean.testing import ErrorType
 
 
-def test_labeled_counter_type():
+def test_labeled_counter_type(ping_schema_url):
     labeled_counter_metric = metrics.LabeledCounterMetricType(
         disabled=False,
         category="telemetry",
@@ -40,7 +40,9 @@ def test_labeled_counter_type():
 
     json_content = Glean.test_collect(_builtins.pings.metrics)
 
-    assert 0 == validate_ping.validate_ping(io.StringIO(json_content), sys.stdout)
+    assert 0 == validate_ping.validate_ping(
+        io.StringIO(json_content), sys.stdout, schema_url=ping_schema_url
+    )
 
     tree = json.loads(json_content)
 
@@ -58,7 +60,7 @@ def test_labeled_counter_type():
     )
 
 
-def test_other_label_with_predefined_labels():
+def test_other_label_with_predefined_labels(ping_schema_url):
     labeled_counter_metric = metrics.LabeledCounterMetricType(
         disabled=False,
         category="telemetry",
@@ -82,7 +84,9 @@ def test_other_label_with_predefined_labels():
 
     json_content = Glean.test_collect(_builtins.pings.metrics)
 
-    assert 0 == validate_ping.validate_ping(io.StringIO(json_content), sys.stdout)
+    assert 0 == validate_ping.validate_ping(
+        io.StringIO(json_content), sys.stdout, schema_url=ping_schema_url
+    )
 
     tree = json.loads(json_content)
 
@@ -102,7 +106,7 @@ def test_other_label_with_predefined_labels():
     )
 
 
-def test_other_label_without_predefined_labels():
+def test_other_label_without_predefined_labels(ping_schema_url):
     labeled_counter_metric = metrics.LabeledCounterMetricType(
         disabled=False,
         category="telemetry",
@@ -123,7 +127,9 @@ def test_other_label_without_predefined_labels():
 
     json_content = Glean.test_collect(_builtins.pings.metrics)
 
-    assert 0 == validate_ping.validate_ping(io.StringIO(json_content), sys.stdout)
+    assert 0 == validate_ping.validate_ping(
+        io.StringIO(json_content), sys.stdout, schema_url=ping_schema_url
+    )
 
 
 def test_other_label_without_predefined_labels_before_glean_init():
