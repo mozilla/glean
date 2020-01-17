@@ -526,9 +526,23 @@ jobs:
             bin/bootstrap.sh
             # See https://circleci.com/docs/2.0/testing-ios/#pre-starting-the-simulator
             xcrun instruments -w "iPhone 11 (13.3) [" || true
+            # Store build type for use in cache key
+            if [ -z "${CIRCLE_TAG}" ]; then
+              echo "release" > buildtype.txt
+            else
+              echo "debug" > buildtype.txt
+            fi
+      - restore_cache:
+          keys:
+            - v1-cargo-cache-{{arch}}-{{checksum "buildtype.txt"}}-{{checksum "Cargo.lock"}}
       - run:
           name: Run iOS build
           command: bash bin/run-ios-build.sh
+      - save_cache:
+          paths:
+            - /Users/distiller/.cargo/registry
+            - target
+          key: v1-cargo-cache-{{arch}}-{{checksum "buildtype.txt"}}-{{checksum "Cargo.lock"}}
       - run:
           name: Run iOS tests
           command: |
