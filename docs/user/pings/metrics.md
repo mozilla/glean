@@ -1,16 +1,16 @@
 # The `metrics` ping
 
 ## Description
-The `metrics` ping is intended for all of the metrics that are explicitly set by the application or are included in the application's `metrics.yaml` file (except events). 
-The reported data is tied to the ping's *measurement window*, which is the time between the collection of two `metrics` ping. 
-Ideally, this window is expected to be about 24 hours, given that the collection is scheduled daily at 4AM. 
+The `metrics` ping is intended for all of the metrics that are explicitly set by the application or are included in the application's `metrics.yaml` file (except events).
+The reported data is tied to the ping's *measurement window*, which is the time between the collection of two `metrics` ping.
+Ideally, this window is expected to be about 24 hours, given that the collection is scheduled daily at 4AM.
 Data in the [`ping_info`](index.md#the-ping_info-section) section of the ping can be used to infer the length of this window.
 If the application crashes, unsent recorded metrics are sent along with the next `metrics` ping.
 
 > **Note:** As the `metrics` ping was specifically designed for mobile operating systems, it is not sent when using the Glean Python bindings.
 
 ## Scheduling
-The desired behavior is to collect the ping at the first available opportunity after 4AM local time on a new calendar day. 
+The desired behavior is to collect the ping at the first available opportunity after 4AM local time on a new calendar day.
 This breaks down into three scenarios:
 
 1. the application was just installed;
@@ -19,13 +19,13 @@ This breaks down into three scenarios:
 
 In the first case, since the application was just installed, if the due time for the current calendar day has passed, a `metrics` ping is immediately generated and scheduled for sending. Otherwise, if the due time for the current calendar day has not passed, a ping collection is scheduled for that time.
 
-In the second case, if the `metrics` ping was already collected on the current calendar day, a new collection will be scheduled for the next calendar day, at 4AM. 
+In the second case, if the `metrics` ping was already collected on the current calendar day, a new collection will be scheduled for the next calendar day, at 4AM.
 If no collection happened yet, and the due time for the current calendar day has passed, a `metrics` ping is immediately generated and scheduled for sending.
 
 In the third case, similarly to the previous case, if the `metrics` ping was already collected on the current calendar day when we hit 4AM, then a new collection is scheduled for the next calendar day.
 Otherwise, the `metrics` is immediately collected and scheduled for sending.
 
-More [scheduling examples](#Scheduling-examples) are included below.
+More [scheduling examples](#scheduling-examples) are included below.
 
 ## Contents
 The `metrics` ping contains all of the metrics defined in `metrics.yaml` (except events) that don't specify a ping or where `default` is specified in their [`send in pings`](https://mozilla.github.io/glean_parser/metrics-yaml.html#send-in-pings) property.
@@ -35,7 +35,7 @@ Additionally, error metrics in the `glean.error` category are included in the `m
 The `metrics` ping shall also include the common [`ping_info`](index.md#the-ping_info-section) and ['client_info'](index.md#the-client_info-section) sections.
 
 ### Querying ping contents
-A quick note about querying ping contents (i.e. for [sql.telemetry.mozilla.org](https://sql.telemetry.mozilla.org)):  Each metric in the metrics ping is organized by its metric type, and uses a namespace of 'glean.metrics'. 
+A quick note about querying ping contents (i.e. for [sql.telemetry.mozilla.org](https://sql.telemetry.mozilla.org)):  Each metric in the metrics ping is organized by its metric type, and uses a namespace of 'glean.metrics'.
 For instance, in order to select a String field called `test` you would use `metrics.string['glean.metrics.test']`.
 
 ### Example metrics ping
