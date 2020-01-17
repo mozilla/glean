@@ -753,12 +753,17 @@ jobs:
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
             .venv/bin/python3 -m twine upload wheelhouse/*
+      - run:
+          name: Install perl
+          command: |
+            # Required for shasum
+            sudo apt install perl
       - install-ghr-linux
       - run:
           name: Publish to Github
           command: |
             # Upload to GitHub
-            ./ghr -replace ${CIRCLE_TAG} wheelhouse
+            ./ghr -replace ${CIRCLE_TAG} glean-core/python/wheelhouse
 
   pypi-macos-release:
     macos:
@@ -784,7 +789,7 @@ jobs:
           name: Publish to Github
           command: |
             # Upload to GitHub
-            ./ghr -replace ${CIRCLE_TAG} dist
+            ./ghr -replace ${CIRCLE_TAG} glean-core/python/dist
 
   pypi-windows-release:
     docker:
@@ -815,7 +820,7 @@ jobs:
           name: Publish to Github
           command: |
             # Upload to GitHub
-            ./ghr -replace ${CIRCLE_TAG} dist
+            ./ghr -replace ${CIRCLE_TAG} glean-core/python/dist
 
   ###########################################################################
   # Docs
