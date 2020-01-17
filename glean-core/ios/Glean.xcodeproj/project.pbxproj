@@ -887,7 +887,7 @@
 				BF3DE3A42243A2F20018E23F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		BF3DE3A52243A2F20018E23F /* Build configuration list for PBXNativeTarget "Glean" */ = {
 			isa = XCConfigurationList;
@@ -896,7 +896,7 @@
 				BF3DE3A72243A2F20018E23F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		BF3DE3A82243A2F20018E23F /* Build configuration list for PBXNativeTarget "GleanTests" */ = {
 			isa = XCConfigurationList;
@@ -905,7 +905,7 @@
 				BF3DE3AA2243A2F20018E23F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 	};
