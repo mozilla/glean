@@ -2,6 +2,12 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v24.1.0...master)
 
+* General:
+  * Add `locale` to `client_info` section.
+  * **Deprecation Warning** Since `locale` is now in the `client_info` section, the one
+    in the baseline ping ([`glean.baseline.locale`](https://github.com/mozilla/glean/blob/c261205d6e84d2ab39c50003a8ffc3bd2b763768/glean-core/metrics.yaml#L28-L42))
+    is redundant and will be removed by the end of the quarter.
+
 # v24.1.0 (2020-01-16)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v24.0.0...v24.1.0)
