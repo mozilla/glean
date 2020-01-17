@@ -54,11 +54,17 @@ extension Date {
 
     /// Convenience function to convert a Date to an ISO8601 string
     ///
-    /// - returns: An ISO8601 `String?` representing the current value of the `Date` object
-    func toISO8601String(precision: TimeUnit) -> String? {
+    /// - returns: An ISO8601 `String` representing the current value of the `Date` object
+    func toISO8601String(precision: TimeUnit) -> String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = dateFormatPatterns[precision]
         return dateFormatter.string(from: self)
+    }
+    
+    /// Overloads the operator so that subtraction between two dates results in a TimeInterval representing
+    /// the difference between them
+    static func - (lhs: Date, rhs: Date) -> TimeInterval {
+        return lhs.timeIntervalSinceReferenceDate - rhs.timeIntervalSinceReferenceDate
     }
 }
 

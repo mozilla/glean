@@ -51,15 +51,17 @@ class MetricsPingScheduler {
             fireDate = tomorrow
         }
 
-        logger.debug("Scheduling the 'metrics' ping for \(fireDate)")
-        timer = Timer(
-            fireAt: fireDate,
-            interval: 0.0,
-            target: self,
-            selector: #selector(collectPingAndReschedule),
-            userInfo: nil,
-            repeats: false
+        logger.debug(
+            "Scheduling the 'metrics' ping for \(fireDate), in \(fireDate - now) seconds."
         )
+
+        // Set the timer to fire at the `fireDate`
+        timer = Timer.scheduledTimer(withTimeInterval: fireDate - now, repeats: false) { _ in
+            self.logger.debug("MetricsPingScheduler timer fired!")
+            // When the timer fires, call `collectPingAndReschedule` with the current
+            // date/time.
+            self.collectPingAndReschedule(Date(), startupPing: false)
+        }
     }
 
     /// Determines if the application is a differnet version from the last time it was run. This is used to prevent
@@ -113,11 +115,11 @@ class MetricsPingScheduler {
 
         // We expect to cover 3 cases here:
         //
-        // (1) - the ping was already collected the current calendar day; only schedule
+        // (1) - the ping was already collected on the current calendar day; only schedule
         //       one for collecting the next calendar day at the due time;
-        // (2) - the ping was NOT collected the current calendar day, and we're later than
+        // (2) - the ping was NOT collected on the current calendar day, and we're later than
         //       the due time; collect the ping immediately;
-        // (3) - the ping was NOT collected the current calendar day, but we still have
+        // (3) - the ping was NOT collected on the current calendar day, but we still have
         //       some time to the due time; schedule for sending the current calendar day.
 
         let alreadySentToday = lastSentDate != nil && Calendar.current.isDateInToday(lastSentDate!)
@@ -136,9 +138,10 @@ class MetricsPingScheduler {
             // engines through the `Dispatchers.API` context, so this ensures we are enqueued
             // before any other recording API call.
             //
-            // * Do not change `Dispatchers.shared.serialOperationQueue.addOperation` to
+            // - Do not change `Dispatchers.shared.serialOperationQueue.addOperation` to
             // `Dispatchers.shared.launchAPI` as this would break startup overdue ping
-            //  collection. * `addOperation` schedules the task for immediate execution on the
+            //  collection.
+            // - `addOperation` schedules the task for immediate execution on the
             // `Dispatchers` serial execution queue, before any other enqueued task. For more
             // context, see bug 1604861 and the implementation of
             // `collectPingAndReschedule`.
@@ -156,7 +159,7 @@ class MetricsPingScheduler {
     ///
     /// - parameters:
     ///     * now: A `Date` representing the current time
-    @objc func collectPingAndReschedule(_ now: Date, startupPing: Bool = false) {
+    func collectPingAndReschedule(_ now: Date, startupPing: Bool = false) {
         logger.info("Collecting the 'metrics' ping, now = \(now), startup = \(startupPing)")
         if startupPing {
             // **IMPORTANT**
@@ -186,7 +189,7 @@ class MetricsPingScheduler {
 
     /// Get the date the metrics ping was last collected.
     ///
-    /// - returns: An Optional `Date` representing the date the metrics ping was last collected, or null if no metrics
+    /// - returns: A `Date` representing the when the metrics ping was last collected, or nil if no metrics
     ///            ping was previously collected.
     func getLastCollectedDate() -> Date? {
         var lastCollectedDate: Date?

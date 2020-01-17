@@ -9,45 +9,12 @@ import XCTest
 class MetricsPingSchedulerTests: XCTestCase {
     var expectation: XCTestExpectation?
 
-    private func setupHttpResponseStub(statusCode: Int32 = 200) {
-        let host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
-        stub(condition: isHost(host)) { data in
-            let body = (data as NSURLRequest).ohhttpStubs_HTTPBody()
-            let json = try! JSONSerialization.jsonObject(with: body!, options: []) as? [String: Any]
-            XCTAssert(json != nil)
-            XCTAssertEqual(json?["ping"] as? String, "test")
-
-            return OHHTTPStubsResponse(
-                jsonObject: [],
-                statusCode: statusCode,
-                headers: ["Content-Type": "application/json"]
-            )
-        }
-    }
-
-    private func clearPingDirectory() {
-        // Get the ping directory
-        let pingDir = HttpPingUploader(configuration: Configuration())
-            .getOrCreatePingDirectory()
-
-        // Clear the directory to ensure we start fresh
-        // Verify all the files were removed, including the bad ones
-        do {
-            let directoryContents = try FileManager.default.contentsOfDirectory(
-                atPath: pingDir.relativePath
-            )
-            for file in directoryContents {
-                try FileManager.default.removeItem(
-                    atPath: pingDir.appendingPathComponent(file).relativePath
-                )
-            }
-        } catch {
-            // Do nothing
-        }
-    }
-
     override func setUp() {
         Glean.shared.enableTestingMode()
+    }
+    
+    override func tearDown() {
+        expectation = nil
     }
 
     func testIsAfterDueTime() {
@@ -61,6 +28,7 @@ class MetricsPingSchedulerTests: XCTestCase {
         fakeNow.month = 6
         fakeNow.day = 11
         fakeNow.hour = 3
+        fakeNow.minute = 0
         fakeDate = Calendar.current.date(from: fakeNow)!
         XCTAssertFalse(
             mps.isAfterDueTime(fakeDate, dueHourOfTheDay: 4),
@@ -71,6 +39,7 @@ class MetricsPingSchedulerTests: XCTestCase {
         fakeNow.month = 6
         fakeNow.day = 11
         fakeNow.hour = 4
+        fakeNow.minute = 0
         fakeDate = Calendar.current.date(from: fakeNow)!
         XCTAssertFalse(
             mps.isAfterDueTime(fakeDate, dueHourOfTheDay: 4),
@@ -81,6 +50,7 @@ class MetricsPingSchedulerTests: XCTestCase {
         fakeNow.month = 6
         fakeNow.day = 11
         fakeNow.hour = 0
+        fakeNow.minute = 0
         fakeDate = Calendar.current.date(from: fakeNow)!
         XCTAssertFalse(
             mps.isAfterDueTime(fakeDate, dueHourOfTheDay: 4),
@@ -142,8 +112,8 @@ class MetricsPingSchedulerTests: XCTestCase {
         UserDefaults.standard.set(nil, forKey: MetricsPingScheduler.Constants.lastMetricsPingSentDateTime)
         mps.collectPingAndReschedule(now)
         XCTAssertEqual(
-            now.toISO8601String(precision: .hour),
-            mps.getLastCollectedDate()?.toISO8601String(precision: .hour),
+            now.toISO8601String(precision: .second),
+            mps.getLastCollectedDate()?.toISO8601String(precision: .second),
             "schedulePingCollection must update last sent date"
         )
 
@@ -159,9 +129,9 @@ class MetricsPingSchedulerTests: XCTestCase {
             )!
         )!
         XCTAssertEqual(
-            fireDate.toISO8601String(precision: .hour),
-            mps.timer?.fireDate.toISO8601String(precision: .hour),
-            "schedulePingCollection must schedule next collection"
+            fireDate.toISO8601String(precision: .second),
+            mps.timer?.fireDate.toISO8601String(precision: .second),
+            "schedulePingCollection must schedule next collection on the next day"
         )
     }
 
@@ -169,11 +139,10 @@ class MetricsPingSchedulerTests: XCTestCase {
     // REASON: Used in a test
     func testQueuedDataNotInOverdueMetricsPings() {
         // Reset Glean and do not start it right away
-        clearPingDirectory()
         Glean.shared.testDestroyGleanHandle()
         Dispatchers.shared.setTaskQueuing(enabled: true)
 
-        // Set the last time the "metrics" ping was set to now. This is required for us to not
+        // Set the last time the "metrics" ping was sent to now. This is required for us to not
         // send a metrics pings the first time we initialize Glean.
         let now = Date()
         Glean.shared.metricsPingScheduler.updateSentDate(now)
@@ -248,7 +217,9 @@ class MetricsPingSchedulerTests: XCTestCase {
         // the "metrics" ping is collected after this one.
         // Glean.shared.initialize(uploadEnabled: true)
         Glean.shared.initialize(uploadEnabled: true)
-        wait(for: [expectation!], timeout: TimeInterval(5.0))
+        waitForExpectations(timeout: 5.0) { error in
+            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
+        }
 
         // Clean up
         Glean.shared.resetGlean(clearStores: true)
@@ -257,11 +228,10 @@ class MetricsPingSchedulerTests: XCTestCase {
 
     func testGleanPreservesLifetimeApplicationMetrics() {
         // Reset Glean and do not start it right away
-        clearPingDirectory()
         Glean.shared.testDestroyGleanHandle()
         Dispatchers.shared.setTaskQueuing(enabled: true)
 
-        // Set the last time the "metrics" ping was set to now. This is required for us to not
+        // Set the last time the "metrics" ping was sent to now. This is required for us to not
         // send a metrics pings the first time we initialize Glean.
         let now = Date()
         Glean.shared.metricsPingScheduler.updateSentDate(now)
@@ -322,10 +292,61 @@ class MetricsPingSchedulerTests: XCTestCase {
         // the "metrics" ping is collected after this one.
         // Glean.shared.initialize(uploadEnabled: true)
         Glean.shared.resetGlean(clearStores: false)
-        wait(for: [expectation!], timeout: TimeInterval(5.0))
+        waitForExpectations(timeout: 5.0) { error in
+            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
+        }
 
         // Clean up
         Glean.shared.resetGlean(clearStores: true)
         Glean.shared.testDestroyGleanHandle()
+    }
+    
+    func testTimerInvocation() {
+        let mps = Glean.shared.metricsPingScheduler
+        
+        // Set the last time the "metrics" ping was set to now. This will be updated if
+        // the timer fires so we can detect the change to determine success
+        let now = Date()
+        Glean.shared.metricsPingScheduler.updateSentDate(now)
+        // Converting to strings here because comparing dates is more difficult
+        XCTAssertEqual(
+            now.toISO8601String(precision: .second),
+            mps.getLastCollectedDate()?.toISO8601String(precision: .second)
+        )
+        
+        // Create a fake date/time that is just a few seconds before the 4 AM time so
+        // that it will fire off after a few seconds.
+        let fakeNow = Calendar.current.date(
+            bySettingHour: MetricsPingScheduler.Constants.dueHourOfTheDay - 1,
+            minute: 59,
+            second: 55,
+            of: now
+        )!
+
+        // Calling `schedulePingCollection` with our `fakeNow` should cause the timer to
+        // be set to fire in @ 5 seconds
+        mps.schedulePingCollection(fakeNow, sendTheNextCalendarDay: false)
+        
+        let semaphore = DispatchSemaphore(value: 0)
+        
+        // Launched off the main thread so we can await the semaphore
+        DispatchQueue.global().async {
+            // Loop and wait for the last collected date to be updated when the timer
+            // fires
+            var same = true
+            repeat {
+                let nowStr = now.toISO8601String(precision: .second)
+                let mpsStr = mps.getLastCollectedDate()!.toISO8601String(precision: .second)
+                same = nowStr.compare(mpsStr) == .orderedSame
+            } while (same)
+            
+            // The date was updated so we can signal the semaphore
+            semaphore.signal()
+        }
+        
+        // Wait up to 10 seconds for the semaphore to be signalled
+        if semaphore.wait(timeout: .now() + 10.0) == .timedOut {
+            XCTFail("Timed out waiting for timer to fire")
+        }
     }
 }
