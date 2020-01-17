@@ -29,10 +29,8 @@ TARGETDIR=$GLEAN_ROOT/target
 
 # We can't use cargo lipo because we can't link to universal libraries :(
 # https://github.com/rust-lang/rust/issues/55235
-LIBS_ARCHS=("x86_64" "arm64")
 IOS_TRIPLES=("x86_64-apple-ios" "aarch64-apple-ios")
-for i in "${!LIBS_ARCHS[@]}"; do
-    LIB_ARCH=${LIBS_ARCHS[$i]}
+for i in "${!IOS_TRIPLES[@]}"; do
     env -i PATH="$PATH" \
     $HOME/.cargo/bin/cargo build -p $FFI_TARGET --lib $RELFLAG --target ${IOS_TRIPLES[$i]}
 done
