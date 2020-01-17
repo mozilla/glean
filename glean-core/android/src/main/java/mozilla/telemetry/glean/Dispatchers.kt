@@ -12,7 +12,6 @@ import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withTimeoutOrNull
 import mozilla.telemetry.glean.GleanMetrics.GleanError
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicBoolean
@@ -38,10 +37,6 @@ internal object Dispatchers {
             // setUploadEnabled(false) is not called so that we don't continue to queue tasks and
             // waste memory.
             const val MAX_QUEUE_SIZE = 100
-
-            // This is the number of milliseconds that are allowed for the initial tasks queue to
-            // process all of the queued tasks.
-            const val QUEUE_PROCESSING_TIMEOUT_MS = 5000L
         }
 
         // The number of items that were added to the queue after it filled up.
@@ -113,15 +108,11 @@ internal object Dispatchers {
          * on the couroutine scope rather than added to the queue.
          */
         internal fun flushQueuedInitialTasks() {
-            // Setting this to false first should cause any new tasks to just be executed (see
-            // launch() above) making it safer to process the queue.
-            //
-            // NOTE: This has the potential for causing a task to execute out of order in certain
-            // situations. If a library or thread that runs before init happens to record
-            // between when the queueInitialTasks is set to false and the taskQueue finishing
-            // launching, then that task could be executed out of the queued order.
             val dispatcherObject = this
-            val job = coroutineScope.launch {
+            // Dispatch a task to flush the pre-init tasks queue. By using `executeTask`
+            // this will be executed as soon as possible, before other tasks are executed.
+            // In test mode, this will make sure to execute things on the caller thread.
+            executeTask {
                 // Set the flag first as the first thing in this job. This will guarantee new jobs
                 // are after this one, thus executed in order. The new jobs won't be added to
                 // `taskQueue` but, rather, handled by the coroutineScope itself.
@@ -142,28 +133,12 @@ internal object Dispatchers {
                     // Task is a suspending function.
                     task()
                 }
-            }
 
-            // In order to ensure that the queued tasks are executed in the proper order, we will
-            // wait up to 5 seconds for it to complete, otherwise we will reset the flag so that
-            // new tasks may continue to run.
-            runBlocking {
-                if (withTimeoutOrNull(QUEUE_PROCESSING_TIMEOUT_MS) {
-                    job.join()
-                } == null) {
-                    Log.e(LOG_TAG, "Timeout processing initial tasks queue")
-                    GleanError.preinitTasksTimeout.set(true)
-                    queueInitialTasks.set(false)
-                    taskQueue.clear()
-                } else {
-                    Log.i(LOG_TAG, "Initial tasks queue completed successfully")
+                // This must happen after `queueInitialTasks.set(false)` is run, or it
+                // would be added to a full task queue and be silently dropped.
+                if (overflowCount > 0) {
+                    GleanError.preinitTasksOverflow.addSync(MAX_QUEUE_SIZE + overflowCount)
                 }
-            }
-
-            // This must happen after `queueInitialTasks.set(false)` is run, or it
-            // would be added to a full task queue and be silently dropped.
-            if (overflowCount > 0) {
-                GleanError.preinitTasksOverflow.add(MAX_QUEUE_SIZE + overflowCount)
             }
         }
 
