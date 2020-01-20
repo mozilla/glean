@@ -43,38 +43,43 @@ use std::sync::Mutex;
 
 pub use configuration::Configuration;
 pub use core_metrics::ClientInfoMetrics;
-pub use glean_core::{CommonMetricData, Error, Glean, Lifetime, Result};
+pub use glean_core::{global_glean, setup_glean, CommonMetricData, Error, Glean, Lifetime, Result};
 
 mod configuration;
 mod core_metrics;
 pub mod metrics;
 mod system;
 
+/// Application state to keep track of.
 #[derive(Debug)]
-struct GleanWrapper {
-    instance: Glean,
+struct AppState {
+    /// The channel the application is being distributed on.
     channel: Option<String>,
+
+    /// Client info metrics set by the application.
     client_info: ClientInfoMetrics,
 }
 
-static GLEAN: OnceCell<Mutex<GleanWrapper>> = OnceCell::new();
-
-/// Get a reference to the global Glean object.
+/// A global singleton storing additional state for Glean.
 ///
-/// Panics if no global Glean object was set.
-fn global_glean() -> &'static Mutex<GleanWrapper> {
-    GLEAN.get().unwrap()
+/// Requires a Mutex, because in tests we can actual reset this.
+static STATE: OnceCell<Mutex<AppState>> = OnceCell::new();
+
+/// Get a reference to the global state object.
+///
+/// Panics if no global state object was set.
+fn global_state() -> &'static Mutex<AppState> {
+    STATE.get().unwrap()
 }
 
 /// Set or replace the global Glean object.
-fn setup_glean(glean: GleanWrapper) -> Result<()> {
-    if GLEAN.get().is_none() {
-        GLEAN.set(Mutex::new(glean)).unwrap();
+fn setup_state(state: AppState) {
+    if STATE.get().is_none() {
+        STATE.set(Mutex::new(state)).unwrap();
     } else {
-        let mut lock = GLEAN.get().unwrap().lock().unwrap();
-        *lock = glean;
+        let mut lock = STATE.get().unwrap().lock().unwrap();
+        *lock = state;
     }
-    Ok(())
 }
 
 fn with_glean<F, R>(f: F) -> R
@@ -82,15 +87,7 @@ where
     F: Fn(&Glean) -> R,
 {
     let lock = global_glean().lock().unwrap();
-    f(&lock.instance)
-}
-
-fn with_glean_wrapper_mut<F, R>(f: F) -> R
-where
-    F: Fn(&mut GleanWrapper) -> R,
-{
-    let mut lock = global_glean().lock().unwrap();
-    f(&mut lock)
+    f(&lock)
 }
 
 fn with_glean_mut<F, R>(f: F) -> R
@@ -98,7 +95,7 @@ where
     F: Fn(&mut Glean) -> R,
 {
     let mut lock = global_glean().lock().unwrap();
-    f(&mut lock.instance)
+    f(&mut lock)
 }
 
 /// Create and initialize a new Glean object.
@@ -118,12 +115,11 @@ pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) -> Result<
     initialize_core_metrics(&glean, &client_info, cfg.channel.clone());
 
     // Now make this the global object available to others.
-    let wrapper = GleanWrapper {
-        instance: glean,
+    setup_state(AppState {
         channel: cfg.channel,
         client_info,
-    };
-    setup_glean(wrapper)?;
+    });
+    glean_core::setup_glean(glean)?;
 
     Ok(())
 }
@@ -159,14 +155,15 @@ fn initialize_core_metrics(
 ///
 /// See `glean_core::Glean.set_upload_enabled`.
 pub fn set_upload_enabled(enabled: bool) -> bool {
-    with_glean_wrapper_mut(|glean| {
-        let old_enabled = glean.instance.is_upload_enabled();
-        glean.instance.set_upload_enabled(enabled);
+    with_glean_mut(|glean| {
+        let state = global_state().lock().unwrap();
+        let old_enabled = glean.is_upload_enabled();
+        glean.set_upload_enabled(enabled);
 
         if !old_enabled && enabled {
             // If uploading is being re-enabled, we have to restore the
             // application-lifetime metrics.
-            initialize_core_metrics(&glean.instance, &glean.client_info, glean.channel.clone());
+            initialize_core_metrics(&glean, &state.client_info, state.channel.clone());
         }
 
         enabled
