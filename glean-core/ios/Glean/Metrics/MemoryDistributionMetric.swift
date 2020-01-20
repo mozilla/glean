@@ -52,7 +52,7 @@ public class MemoryDistributionMetricType {
         guard !self.disabled else { return }
 
         Dispatchers.shared.launchAPI {
-            return glean_memory_distribution_accumulate(self.handle, sample)
+            glean_memory_distribution_accumulate(self.handle, sample)
         }
     }
 
