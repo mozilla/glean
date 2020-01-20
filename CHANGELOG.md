@@ -12,6 +12,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v24.0.0...v24.1.0)
 
+* General:
+  * Stopping a non started measurement in a timing distribution will now be reported
+    as an `invalid_state` error.
 * Android:
   * A new metric `glean.error.preinit_tasks_overflow` was added to report when
     the preinit task queue overruns, leading to data loss. See [bug
