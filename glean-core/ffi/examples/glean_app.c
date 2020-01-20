@@ -14,14 +14,14 @@ int main(void)
     true,
     NULL
   };
-  uint64_t glean = glean_initialize(&cfg);
+  glean_initialize(&cfg);
   uint64_t store1 = glean_new_ping_type("store1", true, false);
-  glean_register_ping_type(glean, store1);
+  glean_register_ping_type(store1);
 
-  printf("Glean upload enabled? %d\n", glean_is_upload_enabled(glean));
-  glean_set_upload_enabled(glean, 0);
-  printf("Glean upload enabled? %d\n", glean_is_upload_enabled(glean));
-  glean_set_upload_enabled(glean, 1);
+  printf("Glean upload enabled? %d\n", glean_is_upload_enabled());
+  glean_set_upload_enabled(0);
+  printf("Glean upload enabled? %d\n", glean_is_upload_enabled());
+  glean_set_upload_enabled(1);
 
   const char *pings[2];
   pings[0] = "store1";
@@ -29,15 +29,15 @@ int main(void)
   uint64_t metric = glean_new_counter_metric("local", "counter", pings, 1, 0, 0);
   printf("Created counter: %llu\n", metric);
 
-  glean_counter_add(glean, metric, 2);
+  glean_counter_add(metric, 2);
 
-  char *payload = glean_ping_collect(glean, store1);
+  char *payload = glean_ping_collect(store1);
   printf("Payload:\n%s\n", payload);
   glean_str_free(payload);
 
   glean_destroy_counter_metric(metric);
 
-  glean_destroy_glean(glean);
+  glean_destroy_glean();
 
   return 0;
 }
