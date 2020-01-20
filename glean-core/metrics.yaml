@@ -193,6 +193,21 @@ glean.internal.metrics:
       - glean-team@mozilla.com
     expires: never
 
+  locale:
+    type: string
+    lifetime: application
+    send_in_pings:
+      - glean_client_info
+    description: |
+      The locale of the application (e.g. "es-ES").
+    bugs:
+      - https://bugzilla.mozilla.org/1601489
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1601489#c3
+    notification_emails:
+      - glean-team@mozilla.com
+    expires: never
+
 glean.error:
   invalid_value:
     type: labeled_counter

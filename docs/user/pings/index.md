@@ -52,6 +52,7 @@ Optional fields are marked accordingly.
 | `os_version` | String | The user-visible version of the operating system (e.g. "1.2.3") |
 | `android_sdk_version` | String | *Optional*. The Android specific SDK version of the software running on this hardware device (e.g. "23") |
 | `telemetry_sdk_build` | String | The version of the Glean SDK |
+| `locale` | String | The locale of the application (e.g. "es-ES") |
 
 All the metrics surviving application restarts (e.g. `client_id`, ...) are removed once the application using the Glean SDK is uninstalled.
 

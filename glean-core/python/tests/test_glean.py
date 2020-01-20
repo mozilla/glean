@@ -310,7 +310,7 @@ def test_core_metrics_should_be_cleared_with_disabling_and_enabling_uploading():
     assert _builtins.metrics.glean.internal.metrics.os.test_has_value()
 
 
-def test_collect():
+def test_collect(ping_schema_url):
     counter_metric = CounterMetricType(
         disabled=False,
         category="telemetry",
@@ -331,7 +331,9 @@ def test_collect():
 
     assert 10 == json_tree["metrics"]["counter"]["telemetry.counter_metric"]
 
-    assert 0 == validate_ping.validate_ping(io.StringIO(json_content), sys.stdout)
+    assert 0 == validate_ping.validate_ping(
+        io.StringIO(json_content), sys.stdout, schema_url=ping_schema_url
+    )
 
 
 def test_tempdir_is_cleared():

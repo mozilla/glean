@@ -137,6 +137,7 @@ public class Glean {
         GleanInternalMetrics.deviceManufacturer.setSync(Sysctl.manufacturer)
         GleanInternalMetrics.deviceModel.setSync(Sysctl.model)
         GleanInternalMetrics.architecture.setSync(Sysctl.machine)
+        GleanInternalMetrics.locale.setSync(getLocaleTag())
 
         if let channel = self.configuration?.channel {
             GleanInternalMetrics.appChannel.setSync(channel)
