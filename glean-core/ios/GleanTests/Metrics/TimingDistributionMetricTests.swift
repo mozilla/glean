@@ -128,6 +128,6 @@ class TimingDistributionTypeTests: XCTestCase {
 
         metric.stopAndAccumulate(0)
 
-        XCTAssertEqual(1, metric.testGetNumRecordedErrors(.invalidValue))
+        XCTAssertEqual(1, metric.testGetNumRecordedErrors(.invalidState))
     }
 }
