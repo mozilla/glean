@@ -17,6 +17,7 @@ The development & release process roughly follows the [GitFlow model](https://nv
 * [Standard release](#standard-release)
 * [Hotfix release for latest version](#hotfix-release-for-latest-version)
 * [Hotfix release for previous version](#hotfix-release-for-previous-version)
+* [Upgrading android-components to a new version of Glean](#upgrading-android-components-to-a-new-version-of-glean)
 
 ## Published artifacts
 
@@ -204,3 +205,23 @@ If you need to release a hotfix for a previously released version (that is: not 
     * This is important so that no changes are lost.
     * This might have merge conflicts with the `master` branch, which you need to fix before it is merged.
 8. Once the above pull request lands, delete the support branch.
+
+## Upgrading android-components to a new version of Glean
+
+On Android, many users of Glean import it through its wrapper in [`android-components`](https://github.com/mozilla-mobile/android-components).
+Therefore, when a new Glean release is made, `android-components` must also be updated.
+
+After following one of the above instructions to make a Glean release:
+
+1) Ensure that CI has completed and the artifacts have published to [the Glean GitHub releases page](https://github.com/mozilla/glean/releases/).
+
+2) Publish Glean to [Mozilla's Maven repository](https://maven.mozilla.org/). 
+   This is currently a manual step that can only performed by individuals with the necessary credentials.
+   Ask in `#releaseduty-mobile` on Mozilla's internal Slack for assistance.
+   
+3) Create a pull request against `android-components` to update the Glean version with the following changes:
+   
+   - The Glean version is updated in the `mozilla_glean` variable in the `buildSrc/src/main/java/Dependencies.kt` file.
+   
+   - The relevant parts of the Glean changelog copied into the `android-components` changelog.
+     This involves copying the Android-specific changes and the general changes to Glean, but can omit other platform-specific changes.
