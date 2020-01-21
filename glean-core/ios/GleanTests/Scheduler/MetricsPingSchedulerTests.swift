@@ -126,8 +126,8 @@ class MetricsPingSchedulerTests: XCTestCase {
                 value: 1,
                 to: now,
                 wrappingComponents: true
-                )!
             )!
+        )!
         XCTAssertEqual(
             fireDate.toISO8601String(precision: .second),
             mps.timer?.fireDate.toISO8601String(precision: .second),
@@ -301,54 +301,50 @@ class MetricsPingSchedulerTests: XCTestCase {
         Glean.shared.testDestroyGleanHandle()
     }
 
+    // Simple mock of the MetricsPingScheduler to override the collectPingAndReschedule
+    // function in order to make it easier to test.
+    private class FakeMPS: MetricsPingScheduler {
+        let mpsExpectation: XCTestExpectation?
+
+        init(expectation: XCTestExpectation?) {
+            mpsExpectation = expectation
+        }
+
+        override func collectPingAndReschedule(_: Date, startupPing _: Bool = false) {
+            mpsExpectation?.fulfill()
+        }
+    }
+
     func testTimerInvocation() {
-        let semaphore = DispatchSemaphore(value: 0)
+        // Set up the expectation
+        expectation = expectation(description: "Timer fired")
 
-        // Launched off the main thread so we can await the semaphore
-        DispatchQueue.global().async {
+        // Build the mock MPS passing in the expectation to be fulfilled later
+        let mps = FakeMPS(expectation: expectation)
 
-            let mps = Glean.shared.metricsPingScheduler
+        // Set the last time the "metrics" ping was set to now. This will be updated if
+        // the timer fires so we can detect the change to determine success
+        let now = Date()
+        mps.updateSentDate(now)
+        // Converting to strings here because comparing dates is more difficult
+        XCTAssertEqual(
+            now.toISO8601String(precision: .second),
+            mps.getLastCollectedDate()?.toISO8601String(precision: .second)
+        )
 
-            // Set the last time the "metrics" ping was set to now. This will be updated if
-            // the timer fires so we can detect the change to determine success
-            let now = Date()
-            Glean.shared.metricsPingScheduler.updateSentDate(now)
-            // Converting to strings here because comparing dates is more difficult
-            XCTAssertEqual(
-                now.toISO8601String(precision: .second),
-                mps.getLastCollectedDate()?.toISO8601String(precision: .second)
-            )
+        // Create a fake date/time that is just a few seconds before the 4 AM time so
+        // that it will fire off after a few seconds.
+        let fakeNow = Calendar.current.date(
+            bySettingHour: MetricsPingScheduler.Constants.dueHourOfTheDay - 1,
+            minute: 59,
+            second: 55,
+            of: now
+        )!
 
-            // Create a fake date/time that is just a few seconds before the 4 AM time so
-            // that it will fire off after a few seconds.
-            let fakeNow = Calendar.current.date(
-                bySettingHour: MetricsPingScheduler.Constants.dueHourOfTheDay - 1,
-                minute: 59,
-                second: 55,
-                of: now
-                )!
+        // Calling `schedulePingCollection` with our `fakeNow` should cause the timer to
+        // be set to fire in @ 5 seconds
+        mps.schedulePingCollection(fakeNow, sendTheNextCalendarDay: false)
 
-            // Calling `schedulePingCollection` with our `fakeNow` should cause the timer to
-            // be set to fire in @ 5 seconds
-            mps.schedulePingCollection(fakeNow, sendTheNextCalendarDay: false)
-
-
-            // Loop and wait for the last collected date to be updated when the timer
-            // fires
-            var same = true
-            repeat {
-                let nowStr = now.toISO8601String(precision: .second)
-                let mpsStr = mps.getLastCollectedDate()!.toISO8601String(precision: .second)
-                same = nowStr.compare(mpsStr) == .orderedSame
-            } while same
-
-            // The date was updated so we can signal the semaphore
-            semaphore.signal()
-        }
-
-        // Wait up to 10 seconds for the semaphore to be signalled
-        if semaphore.wait(timeout: .now() + 10.0) == .timedOut {
-            XCTFail("Timed out waiting for timer to fire")
-        }
+        waitForExpectations(timeout: 10.0)
     }
 }
