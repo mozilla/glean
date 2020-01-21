@@ -13,6 +13,9 @@
 * iOS:
   * Collections performed before initialization (preinit tasks) are now dispatched off
     the main thread and not awaited during initialization.
+  * Added recording of `glean.error.preinit_tasks_overflow` to report when
+    the preinit task queue overruns, leading to data loss. See [bug
+    1609734](https://bugzilla.mozilla.org/show_bug.cgi?id=1609734)
 
 # v24.1.0 (2020-01-16)
 

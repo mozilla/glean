@@ -15,7 +15,7 @@ class Dispatchers {
     // This struct is used for organizational purposes to keep the class constants in a single place
     struct Constants {
         static let logTag = "glean/Dispatchers"
-        static let maxQueueSize = 100
+        static let maxQueueSize: Int32 = 100
 
         // This is the number of seconds that are allowed for the initial tasks queue to
         // process all of the queued tasks.
@@ -45,6 +45,9 @@ class Dispatchers {
 
     // This array will hold the queued initial tasks that are launched before Glean is initialized
     lazy var preInitOperations = [Operation]()
+
+    // The number of items that were added to the queue after it filled up.
+    var preInitTaskCount: Int32 = 0
 
     // When true, jobs will be run synchronously
     var testingMode = false
@@ -83,6 +86,12 @@ class Dispatchers {
             } else {
                 logger.error("Exceeded maximum queue size, discarding task")
             }
+
+            // This value ends up in the `preinit_tasks_overflow` metric, but we
+            // can't record directly there, because that would only add
+            // the recording to an already-overflowing task queue and would be
+            // silently dropped.
+            preInitTaskCount += 1
         } else {
             // If we are not queuing initial tasks, we can go ahead and execute the Operation by
             // adding it to the `operationQueue`
@@ -175,6 +184,13 @@ class Dispatchers {
 
         // Turn off queuing to allow for normal background execution mode
         queueInitialTasks.value = false
+
+        // This must happen after `queueInitialTasks.set(false)` is run, or it
+        // would be added to a full task queue and be silently dropped.
+        if preInitTaskCount > Constants.maxQueueSize {
+            GleanMetrics.GleanError.preinitTasksOverflow.add(preInitTaskCount)
+        }
+        preInitTaskCount = 0
 
         // Clear the cached operations
         preInitOperations.removeAll()

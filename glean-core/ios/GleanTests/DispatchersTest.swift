@@ -217,4 +217,42 @@ class DispatchersTest: XCTestCase {
         // Make sure counter hasn't changed
         XCTAssertEqual(counter, asyncTest, "Concurrent task must be cancelled")
     }
+
+    func testOverflowingTheTaskQueueRecordsTelemetry() {
+        Glean.shared.resetGlean(clearStores: true)
+        Dispatchers.shared.preInitOperations.removeAll()
+        Dispatchers.shared.setTestingMode(enabled: true)
+        Dispatchers.shared.setTaskQueuing(enabled: true)
+
+        for _ in 0 ..< (Dispatchers.Constants.maxQueueSize + 10) {
+            Dispatchers.shared.launchAPI {
+                // Do nothing
+            }
+        }
+
+        XCTAssertEqual(
+            Int(Dispatchers.Constants.maxQueueSize),
+            Dispatchers.shared.preInitOperations.count,
+            "Task queue must contain the maximum number of tasks"
+        )
+        XCTAssertEqual(
+            Dispatchers.Constants.maxQueueSize + 10,
+            Dispatchers.shared.preInitTaskCount,
+            "preInitTaskCount is correct"
+        )
+
+        // Resetting Glean here causes the tasks to be flushed and the
+        // queueing turned off, this should cause the error metric to
+        // be recorded so we can check it to ensure the value matches
+        // the expected value.
+        Glean.shared.resetGlean(clearStores: false)
+
+        XCTAssertEqual(
+            Dispatchers.Constants.maxQueueSize + 10,
+            try GleanMetrics.GleanError.preinitTasksOverflow.testGetValue(),
+            "preInitTaskCount is correct"
+        )
+
+        Glean.shared.resetGlean(clearStores: true)
+    }
 }
