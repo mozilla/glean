@@ -1,4 +1,4 @@
-personal_ws-1.1 en 140 utf-8
+personal_ws-1.1 en 141 utf-8
 AAR
 AARs
 APIs
@@ -89,6 +89,7 @@ gradle
 grcov
 hotfix
 html
+init
 integrations
 io
 ios
