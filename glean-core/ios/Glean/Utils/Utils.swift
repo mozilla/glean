@@ -60,7 +60,7 @@ extension Date {
         dateFormatter.dateFormat = dateFormatPatterns[precision]
         return dateFormatter.string(from: self)
     }
-    
+
     /// Overloads the operator so that subtraction between two dates results in a TimeInterval representing
     /// the difference between them
     static func - (lhs: Date, rhs: Date) -> TimeInterval {

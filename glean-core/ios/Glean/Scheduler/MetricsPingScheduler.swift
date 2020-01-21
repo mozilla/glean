@@ -71,12 +71,12 @@ class MetricsPingScheduler {
     func isDifferentVersion() -> Bool {
         // Determine if the version has changed since the last time we ran.
         let currentVersion = AppInfo.displayVersion
-        if let lastVersion = UserDefaults.standard.string(forKey: Constants.lastVersionOfAppUsed) {
-            if currentVersion != lastVersion {
-                UserDefaults.standard.set(currentVersion, forKey: Constants.lastVersionOfAppUsed)
-                return true
-            }
+        let lastVersion = UserDefaults.standard.string(forKey: Constants.lastVersionOfAppUsed)
+        if currentVersion != lastVersion {
+            UserDefaults.standard.set(currentVersion, forKey: Constants.lastVersionOfAppUsed)
+            return true
         }
+
         return false
     }
 
@@ -105,7 +105,7 @@ class MetricsPingScheduler {
         // this check at startup (when overduePingAsFirst is true).
         if isDifferentVersion() {
             Dispatchers.shared.serialOperationQueue.addOperation {
-                self.collectPingAndReschedule(now)
+                self.collectPingAndReschedule(now, startupPing: true)
             }
             return
         }
