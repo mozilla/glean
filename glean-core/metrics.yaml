@@ -277,21 +277,6 @@ glean.error:
     no_lint:
       - COMMON_PREFIX
 
-  preinit_tasks_timeout:
-    type: boolean
-    description:
-      Set to true if the tasks that are queued prior to Glean initialization
-      time out.
-    bugs:
-      - https://bugzilla.mozilla.org/1575848
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1575848#c5
-    notification_emails:
-      - glean-team@mozilla.com
-    expires: never
-    no_lint:
-      - COMMON_PREFIX
-
   preinit_tasks_overflow:
     type: counter
     description:

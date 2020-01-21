@@ -10,6 +10,9 @@
 * Android:
   * Collections performed before initialization (preinit tasks) are now dispatched off
     the main thread during initialization.
+* iOS:
+  * Collections performed before initialization (preinit tasks) are now dispatched off
+    the main thread and not awaited during initialization.
 
 # v24.1.0 (2020-01-16)
 
