@@ -33,7 +33,9 @@ lazy_static! {
     /// * `1.not_fine`
     /// * `this.$isnotfine`
     /// * `-.not_fine`
-    static ref LABEL_REGEX: Regex = Regex::new("^[a-z_][a-z0-9_-]{0,29}(\\.[a-z0-9_-]{0,29})*$").unwrap();
+    static ref LABEL_REGEX: Regex = Regex::new(
+        "^[a-z_][a-z0-9_-]{0,29}(\\.[a-z_][a-z0-9_-]{0,29})*$"
+    ).unwrap();
 }
 
 /// A labeled metric.
