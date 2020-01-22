@@ -23,6 +23,8 @@ public class Glean {
     /// ```
     public static let shared = Glean()
 
+    var metricsPingScheduler: MetricsPingScheduler = MetricsPingScheduler()
+
     var handle: UInt64 = 0
     private var uploadEnabled: Bool = true
     var configuration: Configuration?
@@ -108,6 +110,9 @@ public class Glean {
                 }
             }
         }
+
+        // Check for overdue metrics pings
+        metricsPingScheduler.schedule()
 
         // Signal Dispatcher that init is complete
         Dispatchers.shared.flushQueuedInitialTasks()
@@ -230,33 +235,42 @@ public class Glean {
     func submitPingsByName(pingNames: [String]) {
         // Queue submitting the ping behind all other metric operations to include them in the ping
         Dispatchers.shared.launchAPI {
-            if !self.isInitialized() {
-                self.logger.error("Glean must be initialized before sending pings")
-                return
-            }
+            self.submitPingsByNameSync(pingNames: pingNames)
+        }
+    }
 
-            if !self.getUploadEnabled() {
-                self.logger.error("Glean must be enabled before sending pings")
-                return
-            }
+    /// Collect and submit a list of pings by name for eventual uploading, synchronously
+    ///
+    /// - parameters:
+    ///     * pingNames: List of ping names to send
+    ///
+    /// The ping content is assembled as soon as possible, but upload is not
+    /// guaranteed to happen immediately, as that depends on the upload
+    /// policies.
+    ///
+    /// If the ping currently contains no content, it will not be assembled and
+    /// queued for sending.
+    func submitPingsByNameSync(pingNames: [String]) {
+        if !self.isInitialized() {
+            self.logger.error("Glean must be initialized before sending pings")
+            return
+        }
 
-            withArrayOfCStrings(pingNames) { pingNames in
-                let submittedPing = glean_submit_pings_by_name(
-                    self.handle,
-                    pingNames,
-                    Int32(pingNames?.count ?? 0)
-                )
+        if !self.getUploadEnabled() {
+            self.logger.error("Glean must be enabled before sending pings")
+            return
+        }
 
-                if submittedPing != 0 {
-                    if let config = self.configuration {
-                        // Run the upload in the background to not block other metric operations.
-                        // Upload is run off of the main thread.
-                        // Please note that the ping uploader will spawn other async
-                        // operations if there are pings to upload.
-                        Dispatchers.shared.launchConcurrent {
-                            HttpPingUploader(configuration: config).process()
-                        }
-                    }
+        withArrayOfCStrings(pingNames) { pingNames in
+            let submittedPing = glean_submit_pings_by_name(
+                self.handle,
+                pingNames,
+                Int32(pingNames?.count ?? 0)
+            )
+
+            if submittedPing != 0 {
+                if let config = self.configuration {
+                    HttpPingUploader(configuration: config).process()
                 }
             }
         }

@@ -25,6 +25,17 @@ extension String: Error {
     public var errorDescription: String? { return self }
 }
 
+/// Format specifiers for different ISO8601 timestamps
+let dateFormatPatterns: [TimeUnit: String] = [
+    .nanosecond: "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ",
+    .microsecond: "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ",
+    .millisecond: "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ",
+    .second: "yyyy-MM-dd'T'HH:mm:ssZZZZZ",
+    .minute: "yyyy-MM-dd'T'HH:mmZZZZZ",
+    .hour: "yyyy-MM-dd'T'HHZZZZZ",
+    .day: "yyyy-MM-ddZZZZZ"
+]
+
 extension Date {
     /// Convenience function to convert ISO8601 string to a Date.
     ///
@@ -36,19 +47,24 @@ extension Date {
     ///     * dateString: The `String` representing the date to convert, i.e.: `2004-12-09T08:03-08:00`
     ///     * precision: The `TimeUnit` precision to use for selecting the correct format to parse against
     static func fromISO8601String(dateString: String, precision: TimeUnit) -> Date? {
-        let dateFormatPatterns: [TimeUnit: String] = [
-            .nanosecond: "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ",
-            .microsecond: "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ",
-            .millisecond: "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ",
-            .second: "yyyy-MM-dd'T'HH:mm:ssZZZZZ",
-            .minute: "yyyy-MM-dd'T'HH:mmZZZZZ",
-            .hour: "yyyy-MM-dd'T'HHZZZZZ",
-            .day: "yyyy-MM-ddZZZZZ"
-        ]
-
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = dateFormatPatterns[precision]
         return dateFormatter.date(from: dateString)
+    }
+
+    /// Convenience function to convert a Date to an ISO8601 string
+    ///
+    /// - returns: An ISO8601 `String` representing the current value of the `Date` object
+    func toISO8601String(precision: TimeUnit) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = dateFormatPatterns[precision]
+        return dateFormatter.string(from: self)
+    }
+
+    /// Overloads the operator so that subtraction between two dates results in a TimeInterval representing
+    /// the difference between them
+    static func - (lhs: Date, rhs: Date) -> TimeInterval {
+        return lhs.timeIntervalSinceReferenceDate - rhs.timeIntervalSinceReferenceDate
     }
 }
 
