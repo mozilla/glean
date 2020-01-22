@@ -35,6 +35,13 @@ use from_raw::*;
 use handlemap_ext::HandleMapExtension;
 use ping_type::PING_TYPES;
 
+/// Execute the callback with a reference to the Glean singleton, returning a `Result`.
+///
+/// The callback returns a `Result<T, E>` while:
+///
+/// - Catching panics, and logging them.
+/// - Converting `T` to a C-compatible type using [`IntoFfi`].
+/// - Logging `E` and returning a default value.
 pub(crate) fn with_glean<R, F>(callback: F) -> R::Value
 where
     F: UnwindSafe + FnOnce(&Glean) -> Result<R, glean_core::Error>,
@@ -49,6 +56,13 @@ where
     res
 }
 
+/// Execute the callback with a mutable reference to the Glean singleton, returning a `Result`.
+///
+/// The callback returns a `Result<T, E>` while:
+///
+/// - Catching panics, and logging them.
+/// - Converting `T` to a C-compatible type using [`IntoFfi`].
+/// - Logging `E` and returning a default value.
 pub(crate) fn with_glean_mut<R, F>(callback: F) -> R::Value
 where
     F: UnwindSafe + FnOnce(&mut Glean) -> Result<R, glean_core::Error>,
@@ -63,6 +77,12 @@ where
     res
 }
 
+/// Execute the callback with a reference to the Glean singleton, returning a value.
+///
+/// The callback returns a value while:
+///
+/// - Catching panics, and logging them.
+/// - Converting the returned value to a C-compatible type using [`IntoFfi`].
 pub(crate) fn with_glean_value<R, F>(callback: F) -> R::Value
 where
     F: UnwindSafe + FnOnce(&Glean) -> R,
@@ -71,6 +91,12 @@ where
     with_glean(|glean| Ok(callback(glean)))
 }
 
+/// Execute the callback with a mutable reference to the Glean singleton, returning a value.
+///
+/// The callback returns a value while:
+///
+/// - Catching panics, and logging them.
+/// - Converting the returned value to a C-compatible type using [`IntoFfi`].
 pub(crate) fn with_glean_value_mut<R, F>(callback: F) -> R::Value
 where
     F: UnwindSafe + FnOnce(&mut Glean) -> R,
