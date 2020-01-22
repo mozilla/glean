@@ -6,7 +6,10 @@ use std::os::raw::c_char;
 
 use ffi_support::FfiStr;
 
-use crate::{define_metric, ffi_string_ext::FallibleToString, handlemap_ext::HandleMapExtension};
+use crate::{
+    define_metric, ffi_string_ext::FallibleToString, handlemap_ext::HandleMapExtension,
+    with_glean_value,
+};
 
 define_metric!(StringMetric => STRING_METRICS {
     new           -> glean_new_string_metric(),
@@ -16,30 +19,33 @@ define_metric!(StringMetric => STRING_METRICS {
 
 #[no_mangle]
 pub extern "C" fn glean_string_set(metric_id: u64, value: FfiStr) {
-    let glean = glean_core::global_glean().lock().unwrap();
-    STRING_METRICS.call_with_log(metric_id, |metric| {
-        let value = value.to_string_fallible()?;
-        metric.set(&glean, value);
-        Ok(())
+    with_glean_value(|glean| {
+        STRING_METRICS.call_with_log(metric_id, |metric| {
+            let value = value.to_string_fallible()?;
+            metric.set(&glean, value);
+            Ok(())
+        })
     })
 }
 
 #[no_mangle]
 pub extern "C" fn glean_string_test_has_value(metric_id: u64, storage_name: FfiStr) -> u8 {
-    let glean = glean_core::global_glean().lock().unwrap();
-    STRING_METRICS.call_infallible(metric_id, |metric| {
-        metric
-            .test_get_value(&glean, storage_name.as_str())
-            .is_some()
+    with_glean_value(|glean| {
+        STRING_METRICS.call_infallible(metric_id, |metric| {
+            metric
+                .test_get_value(&glean, storage_name.as_str())
+                .is_some()
+        })
     })
 }
 
 #[no_mangle]
 pub extern "C" fn glean_string_test_get_value(metric_id: u64, storage_name: FfiStr) -> *mut c_char {
-    let glean = glean_core::global_glean().lock().unwrap();
-    STRING_METRICS.call_infallible(metric_id, |metric| {
-        metric
-            .test_get_value(&glean, storage_name.as_str())
-            .unwrap()
+    with_glean_value(|glean| {
+        STRING_METRICS.call_infallible(metric_id, |metric| {
+            metric
+                .test_get_value(&glean, storage_name.as_str())
+                .unwrap()
+        })
     })
 }

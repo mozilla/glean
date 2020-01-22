@@ -90,15 +90,16 @@ macro_rules! define_metric {
             storage_name: FfiStr
         ) -> i32 {
                 crate::HandleMapExtension::call_infallible(&*$metric_map, metric_id, |metric| {
-                    let glean = glean_core::global_glean().lock().unwrap();
-                    let error_type = std::convert::TryFrom::try_from(error_type).unwrap();
-                    let storage_name = crate::FallibleToString::to_string_fallible(&storage_name).unwrap();
-                    glean_core::test_get_num_recorded_errors(
-                        &glean,
-                        glean_core::metrics::MetricType::meta(metric),
-                        error_type,
-                        Some(&storage_name)
-                    ).unwrap_or(0)
+                    crate::with_glean_value(|glean| {
+                        let error_type = std::convert::TryFrom::try_from(error_type).unwrap();
+                        let storage_name = crate::FallibleToString::to_string_fallible(&storage_name).unwrap();
+                        glean_core::test_get_num_recorded_errors(
+                            &glean,
+                            glean_core::metrics::MetricType::meta(metric),
+                            error_type,
+                            Some(&storage_name)
+                        ).unwrap_or(0)
+                    })
                 })
         }
         )?
