@@ -221,7 +221,7 @@ After following one of the above instructions to make a Glean SDK release:
    
 3) Create a pull request against `android-components` to update the Glean version with the following changes:
    
-   - The Glean version is updated in the `mozilla_glean` variable in the `buildSrc/src/main/java/Dependencies.kt` file.
+   - The Glean version is updated in the `mozilla_glean` variable in the [`buildSrc/src/main/java/Dependencies.kt`](https://github.com/mozilla-mobile/android-components/blob/69546999739ab19d21425e9a98e107e438a3f905/buildSrc/src/main/java/Dependencies.kt#L32) file.
    
    - The relevant parts of the Glean changelog copied into the `android-components` changelog.
      This involves copying the Android-specific changes and the general changes to Glean, but can omit other platform-specific changes.
