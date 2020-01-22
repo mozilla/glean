@@ -67,6 +67,13 @@ test-python: build-python ## Run all Python tests
 
 .PHONY: test test-rust test-rust-with-logs test-kotlin test-swift test-ios-sample
 
+# Benchmarks
+
+bench-rust: ## Run Rust benchmarks
+	cargo bench -p benchmark
+
+.PHONY: bench-rust
+
 # Linting
 
 lint: clippy
