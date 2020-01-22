@@ -190,6 +190,10 @@ class Dispatchers {
         if preInitTaskCount > Constants.maxQueueSize {
             GleanMetrics.GleanError.preinitTasksOverflow.add(preInitTaskCount)
         }
+
+        // Now that the metric has been recorded, it is safe to reset the counter here.  We do
+        // this mostly for tests to ensure the count gets reset between tests and does not
+        // interfere due to the Glean singleton retaining state between tests.
         preInitTaskCount = 0
 
         // Clear the cached operations
