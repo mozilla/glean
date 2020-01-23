@@ -50,12 +50,13 @@ class SampleApplication : Application() {
         Glean.registerPings(Pings)
 
         // Initialize the Glean library.
-        Glean.initialize(applicationContext, uploadEnabled = true)
+        Glean.initialize(applicationContext, uploadEnabled = settings().isTelemetryEnabled)
     }
 }
 ```
 
-Once initialized, if collection is enabled, the Glean SDK will automatically start collecting [baseline metrics](pings/metrics.md) and sending its [pings](pings/index.md).
+Once initialized, if `uploadEnabled` is true, the Glean SDK will automatically start collecting [baseline metrics](pings/metrics.md) and sending its [pings](pings/index.md).  
+If `uploadEnabled` is false, any persisted metrics, events and pings (other than `first_run_date`) are cleared, and subsequent calls to record metrics will be no-ops.
 
 The Glean SDK should be initialized as soon as possible, and importantly, before any other libraries in the application start using Glean.
 Library code should never call `Glean.initialize`, since it should be called exactly once per application.
@@ -92,7 +93,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 }
 ```
 
-Once initialized, if collection is enabled, the Glean SDK will automatically start collecting [baseline metrics](pings/metrics.md) and sending its [pings](pings/index.md).
+Once initialized, if `uploadEnabled` is true, the Glean SDK will automatically start collecting [baseline metrics](pings/metrics.md) and sending its [pings](pings/index.md).  
+If `uploadEnabled` is false, any persisted metrics, events and pings (other than `first_run_date`) are cleared, and subsequent calls to record metrics will be no-ops.
 
 The Glean SDK should be initialized as soon as possible, and importantly, before any other libraries in the application start using Glean.
 Library code should never call `Glean.shared.initialize`, since it should be called exactly once per application.
@@ -124,6 +126,9 @@ Glean.initialize(
 )
 ```
 
+Once initialized, if `upload_enabled` is true, the Glean SDK will automatically start collecting [baseline metrics](pings/metrics.md) and sending its [pings](pings/index.md).  
+If `upload_enabled` is false, any persisted metrics, events and pings (other than `first_run_date`) are cleared, and subsequent calls to record metrics will be no-ops.
+
 Additional configuration is available on the `glean.Configuration` object, which can be passed into `Glean.initialize()`.
 
 Unlike Android and Swift, the Python bindings do not automatically send any pings.
@@ -150,21 +155,11 @@ Built-in pings are only available after initialization.
 
 `Glean.setUploadEnabled()` should be called in response to the user enabling or disabling telemetry.
 
-The application should provide some form of user interface to call this method.
-
-When going from enabled to disabled, all pending events, metrics and pings are cleared, except for [`first_run_date`](pings/index.html#the-client_info-section).
-When re-enabling, core Glean metrics will be recomputed at that time.
-
 </div>
 
 <div data-lang="Swift" class="tab">
 
 `Glean.shared.setUploadEnabled()` should be called in response to the user enabling or disabling telemetry.
-
-The application should provide some form of user interface to call this method.
-
-When going from enabled to disabled, all pending events, metrics and pings are cleared, except for [`first_run_date`](pings/index.html#the-client_info-section).
-When re-enabling, core Glean metrics will be recomputed at that time.
 
 </div>
 
@@ -172,11 +167,11 @@ When re-enabling, core Glean metrics will be recomputed at that time.
 
 `Glean.set_upload_enabled()` should be called in response to the user enabling or disabling telemetry.
 
+</div>
+
+{{#include ../tab_footer.md}}
+
 The application should provide some form of user interface to call this method.
 
 When going from enabled to disabled, all pending events, metrics and pings are cleared, except for [`first_run_date`](pings/index.html#the-client_info-section).
 When re-enabling, core Glean metrics will be recomputed at that time.
-
-</div>
-
-{{#include ../tab_footer.md}}
