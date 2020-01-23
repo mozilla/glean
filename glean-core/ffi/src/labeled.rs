@@ -85,12 +85,11 @@ macro_rules! impl_labeled_metric {
 
         #[no_mangle]
         pub extern "C" fn $test_get_num_recorded_errors(
-            glean_handle: u64,
             metric_id: u64,
             error_type: i32,
             storage_name: FfiStr,
         ) -> i32 {
-            crate::HandleMapExtension::call_infallible(&*crate::GLEAN, glean_handle, |glean| {
+            crate::with_glean_value(|glean| {
                 crate::HandleMapExtension::call_infallible(&*$global, metric_id, |metric| {
                     let error_type = std::convert::TryFrom::try_from(error_type).unwrap();
                     let storage_name =

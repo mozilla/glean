@@ -7,7 +7,6 @@ package mozilla.telemetry.glean.private
 import androidx.annotation.VisibleForTesting
 import com.sun.jna.StringArray
 import mozilla.telemetry.glean.Dispatchers
-import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.getAndConsumeRustString
 import mozilla.telemetry.glean.rust.toBoolean
@@ -80,7 +79,7 @@ class StringMetricType internal constructor(
      * Internal only, synchronous API for setting a string value.
      */
     internal fun setSync(value: String) {
-        LibGleanFFI.INSTANCE.glean_string_set(Glean.handle, this.handle, value)
+        LibGleanFFI.INSTANCE.glean_string_set(this.handle, value)
     }
 
     /**
@@ -98,7 +97,7 @@ class StringMetricType internal constructor(
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.assertInTestingMode()
 
-        val res = LibGleanFFI.INSTANCE.glean_string_test_has_value(Glean.handle, this.handle, pingName)
+        val res = LibGleanFFI.INSTANCE.glean_string_test_has_value(this.handle, pingName)
         return res.toBoolean()
     }
 
@@ -120,7 +119,7 @@ class StringMetricType internal constructor(
         if (!testHasValue(pingName)) {
             throw NullPointerException()
         }
-        val ptr = LibGleanFFI.INSTANCE.glean_string_test_get_value(Glean.handle, this.handle, pingName)!!
+        val ptr = LibGleanFFI.INSTANCE.glean_string_test_get_value(this.handle, pingName)!!
         return ptr.getAndConsumeRustString()
     }
 
@@ -139,7 +138,7 @@ class StringMetricType internal constructor(
         Dispatchers.API.assertInTestingMode()
 
         return LibGleanFFI.INSTANCE.glean_string_test_get_num_recorded_errors(
-            Glean.handle, this.handle, errorType.ordinal, pingName
+            this.handle, errorType.ordinal, pingName
         )
     }
 }

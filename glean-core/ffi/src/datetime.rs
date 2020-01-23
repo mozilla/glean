@@ -6,7 +6,7 @@ use std::os::raw::c_char;
 
 use ffi_support::FfiStr;
 
-use crate::{define_metric, handlemap_ext::HandleMapExtension, GLEAN};
+use crate::{define_metric, handlemap_ext::HandleMapExtension, with_glean_value};
 
 define_metric!(DatetimeMetric => DATETIME_METRICS {
     new           -> glean_new_datetime_metric(time_unit: i32),
@@ -16,7 +16,6 @@ define_metric!(DatetimeMetric => DATETIME_METRICS {
 
 #[no_mangle]
 pub extern "C" fn glean_datetime_set(
-    glean_handle: u64,
     metric_id: u64,
     year: i32,
     month: u32,
@@ -37,7 +36,7 @@ pub extern "C" fn glean_datetime_set(
 
     // We are within the u32 boundaries for nano, we should be ok converting.
     let converted_nanos = nano as u32;
-    GLEAN.call_infallible(glean_handle, |glean| {
+    with_glean_value(|glean| {
         DATETIME_METRICS.call_infallible(metric_id, |metric| {
             metric.set_with_details(
                 glean,
@@ -55,12 +54,8 @@ pub extern "C" fn glean_datetime_set(
 }
 
 #[no_mangle]
-pub extern "C" fn glean_datetime_test_has_value(
-    glean_handle: u64,
-    metric_id: u64,
-    storage_name: FfiStr,
-) -> u8 {
-    GLEAN.call_infallible(glean_handle, |glean| {
+pub extern "C" fn glean_datetime_test_has_value(metric_id: u64, storage_name: FfiStr) -> u8 {
+    with_glean_value(|glean| {
         DATETIME_METRICS.call_infallible(metric_id, |metric| {
             metric
                 .test_get_value_as_string(glean, storage_name.as_str())
@@ -71,11 +66,10 @@ pub extern "C" fn glean_datetime_test_has_value(
 
 #[no_mangle]
 pub extern "C" fn glean_datetime_test_get_value_as_string(
-    glean_handle: u64,
     metric_id: u64,
     storage_name: FfiStr,
 ) -> *mut c_char {
-    GLEAN.call_infallible(glean_handle, |glean| {
+    with_glean_value(|glean| {
         DATETIME_METRICS.call_infallible(metric_id, |metric| {
             metric
                 .test_get_value_as_string(glean, storage_name.as_str())

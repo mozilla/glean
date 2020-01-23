@@ -6,7 +6,7 @@ use std::time::Duration;
 
 use ffi_support::FfiStr;
 
-use crate::{define_metric, handlemap_ext::HandleMapExtension, GLEAN};
+use crate::{define_metric, handlemap_ext::HandleMapExtension, with_glean_value};
 
 define_metric!(TimespanMetric => TIMESPAN_METRICS {
     new           -> glean_new_timespan_metric(time_unit: i32),
@@ -15,8 +15,8 @@ define_metric!(TimespanMetric => TIMESPAN_METRICS {
 });
 
 #[no_mangle]
-pub extern "C" fn glean_timespan_set_start(glean_handle: u64, metric_id: u64, start_time: u64) {
-    GLEAN.call_infallible(glean_handle, |glean| {
+pub extern "C" fn glean_timespan_set_start(metric_id: u64, start_time: u64) {
+    with_glean_value(|glean| {
         TIMESPAN_METRICS.call_infallible_mut(metric_id, |metric| {
             metric.set_start(glean, start_time);
         })
@@ -24,8 +24,8 @@ pub extern "C" fn glean_timespan_set_start(glean_handle: u64, metric_id: u64, st
 }
 
 #[no_mangle]
-pub extern "C" fn glean_timespan_set_stop(glean_handle: u64, metric_id: u64, stop_time: u64) {
-    GLEAN.call_infallible(glean_handle, |glean| {
+pub extern "C" fn glean_timespan_set_stop(metric_id: u64, stop_time: u64) {
+    with_glean_value(|glean| {
         TIMESPAN_METRICS.call_infallible_mut(metric_id, |metric| {
             metric.set_stop(glean, stop_time);
         })
@@ -40,13 +40,9 @@ pub extern "C" fn glean_timespan_cancel(metric_id: u64) {
 }
 
 #[no_mangle]
-pub extern "C" fn glean_timespan_set_raw_nanos(
-    glean_handle: u64,
-    metric_id: u64,
-    elapsed_nanos: u64,
-) {
+pub extern "C" fn glean_timespan_set_raw_nanos(metric_id: u64, elapsed_nanos: u64) {
     let elapsed = Duration::from_nanos(elapsed_nanos);
-    GLEAN.call_infallible(glean_handle, |glean| {
+    with_glean_value(|glean| {
         TIMESPAN_METRICS.call_infallible(metric_id, |metric| {
             metric.set_raw(glean, elapsed, false);
         })
@@ -54,12 +50,8 @@ pub extern "C" fn glean_timespan_set_raw_nanos(
 }
 
 #[no_mangle]
-pub extern "C" fn glean_timespan_test_has_value(
-    glean_handle: u64,
-    metric_id: u64,
-    storage_name: FfiStr,
-) -> u8 {
-    GLEAN.call_infallible(glean_handle, |glean| {
+pub extern "C" fn glean_timespan_test_has_value(metric_id: u64, storage_name: FfiStr) -> u8 {
+    with_glean_value(|glean| {
         TIMESPAN_METRICS.call_infallible(metric_id, |metric| {
             metric
                 .test_get_value(glean, storage_name.as_str())
@@ -69,12 +61,8 @@ pub extern "C" fn glean_timespan_test_has_value(
 }
 
 #[no_mangle]
-pub extern "C" fn glean_timespan_test_get_value(
-    glean_handle: u64,
-    metric_id: u64,
-    storage_name: FfiStr,
-) -> u64 {
-    GLEAN.call_infallible(glean_handle, |glean| {
+pub extern "C" fn glean_timespan_test_get_value(metric_id: u64, storage_name: FfiStr) -> u64 {
+    with_glean_value(|glean| {
         TIMESPAN_METRICS.call_infallible(metric_id, |metric| {
             metric.test_get_value(glean, storage_name.as_str()).unwrap()
         })

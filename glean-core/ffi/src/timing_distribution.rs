@@ -7,7 +7,8 @@ use std::os::raw::c_char;
 use ffi_support::FfiStr;
 
 use crate::{
-    define_metric, from_raw_int64_array, handlemap_ext::HandleMapExtension, RawInt64Array, GLEAN,
+    define_metric, from_raw_int64_array, handlemap_ext::HandleMapExtension, with_glean_value,
+    RawInt64Array,
 };
 use glean_core::metrics::TimerId;
 
@@ -25,12 +26,11 @@ pub extern "C" fn glean_timing_distribution_set_start(metric_id: u64, start_time
 
 #[no_mangle]
 pub extern "C" fn glean_timing_distribution_set_stop_and_accumulate(
-    glean_handle: u64,
     metric_id: u64,
     timer_id: TimerId,
     stop_time: u64,
 ) {
-    GLEAN.call_infallible(glean_handle, |glean| {
+    with_glean_value(|glean| {
         TIMING_DISTRIBUTION_METRICS.call_infallible_mut(metric_id, |metric| {
             metric.set_stop_and_accumulate(glean, timer_id, stop_time);
         })
@@ -46,12 +46,11 @@ pub extern "C" fn glean_timing_distribution_cancel(metric_id: u64, timer_id: Tim
 
 #[no_mangle]
 pub extern "C" fn glean_timing_distribution_accumulate_samples(
-    glean_handle: u64,
     metric_id: u64,
     raw_samples: RawInt64Array,
     num_samples: i32,
 ) {
-    GLEAN.call_infallible(glean_handle, |glean| {
+    with_glean_value(|glean| {
         TIMING_DISTRIBUTION_METRICS.call_infallible_mut(metric_id, |metric| {
             // The Kotlin code is sending Long(s), which are 64 bits, as there's
             // currently no stable UInt type. The positive part of [Int] would not
@@ -66,11 +65,10 @@ pub extern "C" fn glean_timing_distribution_accumulate_samples(
 
 #[no_mangle]
 pub extern "C" fn glean_timing_distribution_test_has_value(
-    glean_handle: u64,
     metric_id: u64,
     storage_name: FfiStr,
 ) -> u8 {
-    GLEAN.call_infallible(glean_handle, |glean| {
+    with_glean_value(|glean| {
         TIMING_DISTRIBUTION_METRICS.call_infallible(metric_id, |metric| {
             metric
                 .test_get_value(glean, storage_name.as_str())
@@ -81,11 +79,10 @@ pub extern "C" fn glean_timing_distribution_test_has_value(
 
 #[no_mangle]
 pub extern "C" fn glean_timing_distribution_test_get_value_as_json_string(
-    glean_handle: u64,
     metric_id: u64,
     storage_name: FfiStr,
 ) -> *mut c_char {
-    GLEAN.call_infallible(glean_handle, |glean| {
+    with_glean_value(|glean| {
         TIMING_DISTRIBUTION_METRICS.call_infallible(metric_id, |metric| {
             metric
                 .test_get_value_as_json_string(glean, storage_name.as_str())

@@ -169,7 +169,7 @@ fn client_id_and_first_run_date_must_be_regenerated() {
     {
         let glean = Glean::with_options(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
 
-        glean.data_store.clear_all();
+        glean.data_store.as_ref().unwrap().clear_all();
 
         assert!(glean
             .core_metrics

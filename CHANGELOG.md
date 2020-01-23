@@ -7,6 +7,7 @@
   * **Deprecation Warning** Since `locale` is now in the `client_info` section, the one
     in the baseline ping ([`glean.baseline.locale`](https://github.com/mozilla/glean/blob/c261205d6e84d2ab39c50003a8ffc3bd2b763768/glean-core/metrics.yaml#L28-L42))
     is redundant and will be removed by the end of the quarter.
+  * Drop the Glean handle and move state into glean-core ([#664](https://github.com/mozilla/glean/pull/664))
 * Android:
   * Collections performed before initialization (preinit tasks) are now dispatched off
     the main thread during initialization.

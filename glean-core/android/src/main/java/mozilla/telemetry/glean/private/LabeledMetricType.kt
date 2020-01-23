@@ -7,7 +7,6 @@ package mozilla.telemetry.glean.private
 import androidx.annotation.VisibleForTesting
 import com.sun.jna.StringArray
 import mozilla.telemetry.glean.Dispatchers
-import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.toByte
 import mozilla.telemetry.glean.testing.ErrorType
@@ -135,17 +134,17 @@ class LabeledMetricType<T>(
         return when (subMetric) {
             is CounterMetricType -> {
                 LibGleanFFI.INSTANCE.glean_labeled_counter_test_get_num_recorded_errors(
-                    Glean.handle, this.handle, errorType.ordinal, pingName
+                    this.handle, errorType.ordinal, pingName
                 )
             }
             is BooleanMetricType -> {
                 LibGleanFFI.INSTANCE.glean_labeled_boolean_test_get_num_recorded_errors(
-                    Glean.handle, this.handle, errorType.ordinal, pingName
+                    this.handle, errorType.ordinal, pingName
                 )
             }
             is StringMetricType -> {
                 LibGleanFFI.INSTANCE.glean_labeled_string_test_get_num_recorded_errors(
-                    Glean.handle, this.handle, errorType.ordinal, pingName
+                    this.handle, errorType.ordinal, pingName
                 )
             }
             else -> throw IllegalStateException(

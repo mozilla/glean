@@ -574,7 +574,7 @@ class GleanTest {
             100, Dispatchers.API.taskQueue.size)
         assertEquals("overflowCount is correct", 10, Dispatchers.API.overflowCount)
 
-        Glean.handle = 0
+        Glean.testDestroyGleanHandle()
         // Now trigger execution to ensure the tasks fired
         Glean.initialize(context, true, Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port,

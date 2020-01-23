@@ -7,7 +7,6 @@ package mozilla.telemetry.glean.private
 import androidx.annotation.VisibleForTesting
 import com.sun.jna.StringArray
 import mozilla.telemetry.glean.Dispatchers
-import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.getAndConsumeRustString
 import mozilla.telemetry.glean.rust.toBoolean
@@ -78,7 +77,6 @@ class StringListMetricType(
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.launch {
             LibGleanFFI.INSTANCE.glean_string_list_add(
-                Glean.handle,
                 this@StringListMetricType.handle,
                 value)
         }
@@ -99,7 +97,6 @@ class StringListMetricType(
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.launch {
             LibGleanFFI.INSTANCE.glean_string_list_set(
-                Glean.handle,
                 this@StringListMetricType.handle,
                 ffiValueList,
                 value.size)
@@ -121,7 +118,6 @@ class StringListMetricType(
         val ffiValueList = StringArray(value.toTypedArray(), "utf-8")
 
         LibGleanFFI.INSTANCE.glean_string_list_set(
-            Glean.handle,
             this@StringListMetricType.handle,
             ffiValueList,
             value.size
@@ -143,7 +139,7 @@ class StringListMetricType(
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.assertInTestingMode()
 
-        val res = LibGleanFFI.INSTANCE.glean_string_list_test_has_value(Glean.handle, this.handle, pingName)
+        val res = LibGleanFFI.INSTANCE.glean_string_list_test_has_value(this.handle, pingName)
         return res.toBoolean()
     }
 
@@ -168,7 +164,6 @@ class StringListMetricType(
 
         val jsonRes: JSONArray
         val ptr = LibGleanFFI.INSTANCE.glean_string_list_test_get_value_as_json_string(
-            Glean.handle,
             this.handle,
             pingName)!!
         try {
@@ -194,7 +189,7 @@ class StringListMetricType(
         Dispatchers.API.assertInTestingMode()
 
         return LibGleanFFI.INSTANCE.glean_string_list_test_get_num_recorded_errors(
-            Glean.handle, this.handle, errorType.ordinal, pingName
+            this.handle, errorType.ordinal, pingName
         )
     }
 }

@@ -8,7 +8,6 @@ import android.os.SystemClock
 import androidx.annotation.VisibleForTesting
 import com.sun.jna.StringArray
 import mozilla.telemetry.glean.Dispatchers
-import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.GleanTimerId
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.getAndConsumeRustString
@@ -111,7 +110,6 @@ class TimingDistributionMetricType internal constructor(
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.launch {
             LibGleanFFI.INSTANCE.glean_timing_distribution_set_stop_and_accumulate(
-                    Glean.handle,
                     this@TimingDistributionMetricType.handle,
                     timerId.id,
                     stopTime)
@@ -152,7 +150,6 @@ class TimingDistributionMetricType internal constructor(
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.launch {
             LibGleanFFI.INSTANCE.glean_timing_distribution_accumulate_samples(
-                Glean.handle,
                 this@TimingDistributionMetricType.handle,
                 samples,
                 samples.size
@@ -176,7 +173,7 @@ class TimingDistributionMetricType internal constructor(
         Dispatchers.API.assertInTestingMode()
 
         return LibGleanFFI
-            .INSTANCE.glean_timing_distribution_test_has_value(Glean.handle, this.handle, pingName)
+            .INSTANCE.glean_timing_distribution_test_has_value(this.handle, pingName)
             .toBoolean()
     }
 
@@ -200,7 +197,6 @@ class TimingDistributionMetricType internal constructor(
         }
 
         val ptr = LibGleanFFI.INSTANCE.glean_timing_distribution_test_get_value_as_json_string(
-                Glean.handle,
                 this.handle,
                 pingName)!!
 
@@ -222,7 +218,7 @@ class TimingDistributionMetricType internal constructor(
         Dispatchers.API.assertInTestingMode()
 
         return LibGleanFFI.INSTANCE.glean_timing_distribution_test_get_num_recorded_errors(
-            Glean.handle, this.handle, errorType.ordinal, pingName
+            this.handle, errorType.ordinal, pingName
         )
     }
 }
