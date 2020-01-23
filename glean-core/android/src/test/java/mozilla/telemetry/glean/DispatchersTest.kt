@@ -5,6 +5,7 @@
 package mozilla.telemetry.glean
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Dispatchers as KotlinDispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -63,7 +64,9 @@ class DispatchersTest {
         assertEquals("Tasks have not run while in queue", 0, threadCanary)
 
         // Now trigger execution to ensure the tasks fired
-        Dispatchers.API.flushQueuedInitialTasks()
+        runBlocking {
+            Dispatchers.API.flushQueuedInitialTasks()
+        }
 
         assertEquals("Tasks have executed", 3, threadCanary)
         assertEquals("Task queue is cleared", 0, Dispatchers.API.taskQueue.size)
@@ -97,12 +100,14 @@ class DispatchersTest {
         assertEquals("Tasks have not run while in queue", 0, threadCanary.get())
 
         // Now trigger execution to ensure the tasks fired
-        Dispatchers.API.flushQueuedInitialTasks()
+        GlobalScope.launch {
+            Dispatchers.API.flushQueuedInitialTasks()
+        }
 
         // Wait for the flushed tasks to be executed.
         runBlocking {
             withTimeoutOrNull(2000) {
-                while (threadCanary.get() != 3) {
+                while (threadCanary.get() != 3 || Dispatchers.API.taskQueue.size > 0) {
                     delay(1)
                 }
             } ?: assertTrue("Timed out waiting for tasks to execute", false)

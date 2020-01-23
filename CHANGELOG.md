@@ -4,6 +4,8 @@
 
 * General:
   * `ping_type` is not included in the `ping_info` any more ([#653](https://github.com/mozilla/glean/pull/653)), the pipeline takes the value from the submission URL.
+* Android:
+  * The `Glean.initialize` method runs mostly off the main thread ([#672](https://github.com/mozilla/glean/pull/672)).
 
 # v24.2.0 (2020-02-11)
 
