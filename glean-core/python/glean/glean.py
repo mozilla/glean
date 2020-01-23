@@ -87,8 +87,9 @@ class Glean:
             application_id (str): The application id to use when sending pings.
             application_version (str): The version of the application sending
                 Glean data.
-            upload_enabled (bool): Controls the state of the uploaer during
-                Glean initialization.
+            upload_enabled (bool): Controls whether telemetry is enabled. If
+                disabled, all persisted metrics, events and queued pings
+                (except first_run_date) are cleared.
             configuration (glean.config.Configuration): (optional) An object with
                 global settings.
             data_dir (pathlib.Path): (optional) The path to the Glean data
