@@ -24,7 +24,6 @@ lazy_static! {
     /// * `this_is_fine_too`
     /// * `this.is_still_fine`
     /// * `thisisfine`
-    /// * `this.is_fine.2`
     /// * `_.is_fine`
     /// * `this.is-fine`
     /// * `this-is-fine`
