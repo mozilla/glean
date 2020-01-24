@@ -103,7 +103,9 @@ open class GleanInternalAPI internal constructor () {
      *
      * @param applicationContext [Context] to access application features, such
      * as shared preferences
-     * @param uploadEnabled A [Boolean] that determines the initial state of the uploader
+     * @param uploadEnabled A [Boolean] that determines whether telemetry is enabled.
+     *     If disabled, all persisted metrics, events and queued pings (except
+     *     first_run_date) are cleared.
      * @param configuration A Glean [Configuration] object with global settings.
      */
     @Suppress("ReturnCount", "LongMethod", "ComplexMethod")
