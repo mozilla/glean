@@ -211,6 +211,86 @@ public class Glean {
         }
     }
 
+    /// Used to indicate that an experiment is running.
+    ///
+    /// Glean will add an experiment annotation that is sent with pings.  This information is _not_
+    /// persisted between runs.
+    ///
+    /// - parameters:
+    ///     * experimentId: The id of the active experiment (maximum 100 bytes).
+    ///     * branch: The branch of the experiment (maximum 100 bytes).
+    ///     * extra: Optional metadata to output with the ping.
+    public func setExperimentActive(experimentId: String, branch: String, extra: [String: String]?) {
+        // The Dictionary is sent over FFI as a pair of arrays, one containing the
+        // keys, and the other containing the values.
+        // Keys and values are passed over the FFI boundary as arrays of strings, so
+        // it is necessary to separate the dictionary into appropriate arrays.
+        var keys = [String]()
+        var values = [String]()
+        if let extras = extra {
+            for item in extras {
+                keys.append(item.key)
+                values.append(item.value)
+            }
+        }
+
+        withArrayOfCStrings(keys) { keys in
+            withArrayOfCStrings(values) { values in
+                // We dispatch this asynchronously so that, if called before the Glean SDK is
+                // initialized, it doesn't get ignored and will be replayed after init.
+                Dispatchers.shared.launchAPI {
+                    glean_set_experiment_active(
+                        experimentId,
+                        branch,
+                        keys,
+                        values,
+                        Int32(extra?.count ?? 0)
+                    )
+                }
+            }
+        }
+    }
+
+    /// Used to indicate that an experiment is no longer running.
+    ///
+    /// - parameters:
+    ///     * experimentsId: The id of the experiment to deactivate.
+    public func setExperimentInactive(experimentId: String) {
+        // We dispatch this asynchronously so that, if called before the Glean SDK is
+        // initialized, it doesn't get ignored and will be replayed after init.
+        Dispatchers.shared.launchAPI {
+            glean_set_experiment_inactive(experimentId)
+        }
+    }
+
+    /// Tests wheter an experiment is active, for testing purposes only.
+    ///
+    /// - parameters:
+    ///     * experimentId: The id of the experiment to look for.
+    ///
+    /// - returns: `true` if the experiment is active and reported in pings.
+    public func testIsExperimentActive(experimentId: String) -> Bool {
+        Dispatchers.shared.assertInTestingMode()
+        return glean_experiment_test_is_active(experimentId).toBool()
+    }
+
+    public func testGetExperimentData(experimentId: String) -> RecordedExperimentData? {
+        Dispatchers.shared.assertInTestingMode()
+        let jsonString = String(
+            freeingRustString: glean_experiment_test_get_data(experimentId)
+        )
+
+        if let jsonData: Data = jsonString.data(using: .utf8, allowLossyConversion: false) {
+            if let json = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] {
+                let experimentData = RecordedExperimentData(json: json)
+
+                return experimentData
+            }
+        }
+
+        return nil
+    }
+
     /// Returns true if the Glean SDK has been initialized.
     func isInitialized() -> Bool {
         return self.initialized
