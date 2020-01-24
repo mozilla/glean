@@ -288,6 +288,9 @@ class MetricsPingSchedulerTest {
 
             // Fetch the ping from the server and decode its JSON body.
             val request = server.takeRequest(20L, AndroidTimeUnit.SECONDS)
+            val docType = request.path.split("/")[3]
+            assertEquals("The received ping must be a 'metrics' ping", "metrics", docType)
+
             val metricsJsonData = request.body.readUtf8()
             val metricsJson = JSONObject(metricsJsonData)
 
@@ -703,6 +706,8 @@ class MetricsPingSchedulerTest {
 
             // Wait for the metrics ping to be received.
             val request = server.takeRequest(20L, AndroidTimeUnit.SECONDS)
+            val docType = request.path.split("/")[3]
+            assertEquals("The received ping must be a 'metrics' ping", "metrics", docType)
 
             val metricsJsonData = request.body.readUtf8()
 
@@ -780,6 +785,8 @@ class MetricsPingSchedulerTest {
 
             // Wait for the metrics ping to be received.
             val request = server.takeRequest(20L, AndroidTimeUnit.SECONDS)
+            val docType = request.path.split("/")[3]
+            assertEquals("The received ping must be a 'metrics' ping", "metrics", docType)
 
             val metricsJsonData = request.body.readUtf8()
 
