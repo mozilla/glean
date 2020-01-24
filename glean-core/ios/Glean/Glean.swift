@@ -61,7 +61,7 @@ public class Glean {
     /// into the background.
     ///
     /// - parameters:
-    ///     * uploadEnabled: A `Bool` that enables or disables telemetry. 
+    ///     * uploadEnabled: A `Bool` that enables or disables telemetry.
     ///       If disabled, all persisted metrics, events and queued pings (except
     ///       first_run_date) are cleared.
     ///     * configuration: A Glean `Configuration` object with global settings.
