@@ -33,7 +33,10 @@ class GleanDebugUtilityTests: XCTestCase {
             let pingType = (json?["ping_info"] as? [String: Any])!["ping_type"] as? String
             XCTAssertTrue(Glean.shared.testHasPingType(pingType!))
 
-            self.expectation!.fulfill()
+            DispatchQueue.main.async {
+                // Let the response get processed before we mark the expectation fulfilled
+                self.expectation?.fulfill()
+            }
 
             return OHHTTPStubsResponse(
                 jsonObject: [],
