@@ -18,7 +18,7 @@ stability:
     ...
 ```
 
-> **Note:** removing or changing labels, including their order in the registy file, is permitted. Special care must be taken when touching GeckoView metrics exfiltrated through the Glean SDK, as the index of the labels is used to exfiltrate Gecko data through the Glean SDK.
+> **Note:** removing or changing labels, including their order in the registry file, is permitted. Special care must be taken when touching GeckoView metrics exfiltrated through the Glean SDK, as the index of the labels is used to exfiltrate Gecko data through the Glean SDK.
 
 ## API
 
