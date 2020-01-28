@@ -306,8 +306,12 @@ jobs:
       - run:
           name: Install mdbook
           command: |
-              wget https://github.com/rust-lang-nursery/mdBook/releases/download/v0.3.0/mdbook-v0.3.0-x86_64-unknown-linux-gnu.tar.gz
-              tar -xvf mdbook-v0.3.0-x86_64-unknown-linux-gnu.tar.gz
+              MDBOOK_VERSION=v0.3.5
+              MDBOOK="mdbook-${MDBOOK_VERSION}-x86_64-unknown-linux-gnu.tar.gz"
+              MDBOOK_SHA256=e03cc253650fa0b4780fab4d75df64c48d35d48f452fcf61c5ec0ae652f9bd8e
+              curl -sfSL --retry 5 --retry-delay 10 -O "https://github.com/rust-lang-nursery/mdBook/releases/download/${MDBOOK_VERSION}/${MDBOOK}"
+              echo "${MDBOOK_SHA256} *${MDBOOK}" | shasum -a 256 -c -
+              tar -xvf "${MDBOOK}"
               mv mdbook /usr/local/cargo/bin/mdbook
       - run:
           name: Build Rust documentation
