@@ -10,3 +10,4 @@ create-missing = false
 [output.html]
 additional-css = ["tabs.css"]
 additional-js = ["tabs.js"]
+git-repository-url = "https://github.com/mozilla/glean"
