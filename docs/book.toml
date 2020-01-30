@@ -11,3 +11,6 @@ create-missing = false
 additional-css = ["tabs.css"]
 additional-js = ["tabs.js"]
 git-repository-url = "https://github.com/mozilla/glean"
+
+[preprocessor.open-on-gh]
+command = "mdbook-open-on-gh"

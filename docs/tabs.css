@@ -39,3 +39,10 @@
     border-top: none;
     padding: 6px 12px;
 }
+
+footer {
+  font-size: 0.8em;
+  text-align: center;
+  border-top: 1px solid black;
+  padding: 5px 0;
+}
