@@ -15,3 +15,4 @@ They could be release notes, documentation, hopes, dreams, or whatever: so long 
 * 2019-11-29: [Differences](https://fnordig.de/2019/11/29/this-week-in-glean/)
 * 2019-12-06: [Migrations](https://brizental.github.io/2019/12/06/this-week-in-glean-migrations.html)
 * 2020-01-10: [Glossary](https://brizental.github.io/2020/01/10/this-week-in-glean-glossary.html)
+* 2020-02-03: [Cargo features - an investigation](https://fnordig.de/2020/02/03/this-week-in-glean/)
