@@ -92,8 +92,10 @@ glean.internal.metrics:
     lifetime: application
     send_in_pings:
       - glean_client_info
-    description: |
+    description: >
       The model of the device the application is running on.
+      On Android, this is Build.MODEL, the user-visible marketing name,
+      like "Pixel 2 XL".
     bugs:
       - https://bugzilla.mozilla.org/1522552
     data_reviews:
