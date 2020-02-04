@@ -67,7 +67,7 @@ pub use self::uuid::UuidMetric;
 /// Do not reorder the variants.
 ///
 /// **Any new metric must be added at the end.**
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub enum Metric {
     /// A boolean metric. See [`BooleanMetric`](struct.BooleanMetric.html) for more information.
     Boolean(bool),
