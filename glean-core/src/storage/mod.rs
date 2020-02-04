@@ -232,8 +232,6 @@ mod test {
         assert!(empty_snapshot.is_none());
     }
 
-    // Experiment's API tests: the next test comes from glean-ac's
-    // ExperimentsStorageEngineTest.kt.
     #[test]
     fn test_experiments_json_serialization_empty() {
         let t = tempfile::tempdir().unwrap();
@@ -246,7 +244,6 @@ mod test {
         let snapshot = StorageManager
             .snapshot_experiments_as_json(glean.storage(), "glean_internal_info")
             .unwrap();
-        print!("{:?}", snapshot);
         assert_eq!(
             json!({"some-experiment": {"branch": "test-branch"}}),
             snapshot
