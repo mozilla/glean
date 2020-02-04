@@ -18,7 +18,7 @@ pub fn sanitize_application_id(application_id: &str) -> String {
         .filter_map(|x| match x {
             'A'..='Z' | 'a'..='z' | '0'..='9' => {
                 last_dash = false;
-                Some(x)
+                Some(x.to_ascii_lowercase())
             }
             _ => {
                 let result = if last_dash { None } else { Some('-') };
@@ -129,6 +129,10 @@ mod test {
         assert_eq!(
             "org-mozilla-test-app",
             sanitize_application_id("org-mozilla-test-app")
+        );
+        assert_eq!(
+            "org-mozilla-test-app",
+            sanitize_application_id("org.mozilla.Test.App")
         );
     }
 
