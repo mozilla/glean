@@ -66,7 +66,7 @@ open class GleanInternalAPI internal constructor () {
     private lateinit var applicationContext: Context
 
     // Note: we set `applicationContext` early during startup so this should be fine.
-    private val gleanLifecycleObserver by lazy { GleanLifecycleObserver(applicationContext) }
+    private val gleanLifecycleObserver by lazy { GleanLifecycleObserver() }
 
     private lateinit var gleanDataDir: File
 
@@ -200,6 +200,21 @@ open class GleanInternalAPI internal constructor () {
         // Signal Dispatcher that init is complete
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.flushQueuedInitialTasks()
+
+        // Check if the "dirty flag" is set. That means the product was probably
+        // force-closed. If that's the case, submit a 'baseline' ping with the
+        // reason "dirty_startup". We only do that from the second run.
+        if (!isFirstRun) {
+            @Suppress("EXPERIMENTAL_API_USAGE")
+            Dispatchers.API.launch {
+                if (LibGleanFFI.INSTANCE.glean_is_dirty_flag_set().toBoolean()) {
+                    submitPingByNameSync("baseline", "dirty_startup")
+                    // Note: while in theory we should set the "dirty flag" to true
+                    // here, in practice it's not needed: if it hits this branch, it
+                    // means the value was `true` and nothing needs to be done.
+                }
+            }
+        }
 
         // At this point, all metrics and events can be recorded.
         // This should only be called from the main thread. This is enforced by
@@ -476,7 +491,7 @@ open class GleanInternalAPI internal constructor () {
      * Handle the background event and send the appropriate pings.
      */
     internal fun handleBackgroundEvent() {
-        Pings.baseline.submit()
+        Pings.baseline.submit(Pings.baselineReasonCodes.background)
         Pings.events.submit()
     }
 
