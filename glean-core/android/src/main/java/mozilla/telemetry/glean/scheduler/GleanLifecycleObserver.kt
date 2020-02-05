@@ -4,7 +4,6 @@
 
 package mozilla.telemetry.glean.scheduler
 
-import android.content.Context
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
@@ -15,9 +14,7 @@ import mozilla.telemetry.glean.GleanMetrics.GleanBaseline
  * Connects process lifecycle events from Android to Glean's handleEvent
  * functionality (where the actual work of sending pings is done).
  */
-internal class GleanLifecycleObserver(
-    private val applicationContext: Context
-) : LifecycleEventObserver {
+internal class GleanLifecycleObserver : LifecycleEventObserver {
     /**
      * Called when lifecycle events are triggered.
      */

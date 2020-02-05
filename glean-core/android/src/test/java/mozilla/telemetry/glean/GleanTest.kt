@@ -203,7 +203,7 @@ class GleanTest {
         // Fake calling the lifecycle observer.
         val lifecycleOwner = mock(LifecycleOwner::class.java)
         val lifecycleRegistry = LifecycleRegistry(lifecycleOwner)
-        val gleanLifecycleObserver = GleanLifecycleObserver(context)
+        val gleanLifecycleObserver = GleanLifecycleObserver()
         lifecycleRegistry.addObserver(gleanLifecycleObserver)
 
         try {
