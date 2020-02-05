@@ -57,6 +57,9 @@ lazy_static! {
         Uuid::parse_str("c0ffeec0-ffee-c0ff-eec0-ffeec0ffeec0").unwrap();
 }
 
+// An internal ping name, not to be touched by anything else
+pub(crate) const INTERNAL_STORAGE: &str = "glean_internal_info";
+
 /// The global Glean instance.
 ///
 /// This is the singleton used by all wrappers to allow for a nice API.
