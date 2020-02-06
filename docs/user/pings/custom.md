@@ -11,6 +11,7 @@ and hyphens and a maximum of 30 characters.
 
 Each ping has the following parameters:
 
+- `description` (required): A textual description describing the purpose of the ping. It may contain [markdown syntax](https://www.markdownguide.org/basic-syntax/).
 - `include_client_id` (required): A boolean indicating whether to include the
   `client_id` in the [`client_info` section](index.md#The-client_info-section)).
 - `send_if_empty` (optional, default: false): A boolean indicating if the ping is sent if it contains no metric data.
