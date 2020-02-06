@@ -102,12 +102,13 @@ class DispatchersTest {
         // Wait for the flushed tasks to be executed.
         runBlocking {
             withTimeoutOrNull(2000) {
-                while (threadCanary.get() == 2) {
+                while (threadCanary.get() != 3) {
                     delay(1)
                 }
             } ?: assertTrue("Timed out waiting for tasks to execute", false)
         }
 
+        assertEquals("All tasks ran to completion", 3, threadCanary.get())
         assertEquals("Task queue is cleared", 0, Dispatchers.API.taskQueue.size)
     }
 
