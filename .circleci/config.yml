@@ -265,30 +265,6 @@ jobs:
           make
           ./glean_app
 
-  Rust code coverage:
-    docker:
-      - image: circleci/rust:latest
-    # We have to use a machine with more RAM for tests so we don't run out of memory.
-    resource_class: "xlarge"
-    steps:
-      - run:
-          name: Setup custom environment variables
-          command: |
-              echo "export CARGO_INCREMENTAL=0" >> $BASH_ENV
-              echo "export RUSTFLAGS='-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Zno-landing-pads'" >> $BASH_ENV
-      - test-rust:
-          rust-version: "nightly"
-      - run:
-          name: Create and upload code coverage
-          command: |
-              set +eo pipefail # Don't fail on errors
-              curl -L https://github.com/mozilla/grcov/releases/download/v0.5.5/grcov-linux-x86_64.tar.bz2 | tar jxf -
-              curl -L https://codecov.io/bash > codecov.sh
-              chmod +x codecov.sh
-              zip -0 ccov.zip `find . \( -name "glean*.gc*" \) -print`
-              ./grcov ccov.zip -s . -t lcov --llvm --branch --ignore-not-existing --ignore "/*" --ignore "glean-core/ffi/*" -o lcov.info
-              ./codecov.sh -Z -f lcov.info || echo 'Codecov upload failed'
-
   Generate Rust documentation:
     docker:
       - image: circleci/rust:latest
@@ -367,13 +343,6 @@ jobs:
           destination: test-results
       - store_test_results:
           path: ~/test-results
-      - run:
-          name: Upload Kotlin code coverage
-          command: |
-              set +eo pipefail # Don't fail on errors
-              curl -L https://codecov.io/bash > codecov.sh
-              chmod +x codecov.sh
-              ./codecov.sh -Z -f glean-core/android/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml || echo 'Codecov upload failed'
 
   android-packaging:
     docker:
@@ -611,13 +580,6 @@ jobs:
           root: .
           paths:
             - Glean.framework.zip
-      - run:
-          name: Create and upload code coverage
-          command: |
-              set +eo pipefail # Don't fail on errors
-              curl -L https://codecov.io/bash > codecov.sh
-              chmod +x codecov.sh
-              ./codecov.sh -Z -J '^Glean$' -X gcov -X coveragepy || echo 'Codecov upload failed'
 
   iOS integration test:
     macos:
@@ -928,7 +890,6 @@ workflows:
   ci:
     jobs:
       - Rust tests - stable
-      - Rust code coverage
       # FIXME: Disabled due to failing to often, bug 1574424
       # - Rust tests - beta
       - Rust tests - minimum version
