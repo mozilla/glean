@@ -25,7 +25,7 @@ class MetricsPingScheduler {
         // In testing mode, set the "last seen version" as the same as this one.
         // Otherwise, all we will ever send is pings for the "upgrade" reason.
         if Dispatchers.shared.testingMode {
-            let _ = isDifferentVersion()
+            _ = isDifferentVersion()
         }
     }
 
