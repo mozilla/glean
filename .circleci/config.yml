@@ -322,21 +322,22 @@ jobs:
       - android-setup
       - skip-if-doc-only
       - run:
+          name: Restrict to Linux builds only
+          command: |
+              echo "rust.targets=linux-x86-64" > local.properties
+      - run:
           name: Android tests
           command: ./gradlew --no-daemon :glean:testDebugUnitTest
           environment:
             GRADLE_OPTS: -Xmx2048m
             TARGET_CFLAGS: -DNDEBUG
-      - store_artifacts:
-          path: glean-core/android/build/rustJniLibs/android
-          destination: libs
       - run:
           name: Save test results
           command: |
-            mkdir -p ~/test-results/junit/
-            mkdir -p ~/test-results/tests/
-            cp -a glean-core/android/build/reports/tests ~/test-results/
-            find glean-core/android/build -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
+              mkdir -p ~/test-results/junit/
+              mkdir -p ~/test-results/tests/
+              cp -a glean-core/android/build/reports/tests ~/test-results/
+              find glean-core/android/build -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
           when: always
       - store_artifacts:
           path: ~/test-results/tests
