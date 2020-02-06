@@ -51,7 +51,7 @@ test-rust-with-logs: ## Run all Rust tests with debug logging and single-threade
 	RUST_LOG=glean_core=debug cargo test --all -- --nocapture --test-threads=1
 
 test-kotlin: ## Run all Kotlin tests
-	./gradlew test
+	./gradlew :glean:testDebugUnitTest
 
 test-swift: ## Run all Swift tests
 	bin/run-ios-tests.sh

@@ -323,7 +323,7 @@ jobs:
       - skip-if-doc-only
       - run:
           name: Android tests
-          command: ./gradlew --no-daemon test
+          command: ./gradlew --no-daemon :glean:testDebugUnitTest
           environment:
             GRADLE_OPTS: -Xmx2048m
             TARGET_CFLAGS: -DNDEBUG
