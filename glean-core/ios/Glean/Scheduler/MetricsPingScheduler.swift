@@ -121,7 +121,7 @@ class MetricsPingScheduler {
                 self.collectPingAndReschedule(
                     now,
                     startupPing: true,
-                    reason: GleanMetrics.Pings.MetricsReasonCodes.upgrade
+                    reason: .upgrade
                 )
             }
             return
@@ -147,7 +147,7 @@ class MetricsPingScheduler {
             schedulePingCollection(
                 now,
                 sendTheNextCalendarDay: true,
-                reason: GleanMetrics.Pings.MetricsReasonCodes.tomorrow
+                reason: .tomorrow
             )
         } else if isAfterDueTime(now) {
             logger.info("The 'metrics' ping is scheduled for immediate collection, \(now)")
@@ -170,7 +170,7 @@ class MetricsPingScheduler {
                 self.collectPingAndReschedule(
                     now,
                     startupPing: true,
-                    reason: GleanMetrics.Pings.MetricsReasonCodes.overdue
+                    reason: .overdue
                 )
             }
         } else {
@@ -179,7 +179,7 @@ class MetricsPingScheduler {
             schedulePingCollection(
                 now,
                 sendTheNextCalendarDay: false,
-                reason: GleanMetrics.Pings.MetricsReasonCodes.today
+                reason: .today
             )
         }
     }
@@ -222,7 +222,7 @@ class MetricsPingScheduler {
         schedulePingCollection(
             now,
             sendTheNextCalendarDay: true,
-            reason: GleanMetrics.Pings.MetricsReasonCodes.reschedule
+            reason: .reschedule
         )
     }
 

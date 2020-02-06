@@ -159,7 +159,7 @@ Pings.search.submit(
 import Glean
 
 GleanMetrics.Pings.shared.search.submit(
-    reason: GleanMetrics.Pings.shared.SearchReasonCodes.performed
+    reason: .performed
 )
 ```
 
