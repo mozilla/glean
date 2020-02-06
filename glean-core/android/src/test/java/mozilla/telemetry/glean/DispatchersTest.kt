@@ -72,7 +72,7 @@ class DispatchersTest {
     @Test
     fun `queued tasks are flushed off the main thread`() {
         val mainThread = Thread.currentThread()
-        var threadCanary = 0
+        val threadCanary = AtomicInteger()
 
         // By setting testing mode to false, we make sure that things
         // are executed asynchronously.
@@ -88,13 +88,13 @@ class DispatchersTest {
                     mainThread,
                     Thread.currentThread()
                 )
-                threadCanary += 1
+                threadCanary.incrementAndGet()
             }
         }
 
         assertEquals("Task queue contains the correct number of tasks",
             3, Dispatchers.API.taskQueue.size)
-        assertEquals("Tasks have not run while in queue", 0, threadCanary)
+        assertEquals("Tasks have not run while in queue", 0, threadCanary.get())
 
         // Now trigger execution to ensure the tasks fired
         Dispatchers.API.flushQueuedInitialTasks()
@@ -102,7 +102,7 @@ class DispatchersTest {
         // Wait for the flushed tasks to be executed.
         runBlocking {
             withTimeoutOrNull(2000) {
-                while (threadCanary == 2) {
+                while (threadCanary.get() == 2) {
                     delay(1)
                 }
             } ?: assertTrue("Timed out waiting for tasks to execute", false)
