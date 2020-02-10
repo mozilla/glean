@@ -10,8 +10,11 @@ use crate::metrics::RecordedExperimentData;
 use crate::metrics::StringMetric;
 
 const GLOBAL_APPLICATION_ID: &str = "org.mozilla.glean.test.app";
-pub fn new_glean() -> (Glean, tempfile::TempDir) {
-    let dir = tempfile::tempdir().unwrap();
+pub fn new_glean(tempdir: Option<tempfile::TempDir>) -> (Glean, tempfile::TempDir) {
+    let dir = match tempdir {
+        Some(tempdir) => tempdir,
+        None => tempfile::tempdir().unwrap(),
+    };
     let tmpname = dir.path().display().to_string();
     let glean = Glean::with_options(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
     (glean, dir)
@@ -19,7 +22,7 @@ pub fn new_glean() -> (Glean, tempfile::TempDir) {
 
 #[test]
 fn path_is_constructed_from_data() {
-    let (glean, _) = new_glean();
+    let (glean, _) = new_glean(None);
 
     assert_eq!(
         "/submit/org-mozilla-glean-test-app/baseline/1/this-is-a-docid",
@@ -200,7 +203,7 @@ fn client_id_and_first_run_date_must_be_regenerated() {
 
 #[test]
 fn basic_metrics_should_be_cleared_when_uploading_is_disabled() {
-    let (mut glean, _t) = new_glean();
+    let (mut glean, _t) = new_glean(None);
     let metric = StringMetric::new(CommonMetricData::new(
         "category",
         "string_metric",
@@ -225,7 +228,7 @@ fn basic_metrics_should_be_cleared_when_uploading_is_disabled() {
 
 #[test]
 fn first_run_date_is_managed_correctly_when_toggling_uploading() {
-    let (mut glean, _) = new_glean();
+    let (mut glean, _) = new_glean(None);
 
     let original_first_run_date = glean
         .core_metrics
@@ -253,7 +256,7 @@ fn first_run_date_is_managed_correctly_when_toggling_uploading() {
 
 #[test]
 fn client_id_is_managed_correctly_when_toggling_uploading() {
-    let (mut glean, _) = new_glean();
+    let (mut glean, _) = new_glean(None);
 
     let original_client_id = glean
         .core_metrics
