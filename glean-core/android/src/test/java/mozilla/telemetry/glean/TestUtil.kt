@@ -126,15 +126,16 @@ internal fun resetGlean(
 }
 
 /**
- * Get a context that contains [PackageInfo.versionName] mocked to
- * "glean.version.name".
+ * Get a context that contains [PackageInfo.versionName] mocked to the passed value
+ * or "glean.version.name" by default.
  *
+ * @param versionName a [String] used as the display version (default: "glean.version.name").
  * @return an application [Context] that can be used to init Glean
  */
-internal fun getContextWithMockedInfo(): Context {
+internal fun getContextWithMockedInfo(versionName: String = "glean.version.name"): Context {
     val context = Mockito.spy<Context>(ApplicationProvider.getApplicationContext<Context>())
     val packageInfo = Mockito.mock(PackageInfo::class.java)
-    packageInfo.versionName = "glean.version.name"
+    packageInfo.versionName = versionName
     val packageManager = Mockito.mock(PackageManager::class.java)
     Mockito.`when`(
         packageManager.getPackageInfo(
