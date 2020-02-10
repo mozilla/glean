@@ -444,6 +444,77 @@ class MetricsPingSchedulerTest {
     }
 
     @Test
+    fun `startup ping sends old version when upgraded`() {
+        // Start the web-server that will receive the metrics ping.
+        val server = getMockWebServer()
+        val configuration = Configuration(
+            serverEndpoint = "http://" + server.hostName + ":" + server.port, logPings = true
+        )
+
+        val oldVersion = "version.0"
+        val oldContext = getContextWithMockedInfo(oldVersion)
+
+        // New version
+        val newContext = getContextWithMockedInfo("version.1")
+
+        try {
+            // Initialize Glean for the first time.
+            // This should pick up the old version ("version.0").
+            // No metric is stored, so no metrics ping will be sent.
+            Glean.initialize(
+                oldContext,
+                true,
+                configuration
+            )
+
+            // Create a metric and set its value. We expect this to be sent after the restart
+            val expectedStringMetric = StringMetricType(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.Ping,
+                name = "expected_metric",
+                sendInPings = listOf("metrics")
+            )
+            val expectedValue = "canary"
+            expectedStringMetric.set(expectedValue)
+
+            // Reset Glean.
+            Glean.testDestroyGleanHandle()
+            @Suppress("EXPERIMENTAL_API_USAGE")
+            Dispatchers.API.setTaskQueueing(true)
+
+            // Initialize Glean again with the new version.
+            // This should trigger a metrics ping after an upgrade (differing version).
+            Glean.initialize(
+                newContext,
+                true,
+                configuration
+            )
+
+            // Trigger worker task to upload the pings in the background.
+            triggerWorkManager(context)
+
+            // Wait for the metrics ping to be received.
+            val request = server.takeRequest(20L, AndroidTimeUnit.SECONDS)
+            val docType = request.path.split("/")[3]
+            assertEquals("The received ping must be a 'metrics' ping", "metrics", docType)
+
+            val metricsJsonData = request.body.readUtf8()
+            val pingJson = JSONObject(metricsJsonData)
+
+            assertEquals("The received ping must contain the old version",
+                oldVersion, pingJson.getJSONObject("client_info")["app_display_version"])
+        } finally {
+            server.shutdown()
+
+            // Reset Glean.
+            Glean.testDestroyGleanHandle()
+            @Suppress("EXPERIMENTAL_API_USAGE")
+            Dispatchers.API.setTaskQueueing(true)
+        }
+    }
+
+    @Test
     fun `startupCheck must correctly handle fresh installs (after due time)`() {
         // Set the current system time to a known datetime: after 4am local.
         val fakeNow = Calendar.getInstance()
