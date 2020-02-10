@@ -30,6 +30,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Before
+import org.junit.After
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.anyBoolean
@@ -54,6 +55,19 @@ class MetricsPingSchedulerTest {
         WorkManagerTestInitHelper.initializeTestWorkManager(context)
 
         Glean.enableTestingMode()
+    }
+
+    @After
+    fun cleanup() {
+        // Always reset Glean to clear all data.
+        // It might not have been initialized, but the reset functions handle that.
+        resetGlean(clearStores = true)
+
+        // Once all data is cleared, destroy the handle.
+        // Individual tests will start Glean if necessary.
+        Glean.testDestroyGleanHandle()
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        Dispatchers.API.setTaskQueueing(true)
     }
 
     @Test
@@ -476,8 +490,6 @@ class MetricsPingSchedulerTest {
 
         // We expect the worker to be scheduled.
         assertNotNull(Glean.metricsPingScheduler.timer)
-
-        resetGlean(clearStores = true)
     }
 
     @Test
