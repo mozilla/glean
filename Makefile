@@ -132,7 +132,14 @@ python-docs: build-python ## Build the Python documentation
 
 linkcheck: docs ## Run linkchecker on the generated docs
 	# Requires https://wummel.github.io/linkchecker/
-	linkchecker --ignore-url javadoc --ignore-url docs/glean_core --ignore-url ErrorKind --ignore-url std.struct.Error build/docs
+	linkchecker \
+		--ignore-url javadoc \
+		--ignore-url swift \
+		--ignore-url python \
+		--ignore-url docs/glean_core \
+		--ignore-url ErrorKind \
+		--ignore-url std.struct.Error \
+		build/docs
 .PHONY: linkcheck
 
 spellcheck: ## Spellcheck the docs
