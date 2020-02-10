@@ -822,7 +822,15 @@ jobs:
           at: build/
       - run:
           name: Check internal documentation links
-          command: linkchecker --ignore-url javadoc --ignore-url docs/glean_core --ignore-url ErrorKind --ignore-url std.struct.Error build/docs
+          command: |
+            linkchecker \
+              --ignore-url javadoc \
+              --ignore-url swift \
+              --ignore-url python \
+              --ignore-url docs/glean_core \
+              --ignore-url ErrorKind \
+              --ignore-url std.struct.Error \
+              build/docs
 
   docs-spellcheck:
     docker:
@@ -896,10 +904,17 @@ workflows:
       - Rust tests - minimum version
       - C tests
       - Android tests
-      - iOS build and test
+      # iOS jobs run only on master by default, see below for manual-approved jobs
+      - iOS build and test:
+          filters:
+            branches:
+              only: master
       - iOS integration test:
           requires:
             - iOS build and test
+          filters:
+            branches:
+              only: master
       - Python 3_5 tests
       - Python 3_6 tests
       - Python 3_7 tests
@@ -915,15 +930,36 @@ workflows:
           requires:
             - Generate Rust documentation
             - Generate Kotlin documentation
-            - iOS build and test
             - Generate Python documentation
       - docs-spellcheck
       - docs-deploy:
           requires:
             - docs-linkcheck
+            - iOS build and test
           filters:
             branches:
               only: master
+
+  # iOS jobs require manual approval on PRs
+  iOS:
+    jobs:
+      - hold:
+          type: approval
+          filters:
+            branches:
+              ignore: master
+      - iOS build and test:
+          requires:
+            - hold
+          filters:
+            branches:
+              ignore: master
+      - iOS integration test:
+          requires:
+            - iOS build and test
+          filters:
+            branches:
+              ignore: master
 
   release:
     jobs:
