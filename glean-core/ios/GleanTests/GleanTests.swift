@@ -7,6 +7,8 @@ import OHHTTPStubs
 import XCTest
 
 class GleanTests: XCTestCase {
+    var expectation: XCTestExpectation?
+
     override func setUp() {
         Glean.shared.resetGlean(clearStores: true)
         Glean.shared.enableTestingMode()
@@ -14,6 +16,7 @@ class GleanTests: XCTestCase {
 
     override func tearDown() {
         Glean.shared.setUploadEnabled(true)
+        expectation = nil
     }
 
     func testInitializeGlean() {
@@ -96,5 +99,52 @@ class GleanTests: XCTestCase {
             Glean.shared.testIsExperimentActive(experimentId: "experiment_preinit_disabled"),
             "Experiment must not be active"
         )
+    }
+
+    func testSendingOfStartupBaselinePing() {
+        // Set the dirty flag
+        glean_set_dirty_flag(true.toByte())
+
+        // Set up the test stub based on the default telemetry endpoint
+        let host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
+        stub(condition: isHost(host)) { data in
+            let body = (data as NSURLRequest).ohhttpStubs_HTTPBody()
+            let json = try! JSONSerialization.jsonObject(with: body!, options: []) as? [String: Any]
+            XCTAssert(json != nil)
+
+            // Check for the "dirty_startup" flag
+            let pingInfo = json?["ping_info"] as? [String: Any]
+            XCTAssertEqual("dirty_startup", pingInfo?["reason"] as? String)
+
+            // Ensure there is only the expected locale string metric
+            let metrics = json?["metrics"] as? [String: Any]
+            let strings = metrics?["string"] as? [String: Any]
+            XCTAssertEqual(1, strings?.count, "Must contain only the expected metric")
+            let locale = strings?["glean.baseline.locale"] as? String
+            XCTAssertNotNil(locale, "Locale is not nil")
+
+            // We should not have a duration for a ping with the "dirty_startup" flag
+            XCTAssertNil(metrics?["timespan"])
+
+            DispatchQueue.main.async {
+                // let the response get processed before we mark the expectation fulfilled
+                self.expectation?.fulfill()
+            }
+
+            return OHHTTPStubsResponse(
+                jsonObject: [],
+                statusCode: 200,
+                headers: ["Content-Type": "application/json"]
+            )
+        }
+
+        // Set up the expectation that will be fulfilled by the stub above
+        expectation = expectation(description: "Baseline Ping Received")
+
+        // Restart Glean and don't clear the stores and then await the expectation
+        Glean.shared.resetGlean(clearStores: false)
+        waitForExpectations(timeout: 5.0) { error in
+            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
+        }
     }
 }

@@ -119,6 +119,20 @@ public class Glean {
         // Signal Dispatcher that init is complete
         Dispatchers.shared.flushQueuedInitialTasks()
 
+        // Check if the "dirty flag" is set. That means the product was probably
+        // force-closed. If that's the case, submit a 'baseline' ping with the
+        // reason "dirty_startup". We only do that from the second run.
+        if !glean_is_first_run().toBool() {
+            Dispatchers.shared.launchAPI {
+                if glean_is_dirty_flag_set().toBool() {
+                    self.submitPingByNameSync(
+                        pingName: "baseline",
+                        reason: "dirty_startup"
+                    )
+                }
+            }
+        }
+
         self.observer = GleanLifecycleObserver()
 
         if !uploadEnabled {
