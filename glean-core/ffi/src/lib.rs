@@ -229,24 +229,21 @@ pub extern "C" fn glean_set_upload_enabled(flag: u8) {
 }
 
 #[no_mangle]
-pub extern "C" fn glean_submit_pings_by_name(
-    ping_names: RawStringArray,
-    ping_names_len: i32,
-) -> u8 {
+pub extern "C" fn glean_submit_ping_by_name(ping_name: FfiStr, reason: FfiStr) -> u8 {
     with_glean(|glean| {
-        let pings = from_raw_string_array(ping_names, ping_names_len)?;
-
-        Ok(glean.submit_pings_by_name(&pings))
+        Ok(glean
+            .submit_ping_by_name(&ping_name.to_string_fallible()?, reason.as_opt_str())
+            .unwrap_or(false))
     })
 }
 
 #[no_mangle]
-pub extern "C" fn glean_ping_collect(ping_type_handle: u64) -> *mut c_char {
+pub extern "C" fn glean_ping_collect(ping_type_handle: u64, reason: FfiStr) -> *mut c_char {
     with_glean_value(|glean| {
         PING_TYPES.call_infallible(ping_type_handle, |ping_type| {
             let ping_maker = glean_core::ping::PingMaker::new();
             let data = ping_maker
-                .collect_string(&glean, ping_type)
+                .collect_string(glean, ping_type, reason.as_opt_str())
                 .unwrap_or_else(|| String::from(""));
             log::info!("Ping({}): {}", ping_type.name.as_str(), data);
             data

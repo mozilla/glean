@@ -33,11 +33,11 @@ let cfg = Configuration {
 };
 glean_preview::initialize(cfg)?;
 
-let prototype_ping = PingType::new("prototype", true, true);
+let prototype_ping = PingType::new("prototype", true, true, vec![]);
 
 glean_preview::register_ping_type(&prototype_ping);
 
-prototype_ping.submit();
+prototype_ping.submit(None);
 ```
 
 ## License

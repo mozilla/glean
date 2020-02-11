@@ -110,7 +110,7 @@ class MetricsPingSchedulerTests: XCTestCase {
         let now = Date()
 
         UserDefaults.standard.set(nil, forKey: MetricsPingScheduler.Constants.lastMetricsPingSentDateTime)
-        mps.collectPingAndReschedule(now)
+        mps.collectPingAndReschedule(now, reason: GleanMetrics.Pings.MetricsReasonCodes.overdue)
         XCTAssertEqual(
             now.toISO8601String(precision: .second),
             mps.getLastCollectedDate()?.toISO8601String(precision: .second),
@@ -310,7 +310,11 @@ class MetricsPingSchedulerTests: XCTestCase {
             mpsExpectation = expectation
         }
 
-        override func collectPingAndReschedule(_: Date, startupPing _: Bool = false) {
+        override func collectPingAndReschedule(
+            _: Date,
+            startupPing _: Bool = false,
+            reason _: GleanMetrics.Pings.MetricsReasonCodes
+        ) {
             mpsExpectation?.fulfill()
         }
     }
@@ -343,7 +347,11 @@ class MetricsPingSchedulerTests: XCTestCase {
 
         // Calling `schedulePingCollection` with our `fakeNow` should cause the timer to
         // be set to fire in @ 5 seconds
-        mps.schedulePingCollection(fakeNow, sendTheNextCalendarDay: false)
+        mps.schedulePingCollection(
+            fakeNow,
+            sendTheNextCalendarDay: false,
+            reason: GleanMetrics.Pings.MetricsReasonCodes.overdue
+        )
 
         waitForExpectations(timeout: 10.0)
     }

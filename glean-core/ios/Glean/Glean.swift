@@ -35,7 +35,7 @@ public class Glean {
         static let logTag = "glean/Glean"
     }
 
-    private var pingTypeQueue = [Ping]()
+    private var pingTypeQueue = [PingBase]()
 
     private let logger = Logger(tag: Constants.logTag)
 
@@ -300,13 +300,16 @@ public class Glean {
 
     /// Handle background event and submit appropriate pings
     func handleBackgroundEvent() {
-        self.submitPingsByName(pingNames: ["baseline", "events"])
+        Pings.shared.baseline.submit()
+        Pings.shared.events.submit()
     }
 
-    /// Collect and submit a list of pings by name for eventual uploading
+    /// Collect and submit a ping by name for eventual uploading
     ///
     /// - parameters:
-    ///     * pingNames: List of ping names to send
+    ///     * pingName: Name of ping to submit.
+    ///     * reason: The reason the ping is being submitted. Must be one of the strings
+    ///       defined in the reasons field in the ping metadata.
     ///
     /// The ping content is assembled as soon as possible, but upload is not
     /// guaranteed to happen immediately, as that depends on the upload
@@ -314,17 +317,19 @@ public class Glean {
     ///
     /// If the ping currently contains no content, it will not be assembled and
     /// queued for sending.
-    func submitPingsByName(pingNames: [String]) {
+    func submitPingByName(pingName: String, reason: String? = nil) {
         // Queue submitting the ping behind all other metric operations to include them in the ping
         Dispatchers.shared.launchAPI {
-            self.submitPingsByNameSync(pingNames: pingNames)
+            self.submitPingByNameSync(pingName: pingName, reason: reason)
         }
     }
 
-    /// Collect and submit a list of pings by name for eventual uploading, synchronously
+    /// Collect and submit a ping by name for eventual uploading, synchronously
     ///
     /// - parameters:
-    ///     * pingNames: List of ping names to send
+    ///     * pingName: Name of the ping to submit.
+    ///     * reason: The reason the ping is being submitted. Must be one of the strings
+    ///       defined in the reasons field in the ping metadata.
     ///
     /// The ping content is assembled as soon as possible, but upload is not
     /// guaranteed to happen immediately, as that depends on the upload
@@ -332,7 +337,7 @@ public class Glean {
     ///
     /// If the ping currently contains no content, it will not be assembled and
     /// queued for sending.
-    func submitPingsByNameSync(pingNames: [String]) {
+    func submitPingByNameSync(pingName: String, reason: String? = nil) {
         if !self.isInitialized() {
             self.logger.error("Glean must be initialized before sending pings")
             return
@@ -343,23 +348,20 @@ public class Glean {
             return
         }
 
-        withArrayOfCStrings(pingNames) { pingNames in
-            let submittedPing = glean_submit_pings_by_name(
-                pingNames,
-                Int32(pingNames?.count ?? 0)
-            )
+        let submittedPing = glean_submit_ping_by_name(
+            pingName,
+            reason
+        )
 
-            if submittedPing != 0 {
-                if let config = self.configuration {
-                    HttpPingUploader(configuration: config).process()
-                }
+        if submittedPing != 0 {
+            if let config = self.configuration {
+                HttpPingUploader(configuration: config).process()
             }
         }
     }
 
-    func submitPings(_ pings: [Ping]) {
-        let pingNames = pings.map { $0.name }
-        return self.submitPingsByName(pingNames: pingNames)
+    func submitPing(_ ping: PingBase, reason: String? = nil) {
+        return self.submitPingByName(pingName: ping.name, reason: reason)
     }
 
     /// Register the pings generated from `pings.yaml` with the Glean SDK.
@@ -374,7 +376,7 @@ public class Glean {
     }
 
     /// Register a `Ping` in the registry associated with this `Glean` object.
-    func registerPingType(_ pingType: Ping) {
+    func registerPingType(_ pingType: PingBase) {
         // TODO: This might need to synchronized across multiple threads,
         // `initialize()` will read and clear the ping type queue.
         if !self.isInitialized() {

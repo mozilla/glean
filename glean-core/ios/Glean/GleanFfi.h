@@ -334,7 +334,11 @@ uint64_t glean_new_memory_distribution_metric(FfiStr category,
                                               uint8_t disabled,
                                               int32_t memory_unit);
 
-uint64_t glean_new_ping_type(FfiStr ping_name, uint8_t include_client_id, uint8_t send_if_empty);
+uint64_t glean_new_ping_type(FfiStr ping_name,
+                             uint8_t include_client_id,
+                             uint8_t send_if_empty,
+                             RawStringArray reason_codes,
+                             int32_t reason_codes_len);
 
 uint64_t glean_new_quantity_metric(FfiStr category,
                                    FfiStr name,
@@ -382,7 +386,7 @@ uint64_t glean_new_uuid_metric(FfiStr category,
 
 uint8_t glean_on_ready_to_submit_pings(void);
 
-char *glean_ping_collect(uint64_t ping_type_handle);
+char *glean_ping_collect(uint64_t ping_type_handle, FfiStr reason);
 
 void glean_quantity_set(uint64_t metric_id, int64_t value);
 
@@ -441,7 +445,7 @@ char *glean_string_test_get_value(uint64_t metric_id, FfiStr storage_name);
 
 uint8_t glean_string_test_has_value(uint64_t metric_id, FfiStr storage_name);
 
-uint8_t glean_submit_pings_by_name(RawStringArray ping_names, int32_t ping_names_len);
+uint8_t glean_submit_ping_by_name(FfiStr ping_name, FfiStr reason);
 
 void glean_test_clear_all_stores(void);
 

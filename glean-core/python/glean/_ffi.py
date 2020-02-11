@@ -5,7 +5,7 @@
 from pathlib import Path
 import pkgutil
 import sys
-from typing import Any, List
+from typing import Any, List, Optional
 import weakref
 
 from cffi import FFI  # type: ignore
@@ -73,10 +73,12 @@ def make_config(
     return cfg
 
 
-def ffi_encode_string(value: str) -> bytes:
+def ffi_encode_string(value: Optional[str]) -> Optional[bytes]:
     """
     Convert a Python string to a UTF-8 encoded char* for sending over FFI.
     """
+    if value is None:
+        return ffi.NULL
     return value.encode("utf-8")
 
 

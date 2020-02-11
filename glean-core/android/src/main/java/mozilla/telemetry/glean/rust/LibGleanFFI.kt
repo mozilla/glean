@@ -86,9 +86,9 @@ internal interface LibGleanFFI : Library {
 
     fun glean_ping_collect(ping_type_handle: Long): Pointer?
 
-    fun glean_submit_pings_by_name(
-        ping_names: StringArray,
-        ping_names_len: Int
+    fun glean_submit_ping_by_name(
+        ping_name: String,
+        reason: String?
     ): Byte
 
     fun glean_set_experiment_active(
@@ -107,7 +107,13 @@ internal interface LibGleanFFI : Library {
 
     // Ping type
 
-    fun glean_new_ping_type(name: String, include_client_id: Byte, send_if_empty: Byte): Long
+    fun glean_new_ping_type(
+        name: String,
+        include_client_id: Byte,
+        send_if_empty: Byte,
+        reason_codes: StringArray?,
+        reason_codes_len: Int
+    ): Long
 
     fun glean_destroy_ping_type(handle: Long)
 

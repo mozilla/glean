@@ -1,29 +1,36 @@
 # The `metrics` ping
 
 ## Description
-The `metrics` ping is intended for all of the metrics that are explicitly set by the application or are included in the application's `metrics.yaml` file (except events).
-The reported data is tied to the ping's *measurement window*, which is the time between the collection of two `metrics` ping.
-Ideally, this window is expected to be about 24 hours, given that the collection is scheduled daily at 04:00.
-Data in the [`ping_info`](index.md#the-ping_info-section) section of the ping can be used to infer the length of this window.
+The `metrics` ping is intended for all of the metrics that are explicitly set by the application or are included in the application's `metrics.yaml` file (except events). 
+The reported data is tied to the ping's *measurement window*, which is the time between the collection of two `metrics` ping. 
+Ideally, this window is expected to be about 24 hours, given that the collection is scheduled daily at 04:00. 
+However, the metrics ping is only submitted while the application is actually running, so in practice, it may not meet the 04:00 target very frequently.
+Data in the [`ping_info`](index.md#the-ping_info-section) section of the ping can be used to infer the length of this window and the reason that triggered the ping to be submitted.
 If the application crashes, unsent recorded metrics are sent along with the next `metrics` ping.
+
+Additionally, it is undesirable to mix metric recording from different versions of the application. Therefore, if a version upgrade is detected, the `metrics` ping is collected immediately before further metrics from the new version are recorded.
 
 > **Note:** As the `metrics` ping was specifically designed for mobile operating systems, it is not sent when using the Glean Python bindings.
 
 ## Scheduling
-The desired behavior is to collect the ping at the first available opportunity after 04:00 local time on a new calendar day.
+The desired behavior is to collect the ping at the first available opportunity after 04:00 local time on a new calendar day, but given constraints of the platform, it can only be submitted while the application is running. 
 This breaks down into three scenarios:
 
 1. the application was just installed;
-2. the application was just started (after a crash or a long inactivity period);
-3. the application was open and the 04:00 due time was hit.
+2. the application was just upgraded (the version of the app is different from the last time the app was run);
+3. the application was just started (after a crash or a long inactivity period);
+4. the application was running at 04:00.
 
-In the first case, since the application was just installed, if the due time for the current calendar day has passed, a `metrics` ping is immediately generated and scheduled for sending. Otherwise, if the due time for the current calendar day has not passed, a ping collection is scheduled for that time.
+In the first case, since the application was just installed, if the due time for the current calendar day has passed, a `metrics` ping is immediately generated and scheduled for sending (reason code `overdue`). Otherwise, if the due time for the current calendar day has not passed, a ping collection is scheduled for that time (reason code `today`). 
 
-In the second case, if the `metrics` ping was already collected on the current calendar day, a new collection will be scheduled for the next calendar day, at 04:00.
-If no collection happened yet, and the due time for the current calendar day has passed, a `metrics` ping is immediately generated and scheduled for sending.
+In the second case, if a version change is detected at startup, the metrics ping is immediately submitted so that metrics from one version are not aggregated with metrics from another version (reason code `upgrade`).
 
-In the third case, similarly to the previous case, if the `metrics` ping was already collected on the current calendar day when we hit 04:00, then a new collection is scheduled for the next calendar day.
-Otherwise, the `metrics` is immediately collected and scheduled for sending.
+In the third case, if the `metrics` ping was not already collected on the current calendar day, and it is before 04:00, a collection is scheduled for 04:00 on the current calendar day (reason code `today`).
+If it is after 04:00, a new collection is scheduled immediately (reason code `overdue`).
+Lastly, if a ping was already collected on the current calendar day, the next one is scheduled for collecting at 04:00 on the next calendar day (reason code `tomorrow`).
+
+In the fourth and last case, the application is running during a scheduled ping collection time.
+The next ping is scheduled for 04:00 the next calendar day (reason code `reschedule`).
 
 More [scheduling examples](#scheduling-examples) are included below.
 
@@ -35,53 +42,8 @@ Additionally, error metrics in the `glean.error` category are included in the `m
 The `metrics` ping shall also include the common [`ping_info`](index.md#the-ping_info-section) and ['client_info'](index.md#the-client_info-section) sections.
 
 ### Querying ping contents
-A quick note about querying ping contents (i.e. for [sql.telemetry.mozilla.org](https://sql.telemetry.mozilla.org)):  Each metric in the metrics ping is organized by its metric type, and uses a namespace of 'glean.metrics'.
-For instance, in order to select a String field called `test` you would use `metrics.string['glean.metrics.test']`.
 
-### Example metrics ping
-
-```json
-{
-  "ping_info": {
-    "ping_type": "metrics",
-    "experiments": {
-      "third_party_library": {
-        "branch": "enabled"
-      }
-    },
-    "seq": 0,
-    "start_time": "2019-03-29T09:50-04:00",
-    "end_time": "2019-03-29T10:02-04:00"
-  },
-  "client_info": {
-    "telemetry_sdk_build": "0.49.0",
-    "first_run_date": "2019-03-29-04:00",
-    "os": "Android",
-    "android_sdk_version": "27",
-    "os_version": "8.1.0",
-    "device_manufacturer": "Google",
-    "device_model": "Android SDK built for x86",
-    "architecture": "x86",
-    "app_build": "1",
-    "app_display_version": "1.0",
-    "client_id": "35dab852-74db-43f4-8aa0-88884211e545"
-  },
-  "metrics": {
-    "counter": {
-      "sample_metrics.test": 1
-    },
-    "string": {
-      "basic.os": "Android"
-    },
-    "timespan": {
-      "test.test_timespan": {
-        "time_unit": "microsecond",
-        "value": 181908
-      }
-    }
-  }
-}
-```
+Information about query ping contents is available in [Accessing Glean data](https://docs.telemetry.mozilla.org/concepts/glean/accessing_glean_data.html) in the Firefox data docs.
 
 ## Scheduling Examples
 

@@ -39,8 +39,26 @@ metrics:
     - https://bugzilla.mozilla.org/1512938
   data_reviews:
     - https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3
+    - https://bugzilla.mozilla.org/show_bug.cgi?id=1557048#c13
   notification_emails:
     - glean-team@mozilla.com
+  reasons:
+    overdue: |
+      The last ping wasn't submitted on the current calendar day, but it's after
+      4am, so this ping submitted immediately
+    today: |
+      The last ping wasn't submitted on the current calendar day, but it is
+      still before 4am, so schedule to send this ping on the current calendar
+      day at 4am.
+    tomorrow: |
+      The last ping was already submitted on the current calendar day, so
+      schedule this ping for the next calendar day at 4am.
+    upgrade: |
+      This ping was submitted at startup because the application was just
+      upgraded.
+    reschedule: |
+      A ping was just submitted. This ping was rescheduled for the next calendar
+      day at 4am.
 
 events:
   description: >

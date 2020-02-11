@@ -15,7 +15,7 @@ int main(void)
     NULL
   };
   glean_initialize(&cfg);
-  uint64_t store1 = glean_new_ping_type("store1", true, false);
+  uint64_t store1 = glean_new_ping_type("store1", true, false, NULL, 0);
   glean_register_ping_type(store1);
 
   printf("Glean upload enabled? %d\n", glean_is_upload_enabled());
@@ -31,7 +31,7 @@ int main(void)
 
   glean_counter_add(metric, 2);
 
-  char *payload = glean_ping_collect(store1);
+  char *payload = glean_ping_collect(store1, NULL);
   printf("Payload:\n%s\n", payload);
   glean_str_free(payload);
 

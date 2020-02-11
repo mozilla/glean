@@ -20,7 +20,7 @@ import org.mockito.ArgumentMatchers
 import org.mockito.Mockito
 import mozilla.telemetry.glean.config.Configuration
 import mozilla.telemetry.glean.scheduler.PingUploadWorker
-import mozilla.telemetry.glean.private.PingType
+import mozilla.telemetry.glean.private.PingTypeBase
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -97,7 +97,7 @@ internal fun checkPingSchema(content: String): JSONObject {
  * @return the ping contents, in a JSONObject
  * @throws AssertionError If the JSON content is not valid
  */
-internal fun collectAndCheckPingSchema(ping: PingType): JSONObject {
+internal fun collectAndCheckPingSchema(ping: PingTypeBase): JSONObject {
     val jsonString = Glean.testCollect(ping)!!
     return checkPingSchema(jsonString)
 }

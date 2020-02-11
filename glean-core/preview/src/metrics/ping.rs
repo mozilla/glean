@@ -21,10 +21,20 @@ impl PingType {
     /// * `name` - The name of the ping.
     /// * `include_client_id` - Whether to include the client ID in the assembled ping when.
     /// * `send_if_empty` - Whether the ping should be sent empty or not.
-    pub fn new<A: Into<String>>(name: A, include_client_id: bool, send_if_empty: bool) -> Self {
+    /// * `reason_codes` - The valid reason codes for this ping.
+    pub fn new<A: Into<String>>(
+        name: A,
+        include_client_id: bool,
+        send_if_empty: bool,
+        reason_codes: Vec<String>,
+    ) -> Self {
         let name = name.into();
-        let ping_type =
-            glean_core::metrics::PingType::new(name.clone(), include_client_id, send_if_empty);
+        let ping_type = glean_core::metrics::PingType::new(
+            name.clone(),
+            include_client_id,
+            send_if_empty,
+            reason_codes,
+        );
         Self { name, ping_type }
     }
 
@@ -33,7 +43,7 @@ impl PingType {
     /// ## Return value
     ///
     /// Returns true if a ping was assembled and queued, false otherwise.
-    pub fn submit(&self) -> bool {
-        crate::submit_ping(self)
+    pub fn submit(&self, reason: Option<&str>) -> bool {
+        crate::submit_ping(self, reason)
     }
 }
