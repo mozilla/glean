@@ -50,6 +50,7 @@ _ARGS = [
     "name",
     "range_max",
     "range_min",
+    "reason_codes",
     "send_in_pings",
     "time_unit",
 ]
@@ -96,11 +97,17 @@ def _get_metric_objects(name: str, metric: glean_parser.metrics.Metric) -> Any:
 
     yield name, glean_metric
 
-    # Events also need to define an enumeration
+    # Events and Pings also need to define an enumeration
     if metric.type == "event":
         enum_name = name + "_keys"
         class_name = inflection.camelize(enum_name, True)
         values = dict((x.upper(), i) for (i, x) in enumerate(metric.allowed_extra_keys))
+        keys_enum = enum.Enum(class_name, values)  # type: ignore
+        yield enum_name, keys_enum
+    elif metric.type == "ping":
+        enum_name = name + "_reason_codes"
+        class_name = inflection.camelize(enum_name, True)
+        values = dict((x.upper(), i) for (i, x) in enumerate(metric.reason_codes))
         keys_enum = enum.Enum(class_name, values)  # type: ignore
         yield enum_name, keys_enum
 

@@ -7,7 +7,6 @@ package mozilla.telemetry.glean.private
 import androidx.annotation.VisibleForTesting
 import com.sun.jna.StringArray
 import mozilla.telemetry.glean.Dispatchers
-import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.getAndConsumeRustString
 import mozilla.telemetry.glean.rust.toBoolean
@@ -70,7 +69,6 @@ class MemoryDistributionMetricType internal constructor(
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.launch {
             LibGleanFFI.INSTANCE.glean_memory_distribution_accumulate(
-                Glean.handle,
                 this@MemoryDistributionMetricType.handle,
                 sample
             )
@@ -93,7 +91,6 @@ class MemoryDistributionMetricType internal constructor(
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.launch {
             LibGleanFFI.INSTANCE.glean_memory_distribution_accumulate_samples(
-                Glean.handle,
                 this@MemoryDistributionMetricType.handle,
                 samples,
                 samples.size
@@ -117,7 +114,7 @@ class MemoryDistributionMetricType internal constructor(
         Dispatchers.API.assertInTestingMode()
 
         return LibGleanFFI
-            .INSTANCE.glean_memory_distribution_test_has_value(Glean.handle, this.handle, pingName)
+            .INSTANCE.glean_memory_distribution_test_has_value(this.handle, pingName)
             .toBoolean()
     }
 
@@ -141,7 +138,6 @@ class MemoryDistributionMetricType internal constructor(
         }
 
         val ptr = LibGleanFFI.INSTANCE.glean_memory_distribution_test_get_value_as_json_string(
-                Glean.handle,
                 this.handle,
                 pingName)!!
 
@@ -163,7 +159,7 @@ class MemoryDistributionMetricType internal constructor(
         Dispatchers.API.assertInTestingMode()
 
         return LibGleanFFI.INSTANCE.glean_memory_distribution_test_get_num_recorded_errors(
-            Glean.handle, this.handle, errorType.ordinal, pingName
+            this.handle, errorType.ordinal, pingName
         )
     }
 }

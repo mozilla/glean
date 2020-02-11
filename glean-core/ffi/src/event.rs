@@ -13,8 +13,8 @@ use glean_core::{CommonMetricData, Lifetime};
 use crate::ffi_string_ext::FallibleToString;
 use crate::handlemap_ext::HandleMapExtension;
 use crate::{
-    define_metric, from_raw_int_array_and_string_array, from_raw_string_array, RawIntArray,
-    RawStringArray, GLEAN,
+    define_metric, from_raw_int_array_and_string_array, from_raw_string_array, with_glean_value,
+    RawIntArray, RawStringArray,
 };
 
 define_metric!(EventMetric => EVENT_METRICS {
@@ -56,14 +56,13 @@ pub extern "C" fn glean_new_event_metric(
 
 #[no_mangle]
 pub extern "C" fn glean_event_record(
-    glean_handle: u64,
     metric_id: u64,
     timestamp: u64,
     extra_keys: RawIntArray,
     extra_values: RawStringArray,
     extra_len: i32,
 ) {
-    GLEAN.call_infallible(glean_handle, |glean| {
+    with_glean_value(|glean| {
         EVENT_METRICS.call_with_log(metric_id, |metric| {
             let extra = from_raw_int_array_and_string_array(extra_keys, extra_values, extra_len)?;
             metric.record(glean, timestamp, extra);
@@ -73,12 +72,8 @@ pub extern "C" fn glean_event_record(
 }
 
 #[no_mangle]
-pub extern "C" fn glean_event_test_has_value(
-    glean_handle: u64,
-    metric_id: u64,
-    storage_name: FfiStr,
-) -> u8 {
-    GLEAN.call_infallible(glean_handle, |glean| {
+pub extern "C" fn glean_event_test_has_value(metric_id: u64, storage_name: FfiStr) -> u8 {
+    with_glean_value(|glean| {
         EVENT_METRICS.call_infallible(metric_id, |metric| {
             metric.test_has_value(glean, storage_name.as_str())
         })
@@ -87,11 +82,10 @@ pub extern "C" fn glean_event_test_has_value(
 
 #[no_mangle]
 pub extern "C" fn glean_event_test_get_value_as_json_string(
-    glean_handle: u64,
     metric_id: u64,
     storage_name: FfiStr,
 ) -> *mut c_char {
-    GLEAN.call_infallible(glean_handle, |glean| {
+    with_glean_value(|glean| {
         EVENT_METRICS.call_infallible(metric_id, |metric| {
             metric.test_get_value_as_json_string(glean, storage_name.as_str())
         })

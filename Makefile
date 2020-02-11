@@ -45,16 +45,13 @@ build-python: python-setup build-rust ## Build the Python bindings
 test: test-rust
 
 test-rust: ## Run Rust tests for glean-core and glean-ffi
-	cargo test --all --exclude glean-preview
+	cargo test --all
 
 test-rust-with-logs: ## Run all Rust tests with debug logging and single-threaded
 	RUST_LOG=glean_core=debug cargo test --all -- --nocapture --test-threads=1
 
-test-preview: ## Run Rust tests for glean-preview
-	cargo test -p glean-preview -- --test-threads=1
-
 test-kotlin: ## Run all Kotlin tests
-	./gradlew test
+	./gradlew :glean:testDebugUnitTest
 
 test-swift: ## Run all Swift tests
 	bin/run-ios-tests.sh
@@ -66,6 +63,13 @@ test-python: build-python ## Run all Python tests
 	$(GLEAN_PYENV)/bin/py.test glean-core/python/tests $(PYTEST_ARGS)
 
 .PHONY: test test-rust test-rust-with-logs test-kotlin test-swift test-ios-sample
+
+# Benchmarks
+
+bench-rust: ## Run Rust benchmarks
+	cargo bench -p benchmark
+
+.PHONY: bench-rust
 
 # Linting
 
@@ -82,6 +86,9 @@ swiftlint: ## Run swiftlint to lint Swift code
 
 yamllint: ## Run yamllint to lint YAML files
 	yamllint glean-core .circleci
+
+shellcheck: ## Run shellcheck against important shell scripts
+	shellcheck glean-core/ios/sdk_generator.sh
 
 pythonlint: python-setup ## Run flake8 and black to lint Python code
 	$(GLEAN_PYENV)/bin/python3 -m flake8 glean-core/python/glean glean-core/python/tests
@@ -125,7 +132,14 @@ python-docs: build-python ## Build the Python documentation
 
 linkcheck: docs ## Run linkchecker on the generated docs
 	# Requires https://wummel.github.io/linkchecker/
-	linkchecker --ignore-url javadoc --ignore-url docs/glean_core --ignore-url ErrorKind --ignore-url std.struct.Error build/docs
+	linkchecker \
+		--ignore-url javadoc \
+		--ignore-url swift \
+		--ignore-url python \
+		--ignore-url docs/glean_core \
+		--ignore-url ErrorKind \
+		--ignore-url std.struct.Error \
+		build/docs
 .PHONY: linkcheck
 
 spellcheck: ## Spellcheck the docs

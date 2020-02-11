@@ -7,7 +7,6 @@ package mozilla.telemetry.glean.private
 import androidx.annotation.VisibleForTesting
 import com.sun.jna.StringArray
 import mozilla.telemetry.glean.Dispatchers
-import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.toBoolean
 import mozilla.telemetry.glean.rust.toByte
@@ -68,7 +67,6 @@ class QuantityMetricType internal constructor(
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.launch {
             LibGleanFFI.INSTANCE.glean_quantity_set(
-                Glean.handle,
                 this@QuantityMetricType.handle,
                 value)
         }
@@ -89,7 +87,7 @@ class QuantityMetricType internal constructor(
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.assertInTestingMode()
 
-        val res = LibGleanFFI.INSTANCE.glean_quantity_test_has_value(Glean.handle, this.handle, pingName)
+        val res = LibGleanFFI.INSTANCE.glean_quantity_test_has_value(this.handle, pingName)
         return res.toBoolean()
     }
 
@@ -111,7 +109,7 @@ class QuantityMetricType internal constructor(
         if (!testHasValue(pingName)) {
             throw NullPointerException()
         }
-        return LibGleanFFI.INSTANCE.glean_quantity_test_get_value(Glean.handle, this.handle, pingName)
+        return LibGleanFFI.INSTANCE.glean_quantity_test_get_value(this.handle, pingName)
     }
 
     /**
@@ -129,7 +127,7 @@ class QuantityMetricType internal constructor(
         Dispatchers.API.assertInTestingMode()
 
         return LibGleanFFI.INSTANCE.glean_quantity_test_get_num_recorded_errors(
-            Glean.handle, this.handle, errorType.ordinal, pingName
+            this.handle, errorType.ordinal, pingName
         )
     }
 }

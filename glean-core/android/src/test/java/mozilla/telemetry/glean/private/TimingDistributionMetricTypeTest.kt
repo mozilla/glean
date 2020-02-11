@@ -233,6 +233,6 @@ class TimingDistributionMetricTypeTest {
         )
 
         metric.stopAndAccumulate(GleanTimerId(-1))
-        assertEquals(1, metric.testGetNumRecordedErrors(ErrorType.InvalidValue))
+        assertEquals(1, metric.testGetNumRecordedErrors(ErrorType.InvalidState))
     }
 }

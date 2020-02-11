@@ -15,7 +15,7 @@ class Dispatchers {
     // This struct is used for organizational purposes to keep the class constants in a single place
     struct Constants {
         static let logTag = "glean/Dispatchers"
-        static let maxQueueSize = 100
+        static let maxQueueSize: Int32 = 100
 
         // This is the number of seconds that are allowed for the initial tasks queue to
         // process all of the queued tasks.
@@ -45,6 +45,9 @@ class Dispatchers {
 
     // This array will hold the queued initial tasks that are launched before Glean is initialized
     lazy var preInitOperations = [Operation]()
+
+    // The number of items that were added to the queue after it filled up.
+    var preInitTaskCount: Int32 = 0
 
     // When true, jobs will be run synchronously
     var testingMode = false
@@ -83,6 +86,12 @@ class Dispatchers {
             } else {
                 logger.error("Exceeded maximum queue size, discarding task")
             }
+
+            // This value ends up in the `preinit_tasks_overflow` metric, but we
+            // can't record directly there, because that would only add
+            // the recording to an already-overflowing task queue and would be
+            // silently dropped.
+            preInitTaskCount += 1
         } else {
             // If we are not queuing initial tasks, we can go ahead and execute the Operation by
             // adding it to the `operationQueue`
@@ -156,31 +165,36 @@ class Dispatchers {
     }
 
     /// Stop queuing tasks and process any tasks in the queue.
-    func flushQueuedInitialTasks() {
-        // Timeouts are easily accomplished in Swift using DispatchSemaphores and launching
-        // a block of code asynchronously.  This creates a semaphore that we can await with a
-        // timeout to prevent the queued initial tasks from hanging up or taking a long time.
-        let timeout = DispatchSemaphore(value: 0)
-        concurrentOperationsQueue.addOperation {
-            // Add all of the queued operations to the `operationQueue` which will cause them to be
-            // executed serially in the order they were collected.
-            self.serialOperationQueue.addOperations(self.preInitOperations, waitUntilFinished: true)
-            timeout.signal()
+    ///
+    /// - parameters:
+    ///     * waitUntilFinished: **USE FOR TESTING ONLY**  Boolean to force awaiting the tasks to complete
+    ///                          in order to make it easier for tests to deal with async issues.
+    func flushQueuedInitialTasks(waitUntilFinished: Bool = false) {
+        // Assert we are in testing mode if the waitUntilFinished flag is true
+        if waitUntilFinished {
+            assertInTestingMode()
         }
 
-        // Await the async task to complete up to the allowed time and log an error if it
-        // times out.
-        if timeout.wait(timeout: DispatchTime.now() + Constants.queueProcessingTimeout) == .timedOut {
-            logger.error("Timeout processing initial tasks queue")
-            // Turn off queuing to allow for normal background execution mode
-            queueInitialTasks.value = false
-            GleanMetrics.GleanError.preinitTasksTimeout.set(true)
-        } else {
-            logger.info("Initial tasks queue completed successfully")
-        }
+        // Add all of the queued operations to the `operationQueue` which will cause them to be
+        // executed serially in the order they were collected.
+        self.serialOperationQueue.addOperations(
+            self.preInitOperations,
+            waitUntilFinished: waitUntilFinished
+        )
 
         // Turn off queuing to allow for normal background execution mode
         queueInitialTasks.value = false
+
+        // This must happen after `queueInitialTasks.set(false)` is run, or it
+        // would be added to a full task queue and be silently dropped.
+        if preInitTaskCount > Constants.maxQueueSize {
+            GleanMetrics.GleanError.preinitTasksOverflow.add(preInitTaskCount)
+        }
+
+        // Now that the metric has been recorded, it is safe to reset the counter here.  We do
+        // this mostly for tests to ensure the count gets reset between tests and does not
+        // interfere due to the Glean singleton retaining state between tests.
+        preInitTaskCount = 0
 
         // Clear the cached operations
         preInitOperations.removeAll()

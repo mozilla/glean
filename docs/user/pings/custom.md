@@ -11,9 +11,11 @@ and hyphens and a maximum of 30 characters.
 
 Each ping has the following parameters:
 
+- `description` (required): A textual description describing the purpose of the ping. It may contain [markdown syntax](https://www.markdownguide.org/basic-syntax/).
 - `include_client_id` (required): A boolean indicating whether to include the
   `client_id` in the [`client_info` section](index.md#The-client_info-section)).
 - `send_if_empty` (optional, default: false): A boolean indicating if the ping is sent if it contains no metric data.
+- `reasons` (optional, default: `{}`): The reasons that this ping may be sent. The keys are the reason codes, and the values are a textual description of each reason. The ping payload will (optionally) contain one of these reasons in the `ping_info.reason` field.
 
 In addition to these parameters, pings also support the parameters related to data review and expiration defined in [common metric parameters](../adding-new-metrics.md#common-metric-parameters): `description`, `notification_emails`, `bugs`, and `data_reviews`.
 
@@ -144,7 +146,9 @@ For example, to submit the custom ping defined above:
 
 ```kotlin
 import org.mozilla.yourApplication.GleanMetrics.Pings
-Pings.search.submit()
+Pings.search.submit(
+    GleanMetrics.Pings.searchReasonCodes.performed
+)
 ```
 
 </div>
@@ -154,7 +158,9 @@ Pings.search.submit()
 ```swift
 import Glean
 
-GleanMetrics.Pings.shared.search.submit()
+GleanMetrics.Pings.shared.search.submit(
+    reason: .performed
+)
 ```
 
 </div>
@@ -166,7 +172,7 @@ from glean import load_pings
 
 pings = load_pings("pings.yaml")
 
-pings.search.submit()
+pings.search.submit(pings.search_reason_codes.PERFORMED)
 ```
 
 </div>

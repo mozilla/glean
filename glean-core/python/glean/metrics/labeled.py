@@ -7,7 +7,6 @@ import abc
 from typing import Callable, List, Optional, Set, Type
 
 
-from ..glean import Glean
 from .. import _ffi
 from .counter import CounterMetricType
 from .lifetime import Lifetime
@@ -119,10 +118,7 @@ class LabeledMetricBase(abc.ABC):
             ping_name = self._send_in_pings[0]
 
         return self._test_get_num_recorded_errors_ffi(
-            Glean._handle,
-            self._handle,
-            error_type.value,
-            _ffi.ffi_encode_string(ping_name),
+            self._handle, error_type.value, _ffi.ffi_encode_string(ping_name),
         )
 
 

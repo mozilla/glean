@@ -193,6 +193,35 @@ glean.internal.metrics:
       - glean-team@mozilla.com
     expires: never
 
+  locale:
+    type: string
+    lifetime: application
+    send_in_pings:
+      - glean_client_info
+    description: |
+      The locale of the application (e.g. "es-ES").
+    bugs:
+      - https://bugzilla.mozilla.org/1601489
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1601489#c3
+    notification_emails:
+      - glean-team@mozilla.com
+    expires: never
+
+  ping_reason:
+    type: string
+    description: |
+      The optional reason the ping was submitted.
+      The specific values for reason are specific to each ping, and are
+      documented in the ping's pings.yaml file.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1557048
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1609218#c4
+    notification_emails:
+      - glean-team@mozilla.com
+    expires: never
+
 glean.error:
   invalid_value:
     type: labeled_counter
@@ -259,21 +288,6 @@ glean.error:
     expires: never
     send_in_pings:
       - all-pings
-    no_lint:
-      - COMMON_PREFIX
-
-  preinit_tasks_timeout:
-    type: boolean
-    description:
-      Set to true if the tasks that are queued prior to Glean initialization
-      time out.
-    bugs:
-      - https://bugzilla.mozilla.org/1575848
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1575848#c5
-    notification_emails:
-      - glean-team@mozilla.com
-    expires: never
     no_lint:
       - COMMON_PREFIX
 

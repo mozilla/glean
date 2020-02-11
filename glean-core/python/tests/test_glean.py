@@ -76,7 +76,7 @@ def test_submit_a_ping(safe_httpserver):
 def test_submiting_an_empty_ping_doesnt_queue_work(safe_httpserver):
     safe_httpserver.serve_content(b"", code=200)
 
-    Glean._submit_pings_by_name(["metrics"])
+    Glean._submit_ping_by_name("metrics")
     assert 0 == len(safe_httpserver.requests)
 
 
@@ -218,7 +218,9 @@ def test_dont_schedule_pings_if_metrics_disabled(safe_httpserver):
         send_in_pings=["store1"],
     )
 
-    custom_ping = PingType(name="store1", include_client_id=True, send_if_empty=False)
+    custom_ping = PingType(
+        name="store1", include_client_id=True, send_if_empty=False, reason_codes=[]
+    )
 
     counter_metric.add(10)
 
@@ -232,7 +234,9 @@ def test_dont_schedule_pings_if_metrics_disabled(safe_httpserver):
 def test_dont_schedule_pings_if_there_is_no_ping_content(safe_httpserver):
     safe_httpserver.serve_content(b"", code=200)
 
-    custom_ping = PingType(name="store1", include_client_id=True, send_if_empty=False)
+    custom_ping = PingType(
+        name="store1", include_client_id=True, send_if_empty=False, reason_codes=[]
+    )
 
     custom_ping.submit()
 
@@ -310,7 +314,7 @@ def test_core_metrics_should_be_cleared_with_disabling_and_enabling_uploading():
     assert _builtins.metrics.glean.internal.metrics.os.test_has_value()
 
 
-def test_collect():
+def test_collect(ping_schema_url):
     counter_metric = CounterMetricType(
         disabled=False,
         category="telemetry",
@@ -319,7 +323,9 @@ def test_collect():
         send_in_pings=["store1"],
     )
 
-    custom_ping = PingType(name="store1", include_client_id=True, send_if_empty=False)
+    custom_ping = PingType(
+        name="store1", include_client_id=True, send_if_empty=False, reason_codes=[]
+    )
 
     counter_metric.add(10)
 
@@ -331,7 +337,9 @@ def test_collect():
 
     assert 10 == json_tree["metrics"]["counter"]["telemetry.counter_metric"]
 
-    assert 0 == validate_ping.validate_ping(io.StringIO(json_content), sys.stdout)
+    assert 0 == validate_ping.validate_ping(
+        io.StringIO(json_content), sys.stdout, schema_url=ping_schema_url
+    )
 
 
 def test_tempdir_is_cleared():

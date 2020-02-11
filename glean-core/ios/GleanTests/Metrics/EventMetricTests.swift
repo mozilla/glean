@@ -46,7 +46,10 @@ class EventMetricTypeTests: XCTestCase {
             self.lastPingJson = json
 
             // Fulfill test's expectation once we parsed the incoming data.
-            self.expectation?.fulfill()
+            DispatchQueue.main.async {
+                // Let the response get processed before we mark the expectation fulfilled
+                self.expectation?.fulfill()
+            }
 
             // Ensure a response so that the uploader does its job.
             return OHHTTPStubsResponse(
@@ -284,7 +287,7 @@ class EventMetricTypeTests: XCTestCase {
         setupHttpResponseStub()
         expectation = expectation(description: "Completed upload")
 
-        Glean.shared.submitPingsByName(pingNames: ["events"])
+        Glean.shared.submitPingByName(pingName: "events")
 
         waitForExpectations(timeout: 5.0) { error in
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")

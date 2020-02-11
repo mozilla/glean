@@ -20,7 +20,7 @@ import org.mockito.ArgumentMatchers
 import org.mockito.Mockito
 import mozilla.telemetry.glean.config.Configuration
 import mozilla.telemetry.glean.scheduler.PingUploadWorker
-import mozilla.telemetry.glean.private.PingType
+import mozilla.telemetry.glean.private.PingTypeBase
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -97,7 +97,7 @@ internal fun checkPingSchema(content: String): JSONObject {
  * @return the ping contents, in a JSONObject
  * @throws AssertionError If the JSON content is not valid
  */
-internal fun collectAndCheckPingSchema(ping: PingType): JSONObject {
+internal fun collectAndCheckPingSchema(ping: PingTypeBase): JSONObject {
     val jsonString = Glean.testCollect(ping)!!
     return checkPingSchema(jsonString)
 }
@@ -126,15 +126,16 @@ internal fun resetGlean(
 }
 
 /**
- * Get a context that contains [PackageInfo.versionName] mocked to
- * "glean.version.name".
+ * Get a context that contains [PackageInfo.versionName] mocked to the passed value
+ * or "glean.version.name" by default.
  *
+ * @param versionName a [String] used as the display version (default: "glean.version.name").
  * @return an application [Context] that can be used to init Glean
  */
-internal fun getContextWithMockedInfo(): Context {
+internal fun getContextWithMockedInfo(versionName: String = "glean.version.name"): Context {
     val context = Mockito.spy<Context>(ApplicationProvider.getApplicationContext<Context>())
     val packageInfo = Mockito.mock(PackageInfo::class.java)
-    packageInfo.versionName = "glean.version.name"
+    packageInfo.versionName = versionName
     val packageManager = Mockito.mock(PackageManager::class.java)
     Mockito.`when`(
         packageManager.getPackageInfo(

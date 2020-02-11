@@ -5,14 +5,6 @@
 > which suggests it has a lower chance of containing undetected software bugs compared to a program with low test coverage.
 > ([Wikipedia](https://en.wikipedia.org/wiki/Code_coverage))
 
-## Automated reports
-
-[![codecov](https://codecov.io/gh/mozilla/glean/branch/master/graph/badge.svg)](https://codecov.io/gh/mozilla/glean)
-
-For pull requests and master pushes we generate code coverage reports on CI and upload them to codecov:
-
-* [https://codecov.io/gh/mozilla/glean](https://codecov.io/gh/mozilla/glean)
-
 ## Generating Kotlin reports locally
 
 Locally you can generate a coverage report with the following command:

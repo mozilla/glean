@@ -31,6 +31,7 @@ Optional fields are marked accordingly.
 | `experiments` | Object | *Optional*. A dictionary of [active experiments](#the-experiments-object) |
 | `start_time` | Datetime | The time of the start of collection of the data in the ping, in local time and with minute precision, including timezone information. |
 | `end_time` | Datetime | The time of the end of collection of the data in the ping, in local time and with minute precision, including timezone information. This is also the time this ping was generated and is likely well before ping transmission time. |
+| `reason` | String | The optional reason the ping was submitted. The specific set of values and their meanings are defined for each metric type in the `reasons` field in the `pings.yaml` file. |
 
 All the metrics surviving application restarts (e.g. `seq`, ...) are removed once the application using the Glean SDK is uninstalled.
 
@@ -52,6 +53,7 @@ Optional fields are marked accordingly.
 | `os_version` | String | The user-visible version of the operating system (e.g. "1.2.3") |
 | `android_sdk_version` | String | *Optional*. The Android specific SDK version of the software running on this hardware device (e.g. "23") |
 | `telemetry_sdk_build` | String | The version of the Glean SDK |
+| `locale` | String | The locale of the application (e.g. "es-ES") |
 
 All the metrics surviving application restarts (e.g. `client_id`, ...) are removed once the application using the Glean SDK is uninstalled.
 
@@ -103,4 +105,3 @@ These docs refer to application 'background' state in several places.
 This specifically means when the activity is no longer visible to the user, it has entered the Stopped state, and the system invokes the [`onStop()`](https://developer.android.com/reference/android/app/Activity.html#onStop()) callback.
 This may occur, for example, when a newly launched activity covers the entire screen.
 The system may also call `onStop()` when the activity has finished running, and is about to be terminated.
-

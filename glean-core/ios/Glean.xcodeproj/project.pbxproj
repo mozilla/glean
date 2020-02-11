@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		1F39E7B0239F0505009B13B3 /* GleanDebugTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F39E7AF239F0505009B13B3 /* GleanDebugTools.swift */; };
 		1F39E7B3239F0777009B13B3 /* GleanDebugUtilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F39E7B2239F0777009B13B3 /* GleanDebugUtilityTests.swift */; };
+		1F58920D23C7D615007D2D80 /* MetricsPingScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F58920C23C7D615007D2D80 /* MetricsPingScheduler.swift */; };
+		1F58921223C923C4007D2D80 /* MetricsPingSchedulerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F58921123C923C4007D2D80 /* MetricsPingSchedulerTests.swift */; };
 		1F6058932314863400307A9F /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6058922314863400307A9F /* Configuration.swift */; };
 		1F605895231489AB00307A9F /* HttpPingUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F605894231489AB00307A9F /* HttpPingUploader.swift */; };
 		1F60589723148BF800307A9F /* GleanLifecycleObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F60589623148BF800307A9F /* GleanLifecycleObserver.swift */; };
@@ -19,6 +21,7 @@
 		1F6F8A0B238336AB00B6ABB9 /* Glean.h in Headers */ = {isa = PBXBuildFile; fileRef = BF3DE3942243A2F20018E23F /* Glean.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1F70B786232995A9007395FB /* Dispatchers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F70B785232995A9007395FB /* Dispatchers.swift */; };
 		1F70B788232A81A4007395FB /* DispatchersTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F70B787232A81A4007395FB /* DispatchersTest.swift */; };
+		1F7CCA7823DA3A9E00023A30 /* RecordedExperimentData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F7CCA7723DA3A9E00023A30 /* RecordedExperimentData.swift */; };
 		1FB70AEF23301C1D00C7CF09 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB70AEE23301C1D00C7CF09 /* Logger.swift */; };
 		1FB8F8382326EABD00618E47 /* ConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB8F8372326EABD00618E47 /* ConfigurationTests.swift */; };
 		1FD4527523395B4500F4C7E8 /* UuidMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FD4527423395B4500F4C7E8 /* UuidMetric.swift */; };
@@ -79,6 +82,8 @@
 /* Begin PBXFileReference section */
 		1F39E7AF239F0505009B13B3 /* GleanDebugTools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GleanDebugTools.swift; sourceTree = "<group>"; };
 		1F39E7B2239F0777009B13B3 /* GleanDebugUtilityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GleanDebugUtilityTests.swift; sourceTree = "<group>"; };
+		1F58920C23C7D615007D2D80 /* MetricsPingScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricsPingScheduler.swift; sourceTree = "<group>"; };
+		1F58921123C923C4007D2D80 /* MetricsPingSchedulerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricsPingSchedulerTests.swift; sourceTree = "<group>"; };
 		1F6058922314863400307A9F /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
 		1F605894231489AB00307A9F /* HttpPingUploader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HttpPingUploader.swift; sourceTree = "<group>"; };
 		1F60589623148BF800307A9F /* GleanLifecycleObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GleanLifecycleObserver.swift; sourceTree = "<group>"; };
@@ -88,6 +93,7 @@
 		1F6A8FF5233C1555007837D5 /* DatetimeMetricTypeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatetimeMetricTypeTests.swift; sourceTree = "<group>"; };
 		1F70B785232995A9007395FB /* Dispatchers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dispatchers.swift; sourceTree = "<group>"; };
 		1F70B787232A81A4007395FB /* DispatchersTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DispatchersTest.swift; path = GleanTests/DispatchersTest.swift; sourceTree = SOURCE_ROOT; };
+		1F7CCA7723DA3A9E00023A30 /* RecordedExperimentData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordedExperimentData.swift; sourceTree = "<group>"; };
 		1FB70AEE23301C1D00C7CF09 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		1FB8F8372326EABD00618E47 /* ConfigurationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigurationTests.swift; sourceTree = "<group>"; };
 		1FD4527423395B4500F4C7E8 /* UuidMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UuidMetric.swift; sourceTree = "<group>"; };
@@ -179,12 +185,21 @@
 			path = Debug;
 			sourceTree = "<group>";
 		};
+		1F58921323C923CB007D2D80 /* Scheduler */ = {
+			isa = PBXGroup;
+			children = (
+				1F58921123C923C4007D2D80 /* MetricsPingSchedulerTests.swift */,
+			);
+			path = Scheduler;
+			sourceTree = "<group>";
+		};
 		1F60588D231483D600307A9F /* Scheduler */ = {
 			isa = PBXGroup;
 			children = (
 				1F60589623148BF800307A9F /* GleanLifecycleObserver.swift */,
 				AC54D224233133DB0019319A /* PingUploadOperation.swift */,
 				AC54D226233134A30019319A /* GleanOperation.swift */,
+				1F58920C23C7D615007D2D80 /* MetricsPingScheduler.swift */,
 			);
 			path = Scheduler;
 			sourceTree = "<group>";
@@ -276,12 +291,12 @@
 				BF43A8C5232A4B5F00545310 /* Metrics */,
 				1F60588E2314840B00307A9F /* Net */,
 				1F60588D231483D600307A9F /* Scheduler */,
+				1FB70AED23301BFC00C7CF09 /* Utils */,
 				BF3DE3942243A2F20018E23F /* Glean.h */,
 				BFFE33A82328F4EF005348FE /* GleanFfi.h */,
 				BF3DE3952243A2F20018E23F /* Info.plist */,
 				BF93C697224BFC57006CE7D8 /* Glean.swift */,
 				BFE1CDCD233B989A0019EE47 /* GleanMetrics.swift */,
-				1FB70AED23301BFC00C7CF09 /* Utils */,
 				1F70B785232995A9007395FB /* Dispatchers.swift */,
 			);
 			path = Glean;
@@ -294,6 +309,7 @@
 				1FB8F8392326EBA500618E47 /* Config */,
 				BF43A8CB232A613100545310 /* Metrics */,
 				BF80AA5923992FFB00A8B172 /* Net */,
+				1F58921323C923CB007D2D80 /* Scheduler */,
 				1F70B787232A81A4007395FB /* DispatchersTest.swift */,
 				BF3DE39F2243A2F20018E23F /* GleanTests.swift */,
 				BF3DE3A12243A2F20018E23F /* Info.plist */,
@@ -320,6 +336,7 @@
 				BFFE18372350A5F50068D97B /* TimingDistributionMetric.swift */,
 				BF10007F23548B0500064051 /* MemoryDistributionMetric.swift */,
 				BFFE183B2350A9CC0068D97B /* DistributionData.swift */,
+				1F7CCA7723DA3A9E00023A30 /* RecordedExperimentData.swift */,
 			);
 			path = Metrics;
 			sourceTree = "<group>";
@@ -579,6 +596,7 @@
 				1F60589723148BF800307A9F /* GleanLifecycleObserver.swift in Sources */,
 				1FD4527523395B4500F4C7E8 /* UuidMetric.swift in Sources */,
 				BFE1CDC8233B73B30019EE47 /* Unreachable.swift in Sources */,
+				1F58920D23C7D615007D2D80 /* MetricsPingScheduler.swift in Sources */,
 				BF30FDC82332640400840607 /* TimeUnit.swift in Sources */,
 				AC54D225233133DB0019319A /* PingUploadOperation.swift in Sources */,
 				BF43A8C9232A4CB200545310 /* Lifetime.swift in Sources */,
@@ -592,6 +610,7 @@
 				1F70B786232995A9007395FB /* Dispatchers.swift in Sources */,
 				1F605895231489AB00307A9F /* HttpPingUploader.swift in Sources */,
 				BF30FDC4233260B500840607 /* TimespanMetric.swift in Sources */,
+				1F7CCA7823DA3A9E00023A30 /* RecordedExperimentData.swift in Sources */,
 				BFE1CDCE233B989A0019EE47 /* GleanMetrics.swift in Sources */,
 				BF6C53B2232F870C00E3B43A /* Ping.swift in Sources */,
 				1F39E7B0239F0505009B13B3 /* GleanDebugTools.swift in Sources */,
@@ -611,6 +630,7 @@
 				1F39E7B3239F0777009B13B3 /* GleanDebugUtilityTests.swift in Sources */,
 				BFAED50A2369752400DF293D /* StringListMetricTests.swift in Sources */,
 				BF890561232BC227003CA2BA /* StringMetricTests.swift in Sources */,
+				1F58921223C923C4007D2D80 /* MetricsPingSchedulerTests.swift in Sources */,
 				1FD4527723395EEB00F4C7E8 /* UuidMetricTests.swift in Sources */,
 				BF80AA5B2399301300A8B172 /* HttpPingUploaderTests.swift in Sources */,
 				1FB8F8382326EABD00618E47 /* ConfigurationTests.swift in Sources */,
@@ -887,7 +907,7 @@
 				BF3DE3A42243A2F20018E23F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		BF3DE3A52243A2F20018E23F /* Build configuration list for PBXNativeTarget "Glean" */ = {
 			isa = XCConfigurationList;
@@ -896,7 +916,7 @@
 				BF3DE3A72243A2F20018E23F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		BF3DE3A82243A2F20018E23F /* Build configuration list for PBXNativeTarget "GleanTests" */ = {
 			isa = XCConfigurationList;
@@ -905,7 +925,7 @@
 				BF3DE3AA2243A2F20018E23F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 	};

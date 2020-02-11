@@ -10,9 +10,11 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.work.testing.WorkManagerTestInitHelper
 import mozilla.components.support.test.any
+import mozilla.components.support.test.eq
 import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.getContextWithMockedInfo
 import mozilla.telemetry.glean.Glean
+import mozilla.telemetry.glean.GleanMetrics.Pings
 import mozilla.telemetry.glean.private.Lifetime
 import mozilla.telemetry.glean.resetGlean
 import mozilla.telemetry.glean.private.StringMetricType
@@ -30,12 +32,12 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Before
+import org.junit.After
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.anyBoolean
 import org.mockito.Mockito.anyString
 import org.mockito.Mockito.doReturn
-import org.mockito.Mockito.eq
 import org.mockito.Mockito.never
 import org.mockito.Mockito.spy
 import org.mockito.Mockito.times
@@ -54,6 +56,19 @@ class MetricsPingSchedulerTest {
         WorkManagerTestInitHelper.initializeTestWorkManager(context)
 
         Glean.enableTestingMode()
+    }
+
+    @After
+    fun cleanup() {
+        // Always reset Glean to clear all data.
+        // It might not have been initialized, but the reset functions handle that.
+        resetGlean(clearStores = true)
+
+        // Once all data is cleared, destroy the handle.
+        // Individual tests will start Glean if necessary.
+        Glean.testDestroyGleanHandle()
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        Dispatchers.API.setTaskQueueing(true)
     }
 
     @Test
@@ -221,16 +236,18 @@ class MetricsPingSchedulerTest {
         verify(mpsSpy, times(0)).updateSentDate(anyString())
         verify(mpsSpy, times(0)).schedulePingCollection(
             any(),
-            anyBoolean()
+            anyBoolean(),
+            eq(Pings.metricsReasonCodes.overdue)
         )
 
-        mpsSpy.collectPingAndReschedule(Calendar.getInstance())
+        mpsSpy.collectPingAndReschedule(Calendar.getInstance(), false, Pings.metricsReasonCodes.overdue)
 
         // Verify that we correctly called in the methods.
         verify(mpsSpy, times(1)).updateSentDate(anyString())
         verify(mpsSpy, times(1)).schedulePingCollection(
             any(),
-            anyBoolean()
+            anyBoolean(),
+            eq(Pings.metricsReasonCodes.reschedule)
         )
     }
 
@@ -260,7 +277,11 @@ class MetricsPingSchedulerTest {
             assertTrue("The initial test data must have been recorded", testMetric.testHasValue())
 
             // Manually call the function to trigger the collection.
-            Glean.metricsPingScheduler.collectPingAndReschedule(Calendar.getInstance())
+            Glean.metricsPingScheduler.collectPingAndReschedule(
+                Calendar.getInstance(),
+                false,
+                Pings.metricsReasonCodes.overdue
+            )
 
             // Trigger worker task to upload the pings in the background
             triggerWorkManager(context)
@@ -281,6 +302,11 @@ class MetricsPingSchedulerTest {
                     .getJSONObject("string")
                     .getString("telemetry.string_metric")
             )
+            assertEquals(
+                "The reason should be 'overdue'",
+                "overdue",
+                metricsJson.getJSONObject("ping_info").getString("reason")
+            )
         } finally {
             server.shutdown()
         }
@@ -297,9 +323,14 @@ class MetricsPingSchedulerTest {
         val mpsSpy =
             spy(MetricsPingScheduler(context))
         val overdueTestDate = "2015-07-05T12:36:00-06:00"
+
         mpsSpy.updateSentDate(overdueTestDate)
 
-        verify(mpsSpy, never()).collectPingAndReschedule(any(), eq(true))
+        verify(mpsSpy, never()).collectPingAndReschedule(
+            any(),
+            eq(true),
+            eq(Pings.metricsReasonCodes.overdue)
+        )
 
         // Make sure to return the fake date when requested.
         doReturn(fakeNow).`when`(mpsSpy).getCalendarInstance()
@@ -314,7 +345,11 @@ class MetricsPingSchedulerTest {
         assertEquals(fakeNow.time, mpsSpy.getLastCollectedDate())
 
         // Verify that we're immediately collecting.
-        verify(mpsSpy, times(1)).collectPingAndReschedule(fakeNow, true)
+        verify(mpsSpy, times(1)).collectPingAndReschedule(
+            fakeNow,
+            true,
+            Pings.metricsReasonCodes.overdue
+        )
     }
 
     @Test
@@ -329,13 +364,9 @@ class MetricsPingSchedulerTest {
         val mpsSpy =
             spy(MetricsPingScheduler(context))
 
-        // Inject the application version as already recorded, so we don't hit the case
-        // where the ping is sent due to a version change.
-        mpsSpy.isDifferentVersion()
-
         mpsSpy.updateSentDate(getISOTimeString(fakeNow, truncateTo = TimeUnit.Day))
 
-        verify(mpsSpy, never()).schedulePingCollection(any(), anyBoolean())
+        verify(mpsSpy, never()).schedulePingCollection(any(), anyBoolean(), eq(Pings.metricsReasonCodes.overdue))
 
         // Make sure to return the fake date when requested.
         doReturn(fakeNow).`when`(mpsSpy).getCalendarInstance()
@@ -344,9 +375,17 @@ class MetricsPingSchedulerTest {
         mpsSpy.schedule()
 
         // Verify that we're scheduling for the next day and not collecting immediately.
-        verify(mpsSpy, times(1)).schedulePingCollection(fakeNow, sendTheNextCalendarDay = true)
-        verify(mpsSpy, never()).schedulePingCollection(fakeNow, sendTheNextCalendarDay = false)
-        verify(mpsSpy, never()).collectPingAndReschedule(any(), eq(true))
+        verify(mpsSpy, times(1)).schedulePingCollection(
+            fakeNow,
+            sendTheNextCalendarDay = true,
+            reason = Pings.metricsReasonCodes.tomorrow
+        )
+        verify(mpsSpy, never()).schedulePingCollection(
+            eq(fakeNow),
+            sendTheNextCalendarDay = eq(false),
+            reason = any()
+        )
+        verify(mpsSpy, never()).collectPingAndReschedule(any(), eq(true), any())
     }
 
     @Test
@@ -361,10 +400,6 @@ class MetricsPingSchedulerTest {
         val mpsSpy =
             spy(MetricsPingScheduler(context))
 
-        // Inject the application version as already recorded, so we don't hit the case
-        // where the ping is sent due to a version change.
-        mpsSpy.isDifferentVersion()
-
         val fakeYesterday = Calendar.getInstance()
         fakeYesterday.time = fakeNow.time
         fakeYesterday.add(Calendar.DAY_OF_MONTH, -1)
@@ -373,15 +408,23 @@ class MetricsPingSchedulerTest {
         // Make sure to return the fake date when requested.
         doReturn(fakeNow).`when`(mpsSpy).getCalendarInstance()
 
-        verify(mpsSpy, never()).schedulePingCollection(any(), anyBoolean())
+        verify(mpsSpy, never()).schedulePingCollection(any(), anyBoolean(), any())
 
         // Trigger the startup check.
         mpsSpy.schedule()
 
         // Verify that we're scheduling for today, but not collecting immediately.
-        verify(mpsSpy, times(1)).schedulePingCollection(fakeNow, sendTheNextCalendarDay = false)
-        verify(mpsSpy, never()).schedulePingCollection(fakeNow, sendTheNextCalendarDay = true)
-        verify(mpsSpy, never()).collectPingAndReschedule(any(), eq(true))
+        verify(mpsSpy, times(1)).schedulePingCollection(
+            fakeNow,
+            sendTheNextCalendarDay = false,
+            reason = Pings.metricsReasonCodes.today
+        )
+        verify(mpsSpy, never()).schedulePingCollection(
+            eq(fakeNow),
+            sendTheNextCalendarDay = eq(true),
+            reason = any()
+        )
+        verify(mpsSpy, never()).collectPingAndReschedule(any(), eq(true), reason = any())
     }
 
     @Test
@@ -395,11 +438,10 @@ class MetricsPingSchedulerTest {
         val mpsSpy =
             spy(MetricsPingScheduler(context))
         mpsSpy.sharedPreferences.edit().clear().apply()
-        // Inject the application version as already recorded, so we don't hit the case
-        // where the ping is sent due to a version change.
+        // Restore the version number, so we don't get an "upgrade" reason ping
         mpsSpy.isDifferentVersion()
 
-        verify(mpsSpy, never()).collectPingAndReschedule(any(), anyBoolean())
+        verify(mpsSpy, never()).collectPingAndReschedule(any(), anyBoolean(), any())
 
         // Make sure to return the fake date when requested.
         doReturn(fakeNow).`when`(mpsSpy).getCalendarInstance()
@@ -408,8 +450,12 @@ class MetricsPingSchedulerTest {
         mpsSpy.schedule()
 
         // Verify that we're immediately collecting.
-        verify(mpsSpy, never()).collectPingAndReschedule(fakeNow, true)
-        verify(mpsSpy, times(1)).schedulePingCollection(fakeNow, sendTheNextCalendarDay = false)
+        verify(mpsSpy, never()).collectPingAndReschedule(eq(fakeNow), eq(true), any())
+        verify(mpsSpy, times(1)).schedulePingCollection(
+            fakeNow,
+            sendTheNextCalendarDay = false,
+            reason = Pings.metricsReasonCodes.today
+        )
     }
 
     @Test
@@ -426,7 +472,78 @@ class MetricsPingSchedulerTest {
         mpsSpy.schedule()
 
         // Verify that we're immediately collecting.
-        verify(mpsSpy, times(1)).collectPingAndReschedule(any(), anyBoolean())
+        verify(mpsSpy, times(1)).collectPingAndReschedule(any(), anyBoolean(), eq(Pings.metricsReasonCodes.upgrade))
+    }
+
+    @Test
+    fun `startup ping sends old version when upgraded`() {
+        // Start the web-server that will receive the metrics ping.
+        val server = getMockWebServer()
+        val configuration = Configuration(
+            serverEndpoint = "http://" + server.hostName + ":" + server.port, logPings = true
+        )
+
+        val oldVersion = "version.0"
+        val oldContext = getContextWithMockedInfo(oldVersion)
+
+        // New version
+        val newContext = getContextWithMockedInfo("version.1")
+
+        try {
+            // Initialize Glean for the first time.
+            // This should pick up the old version ("version.0").
+            // No metric is stored, so no metrics ping will be sent.
+            Glean.initialize(
+                oldContext,
+                true,
+                configuration
+            )
+
+            // Create a metric and set its value. We expect this to be sent after the restart
+            val expectedStringMetric = StringMetricType(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.Ping,
+                name = "expected_metric",
+                sendInPings = listOf("metrics")
+            )
+            val expectedValue = "canary"
+            expectedStringMetric.set(expectedValue)
+
+            // Reset Glean.
+            Glean.testDestroyGleanHandle()
+            @Suppress("EXPERIMENTAL_API_USAGE")
+            Dispatchers.API.setTaskQueueing(true)
+
+            // Initialize Glean again with the new version.
+            // This should trigger a metrics ping after an upgrade (differing version).
+            Glean.initialize(
+                newContext,
+                true,
+                configuration
+            )
+
+            // Trigger worker task to upload the pings in the background.
+            triggerWorkManager(context)
+
+            // Wait for the metrics ping to be received.
+            val request = server.takeRequest(20L, AndroidTimeUnit.SECONDS)
+            val docType = request.path.split("/")[3]
+            assertEquals("The received ping must be a 'metrics' ping", "metrics", docType)
+
+            val metricsJsonData = request.body.readUtf8()
+            val pingJson = JSONObject(metricsJsonData)
+
+            assertEquals("The received ping must contain the old version",
+                oldVersion, pingJson.getJSONObject("client_info")["app_display_version"])
+        } finally {
+            server.shutdown()
+
+            // Reset Glean.
+            Glean.testDestroyGleanHandle()
+            @Suppress("EXPERIMENTAL_API_USAGE")
+            Dispatchers.API.setTaskQueueing(true)
+        }
     }
 
     @Test
@@ -440,8 +557,10 @@ class MetricsPingSchedulerTest {
         val mpsSpy =
             spy(MetricsPingScheduler(context))
         mpsSpy.sharedPreferences.edit().clear().apply()
+        // Restore the version number, so we don't get an "upgrade" reason ping
+        mpsSpy.isDifferentVersion()
 
-        verify(mpsSpy, never()).collectPingAndReschedule(any(), anyBoolean())
+        verify(mpsSpy, never()).collectPingAndReschedule(any(), anyBoolean(), any())
 
         // Make sure to return the fake date when requested.
         doReturn(fakeNow).`when`(mpsSpy).getCalendarInstance()
@@ -458,8 +577,8 @@ class MetricsPingSchedulerTest {
         )
 
         // Verify that we're immediately collecting.
-        verify(mpsSpy, times(1)).collectPingAndReschedule(fakeNow, true)
-        verify(mpsSpy, never()).schedulePingCollection(fakeNow, sendTheNextCalendarDay = false)
+        verify(mpsSpy, times(1)).collectPingAndReschedule(fakeNow, true, reason = Pings.metricsReasonCodes.overdue)
+        verify(mpsSpy, never()).schedulePingCollection(eq(fakeNow), sendTheNextCalendarDay = eq(false), reason = any())
     }
 
     @Test
@@ -472,10 +591,16 @@ class MetricsPingSchedulerTest {
         assertNull(Glean.metricsPingScheduler.timer)
 
         // Manually schedule a collection task for today.
-        Glean.metricsPingScheduler.schedulePingCollection(Calendar.getInstance(), sendTheNextCalendarDay = false)
+        Glean.metricsPingScheduler.schedulePingCollection(
+            Calendar.getInstance(),
+            sendTheNextCalendarDay = false,
+            reason = Pings.metricsReasonCodes.overdue
+        )
 
         // We expect the worker to be scheduled.
         assertNotNull(Glean.metricsPingScheduler.timer)
+
+        Glean.metricsPingScheduler.cancel()
 
         resetGlean(clearStores = true)
     }
@@ -485,7 +610,7 @@ class MetricsPingSchedulerTest {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val mps = MetricsPingScheduler(context)
 
-        mps.schedulePingCollection(Calendar.getInstance(), true)
+        mps.schedulePingCollection(Calendar.getInstance(), true, reason = Pings.metricsReasonCodes.overdue)
 
         // Verify that the worker is enqueued
         assertNotNull("MetricsPingWorker is enqueued",

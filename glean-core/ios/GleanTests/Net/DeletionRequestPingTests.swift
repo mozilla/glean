@@ -21,7 +21,10 @@ class DeletionRequestPingTests: XCTestCase {
             self.lastPingJson = json
 
             // Fulfill test's expectation once we parsed the incoming data.
-            self.expectation?.fulfill()
+            DispatchQueue.main.async {
+                // Let the response get processed before we mark the expectation fulfilled
+                self.expectation?.fulfill()
+            }
 
             // Ensure a response so that the uploader does its job.
             return OHHTTPStubsResponse(

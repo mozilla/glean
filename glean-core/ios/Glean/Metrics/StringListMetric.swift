@@ -57,7 +57,7 @@ public class StringListMetricType {
         guard !self.disabled else { return }
 
         Dispatchers.shared.launchAPI {
-            glean_string_list_add(Glean.shared.handle, self.handle, value)
+            glean_string_list_add(self.handle, value)
         }
     }
 
@@ -72,7 +72,7 @@ public class StringListMetricType {
         Dispatchers.shared.launchAPI {
             let len = value.count
             withArrayOfCStrings(value) { value in
-                glean_string_list_set(Glean.shared.handle, self.handle, value, Int32(len))
+                glean_string_list_set(self.handle, value, Int32(len))
             }
         }
     }
@@ -89,7 +89,7 @@ public class StringListMetricType {
         Dispatchers.shared.assertInTestingMode()
 
         let pingName = pingName ?? self.sendInPings[0]
-        return glean_string_list_test_has_value(Glean.shared.handle, self.handle, pingName) != 0
+        return glean_string_list_test_has_value(self.handle, pingName) != 0
     }
 
     /// Returns the stored value for testing purposes only. This function will attempt to await the
@@ -111,7 +111,7 @@ public class StringListMetricType {
             throw "Missing value"
         }
 
-        let cstr = glean_string_list_test_get_value_as_json_string(Glean.shared.handle, self.handle, pingName)!
+        let cstr = glean_string_list_test_get_value_as_json_string(self.handle, pingName)!
         let json = String(freeingRustString: cstr)
         let data = json.data(using: .utf8)!
         if let content = try JSONSerialization.jsonObject(with: data, options: []) as? [String] {
@@ -135,7 +135,6 @@ public class StringListMetricType {
         let pingName = pingName ?? self.sendInPings[0]
 
         return glean_string_list_test_get_num_recorded_errors(
-            Glean.shared.handle,
             self.handle,
             errorType.rawValue,
             pingName

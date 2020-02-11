@@ -61,7 +61,7 @@ public class StringMetricType {
 
     /// Internal only, synchronous API for setting a string value.
     func setSync(_ value: String) {
-        glean_string_set(Glean.shared.handle, self.handle, value)
+        glean_string_set(self.handle, value)
     }
 
     /// Tests whether a value is stored for the metric for testing purposes only. This function will
@@ -76,7 +76,7 @@ public class StringMetricType {
         Dispatchers.shared.assertInTestingMode()
 
         let pingName = pingName ?? self.sendInPings[0]
-        return glean_string_test_has_value(Glean.shared.handle, self.handle, pingName) != 0
+        return glean_string_test_has_value(self.handle, pingName) != 0
     }
 
     /// Returns the stored value for testing purposes only. This function will attempt to await the
@@ -98,7 +98,7 @@ public class StringMetricType {
             throw "Missing value"
         }
 
-        return String(freeingRustString: glean_string_test_get_value(Glean.shared.handle, self.handle, pingName))
+        return String(freeingRustString: glean_string_test_get_value(self.handle, pingName))
     }
 
     /// Returns the number of errors recorded for the given metric.
@@ -115,7 +115,6 @@ public class StringMetricType {
         let pingName = pingName ?? self.sendInPings[0]
 
         return glean_string_test_get_num_recorded_errors(
-            Glean.shared.handle,
             self.handle,
             errorType.rawValue,
             pingName

@@ -19,6 +19,17 @@ use std::panic::UnwindSafe;
 
 use ffi_support::{ConcurrentHandleMap, ExternError, IntoFfi};
 
+pub fn handle_result<R, F>(callback: F) -> R::Value
+where
+    F: UnwindSafe + FnOnce() -> Result<R, glean_core::Error>,
+    R: IntoFfi,
+{
+    let mut error = ffi_support::ExternError::success();
+    let res = ffi_support::abort_on_panic::call_with_result(&mut error, callback);
+    log_if_error(error);
+    res
+}
+
 /// Helper for the case where we aren't exposing this back over the FFI and
 /// we just want to warn if an error occurred and then release the allocated
 /// memory.

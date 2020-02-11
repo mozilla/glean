@@ -19,10 +19,20 @@ baseline:
   include_client_id: true
   bugs:
     - https://bugzilla.mozilla.org/1512938
+    - https://bugzilla.mozilla.org/1599877
   data_reviews:
     - https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3
   notification_emails:
     - glean-team@mozilla.com
+  reasons:
+    dirty_startup: |
+      The ping was submitted at startup, because the application process was
+      killed before the Glean SDK had the chance to generate this ping, when
+      going to background, in the last session.
+
+      *Note*: this ping will not contain the `glean.baseline.duration` metric.
+    background: |
+      The ping was submitted before going to background.
 
 metrics:
   description: >
@@ -39,8 +49,26 @@ metrics:
     - https://bugzilla.mozilla.org/1512938
   data_reviews:
     - https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3
+    - https://bugzilla.mozilla.org/show_bug.cgi?id=1557048#c13
   notification_emails:
     - glean-team@mozilla.com
+  reasons:
+    overdue: |
+      The last ping wasn't submitted on the current calendar day, but it's after
+      4am, so this ping submitted immediately
+    today: |
+      The last ping wasn't submitted on the current calendar day, but it is
+      still before 4am, so schedule to send this ping on the current calendar
+      day at 4am.
+    tomorrow: |
+      The last ping was already submitted on the current calendar day, so
+      schedule this ping for the next calendar day at 4am.
+    upgrade: |
+      This ping was submitted at startup because the application was just
+      upgraded.
+    reschedule: |
+      A ping was just submitted. This ping was rescheduled for the next calendar
+      day at 4am.
 
 events:
   description: >

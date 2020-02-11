@@ -25,9 +25,11 @@
 
 set -e
 
-GLEAN_PARSER_VERSION=1.15.5
+GLEAN_PARSER_VERSION=1.17.3
 
-CMDNAME=$(basename $0)
+# CMDNAME is used in the usage text below.
+# shellcheck disable=SC2034
+CMDNAME=$(basename "$0")
 USAGE=$(cat <<'HEREDOC'
 $(CMDNAME)
 Glean Team <glean-team@mozilla.com>
@@ -63,11 +65,11 @@ helptext() {
     echo "$USAGE"
 }
 
-PARAMS=""
+declare -a PARAMS=()
 ALLOW_RESERVED=""
 GLEAN_NAMESPACE=Glean
 DOCS_DIRECTORY=""
-YAML_FILES=""
+declare -a YAML_FILES=()
 OUTPUT_DIR="${SOURCE_ROOT}/${PROJECT}/Generated"
 
 while (( "$#" )); do
@@ -96,29 +98,29 @@ while (( "$#" )); do
             shift
             break
             ;;
-        -*|--*=) # unsupported flags
+        --*=|-*) # unsupported flags
             echo "Error: Unsupported flag $1" >&2
             exit 1
             ;;
         *) # preserve positional arguments
-            PARAMS="$PARAMS $1"
+            PARAMS+=("$1")
             shift
             ;;
     esac
 done
 
-if [ -n "$PARAMS" ]; then
-    YAML_FILES="$PARAMS"
+if [ "${#PARAMS[@]}" -gt 0 ]; then
+    YAML_FILES=("${PARAMS[@]}")
 else
     if [ -z "$SCRIPT_INPUT_FILE_COUNT" ] || [ "$SCRIPT_INPUT_FILE_COUNT" -eq 0 ]; then
         echo "warning: No input files specified."
         exit 0
     fi
 
-    for i in $(seq 0 $(expr $SCRIPT_INPUT_FILE_COUNT - 1)); do
+    for i in $(seq 0 $((SCRIPT_INPUT_FILE_COUNT - 1))); do
         infilevar="SCRIPT_INPUT_FILE_${i}"
         infile="${!infilevar}"
-        YAML_FILES="${YAML_FILES} ${infile}"
+        YAML_FILES+=("${infile}")
     done
 fi
 
@@ -137,32 +139,32 @@ fi
 VENVDIR="${SOURCE_ROOT}/.venv"
 
 [ -x "${VENVDIR}/bin/python" ] || python3 -m venv "${VENVDIR}"
-${VENVDIR}/bin/pip install --upgrade glean_parser==$GLEAN_PARSER_VERSION
+"${VENVDIR}"/bin/pip install --upgrade glean_parser==$GLEAN_PARSER_VERSION
 
 # Run the glinter
 # Turn its warnings into warnings visible in Xcode (but don't do for the success message)
-${VENVDIR}/bin/python -m glean_parser \
+"${VENVDIR}"/bin/python -m glean_parser \
     glinter \
     $ALLOW_RESERVED \
-    $YAML_FILES 2>&1 \
+    "${YAML_FILES[@]}" 2>&1 \
     | sed 's/^\(.\)/warning: \1/'  \
     | sed '/Your metrics are Glean/s/^warning: //'
 
-PARSER_OUTPUT=$(${VENVDIR}/bin/python -m glean_parser \
+PARSER_OUTPUT=$("${VENVDIR}"/bin/python -m glean_parser \
     translate \
     -f "swift" \
     -o "${OUTPUT_DIR}" \
     -s "glean_namespace=${GLEAN_NAMESPACE}" \
     $ALLOW_RESERVED \
-    $YAML_FILES 2>&1) || { echo "$PARSER_OUTPUT"; echo "error: glean_parser failed. See errors above."; exit 1; }
+    "${YAML_FILES[@]}" 2>&1) || { echo "$PARSER_OUTPUT"; echo "error: glean_parser failed. See errors above."; exit 1; }
 
 if [ -n "$DOCS_DIRECTORY" ]; then
-    ${VENVDIR}/bin/python -m glean_parser \
+    "${VENVDIR}"/bin/python -m glean_parser \
         translate \
         -f "markdown" \
         -o "${DOCS_DIRECTORY}" \
         $ALLOW_RESERVED \
-        $YAML_FILES
+        "${YAML_FILES[@]}"
 fi
 
 exit 0

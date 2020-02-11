@@ -1,11 +1,42 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v24.1.0...master)
+[Full changelog](https://github.com/mozilla/glean/compare/v24.2.0...master)
+
+# v24.2.0 (2020-02-11)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v24.1.0...v24.2.0)
+
+* General:
+  * Add `locale` to `client_info` section.
+  * **Deprecation Warning** Since `locale` is now in the `client_info` section, the one
+    in the baseline ping ([`glean.baseline.locale`](https://github.com/mozilla/glean/blob/c261205d6e84d2ab39c50003a8ffc3bd2b763768/glean-core/metrics.yaml#L28-L42))
+    is redundant and will be removed by the end of the quarter.
+  * Drop the Glean handle and move state into glean-core ([#664](https://github.com/mozilla/glean/pull/664))
+  * If an experiment includes no `extra` fields, it will no longer include `{"extra": null}` in the JSON payload.
+  * Support for ping `reason` codes was added.
+  * The metrics ping will now include `reason` codes that indicate why it was
+    submitted.
+  * The version of `glean_parser` has been upgraded to 1.17.3
+* Android:
+  * Collections performed before initialization (preinit tasks) are now dispatched off
+    the main thread during initialization.
+  * The baseline ping will now include `reason` codes that indicate why it was
+    submitted. If an unclean shutdown is detected (e.g. due to force-close), this
+    ping will be sent at startup with `reason: dirty_startup`.
+* iOS:
+  * Collections performed before initialization (preinit tasks) are now dispatched off
+    the main thread and not awaited during initialization.
+  * Added recording of `glean.error.preinit_tasks_overflow` to report when
+    the preinit task queue overruns, leading to data loss. See [bug
+    1609734](https://bugzilla.mozilla.org/show_bug.cgi?id=1609734)
 
 # v24.1.0 (2020-01-16)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v24.0.0...v24.1.0)
 
+* General:
+  * Stopping a non started measurement in a timing distribution will now be reported
+    as an `invalid_state` error.
 * Android:
   * A new metric `glean.error.preinit_tasks_overflow` was added to report when
     the preinit task queue overruns, leading to data loss. See [bug

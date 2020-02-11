@@ -39,3 +39,11 @@
     border-top: none;
     padding: 6px 12px;
 }
+
+/* The footer with the "Open on GitHub" link */
+footer#open-on-gh {
+  font-size: 0.8em;
+  text-align: center;
+  border-top: 1px solid black;
+  padding: 5px 0;
+}

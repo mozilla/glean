@@ -345,7 +345,7 @@ class EventMetricTypeTest {
             pingJson.getJSONArray("events").getJSONObject(0).getJSONObject("extra").getString("someExtra")
         )
 
-        Glean.submitPingsByName(listOf("events"))
+        Glean.submitPingByName("events")
 
         // Trigger worker task to upload the pings in the background
         triggerWorkManager(context)

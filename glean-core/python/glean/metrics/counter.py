@@ -6,7 +6,6 @@
 from typing import List, Optional
 
 
-from ..glean import Glean
 from .. import _ffi
 from .._dispatcher import Dispatcher
 from ..testing import ErrorType
@@ -65,7 +64,7 @@ class CounterMetricType:
 
         @Dispatcher.launch
         def add():
-            _ffi.lib.glean_counter_add(Glean._handle, self._handle, amount)
+            _ffi.lib.glean_counter_add(self._handle, amount)
 
     def test_has_value(self, ping_name: Optional[str] = None) -> bool:
         """
@@ -84,7 +83,7 @@ class CounterMetricType:
 
         return bool(
             _ffi.lib.glean_counter_test_has_value(
-                Glean._handle, self._handle, _ffi.ffi_encode_string(ping_name)
+                self._handle, _ffi.ffi_encode_string(ping_name)
             )
         )
 
@@ -106,7 +105,7 @@ class CounterMetricType:
             raise ValueError("metric has no value")
 
         return _ffi.lib.glean_counter_test_get_value(
-            Glean._handle, self._handle, _ffi.ffi_encode_string(ping_name)
+            self._handle, _ffi.ffi_encode_string(ping_name)
         )
 
     def test_get_num_recorded_errors(
@@ -128,10 +127,7 @@ class CounterMetricType:
             ping_name = self._send_in_pings[0]
 
         return _ffi.lib.glean_counter_test_get_num_recorded_errors(
-            Glean._handle,
-            self._handle,
-            error_type.value,
-            _ffi.ffi_encode_string(ping_name),
+            self._handle, error_type.value, _ffi.ffi_encode_string(ping_name),
         )
 
 

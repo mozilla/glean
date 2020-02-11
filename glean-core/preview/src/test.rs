@@ -1,5 +1,15 @@
+use once_cell::sync::Lazy;
+use std::sync::Mutex;
+
 use super::*;
 
+// Because glean_preview is a global-singleton, we need to run the tests one-by-one to avoid different tests stomping over each other.
+// This is only an issue because we're resetting Glean, this cannot happen in normal use of
+// glean-preview.
+//
+// We use a global lock to force synchronization of all tests, even if run multi-threaded.
+// This allows us to run without `--test-threads 1`.`
+static GLOBAL_LOCK: Lazy<Mutex<()>> = Lazy::new(|| Mutex::new(()));
 const GLOBAL_APPLICATION_ID: &str = "org.mozilla.fogotype.test";
 
 // Create a new instance of Glean with a temporary directory.
@@ -23,12 +33,15 @@ fn new_glean() -> tempfile::TempDir {
 
 #[test]
 fn it_initializes() {
+    let _lock = GLOBAL_LOCK.lock().unwrap();
     env_logger::try_init().ok();
+
     let _ = new_glean();
 }
 
 #[test]
 fn it_toggles_upload() {
+    let _lock = GLOBAL_LOCK.lock().unwrap();
     env_logger::try_init().ok();
 
     let _t = new_glean();
@@ -40,6 +53,7 @@ fn it_toggles_upload() {
 
 #[test]
 fn client_info_reset_after_toggle() {
+    let _lock = GLOBAL_LOCK.lock().unwrap();
     env_logger::try_init().ok();
 
     let _t = new_glean();

@@ -28,7 +28,10 @@ class PingTests: XCTestCase {
             self.lastPingJson = json
 
             // Fulfill test's expectation once we parsed the incoming data.
-            self.expectation?.fulfill()
+            DispatchQueue.main.async {
+                // Let the response get processed before we mark the expectation fulfilled
+                self.expectation?.fulfill()
+            }
 
             // Ensure a response so that the uploader does its job.
             return OHHTTPStubsResponse(
@@ -40,7 +43,12 @@ class PingTests: XCTestCase {
     }
 
     func testSendingOfCustomPings() {
-        let customPing = Ping(name: "custom", includeClientId: true, sendIfEmpty: false)
+        let customPing = Ping<NoReasonCodes>(
+            name: "custom",
+            includeClientId: true,
+            sendIfEmpty: false,
+            reasonCodes: []
+        )
 
         let counter = CounterMetricType(
             category: "telemetry",
@@ -70,7 +78,12 @@ class PingTests: XCTestCase {
     }
 
     func testSendingOfCustomPingsWithoutClientId() {
-        let customPing = Ping(name: "custom", includeClientId: false, sendIfEmpty: false)
+        let customPing = Ping<NoReasonCodes>(
+            name: "custom",
+            includeClientId: false,
+            sendIfEmpty: false,
+            reasonCodes: []
+        )
 
         let counter = CounterMetricType(
             category: "telemetry",
@@ -116,9 +129,9 @@ class PingTests: XCTestCase {
         expectation = expectation(description: "Completed unexpected upload")
         expectation?.isInverted = true
 
-        Glean.shared.submitPingsByName(pingNames: ["unknown"])
+        Glean.shared.submitPingByName(pingName: "unknown")
 
-        /// We wait for a timeout to happen, as we don't expect any data to be sent.
+        // We wait for a timeout to happen, as we don't expect any data to be sent.
         waitForExpectations(timeout: 5.0) { _ in
             XCTAssert(true, "Test didn't time out when it should")
         }

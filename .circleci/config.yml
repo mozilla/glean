@@ -55,13 +55,7 @@ commands:
           rust-version: <<parameters.rust-version>>
       - run:
           name: Test
-          command: cargo test --all ---exclude glean-preview --verbose
-      - run:
-          name: Test glean-preview
-          command:
-            # Because glean_preview is a global-singleton, we need to run the tests
-            # single-threaded to avoid different tests stomping over each other.
-            cargo test -p glean-preview -- --test-threads=1
+          command: cargo test --all --verbose
 
   install-rustup:
     steps:
@@ -271,30 +265,6 @@ jobs:
           make
           ./glean_app
 
-  Rust code coverage:
-    docker:
-      - image: circleci/rust:latest
-    # We have to use a machine with more RAM for tests so we don't run out of memory.
-    resource_class: "xlarge"
-    steps:
-      - run:
-          name: Setup custom environment variables
-          command: |
-              echo "export CARGO_INCREMENTAL=0" >> $BASH_ENV
-              echo "export RUSTFLAGS='-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Zno-landing-pads'" >> $BASH_ENV
-      - test-rust:
-          rust-version: "nightly"
-      - run:
-          name: Create and upload code coverage
-          command: |
-              set +eo pipefail # Don't fail on errors
-              curl -L https://github.com/mozilla/grcov/releases/download/v0.5.5/grcov-linux-x86_64.tar.bz2 | tar jxf -
-              curl -L https://codecov.io/bash > codecov.sh
-              chmod +x codecov.sh
-              zip -0 ccov.zip `find . \( -name "glean*.gc*" \) -print`
-              ./grcov ccov.zip -s . -t lcov --llvm --branch --ignore-not-existing --ignore "/*" --ignore "glean-core/ffi/*" -o lcov.info
-              ./codecov.sh -Z -f lcov.info || echo 'Codecov upload failed'
-
   Generate Rust documentation:
     docker:
       - image: circleci/rust:latest
@@ -306,9 +276,23 @@ jobs:
       - run:
           name: Install mdbook
           command: |
-              wget https://github.com/rust-lang-nursery/mdBook/releases/download/v0.3.0/mdbook-v0.3.0-x86_64-unknown-linux-gnu.tar.gz
-              tar -xvf mdbook-v0.3.0-x86_64-unknown-linux-gnu.tar.gz
+              MDBOOK_VERSION=v0.3.5
+              MDBOOK="mdbook-${MDBOOK_VERSION}-x86_64-unknown-linux-gnu.tar.gz"
+              MDBOOK_SHA256=e03cc253650fa0b4780fab4d75df64c48d35d48f452fcf61c5ec0ae652f9bd8e
+              curl -sfSL --retry 5 --retry-delay 10 -O "https://github.com/rust-lang-nursery/mdBook/releases/download/${MDBOOK_VERSION}/${MDBOOK}"
+              echo "${MDBOOK_SHA256} *${MDBOOK}" | shasum -a 256 -c -
+              tar -xvf "${MDBOOK}"
               mv mdbook /usr/local/cargo/bin/mdbook
+      - run:
+          name: Install mdbook-open-on-gh
+          command: |
+              OPENON_VERSION=1.0.1
+              OPENON="mdbook-open-on-gh-${OPENON_VERSION}-x86_64-unknown-linux-gnu.tar.gz"
+              OPENON_SHA256=ca5901ef58844f5a6e6b84aa31d99fc0bab1dd7f7d6913e1d8399a6a2dc80955
+              curl -sfSL --retry 5 --retry-delay 10 -O "https://github.com/badboy/mdbook-open-on-gh/releases/download/${OPENON_VERSION}/${OPENON}"
+              echo "${OPENON_SHA256} *${OPENON}" | shasum -a 256 -c -
+              tar -xvf "${OPENON}"
+              mv mdbook-open-on-gh /usr/local/cargo/bin/mdbook-open-on-gh
       - run:
           name: Build Rust documentation
           command: bin/build-rust-docs.sh
@@ -338,34 +322,28 @@ jobs:
       - android-setup
       - skip-if-doc-only
       - run:
+          name: Restrict to Linux builds only
+          command: |
+              echo "rust.targets=linux-x86-64" > local.properties
+      - run:
           name: Android tests
-          command: ./gradlew --no-daemon test
+          command: ./gradlew --no-daemon :glean:testDebugUnitTest
           environment:
             GRADLE_OPTS: -Xmx2048m
             TARGET_CFLAGS: -DNDEBUG
-      - store_artifacts:
-          path: glean-core/android/build/rustJniLibs/android
-          destination: libs
       - run:
           name: Save test results
           command: |
-            mkdir -p ~/test-results/junit/
-            mkdir -p ~/test-results/tests/
-            cp -a glean-core/android/build/reports/tests ~/test-results/
-            find glean-core/android/build -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
+              mkdir -p ~/test-results/junit/
+              mkdir -p ~/test-results/tests/
+              cp -a glean-core/android/build/reports/tests ~/test-results/
+              find glean-core/android/build -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
           when: always
       - store_artifacts:
           path: ~/test-results/tests
           destination: test-results
       - store_test_results:
           path: ~/test-results
-      - run:
-          name: Upload Kotlin code coverage
-          command: |
-              set +eo pipefail # Don't fail on errors
-              curl -L https://codecov.io/bash > codecov.sh
-              chmod +x codecov.sh
-              ./codecov.sh -Z -f glean-core/android/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml || echo 'Codecov upload failed'
 
   android-packaging:
     docker:
@@ -526,16 +504,34 @@ jobs:
             bin/bootstrap.sh
             # See https://circleci.com/docs/2.0/testing-ios/#pre-starting-the-simulator
             xcrun instruments -w "iPhone 11 (13.3) [" || true
+            # Store build type for use in cache key
+            if [ -z "${CIRCLE_TAG}" ]; then
+              echo "release" > buildtype.txt
+            else
+              echo "debug" > buildtype.txt
+            fi
+      - restore_cache:
+          keys:
+            - v1-cargo-cache-{{arch}}-{{checksum "buildtype.txt"}}-{{checksum "Cargo.lock"}}
       - run:
-          name: Run XCode build, tests and generate documentation
+          name: Run iOS build
+          command: bash bin/run-ios-build.sh
+      - save_cache:
+          paths:
+            - /Users/distiller/.cargo/registry
+            - target
+          key: v1-cargo-cache-{{arch}}-{{checksum "buildtype.txt"}}-{{checksum "Cargo.lock"}}
+      - run:
+          name: Run iOS tests
           command: |
-            bash bin/run-ios-build.sh
             if git log -1 "$CIRCLE_SHA1" | grep -q '\[doc only\]'; then
-                true
+                echo "Skipping this step. Last commit was tagged to not require tests."
             else
                 bash bin/run-ios-tests.sh
             fi
-            bash bin/build-swift-docs.sh
+      - run:
+          name: Generate Swift documentation
+          command: bash bin/build-swift-docs.sh
       - store_artifacts:
           path: raw_xcodebuild.log
           destination: raw_xcodebuild.log
@@ -546,13 +542,6 @@ jobs:
           root: build/
           paths: docs/swift
       - skip-if-doc-only
-      - run:
-          name: Check skip condition before running more steps
-          command: |
-            if git log -1 "$CIRCLE_SHA1" | grep -q '\[doc only\]'; then
-                echo "Skipping this step. Last commit was tagged to not require tests."
-                circleci-agent step halt
-            fi
       - run:
           name: Build Carthage archive
           no_output_timeout: 20m
@@ -570,12 +559,18 @@ jobs:
           command: |
             ZIP_URL=https://circleci.com/api/v1.1/project/github/mozilla/glean/$CIRCLE_BUILD_NUM/artifacts/0/dist/Glean.framework.zip
             echo "{\"0.0.1\":\"$ZIP_URL\"}" > mozilla.glean.json
+            # Store the build number for retrieval in a later step.
+            echo "$CIRCLE_BUILD_NUM" > ios-build-num.txt
       - store_artifacts:
           path: Glean.framework.zip
           destination: dist/Glean.framework.zip
       - store_artifacts:
           path: mozilla.glean.json
           destination: dist/mozilla.glean.json
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ios-build-num.txt
       - run:
           name: "Carthage binary snapshot URL"
           command: |
@@ -586,13 +581,6 @@ jobs:
           root: .
           paths:
             - Glean.framework.zip
-      - run:
-          name: Create and upload code coverage
-          command: |
-              set +eo pipefail # Don't fail on errors
-              curl -L https://codecov.io/bash > codecov.sh
-              chmod +x codecov.sh
-              ./codecov.sh -Z -J '^Glean$' -X gcov -X coveragepy || echo 'Codecov upload failed'
 
   iOS integration test:
     macos:
@@ -606,27 +594,32 @@ jobs:
           name: Setup build environment
           command: |
             rustup target add aarch64-apple-ios x86_64-apple-ios
-            bin/bootstrap.sh
             # See https://circleci.com/docs/2.0/testing-ios/#pre-starting-the-simulator
             xcrun instruments -w "iPhone 11 (13.3) [" || true
+      - attach_workspace:
+          at: .
       - run:
-          name: Use local checkout through Carthage
+          name: Use binary build of Glean
           command: |
+            # Retrieve the previous build number
+            IOS_BUILD_NUM=$(< ios-build-num.txt)
             GLEAN_PATH="$(pwd)"
-            GLEAN_COMMIT="${CIRCLE_SHA1}"
             CARTFILE_PATH="${GLEAN_PATH}/samples/ios/app/Cartfile"
+            # The previous step generated a binary file and the corresponding JSON manifest
+            JSON_URL="https://circleci.com/api/v1.1/project/github/mozilla/glean/${IOS_BUILD_NUM}/artifacts/0/dist/mozilla.glean.json"
+
             echo "Current Cartfile:"
             cat "${CARTFILE_PATH}"
             echo "================="
             echo "New Cartfile:"
-            sed -i.bak "s#github \"mozilla/glean\" \"master\"#git \"file://${GLEAN_PATH}\" \"${GLEAN_COMMIT}\"#" "$CARTFILE_PATH"
+            sed -i.bak "/mozilla\/glean/s#.*#binary \"$JSON_URL\" ~> 0.0.1-SNAPSHOT#" "$CARTFILE_PATH"
             cat "${CARTFILE_PATH}"
       - run:
           name: Build sample app
           command: |
             # Build in Debug mode to speed it all up
             pushd samples/ios/app
-            carthage bootstrap --platform iOS --no-use-binaries --cache-builds --configuration Debug --verbose
+            carthage bootstrap --platform iOS --cache-builds --configuration Debug --verbose
             popd
             bash bin/run-ios-sample-app-build.sh
       - store_artifacts:
@@ -745,12 +738,17 @@ jobs:
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
             .venv/bin/python3 -m twine upload wheelhouse/*
+      - run:
+          name: Install perl
+          command: |
+            # Required for shasum
+            sudo apt install perl
       - install-ghr-linux
       - run:
           name: Publish to Github
           command: |
             # Upload to GitHub
-            ./ghr -replace ${CIRCLE_TAG} wheelhouse
+            ./ghr -replace ${CIRCLE_TAG} glean-core/python/wheelhouse
 
   pypi-macos-release:
     macos:
@@ -776,7 +774,7 @@ jobs:
           name: Publish to Github
           command: |
             # Upload to GitHub
-            ./ghr -replace ${CIRCLE_TAG} dist
+            ./ghr -replace ${CIRCLE_TAG} glean-core/python/dist
 
   pypi-windows-release:
     docker:
@@ -807,7 +805,7 @@ jobs:
           name: Publish to Github
           command: |
             # Upload to GitHub
-            ./ghr -replace ${CIRCLE_TAG} dist
+            ./ghr -replace ${CIRCLE_TAG} glean-core/python/dist
 
   ###########################################################################
   # Docs
@@ -824,7 +822,15 @@ jobs:
           at: build/
       - run:
           name: Check internal documentation links
-          command: linkchecker --ignore-url javadoc --ignore-url docs/glean_core --ignore-url ErrorKind --ignore-url std.struct.Error build/docs
+          command: |
+            linkchecker \
+              --ignore-url javadoc \
+              --ignore-url swift \
+              --ignore-url python \
+              --ignore-url docs/glean_core \
+              --ignore-url ErrorKind \
+              --ignore-url std.struct.Error \
+              build/docs
 
   docs-spellcheck:
     docker:
@@ -893,14 +899,22 @@ workflows:
   ci:
     jobs:
       - Rust tests - stable
-      - Rust code coverage
       # FIXME: Disabled due to failing to often, bug 1574424
       # - Rust tests - beta
       - Rust tests - minimum version
       - C tests
       - Android tests
-      - iOS build and test
-      - iOS integration test
+      # iOS jobs run only on master by default, see below for manual-approved jobs
+      - iOS build and test:
+          filters:
+            branches:
+              only: master
+      - iOS integration test:
+          requires:
+            - iOS build and test
+          filters:
+            branches:
+              only: master
       - Python 3_5 tests
       - Python 3_6 tests
       - Python 3_7 tests
@@ -916,15 +930,36 @@ workflows:
           requires:
             - Generate Rust documentation
             - Generate Kotlin documentation
-            - iOS build and test
             - Generate Python documentation
       - docs-spellcheck
       - docs-deploy:
           requires:
             - docs-linkcheck
+            - iOS build and test
           filters:
             branches:
               only: master
+
+  # iOS jobs require manual approval on PRs
+  iOS:
+    jobs:
+      - hold:
+          type: approval
+          filters:
+            branches:
+              ignore: master
+      - iOS build and test:
+          requires:
+            - hold
+          filters:
+            branches:
+              ignore: master
+      - iOS integration test:
+          requires:
+            - iOS build and test
+          filters:
+            branches:
+              ignore: master
 
   release:
     jobs:

@@ -3,13 +3,13 @@
 ## Description
 
 This ping is intended to provide metrics that are managed by the library itself, and not explicitly set by the application or included in the application's `metrics.yaml` file.
-If the application crashes no `baseline` ping is sent, no additional ping is generated with the data from before the crash.
 
 > **Note:** As the `baseline` ping was specifically designed for mobile operating systems, it is not sent when using the Glean Python bindings.
 
 ## Scheduling
 
-The `baseline` ping is automatically sent when the application is moved to the [background](index.md#defining-background-state).
+The `baseline` ping is automatically submitted with a `reason: background` when the application is moved to the [background](index.md#defining-background-state).
+The `baseline` ping will be submitted at startup with a `reason: dirty_startup`, if the previous session was not cleanly closed. This only happens from the second start.
 
 ## Contents
 
@@ -17,7 +17,7 @@ The baseline ping includes the following fields:
 
 | Field name | Type | Description |
 |---|---|---|
-| `duration` | Timespan | The duration, in seconds, of the last foreground session. [^1]  |
+| `duration` | Timespan | The duration, in seconds, of the last foreground session. Only available if `reason: background`. [^1]  |
 | `locale` | String | The locale of the application. |
 
 [^1]: A quick note about the `duration` metric: it measures specifically the time that the user spent in the last foreground session.

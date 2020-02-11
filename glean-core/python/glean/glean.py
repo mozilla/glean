@@ -41,8 +41,8 @@ class Glean:
     >>> Glean.initialize(application_id="my-app", application_version="0.0.0", upload_enabled=True)
     """
 
-    # The handle to the underlying Rust object
-    _handle = 0  # type: int
+    # Whether Glean was initialized
+    _initialized = False  # type: bool
 
     # The Configuration that was passed to `initialize`
     _configuration = None  # type: Configuration
@@ -87,8 +87,9 @@ class Glean:
             application_id (str): The application id to use when sending pings.
             application_version (str): The version of the application sending
                 Glean data.
-            upload_enabled (bool): Controls the state of the uploaer during
-                Glean initialization.
+            upload_enabled (bool): Controls whether telemetry is enabled. If
+                disabled, all persisted metrics, events and queued pings
+                (except first_run_date) are cleared.
             configuration (glean.config.Configuration): (optional) An object with
                 global settings.
             data_dir (pathlib.Path): (optional) The path to the Glean data
@@ -120,11 +121,11 @@ class Glean:
             configuration.max_events,
         )
 
-        cls._handle = _ffi.lib.glean_initialize(cfg)
+        cls._initialized = _ffi.lib.glean_initialize(cfg) != 0
 
         # If initialization of Glean fails, we bail out and don't initialize
         # further
-        if cls._handle == 0:
+        if not cls._initialized:
             return
 
         for ping in cls._ping_type_queue:
@@ -139,7 +140,7 @@ class Glean:
         # Deal with any pending events so we can start recording new ones
         @Dispatcher.launch_at_front
         def submit_pending_events():
-            if _ffi.lib.glean_on_ready_to_submit_pings(cls._handle):
+            if _ffi.lib.glean_on_ready_to_submit_pings():
                 PingUploadWorker.process()
 
         Dispatcher.flush_queued_initial_tasks()
@@ -160,9 +161,9 @@ class Glean:
         """
         # TODO: 1594184 Send the metrics ping
         Dispatcher.reset()
-        if cls._handle != 0:
-            _ffi.lib.glean_destroy_glean(cls._handle)
-        cls._handle = 0
+        if cls._initialized:
+            _ffi.lib.glean_destroy_glean()
+        cls._initialized = False
         if cls._destroy_data_dir and cls._data_dir.exists():
             shutil.rmtree(str(cls._data_dir))
 
@@ -171,7 +172,7 @@ class Glean:
         """
         Returns True if the Glean SDK has been initialized.
         """
-        return cls._handle != 0
+        return cls._initialized
 
     @classmethod
     def register_ping_type(cls, ping: "PingType"):
@@ -179,7 +180,7 @@ class Glean:
         Register the ping type in the registry.
         """
         if cls.is_initialized():
-            _ffi.lib.glean_register_ping_type(cls._handle, ping._handle)
+            _ffi.lib.glean_register_ping_type(ping._handle)
 
         # We need to keep track of pings, so they get re-registered after a
         # reset. This state is kept across Glean resets, which should only ever
@@ -193,9 +194,7 @@ class Glean:
         Returns True if a ping by this name is in the ping registry.
         """
         return bool(
-            _ffi.lib.glean_test_has_ping_type(
-                cls._handle, _ffi.ffi_encode_string(ping_name)
-            )
+            _ffi.lib.glean_test_has_ping_type(_ffi.ffi_encode_string(ping_name))
         )
 
     @classmethod
@@ -220,7 +219,7 @@ class Glean:
 
             @Dispatcher.launch
             def set_upload_enabled():
-                _ffi.lib.glean_set_upload_enabled(cls._handle, enabled)
+                _ffi.lib.glean_set_upload_enabled(enabled)
 
                 if original_enabled is False and cls.get_upload_enabled() is True:
                     cls._initialize_core_metrics()
@@ -238,7 +237,7 @@ class Glean:
         Get whether or not Glean is allowed to record and upload data.
         """
         if cls.is_initialized():
-            return bool(_ffi.lib.glean_is_upload_enabled(cls._handle))
+            return bool(_ffi.lib.glean_is_upload_enabled())
         else:
             return cls._upload_enabled
 
@@ -267,7 +266,6 @@ class Glean:
         @Dispatcher.launch
         def set_experiment_active():
             _ffi.lib.glean_set_experiment_active(
-                cls._handle,
                 _ffi.ffi_encode_string(experiment_id),
                 _ffi.ffi_encode_string(branch),
                 _ffi.ffi_encode_vec_string(keys),
@@ -287,7 +285,7 @@ class Glean:
         @Dispatcher.launch
         def set_experiment_inactive():
             _ffi.lib.glean_set_experiment_inactive(
-                cls._handle, _ffi.ffi_encode_string(experiment_id)
+                _ffi.ffi_encode_string(experiment_id)
             )
 
     @classmethod
@@ -304,7 +302,7 @@ class Glean:
         """
         return bool(
             _ffi.lib.glean_experiment_test_is_active(
-                cls._handle, _ffi.ffi_encode_string(experiment_id)
+                _ffi.ffi_encode_string(experiment_id)
             )
         )
 
@@ -324,7 +322,7 @@ class Glean:
 
         json_string = _ffi.ffi_decode_string(
             _ffi.lib.glean_experiment_test_get_data(
-                cls._handle, _ffi.ffi_encode_string(experiment_id)
+                _ffi.ffi_encode_string(experiment_id)
             )
         )
 
@@ -343,6 +341,7 @@ class Glean:
         metrics.glean.internal.metrics.os.set(platform.system())
         metrics.glean.internal.metrics.os_version.set(platform.release())
         metrics.glean.internal.metrics.architecture.set(platform.machine())
+        metrics.glean.internal.metrics.locale.set(util.get_locale_tag())
 
         sysinfo = hardware.get_system_information()
         metrics.glean.internal.metrics.device_manufacturer.set(sysinfo.manufacturer)
@@ -366,36 +365,39 @@ class Glean:
         return cls._data_dir
 
     @classmethod
-    def test_collect(cls, ping: "PingType") -> str:
+    def test_collect(cls, ping: "PingType", reason: Optional[str] = None) -> str:
         """
         Collect a ping and return as a string.
+
+        Args:
+            ping: The PingType to submit
+            reason (str, optional): The reason code to record in the ping.
         """
         return _ffi.ffi_decode_string(
-            _ffi.lib.glean_ping_collect(cls._handle, ping._handle)
+            _ffi.lib.glean_ping_collect(ping._handle, _ffi.ffi_encode_string(reason))
         )
 
     @classmethod
-    def _submit_pings(cls, pings: List["PingType"]):
+    def _submit_ping(cls, ping: "PingType", reason: Optional[str] = None):
         """
-        Collect and submit a list of pings for eventual uploading.
+        Collect and submit a ping for eventual uploading.
 
         If the ping currently contains no content, it will not be assembled and
         queued for sending.
 
         Args:
-            pings (list of PingType): List of pings to submit.
+            ping (PingType): Ping to submit.
+            reason (str, optional): The reason the ping was submitted.
         """
-        ping_names = [ping.name for ping in pings]
-
-        cls._submit_pings_by_name(ping_names)
+        cls._submit_ping_by_name(ping.name, reason)
 
     @classmethod
     @Dispatcher.task
-    def _submit_pings_by_name(cls, ping_names: List[str]):
+    def _submit_ping_by_name(cls, ping_name: str, reason: Optional[str] = None):
         """
-        Collect and submit a list of pings for eventual uploading by name.
+        Collect and submit a ping by name for eventual uploading.
 
-        Each ping will be looked up in the known instances of
+        The ping will be looked up in the known instances of
         `glean.metrics.PingType`. If the ping isn't known, an error is logged
         and the ping isn't queued for uploading.
 
@@ -403,7 +405,8 @@ class Glean:
         queued for sending.
 
         Args:
-            ping_names (list of str): List of ping names to submit.
+            ping_name (str): Ping name to submit.
+            reason (str, optional): The reason code to include in the ping.
         """
         if not cls.is_initialized():
             log.error("Glean must be initialized before submitting pings.")
@@ -413,8 +416,8 @@ class Glean:
             log.error("Glean must be enabled before submitting pings.")
             return
 
-        sent_ping = _ffi.lib.glean_submit_pings_by_name(
-            cls._handle, _ffi.ffi_encode_vec_string(ping_names), len(ping_names)
+        sent_ping = _ffi.lib.glean_submit_ping_by_name(
+            _ffi.ffi_encode_string(ping_name), _ffi.ffi_encode_string(reason),
         )
 
         if sent_ping:

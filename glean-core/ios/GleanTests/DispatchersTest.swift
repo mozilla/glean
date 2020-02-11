@@ -30,44 +30,14 @@ class DispatchersTest: XCTestCase {
             "Tasks have not executed while in queue"
         )
 
-        // Now trigger the queue to fire the tasks
-        Dispatchers.shared.flushQueuedInitialTasks()
+        // Now trigger the queue to fire the tasks, we must use the `waitUntilFinished`
+        // parameter to prevent async issues.
+        Dispatchers.shared.flushQueuedInitialTasks(waitUntilFinished: true)
 
         XCTAssertEqual(
             threadCanary,
             3,
             "Tasks have executed"
-        )
-        XCTAssertEqual(
-            Dispatchers.shared.preInitOperations.count,
-            0,
-            "Task queue has cleared"
-        )
-    }
-
-    func testTaskQueuingTimeout() {
-        Dispatchers.shared.setTestingMode(enabled: true)
-        Dispatchers.shared.setTaskQueuing(enabled: true)
-
-        // Add a task to the queue that takes a little longer than the timeout
-        // The timeout is precise so any additional time added should cause it
-        // to time out.
-        Dispatchers.shared.launchAPI {
-            sleep(UInt32(Dispatchers.Constants.queueProcessingTimeout + 0.1))
-        }
-
-        XCTAssertEqual(
-            Dispatchers.shared.preInitOperations.count,
-            1,
-            "Task queue contains the correct number of tasks"
-        )
-
-        // Now trigger the queue to fire the too long task
-        Glean.shared.resetGlean(clearStores: false)
-
-        XCTAssertTrue(
-            (try? GleanMetrics.GleanError.preinitTasksTimeout.testGetValue()) ?? false,
-            "Expected error recorded"
         )
         XCTAssertEqual(
             Dispatchers.shared.preInitOperations.count,
@@ -246,5 +216,43 @@ class DispatchersTest: XCTestCase {
 
         // Make sure counter hasn't changed
         XCTAssertEqual(counter, asyncTest, "Concurrent task must be cancelled")
+    }
+
+    func testOverflowingTheTaskQueueRecordsTelemetry() {
+        Glean.shared.resetGlean(clearStores: true)
+        Dispatchers.shared.preInitOperations.removeAll()
+        Dispatchers.shared.setTestingMode(enabled: true)
+        Dispatchers.shared.setTaskQueuing(enabled: true)
+
+        for _ in 0 ..< (Dispatchers.Constants.maxQueueSize + 10) {
+            Dispatchers.shared.launchAPI {
+                // Do nothing
+            }
+        }
+
+        XCTAssertEqual(
+            Int(Dispatchers.Constants.maxQueueSize),
+            Dispatchers.shared.preInitOperations.count,
+            "Task queue must contain the maximum number of tasks"
+        )
+        XCTAssertEqual(
+            Dispatchers.Constants.maxQueueSize + 10,
+            Dispatchers.shared.preInitTaskCount,
+            "preInitTaskCount is correct"
+        )
+
+        // Resetting Glean here causes the tasks to be flushed and the
+        // queueing turned off, this should cause the error metric to
+        // be recorded so we can check it to ensure the value matches
+        // the expected value.
+        Glean.shared.resetGlean(clearStores: false)
+
+        XCTAssertEqual(
+            Dispatchers.Constants.maxQueueSize + 10,
+            try GleanMetrics.GleanError.preinitTasksOverflow.testGetValue(),
+            "preInitTaskCount is correct"
+        )
+
+        Glean.shared.resetGlean(clearStores: true)
     }
 }

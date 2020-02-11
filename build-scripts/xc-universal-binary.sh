@@ -6,7 +6,7 @@ if [ "$#" -ne 4 ]
 then
     echo "Usage (note: only call inside xcode!):"
     echo "Args: $*"
-    echo "path/to/build-scripts/xc-universal-binary.sh <STATIC_LIB_NAME> <FFI_TARGET> <APPSVC_ROOT_PATH> <buildvariant>"
+    echo "path/to/build-scripts/xc-universal-binary.sh <STATIC_LIB_NAME> <FFI_TARGET> <GLEAN_ROOT_PATH> <buildvariant>"
     exit 1
 fi
 # e.g. libglean_ffi.a
@@ -14,7 +14,7 @@ STATIC_LIB_NAME=$1
 # what to pass to cargo build -p, e.g. glean_ffi
 FFI_TARGET=$2
 # path to app services root
-APPSVC_ROOT=$3
+GLEAN_ROOT=$3
 # buildvariant from our xcconfigs
 BUILDVARIANT=$4
 
@@ -25,14 +25,12 @@ if [[ "$BUILDVARIANT" != "debug" ]]; then
     RELDIR=release
 fi
 
-TARGETDIR=$APPSVC_ROOT/target
+TARGETDIR=$GLEAN_ROOT/target
 
 # We can't use cargo lipo because we can't link to universal libraries :(
 # https://github.com/rust-lang/rust/issues/55235
-LIBS_ARCHS=("x86_64" "arm64")
 IOS_TRIPLES=("x86_64-apple-ios" "aarch64-apple-ios")
-for i in "${!LIBS_ARCHS[@]}"; do
-    LIB_ARCH=${LIBS_ARCHS[$i]}
+for i in "${!IOS_TRIPLES[@]}"; do
     env -i PATH="$PATH" \
     $HOME/.cargo/bin/cargo build -p $FFI_TARGET --lib $RELFLAG --target ${IOS_TRIPLES[$i]}
 done

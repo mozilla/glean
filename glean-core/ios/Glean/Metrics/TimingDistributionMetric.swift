@@ -82,7 +82,6 @@ public class TimingDistributionMetricType {
 
         Dispatchers.shared.launchAPI {
             glean_timing_distribution_set_stop_and_accumulate(
-                Glean.shared.handle,
                 self.handle,
                 timerId,
                 stopTime
@@ -117,7 +116,7 @@ public class TimingDistributionMetricType {
         Dispatchers.shared.assertInTestingMode()
 
         let pingName = pingName ?? self.sendInPings[0]
-        return glean_timing_distribution_test_has_value(Glean.shared.handle, self.handle, pingName).toBool()
+        return glean_timing_distribution_test_has_value(self.handle, pingName).toBool()
     }
 
     /// Returns the stored value for testing purposes only. This function will attempt to await the
@@ -141,7 +140,6 @@ public class TimingDistributionMetricType {
 
         let json = String(
             freeingRustString: glean_timing_distribution_test_get_value_as_json_string(
-                Glean.shared.handle,
                 self.handle,
                 pingName
             )
@@ -164,7 +162,6 @@ public class TimingDistributionMetricType {
         let pingName = pingName ?? self.sendInPings[0]
 
         return glean_timing_distribution_test_get_num_recorded_errors(
-            Glean.shared.handle,
             self.handle,
             errorType.rawValue,
             pingName

@@ -10,7 +10,6 @@ import java.util.Calendar
 import java.util.Date
 import java.util.concurrent.TimeUnit as AndroidTimeUnit
 import mozilla.telemetry.glean.Dispatchers
-import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.getAndConsumeRustString
 import mozilla.telemetry.glean.rust.toBoolean
@@ -86,7 +85,6 @@ class DatetimeMetricType internal constructor(
         }
 
         LibGleanFFI.INSTANCE.glean_datetime_set(
-            Glean.handle,
             this@DatetimeMetricType.handle,
             year = cal.get(Calendar.YEAR),
             month = cal.get(Calendar.MONTH) + 1,
@@ -118,7 +116,6 @@ class DatetimeMetricType internal constructor(
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.launch {
             LibGleanFFI.INSTANCE.glean_datetime_set(
-                Glean.handle,
                 this@DatetimeMetricType.handle,
                 year = value.get(Calendar.YEAR),
                 month = value.get(Calendar.MONTH) + 1,
@@ -150,7 +147,7 @@ class DatetimeMetricType internal constructor(
         Dispatchers.API.assertInTestingMode()
 
         return LibGleanFFI
-            .INSTANCE.glean_datetime_test_has_value(Glean.handle, this.handle, pingName)
+            .INSTANCE.glean_datetime_test_has_value(this.handle, pingName)
             .toBoolean()
     }
 
@@ -175,7 +172,7 @@ class DatetimeMetricType internal constructor(
         }
         val ptr = LibGleanFFI
             .INSTANCE
-            .glean_datetime_test_get_value_as_string(Glean.handle, this.handle, pingName)!!
+            .glean_datetime_test_get_value_as_string(this.handle, pingName)!!
         return ptr.getAndConsumeRustString()
     }
 
@@ -213,7 +210,7 @@ class DatetimeMetricType internal constructor(
         Dispatchers.API.assertInTestingMode()
 
         return LibGleanFFI.INSTANCE.glean_datetime_test_get_num_recorded_errors(
-            Glean.handle, this.handle, errorType.ordinal, pingName
+            this.handle, errorType.ordinal, pingName
         )
     }
 }

@@ -88,8 +88,6 @@ XCTAssertEqual(1, Search.engines.testGetNumRecordedErrors(.invalidValue))
 
 ## Limits
 
-* Empty string lists are not accepted by the `set()` method. Attempting to record an empty string list will result in an `invalid_value` error and nothing being recorded.
-
 * Fixed maximum string length: 50. Longer strings are truncated. This is measured in the number of bytes when the string is encoded in UTF-8.
 
 * Fixed maximum list length: 20 items. Additional strings are dropped.
@@ -99,8 +97,6 @@ XCTAssertEqual(1, Search.engines.testGetNumRecordedErrors(.invalidValue))
 * The names of the enabled search engines.
 
 ## Recorded errors
-
-* `invalid_value`: if an empty list is passed to `set()`
 
 * `invalid_value`: if the string is too long
 
