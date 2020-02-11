@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v24.1.0...master)
+[Full changelog](https://github.com/mozilla/glean/compare/v24.2.0...master)
+
+# v24.2.0 (2020-02-11)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v24.1.0...v24.2.0)
 
 * General:
   * Add `locale` to `client_info` section.
