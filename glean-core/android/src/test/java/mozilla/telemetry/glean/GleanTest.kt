@@ -26,6 +26,7 @@ import mozilla.telemetry.glean.private.PingType
 import mozilla.telemetry.glean.private.StringMetricType
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.toBoolean
+import mozilla.telemetry.glean.rust.toByte
 import mozilla.telemetry.glean.scheduler.GleanLifecycleObserver
 import mozilla.telemetry.glean.scheduler.DeletionPingUploadWorker
 import mozilla.telemetry.glean.scheduler.PingUploadWorker
@@ -203,7 +204,7 @@ class GleanTest {
         // Fake calling the lifecycle observer.
         val lifecycleOwner = mock(LifecycleOwner::class.java)
         val lifecycleRegistry = LifecycleRegistry(lifecycleOwner)
-        val gleanLifecycleObserver = GleanLifecycleObserver(context)
+        val gleanLifecycleObserver = GleanLifecycleObserver()
         lifecycleRegistry.addObserver(gleanLifecycleObserver)
 
         try {
@@ -244,6 +245,45 @@ class GleanTest {
         } finally {
             server.shutdown()
             lifecycleRegistry.removeObserver(gleanLifecycleObserver)
+        }
+    }
+
+    @Test
+    fun `test sending of startup baseline ping`() {
+        // Set the dirty flag.
+        LibGleanFFI.INSTANCE.glean_set_dirty_flag(true.toByte())
+
+        // Restart glean and don't clear the stores.
+        val server = getMockWebServer()
+        val context = getContextWithMockedInfo()
+        resetGlean(context, Glean.configuration.copy(
+            serverEndpoint = "http://" + server.hostName + ":" + server.port,
+            logPings = true
+        ), false)
+
+        try {
+            // Trigger worker task to upload the pings in the background
+            triggerWorkManager(context)
+
+            val request = server.takeRequest(20L, TimeUnit.SECONDS)
+            val docType = request.path.split("/")[3]
+            assertEquals("The received ping must be a 'baseline' ping", "baseline", docType)
+
+            val baselineJson = JSONObject(request.body.readUtf8())
+            assertEquals("dirty_startup", baselineJson.getJSONObject("ping_info")["reason"])
+            checkPingSchema(baselineJson)
+
+            val baselineMetricsObject = baselineJson.getJSONObject("metrics")
+            val baselineStringMetrics = baselineMetricsObject.getJSONObject("string")
+            assertEquals(1, baselineStringMetrics.length())
+            assertNotNull(baselineStringMetrics.get("glean.baseline.locale"))
+
+            assertFalse(
+                "The baseline ping from startup must not have a duration",
+                baselineMetricsObject.has("timespan")
+            )
+        } finally {
+            server.shutdown()
         }
     }
 

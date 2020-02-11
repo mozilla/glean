@@ -14,10 +14,7 @@ use crate::util::{truncate_string_at_boundary, truncate_string_at_boundary_with_
 use crate::CommonMetricData;
 use crate::Glean;
 use crate::Lifetime;
-
-// FIXME: this should be shared?
-// An internal ping name, not to be touched by anything else
-const INTERNAL_STORAGE: &str = "glean_internal_info";
+use crate::INTERNAL_STORAGE;
 
 /// The maximum length of the experiment id, the branch id, and the keys of the
 /// `extra` map. Identifiers longer than this number of characters are truncated.

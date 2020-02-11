@@ -552,3 +552,36 @@ fn test_first_run() {
         assert!(!glean.is_first_run());
     }
 }
+
+#[test]
+fn test_dirty_bit() {
+    let dir = tempfile::tempdir().unwrap();
+    let tmpname = dir.path().display().to_string();
+    {
+        let glean = Glean::with_options(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
+        // The dirty flag must not be set the first time Glean runs.
+        assert!(!glean.is_dirty_flag_set());
+
+        // Set the dirty flag and check that it gets correctly set.
+        glean.set_dirty_flag(true);
+        assert!(glean.is_dirty_flag_set());
+    }
+
+    {
+        // Check that next time Glean runs, it correctly picks up the "dirty flag".
+        // It is expected to be 'true'.
+        let glean = Glean::with_options(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
+        assert!(glean.is_dirty_flag_set());
+
+        // Set the dirty flag to false.
+        glean.set_dirty_flag(false);
+        assert!(!glean.is_dirty_flag_set());
+    }
+
+    {
+        // Check that next time Glean runs, it correctly picks up the "dirty flag".
+        // It is expected to be 'false'.
+        let glean = Glean::with_options(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
+        assert!(!glean.is_dirty_flag_set());
+    }
+}

@@ -15,10 +15,7 @@ use crate::common_metric_data::{CommonMetricData, Lifetime};
 use crate::metrics::{CounterMetric, DatetimeMetric, Metric, MetricType, PingType, TimeUnit};
 use crate::storage::StorageManager;
 use crate::util::{get_iso_time_string, local_now_with_offset};
-use crate::{Glean, Result};
-
-// An internal ping name, not to be touched by anything else
-const INTERNAL_STORAGE: &str = "glean_internal_info";
+use crate::{Glean, Result, INTERNAL_STORAGE};
 
 /// Collect a ping's data, assemble it into its full payload and store it on disk.
 pub struct PingMaker;
