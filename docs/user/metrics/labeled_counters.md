@@ -105,9 +105,9 @@ assert 1 == metrics.stability.crash_count.test_get_num_recorded_errors(
 
 ## Limits
 
-* Labels support lowercase alphanumeric characters; they additionally allow for dots (`.`), underscores (`_`) and/or hyphens (`-`).
+* Labels must conform to the [label formatting regular expression](index.md#label-format).
 
-* Labels are limited to starting with either a letter or an underscore character.
+* Labels support lowercase alphanumeric characters; they additionally allow for dots (`.`), underscores (`_`) and/or hyphens (`-`).
 
 * Each label must have a maximum of 60 bytes, when encoded as UTF-8.
 

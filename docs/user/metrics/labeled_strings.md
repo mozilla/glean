@@ -67,11 +67,9 @@ XCTAssert(Login.errorsByStage["server_auth"].testHasValue())
 ## Limits
 
 
-* Labels support lowercase alphanumeric characters; they additionally allow for dots (`.`), underscores (`_`) and/or hyphens (`-`).
+* Labels must conform to the [label formatting regular expression](index.md#label-format).
 
-* Labels are limited to starting with either a letter or an underscore character.
-
-* Each label must have a maximum of 60 characters.
+* Each label must have a maximum of 60 bytes, when encoded as UTF-8.
 
 * If the labels are specified in the `metrics.yaml`, using a different label will be replaced with the special value `__other__`.
 
