@@ -44,19 +44,21 @@ metrics:
     - glean-team@mozilla.com
   reasons:
     overdue: |
-      The ping wasn't submitted on the current calendar day, but it's after 4am,
-      so it's submitted immediately
+      The last ping wasn't submitted on the current calendar day, but it's after
+      4am, so this ping submitted immediately
     today: |
-      The ping wasn't submitted on the current calendar day, but it is still
-      before 4am, so schedule to send on the current calendar day at 4am.
+      The last ping wasn't submitted on the current calendar day, but it is
+      still before 4am, so schedule to send this ping on the current calendar
+      day at 4am.
     tomorrow: |
-      The ping was already submitted on the current calendar day, so schedule
-      for the next calendar day at 4am.
+      The last ping was already submitted on the current calendar day, so
+      schedule this ping for the next calendar day at 4am.
     upgrade: |
-      The ping was submitted at startup because the application was just
+      This ping was submitted at startup because the application was just
       upgraded.
     reschedule: |
-      The ping was just submitted. Rescheduled for the next calendar day at 4am.
+      A ping was just submitted. This ping was rescheduled for the next calendar
+      day at 4am.
 
 events:
   description: >
