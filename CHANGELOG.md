@@ -34,6 +34,8 @@
   * The metrics ping will now include `reason` codes that indicate why it was
     submitted.
   * The version of `glean_parser` has been upgraded to 1.17.3
+  * Labels in labeled metrics now have a correct, and slightly stricter, regular expression.
+    See [label format](https://mozilla.github.io/glean/user/metrics/index.html#label-format) for more information.
 * Android:
   * Collections performed before initialization (preinit tasks) are now dispatched off
     the main thread during initialization.
