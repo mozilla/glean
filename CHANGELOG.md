@@ -16,6 +16,9 @@
 * Android:
   * Collections performed before initialization (preinit tasks) are now dispatched off
     the main thread during initialization.
+  * The baseline ping will now include `reason` codes that indicate why it was
+    submitted. If an unclean shutdown is detected (e.g. due to force-close), this
+    ping will be sent at startup with `reason: dirty_startup`.
 * iOS:
   * Collections performed before initialization (preinit tasks) are now dispatched off
     the main thread and not awaited during initialization.
