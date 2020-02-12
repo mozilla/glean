@@ -4,6 +4,10 @@
 
 * General:
   * `ping_type` is not included in the `ping_info` any more ([#653](https://github.com/mozilla/glean/pull/653)), the pipeline takes the value from the submission URL.
+* iOS:
+  * The baseline ping will now include `reason` codes that indicate why it was
+    submitted. If an unclean shutdown is detected (e.g. due to force-close), this
+    ping will be sent at startup with `reason: dirty_startup`.
 
 # v24.2.0 (2020-02-11)
 
