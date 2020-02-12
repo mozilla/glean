@@ -21,6 +21,9 @@ class Dispatcher:
     # The task queue
     _task_queue = []  # type: List[Tuple[Callable, tuple, dict]]
 
+    # The number of tasks that overflowed the queue
+    _overflow_count = 0  # type: int
+
     @classmethod
     def reset(cls):
         """
@@ -29,6 +32,7 @@ class Dispatcher:
         """
         cls._queue_initial_tasks = True
         cls._task_queue = []
+        cls._overflow_count = 0
 
     @classmethod
     def task(cls, func: Callable):
@@ -79,6 +83,11 @@ class Dispatcher:
 
         if cls._queue_initial_tasks:
             if len(cls._task_queue) >= cls.MAX_QUEUE_SIZE:
+                # This value ends up in the `preinit_tasks_overflow` metric,
+                # but we can't record directly there, because that would only
+                # add the recording to an already-overflowing task queue and
+                # would be silently dropped.
+                cls._overflow_count += 1
                 return
             cls._task_queue.append((func, (), {}))
         else:
@@ -117,3 +126,14 @@ class Dispatcher:
         for (task, args, kwargs) in cls._task_queue:
             task(*args, **kwargs)
         cls._task_queue.clear()
+
+        if cls._overflow_count > 0:
+            from ._builtins import metrics
+
+            # This must happen after `cls.set_task_queueing(False)` is run, or
+            # it would be added to a full task queue and be silently dropped.
+            metrics.glean.error.preinit_tasks_overflow.add(
+                cls.MAX_QUEUE_SIZE + cls._overflow_count
+            )
+
+            cls._overflow_count = 0
