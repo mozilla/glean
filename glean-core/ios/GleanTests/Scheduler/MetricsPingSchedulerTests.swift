@@ -259,18 +259,11 @@ class MetricsPingSchedulerTests: XCTestCase {
         // Set up the interception of the ping for inspection
         let host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
         stub(condition: isHost(host)) { data in
-            let body = (data as NSURLRequest).ohhttpStubs_HTTPBody()
-            let json = try! JSONSerialization.jsonObject(with: body!, options: []) as? [String: Any]
-            XCTAssert(json != nil)
-            let metrics = json?["metrics"] as? [String: Any]
-            let strings = metrics?["string"] as? [String: Any]
+            let docType = (data as NSURLRequest).url!.path
+            XCTAssertTrue(docType.contains("metrics"), "Must be a metrics ping")
 
-            // Ensure there is only the expected metric
-            XCTAssertEqual(1, strings?.count, "Must contain only the expected metric")
-
-            // Check the received metric's value against the expected value
-            let receivedValue = strings?["telemetry.test_applifetime_metric"] as? String
-            XCTAssertEqual(expectedValue, receivedValue, "Values must match")
+            let body = String(decoding: (data as NSURLRequest).ohhttpStubs_HTTPBody(), as: UTF8.self)
+            XCTAssertTrue(body.contains(expectedValue), "Must contain expected value")
 
             DispatchQueue.main.async {
                 // let the response get processed before we mark the expectation fulfilled
@@ -290,11 +283,14 @@ class MetricsPingSchedulerTests: XCTestCase {
         // Initialize Glean the SECOND time: it will send the expected string metric (stored from
         // the previous run) but must not send the canary string, which would be sent the next time
         // the "metrics" ping is collected after this one.
-        // Glean.shared.initialize(uploadEnabled: true)
         Glean.shared.resetGlean(clearStores: false)
         waitForExpectations(timeout: 5.0) { error in
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
         }
+
+        // Checking to see if the metric has been cleared after startup here, since receiving
+        // the response above means that the metric should have been processed and cleared.
+        XCTAssertFalse(testMetric.testHasValue(), "The metric must be cleared after startup")
 
         // Clean up
         Glean.shared.resetGlean(clearStores: true)
