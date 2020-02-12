@@ -40,7 +40,6 @@ Each entry in the `events` array is an object with the following properties:
 ```json
 {
   "ping_info": {
-    "ping_type": "metrics",
     "experiments": {
       "third_party_library": {
         "branch": "enabled"
@@ -69,7 +68,7 @@ Each entry in the `events` array is an object with the following properties:
       "category": "examples",
       "name": "event_example",
       "extra": {
-        "metadata1": "extra", 
+        "metadata1": "extra",
         "metadata2": "more_extra"
       }
     },

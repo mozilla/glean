@@ -12,10 +12,14 @@ class DeletionRequestPingTests: XCTestCase {
     var expectation: XCTestExpectation?
     var lastPingJson: [String: Any]?
 
-    private func setupHttpResponseStub() {
+    private func setupHttpResponseStub(_ expectedPingType: String) {
         let host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
-        stub(condition: isHost(host)) { data in
-            let body = (data as NSURLRequest).ohhttpStubs_HTTPBody()
+        stub(condition: isHost(host)) { request in
+            let request = request as NSURLRequest
+            let pingType = request.url?.path.split(separator: "/")[2]
+            XCTAssertEqual(String(pingType!), expectedPingType, "Wrong ping type received")
+
+            let body = request.ohhttpStubs_HTTPBody()
             let json = try! JSONSerialization.jsonObject(with: body!, options: []) as? [String: Any]
             XCTAssert(json != nil)
             self.lastPingJson = json
@@ -43,7 +47,7 @@ class DeletionRequestPingTests: XCTestCase {
     func testDeletionRequestPingsAreSentWhenUploadDisabled() {
         Glean.shared.resetGlean(clearStores: true)
 
-        setupHttpResponseStub()
+        setupHttpResponseStub("deletion-request")
         expectation = expectation(description: "Completed upload")
 
         Glean.shared.setUploadEnabled(false)
@@ -51,9 +55,6 @@ class DeletionRequestPingTests: XCTestCase {
         waitForExpectations(timeout: 5.0) { error in
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
         }
-
-        let pingInfo = lastPingJson!["ping_info"] as! [String: Any]
-        XCTAssertEqual(pingInfo["ping_type"] as! String, "deletion-request")
 
         let clientInfo = lastPingJson!["client_info"] as! [String: Any]
         let clientId = clientInfo["client_id"] as! String
@@ -88,7 +89,7 @@ class DeletionRequestPingTests: XCTestCase {
             attributes: nil
         )
 
-        setupHttpResponseStub()
+        setupHttpResponseStub("deletion-request")
         expectation = expectation(description: "Completed upload")
 
         // Init Glean.
@@ -97,9 +98,6 @@ class DeletionRequestPingTests: XCTestCase {
         waitForExpectations(timeout: 5.0) { error in
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
         }
-
-        let pingInfo = lastPingJson?["ping_info"] as? [String: Any]
-        XCTAssertEqual(pingInfo?["ping_type"] as? String, "deletion-request")
 
         let clientInfo = lastPingJson!["client_info"] as! [String: Any]
         let clientId = clientInfo["client_id"] as! String

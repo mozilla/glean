@@ -62,7 +62,6 @@ fn get_ping_info_must_report_all_the_required_fields() {
     let content = ping_maker.collect(&glean, &ping_type, None).unwrap();
     let ping_info = content["ping_info"].as_object().unwrap();
 
-    assert_eq!("store1", ping_info["ping_type"].as_str().unwrap());
     assert!(ping_info.get("start_time").is_some());
     assert!(ping_info.get("end_time").is_some());
     assert!(ping_info.get("seq").is_some());

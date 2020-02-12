@@ -26,12 +26,16 @@ class GleanDebugUtilityTests: XCTestCase {
         expectation!.expectedFulfillmentCount = 3
         expectation!.assertForOverFulfill = true
         let host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
-        stub(condition: isHost(host)) { data in
-            let body = (data as NSURLRequest).ohhttpStubs_HTTPBody()
+        stub(condition: isHost(host)) { request in
+            let request = request as NSURLRequest
+            let body = request.ohhttpStubs_HTTPBody()
             let json = try! JSONSerialization.jsonObject(with: body!, options: []) as? [String: Any]
             XCTAssert(json != nil)
-            let pingType = (json?["ping_info"] as? [String: Any])!["ping_type"] as? String
-            XCTAssertTrue(Glean.shared.testHasPingType(pingType!))
+            let pingType = request.url?.path.split(separator: "/")[2]
+            XCTAssertTrue(
+                Glean.shared.testHasPingType(String(pingType!)),
+                "\(String(pingType!)) should be registered, but is missing"
+            )
 
             DispatchQueue.main.async {
                 // Let the response get processed before we mark the expectation fulfilled

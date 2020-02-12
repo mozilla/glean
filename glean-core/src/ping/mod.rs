@@ -108,7 +108,6 @@ impl PingMaker {
     fn get_ping_info(&self, glean: &Glean, storage_name: &str, reason: Option<&str>) -> JsonValue {
         let (start_time, end_time) = self.get_start_end_times(glean, storage_name);
         let mut map = json!({
-            "ping_type": storage_name,
             "seq": self.get_ping_seq(glean, storage_name),
             "start_time": start_time,
             "end_time": end_time,

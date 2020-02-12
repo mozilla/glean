@@ -49,9 +49,6 @@ class DeletionRequestPingTest: XCTestCase {
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
         }
 
-        var pingInfo = lastPingJson!["ping_info"] as! [String: Any]
-        XCTAssertEqual(pingInfo["ping_type"] as! String, "deletion-request")
-
         var clientInfo = lastPingJson!["client_info"] as! [String: Any]
         let clientId = clientInfo["client_id"] as! String
         XCTAssertNotEqual(clientId, "c0ffeec0-ffee-c0ff-eec0-ffeec0ffeec0")
@@ -70,9 +67,6 @@ class DeletionRequestPingTest: XCTestCase {
         waitForExpectations(timeout: 5.0) { error in
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
         }
-
-        pingInfo = lastPingJson!["ping_info"] as! [String: Any]
-        XCTAssertEqual(pingInfo["ping_type"] as! String, "baseline")
 
         clientInfo = lastPingJson!["client_info"] as! [String: Any]
         let newClientId = clientInfo["client_id"] as! String
