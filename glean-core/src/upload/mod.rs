@@ -106,12 +106,11 @@ impl PingUploadManager {
 
 #[cfg(test)]
 mod test {
-    use crate::metrics::PingType;
-    use serde_json::Value as JsonValue;
+    use super::*;
+    use serde_json::json;
 
-    let uuid = "c0ffeec0-ffee-c0ff-eec0-ffeec0ffeec0";
-    let url = "http://example.com";
-    let body = json!("{}")
+    static UUID: &str = "c0ffeec0-ffee-c0ff-eec0-ffeec0ffeec0";
+    static URL: &str = "http://example.com";
 
     #[test]
     fn test_doesnt_error_when_there_are_no_pending_pings() {
@@ -119,7 +118,7 @@ mod test {
         let tmpname = data_dir.path().display().to_string();
 
         // Create a new upload_manager
-        let upload_manager = PingUploadManager::new(&tempname);
+        let upload_manager = PingUploadManager::new(&tmpname);
 
         // Try and get the next request
         let request = upload_manager.get_next_ping();
@@ -134,10 +133,10 @@ mod test {
         let tmpname = data_dir.path().display().to_string();
 
         // Create a new upload_manager
-        let upload_manager = PingUploadManager::new(&tempname);
+        let upload_manager = PingUploadManager::new(&tmpname);
 
         // Enqueue a ping
-        upload_manager.enqueue_ping(uuid, url, body);
+        upload_manager.enqueue_ping(UUID, URL, json!({}));
 
         // Try and get the next request
         let request = upload_manager.get_next_ping();
@@ -152,12 +151,12 @@ mod test {
         let tmpname = data_dir.path().display().to_string();
 
         // Create a new upload_manager
-        let upload_manager = PingUploadManager::new(&tempname);
+        let upload_manager = PingUploadManager::new(&tmpname);
 
         // Enqueue a ping multiple times
         let n = 10;
         for _ in 0..n {
-            upload_manager.enqueue_ping(uuid, url, body);
+            upload_manager.enqueue_ping(UUID, URL, json!({}));
         }
 
         // Verify a request is returned for each submitted ping
@@ -175,18 +174,18 @@ mod test {
         let tmpname = data_dir.path().display().to_string();
 
         // Create a new upload_manager
-        let upload_manager = PingUploadManager::new(&tempname);
+        let upload_manager = PingUploadManager::new(&tmpname);
 
         // Submit the ping multiple times
         let n = 10;
         for _ in 0..n {
-            upload_manager.enqueue_ping(uuid, url, body);
+            upload_manager.enqueue_ping(UUID, URL, json!({}));
         }
 
         // Clear the queue
-        glean.upload_manager.clear_ping_queue();
+        upload_manager.clear_ping_queue();
 
         // Verify there really isn't any ping in the queue.
-        assert!(glean.upload_manager.get_next_ping().is_none());
+        assert!(upload_manager.get_next_ping().is_none());
     }
 }
