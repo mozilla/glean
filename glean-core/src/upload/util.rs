@@ -163,11 +163,7 @@ mod test {
         assert_eq!(requests.len(), 1);
 
         // Verify request was returned for the "test" ping
-        let request_ping_type = requests[0]
-            .body
-            .get("ping_info")
-            .and_then(|value| value.get("ping_type"))
-            .unwrap();
+        let request_ping_type = requests[0].url.split('/').nth(3).unwrap();
         assert_eq!(request_ping_type, "test");
     }
 
@@ -194,11 +190,7 @@ mod test {
         assert_eq!(requests.len(), 1);
 
         // Verify request was returned for the "test" ping
-        let request_ping_type = requests[0]
-            .body
-            .get("ping_info")
-            .and_then(|value| value.get("ping_type"))
-            .unwrap();
+        let request_ping_type = requests[0].url.split('/').nth(3).unwrap();
         assert_eq!(request_ping_type, "test");
 
         // Verify that file was indeed deleted
@@ -228,11 +220,7 @@ mod test {
         assert_eq!(requests.len(), 1);
 
         // Verify request was returned for the "test" ping
-        let request_ping_type = requests[0]
-            .body
-            .get("ping_info")
-            .and_then(|value| value.get("ping_type"))
-            .unwrap();
+        let request_ping_type = requests[0].url.split('/').nth(3).unwrap();
         assert_eq!(request_ping_type, "test");
 
         // Verify that file was indeed deleted
@@ -268,11 +256,7 @@ mod test {
         assert_eq!(requests.len(), 1);
 
         // Verify request was returned for the "test" ping
-        let request_ping_type = requests[0]
-            .body
-            .get("ping_info")
-            .and_then(|value| value.get("ping_type"))
-            .unwrap();
+        let request_ping_type = requests[0].url.split('/').nth(3).unwrap();
         assert_eq!(request_ping_type, "test");
 
         // Verify that file was indeed deleted
