@@ -8,6 +8,10 @@
   * The baseline ping will now include `reason` codes that indicate why it was
     submitted. If an unclean shutdown is detected (e.g. due to force-close), this
     ping will be sent at startup with `reason: dirty_startup`.
+  * Per [Bug 1614785](https://bugzilla.mozilla.org/show_bug.cgi?id=1614785), the
+    clearing of application lifetime metrics now occurs after the metrics ping is
+    sent in order to preserve values meant to be included in the startup metrics
+    ping.
 
 # v24.2.0 (2020-02-11)
 
