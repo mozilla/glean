@@ -9,6 +9,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Dispatchers as KotlinDispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -107,7 +108,7 @@ class DispatchersTest {
         // Wait for the flushed tasks to be executed.
         runBlocking {
             withTimeoutOrNull(2000) {
-                while (threadCanary.get() != 3 || Dispatchers.API.taskQueue.size > 0) {
+                while (isActive && (threadCanary.get() != 3 || Dispatchers.API.taskQueue.size > 0)) {
                     delay(1)
                 }
             } ?: assertTrue("Timed out waiting for tasks to execute", false)
@@ -157,7 +158,7 @@ class DispatchersTest {
         runBlocking {
             // Ensure that all the required jobs have been added to the list.
             withTimeoutOrNull(2000) {
-                while (counter.get() < 100) {
+                while (isActive && counter.get() < 100) {
                     delay(1)
                 }
             } ?: assertEquals("Timed out waiting for tasks to execute", 100, counter.get())
