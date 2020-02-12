@@ -44,8 +44,15 @@ Labeled metrics come in two forms:
 
 - **Static labels**: The labels are specified at build time in the `metrics.yaml` file.
   If a label that isn't part of this set is used at run time, it is converted to the special label `__other__`.
-  
+
 - **Dynamic labels**: The labels aren't known at build time, so are set at run time.
   Only the first 16 labels seen by the Glean SDK will be tracked. After that, any additional labels are converted to the special label `__other__`.
 
 > **Note**: Be careful with using arbitrary strings as labels and make sure they can't accidentally contain identifying data (like directory paths or user input).
+
+## Adding or changing metric types
+Glean has a [well-defined process](https://wiki.mozilla.org/Glean/Adding_or_changing_Glean_metric_types) for requesting changes to existing metric types or suggesting the implementation of new metric types:
+
+1.  Glean consumers need to file a bug in the [Data platforms & tools::Glean Metric Types](https://bugzilla.mozilla.org/enter_bug.cgi?product=Data%20Platform%20and%20Tools&component=Glean%20Metric%20Types) component, filling in the provided form;
+2.  The triage owner of the Bugzilla component prioritizes this within 6 business days and kicks off the [decision making process](https://wiki.mozilla.org/Glean/Adding_or_changing_Glean_metric_types#The_decision_making_process).
+3.  Once the decision process is completed, the bug is closed with a comment outlining the decision that was made.
