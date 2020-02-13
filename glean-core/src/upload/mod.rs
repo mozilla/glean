@@ -362,18 +362,15 @@ mod test {
     }
 
     #[test]
-    fn test_processes_correctly_different_upload_responses() {
+    fn test_processes_correctly_success_upload_response() {
         let (mut glean, dir) = new_glean(None);
 
         // Register a ping for testing
         let ping_type = PingType::new("test", true, /* send_if_empty */ true, vec![]);
         glean.register_ping_type(&ping_type);
 
-        // Submit the ping three times to test the 3 different
-        // possible outcomes of processing an upload request
-        for _ in 0..3 {
-            glean.submit_ping(&ping_type, None).unwrap();
-        }
+        // Submit a ping
+        glean.submit_ping(&ping_type, None).unwrap();
 
         // Create a new upload_manager
         let data_path = dir.path().to_str().unwrap();
@@ -390,7 +387,7 @@ mod test {
         let directory_manager = upload_manager.directory_manager.read().unwrap();
         let pending_pings_dir = directory_manager.get_dir();
 
-        // Get the one of the submitted PingRequests
+        // Get the submitted PingRequest
         match upload_task {
             PingUploadTask::Upload(request) => {
                 // Simulate the processing of a sucessfull request
@@ -402,8 +399,38 @@ mod test {
             _ => panic!("Expected upload manager to return the next request!"),
         }
 
-        // Get the another one of the submitted PingRequests
-        match upload_manager.get_upload_task() {
+        // Verify that after request is returned, none are left
+        assert_eq!(upload_manager.get_upload_task(), PingUploadTask::Done);
+    }
+
+    #[test]
+    fn test_processes_correctly_client_error_upload_response() {
+        let (mut glean, dir) = new_glean(None);
+
+        // Register a ping for testing
+        let ping_type = PingType::new("test", true, /* send_if_empty */ true, vec![]);
+        glean.register_ping_type(&ping_type);
+
+        // Submit a ping
+        glean.submit_ping(&ping_type, None).unwrap();
+
+        // Create a new upload_manager
+        let data_path = dir.path().to_str().unwrap();
+        let upload_manager = PingUploadManager::new(data_path);
+
+        // Wait for processing of pending pings directory to finish.
+        let mut upload_task = upload_manager.get_upload_task();
+        while upload_task == PingUploadTask::Wait {
+            thread::sleep(Duration::from_millis(10));
+            upload_task = upload_manager.get_upload_task();
+        }
+
+        // Get the pending ping directory path
+        let directory_manager = upload_manager.directory_manager.read().unwrap();
+        let pending_pings_dir = directory_manager.get_dir();
+
+        // Get the submitted PingRequest
+        match upload_task {
             PingUploadTask::Upload(request) => {
                 // Simulate the processing of a client error
                 let uuid = request.uuid;
@@ -414,8 +441,34 @@ mod test {
             _ => panic!("Expected upload manager to return the next request!"),
         }
 
-        // Get the last one of the submitted PingRequests
-        match upload_manager.get_upload_task() {
+        // Verify that after request is returned, none are left
+        assert_eq!(upload_manager.get_upload_task(), PingUploadTask::Done);
+    }
+
+    #[test]
+    fn test_processes_correctly_server_error_upload_response() {
+        let (mut glean, dir) = new_glean(None);
+
+        // Register a ping for testing
+        let ping_type = PingType::new("test", true, /* send_if_empty */ true, vec![]);
+        glean.register_ping_type(&ping_type);
+
+        // Submit a ping
+        glean.submit_ping(&ping_type, None).unwrap();
+
+        // Create a new upload_manager
+        let data_path = dir.path().to_str().unwrap();
+        let upload_manager = PingUploadManager::new(data_path);
+
+        // Wait for processing of pending pings directory to finish.
+        let mut upload_task = upload_manager.get_upload_task();
+        while upload_task == PingUploadTask::Wait {
+            thread::sleep(Duration::from_millis(10));
+            upload_task = upload_manager.get_upload_task();
+        }
+
+        // Get the submitted PingRequest
+        match upload_task {
             PingUploadTask::Upload(request) => {
                 // Simulate the processing of a client error
                 let uuid = request.uuid;
@@ -431,7 +484,7 @@ mod test {
             _ => panic!("Expected upload manager to return the next request!"),
         }
 
-        // Verify that after all requests are returned, none are left
+        // Verify that after request is returned, none are left
         assert_eq!(upload_manager.get_upload_task(), PingUploadTask::Done);
     }
 }
