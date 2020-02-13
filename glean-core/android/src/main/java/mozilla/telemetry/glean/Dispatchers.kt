@@ -107,7 +107,7 @@ internal object Dispatchers {
          * set to false prior to processing the queue, newly launched tasks should be executed
          * on the couroutine scope rather than added to the queue.
          */
-        internal fun flushQueuedInitialTasks() {
+        internal suspend fun flushQueuedInitialTasks() {
             val dispatcherObject = this
             // Dispatch a task to flush the pre-init tasks queue. By using `executeTask`
             // this will be executed as soon as possible, before other tasks are executed.
@@ -139,7 +139,7 @@ internal object Dispatchers {
                 if (overflowCount > 0) {
                     GleanError.preinitTasksOverflow.addSync(MAX_QUEUE_SIZE + overflowCount)
                 }
-            }
+            }?.join()
         }
 
         /**

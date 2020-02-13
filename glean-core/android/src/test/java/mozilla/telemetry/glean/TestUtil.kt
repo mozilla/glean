@@ -13,6 +13,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.testing.WorkManagerTestInitHelper
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.json.JSONObject
@@ -197,7 +198,7 @@ internal fun waitForEnqueuedWorker(
             if (getWorkerStatus(context, workTag).isEnqueued) {
                 return@withTimeout
             }
-        } while (true)
+        } while (isActive)
     }
 }
 

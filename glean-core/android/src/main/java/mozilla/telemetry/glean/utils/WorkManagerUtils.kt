@@ -8,6 +8,7 @@ import android.content.Context
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.testing.WorkManagerTestInitHelper
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 
@@ -35,7 +36,7 @@ internal fun testFlushWorkManagerJob(context: Context, workTag: String, timeoutM
                         return@withTimeout
                     }
                 }
-            } while (true)
+            } while (isActive)
         }
     }
 }
