@@ -9,6 +9,7 @@ import androidx.annotation.VisibleForTesting
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.ObsoleteCoroutinesApi
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
@@ -18,7 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 @ObsoleteCoroutinesApi
 internal object Dispatchers {
-    class WaitableCoroutineScope(val coroutineScope: CoroutineScope) {
+    class WaitableCoroutineScope(private val coroutineScope: CoroutineScope) {
         // When true, jobs will be run synchronously
         internal var testingMode = false
 
@@ -195,9 +196,15 @@ internal object Dispatchers {
         }
     }
 
+    // This job is used to make sure the API `CoroutineContext` does not cancel
+    // children jobs when exceptions are thrown in children coroutines.
+    private val supervisorJob = SupervisorJob()
+
     /**
      * A coroutine scope to make it easy to dispatch API calls off the main thread.
      * This needs to be a `var` so that our tests can override this.
      */
-    var API = WaitableCoroutineScope(CoroutineScope(newSingleThreadContext("GleanAPIPool")))
+    var API = WaitableCoroutineScope(CoroutineScope(
+        newSingleThreadContext("GleanAPIPool") + supervisorJob
+    ))
 }
