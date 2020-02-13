@@ -47,7 +47,7 @@ Optional fields are marked accordingly.
 | `architecture` | String | The architecture of the device (e.g. "arm", "x86") |
 | `client_id` | UUID |  *Optional* A UUID identifying a profile and allowing user-oriented correlation of data |
 | `device_manufacturer` | String | The manufacturer of the device |
-| `device_model` | String | The model name of the device |
+| `device_model` | String | The model name of the device. On Android, this is [`Build.MODEL`], the user-visible name of the device. |
 | `first_run_date` | Datetime | The date of the first run of the application, in local time and with day precision, including timezone information. |
 | `os` | String | The name of the operating system (e.g. "linux", "Android", "ios") |
 | `os_version` | String | The user-visible version of the operating system (e.g. "1.2.3") |
@@ -56,6 +56,8 @@ Optional fields are marked accordingly.
 | `locale` | String | The locale of the application (e.g. "es-ES") |
 
 All the metrics surviving application restarts (e.g. `client_id`, ...) are removed once the application using the Glean SDK is uninstalled.
+
+[`Build.MODEL`]: https://developer.android.com/reference/android/os/Build.html#MODEL
 
 ### The `experiments` object
 
