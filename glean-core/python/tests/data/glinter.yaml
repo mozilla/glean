@@ -4,7 +4,7 @@
 ---
 $schema: moz://mozilla.org/schemas/glean/metrics/1-0-0
 
-glean:
+test:
   client_id:
     type: counter
     description: >

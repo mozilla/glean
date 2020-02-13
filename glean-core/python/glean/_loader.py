@@ -137,8 +137,8 @@ def load_metrics(
 
     filepath = [Path(x) for x in filepath]
 
-    if glean_parser.lint.glinter(filepath, config, file=sys.stderr):
-        raise ValueError("glinter checks failed")
+    # Just print glinter warnings to stderr
+    glean_parser.lint.glinter(filepath, config, file=sys.stderr)
 
     result = parse_objects(filepath, config)
 

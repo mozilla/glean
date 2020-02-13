@@ -42,6 +42,8 @@ def test_working_metric():
     assert 1 == metrics.core_ping.flash_usage.test_get_value()
 
 
-def test_glinter_error():
-    with pytest.raises(ValueError):
-        load_metrics(ROOT / "data" / "glinter.yaml")
+def test_glinter_error(capsys):
+    load_metrics(ROOT / "data" / "glinter.yaml")
+
+    captured = capsys.readouterr()
+    assert "BUG_NUMBER" in captured.err
