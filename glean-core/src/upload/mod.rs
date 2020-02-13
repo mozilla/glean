@@ -145,6 +145,73 @@ impl PingUploadManager {
             None => PingUploadTask::Done,
         }
     }
+
+    /// Processes the response from an attempt to upload a ping.
+    ///
+    /// Based on the HTTP status of said response,
+    /// the possible outcomes are:
+    ///
+    /// * **200 - 299 Success**
+    ///   Any status on the 2XX range is considered a succesful upload,
+    ///   which means the corresponding ping file can be deleted.
+    ///   _Known 2XX status:_
+    ///   * 200 - OK. Request accepted into the pipeline.
+    ///
+    /// * **400 - 499 Unrecoverable error**
+    ///   Any status on the 4XX range means something our client did is not correct.
+    ///   It is unlikely that the client is going to recover from this by retrying,
+    ///   so in this case the corresponding ping file can also be deleted.
+    ///   _Known 4XX status:_
+    ///   * 404 - not found - POST/PUT to an unknown namespace
+    ///   * 405 - wrong request type (anything other than POST/PUT)
+    ///   * 411 - missing content-length header
+    ///   * 413 - request body too large Note that if we have badly-behaved clients that
+    ///           retry on 4XX, we should send back 202 on body/path too long).
+    ///   * 414 - request path too long (See above)
+    ///
+    /// * **Any other error**
+    ///   For any other error, a warning is logged and the ping is re-enqueued.
+    ///   _Known other errors:_
+    ///   * 500 - internal error
+    ///
+    /// # Arguments
+    ///
+    /// `uuid` - The UUID of the ping in question.
+    /// `status` - The HTTP status of the response.
+    pub fn process_ping_upload_response(&self, uuid: &str, status: u16) {
+        let directory_manager = self
+            .directory_manager
+            .read()
+            .expect("Can't read ping directory manager.");
+        match status {
+            200..=299 => {
+                log::info!("Ping {} successfully sent {}.", uuid, status);
+                directory_manager.delete_file(uuid);
+            }
+            400..=499 => {
+                log::error!(
+                    "Server returned client error code {} while attempting to send ping {}.",
+                    status,
+                    uuid
+                );
+                directory_manager.delete_file(uuid);
+            }
+            _ => {
+                log::error!(
+                    "Server returned response code {} while attempting to send ping {}.",
+                    status,
+                    uuid
+                );
+                if let Some(request) = directory_manager.process_file(uuid) {
+                    let mut queue = self
+                        .queue
+                        .write()
+                        .expect("Can't write to pending pings queue.");
+                    queue.push_back(request);
+                }
+            }
+        };
+    }
 }
 
 #[cfg(test)]
@@ -288,6 +355,80 @@ mod test {
             }
 
             upload_task = upload_manager.get_upload_task();
+        }
+
+        // Verify that after all requests are returned, none are left
+        assert_eq!(upload_manager.get_upload_task(), PingUploadTask::Done);
+    }
+
+    #[test]
+    fn test_processes_correctly_different_upload_responses() {
+        let (mut glean, dir) = new_glean(None);
+
+        // Register a ping for testing
+        let ping_type = PingType::new("test", true, /* send_if_empty */ true, vec![]);
+        glean.register_ping_type(&ping_type);
+
+        // Submit the ping three times to test the 3 different
+        // possible outcomes of processing an upload request
+        for _ in 0..3 {
+            glean.submit_ping(&ping_type, None).unwrap();
+        }
+
+        // Create a new upload_manager
+        let data_path = dir.path().to_str().unwrap();
+        let upload_manager = PingUploadManager::new(data_path);
+
+        // Wait for processing of pending pings directory to finish.
+        let mut upload_task = upload_manager.get_upload_task();
+        while upload_task == PingUploadTask::Wait {
+            thread::sleep(Duration::from_millis(10));
+            upload_task = upload_manager.get_upload_task();
+        }
+
+        // Get the pending ping directory path
+        let directory_manager = upload_manager.directory_manager.read().unwrap();
+        let pending_pings_dir = directory_manager.get_dir();
+
+        // Get the one of the submitted PingRequests
+        match upload_task {
+            PingUploadTask::Upload(request) => {
+                // Simulate the processing of a sucessfull request
+                let uuid = request.uuid;
+                upload_manager.process_ping_upload_response(&uuid, 200);
+                // Verify file was deleted
+                assert!(!pending_pings_dir.join(uuid).exists());
+            }
+            _ => panic!("Expected upload manager to return the next request!"),
+        }
+
+        // Get the another one of the submitted PingRequests
+        match upload_manager.get_upload_task() {
+            PingUploadTask::Upload(request) => {
+                // Simulate the processing of a client error
+                let uuid = request.uuid;
+                upload_manager.process_ping_upload_response(&uuid, 404);
+                // Verify file was deleted
+                assert!(!pending_pings_dir.join(uuid).exists());
+            }
+            _ => panic!("Expected upload manager to return the next request!"),
+        }
+
+        // Get the last one of the submitted PingRequests
+        match upload_manager.get_upload_task() {
+            PingUploadTask::Upload(request) => {
+                // Simulate the processing of a client error
+                let uuid = request.uuid;
+                upload_manager.process_ping_upload_response(&uuid, 500);
+                // Verify this ping was indeed re-enqueued
+                match upload_manager.get_upload_task() {
+                    PingUploadTask::Upload(request) => {
+                        assert_eq!(uuid, request.uuid);
+                    }
+                    _ => panic!("Expected upload manager to return the next request!"),
+                }
+            }
+            _ => panic!("Expected upload manager to return the next request!"),
         }
 
         // Verify that after all requests are returned, none are left
