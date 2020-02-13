@@ -15,8 +15,6 @@
 #![allow(dead_code)]
 
 use std::collections::VecDeque;
-use std::path::PathBuf;
-use std::str::FromStr;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, RwLock};
 use std::thread;
@@ -24,11 +22,11 @@ use std::thread;
 use log;
 use serde_json::Value as JsonValue;
 
+use directory::PingDirectoryManager;
 use request::PingRequest;
-use util::process_pings_dir;
 
+mod directory;
 mod request;
-mod util;
 
 /// When asking for the next ping request to upload,
 /// the requester may receive one out of three possible tasks.
@@ -49,6 +47,8 @@ pub enum PingUploadTask {
 pub struct PingUploadManager {
     /// A FIFO queue storing a `PingRequest` for each pending ping.
     queue: Arc<RwLock<VecDeque<PingRequest>>>,
+    /// A manager for the pending pings directories.
+    directory_manager: Arc<RwLock<PingDirectoryManager>>,
     /// A flag signaling if we are done processing the pending pings directories.
     ///
     /// This does not indicate that processing of the directory was successful,
@@ -71,15 +71,19 @@ impl PingUploadManager {
     /// Will panic if unable to spawn a new thread.
     pub fn new(data_path: &str) -> Self {
         let queue = Arc::new(RwLock::new(VecDeque::new()));
+        let directory_manager = Arc::new(RwLock::new(PingDirectoryManager::new(data_path)));
         let processed_pending_pings = Arc::new(AtomicBool::new(false));
 
-        let data_path = PathBuf::from_str(data_path).expect("data_path must be a valid path.");
         let local_queue = queue.clone();
+        let local_manager = directory_manager.clone();
         let local_flag = processed_pending_pings.clone();
         let _ = thread::Builder::new()
-            .name("glean.upload_manager.process_pings_dir".to_string())
+            .name("glean.ping_directory_manager.process_dir".to_string())
             .spawn(move || {
-                match process_pings_dir(&data_path) {
+                let local_manager = local_manager
+                    .read()
+                    .expect("Can't read ping directory manager.");
+                match local_manager.process_dir() {
                     Ok(requests) => {
                         let mut local_queue = local_queue
                             .write()
@@ -95,6 +99,7 @@ impl PingUploadManager {
         Self {
             queue,
             processed_pending_pings,
+            directory_manager,
         }
     }
 
