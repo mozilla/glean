@@ -47,10 +47,20 @@ git clone https://github.com/mozilla-mobile/fenix/
     3. Inside [`build.gradle`][android-components-build-gradle], add
        `mavenLocal()` inside `allprojects { repositories { <here> } }`.
 
-    4. Inside the android-component's `local.properties` file, ensure
+    4. Add the following block in the [`settings.gradle`](https://github.com/mozilla-mobile/android-components/blob/d67f83af679a2e847e5bd284ea4a30b412403241/settings.gradle#L7) file, before any other statement in the script, in order to have the Glean Gradle plugin loaded from the local Maven repository.
+    ```
+    pluginManagement {
+      repositories {
+          mavenLocal()
+          gradlePluginPortal()
+      }
+    }
+    ```
+
+    5. Inside the android-component's `local.properties` file, ensure
        `substitutions.glean.dir` is *NOT* set.
 
-    5. Run `./gradlew publishToMavenLocal`.
+    6. Run `./gradlew publishToMavenLocal`.
 
 3. Inside the `fenix` repository root:
     1. Inside [`build.gradle`][fenix-build-gradle-1], add
@@ -64,6 +74,8 @@ git clone https://github.com/mozilla-mobile/fenix/
        In the same file change `mozilla_glean` to the version you defined in step 1 part 1.
 
        Example: `const val mozilla_glean = "22.0.0-TESTING1"`
+
+    3. Change the `Versions.mozilla_android_components.endsWith('-SNAPSHOT')` line in [`app/build.gradle`](https://github.com/mozilla-mobile/fenix/blob/1f250a730d4f1bbd42bc15079eb98d1b01a34cf0/app/build.gradle#L628) to `Versions.mozilla_android_components.endsWith('-TESTING$N')` where `$N` is the number to reference the version you published in part 2.
 
 You should now be able to build and run Fenix (assuming you could before all this).
 
