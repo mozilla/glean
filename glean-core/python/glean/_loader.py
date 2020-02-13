@@ -10,6 +10,7 @@ of metric types.
 
 
 import enum
+import io
 from pathlib import Path
 import sys
 from typing import Any, List, Union
@@ -138,7 +139,9 @@ def load_metrics(
     filepath = [Path(x) for x in filepath]
 
     # Just print glinter warnings to stderr
-    glean_parser.lint.glinter(filepath, config, file=sys.stderr)
+    glinter_warnings = io.StringIO()
+    if glean_parser.lint.glinter(filepath, config, file=glinter_warnings):
+        sys.stderr.write(glinter_warnings.getvalue())
 
     result = parse_objects(filepath, config)
 

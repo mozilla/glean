@@ -47,3 +47,10 @@ def test_glinter_error(capsys):
 
     captured = capsys.readouterr()
     assert "BUG_NUMBER" in captured.err
+
+
+def test_glinter_no_error(capsys):
+    load_metrics(ROOT / "data" / "core.yaml", config={"allow_reserved": True})
+
+    captured = capsys.readouterr()
+    assert "" == captured.err
