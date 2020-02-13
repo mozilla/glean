@@ -30,9 +30,8 @@ class DispatchersTest: XCTestCase {
             "Tasks have not executed while in queue"
         )
 
-        // Now trigger the queue to fire the tasks, we must use the `waitUntilFinished`
-        // parameter to prevent async issues.
-        Dispatchers.shared.flushQueuedInitialTasks(waitUntilFinished: true)
+        // Now trigger the queue to fire the tasks
+        Dispatchers.shared.flushQueuedInitialTasks()
 
         XCTAssertEqual(
             threadCanary,
