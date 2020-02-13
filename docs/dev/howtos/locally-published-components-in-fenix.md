@@ -47,7 +47,7 @@ git clone https://github.com/mozilla-mobile/fenix/
     3. Inside [`build.gradle`][android-components-build-gradle], add
        `mavenLocal()` inside `allprojects { repositories { <here> } }`.
 
-    4. Add the following block in the [`settings.gradle`](https://github.com/mozilla-mobile/android-components/blob/d67f83af679a2e847e5bd284ea4a30b412403241/settings.gradle#L7) file, in order to have the Glean Gradle plugin loaded from the local Maven repository.
+    4. Add the following block in the [`settings.gradle`](https://github.com/mozilla-mobile/android-components/blob/d67f83af679a2e847e5bd284ea4a30b412403241/settings.gradle#L7) file, before any other statement in the script, in order to have the Glean Gradle plugin loaded from the local Maven repository.
     ```
     pluginManagement {
       repositories {
