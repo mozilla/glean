@@ -492,6 +492,5 @@ public class Glean {
         // Init Glean.
         testDestroyGleanHandle()
         initialize(uploadEnabled: true, configuration: configuration)
-        Dispatchers.shared.concurrentOperationsQueue.waitUntilAllOperationsAreFinished()
     }
 }

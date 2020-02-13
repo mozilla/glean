@@ -259,8 +259,8 @@ class MetricsPingSchedulerTests: XCTestCase {
         // Set up the interception of the ping for inspection
         let host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
         stub(condition: isHost(host)) { data in
-            let docType = (data as NSURLRequest).url!.path
-            XCTAssertTrue(docType.contains("metrics"), "Must be a metrics ping")
+            let docType = (data as NSURLRequest).url!.path.split(separator: "/")[2]
+            XCTAssertEqual(docType, "metrics", "Must be a metrics ping")
 
             let body = String(decoding: (data as NSURLRequest).ohhttpStubs_HTTPBody(), as: UTF8.self)
             XCTAssertTrue(body.contains(expectedValue), "Must contain expected value")

@@ -164,10 +164,10 @@ class Dispatchers {
         concurrentOperationsQueue.cancelAllOperations()
     }
 
-    ///  Stop queuing tasks and process any tasks in the queue.
-    ///  Note that this function waits for the tasks to complete as it
-    ///  is meant to be called from the `initialize()` function
-    ///  and is executed asynchronously from there.
+    /// Stop queuing tasks and process any tasks in the queue.
+    ///
+    /// Note that this function waits for the tasks to complete and care must be
+    /// taken by the calling functions to make this not block execution, if needed.
     ///
     func flushQueuedInitialTasks() {
         // Add all of the queued operations to the `operationQueue` which will cause them to be

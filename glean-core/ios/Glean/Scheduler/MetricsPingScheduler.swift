@@ -151,19 +151,10 @@ class MetricsPingScheduler {
             logger.info("The 'metrics' ping is scheduled for immediate collection, \(now)")
             // **IMPORTANT**
             //
-            // The reason why we're collecting the "metrics" ping in the `Dispatchers`
-            // queue is that we want to make sure no other metric API adds data before
-            // the ping is collected. All the exposed metrics API dispatch calls to the
-            // engines through the `Dispatchers.API` context, so this ensures we are enqueued
-            // before any other recording API call.
-            //
-            // - Do not change `Dispatchers.shared.serialOperationQueue.addOperation` to
-            // `Dispatchers.shared.launchAPI` as this would break startup overdue ping
-            //  collection.
-            // - `addOperation` schedules the task for immediate execution on the
-            // `Dispatchers` serial execution queue, before any other enqueued task. For more
-            // context, see bug 1604861 and the implementation of
-            // `collectPingAndReschedule`.
+            // We want to make sure no other metric API adds data before the ping is collected.
+            // `schedule` should be called off of the main thread.  As long as `schedule` is
+            // invoked before replaying any queued recording API call, it guarantees this step
+            // is completed before anything else is recorded.
             self.collectPingAndReschedule(
                 now,
                 startupPing: true,
@@ -195,12 +186,10 @@ class MetricsPingScheduler {
         if startupPing {
             // **IMPORTANT**
             //
-            // During the Glean initialization, we require any metric recording to be
-            // batched up and replayed after any startup metrics ping is sent. To guarantee
+            // If this is a `startupPing` we require any metric recording to be
+            // batched up and replayed after the startup metrics ping is sent. To guarantee
             // that we synchronously and manually dispatch the 'metrics' ping without
-            // going through our public API.  Since this part of the `Glean.initialize`
-            // function is already dispatched async, we don't need to worry about doing
-            // work on the main thread here.
+            // going through our public API.
             //
             // * Do not change this line without checking what it implies for the above wall
             // of text. *
