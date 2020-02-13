@@ -18,6 +18,8 @@
 * Python:
   * When the pre-init task queue overruns, this is now recorded in the metric
     `glean.error.preinit_tasks_overflow`.
+  * glinter warnings are printed to `stderr` when loading `metrics.yaml` and
+    `pings.yaml` files.
 
 # v24.2.0 (2020-02-11)
 
