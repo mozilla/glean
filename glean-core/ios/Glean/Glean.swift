@@ -73,77 +73,73 @@ public class Glean {
             return
         }
 
-        self.registerPings(Pings.shared)
-
         self.configuration = configuration
+        setUploadEnabled(uploadEnabled)
 
-        self.initialized = withFfiConfiguration(
-            // The FileManager returns `file://` URLS with absolute paths.
-            // The Rust side expects normal path strings to be used.
-            // `relativePath` for a file URL gives us the absolute filesystem path.
-            dataDir: getDocumentsDirectory().relativePath,
-            packageName: AppInfo.name,
-            uploadEnabled: uploadEnabled,
-            configuration: configuration
-        ) { cfg in
-            var cfg = cfg
-            return glean_initialize(&cfg).toBool()
-        }
+        // Execute startup off the main thread
+        Dispatchers.shared.launchConcurrent {
+            self.registerPings(Pings.shared)
 
-        if !self.initialized {
-            return
-        }
-
-        // If any pings were registered before initializing, do so now
-        for ping in self.pingTypeQueue {
-            self.registerPingType(ping)
-        }
-
-        if !Dispatchers.shared.testingMode {
-            self.pingTypeQueue.removeAll()
-        }
-
-        // If this is the first time ever the Glean SDK runs, make sure to set
-        // some initial core metrics in case we need to generate early pings.
-        // The next times we start, we would have them around already.
-        let isFirstRun = glean_is_first_run().toBool()
-        if isFirstRun {
-            initializeCoreMetrics()
-        }
-
-        // Deal with any pending events so we can start recording new ones
-        Dispatchers.shared.serialOperationQueue.addOperation {
-            if glean_on_ready_to_submit_pings() != 0 {
-                Dispatchers.shared.launchConcurrent {
-                    HttpPingUploader(configuration: configuration).process()
-                }
+            self.initialized = withFfiConfiguration(
+                // The FileManager returns `file://` URLS with absolute paths.
+                // The Rust side expects normal path strings to be used.
+                // `relativePath` for a file URL gives us the absolute filesystem path.
+                dataDir: getDocumentsDirectory().relativePath,
+                packageName: AppInfo.name,
+                uploadEnabled: uploadEnabled,
+                configuration: configuration
+            ) { cfg in
+                var cfg = cfg
+                return glean_initialize(&cfg).toBool()
             }
-        }
 
-        // Check for overdue metrics pings
-        metricsPingScheduler.schedule()
+            // If initialization of Glean fails, bail out and don't initialize further
+            if !self.initialized {
+                return
+            }
 
-        // From the second time we run, after all startup pings are generated,
-        // make sure to clear `lifetime: application` metrics and set them again.
-        // Any new value will be sent in newly generted pings after startup.
-        // NOTE: we are adding this directly to the serialOperationQueue which
-        // bypasses the queue for initial tasks, otherwise this could get lost
-        // if the initial tasks queue overflows.
-        if !isFirstRun {
-            Dispatchers.shared.serialOperationQueue.addOperation {
+            // If any pings were registered before initializing, do so now
+            for ping in self.pingTypeQueue {
+                self.registerPingType(ping)
+            }
+            if !Dispatchers.shared.testingMode {
+                self.pingTypeQueue.removeAll()
+            }
+
+            // If this is the first time ever the Glean SDK runs, make sure to set
+            // some initial core metrics in case we need to generate early pings.
+            // The next times we start, we would have them around already.
+            let isFirstRun = glean_is_first_run().toBool()
+            if isFirstRun {
+                self.initializeCoreMetrics()
+            }
+
+            // Deal with any pending events so we can start recording new ones
+            if glean_on_ready_to_submit_pings().toBool() {
+                HttpPingUploader(configuration: configuration).process()
+            }
+
+            // Check for overdue metrics pings
+            self.metricsPingScheduler.schedule()
+
+            // From the second time we run, after all startup pings are generated,
+            // make sure to clear `lifetime: application` metrics and set them again.
+            // Any new value will be sent in newly generted pings after startup.
+            // NOTE: we are adding this directly to the serialOperationQueue which
+            // bypasses the queue for initial tasks, otherwise this could get lost
+            // if the initial tasks queue overflows.
+            if !isFirstRun {
                 glean_clear_application_lifetime_metrics()
                 self.initializeCoreMetrics()
             }
-        }
 
-        // Signal Dispatcher that init is complete
-        Dispatchers.shared.flushQueuedInitialTasks()
+            // Signal Dispatcher that init is complete
+            Dispatchers.shared.flushQueuedInitialTasks()
 
-        // Check if the "dirty flag" is set. That means the product was probably
-        // force-closed. If that's the case, submit a 'baseline' ping with the
-        // reason "dirty_startup". We only do that from the second run.
-        if !isFirstRun {
-            Dispatchers.shared.launchAPI {
+            // Check if the "dirty flag" is set. That means the product was probably
+            // force-closed. If that's the case, submit a 'baseline' ping with the
+            // reason "dirty_startup". We only do that from the second run.
+            if !isFirstRun {
                 if glean_is_dirty_flag_set().toBool() {
                     self.submitPingByNameSync(
                         pingName: "baseline",
@@ -151,12 +147,10 @@ public class Glean {
                     )
                 }
             }
-        }
 
-        self.observer = GleanLifecycleObserver()
+            self.observer = GleanLifecycleObserver()
 
-        if !uploadEnabled {
-            Dispatchers.shared.launchConcurrent {
+            if !uploadEnabled {
                 HttpPingUploader(
                     configuration: self.configuration!,
                     pingDirectory: "deletion_request"

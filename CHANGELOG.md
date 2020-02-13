@@ -14,6 +14,7 @@
     clearing of application lifetime metrics now occurs after the metrics ping is
     sent in order to preserve values meant to be included in the startup metrics
     ping.
+  * `initialize()` now performs most of its work in a background thread.
 * Python:
   * When the pre-init task queue overruns, this is now recorded in the metric
     `glean.error.preinit_tasks_overflow`.
