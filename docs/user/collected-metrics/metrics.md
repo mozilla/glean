@@ -14,7 +14,9 @@ This means you might have to go searching through the dependency tree to get a f
 
 
 ## all-pings
+
 These metrics are sent in every ping.
+
 The following metrics are added to the ping:
 
 | Name | Type | Description | Data reviews | Extras | Expiration |
@@ -25,8 +27,21 @@ The following metrics are added to the ping:
 | glean.error.invalid_value |[labeled_counter](https://mozilla.github.io/glean/book/user/metrics/labeled_counters.html) |Counts the number of times a metric was set to an invalid value. The labels are the `category.name` identifier of the metric. |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1499761#c5)||never |
 
 ## baseline
+
 This is a built-in ping that is assembled out of the box by the Glean SDK.
+
 See the Glean SDK documentation for the [`baseline` ping](https://mozilla.github.io/glean/book/user/pings/baseline.html).
+
+Reasons this ping may be sent:
+    - `background`: The ping was submitted before going to background.
+
+    - `dirty_startup`: The ping was submitted at startup, because the application process was
+      killed before the Glean SDK had the chance to generate this ping, when
+      going to background, in the last session.
+
+      *Note*: this ping will not contain the `glean.baseline.duration` metric.
+
+
 The following metrics are added to the ping:
 
 | Name | Type | Description | Data reviews | Extras | Expiration |
@@ -35,14 +50,38 @@ The following metrics are added to the ping:
 | glean.baseline.locale |[string](https://mozilla.github.io/glean/book/user/metrics/string.html) |The locale of the application (e.g. "es-ES").  |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3)||never |
 
 ## deletion-request
+
 This ping is submitted when a user opts out of sending technical and interaction data to Mozilla. This ping is intended to communicate to the Data Pipeline that the user wishes to have their reported Telemetry data deleted. As such it attempts to send itself at the moment the user opts out of data collection.
 
+
 This ping is sent if empty.
+
 This ping contains no metrics.
 
 ## metrics
+
 This is a built-in ping that is assembled out of the box by the Glean SDK.
+
 See the Glean SDK documentation for the [`metrics` ping](https://mozilla.github.io/glean/book/user/pings/metrics.html).
+
+Reasons this ping may be sent:
+    - `overdue`: The last ping wasn't submitted on the current calendar day, but it's after
+      4am, so this ping submitted immediately
+
+    - `reschedule`: A ping was just submitted. This ping was rescheduled for the next calendar
+      day at 4am.
+
+    - `today`: The last ping wasn't submitted on the current calendar day, but it is
+      still before 4am, so schedule to send this ping on the current calendar
+      day at 4am.
+
+    - `tomorrow`: The last ping was already submitted on the current calendar day, so
+      schedule this ping for the next calendar day at 4am.
+
+    - `upgrade`: This ping was submitted at startup because the application was just
+      upgraded.
+
+
 The following metrics are added to the ping:
 
 | Name | Type | Description | Data reviews | Extras | Expiration |
