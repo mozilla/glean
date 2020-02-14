@@ -6,6 +6,8 @@
   * `ping_type` is not included in the `ping_info` any more ([#653](https://github.com/mozilla/glean/pull/653)), the pipeline takes the value from the submission URL.
 * Android:
   * The `Glean.initialize` method runs mostly off the main thread ([#672](https://github.com/mozilla/glean/pull/672)).
+  * Labels in labeled metrics now have a correct, and slightly stricter, regular expression.
+    See [label format](https://mozilla.github.io/glean/user/metrics/index.html#label-format) for more information.
 * iOS:
   * The baseline ping will now include `reason` codes that indicate why it was
     submitted. If an unclean shutdown is detected (e.g. due to force-close), this
@@ -34,8 +36,6 @@
   * The metrics ping will now include `reason` codes that indicate why it was
     submitted.
   * The version of `glean_parser` has been upgraded to 1.17.3
-  * Labels in labeled metrics now have a correct, and slightly stricter, regular expression.
-    See [label format](https://mozilla.github.io/glean/user/metrics/index.html#label-format) for more information.
 * Android:
   * Collections performed before initialization (preinit tasks) are now dispatched off
     the main thread during initialization.
