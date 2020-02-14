@@ -50,6 +50,16 @@ Labeled metrics come in two forms:
 
 > **Note**: Be careful with using arbitrary strings as labels and make sure they can't accidentally contain identifying data (like directory paths or user input).
 
+### Label format
+
+To ensure maximum support in database columns, labels must be made up of dot-separated identifiers with lowercase ASCII alphanumerics, containing underscores and dashes.
+
+Specifically, they must conform to this regular expression:
+
+```
+^[a-z_][a-z0-9_-]{0,29}(\\.[a-z_][a-z0-9_-]{0,29})*$
+```
+
 ## Adding or changing metric types
 Glean has a [well-defined process](https://wiki.mozilla.org/Glean/Adding_or_changing_Glean_metric_types) for requesting changes to existing metric types or suggesting the implementation of new metric types:
 
