@@ -17,6 +17,7 @@
 use std::collections::VecDeque;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, RwLock};
+use std::path::PathBuf;
 use std::thread;
 
 use log;
@@ -48,7 +49,7 @@ pub struct PingUploadManager {
     /// A FIFO queue storing a `PingRequest` for each pending ping.
     queue: Arc<RwLock<VecDeque<PingRequest>>>,
     /// A manager for the pending pings directories.
-    directory_manager: Arc<RwLock<PingDirectoryManager>>,
+    directory_manager: PingDirectoryManager,
     /// A flag signaling if we are done processing the pending pings directories.
     ///
     /// This does not indicate that processing of the directory was successful,
@@ -69,20 +70,17 @@ impl PingUploadManager {
     /// # Panics
     ///
     /// Will panic if unable to spawn a new thread.
-    pub fn new(data_path: &str) -> Self {
+    pub fn new<P: Into<PathBuf>>(data_path: P) -> Self {
         let queue = Arc::new(RwLock::new(VecDeque::new()));
-        let directory_manager = Arc::new(RwLock::new(PingDirectoryManager::new(data_path)));
+        let directory_manager = PingDirectoryManager::new(data_path);
         let processed_pending_pings = Arc::new(AtomicBool::new(false));
 
         let local_queue = queue.clone();
-        let local_manager = directory_manager.clone();
         let local_flag = processed_pending_pings.clone();
+        let local_manager = directory_manager.clone();
         let _ = thread::Builder::new()
             .name("glean.ping_directory_manager.process_dir".to_string())
             .spawn(move || {
-                let local_manager = local_manager
-                    .read()
-                    .expect("Can't read ping directory manager.");
                 match local_manager.process_dir() {
                     Ok(requests) => {
                         let mut local_queue = local_queue
@@ -179,14 +177,10 @@ impl PingUploadManager {
     /// `uuid` - The UUID of the ping in question.
     /// `status` - The HTTP status of the response.
     pub fn process_ping_upload_response(&self, uuid: &str, status: u16) {
-        let directory_manager = self
-            .directory_manager
-            .read()
-            .expect("Can't read ping directory manager.");
         match status {
             200..=299 => {
                 log::info!("Ping {} successfully sent {}.", uuid, status);
-                directory_manager.delete_file(uuid);
+                self.directory_manager.delete_file(uuid);
             }
             400..=499 => {
                 log::error!(
@@ -194,7 +188,7 @@ impl PingUploadManager {
                     status,
                     uuid
                 );
-                directory_manager.delete_file(uuid);
+                self.directory_manager.delete_file(uuid);
             }
             _ => {
                 log::error!(
@@ -202,7 +196,7 @@ impl PingUploadManager {
                     status,
                     uuid
                 );
-                if let Some(request) = directory_manager.process_file(uuid) {
+                if let Some(request) = self.directory_manager.process_file(uuid) {
                     let mut queue = self
                         .queue
                         .write()
@@ -232,8 +226,7 @@ mod test {
     fn test_doesnt_error_when_there_are_no_pending_pings() {
         // Create a new upload_manager
         let dir = tempfile::tempdir().unwrap();
-        let tmpname = dir.path().display().to_string();
-        let upload_manager = PingUploadManager::new(&tmpname);
+        let upload_manager = PingUploadManager::new(dir.path());
 
         // Wait for processing of pending pings directory to finish.
         while upload_manager.get_upload_task() == PingUploadTask::Wait {
@@ -249,8 +242,7 @@ mod test {
     fn test_returns_ping_request_when_there_is_one() {
         // Create a new upload_manager
         let dir = tempfile::tempdir().unwrap();
-        let tmpname = dir.path().display().to_string();
-        let upload_manager = PingUploadManager::new(&tmpname);
+        let upload_manager = PingUploadManager::new(dir.path());
 
         // Wait for processing of pending pings directory to finish.
         while upload_manager.get_upload_task() == PingUploadTask::Wait {
@@ -272,8 +264,7 @@ mod test {
     fn test_returns_as_many_ping_requests_as_there_are() {
         // Create a new upload_manager
         let dir = tempfile::tempdir().unwrap();
-        let tmpname = dir.path().display().to_string();
-        let upload_manager = PingUploadManager::new(&tmpname);
+        let upload_manager = PingUploadManager::new(dir.path());
 
         // Wait for processing of pending pings directory to finish.
         while upload_manager.get_upload_task() == PingUploadTask::Wait {
@@ -302,8 +293,7 @@ mod test {
     fn test_clearing_the_queue_works_correctly() {
         // Create a new upload_manager
         let dir = tempfile::tempdir().unwrap();
-        let tmpname = dir.path().display().to_string();
-        let upload_manager = PingUploadManager::new(&tmpname);
+        let upload_manager = PingUploadManager::new(dir.path());
 
         // Wait for processing of pending pings directory to finish.
         while upload_manager.get_upload_task() == PingUploadTask::Wait {
@@ -337,8 +327,7 @@ mod test {
         }
 
         // Create a new upload_manager
-        let data_path = dir.path().to_str().unwrap();
-        let upload_manager = PingUploadManager::new(data_path);
+        let upload_manager = PingUploadManager::new(dir.path());
 
         // Wait for processing of pending pings directory to finish.
         let mut upload_task = upload_manager.get_upload_task();
@@ -373,8 +362,7 @@ mod test {
         glean.submit_ping(&ping_type, None).unwrap();
 
         // Create a new upload_manager
-        let data_path = dir.path().to_str().unwrap();
-        let upload_manager = PingUploadManager::new(data_path);
+        let upload_manager = PingUploadManager::new(dir.path());
 
         // Wait for processing of pending pings directory to finish.
         let mut upload_task = upload_manager.get_upload_task();
@@ -384,8 +372,7 @@ mod test {
         }
 
         // Get the pending ping directory path
-        let directory_manager = upload_manager.directory_manager.read().unwrap();
-        let pending_pings_dir = directory_manager.get_dir();
+        let pending_pings_dir = upload_manager.directory_manager.get_dir();
 
         // Get the submitted PingRequest
         match upload_task {
@@ -415,8 +402,7 @@ mod test {
         glean.submit_ping(&ping_type, None).unwrap();
 
         // Create a new upload_manager
-        let data_path = dir.path().to_str().unwrap();
-        let upload_manager = PingUploadManager::new(data_path);
+        let upload_manager = PingUploadManager::new(dir.path());
 
         // Wait for processing of pending pings directory to finish.
         let mut upload_task = upload_manager.get_upload_task();
@@ -426,8 +412,7 @@ mod test {
         }
 
         // Get the pending ping directory path
-        let directory_manager = upload_manager.directory_manager.read().unwrap();
-        let pending_pings_dir = directory_manager.get_dir();
+        let pending_pings_dir = upload_manager.directory_manager.get_dir();
 
         // Get the submitted PingRequest
         match upload_task {
@@ -457,8 +442,7 @@ mod test {
         glean.submit_ping(&ping_type, None).unwrap();
 
         // Create a new upload_manager
-        let data_path = dir.path().to_str().unwrap();
-        let upload_manager = PingUploadManager::new(data_path);
+        let upload_manager = PingUploadManager::new(dir.path());
 
         // Wait for processing of pending pings directory to finish.
         let mut upload_task = upload_manager.get_upload_task();

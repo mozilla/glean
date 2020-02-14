@@ -8,7 +8,6 @@ use std::cmp::Ordering;
 use std::fs::{self, File};
 use std::io::{BufRead, BufReader};
 use std::path::{Path, PathBuf};
-use std::str::FromStr;
 
 use log;
 use serde_json::Value as JsonValue;
@@ -39,7 +38,7 @@ fn get_file_name_as_str(path: &Path) -> Option<&str> {
 }
 
 /// Manages the pending pings directories.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct PingDirectoryManager {
     /// Path to the pending pings directory.
     data_path: PathBuf,
@@ -51,13 +50,9 @@ impl PingDirectoryManager {
     /// # Arguments
     ///
     /// * `data_path` - Path to the pending pings directory.
-    ///
-    /// # Panics
-    ///
-    /// Will panic if unable to parse the data_path.
-    pub fn new(data_path: &str) -> Self {
+    pub fn new<P: Into<PathBuf>>(data_path: P) -> Self {
         Self {
-            data_path: PathBuf::from_str(data_path).expect("data_path must be a valid path."),
+            data_path: data_path.into(),
         }
     }
 
@@ -70,7 +65,7 @@ impl PingDirectoryManager {
     ///
     /// ## Arguments
     ///
-    /// * `uuid` - The UUID of the ping file to be processed
+    /// * `uuid` - The UUID of the ping file to be deleted
     ///
     /// ## Panics
     ///
@@ -85,18 +80,17 @@ impl PingDirectoryManager {
 
     /// Reads a ping file and returns a `PingRequest` from it.
     ///
-    /// If the file is not properly formatted, it will be deleted.
+    /// If the file is not properly formatted, it will be deleted and `None` will be returned.
     ///
     /// ## Arguments
     ///
     /// * `uuid` - The UUID of the ping file to be processed
-    ///
-    /// ## Panics
-    ///
-    /// Will panic if unable to read the file.
     pub fn process_file(&self, uuid: &str) -> Option<PingRequest> {
         let path = self.get_dir().join(uuid);
-        let file = File::open(path).expect("Should be able to read ping file.");
+        let file = match File::open(path) {
+            Ok(file) => file,
+            Err(_) => return None,
+        };
 
         log::info!("Processing ping: {}", uuid);
 
@@ -200,10 +194,8 @@ mod test {
 
     #[test]
     fn test_doesnt_panic_if_no_pending_pings_directory() {
-        // Create a new directory_manager
         let dir = tempfile::tempdir().unwrap();
-        let tmpname = dir.path().display().to_string();
-        let directory_manager = PingDirectoryManager::new(&tmpname);
+        let directory_manager = PingDirectoryManager::new(dir.path());
 
         // Verify that processing the directory didn't panic
         assert!(directory_manager.process_dir().is_err());
@@ -212,7 +204,6 @@ mod test {
     #[test]
     fn test_creates_requests_correctly_from_valid_ping_file() {
         let (mut glean, dir) = new_glean(None);
-        let data_path = dir.path().display().to_string();
 
         // Register a ping for testing
         let ping_type = PingType::new("test", true, true, vec![]);
@@ -221,8 +212,7 @@ mod test {
         // Submit the ping to populate the pending_pings directory
         glean.submit_ping(&ping_type, None).unwrap();
 
-        // Create a new directory_manager
-        let directory_manager = PingDirectoryManager::new(&data_path);
+        let directory_manager = PingDirectoryManager::new(dir.path());
 
         // Try and process the pings folder
         let requests = directory_manager.process_dir().unwrap();
@@ -238,7 +228,6 @@ mod test {
     #[test]
     fn test_non_uuid_files_are_deleted_and_ignored() {
         let (mut glean, dir) = new_glean(None);
-        let data_path = dir.path().display().to_string();
 
         // Register a ping for testing
         let ping_type = PingType::new("test", true, true, vec![]);
@@ -247,8 +236,7 @@ mod test {
         // Submit the ping to populate the pending_pings directory
         glean.submit_ping(&ping_type, None).unwrap();
 
-        // Create a new directory_manager
-        let directory_manager = PingDirectoryManager::new(&data_path);
+        let directory_manager = PingDirectoryManager::new(dir.path());
 
         // Add non uuid file to pending_pings directory
         let not_uuid_path = directory_manager.get_dir().join("not-uuid-file-name.txt");
@@ -271,7 +259,6 @@ mod test {
     #[test]
     fn test_wrongly_formatted_files_are_deleted_and_ignored() {
         let (mut glean, dir) = new_glean(None);
-        let data_path = dir.path().display().to_string();
 
         // Register a ping for testing
         let ping_type = PingType::new("test", true, true, vec![]);
@@ -280,8 +267,7 @@ mod test {
         // Submit the ping to populate the pending_pings directory
         glean.submit_ping(&ping_type, None).unwrap();
 
-        // Create a new directory_manager
-        let directory_manager = PingDirectoryManager::new(&data_path);
+        let directory_manager = PingDirectoryManager::new(dir.path());
 
         // Create a file that will have wrong format contents
         let wrong_contents_file_path = directory_manager.get_dir().join(Uuid::new_v4().to_string());
@@ -304,7 +290,6 @@ mod test {
     #[test]
     fn test_non_json_ping_body_files_are_deleted_and_ignored() {
         let (mut glean, dir) = new_glean(None);
-        let data_path = dir.path().display().to_string();
 
         // Register a ping for testing
         let ping_type = PingType::new("test", true, true, vec![]);
@@ -313,8 +298,7 @@ mod test {
         // Submit the ping to populate the pending_pings directory
         glean.submit_ping(&ping_type, None).unwrap();
 
-        // Create a new directory_manager
-        let directory_manager = PingDirectoryManager::new(&data_path);
+        let directory_manager = PingDirectoryManager::new(dir.path());
 
         // Create a file that will have wrong format contents
         let non_json_body_file_path = directory_manager.get_dir().join(Uuid::new_v4().to_string());
