@@ -33,6 +33,7 @@ This is a built-in ping that is assembled out of the box by the Glean SDK.
 See the Glean SDK documentation for the [`baseline` ping](https://mozilla.github.io/glean/book/user/pings/baseline.html).
 
 Reasons this ping may be sent:
+
     - `background`: The ping was submitted before going to background.
 
     - `dirty_startup`: The ping was submitted at startup, because the application process was
@@ -65,6 +66,7 @@ This is a built-in ping that is assembled out of the box by the Glean SDK.
 See the Glean SDK documentation for the [`metrics` ping](https://mozilla.github.io/glean/book/user/pings/metrics.html).
 
 Reasons this ping may be sent:
+
     - `overdue`: The last ping wasn't submitted on the current calendar day, but it's after
       4am, so this ping submitted immediately
 
