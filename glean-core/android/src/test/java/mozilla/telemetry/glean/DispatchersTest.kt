@@ -178,4 +178,50 @@ class DispatchersTest {
             assertEquals("This list is out of order $orderedList", num, orderedList[num])
         }
     }
+
+    @Test
+    fun `dispatched tasks throwing exceptions are correctly handled`() {
+        val mainThread = Thread.currentThread()
+        val threadCanary = AtomicInteger()
+
+        // By setting testing mode to false, we make sure that things
+        // are executed asynchronously.
+        Dispatchers.API.setTestingMode(false)
+        Dispatchers.API.setTaskQueueing(false)
+
+        // Dispatch an initial tasks that throws an exception.
+        Dispatchers.API.launch {
+            assertNotSame(
+                "Tasks must be executed off the main thread",
+                mainThread,
+                Thread.currentThread()
+            )
+            @Suppress("TooGenericExceptionThrown")
+            throw Exception("Test exception for DispatchersTest")
+        }
+
+        // Add 3 tasks to queue each one increments threadCanary
+        // to indicate if any task has ran.
+        repeat(3) {
+            Dispatchers.API.launch {
+                assertNotSame(
+                    "Tasks must be executed off the main thread",
+                    mainThread,
+                    Thread.currentThread()
+                )
+                threadCanary.incrementAndGet()
+            }
+        }
+
+        // Wait for the flushed tasks to be executed.
+        runBlocking {
+            withTimeoutOrNull(2000) {
+                while (isActive && (threadCanary.get() != 3)) {
+                    delay(1)
+                }
+            } ?: assertTrue("Timed out waiting for tasks to execute", false)
+        }
+
+        assertEquals("All the dispatched actions should execute", 3, threadCanary.get())
+    }
 }
