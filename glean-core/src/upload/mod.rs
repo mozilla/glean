@@ -15,9 +15,9 @@
 #![allow(dead_code)]
 
 use std::collections::VecDeque;
+use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, RwLock};
-use std::path::PathBuf;
 use std::thread;
 
 use log;
@@ -171,6 +171,11 @@ impl PingUploadManager {
     ///   For any other error, a warning is logged and the ping is re-enqueued.
     ///   _Known other errors:_
     ///   * 500 - internal error
+    ///
+    /// # Note
+    ///
+    /// The disk I/O performed by this function is not done off-thread,
+    /// as it is expected to be called off-thread by the platform.
     ///
     /// # Arguments
     ///
