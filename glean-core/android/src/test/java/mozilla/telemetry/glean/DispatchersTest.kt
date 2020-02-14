@@ -200,7 +200,7 @@ class DispatchersTest {
             throw Exception("Test exception for DispatchersTest")
         }
 
-        // Add 3 tasks to queue each one setting threadCanary to true
+        // Add 3 tasks to queue each one increments threadCanary
         // to indicate if any task has ran.
         repeat(3) {
             Dispatchers.API.launch {
