@@ -46,7 +46,7 @@ assertTrue(Flags.a11yEnabled.testGetValue())
 ```Java
 import org.mozilla.yourApplication.GleanMetrics.Flags
 
-Flags.INSTANCE.getA11yEnabled.set(System.isAccesibilityEnabled())
+Flags.INSTANCE.a11yEnabled.set(System.isAccesibilityEnabled())
 ```
 
 There are test APIs available too:
@@ -55,9 +55,9 @@ There are test APIs available too:
 import org.mozilla.yourApplication.GleanMetrics.Flags
 
 // Was anything recorded?
-assertTrue(Flags.INSTANCE.getA11yEnabled.testHasValue())
+assertTrue(Flags.INSTANCE.a11yEnabled.testHasValue())
 // Does it have the expected value?
-assertTrue(Flags.INSTANCE.getA11yEnabled.testGetValue())
+assertTrue(Flags.INSTANCE.a11yEnabled.testGetValue())
 ```
 
 </div>

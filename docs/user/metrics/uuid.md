@@ -49,8 +49,8 @@ assertEquals(uuid, User.clientId.testGetValue())
 ```Java
 import org.mozilla.yourApplication.GleanMetrics.User
 
-User.INSTANCE.getClientId.generateAndSet() // Generate a new UUID and record it
-User.INSTANCE.getClientId.set(UUID.randomUUID())  // Set a UUID explicitly
+User.INSTANCE.clientId.generateAndSet() // Generate a new UUID and record it
+User.INSTANCE.clientId.set(UUID.randomUUID())  // Set a UUID explicitly
 ```
 
 There are test APIs available too:
@@ -59,9 +59,9 @@ There are test APIs available too:
 import org.mozilla.yourApplication.GleanMetrics.User
 
 // Was anything recorded?
-assertTrue(User.INSTANCE.getClientId.testHasValue())
+assertTrue(User.INSTANCE.clientId.testHasValue())
 // Was it the expected value?
-assertEquals(uuid, User.INSTANCE.getClientId.testGetValue())
+assertEquals(uuid, User.INSTANCE.clientId.testGetValue())
 ```
 
 </div>

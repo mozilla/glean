@@ -78,17 +78,17 @@ assertEquals(1, Auth.loginTime.testGetNumRecordedErrors(ErrorType.InvalidValue))
 import org.mozilla.yourApplication.GleanMetrics.Auth
 
 fun onShowLogin() {
-    Auth.INSTANCE.getLoginTime.start()
+    Auth.INSTANCE.loginTime.start()
     // ...
 }
 
 fun onLogin() {
-    Auth.INSTANCE.getLoginTime.stop()
+    Auth.INSTANCE.loginTime.stop()
     // ...
 }
 
 fun onLoginCancel() {
-    Auth.INSTANCE.getLoginTime.cancel()
+    Auth.INSTANCE.loginTime.cancel()
     // ...
 }
 ```
@@ -101,13 +101,13 @@ There are test APIs available too:
 import org.mozilla.yourApplication.GleanMetrics.Auth
 
 // Was anything recorded?
-assertTrue(Auth.INSTANCE.getLoginTime.testHasValue())
+assertTrue(Auth.INSTANCE.loginTime.testHasValue())
 // Does the timer have the expected value
-assertTrue(Auth.INSTANCE.getLoginTime.testGetValue() > 0)
+assertTrue(Auth.INSTANCE.loginTime.testGetValue() > 0)
 // Was the timing recorded incorrectly?
 assertEquals(
     1, 
-    Auth.INSTANCE.getLoginTime.testGetNumRecordedErrors(
+    Auth.INSTANCE.loginTime.testGetNumRecordedErrors(
         ErrorType.InvalidValue
     )
 )

@@ -57,9 +57,9 @@ assertEquals(1, SearchDefault.name.testGetNumRecordedErrors(ErrorType.InvalidVal
 import org.mozilla.yourApplication.GleanMetrics.SearchDefault
 
 // Record a value into the metric.
-SearchDefault.INSTANCE.getName.set("duck duck go")
+SearchDefault.INSTANCE.name.set("duck duck go")
 // If it changed later, you can record the new value:
-SearchDefault.INSTANCE.getName.set("wikipedia")
+SearchDefault.INSTANCE.name.set("wikipedia")
 ```
 
 There are test APIs available too:
@@ -68,14 +68,14 @@ There are test APIs available too:
 import org.mozilla.yourApplication.GleanMetrics.SearchDefault
 
 // Was anything recorded?
-assertTrue(SearchDefault.INSTANCE.getName.testHasValue())
+assertTrue(SearchDefault.INSTANCE.name.testHasValue())
 // Does the string metric have the expected value?
 // IMPORTANT: It may have been truncated -- see "Limits" below
-assertEquals("wikipedia", SearchDefault.INSTANCE.getName.testGetValue())
+assertEquals("wikipedia", SearchDefault.INSTANCE.name.testGetValue())
 // Was the string truncated, and an error reported?
 assertEquals(
     1, 
-    SearchDefault.INSTANCE.getName.testGetNumRecordedErrors(
+    SearchDefault.INSTANCE.name.testGetNumRecordedErrors(
         ErrorType.InvalidValue
     )
 )
