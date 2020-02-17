@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v24.2.0...master)
+[Full changelog](https://github.com/mozilla/glean/compare/v25.0.0...master)
+
+# v25.0.0 (2020-02-17)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v24.2.0...v25.0.0)
 
 * General:
   * `ping_type` is not included in the `ping_info` any more ([#653](https://github.com/mozilla/glean/pull/653)), the pipeline takes the value from the submission URL.
