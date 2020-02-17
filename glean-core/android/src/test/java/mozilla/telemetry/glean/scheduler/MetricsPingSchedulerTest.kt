@@ -288,13 +288,14 @@ class MetricsPingSchedulerTest {
 
             // Fetch the ping from the server and decode its JSON body.
             val request = server.takeRequest(20L, AndroidTimeUnit.SECONDS)
+            val docType = request.path.split("/")[3]
+            assertEquals("The received ping must be a 'metrics' ping", "metrics", docType)
+
             val metricsJsonData = request.body.readUtf8()
             val metricsJson = JSONObject(metricsJsonData)
 
             // Validate the received data.
             checkPingSchema(metricsJson)
-            assertEquals("The received ping must be a 'metrics' ping",
-                "metrics", metricsJson.getJSONObject("ping_info")["ping_type"])
             assertEquals(
                 "The reported metric must contain the expected value",
                 expectedValue,
@@ -705,12 +706,11 @@ class MetricsPingSchedulerTest {
 
             // Wait for the metrics ping to be received.
             val request = server.takeRequest(20L, AndroidTimeUnit.SECONDS)
+            val docType = request.path.split("/")[3]
+            assertEquals("The received ping must be a 'metrics' ping", "metrics", docType)
 
             val metricsJsonData = request.body.readUtf8()
-            val pingJson = JSONObject(metricsJsonData)
 
-            assertEquals("The received ping must be a 'metrics' ping",
-                "metrics", pingJson.getJSONObject("ping_info")["ping_type"])
             assertFalse("The canary metric must not be present in this ping",
                 metricsJsonData.contains("must-not-be-in-the-first-ping"))
             assertTrue("The expected metric must be in this ping",
@@ -785,12 +785,11 @@ class MetricsPingSchedulerTest {
 
             // Wait for the metrics ping to be received.
             val request = server.takeRequest(20L, AndroidTimeUnit.SECONDS)
+            val docType = request.path.split("/")[3]
+            assertEquals("The received ping must be a 'metrics' ping", "metrics", docType)
 
             val metricsJsonData = request.body.readUtf8()
-            val pingJson = JSONObject(metricsJsonData)
 
-            assertEquals("The received ping must be a 'metrics' ping",
-                "metrics", pingJson.getJSONObject("ping_info")["ping_type"])
             assertTrue("The expected metric must be in this ping",
                 metricsJsonData.contains(expectedString))
             assertFalse("The metric must be cleared after startup",
@@ -881,8 +880,6 @@ class MetricsPingSchedulerTest {
 
     //         // Validate the received data.
     //         checkPingSchema(metricsJson)
-    //         assertEquals("The received ping must be a 'metrics' ping",
-    //             "metrics", metricsJson.getJSONObject("ping_info")["ping_type"])
     //         assertEquals(
     //             "The reported metric must contain the expected value",
     //             expectedValue,

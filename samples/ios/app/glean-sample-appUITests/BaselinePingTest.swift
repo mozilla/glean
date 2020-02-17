@@ -53,9 +53,6 @@ class BaselinePingTest: XCTestCase {
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
         }
 
-        let pingInfo = lastPingJson!["ping_info"] as! [String: Any]
-        XCTAssertEqual(pingInfo["ping_type"] as! String, "baseline")
-
         let metrics = lastPingJson!["metrics"] as! [String: Any]
 
         // Make sure we have a 'duration' field with a reasonable value: it should be >= 1, since

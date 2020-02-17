@@ -13,7 +13,6 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
-import org.junit.Assert.assertEquals
 import org.mozilla.samples.gleancore.R
 
 import org.junit.Rule
@@ -52,7 +51,6 @@ class DeletionRequestPingTest {
         val deletionPing = waitForPingContent("deletion-request")!!
 
         // Validate the received data.
-        assertEquals("deletion-request", deletionPing.getJSONObject("ping_info")["ping_type"])
 
         var clientInfo = deletionPing.getJSONObject("client_info")
         val clientId = clientInfo.getString("client_id")
@@ -66,7 +64,6 @@ class DeletionRequestPingTest {
 
         // Validate the received data.
         val baselinePing = waitForPingContent("baseline")!!
-        assertEquals("baseline", baselinePing.getJSONObject("ping_info")["ping_type"])
 
         clientInfo = baselinePing.getJSONObject("client_info")
 

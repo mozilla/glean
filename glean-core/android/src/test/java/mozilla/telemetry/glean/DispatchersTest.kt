@@ -5,9 +5,11 @@
 package mozilla.telemetry.glean
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Dispatchers as KotlinDispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -63,7 +65,9 @@ class DispatchersTest {
         assertEquals("Tasks have not run while in queue", 0, threadCanary)
 
         // Now trigger execution to ensure the tasks fired
-        Dispatchers.API.flushQueuedInitialTasks()
+        runBlocking {
+            Dispatchers.API.flushQueuedInitialTasks()
+        }
 
         assertEquals("Tasks have executed", 3, threadCanary)
         assertEquals("Task queue is cleared", 0, Dispatchers.API.taskQueue.size)
@@ -97,12 +101,14 @@ class DispatchersTest {
         assertEquals("Tasks have not run while in queue", 0, threadCanary.get())
 
         // Now trigger execution to ensure the tasks fired
-        Dispatchers.API.flushQueuedInitialTasks()
+        GlobalScope.launch {
+            Dispatchers.API.flushQueuedInitialTasks()
+        }
 
         // Wait for the flushed tasks to be executed.
         runBlocking {
             withTimeoutOrNull(2000) {
-                while (threadCanary.get() != 3) {
+                while (isActive && (threadCanary.get() != 3 || Dispatchers.API.taskQueue.size > 0)) {
                     delay(1)
                 }
             } ?: assertTrue("Timed out waiting for tasks to execute", false)
@@ -152,7 +158,7 @@ class DispatchersTest {
         runBlocking {
             // Ensure that all the required jobs have been added to the list.
             withTimeoutOrNull(2000) {
-                while (counter.get() < 100) {
+                while (isActive && counter.get() < 100) {
                     delay(1)
                 }
             } ?: assertEquals("Timed out waiting for tasks to execute", 100, counter.get())
@@ -171,5 +177,51 @@ class DispatchersTest {
             )
             assertEquals("This list is out of order $orderedList", num, orderedList[num])
         }
+    }
+
+    @Test
+    fun `dispatched tasks throwing exceptions are correctly handled`() {
+        val mainThread = Thread.currentThread()
+        val threadCanary = AtomicInteger()
+
+        // By setting testing mode to false, we make sure that things
+        // are executed asynchronously.
+        Dispatchers.API.setTestingMode(false)
+        Dispatchers.API.setTaskQueueing(false)
+
+        // Dispatch an initial tasks that throws an exception.
+        Dispatchers.API.launch {
+            assertNotSame(
+                "Tasks must be executed off the main thread",
+                mainThread,
+                Thread.currentThread()
+            )
+            @Suppress("TooGenericExceptionThrown")
+            throw Exception("Test exception for DispatchersTest")
+        }
+
+        // Add 3 tasks to queue each one increments threadCanary
+        // to indicate if any task has ran.
+        repeat(3) {
+            Dispatchers.API.launch {
+                assertNotSame(
+                    "Tasks must be executed off the main thread",
+                    mainThread,
+                    Thread.currentThread()
+                )
+                threadCanary.incrementAndGet()
+            }
+        }
+
+        // Wait for the flushed tasks to be executed.
+        runBlocking {
+            withTimeoutOrNull(2000) {
+                while (isActive && (threadCanary.get() != 3)) {
+                    delay(1)
+                }
+            } ?: assertTrue("Timed out waiting for tasks to execute", false)
+        }
+
+        assertEquals("All the dispatched actions should execute", 3, threadCanary.get())
     }
 }

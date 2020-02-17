@@ -15,6 +15,8 @@ import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.sun.jna.StringArray
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import mozilla.telemetry.glean.config.Configuration
 import mozilla.telemetry.glean.config.FfiConfiguration
 import mozilla.telemetry.glean.utils.getLocaleTag
@@ -135,95 +137,86 @@ open class GleanInternalAPI internal constructor () {
             return
         }
 
-        setUploadEnabled(uploadEnabled)
-
-        registerPings(Pings)
-
         this.applicationContext = applicationContext
 
         this.configuration = configuration
         this.gleanDataDir = File(applicationContext.applicationInfo.dataDir, GLEAN_DATA_DIR)
 
-        val cfg = FfiConfiguration(
-            dataDir = this.gleanDataDir.path,
-            packageName = applicationContext.packageName,
-            uploadEnabled = uploadEnabled,
-            maxEvents = this.configuration.maxEvents,
-            delayPingLifetimeIO = false
-        )
+        setUploadEnabled(uploadEnabled)
 
-        initialized = LibGleanFFI.INSTANCE.glean_initialize(cfg).toBoolean()
-
-        // If initialization of Glean fails we bail out and don't initialize further.
-        if (!initialized) {
-            return
-        }
-
-        // If any pings were registered before initializing, do so now.
-        // We're not clearing this queue in case Glean is reset by tests.
-        this.pingTypeQueue.forEach { this.registerPingType(it) }
-
-        // If this is the first time ever the Glean SDK runs, make sure to set
-        // some initial core metrics in case we need to generate early pings.
-        // The next times we start, we would have them around already.
-        val isFirstRun = LibGleanFFI.INSTANCE.glean_is_first_run().toBoolean()
-        if (isFirstRun) {
-            initializeCoreMetrics(applicationContext)
-        }
-
-        // Deal with any pending events so we can start recording new ones
+        // Execute startup off the main thread.
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.executeTask {
+            registerPings(Pings)
+
+            val cfg = FfiConfiguration(
+                dataDir = gleanDataDir.path,
+                packageName = applicationContext.packageName,
+                uploadEnabled = uploadEnabled,
+                maxEvents = configuration.maxEvents,
+                delayPingLifetimeIO = false
+            )
+
+            initialized = LibGleanFFI.INSTANCE.glean_initialize(cfg).toBoolean()
+
+            // If initialization of Glean fails we bail out and don't initialize further.
+            if (!initialized) {
+                return@executeTask
+            }
+
+            // If any pings were registered before initializing, do so now.
+            // We're not clearing this queue in case Glean is reset by tests.
+            pingTypeQueue.forEach { registerPingType(it) }
+
+            // If this is the first time ever the Glean SDK runs, make sure to set
+            // some initial core metrics in case we need to generate early pings.
+            // The next times we start, we would have them around already.
+            val isFirstRun = LibGleanFFI.INSTANCE.glean_is_first_run().toBoolean()
+            if (isFirstRun) {
+                initializeCoreMetrics(applicationContext)
+            }
+
+            // Deal with any pending events so we can start recording new ones
             val pingSubmitted = LibGleanFFI.INSTANCE.glean_on_ready_to_submit_pings().toBoolean()
             if (pingSubmitted) {
                 PingUploadWorker.enqueueWorker(applicationContext)
             }
-        }
 
-        // Set up information and scheduling for Glean owned pings. Ideally, the "metrics"
-        // ping startup check should be performed before any other ping, since it relies
-        // on being dispatched to the API context before any other metric.
-        metricsPingScheduler = MetricsPingScheduler(applicationContext)
-        metricsPingScheduler.schedule()
+            // Set up information and scheduling for Glean owned pings. Ideally, the "metrics"
+            // ping startup check should be performed before any other ping, since it relies
+            // on being dispatched to the API context before any other metric.
+            metricsPingScheduler = MetricsPingScheduler(applicationContext)
+            metricsPingScheduler.schedule()
 
-        // From the second time we run, after all startup pings are generated,
-        // make sure to clear `lifetime: application` metrics and set them again.
-        // Any new value will be sent in newly generted pings after startup.
-        if (!isFirstRun) {
-            @Suppress("EXPERIMENTAL_API_USAGE")
-            Dispatchers.API.executeTask {
+            // From the second time we run, after all startup pings are generated,
+            // make sure to clear `lifetime: application` metrics and set them again.
+            // Any new value will be sent in newly generated pings after startup.
+            if (!isFirstRun) {
                 LibGleanFFI.INSTANCE.glean_clear_application_lifetime_metrics()
                 initializeCoreMetrics(applicationContext)
             }
-        }
 
-        // Signal Dispatcher that init is complete
-        @Suppress("EXPERIMENTAL_API_USAGE")
-        Dispatchers.API.flushQueuedInitialTasks()
+            // Signal Dispatcher that init is complete
+            Dispatchers.API.flushQueuedInitialTasks()
 
-        // Check if the "dirty flag" is set. That means the product was probably
-        // force-closed. If that's the case, submit a 'baseline' ping with the
-        // reason "dirty_startup". We only do that from the second run.
-        if (!isFirstRun) {
-            @Suppress("EXPERIMENTAL_API_USAGE")
-            Dispatchers.API.launch {
-                if (LibGleanFFI.INSTANCE.glean_is_dirty_flag_set().toBoolean()) {
-                    submitPingByNameSync("baseline", "dirty_startup")
-                    // Note: while in theory we should set the "dirty flag" to true
-                    // here, in practice it's not needed: if it hits this branch, it
-                    // means the value was `true` and nothing needs to be done.
-                }
+            // Check if the "dirty flag" is set. That means the product was probably
+            // force-closed. If that's the case, submit a 'baseline' ping with the
+            // reason "dirty_startup". We only do that from the second run.
+            if (!isFirstRun && LibGleanFFI.INSTANCE.glean_is_dirty_flag_set().toBoolean()) {
+                submitPingByNameSync("baseline", "dirty_startup")
+                // Note: while in theory we should set the "dirty flag" to true
+                // here, in practice it's not needed: if it hits this branch, it
+                // means the value was `true` and nothing needs to be done.
             }
-        }
 
-        // At this point, all metrics and events can be recorded.
-        // This should only be called from the main thread. This is enforced by
-        // the @MainThread decorator and the `assertOnUiThread` call.
-        ProcessLifecycleOwner.get().lifecycle.addObserver(gleanLifecycleObserver)
+            // At this point, all metrics and events can be recorded.
+            // This should only be called from the main thread. This is enforced by
+            // the @MainThread decorator and the `assertOnUiThread` call.
+            MainScope().launch {
+                ProcessLifecycleOwner.get().lifecycle.addObserver(gleanLifecycleObserver)
+            }
 
-        if (!uploadEnabled) {
-            @Suppress("EXPERIMENTAL_API_USAGE")
-            Dispatchers.API.launch {
+            if (!uploadEnabled) {
                 DeletionPingUploadWorker.enqueueWorker(applicationContext)
             }
         }

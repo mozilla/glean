@@ -43,7 +43,6 @@ A quick note about querying ping contents (i.e. for [sql.telemetry.mozilla.org](
 ```json
 {
   "ping_info": {
-    "ping_type": "baseline",
     "experiments": {
       "third_party_library": {
         "branch": "enabled"

@@ -1,6 +1,35 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v24.2.0...master)
+[Full changelog](https://github.com/mozilla/glean/compare/v25.0.0...master)
+
+# v25.0.0 (2020-02-17)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v24.2.0...v25.0.0)
+
+* General:
+  * `ping_type` is not included in the `ping_info` any more ([#653](https://github.com/mozilla/glean/pull/653)), the pipeline takes the value from the submission URL.
+  * The version of `glean_parser` has been upgraded to 1.18.2:
+    * **Breaking Change (Java API)** Have the metrics names in Java match the names in Kotlin.
+      See [Bug 1588060](https://bugzilla.mozilla.org/show_bug.cgi?id=1588060).
+    * The reasons a ping are sent are now included in the generated markdown documentation.
+* Android:
+  * The `Glean.initialize` method runs mostly off the main thread ([#672](https://github.com/mozilla/glean/pull/672)).
+  * Labels in labeled metrics now have a correct, and slightly stricter, regular expression.
+    See [label format](https://mozilla.github.io/glean/user/metrics/index.html#label-format) for more information.
+* iOS:
+  * The baseline ping will now include `reason` codes that indicate why it was
+    submitted. If an unclean shutdown is detected (e.g. due to force-close), this
+    ping will be sent at startup with `reason: dirty_startup`.
+  * Per [Bug 1614785](https://bugzilla.mozilla.org/show_bug.cgi?id=1614785), the
+    clearing of application lifetime metrics now occurs after the metrics ping is
+    sent in order to preserve values meant to be included in the startup metrics
+    ping.
+  * `initialize()` now performs most of its work in a background thread.
+* Python:
+  * When the pre-init task queue overruns, this is now recorded in the metric
+    `glean.error.preinit_tasks_overflow`.
+  * glinter warnings are printed to `stderr` when loading `metrics.yaml` and
+    `pings.yaml` files.
 
 # v24.2.0 (2020-02-11)
 

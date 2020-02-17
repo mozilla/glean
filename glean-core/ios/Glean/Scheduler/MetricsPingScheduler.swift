@@ -117,13 +117,11 @@ class MetricsPingScheduler {
         // schedule the metrics ping for immediate collection. We only need to perform
         // this check at startup (when overduePingAsFirst is true).
         if isDifferentVersion() {
-            Dispatchers.shared.serialOperationQueue.addOperation {
-                self.collectPingAndReschedule(
-                    now,
-                    startupPing: true,
-                    reason: .upgrade
-                )
-            }
+            self.collectPingAndReschedule(
+                now,
+                startupPing: true,
+                reason: .upgrade
+            )
             return
         }
 
@@ -153,26 +151,15 @@ class MetricsPingScheduler {
             logger.info("The 'metrics' ping is scheduled for immediate collection, \(now)")
             // **IMPORTANT**
             //
-            // The reason why we're collecting the "metrics" ping in the `Dispatchers`
-            // queue is that we want to make sure no other metric API adds data before
-            // the ping is collected. All the exposed metrics API dispatch calls to the
-            // engines through the `Dispatchers.API` context, so this ensures we are enqueued
-            // before any other recording API call.
-            //
-            // - Do not change `Dispatchers.shared.serialOperationQueue.addOperation` to
-            // `Dispatchers.shared.launchAPI` as this would break startup overdue ping
-            //  collection.
-            // - `addOperation` schedules the task for immediate execution on the
-            // `Dispatchers` serial execution queue, before any other enqueued task. For more
-            // context, see bug 1604861 and the implementation of
-            // `collectPingAndReschedule`.
-            Dispatchers.shared.serialOperationQueue.addOperation {
-                self.collectPingAndReschedule(
-                    now,
-                    startupPing: true,
-                    reason: .overdue
-                )
-            }
+            // We want to make sure no other metric API adds data before the ping is collected.
+            // `schedule` should be called off of the main thread.  As long as `schedule` is
+            // invoked before replaying any queued recording API call, it guarantees this step
+            // is completed before anything else is recorded.
+            self.collectPingAndReschedule(
+                now,
+                startupPing: true,
+                reason: .overdue
+            )
         } else {
             // This covers (3).
             logger.info("The 'metrics' collection is scheduled for today, \(now)")
@@ -199,14 +186,9 @@ class MetricsPingScheduler {
         if startupPing {
             // **IMPORTANT**
             //
-            // During the Glean initialization, we require any metric recording to be
-            // batched up and replayed after any startup metrics ping is sent. To guarantee
-            // that, we dispatch this function from `Dispatchers.API.executeTask`. However,
-            // Pings.metrics.submit() ends up calling `Dispatchers.API.launch` again which
-            // will delay the ping collection task after any pending metric recording is
-            // executed, breaking the 'metrics' ping promise of sending a startup 'metrics'
-            // ping only containing data from the previous session.
-            // To prevent that, we synchronously manually dispatch the 'metrics' ping, without
+            // If this is a `startupPing` we require any metric recording to be
+            // batched up and replayed after the startup metrics ping is sent. To guarantee
+            // that we synchronously and manually dispatch the 'metrics' ping without
             // going through our public API.
             //
             // * Do not change this line without checking what it implies for the above wall

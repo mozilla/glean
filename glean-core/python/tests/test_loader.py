@@ -40,3 +40,17 @@ def test_working_metric():
     metrics.core_ping.flash_usage.add(1)
 
     assert 1 == metrics.core_ping.flash_usage.test_get_value()
+
+
+def test_glinter_error(capsys):
+    load_metrics(ROOT / "data" / "glinter.yaml")
+
+    captured = capsys.readouterr()
+    assert "BUG_NUMBER" in captured.err
+
+
+def test_glinter_no_error(capsys):
+    load_metrics(ROOT / "data" / "core.yaml", config={"allow_reserved": True})
+
+    captured = capsys.readouterr()
+    assert "" == captured.err

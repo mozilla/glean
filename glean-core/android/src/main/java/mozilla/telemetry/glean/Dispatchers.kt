@@ -9,6 +9,7 @@ import androidx.annotation.VisibleForTesting
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.ObsoleteCoroutinesApi
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
@@ -18,7 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 @ObsoleteCoroutinesApi
 internal object Dispatchers {
-    class WaitableCoroutineScope(val coroutineScope: CoroutineScope) {
+    class WaitableCoroutineScope(private val coroutineScope: CoroutineScope) {
         // When true, jobs will be run synchronously
         internal var testingMode = false
 
@@ -107,7 +108,7 @@ internal object Dispatchers {
          * set to false prior to processing the queue, newly launched tasks should be executed
          * on the couroutine scope rather than added to the queue.
          */
-        internal fun flushQueuedInitialTasks() {
+        internal suspend fun flushQueuedInitialTasks() {
             val dispatcherObject = this
             // Dispatch a task to flush the pre-init tasks queue. By using `executeTask`
             // this will be executed as soon as possible, before other tasks are executed.
@@ -139,7 +140,7 @@ internal object Dispatchers {
                 if (overflowCount > 0) {
                     GleanError.preinitTasksOverflow.addSync(MAX_QUEUE_SIZE + overflowCount)
                 }
-            }
+            }?.join()
         }
 
         /**
@@ -195,9 +196,15 @@ internal object Dispatchers {
         }
     }
 
+    // This job is used to make sure the API `CoroutineContext` does not cancel
+    // children jobs when exceptions are thrown in children coroutines.
+    private val supervisorJob = SupervisorJob()
+
     /**
      * A coroutine scope to make it easy to dispatch API calls off the main thread.
      * This needs to be a `var` so that our tests can override this.
      */
-    var API = WaitableCoroutineScope(CoroutineScope(newSingleThreadContext("GleanAPIPool")))
+    var API = WaitableCoroutineScope(CoroutineScope(
+        newSingleThreadContext("GleanAPIPool") + supervisorJob
+    ))
 }

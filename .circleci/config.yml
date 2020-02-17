@@ -56,6 +56,12 @@ commands:
       - run:
           name: Test
           command: cargo test --all --verbose
+      - run:
+          name: Test with upload feature
+          command: |
+              # Changing to the core crate due to: --features is not allowed in the root of a virtual workspace#
+              cd glean-core
+              cargo test --lib --verbose --features upload
 
   install-rustup:
     steps:
@@ -145,7 +151,7 @@ commands:
             GHR=ghr_v0.13.0_linux_amd64
             GHR_SHA256=c428627270ae26e206cb526cb8c7bdfba475dd278f6691ddaf863355adadfa13
             curl -sfSL --retry 5 --retry-delay 10 -O "https://github.com/tcnksm/ghr/releases/download/v0.13.0/${GHR}.tar.gz"
-            echo "${GHR_SHA256} *${GHR}.tar.gz" | shasum -a 256 -c -
+            echo "${GHR_SHA256} *${GHR}.tar.gz" | sha256sum -c -
             tar -xf "${GHR}.tar.gz"
             cp ./${GHR}/ghr ghr
 

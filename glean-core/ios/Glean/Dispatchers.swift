@@ -166,20 +166,15 @@ class Dispatchers {
 
     /// Stop queuing tasks and process any tasks in the queue.
     ///
-    /// - parameters:
-    ///     * waitUntilFinished: **USE FOR TESTING ONLY**  Boolean to force awaiting the tasks to complete
-    ///                          in order to make it easier for tests to deal with async issues.
-    func flushQueuedInitialTasks(waitUntilFinished: Bool = false) {
-        // Assert we are in testing mode if the waitUntilFinished flag is true
-        if waitUntilFinished {
-            assertInTestingMode()
-        }
-
+    /// Note that this function waits for the tasks to complete and care must be
+    /// taken by the calling functions to make this not block execution, if needed.
+    ///
+    func flushQueuedInitialTasks() {
         // Add all of the queued operations to the `operationQueue` which will cause them to be
         // executed serially in the order they were collected.
         self.serialOperationQueue.addOperations(
             self.preInitOperations,
-            waitUntilFinished: waitUntilFinished
+            waitUntilFinished: true
         )
 
         // Turn off queuing to allow for normal background execution mode

@@ -10,7 +10,7 @@ use chrono::prelude::{DateTime, Utc};
 use serde_json::Value as JsonValue;
 
 /// Represents a request to upload a ping.
-#[derive(Debug)]
+#[derive(PartialEq, Debug)]
 pub struct PingRequest {
     /// The Job ID to identify this request,
     /// this is the same as the ping UUID.

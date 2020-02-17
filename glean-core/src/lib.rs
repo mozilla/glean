@@ -38,6 +38,9 @@ pub mod ping;
 pub mod storage;
 mod util;
 
+#[cfg(feature = "upload")]
+mod upload;
+
 pub use crate::common_metric_data::{CommonMetricData, Lifetime};
 use crate::database::Database;
 pub use crate::error::{Error, Result};

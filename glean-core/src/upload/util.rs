@@ -150,11 +150,11 @@ mod test {
         let data_path = dir.path();
 
         // Register a ping for testing
-        let ping_type = PingType::new("test", true, true);
+        let ping_type = PingType::new("test", true, true, vec![]);
         glean.register_ping_type(&ping_type);
 
         // Submit the ping to populate the pending_pings directory
-        glean.submit_ping(&ping_type).unwrap();
+        glean.submit_ping(&ping_type, None).unwrap();
 
         // Try and process the pings folder
         let requests = process_pings_dir(&data_path).unwrap();
@@ -163,11 +163,7 @@ mod test {
         assert_eq!(requests.len(), 1);
 
         // Verify request was returned for the "test" ping
-        let request_ping_type = requests[0]
-            .body
-            .get("ping_info")
-            .and_then(|value| value.get("ping_type"))
-            .unwrap();
+        let request_ping_type = requests[0].url.split('/').nth(3).unwrap();
         assert_eq!(request_ping_type, "test");
     }
 
@@ -177,11 +173,11 @@ mod test {
         let data_path = dir.path();
 
         // Register a ping for testing
-        let ping_type = PingType::new("test", true, true);
+        let ping_type = PingType::new("test", true, true, vec![]);
         glean.register_ping_type(&ping_type);
 
         // Submit the ping to populate the pending_pings directory
-        glean.submit_ping(&ping_type).unwrap();
+        glean.submit_ping(&ping_type, None).unwrap();
 
         // Add non uuid file to pending_pings directory
         let not_uuid_path = get_pings_dir(&data_path).join("not-uuid-file-name.txt");
@@ -194,11 +190,7 @@ mod test {
         assert_eq!(requests.len(), 1);
 
         // Verify request was returned for the "test" ping
-        let request_ping_type = requests[0]
-            .body
-            .get("ping_info")
-            .and_then(|value| value.get("ping_type"))
-            .unwrap();
+        let request_ping_type = requests[0].url.split('/').nth(3).unwrap();
         assert_eq!(request_ping_type, "test");
 
         // Verify that file was indeed deleted
@@ -211,11 +203,11 @@ mod test {
         let data_path = dir.path();
 
         // Register a ping for testing
-        let ping_type = PingType::new("test", true, true);
+        let ping_type = PingType::new("test", true, true, vec![]);
         glean.register_ping_type(&ping_type);
 
         // Submit the ping to populate the pending_pings directory
-        glean.submit_ping(&ping_type).unwrap();
+        glean.submit_ping(&ping_type, None).unwrap();
 
         // Create a file that will have wrong format contents
         let wrong_contents_file_path = get_pings_dir(&data_path).join(Uuid::new_v4().to_string());
@@ -228,11 +220,7 @@ mod test {
         assert_eq!(requests.len(), 1);
 
         // Verify request was returned for the "test" ping
-        let request_ping_type = requests[0]
-            .body
-            .get("ping_info")
-            .and_then(|value| value.get("ping_type"))
-            .unwrap();
+        let request_ping_type = requests[0].url.split('/').nth(3).unwrap();
         assert_eq!(request_ping_type, "test");
 
         // Verify that file was indeed deleted
@@ -245,11 +233,11 @@ mod test {
         let data_path = dir.path();
 
         // Register a ping for testing
-        let ping_type = PingType::new("test", true, true);
+        let ping_type = PingType::new("test", true, true, vec![]);
         glean.register_ping_type(&ping_type);
 
         // Submit the ping to populate the pending_pings directory
-        glean.submit_ping(&ping_type).unwrap();
+        glean.submit_ping(&ping_type, None).unwrap();
 
         // Create a file that will have wrong format contents
         let non_json_body_file_path = get_pings_dir(&data_path).join(Uuid::new_v4().to_string());
@@ -268,11 +256,7 @@ mod test {
         assert_eq!(requests.len(), 1);
 
         // Verify request was returned for the "test" ping
-        let request_ping_type = requests[0]
-            .body
-            .get("ping_info")
-            .and_then(|value| value.get("ping_type"))
-            .unwrap();
+        let request_ping_type = requests[0].url.split('/').nth(3).unwrap();
         assert_eq!(request_ping_type, "test");
 
         // Verify that file was indeed deleted

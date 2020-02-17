@@ -6,7 +6,6 @@ package mozilla.telemetry.glean;
 
 import android.content.Context;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.work.testing.WorkManagerTestInitHelper;
 
 import org.junit.Before;
@@ -25,7 +24,7 @@ public class GleanFromJavaTest {
     // callable from Java. If something goes wrong, it should complain about missing
     // methods at build-time.
 
-    private Context appContext = ApplicationProvider.getApplicationContext();
+    private Context appContext = TestUtilKt.getContextWithMockedInfo("java-test");
 
     @Before
     public void setup() {

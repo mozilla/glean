@@ -23,7 +23,6 @@ The `deletion-request` does not contain additional metrics.
 ```json
 {
   "ping_info": {
-    "ping_type": "deletion-request",
     "seq": 0,
     "start_time": "2019-12-06T09:50-04:00",
     "end_time": "2019-12-06T09:53-04:00"

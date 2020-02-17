@@ -376,3 +376,22 @@ def test_disabling_upload_sends_deletion_request(safe_httpserver):
     # Disabling upload will trigger a deletion-request ping
     Glean.set_upload_enabled(False)
     assert 1 == len(safe_httpserver.requests)
+
+
+def test_overflowing_the_task_queue_records_telemetry():
+    Dispatcher.set_task_queueing(True)
+
+    for i in range(110):
+        Dispatcher.launch(lambda: None)
+
+    assert 100 == len(Dispatcher._task_queue)
+    assert 10 == Dispatcher._overflow_count
+
+    Dispatcher.flush_queued_initial_tasks()
+
+    assert 110 == _builtins.metrics.glean.error.preinit_tasks_overflow.test_get_value()
+
+    json_content = Glean.test_collect(_builtins.pings.metrics)
+    json_tree = json.loads(json_content)
+
+    assert 110 == json_tree["metrics"]["counter"]["glean.error.preinit_tasks_overflow"]
