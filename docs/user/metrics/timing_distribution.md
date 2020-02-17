@@ -86,11 +86,11 @@ import org.mozilla.yourApplication.GleanMetrics.Pages
 val timerId : GleanTimerId
 
 fun onPageStart(e: Event) {
-    timerId = Pages.INSTANCE.getPageLoad.start()
+    timerId = Pages.INSTANCE.pageLoad.start()
 }
 
 fun onPageLoaded(e: Event) {
-    Pages.INSTANCE.getPageLoad.stopAndAccumulate(timerId)
+    Pages.INSTANCE.pageLoad.stopAndAccumulate(timerId)
 }
 ```
 
@@ -102,10 +102,10 @@ Continuing the `pageLoad` example above, at this point the metric should have a 
 import org.mozilla.yourApplication.GleanMetrics.Pages
 
 // Was anything recorded?
-assertTrue(pages.INSTANCE.getPageLoad.testHasValue())
+assertTrue(pages.INSTANCE.pageLoad.testHasValue())
 
 // Get snapshot.
-val snapshot = pages.INSTANCE.getPageLoad.testGetValue()
+val snapshot = pages.INSTANCE.pageLoad.testGetValue()
 
 // Does the sum have the expected value?
 assertEquals(11, snapshot.getSum)
@@ -116,7 +116,7 @@ assertEquals(2L, snapshot.getCount)
 // Was an error recorded?
 assertEquals(
     1, 
-    pages.INSTANCE.getPageLoad.testGetNumRecordedErrors(
+    pages.INSTANCE.pageLoad.testGetNumRecordedErrors(
         ErrorType.InvalidValue
     )
 )
