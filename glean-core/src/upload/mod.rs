@@ -51,9 +51,6 @@ pub struct PingUploadManager {
     /// A manager for the pending pings directories.
     directory_manager: PingDirectoryManager,
     /// A flag signaling if we are done processing the pending pings directories.
-    ///
-    /// This does not indicate that processing of the directory was successful,
-    /// only that it did happen.
     processed_pending_pings: Arc<AtomicBool>,
 }
 
@@ -81,15 +78,10 @@ impl PingUploadManager {
         let _ = thread::Builder::new()
             .name("glean.ping_directory_manager.process_dir".to_string())
             .spawn(move || {
-                match local_manager.process_dir() {
-                    Ok(requests) => {
-                        let mut local_queue = local_queue
-                            .write()
-                            .expect("Can't write to pending pings queue.");
-                        local_queue.extend(requests.into_iter());
-                    }
-                    Err(e) => log::info!("Error processing pending pings directories! {}", e),
-                }
+                let mut local_queue = local_queue
+                    .write()
+                    .expect("Can't write to pending pings queue.");
+                local_queue.extend(local_manager.process_dir());
                 local_flag.store(true, Ordering::SeqCst);
             })
             .expect("Unable to spawn thread to process pings directories.");
@@ -223,6 +215,7 @@ mod test {
     use super::*;
     use crate::metrics::PingType;
     use crate::tests::new_glean;
+    use directory::PENDING_PINGS_DIRECTORY;
 
     const UUID: &str = "40e31919-684f-43b0-a5aa-e15c2d56a674"; // Just a random UUID.
     const URL: &str = "http://example.com";
@@ -367,7 +360,7 @@ mod test {
         glean.submit_ping(&ping_type, None).unwrap();
 
         // Create a new upload_manager
-        let upload_manager = PingUploadManager::new(dir.path());
+        let upload_manager = PingUploadManager::new(&dir.path());
 
         // Wait for processing of pending pings directory to finish.
         let mut upload_task = upload_manager.get_upload_task();
@@ -377,7 +370,7 @@ mod test {
         }
 
         // Get the pending ping directory path
-        let pending_pings_dir = upload_manager.directory_manager.get_dir();
+        let pending_pings_dir = dir.path().join(PENDING_PINGS_DIRECTORY);
 
         // Get the submitted PingRequest
         match upload_task {
@@ -407,7 +400,7 @@ mod test {
         glean.submit_ping(&ping_type, None).unwrap();
 
         // Create a new upload_manager
-        let upload_manager = PingUploadManager::new(dir.path());
+        let upload_manager = PingUploadManager::new(&dir.path());
 
         // Wait for processing of pending pings directory to finish.
         let mut upload_task = upload_manager.get_upload_task();
@@ -417,7 +410,7 @@ mod test {
         }
 
         // Get the pending ping directory path
-        let pending_pings_dir = upload_manager.directory_manager.get_dir();
+        let pending_pings_dir = dir.path().join(PENDING_PINGS_DIRECTORY);
 
         // Get the submitted PingRequest
         match upload_task {
