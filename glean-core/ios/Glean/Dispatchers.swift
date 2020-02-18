@@ -7,7 +7,12 @@ import Foundation
 /// This class manages background execution of Glean tasks.
 ///
 /// This class makes use of the higher level `Operation` and `OperationQueue` API's in order to allow
-/// for observable background operation with the capabilities to pause, cancel, and resume tasks
+/// for observable background operation with the capabilities to pause, cancel, and resume tasks.
+///
+/// There are two main queues created and used as part of `Dispatchers`.  The `serialOperationQueue`
+/// is a serially executed queue meant for API tasks and is serviced through `launchAPI`, the
+/// `concurrentOperationsQueue` is a concurrently executed queue meant for other heavy tasks that
+/// should not be subject to the same behavior and constraints as the serial API queue.
 class Dispatchers {
     /// This is the shared singleton access to the Glean Dispatchers
     static let shared = Dispatchers()
@@ -25,7 +30,9 @@ class Dispatchers {
     private let logger = Logger(tag: Constants.logTag)
 
     // This is a task queue for all Glean background operations that are required to be executed in order.
-    // It is currently set to be a serial queue by setting the `maxConcurrentOperationsCount` to 1
+    // It is currently set to be a serial queue by setting the `maxConcurrentOperationsCount` to 1.
+    // This queue is intended for API operations that are subject to the behavior and constraints of the
+    // API.
     lazy var serialOperationQueue: OperationQueue = {
         var queue = OperationQueue()
         queue.name = "Glean serial dispatch queue"
@@ -33,7 +40,10 @@ class Dispatchers {
         return queue
     }()
 
-    // This is a task queue for all Glean background operations that can be executed concurrently.
+    // This is a task queue for all Glean background operations that can be executed concurrently, and
+    // should not be subject to the behavior and constraints of the API.  This queue is intended for
+    // tasks that are burdensome to the main thread such as initialization work that is not part of
+    // the API.
     lazy var concurrentOperationsQueue: OperationQueue = {
         var queue = OperationQueue()
         queue.name = "Glean concurrent dispatch queue"
@@ -64,6 +74,11 @@ class Dispatchers {
     /// This function is used throughout Glean in order to launch tasks in the background, typically
     /// recording of metrics and things that need to execute in order. Since this executes the tasks on
     /// a non-concurrent (serial) queue, the tasks are executed in the order that they are launched.
+    ///
+    /// **Important Note:** This queue should only be used for performing API functions, and not for
+    /// non-API related tasks since it is subject to the behavior and constraints of the API, such as
+    /// queueing of tasks before initialization is complete.  For launching of tasks that should not be
+    /// subject to the API's constraints, see `launchConcurrent`.
     ///
     /// If `queueInitialTasks` is enabled, then the operation will be created and added to the
     /// `preInitOperations` array but not executed until flushed.
@@ -113,6 +128,11 @@ class Dispatchers {
     /// This function is used to execute tasks in an asynchrounous manner and still give us the ability
     /// to cancel the tasks by creating them as `Operation`s rather than using GCD.
     ///
+    /// **Important Note:** This queue should not be used for performing API functions, see `launchAPI`
+    /// for performing API operations such as recording metrics and collecting pings.  This queue is intended
+    /// to be used for performing background tasks that are not subject to the behavior and constraints of the
+    /// API such as performing initialization tasks off of the main thread.
+    ///
     /// This function specifically ignores the `queueInitialTasks` flag because the only tasks that
     /// should be launched by this are the ping upload schedulers and those should run regardless of
     /// the initialized state.
@@ -135,6 +155,11 @@ class Dispatchers {
     ///
     /// This function is used to execute tasks in an asynchrounous manner and still give us the ability
     /// to cancel the tasks by creating them as `Operation`s rather than using GCD.
+    ///
+    /// **Important Note:** This queue should not be used for performing API functions, see `launchAPI`
+    /// for performing API operations such as recording metrics and collecting pings.  This queue is intended
+    /// to be used for performing background tasks that are not subject to the behavior and constraints of the
+    /// API such as performing initialization tasks off of the main thread.
     ///
     /// This function specifically ignores the `queueInitialTasks` flag because the only tasks that
     /// should be launched by this are the ping upload schedulers and those should run regardless of
