@@ -744,11 +744,6 @@ jobs:
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
             .venv/bin/python3 -m twine upload wheelhouse/*
-      - run:
-          name: Install perl
-          command: |
-            # Required for shasum
-            sudo apt install perl
       - install-ghr-linux
       - run:
           name: Publish to Github
