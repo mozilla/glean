@@ -214,8 +214,7 @@ mod test {
 
     use super::*;
     use crate::metrics::PingType;
-    use crate::tests::new_glean;
-    use directory::PENDING_PINGS_DIRECTORY;
+    use crate::{tests::new_glean, PENDING_PINGS_DIRECTORY};
 
     const UUID: &str = "40e31919-684f-43b0-a5aa-e15c2d56a674"; // Just a random UUID.
     const URL: &str = "http://example.com";

@@ -14,9 +14,7 @@ use serde_json::Value as JsonValue;
 use uuid::Uuid;
 
 use super::PingRequest;
-
-pub const PENDING_PINGS_DIRECTORY: &str = "pending_pings";
-pub const DELETION_REQUEST_PINGS_DIRECTORY: &str = "deletion_request";
+use crate::{DELETION_REQUEST_PINGS_DIRECTORY, PENDING_PINGS_DIRECTORY};
 
 /// Get the file name from a path as a &str.
 ///
