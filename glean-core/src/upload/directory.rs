@@ -40,8 +40,8 @@ fn get_file_name_as_str(path: &Path) -> Option<&str> {
 /// Manages the pending pings directories.
 #[derive(Debug, Clone)]
 pub struct PingDirectoryManager {
-    /// Path to the pending pings directory.
-    data_path: PathBuf,
+    /// Paths to the pings directories.
+    pings_dirs: [PathBuf; 2],
 }
 
 impl PingDirectoryManager {
@@ -51,17 +51,13 @@ impl PingDirectoryManager {
     ///
     /// * `data_path` - Path to the pending pings directory.
     pub fn new<P: Into<PathBuf>>(data_path: P) -> Self {
+        let data_path = data_path.into();
         Self {
-            data_path: data_path.into(),
+            pings_dirs: [
+                data_path.join(PENDING_PINGS_DIRECTORY),
+                data_path.join(DELETION_REQUEST_PINGS_DIRECTORY),
+            ],
         }
-    }
-
-    /// Get the paths to the directories that may contain ping files.
-    fn get_dirs(&self) -> [PathBuf; 2] {
-        [
-            self.data_path.join(PENDING_PINGS_DIRECTORY),
-            self.data_path.join(DELETION_REQUEST_PINGS_DIRECTORY),
-        ]
     }
 
     /// Attempts to delete a ping file.
@@ -199,7 +195,7 @@ impl PingDirectoryManager {
     /// Get all the ping entries in all ping directories.
     fn get_ping_entries(&self) -> Vec<fs::DirEntry> {
         let mut result = Vec::new();
-        for dir in &self.get_dirs() {
+        for dir in &self.pings_dirs {
             if let Ok(entries) = dir.read_dir() {
                 result.extend(entries.filter_map(|entry| entry.ok()))
             };
@@ -212,7 +208,7 @@ impl PingDirectoryManager {
     /// Will look for files in each ping directory until something is found.
     /// If nothing is found, returns `None`.
     fn get_file_path(&self, uuid: &str) -> Option<PathBuf> {
-        for dir in &self.get_dirs() {
+        for dir in &self.pings_dirs {
             let path = dir.join(uuid);
             if path.exists() {
                 return Some(path);
@@ -276,11 +272,10 @@ mod test {
         // Submit the ping to populate the pending_pings directory
         glean.submit_ping(&ping_type, None).unwrap();
 
-        let directory_manager = PingDirectoryManager::new(dir.path());
+        let directory_manager = PingDirectoryManager::new(&dir.path());
 
-        // Add non uuid file to pending_pings directory
-        let not_uuid_path = directory_manager
-            .data_path
+        let not_uuid_path = dir
+            .path()
             .join(PENDING_PINGS_DIRECTORY)
             .join("not-uuid-file-name.txt");
         File::create(&not_uuid_path).unwrap();
@@ -310,11 +305,10 @@ mod test {
         // Submit the ping to populate the pending_pings directory
         glean.submit_ping(&ping_type, None).unwrap();
 
-        let directory_manager = PingDirectoryManager::new(dir.path());
+        let directory_manager = PingDirectoryManager::new(&dir.path());
 
-        // Create a file that will have wrong format contents
-        let wrong_contents_file_path = directory_manager
-            .data_path
+        let wrong_contents_file_path = dir
+            .path()
             .join(PENDING_PINGS_DIRECTORY)
             .join(Uuid::new_v4().to_string());
         File::create(&wrong_contents_file_path).unwrap();
@@ -344,11 +338,10 @@ mod test {
         // Submit the ping to populate the pending_pings directory
         glean.submit_ping(&ping_type, None).unwrap();
 
-        let directory_manager = PingDirectoryManager::new(dir.path());
+        let directory_manager = PingDirectoryManager::new(&dir.path());
 
-        // Create a file that will have wrong format contents
-        let non_json_body_file_path = directory_manager
-            .data_path
+        let non_json_body_file_path = dir
+            .path()
             .join(PENDING_PINGS_DIRECTORY)
             .join(Uuid::new_v4().to_string());
         let mut non_json_body_file = File::create(&non_json_body_file_path).unwrap();
