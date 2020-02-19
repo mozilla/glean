@@ -6,8 +6,6 @@ This API allows to enable and disable upload, register [custom pings][custom-pin
 [custom-pings]: pings/custom.md
 [experiments-api]: experiments-api.md
 
-The following steps are required for applications using the Glean SDK, but not libraries.
-
 > **Important:** The Glean SDK should only be initialized from the main application, not individual libraries.
 
 If you are adding Glean support to a library, you can safely skip this section.
@@ -26,6 +24,8 @@ The Glean SDK provides a general API that supports the following operations. See
 | `setExperimentInactive` | Indicate that an experiment is no longer running.. | [Using the Experiments API][experiments-api] |
 
 ## Initializing the Glean SDK
+
+The following steps are required for applications using the Glean SDK, but not libraries.
 
 {{#include ../tab_header.md}}
 
