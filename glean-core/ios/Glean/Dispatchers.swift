@@ -10,9 +10,10 @@ import Foundation
 /// for observable background operation with the capabilities to pause, cancel, and resume tasks.
 ///
 /// There are two main queues created and used as part of `Dispatchers`.  The `serialOperationQueue`
-/// is a serially executed queue meant for API tasks and is serviced through `launchAPI`, the
+/// is a serially executed, single-threaded queue meant for API tasks and is serviced through `launchAPI`, the
 /// `concurrentOperationsQueue` is a concurrently executed queue meant for other heavy tasks that
-/// should not be subject to the same behavior and constraints as the serial API queue.
+/// should not be subject to the same behavior and constraints as the serial API queue and should not block other
+/// tasks.
 class Dispatchers {
     /// This is the shared singleton access to the Glean Dispatchers
     static let shared = Dispatchers()
@@ -75,10 +76,10 @@ class Dispatchers {
     /// recording of metrics and things that need to execute in order. Since this executes the tasks on
     /// a non-concurrent (serial) queue, the tasks are executed in the order that they are launched.
     ///
-    /// **Important Note:** This queue should only be used for performing API functions, and not for
-    /// non-API related tasks since it is subject to the behavior and constraints of the API, such as
-    /// queueing of tasks before initialization is complete.  For launching of tasks that should not be
-    /// subject to the API's constraints, see `launchConcurrent`.
+    /// **Note:** Tasks that should be processed in order and finish before successive tasks are
+    /// run should be launched using the `launchAPI` function.  This includes all metric recording
+    /// functions. For launching of tasks that need to be processed asynchronously but should not
+    /// block other tasks, see `launchConcurrent`.
     ///
     /// If `queueInitialTasks` is enabled, then the operation will be created and added to the
     /// `preInitOperations` array but not executed until flushed.
@@ -128,10 +129,10 @@ class Dispatchers {
     /// This function is used to execute tasks in an asynchrounous manner and still give us the ability
     /// to cancel the tasks by creating them as `Operation`s rather than using GCD.
     ///
-    /// **Important Note:** This queue should not be used for performing API functions, see `launchAPI`
-    /// for performing API operations such as recording metrics and collecting pings.  This queue is intended
-    /// to be used for performing background tasks that are not subject to the behavior and constraints of the
-    /// API such as performing initialization tasks off of the main thread.
+    /// **Note:** Tasks that need to be executed asynchronously but should not block other tasks
+    /// such as recording data should use the `launchConcurrent` function. For example, tasks
+    /// performed during initialization or an upload task could be executed concurrently. For tasks that
+    /// need to be executed serially, see `launchAPI`.
     ///
     /// This function specifically ignores the `queueInitialTasks` flag because the only tasks that
     /// should be launched by this are the ping upload schedulers and those should run regardless of
@@ -156,10 +157,10 @@ class Dispatchers {
     /// This function is used to execute tasks in an asynchrounous manner and still give us the ability
     /// to cancel the tasks by creating them as `Operation`s rather than using GCD.
     ///
-    /// **Important Note:** This queue should not be used for performing API functions, see `launchAPI`
-    /// for performing API operations such as recording metrics and collecting pings.  This queue is intended
-    /// to be used for performing background tasks that are not subject to the behavior and constraints of the
-    /// API such as performing initialization tasks off of the main thread.
+    /// **Note:** Tasks that need to be executed asynchronously but should not block other tasks
+    /// such as recording data should use the `launchConcurrent` function. For example, tasks
+    /// performed during initialization or an upload task could be executed concurrently. For tasks that
+    /// need to be executed serially, see `launchAPI`.
     ///
     /// This function specifically ignores the `queueInitialTasks` flag because the only tasks that
     /// should be launched by this are the ping upload schedulers and those should run regardless of
