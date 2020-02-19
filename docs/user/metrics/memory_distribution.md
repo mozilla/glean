@@ -3,6 +3,10 @@
 Memory distributions are used to accumulate and store memory sizes.
 
 Memory distributions are recorded in a histogram where the buckets have an exponential distribution, specifically with 16 buckets for every power of 2.
+That is, the function from a value \\( x \\) to a bucket index is:
+
+\\[ \lfloor 16 \log_2(x) \rfloor \\]
+
 This makes them suitable for measuring memory sizes on a number of different scales without any configuration.
 
 ## Configuration
