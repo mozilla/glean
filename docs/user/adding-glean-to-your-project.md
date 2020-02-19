@@ -101,17 +101,17 @@ For integration with the build system you can follow the [Carthage Quick Start s
 
 <div data-lang="Python" class="tab">
 
-It is recommended that you use a virtual environment for your work to isolate the dependencies for your project. There are many popular abstractions on top of virtual environments in the Python ecosystem which can help manage your project dependencies.
+We recommend using a virtual environment for your work to isolate the dependencies for your project. There are many popular abstractions on top of virtual environments in the Python ecosystem which can help manage your project dependencies.
 
-The Python Glean bindings currently have [prebuilt wheels on PyPI for x86_64 Linux only](https://pypi.org/project/glean-sdk/#files).
+The Python Glean bindings currently have [prebuilt wheels on PyPI for x86_64 Windows, Linux and macOS](https://pypi.org/project/glean-sdk/#files).
 
-If you're running that platform and have your virtual environment set up and activated, you can install Glean into it using:
+If you're running one of those platforms and have your virtual environment set up and activated, you can install Glean into it using:
 
 ```bash
 $ python -m pip install glean_sdk
 ```
 
-If you are not on x86_64 Linux, you will need to build the Glean Python bindings from source using [these instructions](../dev/python/setting-up-python-build-environment.html).
+If you are not on one of these platforms, you will need to build the Glean Python bindings from source using [these instructions](../dev/python/setting-up-python-build-environment.html).
 
 </div>
 
