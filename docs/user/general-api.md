@@ -150,7 +150,9 @@ See the [custom pings documentation](pings/custom.md) about adding custom pings 
 ## Behavior when uninitialized
 
 Metric recording that happens before Glean is initialized is queued and applied when Glean is initialized.
-To avoid unbounded memory growth the queue is bounded (currently to a maximum of 100 tasks). Further recordings are dropped.
+To avoid unbounded memory growth the queue is bounded (currently to a maximum of 100 tasks).
+Further recordings are dropped.
+The number of recordings dropped, if any, is recorded in the `glean.error.preinit_tasks_overflow` metric.
 
 Custom ping submission will not fail before initialization.
 Collection and upload of the custom ping is delayed until Glean is initialized.
