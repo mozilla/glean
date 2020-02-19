@@ -132,4 +132,23 @@ class CounterMetricType:
         )
 ```
 
-The new metric type also needs to be imported from `glean-core/python/glean/metrics/__init__.py` and added to the `_TYPE_MAPPING` in `glean-core/python/glean/_loader.py`. 
+The new metric type also needs to be imported from `glean-core/python/glean/metrics/__init__.py`:
+
+```python
+from .counter import CounterMetricType
+
+
+__all__ = [
+    "CounterMetricType",
+    # ...
+]
+```
+
+It also must be added to the `_TYPE_MAPPING` in `glean-core/python/glean/_loader.py`:
+
+```python
+_TYPE_MAPPING = {
+    "counter": metrics.CounterMetricType,
+    # ...
+}
+```
