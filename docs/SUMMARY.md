@@ -54,6 +54,7 @@
             - [FFI](dev/core/new-metric-type/ffi.md)
             - [Kotlin](dev/core/new-metric-type/kotlin.md)
             - [Swift](dev/core/new-metric-type/swift.md)
+            - [Python](dev/core/new-metric-type/python.md)
     - [FFI Layer](dev/ffi/index.md)
         - [When/How FFI](dev/ffi/when-to-use-what-in-the-ffi.md)
     - [Contributing](contributing.md)
