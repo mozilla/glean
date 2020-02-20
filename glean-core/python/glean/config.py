@@ -93,16 +93,18 @@ class Configuration:
 
     @channel.setter
     def channel(self, value: str):
+        from ._builtins import metrics
+
         self._channel = value
+
+        metrics.glean.internal.metrics.app_channel.set(value)
 
     @property
     def max_events(self) -> int:
         """The number of events to store before force-sending."""
         return self._max_events
 
-    @max_events.setter
-    def max_events(self, value: int):
-        self._max_events = value
+    # max_events can't be changed after Glean is initialized
 
     @property
     def log_pings(self) -> bool:

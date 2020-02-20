@@ -395,3 +395,31 @@ def test_overflowing_the_task_queue_records_telemetry():
     json_tree = json.loads(json_content)
 
     assert 110 == json_tree["metrics"]["counter"]["glean.error.preinit_tasks_overflow"]
+
+
+def test_configuration_property(safe_httpserver):
+    safe_httpserver.serve_content(b"", code=200)
+
+    Glean._configuration.server_endpoint = safe_httpserver.url
+    Glean._configuration.log_pings = True
+
+    counter_metric = CounterMetricType(
+        disabled=False,
+        category="telemetry",
+        lifetime=Lifetime.APPLICATION,
+        name="counter_metric",
+        send_in_pings=["baseline"],
+    )
+
+    counter_metric.add()
+
+    # Explicitly testing setting this *after the fact*
+    Glean.configuration.ping_tag = "foo"
+
+    _builtins.pings.baseline.submit()
+
+    assert 1 == len(safe_httpserver.requests)
+
+    request = safe_httpserver.requests[0]
+    assert "baseline" in request.url
+    assert "foo" == request.headers["X-Debug-Id"]
