@@ -1,4 +1,4 @@
-personal_ws-1.1 en 142 utf-8
+personal_ws-1.1 en 151 utf-8
 AAR
 AARs
 APIs
@@ -11,6 +11,7 @@ CMake
 CODEOWNERS
 Cartfile
 CircleCI
+Ciufo
 Datetime
 Datetimes
 Fenix
@@ -44,9 +45,11 @@ PowerShell
 ProGuard
 Protobufs
 PyPI
+Redash
 SDK
 TODO
 TWiG
+Taskcluster
 UI
 URIs
 UTF
@@ -70,10 +73,13 @@ chutten
 cmd
 codecov
 codepoints
+commandline
 conda
 coroutine
 csh
+dataset
 destructor
+dev
 dexter
 distributable
 docstrings
@@ -86,6 +92,7 @@ experimentId
 ffi
 func
 gfritzsche
+glinter
 gradle
 grcov
 hotfix
@@ -114,6 +121,7 @@ pidcat
 pipenv
 pre
 prebuilt
+preinit
 py
 pytest
 rkv
@@ -133,6 +141,7 @@ timespans
 timezones
 toolchain
 toolchains
+tooltip
 transpiler
 travis
 unhandled

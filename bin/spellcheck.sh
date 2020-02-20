@@ -45,7 +45,7 @@ aspell --version
 shopt -s nullglob
 
 dict_filename=./.dictionary
-markdown_sources="$(find ./docs -name '*.md')"
+markdown_sources="$(git ls-files | grep -v 'DEPENDENCIES\.md' | grep '\.md$')"
 mode="check"
 aspell_args="--lang en_US --mode=markdown"
 

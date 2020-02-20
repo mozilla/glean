@@ -1,8 +1,8 @@
-This directory contains a tool to analyse the patterns of baseline and metrics pings received on a per-client basis in Fenix.  These pattern analyses are then summarized in a single plot showing various patterns and issues found in the data.
+This directory contains a tool to analyze the patterns of baseline and metrics pings received on a per-client basis in Fenix.  These pattern analyses are then summarized in a single plot showing various patterns and issues found in the data.
 
 ## Requirements
 
-A recent version of [matplotlib](https://matplotlib.org).
+A recent version of [`matplotlib`](https://matplotlib.org).
 
 ## Collecting input data
 
@@ -66,6 +66,6 @@ Baseline pings are in blue.  The thick part of the line represents the active se
 
 Metrics pings are in red.  Issues found with metrics pings are notated with a number to the right.  Hover over the number to display a tooltip with further information about the issue.
 
-Grey vertical lines are midnight local time.  Dashed grey vertical lines are 04:00 local time.
+Gray vertical lines are midnight local time.  Dashed gray vertical lines are 04:00 local time.
 
 Green vertical lines indicate the first ping coming from an interesting revision that contains a related fix.
