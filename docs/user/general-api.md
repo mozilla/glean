@@ -1,7 +1,7 @@
 # The General API
 
 Glean has a minimal API available on its top-level `Glean` object.
-This API allows to enable and disable upload, register [custom pings][custom-pings] and set [experiment data][experiments-api].
+This API allows one to enable and disable upload, register [custom pings][custom-pings] and set [experiment data][experiments-api].
 
 [custom-pings]: pings/custom.md
 [experiments-api]: experiments-api.md
