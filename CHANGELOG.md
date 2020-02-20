@@ -3,7 +3,7 @@
 [Full changelog](https://github.com/mozilla/glean/compare/v25.0.0...master)
 
 * Python:
-  * The boolean metric type is now supported in Python.
+  * The boolean and datetime metric types are now supported in Python.
 
 # v25.0.0 (2020-02-17)
 
