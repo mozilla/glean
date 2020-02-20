@@ -98,12 +98,12 @@ impl PingUploadManager {
     }
 
     /// Creates a `PingRequest` and adds it to the queue.
-    pub fn enqueue_ping(&self, uuid: &str, url: &str, body: JsonValue) {
+    pub fn enqueue_ping(&self, uuid: &str, path: &str, body: JsonValue) {
         let mut queue = self
             .queue
             .write()
             .expect("Can't write to pending pings queue.");
-        let request = PingRequest::new(uuid, url, body);
+        let request = PingRequest::new(uuid, path, body);
         queue.push_back(request);
     }
 
@@ -227,7 +227,7 @@ mod test {
     use crate::{tests::new_glean, PENDING_PINGS_DIRECTORY};
 
     const UUID: &str = "40e31919-684f-43b0-a5aa-e15c2d56a674"; // Just a random UUID.
-    const URL: &str = "/submit/app_id/ping_name/schema_version/doc_id";
+    const PATH: &str = "/submit/app_id/ping_name/schema_version/doc_id";
 
     #[test]
     fn test_doesnt_error_when_there_are_no_pending_pings() {
@@ -257,7 +257,7 @@ mod test {
         }
 
         // Enqueue a ping
-        upload_manager.enqueue_ping(UUID, URL, json!({}));
+        upload_manager.enqueue_ping(UUID, PATH, json!({}));
 
         // Try and get the next request.
         // Verify request was returned
@@ -281,7 +281,7 @@ mod test {
         // Enqueue a ping multiple times
         let n = 10;
         for _ in 0..n {
-            upload_manager.enqueue_ping(UUID, URL, json!({}));
+            upload_manager.enqueue_ping(UUID, PATH, json!({}));
         }
 
         // Verify a request is returned for each submitted ping
@@ -309,7 +309,7 @@ mod test {
 
         // Enqueue a ping multiple times
         for _ in 0..10 {
-            upload_manager.enqueue_ping(UUID, URL, json!({}));
+            upload_manager.enqueue_ping(UUID, PATH, json!({}));
         }
 
         // Clear the queue

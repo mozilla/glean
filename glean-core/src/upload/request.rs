@@ -16,7 +16,7 @@ pub struct PingRequest {
     /// this is the same as the ping UUID.
     pub uuid: String,
     /// The path for the server to upload the ping to.
-    pub url: String,
+    pub path: String,
     /// The body of the request.
     pub body: JsonValue,
     /// A map with all the headers to be sent with the request.
@@ -28,18 +28,18 @@ impl PingRequest {
     ///
     /// Automatically creates the default request headers.
     /// Clients may add more headers such as `userAgent` to this list.
-    pub fn new(uuid: &str, url: &str, body: JsonValue) -> Self {
+    pub fn new(uuid: &str, path: &str, body: JsonValue) -> Self {
         Self {
             uuid: uuid.into(),
-            url: url.into(),
+            path: path.into(),
             body,
             headers: Self::create_request_headers(),
         }
     }
 
     pub fn is_deletion_request(&self) -> bool {
-        // The url format should be `/submit/<app_id>/<ping_name>/<schema_version/<doc_id>`
-        self.url
+        // The path format should be `/submit/<app_id>/<ping_name>/<schema_version/<doc_id>`
+        self.path
             .split('/')
             .nth(3)
             .expect("URL path does not follow the expected pattern.")
