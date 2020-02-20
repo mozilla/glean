@@ -407,11 +407,15 @@ impl Glean {
         self.max_events
     }
 
-    /// Gets the next `PingUploadTask`.
+    /// Gets the next task for an uploader. Which can be either:
+    ///
+    /// Wait - which means the requester should ask again later;
+    /// Upload(PingRequest) - which means there is a ping to upload. This wraps the actual request object;
+    /// Done - which means there are no more pings queued right now.
     ///
     /// # Return value
     ///
-    /// `PingUploadTask` - see [`PingUploadTask`](upload/enum.PingUploadTask.html) for more information.
+    /// `PingUploadTask` - an enum representing the three possible tasks.
     pub fn get_upload_task(&self) -> PingUploadTask {
         self.upload_manager.get_upload_task()
     }
