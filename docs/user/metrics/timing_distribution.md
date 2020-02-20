@@ -4,7 +4,11 @@ Timing distributions are used to accumulate and store time measurement, for anal
 
 To measure the distribution of single timespans, see [Timespans](timespan.md). To record absolute times, see [Datetimes](datetime.md).
 
-Timing distributions are recorded in a histogram where the buckets have an exponential distribution, specifically with 8 buckets for every power of 2.
+Timing distributions are recorded in a histogram where the buckets have an exponential distribution, specifically with 8 buckets for every power of 2. 
+That is, the function from a value \\( x \\) to a bucket index is:
+
+\\[ \lfloor 8 \log_2(x) \rfloor \\]
+
 This makes them suitable for measuring timings on a number of time scales without any configuration.
 
 Timings always span the full length between `start` and `stopAndAccumulate`.
