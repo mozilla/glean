@@ -32,6 +32,7 @@ from . import metrics
 _TYPE_MAPPING = {
     "boolean": metrics.BooleanMetricType,
     "counter": metrics.CounterMetricType,
+    "datetime": metrics.DatetimeMetricType,
     "event": metrics.EventMetricType,
     "labeled_counter": metrics.LabeledCounterMetricType,
     "ping": metrics.PingType,

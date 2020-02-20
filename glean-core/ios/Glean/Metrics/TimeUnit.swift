@@ -7,24 +7,24 @@ import Foundation
 /// Enumeration of different resolutions supported by
 /// the `TimespanMetricType` and `TimingDistributionMetricType`.
 public enum TimeUnit: Int32 {
-    /// Represents a nanosecond precision.
+    /// Represents nanosecond precision.
     case nanosecond = 0
 
-    /// Represents a microsecond precision.
+    /// Represents microsecond precision.
     case microsecond = 1
 
-    /// Represents a millisecond precision.
+    /// Represents millisecond precision.
     case millisecond = 2
 
-    /// Represents a second precision.
+    /// Represents second precision.
     case second = 3
 
-    /// Represents a minute precision.
+    /// Represents minute precision.
     case minute = 4
 
-    /// Represents a hour precision.
+    /// Represents hour precision.
     case hour = 5
 
-    /// Represents a day precision.
+    /// Represents day precision.
     case day = 6
 }
