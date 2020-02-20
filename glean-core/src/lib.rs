@@ -63,6 +63,10 @@ lazy_static! {
 // An internal ping name, not to be touched by anything else
 pub(crate) const INTERNAL_STORAGE: &str = "glean_internal_info";
 
+// The names of the pings directories.
+pub(crate) const PENDING_PINGS_DIRECTORY: &str = "pending_pings";
+pub(crate) const DELETION_REQUEST_PINGS_DIRECTORY: &str = "deletion_request";
+
 /// The global Glean instance.
 ///
 /// This is the singleton used by all wrappers to allow for a nice API.
