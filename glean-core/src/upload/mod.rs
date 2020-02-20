@@ -17,7 +17,7 @@
 use std::collections::VecDeque;
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::{Arc, RwLock};
+use std::sync::{Arc, RwLock, RwLockWriteGuard};
 use std::thread;
 
 use log;
@@ -107,13 +107,23 @@ impl PingUploadManager {
         queue.push_back(request);
     }
 
-    /// Clears the pending pings queue.
-    pub fn clear_ping_queue(&self) {
+    /// Clears the pending pings queue, leaves the deletion-request pings.
+    pub fn clear_ping_queue(&self) -> RwLockWriteGuard<'_, VecDeque<PingRequest>> {
         let mut queue = self
             .queue
             .write()
             .expect("Can't write to pending pings queue.");
+
+        let mut deletion_requests = Vec::new();
+        for ping in queue.iter() {
+            if ping.is_deletion_request() {
+                deletion_requests.push(ping.clone());
+            }
+        }
+
         queue.clear();
+        queue.extend(deletion_requests);
+        queue
     }
 
     /// Gets the next `PingUploadTask`.
@@ -217,7 +227,7 @@ mod test {
     use crate::{tests::new_glean, PENDING_PINGS_DIRECTORY};
 
     const UUID: &str = "40e31919-684f-43b0-a5aa-e15c2d56a674"; // Just a random UUID.
-    const URL: &str = "http://example.com";
+    const URL: &str = "/submit/app_id/ping_name/schema_version/doc_id";
 
     #[test]
     fn test_doesnt_error_when_there_are_no_pending_pings() {
@@ -303,10 +313,43 @@ mod test {
         }
 
         // Clear the queue
-        upload_manager.clear_ping_queue();
+        let _ = upload_manager.clear_ping_queue();
 
         // Verify there really isn't any ping in the queue
         assert_eq!(upload_manager.get_upload_task(), PingUploadTask::Done);
+    }
+
+    #[test]
+    fn test_clearing_the_queue_doesnt_clear_deletion_request_pings() {
+        let (mut glean, _) = new_glean(None);
+
+        // Register a ping for testing
+        let ping_type = PingType::new("test", true, /* send_if_empty */ true, vec![]);
+        glean.register_ping_type(&ping_type);
+
+        // Submit the ping multiple times
+        let n = 10;
+        for _ in 0..n {
+            glean.submit_ping(&ping_type, None).unwrap();
+        }
+
+        glean
+            .internal_pings
+            .deletion_request
+            .submit(&glean, None)
+            .unwrap();
+
+        // Clear the queue
+        let _ = glean.upload_manager.clear_ping_queue();
+
+        let upload_task = glean.get_upload_task();
+        match upload_task {
+            PingUploadTask::Upload(request) => assert!(request.is_deletion_request()),
+            _ => panic!("Expected upload manager to return the next request!"),
+        }
+
+        // Verify there really isn't any other pings in the queue
+        assert_eq!(glean.get_upload_task(), PingUploadTask::Done);
     }
 
     #[test]

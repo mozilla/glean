@@ -10,7 +10,7 @@ use chrono::prelude::{DateTime, Utc};
 use serde_json::Value as JsonValue;
 
 /// Represents a request to upload a ping.
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Clone)]
 pub struct PingRequest {
     /// The Job ID to identify this request,
     /// this is the same as the ping UUID.
@@ -35,6 +35,15 @@ impl PingRequest {
             body,
             headers: Self::create_request_headers(),
         }
+    }
+
+    pub fn is_deletion_request(&self) -> bool {
+        // The url format should be `/submit/<app_id>/<ping_name>/<schema_version/<doc_id>`
+        self.url
+            .split('/')
+            .nth(3)
+            .expect("URL path does not follow the expected pattern.")
+            == "deletion-request"
     }
 
     /// Creates the default request headers.

@@ -382,11 +382,8 @@ mod test {
         // Try and process the pings folder
         let requests = directory_manager.process_dir();
 
-        // Verify there is just the one request
         assert_eq!(requests.len(), 1);
 
-        // Verify request was returned for the "test" ping
-        let request_ping_type = requests[0].url.split('/').nth(3).unwrap();
-        assert_eq!(request_ping_type, "deletion-request");
+        assert!(requests[0].is_deletion_request());
     }
 }
