@@ -46,3 +46,15 @@ else:
         On Python prior to 3.7, this may have less than millisecond resolution.
         """
         return int(time.time() * 1000.0)
+
+
+class classproperty:
+    """
+    Decorator for creating a property on a class (rather than an instance).
+    """
+
+    def __init__(self, f):
+        self.f = f
+
+    def __get__(self, obj, owner):
+        return self.f(owner)

@@ -10,6 +10,7 @@
     - [Debugging products using Glean](user/debugging/index.md)
         - [Android](user/debugging/android.md)
         - [iOS](user/debugging/ios.md)
+        - [Python](user/debugging/python.md)
     - [Error reporting](user/error-reporting.md)
     - [Using the experiments API](user/experiments-api.md)
     - [Metric types](user/metrics/index.md)
