@@ -30,6 +30,7 @@ from . import metrics
 # A mapping from the name of the metric type as it appears in the metrics.yaml
 # to the Python class for that metric type.
 _TYPE_MAPPING = {
+    "boolean": metrics.BooleanMetricType,
     "counter": metrics.CounterMetricType,
     "event": metrics.EventMetricType,
     "labeled_counter": metrics.LabeledCounterMetricType,

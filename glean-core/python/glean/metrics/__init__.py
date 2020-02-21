@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
+from .boolean import BooleanMetricType
 from .counter import CounterMetricType
 from .event import EventMetricType, RecordedEventData
 from .experiment import RecordedExperimentData
@@ -14,6 +15,7 @@ from .uuid import UuidMetricType
 
 
 __all__ = [
+    "BooleanMetricType",
     "CounterMetricType",
     "EventMetricType",
     "LabeledCounterMetricType",

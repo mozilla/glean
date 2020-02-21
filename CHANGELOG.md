@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v25.0.0...master)
 
+* Python:
+  * The boolean metric type is now supported in Python.
+
 # v25.0.0 (2020-02-17)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v24.2.0...v25.0.0)
