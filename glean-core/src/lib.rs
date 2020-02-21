@@ -426,6 +426,17 @@ impl Glean {
         self.upload_manager.get_upload_task()
     }
 
+    /// Processes the response from an attempt to upload a ping.
+    ///
+    /// # Arguments
+    ///
+    /// `uuid` - The UUID of the ping in question.
+    /// `status` - The HTTP status of the response.
+    #[cfg(feature = "upload")]
+    pub fn process_ping_upload_response(&self, uuid: &str, status: u16) {
+        self.upload_manager.process_ping_upload_response(uuid, status);
+    }
+
     /// Take a snapshot for the given store and optionally clear it.
     ///
     /// ## Arguments
