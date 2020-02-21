@@ -65,6 +65,24 @@ fn disabling_upload_clears_pending_pings() {
 }
 
 #[test]
+fn deletion_request_only_when_toggled_from_on_to_off() {
+    let (mut glean, _) = new_glean(None);
+
+    // Disabling upload generates a deletion ping
+    glean.set_upload_enabled(false);
+    assert_eq!(1, get_deletion_pings(glean.get_data_path()).unwrap().len());
+
+    // Re-setting it to `false` should not generate an additional ping.
+    // As we didn't clear the pending ping, that's the only one that sticks around.
+    glean.set_upload_enabled(false);
+    assert_eq!(1, get_deletion_pings(glean.get_data_path()).unwrap().len());
+
+    // Toggling back to true won't generate a ping either.
+    glean.set_upload_enabled(true);
+    assert_eq!(1, get_deletion_pings(glean.get_data_path()).unwrap().len());
+}
+
+#[test]
 fn empty_pings_with_flag_are_sent() {
     let (mut glean, _) = new_glean(None);
 
