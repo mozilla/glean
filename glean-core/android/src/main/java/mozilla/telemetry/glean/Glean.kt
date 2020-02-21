@@ -63,7 +63,7 @@ open class GleanInternalAPI internal constructor () {
     // This is the wrapped http uploading mechanism: provides base functionalities
     // for logging and delegates the actual upload to the implementation in
     // the `Configuration`.
-    internal val httpClient by lazy { BaseUploader(configuration.httpClient) }
+    internal lateinit var httpClient: BaseUploader
 
     private lateinit var applicationContext: Context
 
@@ -140,6 +140,7 @@ open class GleanInternalAPI internal constructor () {
         this.applicationContext = applicationContext
 
         this.configuration = configuration
+        this.httpClient = BaseUploader(configuration.httpClient)
         this.gleanDataDir = File(applicationContext.applicationInfo.dataDir, GLEAN_DATA_DIR)
 
         setUploadEnabled(uploadEnabled)
