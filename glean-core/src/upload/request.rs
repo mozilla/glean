@@ -42,8 +42,8 @@ impl PingRequest {
         self.path
             .split('/')
             .nth(3)
-            .expect("URL path does not follow the expected pattern.")
-            == "deletion-request"
+            .map(|url| url == "deletion-request")
+            .unwrap_or(false)
     }
 
     /// Creates the default request headers.
