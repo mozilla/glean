@@ -36,6 +36,7 @@ mod internal_pings;
 pub mod metrics;
 pub mod ping;
 pub mod storage;
+#[cfg(feature = "upload")]
 pub mod upload;
 mod util;
 
@@ -49,6 +50,7 @@ use crate::internal_pings::InternalPings;
 use crate::metrics::{Metric, MetricType, PingType};
 use crate::ping::PingMaker;
 use crate::storage::StorageManager;
+#[cfg(feature = "upload")]
 use crate::upload::{PingUploadManager, PingUploadTask};
 use crate::util::{local_now_with_offset, sanitize_application_id};
 
@@ -159,6 +161,7 @@ pub struct Glean {
     start_time: DateTime<FixedOffset>,
     max_events: usize,
     is_first_run: bool,
+    #[cfg(feature = "upload")]
     upload_manager: PingUploadManager,
 }
 
@@ -183,6 +186,7 @@ impl Glean {
             event_data_store,
             core_metrics: CoreMetrics::new(),
             internal_pings: InternalPings::new(),
+            #[cfg(feature = "upload")]
             upload_manager: PingUploadManager::new(&cfg.data_path),
             data_path: PathBuf::from(cfg.data_path),
             application_id,
@@ -326,6 +330,7 @@ impl Glean {
     fn clear_metrics(&mut self) {
         // Clear the pending pings queue and acquire the lock
         // so that it can't be accessed until this function is done.
+        #[cfg(feature = "upload")]
         let _lock = self.upload_manager.clear_ping_queue();
 
         // There is only one metric that we want to survive after clearing all
@@ -416,6 +421,7 @@ impl Glean {
     /// # Return value
     ///
     /// `PingUploadTask` - an enum representing the three possible tasks.
+    #[cfg(feature = "upload")]
     pub fn get_upload_task(&self) -> PingUploadTask {
         self.upload_manager.get_upload_task()
     }
@@ -490,6 +496,7 @@ impl Glean {
                     return Err(e.into());
                 }
 
+                #[cfg(feature = "upload")]
                 self.upload_manager
                     .enqueue_ping(&doc_id, &url_path, content);
 
