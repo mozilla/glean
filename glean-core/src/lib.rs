@@ -434,7 +434,8 @@ impl Glean {
     /// `status` - The HTTP status of the response.
     #[cfg(feature = "upload")]
     pub fn process_ping_upload_response(&self, uuid: &str, status: u16) {
-        self.upload_manager.process_ping_upload_response(uuid, status);
+        self.upload_manager
+            .process_ping_upload_response(uuid, status);
     }
 
     /// Take a snapshot for the given store and optionally clear it.
