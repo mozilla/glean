@@ -208,11 +208,12 @@ internal fun waitForEnqueuedWorker(
  * is fixed, the contents of this can be amended to trigger WorkManager directly.
  *
  * @param context the application [Context] to get the [WorkManager] instance for
+ * @param workerTag the tag for the expected worker (default: `PingUploadWorker.PING_WORKER_TAG`)
  */
-internal fun triggerWorkManager(context: Context) {
+internal fun triggerWorkManager(context: Context, workerTag: String = PingUploadWorker.PING_WORKER_TAG) {
     // Check that the work is scheduled
-    val status = getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG)
-    Assert.assertTrue("A scheduled PingUploadWorker must exist",
+    val status = getWorkerStatus(context, workerTag)
+    Assert.assertTrue("A scheduled $workerTag must exist",
         status.isEnqueued)
 
     // Trigger WorkManager using TestDriver

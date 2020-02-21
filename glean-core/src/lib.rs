@@ -280,14 +280,14 @@ impl Glean {
     pub fn set_upload_enabled(&mut self, flag: bool) -> bool {
         log::info!("Upload enabled: {:?}", flag);
 
-        // When upload is disabled, submit a deletion-request ping
-        if !flag {
-            if let Err(err) = self.internal_pings.deletion_request.submit(self, None) {
-                log::error!("Failed to send deletion-request ping on optout: {}", err);
-            }
-        }
-
         if self.upload_enabled != flag {
+            // When upload is disabled, submit a deletion-request ping
+            if !flag {
+                if let Err(err) = self.internal_pings.deletion_request.submit(self, None) {
+                    log::error!("Failed to submit deletion-request ping on optout: {}", err);
+                }
+            }
+
             self.upload_enabled = flag;
             self.on_change_upload_enabled(flag);
             true
