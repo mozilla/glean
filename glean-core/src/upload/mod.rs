@@ -114,15 +114,7 @@ impl PingUploadManager {
             .write()
             .expect("Can't write to pending pings queue.");
 
-        let mut deletion_requests = Vec::new();
-        for ping in queue.iter() {
-            if ping.is_deletion_request() {
-                deletion_requests.push(ping.clone());
-            }
-        }
-
-        queue.clear();
-        queue.extend(deletion_requests);
+        queue.retain(|ping| ping.is_deletion_request());
         queue
     }
 
