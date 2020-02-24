@@ -56,12 +56,6 @@ commands:
       - run:
           name: Test
           command: cargo test --all --verbose
-      - run:
-          name: Test with upload feature
-          command: |
-              # Changing to the core crate due to: --features is not allowed in the root of a virtual workspace#
-              cd glean-core
-              cargo test --lib --verbose --features upload
 
   install-rustup:
     steps:

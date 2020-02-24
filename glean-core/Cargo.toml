@@ -17,9 +17,6 @@ include = [
   "Cargo.toml"
 ]
 
-[features]
-upload = []
-
 [badges]
 circle-ci = { repository = "mozilla/glean", branch = "master" }
 maintenance = { status = "actively-developed" }
