@@ -109,12 +109,12 @@ impl PingDirectoryManager {
         log::info!("Processing ping at: {}", path.display());
 
         // The way the ping file is structured,
-        // first line should always have the url
+        // first line should always have the path
         // and second line should have the body with the ping contents in JSON format
         let mut lines = BufReader::new(file).lines();
-        if let (Some(Ok(url)), Some(Ok(body))) = (lines.next(), lines.next()) {
+        if let (Some(Ok(path)), Some(Ok(body))) = (lines.next(), lines.next()) {
             if let Ok(parsed_body) = serde_json::from_str::<JsonValue>(&body) {
-                return Some(PingRequest::new(uuid, &url, parsed_body));
+                return Some(PingRequest::new(uuid, &path, parsed_body));
             } else {
                 log::warn!(
                     "Error processing ping file: {}. Can't parse ping contents as JSON.",
@@ -257,7 +257,7 @@ mod test {
         assert_eq!(requests.len(), 1);
 
         // Verify request was returned for the "test" ping
-        let request_ping_type = requests[0].url.split('/').nth(3).unwrap();
+        let request_ping_type = requests[0].path.split('/').nth(3).unwrap();
         assert_eq!(request_ping_type, "test");
     }
 
@@ -287,7 +287,7 @@ mod test {
         assert_eq!(requests.len(), 1);
 
         // Verify request was returned for the "test" ping
-        let request_ping_type = requests[0].url.split('/').nth(3).unwrap();
+        let request_ping_type = requests[0].path.split('/').nth(3).unwrap();
         assert_eq!(request_ping_type, "test");
 
         // Verify that file was indeed deleted
@@ -320,7 +320,7 @@ mod test {
         assert_eq!(requests.len(), 1);
 
         // Verify request was returned for the "test" ping
-        let request_ping_type = requests[0].url.split('/').nth(3).unwrap();
+        let request_ping_type = requests[0].path.split('/').nth(3).unwrap();
         assert_eq!(request_ping_type, "test");
 
         // Verify that file was indeed deleted
@@ -359,7 +359,7 @@ mod test {
         assert_eq!(requests.len(), 1);
 
         // Verify request was returned for the "test" ping
-        let request_ping_type = requests[0].url.split('/').nth(3).unwrap();
+        let request_ping_type = requests[0].path.split('/').nth(3).unwrap();
         assert_eq!(request_ping_type, "test");
 
         // Verify that file was indeed deleted
@@ -382,11 +382,8 @@ mod test {
         // Try and process the pings folder
         let requests = directory_manager.process_dir();
 
-        // Verify there is just the one request
         assert_eq!(requests.len(), 1);
 
-        // Verify request was returned for the "test" ping
-        let request_ping_type = requests[0].url.split('/').nth(3).unwrap();
-        assert_eq!(request_ping_type, "deletion-request");
+        assert!(requests[0].is_deletion_request());
     }
 }
