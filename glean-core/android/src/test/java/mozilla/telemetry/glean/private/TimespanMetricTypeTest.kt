@@ -251,6 +251,7 @@ class TimespanMetricTypeTest {
         metric.setRawNanos(timespanNanos)
         metric.stop()
 
-        assertNotEquals(timespanNanos, metric.testGetValue())
+        // If that was recorded, we would expect it to record 1 second
+        assertNotEquals(1, metric.testGetValue())
     }
 }
