@@ -24,10 +24,10 @@ def test_builtin_pings():
 def test_unknown_metric_type():
     metrics = load_metrics(ROOT / "data" / "core.yaml", config={"allow_reserved": True})
 
-    assert isinstance(metrics.environment.profile_date, UnsupportedMetricType)
+    assert isinstance(metrics.core_ping.durations, UnsupportedMetricType)
 
     with pytest.raises(TypeError):
-        metrics.environment.profile_date.set("foo")
+        metrics.core_ping.durations.set("foo")
 
 
 def test_working_metric():

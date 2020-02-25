@@ -116,6 +116,38 @@ XCTAssertEqual(1, Install.firstRun.getNumRecordedErrors(.invalidValue))
 
 </div>
 
+<div data-lang="Python" class="tab">
+
+```Python
+import datetime
+
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+# Records "now"
+metrics.install.first_run.set()
+# Records a custom datetime
+metrics.install.first_run.set(datetime.datetime(2019, 3, 25))
+```
+
+There are test APIs available too.
+
+```Python
+# Was anything recorded?
+assert metrics.install.first_run.test_has_value()
+
+# Was it the expected value?
+# NOTE: Datetimes always include a timezone offset from UTC, hence the
+# "-05:00" suffix.
+assert "2019-03-25-05:00" == metrics.install.first_run.test_get_value_as_str()
+# Was the value invalid?
+assert 1 == metrics.install.test_get_num_recorded_errors(
+    ErrorType.INVALID_VALUE
+)
+```
+
+</div>
+
 {{#include ../../tab_footer.md}}
 
 ## Limits
@@ -134,3 +166,4 @@ XCTAssertEqual(1, Install.firstRun.getNumRecordedErrors(.invalidValue))
 
 * [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-datetime-metric-type/index.html)
 * [Swift API docs](../../../swift/Classes/DatetimeMetricType.html)
+* [Python API docs](../../../python/glean/metrics/datetime.html)
