@@ -16,7 +16,7 @@ Glean.initialize(
     application_version="0.1.0",
     upload_enabled=True,
     configuration=Configuration(
-        ping_tag="mozregression-test-tag"
+        ping_tag="my-ping-tag"
     )
 )
 ```
