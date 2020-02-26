@@ -3,7 +3,8 @@
 [Full changelog](https://github.com/mozilla/glean/compare/v25.0.0...master)
 
 * Python:
-  * The Boolean, Datetime and Timespan metric types are now supported in Python.
+  * The Boolean, Datetime and Timespan metric types are now supported in Python ([#731](https://github.com/mozilla/glean/pull/731), [#732](https://github.com/mozilla/glean/pull/732), [#737](https://github.com/mozilla/glean/pull/737))
+  * Make public, document and test the debugging features ([#733](https://github.com/mozilla/glean/pull/733))
 
 # v25.0.0 (2020-02-17)
 
