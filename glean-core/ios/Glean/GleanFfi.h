@@ -81,10 +81,10 @@ typedef uint8_t FfiPingUploadTask_Tag;
 
 typedef struct {
   FfiPingUploadTask_Tag tag;
-  const char *uuid;
-  const char *path;
-  const char *body;
-  const char *headers;
+  char *uuid;
+  char *path;
+  char *body;
+  char *headers;
 } Upload_Body;
 
 typedef union {
@@ -415,7 +415,7 @@ uint8_t glean_on_ready_to_submit_pings(void);
 
 char *glean_ping_collect(uint64_t ping_type_handle, FfiStr reason);
 
-void glean_process_ping_upload_response(FfiStr uuid, uint16_t status);
+void glean_process_ping_upload_response(FfiPingUploadTask task, uint16_t status);
 
 void glean_quantity_set(uint64_t metric_id, int64_t value);
 

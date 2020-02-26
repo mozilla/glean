@@ -33,18 +33,23 @@ int main(void)
 
   glean_submit_ping_by_name("store1", NULL);
 
-  // task == 0 (wait)
-  // task == 1 (upload)
-  // task == 2 (done)
+  // Since we disabled upload and submitted a ping above,
+  // we expect to have at least two pending pings: a deletion-request and a store1.
+  //
+  // The upload task.tag will either be:
+  // 0 - "wait", glean is still parsing the pending_pings directory;
+  // 1 - "upload", there is a new ping to upload and the task will also include the request data;
+  // 2 - "done", there are no more pings to upload.
+  //
+  //  NOTE: If, there are other ping files inside tmp/glean_data directory
+  // they will also be consumed here by `glean_process_ping_upload_response`.
   FfiPingUploadTask task = glean_get_upload_task();
   while (task.tag == 1) {
     printf("tag: %d\n", task.tag);
-    if (task.tag == 1) {
-      printf("uuid: %s\n", task.upload.uuid);
-      printf("path: %s\n", task.upload.path);
-      printf("body: %s\n", task.upload.body);
-    }
-    glean_process_ping_upload_response(task.upload.uuid, 200);
+    printf("path: %s\n", task.upload.path);
+    printf("body: %s\n", task.upload.body);
+
+    glean_process_ping_upload_response(task, 200);
     task = glean_get_upload_task();
   }
   printf("tag: %d\n", task.tag);
