@@ -752,12 +752,19 @@
                 "type": "string"
               },
               "extra": {
-                "properties": {
-                  "type": {
-                    "type": "string"
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "properties": {
+                      "type": {
+                        "type": "string"
+                      }
+                    },
+                    "type": "object"
                   }
-                },
-                "type": "object"
+                ]
               }
             },
             "required": [
