@@ -31,10 +31,10 @@ if sys.version_info >= (3, 7):
     def time_ms() -> int:
         """
         Get time from a monotonic timer in milliseconds.
-
-        On Python prior to 3.7, this may have less than millisecond resolution.
         """
-        return int(time.time_ns() / 1000)
+        return int(time.monotonic_ns() / 1000000.0)
+
+    time_ns = time.monotonic_ns
 
 
 else:
@@ -42,7 +42,25 @@ else:
     def time_ms() -> int:
         """
         Get time from a monotonic timer in milliseconds.
-
-        On Python prior to 3.7, this may have less than millisecond resolution.
         """
-        return int(time.time() * 1000.0)
+        return int(time.monotonic() * 1000.0)
+
+    def time_ns() -> int:
+        """
+        Get time from a monotonic timer in nanoseconds.
+
+        On Python prior to 3.7, this may have less than nanosecond resolution.
+        """
+        return int(time.monotonic() * 1000000000.0)
+
+
+class classproperty:
+    """
+    Decorator for creating a property on a class (rather than an instance).
+    """
+
+    def __init__(self, f):
+        self.f = f
+
+    def __get__(self, obj, owner):
+        return self.f(owner)

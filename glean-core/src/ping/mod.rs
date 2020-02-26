@@ -15,7 +15,9 @@ use crate::common_metric_data::{CommonMetricData, Lifetime};
 use crate::metrics::{CounterMetric, DatetimeMetric, Metric, MetricType, PingType, TimeUnit};
 use crate::storage::StorageManager;
 use crate::util::{get_iso_time_string, local_now_with_offset};
-use crate::{Glean, Result, INTERNAL_STORAGE};
+use crate::{
+    Glean, Result, DELETION_REQUEST_PINGS_DIRECTORY, INTERNAL_STORAGE, PENDING_PINGS_DIRECTORY,
+};
 
 /// Collect a ping's data, assemble it into its full payload and store it on disk.
 pub struct PingMaker;
@@ -238,9 +240,9 @@ impl PingMaker {
         // Use a special directory for deletion-request pings
         let pings_dir = match ping_type {
             Some(ping_type) if ping_type == "deletion-request" => {
-                data_path.join("deletion_request")
+                data_path.join(DELETION_REQUEST_PINGS_DIRECTORY)
             }
-            _ => data_path.join("pending_pings"),
+            _ => data_path.join(PENDING_PINGS_DIRECTORY),
         };
 
         create_dir_all(&pings_dir)?;

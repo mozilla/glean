@@ -36,10 +36,9 @@ mod internal_pings;
 pub mod metrics;
 pub mod ping;
 pub mod storage;
-mod util;
-
 #[cfg(feature = "upload")]
 mod upload;
+mod util;
 
 pub use crate::common_metric_data::{CommonMetricData, Lifetime};
 use crate::database::Database;
@@ -51,6 +50,8 @@ use crate::internal_pings::InternalPings;
 use crate::metrics::{Metric, MetricType, PingType};
 use crate::ping::PingMaker;
 use crate::storage::StorageManager;
+#[cfg(feature = "upload")]
+use crate::upload::{PingUploadManager, PingUploadTask};
 use crate::util::{local_now_with_offset, sanitize_application_id};
 
 const GLEAN_SCHEMA_VERSION: u32 = 1;
@@ -62,6 +63,10 @@ lazy_static! {
 
 // An internal ping name, not to be touched by anything else
 pub(crate) const INTERNAL_STORAGE: &str = "glean_internal_info";
+
+// The names of the pings directories.
+pub(crate) const PENDING_PINGS_DIRECTORY: &str = "pending_pings";
+pub(crate) const DELETION_REQUEST_PINGS_DIRECTORY: &str = "deletion_request";
 
 /// The global Glean instance.
 ///
@@ -156,6 +161,8 @@ pub struct Glean {
     start_time: DateTime<FixedOffset>,
     max_events: usize,
     is_first_run: bool,
+    #[cfg(feature = "upload")]
+    upload_manager: PingUploadManager,
 }
 
 impl Glean {
@@ -179,6 +186,8 @@ impl Glean {
             event_data_store,
             core_metrics: CoreMetrics::new(),
             internal_pings: InternalPings::new(),
+            #[cfg(feature = "upload")]
+            upload_manager: PingUploadManager::new(&cfg.data_path),
             data_path: PathBuf::from(cfg.data_path),
             application_id,
             ping_registry: HashMap::new(),
@@ -276,14 +285,14 @@ impl Glean {
     pub fn set_upload_enabled(&mut self, flag: bool) -> bool {
         log::info!("Upload enabled: {:?}", flag);
 
-        // When upload is disabled, submit a deletion-request ping
-        if !flag {
-            if let Err(err) = self.internal_pings.deletion_request.submit(self, None) {
-                log::error!("Failed to send deletion-request ping on optout: {}", err);
-            }
-        }
-
         if self.upload_enabled != flag {
+            // When upload is disabled, submit a deletion-request ping
+            if !flag {
+                if let Err(err) = self.internal_pings.deletion_request.submit(self, None) {
+                    log::error!("Failed to submit deletion-request ping on optout: {}", err);
+                }
+            }
+
             self.upload_enabled = flag;
             self.on_change_upload_enabled(flag);
             true
@@ -319,6 +328,11 @@ impl Glean {
 
     /// Clear any pending metrics when telemetry is disabled.
     fn clear_metrics(&mut self) {
+        // Clear the pending pings queue and acquire the lock
+        // so that it can't be accessed until this function is done.
+        #[cfg(feature = "upload")]
+        let _lock = self.upload_manager.clear_ping_queue();
+
         // There is only one metric that we want to survive after clearing all
         // metrics: first_run_date. Here, we store its value so we can restore
         // it after clearing the metrics.
@@ -398,6 +412,32 @@ impl Glean {
         self.max_events
     }
 
+    /// Gets the next task for an uploader. Which can be either:
+    ///
+    /// * Wait - which means the requester should ask again later;
+    /// * Upload(PingRequest) - which means there is a ping to upload. This wraps the actual request object;
+    /// * Done - which means there are no more pings queued right now.
+    ///
+    /// # Return value
+    ///
+    /// `PingUploadTask` - an enum representing the possible tasks.
+    #[cfg(feature = "upload")]
+    pub fn get_upload_task(&self) -> PingUploadTask {
+        self.upload_manager.get_upload_task()
+    }
+
+    /// Processes the response from an attempt to upload a ping.
+    ///
+    /// # Arguments
+    ///
+    /// `uuid` - The UUID of the ping in question.
+    /// `status` - The HTTP status of the response.
+    #[cfg(feature = "upload")]
+    pub fn process_ping_upload_response(&self, uuid: &str, status: u16) {
+        self.upload_manager
+            .process_ping_upload_response(uuid, status);
+    }
+
     /// Take a snapshot for the given store and optionally clear it.
     ///
     /// ## Arguments
@@ -467,6 +507,10 @@ impl Glean {
                     log::warn!("IO error while writing ping to file: {}", e);
                     return Err(e.into());
                 }
+
+                #[cfg(feature = "upload")]
+                self.upload_manager
+                    .enqueue_ping(&doc_id, &url_path, content);
 
                 log::info!(
                     "The ping '{}' was submitted and will be sent as soon as possible",

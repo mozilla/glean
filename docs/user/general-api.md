@@ -1,12 +1,10 @@
 # The General API
 
 Glean has a minimal API available on its top-level `Glean` object.
-This API allows to enable and disable upload, register [custom pings][custom-pings] and set [experiment data][experiments-api].
+This API allows one to enable and disable upload, register [custom pings][custom-pings] and set [experiment data][experiments-api].
 
 [custom-pings]: pings/custom.md
 [experiments-api]: experiments-api.md
-
-The following steps are required for applications using the Glean SDK, but not libraries.
 
 > **Important:** The Glean SDK should only be initialized from the main application, not individual libraries.
 
@@ -26,6 +24,8 @@ The Glean SDK provides a general API that supports the following operations. See
 | `setExperimentInactive` | Indicate that an experiment is no longer running.. | [Using the Experiments API][experiments-api] |
 
 ## Initializing the Glean SDK
+
+The following steps are required for applications using the Glean SDK, but not libraries.
 
 {{#include ../tab_header.md}}
 
@@ -150,7 +150,9 @@ See the [custom pings documentation](pings/custom.md) about adding custom pings 
 ## Behavior when uninitialized
 
 Metric recording that happens before Glean is initialized is queued and applied when Glean is initialized.
-To avoid unbounded memory growth the queue is bounded (currently to a maximum of 100 tasks). Further recordings are dropped.
+To avoid unbounded memory growth the queue is bounded (currently to a maximum of 100 tasks).
+Further recordings are dropped.
+The number of recordings dropped, if any, is recorded in the `glean.error.preinit_tasks_overflow` metric.
 
 Custom ping submission will not fail before initialization.
 Collection and upload of the custom ping is delayed until Glean is initialized.

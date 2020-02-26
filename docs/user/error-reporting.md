@@ -21,7 +21,7 @@ MyMetrics.stringMetric.set("this_string_is_longer_than_the_limit_for_string_metr
 The following error metric counter would be incremented:
 
 ```Kotlin
-Glean.error.invalidValue.add(1)
+Glean.error.invalidValue["my_metrics.string_metric"].add(1)
 ```
 
 Resulting in the following keys in the ping:

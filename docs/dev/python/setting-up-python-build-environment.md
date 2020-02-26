@@ -167,3 +167,12 @@ In order to create wheels that can be installed on the broadest range of Linux d
 
 The CircleCI configuration handles making these wheels from tagged releases.
 If you need to reproduce this locally, see the CircleCI job `pypi-linux-release` for an example of how this Docker image is used in practice.
+
+## Building wheels for Windows
+
+The official wheels for Windows are produced on a Linux virtual machine using the Mingw toolchain.
+
+The CircleCI configuration handles making these wheels from tagged releases.
+If you need to reproduce this locally, see the CircleCI job `pypi-windows-release` for an example of how this is done in practice.
+
+

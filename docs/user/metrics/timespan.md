@@ -78,17 +78,17 @@ assertEquals(1, Auth.loginTime.testGetNumRecordedErrors(ErrorType.InvalidValue))
 import org.mozilla.yourApplication.GleanMetrics.Auth
 
 fun onShowLogin() {
-    Auth.INSTANCE.getLoginTime.start()
+    Auth.INSTANCE.loginTime.start()
     // ...
 }
 
 fun onLogin() {
-    Auth.INSTANCE.getLoginTime.stop()
+    Auth.INSTANCE.loginTime.stop()
     // ...
 }
 
 fun onLoginCancel() {
-    Auth.INSTANCE.getLoginTime.cancel()
+    Auth.INSTANCE.loginTime.cancel()
     // ...
 }
 ```
@@ -101,13 +101,13 @@ There are test APIs available too:
 import org.mozilla.yourApplication.GleanMetrics.Auth
 
 // Was anything recorded?
-assertTrue(Auth.INSTANCE.getLoginTime.testHasValue())
+assertTrue(Auth.INSTANCE.loginTime.testHasValue())
 // Does the timer have the expected value
-assertTrue(Auth.INSTANCE.getLoginTime.testGetValue() > 0)
+assertTrue(Auth.INSTANCE.loginTime.testGetValue() > 0)
 // Was the timing recorded incorrectly?
 assertEquals(
-    1, 
-    Auth.INSTANCE.getLoginTime.testGetNumRecordedErrors(
+    1,
+    Auth.INSTANCE.loginTime.testGetNumRecordedErrors(
         ErrorType.InvalidValue
     )
 )
@@ -151,6 +151,40 @@ XCTAssertEqual(1, Auth.loginTime.testGetNumRecordedErrors(.invalidValue))
 
 </div>
 
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+def on_show_login():
+    metrics.auth.login_time.start()
+    # ...
+
+def on_login():
+    metrics.auth.login_time.stop()
+    # ...
+
+def on_login_cancel():
+    metrics.auth.login_time.cancel()
+    # ...
+```
+
+The time reported in the telemetry ping will be timespan recorded during the lifetime of the ping.
+
+There are test APIs available too:
+
+```Python
+# Was anything recorded?
+assert metrics.auth.login_time.test_has_value()
+# Does the timer have the expected value
+assert metrics.auth.login_time.test_get_value() > 0
+# Was the timing recorded incorrectly?
+assert 1 == metrics.auth.local_time.test_get_num_recorded_errors(
+    ErrorType.INVALID_VALUE
+)
+```
+
 {{#include ../../tab_footer.md}}
 
 ## Raw API
@@ -185,6 +219,17 @@ HistorySync.setRawNanos(duration)
 
 </div>
 
+<div data-lang="Python" class="tab">
+
+```Python
+import org.mozilla.yourApplication.GleanMetrics.HistorySync
+
+val duration = SyncResult.status.syncs.took.toLong()
+HistorySync.setRawNanos(duration)
+```
+
+</div>
+
 {{#include ../../tab_footer.md}}
 
 ## Limits
@@ -208,3 +253,4 @@ HistorySync.setRawNanos(duration)
 
 * [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-timespan-metric-type/index.html)
 * [Swift API docs](../../../swift/Classes/TimespanMetricType.html)
+* [Python API docs](../../../python/glean/metrics/timespan.html)

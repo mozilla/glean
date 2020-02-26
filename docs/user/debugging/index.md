@@ -4,6 +4,7 @@
 
 1. [Debugging Android applications using the Glean SDK](android.md)
 2. [Debugging iOS applications using the Glean SDK](ios.md)
+3. [Debugging Python applications using the Glean SDK](python.md)
 
 ## General debugging information
 

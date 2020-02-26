@@ -6,35 +6,35 @@ package mozilla.telemetry.glean.private
 
 /**
  * Enumeration of different resolutions supported by
- * the Timespan and TimingDistribution metric types.
+ * the Timespan and DateTime metric types.
  */
 enum class TimeUnit {
     /**
-     * Represents a nanosecond precision.
+     * Represents nanosecond precision.
      */
     Nanosecond,
     /**
-     * Represents a microsecond precision.
+     * Represents microsecond precision.
      */
     Microsecond,
     /**
-     * Represents a millisecond precision.
+     * Represents millisecond precision.
      */
     Millisecond,
     /**
-     * Represents a second precision.
+     * Represents second precision.
      */
     Second,
     /**
-     * Represents a minute precision.
+     * Represents minute precision.
      */
     Minute,
     /**
-     * Represents a hour precision.
+     * Represents hour precision.
      */
     Hour,
     /**
-     * Represents a day precision.
+     * Represents day precision.
      */
     Day,
 }

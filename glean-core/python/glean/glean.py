@@ -154,6 +154,13 @@ class Glean:
             def check_pending_deletion_request():
                 DeletionPingUploadWorker.process()
 
+    @util.classproperty
+    def configuration(cls):
+        """
+        Access the configuration object to change dynamic parameters.
+        """
+        return cls._configuration
+
     @classmethod
     def reset(cls):
         """

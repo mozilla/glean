@@ -46,7 +46,7 @@ assertTrue(Flags.a11yEnabled.testGetValue())
 ```Java
 import org.mozilla.yourApplication.GleanMetrics.Flags
 
-Flags.INSTANCE.getA11yEnabled.set(System.isAccesibilityEnabled())
+Flags.INSTANCE.a11yEnabled.set(System.isAccessibilityEnabled())
 ```
 
 There are test APIs available too:
@@ -55,9 +55,9 @@ There are test APIs available too:
 import org.mozilla.yourApplication.GleanMetrics.Flags
 
 // Was anything recorded?
-assertTrue(Flags.INSTANCE.getA11yEnabled.testHasValue())
+assertTrue(Flags.INSTANCE.a11yEnabled.testHasValue())
 // Does it have the expected value?
-assertTrue(Flags.INSTANCE.getA11yEnabled.testGetValue())
+assertTrue(Flags.INSTANCE.a11yEnabled.testGetValue())
 ```
 
 </div>
@@ -66,7 +66,7 @@ assertTrue(Flags.INSTANCE.getA11yEnabled.testGetValue())
 <div data-lang="Swift" class="tab">
 
 ```Swift
-Flags.a11yEnabled.set(self.isAccesibilityElement)
+Flags.a11yEnabled.set(self.isAccessibilityEnabled)
 ```
 
 There are test APIs available too:
@@ -78,6 +78,26 @@ There are test APIs available too:
 XCTAssertTrue(Flags.a11yEnabled.testHasValue())
 // Does the counter have the expected value?
 XCTAssertTrue(try Flags.a11yEnabled.testGetValue())
+```
+
+</div>
+
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+metrics.flags.a11y_enabled.set(is_accessibility_enabled())
+```
+
+There are test APIs available too:
+
+```Python
+# Was anything recorded?
+assert metrics.flags.a11y_enabled.test_has_value()
+# Does it have the expected value?
+assert True is metrics.flags.a11y_enabled.test_get_value()
 ```
 
 </div>
@@ -100,3 +120,4 @@ XCTAssertTrue(try Flags.a11yEnabled.testGetValue())
 
 * [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-boolean-metric-type/index.html)
 * [Swift API docs](../../../swift/Classes/BooleanMetricType.html)
+* [Python API docs](../../../python/glean/metrics/boolean.html)

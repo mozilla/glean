@@ -30,11 +30,14 @@ from . import metrics
 # A mapping from the name of the metric type as it appears in the metrics.yaml
 # to the Python class for that metric type.
 _TYPE_MAPPING = {
+    "boolean": metrics.BooleanMetricType,
     "counter": metrics.CounterMetricType,
+    "datetime": metrics.DatetimeMetricType,
     "event": metrics.EventMetricType,
     "labeled_counter": metrics.LabeledCounterMetricType,
     "ping": metrics.PingType,
     "string": metrics.StringMetricType,
+    "timespan": metrics.TimespanMetricType,
     "uuid": metrics.UuidMetricType,
 }
 
