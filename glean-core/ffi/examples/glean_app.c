@@ -31,9 +31,23 @@ int main(void)
 
   glean_counter_add(metric, 2);
 
-  char *payload = glean_ping_collect(store1, NULL);
-  printf("Payload:\n%s\n", payload);
-  glean_str_free(payload);
+  glean_submit_ping_by_name("store1", NULL);
+
+  // task == 0 (wait)
+  // task == 1 (upload)
+  // task == 2 (done)
+  FfiPingUploadTask task = glean_get_upload_task();
+  while (task.tag == 1) {
+    printf("tag: %d\n", task.tag);
+    if (task.tag == 1) {
+      printf("uuid: %s\n", task.upload.uuid);
+      printf("path: %s\n", task.upload.path);
+      printf("body: %s\n", task.upload.body);
+    }
+    glean_process_ping_upload_response(task.upload.uuid, 200);
+    task = glean_get_upload_task();
+  }
+  printf("tag: %d\n", task.tag);
 
   glean_destroy_counter_metric(metric);
 

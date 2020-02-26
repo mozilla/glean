@@ -3,11 +3,13 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use std::convert::TryFrom;
+use std::ffi::CString;
 use std::os::raw::c_char;
 use std::panic::UnwindSafe;
 
 use ffi_support::{define_string_destructor, ConcurrentHandleMap, FfiStr, IntoFfi};
 
+use glean_core::upload::PingUploadTask;
 use glean_core::Glean;
 
 mod macros;
@@ -322,6 +324,69 @@ pub extern "C" fn glean_destroy_glean() {
 #[no_mangle]
 pub extern "C" fn glean_is_first_run() -> u8 {
     with_glean_value(|glean| glean.is_first_run())
+}
+
+/// A FFI-compatible representation for the PingUploadTask
+#[repr(u8)]
+pub enum FfiPingUploadTask {
+    Wait,
+    Upload {
+        uuid: *const c_char,
+        path: *const c_char,
+        body: *const c_char,
+        headers: *const c_char,
+    },
+    Done,
+}
+
+/// Convert the PingUploadTask to the FFI compatible FfiPingUploadTask.
+impl From<PingUploadTask> for FfiPingUploadTask {
+    fn from(task: PingUploadTask) -> Self {
+        match task {
+            PingUploadTask::Wait => FfiPingUploadTask::Wait,
+            PingUploadTask::Upload(request) => {
+                let uuid = CString::new(request.uuid()).unwrap();
+                let path = CString::new(request.path()).unwrap();
+                let body = CString::new(request.body()).unwrap();
+                let headers = CString::new(request.headers()).unwrap();
+                FfiPingUploadTask::Upload {
+                    uuid: uuid.into_raw(),
+                    path: path.into_raw(),
+                    body: body.into_raw(),
+                    headers: headers.into_raw(),
+                }
+            }
+            PingUploadTask::Done => FfiPingUploadTask::Done,
+        }
+    }
+}
+
+unsafe impl IntoFfi for FfiPingUploadTask {
+    type Value = FfiPingUploadTask;
+
+    #[inline]
+    fn ffi_default() -> FfiPingUploadTask {
+        FfiPingUploadTask::Done
+    }
+
+    #[inline]
+    fn into_ffi_value(self) -> FfiPingUploadTask {
+        self
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn glean_get_upload_task() -> FfiPingUploadTask {
+    with_glean_value(|glean| FfiPingUploadTask::from(glean.get_upload_task()))
+}
+
+#[no_mangle]
+pub extern "C" fn glean_process_ping_upload_response(uuid: FfiStr, status: u16) {
+    with_glean(|glean| {
+        let uuid = uuid.to_string_fallible()?;
+        glean.process_ping_upload_response(&uuid, status);
+        Ok(())
+    });
 }
 
 define_string_destructor!(glean_str_free);

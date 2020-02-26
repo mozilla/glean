@@ -70,6 +70,29 @@ typedef const int32_t *RawIntArray;
 typedef const char *const *RawStringArray;
 
 /**
+ * A FFI-compatible representation for the PingUploadTask
+ */
+enum FfiPingUploadTask_Tag {
+  Wait,
+  Upload,
+  Done,
+};
+typedef uint8_t FfiPingUploadTask_Tag;
+
+typedef struct {
+  FfiPingUploadTask_Tag tag;
+  const char *uuid;
+  const char *path;
+  const char *body;
+  const char *headers;
+} Upload_Body;
+
+typedef union {
+  FfiPingUploadTask_Tag tag;
+  Upload_Body upload;
+} FfiPingUploadTask;
+
+/**
  * Configuration over FFI.
  *
  * **CAUTION**: This must match _exactly_ the definition on the Kotlin side.
@@ -194,6 +217,8 @@ uint8_t glean_event_test_has_value(uint64_t metric_id, FfiStr storage_name);
 char *glean_experiment_test_get_data(FfiStr experiment_id);
 
 uint8_t glean_experiment_test_is_active(FfiStr experiment_id);
+
+FfiPingUploadTask glean_get_upload_task(void);
 
 /**
  * # Safety
@@ -389,6 +414,8 @@ uint64_t glean_new_uuid_metric(FfiStr category,
 uint8_t glean_on_ready_to_submit_pings(void);
 
 char *glean_ping_collect(uint64_t ping_type_handle, FfiStr reason);
+
+void glean_process_ping_upload_response(FfiStr uuid, uint16_t status);
 
 void glean_quantity_set(uint64_t metric_id, int64_t value);
 
