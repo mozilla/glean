@@ -1,7 +1,6 @@
 {
   "$id": "moz://mozilla.org/schemas/glean/ping/1",
   "$schema": "http://json-schema.org/draft-06/schema#",
-  "$originUrl": "https://raw.githubusercontent.com/mozilla-services/mozilla-pipeline-schemas/f2a7ce4/schemas/glean/glean/glean.1.schema.json",
   "additionalProperties": false,
   "description": "Schema for the ping content sent by Mozilla's glean telemetry SDK\n",
   "properties": {

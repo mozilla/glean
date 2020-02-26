@@ -17,7 +17,7 @@ from glean import __version__ as glean_version
 # !IMPORTANT!
 # Everytime this hash is changed it should also be changed in
 # glean-core/android/build.gradle
-GLEAN_PING_SCHEMA_GIT_HASH = "f2a7ce4"
+GLEAN_PING_SCHEMA_GIT_HASH = "ee08e7c"
 GLEAN_PING_SCHEMA_URL = (
     "https://raw.githubusercontent.com/mozilla-services/"
     "mozilla-pipeline-schemas/{}/schemas/glean/glean/"
