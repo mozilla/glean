@@ -251,6 +251,8 @@ class TimespanMetricTypeTest {
         metric.setRawNanos(timespanNanos)
         metric.stop()
 
-        assertNotEquals(timespanNanos, metric.testGetValue())
+        // If setRawNanos worked, (which it's not supposed to in this case), it would
+        // have recorded 1000000000 ns == 1s.  Make sure it's not that.
+        assertNotEquals(1, metric.testGetValue())
     }
 }

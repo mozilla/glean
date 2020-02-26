@@ -37,6 +37,7 @@ _TYPE_MAPPING = {
     "labeled_counter": metrics.LabeledCounterMetricType,
     "ping": metrics.PingType,
     "string": metrics.StringMetricType,
+    "timespan": metrics.TimespanMetricType,
     "uuid": metrics.UuidMetricType,
 }
 

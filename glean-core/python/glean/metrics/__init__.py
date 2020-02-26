@@ -12,6 +12,7 @@ from .labeled import LabeledCounterMetricType
 from .lifetime import Lifetime
 from .ping import PingType
 from .string import StringMetricType
+from .timespan import TimespanMetricType
 from .timeunit import TimeUnit
 from .uuid import UuidMetricType
 
@@ -27,6 +28,7 @@ __all__ = [
     "RecordedEventData",
     "RecordedExperimentData",
     "StringMetricType",
+    "TimespanMetricType",
     "TimeUnit",
     "UuidMetricType",
 ]
