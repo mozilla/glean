@@ -3,6 +3,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use std::convert::TryFrom;
+use std::ffi::CStr;
 use std::os::raw::c_char;
 use std::panic::UnwindSafe;
 
@@ -334,8 +335,15 @@ pub extern "C" fn glean_get_upload_task() -> FfiPingUploadTask {
 #[no_mangle]
 pub extern "C" fn glean_process_ping_upload_response(task: FfiPingUploadTask, status: u16) {
     with_glean(|glean| {
-        let uuid = task.uuid_as_str()?;
-        glean.process_ping_upload_response(uuid, status);
+        if let FfiPingUploadTask::Upload { uuid, .. } = task {
+            assert!(!uuid.is_null());
+            let uuid_str = unsafe {
+                CStr::from_ptr(uuid)
+                    .to_str()
+                    .map_err(|_| glean_core::Error::utf8_error())
+            }?;
+            glean.process_ping_upload_response(uuid_str, status);
+        };
         Ok(())
     });
 }

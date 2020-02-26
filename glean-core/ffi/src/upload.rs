@@ -1,10 +1,10 @@
-use std::ffi::{CStr, CString};
+use std::ffi::CString;
 use std::os::raw::c_char;
 
 use ffi_support::IntoFfi;
 
 use crate::glean_str_free;
-use glean_core::{upload::PingUploadTask, Result};
+use glean_core::upload::PingUploadTask;
 
 /// A FFI-compatible representation for the PingUploadTask
 #[repr(u8)]
@@ -17,21 +17,6 @@ pub enum FfiPingUploadTask {
         headers: *mut c_char,
     },
     Done,
-}
-
-impl FfiPingUploadTask {
-    pub fn uuid_as_str(&self) -> Result<&str> {
-        if let FfiPingUploadTask::Upload { uuid, .. } = self {
-            assert!(!uuid.is_null());
-            unsafe {
-                CStr::from_ptr(*uuid)
-                    .to_str()
-                    .map_err(|_| glean_core::Error::utf8_error())
-            }
-        } else {
-            Ok("")
-        }
-    }
 }
 
 impl From<PingUploadTask> for FfiPingUploadTask {
