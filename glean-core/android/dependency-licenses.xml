@@ -37,20 +37,8 @@ the details of which are reproduced below.
     <url>https://github.com/cryptocorrosion/cryptocorrosion</url>
   </license>
   <license>
-    <name>Apache License 2.0: autocfg</name>
-    <url>https://github.com/cuviper/autocfg</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: backtrace</name>
-    <url>https://github.com/rust-lang/backtrace-rs</url>
-  </license>
-  <license>
     <name>Apache License 2.0: bitflags</name>
     <url>https://github.com/bitflags/bitflags</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: cc</name>
-    <url>https://github.com/alexcrichton/cc-rs</url>
   </license>
   <license>
     <name>Apache License 2.0: cfg-if</name>
@@ -67,10 +55,6 @@ the details of which are reproduced below.
   <license>
     <name>Apache License 2.0: ffi-support</name>
     <url>https://github.com/mozilla/application-services</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: hermit-abi</name>
-    <url>https://github.com/hermitcore/rusty-hermit</url>
   </license>
   <license>
     <name>Apache License 2.0: idna</name>
@@ -109,10 +93,6 @@ the details of which are reproduced below.
     <url>https://github.com/servo/rust-url/</url>
   </license>
   <license>
-    <name>Apache License 2.0: pkg-config</name>
-    <url>https://github.com/rust-lang/pkg-config-rs</url>
-  </license>
-  <license>
     <name>Apache License 2.0: proc-macro2</name>
     <url>https://github.com/alexcrichton/proc-macro2</url>
   </license>
@@ -127,10 +107,6 @@ the details of which are reproduced below.
   <license>
     <name>Apache License 2.0: regex-syntax</name>
     <url>https://github.com/rust-lang/regex</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: rustc-demangle</name>
-    <url>https://github.com/alexcrichton/rustc-demangle</url>
   </license>
   <license>
     <name>Apache License 2.0: serde</name>
@@ -151,10 +127,6 @@ the details of which are reproduced below.
   <license>
     <name>Apache License 2.0: syn</name>
     <url>https://github.com/dtolnay/syn</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: tempfile</name>
-    <url>https://github.com/Stebalien/tempfile</url>
   </license>
   <license>
     <name>Apache License 2.0: time</name>
@@ -185,14 +157,6 @@ the details of which are reproduced below.
     <url>https://github.com/uuid-rs/uuid</url>
   </license>
   <license>
-    <name>Apache License 2.0: version_check</name>
-    <url>https://github.com/SergioBenitez/version_check</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: wasi</name>
-    <url>https://github.com/bytecodealliance/wasi</url>
-  </license>
-  <license>
     <name>Apache License 2.0: getrandom</name>
     <url>https://github.com/rust-random/getrandom</url>
   </license>
@@ -209,32 +173,12 @@ the details of which are reproduced below.
     <url>https://github.com/rust-random/rand</url>
   </license>
   <license>
-    <name>Apache License 2.0: rand_hc</name>
-    <url>https://github.com/rust-random/rand</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: remove_dir_all</name>
-    <url>https://github.com/XAMPPRocky/remove_dir_all.git</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: backtrace-sys</name>
-    <url>https://github.com/alexcrichton/backtrace-rs</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: ctor</name>
-    <url>https://github.com/mmastrac/rust-ctor</url>
-  </license>
-  <license>
     <name>Apache License 2.0: failure_derive</name>
     <url>https://github.com/withoutboats/failure_derive</url>
   </license>
   <license>
     <name>Apache License 2.0: lmdb-rkv-sys</name>
     <url>https://github.com/mozilla/lmdb-rs.git</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: winapi-i686-pc-windows-gnu</name>
-    <url>https://github.com/retep998/winapi-rs</url>
   </license>
   <license>
     <name>Apache License 2.0: winapi-x86_64-pc-windows-gnu</name>
@@ -261,24 +205,12 @@ the details of which are reproduced below.
     <url>https://github.com/SimonSapin/rust-std-candidates</url>
   </license>
   <license>
-    <name>MIT License: nom</name>
-    <url>https://github.com/Geal/nom</url>
-  </license>
-  <license>
-    <name>MIT License: iso8601</name>
-    <url>https://github.com/badboy/iso8601</url>
-  </license>
-  <license>
     <name>MIT License: ordered-float</name>
     <url>https://github.com/reem/rust-ordered-float</url>
   </license>
   <license>
     <name>MIT License: atty</name>
     <url>https://github.com/softprops/atty</url>
-  </license>
-  <license>
-    <name>MIT License: redox_syscall</name>
-    <url>https://gitlab.redox-os.org/redox-os/syscall</url>
   </license>
   <license>
     <name>MIT License: synstructure</name>
@@ -293,10 +225,6 @@ the details of which are reproduced below.
     <url>https://github.com/BurntSushi/byteorder</url>
   </license>
   <license>
-    <name>MIT License: memchr</name>
-    <url>https://github.com/BurntSushi/rust-memchr</url>
-  </license>
-  <license>
     <name>MIT License: termcolor</name>
     <url>https://github.com/BurntSushi/termcolor</url>
   </license>
@@ -307,6 +235,10 @@ the details of which are reproduced below.
   <license>
     <name>MIT License: winapi-util</name>
     <url>https://github.com/BurntSushi/winapi-util</url>
+  </license>
+  <license>
+    <name>Mozilla Public License 2.0: benchmark</name>
+    <url>https://crates.io/crates/benchmark</url>
   </license>
   <license>
     <name>Mozilla Public License 2.0: glean-core</name>
