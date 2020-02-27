@@ -7,7 +7,7 @@
 use std::collections::HashMap;
 
 use chrono::prelude::{DateTime, Utc};
-use serde_json::Value as JsonValue;
+use serde_json::{self, Value as JsonValue};
 
 /// Represents a request to upload a ping.
 #[derive(PartialEq, Debug, Clone)]
@@ -37,6 +37,7 @@ impl PingRequest {
         }
     }
 
+    /// Verifies if current request is for a deletion-request ping.
     pub fn is_deletion_request(&self) -> bool {
         // The path format should be `/submit/<app_id>/<ping_name>/<schema_version/<doc_id>`
         self.path

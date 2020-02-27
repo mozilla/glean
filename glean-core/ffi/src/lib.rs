@@ -3,6 +3,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use std::convert::TryFrom;
+use std::ffi::CStr;
 use std::os::raw::c_char;
 use std::panic::UnwindSafe;
 
@@ -28,12 +29,14 @@ mod string;
 mod string_list;
 mod timespan;
 mod timing_distribution;
+mod upload;
 mod uuid;
 
 use ffi_string_ext::FallibleToString;
 use from_raw::*;
 use handlemap_ext::HandleMapExtension;
 use ping_type::PING_TYPES;
+use upload::FfiPingUploadTask;
 
 /// Execute the callback with a reference to the Glean singleton, returning a `Result`.
 ///
@@ -322,6 +325,27 @@ pub extern "C" fn glean_destroy_glean() {
 #[no_mangle]
 pub extern "C" fn glean_is_first_run() -> u8 {
     with_glean_value(|glean| glean.is_first_run())
+}
+
+#[no_mangle]
+pub extern "C" fn glean_get_upload_task() -> FfiPingUploadTask {
+    with_glean_value(|glean| FfiPingUploadTask::from(glean.get_upload_task()))
+}
+
+#[no_mangle]
+pub extern "C" fn glean_process_ping_upload_response(task: FfiPingUploadTask, status: u16) {
+    with_glean(|glean| {
+        if let FfiPingUploadTask::Upload { uuid, .. } = task {
+            assert!(!uuid.is_null());
+            let uuid_str = unsafe {
+                CStr::from_ptr(uuid)
+                    .to_str()
+                    .map_err(|_| glean_core::Error::utf8_error())
+            }?;
+            glean.process_ping_upload_response(uuid_str, status);
+        };
+        Ok(())
+    });
 }
 
 define_string_destructor!(glean_str_free);

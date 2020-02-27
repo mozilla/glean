@@ -36,7 +36,7 @@ mod internal_pings;
 pub mod metrics;
 pub mod ping;
 pub mod storage;
-mod upload;
+pub mod upload;
 mod util;
 
 pub use crate::common_metric_data::{CommonMetricData, Lifetime};
