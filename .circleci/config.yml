@@ -179,6 +179,25 @@ jobs:
           name: Run license check
           command: cargo deny check
 
+  Check vendored schema:
+    docker:
+      - image: circleci/rust:latest
+    steps:
+      - checkout
+      - run:
+          name: Check vendored schema for upstream updates
+          command: |
+            bin/update-schema.sh latest
+            if ! git diff --exit-code HEAD -- glean-core/preview/tests/glean.1.schema.json; then
+              echo "===================================="
+              echo "Latest schema from upstream changed."
+              echo "Please regenerate the file using:"
+              echo "    bin/update-schema.sh latest"
+              echo "Commit the modified files and push."
+              echo "===================================="
+              exit 1
+            fi
+
   Lint YAML with yamllint:
     docker:
       - image: circleci/python:3.7.5
@@ -896,6 +915,7 @@ workflows:
       - Rust FFI header check
       - Lint Android with ktlint and detekt
       - Lint Python
+      - Check vendored schema
 
   ci:
     jobs:
