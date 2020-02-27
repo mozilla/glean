@@ -179,7 +179,7 @@ impl PingDirectoryManager {
             // We might not be able to get the modified date for a given file,
             // in which case we just put it at the end.
             if let (Ok(a), Ok(b)) = (a, b) {
-                a.partial_cmp(b).unwrap()
+                a.cmp(b)
             } else {
                 Ordering::Less
             }
