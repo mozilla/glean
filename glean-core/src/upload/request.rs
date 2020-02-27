@@ -20,7 +20,7 @@ pub struct PingRequest {
     /// The body of the request.
     pub body: JsonValue,
     /// A map with all the headers to be sent with the request.
-    headers: HashMap<String, String>,
+    pub headers: HashMap<String, String>,
 }
 
 impl PingRequest {
@@ -35,26 +35,6 @@ impl PingRequest {
             body,
             headers: Self::create_request_headers(),
         }
-    }
-
-    /// Get the uuid as an owned String.
-    pub fn uuid(&self) -> String {
-        self.uuid.to_owned()
-    }
-
-    /// Get the path as an owned String.
-    pub fn path(&self) -> String {
-        self.path.to_owned()
-    }
-
-    /// Get the body as a JSON formatted string.
-    pub fn body(&self) -> String {
-        serde_json::to_string(&self.body).unwrap()
-    }
-
-    /// Get the headers as a JSON formatted string.
-    pub fn headers(&self) -> String {
-        serde_json::to_string(&self.headers).unwrap()
     }
 
     /// Verifies if current request is for a deletion-request ping.

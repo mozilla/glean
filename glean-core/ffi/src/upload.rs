@@ -24,10 +24,14 @@ impl From<PingUploadTask> for FfiPingUploadTask {
         match task {
             PingUploadTask::Wait => FfiPingUploadTask::Wait,
             PingUploadTask::Upload(request) => {
-                let uuid = CString::new(request.uuid()).unwrap();
-                let path = CString::new(request.path()).unwrap();
-                let body = CString::new(request.body()).unwrap();
-                let headers = CString::new(request.headers()).unwrap();
+                // Safe unwraps:
+                // 1. CString::new(..) should not fail as we are the ones that created the strings being transformed;
+                // 2. serde_json::to_string(&request.body) should not fail as request.body is a JsonValue;
+                // 3. serde_json::to_string(&request.headers) should not fail as request.headers is a HashMap of Strings.
+                let uuid = CString::new(request.uuid.to_owned()).unwrap();
+                let path = CString::new(request.path.to_owned()).unwrap();
+                let body = CString::new(serde_json::to_string(&request.body).unwrap()).unwrap();
+                let headers = CString::new(serde_json::to_string(&request.headers).unwrap()).unwrap();
                 FfiPingUploadTask::Upload {
                     uuid: uuid.into_raw(),
                     path: path.into_raw(),
