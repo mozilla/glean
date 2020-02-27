@@ -20,7 +20,7 @@ pub struct PingRequest {
     /// The body of the request.
     pub body: JsonValue,
     /// A map with all the headers to be sent with the request.
-    pub headers: HashMap<String, String>,
+    pub headers: HashMap<&'static str, String>,
 }
 
 impl PingRequest {
@@ -48,19 +48,16 @@ impl PingRequest {
     }
 
     /// Creates the default request headers.
-    fn create_request_headers() -> HashMap<String, String> {
+    fn create_request_headers() -> HashMap<&'static str, String> {
         let mut headers = HashMap::new();
         let date: DateTime<Utc> = Utc::now();
-        headers.insert("Date".to_string(), date.to_string());
-        headers.insert("X-Client-Type".to_string(), "Glean".to_string());
+        headers.insert("Date", date.to_string());
+        headers.insert("X-Client-Type", "Glean".to_string());
         headers.insert(
-            "Content-Type".to_string(),
+            "Content-Type",
             "application/json; charset=utf-8".to_string(),
         );
-        headers.insert(
-            "X-Client-Version".to_string(),
-            env!("CARGO_PKG_VERSION").to_string(),
-        );
+        headers.insert("X-Client-Version", env!("CARGO_PKG_VERSION").to_string());
         headers
     }
 }
