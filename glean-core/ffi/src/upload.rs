@@ -31,7 +31,8 @@ impl From<PingUploadTask> for FfiPingUploadTask {
                 let uuid = CString::new(request.uuid.to_owned()).unwrap();
                 let path = CString::new(request.path.to_owned()).unwrap();
                 let body = CString::new(serde_json::to_string(&request.body).unwrap()).unwrap();
-                let headers = CString::new(serde_json::to_string(&request.headers).unwrap()).unwrap();
+                let headers =
+                    CString::new(serde_json::to_string(&request.headers).unwrap()).unwrap();
                 FfiPingUploadTask::Upload {
                     uuid: uuid.into_raw(),
                     path: path.into_raw(),
