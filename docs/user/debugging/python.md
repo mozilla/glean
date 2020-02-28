@@ -6,19 +6,19 @@ Glean provides a couple of configuration flags to assist with debugging Python a
 
 The `Glean.configuration.ping_tag` property can be used to add a special flag to the HTTP header so that the ping will end up in the [Glean Debug View](https://docs.telemetry.mozilla.org/concepts/glean/debug_ping_view.html).
 
-To set it, you will need to create a configuration object with that property and pass it to `Glean.initialize`:
+You can set it after `Glean.initialize` is called:
 
 ```py
 from Glean import Glean, Configuration
-
 Glean.initialize(
     application_id="my-app-id",
     application_version="0.1.0",
     upload_enabled=True,
-    configuration=Configuration(
-        ping_tag="my-ping-tag"
-    )
 )
+
+# ...
+
+Glean.configuration.ping_tag = "my-ping-tag"
 ```
 
 After doing so, something like `pings.custom_ping.submit()` will send the custom ping to the Glean Debug View.
