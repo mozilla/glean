@@ -1,9 +1,9 @@
 # Contributing to the Glean SDK
 
-Anyone is welcome to help with the Glean SDK project. Feel free to get in touch with other community members on IRC
+Anyone is welcome to help with the Glean SDK project. Feel free to get in touch with other community members on `chat.mozilla.org` 
 or through issues on GitHub or Bugzilla.
 
-- IRC: `#telemetry` on `irc.mozilla.org`
+- Matrix: [#glean channel on chat.mozilla.org](https://chat.mozilla.org/#/room/#glean:mozilla.org)
 - [the Bugzilla issues list][bugzillalist]
 - [the GitHub issues list](https://github.com/mozilla/glean/issues)
 

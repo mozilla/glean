@@ -86,7 +86,7 @@ You should now be able to build and run Fenix (assuming you could before all thi
 3. This omits the steps if changes needed because, e.g. Glean made a breaking change to an API used in android-components.
    These should be understandable to fix, you usually should be able to find a PR with the fixes somewhere in the android-component's list of pending PRs
    (or, failing that, a description of what to do in the Glean changelog).
-4. Ask in `#glean` slack (or `#telemetry` on mozilla IRC) if you get stuck.
+4. Ask in the [#glean channel on chat.mozilla.org](https://chat.mozilla.org/#/room/#glean:mozilla.org).
 
 ## Notes
 
