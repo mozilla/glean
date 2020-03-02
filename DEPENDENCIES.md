@@ -229,7 +229,7 @@ The following text applies to code linked from these dependencies:
 
 The following text applies to code linked from these dependencies:
 
-* [rkv 0.10.2]( https://github.com/mozilla/rkv )
+* [rkv 0.10.3]( https://github.com/mozilla/rkv )
 
 
 ```
@@ -1299,29 +1299,28 @@ The following text applies to code linked from these dependencies:
 * [failure 0.1.6]( https://github.com/rust-lang-nursery/failure )
 * [ffi-support 0.4.0]( https://github.com/mozilla/application-services )
 * [idna 0.2.0]( https://github.com/servo/rust-url/ )
-* [itoa 0.4.4]( https://github.com/dtolnay/itoa )
+* [itoa 0.4.5]( https://github.com/dtolnay/itoa )
 * [lazy_static 1.4.0]( https://github.com/rust-lang-nursery/lazy-static.rs )
-* [libc 0.2.66]( https://github.com/rust-lang/libc )
+* [libc 0.2.67]( https://github.com/rust-lang/libc )
 * [log 0.4.8]( https://github.com/rust-lang/log )
 * [num-integer 0.1.42]( https://github.com/rust-num/num-integer )
 * [num-traits 0.2.11]( https://github.com/rust-num/num-traits )
-* [once_cell 1.2.0]( https://github.com/matklad/once_cell )
+* [once_cell 1.3.1]( https://github.com/matklad/once_cell )
 * [percent-encoding 2.1.0]( https://github.com/servo/rust-url/ )
-* [proc-macro2 1.0.7]( https://github.com/alexcrichton/proc-macro2 )
+* [proc-macro2 1.0.9]( https://github.com/alexcrichton/proc-macro2 )
 * [quote 1.0.2]( https://github.com/dtolnay/quote )
-* [regex 1.3.3]( https://github.com/rust-lang/regex )
-* [regex-syntax 0.6.13]( https://github.com/rust-lang/regex )
+* [regex 1.3.4]( https://github.com/rust-lang/regex )
+* [regex-syntax 0.6.16]( https://github.com/rust-lang/regex )
 * [serde 1.0.104]( https://github.com/serde-rs/serde )
 * [serde_derive 1.0.104]( https://github.com/serde-rs/serde )
-* [serde_json 1.0.44]( https://github.com/serde-rs/json )
-* [smallvec 1.1.0]( https://github.com/servo/rust-smallvec )
-* [syn 1.0.13]( https://github.com/dtolnay/syn )
+* [serde_json 1.0.48]( https://github.com/serde-rs/json )
+* [smallvec 1.2.0]( https://github.com/servo/rust-smallvec )
+* [syn 1.0.16]( https://github.com/dtolnay/syn )
 * [time 0.1.42]( https://github.com/rust-lang/time )
 * [unicode-bidi 0.3.4]( https://github.com/servo/unicode-bidi )
-* [unicode-normalization 0.1.11]( https://github.com/unicode-rs/unicode-normalization )
+* [unicode-normalization 0.1.12]( https://github.com/unicode-rs/unicode-normalization )
 * [unicode-xid 0.2.0]( https://github.com/unicode-rs/unicode-xid )
 * [url 2.1.1]( https://github.com/servo/rust-url )
-* [uuid 0.7.4]( https://github.com/uuid-rs/uuid )
 * [uuid 0.8.1]( https://github.com/uuid-rs/uuid )
 
 
@@ -1535,7 +1534,7 @@ limitations under the License.
 The following text applies to code linked from these dependencies:
 
 * [getrandom 0.1.14]( https://github.com/rust-random/getrandom )
-* [rand 0.7.2]( https://github.com/rust-random/rand )
+* [rand 0.7.3]( https://github.com/rust-random/rand )
 * [rand_chacha 0.2.1]( https://github.com/rust-random/rand )
 * [rand_core 0.5.1]( https://github.com/rust-random/rand )
 
@@ -2533,7 +2532,7 @@ limitations under the License.
 
 The following text applies to code linked from these dependencies:
 
-* [arrayref 0.3.5]( https://github.com/droundy/arrayref )
+* [arrayref 0.3.6]( https://github.com/droundy/arrayref )
 
 
 ```
@@ -2723,9 +2722,8 @@ SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
-* [byteorder 1.3.2]( https://github.com/BurntSushi/byteorder )
-* [termcolor 1.0.5]( https://github.com/BurntSushi/termcolor )
-* [wincolor 1.0.2]( https://github.com/BurntSushi/termcolor/tree/master/wincolor )
+* [byteorder 1.3.4]( https://github.com/BurntSushi/byteorder )
+* [termcolor 1.1.0]( https://github.com/BurntSushi/termcolor )
 
 
 ```
@@ -2757,7 +2755,7 @@ THE SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
-* [winapi-util 0.1.2]( https://github.com/BurntSushi/winapi-util )
+* [winapi-util 0.1.3]( https://github.com/BurntSushi/winapi-util )
 
 
 ```
