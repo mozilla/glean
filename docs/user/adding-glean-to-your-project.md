@@ -38,7 +38,7 @@ Add this to your Gradle configuration:
 implementation "org.mozilla.components:service-glean:{latest-version}"
 ```
 
-> **Important:** the `{latest-version}` placeholder in the above link should be replaced with the version of android components used by the project.
+> **Important:** the `{latest-version}` placeholder in the above link should be replaced with the version of Android Components used by the project.
 
 The Glean SDK is released as part of [android-components](https://github.com/mozilla-mobile/android-components).  Therefore, it follows android-components' versions.
 The [android-components release page](https://github.com/mozilla-mobile/android-components/releases/) can be used to determine the latest version.
