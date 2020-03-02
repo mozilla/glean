@@ -6,23 +6,22 @@
 import logging
 import socket
 import time
-
+from pathlib import Path
 
 import pytest
-
 
 from glean import testing
 from glean import __version__ as glean_version
 
-# !IMPORTANT!
-# Everytime this hash is changed it should also be changed in
-# glean-core/android/build.gradle
-GLEAN_PING_SCHEMA_GIT_HASH = "63dcb4285b73c0c625cbee46cf1fe506b7f4c5f6"
-GLEAN_PING_SCHEMA_URL = (
-    "https://raw.githubusercontent.com/mozilla-services/"
-    "mozilla-pipeline-schemas/{}/schemas/glean/glean/"
-    "glean.1.schema.json"
-).format(GLEAN_PING_SCHEMA_GIT_HASH)
+# This defines the location of the JSON schema used to validate the pings
+# created during unit testing. This uses the vendored schema.
+#
+# Use `bin/update-schema.sh latest` to update it to the latest upstream version.`
+this_dir = Path(__file__)
+# removing the file name and 3 layers of directories
+GLEAN_PING_SCHEMA_PATH = (
+    this_dir.parent.parent.parent.parent / "glean.1.schema.json"
+).resolve()
 
 # Turn on all logging when running the unit tests
 logging.getLogger(None).setLevel(logging.INFO)
@@ -51,7 +50,7 @@ def safe_httpsserver(httpsserver):
 
 @pytest.fixture
 def ping_schema_url():
-    return GLEAN_PING_SCHEMA_URL
+    return str(GLEAN_PING_SCHEMA_PATH)
 
 
 def wait_for_server(httpserver, timeout=30):

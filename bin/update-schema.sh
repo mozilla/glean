@@ -33,26 +33,10 @@ run() {
 update() {
   COMMIT_HASH="$1"
   FULL_URL="$(printf "$SCHEMA_URL" "$COMMIT_HASH")"
-  SCHEMA_PATH="${WORKSPACE_ROOT}/glean-core/preview/tests/glean.1.schema.json"
+  SCHEMA_PATH="${WORKSPACE_ROOT}/glean.1.schema.json"
 
   echo "Vendoring schema from ${FULL_URL}"
   run curl --silent --fail --show-error --location --retry 5 --retry-delay 10 "$FULL_URL" --output "$SCHEMA_PATH"
-
-  # Update the android/build.gradle version
-
-  FILE=glean-core/android/build.gradle
-  run $SED -i.bak -E \
-      -e "s/^String GLEAN_PING_SCHEMA_GIT_HASH = \"[0-9a-z.-]+\"/String GLEAN_PING_SCHEMA_GIT_HASH = \"${COMMIT_HASH}\"/" \
-      "${WORKSPACE_ROOT}/${FILE}"
-  run rm "${WORKSPACE_ROOT}/${FILE}.bak"
-
-  # Update the Python testso
-
-  FILE=glean-core/python/tests/conftest.py
-  run $SED -i.bak -E \
-      -e "s/^GLEAN_PING_SCHEMA_GIT_HASH = \"[0-9a-z.-]+\"/GLEAN_PING_SCHEMA_GIT_HASH = \"${COMMIT_HASH}\"/" \
-      "${WORKSPACE_ROOT}/${FILE}"
-  run rm "${WORKSPACE_ROOT}/${FILE}.bak"
 }
 
 get_latest() {
