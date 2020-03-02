@@ -33,7 +33,7 @@ run() {
 update() {
   COMMIT_HASH="$1"
   FULL_URL="$(printf "$SCHEMA_URL" "$COMMIT_HASH")"
-  SCHEMA_PATH="${WORKSPACE_ROOT}/glean-core/preview/tests/glean.1.schema.json"
+  SCHEMA_PATH="${WORKSPACE_ROOT}/glean.1.schema.json"
 
   echo "Vendoring schema from ${FULL_URL}"
   run curl --silent --fail --show-error --location --retry 5 --retry-delay 10 "$FULL_URL" --output "$SCHEMA_PATH"

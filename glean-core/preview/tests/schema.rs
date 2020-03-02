@@ -12,7 +12,7 @@ use serde_json::Value;
 use glean::{metrics::PingType, ClientInfoMetrics, Configuration};
 use glean_preview as glean;
 
-const SCHEMA_JSON: &str = include_str!("glean.1.schema.json");
+const SCHEMA_JSON: &str = include_str!("../../../glean.1.schema.json");
 
 fn load_schema() -> Value {
     serde_json::from_str(SCHEMA_JSON).unwrap()
