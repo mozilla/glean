@@ -25,6 +25,15 @@ After doing so, something like `pings.custom_ping.submit()` will send the custom
 
 ## Logging pings
 
-If the `Glean.configuration.log_pings` property is set to `True`, pings are logged to the console whenever they are submitted.
+If the `Glean.configuration.log_pings` property is set to `True`, pings are
+logged to the console on `DEBUG` level whenever they are submitted. You can set
+this property in a similar way as the `ping_tag` property above.
 
-You can set this property in a similar way as the `ping_tag` property above.
+Make sure that when you configure logging in your application, you set the
+level for the `glean` logger to `DEBUG` or higher. Otherwise pings won't be
+logged even if `log_pings` is set to `True`.
+
+See the [Python logging documentation][python-logging] for more information.
+
+[python-logging]: https://docs.python.org/3.8/library/logging.html
+
