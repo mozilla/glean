@@ -33,6 +33,14 @@ Make sure that when you configure logging in your application, you set the
 level for the `glean` logger to `DEBUG` or higher. Otherwise pings won't be
 logged even if `log_pings` is set to `True`.
 
+You can set the logging level for Glean to `DEBUG` as follows:
+
+```python
+import logging
+
+logging.getLogger("glean").setLevel(logging.DEBUG)
+```
+
 See the [Python logging documentation][python-logging] for more information.
 
 [python-logging]: https://docs.python.org/3.8/library/logging.html
