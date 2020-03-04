@@ -69,7 +69,7 @@ If the metric is still needed after its expiration date, it should go back for [
 
 The `lifetime` parameter of a metric defines when its value will be cleared. There are three lifetime options available:
 
-- `ping` (default): The metric is cleared each time it is sent in the ping.
+- `ping` (default): The metric is cleared each time it is submitted in the ping.
   This is the most common case, and should be used for metrics that are highly dynamic, such as things computed in response to the user's interaction with the application.
   
 - `application`: The metric is related to an application run, and is cleared every time the application restarts.
@@ -101,7 +101,7 @@ In this diagram, the ping "lifetimes" are represented as rectangles, but the mom
 
 - **E. User, set on change**: The default value is missing from Ping 1, but since `user` lifetime metrics aren't cleared unless the user profile is reset, it is included in all subsequent pings.
 
-- **F. User, set on change**: Since `user` lifetime metrics aren't cleared unless the user profile is reset, it is included in all pings.
+- **F. User, set on init and change**: Since `user` lifetime metrics aren't cleared unless the user profile is reset, it is included in all pings.
 
 Note that for all of the metric configurations, the toggle of the preference off and on during Ping 4 is completely missed.  If you need to create a ping containing one, and only one, value for this metric, consider using a [custom ping](pings/custom.html) to create a ping whose lifetime matches the lifetime of the value.
 
