@@ -15,6 +15,8 @@ Timings always span the full length between `start` and `stopAndAccumulate`.
 If the Glean upload is disabled when calling `start`, the timer is still started.
 If the Glean upload is disabled at the time `stopAndAccumulate` is called, nothing is recorded.
 
+Multiple concurrent timespans in different threads may be measured at the same time.
+
 ## Configuration
 
 If you wanted to create a timing distribution to measure page load times, first you need to add an entry for it to the `metrics.yaml` file:

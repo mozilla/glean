@@ -4,6 +4,8 @@ Timespans are used to make a measurement of how much time is spent in a particul
 
 To measure the distribution of multiple timespans, see [Timing Distributions](timing_distribution.md). To record absolute times, see [Datetimes](datetime.md).
 
+It is not recommended to use timespans in multiple threads, since calling `start` or `stop` out of order will be recorded as an `invalid_state` error.
+
 ## Configuration
 
 Timespans have a required `time_unit` parameter to specify the smallest unit of resolution that the timespan will record. The allowed values for `time_unit` are:
