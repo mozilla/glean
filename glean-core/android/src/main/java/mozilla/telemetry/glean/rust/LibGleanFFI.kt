@@ -12,6 +12,7 @@ import com.sun.jna.Pointer
 import com.sun.jna.StringArray
 import java.lang.reflect.Proxy
 import mozilla.telemetry.glean.config.FfiConfiguration
+import mozilla.telemetry.glean.upload.FfiPingUploadTask
 
 // Turn a boolean into its Byte (u8) representation
 internal fun Boolean.toByte(): Byte = if (this) 1 else 0
@@ -534,6 +535,10 @@ internal interface LibGleanFFI : Library {
         error_type: Int,
         storage_name: String
     ): Int
+
+    fun glean_get_upload_task(): FfiPingUploadTask.ByValue
+
+    fun glean_process_ping_upload_response(task: FfiPingUploadTask.ByValue, status: Int)
 
     // Misc
 
