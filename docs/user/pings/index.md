@@ -112,7 +112,7 @@ These docs refer to application 'background' state in several places.
 For Android, this specifically means when the activity is no longer visible to the user, it has entered the
 Stopped state, and the system invokes the [`onStop()`](https://developer.android.com/reference/android/app/Activity.html#onStop()) callback.
 
-This may occur, if the user uses `Overview` button to change to another, the user presses the `Back` button and
+This may occur, if the user uses `Overview` button to change to another app, the user presses the `Back` button and
 navigates to a previous application or the home screen, or if the user presses the `Home` button to return to the
 home screen.  This can also occur if the user navigates away from the application through some notification or
 other means.
