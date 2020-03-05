@@ -23,8 +23,8 @@ pub struct Functional {
 
 impl Functional {
     /// Instantiate a new functional bucketing.
-    fn new(log_base: f64, buckets_per_magnitutde: f64) -> Functional {
-        let exponent = log_base.powf(1.0 / buckets_per_magnitutde);
+    fn new(log_base: f64, buckets_per_magnitude: f64) -> Functional {
+        let exponent = log_base.powf(1.0 / buckets_per_magnitude);
 
         Functional { exponent }
     }
@@ -60,12 +60,12 @@ impl Bucketing for Functional {
 
 impl Histogram<Functional> {
     /// Create a histogram with functional buckets.
-    pub fn functional(log_base: f64, buckets_per_magnitutde: f64) -> Histogram<Functional> {
+    pub fn functional(log_base: f64, buckets_per_magnitude: f64) -> Histogram<Functional> {
         Histogram {
             values: HashMap::new(),
             count: 0,
             sum: 0,
-            bucketing: Functional::new(log_base, buckets_per_magnitutde),
+            bucketing: Functional::new(log_base, buckets_per_magnitude),
         }
     }
 
