@@ -125,6 +125,9 @@ impl PingUploadManager {
     /// `PingUploadTask` - see [`PingUploadTask`](enum.PingUploadTask.html) for more information.
     pub fn get_upload_task(&self) -> PingUploadTask {
         if !self.has_processed_pings_dir() {
+            log::info!(
+                "Tried getting an upload task, but processing is ongoing. Will come back later."
+            );
             return PingUploadTask::Wait;
         }
 
@@ -133,8 +136,14 @@ impl PingUploadManager {
             .write()
             .expect("Can't write to pending pings queue.");
         match queue.pop_front() {
-            Some(request) => PingUploadTask::Upload(request),
-            None => PingUploadTask::Done,
+            Some(request) => {
+                log::info!("New upload task! {}", &request.uuid);
+                PingUploadTask::Upload(request)
+            }
+            None => {
+                log::info!("No more pings to upload! You are done.");
+                PingUploadTask::Done
+            }
         }
     }
 
