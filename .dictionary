@@ -80,6 +80,7 @@ conda
 coroutine
 csh
 dataset
+datetime
 destructor
 dev
 dexter

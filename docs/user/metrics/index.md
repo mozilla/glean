@@ -1,5 +1,7 @@
 # Metrics
 
+> **Not sure which metric type to use?** These docs contain a [series of questions](../adding-new-metrics.html#Choosing-a-metric-type) that can help. Reference information about each metric type is linked below.
+
 There are different metrics to choose from, depending on what you want to achieve:
 
 * [Boolean](boolean.md): Records a single truth value, for example "is a11y enabled?"
@@ -26,9 +28,9 @@ There are different metrics to choose from, depending on what you want to achiev
 
 * [Events](event.md): Records events e.g. individual occurrences of user actions, say every time a view was open and from where.
 
-* [Custom Distribution](custom_distribution.md): Used to record the distribution of a value that needs fine-grained control of how the histogram buckets are computed.
+* [Custom Distribution](custom_distribution.md): Used to record the distribution of a value that needs fine-grained control of how the histogram buckets are computed.  **Custom distributions are only available for values that come from Gecko.**
 
-* [Quantity](quantity.md): Used to record a single non-negative integer value. For example, the width of the display in pixels.
+* [Quantity](quantity.md): Used to record a single non-negative integer value. For example, the width of the display in pixels.  **Quantities are only available for values that come from Gecko.**
 
 ## Labeled metrics
 
