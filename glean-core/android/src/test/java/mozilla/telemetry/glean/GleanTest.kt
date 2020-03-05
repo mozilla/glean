@@ -28,7 +28,6 @@ import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.toBoolean
 import mozilla.telemetry.glean.rust.toByte
 import mozilla.telemetry.glean.scheduler.GleanLifecycleObserver
-import mozilla.telemetry.glean.scheduler.DeletionPingUploadWorker
 import mozilla.telemetry.glean.scheduler.PingUploadWorker
 import mozilla.telemetry.glean.testing.GleanTestRule
 import mozilla.telemetry.glean.utils.getLanguageFromLocale
@@ -52,6 +51,8 @@ import java.io.FileReader
 import java.util.Calendar
 import java.util.Locale
 import java.util.concurrent.TimeUnit
+
+const val PINGS_DIR = "pending_pings"
 
 @ObsoleteCoroutinesApi
 @RunWith(AndroidJUnit4::class)
@@ -102,7 +103,7 @@ class GleanTest {
 
         Glean.handleBackgroundEvent()
         // Make sure the file is on the disk
-        val pingPath = File(Glean.getDataDir(), PingUploadWorker.PINGS_DIR)
+        val pingPath = File(Glean.getDataDir(), PINGS_DIR)
         // Only the baseline ping should have been written
         assertEquals(1, pingPath.listFiles()?.size)
 
@@ -112,12 +113,6 @@ class GleanTest {
         val request = server.takeRequest(20L, TimeUnit.SECONDS)
         val docType = request.path.split("/")[3]
         assertEquals("baseline", docType)
-    }
-
-    @Test
-    fun `sending an empty ping doesn't queue work`() {
-        Pings.metrics.submit()
-        assertFalse(getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued)
     }
 
     // Tests from glean-ac (706af1f).
@@ -358,16 +353,6 @@ class GleanTest {
     }
 
     @Test
-    fun `Don't schedule pings if metrics disabled`() {
-        Glean.setUploadEnabled(false)
-
-        runBlocking {
-            Glean.handleBackgroundEvent()
-        }
-        assertFalse(getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued)
-    }
-
-    @Test
     fun `Don't schedule pings if there is no ping content`() {
         resetGlean(getContextWithMockedInfo())
 
@@ -377,7 +362,7 @@ class GleanTest {
 
         // We should only have a baseline ping and no events or metrics pings since nothing was
         // recorded
-        val files = File(Glean.getDataDir(), PingUploadWorker.PINGS_DIR).listFiles()!!
+        val files = File(Glean.getDataDir(), PINGS_DIR).listFiles()!!
 
         // Make sure only the baseline ping is present and no events or metrics pings
         assertEquals(1, files.count())
@@ -575,13 +560,8 @@ class GleanTest {
         Glean.setUploadEnabled(false)
 
         // Verify workers have been cancelled
-        assertFalse("PingUploadWorker is not enqueued",
-            getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued)
         assertTrue("MetricsPingWorker is not enqueued",
             Glean.metricsPingScheduler.timer == null)
-        // Verify deletion ping upload worker has been scheduled
-        assertTrue("DeletionPingUploadWorker is not enqueued",
-            getWorkerStatus(context, DeletionPingUploadWorker.PING_WORKER_TAG).isEnqueued)
     }
 
     @Test

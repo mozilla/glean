@@ -38,12 +38,11 @@ class HttpURLConnectionUploader : PingUploader {
      * @param headers a [HeadersList] containing String to String [Pair] with
      *        the first entry being the header name and the second its value.
      *
-     * @return true if the ping was correctly dealt with (sent successfully
-     *         or faced an unrecoverable error), false if there was a recoverable
-     *         error callers can deal with.
+     * @return return the status code of the upload response,
+     *         or null in case unable to upload.
      */
     @Suppress("ReturnCount", "MagicNumber")
-    override fun upload(url: String, data: String, headers: HeadersList): Boolean {
+    override fun upload(url: String, data: String, headers: HeadersList): Int? {
         var connection: HttpURLConnection? = null
         try {
             connection = openConnection(url)
@@ -62,52 +61,16 @@ class HttpURLConnectionUploader : PingUploader {
             removeCookies(url)
 
             // Finally upload.
-            val responseCode = doUpload(connection, data)
-
-            Log.d(LOG_TAG, "Ping upload: $responseCode")
-
-            when (responseCode) {
-                in HttpURLConnection.HTTP_OK..(HttpURLConnection.HTTP_OK + 99) -> {
-                    // Known success errors (2xx):
-                    // 200 - OK. Request accepted into the pipeline.
-
-                    // We treat all success codes as successful upload even though we only expect 200.
-                    Log.d(LOG_TAG, "Ping successfully sent ($responseCode)")
-                    return true
-                }
-                in HttpURLConnection.HTTP_BAD_REQUEST..(HttpURLConnection.HTTP_BAD_REQUEST + 99) -> {
-                    // Known client (4xx) errors:
-                    // 404 - not found - POST/PUT to an unknown namespace
-                    // 405 - wrong request type (anything other than POST/PUT)
-                    // 411 - missing content-length header
-                    // 413 - request body too large (Note that if we have badly-behaved clients that
-                    //       retry on 4XX, we should send back 202 on body/path too long).
-                    // 414 - request path too long (See above)
-
-                    // Something our client did is not correct. It's unlikely that the client is going
-                    // to recover from this by re-trying again, so we just log and error and report a
-                    // successful upload to the service.
-                    Log.e(LOG_TAG, "Server returned client error code: $responseCode")
-                    return true
-                }
-                else -> {
-                    // Known other errors:
-                    // 500 - internal error
-
-                    // For all other errors we log a warning and try again at a later time.
-                    Log.w(LOG_TAG, "Server returned response code: $responseCode")
-                    return false
-                }
-            }
+            return doUpload(connection, data)
         } catch (e: MalformedURLException) {
             // There's nothing we can do to recover from this here. So let's just log an error and
             // notify the service that this job has been completed - even though we didn't upload
             // anything to the server.
             Log.e(LOG_TAG, "Could not upload telemetry due to malformed URL", e)
-            return true
+            return null
         } catch (e: IOException) {
             Log.w(LOG_TAG, "IOException while uploading ping", e)
-            return false
+            return null
         } finally {
             connection?.disconnect()
         }

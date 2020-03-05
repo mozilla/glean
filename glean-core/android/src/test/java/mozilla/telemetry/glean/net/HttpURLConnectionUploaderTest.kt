@@ -5,17 +5,16 @@
 package mozilla.telemetry.glean.net
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import mozilla.components.support.test.argumentCaptor
 import mozilla.telemetry.glean.config.Configuration
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import org.junit.Test
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
+import org.junit.Test
 
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.doReturn
 import org.mockito.Mockito.doThrow
@@ -23,7 +22,6 @@ import org.mockito.Mockito.mock
 import org.mockito.Mockito.spy
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
-import java.io.IOException
 import java.io.OutputStream
 import java.net.CookieHandler
 import java.net.CookieManager
@@ -57,43 +55,7 @@ class HttpURLConnectionUploaderTest {
     }
 
     @Test
-    fun `Glean headers are correctly dispatched`() {
-        val uploader = spy<HttpURLConnectionUploader>(HttpURLConnectionUploader())
-        val connection = mock<HttpURLConnection>(HttpURLConnection::class.java)
-        doReturn(connection).`when`(uploader).openConnection(anyString())
-        doReturn(200).`when`(uploader).doUpload(connection, testPing)
-
-        val expectedHeaders = mapOf(
-            "Content-Type" to "application/json; charset=utf-8",
-            "Test-header" to "SomeValue",
-            "OtherHeader" to "Glean/Test 25.0.2"
-        )
-        uploader.upload(testPath, testPing, expectedHeaders.toList())
-
-        val headerNameCaptor = argumentCaptor<String>()
-        val headerValueCaptor = argumentCaptor<String>()
-        verify(connection, times(expectedHeaders.size)).setRequestProperty(
-            headerNameCaptor.capture(),
-            headerValueCaptor.capture()
-        )
-
-        val capturedHeader = headerNameCaptor.allValues.zip(headerValueCaptor.allValues)
-        expectedHeaders.toList().forEachIndexed { index: Int, header: Pair<String, String> ->
-            assertEquals(
-                "Header names must be correctly reported",
-                capturedHeader[index].first,
-                header.first
-            )
-            assertEquals(
-                "Header values must be correctly reported",
-                capturedHeader[index].second,
-                header.second
-            )
-        }
-    }
-
-    @Test
-    fun `upload() returns true for successful submissions (200)`() {
+    fun `upload() returns the status code for successful requests`() {
         val connection = mock(HttpURLConnection::class.java)
 
         doReturn(200).`when`(connection).responseCode
@@ -102,55 +64,8 @@ class HttpURLConnectionUploaderTest {
         val client = spy<HttpURLConnectionUploader>(HttpURLConnectionUploader())
         doReturn(connection).`when`(client).openConnection(anyString())
 
-        assertTrue(client.upload(testPath, testPing, emptyList()))
+        assertEquals(client.upload(testPath, testPing, emptyList())!!, 200)
         verify<HttpURLConnection>(connection, times(1)).disconnect()
-    }
-
-    @Test
-    fun `upload() returns false for server errors (5xx)`() {
-        for (responseCode in 500..527) {
-            val connection = mock(HttpURLConnection::class.java)
-            doReturn(responseCode).`when`(connection).responseCode
-            doReturn(mock(OutputStream::class.java)).`when`(connection).outputStream
-
-            val client = spy<HttpURLConnectionUploader>(HttpURLConnectionUploader())
-            doReturn(connection).`when`(client).openConnection(anyString())
-
-            assertFalse(client.upload(testPath, testPing, emptyList()))
-            verify<HttpURLConnection>(connection, times(1)).disconnect()
-        }
-    }
-
-    @Test
-    fun `upload() returns true for successful submissions (2xx)`() {
-        for (responseCode in 200..226) {
-            val connection = mock(HttpURLConnection::class.java)
-
-            doReturn(responseCode).`when`(connection).responseCode
-            doReturn(mock(OutputStream::class.java)).`when`(connection).outputStream
-
-            val client = spy<HttpURLConnectionUploader>(HttpURLConnectionUploader())
-            doReturn(connection).`when`(client).openConnection(anyString())
-
-            assertTrue(client.upload(testPath, testPing, emptyList()))
-            verify<HttpURLConnection>(connection, times(1)).disconnect()
-        }
-    }
-
-    @Test
-    fun `upload() returns true for failing submissions with broken requests (4xx)`() {
-        for (responseCode in 400..451) {
-            val connection = mock(HttpURLConnection::class.java)
-
-            doReturn(responseCode).`when`(connection).responseCode
-            doReturn(mock(OutputStream::class.java)).`when`(connection).outputStream
-
-            val client = spy<HttpURLConnectionUploader>(HttpURLConnectionUploader())
-            doReturn(connection).`when`(client).openConnection(anyString())
-
-            assertTrue(client.upload(testPath, testPing, emptyList()))
-            verify<HttpURLConnection>(connection, times(1)).disconnect()
-        }
     }
 
     @Test
@@ -165,7 +80,7 @@ class HttpURLConnectionUploaderTest {
 
         val client = HttpURLConnectionUploader()
         val url = testConfig.serverEndpoint + testPath
-        assertTrue(client.upload(url, testPing, emptyList()))
+        assertNotNull(client.upload(url, testPing, emptyList()))
 
         val request = server.takeRequest()
         assertEquals(testPath, request.path)
@@ -221,7 +136,7 @@ class HttpURLConnectionUploaderTest {
         // Trigger the connection.
         val url = testConfig.serverEndpoint + testPath
         val client = HttpURLConnectionUploader()
-        assertTrue(client.upload(url, testPing, emptyList()))
+        assertNotNull(client.upload(url, testPing, emptyList()))
 
         val request = server.takeRequest()
         assertEquals(testPath, request.path)
@@ -237,29 +152,9 @@ class HttpURLConnectionUploaderTest {
     }
 
     @Test
-    fun `upload() returns true on malformed URLs`() {
+    fun `upload() returns null on malformed URLs`() {
         val client = spy<HttpURLConnectionUploader>(HttpURLConnectionUploader())
         doThrow(MalformedURLException()).`when`(client).openConnection(anyString())
-
-        // If the URL is malformed then there's nothing we can do to recover. Therefore this is treated
-        // like a successful upload.
-        assertTrue(client.upload("path", "ping", emptyList()))
-    }
-
-    @Test
-    fun `upload() should return false when upload fails`() {
-        val stream = mock(OutputStream::class.java)
-        doThrow(IOException()).`when`(stream).write(any(ByteArray::class.java))
-
-        val connection = mock(HttpURLConnection::class.java)
-        doReturn(stream).`when`(connection).outputStream
-
-        val client = spy<HttpURLConnectionUploader>(HttpURLConnectionUploader())
-        doReturn(connection).`when`(client).openConnection(anyString())
-
-        // And IOException during upload is a failed upload that we should retry. The client should
-        // return false in this case.
-        assertFalse(client.upload("path", "ping", emptyList()))
-        verify<HttpURLConnection>(connection, times(1)).disconnect()
+        assertNull(client.upload("path", "ping", emptyList()))
     }
 }

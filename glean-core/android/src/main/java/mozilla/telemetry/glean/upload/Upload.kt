@@ -8,9 +8,11 @@ import org.json.JSONObject
 import com.sun.jna.Structure
 import com.sun.jna.Pointer
 import com.sun.jna.Union
+import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.net.HeadersList
 import mozilla.telemetry.glean.rust.getRustString
 
+@Suppress("ClassNaming")
 @Structure.FieldOrder("tag", "uuid", "path", "body", "headers")
 internal class Upload_Body(
     // NOTE: We need to provide defaults here, so that JNA can create this object.
@@ -66,6 +68,11 @@ internal class PingRequest(
             for (key in jsonHeaders.keys()) {
                 headers.add(Pair(key, jsonHeaders.get(key).toString()))
             }
+
+            Glean.configuration.pingTag?.let {
+                headers.add(Pair("X-Debug-ID", it))
+            }
+
             return headers
         }
     }

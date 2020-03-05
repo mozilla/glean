@@ -39,13 +39,13 @@ private class TestPingTagClient(
     private val responseUrl: String = Configuration.DEFAULT_TELEMETRY_ENDPOINT,
     private val debugHeaderValue: String? = null
 ) : PingUploader {
-    override fun upload(url: String, data: String, headers: HeadersList): Boolean {
+    override fun upload(url: String, data: String, headers: HeadersList): Int? {
         assertTrue("URL must be redirected for tagged pings",
             url.startsWith(responseUrl))
         assertEquals("Debug headers must match what the ping tag was set to",
             debugHeaderValue, headers.find { it.first == "X-Debug-ID" }!!.second)
 
-        return true
+        return 200
     }
 }
 

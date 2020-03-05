@@ -21,9 +21,8 @@ interface PingUploader {
      * @param data the serialized text data to send
      * @param headers a [HeadersList] containing the headers to add.
      *
-     * @return true if the ping was correctly dealt with (sent successfully
-     *         or faced an unrecoverable error), false if there was a recoverable
-     *         error callers can deal with.
+     * @return return the status code of the upload response,
+     *         or null in case unable to upload.
      */
-    fun upload(url: String, data: String, headers: HeadersList): Boolean
+    fun upload(url: String, data: String, headers: HeadersList): Int?
 }
