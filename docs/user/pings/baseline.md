@@ -11,7 +11,7 @@ This ping is intended to provide metrics that are managed by the library itself,
 The `baseline` ping is automatically submitted with a `reason: background` when the application is moved to the [background](index.md#defining-background-state).
 The `baseline` ping will be submitted at startup with a `reason: dirty_startup`, if the previous session was not cleanly closed. This only happens from the second start.
 
-See also the [ping schedules and timing overview](ping-schedules-and-timing.html).
+See also the [ping schedules and timing overview](ping-schedules-and-timings.html).
 
 ## Contents
 
@@ -22,7 +22,7 @@ The baseline ping includes the following fields:
 | `duration` | Timespan | The duration, in seconds, of the last foreground session. Only available if `reason: background`. [^1] |
 | `locale` | String | The locale of the application. [^2] |
 
-[^1]: See also the [ping schedules and timing overview](ping-schedules-and-timing.html) for how the `duration` metric relates to other sources of timing in the `baseline` ping.
+[^1]: See also the [ping schedules and timing overview](ping-schedules-and-timings.html) for how the `duration` metric relates to other sources of timing in the `baseline` ping.
 
 [^2]: The locale metric in the baseline ping is deprecated. Use [`client_info.locale`](index.html#The-client-info-section) instead. 
 

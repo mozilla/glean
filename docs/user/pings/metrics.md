@@ -34,7 +34,7 @@ The next ping is scheduled for 04:00 the next calendar day (reason code `resched
 
 More [scheduling examples](#scheduling-examples) are included below.
 
-See also the [ping schedules and timing overview](ping-schedules-and-timing.html).
+See also the [ping schedules and timing overview](ping-schedules-and-timings.html).
 
 ## Contents
 The `metrics` ping contains all of the metrics defined in `metrics.yaml` (except events) that don't specify a ping or where `default` is specified in their [`send in pings`](https://mozilla.github.io/glean_parser/metrics-yaml.html#send-in-pings) property.
