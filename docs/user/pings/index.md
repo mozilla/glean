@@ -107,7 +107,7 @@ These docs refer to application 'background' state in several places.
 
 {{#include ../../tab_header.md}}
 
-<div data-lang="Android" class="tab">
+<div data-lang="Kotlin" class="tab">
 
 For Android, this specifically means when the activity is no longer visible to the user, it has entered the
 Stopped state, and the system invokes the [`onStop()`](https://developer.android.com/reference/android/app/Activity.html#onStop()) callback.
@@ -121,7 +121,7 @@ The system may also call `onStop()` when the activity has finished running, and 
 
 </div>
 
-<div data-lang="iOS" class="tab">
+<div data-lang="Swift" class="tab">
 
 For iOS, this specifically means when the app is no longer visible to the user, or when the `UIApplicationDelegate`
 receives the [`applicationDidEnterBackground`](https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622997-applicationdidenterbackground) event.
