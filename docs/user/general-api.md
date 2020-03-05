@@ -27,6 +27,13 @@ The Glean SDK provides a general API that supports the following operations. See
 
 The following steps are required for applications using the Glean SDK, but not libraries.
 
+> **Note**: The `initialize` function _must_ be called, even if telemetry upload is disabled.
+> Glean needs to perform maintenance tasks even when telemetry is disabled, and because Glean
+> does this as part of it's initialization, it is _required_ to always call the `initialize`
+> function. Otherwise, Glean won't be able to clean up collected data, disable queuing of pre-init
+> tasks, or reset the user lifetime metrics and trigger a deletion request ping in the event that
+> this is the first time telemetry is disabled.
+
 {{#include ../tab_header.md}}
 
 <div data-lang="Kotlin" class="tab">
