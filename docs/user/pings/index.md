@@ -11,6 +11,8 @@ If data collection is enabled, the Glean SDK provides a set of built-in pings th
 
 Applications can also define and send their own [custom pings](custom.md).
 
+There is also a [high-level overview](ping-schedules-and-timings.html) of how the `metrics` and `baseline` pings relate and the timings they record.
+
 ## Ping sections
 
 There are two standard metadata sections that are added to most pings, in addition to their core metrics and events content (which are described in [Adding new metrics](../adding-new-metrics.md)).
