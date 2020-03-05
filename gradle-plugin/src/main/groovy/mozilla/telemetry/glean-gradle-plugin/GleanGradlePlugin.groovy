@@ -330,10 +330,6 @@ subprocess.check_call([
         project.preBuild.dependsOn(createBuildDir)
         project.preBuild.finalizedBy("build_envs")
 
-        project.clean {
-            delete condaBootstrapDir
-        }
-
         return condaDir
     }
 
