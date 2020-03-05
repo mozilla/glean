@@ -2,6 +2,11 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v25.1.0...master)
 
+* Android:
+  * `gradlew clean` will no longer remove the Miniconda installation in
+    `~/.gradle/glean`. Therefore `clean` can be used without reinstalling
+    Miniconda afterward every time.
+
 # v25.1.0 (2020-02-26)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v25.0.0...v25.1.0)
