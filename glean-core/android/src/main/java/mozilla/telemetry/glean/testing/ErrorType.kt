@@ -4,6 +4,9 @@
 
 package mozilla.telemetry.glean.testing
 
+/**
+ * Different types of errors that can be reported through Glean's error reporting metrics.
+ */
 enum class ErrorType {
     /**
      * For when the value to be recorded does not match the metric-specific restrictions
