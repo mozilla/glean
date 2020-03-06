@@ -35,6 +35,7 @@ _TYPE_MAPPING = {
     "datetime": metrics.DatetimeMetricType,
     "event": metrics.EventMetricType,
     "labeled_counter": metrics.LabeledCounterMetricType,
+    "memory_unit": metrics.MemoryDistributionMetricType,
     "ping": metrics.PingType,
     "string": metrics.StringMetricType,
     "timespan": metrics.TimespanMetricType,
