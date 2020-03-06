@@ -17,7 +17,7 @@ import androidx.work.WorkerParameters
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.utils.testFlushWorkManagerJob
-import mozilla.telemetry.glean.upload.PingUploadTask
+import mozilla.telemetry.glean.net.PingUploadTask
 
 /**
  * Build the constraints around which the worker can be run, such as whether network
@@ -51,6 +51,12 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
     companion object {
         internal const val PING_WORKER_TAG = "mozac_service_glean_ping_upload_worker"
 
+        // NOTE: The `PINGS_DIR` must be kept in sync with the one in the Rust implementation.
+        @VisibleForTesting
+        internal const val PINGS_DIR = "pending_pings"
+
+        internal const val UNRECOVERABLE_ERROR_STATUS_CODE = 400
+
         /**
          * Function to aid in properly enqueuing the worker in [WorkManager]
          *
@@ -78,41 +84,6 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
         internal fun cancel(context: Context) {
             WorkManager.getInstance(context).cancelUniqueWork(PING_WORKER_TAG)
         }
-
-        /**
-         * Function to perform the actual ping upload task.
-         *
-         * @return true if process was successful
-         */
-        internal fun uploadPings(): Boolean {
-            var ffiTask = LibGleanFFI.INSTANCE.glean_get_upload_task()
-            var task = ffiTask.toPingUploadTask()
-            while (task is PingUploadTask.Upload) {
-                // Get the request
-                val request = task.request()!!
-                // Upload the request
-                // If the status is `null` there was some kind of unrecoverable error
-                // so we return 400 which will ensure this gets treated as such.
-                @Suppress("MagicNumber")
-                val status = Glean.httpClient.doUpload(
-                        request.path,
-                        request.body,
-                        request.headers,
-                        Glean.configuration
-                ) ?: 400
-                // Process the upload response
-                LibGleanFFI.INSTANCE.glean_process_ping_upload_response(ffiTask, status)
-                // Get the next task
-                ffiTask = LibGleanFFI.INSTANCE.glean_get_upload_task()
-                task = ffiTask.toPingUploadTask()
-            }
-
-            return when (task) {
-                is PingUploadTask.Wait -> false
-                is PingUploadTask.Done -> true
-                else -> throw IllegalStateException("Unknown ping uploading task!")
-            }
-        }
     }
 
     /**
@@ -128,9 +99,27 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
      * @return The [androidx.work.ListenableWorker.Result] of the computation
      */
     override fun doWork(): Result {
-        return when {
-            !uploadPings() -> Result.retry()
-            else -> Result.success()
-        }
+        do {
+            val incomingTask = LibGleanFFI.INSTANCE.glean_get_upload_task()
+            when (val action = incomingTask.toPingUploadTask()) {
+                is PingUploadTask.Upload -> {
+                    // Upload the ping request.
+                    // If the status is `null` there was some kind of unrecoverable error
+                    // so we return a known unrecoverable error status code
+                    // which will ensure this gets treated as such.
+                    val status = Glean.httpClient.doUpload(
+                            action.request.path,
+                            action.request.body,
+                            action.request.headers,
+                            Glean.configuration
+                    ) ?: UNRECOVERABLE_ERROR_STATUS_CODE
+
+                    // Process the upload response
+                    LibGleanFFI.INSTANCE.glean_process_ping_upload_response(incomingTask, status)
+                }
+                PingUploadTask.Wait -> return Result.retry()
+                PingUploadTask.Done -> return Result.success()
+            }
+        } while (true)
     }
 }

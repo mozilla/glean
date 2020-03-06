@@ -22,7 +22,7 @@ interface PingUploader {
      * @param headers a [HeadersList] containing the headers to add.
      *
      * @return return the status code of the upload response,
-     *         or null in case unable to upload.
+     *         or null in case upload could not be attempted at all.
      */
     fun upload(url: String, data: String, headers: HeadersList): Int?
 }

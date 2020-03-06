@@ -29,6 +29,7 @@ import mozilla.telemetry.glean.rust.toBoolean
 import mozilla.telemetry.glean.rust.toByte
 import mozilla.telemetry.glean.scheduler.GleanLifecycleObserver
 import mozilla.telemetry.glean.scheduler.PingUploadWorker
+import mozilla.telemetry.glean.scheduler.PingUploadWorker.Companion.PINGS_DIR
 import mozilla.telemetry.glean.testing.GleanTestRule
 import mozilla.telemetry.glean.utils.getLanguageFromLocale
 import mozilla.telemetry.glean.utils.getLocaleTag
@@ -51,8 +52,6 @@ import java.io.FileReader
 import java.util.Calendar
 import java.util.Locale
 import java.util.concurrent.TimeUnit
-
-const val PINGS_DIR = "pending_pings"
 
 @ObsoleteCoroutinesApi
 @RunWith(AndroidJUnit4::class)
@@ -113,6 +112,24 @@ class GleanTest {
         val request = server.takeRequest(20L, TimeUnit.SECONDS)
         val docType = request.path.split("/")[3]
         assertEquals("baseline", docType)
+    }
+
+    @Test
+    fun `X-Debug-ID header is correctly added when pingTag is not null`() {
+        val server = getMockWebServer()
+        resetGlean(context, Glean.configuration.copy(
+            serverEndpoint = "http://" + server.hostName + ":" + server.port,
+            logPings = true,
+            pingTag = "this-ping-is-tagged"
+        ))
+
+        Glean.handleBackgroundEvent()
+
+        // Now trigger it to upload
+        triggerWorkManager(context)
+
+        val request = server.takeRequest(20L, TimeUnit.SECONDS)
+        assertEquals(request.getHeader("X-Debug-ID"), "this-ping-is-tagged")
     }
 
     // Tests from glean-ac (706af1f).

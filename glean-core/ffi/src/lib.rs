@@ -332,6 +332,8 @@ pub extern "C" fn glean_get_upload_task() -> FfiPingUploadTask {
     with_glean_value(|glean| FfiPingUploadTask::from(glean.get_upload_task()))
 }
 
+// We need to pass the whole task instead of only the uuid,
+// so that we can free the strings properly on Drop.
 #[no_mangle]
 pub extern "C" fn glean_process_ping_upload_response(task: FfiPingUploadTask, status: u16) {
     with_glean(|glean| {

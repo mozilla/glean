@@ -137,7 +137,7 @@ impl PingUploadManager {
             .expect("Can't write to pending pings queue.");
         match queue.pop_front() {
             Some(request) => {
-                log::info!("New upload task! {}", &request.uuid);
+                log::info!("New upload task with id {}", &request.uuid);
                 PingUploadTask::Upload(request)
             }
             None => {
