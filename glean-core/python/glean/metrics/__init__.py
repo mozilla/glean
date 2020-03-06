@@ -14,6 +14,7 @@ from .ping import PingType
 from .string import StringMetricType
 from .timespan import TimespanMetricType
 from .timeunit import TimeUnit
+from .timing_distribution import TimingDistributionMetricType
 from .uuid import UuidMetricType
 
 
@@ -30,5 +31,6 @@ __all__ = [
     "StringMetricType",
     "TimespanMetricType",
     "TimeUnit",
+    "TimingDistributionMetricType",
     "UuidMetricType",
 ]
