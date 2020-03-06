@@ -87,7 +87,7 @@ While lifetimes are important to understand for all metric types, they are parti
 
 Let's work through an example to see how these lifetimes play out in practice. Let's suppose we have a user preference, "turbo mode", which defaults to `false`, but the user can turn it to `true` at any time.  We want to know when this flag is `true` so we can measure its affect on other metrics in the same ping.  In the following diagram, we look at a time period that sends 4 pings across two separate runs of the application. We assume here, that like Glean's built-in [metrics ping](pings/metrics.html), the developer writing the metric isn't in control of when the ping is submitted. 
 
-In this diagram, the ping "lifetimes" are represented as rectangles, but the moment the ping is "submitted" is represented by its right edge. The user changes the "turbo mode" setting from `false` to `true` in the first run, and then toggles it again twice in the second run. 
+In this diagram, the ping measurement windows are represented as rectangles, but the moment the ping is "submitted" is represented by its right edge. The user changes the "turbo mode" setting from `false` to `true` in the first run, and then toggles it again twice in the second run. 
   
 ![Metric lifetime timeline](metric-lifetime-timeline.svg)
 
