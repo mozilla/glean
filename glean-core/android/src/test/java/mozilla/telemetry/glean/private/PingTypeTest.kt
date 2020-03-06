@@ -6,11 +6,12 @@ package mozilla.telemetry.glean.private
 
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import mozilla.telemetry.glean.Glean
+import mozilla.telemetry.glean.*
 import mozilla.telemetry.glean.checkPingSchema
 import mozilla.telemetry.glean.getContextWithMockedInfo
 import mozilla.telemetry.glean.getMockWebServer
 import mozilla.telemetry.glean.resetGlean
+import mozilla.telemetry.glean.scheduler.PingUploadWorker
 import mozilla.telemetry.glean.testing.GleanTestRule
 import mozilla.telemetry.glean.triggerWorkManager
 import org.json.JSONObject
@@ -18,6 +19,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
+import org.junit.Assert.assertFalse
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -191,6 +193,34 @@ class PingTypeTest {
         val pingJson = JSONObject(request.body.readUtf8())
         assertNull(pingJson.getJSONObject("client_info").opt("client_id"))
         checkPingSchema(pingJson)
+    }
+
+    @Test
+    fun `Sending a ping with an unknown name is a no-op`() {
+        val server = getMockWebServer()
+
+        val counter = CounterMetricType(
+                disabled = false,
+                category = "test",
+                lifetime = Lifetime.Ping,
+                name = "counter",
+                sendInPings = listOf("unknown")
+        )
+
+        val context = getContextWithMockedInfo()
+        resetGlean(context, Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
+                logPings = true
+        ))
+
+        counter.add()
+        assertTrue(counter.testHasValue())
+
+        Glean.submitPingByName("unknown")
+
+        assertFalse("We shouldn't have any pings scheduled",
+                getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued
+        )
     }
 
     @Test

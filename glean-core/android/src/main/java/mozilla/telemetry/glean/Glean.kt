@@ -177,7 +177,14 @@ open class GleanInternalAPI internal constructor () {
             }
 
             // Deal with any pending events so we can start recording new ones
-            LibGleanFFI.INSTANCE.glean_on_ready_to_submit_pings()
+            val pingSubmitted = LibGleanFFI.INSTANCE.glean_on_ready_to_submit_pings().toBoolean()
+
+            // We need to enqueue the PingUploadWorker in these cases:
+            // 1. Glean is ready to submit pings, to upload those pings;
+            // 2. Upload is disabled, to upload a possible deletion-request ping.
+            if (pingSubmitted || !uploadEnabled) {
+                PingUploadWorker.enqueueWorker(applicationContext)
+            }
 
             // Set up information and scheduling for Glean owned pings. Ideally, the "metrics"
             // ping startup check should be performed before any other ping, since it relies
@@ -212,10 +219,6 @@ open class GleanInternalAPI internal constructor () {
             MainScope().launch {
                 ProcessLifecycleOwner.get().lifecycle.addObserver(gleanLifecycleObserver)
             }
-
-            // Enqueue the PingUploadWorker, this does not depend on wether upload is enabled,
-            // because there might be deletion-request ping in that case.
-            PingUploadWorker.enqueueWorker(applicationContext)
         }
     }
 
@@ -542,16 +545,17 @@ open class GleanInternalAPI internal constructor () {
 
         if (!getUploadEnabled()) {
             Log.e(LOG_TAG, "Glean must be enabled before submitting pings.")
-        } else {
-            LibGleanFFI.INSTANCE.glean_submit_ping_by_name(
-                    pingName,
-                    reason
-            )
+            return
         }
 
-        // Enqueue the PingUploadWorker, this does not depend on wether upload is enabled,
-        // because there might be deletion-request ping in that case.
-        PingUploadWorker.enqueueWorker(applicationContext)
+        val submittedPing = LibGleanFFI.INSTANCE.glean_submit_ping_by_name(
+                pingName,
+                reason
+        ).toBoolean()
+
+        if (submittedPing) {
+            PingUploadWorker.enqueueWorker(applicationContext)
+        }
     }
 
     /**
