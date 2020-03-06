@@ -14,7 +14,7 @@ The rectangles for the `baseline` and `metrics` pings represent the measurement 
 
 The `baseline.duration` metric (included only in `baseline` pings) corresponds to amount of time the application spent on the foreground, which, since measurement window always extend to the next ping, is not always the same thing as the `baseline` ping's measurement window.
 
-The `submission_timestamp` is the time the ping was received at the telemetry endpoint.  It is not exactly the same as `ping_info.end_time`, since there may be various networking and system latencies (represented by the dotted horizontal line, not to scale).  Also of note is that `start_time`/`end_time` are measured using the client's real-time clock in its local timezone, which may include clock skew or completely incorrect values.
+The `submission_timestamp` is the time the ping was received at the telemetry endpoint, added by the ingestion pipeline.  It is not exactly the same as `ping_info.end_time`, since there may be various networking and system latencies both on the client and in the ingestion pipeline (represented by the dotted horizontal line, not to scale).  Also of note is that `start_time`/`end_time` are measured using the client's real-time clock in its local timezone, which is not a fully reliable source of time.
 
 The "Baseline 2" ping illustrates an important corner case. When "Session 2" ended, the OS also shut down the entire process, and the Glean SDK did not have an opportunity to send a `baseline` ping immediately.  In this case, it is sent at the next available opportunity when the application starts up again in "Run 2".  This `baseline` ping is annotated with the reason code `dirty_startup`.
 
