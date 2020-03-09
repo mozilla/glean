@@ -14,6 +14,7 @@ from .memory_distribution import MemoryDistributionMetricType
 from .memoryunit import MemoryUnit
 from .ping import PingType
 from .string import StringMetricType
+from .string_list import StringListMetricType
 from .timespan import TimespanMetricType
 from .timeunit import TimeUnit
 from .timing_distribution import TimingDistributionMetricType
@@ -33,6 +34,7 @@ __all__ = [
     "RecordedEventData",
     "RecordedExperimentData",
     "StringMetricType",
+    "StringListMetricType",
     "TimespanMetricType",
     "TimeUnit",
     "TimingDistributionMetricType",

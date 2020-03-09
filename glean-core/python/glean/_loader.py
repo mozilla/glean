@@ -38,6 +38,7 @@ _TYPE_MAPPING = {
     "memory_unit": metrics.MemoryDistributionMetricType,
     "ping": metrics.PingType,
     "string": metrics.StringMetricType,
+    "string_list": metrics.StringListMetricType,
     "timespan": metrics.TimespanMetricType,
     "timing_distribution": metrics.TimingDistributionMetricType,
     "uuid": metrics.UuidMetricType,
