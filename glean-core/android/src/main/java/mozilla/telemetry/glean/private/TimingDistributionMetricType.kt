@@ -76,8 +76,10 @@ class TimingDistributionMetricType internal constructor(
             return null
         }
 
-        // The Rust code for [start] runs async and we need to use the same clock for start and stop.
-        // Therefore we take the time on the Kotlin side.
+        // Even though the Rust code for [start] runs syncronously, the Rust
+        // code for [stopAndAccumulate] runs asynchronously, and we need to use the same
+        // clock for start and stop. Therefore we take the time on the Kotlin side, both
+        // here and in [stopAndAccumulate].
         val startTime = getElapsedTimeNanos()
 
         // No dispatcher, we need the return value
