@@ -6,7 +6,9 @@
   * `gradlew clean` will no longer remove the Miniconda installation in
     `~/.gradle/glean`. Therefore `clean` can be used without reinstalling
     Miniconda afterward every time.
-
+* Python:
+  * The timing distribution and memory distribution metric types are now supported in Python ([#762](https://github.com/mozilla/glean/pull/762), [#763](https://github.com/mozilla/glean/pull/763)) 
+  
 # v25.1.0 (2020-02-26)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v25.0.0...v25.1.0)

@@ -10,6 +10,8 @@ from .event import EventMetricType, RecordedEventData
 from .experiment import RecordedExperimentData
 from .labeled import LabeledCounterMetricType
 from .lifetime import Lifetime
+from .memory_distribution import MemoryDistributionMetricType
+from .memoryunit import MemoryUnit
 from .ping import PingType
 from .string import StringMetricType
 from .timespan import TimespanMetricType
@@ -25,6 +27,8 @@ __all__ = [
     "EventMetricType",
     "LabeledCounterMetricType",
     "Lifetime",
+    "MemoryDistributionMetricType",
+    "MemoryUnit",
     "PingType",
     "RecordedEventData",
     "RecordedExperimentData",

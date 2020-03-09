@@ -101,6 +101,42 @@ XCTAssertEqual(1, Memory.heapAllocated.testGetNumRecordedErrors(.invalidValue))
 
 </div>
 
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+def allocate_memory(nbytes):
+    # ...
+    metrics.memory.heap_allocated.accumulate(nbytes / 1024)
+```
+
+There are test APIs available too.  For convenience, properties `sum` and `count` are exposed to facilitate validating that data was recorded correctly.
+
+Continuing the `heapAllocated` example above, at this point the metric should have a `sum == 11` and a `count == 2`:
+
+```Python
+# Was anything recorded?
+assert metrics.memory.head_allocated.test_has_value()
+
+# Get snapshot
+snapshot = metrics.memory.heap_allocated.test_get_value()
+
+# Does the sum have the expected value?
+assert 11 == snapshot.sum
+
+# Usually you don't know the exact memory values, but how many should have been recorded.
+assert 2 == snapshot.count
+
+# Did this record a negative value?
+assert 1 == metrics.memory.heap_allocated.test_get_num_recorded_errors(
+    ErrorType.INVALID_VALUE
+)
+```
+
+</div>
+
 {{#include ../../tab_footer.md}}
 
 ## Limits
@@ -120,3 +156,4 @@ XCTAssertEqual(1, Memory.heapAllocated.testGetNumRecordedErrors(.invalidValue))
 
 * [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-memory-distribution-metric-type/index.html)
 * [Swift API docs](../../../swift/Classes/MemoryDistributionMetricType.html)
+* [Python API docs](../../../python/glean/metrics/timing_distribution.html)
