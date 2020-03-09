@@ -62,6 +62,29 @@ XCTAssert(Login.errorsByStage["server_auth"].testHasValue())
 
 </div>
 
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+metrics.login.errors_by_stage["server_auth"].set("Invalid password")
+```
+
+There are test APIs available too:
+
+```Python
+# Was anything recorded?
+assert metrics.login.errors_by_stage["server_auth"].test_has_value()
+
+# Were there any invalid labels?
+assert 1 == metrics.login.errors_by_stage.test_get_num_recorded_errors(
+    ErrorType.INVALID_LABEL
+)
+```
+
+</div>
+
 {{#include ../../tab_footer.md}}
 
 ## Limits
@@ -89,3 +112,4 @@ XCTAssert(Login.errorsByStage["server_auth"].testHasValue())
 
 * Kotlin API docs: [`LabeledMetricType`](../../../javadoc/glean/mozilla.telemetry.glean.private/-labeled-metric-type/index.html), [`StringMetricType`](../../../javadoc/glean/mozilla.telemetry.glean.private/-string-metric-type/index.html)
 * Swift API docs: [`LabeledMetricType`](../../../swift/Classes/LabeledMetricType.html), [`StringMetricType`](../../../swift/Classes/StringMetricType.html)
+* Python API docs: [`LabeledMetricBase`](../../../python/glean/metrics/labeled.html), [`StringMetricType`](../../../python/glean/metrics/string.html)

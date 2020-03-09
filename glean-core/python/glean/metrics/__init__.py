@@ -13,7 +13,11 @@ from .counter import CounterMetricType
 from .datetime import DatetimeMetricType
 from .event import EventMetricType, RecordedEventData
 from .experiment import RecordedExperimentData
-from .labeled import LabeledCounterMetricType
+from .labeled import (
+    LabeledBooleanMetricType,
+    LabeledCounterMetricType,
+    LabeledStringMetricType,
+)
 from .lifetime import Lifetime
 from .memory_distribution import MemoryDistributionMetricType
 from .memoryunit import MemoryUnit
@@ -31,7 +35,9 @@ __all__ = [
     "CounterMetricType",
     "DatetimeMetricType",
     "EventMetricType",
+    "LabeledBooleanMetricType",
     "LabeledCounterMetricType",
+    "LabeledStringMetricType",
     "Lifetime",
     "MemoryDistributionMetricType",
     "MemoryUnit",
