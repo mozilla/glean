@@ -38,6 +38,7 @@ _TYPE_MAPPING = {
     "ping": metrics.PingType,
     "string": metrics.StringMetricType,
     "timespan": metrics.TimespanMetricType,
+    "timing_distribution": metrics.TimingDistributionMetricType,
     "uuid": metrics.UuidMetricType,
 }
 
