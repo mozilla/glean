@@ -15,6 +15,7 @@
     - [Using the experiments API](user/experiments-api.md)
     - [Metric types](user/metrics/index.md)
         - [Boolean](user/metrics/boolean.md)
+        - [Labeled Booleans](user/metrics/labeled_booleans.md)
         - [Counter](user/metrics/counter.md)
         - [Labeled Counters](user/metrics/labeled_counters.md)
         - [String](user/metrics/string.md)
