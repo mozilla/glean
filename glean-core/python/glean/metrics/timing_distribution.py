@@ -97,9 +97,20 @@ class TimingDistributionMetricType:
         stop_time = util.time_ns()
 
         @Dispatcher.launch
-        def stop():
+        def stop_and_accumulate():
+            # CFFI prevents us from passing a negative value to
+            # `glean_timing_distribution_set_stop_and_accumulate`. However, to be
+            # consistent with the other platforms, we should still pass an invalid
+            # value to the Rust side so it can record an error using the Glean
+            # error reporting system.
+            if timer_id < 0:
+                # 64-bit maxint
+                corrected_timer_id = 0xFFFFFFFFFFFFFFFF
+            else:
+                corrected_timer_id = timer_id
+
             _ffi.lib.glean_timing_distribution_set_stop_and_accumulate(
-                self._handle, timer_id, stop_time
+                self._handle, corrected_timer_id, stop_time
             )
 
     def cancel(self, timer_id: Optional[int]) -> None:
@@ -118,7 +129,18 @@ class TimingDistributionMetricType:
 
         @Dispatcher.launch
         def cancel():
-            _ffi.lib.glean_timing_distribution_cancel(self._handle, timer_id)
+            # CFFI prevents us from passing a negative value to
+            # `glean_timing_distribution_cancel`. However, to be consistent
+            # with the other platforms, we should still pass an invalid value
+            # to the Rust side so it can record an error using the Glean error
+            # reporting system.
+            if timer_id < 0:
+                # 64-bit maxint
+                corrected_timer_id = 0xFFFFFFFFFFFFFFFF
+            else:
+                corrected_timer_id = timer_id
+
+            _ffi.lib.glean_timing_distribution_cancel(self._handle, corrected_timer_id)
 
     def test_has_value(self, ping_name: Optional[str] = None) -> bool:
         """
@@ -184,7 +206,7 @@ class TimingDistributionMetricType:
         if ping_name is None:
             ping_name = self._send_in_pings[0]
 
-        return _ffi.lib.glean_timing_distribution_get_num_recorded_errors(
+        return _ffi.lib.glean_timing_distribution_test_get_num_recorded_errors(
             self._handle, error_type.value, _ffi.ffi_encode_string(ping_name),
         )
 
