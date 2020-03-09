@@ -17,7 +17,7 @@ import pytest
 from glean import Configuration, Glean
 from glean import __version__ as glean_version
 from glean import _builtins
-from glean import util
+from glean import _util
 from glean._dispatcher import Dispatcher
 from glean.metrics import CounterMetricType, Lifetime, PingType
 
@@ -258,7 +258,7 @@ def test_the_app_channel_must_be_correctly_set():
 
 
 def test_get_language_tag_reports_the_tag_for_the_default_locale():
-    tag = util.get_locale_tag()
+    tag = _util.get_locale_tag()
     assert re.match("[a-z][a-z]-[A-Z][A-Z]", tag)
 
 

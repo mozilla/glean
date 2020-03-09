@@ -9,7 +9,7 @@ from typing import List, Optional
 from .. import _ffi
 from .._dispatcher import Dispatcher
 from ..testing import ErrorType
-from .. import util
+from .. import _util
 
 
 from .distribution_data import DistributionData
@@ -69,8 +69,8 @@ class TimingDistributionMetricType:
         # Even though the Rust code for `start` runs synchronously, the Rust
         # code for `stopAndAccumulate` runs asynchronously, and we need to use
         # the same clock for start and stop. Therefore we take the time on the
-        # Kotlin side, both here and in `stopAndAccumulate`.
-        start_time = util.time_ns()
+        # Python side, both here and in `stopAndAccumulate`.
+        start_time = _util.time_ns()
 
         # No dispatcher, we need the return value
         return _ffi.lib.glean_timing_distribution_set_start(self._handle, start_time)
@@ -94,7 +94,7 @@ class TimingDistributionMetricType:
         # The Rust code runs async and might be delayed. We need the time as
         # precisely as possible. We also need the same clock for start and stop
         # (`start` takes the time on the Python side).
-        stop_time = util.time_ns()
+        stop_time = _util.time_ns()
 
         @Dispatcher.launch
         def stop_and_accumulate():

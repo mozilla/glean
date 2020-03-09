@@ -3,6 +3,11 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
+"""
+This module contains all of the metric types.
+"""
+
+
 from .boolean import BooleanMetricType
 from .counter import CounterMetricType
 from .datetime import DatetimeMetricType

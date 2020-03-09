@@ -9,7 +9,7 @@ import pytest
 from glean import metrics
 from glean.metrics import Lifetime, TimeUnit
 from glean import testing
-from glean import util
+from glean import _util
 
 
 def test_the_api_saves_to_its_storage_engine():
@@ -27,8 +27,8 @@ def test_the_api_saves_to_its_storage_engine():
     def override_time_ns():
         return override_time
 
-    original_time_ns = util.time_ns
-    util.time_ns = override_time_ns
+    original_time_ns = _util.time_ns
+    _util.time_ns = override_time_ns
 
     try:
         for i in range(1, 4):
@@ -38,7 +38,7 @@ def test_the_api_saves_to_its_storage_engine():
             metric.stop_and_accumulate(timer_id)
 
     finally:
-        util.time_ns = original_time_ns
+        _util.time_ns = original_time_ns
 
     assert metric.test_has_value()
     snapshot = metric.test_get_value()
@@ -91,8 +91,8 @@ def test_api_saves_to_secondary_pings():
     def override_time_ns():
         return override_time
 
-    original_time_ns = util.time_ns
-    util.time_ns = override_time_ns
+    original_time_ns = _util.time_ns
+    _util.time_ns = override_time_ns
 
     try:
         for i in range(1, 4):
@@ -102,7 +102,7 @@ def test_api_saves_to_secondary_pings():
             metric.stop_and_accumulate(timer_id)
 
     finally:
-        util.time_ns = original_time_ns
+        _util.time_ns = original_time_ns
 
     for store in ["store1", "store2", "store3"]:
         assert metric.test_has_value(store)
