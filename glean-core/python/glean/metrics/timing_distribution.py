@@ -66,7 +66,7 @@ class TimingDistributionMetricType:
         if self._disabled:
             return None
 
-        # Even though the Rust code for [start] runs syncronously, the Rust
+        # Even though the Rust code for [start] runs synchronously, the Rust
         # code for [stopAndAccumulate] runs asynchronously, and we need to use
         # the same clock for start and stop. Therefore we take the time on the
         # Kotlin side, both here and in [stopAndAccumulate].
