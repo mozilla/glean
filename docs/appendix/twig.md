@@ -19,3 +19,4 @@ They could be release notes, documentation, hopes, dreams, or whatever: so long 
 * 2020-02-14: [Extending Glean: build re-usable types for new use-cases](https://www.a2p.it/wordpress/tech-stuff/mozilla/extending-glean-build-re-usable-types-for-new-use-cases/)
 * 2020-02-21: [A Distributed Team Echoes Distributed Workflow](https://chuttenblog.wordpress.com/2020/02/21/this-week-in-glean-a-distributed-team-echoes-distributed-workflow/)
 * 2020-02-28: [mozregression telemetry (part 1)](https://wlach.github.io/blog/2020/02/this-week-in-glean-special-guest-post-mozregression-telemetry-part-1/)
+* 2020-03-09: [Metric lifetimes](https://blog.mozilla.org/data/2020/03/09/this-week-in-glean-metric-lifetimes/)
