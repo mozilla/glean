@@ -2,6 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+"""
+The main Glean general API.
+"""
+
 
 import atexit
 import json
@@ -16,10 +20,10 @@ from typing import Dict, List, Optional, Set, TYPE_CHECKING
 from .config import Configuration
 from ._dispatcher import Dispatcher
 from . import _ffi
-from . import hardware
+from . import _hardware
 from .net import PingUploadWorker
 from .net import DeletionPingUploadWorker
-from . import util
+from . import _util
 
 
 # To avoid cyclical imports, but still make mypy type-checking work.
@@ -38,7 +42,11 @@ class Glean:
     Before any data collection can take place, the Glean SDK **must** be
     initialized from the application.
 
-    >>> Glean.initialize(application_id="my-app", application_version="0.0.0", upload_enabled=True)
+    >>> Glean.initialize(
+    ...     application_id="my-app",
+    ...     application_version="0.0.0",
+    ...     upload_enabled=True
+    ... )
     """
 
     # Whether Glean was initialized
@@ -154,7 +162,7 @@ class Glean:
             def check_pending_deletion_request():
                 DeletionPingUploadWorker.process()
 
-    @util.classproperty
+    @_util.classproperty
     def configuration(cls):
         """
         Access the configuration object to change dynamic parameters.
@@ -344,13 +352,13 @@ class Glean:
         """
         from ._builtins import metrics
 
-        metrics.glean.baseline.locale.set(util.get_locale_tag())
+        metrics.glean.baseline.locale.set(_util.get_locale_tag())
         metrics.glean.internal.metrics.os.set(platform.system())
         metrics.glean.internal.metrics.os_version.set(platform.release())
         metrics.glean.internal.metrics.architecture.set(platform.machine())
-        metrics.glean.internal.metrics.locale.set(util.get_locale_tag())
+        metrics.glean.internal.metrics.locale.set(_util.get_locale_tag())
 
-        sysinfo = hardware.get_system_information()
+        sysinfo = _hardware.get_system_information()
         metrics.glean.internal.metrics.device_manufacturer.set(sysinfo.manufacturer)
         metrics.glean.internal.metrics.device_model.set(sysinfo.model)
 

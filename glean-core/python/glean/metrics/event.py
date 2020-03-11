@@ -10,7 +10,7 @@ from typing import Dict, List, Optional
 from .. import _ffi
 from .._dispatcher import Dispatcher
 from ..testing import ErrorType
-from .. import util
+from .. import _util
 
 
 from .lifetime import Lifetime
@@ -125,7 +125,7 @@ class EventMetricType:
         if self._disabled:
             return
 
-        timestamp = util.time_ms()
+        timestamp = _util.time_ms()
 
         @Dispatcher.launch
         def record():

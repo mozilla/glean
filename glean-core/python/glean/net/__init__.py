@@ -3,6 +3,11 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
+"""
+Network functionality for Glean.
+"""
+
+
 from .base_uploader import BaseUploader
 from .http_client import HttpClientUploader
 from .ping_uploader import PingUploader
