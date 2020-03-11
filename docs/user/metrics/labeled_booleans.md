@@ -45,7 +45,7 @@ assertTrue(Accessibility.features["high_contrast"].testHasValue())
 assertEquals(True, Accessibility.features["screen_reader"].testGetValue())
 assertEquals(False, Accessibility.features["high_contrast"].testGetValue())
 // Did we record any invalid labels?
-assertEquals(1, Accessibility.features.testGetNumRecordedErrors(ErrorType.InvalidLabel))
+assertEquals(0, Accessibility.features.testGetNumRecordedErrors(ErrorType.InvalidLabel))
 ```
 
 </div>
@@ -96,7 +96,7 @@ assert metrics.accessibility.features["high_contrast"].test_has_value()
 assert metrics.accessibility.features["screen_reader"].test_get_value()
 assert not metrics.accessibility.features["high_contrast"].test_get_value()
 # Did we record any invalid labels?
-assert 1 == metrics.accessibility.features.test_get_num_recorded_errors(
+assert 0 == metrics.accessibility.features.test_get_num_recorded_errors(
     ErrorType.INVALID_LABEL
 )
 ```
@@ -113,7 +113,7 @@ assert 1 == metrics.accessibility.features.test_get_num_recorded_errors(
 
 * Each label must have a maximum of 60 bytes, when encoded as UTF-8.
 
-* If the labels are specified in the `metrics.yaml`, using a different label will be replaced with the special value `__other__`.
+* If the labels are specified in the `metrics.yaml`, using any label not listed in that file will be replaced with the special value `__other__`.
 
 * If the labels aren't specified in the `metrics.yaml`, only 16 different dynamic labels may be used, after which the special value `__other__` will be used.
 

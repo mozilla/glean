@@ -40,7 +40,7 @@ import org.mozilla.yourApplication.GleanMetrics.Login
 assertTrue(Login.errorsByStage["server_auth"].testHasValue())
 
 // Were there any invalid labels?
-assertEquals(1, Login.errorsByStage.testGetNumRecordedErrors(ErrorType.InvalidLabel))
+assertEquals(0, Login.errorsByStage.testGetNumRecordedErrors(ErrorType.InvalidLabel))
 ```
 
 </div>
@@ -78,7 +78,7 @@ There are test APIs available too:
 assert metrics.login.errors_by_stage["server_auth"].test_has_value()
 
 # Were there any invalid labels?
-assert 1 == metrics.login.errors_by_stage.test_get_num_recorded_errors(
+assert 0 == metrics.login.errors_by_stage.test_get_num_recorded_errors(
     ErrorType.INVALID_LABEL
 )
 ```
@@ -94,7 +94,7 @@ assert 1 == metrics.login.errors_by_stage.test_get_num_recorded_errors(
 
 * Each label must have a maximum of 60 bytes, when encoded as UTF-8.
 
-* If the labels are specified in the `metrics.yaml`, using a different label will be replaced with the special value `__other__`.
+* If the labels are specified in the `metrics.yaml`, using any label not listed in that file will be replaced with the special value `__other__`.
 
 * If the labels aren't specified in the `metrics.yaml`, only 16 different dynamic labels may be used, after which the special value `__other__` will be used.
 
