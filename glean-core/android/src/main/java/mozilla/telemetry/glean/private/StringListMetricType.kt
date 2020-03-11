@@ -66,8 +66,7 @@ class StringListMetricType(
      * Appends a string value to one or more string list metric stores.  If the string exceeds the
      * maximum string length or if the list exceeds the maximum length it will be truncated.
      *
-     * @param value This is a user defined string value. The maximum length of
-     *              this string is `MAX_STRING_LENGTH`.
+     * @param value This is a user defined string value.
      */
     fun add(value: String) {
         if (disabled) {
