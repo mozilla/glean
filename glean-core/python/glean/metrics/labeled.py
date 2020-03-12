@@ -8,8 +8,10 @@ from typing import Callable, List, Optional, Set, Type
 
 
 from .. import _ffi
+from .boolean import BooleanMetricType
 from .counter import CounterMetricType
 from .lifetime import Lifetime
+from .string import StringMetricType
 from ..testing import ErrorType
 
 
@@ -122,6 +124,15 @@ class LabeledMetricBase(abc.ABC):
         )
 
 
+class LabeledBooleanMetricType(LabeledMetricBase):
+    _submetric_type = BooleanMetricType
+    _metric_type_instantiator = _ffi.lib.glean_new_labeled_boolean_metric
+    _submetric_type_instantiator = _ffi.lib.glean_labeled_boolean_metric_get
+    _test_get_num_recorded_errors_ffi = (
+        _ffi.lib.glean_labeled_boolean_test_get_num_recorded_errors
+    )
+
+
 class LabeledCounterMetricType(LabeledMetricBase):
     _submetric_type = CounterMetricType
     _metric_type_instantiator = _ffi.lib.glean_new_labeled_counter_metric
@@ -131,4 +142,17 @@ class LabeledCounterMetricType(LabeledMetricBase):
     )
 
 
-__all__ = ["LabeledCounterMetricType"]
+class LabeledStringMetricType(LabeledMetricBase):
+    _submetric_type = StringMetricType
+    _metric_type_instantiator = _ffi.lib.glean_new_labeled_string_metric
+    _submetric_type_instantiator = _ffi.lib.glean_labeled_string_metric_get
+    _test_get_num_recorded_errors_ffi = (
+        _ffi.lib.glean_labeled_string_test_get_num_recorded_errors
+    )
+
+
+__all__ = [
+    "LabeledBooleanMetricType",
+    "LabeledCounterMetricType",
+    "LabeledStringMetricType",
+]

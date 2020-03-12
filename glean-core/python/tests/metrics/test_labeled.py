@@ -60,6 +60,80 @@ def test_labeled_counter_type(ping_schema_url):
     )
 
 
+def test_labeled_boolean_type(ping_schema_url):
+    labeled_boolean_metric = metrics.LabeledBooleanMetricType(
+        disabled=False,
+        category="telemetry",
+        lifetime=Lifetime.APPLICATION,
+        name="labeled_boolean_metric",
+        send_in_pings=["metrics"],
+    )
+
+    labeled_boolean_metric["label1"].set(True)
+    labeled_boolean_metric["label2"].set(False)
+
+    assert labeled_boolean_metric["label1"].test_has_value()
+    assert labeled_boolean_metric["label1"].test_get_value()
+
+    assert labeled_boolean_metric["label2"].test_has_value()
+    assert not labeled_boolean_metric["label2"].test_get_value()
+
+    json_content = Glean.test_collect(_builtins.pings.metrics)
+
+    assert 0 == validate_ping.validate_ping(
+        io.StringIO(json_content), sys.stdout, schema_url=ping_schema_url
+    )
+
+    tree = json.loads(json_content)
+
+    assert tree["metrics"]["labeled_boolean"]["telemetry.labeled_boolean_metric"][
+        "label1"
+    ]
+    assert not tree["metrics"]["labeled_boolean"]["telemetry.labeled_boolean_metric"][
+        "label2"
+    ]
+
+
+def test_labeled_string_type(ping_schema_url):
+    labeled_string_metric = metrics.LabeledStringMetricType(
+        disabled=False,
+        category="telemetry",
+        lifetime=Lifetime.APPLICATION,
+        name="labeled_string_metric",
+        send_in_pings=["metrics"],
+    )
+
+    labeled_string_metric["label1"].set("foo")
+    labeled_string_metric["label2"].set("bar")
+
+    assert labeled_string_metric["label1"].test_has_value()
+    assert "foo" == labeled_string_metric["label1"].test_get_value()
+
+    assert labeled_string_metric["label2"].test_has_value()
+    assert "bar" == labeled_string_metric["label2"].test_get_value()
+
+    json_content = Glean.test_collect(_builtins.pings.metrics)
+
+    assert 0 == validate_ping.validate_ping(
+        io.StringIO(json_content), sys.stdout, schema_url=ping_schema_url
+    )
+
+    tree = json.loads(json_content)
+
+    assert (
+        "foo"
+        == tree["metrics"]["labeled_string"]["telemetry.labeled_string_metric"][
+            "label1"
+        ]
+    )
+    assert (
+        "bar"
+        == tree["metrics"]["labeled_string"]["telemetry.labeled_string_metric"][
+            "label2"
+        ]
+    )
+
+
 def test_other_label_with_predefined_labels(ping_schema_url):
     labeled_counter_metric = metrics.LabeledCounterMetricType(
         disabled=False,

@@ -45,7 +45,7 @@ assertTrue(Stability.crashCount["native_code_crash"].testHasValue())
 assertEquals(1, Stability.crashCount["uncaught_exception"].testGetValue())
 assertEquals(3, Stability.crashCount["native_code_crash"].testGetValue())
 // Did we record any invalid labels?
-assertEquals(1, Stability.crashCount.testGetNumRecordedErrors(ErrorType.InvalidLabel))
+assertEquals(0, Stability.crashCount.testGetNumRecordedErrors(ErrorType.InvalidLabel))
 ```
 
 </div>
@@ -94,7 +94,7 @@ assert metrics.stability.crash_count["native_code_crash"].test_has_value()
 assert 1 == metrics.stability.crash_count["uncaught_exception"].test_get_value()
 assert 3 == metrics.stability.crash_count["native_code_crash"].test_get_value()
 # Did we record any invalid labels?
-assert 1 == metrics.stability.crash_count.test_get_num_recorded_errors(
+assert 0 == metrics.stability.crash_count.test_get_num_recorded_errors(
     ErrorType.INVALID_LABEL
 )
 ```
@@ -111,7 +111,7 @@ assert 1 == metrics.stability.crash_count.test_get_num_recorded_errors(
 
 * Each label must have a maximum of 60 bytes, when encoded as UTF-8.
 
-* If the labels are specified in the `metrics.yaml`, using a different label will be replaced with the special value `__other__`.
+* If the labels are specified in the `metrics.yaml`, using any label not listed in that file will be replaced with the special value `__other__`.
 
 * If the labels aren't specified in the `metrics.yaml`, only 16 different dynamic labels may be used, after which the special value `__other__` will be used.
 
@@ -129,4 +129,4 @@ assert 1 == metrics.stability.crash_count.test_get_num_recorded_errors(
 
 * Kotlin API docs [`LabeledMetricType`](../../../javadoc/glean/mozilla.telemetry.glean.private/-labeled-metric-type/index.html), [`CounterMetricType`](../../../javadoc/glean/mozilla.telemetry.glean.private/-counter-metric-type/index.html)
 * Swift API docs: [`LabeledMetricType`](../../../swift/Classes/LabeledMetricType.html), [`CounterMetricType`](../../../swift/Classes/CounterMetricType.html)
-* [Python API docs](../../../python/glean/metrics/labeled.html)
+* Python API docs: [`LabeledMetricBase`](../../../python/glean/metrics/labeled.html), [`CounterMetricType`](../../../python/glean/metrics/counter.html)
