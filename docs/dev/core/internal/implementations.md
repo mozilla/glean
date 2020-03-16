@@ -1,6 +1,6 @@
 # Implementations
 
-| Project Name      | Language Bindings   | Operating System  | App lifecycle type  | Environment Data source |
+| Project Name      | Language Bindings   | Operating System  | App Lifecycle Type  | Environment Data source |
 | ----------------- | ------------------- | ----------------  | ------------------- | ----------------------- |
 | glean-core        | Rust                | all               | all                 | none                    |
 | glean-ffi         | C                   | all               | all                 | none                    |
