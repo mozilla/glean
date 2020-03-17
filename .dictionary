@@ -1,4 +1,4 @@
-personal_ws-1.1 en 158 utf-8
+personal_ws-1.1 en 159 utf-8
 AAR
 AARs
 APIs
@@ -63,6 +63,7 @@ alphanumerics
 analytics
 aspell
 async
+autodetected
 backend
 barcode
 boolean
