@@ -123,4 +123,35 @@ public class LabeledMetricType<T> {
             assertUnreachable()
         }
     }
+
+    /// Returns the number of errors recorded for the given metric.
+    ///
+    /// - parameters:
+    ///     * errorType: The type of the error recorded.
+    ///     * pingName: represents the name of the ping to retrieve the metric for.
+    ///                 Defaults to the first value in `sendInPings`.
+    /// - returns: the number of errors recorded for the metric.
+    public func testGetNumRecordedErrors(_ errorType: ErrorType, pingName: String? = nil) -> Int32 {
+        Dispatchers.shared.assertInTestingMode()
+
+        let pingName = pingName ?? self.sendInPings[0]
+
+        switch self.subMetric {
+        case is CounterMetricType:
+            return glean_labeled_counter_test_get_num_recorded_errors(
+                self.handle, errorType.rawValue, pingName
+            )
+        case is BooleanMetricType:
+            return glean_labeled_boolean_test_get_num_recorded_errors(
+                self.handle, errorType.rawValue, pingName
+            )
+        case is StringMetricType:
+            return glean_labeled_string_test_get_num_recorded_errors(
+                self.handle, errorType.rawValue, pingName
+            )
+        default:
+            // The constructor will already throw an exception on an unhandled sub-metric type
+            assertUnreachable()
+        }
+    }
 }

@@ -13,7 +13,7 @@ accessibility:
     description: >
       a11y features enabled on the device. ...
     labels:
-      - screen_reader 
+      - screen_reader
       - high_contrast
     ...
 ```
@@ -68,6 +68,8 @@ XCTAssert(Accessibility.features["high_contrast"].testHasValue())
 // Do the booleans have the expected values?
 XCTAssertEqual(true, try Accessibility.features["screen_reader"].testGetValue())
 XCTAssertEqual(false, try Accessibility.features["high_contrast"].testGetValue())
+// Were there any invalid labels?
+XCTAssertEqual(0, Accessibility.features.testGetNumRecordedErrors(.invalidLabel))
 ```
 
 </div>
@@ -119,7 +121,7 @@ assert 0 == metrics.accessibility.features.test_get_num_recorded_errors(
 
 ## Examples
 
-* Record a related set of boolean flags. 
+* Record a related set of boolean flags.
 
 ## Recorded Errors
 
