@@ -44,7 +44,7 @@ assertTrue(Stability.crashCount["native_code_crash"].testHasValue())
 // Do the counters have the expected values?
 assertEquals(1, Stability.crashCount["uncaught_exception"].testGetValue())
 assertEquals(3, Stability.crashCount["native_code_crash"].testGetValue())
-// Did we record any invalid labels?
+// Were there any invalid labels?
 assertEquals(0, Stability.crashCount.testGetNumRecordedErrors(ErrorType.InvalidLabel))
 ```
 
@@ -68,6 +68,8 @@ XCTAssert(Stability.crashCount["native_code_crash"].testHasValue())
 // Do the counters have the expected values?
 XCTAssertEqual(1, try Stability.crashCount["uncaught_exception"].testGetValue())
 XCTAssertEqual(3, try Stability.crashCount["native_code_crash"].testGetValue())
+// Were there any invalid labels?
+XCTAssertEqual(0, Stability.crashCount.testGetNumRecordedErrors(.invalidLabel))
 ```
 
 </div>
@@ -93,7 +95,7 @@ assert metrics.stability.crash_count["native_code_crash"].test_has_value()
 # Do the counters have the expected values?
 assert 1 == metrics.stability.crash_count["uncaught_exception"].test_get_value()
 assert 3 == metrics.stability.crash_count["native_code_crash"].test_get_value()
-# Did we record any invalid labels?
+# Were there any invalid labels?
 assert 0 == metrics.stability.crash_count.test_get_num_recorded_errors(
     ErrorType.INVALID_LABEL
 )

@@ -58,6 +58,9 @@ There are test APIs available too:
 
 // Was anything recorded?
 XCTAssert(Login.errorsByStage["server_auth"].testHasValue())
+
+// Were there any invalid labels?
+XCTAssertEqual(0, Login.errorsByStage.testGetNumRecordedErrors(.invalidLabel))
 ```
 
 </div>
