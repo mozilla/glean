@@ -90,7 +90,7 @@ elif sys.platform.startswith("win"):  # pragma: no cover
             except subprocess.CalledProcessError:
                 return "error"
             lines = output.splitlines()
-            if lines < 3:
+            if len(lines) < 3:
                 return "error"
             return lines[2].strip().decode("ascii", "replace")
 
