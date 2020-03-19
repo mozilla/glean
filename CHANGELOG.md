@@ -7,7 +7,7 @@
     * **Breaking change:** The regular expression used to validate labels is
       stricter and more correct.
     * Add more information about pings to markdown documentation:
-      * State wether the ping includes client id;
+      * State whether the ping includes client id;
       * Add list of data review links;
       * Add list of related bugs links.
     * `glean_parser` now makes it easier to write external translation functions for
