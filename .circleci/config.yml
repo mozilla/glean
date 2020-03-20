@@ -724,6 +724,14 @@ jobs:
           root: glean-core/python/
           paths: .venv
 
+  Python 3_8 tests:
+    docker:
+      - image: circleci/python:3.8.2
+    steps:
+      - checkout
+      - skip-if-doc-only
+      - test-python
+
   Generate Python documentation:
     docker:
       - image: circleci/python:3.7.6
@@ -939,6 +947,7 @@ workflows:
       - Python 3_5 tests
       - Python 3_6 tests
       - Python 3_7 tests
+      - Python 3_8 tests
 
       - Generate Rust documentation:
           requires:
