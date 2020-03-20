@@ -1052,7 +1052,11 @@ workflows:
           requires:
             - Python 3_7 tests
           filters: *release-filters
-      - pypi-windows-release:
+      - pypi-windows-i686-release:
+          requires:
+            - Python 3_7 tests
+          filters: *release-filters
+      - pypi-windows-x86_64-release:
           requires:
             - Python 3_7 tests
           filters: *release-filters
