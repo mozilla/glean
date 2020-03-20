@@ -114,14 +114,18 @@ commands:
           name: Install mingw
           command: |
             sudo apt update
+            # This package contains tools for both i686 and x86_64 targets
             sudo apt install -y gcc-mingw-w64
       - run:
           name: Add mingw target
           command: |
             rustup target add x86_64-pc-windows-gnu
+            rustup target add i686-pc-windows-gnu
             # Set the linker to use for Rust/mingw
             echo '[target.x86_64-pc-windows-gnu]' >> ~/.cargo/config
             echo 'linker = "/usr/bin/x86_64-w64-mingw32-gcc"' >> ~/.cargo/config
+            echo '[target.i686-pc-windows-gnu]' >> ~/.cargo/config
+            echo 'linker = "/usr/bin/i686-w64-mingw32-gcc"' >> ~/.cargo/config
       - run:
           name: Fix broken mingw toolchain
           command: |
@@ -130,6 +134,7 @@ commands:
             # https://github.com/rust-lang/rust/issues/49078
             # https://wiki.archlinux.org/index.php/Rust#Windows
             for lib in crt2.o dllcrt2.o libmsvcrt.a; do cp -v /usr/x86_64-w64-mingw32/lib/$lib ~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-pc-windows-gnu/lib/; done
+            for lib in crt2.o dllcrt2.o libmsvcrt.a; do cp -v /usr/i686-w64-mingw32/lib/$lib ~/.rustup/toolchains/stable-i686-unknown-linux-gnu/lib/rustlib/i686-pc-windows-gnu/lib/; done
 
   install-ghr-darwin:
     steps:
@@ -804,7 +809,7 @@ jobs:
             # Upload to GitHub
             ./ghr -replace ${CIRCLE_TAG} glean-core/python/dist
 
-  pypi-windows-release:
+  pypi-windows-x86_64-release:
     docker:
       - image: circleci/python:3.7.6
     steps:
@@ -824,7 +829,38 @@ jobs:
           name: Build Windows wheel
           command: |
             cd glean-core/python
-            GLEAN_PYTHON_MINGW_BUILD=1 .venv/bin/python3 setup.py bdist_wheel
+            GLEAN_PYTHON_MINGW_X86_64_BUILD=1 .venv/bin/python3 setup.py bdist_wheel
+            # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
+            # variables are configured in CircleCI's environment variables.
+            .venv/bin/python3 -m twine upload dist/*
+      - install-ghr-linux
+      - run:
+          name: Publish to Github
+          command: |
+            # Upload to GitHub
+            ./ghr -replace ${CIRCLE_TAG} glean-core/python/dist
+
+  pypi-windows-i686-release:
+    docker:
+      - image: circleci/python:3.7.6
+    steps:
+      - install-rustup
+      - setup-rust-toolchain
+      - install-mingw
+      - checkout
+      - run:
+          name: Install Python development tools for host
+          command:
+            make python-setup
+      - run:
+          name: Build Windows glean_ffi.dll
+          command:
+            cargo build --target i686-pc-windows-gnu
+      - run:
+          name: Build Windows wheel
+          command: |
+            cd glean-core/python
+            GLEAN_PYTHON_MINGW_I686_BUILD=1 .venv/bin/python3 setup.py bdist_wheel
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
             .venv/bin/python3 -m twine upload dist/*

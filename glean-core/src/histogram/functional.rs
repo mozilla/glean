@@ -8,6 +8,8 @@ use serde::{Deserialize, Serialize};
 
 use super::{Bucketing, Histogram};
 
+use crate::util::floating_point_context::FloatingPointContext;
+
 /// A functional bucketing algorithm.
 ///
 /// Bucketing is performed by a function, rather than pre-computed buckets.
@@ -39,6 +41,7 @@ impl Functional {
 
     /// Determines the minimum value of a bucket, given a bucket index.
     fn bucket_index_to_bucket_minimum(&self, index: u64) -> u64 {
+        let _ = FloatingPointContext::new();
         self.exponent.powf(index as f64) as u64
     }
 }

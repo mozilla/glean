@@ -111,6 +111,46 @@ pub(crate) fn truncate_string_at_boundary_with_error<S: Into<String>>(
     }
 }
 
+#[cfg(all(target_arch = "x86", target_os = "windows"))]
+pub mod floating_point_context {
+    use libc::size_t;
+
+    #[link(name = "m")]
+    extern "C" {
+        fn _controlfp_s(current: *mut size_t, new: size_t, mask: size_t) -> size_t;
+    }
+
+    const MCW_PC: size_t = 0x00030000;
+    const PC_64: size_t = 0x00000000;
+
+    pub struct FloatingPointContext {
+        original_value: size_t,
+    }
+
+    impl FloatingPointContext {
+        pub fn new() -> Self {
+            let mut current: size_t = 0;
+            let _err = unsafe { _controlfp_s(&mut current, PC_64, MCW_PC) };
+
+            FloatingPointContext {
+                original_value: current,
+            }
+        }
+    }
+
+    impl Drop for FloatingPointContext {
+        fn drop(&mut self) {
+            let mut current: size_t = 0;
+            let _err = unsafe { _controlfp_s(&mut current, self.original_value, MCW_PC) };
+        }
+    }
+}
+
+#[cfg(not(all(target_arch = "x86", target_os = "windows")))]
+pub mod floating_point_context {
+    pub struct FloatingPointContext {}
+}
+
 #[cfg(test)]
 mod test {
     use super::*;

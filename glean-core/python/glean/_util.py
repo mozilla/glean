@@ -18,6 +18,11 @@ def get_locale_tag() -> str:
     """
     value = locale.getlocale()[0]
 
+    # In some contexts, especially on Windows, there is no locale set. Use "C"
+    # to indicate "unknown".
+    if value is None:
+        return "C"
+
     # The format of the locale string is platform depedent. At least on Linux,
     # often an understore is used between language and country, which is not
     # RFC 1766 compliant. Correct it here.
