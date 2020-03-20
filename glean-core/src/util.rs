@@ -149,6 +149,12 @@ pub mod floating_point_context {
 #[cfg(not(all(target_arch = "x86", target_os = "windows")))]
 pub mod floating_point_context {
     pub struct FloatingPointContext {}
+
+    impl FloatingPointContext {
+        pub fn new() -> Self {
+            FloatingPointContext {}
+        }
+    }
 }
 
 #[cfg(test)]
