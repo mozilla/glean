@@ -119,6 +119,18 @@ class TimingDistributionMetricType internal constructor(
     }
 
     /**
+     * Convenience method to simplify measuring a function or block of code
+     */
+     inline fun <U> measure(funcToMeasure: () -> U): U {
+        val timerId = start()
+        try {
+            return funcToMeasure()
+        } finally {
+            stopAndAccumulate(timerId)
+        }
+     }
+
+    /**
      * Abort a previous [start] call. No error is recorded if no [start] was called.
      *
      * @param timerId The [GleanTimerId] associated with this timing. This allows
