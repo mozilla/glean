@@ -98,6 +98,18 @@ class TimespanMetricType internal constructor(
     }
 
     /**
+     * Convenience method to simplify measuring a function or block of code
+     */
+    inline fun <U> measure(funcToMeasure: () -> U): U {
+        start()
+        try {
+            return funcToMeasure()
+        } finally {
+            stop()
+        }
+    }
+
+    /**
      * Abort a previous [start] call. No error is recorded if no [start] was called.
      */
     fun cancel() {

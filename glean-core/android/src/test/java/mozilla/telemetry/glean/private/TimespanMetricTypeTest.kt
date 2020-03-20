@@ -18,6 +18,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import kotlin.reflect.typeOf
 
 @RunWith(AndroidJUnit4::class)
 class TimespanMetricTypeTest {
@@ -254,5 +255,71 @@ class TimespanMetricTypeTest {
         // If setRawNanos worked, (which it's not supposed to in this case), it would
         // have recorded 1000000000 ns == 1s.  Make sure it's not that.
         assertNotEquals(1, metric.testGetValue())
+    }
+
+    @Test
+    fun `measure function correctly measures values`() {
+        // Define a timespan metric, which will be stored in "store1"
+        val metric = TimespanMetricType(
+            disabled = false,
+            category = "telemetry",
+            lifetime = Lifetime.Application,
+            name = "timespan_metric",
+            sendInPings = listOf("store1"),
+            timeUnit = TimeUnit.Millisecond
+        )
+
+        // Create a function to measure, which also returns a value to test that we properly pass
+        // along the returned value from the measure function
+        fun testFunc(value: Boolean): Boolean {
+            return value
+        }
+
+        // Capture returned value to determine if the function return value matches what is expected
+        // and measure the test function, which should record to the metric
+        val testValue = metric.measure {
+            testFunc(true)
+        }
+
+        // Make sure the returned valued matches the expected value of "true"
+        assertTrue("Test value must match", testValue)
+
+        // Check that data was properly recorded.
+        assertTrue("Metric must have a value", metric.testHasValue())
+        assertTrue("Metric value must be greater than zero", metric.testGetValue() >= 0)
+    }
+
+    @Test
+    fun `measure function still measures and allows exceptions to bubble up`() {
+        // Define a timespan metric, which will be stored in "store1"
+        val metric = TimespanMetricType(
+            disabled = false,
+            category = "telemetry",
+            lifetime = Lifetime.Application,
+            name = "timespan_metric",
+            sendInPings = listOf("store1"),
+            timeUnit = TimeUnit.Millisecond
+        )
+
+        // Create a function that will throw a NPE
+        fun testFunc() {
+            throw NullPointerException()
+        }
+
+        // Attempt to measure the function that will throw an exception.  The `measure` function
+        // should allow the exception to bubble up while still measuring and recording to the
+        // metric.
+        try {
+            metric.measure {
+                testFunc()
+            }
+        } catch(e: Exception) {
+            // Make sure we caught the right kind of exception: NPE
+            assertTrue("Exception type must match", e is NullPointerException)
+        } finally {
+            // Check that data was properly recorded, despite the exception.
+            assertTrue("Metric must have a value", metric.testHasValue())
+            assertTrue("Metric value must be greater than zero", metric.testGetValue() >= 0)
+        }
     }
 }
