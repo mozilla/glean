@@ -2,6 +2,17 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v25.1.0...master)
 
+* General:
+  * The version of `glean_parser` has been updated to 1.19.0:
+    * **Breaking change:** The regular expression used to validate labels is
+      stricter and more correct.
+    * Add more information about pings to markdown documentation:
+      * State whether the ping includes client id;
+      * Add list of data review links;
+      * Add list of related bugs links.
+    * `glean_parser` now makes it easier to write external translation functions for
+      different language targets.
+    * BUGFIX: glean_parser now works on 32-bit Windows.
 * Android:
   * `gradlew clean` will no longer remove the Miniconda installation in
     `~/.gradle/glean`. Therefore `clean` can be used without reinstalling
