@@ -84,6 +84,22 @@ public class TimespanMetricType {
             glean_timespan_cancel(self.handle)
         }
     }
+    
+    /// Convenience method to simplify measuring a function or block of code
+    ///
+    /// - parameters:
+    ///     * funcToMeasure: Accepts a function or closure  to measure that can return a value
+    public func measure<U>(funcToMeasure: () -> U) -> U {
+        start()
+        // Putting `stop` in a `defer` block guarantees it will execute at the end
+        // of the scope, after the return value is pushed onto the stack.
+        // Reference: https://docs.swift.org/swift-book/LanguageGuide/ErrorHandling.html
+        // under the "Specifying Cleanup Actions" section.
+        defer {
+            stop()
+        }
+        return funcToMeasure()
+    }
 
     /// Explicitly set the timespan value, in nanoseconds.
     ///
