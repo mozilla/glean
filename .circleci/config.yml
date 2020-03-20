@@ -947,6 +947,7 @@ workflows:
       - Python 3_5 tests
       - Python 3_6 tests
       - Python 3_7 tests
+      - Python 3_8 tests
 
       - Generate Rust documentation:
           requires:
