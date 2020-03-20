@@ -26,6 +26,8 @@ pub struct Functional {
 impl Functional {
     /// Instantiate a new functional bucketing.
     fn new(log_base: f64, buckets_per_magnitude: f64) -> Functional {
+        let _ = FloatingPointContext::new();
+
         let exponent = log_base.powf(1.0 / buckets_per_magnitude);
 
         Functional { exponent }
@@ -36,6 +38,7 @@ impl Functional {
     /// mathematical concept, even though the internal representation is stored and
     /// sent using the minimum value in each bucket.
     fn sample_to_bucket_index(&self, sample: u64) -> u64 {
+        let _ = FloatingPointContext::new();
         ((sample + 1) as f64).log(self.exponent) as u64
     }
 
