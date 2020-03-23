@@ -103,7 +103,7 @@ public class TimingDistributionMetricType {
             glean_timing_distribution_cancel(self.handle, timerId)
         }
     }
-    
+
     /// Convenience method to simplify measuring a function or block of code
     ///
     /// - parameters:

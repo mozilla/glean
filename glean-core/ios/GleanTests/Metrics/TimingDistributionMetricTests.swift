@@ -130,7 +130,7 @@ class TimingDistributionTypeTests: XCTestCase {
 
         XCTAssertEqual(1, metric.testGetNumRecordedErrors(.invalidState))
     }
-    
+
     func testMeasureFunctionCorrectlyStoresValues() {
         let metric = TimingDistributionMetricType(
             category: "telemetry",
@@ -140,7 +140,7 @@ class TimingDistributionTypeTests: XCTestCase {
             disabled: false,
             timeUnit: .millisecond
         )
-        
+
         func testFunc(value: Bool) -> Bool {
             return value
         }
@@ -150,7 +150,7 @@ class TimingDistributionTypeTests: XCTestCase {
             let testValue = metric.measure {
                 testFunc(value: true)
             }
-            
+
             // Make sure that the `measure` function returns the value from
             // the measured function
             XCTAssertTrue(testValue)
