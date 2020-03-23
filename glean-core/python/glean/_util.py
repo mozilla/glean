@@ -19,7 +19,9 @@ def get_locale_tag() -> str:
     value = locale.getlocale()[0]
 
     # In some contexts, especially on Windows, there is no locale set. Use "C"
-    # to indicate "unknown".
+    # to indicate "unknown", as this is the "default locale" according to the
+    # POSIX standard:
+    # https://pubs.opengroup.org/onlinepubs/009695399/basedefs/xbd_chap07.html#tag_07_02
     if value is None:
         return "C"
 
