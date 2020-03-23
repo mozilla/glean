@@ -18,7 +18,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import kotlin.reflect.typeOf
 
 @RunWith(AndroidJUnit4::class)
 class TimespanMetricTypeTest {
@@ -313,7 +312,7 @@ class TimespanMetricTypeTest {
             metric.measure {
                 testFunc()
             }
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             // Make sure we caught the right kind of exception: NPE
             assertTrue("Exception type must match", e is NullPointerException)
         } finally {

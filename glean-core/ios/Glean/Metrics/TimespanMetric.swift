@@ -84,7 +84,7 @@ public class TimespanMetricType {
             glean_timespan_cancel(self.handle)
         }
     }
-    
+
     /// Convenience method to simplify measuring a function or block of code
     ///
     /// - parameters:

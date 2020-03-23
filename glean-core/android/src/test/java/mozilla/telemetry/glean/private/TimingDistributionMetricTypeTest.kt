@@ -7,7 +7,6 @@ package mozilla.telemetry.glean.private
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import kotlinx.coroutines.delay
 import java.lang.NullPointerException
 import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.Glean
@@ -22,7 +21,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.spy
-import java.lang.Thread.sleep
 
 @RunWith(AndroidJUnit4::class)
 class TimingDistributionMetricTypeTest {
@@ -303,7 +301,7 @@ class TimingDistributionMetricTypeTest {
             metric.measure {
                 testFunc()
             }
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             // Ensure that the exception was a NPE
             assertTrue("Exception type must match", e is NullPointerException)
         } finally {

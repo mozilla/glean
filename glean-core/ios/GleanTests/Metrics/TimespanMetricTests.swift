@@ -191,7 +191,7 @@ class TimespanMetricTypeTests: XCTestCase {
 
         XCTAssertEqual(1, metric.testGetNumRecordedErrors(.invalidState))
     }
-    
+
     func testMeasureFunctionCorrectlySavesValues() {
         let metric = TimespanMetricType(
             category: "telemetry",
@@ -203,7 +203,7 @@ class TimespanMetricTypeTests: XCTestCase {
         )
 
         XCTAssertFalse(metric.testHasValue())
-        
+
         // Create a test function that returns a value so we can measure
         // it and check that it returns the correct value from the
         // measure function.
@@ -215,7 +215,7 @@ class TimespanMetricTypeTests: XCTestCase {
         let testValue = metric.measure {
             testFunc(value: true)
         }
-        
+
         // Ensure the return value of the test function is the one
         // returned by the `measure` function
         XCTAssertTrue(testValue)
