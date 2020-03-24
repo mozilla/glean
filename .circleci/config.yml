@@ -855,7 +855,7 @@ jobs:
       - run:
           name: Build Windows glean_ffi.dll
           command:
-            cargo build --target i686-pc-windows-gnu
+            RUSTFLAGS="-C panic=abort" cargo build --target i686-pc-windows-gnu
       - run:
           name: Build Windows wheel
           command: |
