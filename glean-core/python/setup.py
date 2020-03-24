@@ -14,9 +14,16 @@ import wheel.bdist_wheel
 
 
 platform = sys.platform
-if os.environ.get("GLEAN_PYTHON_MINGW_BUILD") or platform.startswith("win"):
-    platform = "windows"
 
+if os.environ.get("GLEAN_PYTHON_MINGW_I686_BUILD"):
+    mingw_arch = "i686"
+elif os.environ.get("GLEAN_PYTHON_MINGW_X86_64_BUILD"):
+    mingw_arch = "x86_64"
+else:
+    mingw_arch = None
+
+if mingw_arch is not None:
+    platform = "windows"
 
 if sys.version_info < (3, 5):
     print("glean requires at least Python 3.5", file=sys.stderr)
@@ -48,9 +55,12 @@ requirements = [
 
 setup_requirements = []
 
-shared_object_build_dir = "../../target/debug/"
-if os.environ.get("GLEAN_PYTHON_MINGW_BUILD"):
+if mingw_arch == "i686":
+    shared_object_build_dir = "../../target/i686-pc-windows-gnu/debug/"
+elif mingw_arch == "x86_64":
     shared_object_build_dir = "../../target/x86_64-pc-windows-gnu/debug/"
+else:
+    shared_object_build_dir = "../../target/debug/"
 
 
 if platform == "linux":
@@ -90,7 +100,12 @@ class bdist_wheel(wheel.bdist_wheel.bdist_wheel):
         elif platform == "darwin":
             return ("cp35", "abi3", "macosx_10_7_x86_64")
         elif platform == "windows":
-            return ("py3", "none", "win_amd64")
+            if mingw_arch == "i686":
+                return ("py3", "none", "win32")
+            elif mingw_arch == "x86_64":
+                return ("py3", "none", "win_amd64")
+            else:
+                raise ValueError("Unsupported Windows platform")
 
 
 class InstallPlatlib(install):
@@ -107,6 +122,8 @@ setup(
         "Intended Audience :: Developers",
         "Natural Language :: English",
         "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
     ],

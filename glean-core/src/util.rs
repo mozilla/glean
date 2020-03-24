@@ -111,6 +111,64 @@ pub(crate) fn truncate_string_at_boundary_with_error<S: Into<String>>(
     }
 }
 
+// On i686 on Windows, the CPython interpreter sets the FPU precision control
+// flag to 53 bits of precision, rather than the 64 bit default. This causes
+// different floating point results than on other architectures. This context
+// manager makes it easy to set the precision to 64-bits around floating point
+// operations.
+//
+// See https://bugzilla.mozilla.org/show_bug.cgi?id=1623335 for additional context.
+#[cfg(all(target_arch = "x86", target_os = "windows"))]
+pub mod floating_point_context {
+    use libc::size_t;
+
+    #[link(name = "m")]
+    extern "C" {
+        // Gets and sets the floating point control word.
+        // See documentation here:
+        // https://docs.microsoft.com/en-us/cpp/c-runtime-library/reference/controlfp-s
+        fn _controlfp_s(current: *mut size_t, new: size_t, mask: size_t) -> size_t;
+    }
+
+    // Precision control mask
+    const MCW_PC: size_t = 0x00030000;
+    // Values for 64-bit precision
+    const PC_64: size_t = 0x00000000;
+
+    pub struct FloatingPointContext {
+        original_value: size_t,
+    }
+
+    impl FloatingPointContext {
+        pub fn new() -> Self {
+            let mut current: size_t = 0;
+            let _err = unsafe { _controlfp_s(&mut current, PC_64, MCW_PC) };
+
+            FloatingPointContext {
+                original_value: current,
+            }
+        }
+    }
+
+    impl Drop for FloatingPointContext {
+        fn drop(&mut self) {
+            let mut current: size_t = 0;
+            let _err = unsafe { _controlfp_s(&mut current, self.original_value, MCW_PC) };
+        }
+    }
+}
+
+#[cfg(not(all(target_arch = "x86", target_os = "windows")))]
+pub mod floating_point_context {
+    pub struct FloatingPointContext {}
+
+    impl FloatingPointContext {
+        pub fn new() -> Self {
+            FloatingPointContext {}
+        }
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
