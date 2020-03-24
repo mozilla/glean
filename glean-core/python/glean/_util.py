@@ -18,12 +18,11 @@ def get_locale_tag() -> str:
     """
     value = locale.getlocale()[0]
 
-    # In some contexts, especially on Windows, there is no locale set. Use "C"
-    # to indicate "unknown", as this is the "default locale" according to the
-    # POSIX standard:
-    # https://pubs.opengroup.org/onlinepubs/009695399/basedefs/xbd_chap07.html#tag_07_02
+    # In some contexts, especially on Windows, there is no locale set. Use "und"
+    # to indicate "undetermined", as recommended by the Unicode TR35:
+    # https://unicode.org/reports/tr35/#Unknown_or_Invalid_Identifiers
     if value is None:
-        return "C"
+        return "und"
 
     # The format of the locale string is platform depedent. At least on Linux,
     # often an understore is used between language and country, which is not

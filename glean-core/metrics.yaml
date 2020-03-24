@@ -32,8 +32,8 @@ glean.baseline:
       - baseline
     description: |
       The locale of the application (e.g. "es-ES").
-      If the locale can't be determined on the system, the value is "C",
-      which is the POSIX value for "default locale".
+      If the locale can't be determined on the system, the value is "und",
+      to indicate "undetermined".
     bugs:
       - https://bugzilla.mozilla.org/1512938
       - https://bugzilla.mozilla.org/1525540

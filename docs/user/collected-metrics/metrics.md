@@ -60,7 +60,7 @@ The following metrics are added to the ping:
 | Name | Type | Description | Data reviews | Extras | Expiration |
 | --- | --- | --- | --- | --- | --- |
 | glean.baseline.duration |[timespan](https://mozilla.github.io/glean/book/user/metrics/timespan.html) |The duration of the last foreground session.  |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3)||never |
-| glean.baseline.locale |[string](https://mozilla.github.io/glean/book/user/metrics/string.html) |The locale of the application (e.g. "es-ES"). If the locale can't be determined on the system, the value is "C", which is the POSIX value for "default locale".  |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3)||never |
+| glean.baseline.locale |[string](https://mozilla.github.io/glean/book/user/metrics/string.html) |The locale of the application (e.g. "es-ES"). If the locale can't be determined on the system, the value is "und", to indicate "undetermined".  |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3)||never |
 
 ## deletion-request
 
