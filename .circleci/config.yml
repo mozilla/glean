@@ -108,6 +108,57 @@ commands:
           name: Python tests
           command: make test-python
 
+  build-windows-x86_64-wheel:
+    steps:
+      - install-rustup
+      - setup-rust-toolchain
+      - install-mingw
+      - run:
+          name: Install Python development tools for host
+          command:
+            make python-setup
+      - run:
+          name: Build Windows glean_ffi.dll
+          command:
+            cargo build --target x86_64-pc-windows-gnu
+      - run:
+          name: Build Windows wheel
+          command: |
+            cd glean-core/python
+            GLEAN_PYTHON_MINGW_X86_64_BUILD=1 .venv/bin/python3 setup.py bdist_wheel
+
+  build-windows-i686-wheel:
+    steps:
+      - install-rustup
+      - setup-rust-toolchain
+      - install-mingw
+      - run:
+          name: Install Python development tools for host
+          command:
+            make python-setup
+      - run:
+          name: Build Windows glean_ffi.dll
+          command:
+            RUSTFLAGS="-C panic=abort" cargo build --target i686-pc-windows-gnu
+      - run:
+          name: Build Windows wheel
+          command: |
+            cd glean-core/python
+            GLEAN_PYTHON_MINGW_I686_BUILD=1 .venv/bin/python3 setup.py bdist_wheel
+
+  install-python-windows-deps:
+    steps:
+      - run:
+          name: Set up dependencies for Python for Windows
+          command: |
+            echo "export WINEDEBUG=-all" >> $BASH_ENV
+            wget https://bootstrap.pypa.io/get-pip.py
+            $WINPYTHON get-pip.py
+            echo "import site" >> winpython/python37._pth
+            echo "import sys; sys.path.insert(0, '')" >> winpython/sitecustomize.py
+            $WINPYTHON -m pip install -r glean-core/python/requirements_dev.txt --no-warn-script-location
+            $WINPYTHON -m pip install glean-core/python/dist/*.whl --no-warn-script-location
+
   install-mingw:
     steps:
       - run:
@@ -134,7 +185,7 @@ commands:
             # https://github.com/rust-lang/rust/issues/49078
             # https://wiki.archlinux.org/index.php/Rust#Windows
             for lib in crt2.o dllcrt2.o libmsvcrt.a; do cp -v /usr/x86_64-w64-mingw32/lib/$lib ~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-pc-windows-gnu/lib/; done
-            for lib in crt2.o dllcrt2.o libmsvcrt.a; do cp -v /usr/i686-w64-mingw32/lib/$lib ~/.rustup/toolchains/stable-i686-unknown-linux-gnu/lib/rustlib/i686-pc-windows-gnu/lib/; done
+            for lib in crt2.o dllcrt2.o libmsvcrt.a; do cp -v /usr/i686-w64-mingw32/lib/$lib ~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/i686-pc-windows-gnu/lib/; done
 
   install-ghr-darwin:
     steps:
@@ -737,6 +788,54 @@ jobs:
       - skip-if-doc-only
       - test-python
 
+  Python Windows x86_64 tests:
+    docker:
+      - image: circleci/python:3.7.6
+    steps:
+      - checkout
+      - build-windows-x86_64-wheel
+      - run:
+          name: Install Wine
+          command: |
+            sudo apt install wine
+      - run:
+          name: Install Python for Windows
+          command: |
+            wget https://www.python.org/ftp/python/3.7.7/python-3.7.7-embed-amd64.zip
+            mkdir winpython
+            unzip python-3.7.7-embed-amd64.zip -d winpython
+            echo "export WINPYTHON=\"wine64 winpython/python.exe\"" >> $BASH_ENV
+      - install-python-windows-deps
+      - run:
+          name: Run tests
+          command: |
+            $WINPYTHON -m pytest glean-core/python/tests
+
+  Python Windows i686 tests:
+    docker:
+      - image: circleci/python:3.7.6
+    steps:
+      - checkout
+      - build-windows-i686-wheel
+      - run:
+          name: Install Wine
+          command: |
+            sudo dpkg --add-architecture i386
+            sudo apt update
+            sudo apt install wine32
+      - run:
+          name: Install Python for Windows
+          command: |
+            wget https://www.python.org/ftp/python/3.7.7/python-3.7.7-embed-win32.zip
+            mkdir winpython
+            unzip python-3.7.7-embed-win32.zip -d winpython
+            echo "export WINPYTHON=\"wine winpython/python.exe\"" >> $BASH_ENV
+      - install-python-windows-deps
+      - run:
+          name: Run tests
+          command: |
+            $WINPYTHON -m pytest glean-core/python/tests
+
   Generate Python documentation:
     docker:
       - image: circleci/python:3.7.6
@@ -813,23 +912,12 @@ jobs:
     docker:
       - image: circleci/python:3.7.6
     steps:
-      - install-rustup
-      - setup-rust-toolchain
-      - install-mingw
       - checkout
+      - build-windows-x86_64-wheel
       - run:
-          name: Install Python development tools for host
-          command:
-            make python-setup
-      - run:
-          name: Build Windows glean_ffi.dll
-          command:
-            cargo build --target x86_64-pc-windows-gnu
-      - run:
-          name: Build Windows wheel
+          name: Upload to PyPI
           command: |
             cd glean-core/python
-            GLEAN_PYTHON_MINGW_X86_64_BUILD=1 .venv/bin/python3 setup.py bdist_wheel
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
             .venv/bin/python3 -m twine upload dist/*
@@ -844,23 +932,12 @@ jobs:
     docker:
       - image: circleci/python:3.7.6
     steps:
-      - install-rustup
-      - setup-rust-toolchain
-      - install-mingw
       - checkout
+      - build-windows-i686-wheel
       - run:
-          name: Install Python development tools for host
-          command:
-            make python-setup
-      - run:
-          name: Build Windows glean_ffi.dll
-          command:
-            cargo build --target i686-pc-windows-gnu
-      - run:
-          name: Build Windows wheel
+          name: Upload to PyPI
           command: |
             cd glean-core/python
-            GLEAN_PYTHON_MINGW_I686_BUILD=1 .venv/bin/python3 setup.py bdist_wheel
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
             .venv/bin/python3 -m twine upload dist/*
@@ -984,6 +1061,8 @@ workflows:
       - Python 3_6 tests
       - Python 3_7 tests
       - Python 3_8 tests
+      - Python Windows x86_64 tests
+      - Python Windows i686 tests
 
       - Generate Rust documentation:
           requires:
