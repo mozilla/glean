@@ -20,3 +20,5 @@ They could be release notes, documentation, hopes, dreams, or whatever: so long 
 * 2020-02-21: [A Distributed Team Echoes Distributed Workflow](https://chuttenblog.wordpress.com/2020/02/21/this-week-in-glean-a-distributed-team-echoes-distributed-workflow/)
 * 2020-02-28: [mozregression telemetry (part 1)](https://wlach.github.io/blog/2020/02/this-week-in-glean-special-guest-post-mozregression-telemetry-part-1/)
 * 2020-03-09: [Metric lifetimes](https://blog.mozilla.org/data/2020/03/09/this-week-in-glean-metric-lifetimes/)
+* 2020-03-13: [Adding support for GLAM on Glean](https://blog.mozilla.org/data/2020/03/13/this-week-in-glean-adding-support-for-glam-on-glean/)
+* 2020-03-25: [Comparing Apples to Oranges](https://blog.mozilla.org/data/2020/03/25/this-week-in-glean-comparing-apples-to-oranges/)
