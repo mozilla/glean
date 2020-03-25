@@ -112,10 +112,11 @@ pub(crate) fn truncate_string_at_boundary_with_error<S: Into<String>>(
 }
 
 // On i686 on Windows, the CPython interpreter sets the FPU precision control
-// flag to 53 bits of precision, rather than the 64 bit default. This causes
-// different floating point results than on other architectures. This context
-// manager makes it easy to set the precision to 64-bits around floating point
-// operations.
+// flag to 53 bits of precision, rather than the 64 bit default. On x86_64 on
+// Windows, the CPython interpreter changes the rounding control settings. This
+// causes different floating point results than on other architectures. This
+// context manager makes it easy to set the correct precision and rounding control
+// to match our other targets and platforms.
 //
 // See https://bugzilla.mozilla.org/show_bug.cgi?id=1623335 for additional context.
 #[cfg(target_os = "windows")]
@@ -132,7 +133,7 @@ pub mod floating_point_context {
 
     // Rounding control mask
     const MCW_RC: size_t = 0x00000300;
-    // Round up
+    // Round by truncation
     const RC_CHOP: size_t = 0x00000300;
     // Precision control mask
     const MCW_PC: size_t = 0x00030000;
