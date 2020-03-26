@@ -84,11 +84,9 @@ class _ThreadWorker:
     def _start_worker(self):
         """
         Starts the worker thread.
-
-        It is started in daemon mode so it will run as long as the parent
-        thread.
         """
         t = threading.Thread(target=self._worker)
+        # Start the thread in daemon mode.
         t.daemon = True
         t.start()
         self._started = True
