@@ -449,7 +449,7 @@ class GleanTest {
         // Given the following block of code:
         //
         // Metric.A.set("SomeTestValue")
-        // Glean.sendPings(listOf("custom-ping-1"))
+        // Glean.submitPings(listOf("custom-ping-1"))
         //
         // This test ensures that "custom-ping-1" contains "metric.a" with a value of "SomeTestValue"
         // when the ping is collected.
