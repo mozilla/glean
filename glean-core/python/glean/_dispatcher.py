@@ -8,6 +8,7 @@ most Glean work is done.
 """
 
 import functools
+import logging
 import queue
 import threading
 from typing import Callable, List, Tuple
@@ -30,31 +31,25 @@ from typing import Callable, List, Tuple
 # the process boundary, whereas sharing across threads works transparently.
 
 
+log = logging.getLogger(__name__)
+
+
 class _ThreadWorker:
     """
     Manages a single worker to perform tasks in another thread.
     """
 
-    # The worker uses a priority queue so we can schedule some tasks to be
-    # immediate (before all other normal scheduled work). Python's
-    # PriorityQueue sorts in ascending order, so lower-numbered tasks are
-    # executed first.
-    _PRIORITY_NORMAL = 1
-    _PRIORITY_IMMEDIATE = 0
-
     def __init__(self):
-        self._queue = queue.PriorityQueue()
+        self._queue = queue.Queue()
         # The worker thread is only started when work needs to be performed so
         # that importing Glean alone does not start an unnecessary thread.
         self._started = False
 
-    def _add_task(self, priority: int, sync: bool, task: Callable, *args, **kwargs):
+    def _add_task(self, sync: bool, task: Callable, *args, **kwargs):
         """
         Add a task to the worker queue.
 
         Args:
-            priority (int): The priority number of the tasks. Lower-valued
-                tasks are run first.
             sync (bool): If `True`, block until the task is complete.
             task (Callable): The task to run.
 
@@ -70,7 +65,7 @@ class _ThreadWorker:
         else:
             args = args or ()
             kwargs = kwargs or {}
-            self._queue.put((priority, task, args, kwargs))
+            self._queue.put((task, args, kwargs))
             if sync:
                 self._queue.join()
 
@@ -84,21 +79,7 @@ class _ThreadWorker:
 
         Additional arguments are passed to the task.
         """
-        self._add_task(self._PRIORITY_NORMAL, sync, task, *args, **kwargs)
-
-    def add_immediate_task(self, sync: bool, task: Callable, *args, **kwargs):
-        """
-        Add an immediate task to the worker queue. This task is run before all
-        other currently queued tasks.
-
-        Args:
-            sync (bool): If `True`, block until the task is complete.
-            task (Callable): The task to run.
-
-        Additional arguments are passed to the task.
-
-        """
-        self._add_task(self._PRIORITY_IMMEDIATE, sync, task, *args, **kwargs)
+        self._add_task(sync, task, *args, **kwargs)
 
     def _start_worker(self):
         """
@@ -119,9 +100,13 @@ class _ThreadWorker:
         them.
         """
         while True:
-            _priority, task, args, kwargs = self._queue.get()
-            task(*args, **kwargs)
-            self._queue.task_done()
+            task, args, kwargs = self._queue.get()
+            try:
+                task(*args, **kwargs)
+            except Exception as e:
+                log.error(str(e))
+            finally:
+                self._queue.task_done()
 
 
 class Dispatcher:
@@ -160,10 +145,6 @@ class Dispatcher:
     @classmethod
     def _execute_task(cls, func: Callable, *args, **kwargs):
         cls._task_worker.add_task(cls._testing_mode, func, *args, **kwargs)
-
-    @classmethod
-    def _execute_immediate_task(cls, func: Callable, *args, **kwargs):
-        cls._task_worker.add_immediate_task(cls._testing_mode, func, *args, **kwargs)
 
     @classmethod
     def task(cls, func: Callable):
@@ -235,7 +216,7 @@ class Dispatcher:
         if cls._queue_initial_tasks:
             cls._preinit_task_queue.insert(0, (func, (), {}))
         else:
-            cls._execute_immediate_task(func)
+            func()
 
     @classmethod
     def set_task_queueing(cls, enabled: bool):
