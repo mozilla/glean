@@ -101,7 +101,7 @@ class _ThreadWorker:
             task, args, kwargs = self._queue.get()
             try:
                 task(*args, **kwargs)
-            except Exception as e:
+            except Exception:
                 log.exception("Glean error")
             finally:
                 self._queue.task_done()
