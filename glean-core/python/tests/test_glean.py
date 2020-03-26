@@ -384,7 +384,7 @@ def test_overflowing_the_task_queue_records_telemetry():
     for i in range(110):
         Dispatcher.launch(lambda: None)
 
-    assert 100 == len(Dispatcher._task_queue)
+    assert 100 == len(Dispatcher._preinit_task_queue)
     assert 10 == Dispatcher._overflow_count
 
     Dispatcher.flush_queued_initial_tasks()

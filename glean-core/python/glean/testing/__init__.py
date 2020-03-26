@@ -34,6 +34,9 @@ def reset_glean(
             global settings.
     """
     from glean import Glean
+    from glean._dispatcher import Dispatcher
+
+    Dispatcher._testing_mode = True
 
     data_dir = None  # type: Optional[Path]
     if not clear_stores:
