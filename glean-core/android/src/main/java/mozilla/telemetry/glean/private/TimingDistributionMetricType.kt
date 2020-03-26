@@ -49,15 +49,6 @@ class TimingDistributionMetricType internal constructor(
         )
     }
 
-    /**
-     * Destroy this metric.
-     */
-    protected fun finalize() {
-        if (this.handle != 0L) {
-            LibGleanFFI.INSTANCE.glean_destroy_timing_distribution_metric(this.handle)
-        }
-    }
-
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     internal fun getElapsedTimeNanos(): Long {
         return SystemClock.elapsedRealtimeNanos()

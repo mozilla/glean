@@ -52,15 +52,6 @@ class DatetimeMetricType internal constructor(
     }
 
     /**
-     * Destroy this metric.
-     */
-    protected fun finalize() {
-        if (this.handle != 0L) {
-            LibGleanFFI.INSTANCE.glean_destroy_datetime_metric(this.handle)
-        }
-    }
-
-    /**
      * Set a datetime value, truncating it to the metric's resolution.
      *
      * @param value The [Date] value to set. If not provided, will record the current time.

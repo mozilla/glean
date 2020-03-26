@@ -49,15 +49,6 @@ class UuidMetricType(
     }
 
     /**
-     * Destroy this metric.
-     */
-    protected fun finalize() {
-        if (this.handle != 0L) {
-            LibGleanFFI.INSTANCE.glean_destroy_uuid_metric(this.handle)
-        }
-    }
-
-    /**
      * Generate a new UUID value and set it in the metric store.
      */
     fun generateAndSet(): UUID? {

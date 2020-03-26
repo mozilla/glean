@@ -49,15 +49,6 @@ class BooleanMetricType internal constructor(
     }
 
     /**
-     * Destroy this metric.
-     */
-    protected fun finalize() {
-        if (this.handle != 0L) {
-            LibGleanFFI.INSTANCE.glean_destroy_boolean_metric(this.handle)
-        }
-    }
-
-    /**
      * Set a boolean value.
      *
      * @param value This is a user defined boolean value.

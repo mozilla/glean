@@ -46,15 +46,6 @@ class QuantityMetricType internal constructor(
     }
 
     /**
-     * Destroy this metric.
-     */
-    protected fun finalize() {
-        if (this.handle != 0L) {
-            LibGleanFFI.INSTANCE.glean_destroy_quantity_metric(this.handle)
-        }
-    }
-
-    /**
      * Set the quantity value.
      *
      * @param value The value to set. Must be non-negative.
