@@ -266,6 +266,10 @@ Please refer to the [custom pings documentation](pings/custom.md).
 > **Important**: as stated [before](adding-glean-to-your-project.md#before-using-glean), any new data collection requires documentation and data-review.
 > This is also required for any new metric automatically collected by the Glean SDK.
 
+### Parallelism
+
+All of Glean's target languages use a separate worker thread to do most of Glean's work, including any I/O. This thread is fully managed by Glean as an implementation detail. Therefore, users should be free to use the Glean API wherever it is most convenient, without worrying about the performance impact of updating metrics and sending pings.
+
 ### Testing metrics
 
 In order to make testing metrics easier 'out of the box', all metrics include a set of test API functions in order to facilitate unit testing.  These include functions to test whether a value has been stored, and functions to retrieve the stored value for validation.  For more information, please refer to [Unit testing Glean metrics](testing-metrics.md).
