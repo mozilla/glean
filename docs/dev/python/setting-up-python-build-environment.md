@@ -65,7 +65,9 @@ pip install -r requirements_dev.txt
   $ make python-setup
 ```
 
-> *Note:* If you wish to change the location of the virtual environment that the `Makefile` uses, set the `GLEAN_PYENV` environment variable.
+The default location of the virtual environment used by the make file is `glean-core/python/.venvX.Y`, where `X.Y` is the version of Python in use. This makes is possible to build and test for multiple versions of Python in the same checkout.
+
+> *Note:* If you wish to change the location of the virtual environment that the `Makefile` uses, pass the `GLEAN_PYENV` environment variable: `make test-python GLEAN_PYENV=mypyenv`.
 
 ## Build the Python bindings
 
