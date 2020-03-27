@@ -65,7 +65,7 @@ pip install -r requirements_dev.txt
   $ make python-setup
 ```
 
-The default location of the virtual environment used by the make file is `glean-core/python/.venvX.Y`, where `X.Y` is the version of Python in use. This makes is possible to build and test for multiple versions of Python in the same checkout.
+The default location of the virtual environment used by the make file is `glean-core/python/.venvX.Y`, where `X.Y` is the version of Python in use. This makes it possible to build and test for multiple versions of Python in the same checkout.
 
 > *Note:* If you wish to change the location of the virtual environment that the `Makefile` uses, pass the `GLEAN_PYENV` environment variable: `make test-python GLEAN_PYENV=mypyenv`.
 
@@ -176,5 +176,4 @@ The official wheels for Windows are produced on a Linux virtual machine using th
 
 The CircleCI configuration handles making these wheels from tagged releases.
 If you need to reproduce this locally, see the CircleCI job `pypi-windows-release` for an example of how this is done in practice.
-
 
