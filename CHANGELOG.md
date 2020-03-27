@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v25.1.0...master)
+[Full changelog](https://github.com/mozilla/glean/compare/v26.0.0...master)
+
+# v26.0.0 (2020-03-27)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v25.1.0...v26.0.0)
 
 * General:
   * The version of `glean_parser` has been updated to 1.19.0:
