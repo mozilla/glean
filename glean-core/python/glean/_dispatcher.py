@@ -45,7 +45,7 @@ class _ThreadWorker:
         # that importing Glean alone does not start an unnecessary thread.
         self._started = False
 
-    def _add_task(self, sync: bool, task: Callable, *args, **kwargs):
+    def add_task(self, sync: bool, task: Callable, *args, **kwargs):
         """
         Add a task to the worker queue.
 
@@ -68,18 +68,6 @@ class _ThreadWorker:
             self._queue.put((task, args, kwargs))
             if sync:
                 self._queue.join()
-
-    def add_task(self, sync: bool, task: Callable, *args, **kwargs):
-        """
-        Add a task to the worker queue.
-
-        Args:
-            sync (bool): If `True`, block until the task is complete.
-            task (Callable): The task to run.
-
-        Additional arguments are passed to the task.
-        """
-        self._add_task(sync, task, *args, **kwargs)
 
     def _start_worker(self):
         """
