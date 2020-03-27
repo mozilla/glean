@@ -125,7 +125,7 @@ commands:
           name: Build Windows wheel
           command: |
             cd glean-core/python
-            GLEAN_PYTHON_MINGW_X86_64_BUILD=1 .venv/bin/python3 setup.py bdist_wheel
+            GLEAN_PYTHON_MINGW_X86_64_BUILD=1 .venv3.7/bin/python3 setup.py bdist_wheel
 
   build-windows-i686-wheel:
     steps:
@@ -144,7 +144,7 @@ commands:
           name: Build Windows wheel
           command: |
             cd glean-core/python
-            GLEAN_PYTHON_MINGW_I686_BUILD=1 .venv/bin/python3 setup.py bdist_wheel
+            GLEAN_PYTHON_MINGW_I686_BUILD=1 .venv3.7/bin/python3 setup.py bdist_wheel
 
   install-python-windows-deps:
     steps:
@@ -778,7 +778,7 @@ jobs:
       - test-python
       - persist_to_workspace:
           root: glean-core/python/
-          paths: .venv
+          paths: .venv3.7
 
   Python 3_8 tests:
     docker:
@@ -845,7 +845,7 @@ jobs:
           at: glean-core/python/
       - run:
           name: Generate Python docs
-          command: glean-core/python/.venv/bin/python3 -m pdoc --html glean --force -o build/docs/python
+          command: glean-core/python/.venv3.7/bin/python3 -m pdoc --html glean --force -o build/docs/python
       - persist_to_workspace:
           root: build/
           paths: docs/python
@@ -870,11 +870,11 @@ jobs:
           name: Build Linux wheel
           command: |
             cd glean-core/python
-            .venv/bin/python3 setup.py bdist_wheel
-            .venv/bin/python3 -m auditwheel repair dist/*.whl
+            .venv3.7/bin/python3 setup.py bdist_wheel
+            .venv3.7/bin/python3 -m auditwheel repair dist/*.whl
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
-            .venv/bin/python3 -m twine upload wheelhouse/*
+            .venv3.7/bin/python3 -m twine upload wheelhouse/*
       - install-ghr-linux
       - run:
           name: Publish to Github
@@ -897,10 +897,10 @@ jobs:
           name: Build macOS wheel
           command: |
             cd glean-core/python
-            .venv/bin/python3 setup.py bdist_wheel
+            .venv3.7/bin/python3 setup.py bdist_wheel
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
-            .venv/bin/python3 -m twine upload dist/*
+            .venv3.7/bin/python3 -m twine upload dist/*
       - install-ghr-darwin
       - run:
           name: Publish to Github
@@ -920,7 +920,7 @@ jobs:
             cd glean-core/python
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
-            .venv/bin/python3 -m twine upload dist/*
+            .venv3.7/bin/python3 -m twine upload dist/*
       - install-ghr-linux
       - run:
           name: Publish to Github
@@ -940,7 +940,7 @@ jobs:
             cd glean-core/python
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
-            .venv/bin/python3 -m twine upload dist/*
+            .venv3.7/bin/python3 -m twine upload dist/*
       - install-ghr-linux
       - run:
           name: Publish to Github

@@ -4,7 +4,7 @@ help:
 	  sort | \
 	  awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-GLEAN_PYENV = glean-core/python/.venv
+GLEAN_PYENV := $(shell python -c "import sys; print('glean-core/python/.venv' + '.'.join(str(x) for x in sys.version_info[:2]))")
 
 # Setup environments
 
@@ -92,7 +92,7 @@ shellcheck: ## Run shellcheck against important shell scripts
 
 pythonlint: python-setup ## Run flake8 and black to lint Python code
 	$(GLEAN_PYENV)/bin/python3 -m flake8 glean-core/python/glean glean-core/python/tests
-	$(GLEAN_PYENV)/bin/python3 -m black --check glean-core/python
+	$(GLEAN_PYENV)/bin/python3 -m black --check --exclude .venv\* glean-core/python
 	$(GLEAN_PYENV)/bin/python3 -m mypy glean-core/python/glean
 
 .PHONY: lint clippy ktlint swiftlint yamllint
