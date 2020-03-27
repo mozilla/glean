@@ -9,7 +9,6 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     let data_dir = tempfile::tempdir().unwrap();
     let tmpname = data_dir.path().display().to_string();
     let cfg = Configuration {
-        upload_enabled: true,
         data_path: tmpname,
         application_id: "glean.bench".into(),
         max_events: None,

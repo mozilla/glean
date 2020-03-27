@@ -153,7 +153,6 @@ open class GleanInternalAPI internal constructor () {
             val cfg = FfiConfiguration(
                 dataDir = gleanDataDir.path,
                 packageName = applicationContext.packageName,
-                uploadEnabled = uploadEnabled,
                 maxEvents = configuration.maxEvents,
                 delayPingLifetimeIO = false
             )
@@ -164,6 +163,8 @@ open class GleanInternalAPI internal constructor () {
             if (!initialized) {
                 return@executeTask
             }
+
+            setUploadEnabled(uploadEnabled)
 
             // If any pings were registered before initializing, do so now.
             // We're not clearing this queue in case Glean is reset by tests.
@@ -261,7 +262,7 @@ open class GleanInternalAPI internal constructor () {
             val originalEnabled = getUploadEnabled()
 
             @Suppress("EXPERIMENTAL_API_USAGE")
-            Dispatchers.API.launch {
+            Dispatchers.API.executeTask {
                 // glean_set_upload_enabled might delete all of the queued pings. We
                 // therefore need to obtain the lock from the PingUploader so that
                 // iterating over and deleting the pings doesn't happen at the same time.
@@ -593,7 +594,8 @@ open class GleanInternalAPI internal constructor () {
     internal fun resetGlean(
         context: Context,
         config: Configuration,
-        clearStores: Boolean
+        clearStores: Boolean,
+        uploadEnabled: Boolean = true
     ) {
         Glean.enableTestingMode()
 
@@ -606,7 +608,7 @@ open class GleanInternalAPI internal constructor () {
 
         // Init Glean.
         Glean.testDestroyGleanHandle()
-        Glean.initialize(context, true, config)
+        Glean.initialize(context, uploadEnabled, config)
     }
 
     /**

@@ -22,12 +22,12 @@
 //! let cfg = Configuration {
 //!     data_path: "/tmp/data".into(),
 //!     application_id: "org.mozilla.glean_core.example".into(),
-//!     upload_enabled: true,
 //!     max_events: None,
 //!     delay_ping_lifetime_io: false,
 //!     channel: None,
 //! };
 //! glean_preview::initialize(cfg, ClientInfoMetrics::unknown())?;
+//! glean_preview::set_upload_enabled(true);
 //!
 //! let prototype_ping = PingType::new("prototype", true, true, vec!());
 //!
@@ -103,7 +103,6 @@ where
 /// See `glean_core::Glean::new`.
 pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) -> Result<()> {
     let core_cfg = glean_core::Configuration {
-        upload_enabled: cfg.upload_enabled,
         data_path: cfg.data_path.clone(),
         application_id: cfg.application_id.clone(),
         max_events: cfg.max_events,

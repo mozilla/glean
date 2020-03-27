@@ -122,12 +122,7 @@ class Glean:
 
         cls._upload_enabled = upload_enabled
 
-        cfg = _ffi.make_config(
-            cls._data_dir,
-            application_id,
-            cls._upload_enabled,
-            configuration.max_events,
-        )
+        cfg = _ffi.make_config(cls._data_dir, application_id, configuration.max_events,)
 
         cls._initialized = _ffi.lib.glean_initialize(cfg) != 0
 
@@ -135,6 +130,8 @@ class Glean:
         # further
         if not cls._initialized:
             return
+
+        cls.set_upload_enabled(cls._upload_enabled)
 
         for ping in cls._ping_type_queue:
             cls.register_ping_type(ping)
@@ -232,7 +229,7 @@ class Glean:
         if cls.is_initialized():
             original_enabled = cls.get_upload_enabled()
 
-            @Dispatcher.launch
+            @Dispatcher.launch_at_front
             def set_upload_enabled():
                 _ffi.lib.glean_set_upload_enabled(enabled)
 

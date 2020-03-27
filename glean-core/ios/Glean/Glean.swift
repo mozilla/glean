@@ -86,7 +86,6 @@ public class Glean {
                 // `relativePath` for a file URL gives us the absolute filesystem path.
                 dataDir: getDocumentsDirectory().relativePath,
                 packageName: AppInfo.name,
-                uploadEnabled: uploadEnabled,
                 configuration: configuration
             ) { cfg in
                 var cfg = cfg
@@ -97,6 +96,8 @@ public class Glean {
             if !self.initialized {
                 return
             }
+
+            self.setUploadEnabled(uploadEnabled)
 
             // If any pings were registered before initializing, do so now
             for ping in self.pingTypeQueue {
@@ -199,7 +200,7 @@ public class Glean {
         if isInitialized() {
             let originalEnabled = getUploadEnabled()
 
-            Dispatchers.shared.launchAPI {
+            Dispatchers.shared.launchConcurrent {
                 // glean_set_upload_enabled might delete all of the queued pings.
                 // Currently a ping uploader could be scheduled ahead of this,
                 // at which point it will pick up scheduled pings before the setting was toggled.

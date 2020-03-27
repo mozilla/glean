@@ -46,9 +46,7 @@ lib = ffi.dlopen(str(Path(__file__).parent / get_shared_object_filename()))
 lib.glean_enable_logging()
 
 
-def make_config(
-    data_dir: Path, package_name: str, upload_enabled: bool, max_events: int,
-) -> Any:
+def make_config(data_dir: Path, package_name: str, max_events: int,) -> Any:
     """
     Make an `FfiConfiguration` object.
 
@@ -64,7 +62,6 @@ def make_config(
 
     cfg.data_dir = data_dir
     cfg.package_name = package_name
-    cfg.upload_enabled = upload_enabled
     cfg.max_events = max_events
     cfg.delay_ping_lifetime_io = False
 

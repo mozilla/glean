@@ -100,8 +100,6 @@ pub fn setup_glean(glean: Glean) -> Result<()> {
 /// Optional values will be filled in with default values.
 #[derive(Debug, Clone)]
 pub struct Configuration {
-    /// Whether upload should be enabled.
-    pub upload_enabled: bool,
     /// Path to a directory to store all data in.
     pub data_path: String,
     /// The application ID (will be sanitized during initialization).
@@ -124,11 +122,11 @@ pub struct Configuration {
 /// let cfg = Configuration {
 ///     data_path: "/tmp/glean".into(),
 ///     application_id: "glean.sample.app".into(),
-///     upload_enabled: true,
 ///     max_events: None,
 ///     delay_ping_lifetime_io: false,
 /// };
 /// let mut glean = Glean::new(cfg).unwrap();
+/// glean.set_upload_enabled(true);
 /// let ping = PingType::new("sample", true, false, vec![]);
 /// glean.register_ping_type(&ping);
 ///
@@ -181,7 +179,7 @@ impl Glean {
         let event_data_store = EventDatabase::new(&cfg.data_path)?;
 
         let mut glean = Self {
-            upload_enabled: cfg.upload_enabled,
+            upload_enabled: false,
             data_store,
             event_data_store,
             core_metrics: CoreMetrics::new(),
@@ -195,21 +193,35 @@ impl Glean {
             max_events: cfg.max_events.unwrap_or(DEFAULT_MAX_EVENTS),
             is_first_run: false,
         };
-        glean.on_change_upload_enabled(cfg.upload_enabled);
+
+        // Set the initial state of upload enabled. If we don't have any client
+        // id, assume this is a new installation and set to the default of True.
+        // If we have a client_id, if it's the KNOWN_CLIENT_ID, we know that
+        // upload was disabled previously. This is changed to the value
+        // requested by the user from the language binding immediately after
+        // initialization. This allows for the detection of changes to this
+        // preference outside of the run of the applicaton, such as in a
+        // configuration file and allows changes such as clearing the database
+        // and sending a deletion ping to happen. See bug 1624695.
+        glean.upload_enabled = match glean
+            .core_metrics
+            .client_id
+            .get_value(&glean, "glean_client_info")
+        {
+            None => true,
+            Some(uuid) => uuid != *KNOWN_CLIENT_ID,
+        };
+        glean.on_change_upload_enabled(glean.upload_enabled);
+
         Ok(glean)
     }
 
     /// For tests make it easy to create a Glean object using only the required configuration.
     #[cfg(test)]
-    pub(crate) fn with_options(
-        data_path: &str,
-        application_id: &str,
-        upload_enabled: bool,
-    ) -> Result<Self> {
+    pub(crate) fn with_options(data_path: &str, application_id: &str) -> Result<Self> {
         let cfg = Configuration {
             data_path: data_path.into(),
             application_id: application_id.into(),
-            upload_enabled,
             max_events: None,
             delay_ping_lifetime_io: false,
         };

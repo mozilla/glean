@@ -7,8 +7,6 @@
 /// Optional values will be filled in with default values.
 #[derive(Debug, Clone)]
 pub struct Configuration {
-    /// Whether upload should be enabled.
-    pub upload_enabled: bool,
     /// Path to a directory to store all data in.
     pub data_path: String,
     /// The application ID (will be sanitized during initialization).

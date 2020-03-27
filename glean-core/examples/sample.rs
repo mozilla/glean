@@ -20,7 +20,6 @@ fn main() {
     let cfg = glean_core::Configuration {
         data_path,
         application_id: "org.mozilla.glean_core.example".into(),
-        upload_enabled: true,
         max_events: None,
         delay_ping_lifetime_io: false,
     };

@@ -11,7 +11,6 @@ int main(void)
   FfiConfiguration cfg = {
     "/tmp/glean_data",
     "c-app",
-    true,
     NULL
   };
   glean_initialize(&cfg);
