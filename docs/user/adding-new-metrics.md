@@ -69,17 +69,7 @@ If the metric is still needed after its expiration date, it should go back for [
 
 The `lifetime` parameter of a metric defines when its value will be cleared. There are three lifetime options available:
 
-- `ping` (default): The metric is cleared each time it is submitted in the ping.
-  This is the most common case, and should be used for metrics that are highly dynamic, such as things computed in response to the user's interaction with the application.
-  
-- `application`: The metric is related to an application run, and is cleared after the application restarts and any Glean-owned ping, due at startup, is submitted.
-  This should be used for things that are constant during the run of an application, such as the operating system version.
-  In practice, these metrics are generally set during application startup.
-  A common mistake---using the `ping` lifetime for these type of metrics---means that they will only be included in the first ping sent during a particular run of the application.
-  
-- `user`: The metric is part of the user's profile.
-  This should be used for things that change only when the user's profile is created.
-  It is rare to use this lifetime outside of some metrics that are built in to Glean, such as `client_id`.
+{{#include lifetimes-parameters.md}}
 
 While lifetimes are important to understand for all metric types, they are particularly important for the metric types that record single values and don't aggregate on the client (`boolean`, `string`, `labeled_string`, `string_list`, `datetime` and `uuid`), since these metrics will send the "last known" value and missing the earlier values could be a form of unintended data loss.
 
