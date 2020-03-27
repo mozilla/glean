@@ -3,6 +3,11 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
+"""
+Utilities for writing unit tests involving Glean.
+"""
+
+
 from pathlib import Path
 from typing import Optional
 
@@ -29,6 +34,9 @@ def reset_glean(
             global settings.
     """
     from glean import Glean
+    from glean._dispatcher import Dispatcher
+
+    Dispatcher._testing_mode = True
 
     data_dir = None  # type: Optional[Path]
     if not clear_stores:

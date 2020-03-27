@@ -34,10 +34,15 @@ _TYPE_MAPPING = {
     "counter": metrics.CounterMetricType,
     "datetime": metrics.DatetimeMetricType,
     "event": metrics.EventMetricType,
+    "labeled_boolean": metrics.LabeledBooleanMetricType,
     "labeled_counter": metrics.LabeledCounterMetricType,
+    "labeled_string": metrics.LabeledStringMetricType,
+    "memory_unit": metrics.MemoryDistributionMetricType,
     "ping": metrics.PingType,
     "string": metrics.StringMetricType,
+    "string_list": metrics.StringListMetricType,
     "timespan": metrics.TimespanMetricType,
+    "timing_distribution": metrics.TimingDistributionMetricType,
     "uuid": metrics.UuidMetricType,
 }
 
@@ -125,7 +130,7 @@ def load_metrics(
     Load metrics from a `metrics.yaml` file.
 
     Args:
-        filepath: The path to the file, or a list of paths, to load.
+        filepath (Path): The path to the file, or a list of paths, to load.
         config (dict): A dictionary of options that change parsing behavior.
             These are documented in glean_parser:
             https://mozilla.github.io/glean_parser/glean_parser.html#glean_parser.parser.parse_objects
@@ -178,7 +183,7 @@ def load_pings(
     Load pings from a `pings.yaml` file.
 
     Args:
-        filepath: The path to the file, or a list of paths, to load.
+        filepath (Path): The path to the file, or a list of paths, to load.
         config (dict): A dictionary of options that change parsing behavior.
             These are documented in glean_parser:
             https://mozilla.github.io/glean_parser/glean_parser.html#glean_parser.parser.parse_objects

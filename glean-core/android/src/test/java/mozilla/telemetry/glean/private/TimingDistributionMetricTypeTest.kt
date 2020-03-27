@@ -235,4 +235,79 @@ class TimingDistributionMetricTypeTest {
         metric.stopAndAccumulate(GleanTimerId(-1))
         assertEquals(1, metric.testGetNumRecordedErrors(ErrorType.InvalidState))
     }
+
+    @Test
+    fun `measure function correctly measures values`() {
+        val metric = spy(TimingDistributionMetricType(
+            disabled = false,
+            category = "telemetry",
+            lifetime = Lifetime.Ping,
+            name = "timing_distribution_samples",
+            sendInPings = listOf("store1"),
+            timeUnit = TimeUnit.Second
+        ))
+
+        // Create a test function to "measure". This works by mocking the getElapsedNanos return
+        // value setting it to return a known value to make it easier to validate.
+        fun testFunc(value: Long): Long {
+            `when`(metric.getElapsedTimeNanos()).thenReturn(value)
+            return value
+        }
+
+        // Accumulate a few values
+        for (i in 1L..3L) {
+            // Measure the test function, capturing the value to verify we correctly return the
+            // value of the underlying function.
+            `when`(metric.getElapsedTimeNanos()).thenReturn(0L)
+            val testValue = metric.measure {
+                testFunc(i)
+            }
+
+            assertEquals("Returned value must match", i, testValue)
+        }
+
+        // Check that data was properly recorded.
+        assertTrue(metric.testHasValue())
+        val snapshot = metric.testGetValue()
+        // Check the sum
+        assertEquals(6L, snapshot.sum)
+        // Check that the 1L fell into the first bucket (max 1)
+        assertEquals(1L, snapshot.values[1])
+        // Check that the 2L fell into the second bucket (max 2)
+        assertEquals(1L, snapshot.values[2])
+        // Check that the 3L fell into the third bucket (max 3)
+        assertEquals(1L, snapshot.values[3])
+    }
+
+    @Test
+    fun `measure function still measures and allows exceptions to bubble up`() {
+        val metric = TimingDistributionMetricType(
+            disabled = false,
+            category = "telemetry",
+            lifetime = Lifetime.Ping,
+            name = "timing_distribution_samples",
+            sendInPings = listOf("store1"),
+            timeUnit = TimeUnit.Second
+        )
+
+        // Create a test function that throws a NPE
+        fun testFunc() {
+            throw NullPointerException()
+        }
+
+        // Measure the test function, which should throw an exception.  We will catch the
+        // exception and verify it and that we still recorded the measurement.
+        try {
+            metric.measure {
+                testFunc()
+            }
+        } catch (e: Exception) {
+            // Ensure that the exception was a NPE
+            assertTrue("Exception type must match", e is NullPointerException)
+        } finally {
+            // Check that data was still properly recorded even though there was an exception.
+            assertTrue("Metric must have a value", metric.testHasValue())
+            assertTrue("Metric value must be greater than zero", metric.testGetValue().sum >= 0)
+        }
+    }
 }

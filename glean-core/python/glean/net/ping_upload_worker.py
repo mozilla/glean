@@ -82,10 +82,14 @@ class PingUploadWorker:
                 try:
                     url_path = next(lines).strip()
                     serialized_ping = next(lines)
+                    valid_content = True
                 except StopIteration:
-                    path.unlink()
-                    log.error("Invalid ping content in {}".format(path.resolve()))
-                    return False
+                    valid_content = False
+            # On Windows, we must close the file before deleting it
+            if not valid_content:
+                path.unlink()
+                log.error("Invalid ping content in {}".format(path.resolve()))
+                return False
         except FileNotFoundError:
             log.error("Could not find ping file {}".format(path.resolve()))
             return False

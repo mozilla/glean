@@ -3,6 +3,9 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
+import threading
+
+
 from glean._dispatcher import Dispatcher
 
 
@@ -18,13 +21,13 @@ def test_launch_correctly_adds_tasks_to_queue_if_queue_tasks_is_true():
     for i in range(3):
         update()
 
-    assert 3 == len(Dispatcher._task_queue)
+    assert 3 == len(Dispatcher._preinit_task_queue)
     assert 0 == thread_canary[0]
 
     Dispatcher.flush_queued_initial_tasks()
 
     assert 3 == thread_canary[0]
-    assert 0 == len(Dispatcher._task_queue)
+    assert 0 == len(Dispatcher._preinit_task_queue)
 
 
 def test_maximum_tasks():
@@ -33,7 +36,7 @@ def test_maximum_tasks():
     for i in range(Dispatcher.MAX_QUEUE_SIZE + 10):
         Dispatcher.task(lambda: 0)()
 
-    assert len(Dispatcher._task_queue) == Dispatcher.MAX_QUEUE_SIZE
+    assert len(Dispatcher._preinit_task_queue) == Dispatcher.MAX_QUEUE_SIZE
 
 
 def test_maximum_queue():
@@ -42,4 +45,101 @@ def test_maximum_queue():
     for i in range(Dispatcher.MAX_QUEUE_SIZE + 10):
         Dispatcher.launch(lambda: 0)
 
-    assert len(Dispatcher._task_queue) == Dispatcher.MAX_QUEUE_SIZE
+    assert len(Dispatcher._preinit_task_queue) == Dispatcher.MAX_QUEUE_SIZE
+
+
+def test_tasks_run_off_the_main_thread():
+    main_thread_id = threading.get_ident()
+    thread_canary = [False]
+
+    def test_task():
+        assert main_thread_id != threading.get_ident()
+        assert False is thread_canary[0]
+        thread_canary[0] = True
+
+    Dispatcher.launch(test_task)
+    Dispatcher._task_worker._queue.join()
+
+    assert True is thread_canary[0]
+
+
+def test_queue_tasks_are_flushed_off_the_main_thread():
+    main_thread_id = threading.get_ident()
+    Dispatcher._testing_mode = False
+    Dispatcher._queue_initial_tasks = False
+    thread_canary = [0]
+
+    def test_task():
+        assert main_thread_id != threading.get_ident()
+        thread_canary[0] += 1
+
+    Dispatcher._testing_mode = False
+    Dispatcher._queue_initial_tasks = True
+
+    for i in range(3):
+        Dispatcher.launch(test_task)
+
+    assert 3 == len(Dispatcher._preinit_task_queue)
+    assert 0 == thread_canary[0]
+
+    Dispatcher.flush_queued_initial_tasks()
+
+    Dispatcher._task_worker._queue.join()
+
+    assert 3 == thread_canary[0]
+    assert 0 == len(Dispatcher._preinit_task_queue)
+
+
+def test_queued_tasks_are_executed_in_the_order_they_are_received():
+    main_thread_id = threading.get_ident()
+    Dispatcher._testing_mode = False
+    Dispatcher._queue_initial_tasks = True
+
+    class Job:
+        thread_counter = [0]
+        thread_list = []
+
+        def __init__(self, num):
+            self.num = num
+
+        def __lt__(self, other):
+            return id(self) < id(other)
+
+        def __call__(self):
+            assert main_thread_id != threading.get_ident()
+            self.thread_counter[0] += 1
+            self.thread_list.append(self.num)
+
+    for i in range(50):
+        Dispatcher.launch(Job(i))
+
+    Dispatcher.flush_queued_initial_tasks()
+
+    for i in range(50, 100):
+        Dispatcher.launch(Job(i))
+
+    Dispatcher._task_worker._queue.join()
+
+    assert Job.thread_list == list(range(100))
+    assert Job.thread_counter[0] == 100
+
+
+def test_dispatched_tasks_throwing_exceptions_are_correctly_handled():
+    Dispatcher._testing_mode = False
+    Dispatcher._queue_initial_tasks = False
+    thread_canary = [0]
+
+    def exception_task():
+        42 / 0
+
+    Dispatcher.launch(exception_task)
+
+    def working_task():
+        thread_canary[0] += 1
+
+    for i in range(3):
+        Dispatcher.launch(working_task)
+
+    Dispatcher._task_worker._queue.join()
+
+    assert 3 == thread_canary[0]

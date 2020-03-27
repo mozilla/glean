@@ -98,31 +98,6 @@ class StringListMetricTypeTest {
     }
 
     @Test
-    fun `lists with no lifetime must not record data`() {
-        // Define a string list metric which will be stored in "store1".
-        // It's lifetime is set to Lifetime.Ping so it should not record anything.
-        val stringListMetric = StringListMetricType(
-            disabled = true,
-            category = "telemetry",
-            lifetime = Lifetime.Ping,
-            name = "string_list_metric",
-            sendInPings = listOf("store1")
-        )
-
-        // Attempt to store the string list using set
-        stringListMetric.set(listOf("value1", "value2", "value3"))
-        // Check that nothing was recorded.
-        assertFalse("StringLists without a lifetime should not record data",
-            stringListMetric.testHasValue())
-
-        // Attempt to store the string list using add.
-        stringListMetric.add("value4")
-        // Check that nothing was recorded.
-        assertFalse("StringLists without a lifetime should not record data",
-            stringListMetric.testHasValue())
-    }
-
-    @Test
     fun `disabled lists must not record data`() {
         // Define a string list metric which will be stored in "store1".
         // It's disabled so it should not record anything.

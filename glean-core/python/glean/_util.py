@@ -18,6 +18,12 @@ def get_locale_tag() -> str:
     """
     value = locale.getlocale()[0]
 
+    # In some contexts, especially on Windows, there is no locale set. Use "und"
+    # to indicate "undetermined", as recommended by the Unicode TR35:
+    # https://unicode.org/reports/tr35/#Unknown_or_Invalid_Identifiers
+    if value is None:
+        return "und"
+
     # The format of the locale string is platform depedent. At least on Linux,
     # often an understore is used between language and country, which is not
     # RFC 1766 compliant. Correct it here.

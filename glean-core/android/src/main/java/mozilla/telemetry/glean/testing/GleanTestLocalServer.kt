@@ -31,6 +31,7 @@ import java.util.concurrent.Executors
  * val gleanRule = GleanTestLocalServer(3785)
  * ```
  *
+ * @property context the application context
  * @param localPort the port of the local ping server
  */
 @VisibleForTesting(otherwise = VisibleForTesting.NONE)

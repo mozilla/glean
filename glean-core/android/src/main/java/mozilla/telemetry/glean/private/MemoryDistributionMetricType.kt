@@ -48,15 +48,6 @@ class MemoryDistributionMetricType internal constructor(
     }
 
     /**
-     * Destroy this metric.
-     */
-    protected fun finalize() {
-        if (this.handle != 0L) {
-            LibGleanFFI.INSTANCE.glean_destroy_memory_distribution_metric(this.handle)
-        }
-    }
-
-    /**
      * Record a single value, in the unit specified by `memoryUnit`, to the distribution.
      *
      * @param sample the value

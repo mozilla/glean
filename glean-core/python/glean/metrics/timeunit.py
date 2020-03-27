@@ -8,7 +8,8 @@ from enum import IntEnum
 
 class TimeUnit(IntEnum):
     """
-    An enumeration of different resolutions supported by the `glean.metrics.DateTime` metric type.
+    An enumeration of different resolutions supported by the time-related
+    metric types.
     """
 
     NANOSECOND = 0

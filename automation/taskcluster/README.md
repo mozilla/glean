@@ -97,7 +97,7 @@ Taskcluster automatically save the `stdio` output of a task as an artifact,
 and as special support for seeing and streaming that output while the task is still running.
 
 
-## Self-service, Bugzilla, and IRC
+## Self-service, Bugzilla, and chat.mozilla.org
 
 Taskcluster is designed to be “self-service” as much as possible,
 with features like in-tree `.taskcluster.yml`
@@ -105,7 +105,7 @@ or the web UI for modifying the worker type definitions.
 However some changes like adding a new worker type still require Taskcluster admin access.
 For those, file requests on Bugzilla under [Taskcluster :: Service Request][req].
 
-For asking for help less formally, try the `#glean` channel on Mozilla Slack.
+For asking for help less formally, try the [#glean channel on chat.mozilla.org](https://chat.mozilla.org/#/room/#glean:mozilla.org).
 
 [req]: https://bugzilla.mozilla.org/enter_bug.cgi?product=Taskcluster&component=Service%20Request
 

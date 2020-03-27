@@ -1,0 +1,812 @@
+{
+  "$id": "moz://mozilla.org/schemas/glean/ping/1",
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "additionalProperties": false,
+  "description": "Schema for the ping content sent by Mozilla's glean telemetry SDK\n",
+  "properties": {
+    "$schema": {
+      "enum": [
+        "moz://mozilla.org/schemas/glean/ping/1"
+      ],
+      "type": "string"
+    },
+    "client_info": {
+      "additionalProperties": false,
+      "properties": {
+        "android_sdk_version": {
+          "type": "string"
+        },
+        "app_build": {
+          "type": "string"
+        },
+        "app_channel": {
+          "type": "string"
+        },
+        "app_display_version": {
+          "type": "string"
+        },
+        "architecture": {
+          "type": "string"
+        },
+        "client_id": {
+          "pattern": "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$",
+          "type": "string"
+        },
+        "device_manufacturer": {
+          "type": "string"
+        },
+        "device_model": {
+          "type": "string"
+        },
+        "first_run_date": {
+          "format": "datetime",
+          "type": "string"
+        },
+        "locale": {
+          "type": "string"
+        },
+        "os": {
+          "type": "string"
+        },
+        "os_version": {
+          "type": "string"
+        },
+        "telemetry_sdk_build": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "app_build",
+        "app_display_version",
+        "architecture",
+        "device_manufacturer",
+        "device_model",
+        "first_run_date",
+        "os",
+        "os_version",
+        "telemetry_sdk_build"
+      ],
+      "type": "object"
+    },
+    "events": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "category": {
+            "type": "string"
+          },
+          "extra": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "propertyNames": {
+              "maxLength": 40,
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "name": {
+            "type": "string"
+          },
+          "timestamp": {
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "timestamp",
+          "category",
+          "name"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "metrics": {
+      "additionalProperties": false,
+      "properties": {
+        "boolean": {
+          "additionalProperties": {
+            "type": "boolean"
+          },
+          "propertyNames": {
+            "maxLength": 61,
+            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "counter": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "propertyNames": {
+            "maxLength": 61,
+            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "custom_distribution": {
+          "additionalProperties": {
+            "properties": {
+              "sum": {
+                "type": "integer"
+              },
+              "values": {
+                "additionalProperties": {
+                  "type": "integer"
+                },
+                "propertyNames": {
+                  "pattern": "[0-9]+"
+                },
+                "type": "object"
+              }
+            },
+            "required": [
+              "sum",
+              "values"
+            ],
+            "type": "object"
+          },
+          "propertyNames": {
+            "maxLength": 61,
+            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "datetime": {
+          "additionalProperties": {
+            "format": "datetime",
+            "type": "string"
+          },
+          "propertyNames": {
+            "maxLength": 61,
+            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "enumeration": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "propertyNames": {
+            "maxLength": 61,
+            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "labeled_boolean": {
+          "additionalProperties": {
+            "additionalProperties": {
+              "type": "boolean"
+            },
+            "propertyNames": {
+              "comment": "This must be at least the length of 'category.name' metric names to support error reporting",
+              "maxLength": 61,
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "propertyNames": {
+            "maxLength": 61,
+            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "labeled_counter": {
+          "additionalProperties": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "propertyNames": {
+              "comment": "This must be at least the length of 'category.name' metric names to support error reporting",
+              "maxLength": 61,
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "propertyNames": {
+            "maxLength": 61,
+            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "labeled_datetime": {
+          "additionalProperties": {
+            "additionalProperties": {
+              "format": "datetime",
+              "type": "string"
+            },
+            "propertyNames": {
+              "comment": "This must be at least the length of 'category.name' metric names to support error reporting",
+              "maxLength": 61,
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "propertyNames": {
+            "maxLength": 61,
+            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "labeled_enumeration": {
+          "additionalProperties": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "propertyNames": {
+              "comment": "This must be at least the length of 'category.name' metric names to support error reporting",
+              "maxLength": 61,
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "propertyNames": {
+            "maxLength": 61,
+            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "labeled_number": {
+          "additionalProperties": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "propertyNames": {
+              "comment": "This must be at least the length of 'category.name' metric names to support error reporting",
+              "maxLength": 61,
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "propertyNames": {
+            "maxLength": 61,
+            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "labeled_rate": {
+          "additionalProperties": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "propertyNames": {
+              "comment": "This must be at least the length of 'category.name' metric names to support error reporting",
+              "maxLength": 61,
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "propertyNames": {
+            "maxLength": 61,
+            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "labeled_string": {
+          "additionalProperties": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "propertyNames": {
+              "comment": "This must be at least the length of 'category.name' metric names to support error reporting",
+              "maxLength": 61,
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "propertyNames": {
+            "maxLength": 61,
+            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "labeled_string_list": {
+          "additionalProperties": {
+            "additionalProperties": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "propertyNames": {
+              "comment": "This must be at least the length of 'category.name' metric names to support error reporting",
+              "maxLength": 61,
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "propertyNames": {
+            "maxLength": 61,
+            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "labeled_timing_distribution": {
+          "additionalProperties": {
+            "additionalProperties": {
+              "properties": {
+                "bucket_count": {
+                  "type": "integer"
+                },
+                "histogram_type": {
+                  "enum": [
+                    "linear",
+                    "exponential"
+                  ],
+                  "type": "string"
+                },
+                "overflow": {
+                  "type": "integer"
+                },
+                "range": {
+                  "items": {
+                    "type": "number"
+                  },
+                  "maxItems": 2,
+                  "minItems": 2,
+                  "type": "array"
+                },
+                "sum": {
+                  "type": "integer"
+                },
+                "time_unit": {
+                  "enum": [
+                    "nanosecond",
+                    "microsecond",
+                    "millisecond",
+                    "second",
+                    "minute",
+                    "hour",
+                    "day"
+                  ],
+                  "type": "string"
+                },
+                "underflow": {
+                  "type": "integer"
+                },
+                "values": {
+                  "additionalProperties": {
+                    "type": "integer"
+                  },
+                  "propertyNames": {
+                    "pattern": "[0-9]+"
+                  },
+                  "type": "object"
+                }
+              },
+              "required": [
+                "values"
+              ],
+              "type": "object"
+            },
+            "propertyNames": {
+              "comment": "This must be at least the length of 'category.name' metric names to support error reporting",
+              "maxLength": 61,
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "propertyNames": {
+            "maxLength": 61,
+            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "labeled_usage": {
+          "additionalProperties": {
+            "additionalProperties": {
+              "type": "boolean"
+            },
+            "propertyNames": {
+              "comment": "This must be at least the length of 'category.name' metric names to support error reporting",
+              "maxLength": 61,
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "propertyNames": {
+            "maxLength": 61,
+            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "labeled_use_counter": {
+          "additionalProperties": {
+            "additionalProperties": {
+              "properties": {
+                "denominator": {
+                  "properties": {
+                    "name": {
+                      "maxLength": 30,
+                      "pattern": "^[a-z_][a-z0-9_]*$",
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
+                },
+                "values": {
+                  "additionalProperties": {
+                    "type": "integer"
+                  },
+                  "propertyNames": {
+                    "maxLength": 30,
+                    "pattern": "^[a-z_][a-z0-9_]*$",
+                    "type": "string"
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "object"
+            },
+            "propertyNames": {
+              "comment": "This must be at least the length of 'category.name' metric names to support error reporting",
+              "maxLength": 61,
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "propertyNames": {
+            "maxLength": 61,
+            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "labeled_uuid": {
+          "additionalProperties": {
+            "additionalProperties": {
+              "pattern": "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$",
+              "type": "string"
+            },
+            "propertyNames": {
+              "comment": "This must be at least the length of 'category.name' metric names to support error reporting",
+              "maxLength": 61,
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "propertyNames": {
+            "maxLength": 61,
+            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "memory_distribution": {
+          "additionalProperties": {
+            "properties": {
+              "sum": {
+                "type": "integer"
+              },
+              "values": {
+                "additionalProperties": {
+                  "type": "integer"
+                },
+                "propertyNames": {
+                  "pattern": "[0-9]+"
+                },
+                "type": "object"
+              }
+            },
+            "required": [
+              "values"
+            ],
+            "type": "object"
+          },
+          "propertyNames": {
+            "maxLength": 61,
+            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "number": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "propertyNames": {
+            "maxLength": 61,
+            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "quantity": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "propertyNames": {
+            "maxLength": 61,
+            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "rate": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "propertyNames": {
+            "maxLength": 61,
+            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "string": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "propertyNames": {
+            "maxLength": 61,
+            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "string_list": {
+          "additionalProperties": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "propertyNames": {
+            "maxLength": 61,
+            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "timespan": {
+          "additionalProperties": {
+            "properties": {
+              "time_unit": {
+                "enum": [
+                  "nanosecond",
+                  "microsecond",
+                  "millisecond",
+                  "second",
+                  "minute",
+                  "hour",
+                  "day"
+                ],
+                "type": "string"
+              },
+              "value": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "value",
+              "time_unit"
+            ],
+            "type": "object"
+          },
+          "propertyNames": {
+            "maxLength": 61,
+            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "timing_distribution": {
+          "additionalProperties": {
+            "properties": {
+              "bucket_count": {
+                "type": "integer"
+              },
+              "histogram_type": {
+                "enum": [
+                  "linear",
+                  "exponential"
+                ],
+                "type": "string"
+              },
+              "overflow": {
+                "type": "integer"
+              },
+              "range": {
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 2,
+                "minItems": 2,
+                "type": "array"
+              },
+              "sum": {
+                "type": "integer"
+              },
+              "time_unit": {
+                "enum": [
+                  "nanosecond",
+                  "microsecond",
+                  "millisecond",
+                  "second",
+                  "minute",
+                  "hour",
+                  "day"
+                ],
+                "type": "string"
+              },
+              "underflow": {
+                "type": "integer"
+              },
+              "values": {
+                "additionalProperties": {
+                  "type": "integer"
+                },
+                "propertyNames": {
+                  "pattern": "[0-9]+"
+                },
+                "type": "object"
+              }
+            },
+            "required": [
+              "values"
+            ],
+            "type": "object"
+          },
+          "propertyNames": {
+            "maxLength": 61,
+            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "usage": {
+          "additionalProperties": {
+            "type": "boolean"
+          },
+          "propertyNames": {
+            "maxLength": 61,
+            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "use_counter": {
+          "additionalProperties": {
+            "properties": {
+              "denominator": {
+                "properties": {
+                  "name": {
+                    "maxLength": 30,
+                    "pattern": "^[a-z_][a-z0-9_]*$",
+                    "type": "string"
+                  },
+                  "value": {
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "values": {
+                "additionalProperties": {
+                  "type": "integer"
+                },
+                "propertyNames": {
+                  "maxLength": 30,
+                  "pattern": "^[a-z_][a-z0-9_]*$",
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          },
+          "propertyNames": {
+            "maxLength": 61,
+            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "uuid": {
+          "additionalProperties": {
+            "pattern": "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$",
+            "type": "string"
+          },
+          "propertyNames": {
+            "maxLength": 61,
+            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "type": "string"
+          },
+          "type": "object"
+        }
+      },
+      "type": "object"
+    },
+    "ping_info": {
+      "additionalProperties": false,
+      "properties": {
+        "end_time": {
+          "format": "datetime",
+          "type": "string"
+        },
+        "experiments": {
+          "additionalProperties": {
+            "additionalProperties": false,
+            "properties": {
+              "branch": {
+                "maxLength": 100,
+                "type": "string"
+              },
+              "extra": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "properties": {
+                      "type": {
+                        "type": "string"
+                      }
+                    },
+                    "type": "object"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "branch"
+            ],
+            "type": "object"
+          },
+          "propertyNames": {
+            "maxLength": 100,
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "ping_type": {
+          "maxLength": 30,
+          "pattern": "^[a-z-_][a-z0-9-_]*$",
+          "type": "string"
+        },
+        "reason": {
+          "maxLength": 30,
+          "type": "string"
+        },
+        "seq": {
+          "type": "integer"
+        },
+        "start_time": {
+          "format": "datetime",
+          "type": "string"
+        }
+      },
+      "required": [
+        "seq",
+        "start_time",
+        "end_time"
+      ],
+      "type": "object"
+    }
+  },
+  "required": [
+    "ping_info",
+    "client_info"
+  ],
+  "title": "Ping transport",
+  "type": "object"
+}

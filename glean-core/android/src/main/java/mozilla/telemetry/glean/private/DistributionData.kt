@@ -9,12 +9,12 @@ import mozilla.telemetry.glean.utils.tryGetLong
 import org.json.JSONObject
 
 /**
- * This class represents the structure of a timing distribution according to the pipeline schema. It
+ * This class represents the structure of a distribution according to the pipeline schema. It
  * is meant to help serialize and deserialize data to the correct format for transport and storage,
  * as well as including a helper function to calculate the bucket sizes.
  *
  * @param values a map containing the bucket index mapped to the accumulated count
- * @param sum the accumulated sum of all the samples in the timing distribution
+ * @param sum the accumulated sum of all the samples in the distribution
  */
 @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
 data class DistributionData(

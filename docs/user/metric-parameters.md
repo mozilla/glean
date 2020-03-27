@@ -4,6 +4,8 @@
 
 - `type`: **Required.**  Specifies the type of a metric, like "counter" or "event". This defines which operations are valid for the metric, how it is stored and how data analysis tooling displays it. See the list of [supported metric types](metrics/index.md).
 
+> **Important**: Once a metric is released in a product, its `type` should not be changed. If any data was collected locally with the older `type`, and hasn't yet been sent in a ping, recording data with the new `type` may cause any old persisted data to be lost for that metric. See [this comment](https://bugzilla.mozilla.org/show_bug.cgi?id=1621757#c1) for an extended explanation of the different scenarios.
+
 - `description`: **Required.** A textual description of the metric for humans. It should describe what the metric does, what it means for analysts, and its edge cases or any other helpful information.
 
   The description field may contain [markdown syntax](https://www.markdownguide.org/basic-syntax/).
@@ -26,9 +28,8 @@
 ## Optional metric parameters
 
 - `lifetime`: Defines the lifetime of the metric. Different lifetimes affect when the metrics value is reset.
-  - `ping` (default): The metric is reset each time it is sent in a ping.
-  - `application`: The metric is related to an application run, and is reset when the application restarts.
-  - `user`: The metric is part of the user's profile.
+
+{{#include lifetimes-parameters.md}}
     
 - `send_in_pings`: Defines which pings the metric should be sent on. If not specified, the metric is sent on the "default ping", which is the `events` ping for events and the `metrics` ping for everything else. Most metrics don't need to specify this unless they are sent on [custom pings](pings/custom.md).
 

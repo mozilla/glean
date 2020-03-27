@@ -4,7 +4,7 @@ Timing distributions are used to accumulate and store time measurement, for anal
 
 To measure the distribution of single timespans, see [Timespans](timespan.md). To record absolute times, see [Datetimes](datetime.md).
 
-Timing distributions are recorded in a histogram where the buckets have an exponential distribution, specifically with 8 buckets for every power of 2. 
+Timing distributions are recorded in a histogram where the buckets have an exponential distribution, specifically with 8 buckets for every power of 2.
 That is, the function from a value \\( x \\) to a bucket index is:
 
 \\[ \lfloor 8 \log_2(x) \rfloor \\]
@@ -14,6 +14,8 @@ This makes them suitable for measuring timings on a number of time scales withou
 Timings always span the full length between `start` and `stopAndAccumulate`.
 If the Glean upload is disabled when calling `start`, the timer is still started.
 If the Glean upload is disabled at the time `stopAndAccumulate` is called, nothing is recorded.
+
+Multiple concurrent timespans in different threads may be measured at the same time.
 
 ## Configuration
 
@@ -119,7 +121,7 @@ assertEquals(2L, snapshot.getCount)
 
 // Was an error recorded?
 assertEquals(
-    1, 
+    1,
     pages.INSTANCE.pageLoad.testGetNumRecordedErrors(
         ErrorType.InvalidValue
     )
@@ -170,12 +172,59 @@ XCTAssertEqual(1, pages.pageLoad.testGetNumRecordedErrors(.invalidValue))
 
 </div>
 
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+class PageHandler:
+    def __init__(self):
+        self.timer_id = None
+
+    def on_page_start(self, event):
+        # ...
+        self.timer_id = metrics.pages.page_load.start()
+
+    def on_page_loaded(self, event):
+        # ...
+        metrics.pages.page_load.store_and_accumulate(self.timer_id)
+```
+
+There are test APIs available too.  For convenience, properties `sum` and `count` are exposed to facilitate validating that data was recorded correctly.
+
+Continuing the `page_load` example above, at this point the metric should have a `sum == 11` and a `count == 2`:
+
+```Python
+# Was anything recorded?
+assert metrics.pages.page_load.test_has_value()
+
+# Get snapshot.
+snapshot = metrics.pages.page_load.test_get_value()
+
+# Does the sum have the expected value?
+assert 11 == snapshot.sum
+
+# Usually you don't know the exact timing values, but how many should have been recorded.
+assert 2 == snapshot.count
+
+# Was an error recorded?
+assert 1 == metrics.pages.page_load.test_get_num_recorded_errors(
+    ErrorType.INVALID_VALUE
+)
+```
+
+</div>
+
 {{#include ../../tab_footer.md}}
 
 ## Limits
 
 * Timings are recorded in nanoseconds.
-  On Android, the [`SystemClock.getElapsedNanos()`](https://developer.android.com/reference/android/os/SystemClock.html#elapsedRealtimeNanos()) function is used, so it is limited by the accuracy and performance of that timer.
+
+  * On Android, the [`SystemClock.elapsedRealtimeNanos()`](https://developer.android.com/reference/android/os/SystemClock.html#elapsedRealtimeNanos()) function is used, so it is limited by the accuracy and performance of that timer.
+
+  * On Python 3.7 and later, [`time.monotonic_ns()`](https://docs.python.org/3/library/time.html#time.monotonic_ns) is used.  On earlier versions of Python, [`time.monotonics()`](https://docs.python.org/3/library/time.html#time.monotonic) is used, which is not guaranteed to have nanosecond resolution.
 
 * The maximum timing value that will be recorded is 10 minutes. Longer times will be truncated to 10 minutes and an error will be recorded.
 
@@ -193,3 +242,4 @@ XCTAssertEqual(1, pages.pageLoad.testGetNumRecordedErrors(.invalidValue))
 
 * [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-timing-distribution-metric-type/index.html)
 * [Swift API docs](../../../swift/Classes/TimingDistributionMetricType.html)
+* [Python API docs](../../../python/glean/metrics/timing_distribution.html)

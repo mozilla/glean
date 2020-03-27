@@ -1,4 +1,4 @@
-personal_ws-1.1 en 154 utf-8
+personal_ws-1.1 en 160 utf-8
 AAR
 AARs
 APIs
@@ -37,6 +37,7 @@ Lockwise
 MPL
 Makefile
 Mingw
+Miniconda
 Mockito
 Mutex
 NDK
@@ -62,9 +63,11 @@ alphanumerics
 analytics
 aspell
 async
+autodetected
 backend
 barcode
 boolean
+booleans
 brizental
 bugfixes
 camelCase
@@ -79,6 +82,7 @@ conda
 coroutine
 csh
 dataset
+datetime
 destructor
 dev
 dexter
@@ -111,10 +115,12 @@ linux
 logcat
 macOS
 manylinux
+md
 mdbook
 mdroettboom
 metric's
 mozilla
+mozregression
 mypy
 namespace
 ol
@@ -147,6 +153,7 @@ toolchains
 tooltip
 transpiler
 travis
+und
 unhandled
 uploader
 vendored

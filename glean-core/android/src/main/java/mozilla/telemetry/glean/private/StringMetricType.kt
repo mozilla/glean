@@ -50,15 +50,6 @@ class StringMetricType internal constructor(
     }
 
     /**
-     * Destroy this metric.
-     */
-    protected fun finalize() {
-        if (this.handle != 0L) {
-            LibGleanFFI.INSTANCE.glean_destroy_string_metric(this.handle)
-        }
-    }
-
-    /**
      * Set a string value.
      *
      * @param value This is a user defined string value. If the length of the string exceeds

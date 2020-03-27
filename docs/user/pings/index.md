@@ -104,6 +104,34 @@ A pre-defined set of headers is additionally sent along with the submitted ping:
 ## Defining background state
 
 These docs refer to application 'background' state in several places.
-This specifically means when the activity is no longer visible to the user, it has entered the Stopped state, and the system invokes the [`onStop()`](https://developer.android.com/reference/android/app/Activity.html#onStop()) callback.
-This may occur, for example, when a newly launched activity covers the entire screen.
+
+{{#include ../../tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
+
+For Android, this specifically means when the activity is no longer visible to the user, it has entered the
+Stopped state, and the system invokes the [`onStop()`](https://developer.android.com/reference/android/app/Activity.html#onStop()) callback.
+
+This may occur, if the user uses `Overview` button to change to another app, the user presses the `Back` button and
+navigates to a previous application or the home screen, or if the user presses the `Home` button to return to the
+home screen.  This can also occur if the user navigates away from the application through some notification or
+other means.
+
 The system may also call `onStop()` when the activity has finished running, and is about to be terminated.
+
+</div>
+
+<div data-lang="Swift" class="tab">
+
+For iOS, this specifically means when the app is no longer visible to the user, or when the `UIApplicationDelegate`
+receives the [`applicationDidEnterBackground`](https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622997-applicationdidenterbackground) event.
+
+This may occur if the user opens the task switcher to change to another app, or if the user presses the `Home` button
+to show the home screen.  This can also occur if the user navigates away from the app through a notification or other
+means.
+
+> **Note:** Glean does not currently support [Scene based lifecycle events](https://developer.apple.com/documentation/uikit/app_and_environment/managing_your_app_s_life_cycle) that were introduced in iOS 13.
+
+</div>
+
+{{#include ../../tab_footer.md}}

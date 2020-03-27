@@ -18,12 +18,14 @@ set "docs_location=build\docs"
 :: Set the crate name.
 set "crate_name=glean_core"
 
-:: Add the changelog file
-cp -a CHANGELOG.md docs/appendix/changelog.md
+:: Add the changelog file.
+copy /Y CHANGELOG.md docs\appendix\changelog.md
 
 :: Switch to the 'docs' subdirectory, build using
 :: mdbook and get back to the current directory.
-pushd docs && mdbook build && popd
+:: Use a single `&` so that popd gets executed even
+:: if mdbook fails.
+pushd docs & mdbook build & popd
 
 cargo doc --no-deps
 

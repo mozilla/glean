@@ -38,16 +38,16 @@ Add this to your Gradle configuration:
 implementation "org.mozilla.components:service-glean:{latest-version}"
 ```
 
-> **Important:** the `{latest-version}` placeholder in the above link should be replaced with the version number of the Glean SDK used by the project.
-
-For example, if version *6.0.2* is used, then the include directive becomes:
-
-```Groovy
-implementation "org.mozilla.components:service-glean:6.0.2"
-```
+> **Important:** the `{latest-version}` placeholder in the above link should be replaced with the version of Android Components used by the project.
 
 The Glean SDK is released as part of [android-components](https://github.com/mozilla-mobile/android-components).  Therefore, it follows android-components' versions.
 The [android-components release page](https://github.com/mozilla-mobile/android-components/releases/) can be used to determine the latest version.
+
+For example, if version *33.0.0* is used, then the include directive becomes:
+
+```Groovy
+implementation "org.mozilla.components:service-glean:33.0.0"
+```
 
 
 </div>
@@ -141,18 +141,22 @@ The Glean Gradle plugin is distributed through Mozilla's Maven, so we need to te
 ```
 buildscript {
     repositories {
+        // Include the next clause if you are tracking snapshots of android components
+        maven {
+            url "https://snapshots.maven.mozilla.org/maven2"
+        }
         maven {
             url "https://maven.mozilla.org/maven2"
         }
 
         dependencies {
-            classpath "org.mozilla.telemetry:glean-gradle-plugin:{latest-version}"
+            classpath "org.mozilla.components:tooling-gradle-plugin:{android-components-version}"
         }
     }
 }
 ```
 
-> **Important:** as above, the `{latest-version}` placeholder in the above link should be replaced with the version number of the Glean SDK used by the project.
+> **Important:** as above, the `{android-components-version}` placeholder in the above link should be replaced with the version number of android components used in your project.
 
 The JetBrains Python plugin is distributed in the Gradle plugin repository, so it can be included with:
 
@@ -162,13 +166,15 @@ plugins {
 }
 ```
 
-Right before the end of the same file, we need to apply the Glean Gradle plugin:
+Right before the end of the same file, we need to apply the Glean Gradle plugin.
+Set any [additional parameters](android-build-configuration-options.md) to control the behavior of the Glean Gradle plugin before calling `apply plugin`.
+
 
 ```Groovy
+// Optionally, set any parameters to send to the plugin.
+ext.gleanGenerateMarkdownDocs = true
 apply plugin: "org.mozilla.telemetry.glean-gradle-plugin"
 ```
-
-There are [additional parameters](android-build-configuration-options.md) that can be set to control the behavior of the Glean Gradle plugin, but they are rarely needed for normal use.
 
 > **Note:** Earlier versions of Glean used a Gradle script (`sdk_generator.gradle`) rather than a Gradle plugin. Its use is deprecated and projects should be updated to use the Gradle plugin as described above.
 
@@ -224,10 +230,6 @@ Follow these steps to automatically run the parser at build time:
 
 <div data-lang="Python" class="tab">
 
-> **Important:** The Python bindings are already being used internally for testing of Mozilla's data platform.
-> However, they are not ready for production or inclusion in applications that are distributed to end users.
-> Progress on this support is being [tracked in this bug](https://bugzilla.mozilla.org/show_bug.cgi?id=1598673).
-
 For Python, the `metrics.yaml` file must be available and loaded at runtime.
 
 If your project is a script (i.e. just Python files in a directory), you can load the `metrics.yaml` using:
@@ -263,6 +265,10 @@ Please refer to the [custom pings documentation](pings/custom.md).
 
 > **Important**: as stated [before](adding-glean-to-your-project.md#before-using-glean), any new data collection requires documentation and data-review.
 > This is also required for any new metric automatically collected by the Glean SDK.
+
+### Parallelism
+
+All of Glean's target languages use a separate worker thread to do most of Glean's work, including any I/O. This thread is fully managed by Glean as an implementation detail. Therefore, users should be free to use the Glean API wherever it is most convenient, without worrying about the performance impact of updating metrics and sending pings.
 
 ### Testing metrics
 

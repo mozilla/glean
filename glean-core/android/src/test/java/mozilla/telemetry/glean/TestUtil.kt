@@ -56,7 +56,7 @@ internal fun checkPingSchema(content: JSONObject) {
             "glean_parser",
             "check",
             "-s",
-            "${BuildConfig.GLEAN_PING_SCHEMA_URL}"
+            "${BuildConfig.GLEAN_PING_SCHEMA_PATH}"
         )
     ).redirectOutput(ProcessBuilder.Redirect.INHERIT)
         .redirectError(ProcessBuilder.Redirect.INHERIT)

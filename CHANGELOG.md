@@ -1,7 +1,32 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v25.1.0...master)
+[Full changelog](https://github.com/mozilla/glean/compare/v26.0.0...master)
 
+# v26.0.0 (2020-03-27)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v25.1.0...v26.0.0)
+
+* General:
+  * The version of `glean_parser` has been updated to 1.19.0:
+    * **Breaking change:** The regular expression used to validate labels is
+      stricter and more correct.
+    * Add more information about pings to markdown documentation:
+      * State whether the ping includes client id;
+      * Add list of data review links;
+      * Add list of related bugs links.
+    * `glean_parser` now makes it easier to write external translation functions for
+      different language targets.
+    * BUGFIX: glean_parser now works on 32-bit Windows.
+* Android:
+  * `gradlew clean` will no longer remove the Miniconda installation in
+    `~/.gradle/glean`. Therefore `clean` can be used without reinstalling
+    Miniconda afterward every time.
+* Python:
+  * **Breaking Change**: The `glean.util` and `glean.hardware` modules, which
+    were unintentionally public, have been made private.
+  * Most Glean work and I/O is now done on its own worker thread. This brings the parallelism Python in line with the other platforms.
+  * The timing distribution, memory distribution, string list, labeled boolean and labeled string metric types are now supported in Python ([#762](https://github.com/mozilla/glean/pull/762), [#763](https://github.com/mozilla/glean/pull/763), [#765](https://github.com/mozilla/glean/pull/765), [#766](https://github.com/mozilla/glean/pull/766))
+  
 # v25.1.0 (2020-02-26)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v25.0.0...v25.1.0)

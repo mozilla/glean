@@ -17,9 +17,9 @@ import pytest
 from glean import Configuration, Glean
 from glean import __version__ as glean_version
 from glean import _builtins
-from glean import util
+from glean import _util
 from glean._dispatcher import Dispatcher
-from glean.metrics import CounterMetricType, Lifetime, PingType
+from glean.metrics import CounterMetricType, Lifetime, PingType, StringMetricType
 
 
 GLEAN_APP_ID = "glean-python-test"
@@ -258,8 +258,8 @@ def test_the_app_channel_must_be_correctly_set():
 
 
 def test_get_language_tag_reports_the_tag_for_the_default_locale():
-    tag = util.get_locale_tag()
-    assert re.match("[a-z][a-z]-[A-Z][A-Z]", tag)
+    tag = _util.get_locale_tag()
+    assert re.match("(und)|([a-z][a-z]-[A-Z][A-Z])", tag)
 
 
 @pytest.mark.skip
@@ -278,9 +278,70 @@ def test_get_language_reports_the_modern_translation_for_some_languages():
     pass
 
 
-@pytest.mark.skip
-def test_ping_collection_must_happen_after_currently_scheduled_metrics_recordings():
-    pass
+def test_ping_collection_must_happen_after_currently_scheduled_metrics_recordings(
+    ping_schema_url,
+):
+    # Given the following block of code:
+    #
+    # metrics.metric.a.set("SomeTestValue")
+    # Glean.submit_pings(["custom-ping-1"])
+    #
+    # This test ensures that "custom-ping-1" contains "metric.a" with a value of "SomeTestValue"
+    # when the ping is collected.
+
+    # safe_httpserver.serve_content(b"", code=200)
+
+    class TestUploader:
+        def do_upload(self, url_path, serialized_ping, configuration):
+            self.url_path = url_path
+            self.serialized_ping = serialized_ping
+            self.configuration = configuration
+
+    real_uploader = Glean._configuration.ping_uploader
+    test_uploader = TestUploader()
+    Glean._configuration.ping_uploader = test_uploader
+
+    Glean._configuration.log_pings = True
+
+    ping_name = "custom_ping_1"
+    ping = PingType(
+        name=ping_name, include_client_id=True, send_if_empty=False, reason_codes=[]
+    )
+    string_metric = StringMetricType(
+        disabled=False,
+        category="category",
+        lifetime=Lifetime.PING,
+        name="string_metric",
+        send_in_pings=[ping_name],
+    )
+
+    # This test relies on testing mode to be disabled, since we need to prove the
+    # real-world async behaviour of this.
+    Dispatcher._testing_mode = False
+
+    # This is the important part of the test. Even though both the metrics API and
+    # sendPings are async and off the main thread, "SomeTestValue" should be recorded,
+    # the order of the calls must be preserved.
+    test_value = "SomeTestValue"
+    string_metric.set(test_value)
+    ping.submit()
+
+    # Wait until the work is completea
+    Dispatcher._task_worker._queue.join()
+
+    assert ping_name == test_uploader.url_path.split("/")[3]
+
+    json_content = json.loads(test_uploader.serialized_ping)
+
+    assert 0 == validate_ping.validate_ping(
+        io.StringIO(test_uploader.serialized_ping),
+        sys.stdout,
+        schema_url=ping_schema_url,
+    )
+
+    assert {"category.string_metric": test_value} == json_content["metrics"]["string"]
+
+    Glean._configuration.ping_uploader = real_uploader
 
 
 def test_basic_metrics_should_be_cleared_when_disabling_uploading():
@@ -384,7 +445,7 @@ def test_overflowing_the_task_queue_records_telemetry():
     for i in range(110):
         Dispatcher.launch(lambda: None)
 
-    assert 100 == len(Dispatcher._task_queue)
+    assert 100 == len(Dispatcher._preinit_task_queue)
     assert 10 == Dispatcher._overflow_count
 
     Dispatcher.flush_queued_initial_tasks()

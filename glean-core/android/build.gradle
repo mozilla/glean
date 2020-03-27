@@ -20,15 +20,11 @@ apply plugin: 'jacoco'
 
 /*
  * This defines the location of the JSON schema used to validate the pings
- * created during unit testing.
- * This uses a specific version of the schema identified by a git commit hash.
+ * created during unit testing. This uses the vendored schema.
  *
- * !IMPORTANT!
- * Everytime this hash is changed it should also be changed in
- * glean-core/python/tests/conftest.py
+ * Use `bin/update-schema.sh latest` to update it to the latest upstream version.`
  */
-String GLEAN_PING_SCHEMA_GIT_HASH = "ee08e7c"
-String GLEAN_PING_SCHEMA_URL = "https://raw.githubusercontent.com/mozilla-services/mozilla-pipeline-schemas/$GLEAN_PING_SCHEMA_GIT_HASH/schemas/glean/glean/glean.1.schema.json"
+File GLEAN_PING_SCHEMA_PATH = file("$rootDir/glean.1.schema.json")
 
 // Set configuration for the glean_parser
 ext.allowGleanInternal = true
@@ -44,7 +40,9 @@ android {
         // TODO: 1551691 Get the version from git tag...? Also, we need to select a
         // version that won't conflict with legacy glean-ac versions.
         buildConfigField("String", "LIBRARY_VERSION", "\"0.1\"")
-        buildConfigField("String", "GLEAN_PING_SCHEMA_URL", "\"" + GLEAN_PING_SCHEMA_URL + "\"")
+        // Carefully escape the string here so it will support `\` in
+        // Windows paths correctly.
+        buildConfigField("String", "GLEAN_PING_SCHEMA_PATH", JsonOutput.toJson(GLEAN_PING_SCHEMA_PATH.path))
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
