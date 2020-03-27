@@ -20,6 +20,7 @@
 * Python:
   * **Breaking Change**: The `glean.util` and `glean.hardware` modules, which
     were unintentionally public, have been made private.
+  * Most Glean work and I/O is now done on its own worker thread. This brings the parallelism Python in line with the other platforms.
   * The timing distribution, memory distribution, string list, labeled boolean and labeled string metric types are now supported in Python ([#762](https://github.com/mozilla/glean/pull/762), [#763](https://github.com/mozilla/glean/pull/763), [#765](https://github.com/mozilla/glean/pull/765), [#766](https://github.com/mozilla/glean/pull/766))
   
 # v25.1.0 (2020-02-26)
