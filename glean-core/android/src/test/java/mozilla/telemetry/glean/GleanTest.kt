@@ -689,6 +689,11 @@ class GleanTest {
             uploadEnabled = false
         )
 
+        // Now trigger it to upload
+        triggerWorkManager(context, DeletionPingUploadWorker.PING_WORKER_TAG)
+
+        assertEquals(1, server.requestCount)
+
         resetGlean(
             context,
             Glean.configuration.copy(
@@ -702,6 +707,6 @@ class GleanTest {
         // Now trigger it to upload
         triggerWorkManager(context, DeletionPingUploadWorker.PING_WORKER_TAG)
 
-        assertEquals(0, server.requestCount)
+        assertEquals(1, server.requestCount)
     }
 }
