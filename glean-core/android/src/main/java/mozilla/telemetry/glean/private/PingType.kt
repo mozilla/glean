@@ -62,15 +62,6 @@ class PingType<ReasonCodesEnum : Enum<ReasonCodesEnum>> (
     }
 
     /**
-     * Destroy this ping type.
-     */
-    protected fun finalize() {
-        if (this.handle != 0L) {
-            LibGleanFFI.INSTANCE.glean_destroy_ping_type(this.handle)
-        }
-    }
-
-    /**
      * Collect and submit the ping for eventual upload.
      *
      * While the collection of metrics into pings happens synchronously, the

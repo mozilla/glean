@@ -42,12 +42,6 @@ class CounterMetricType(
                 disabled = disabled.toByte())
     }
 
-    protected fun finalize() {
-        if (this.handle != 0L) {
-            LibGleanFFI.INSTANCE.glean_destroy_counter_metric(this.handle)
-        }
-    }
-
     fun add(amount: Int = 1) {
         if (disabled) {
             return
