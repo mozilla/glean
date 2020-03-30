@@ -68,6 +68,8 @@ pub(crate) const INTERNAL_STORAGE: &str = "glean_internal_info";
 pub(crate) const PENDING_PINGS_DIRECTORY: &str = "pending_pings";
 pub(crate) const DELETION_REQUEST_PINGS_DIRECTORY: &str = "deletion_request";
 
+type SimpleCallback = fn();
+
 /// The global Glean instance.
 ///
 /// This is the singleton used by all wrappers to allow for a nice API.
@@ -163,6 +165,10 @@ pub struct Glean {
     is_first_run: bool,
     #[cfg(feature = "upload")]
     upload_manager: PingUploadManager,
+    /// upload
+    pub on_upload_enabled_callback: Option<SimpleCallback>,
+    /// upload
+    pub on_upload_disabled_callback: Option<SimpleCallback>,
 }
 
 impl Glean {
@@ -170,7 +176,11 @@ impl Glean {
     ///
     /// This will create the necessary directories and files in `data_path`.
     /// This will also initialize the core metrics.
-    pub fn new(cfg: Configuration) -> Result<Self> {
+    pub fn new(
+        cfg: Configuration,
+        on_upload_enabled_callback: Option<SimpleCallback>,
+        on_upload_disabled_callback: Option<SimpleCallback>,
+    ) -> Result<Self> {
         log::info!("Creating new Glean");
 
         let application_id = sanitize_application_id(&cfg.application_id);
@@ -194,8 +204,28 @@ impl Glean {
             start_time: local_now_with_offset(),
             max_events: cfg.max_events.unwrap_or(DEFAULT_MAX_EVENTS),
             is_first_run: false,
+            on_upload_enabled_callback,
+            on_upload_disabled_callback,
         };
-        glean.on_change_upload_enabled(cfg.upload_enabled);
+
+        // TODO: Add comment explaining the logic here
+        if cfg.upload_enabled {
+            glean.initialize_core_metrics();
+        } else {
+            match glean
+                .core_metrics
+                .client_id
+                .get_value(&glean, "glean_client_info")
+            {
+                None => (),
+                Some(uuid) => {
+                    if uuid != *KNOWN_CLIENT_ID {
+                        glean.on_upload_disabled();
+                    }
+                }
+            }
+        }
+
         Ok(glean)
     }
 
@@ -214,7 +244,7 @@ impl Glean {
             delay_ping_lifetime_io: false,
         };
 
-        Self::new(cfg)
+        Self::new(cfg, None, None)
     }
 
     /// Destroy the database.
@@ -286,15 +316,11 @@ impl Glean {
         log::info!("Upload enabled: {:?}", flag);
 
         if self.upload_enabled != flag {
-            // When upload is disabled, submit a deletion-request ping
-            if !flag {
-                if let Err(err) = self.internal_pings.deletion_request.submit(self, None) {
-                    log::error!("Failed to submit deletion-request ping on optout: {}", err);
-                }
+            if flag {
+                self.on_upload_enabled()
+            } else {
+                self.on_upload_disabled()
             }
-
-            self.upload_enabled = flag;
-            self.on_change_upload_enabled(flag);
             true
         } else {
             false
@@ -308,21 +334,31 @@ impl Glean {
         self.upload_enabled
     }
 
-    /// Handles the changing of state when upload_enabled changes.
+    /// Handles the changing of state from upload disabled to enabled.
     ///
     /// Should only be called when the state actually changes.
-    /// When disabling, all pending metrics, events and queued pings are cleared.
     ///
-    /// When enabling, the core Glean metrics are recreated.
+    /// The core Glean metrics are recreated.
     ///
     /// # Arguments
     ///
     /// * `flag` - When true, enable metric collection.
-    fn on_change_upload_enabled(&mut self, flag: bool) {
-        if flag {
-            self.initialize_core_metrics();
-        } else {
-            self.clear_metrics();
+    fn on_upload_enabled(&mut self) {
+        self.upload_enabled = true;
+        self.initialize_core_metrics();
+        if let Some(on_upload_enabled_callback) = self.on_upload_enabled_callback {
+            (on_upload_enabled_callback)();
+        }
+    }
+
+    fn on_upload_disabled(&mut self) {
+        if let Err(err) = self.internal_pings.deletion_request.submit(self, None) {
+            log::error!("Failed to submit deletion-request ping on optout: {}", err);
+        }
+        self.clear_metrics();
+        self.upload_enabled = false;
+        if let Some(on_upload_disabled_callback) = self.on_upload_disabled_callback {
+            (on_upload_disabled_callback)();
         }
     }
 

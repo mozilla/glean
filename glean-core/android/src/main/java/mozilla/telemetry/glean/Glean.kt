@@ -44,6 +44,20 @@ import org.json.JSONObject
  */
 data class GleanTimerId internal constructor(internal val id: Long)
 
+class GleanOnUploadEnabledCallback
+constructor (val glean: GleanInternalAPI) : LibGleanFFI.OnUploadEnabledCallback {
+    override fun onUploadEnabled() {
+        glean.onUploadEnabled()
+    }
+}
+
+class GleanOnUploadDisabledCallback
+constructor (val glean: GleanInternalAPI) : LibGleanFFI.OnUploadDisabledCallback {
+    override fun onUploadDisabled() {
+        glean.onUploadDisabled()
+    }
+}
+
 /**
  * The main Glean API.
  *
@@ -158,7 +172,11 @@ open class GleanInternalAPI internal constructor () {
                 delayPingLifetimeIO = false
             )
 
-            initialized = LibGleanFFI.INSTANCE.glean_initialize(cfg).toBoolean()
+            initialized = LibGleanFFI.INSTANCE.glean_initialize(
+                cfg,
+                GleanOnUploadEnabledCallback(this@GleanInternalAPI),
+                GleanOnUploadDisabledCallback(this@GleanInternalAPI)
+            ).toBoolean()
 
             // If initialization of Glean fails we bail out and don't initialize further.
             if (!initialized) {
@@ -216,10 +234,6 @@ open class GleanInternalAPI internal constructor () {
             MainScope().launch {
                 ProcessLifecycleOwner.get().lifecycle.addObserver(gleanLifecycleObserver)
             }
-
-            if (!uploadEnabled) {
-                DeletionPingUploadWorker.enqueueWorker(applicationContext)
-            }
         }
     }
 
@@ -258,8 +272,6 @@ open class GleanInternalAPI internal constructor () {
      */
     fun setUploadEnabled(enabled: Boolean) {
         if (isInitialized()) {
-            val originalEnabled = getUploadEnabled()
-
             @Suppress("EXPERIMENTAL_API_USAGE")
             Dispatchers.API.launch {
                 // glean_set_upload_enabled might delete all of the queued pings. We
@@ -267,24 +279,6 @@ open class GleanInternalAPI internal constructor () {
                 // iterating over and deleting the pings doesn't happen at the same time.
                 synchronized(PingUploadWorker.pingQueueLock) {
                     LibGleanFFI.INSTANCE.glean_set_upload_enabled(enabled.toByte())
-
-                    // Cancel any pending workers here so that we don't accidentally upload or
-                    // collect data after the upload has been disabled.
-                    if (!enabled) {
-                        metricsPingScheduler.cancel()
-                        PingUploadWorker.cancel(applicationContext)
-                    }
-                }
-
-                if (!originalEnabled && enabled) {
-                    // If uploading is being re-enabled, we have to restore the
-                    // application-lifetime metrics.
-                    initializeCoreMetrics((this@GleanInternalAPI).applicationContext)
-                }
-
-                if (originalEnabled && !enabled) {
-                    // If uploading is disabled, we need to send the deletion-request ping
-                    DeletionPingUploadWorker.enqueueWorker(applicationContext)
                 }
             }
         } else {
@@ -301,6 +295,19 @@ open class GleanInternalAPI internal constructor () {
         } else {
             return uploadEnabled
         }
+    }
+
+    fun onUploadEnabled() {
+        // If uploading is being re-enabled, we have to restore the
+        // application-lifetime metrics.
+        initializeCoreMetrics(applicationContext)
+    }
+
+    fun onUploadDisabled() {
+        metricsPingScheduler.cancel()
+        PingUploadWorker.cancel(applicationContext)
+        // If uploading is disabled, we need to send the deletion-request ping
+        DeletionPingUploadWorker.enqueueWorker(applicationContext)
     }
 
     /**
@@ -593,7 +600,8 @@ open class GleanInternalAPI internal constructor () {
     internal fun resetGlean(
         context: Context,
         config: Configuration,
-        clearStores: Boolean
+        clearStores: Boolean,
+        uploadEnabled: Boolean = true
     ) {
         Glean.enableTestingMode()
 
@@ -606,7 +614,7 @@ open class GleanInternalAPI internal constructor () {
 
         // Init Glean.
         Glean.testDestroyGleanHandle()
-        Glean.initialize(context, true, config)
+        Glean.initialize(context, uploadEnabled, config)
     }
 
     /**

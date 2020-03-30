@@ -191,11 +191,17 @@ impl TryFrom<&FfiConfiguration<'_>> for glean_core::Configuration {
     }
 }
 
+type SimpleCallback = fn();
+
 /// # Safety
 ///
 /// A valid and non-null configuration object is required for this function.
 #[no_mangle]
-pub unsafe extern "C" fn glean_initialize(cfg: *const FfiConfiguration) -> u8 {
+pub unsafe extern "C" fn glean_initialize(
+    cfg: *const FfiConfiguration,
+    on_upload_enabled: SimpleCallback,
+    on_upload_disabled: SimpleCallback,
+) -> u8 {
     assert!(!cfg.is_null());
 
     handlemap_ext::handle_result(|| {
@@ -204,7 +210,7 @@ pub unsafe extern "C" fn glean_initialize(cfg: *const FfiConfiguration) -> u8 {
         // 2. We're not holding on to it beyond this function
         //    and we copy out all data when needed.
         let glean_cfg = glean_core::Configuration::try_from(&*cfg)?;
-        let glean = Glean::new(glean_cfg)?;
+        let glean = Glean::new(glean_cfg, Some(on_upload_enabled), Some(on_upload_disabled))?;
         glean_core::setup_glean(glean)?;
         log::info!("Glean initialized");
         Ok(true)

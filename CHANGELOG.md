@@ -13,6 +13,7 @@
     * `glean_parser` now makes it easier to write external translation functions for
       different language targets.
     * BUGFIX: glean_parser now works on 32-bit Windows.
+  * Glean will now detect when the upload enabled flag changes outside of the application, for example due to a change in a config file. This means that if upload is disabled while the application wasn't running (e.g. between the runs of a Python command using the Glean SDK), the database is correctly cleared and a deletion request ping is sent.
 * Android:
   * `gradlew clean` will no longer remove the Miniconda installation in
     `~/.gradle/glean`. Therefore `clean` can be used without reinstalling

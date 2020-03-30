@@ -5,6 +5,7 @@
 
 import io
 import json
+from pathlib import Path
 import re
 import shutil
 import sys
@@ -423,3 +424,63 @@ def test_configuration_property(safe_httpserver):
     request = safe_httpserver.requests[0]
     assert "baseline" in request.url
     assert "foo" == request.headers["X-Debug-Id"]
+
+
+def test_sending_deletion_ping_if_disabled_outside_of_run(safe_httpserver, tmpdir):
+    safe_httpserver.serve_content(b"", code=200)
+    Glean.reset()
+    config = Configuration(server_endpoint=safe_httpserver.url)
+
+    Glean.initialize(
+        application_id=GLEAN_APP_ID,
+        application_version=glean_version,
+        upload_enabled=True,
+        data_dir=Path(str(tmpdir)),
+        configuration=config,
+    )
+
+    Glean.reset()
+
+    Glean.initialize(
+        application_id=GLEAN_APP_ID,
+        application_version=glean_version,
+        upload_enabled=False,
+        data_dir=Path(str(tmpdir)),
+        configuration=config,
+    )
+
+    assert 1 == len(safe_httpserver.requests)
+
+    request = safe_httpserver.requests[0]
+    assert "deletion-request" in request.url
+
+
+def test_no_sending_deletion_ping_if_unchanged_outside_of_run(safe_httpserver, tmpdir):
+    safe_httpserver.serve_content(b"", code=200)
+    Glean.reset()
+    config = Configuration(server_endpoint=safe_httpserver.url)
+
+    Glean.initialize(
+        application_id=GLEAN_APP_ID,
+        application_version=glean_version,
+        upload_enabled=False,
+        data_dir=Path(str(tmpdir)),
+        configuration=config,
+    )
+
+    assert 1 == len(safe_httpserver.requests)
+
+    request = safe_httpserver.requests[0]
+    assert "deletion-request" in request.url
+
+    Glean.reset()
+
+    Glean.initialize(
+        application_id=GLEAN_APP_ID,
+        application_version=glean_version,
+        upload_enabled=False,
+        data_dir=Path(str(tmpdir)),
+        configuration=config,
+    )
+
+    assert 1 == len(safe_httpserver.requests)

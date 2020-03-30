@@ -646,4 +646,61 @@ class GleanTest {
 
         Dispatchers.API.overflowCount = 0
     }
+
+    @Test
+    fun `sending deletion ping if disabled outside of run`() {
+        val server = getMockWebServer()
+        resetGlean(
+            context,
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
+                logPings = true
+            ),
+            uploadEnabled = true
+        )
+
+        resetGlean(
+            context,
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
+                logPings = true
+            ),
+            uploadEnabled = false,
+            clearStores = false
+        )
+
+        // Now trigger it to upload
+        triggerWorkManager(context, DeletionPingUploadWorker.PING_WORKER_TAG)
+
+        val request = server.takeRequest(20L, TimeUnit.SECONDS)
+        val docType = request.path.split("/")[3]
+        assertEquals("deletion-request", docType)
+    }
+
+    @Test
+    fun `no sending of deletion ping if unchanged outside of run`() {
+        val server = getMockWebServer()
+        resetGlean(
+            context,
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
+                logPings = true
+            ),
+            uploadEnabled = false
+        )
+
+        resetGlean(
+            context,
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
+                logPings = true
+            ),
+            uploadEnabled = false,
+            clearStores = false
+        )
+
+        // TODO: How to assert that nothing was sent?
+        // Now trigger it to upload
+        triggerWorkManager(context, DeletionPingUploadWorker.PING_WORKER_TAG)
+    }
 }

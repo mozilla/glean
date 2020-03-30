@@ -6,6 +6,7 @@
 
 package mozilla.telemetry.glean.rust
 
+import com.sun.jna.Callback
 import com.sun.jna.Library
 import com.sun.jna.Native
 import com.sun.jna.Pointer
@@ -43,6 +44,14 @@ internal fun Pointer.getRustString(): String {
 
 @Suppress("TooManyFunctions")
 internal interface LibGleanFFI : Library {
+    interface OnUploadEnabledCallback: Callback {
+        fun onUploadEnabled();
+    }
+
+    interface OnUploadDisabledCallback: Callback {
+        fun onUploadDisabled();
+    }
+
     companion object {
         private val JNA_LIBRARY_NAME = "glean_ffi"
 
@@ -66,7 +75,11 @@ internal interface LibGleanFFI : Library {
 
     // Glean top-level API
 
-    fun glean_initialize(cfg: FfiConfiguration): Byte
+    fun glean_initialize(
+        cfg: FfiConfiguration,
+        on_upload_enabled: OnUploadEnabledCallback,
+        on_upload_disabled: OnUploadDisabledCallback
+    ): Byte
 
     fun glean_clear_application_lifetime_metrics()
 
