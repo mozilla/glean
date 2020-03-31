@@ -485,7 +485,7 @@ open class GleanInternalAPI internal constructor () {
      */
     internal fun handleBackgroundEvent() {
         Pings.baseline.submit(Pings.baselineReasonCodes.background)
-        Pings.events.submit()
+        Pings.events.submit(Pings.eventsReasonCodes.background)
     }
 
     /**

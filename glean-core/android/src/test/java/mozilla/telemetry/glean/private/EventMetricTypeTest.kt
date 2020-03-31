@@ -281,6 +281,10 @@ class EventMetricTypeTest {
             1,
             pingJson.getJSONArray("events").length()
         )
+        assertEquals(
+            "startup",
+            pingJson.getJSONObject("ping_info").getString("reason")
+        )
     }
 
     // Moved from EventsStorageEngineTest.kt in glean-ac
@@ -337,6 +341,10 @@ class EventMetricTypeTest {
 
         // This event comes from disk from the prior "run"
         assertEquals(
+            "startup",
+            pingJson.getJSONObject("ping_info").getString("reason")
+        )
+        assertEquals(
             1,
             pingJson.getJSONArray("events").length()
         )
@@ -345,7 +353,7 @@ class EventMetricTypeTest {
             pingJson.getJSONArray("events").getJSONObject(0).getJSONObject("extra").getString("someExtra")
         )
 
-        Glean.submitPingByName("events")
+        Glean.submitPingByName("events", "background")
 
         // Trigger worker task to upload the pings in the background
         triggerWorkManager(context)
@@ -357,6 +365,10 @@ class EventMetricTypeTest {
         assertNotNull(pingJson.opt("events"))
 
         // This event comes from the pre-initialization event
+        assertEquals(
+            "background",
+            pingJson.getJSONObject("ping_info").getString("reason")
+        )
         assertEquals(
             2,
             pingJson.getJSONArray("events").length()
