@@ -34,6 +34,8 @@ adb shell am start -n org.mozilla.samples.glean/mozilla.telemetry.glean.debug.Gl
   --es tagPings test-metrics-ping
 ```
 
+The `logPings` command doesn't trigger ping submission and you won't see any output until a ping has been submitted. You can use the `sendPings` command to force a ping to be sent, but it could be more desirable to trigger the pings submission on their normal schedule. For instance, the `baseline` and `events` pings can be triggered by moving the app out of the foreground and the `metrics` ping can be triggered normally if it is overdue for the current calendar day. See the [ping documentation](../pings/index.md) for more information on ping scheduling to learn when pings are sent.
+
 > **Note:** In previous versions of Glean the activity was available with the name `mozilla.components.service.glean.debug.GleanDebugActivity`.
 >
 > If you're debugging an old build, try running:
