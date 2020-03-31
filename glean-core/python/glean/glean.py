@@ -353,7 +353,6 @@ class Glean:
         from ._builtins import metrics
 
         metrics.glean.baseline.locale.set(_util.get_locale_tag())
-        metrics.glean.internal.metrics.os.set(platform.system())
         metrics.glean.internal.metrics.os_version.set(platform.release())
         metrics.glean.internal.metrics.architecture.set(platform.machine())
         metrics.glean.internal.metrics.locale.set(_util.get_locale_tag())

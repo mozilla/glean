@@ -51,6 +51,9 @@ glean.internal.metrics:
       - glean_client_info
     description: |
       The name of the operating system.
+      Possible values:
+      Android, iOS, Linux, Darwin, Windows,
+      FreeBSD, NetBSD, OpenBSD, Solaris, unknown
     bugs:
       - https://bugzilla.mozilla.org/1497894
     data_reviews:

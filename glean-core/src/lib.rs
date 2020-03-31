@@ -36,6 +36,7 @@ mod internal_pings;
 pub mod metrics;
 pub mod ping;
 pub mod storage;
+mod system;
 #[cfg(feature = "upload")]
 mod upload;
 mod util;
@@ -249,6 +250,8 @@ impl Glean {
             // time it is set, that's indeed our "first run".
             self.is_first_run = true;
         }
+
+        self.set_application_lifetime_core_metrics();
     }
 
     /// Called when Glean is initialized to the point where it can correctly
@@ -611,6 +614,11 @@ impl Glean {
         Ok(())
     }
 
+    /// Set internally-handled application lifetime metrics.
+    fn set_application_lifetime_core_metrics(&self) {
+        self.core_metrics.os.set(self, system::OS);
+    }
+
     /// ** This is not meant to be used directly.**
     ///
     /// Clear all the metrics that have `Lifetime::Application`.
@@ -619,6 +627,9 @@ impl Glean {
         if let Some(data) = self.data_store.as_ref() {
             data.clear_lifetime(Lifetime::Application);
         }
+
+        // Set internally handled app lifetime metrics again.
+        self.set_application_lifetime_core_metrics();
     }
 
     /// Return whether or not this is the first run on this profile.
