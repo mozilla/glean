@@ -270,6 +270,19 @@ Please refer to the [custom pings documentation](pings/custom.md).
 
 All of Glean's target languages use a separate worker thread to do most of Glean's work, including any I/O. This thread is fully managed by Glean as an implementation detail. Therefore, users should be free to use the Glean API wherever it is most convenient, without worrying about the performance impact of updating metrics and sending pings.
 
+{{#include ../tab_header.md}}
+
+<div data-lang="Python" class="tab">
+When using the Python bindings, Glean's work is done on a separate thread, managed by Glean itself.
+Glean releases the Global Interpreter Lock (GIL), therefore your application's threads should not be in contention with Glean's thread.
+
+Glean installs an [`atexit` handler](https://docs.python.org/3/library/atexit.html) so the Glean thread can attempt to cleanly shut down when your application exits.
+This handler will wait up to 1 second for any pending work to complete.
+If that times out, some Glean work may be lost.
+</div>
+
+{{#include ../tab_footer.md}}
+
 ### Testing metrics
 
 In order to make testing metrics easier 'out of the box', all metrics include a set of test API functions in order to facilitate unit testing.  These include functions to test whether a value has been stored, and functions to retrieve the stored value for validation.  For more information, please refer to [Unit testing Glean metrics](testing-metrics.md).
