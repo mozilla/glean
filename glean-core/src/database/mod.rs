@@ -4,10 +4,13 @@
 
 use std::collections::btree_map::Entry;
 use std::collections::BTreeMap;
+use std::collections::HashMap;
 use std::fs;
 use std::str;
 use std::sync::RwLock;
 
+use chrono::{Local, NaiveDate};
+use lazy_static::lazy_static;
 use rkv::{Rkv, SingleStore, StoreOptions};
 
 use crate::metrics::Metric;
@@ -15,6 +18,19 @@ use crate::CommonMetricData;
 use crate::Glean;
 use crate::Lifetime;
 use crate::Result;
+
+lazy_static! {
+    // A map of all the known 'user' lifetime metrics along with their expiration
+    // dates. See bug 1604854 for more context on why this is needed.
+    static ref USER_LIFETIME_EXPIRATION_MAP: HashMap<&'static str, NaiveDate> = vec![
+        ("glean_internal_test.user_metric_expired", NaiveDate::from_ymd(2015, 3, 14)),
+    ].into_iter().collect();
+
+    // Get the current date at runtime. While we should use the build-date to be
+    // consistent with other metric types, given the edge case this already is,
+    // it might be enough to go with a run-time date.
+    static ref STARTUP_LOCAL_DATE: NaiveDate = Local::now().naive_utc().date();
+}
 
 pub struct Database {
     /// Handle to the database environment.
@@ -73,6 +89,9 @@ impl Database {
             application_store,
             ping_lifetime_data,
         };
+
+        // Force the startup date to be initialized.
+        log::debug!("Startup UTC date is: {:?}", *STARTUP_LOCAL_DATE);
 
         db.load_ping_lifetime_data();
 
@@ -147,6 +166,60 @@ impl Database {
         }
     }
 
+    /// Checks if the 'user' lifetime metric is expired and, if so, removes it.
+    ///
+    /// ## Arguments
+    ///
+    /// * `storage_name`: The storage name to iterate over.
+    /// * `metric_id_slice`: The metric id to check.
+    ///
+    /// ## Return value
+    ///
+    /// Returns `true` if the metric is expired and should not be reported,
+    /// `false` otherwise.
+    ///
+    /// ## Panics
+    ///
+    /// This function will **not** panic on database errors.
+    fn check_and_remove_expired_user_lifetime(
+        &self,
+        storage_name: &str,
+        metric_id_slice: &[u8],
+    ) -> bool {
+        let metric_name = match str::from_utf8(metric_id_slice) {
+            Ok(metric_name) => metric_name.to_string(),
+            _ => return false,
+        };
+
+        match USER_LIFETIME_EXPIRATION_MAP.get(metric_name.as_str()) {
+            Some(&expiration) => {
+                let is_expired = *STARTUP_LOCAL_DATE > expiration;
+                if is_expired {
+                    // This should be fine to delete now, even though we may be iterating
+                    // through the database entries.
+                    if let Err(e) =
+                        self.remove_single_metric(Lifetime::User, storage_name, &metric_name)
+                    {
+                        log::error!(
+                            "Failed to remove  expired {} from {}: {:?}",
+                            metric_name,
+                            storage_name,
+                            e
+                        );
+                    } else {
+                        log::debug!("Removed expired {} from {}", metric_name, storage_name);
+                    }
+                }
+                // While we might not be able to remove it from the database, we can still
+                // make sure to not report it.
+                true
+            }
+            // If we can't find the expiration in our table, that's fine. We might
+            // not know about it, or it's really not meant to expire.
+            _ => false,
+        }
+    }
+
     /// Iterates with the provided transaction function over the requested data
     /// from the given storage.
     ///
@@ -210,6 +283,16 @@ impl Database {
             }
 
             let metric_name = &metric_name[len..];
+
+            // Don't report the 'user' lifetiem metric if it expired and additionally
+            // mark it for removal. We need to do it now as we don't know the storage
+            // names beforehand.
+            if lifetime == Lifetime::User
+                && self.check_and_remove_expired_user_lifetime(storage_name, metric_name)
+            {
+                continue;
+            }
+
             let metric: Metric = match value.expect("Value missing in iteration") {
                 rkv::Value::Blob(blob) => unwrap_or!(bincode::deserialize(blob), continue),
                 _ => continue,
@@ -1026,5 +1109,68 @@ mod test {
                 .unwrap_or(None)
                 .is_some());
         }
+    }
+
+    #[test]
+    fn test_purge_expired_user_lifetime_metrics() {
+        // Init the database in a temporary directory.
+        let dir = tempdir().unwrap();
+        let str_dir = dir.path().display().to_string();
+        let db = Database::new(&str_dir, false).unwrap();
+
+        let test_storage = "test-storage-expired-user";
+        let metric_id_pattern = "glean_internal_test.user_metric";
+
+        // Write sample metrics to the database. We write all lifetimes to
+        // make sure we don't mess with anything else that's already stored.
+        let lifetimes = vec![Lifetime::User, Lifetime::Ping, Lifetime::Application];
+
+        for lifetime in lifetimes.iter() {
+            db.record_per_lifetime(
+                *lifetime,
+                test_storage,
+                &format!("{}_retain", metric_id_pattern),
+                &Metric::String("retain".to_string()),
+            )
+            .unwrap();
+        }
+
+        // Save a 'user'-lifetime metric that will be expired.
+        db.record_per_lifetime(
+            Lifetime::User,
+            test_storage,
+            &format!("{}_expired", metric_id_pattern),
+            &Metric::String("expired".to_string()),
+        )
+        .unwrap();
+
+        // Verify that "telemetry_test.single_metric_retain" is still around for all lifetimes.
+        let mut total_found_metrics = 0;
+        for lifetime in lifetimes.iter() {
+            let mut found_metrics = 0;
+            let mut snapshotter = |metric_name: &[u8], metric: &Metric| {
+                found_metrics += 1;
+                let metric_id = String::from_utf8_lossy(metric_name).into_owned();
+                assert_eq!(format!("{}_retain", metric_id_pattern), metric_id);
+                match metric {
+                    Metric::String(s) => assert_eq!("retain", s),
+                    _ => panic!("Unexpected data found"),
+                }
+            };
+
+            // Check the count of the metrics that were found for this lifetime.
+            db.iter_store_from(*lifetime, test_storage, None, &mut snapshotter);
+            assert_eq!(
+                1, found_metrics,
+                "We only expect 1 metric for this lifetime."
+            );
+            // Increment the total count as well.
+            total_found_metrics += found_metrics;
+        }
+
+        assert_eq!(
+            3, total_found_metrics,
+            "We only expect 3 metrics to be reported across all lifetimes."
+        );
     }
 }
