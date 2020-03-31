@@ -119,9 +119,14 @@ pub(crate) fn truncate_string_at_boundary_with_error<S: Into<String>>(
 // to match our other targets and platforms.
 //
 // See https://bugzilla.mozilla.org/show_bug.cgi?id=1623335 for additional context.
-#[cfg(target_os = "windows")]
+#[cfg(all(target_os = "windows", target_env = "gnu"))]
 pub mod floating_point_context {
-    use libc::size_t;
+    // `size_t` is "pointer size", which is equivalent to Rust's `usize`.
+    // It's defined as such in libc:
+    // * https://github.com/rust-lang/libc/blob/bcbfeb5516cd5bb055198dbfbddf8d626fa2be07/src/unix/mod.rs#L19
+    // * https://github.com/rust-lang/libc/blob/bcbfeb5516cd5bb055198dbfbddf8d626fa2be07/src/windows/mod.rs#L16
+    #[allow(non_camel_case_types)]
+    type size_t = usize;
 
     #[link(name = "m")]
     extern "C" {
@@ -163,7 +168,7 @@ pub mod floating_point_context {
     }
 }
 
-#[cfg(not(target_os = "windows"))]
+#[cfg(not(all(target_os = "windows", target_env = "gnu")))]
 pub mod floating_point_context {
     pub struct FloatingPointContext {}
 
