@@ -39,6 +39,7 @@ class _ThreadWorker:
     """
     Manages a single worker to perform tasks in another thread.
     """
+
     END_MARKER = "END"
 
     def __init__(self):
