@@ -2,6 +2,8 @@
 
 Used to count how often something happens, say how often a certain button was pressed. A counter always starts from `0`. Each time you record to a counter, its value is incremented.
 
+> **IMPORTANT:** When using a counter metric, it is important to let the it do the counting. Specifically, don't count events in your own variable and reset the counter yourself.  It will be difficult to reset at the correct moment relative to when the counter value is sent in a ping. By just using the `counter.add` API and letting Glean handle resetting the counter when it is sent in a ping, Glean will ensure that counts aren't duplicated across pings.
+
 ## Configuration
 
 Say you're adding a new counter for how often the refresh button is pressed. First you need to add an entry for the counter to the `metrics.yaml` file:

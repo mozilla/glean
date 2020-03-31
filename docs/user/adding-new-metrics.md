@@ -128,6 +128,23 @@ The current set of metrics Glean supports is based on known common use cases, bu
 
 Please reach out to us on [#glean:mozilla.org](https://chat.mozilla.org/#/room/#glean:mozilla.org). If you think you need a new metric type, we [have a process for that](metrics/index.html#adding-or-changing-metric-types).
 
+### How do I make sure my metric is working?
+
+Glean has rich support for writing unit tests involving metrics. Writing a good unit test is a large topic, but in general, you should write unit tests for all new telemetry that does the following:
+
+- Performs the operation being measured.
+
+- Asserts that metrics contain the expected data, using the `testGetValue` API on the metric.
+
+- Where applicable, asserts that no errors are recorded, such as when values are out of range, using the `testGetNumRecordedErrors` API.
+
+In addition to unit tests, it is good practice to validate the incoming data for the new metric on a pre-release channel to make sure things are working as expected.
+
+<!--
+TODO: This will be a good place to talk about the product telemetry health
+dashboard when that's ready
+-->
+
 ## Adding the metric to the `metrics.yaml` file
 
 The [`metrics.yaml` file](https://mozilla.github.io/glean_parser/metrics-yaml.html) defines the metrics your application or library will send.
