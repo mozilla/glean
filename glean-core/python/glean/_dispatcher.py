@@ -7,6 +7,7 @@ This module implements a single-threaded (mostly FIFO) work queue on which
 most Glean work is done.
 """
 
+import atexit
 import functools
 import logging
 import queue
@@ -38,6 +39,7 @@ class _ThreadWorker:
     """
     Manages a single worker to perform tasks in another thread.
     """
+    END_MARKER = "END"
 
     def __init__(self):
         self._queue = queue.Queue()
@@ -73,12 +75,13 @@ class _ThreadWorker:
         """
         Starts the worker thread.
         """
-        t = threading.Thread(target=self._worker)
+        self._thread = threading.Thread(target=self._worker)
         # Start the thread in daemon mode.
-        t.daemon = True
-        t.start()
+        self._thread.daemon = True
+        self._thread.start()
         self._started = True
-        self._ident = t.ident
+        self._ident = self._thread.ident
+        atexit.register(self._shutdown_thread)
 
     def _worker(self):
         """
@@ -87,12 +90,25 @@ class _ThreadWorker:
         """
         while True:
             task, args, kwargs = self._queue.get()
+            if task == self.END_MARKER:
+                self._queue.task_done()
+                break
             try:
                 task(*args, **kwargs)
             except Exception:
                 log.exception("Glean error")
             finally:
                 self._queue.task_done()
+
+    def _shutdown_thread(self):
+        """
+        An atexit handler to tell the worker thread to shutdown and then wait
+        for 1 seconds for it to finish.
+        """
+        self._queue.put((self.END_MARKER, (), {}))
+        self._thread.join(1.0)
+        if self._thread.is_alive():
+            log.error("Timeout sending Glean telemetry")
 
 
 class Dispatcher:
