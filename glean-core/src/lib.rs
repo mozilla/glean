@@ -79,10 +79,8 @@ pub(crate) const DELETION_REQUEST_PINGS_DIRECTORY: &str = "deletion_request";
 static GLEAN: OnceCell<Mutex<Glean>> = OnceCell::new();
 
 /// Get a reference to the global Glean object.
-///
-/// Panics if no global Glean object was set.
-pub fn global_glean() -> &'static Mutex<Glean> {
-    GLEAN.get().unwrap()
+pub fn global_glean() -> Option<&'static Mutex<Glean>> {
+    GLEAN.get()
 }
 
 /// Set or replace the global Glean object.
