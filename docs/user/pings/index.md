@@ -46,8 +46,8 @@ Optional fields are marked accordingly.
 | `app_display_version` | String | The user-visible version string (e.g. "1.0.3") |
 | `architecture` | String | The architecture of the device (e.g. "arm", "x86") |
 | `client_id` | UUID |  *Optional* A UUID identifying a profile and allowing user-oriented correlation of data |
-| `device_manufacturer` | String | The manufacturer of the device |
-| `device_model` | String | The model name of the device. On Android, this is [`Build.MODEL`], the user-visible name of the device. |
+| `device_manufacturer` | String | *Optional* The manufacturer of the device |
+| `device_model` | String | *Optional* The model name of the device. On Android, this is [`Build.MODEL`], the user-visible name of the device. |
 | `first_run_date` | Datetime | The date of the first run of the application, in local time and with day precision, including timezone information. |
 | `os` | String | The name of the operating system (e.g. "linux", "Android", "ios") |
 | `os_version` | String | The user-visible version of the operating system (e.g. "1.2.3") |
