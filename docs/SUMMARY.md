@@ -30,6 +30,7 @@
         - [Custom Distribution](user/metrics/custom_distribution.md)
         - [Quantity](user/metrics/quantity.md)
     - [Pings](user/pings/index.md)
+        - [Ping schedules and timings overview](user/pings/ping-schedules-and-timings.md)
         - [Baseline Ping](user/pings/baseline.md)
         - [Deletion Request Ping](user/pings/deletion_request.md)
         - [Metrics Ping](user/pings/metrics.md)
