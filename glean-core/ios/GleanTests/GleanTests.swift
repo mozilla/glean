@@ -141,6 +141,11 @@ class GleanTests: XCTestCase {
         // Set up the expectation that will be fulfilled by the stub above
         expectation = expectation(description: "Baseline Ping Received")
 
+        // Set the last time the "metrics" ping was sent to now. This is required for us to not
+        // send a metrics pings the first time we initialize Glean and to keep it from interfering
+        // with these tests.
+        let now = Date()
+        Glean.shared.metricsPingScheduler.updateSentDate(now)
         // Restart Glean and don't clear the stores and then await the expectation
         Glean.shared.resetGlean(clearStores: false)
         waitForExpectations(timeout: 5.0) { error in
