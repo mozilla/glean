@@ -593,7 +593,8 @@ open class GleanInternalAPI internal constructor () {
     internal fun resetGlean(
         context: Context,
         config: Configuration,
-        clearStores: Boolean
+        clearStores: Boolean,
+        uploadEnabled: Boolean = true
     ) {
         Glean.enableTestingMode()
 
@@ -606,7 +607,7 @@ open class GleanInternalAPI internal constructor () {
 
         // Init Glean.
         Glean.testDestroyGleanHandle()
-        Glean.initialize(context, true, config)
+        Glean.initialize(context, uploadEnabled, config)
     }
 
     /**

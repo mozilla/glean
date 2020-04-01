@@ -195,7 +195,38 @@ impl Glean {
             max_events: cfg.max_events.unwrap_or(DEFAULT_MAX_EVENTS),
             is_first_run: false,
         };
-        glean.on_change_upload_enabled(cfg.upload_enabled);
+
+        // The upload enabled flag may have changed since the last run, for
+        // example by the changing of a config file.
+        if cfg.upload_enabled {
+            // If upload is enabled, just follow the normal code path to
+            // instantiate the core metrics.
+            glean.on_upload_enabled();
+        } else {
+            // If upload is disabled, and we've never run before, only set the
+            // client_id to KNOWN_CLIENT_ID, but do not send a deletion request
+            // ping.
+            // If we have run before, and if the client_id is not equal to
+            // the KNOWN_CLIENT_ID, do the full upload disabled operations to
+            // clear metrics, set the client_id to KNOWN_CLIENT_ID, and send a
+            // deletion request ping.
+            match glean
+                .core_metrics
+                .client_id
+                .get_value(&glean, "glean_client_info")
+            {
+                None => glean.clear_metrics(),
+                Some(uuid) => {
+                    if uuid != *KNOWN_CLIENT_ID {
+                        // Temporarily enable uploading so we can submit a
+                        // deletion request ping.
+                        glean.upload_enabled = true;
+                        glean.on_upload_disabled();
+                    }
+                }
+            }
+        }
+
         Ok(glean)
     }
 
@@ -286,15 +317,11 @@ impl Glean {
         log::info!("Upload enabled: {:?}", flag);
 
         if self.upload_enabled != flag {
-            // When upload is disabled, submit a deletion-request ping
-            if !flag {
-                if let Err(err) = self.internal_pings.deletion_request.submit(self, None) {
-                    log::error!("Failed to submit deletion-request ping on optout: {}", err);
-                }
+            if flag {
+                self.on_upload_enabled();
+            } else {
+                self.on_upload_disabled();
             }
-
-            self.upload_enabled = flag;
-            self.on_change_upload_enabled(flag);
             true
         } else {
             false
@@ -308,22 +335,32 @@ impl Glean {
         self.upload_enabled
     }
 
-    /// Handles the changing of state when upload_enabled changes.
+    /// Handles the changing of state from upload disabled to enabled.
     ///
     /// Should only be called when the state actually changes.
-    /// When disabling, all pending metrics, events and queued pings are cleared.
     ///
-    /// When enabling, the core Glean metrics are recreated.
+    /// The upload_enabled flag is set to true and the core Glean metrics are
+    /// recreated.
+    fn on_upload_enabled(&mut self) {
+        self.upload_enabled = true;
+        self.initialize_core_metrics();
+    }
+
+    /// Handles the changing of state from upload enabled to disabled.
     ///
-    /// # Arguments
+    /// Should only be called when the state actually changes.
     ///
-    /// * `flag` - When true, enable metric collection.
-    fn on_change_upload_enabled(&mut self, flag: bool) {
-        if flag {
-            self.initialize_core_metrics();
-        } else {
-            self.clear_metrics();
+    /// A deletion_request ping is sent, all pending metrics, events and queued
+    /// pings are cleared, and the client_id is set to KNOWN_CLIENT_ID.
+    /// Afterward, the upload_enabled flag is set to false.
+    fn on_upload_disabled(&mut self) {
+        // The upload_enabled flag should be true here, or the deletion ping
+        // won't be submitted.
+        if let Err(err) = self.internal_pings.deletion_request.submit(self, None) {
+            log::error!("Failed to submit deletion-request ping on optout: {}", err);
         }
+        self.clear_metrics();
+        self.upload_enabled = false;
     }
 
     /// Clear any pending metrics when telemetry is disabled.
