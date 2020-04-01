@@ -144,9 +144,6 @@ struct Sysctl {
         return try string(for: keys(for: name))
     }
 
-    /// Always the same on iOS
-    public static var os: String = "iOS"
-
     /// Always the same on Apple hardware
     public static var manufacturer: String = "Apple"
 

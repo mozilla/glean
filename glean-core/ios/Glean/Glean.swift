@@ -167,7 +167,6 @@ public class Glean {
         // generated. We use an internal only API to do that.
 
         GleanBaseline.locale.setSync(getLocaleTag())
-        GleanInternalMetrics.os.setSync(Sysctl.os)
         GleanInternalMetrics.osVersion.setSync(UIDevice.current.systemVersion)
         GleanInternalMetrics.deviceManufacturer.setSync(Sysctl.manufacturer)
         GleanInternalMetrics.deviceModel.setSync(Sysctl.model)

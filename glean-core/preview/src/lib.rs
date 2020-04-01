@@ -140,7 +140,6 @@ fn initialize_core_metrics(
     if let Some(app_channel) = channel {
         core_metrics.app_channel.set(glean, app_channel);
     }
-    core_metrics.os.set(glean, system::OS.to_string());
     core_metrics.os_version.set(glean, "unknown".to_string());
     core_metrics
         .architecture
