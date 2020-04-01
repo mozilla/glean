@@ -85,9 +85,9 @@ events:
     - glean-team@mozilla.com
   reasons:
     startup: |
-      The ping was submitted at startup. The events ping is always sent at
-      startup, because event timestamps can not be mixed across runs of the
-      application.
+      The ping was submitted at startup. The events ping is always sent if there
+      are any pending events at startup, because event timestamps can not be
+      mixed across runs of the application.
     background: |
       The ping was submitted before going to background.
     max_capacity: |
