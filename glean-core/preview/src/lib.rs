@@ -86,7 +86,8 @@ fn with_glean<F, R>(f: F) -> R
 where
     F: Fn(&Glean) -> R,
 {
-    let lock = global_glean().lock().unwrap();
+    let glean = global_glean().expect("Global Glean object not initialized");
+    let lock = glean.lock().unwrap();
     f(&lock)
 }
 
@@ -94,7 +95,8 @@ fn with_glean_mut<F, R>(f: F) -> R
 where
     F: Fn(&mut Glean) -> R,
 {
-    let mut lock = global_glean().lock().unwrap();
+    let glean = global_glean().expect("Global Glean object not initialized");
+    let mut lock = glean.lock().unwrap();
     f(&mut lock)
 }
 

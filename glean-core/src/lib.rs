@@ -79,17 +79,31 @@ pub(crate) const DELETION_REQUEST_PINGS_DIRECTORY: &str = "deletion_request";
 static GLEAN: OnceCell<Mutex<Glean>> = OnceCell::new();
 
 /// Get a reference to the global Glean object.
-///
-/// Panics if no global Glean object was set.
-pub fn global_glean() -> &'static Mutex<Glean> {
-    GLEAN.get().unwrap()
+pub fn global_glean() -> Option<&'static Mutex<Glean>> {
+    GLEAN.get()
 }
 
 /// Set or replace the global Glean object.
 pub fn setup_glean(glean: Glean) -> Result<()> {
+    // The `OnceCell` type wrapping our Glean is thread-safe and can only be set once.
+    // Therefore even if our check for it being empty succeeds, setting it could fail if a
+    // concurrent thread is quicker in setting it.
+    // However this will not cause a bigger problem, as the second `set` operation will just fail.
+    // We can log it and move on.
+    //
+    // For all wrappers this is not a problem, as the Glean object is intialized exactly once on
+    // calling `initialize` on the global singleton and further operations check that it has been
+    // initialized.
     if GLEAN.get().is_none() {
-        GLEAN.set(Mutex::new(glean)).unwrap();
+        if GLEAN.set(Mutex::new(glean)).is_err() {
+            log::error!(
+                "Global Glean object is initialized already. This probably happened concurrently."
+            )
+        }
     } else {
+        // We allow overriding the global Glean object to support test mode.
+        // In test mode the Glean object is fully destroyed and recreated.
+        // This all happens behind a mutex and is therefore also thread-safe..
         let mut lock = GLEAN.get().unwrap().lock().unwrap();
         *lock = glean;
     }
