@@ -20,7 +20,6 @@ from typing import Dict, List, Optional, Set, TYPE_CHECKING
 from .config import Configuration
 from ._dispatcher import Dispatcher
 from . import _ffi
-from . import _hardware
 from .net import PingUploadWorker
 from .net import DeletionPingUploadWorker
 from . import _util
@@ -356,10 +355,6 @@ class Glean:
         metrics.glean.internal.metrics.os_version.set(platform.release())
         metrics.glean.internal.metrics.architecture.set(platform.machine())
         metrics.glean.internal.metrics.locale.set(_util.get_locale_tag())
-
-        sysinfo = _hardware.get_system_information()
-        metrics.glean.internal.metrics.device_manufacturer.set(sysinfo.manufacturer)
-        metrics.glean.internal.metrics.device_model.set(sysinfo.model)
 
         if cls._configuration.channel is not None:
             metrics.glean.internal.metrics.app_channel.set(cls._configuration.channel)
