@@ -40,12 +40,17 @@ class PingUploadWorker:
             cls._test_process_sync()
             return
 
+        cls._do_process_async()
+
+    @classmethod
+    def _do_process_async(cls) -> multiprocessing.Process:
         from .. import Glean
 
         p = multiprocessing.Process(
             target=_process_worker, args=(cls.storage_directory(), Glean._configuration)
         )
         p.start()
+        return p
 
     @classmethod
     def _test_process_sync(cls) -> bool:
@@ -56,14 +61,9 @@ class PingUploadWorker:
         Returns:
             uploaded (bool): The success of the upload task.
         """
-        from .. import Glean
-
         assert Dispatcher._testing_mode is True
 
-        p = multiprocessing.Process(
-            target=_process_worker, args=(cls.storage_directory(), Glean._configuration)
-        )
-        p.start()
+        p = cls._do_process_async()
         p.join()
         return p.exitcode == 0
 
