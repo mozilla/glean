@@ -2,6 +2,11 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v26.0.0...master)
 
+* General:
+  * Glean will now detect when the upload enabled flag changes outside of the application, for example due to a change in a config file. This means that if upload is disabled while the application wasn't running (e.g. between the runs of a Python command using the Glean SDK), the database is correctly cleared and a deletion request ping is sent. See [#791](https://github.com/mozilla/glean/pull/791).
+* iOS:
+  * BUGFIX: A bug where the metrics ping is sent immediately at startup on the last day of the month has been fixed.
+
 # v26.0.0 (2020-03-27)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v25.1.0...v26.0.0)

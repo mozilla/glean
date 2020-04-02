@@ -59,7 +59,7 @@ class MetricsPingScheduler {
                 byAdding: .day,
                 value: 1,
                 to: fireDate,
-                wrappingComponents: true
+                wrappingComponents: false
             )!
             fireDate = tomorrow
         }

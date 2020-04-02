@@ -480,7 +480,9 @@ public class Glean {
     /// - parameters:
     ///     * configuration: the `Configuration` to init Glean with
     ///     * clearStores: if true, clear the contents of all stores
-    public func resetGlean(configuration: Configuration = Configuration(), clearStores: Bool) {
+    public func resetGlean(configuration: Configuration = Configuration(),
+                           clearStores: Bool,
+                           uploadEnabled: Bool = true) {
         enableTestingMode()
 
         if isInitialized() && clearStores {
@@ -490,6 +492,6 @@ public class Glean {
 
         // Init Glean.
         testDestroyGleanHandle()
-        initialize(uploadEnabled: true, configuration: configuration)
+        initialize(uploadEnabled: uploadEnabled, configuration: configuration)
     }
 }
