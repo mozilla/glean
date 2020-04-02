@@ -280,6 +280,16 @@ def test_get_language_reports_the_modern_translation_for_some_languages():
     pass
 
 
+class RecordingUploader:
+    def __init__(self, file_path):
+        self.file_path = file_path
+
+    def do_upload(self, url_path, serialized_ping, configuration):
+        with self.file_path.open("w") as fd:
+            fd.write(str(url_path) + "\n")
+            fd.write(serialized_ping + "\n")
+
+
 def test_ping_collection_must_happen_after_currently_scheduled_metrics_recordings(
     tmpdir, ping_schema_url,
 ):
@@ -293,17 +303,8 @@ def test_ping_collection_must_happen_after_currently_scheduled_metrics_recording
 
     info_path = Path(str(tmpdir)) / "info.txt"
 
-    class TestUploader:
-        def __init__(self, file_path):
-            self.file_path = file_path
-
-        def do_upload(self, url_path, serialized_ping, configuration):
-            with self.file_path.open("w") as fd:
-                fd.write(str(url_path) + "\n")
-                fd.write(serialized_ping + "\n")
-
     real_uploader = Glean._configuration.ping_uploader
-    test_uploader = TestUploader(info_path)
+    test_uploader = RecordingUploader(info_path)
     Glean._configuration.ping_uploader = test_uploader
 
     Glean._configuration.log_pings = True
