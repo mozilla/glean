@@ -5,6 +5,7 @@
 
 import io
 import json
+import multiprocessing
 from pathlib import Path
 import re
 import shutil
@@ -552,3 +553,24 @@ def test_no_sending_deletion_ping_if_unchanged_outside_of_run(safe_httpserver, t
     )
 
     assert 0 == len(safe_httpserver.requests)
+
+
+def test_dont_allow_multiprocessing(monkeypatch, safe_httpserver):
+    safe_httpserver.serve_content(b"", code=200)
+
+    Glean._configuration.server_endpoint = safe_httpserver.url
+    Glean._configuration._allow_multiprocessing = False
+
+    # Monkey-patch the multiprocessing API to be broken so we can assert it isn't used
+    def broken_process(*args, **kwargs):
+        assert False, "shouldn't be called"
+
+    monkeypatch.setattr(multiprocessing, "Process", broken_process)
+
+    custom_ping = PingType(
+        name="store1", include_client_id=True, send_if_empty=True, reason_codes=[]
+    )
+
+    custom_ping.submit()
+
+    assert 1 == len(safe_httpserver.requests)
