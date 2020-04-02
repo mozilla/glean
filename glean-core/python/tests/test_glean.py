@@ -9,6 +9,7 @@ from pathlib import Path
 import re
 import shutil
 import sys
+import time
 
 
 from glean_parser import validate_ping
@@ -280,7 +281,7 @@ def test_get_language_reports_the_modern_translation_for_some_languages():
 
 
 def test_ping_collection_must_happen_after_currently_scheduled_metrics_recordings(
-    ping_schema_url,
+    tmpdir, ping_schema_url,
 ):
     # Given the following block of code:
     #
@@ -290,16 +291,19 @@ def test_ping_collection_must_happen_after_currently_scheduled_metrics_recording
     # This test ensures that "custom-ping-1" contains "metric.a" with a value of "SomeTestValue"
     # when the ping is collected.
 
-    # safe_httpserver.serve_content(b"", code=200)
+    info_path = Path(str(tmpdir)) / "info.txt"
 
     class TestUploader:
+        def __init__(self, file_path):
+            self.file_path = file_path
+
         def do_upload(self, url_path, serialized_ping, configuration):
-            self.url_path = url_path
-            self.serialized_ping = serialized_ping
-            self.configuration = configuration
+            with self.file_path.open("w") as fd:
+                fd.write(str(url_path) + "\n")
+                fd.write(serialized_ping + "\n")
 
     real_uploader = Glean._configuration.ping_uploader
-    test_uploader = TestUploader()
+    test_uploader = TestUploader(info_path)
     Glean._configuration.ping_uploader = test_uploader
 
     Glean._configuration.log_pings = True
@@ -327,17 +331,22 @@ def test_ping_collection_must_happen_after_currently_scheduled_metrics_recording
     string_metric.set(test_value)
     ping.submit()
 
-    # Wait until the work is completea
+    # Wait until the work is complete
     Dispatcher._task_worker._queue.join()
 
-    assert ping_name == test_uploader.url_path.split("/")[3]
+    while not info_path.exists():
+        time.sleep(0.1)
 
-    json_content = json.loads(test_uploader.serialized_ping)
+    with info_path.open("r") as fd:
+        url_path = fd.readline()
+        serialized_ping = fd.readline()
+
+    assert ping_name == url_path.split("/")[3]
+
+    json_content = json.loads(serialized_ping)
 
     assert 0 == validate_ping.validate_ping(
-        io.StringIO(test_uploader.serialized_ping),
-        sys.stdout,
-        schema_url=ping_schema_url,
+        io.StringIO(serialized_ping), sys.stdout, schema_url=ping_schema_url,
     )
 
     assert {"category.string_metric": test_value} == json_content["metrics"]["string"]

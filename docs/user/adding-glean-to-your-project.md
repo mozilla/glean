@@ -278,7 +278,8 @@ Glean releases the Global Interpreter Lock (GIL), therefore your application's t
 
 Glean installs an [`atexit` handler](https://docs.python.org/3/library/atexit.html) so the Glean thread can attempt to cleanly shut down when your application exits.
 This handler will wait up to 1 second for any pending work to complete.
-If that times out, some Glean work may be lost.
+
+In addition, ping uploading is performed in a separate child process. This process may continue to exist during uploading even after the main process shuts down.
 </div>
 
 {{#include ../tab_footer.md}}

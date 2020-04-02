@@ -23,8 +23,8 @@ from typing import Callable, List, Tuple
 #     library used to interface with Rust releases the GIL around every foreign
 #     call. See https://cffi.readthedocs.io/en/latest/ref.html#conversions
 #
-#   - The other significant blocking I/O is in networking code, where the GIL
-#     is also released while waiting on network sockets.
+#   - The other significant blocking I/O is in networking code, which runs
+#     in a separate child process (see net/ping_upload_worker.py).
 #
 # This approach greatly reduces complexity of the implementation. Using
 # multiprocessing would imply going to a 100% IPC-like approach, since the
