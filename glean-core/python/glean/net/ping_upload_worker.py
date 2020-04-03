@@ -47,12 +47,12 @@ class PingUploadWorker:
             return
 
         if Glean._configuration._allow_multiprocessing:
-            cls._do_process_async()
+            cls._do_process_pings_multiprocessing()
         else:
-            cls._do_process_sync()
+            cls._do_process_pings()
 
     @classmethod
-    def _do_process_async(cls) -> "multiprocessing.Process":
+    def _do_process_pings_multiprocessing(cls) -> "multiprocessing.Process":
         from .. import Glean
 
         # Only import the multiprocessing library if it's actually needed
@@ -65,7 +65,7 @@ class PingUploadWorker:
         return p
 
     @classmethod
-    def _do_process_sync(cls) -> bool:
+    def _do_process_pings(cls) -> bool:
         from .. import Glean
 
         return _process(cls.storage_directory(), Glean._configuration)
@@ -84,11 +84,11 @@ class PingUploadWorker:
         assert Dispatcher._testing_mode is True
 
         if Glean._configuration._allow_multiprocessing:
-            p = cls._do_process_async()
+            p = cls._do_process_pings_multiprocessing()
             p.join()
             return p.exitcode == 0
         else:
-            return cls._do_process_sync()
+            return cls._do_process_pings()
 
 
 # Ping files are UUIDs.  This matches UUIDs for filtering purposes.
