@@ -209,6 +209,8 @@ glean.internal.metrics:
       - glean_client_info
     description: |
       The locale of the application (e.g. "es-ES").
+      If the locale can't be determined on the system, the value is "und",
+      to indicate "undetermined".
     bugs:
       - https://bugzilla.mozilla.org/1601489
     data_reviews:
