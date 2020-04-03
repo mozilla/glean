@@ -4,6 +4,7 @@
 
 * General:
   * Glean will now detect when the upload enabled flag changes outside of the application, for example due to a change in a config file. This means that if upload is disabled while the application wasn't running (e.g. between the runs of a Python command using the Glean SDK), the database is correctly cleared and a deletion request ping is sent. See [#791](https://github.com/mozilla/glean/pull/791).
+  * The `events` ping now includes a reason code: `startup`, `background` or `max_capacity`.
 * iOS:
   * BUGFIX: A bug where the metrics ping is sent immediately at startup on the last day of the month has been fixed.
   * Glean for iOS is now being built with Xcode 11.4.0

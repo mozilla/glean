@@ -327,8 +327,8 @@ public class Glean {
 
     /// Handle background event and submit appropriate pings
     func handleBackgroundEvent() {
-        Pings.shared.baseline.submit()
-        Pings.shared.events.submit()
+        Pings.shared.baseline.submit(reason: .background)
+        Pings.shared.events.submit(reason: .background)
     }
 
     /// Collect and submit a ping by name for eventual uploading
