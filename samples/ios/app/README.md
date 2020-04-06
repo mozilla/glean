@@ -3,7 +3,7 @@
 A minimal example showcasing the integration of Glean into an iOS application.
 This app does nothing, but enable Glean.
 
-Glean sends a [`baseline`][] ping when the app is sent to background.
+Glean sends a [`baseline`][] ping when the app is sent to foreground.
 
 [`baseline`]: https://mozilla.github.io/glean/book/user/pings/baseline.html
 

@@ -8,7 +8,9 @@ This ping is intended to provide metrics that are managed by the library itself,
 
 ## Scheduling
 
-The `baseline` ping is automatically submitted with a `reason: background` when the application is moved to the [background](index.md#defining-background-state).
+The `baseline` ping is automatically submitted with a `reason: foreground` when the application is moved to the [foreground](index.md#defining-background-state).
+
+Prior to Glean 27.0.0, the `baseline` ping is automatically submitted with a `reason: background` when the application is moved to the [background](index.md#defining-background-state).
 The `baseline` ping will be submitted at startup with a `reason: dirty_startup`, if the previous session was not cleanly closed. This only happens from the second start.
 
 See also the [ping schedules and timing overview](ping-schedules-and-timings.html).
@@ -19,7 +21,7 @@ The baseline ping includes the following fields:
 
 | Field name | Type | Description |
 |---|---|---|
-| `duration` | Timespan | The duration, in seconds, of the last foreground session. Only available if `reason: background`. [^1] |
+| `duration` | Timespan | The duration, in seconds, of the previous foreground session. [^1]                                         |
 | `locale` | String | The locale of the application. [^2] |
 
 [^1]: See also the [ping schedules and timing overview](ping-schedules-and-timings.html) for how the `duration` metric relates to other sources of timing in the `baseline` ping.
@@ -44,7 +46,8 @@ A quick note about querying ping contents (i.e. for [sql.telemetry.mozilla.org](
     },
     "seq": 0,
     "start_time": "2019-03-29T09:50-04:00",
-    "end_time": "2019-03-29T09:53-04:00"
+    "end_time": "2019-03-29T09:53-04:00",
+    "reason": "foreground"
   },
   "client_info": {
     "telemetry_sdk_build": "0.49.0",

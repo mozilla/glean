@@ -100,7 +100,7 @@ class GleanTest {
             logPings = true
         ))
 
-        Glean.handleBackgroundEvent()
+        Glean.handleForegroundEvent()
         // Make sure the file is on the disk
         val pingPath = File(Glean.getDataDir(), PingUploadWorker.PINGS_DIR)
         // Only the baseline ping should have been written
@@ -184,7 +184,7 @@ class GleanTest {
     }
 
     @Test
-    fun `test sending of background pings`() {
+    fun `test sending of foreground and background pings`() {
         val server = getMockWebServer()
 
         val click = EventMetricType<NoExtraKeys>(
@@ -215,73 +215,41 @@ class GleanTest {
             // Simulate going to background.
             lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
 
+            // Simulate going to foreground.
+            lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
+
             // Trigger worker task to upload the pings in the background
             triggerWorkManager(context)
 
-            val requests = mutableMapOf<String, String>()
-            for (i in 0..1) {
+            for (i in 0..2) {
                 val request = server.takeRequest(20L, TimeUnit.SECONDS)
                 val docType = request.path.split("/")[3]
-                requests[docType] = request.body.readUtf8()
+                val json = JSONObject(request.body.readUtf8())
+                checkPingSchema(json)
+                if (docType == "events") {
+                    assertEquals(1, json.getJSONArray("events").length())
+                } else if (docType == "baseline") {
+                    val seq = json.getJSONObject("ping_info").getInt("seq")
+                    val baselineMetricsObject = json.getJSONObject("metrics")
+                    val baselineStringMetrics = baselineMetricsObject.getJSONObject("string")
+                    assertEquals(1, baselineStringMetrics.length())
+                    assertNotNull(baselineStringMetrics.get("glean.baseline.locale"))
+
+                    // There are two baseline pings -- the first has no duration, the second does
+                    if (seq == 0) {
+                        assertFalse(baselineMetricsObject.has("timespan"))
+                    } else if (seq == 1) {
+                        val baselineTimespanMetrics = baselineMetricsObject.getJSONObject("timespan")
+                        assertEquals(1, baselineTimespanMetrics.length())
+                        assertNotNull(baselineTimespanMetrics.get("glean.baseline.duration"))
+                    }
+                } else {
+                    assertTrue("Unknown docType ${docType}", false)
+                }
             }
-
-            val eventsJson = JSONObject(requests["events"]!!)
-            checkPingSchema(eventsJson)
-            assertEquals(1, eventsJson.getJSONArray("events").length())
-
-            val baselineJson = JSONObject(requests["baseline"]!!)
-            checkPingSchema(baselineJson)
-
-            val baselineMetricsObject = baselineJson.getJSONObject("metrics")
-            val baselineStringMetrics = baselineMetricsObject.getJSONObject("string")
-            assertEquals(1, baselineStringMetrics.length())
-            assertNotNull(baselineStringMetrics.get("glean.baseline.locale"))
-
-            val baselineTimespanMetrics = baselineMetricsObject.getJSONObject("timespan")
-            assertEquals(1, baselineTimespanMetrics.length())
-            assertNotNull(baselineTimespanMetrics.get("glean.baseline.duration"))
         } finally {
             server.shutdown()
             lifecycleRegistry.removeObserver(gleanLifecycleObserver)
-        }
-    }
-
-    @Test
-    fun `test sending of startup baseline ping`() {
-        // Set the dirty flag.
-        LibGleanFFI.INSTANCE.glean_set_dirty_flag(true.toByte())
-
-        // Restart glean and don't clear the stores.
-        val server = getMockWebServer()
-        val context = getContextWithMockedInfo()
-        resetGlean(context, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port,
-            logPings = true
-        ), false)
-
-        try {
-            // Trigger worker task to upload the pings in the background
-            triggerWorkManager(context)
-
-            val request = server.takeRequest(20L, TimeUnit.SECONDS)
-            val docType = request.path.split("/")[3]
-            assertEquals("The received ping must be a 'baseline' ping", "baseline", docType)
-
-            val baselineJson = JSONObject(request.body.readUtf8())
-            assertEquals("dirty_startup", baselineJson.getJSONObject("ping_info")["reason"])
-            checkPingSchema(baselineJson)
-
-            val baselineMetricsObject = baselineJson.getJSONObject("metrics")
-            val baselineStringMetrics = baselineMetricsObject.getJSONObject("string")
-            assertEquals(1, baselineStringMetrics.length())
-            assertNotNull(baselineStringMetrics.get("glean.baseline.locale"))
-
-            assertFalse(
-                "The baseline ping from startup must not have a duration",
-                baselineMetricsObject.has("timespan")
-            )
-        } finally {
-            server.shutdown()
         }
     }
 
@@ -372,6 +340,7 @@ class GleanTest {
         resetGlean(getContextWithMockedInfo())
 
         runBlocking {
+            Glean.handleForegroundEvent()
             Glean.handleBackgroundEvent()
         }
 

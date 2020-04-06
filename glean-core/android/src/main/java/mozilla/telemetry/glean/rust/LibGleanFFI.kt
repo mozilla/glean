@@ -70,10 +70,6 @@ internal interface LibGleanFFI : Library {
 
     fun glean_clear_application_lifetime_metrics()
 
-    fun glean_set_dirty_flag(flag: Byte)
-
-    fun glean_is_dirty_flag_set(): Byte
-
     fun glean_test_clear_all_stores()
 
     fun glean_is_first_run(): Byte

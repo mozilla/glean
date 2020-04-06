@@ -314,16 +314,6 @@ pub extern "C" fn glean_clear_application_lifetime_metrics() {
 }
 
 #[no_mangle]
-pub extern "C" fn glean_set_dirty_flag(flag: u8) {
-    with_glean_value_mut(|glean| glean.set_dirty_flag(flag != 0));
-}
-
-#[no_mangle]
-pub extern "C" fn glean_is_dirty_flag_set() -> u8 {
-    with_glean_value(|glean| glean.is_dirty_flag_set())
-}
-
-#[no_mangle]
 pub extern "C" fn glean_test_clear_all_stores() {
     with_glean_value(|glean| glean.test_clear_all_stores())
 }

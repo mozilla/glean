@@ -48,7 +48,7 @@ pub use crate::error_recording::{test_get_num_recorded_errors, ErrorType};
 use crate::event_database::EventDatabase;
 use crate::internal_metrics::CoreMetrics;
 use crate::internal_pings::InternalPings;
-use crate::metrics::{Metric, MetricType, PingType};
+use crate::metrics::PingType;
 use crate::ping::PingMaker;
 use crate::storage::StorageManager;
 #[cfg(feature = "upload")]
@@ -686,50 +686,6 @@ impl Glean {
     /// Return whether or not this is the first run on this profile.
     pub fn is_first_run(&self) -> bool {
         self.is_first_run
-    }
-
-    fn get_dirty_bit_metric(&self) -> metrics::BooleanMetric {
-        metrics::BooleanMetric::new(CommonMetricData {
-            name: "dirtybit".into(),
-            // We don't need a category, the name is already unique
-            category: "".into(),
-            send_in_pings: vec![INTERNAL_STORAGE.into()],
-            lifetime: Lifetime::User,
-            ..Default::default()
-        })
-    }
-
-    /// ** This is not meant to be used directly.**
-    ///
-    /// Set the value of a "dirty flag" in the permanent storage.
-    /// The "dirty flag" is meant to have the following behaviour, implemented
-    /// by the consumers of the FFI layer:
-    ///
-    /// - on mobile: set to `false` when going to background or shutting down,
-    ///   set to `true` at startup and when going to foreground.
-    /// - on non-mobile platforms: set to `true` at startup and `false` at
-    ///   shutdown.
-    ///
-    /// At startup, before setting its new value, if the "dirty flag" value is
-    /// `true`, then Glean knows it did not exit cleanly and can implement
-    /// coping mechanisms (e.g. sending a `baseline` ping).
-    pub fn set_dirty_flag(&self, new_value: bool) {
-        self.get_dirty_bit_metric().set(self, new_value);
-    }
-
-    /// ** This is not meant to be used directly.**
-    ///
-    /// Check the stored value of the "dirty flag".
-    pub fn is_dirty_flag_set(&self) -> bool {
-        let dirty_bit_metric = self.get_dirty_bit_metric();
-        match StorageManager.snapshot_metric(
-            self.storage(),
-            INTERNAL_STORAGE,
-            &dirty_bit_metric.meta().identifier(self),
-        ) {
-            Some(Metric::Boolean(b)) => b,
-            _ => false,
-        }
     }
 
     /// **Test-only API (exported for FFI purposes).**

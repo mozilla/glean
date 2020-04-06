@@ -99,7 +99,7 @@ open class GleanInternalAPI internal constructor () {
      * once.
      *
      * A LifecycleObserver will be added to send pings when the application goes
-     * into the background.
+     * into foreground and background.
      *
      * This method must be called from the main thread.
      *
@@ -199,16 +199,6 @@ open class GleanInternalAPI internal constructor () {
 
             // Signal Dispatcher that init is complete
             Dispatchers.API.flushQueuedInitialTasks()
-
-            // Check if the "dirty flag" is set. That means the product was probably
-            // force-closed. If that's the case, submit a 'baseline' ping with the
-            // reason "dirty_startup". We only do that from the second run.
-            if (!isFirstRun && LibGleanFFI.INSTANCE.glean_is_dirty_flag_set().toBoolean()) {
-                submitPingByNameSync("baseline", "dirty_startup")
-                // Note: while in theory we should set the "dirty flag" to true
-                // here, in practice it's not needed: if it hits this branch, it
-                // means the value was `true` and nothing needs to be done.
-            }
 
             // At this point, all metrics and events can be recorded.
             // This should only be called from the main thread. This is enforced by
@@ -481,10 +471,16 @@ open class GleanInternalAPI internal constructor () {
     }
 
     /**
+     * Handle the foreground event and send the appropriate pings.
+     */
+    internal fun handleForegroundEvent() {
+        Pings.baseline.submit(Pings.baselineReasonCodes.foreground)
+    }
+    
+    /**
      * Handle the background event and send the appropriate pings.
      */
     internal fun handleBackgroundEvent() {
-        Pings.baseline.submit(Pings.baselineReasonCodes.background)
         Pings.events.submit(Pings.eventsReasonCodes.background)
     }
 

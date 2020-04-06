@@ -202,8 +202,6 @@ uint8_t glean_experiment_test_is_active(FfiStr experiment_id);
  */
 uint8_t glean_initialize(const FfiConfiguration *cfg);
 
-uint8_t glean_is_dirty_flag_set(void);
-
 uint8_t glean_is_first_run(void);
 
 uint8_t glean_is_upload_enabled(void);
@@ -401,8 +399,6 @@ int64_t glean_quantity_test_get_value(uint64_t metric_id, FfiStr storage_name);
 uint8_t glean_quantity_test_has_value(uint64_t metric_id, FfiStr storage_name);
 
 void glean_register_ping_type(uint64_t ping_type_handle);
-
-void glean_set_dirty_flag(uint8_t flag);
 
 void glean_set_experiment_active(FfiStr experiment_id,
                                  FfiStr branch,

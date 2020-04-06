@@ -62,6 +62,7 @@ class DeletionRequestPingTest: XCTestCase {
         app.switches.firstMatch.tap()
 
         // Trigger baseline ping by putting app into the background
+        // FIXME: This no longer triggers a baseline ping on background
         XCUIDevice.shared.press(XCUIDevice.Button.home)
 
         waitForExpectations(timeout: 5.0) { error in
