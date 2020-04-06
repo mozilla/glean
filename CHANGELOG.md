@@ -8,6 +8,9 @@
 * iOS:
   * BUGFIX: A bug where the metrics ping is sent immediately at startup on the last day of the month has been fixed.
   * Glean for iOS is now being built with Xcode 11.4.0
+* Python:
+  * Glean will now wait at application exit for up to one second to let its worker thread complete.
+  * Ping uploading now happens in a separate child process by default. This can be disabled with the `allow_multiprocessing` configuration option.
 
 # v26.0.0 (2020-03-27)
 

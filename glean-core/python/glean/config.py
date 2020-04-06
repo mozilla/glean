@@ -42,6 +42,7 @@ class Configuration:
         log_pings: bool = False,
         ping_tag: Optional[str] = None,
         ping_uploader: Optional[net.BaseUploader] = None,
+        allow_multiprocessing: bool = True,
     ):
         """
         Args:
@@ -59,6 +60,9 @@ class Configuration:
                 uploading pings for debug view.
             ping_uploader (glean.net.BaseUploader): Optional. The ping uploader
                 implementation. Defaults to `glean.net.HttpClientUploader`.
+            allow_multiprocessing (bool): When True (default), use Python
+                multiprocessing to offload some work (such as ping uploading) to a
+                child process.
         """
         self._server_endpoint = server_endpoint
         if user_agent is None:
@@ -71,6 +75,7 @@ class Configuration:
         if ping_uploader is None:
             ping_uploader = net.HttpClientUploader()
         self._ping_uploader = ping_uploader
+        self._allow_multiprocessing = allow_multiprocessing
 
     @property
     def server_endpoint(self) -> str:
