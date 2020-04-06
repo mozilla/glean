@@ -303,6 +303,14 @@ public class Glean {
         return glean_experiment_test_is_active(experimentId).toBool()
     }
 
+    /// PUBLIC TEST ONLY FUNCTION.
+    ///
+    /// Get recorded experiment data for a given `experimentId`.
+    ///
+    /// - parameters:
+    ///     * experimentId: The id of the experiment to look for.
+    ///
+    /// - returns: `RecordedExperimentData` if the experiment is active and reported in pings, `nil` otherwise.
     public func testGetExperimentData(experimentId: String) -> RecordedExperimentData? {
         Dispatchers.shared.assertInTestingMode()
         let jsonString = String(

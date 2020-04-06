@@ -4,6 +4,10 @@
 
 import Foundation
 
+/// The reasons a  ping may be sent.
+/// Reason codes can be of any type, but need to adhere to a protocol.
+///
+/// For user-defined custom pings associated reason codes will be defined as `enums`.
 public protocol ReasonCodes: Hashable {
     /// The index of the reason code, used to index the string array passed at
     /// `Ping` instantiation.
@@ -25,6 +29,7 @@ public class PingBase {
     var handle: UInt64
     var name: String
 
+    /// Create a new Ping with the given name.
     public init(name: String) {
         self.name = name
         self.handle = 0
