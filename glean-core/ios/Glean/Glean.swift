@@ -50,6 +50,7 @@ public class Glean {
         self.initialized = false
     }
 
+    // swiftlint:disable function_body_length
     /// Initialize the Glean SDK.
     ///
     /// This should only be initialized once by the application, and not by
@@ -65,7 +66,6 @@ public class Glean {
     ///       If disabled, all persisted metrics, events and queued pings (except
     ///       first_run_date) are cleared.
     ///     * configuration: A Glean `Configuration` object with global settings.
-    // swiftlint:disable function_body_length
     public func initialize(uploadEnabled: Bool,
                            configuration: Configuration = Configuration()) {
         if self.isInitialized() {
@@ -303,6 +303,14 @@ public class Glean {
         return glean_experiment_test_is_active(experimentId).toBool()
     }
 
+    /// PUBLIC TEST ONLY FUNCTION.
+    ///
+    /// Get recorded experiment data for a given `experimentId`.
+    ///
+    /// - parameters:
+    ///     * experimentId: The id of the experiment to look for.
+    ///
+    /// - returns: `RecordedExperimentData` if the experiment is active and reported in pings, `nil` otherwise.
     public func testGetExperimentData(experimentId: String) -> RecordedExperimentData? {
         Dispatchers.shared.assertInTestingMode()
         let jsonString = String(

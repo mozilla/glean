@@ -22,6 +22,7 @@ extension UInt8 {
 ///
 /// This should only be used in tests.
 extension String: Error {
+    /// The string itself is the error description.
     public var errorDescription: String? { return self }
 }
 
