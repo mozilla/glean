@@ -88,7 +88,7 @@ public class TimespanMetricType {
     /// Convenience method to simplify measuring a function or block of code
     ///
     /// - parameters:
-    ///     * funcToMeasure: Accepts a function or closure  to measure that can return a value
+    ///     * funcToMeasure: Accepts a function or closure to measure that can return a value
     public func measure<U>(funcToMeasure: () -> U) -> U {
         start()
         // Putting `stop` in a `defer` block guarantees it will execute at the end
@@ -99,6 +99,25 @@ public class TimespanMetricType {
             stop()
         }
         return funcToMeasure()
+    }
+
+    /// Convenience method to simplify measuring a function or block of code
+    ///
+    /// If the measured function throws, the measurement is canceled and the exception rethrown.
+    ///
+    /// - parameters:
+    ///     * funcToMeasure: Accepts a function or closure to measure that can return a value
+    public func measure<U>(funcToMeasure: () throws -> U) throws -> U {
+        start()
+
+        do {
+            let returnValue = try funcToMeasure()
+            stop()
+            return returnValue
+        } catch {
+            cancel()
+            throw error
+        }
     }
 
     /// Explicitly set the timespan value, in nanoseconds.
