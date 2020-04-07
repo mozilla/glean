@@ -280,7 +280,7 @@ class TimingDistributionMetricTypeTest {
     }
 
     @Test
-    fun `measure function still measures and allows exceptions to bubble up`() {
+    fun `measure function bubbles up exceptions and timing is canceled`() {
         val metric = TimingDistributionMetricType(
             disabled = false,
             category = "telemetry",
@@ -295,8 +295,8 @@ class TimingDistributionMetricTypeTest {
             throw NullPointerException()
         }
 
-        // Measure the test function, which should throw an exception.  We will catch the
-        // exception and verify it and that we still recorded the measurement.
+        // Attempt to measure the function that will throw an exception.  The `measure` function
+        // should allow the exception to bubble up, the timespan measurement is canceled.
         try {
             metric.measure {
                 testFunc()
@@ -306,8 +306,7 @@ class TimingDistributionMetricTypeTest {
             assertTrue("Exception type must match", e is NullPointerException)
         } finally {
             // Check that data was still properly recorded even though there was an exception.
-            assertTrue("Metric must have a value", metric.testHasValue())
-            assertTrue("Metric value must be greater than zero", metric.testGetValue().sum >= 0)
+            assertTrue("Metric must not have a value", !metric.testHasValue())
         }
     }
 }
