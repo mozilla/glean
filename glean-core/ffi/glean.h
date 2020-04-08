@@ -76,9 +76,9 @@ typedef const char *const *RawStringArray;
  * and `glean-core/android/src/main/java/mozilla/telemetry/glean/net/Upload.kt`.
  */
 enum FfiPingUploadTask_Tag {
-  Upload,
-  Wait,
-  Done,
+  FfiPingUploadTask_Upload,
+  FfiPingUploadTask_Wait,
+  FfiPingUploadTask_Done,
 };
 typedef uint8_t FfiPingUploadTask_Tag;
 
@@ -88,11 +88,11 @@ typedef struct {
   char *path;
   char *body;
   char *headers;
-} Upload_Body;
+} FfiPingUploadTask_Upload_Body;
 
 typedef union {
   FfiPingUploadTask_Tag tag;
-  Upload_Body upload;
+  FfiPingUploadTask_Upload_Body upload;
 } FfiPingUploadTask;
 
 /**

@@ -10,6 +10,7 @@ use glean_core::upload::PingUploadTask;
 ///
 /// The order of variants should be the same as in `glean-core/src/upload/mod.rs`
 /// and `glean-core/android/src/main/java/mozilla/telemetry/glean/net/Upload.kt`.
+/// cbindgen:prefix-with-name
 #[repr(u8)]
 pub enum FfiPingUploadTask {
     Upload {
