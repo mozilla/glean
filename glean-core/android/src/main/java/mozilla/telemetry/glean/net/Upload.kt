@@ -64,7 +64,7 @@ internal open class FfiPingUploadTask(
 }
 
 /**
- * The PingUploadTask makes it easier to consume Upload_Body.
+ * Represents a request to upload a ping.
  */
 internal class PingRequest(
     private val uuid: String,
@@ -101,7 +101,8 @@ internal class PingRequest(
 }
 
 /**
- * The PingUploadTask makes it easier to consume FfiPingUploadTask.
+ * When asking for the next ping request to upload,
+ * the requester may receive one out of three possible tasks.
  */
 internal sealed class PingUploadTask {
     /**
