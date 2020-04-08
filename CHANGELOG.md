@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v27.0.0...master)
 
+* General:
+  * BUGFIX: baseline pings sent at startup with the `dirty_startup` reason will now include application lifetime metrics.
+
 # v27.0.0 (2020-04-08)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v26.0.0...v27.0.0)

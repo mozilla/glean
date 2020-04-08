@@ -122,6 +122,18 @@ public class Glean {
             // Check for overdue metrics pings
             self.metricsPingScheduler.schedule()
 
+            // Check if the "dirty flag" is set. That means the product was probably
+            // force-closed. If that's the case, submit a 'baseline' ping with the
+            // reason "dirty_startup". We only do that from the second run.
+            if !isFirstRun {
+                if glean_is_dirty_flag_set().toBool() {
+                    self.submitPingByNameSync(
+                        pingName: "baseline",
+                        reason: "dirty_startup"
+                    )
+                }
+            }
+
             // From the second time we run, after all startup pings are generated,
             // make sure to clear `lifetime: application` metrics and set them again.
             // Any new value will be sent in newly generted pings after startup.
@@ -135,18 +147,6 @@ public class Glean {
 
             // Signal Dispatcher that init is complete
             Dispatchers.shared.flushQueuedInitialTasks()
-
-            // Check if the "dirty flag" is set. That means the product was probably
-            // force-closed. If that's the case, submit a 'baseline' ping with the
-            // reason "dirty_startup". We only do that from the second run.
-            if !isFirstRun {
-                if glean_is_dirty_flag_set().toBool() {
-                    self.submitPingByNameSync(
-                        pingName: "baseline",
-                        reason: "dirty_startup"
-                    )
-                }
-            }
 
             self.observer = GleanLifecycleObserver()
 
