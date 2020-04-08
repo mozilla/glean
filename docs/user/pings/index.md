@@ -33,7 +33,7 @@ Optional fields are marked accordingly.
 | `experiments` | Object | *Optional*. A dictionary of [active experiments](#the-experiments-object) |
 | `start_time` | Datetime | The time of the start of collection of the data in the ping, in local time and with minute precision, including timezone information. |
 | `end_time` | Datetime | The time of the end of collection of the data in the ping, in local time and with minute precision, including timezone information. This is also the time this ping was generated and is likely well before ping transmission time. |
-| `reason` | String | The optional reason the ping was submitted. The specific set of values and their meanings are defined for each metric type in the `reasons` field in the `pings.yaml` file. |
+| `reason` | String | *Optional*. The reason the ping was submitted. The specific set of values and their meanings are defined for each metric type in the `reasons` field in the `pings.yaml` file. |
 
 All the metrics surviving application restarts (e.g. `seq`, ...) are removed once the application using the Glean SDK is uninstalled.
 
