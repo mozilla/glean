@@ -8,6 +8,10 @@
 * iOS:
   * BUGFIX: A bug where the metrics ping is sent immediately at startup on the last day of the month has been fixed.
   * Glean for iOS is now being built with Xcode 11.4.0
+  * The `measure` convenience function on timing distributions and time spans will now cancel the timing if the measured function throws, then rethrow the exception ([#808](https://github.com/mozilla/glean/pull/808))
+  * Broken doc genration has been fixed ([#805](https://github.com/mozilla/glean/pull/805)).
+* Kotlin
+  * The `measure` convenience function on timing distributions and time spans will now cancel the timing if the measured function throws, then rethrow the exception ([#808](https://github.com/mozilla/glean/pull/808))
 * Python:
   * Glean will now wait at application exit for up to one second to let its worker thread complete.
   * Ping uploading now happens in a separate child process by default. This can be disabled with the `allow_multiprocessing` configuration option.
