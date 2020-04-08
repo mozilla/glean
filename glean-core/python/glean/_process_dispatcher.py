@@ -56,7 +56,7 @@ class ProcessDispatcher:
             import multiprocessing  # noqa
 
             # We only want one of these processes running at a time, so if there's
-            # already one, join on it. PingUploadWorker.process is only triggered
+            # already one, join on it. ProcessDispatcher.dispatch is only triggered
             # from a worker thread anyway, so this blocking will not block the main
             # user thread.
             if cls._last_process is not None:
