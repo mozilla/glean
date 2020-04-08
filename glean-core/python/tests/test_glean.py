@@ -11,6 +11,7 @@ import re
 import shutil
 import sys
 import time
+import uuid
 
 
 from glean_parser import validate_ping
@@ -23,13 +24,14 @@ from glean import _builtins
 from glean import _util
 from glean._dispatcher import Dispatcher
 from glean.metrics import CounterMetricType, Lifetime, PingType, StringMetricType
+from glean.net import PingUploadWorker
 
 
 GLEAN_APP_ID = "glean-python-test"
 
 
 def test_setting_upload_enabled_before_initialization_should_not_crash():
-    Glean.reset()
+    Glean._reset()
     Glean.set_upload_enabled(True)
     Glean.initialize(
         application_id=GLEAN_APP_ID,
@@ -39,7 +41,7 @@ def test_setting_upload_enabled_before_initialization_should_not_crash():
 
 
 def test_getting_upload_enabled_before_initialization_should_not_crash():
-    Glean.reset()
+    Glean._reset()
 
     Glean.set_upload_enabled(True)
     assert Glean.get_upload_enabled()
@@ -119,7 +121,7 @@ def test_experiments_recording():
 def test_experiments_recording_before_glean_inits():
     # This test relies on Glean not being initialized and task
     # queuing to be on.
-    Glean.reset()
+    Glean._reset()
 
     Glean.set_experiment_active("experiment_set_preinit", "branch_a")
     Glean.set_experiment_active("experiment_preinit_disabled", "branch_a")
@@ -149,7 +151,7 @@ def test_initialize_must_not_crash_if_data_dir_is_messed_up(tmpdir):
     with filename.open("w") as fd:
         fd.write("Contents\n")
 
-    Glean.reset()
+    Glean._reset()
     assert False is Glean.is_initialized()
 
     # Pass in the filename as the data_dir
@@ -167,7 +169,7 @@ def test_initialize_must_not_crash_if_data_dir_is_messed_up(tmpdir):
 
 
 def test_queued_recorded_metrics_correctly_during_init():
-    Glean.reset()
+    Glean._reset()
 
     # Enable queueing
     Dispatcher.set_task_queueing(True)
@@ -247,7 +249,7 @@ def test_dont_schedule_pings_if_there_is_no_ping_content(safe_httpserver):
 
 
 def test_the_app_channel_must_be_correctly_set():
-    Glean.reset()
+    Glean._reset()
     Glean.initialize(
         application_id=GLEAN_APP_ID,
         application_version=glean_version,
@@ -418,13 +420,36 @@ def test_collect(ping_schema_url):
 def test_tempdir_is_cleared():
     tempdir = Glean._data_dir
 
-    Glean.reset()
+    Glean._reset()
 
     assert not tempdir.exists()
 
 
+def test_tempdir_is_cleared_multiprocess(safe_httpserver):
+    safe_httpserver.serve_content(b"", code=200)
+    Glean._configuration.server_endpoint = safe_httpserver.url
+
+    pings_dir = PingUploadWorker.storage_directory()
+    pings_dir.mkdir()
+
+    for i in range(100):
+        with (pings_dir / str(uuid.uuid4())).open("wb") as fd:
+            fd.write(b"/data/path/\n")
+            fd.write(b"{}\n")
+
+    # Make sure that resetting while the PingUploadWorker is running doesn't
+    # delete the directory out from under the PingUploadWorker.
+    p1 = PingUploadWorker._process()
+    Glean._reset()
+
+    p1.join()
+    assert p1.exitcode == 0
+
+    assert 100 == len(safe_httpserver.requests)
+
+
 def test_set_application_id_and_version():
-    Glean.reset()
+    Glean._reset()
 
     Glean.initialize(
         application_id="my-id", application_version="my-version", upload_enabled=True
@@ -500,7 +525,7 @@ def test_configuration_property(safe_httpserver):
 
 def test_sending_deletion_ping_if_disabled_outside_of_run(safe_httpserver, tmpdir):
     safe_httpserver.serve_content(b"", code=200)
-    Glean.reset()
+    Glean._reset()
     config = Configuration(server_endpoint=safe_httpserver.url)
 
     Glean.initialize(
@@ -511,7 +536,7 @@ def test_sending_deletion_ping_if_disabled_outside_of_run(safe_httpserver, tmpdi
         configuration=config,
     )
 
-    Glean.reset()
+    Glean._reset()
 
     Glean.initialize(
         application_id=GLEAN_APP_ID,
@@ -529,7 +554,7 @@ def test_sending_deletion_ping_if_disabled_outside_of_run(safe_httpserver, tmpdi
 
 def test_no_sending_deletion_ping_if_unchanged_outside_of_run(safe_httpserver, tmpdir):
     safe_httpserver.serve_content(b"", code=200)
-    Glean.reset()
+    Glean._reset()
     config = Configuration(server_endpoint=safe_httpserver.url)
 
     Glean.initialize(
@@ -542,7 +567,7 @@ def test_no_sending_deletion_ping_if_unchanged_outside_of_run(safe_httpserver, t
 
     assert 0 == len(safe_httpserver.requests)
 
-    Glean.reset()
+    Glean._reset()
 
     Glean.initialize(
         application_id=GLEAN_APP_ID,

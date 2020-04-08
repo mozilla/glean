@@ -6,15 +6,10 @@
 import logging
 from pathlib import Path
 import re
-import sys
-from typing import TYPE_CHECKING
 
 
 from .._dispatcher import Dispatcher
-
-
-if TYPE_CHECKING:
-    import multiprocessing
+from .._process_dispatcher import ProcessDispatcher
 
 
 log = logging.getLogger(__name__)
@@ -40,35 +35,19 @@ class PingUploadWorker:
         just delete them to prevent files from polluting the ping storage
         directory.
         """
-        from .. import Glean
-
         if Dispatcher._testing_mode:
             cls._test_process_sync()
             return
 
-        if Glean._configuration._allow_multiprocessing:
-            cls._do_process_pings_multiprocessing()
-        else:
-            cls._do_process_pings()
+        cls._process()
 
     @classmethod
-    def _do_process_pings_multiprocessing(cls) -> "multiprocessing.Process":
+    def _process(cls):
         from .. import Glean
 
-        # Only import the multiprocessing library if it's actually needed
-        import multiprocessing
-
-        p = multiprocessing.Process(
-            target=_process_worker, args=(cls.storage_directory(), Glean._configuration)
+        return ProcessDispatcher.dispatch(
+            _process, (cls.storage_directory(), Glean._configuration)
         )
-        p.start()
-        return p
-
-    @classmethod
-    def _do_process_pings(cls) -> bool:
-        from .. import Glean
-
-        return _process(cls.storage_directory(), Glean._configuration)
 
     @classmethod
     def _test_process_sync(cls) -> bool:
@@ -79,16 +58,14 @@ class PingUploadWorker:
         Returns:
             uploaded (bool): The success of the upload task.
         """
-        from .. import Glean
-
         assert Dispatcher._testing_mode is True
 
-        if Glean._configuration._allow_multiprocessing:
-            p = cls._do_process_pings_multiprocessing()
+        p = cls._process()
+        if isinstance(p, bool):
+            return p
+        else:
             p.join()
             return p.exitcode == 0
-        else:
-            return cls._do_process_pings()
 
 
 # Ping files are UUIDs.  This matches UUIDs for filtering purposes.
@@ -99,15 +76,6 @@ _FILE_PATTERN = re.compile(
     "[0-9a-fA-F]{4}-"
     "[0-9a-fA-F]{12}"
 )
-
-
-def _process_worker(storage_dir, configuration):
-    success = _process(storage_dir, configuration)
-
-    if success:
-        sys.exit(0)
-    else:
-        sys.exit(1)
 
 
 def _process(storage_dir: Path, configuration) -> bool:
