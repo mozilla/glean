@@ -2,12 +2,14 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v27.0.0...master)
 
+* General:
+  * BUGFIX: baseline pings sent at startup with the `dirty_startup` reason will now include application lifetime metrics.
+
 # v27.0.0 (2020-04-08)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v26.0.0...v27.0.0)
 
 * General:
-  * BUGFIX: baseline pings sent at startup with the `dirty_startup` reason will now include application lifetime metrics.
   * Glean will now detect when the upload enabled flag changes outside of the application, for example due to a change in a config file. This means that if upload is disabled while the application wasn't running (e.g. between the runs of a Python command using the Glean SDK), the database is correctly cleared and a deletion request ping is sent. See [#791](https://github.com/mozilla/glean/pull/791).
   * The `events` ping now includes a reason code: `startup`, `background` or `max_capacity`.
 * iOS:
