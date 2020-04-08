@@ -83,6 +83,15 @@ events:
     - https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3
   notification_emails:
     - glean-team@mozilla.com
+  reasons:
+    startup: |
+      The ping was submitted at startup. The events ping is always sent if there
+      are any pending events at startup, because event timestamps can not be
+      mixed across runs of the application.
+    background: |
+      The ping was submitted before going to background.
+    max_capacity: |
+      The maximum number of events was reached (default 500 events).
 
 deletion-request:
   description: >

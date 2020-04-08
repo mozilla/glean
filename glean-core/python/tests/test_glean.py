@@ -5,9 +5,12 @@
 
 import io
 import json
+import multiprocessing
+from pathlib import Path
 import re
 import shutil
 import sys
+import time
 
 
 from glean_parser import validate_ping
@@ -278,8 +281,18 @@ def test_get_language_reports_the_modern_translation_for_some_languages():
     pass
 
 
+class RecordingUploader:
+    def __init__(self, file_path):
+        self.file_path = file_path
+
+    def do_upload(self, url_path, serialized_ping, configuration):
+        with self.file_path.open("w") as fd:
+            fd.write(str(url_path) + "\n")
+            fd.write(serialized_ping + "\n")
+
+
 def test_ping_collection_must_happen_after_currently_scheduled_metrics_recordings(
-    ping_schema_url,
+    tmpdir, ping_schema_url,
 ):
     # Given the following block of code:
     #
@@ -289,16 +302,10 @@ def test_ping_collection_must_happen_after_currently_scheduled_metrics_recording
     # This test ensures that "custom-ping-1" contains "metric.a" with a value of "SomeTestValue"
     # when the ping is collected.
 
-    # safe_httpserver.serve_content(b"", code=200)
-
-    class TestUploader:
-        def do_upload(self, url_path, serialized_ping, configuration):
-            self.url_path = url_path
-            self.serialized_ping = serialized_ping
-            self.configuration = configuration
+    info_path = Path(str(tmpdir)) / "info.txt"
 
     real_uploader = Glean._configuration.ping_uploader
-    test_uploader = TestUploader()
+    test_uploader = RecordingUploader(info_path)
     Glean._configuration.ping_uploader = test_uploader
 
     Glean._configuration.log_pings = True
@@ -326,17 +333,22 @@ def test_ping_collection_must_happen_after_currently_scheduled_metrics_recording
     string_metric.set(test_value)
     ping.submit()
 
-    # Wait until the work is completea
+    # Wait until the work is complete
     Dispatcher._task_worker._queue.join()
 
-    assert ping_name == test_uploader.url_path.split("/")[3]
+    while not info_path.exists():
+        time.sleep(0.1)
 
-    json_content = json.loads(test_uploader.serialized_ping)
+    with info_path.open("r") as fd:
+        url_path = fd.readline()
+        serialized_ping = fd.readline()
+
+    assert ping_name == url_path.split("/")[3]
+
+    json_content = json.loads(serialized_ping)
 
     assert 0 == validate_ping.validate_ping(
-        io.StringIO(test_uploader.serialized_ping),
-        sys.stdout,
-        schema_url=ping_schema_url,
+        io.StringIO(serialized_ping), sys.stdout, schema_url=ping_schema_url,
     )
 
     assert {"category.string_metric": test_value} == json_content["metrics"]["string"]
@@ -484,3 +496,81 @@ def test_configuration_property(safe_httpserver):
     request = safe_httpserver.requests[0]
     assert "baseline" in request.url
     assert "foo" == request.headers["X-Debug-Id"]
+
+
+def test_sending_deletion_ping_if_disabled_outside_of_run(safe_httpserver, tmpdir):
+    safe_httpserver.serve_content(b"", code=200)
+    Glean.reset()
+    config = Configuration(server_endpoint=safe_httpserver.url)
+
+    Glean.initialize(
+        application_id=GLEAN_APP_ID,
+        application_version=glean_version,
+        upload_enabled=True,
+        data_dir=Path(str(tmpdir)),
+        configuration=config,
+    )
+
+    Glean.reset()
+
+    Glean.initialize(
+        application_id=GLEAN_APP_ID,
+        application_version=glean_version,
+        upload_enabled=False,
+        data_dir=Path(str(tmpdir)),
+        configuration=config,
+    )
+
+    assert 1 == len(safe_httpserver.requests)
+
+    request = safe_httpserver.requests[0]
+    assert "deletion-request" in request.url
+
+
+def test_no_sending_deletion_ping_if_unchanged_outside_of_run(safe_httpserver, tmpdir):
+    safe_httpserver.serve_content(b"", code=200)
+    Glean.reset()
+    config = Configuration(server_endpoint=safe_httpserver.url)
+
+    Glean.initialize(
+        application_id=GLEAN_APP_ID,
+        application_version=glean_version,
+        upload_enabled=False,
+        data_dir=Path(str(tmpdir)),
+        configuration=config,
+    )
+
+    assert 0 == len(safe_httpserver.requests)
+
+    Glean.reset()
+
+    Glean.initialize(
+        application_id=GLEAN_APP_ID,
+        application_version=glean_version,
+        upload_enabled=False,
+        data_dir=Path(str(tmpdir)),
+        configuration=config,
+    )
+
+    assert 0 == len(safe_httpserver.requests)
+
+
+def test_dont_allow_multiprocessing(monkeypatch, safe_httpserver):
+    safe_httpserver.serve_content(b"", code=200)
+
+    Glean._configuration.server_endpoint = safe_httpserver.url
+    Glean._configuration._allow_multiprocessing = False
+
+    # Monkey-patch the multiprocessing API to be broken so we can assert it isn't used
+    def broken_process(*args, **kwargs):
+        assert False, "shouldn't be called"
+
+    monkeypatch.setattr(multiprocessing, "Process", broken_process)
+
+    custom_ping = PingType(
+        name="store1", include_client_id=True, send_if_empty=True, reason_codes=[]
+    )
+
+    custom_ping.submit()
+
+    assert 1 == len(safe_httpserver.requests)

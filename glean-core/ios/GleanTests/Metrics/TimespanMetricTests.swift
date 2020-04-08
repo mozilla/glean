@@ -224,4 +224,36 @@ class TimespanMetricTypeTests: XCTestCase {
         XCTAssert(metric.testHasValue())
         XCTAssert(try metric.testGetValue() >= 0)
     }
+
+    func testMeasureFunctionThrows() {
+        let metric = TimespanMetricType(
+            category: "telemetry",
+            name: "timespan_metric",
+            sendInPings: ["store1"],
+            lifetime: .application,
+            disabled: false,
+            timeUnit: .millisecond
+        )
+
+        XCTAssertFalse(metric.testHasValue())
+
+        // Create a test function that throws an exception.
+        func testFunc() throws {
+            throw "invalid"
+        }
+
+        // Perform the measurement
+        do {
+            _ = try metric.measure {
+                try testFunc()
+            }
+
+            // The function throws, so this is unreachable
+            XCTAssert(false)
+        } catch {
+            // intentionally left empty
+        }
+
+        XCTAssertFalse(metric.testHasValue())
+    }
 }

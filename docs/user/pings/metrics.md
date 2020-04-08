@@ -2,7 +2,7 @@
 
 ## Description
 The `metrics` ping is intended for all of the metrics that are explicitly set by the application or are included in the application's `metrics.yaml` file (except events). 
-The reported data is tied to the ping's *measurement window*, which is the time between the collection of two `metrics` ping. 
+The reported data is tied to the ping's *measurement window*, which is the time between the collection of two `metrics` pings. 
 Ideally, this window is expected to be about 24 hours, given that the collection is scheduled daily at 04:00. 
 However, the metrics ping is only submitted while the application is actually running, so in practice, it may not meet the 04:00 target very frequently.
 Data in the [`ping_info`](index.md#the-ping_info-section) section of the ping can be used to infer the length of this window and the reason that triggered the ping to be submitted.
@@ -33,6 +33,8 @@ In the fourth and last case, the application is running during a scheduled ping 
 The next ping is scheduled for 04:00 the next calendar day (reason code `reschedule`).
 
 More [scheduling examples](#scheduling-examples) are included below.
+
+See also the [ping schedules and timing overview](ping-schedules-and-timings.html).
 
 ## Contents
 The `metrics` ping contains all of the metrics defined in `metrics.yaml` (except events) that don't specify a ping or where `default` is specified in their [`send in pings`](https://mozilla.github.io/glean_parser/metrics-yaml.html#send-in-pings) property.

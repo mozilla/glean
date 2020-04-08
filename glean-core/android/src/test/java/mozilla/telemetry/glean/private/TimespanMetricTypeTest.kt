@@ -289,7 +289,7 @@ class TimespanMetricTypeTest {
     }
 
     @Test
-    fun `measure function still measures and allows exceptions to bubble up`() {
+    fun `measure function bubbles up exceptions and timing is canceled`() {
         // Define a timespan metric, which will be stored in "store1"
         val metric = TimespanMetricType(
             disabled = false,
@@ -306,8 +306,7 @@ class TimespanMetricTypeTest {
         }
 
         // Attempt to measure the function that will throw an exception.  The `measure` function
-        // should allow the exception to bubble up while still measuring and recording to the
-        // metric.
+        // should allow the exception to bubble up, the timespan measurement is canceled.
         try {
             metric.measure {
                 testFunc()
@@ -316,9 +315,7 @@ class TimespanMetricTypeTest {
             // Make sure we caught the right kind of exception: NPE
             assertTrue("Exception type must match", e is NullPointerException)
         } finally {
-            // Check that data was properly recorded, despite the exception.
-            assertTrue("Metric must have a value", metric.testHasValue())
-            assertTrue("Metric value must be greater than zero", metric.testGetValue() >= 0)
+            assertTrue("Metric must not have a value", !metric.testHasValue())
         }
     }
 }

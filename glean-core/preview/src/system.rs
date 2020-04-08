@@ -1,43 +1,33 @@
-// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at https://mozilla.org/MPL/2.0/.
-
-// Detect and expose `target_os` as a constant.
-// Whether this is a good idea is somewhat debatable.
+// Copyright (c) 2017 The Rust Project Developers
+// Licensed under the MIT License.
+// Original license:
+// https://github.com/RustSec/platforms-crate/blob/ebbd3403243067ba3096f31684557285e352b639/LICENSE-MIT
 //
-// Code adopted from the "platforms" crate: <https://github.com/RustSec/platforms-crate>.
+// Permission is hereby granted, free of charge, to any
+// person obtaining a copy of this software and associated
+// documentation files (the "Software"), to deal in the
+// Software without restriction, including without
+// limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of
+// the Software, and to permit persons to whom the Software
+// is furnished to do so, subject to the following
+// conditions:
+//
+// The above copyright notice and this permission notice
+// shall be included in all copies or substantial portions
+// of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF
+// ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+// TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT
+// SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+// CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+// IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
-#[cfg(target_os = "android")]
-/// `target_os` when building this crate: `android`
-pub const OS: &str = "Android";
-
-#[cfg(target_os = "ios")]
-/// `target_os` when building this crate: `ios`
-pub const OS: &str = "iOS";
-
-#[cfg(target_os = "linux")]
-/// `target_os` when building this crate: `linux`
-pub const OS: &str = "Linux";
-
-#[cfg(target_os = "macos")]
-/// `target_os` when building this crate: `macos`
-pub const OS: &str = "MacOS";
-
-#[cfg(target_os = "windows")]
-/// `target_os` when building this crate: `windows`
-pub const OS: &str = "Windows";
-
-#[cfg(not(any(
-    target_os = "android",
-    target_os = "ios",
-    target_os = "linux",
-    target_os = "macos",
-    target_os = "windows",
-)))]
-pub const OS: &str = "unknown";
-
-// Detect and expose `target_arch` as a constant
-// Whether this is a good idea is somewhat debatable
+//! Detect and expose `target_arch` as a constant
 
 #[cfg(target_arch = "aarch64")]
 /// `target_arch` when building this crate: `aarch64`

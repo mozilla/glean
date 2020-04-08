@@ -1,6 +1,24 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v26.0.0...master)
+[Full changelog](https://github.com/mozilla/glean/compare/v27.0.0...master)
+
+# v27.0.0 (2020-04-08)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v26.0.0...v27.0.0)
+
+* General:
+  * Glean will now detect when the upload enabled flag changes outside of the application, for example due to a change in a config file. This means that if upload is disabled while the application wasn't running (e.g. between the runs of a Python command using the Glean SDK), the database is correctly cleared and a deletion request ping is sent. See [#791](https://github.com/mozilla/glean/pull/791).
+  * The `events` ping now includes a reason code: `startup`, `background` or `max_capacity`.
+* iOS:
+  * BUGFIX: A bug where the metrics ping is sent immediately at startup on the last day of the month has been fixed.
+  * Glean for iOS is now being built with Xcode 11.4.0
+  * The `measure` convenience function on timing distributions and time spans will now cancel the timing if the measured function throws, then rethrow the exception ([#808](https://github.com/mozilla/glean/pull/808))
+  * Broken doc generation has been fixed ([#805](https://github.com/mozilla/glean/pull/805)).
+* Kotlin
+  * The `measure` convenience function on timing distributions and time spans will now cancel the timing if the measured function throws, then rethrow the exception ([#808](https://github.com/mozilla/glean/pull/808))
+* Python:
+  * Glean will now wait at application exit for up to one second to let its worker thread complete.
+  * Ping uploading now happens in a separate child process by default. This can be disabled with the `allow_multiprocessing` configuration option.
 
 # v26.0.0 (2020-03-27)
 

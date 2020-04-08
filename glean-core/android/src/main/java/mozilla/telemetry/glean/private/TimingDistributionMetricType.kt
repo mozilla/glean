@@ -110,15 +110,23 @@ class TimingDistributionMetricType internal constructor(
     }
 
     /**
-     * Convenience method to simplify measuring a function or block of code
+     * Convenience method to simplify measuring a function or block of code.
+     *
+     * If the measured function throws, the measurement is canceled and the exception rethrown.
      */
+    @Suppress("TooGenericExceptionCaught")
     inline fun <U> measure(funcToMeasure: () -> U): U {
         val timerId = start()
-        try {
-            return funcToMeasure()
-        } finally {
-            stopAndAccumulate(timerId)
+
+        val returnValue = try {
+            funcToMeasure()
+        } catch (e: Exception) {
+            cancel(timerId)
+            throw e
         }
+
+        stopAndAccumulate(timerId)
+        return returnValue
     }
 
     /**

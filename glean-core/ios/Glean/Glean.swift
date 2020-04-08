@@ -50,6 +50,7 @@ public class Glean {
         self.initialized = false
     }
 
+    // swiftlint:disable function_body_length
     /// Initialize the Glean SDK.
     ///
     /// This should only be initialized once by the application, and not by
@@ -65,7 +66,6 @@ public class Glean {
     ///       If disabled, all persisted metrics, events and queued pings (except
     ///       first_run_date) are cleared.
     ///     * configuration: A Glean `Configuration` object with global settings.
-    // swiftlint:disable function_body_length
     public func initialize(uploadEnabled: Bool,
                            configuration: Configuration = Configuration()) {
         if self.isInitialized() {
@@ -167,7 +167,6 @@ public class Glean {
         // generated. We use an internal only API to do that.
 
         GleanBaseline.locale.setSync(getLocaleTag())
-        GleanInternalMetrics.os.setSync(Sysctl.os)
         GleanInternalMetrics.osVersion.setSync(UIDevice.current.systemVersion)
         GleanInternalMetrics.deviceManufacturer.setSync(Sysctl.manufacturer)
         GleanInternalMetrics.deviceModel.setSync(Sysctl.model)
@@ -304,6 +303,14 @@ public class Glean {
         return glean_experiment_test_is_active(experimentId).toBool()
     }
 
+    /// PUBLIC TEST ONLY FUNCTION.
+    ///
+    /// Get recorded experiment data for a given `experimentId`.
+    ///
+    /// - parameters:
+    ///     * experimentId: The id of the experiment to look for.
+    ///
+    /// - returns: `RecordedExperimentData` if the experiment is active and reported in pings, `nil` otherwise.
     public func testGetExperimentData(experimentId: String) -> RecordedExperimentData? {
         Dispatchers.shared.assertInTestingMode()
         let jsonString = String(
@@ -328,8 +335,8 @@ public class Glean {
 
     /// Handle background event and submit appropriate pings
     func handleBackgroundEvent() {
-        Pings.shared.baseline.submit()
-        Pings.shared.events.submit()
+        Pings.shared.baseline.submit(reason: .background)
+        Pings.shared.events.submit(reason: .background)
     }
 
     /// Collect and submit a ping by name for eventual uploading
@@ -481,7 +488,9 @@ public class Glean {
     /// - parameters:
     ///     * configuration: the `Configuration` to init Glean with
     ///     * clearStores: if true, clear the contents of all stores
-    public func resetGlean(configuration: Configuration = Configuration(), clearStores: Bool) {
+    public func resetGlean(configuration: Configuration = Configuration(),
+                           clearStores: Bool,
+                           uploadEnabled: Bool = true) {
         enableTestingMode()
 
         if isInitialized() && clearStores {
@@ -491,6 +500,6 @@ public class Glean {
 
         // Init Glean.
         testDestroyGleanHandle()
-        initialize(uploadEnabled: true, configuration: configuration)
+        initialize(uploadEnabled: uploadEnabled, configuration: configuration)
     }
 }

@@ -433,7 +433,6 @@ open class GleanInternalAPI internal constructor () {
         // that they are guaranteed to be available with the first ping that is
         // generated. We use an internal only API to do that.
         GleanBaseline.locale.setSync(getLocaleTag())
-        GleanInternalMetrics.os.setSync("Android")
         // https://developer.android.com/reference/android/os/Build.VERSION
         GleanInternalMetrics.androidSdkVersion.setSync(Build.VERSION.SDK_INT.toString())
         GleanInternalMetrics.osVersion.setSync(Build.VERSION.RELEASE)
@@ -486,7 +485,7 @@ open class GleanInternalAPI internal constructor () {
      */
     internal fun handleBackgroundEvent() {
         Pings.baseline.submit(Pings.baselineReasonCodes.background)
-        Pings.events.submit()
+        Pings.events.submit(Pings.eventsReasonCodes.background)
     }
 
     /**
@@ -593,7 +592,8 @@ open class GleanInternalAPI internal constructor () {
     internal fun resetGlean(
         context: Context,
         config: Configuration,
-        clearStores: Boolean
+        clearStores: Boolean,
+        uploadEnabled: Boolean = true
     ) {
         Glean.enableTestingMode()
 
@@ -606,7 +606,7 @@ open class GleanInternalAPI internal constructor () {
 
         // Init Glean.
         Glean.testDestroyGleanHandle()
-        Glean.initialize(context, true, config)
+        Glean.initialize(context, uploadEnabled, config)
     }
 
     /**

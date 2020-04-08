@@ -31,8 +31,9 @@ glean.baseline:
     send_in_pings:
       - baseline
     description: |
-      The locale of the application (e.g. "es-ES").
-      If the locale can't be determined on the system, the value is "und",
+      The locale of the application during initialization (e.g. "es-ES").
+      If the locale can't be determined on the system, the value is
+      ["und"](https://unicode.org/reports/tr35/#Unknown_or_Invalid_Identifiers),
       to indicate "undetermined".
     bugs:
       - https://bugzilla.mozilla.org/1512938
@@ -51,6 +52,9 @@ glean.internal.metrics:
       - glean_client_info
     description: |
       The name of the operating system.
+      Possible values:
+      Android, iOS, Linux, Darwin, Windows,
+      FreeBSD, NetBSD, OpenBSD, Solaris, unknown
     bugs:
       - https://bugzilla.mozilla.org/1497894
     data_reviews:
@@ -81,6 +85,7 @@ glean.internal.metrics:
       - glean_client_info
     description: |
       The manufacturer of the device the application is running on.
+      Not set if the device manufacturer can't be determined (e.g. on Desktop).
     bugs:
       - https://bugzilla.mozilla.org/1522552
     data_reviews:
@@ -98,6 +103,7 @@ glean.internal.metrics:
       The model of the device the application is running on.
       On Android, this is Build.MODEL, the user-visible marketing name,
       like "Pixel 2 XL".
+      Not set if the device model can't be determined (e.g. on Desktop).
     bugs:
       - https://bugzilla.mozilla.org/1522552
     data_reviews:
@@ -203,7 +209,10 @@ glean.internal.metrics:
     send_in_pings:
       - glean_client_info
     description: |
-      The locale of the application (e.g. "es-ES").
+      The locale of the application during initialization (e.g. "es-ES").
+      If the locale can't be determined on the system, the value is
+      ["und"](https://unicode.org/reports/tr35/#Unknown_or_Invalid_Identifiers),
+      to indicate "undetermined".
     bugs:
       - https://bugzilla.mozilla.org/1601489
     data_reviews:

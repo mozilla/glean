@@ -1,4 +1,4 @@
-personal_ws-1.1 en 160 utf-8
+personal_ws-1.1 en 164 utf-8
 AAR
 AARs
 APIs
@@ -79,6 +79,7 @@ codecov
 codepoints
 commandline
 conda
+config
 coroutine
 csh
 dataset
@@ -109,6 +110,7 @@ ios
 janerik
 ktlint
 lang
+latencies
 lfloor
 lifecycle
 linux
@@ -132,6 +134,7 @@ prebuilt
 preinit
 py
 pytest
+rethrow
 rfloor
 rkv
 runtime

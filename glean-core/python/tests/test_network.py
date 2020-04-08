@@ -6,9 +6,6 @@
 import uuid
 
 
-import pytest
-
-
 from glean import Glean
 from glean.net import PingUploadWorker
 
@@ -20,7 +17,7 @@ def test_invalid_filename():
     with (pings_dir / "ping").open("wb") as fd:
         fd.write(b"\n")
 
-    assert PingUploadWorker.process()
+    assert PingUploadWorker._test_process_sync()
 
     assert 0 == len(list(pings_dir.iterdir()))
 
@@ -48,7 +45,7 @@ def test_400_error(safe_httpserver):
         fd.write(b"/data/path/\n")
         fd.write(b"{}\n")
 
-    assert PingUploadWorker.process()
+    assert PingUploadWorker._test_process_sync()
 
     assert 0 == len(list(pings_dir.iterdir()))
 
@@ -66,7 +63,7 @@ def test_500_error(safe_httpserver):
         fd.write(b"/data/path/\n")
         fd.write(b"{}\n")
 
-    assert not PingUploadWorker.process()
+    assert not PingUploadWorker._test_process_sync()
 
     assert 1 == len(list(pings_dir.iterdir()))
 
@@ -83,5 +80,4 @@ def test_unknown_scheme():
         fd.write(b"/data/path/\n")
         fd.write(b"{}\n")
 
-    with pytest.raises(ValueError):
-        PingUploadWorker.process()
+    assert False is PingUploadWorker._test_process_sync()
