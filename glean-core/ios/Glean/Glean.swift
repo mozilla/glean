@@ -84,7 +84,7 @@ public class Glean {
                 // The FileManager returns `file://` URLS with absolute paths.
                 // The Rust side expects normal path strings to be used.
                 // `relativePath` for a file URL gives us the absolute filesystem path.
-                dataDir: getDocumentsDirectory().relativePath,
+                dataDir: getGleanDirectory().relativePath,
                 packageName: AppInfo.name,
                 uploadEnabled: uploadEnabled,
                 configuration: configuration
