@@ -131,7 +131,12 @@ The system may also call `onStop()` when the activity has finished running, and 
 
 <div data-lang="Swift" class="tab">
 
-<!-- TODO: Fill in Swift details about foreground -->
+### Foreground
+
+For iOS, Glean attaches to the [`willEnterForegroundNotification`](https://developer.apple.com/documentation/uikit/uiapplication/1622944-willenterforegroundnotification).
+This notification is posted by the OS shortly before an app leaves the background state on its way to becoming the active app.
+
+### Background
 
 For iOS, this specifically means when the app is no longer visible to the user, or when the `UIApplicationDelegate`
 receives the [`applicationDidEnterBackground`](https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622997-applicationdidenterbackground) event.
