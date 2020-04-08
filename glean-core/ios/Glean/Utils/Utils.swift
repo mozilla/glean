@@ -98,11 +98,11 @@ extension String {
     }
 }
 
-/// Helper function to retrive the application's Documents directory for persistent file storage
+/// Helper function to retrive the application's Application Support directory for persistent file storage
 ///
-/// - returns: `String` representation of the path to the Documents directory
-func getDocumentsDirectory() -> URL {
-    let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+/// - returns: `URL` of the Application Support directory
+func getGleanDirectory() -> URL {
+    let paths = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
     let documentsDirectory = paths[0]
     return documentsDirectory.appendingPathComponent("glean_data")
 }
