@@ -107,7 +107,7 @@ public class TimingDistributionMetricType {
     /// Convenience method to simplify measuring a function or block of code
     ///
     /// - parameters:
-    ///     * funcToMeasure: Accepts a function or closure  to measure that can return a value
+    ///     * funcToMeasure: Accepts a function or closure to measure that can return a value
     public func measure<U>(funcToMeasure: () -> U) -> U {
         let timerId = start()
         // Putting `stopAndAccumulate` in a `defer` block guarantees it will execute at the end
@@ -118,6 +118,25 @@ public class TimingDistributionMetricType {
             stopAndAccumulate(timerId)
         }
         return funcToMeasure()
+    }
+
+    /// Convenience method to simplify measuring a function or block of code
+    ///
+    /// If the measured function throws, the measurement is canceled and the exception rethrown.
+    ///
+    /// - parameters:
+    ///     * funcToMeasure: Accepts a function or closure to measure that can return a value
+    public func measure<U>(funcToMeasure: () throws -> U) throws -> U {
+        let timerId = start()
+
+        do {
+            let returnValue = try funcToMeasure()
+            stopAndAccumulate(timerId)
+            return returnValue
+        } catch {
+            cancel(timerId)
+            throw error
+        }
     }
 
     /// Tests whether a value is stored for the metric for testing purposes only. This function will
