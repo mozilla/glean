@@ -60,10 +60,10 @@ class HttpClientUploader(base_uploader.BaseUploader):
             )
             response = conn.getresponse()
         except http.client.HTTPException as e:
-            log.debug("http.client.HTTPException: {}".format(e))
+            log.error("http.client.HTTPException: {}".format(e))
             return False
         except socket.gaierror as e:
-            log.debug("socket.gaierror: {}".format(e))
+            log.error("socket.gaierror: {}".format(e))
             return False
 
         log.debug("Ping upload: {}".format(response.status))
