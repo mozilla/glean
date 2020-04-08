@@ -11,7 +11,7 @@ This ping is intended to provide metrics that are managed by the library itself,
 The `baseline` ping is automatically submitted with a `reason: foreground` when the application is moved to the [foreground](index.md#defining-background-state).  These baseline pings do not contain `duration`.
 
 The `baseline` ping is automatically submitted with a `reason: background` when the application is moved to the [background](index.md#defining-background-state).
-Occasionally, the `baseline` ping will fail to send when going to background.  In that case, it will be submitted at startup with a `reason: dirty_startup`, if the previous session was not cleanly closed. This only happens from the second start onward.
+Occasionally, the `baseline` ping may fail to send when going to background (e.g. the process is killed quickly).  In that case, it will be submitted at startup with a `reason: dirty_startup`, if the previous session was not cleanly closed. This only happens from the second start onward.
 
 See also the [ping schedules and timing overview](ping-schedules-and-timings.html).
 

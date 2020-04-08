@@ -4,7 +4,7 @@ Every Glean ping is in JSON format and contains one or more of the [common secti
 
 If data collection is enabled, the Glean SDK provides a set of built-in pings that are assembled out of the box without any developer intervention.  The following is a list of these built-in pings:
 
-- [`baseline` ping](baseline.md): A small ping sent every time the application goes to foreground and background.
+- [`baseline` ping](baseline.md): A small ping sent every time the application goes to foreground and background. Going to foreground also includes when the application starts.
 - [`metrics` ping](metrics.md): The default ping for metrics. Sent approximately daily.
 - [`events` ping](events.md): The default ping for events. Sent every time the application goes to background or a certain number of events is reached.
 - [`deletion-request` ping](deletion_request.md): Sent when the user disables telemetry in order to request a deletion of their data.
