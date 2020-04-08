@@ -16,14 +16,18 @@ import mozilla.telemetry.glean.rust.getRustString
 // Rust represents the upload task as an Enum
 // and to go through the FFI that gets transformed into a tagged union.
 // Each variant is represented as an 8-bit unsigned integer.
-const val WAIT = 0
-const val DONE = 2
-const val UPLOAD = 1
+//
+// This *MUST* have the same order as the variants in `glean-core/ffi/src/upload.rs`.
+enum class UploadTaskTag {
+    Upload,
+    Wait,
+    Done
+}
 
 @Structure.FieldOrder("tag", "uuid", "path", "body", "headers")
 internal class UploadBody(
     // NOTE: We need to provide defaults here, so that JNA can create this object.
-    @JvmField val tag: Byte? = null,
+    @JvmField val tag: Byte = UploadTaskTag.Done.ordinal.toByte(),
     @JvmField val uuid: Pointer? = null,
     @JvmField val path: Pointer? = null,
     @JvmField val body: Pointer? = null,
@@ -42,15 +46,15 @@ internal class UploadBody(
 @Structure.FieldOrder("tag", "upload")
 internal open class FfiPingUploadTask(
     // NOTE: We need to provide defaults here, so that JNA can create this object.
-    @JvmField var tag: Byte = DONE.toByte(),
+    @JvmField var tag: Byte = UploadTaskTag.Done.ordinal.toByte(),
     @JvmField var upload: UploadBody = UploadBody()
 ) : Union() {
     class ByValue : FfiPingUploadTask(), Structure.ByValue
 
     fun toPingUploadTask(): PingUploadTask {
         return when (this.tag.toInt()) {
-            WAIT -> PingUploadTask.Wait
-            UPLOAD -> {
+            UploadTaskTag.Wait.ordinal -> PingUploadTask.Wait
+            UploadTaskTag.Upload.ordinal -> {
                 this.readField("upload")
                 PingUploadTask.Upload(this.upload.toPingRequest())
             }

@@ -31,6 +31,8 @@ mod request;
 
 /// When asking for the next ping request to upload,
 /// the requester may receive one out of three possible tasks.
+///
+/// If new variants are added, this should be reflected in `glean-core/ffi/src/upload.rs` as well.
 #[derive(PartialEq, Debug)]
 pub enum PingUploadTask {
     /// A PingRequest popped from the front of the queue.

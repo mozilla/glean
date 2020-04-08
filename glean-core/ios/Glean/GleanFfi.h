@@ -71,10 +71,13 @@ typedef const char *const *RawStringArray;
 
 /**
  * A FFI-compatible representation for the PingUploadTask
+ *
+ * The order of variants should be the same as in `glean-core/src/upload/mod.rs`
+ * and `glean-core/android/src/main/java/mozilla/telemetry/glean/net/Upload.kt`.
  */
 enum FfiPingUploadTask_Tag {
-  Wait,
   Upload,
+  Wait,
   Done,
 };
 typedef uint8_t FfiPingUploadTask_Tag;
