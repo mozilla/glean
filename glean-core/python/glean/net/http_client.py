@@ -10,6 +10,7 @@ module.
 
 import http.client
 import logging
+import socket
 from typing import List, Tuple
 import urllib.parse
 
@@ -50,10 +51,20 @@ class HttpClientUploader(base_uploader.BaseUploader):
         else:
             raise ValueError("Unknown URL scheme {}".format(parsed_url.scheme))
 
-        conn.request(
-            "POST", parsed_url.path, body=data.encode("utf-8"), headers=dict(headers),
-        )
-        response = conn.getresponse()
+        try:
+            conn.request(
+                "POST",
+                parsed_url.path,
+                body=data.encode("utf-8"),
+                headers=dict(headers),
+            )
+            response = conn.getresponse()
+        except http.client.HTTPException as e:
+            log.debug("http.client.HTTPException: {}".format(e))
+            return False
+        except socket.gaierror as e:
+            log.debug("socket.gaierror: {}".format(e))
+            return False
 
         log.debug("Ping upload: {}".format(response.status))
 
