@@ -5,6 +5,7 @@
 package mozilla.telemetry.glean.net
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import mozilla.components.support.test.argumentCaptor
 import mozilla.telemetry.glean.config.Configuration
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -52,6 +53,42 @@ class HttpURLConnectionUploaderTest {
         verify<HttpURLConnection>(connection).readTimeout = HttpURLConnectionUploader.DEFAULT_READ_TIMEOUT
         verify<HttpURLConnection>(connection).connectTimeout = HttpURLConnectionUploader.DEFAULT_CONNECTION_TIMEOUT
         verify<HttpURLConnection>(connection, times(1)).disconnect()
+    }
+
+    @Test
+    fun `Glean headers are correctly dispatched`() {
+        val uploader = spy<HttpURLConnectionUploader>(HttpURLConnectionUploader())
+        val connection = mock<HttpURLConnection>(HttpURLConnection::class.java)
+        doReturn(connection).`when`(uploader).openConnection(anyString())
+        doReturn(200).`when`(uploader).doUpload(connection, testPing)
+
+        val expectedHeaders = mapOf(
+            "Content-Type" to "application/json; charset=utf-8",
+            "Test-header" to "SomeValue",
+            "OtherHeader" to "Glean/Test 25.0.2"
+        )
+        uploader.upload(testPath, testPing, expectedHeaders.toList())
+
+        val headerNameCaptor = argumentCaptor<String>()
+        val headerValueCaptor = argumentCaptor<String>()
+        verify(connection, times(expectedHeaders.size)).setRequestProperty(
+            headerNameCaptor.capture(),
+            headerValueCaptor.capture()
+        )
+
+        val capturedHeader = headerNameCaptor.allValues.zip(headerValueCaptor.allValues)
+        expectedHeaders.toList().forEachIndexed { index: Int, header: Pair<String, String> ->
+            assertEquals(
+                "Header names must be correctly reported",
+                capturedHeader[index].first,
+                header.first
+            )
+            assertEquals(
+                "Header values must be correctly reported",
+                capturedHeader[index].second,
+                header.second
+            )
+        }
     }
 
     @Test
