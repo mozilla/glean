@@ -114,4 +114,4 @@ def test_ping_upload_worker_single_process(safe_httpserver):
 
 def test_unknown_url_no_exception():
     # Shouldn't leak any socket or HTTPExceptions
-    assert not HttpClientUploader.upload("http://nowhere.mozilla.org", "{}", [])
+    assert not HttpClientUploader.upload("http://nowhere.example.com", "{}", [])
