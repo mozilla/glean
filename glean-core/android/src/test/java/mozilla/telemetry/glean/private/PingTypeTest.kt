@@ -17,10 +17,10 @@ import mozilla.telemetry.glean.testing.GleanTestRule
 import mozilla.telemetry.glean.triggerWorkManager
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
-import org.junit.Assert.assertFalse
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -201,17 +201,17 @@ class PingTypeTest {
         val server = getMockWebServer()
 
         val counter = CounterMetricType(
-                disabled = false,
-                category = "test",
-                lifetime = Lifetime.Ping,
-                name = "counter",
-                sendInPings = listOf("unknown")
+            disabled = false,
+            category = "test",
+            lifetime = Lifetime.Ping,
+            name = "counter",
+            sendInPings = listOf("unknown")
         )
 
         val context = getContextWithMockedInfo()
         resetGlean(context, Glean.configuration.copy(
-                serverEndpoint = "http://" + server.hostName + ":" + server.port,
-                logPings = true
+            serverEndpoint = "http://" + server.hostName + ":" + server.port,
+            logPings = true
         ))
 
         counter.add()
@@ -220,7 +220,7 @@ class PingTypeTest {
         Glean.submitPingByName("unknown")
 
         assertFalse("We shouldn't have any pings scheduled",
-                getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued
+            getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued
         )
     }
 
