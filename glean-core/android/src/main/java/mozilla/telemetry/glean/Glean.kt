@@ -180,7 +180,7 @@ open class GleanInternalAPI internal constructor () {
             val pingSubmitted = LibGleanFFI.INSTANCE.glean_on_ready_to_submit_pings().toBoolean()
 
             // We need to enqueue the PingUploadWorker in these cases:
-            // 1. Glean is ready to submit pings, to upload those pings;
+            // 1. Pings were submitted through Glean and it is ready to upload those pings;
             // 2. Upload is disabled, to upload a possible deletion-request ping.
             if (pingSubmitted || !uploadEnabled) {
                 PingUploadWorker.enqueueWorker(applicationContext)
