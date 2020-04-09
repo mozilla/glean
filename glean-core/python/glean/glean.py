@@ -195,10 +195,13 @@ class Glean:
         cls._initialized = False
         if cls._destroy_data_dir and cls._data_dir.exists():
             # This needs to be run in the same one-at-a-time process as the
-            # PingUploadWorker to avoid a race condition.
+            # PingUploadWorker to avoid a race condition. This will block the
+            # main thread waiting for all pending uploads to complete, but this
+            # only happens during testing when the data directory is a
+            # temporary directory, so there is no concern about delaying
+            # application shutdown here.
             p = ProcessDispatcher.dispatch(_rmtree, (str(cls._data_dir),))
-            if not isinstance(p, bool):
-                p.join()
+            p.join()
 
     @classmethod
     def is_initialized(cls) -> bool:

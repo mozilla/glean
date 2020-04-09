@@ -61,11 +61,8 @@ class PingUploadWorker:
         assert Dispatcher._testing_mode is True
 
         p = cls._process()
-        if isinstance(p, bool):
-            return p
-        else:
-            p.join()
-            return p.exitcode == 0
+        p.join()
+        return p.exitcode == 0
 
 
 # Ping files are UUIDs.  This matches UUIDs for filtering purposes.
