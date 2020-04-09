@@ -114,10 +114,10 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
                     // so we return a known unrecoverable error status code
                     // which will ensure this gets treated as such.
                     val result = Glean.httpClient.doUpload(
-                            action.request.path,
-                            action.request.body,
-                            action.request.headers,
-                            Glean.configuration
+                        action.request.path,
+                        action.request.body,
+                        action.request.headers,
+                        Glean.configuration
                     )
 
                     // Translate the upload result into a status code the Rust side understands.
