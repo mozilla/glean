@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v27.1.0...master)
 
+* Python:
+  * BUGFIX: The ping uploader will no longer display a trace back when the upload fails due to a failed DNS lookup, network outage, or related issues that prevent communication with the telemetry endpoint.
+
 # v27.1.0 (2020-04-09)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v27.0.0...v27.1.0)
