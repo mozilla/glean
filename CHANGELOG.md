@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v27.0.0...master)
+[Full changelog](https://github.com/mozilla/glean/compare/v27.1.0...master)
+
+# v27.1.0 (2020-04-09)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v27.0.0...v27.1.0)
 
 * General:
   * BUGFIX: baseline pings sent at startup with the `dirty_startup` reason will now include application lifetime metrics ([#810](https://github.com/mozilla/glean/pull/810))
