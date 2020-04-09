@@ -27,6 +27,8 @@ import mozilla.telemetry.glean.triggerWorkManager
 import mozilla.telemetry.glean.getMockWebServer
 import mozilla.telemetry.glean.net.HeadersList
 import mozilla.telemetry.glean.net.PingUploader
+import mozilla.telemetry.glean.net.UploadResult
+import mozilla.telemetry.glean.net.HttpResponse
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Rule
 import org.robolectric.Shadows.shadowOf
@@ -39,13 +41,13 @@ private class TestPingTagClient(
     private val responseUrl: String = Configuration.DEFAULT_TELEMETRY_ENDPOINT,
     private val debugHeaderValue: String? = null
 ) : PingUploader {
-    override fun upload(url: String, data: String, headers: HeadersList): Boolean {
+    override fun upload(url: String, data: String, headers: HeadersList): UploadResult {
         assertTrue("URL must be redirected for tagged pings",
             url.startsWith(responseUrl))
         assertEquals("Debug headers must match what the ping tag was set to",
             debugHeaderValue, headers.find { it.first == "X-Debug-ID" }!!.second)
 
-        return true
+        return HttpResponse(200)
     }
 }
 

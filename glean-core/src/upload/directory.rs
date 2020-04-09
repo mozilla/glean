@@ -79,7 +79,7 @@ impl PingDirectoryManager {
         };
         match fs::remove_file(&path) {
             Err(e) => log::error!("Error deleting file {}. {}", path.display(), e),
-            _ => log::info!("Files was deleted {}", path.display()),
+            _ => log::info!("File was deleted {}", path.display()),
         };
     }
 

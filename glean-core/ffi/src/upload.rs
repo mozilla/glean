@@ -7,22 +7,24 @@ use crate::glean_str_free;
 use glean_core::upload::PingUploadTask;
 
 /// A FFI-compatible representation for the PingUploadTask
+///
+/// The order of variants should be the same as in `glean-core/src/upload/mod.rs`
+/// and `glean-core/android/src/main/java/mozilla/telemetry/glean/net/Upload.kt`.
 #[repr(u8)]
 pub enum FfiPingUploadTask {
-    Wait,
     Upload {
         uuid: *mut c_char,
         path: *mut c_char,
         body: *mut c_char,
         headers: *mut c_char,
     },
+    Wait,
     Done,
 }
 
 impl From<PingUploadTask> for FfiPingUploadTask {
     fn from(task: PingUploadTask) -> Self {
         match task {
-            PingUploadTask::Wait => FfiPingUploadTask::Wait,
             PingUploadTask::Upload(request) => {
                 // Safe unwraps:
                 // 1. CString::new(..) should not fail as we are the ones that created the strings being transformed;
@@ -40,6 +42,7 @@ impl From<PingUploadTask> for FfiPingUploadTask {
                     headers: headers.into_raw(),
                 }
             }
+            PingUploadTask::Wait => FfiPingUploadTask::Wait,
             PingUploadTask::Done => FfiPingUploadTask::Done,
         }
     }

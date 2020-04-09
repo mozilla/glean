@@ -32,7 +32,6 @@ import mozilla.telemetry.glean.net.BaseUploader
 import mozilla.telemetry.glean.private.PingTypeBase
 import mozilla.telemetry.glean.private.RecordedExperimentData
 import mozilla.telemetry.glean.scheduler.GleanLifecycleObserver
-import mozilla.telemetry.glean.scheduler.DeletionPingUploadWorker
 import mozilla.telemetry.glean.scheduler.PingUploadWorker
 import mozilla.telemetry.glean.scheduler.MetricsPingScheduler
 import mozilla.telemetry.glean.utils.ThreadUtils
@@ -179,7 +178,11 @@ open class GleanInternalAPI internal constructor () {
 
             // Deal with any pending events so we can start recording new ones
             val pingSubmitted = LibGleanFFI.INSTANCE.glean_on_ready_to_submit_pings().toBoolean()
-            if (pingSubmitted) {
+
+            // We need to enqueue the PingUploadWorker in these cases:
+            // 1. Pings were submitted through Glean and it is ready to upload those pings;
+            // 2. Upload is disabled, to upload a possible deletion-request ping.
+            if (pingSubmitted || !uploadEnabled) {
                 PingUploadWorker.enqueueWorker(applicationContext)
             }
 
@@ -215,10 +218,6 @@ open class GleanInternalAPI internal constructor () {
             // the @MainThread decorator and the `assertOnUiThread` call.
             MainScope().launch {
                 ProcessLifecycleOwner.get().lifecycle.addObserver(gleanLifecycleObserver)
-            }
-
-            if (!uploadEnabled) {
-                DeletionPingUploadWorker.enqueueWorker(applicationContext)
             }
         }
     }
@@ -262,29 +261,20 @@ open class GleanInternalAPI internal constructor () {
 
             @Suppress("EXPERIMENTAL_API_USAGE")
             Dispatchers.API.launch {
-                // glean_set_upload_enabled might delete all of the queued pings. We
-                // therefore need to obtain the lock from the PingUploader so that
-                // iterating over and deleting the pings doesn't happen at the same time.
-                synchronized(PingUploadWorker.pingQueueLock) {
-                    LibGleanFFI.INSTANCE.glean_set_upload_enabled(enabled.toByte())
+                LibGleanFFI.INSTANCE.glean_set_upload_enabled(enabled.toByte())
 
+                if (!enabled) {
                     // Cancel any pending workers here so that we don't accidentally upload or
                     // collect data after the upload has been disabled.
-                    if (!enabled) {
-                        metricsPingScheduler.cancel()
-                        PingUploadWorker.cancel(applicationContext)
-                    }
+                    metricsPingScheduler.cancel()
+                    // Enqueue the PingUploadWorker to immediately upload the deletion-request ping.
+                    PingUploadWorker.enqueueWorker(applicationContext)
                 }
 
                 if (!originalEnabled && enabled) {
                     // If uploading is being re-enabled, we have to restore the
                     // application-lifetime metrics.
                     initializeCoreMetrics((this@GleanInternalAPI).applicationContext)
-                }
-
-                if (originalEnabled && !enabled) {
-                    // If uploading is disabled, we need to send the deletion-request ping
-                    DeletionPingUploadWorker.enqueueWorker(applicationContext)
                 }
             }
         } else {
@@ -559,8 +549,8 @@ open class GleanInternalAPI internal constructor () {
         }
 
         val submittedPing = LibGleanFFI.INSTANCE.glean_submit_ping_by_name(
-            pingName,
-            reason
+                pingName,
+                reason
         ).toBoolean()
 
         if (submittedPing) {

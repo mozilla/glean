@@ -5,7 +5,6 @@
 package mozilla.telemetry.glean.scheduler
 
 import android.content.Context
-import android.util.Log
 import androidx.annotation.VisibleForTesting
 import androidx.work.Constraints
 import androidx.work.ExistingWorkPolicy
@@ -15,17 +14,13 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.utils.testFlushWorkManagerJob
-import java.io.BufferedReader
-import java.io.File
-import java.io.FileNotFoundException
-import java.io.FileReader
-import java.io.IOException
-
-// Since ping file names are UUIDs, this matches UUIDs for filtering purposes
-private const val FILE_PATTERN = "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
-private const val LOG_TAG = "glean/PingUploadWorker"
+import mozilla.telemetry.glean.net.PingUploadTask
+import mozilla.telemetry.glean.net.HttpResponse
+import mozilla.telemetry.glean.net.UnrecoverableFailure
+import mozilla.telemetry.glean.net.RecoverableFailure
 
 /**
  * Build the constraints around which the worker can be run, such as whether network
@@ -52,77 +47,6 @@ internal inline fun <reified W : Worker> buildWorkRequest(tag: String): OneTimeW
 }
 
 /**
- * This function encapsulates processing of a single ping file.
- *
- * @param file The [File] to process
- *
- */
-@Suppress("ReturnCount")
-private fun processFile(file: File): Boolean {
-    // This function is from PingsStorageEngine in glean-ac
-
-    var processed = false
-    BufferedReader(FileReader(file)).use {
-        try {
-            val path = it.readLine()
-            val serializedPing = it.readLine()
-
-            processed = serializedPing == null ||
-                Glean.httpClient.doUpload(path, serializedPing, Glean.configuration)
-        } catch (e: FileNotFoundException) {
-            // This shouldn't happen after we queried the directory.
-            Log.e(LOG_TAG, "Could not find ping file ${file.name}")
-            return false
-        } catch (e: IOException) {
-            // Something is not right.
-            Log.e(LOG_TAG, "IO Exception when reading file ${file.name}")
-            return false
-        }
-    }
-
-    return if (processed) {
-        val fileWasDeleted = file.delete()
-        Log.d(LOG_TAG, "${file.name} was deleted: $fileWasDeleted")
-        true
-    } else {
-        // The callback couldn't process this file.
-        false
-    }
-}
-
-/**
- * Function to deserialize and process all serialized ping files.  This function will ignore
- * files that don't match the UUID regex and just delete them to prevent files from polluting
- * the ping storage directory.
- *
- * @return Boolean representing the success of the upload task. This may be the value bubbled up
- *         from the callback, or if there was an error reading the files.
- */
-fun processDirectory(lock: Any, storageDirectory: File): Boolean {
-    var success = true
-
-    Log.d(LOG_TAG, "Processing persisted pings at ${storageDirectory.absolutePath}")
-
-    synchronized(lock) {
-        storageDirectory.listFiles()?.forEach { file ->
-            if (file.name.matches(Regex(FILE_PATTERN))) {
-                Log.d(LOG_TAG, "Processing ping: ${file.name}")
-                if (!processFile(file)) {
-                    Log.e(LOG_TAG, "Error processing ping file: ${file.name}")
-                    success = false
-                }
-            } else {
-                // Delete files that don't match the UUID FILE_PATTERN regex
-                Log.d(LOG_TAG, "Pattern mismatch. Deleting ${file.name}")
-                file.delete()
-            }
-        }
-    }
-
-    return success
-}
-
-/**
  * This class is the worker class used by [WorkManager] to handle uploading the ping to the server.
  * @suppress This is internal only, don't show it in the docs.
  */
@@ -131,13 +55,13 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
         internal const val PING_WORKER_TAG = "mozac_service_glean_ping_upload_worker"
 
         // NOTE: The `PINGS_DIR` must be kept in sync with the one in the Rust implementation.
+        @VisibleForTesting
         internal const val PINGS_DIR = "pending_pings"
-        // A lock to prevent simultaneous writes in the ping queue directory.
-        // In particular, there are issues if the pings are cleared (as part of
-        // disabling telemetry), while the ping uploader is trying to upload queued pings.
-        // Therefore, this lock is held both when uploading pings and when calling
-        // into the Rust code that might clear queued pings (set_upload_enabled).
-        internal val pingQueueLock = Any()
+
+        // For this error, the ping will be retried later
+        internal const val RECOVERABLE_ERROR_STATUS_CODE = 500
+        // For this error, the ping data will be deleted and no retry happens
+        internal const val UNRECOVERABLE_ERROR_STATUS_CODE = 400
 
         /**
          * Function to aid in properly enqueuing the worker in [WorkManager]
@@ -166,17 +90,6 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
         internal fun cancel(context: Context) {
             WorkManager.getInstance(context).cancelUniqueWork(PING_WORKER_TAG)
         }
-
-        /**
-         * Function to perform the actual ping upload task.
-         *
-         * @return true if process was successful
-         */
-        internal fun uploadPings(): Boolean {
-            val storageDirectory = File(Glean.getDataDir(), PINGS_DIR)
-
-            return processDirectory(pingQueueLock, storageDirectory)
-        }
     }
 
     /**
@@ -192,10 +105,34 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
      * @return The [androidx.work.ListenableWorker.Result] of the computation
      */
     override fun doWork(): Result {
-        return when {
-            !Glean.getUploadEnabled() -> Result.failure()
-            !uploadPings() -> Result.retry()
-            else -> Result.success()
-        }
+        do {
+            val incomingTask = LibGleanFFI.INSTANCE.glean_get_upload_task()
+            when (val action = incomingTask.toPingUploadTask()) {
+                is PingUploadTask.Upload -> {
+                    // Upload the ping request.
+                    // If the status is `null` there was some kind of unrecoverable error
+                    // so we return a known unrecoverable error status code
+                    // which will ensure this gets treated as such.
+                    val result = Glean.httpClient.doUpload(
+                            action.request.path,
+                            action.request.body,
+                            action.request.headers,
+                            Glean.configuration
+                    )
+
+                    // Translate the upload result into a status code the Rust side understands.
+                    val status = when (result) {
+                        is RecoverableFailure -> RECOVERABLE_ERROR_STATUS_CODE
+                        is UnrecoverableFailure -> UNRECOVERABLE_ERROR_STATUS_CODE
+                        is HttpResponse -> result.statusCode
+                    }
+
+                    // Process the upload response
+                    LibGleanFFI.INSTANCE.glean_process_ping_upload_response(incomingTask, status)
+                }
+                PingUploadTask.Wait -> return Result.retry()
+                PingUploadTask.Done -> return Result.success()
+            }
+        } while (true)
     }
 }

@@ -6,14 +6,10 @@ package mozilla.telemetry.glean.net
 
 import android.util.Log
 import androidx.annotation.VisibleForTesting
-import mozilla.telemetry.glean.BuildConfig
 import mozilla.telemetry.glean.config.Configuration
 import org.json.JSONException
 import org.json.JSONObject
-import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Locale
-import java.util.TimeZone
 
 /**
  * The logic for uploading pings: this leaves the actual upload implementation
@@ -85,54 +81,17 @@ class BaseUploader(d: PingUploader) : PingUploader by d {
     internal fun getCalendarInstance(): Calendar { return Calendar.getInstance() }
 
     /**
-     * Generate a date string to be used in the Date header.
-     */
-    private fun createDateHeaderValue(): String {
-        val calendar = getCalendarInstance()
-        val dateFormat = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US)
-        dateFormat.timeZone = TimeZone.getTimeZone("GMT")
-        return dateFormat.format(calendar.time)
-    }
-
-    /**
-     * Generate a list of headers to send with the request.
-     *
-     * @param config the Glean configuration object
-     * @return a [HeadersList] containing String to String [Pair] with the first
-     *         entry being the header name and the second its value.
-     */
-    private fun getHeadersToSend(config: Configuration): HeadersList {
-        val headers = mutableListOf(
-            Pair("Content-Type", "application/json; charset=utf-8"),
-            Pair("User-Agent", config.userAgent),
-            Pair("Date", createDateHeaderValue()),
-            // Add headers for supporting the legacy pipeline.
-            Pair("X-Client-Type", "Glean"),
-            Pair("X-Client-Version", BuildConfig.LIBRARY_VERSION)
-        )
-
-        // If there is a pingTag set, then this header needs to be added in order to flag pings
-        // for "debug view" use.
-        config.pingTag?.let {
-            headers.add(Pair("X-Debug-ID", it))
-        }
-
-        return headers
-    }
-
-    /**
      * This function triggers the actual upload: logs the ping and calls the implementation
      * specific upload function.
      *
      * @param path the URL path to append to the server address
      * @param data the serialized text data to send
+     * @param headers the headers list for this request
      * @param config the Glean configuration object
      *
-     * @return true if the ping was correctly dealt with (sent successfully
-     *         or faced an unrecoverable error), false if there was a recoverable
-     *         error callers can deal with.
+     * @return return the status code of the upload response or null in case unable to upload.
      */
-    internal fun doUpload(path: String, data: String, config: Configuration): Boolean {
+    internal fun doUpload(path: String, data: String, headers: HeadersList, config: Configuration): UploadResult {
         if (config.logPings) {
             logPing(path, data)
         }
@@ -140,7 +99,7 @@ class BaseUploader(d: PingUploader) : PingUploader by d {
         return upload(
             url = config.serverEndpoint + path,
             data = data,
-            headers = getHeadersToSend(config)
+            headers = headers
         )
     }
 }

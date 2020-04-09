@@ -7,10 +7,10 @@ package mozilla.telemetry.glean.private
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import mozilla.telemetry.glean.Glean
+import mozilla.telemetry.glean.getWorkerStatus
 import mozilla.telemetry.glean.checkPingSchema
 import mozilla.telemetry.glean.getContextWithMockedInfo
 import mozilla.telemetry.glean.getMockWebServer
-import mozilla.telemetry.glean.getWorkerStatus
 import mozilla.telemetry.glean.resetGlean
 import mozilla.telemetry.glean.scheduler.PingUploadWorker
 import mozilla.telemetry.glean.testing.GleanTestRule
