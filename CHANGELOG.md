@@ -4,6 +4,8 @@
 
 * General:
   * BUGFIX: baseline pings sent at startup with the `dirty_startup` reason will now include application lifetime metrics.
+* Python
+  * BUGFIX: Fixed a race condition between uploading pings and deleting the temporary directory on shutdown of the process.
 
 # v27.0.0 (2020-04-08)
 
