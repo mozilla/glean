@@ -91,7 +91,7 @@ class BaseUploader(d: PingUploader) : PingUploader by d {
      *
      * @return return the status code of the upload response or null in case unable to upload.
      */
-    internal fun doUpload(path: String, data: String, headers: HeadersList, config: Configuration): Int? {
+    internal fun doUpload(path: String, data: String, headers: HeadersList, config: Configuration): UploadResult {
         if (config.logPings) {
             logPing(path, data)
         }

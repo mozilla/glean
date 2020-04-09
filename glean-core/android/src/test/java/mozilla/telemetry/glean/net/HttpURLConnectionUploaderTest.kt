@@ -10,7 +10,6 @@ import mozilla.telemetry.glean.config.Configuration
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -101,7 +100,7 @@ class HttpURLConnectionUploaderTest {
         val client = spy<HttpURLConnectionUploader>(HttpURLConnectionUploader())
         doReturn(connection).`when`(client).openConnection(anyString())
 
-        assertEquals(client.upload(testPath, testPing, emptyList())!!, 200)
+        assertEquals(client.upload(testPath, testPing, emptyList()), HttpResponse(200))
         verify<HttpURLConnection>(connection, times(1)).disconnect()
     }
 
@@ -189,9 +188,9 @@ class HttpURLConnectionUploaderTest {
     }
 
     @Test
-    fun `upload() returns null on malformed URLs`() {
+    fun `upload() discards pings on malformed URLs`() {
         val client = spy<HttpURLConnectionUploader>(HttpURLConnectionUploader())
         doThrow(MalformedURLException()).`when`(client).openConnection(anyString())
-        assertNull(client.upload("path", "ping", emptyList()))
+        assertEquals(UnrecoverableFailure, client.upload("path", "ping", emptyList()))
     }
 }

@@ -18,6 +18,9 @@ import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.utils.testFlushWorkManagerJob
 import mozilla.telemetry.glean.net.PingUploadTask
+import mozilla.telemetry.glean.net.HttpResponse
+import mozilla.telemetry.glean.net.UnrecoverableFailure
+import mozilla.telemetry.glean.net.RecoverableFailure
 
 /**
  * Build the constraints around which the worker can be run, such as whether network
@@ -55,6 +58,9 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
         @VisibleForTesting
         internal const val PINGS_DIR = "pending_pings"
 
+        // For this error, the ping will be retried later
+        internal const val RECOVERABLE_ERROR_STATUS_CODE = 500
+        // For this error, the ping data will be deleted and no retry happens
         internal const val UNRECOVERABLE_ERROR_STATUS_CODE = 400
 
         /**
@@ -107,12 +113,19 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
                     // If the status is `null` there was some kind of unrecoverable error
                     // so we return a known unrecoverable error status code
                     // which will ensure this gets treated as such.
-                    val status = Glean.httpClient.doUpload(
+                    val result = Glean.httpClient.doUpload(
                             action.request.path,
                             action.request.body,
                             action.request.headers,
                             Glean.configuration
-                    ) ?: UNRECOVERABLE_ERROR_STATUS_CODE
+                    )
+
+                    // Translate the upload result into a status code the Rust side understands.
+                    val status = when (result) {
+                        is RecoverableFailure -> RECOVERABLE_ERROR_STATUS_CODE
+                        is UnrecoverableFailure -> UNRECOVERABLE_ERROR_STATUS_CODE
+                        is HttpResponse -> result.statusCode
+                    }
 
                     // Process the upload response
                     LibGleanFFI.INSTANCE.glean_process_ping_upload_response(incomingTask, status)

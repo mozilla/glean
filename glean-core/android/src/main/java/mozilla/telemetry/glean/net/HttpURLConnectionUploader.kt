@@ -42,7 +42,7 @@ class HttpURLConnectionUploader : PingUploader {
      *         or null in case unable to upload.
      */
     @Suppress("ReturnCount", "MagicNumber")
-    override fun upload(url: String, data: String, headers: HeadersList): Int? {
+    override fun upload(url: String, data: String, headers: HeadersList): UploadResult {
         var connection: HttpURLConnection? = null
         try {
             connection = openConnection(url)
@@ -61,16 +61,17 @@ class HttpURLConnectionUploader : PingUploader {
             removeCookies(url)
 
             // Finally upload.
-            return doUpload(connection, data)
+            var statusCode = doUpload(connection, data)
+            return HttpResponse(statusCode)
         } catch (e: MalformedURLException) {
             // There's nothing we can do to recover from this here. So let's just log an error and
             // notify the service that this job has been completed - even though we didn't upload
             // anything to the server.
             Log.e(LOG_TAG, "Could not upload telemetry due to malformed URL", e)
-            return null
+            return UnrecoverableFailure
         } catch (e: IOException) {
             Log.w(LOG_TAG, "IOException while uploading ping", e)
-            return null
+            return RecoverableFailure
         } finally {
             connection?.disconnect()
         }
