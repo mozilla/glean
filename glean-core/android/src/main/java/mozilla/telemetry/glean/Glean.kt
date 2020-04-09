@@ -549,8 +549,8 @@ open class GleanInternalAPI internal constructor () {
         }
 
         val submittedPing = LibGleanFFI.INSTANCE.glean_submit_ping_by_name(
-                pingName,
-                reason
+            pingName,
+            reason
         ).toBoolean()
 
         if (submittedPing) {
