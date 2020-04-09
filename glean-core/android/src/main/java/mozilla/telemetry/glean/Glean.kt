@@ -189,6 +189,16 @@ open class GleanInternalAPI internal constructor () {
             metricsPingScheduler = MetricsPingScheduler(applicationContext)
             metricsPingScheduler.schedule()
 
+            // Check if the "dirty flag" is set. That means the product was probably
+            // force-closed. If that's the case, submit a 'baseline' ping with the
+            // reason "dirty_startup". We only do that from the second run.
+            if (!isFirstRun && LibGleanFFI.INSTANCE.glean_is_dirty_flag_set().toBoolean()) {
+                submitPingByNameSync("baseline", "dirty_startup")
+                // Note: while in theory we should set the "dirty flag" to true
+                // here, in practice it's not needed: if it hits this branch, it
+                // means the value was `true` and nothing needs to be done.
+            }
+
             // From the second time we run, after all startup pings are generated,
             // make sure to clear `lifetime: application` metrics and set them again.
             // Any new value will be sent in newly generated pings after startup.
@@ -199,16 +209,6 @@ open class GleanInternalAPI internal constructor () {
 
             // Signal Dispatcher that init is complete
             Dispatchers.API.flushQueuedInitialTasks()
-
-            // Check if the "dirty flag" is set. That means the product was probably
-            // force-closed. If that's the case, submit a 'baseline' ping with the
-            // reason "dirty_startup". We only do that from the second run.
-            if (!isFirstRun && LibGleanFFI.INSTANCE.glean_is_dirty_flag_set().toBoolean()) {
-                submitPingByNameSync("baseline", "dirty_startup")
-                // Note: while in theory we should set the "dirty flag" to true
-                // here, in practice it's not needed: if it hits this branch, it
-                // means the value was `true` and nothing needs to be done.
-            }
 
             // At this point, all metrics and events can be recorded.
             // This should only be called from the main thread. This is enforced by

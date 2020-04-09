@@ -81,3 +81,31 @@ def test_unknown_scheme():
         fd.write(b"{}\n")
 
     assert False is PingUploadWorker._test_process_sync()
+
+
+def test_ping_upload_worker_single_process(safe_httpserver):
+    safe_httpserver.serve_content(b"", code=200)
+    Glean._configuration.server_endpoint = safe_httpserver.url
+
+    pings_dir = PingUploadWorker.storage_directory()
+    pings_dir.mkdir()
+
+    for i in range(100):
+        with (pings_dir / str(uuid.uuid4())).open("wb") as fd:
+            fd.write(b"/data/path/\n")
+            fd.write(b"{}\n")
+
+    # Fire off two PingUploadWorker processing tasks at the same time. If
+    # working correctly, p1 should finish entirely before p2 starts.
+    # If these actually run in parallel, one or the other will try to send
+    # deleted queued ping files and fail.
+    p1 = PingUploadWorker._process()
+    p2 = PingUploadWorker._process()
+
+    p1.join()
+    assert p1.exitcode == 0
+
+    p2.join()
+    assert p2.exitcode == 0
+
+    assert 100 == len(safe_httpserver.requests)

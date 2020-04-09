@@ -181,7 +181,7 @@ public class HttpPingUploader {
     ///
     /// - returns: File `URL` representing the ping directory
     func getOrCreatePingDirectory() -> URL {
-        let dataPath = getDocumentsDirectory().appendingPathComponent(self.pingDirectory)
+        let dataPath = getGleanDirectory().appendingPathComponent(self.pingDirectory)
 
         if !FileManager.default.fileExists(atPath: dataPath.relativePath) {
             do {

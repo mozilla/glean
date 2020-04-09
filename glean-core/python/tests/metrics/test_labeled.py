@@ -215,7 +215,7 @@ def test_other_label_without_predefined_labels_before_glean_init():
         send_in_pings=["metrics"],
     )
 
-    Glean.reset()
+    Glean._reset()
     Dispatcher.set_task_queueing(True)
 
     for i in range(21):

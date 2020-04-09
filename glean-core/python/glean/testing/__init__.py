@@ -43,7 +43,7 @@ def reset_glean(
         Glean._destroy_data_dir = False
         data_dir = Glean._data_dir
 
-    Glean.reset()
+    Glean._reset()
     Glean.initialize(
         application_id=application_id,
         application_version=application_version,

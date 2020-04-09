@@ -22,6 +22,7 @@ from ._dispatcher import Dispatcher
 from . import _ffi
 from .net import PingUploadWorker
 from .net import DeletionPingUploadWorker
+from ._process_dispatcher import ProcessDispatcher
 from . import _util
 
 
@@ -32,6 +33,15 @@ if TYPE_CHECKING:
 
 
 log = logging.getLogger(__name__)
+
+
+def _rmtree(path) -> bool:
+    """
+    A small wrapper around shutil.rmtree to make it runnable on the
+    ProcessDispatcher.
+    """
+    shutil.rmtree(path)
+    return True
 
 
 class Glean:
@@ -169,17 +179,29 @@ class Glean:
         return cls._configuration
 
     @classmethod
-    def reset(cls):
+    def _reset(cls):
         """
         Resets the Glean singleton.
         """
         # TODO: 1594184 Send the metrics ping
+
+        # WARNING: Do not run any tasks on the Dispatcher from here since this
+        # is called atexit, which also waits for the Dispatcher queue to
+        # complete.
+
         Dispatcher.reset()
         if cls._initialized:
             _ffi.lib.glean_destroy_glean()
         cls._initialized = False
         if cls._destroy_data_dir and cls._data_dir.exists():
-            shutil.rmtree(str(cls._data_dir))
+            # This needs to be run in the same one-at-a-time process as the
+            # PingUploadWorker to avoid a race condition. This will block the
+            # main thread waiting for all pending uploads to complete, but this
+            # only happens during testing when the data directory is a
+            # temporary directory, so there is no concern about delaying
+            # application shutdown here.
+            p = ProcessDispatcher.dispatch(_rmtree, (str(cls._data_dir),))
+            p.join()
 
     @classmethod
     def is_initialized(cls) -> bool:
@@ -436,4 +458,4 @@ class Glean:
 __all__ = ["Glean"]
 
 
-atexit.register(Glean.reset)
+atexit.register(Glean._reset)
