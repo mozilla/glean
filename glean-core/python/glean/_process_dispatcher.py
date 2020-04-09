@@ -10,52 +10,46 @@ another worker process until the previous worker process has completed.
 This is used only by the PingUploadWorker (and the test-only feature to delete
 temporary data directories which has a potential race condition with the
 PingUploadWorker).
+
+This uses the lower level `subprocess` library rather than `multiprocessing` to
+avoid the unnecessary complexity and not place burdens on Glean's users to
+architect their application startup to be `multiprocessing` compatible on
+Windows.
 """
 
+import base64
+import pickle
+import subprocess
 import sys
-from typing import Optional, TYPE_CHECKING, Union
+from typing import Optional, Union
 
 
-if TYPE_CHECKING:
-    import multiprocessing  # noqa
-
-
-def _work_wrapper(func, args):
-    """
-    A wrapper to call a function in another process and convert its boolean
-    success value into a process exitcode.
-    """
-    success = func(*args)
-
-    if success:
-        sys.exit(0)
-    else:
-        sys.exit(1)
+from .subprocess import _process_dispatcher_helper
 
 
 class _SyncWorkWrapper:
     """
     A wrapper to synchronously call a function in the current process, but make
-    it have the same (limited) interface as if it were a
-    multiprocessing.Process:
+    it have the same (limited) interface as if it were a `subprocess.Popen`
+    object:
 
         >>> p = ProcessDispatcher.dispatch(myfunc, ())
-        >>> p.join()
-        >>> p.exitcode
+        >>> p.wait()
+        >>> p.returncode
         0
     """
 
     def __init__(self, func, args):
         self._result = func(*args)
-        self._joined = False
+        self._waited = False
 
-    def join(self):
-        self._joined = True
+    def wait(self):
+        self._waited = True
 
     @property
-    def exitcode(self):
+    def returncode(self):
         if not self._joined:
-            raise RuntimeError("join() must be called before exitcode is available")
+            raise RuntimeError("wait() must be called before returncode is available")
         if self._result:
             return 0
         else:
@@ -75,25 +69,27 @@ class ProcessDispatcher:
 
     # Store the last run process object so we can `join` it when starting
     # another process.
-    _last_process = None  # type: Optional[multiprocessing.Process]
+    _last_process = None  # type: Optional[subprocess.Popen]
 
     @classmethod
-    def dispatch(cls, func, args) -> Union[_SyncWorkWrapper, "multiprocessing.Process"]:
+    def dispatch(cls, func, args) -> Union[_SyncWorkWrapper, subprocess.Popen]:
         from . import Glean
 
         if Glean._configuration._allow_multiprocessing:
-            # Only import the multiprocessing library if it's actually needed
-            import multiprocessing  # noqa
-
             # We only want one of these processes running at a time, so if
             # there's already one, join on it. Therefore, this should not be
             # run from the main user thread.
             if cls._last_process is not None:
-                cls._last_process.join()
+                cls._last_process.wait()
                 cls._last_process = None
 
-            p = multiprocessing.Process(target=_work_wrapper, args=(func, args))
-            p.start()
+            p = subprocess.Popen(
+                [
+                    sys.executable,
+                    _process_dispatcher_helper.__file__,
+                    base64.b64encode(pickle.dumps((func, args))).decode("ascii"),
+                ]
+            )
 
             cls._last_process = p
 

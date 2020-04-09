@@ -5,10 +5,10 @@
 
 import io
 import json
-import multiprocessing
 from pathlib import Path
 import re
 import shutil
+import subprocess
 import sys
 import time
 import uuid
@@ -25,6 +25,7 @@ from glean import _util
 from glean._dispatcher import Dispatcher
 from glean.metrics import CounterMetricType, Lifetime, PingType, StringMetricType
 from glean.net import PingUploadWorker
+from glean.testing import _RecordingUploader
 
 
 GLEAN_APP_ID = "glean-python-test"
@@ -283,16 +284,6 @@ def test_get_language_reports_the_modern_translation_for_some_languages():
     pass
 
 
-class RecordingUploader:
-    def __init__(self, file_path):
-        self.file_path = file_path
-
-    def do_upload(self, url_path, serialized_ping, configuration):
-        with self.file_path.open("w") as fd:
-            fd.write(str(url_path) + "\n")
-            fd.write(serialized_ping + "\n")
-
-
 def test_ping_collection_must_happen_after_currently_scheduled_metrics_recordings(
     tmpdir, ping_schema_url,
 ):
@@ -307,7 +298,7 @@ def test_ping_collection_must_happen_after_currently_scheduled_metrics_recording
     info_path = Path(str(tmpdir)) / "info.txt"
 
     real_uploader = Glean._configuration.ping_uploader
-    test_uploader = RecordingUploader(info_path)
+    test_uploader = _RecordingUploader(info_path)
     Glean._configuration.ping_uploader = test_uploader
 
     Glean._configuration.log_pings = True
@@ -442,8 +433,8 @@ def test_tempdir_is_cleared_multiprocess(safe_httpserver):
     p1 = PingUploadWorker._process()
     Glean._reset()
 
-    p1.join()
-    assert p1.exitcode == 0
+    p1.wait()
+    assert p1.returncode == 0
 
     assert 100 == len(safe_httpserver.requests)
 
@@ -590,7 +581,7 @@ def test_dont_allow_multiprocessing(monkeypatch, safe_httpserver):
     def broken_process(*args, **kwargs):
         assert False, "shouldn't be called"
 
-    monkeypatch.setattr(multiprocessing, "Process", broken_process)
+    monkeypatch.setattr(subprocess, "Popen", broken_process)
 
     custom_ping = PingType(
         name="store1", include_client_id=True, send_if_empty=True, reason_codes=[]

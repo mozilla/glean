@@ -60,9 +60,8 @@ class Configuration:
                 uploading pings for debug view.
             ping_uploader (glean.net.BaseUploader): Optional. The ping uploader
                 implementation. Defaults to `glean.net.HttpClientUploader`.
-            allow_multiprocessing (bool): When True (default), use Python
-                multiprocessing to offload some work (such as ping uploading) to a
-                child process.
+            allow_multiprocessing (bool): When True (default), use a subprocess
+                to offload some work (such as ping uploading).
         """
         self._server_endpoint = server_endpoint
         if user_agent is None:
