@@ -8,6 +8,7 @@ import uuid
 
 from glean import Glean
 from glean.net import PingUploadWorker
+from glean.net.http_client import HttpClientUploader
 
 
 def test_invalid_filename():
@@ -109,3 +110,8 @@ def test_ping_upload_worker_single_process(safe_httpserver):
     assert p2.exitcode == 0
 
     assert 100 == len(safe_httpserver.requests)
+
+
+def test_unknown_url_no_exception():
+    # Shouldn't leak any socket or HTTPExceptions
+    assert not HttpClientUploader.upload("http://nowhere.example.com", "{}", [])
