@@ -236,7 +236,10 @@ class GleanTest {
                     assertEquals(1, baselineStringMetrics.length())
                     assertNotNull(baselineStringMetrics.get("glean.baseline.locale"))
 
-                    // There are three baseline pings -- the first has no duration, the second does
+                    // There are three baseline pings:
+                    //   - seq: 0, reason: foreground, duration: null
+                    //   - seq: 1, reason: background, duration: non-null
+                    //   - seq: 2, reason: foreground, duration: null
                     if (seq == 0 || seq == 2) {
                         assertFalse(baselineMetricsObject.has("timespan"))
                         assertEquals("foreground", json.getJSONObject("ping_info").getString("reason"))

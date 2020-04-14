@@ -113,12 +113,11 @@ These docs refer to application 'foreground' and 'background' state in several p
 
 #### Foreground
 
-For Android, this specifically means the activity becomes visible to the user, it has entered the Started state, and the system invokes the [`onStart()`](https://developer.android.com/reference/android/app/Activity.html#onStart()) callback.
+For Android, this specifically means the activity becomes visible to the user, it has entered the `Started` state, and the system invokes the [`onStart()`](https://developer.android.com/reference/android/app/Activity.html#onStart()) callback.
 
 ### Background
 
-This specifically means when the activity is no longer visible to the user, it has entered the
-Stopped state, and the system invokes the [`onStop()`](https://developer.android.com/reference/android/app/Activity.html#onStop()) callback.
+This specifically means when the activity is no longer visible to the user, it has entered the `Stopped` state, and the system invokes the [`onStop()`](https://developer.android.com/reference/android/app/Activity.html#onStop()) callback.
 
 This may occur, if the user uses `Overview` button to change to another app, the user presses the `Back` button and
 navigates to a previous application or the home screen, or if the user presses the `Home` button to return to the
