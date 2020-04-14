@@ -18,6 +18,7 @@ Windows.
 """
 
 import base64
+import logging
 import pickle
 import subprocess
 import sys
@@ -25,6 +26,9 @@ from typing import Optional, Union
 
 
 from .subprocess import _process_dispatcher_helper
+
+
+log = logging.getLogger(__name__)
 
 
 class _SyncWorkWrapper:
@@ -37,6 +41,8 @@ class _SyncWorkWrapper:
         >>> p.wait()
         >>> p.returncode
         0
+
+    This is used only when `Configuration.allow_multiprocessing` is `False`.
     """
 
     def __init__(self, func, args):
@@ -48,7 +54,7 @@ class _SyncWorkWrapper:
 
     @property
     def returncode(self):
-        if not self._joined:
+        if not self._waited:
             raise RuntimeError("wait() must be called before returncode is available")
         if self._result:
             return 0
@@ -83,12 +89,23 @@ class ProcessDispatcher:
                 cls._last_process.wait()
                 cls._last_process = None
 
+            # This sends the data over as a commandline argument, which has a
+            # maximum length of:
+            #   - 8191 characters on Windows
+            #     (see: https://support.microsoft.com/en-us/help/830473/command-prompt-cmd-exe-command-line-string-limitation)
+            #   - As little as 4096 bytes on POSIX, though in practice much larger
+            #     (see _POSIX_ARG_MAX_: https://www.gnu.org/software/libc/manual/html_node/Minimums.html)
+            # In practice, this is ~700 bytes, and the data is an implementation detail
+            # that Glean controls. This approach may need to change to pass over a pipe
+            # if it becomes too large.
+
+            payload = base64.b64encode(pickle.dumps((func, args))).decode("ascii")
+
+            if len(payload) > 4096:
+                log.warning("data payload to subprocess is greater than 4096 bytes")
+
             p = subprocess.Popen(
-                [
-                    sys.executable,
-                    _process_dispatcher_helper.__file__,
-                    base64.b64encode(pickle.dumps((func, args))).decode("ascii"),
-                ]
+                [sys.executable, _process_dispatcher_helper.__file__, payload]
             )
 
             cls._last_process = p

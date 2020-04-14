@@ -589,4 +589,8 @@ def test_dont_allow_multiprocessing(monkeypatch, safe_httpserver):
 
     custom_ping.submit()
 
+    process = PingUploadWorker._process()
+    process.wait()
+    assert process.returncode == 0
+
     assert 1 == len(safe_httpserver.requests)
