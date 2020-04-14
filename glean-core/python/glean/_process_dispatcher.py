@@ -92,9 +92,9 @@ class ProcessDispatcher:
             # This sends the data over as a commandline argument, which has a
             # maximum length of:
             #   - 8191 characters on Windows
-            #     (see: https://support.microsoft.com/en-us/help/830473/command-prompt-cmd-exe-command-line-string-limitation)
+            #     (see: https://support.microsoft.com/en-us/help/830473/command-prompt-cmd-exe-command-line-string-limitation)  # noqa
             #   - As little as 4096 bytes on POSIX, though in practice much larger
-            #     (see _POSIX_ARG_MAX_: https://www.gnu.org/software/libc/manual/html_node/Minimums.html)
+            #     (see _POSIX_ARG_MAX_: https://www.gnu.org/software/libc/manual/html_node/Minimums.html)  # noqa
             # In practice, this is ~700 bytes, and the data is an implementation detail
             # that Glean controls. This approach may need to change to pass over a pipe
             # if it becomes too large.
