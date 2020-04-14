@@ -184,7 +184,8 @@ class GleanTest {
     }
 
     @Test
-    fun `test sending of background pings`() {
+    @Suppress("ComplexMethod")
+    fun `test sending of foreground and background pings`() {
         val server = getMockWebServer()
 
         val click = EventMetricType<NoExtraKeys>(
@@ -215,31 +216,40 @@ class GleanTest {
             // Simulate going to background.
             lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
 
+            // Simulate going to foreground.
+            lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
+
             // Trigger worker task to upload the pings in the background
             triggerWorkManager(context)
 
-            val requests = mutableMapOf<String, String>()
-            for (i in 0..1) {
+            for (i in 0..3) {
                 val request = server.takeRequest(20L, TimeUnit.SECONDS)
                 val docType = request.path.split("/")[3]
-                requests[docType] = request.body.readUtf8()
+                val json = JSONObject(request.body.readUtf8())
+                checkPingSchema(json)
+                if (docType == "events") {
+                    assertEquals(1, json.getJSONArray("events").length())
+                } else if (docType == "baseline") {
+                    val seq = json.getJSONObject("ping_info").getInt("seq")
+                    val baselineMetricsObject = json.getJSONObject("metrics")
+                    val baselineStringMetrics = baselineMetricsObject.getJSONObject("string")
+                    assertEquals(1, baselineStringMetrics.length())
+                    assertNotNull(baselineStringMetrics.get("glean.baseline.locale"))
+
+                    // There are three baseline pings -- the first has no duration, the second does
+                    if (seq == 0 || seq == 2) {
+                        assertFalse(baselineMetricsObject.has("timespan"))
+                        assertEquals("foreground", json.getJSONObject("ping_info").getString("reason"))
+                    } else if (seq == 1) {
+                        assertEquals("background", json.getJSONObject("ping_info").getString("reason"))
+                        val baselineTimespanMetrics = baselineMetricsObject.getJSONObject("timespan")
+                        assertEquals(1, baselineTimespanMetrics.length())
+                        assertNotNull(baselineTimespanMetrics.get("glean.baseline.duration"))
+                    }
+                } else {
+                    assertTrue("Unknown docType $docType", false)
+                }
             }
-
-            val eventsJson = JSONObject(requests["events"]!!)
-            checkPingSchema(eventsJson)
-            assertEquals(1, eventsJson.getJSONArray("events").length())
-
-            val baselineJson = JSONObject(requests["baseline"]!!)
-            checkPingSchema(baselineJson)
-
-            val baselineMetricsObject = baselineJson.getJSONObject("metrics")
-            val baselineStringMetrics = baselineMetricsObject.getJSONObject("string")
-            assertEquals(1, baselineStringMetrics.length())
-            assertNotNull(baselineStringMetrics.get("glean.baseline.locale"))
-
-            val baselineTimespanMetrics = baselineMetricsObject.getJSONObject("timespan")
-            assertEquals(1, baselineTimespanMetrics.length())
-            assertNotNull(baselineTimespanMetrics.get("glean.baseline.duration"))
         } finally {
             server.shutdown()
             lifecycleRegistry.removeObserver(gleanLifecycleObserver)
