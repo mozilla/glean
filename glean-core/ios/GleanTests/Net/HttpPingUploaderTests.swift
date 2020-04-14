@@ -81,76 +81,27 @@ class HttpPingUploaderTests: XCTestCase {
         return pingDir
     }
 
-    func test2XX() {
-        var testValue = false
+    func testHTTPStatusCode() {
+        var testValue: UploadResult?
         setupHttpResponseStub(statusCode: 200)
 
         expectation = expectation(description: "Completed upload")
 
         let httpPingUploader = HttpPingUploader(configuration: testConfig)
-        httpPingUploader.upload(path: testPath, data: testPing, headers: [:]) { success, _ in
-            testValue = success
+        httpPingUploader.upload(path: testPath, data: testPing, headers: [:]) { result in
+            testValue = result
             self.expectation?.fulfill()
         }
         waitForExpectations(timeout: 5.0) { error in
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
         }
 
-        XCTAssertTrue(testValue, "`upload()` returns success")
-    }
-
-    func test3XX() {
-        var testValue = true
-        setupHttpResponseStub(statusCode: 300)
-
-        expectation = expectation(description: "Completed upload")
-
-        let httpPingUploader = HttpPingUploader(configuration: testConfig)
-        httpPingUploader.upload(path: testPath, data: testPing, headers: [:]) { success, _ in
-            testValue = success
-            self.expectation?.fulfill()
+        // `UploadResult` is not `Equatable`, so instead of implementing that we just unpack it
+        if case let .httpResponse(statusCode) = testValue {
+            XCTAssertEqual(200, statusCode, "`upload()` returns the expected HTTP status code")
+        } else {
+            XCTAssertTrue(false, "`upload()` returns the expected HTTP status code")
         }
-        waitForExpectations(timeout: 5.0) { error in
-            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
-        }
-
-        XCTAssertFalse(testValue, "`upload()` returns failure")
-    }
-
-    func test4XX() {
-        var testValue = false
-        setupHttpResponseStub(statusCode: 400)
-
-        expectation = expectation(description: "Completed upload")
-
-        let httpPingUploader = HttpPingUploader(configuration: testConfig)
-        httpPingUploader.upload(path: testPath, data: testPing, headers: [:]) { success, _ in
-            testValue = success
-            self.expectation?.fulfill()
-        }
-        waitForExpectations(timeout: 5.0) { error in
-            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
-        }
-
-        XCTAssertTrue(testValue, "`upload()` returns success")
-    }
-
-    func test5XX() {
-        var testValue = true
-        setupHttpResponseStub(statusCode: 500)
-
-        expectation = expectation(description: "Completed upload")
-
-        let httpPingUploader = HttpPingUploader(configuration: testConfig)
-        httpPingUploader.upload(path: testPath, data: testPing, headers: [:]) { success, _ in
-            testValue = success
-            self.expectation?.fulfill()
-        }
-        waitForExpectations(timeout: 5.0) { error in
-            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
-        }
-
-        XCTAssertFalse(testValue, "`upload()` returns failure")
     }
 
     func testRequestParameters() {

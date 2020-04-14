@@ -13,6 +13,11 @@ public class HttpPingUploader {
         // Since ping file names are UUIDs, this matches UUIDs for filtering purposes
         static let logTag = "glean/HttpPingUploader"
         static let connectionTimeout = 10000
+
+        // For this error, the ping will be retried later
+        static let recoverableErrorStatusCode: UInt16 = 500
+        // For this error, the ping data will be deleted and no retry happens
+        static let unrecoverableErrorStatusCode: UInt16 = 400
     }
 
     private let logger = Logger(tag: Constants.logTag)
@@ -40,7 +45,7 @@ public class HttpPingUploader {
     /// Note that the `X-Client-Type`: `Glean` and `X-Client-Version`: <SDK version>
     /// headers are added to the HTTP request in addition to the UserAgent. This allows
     /// us to easily handle pings coming from Glean on the legacy Mozilla pipeline.
-    func upload(path: String, data: String, headers: [String: String], callback: @escaping (Bool, Error?) -> Void) {
+    func upload(path: String, data: String, headers: [String: String], callback: @escaping (UploadResult) -> Void) {
         if config.logPings {
             logPing(path: path, data: data)
         }
@@ -93,19 +98,19 @@ public class HttpPingUploader {
 
             switch task {
             case let .upload(request):
-                self.upload(path: request.path, data: request.body, headers: request.headers) { success, error in
-                    if success {
-                        if error != nil {
-                            let status = UInt16(200)
-                            glean_process_ping_upload_response(incomingTask, status)
-                        } else {
-                            let status = UInt16(400)
-                            glean_process_ping_upload_response(incomingTask, status)
-                        }
-                    } else {
-                        let status = UInt16(500)
-                        glean_process_ping_upload_response(incomingTask, status)
+                self.upload(path: request.path, data: request.body, headers: request.headers) { result in
+                    let status: UInt16
+
+                    switch result {
+                    case let .httpResponse(statusCode):
+                        status = statusCode
+                    case .unrecoverableFailure:
+                        status = Constants.unrecoverableErrorStatusCode
+                    case .recoverableFailure:
+                        status = Constants.recoverableErrorStatusCode
                     }
+
+                    glean_process_ping_upload_response(incomingTask, status)
                 }
             case .wait:
                 continue
