@@ -267,14 +267,20 @@ open class GleanInternalAPI internal constructor () {
                     // Cancel any pending workers here so that we don't accidentally upload or
                     // collect data after the upload has been disabled.
                     metricsPingScheduler.cancel()
-                    // Enqueue the PingUploadWorker to immediately upload the deletion-request ping.
-                    PingUploadWorker.enqueueWorker(applicationContext)
+                    // Cancel any pending workers here so that we don't accidentally upload or
+                    // collect data after the upload has been disabled.
+                    PingUploadWorker.cancel(applicationContext)
                 }
 
                 if (!originalEnabled && enabled) {
                     // If uploading is being re-enabled, we have to restore the
                     // application-lifetime metrics.
                     initializeCoreMetrics((this@GleanInternalAPI).applicationContext)
+                }
+
+                if (originalEnabled && !enabled) {
+                    // If uploading is disabled, we need to send the deletion-request ping
+                    PingUploadWorker.enqueueWorker(applicationContext)
                 }
             }
         } else {
