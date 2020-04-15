@@ -39,7 +39,7 @@ class HttpPingUploaderTests: XCTestCase {
     }
 
     func getOrCreatePingDirectory(_ pingDirectory: String) -> URL {
-        let dataPath = getDocumentsDirectory().appendingPathComponent(pingDirectory)
+        let dataPath = getGleanDirectory().appendingPathComponent(pingDirectory)
 
         if !FileManager.default.fileExists(atPath: dataPath.relativePath) {
             do {
