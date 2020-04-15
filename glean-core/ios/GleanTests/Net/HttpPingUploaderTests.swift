@@ -6,7 +6,6 @@
 import OHHTTPStubs
 import XCTest
 
-// swiftlint:disable type_body_length
 // REASON: This test is long because of setup boilerplate
 class HttpPingUploaderTests: XCTestCase {
     var expectation: XCTestExpectation?
@@ -17,6 +16,11 @@ class HttpPingUploaderTests: XCTestCase {
         logPings: true,
         pingTag: "Tag"
     )
+
+    override func tearDown() {
+        // Reset expectations
+        expectation = nil
+    }
 
     private func setupHttpResponseStub(statusCode: Int32 = 200) {
         let host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
@@ -34,10 +38,30 @@ class HttpPingUploaderTests: XCTestCase {
         }
     }
 
+    func getOrCreatePingDirectory(_ pingDirectory: String) -> URL {
+        let dataPath = getDocumentsDirectory().appendingPathComponent(pingDirectory)
+
+        if !FileManager.default.fileExists(atPath: dataPath.relativePath) {
+            do {
+                try FileManager.default.createDirectory(
+                    atPath: dataPath.relativePath,
+                    withIntermediateDirectories: true,
+                    attributes: nil
+                )
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+
+        return dataPath
+    }
+
     private func getAndClearPingDirectory(withDirectory pingDirectory: String? = nil) -> URL {
-        // Get the ping directory
-        let pingDir = HttpPingUploader(configuration: Configuration(), pingDirectory: pingDirectory)
-            .getOrCreatePingDirectory()
+        // Get the ping directory.
+        //
+        // This is the same pending pings directory as defined in `glean-core/src/lib.rs`.
+        // We want to test interoperation between the Swift and Rust parts.
+        let pingDir = getOrCreatePingDirectory(pingDirectory ?? "pending_pings")
 
         // Clear the directory to ensure we start fresh
         // Verify all the files were removed, including the bad ones
@@ -57,81 +81,35 @@ class HttpPingUploaderTests: XCTestCase {
         return pingDir
     }
 
-    func test2XX() {
-        var testValue = false
+    func testHTTPStatusCode() {
+        var testValue: UploadResult?
         setupHttpResponseStub(statusCode: 200)
 
         expectation = expectation(description: "Completed upload")
 
         let httpPingUploader = HttpPingUploader(configuration: testConfig)
-        httpPingUploader.upload(path: testPath, data: testPing) { success, _ in
-            testValue = success
+        httpPingUploader.upload(path: testPath, data: testPing, headers: [:]) { result in
+            testValue = result
             self.expectation?.fulfill()
         }
         waitForExpectations(timeout: 5.0) { error in
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
         }
 
-        XCTAssertTrue(testValue, "`upload()` returns success")
-    }
-
-    func test3XX() {
-        var testValue = true
-        setupHttpResponseStub(statusCode: 300)
-
-        expectation = expectation(description: "Completed upload")
-
-        let httpPingUploader = HttpPingUploader(configuration: testConfig)
-        httpPingUploader.upload(path: testPath, data: testPing) { success, _ in
-            testValue = success
-            self.expectation?.fulfill()
+        // `UploadResult` is not `Equatable`, so instead of implementing that we just unpack it
+        if case let .httpResponse(statusCode) = testValue {
+            XCTAssertEqual(200, statusCode, "`upload()` returns the expected HTTP status code")
+        } else {
+            XCTAssertTrue(false, "`upload()` returns the expected HTTP status code")
         }
-        waitForExpectations(timeout: 5.0) { error in
-            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
-        }
-
-        XCTAssertFalse(testValue, "`upload()` returns failure")
-    }
-
-    func test4XX() {
-        var testValue = false
-        setupHttpResponseStub(statusCode: 400)
-
-        expectation = expectation(description: "Completed upload")
-
-        let httpPingUploader = HttpPingUploader(configuration: testConfig)
-        httpPingUploader.upload(path: testPath, data: testPing) { success, _ in
-            testValue = success
-            self.expectation?.fulfill()
-        }
-        waitForExpectations(timeout: 5.0) { error in
-            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
-        }
-
-        XCTAssertTrue(testValue, "`upload()` returns success")
-    }
-
-    func test5XX() {
-        var testValue = true
-        setupHttpResponseStub(statusCode: 500)
-
-        expectation = expectation(description: "Completed upload")
-
-        let httpPingUploader = HttpPingUploader(configuration: testConfig)
-        httpPingUploader.upload(path: testPath, data: testPing) { success, _ in
-            testValue = success
-            self.expectation?.fulfill()
-        }
-        waitForExpectations(timeout: 5.0) { error in
-            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
-        }
-
-        XCTAssertFalse(testValue, "`upload()` returns failure")
     }
 
     func testRequestParameters() {
+        // Build a request.
+        // We specify a single additional header here.
+        // In usual code they are generated on the Rust side.
         let request = HttpPingUploader(configuration: testConfig)
-            .buildRequest(path: testPath, data: testPing)
+            .buildRequest(path: testPath, data: testPing, headers: ["X-Client-Type": "Glean"])
 
         XCTAssertEqual(
             request?.url?.path,
@@ -144,19 +122,9 @@ class HttpPingUploaderTests: XCTestCase {
             "Request method set correctly"
         )
         XCTAssertEqual(
-            request?.value(forHTTPHeaderField: "User-Agent"),
-            testConfig.userAgent,
-            "Request User-Agent set correctly"
-        )
-        XCTAssertEqual(
             request?.httpBody,
             Data(testPing.utf8),
             "Request body set correctly"
-        )
-        XCTAssertEqual(
-            request?.value(forHTTPHeaderField: "Content-Type"),
-            "application/json; charset=utf-8",
-            "Request Content-Type set correctly"
         )
         XCTAssertEqual(
             request?.httpShouldHandleCookies,
@@ -167,11 +135,6 @@ class HttpPingUploaderTests: XCTestCase {
             request?.value(forHTTPHeaderField: "X-Client-Type"),
             "Glean",
             "Request X-Client-Type set correctly"
-        )
-        XCTAssertEqual(
-            request?.value(forHTTPHeaderField: "X-Client-Version"),
-            Configuration.getGleanVersion(),
-            "Request X-Client-Version set correctly"
         )
     }
 
@@ -233,6 +196,9 @@ class HttpPingUploaderTests: XCTestCase {
         // Set our expectation that will be fulfilled by the stub above
         expectation = expectation(description: "Completed upload")
 
+        // Reset Glean to trigger refetching pending pings
+        Glean.shared.resetGlean(clearStores: true)
+
         // Trigger file processing and wait for the expectation to be fulfilled.  This will cause
         // a test failure if the expectation times out.
         HttpPingUploader(configuration: testConfig).process()
@@ -240,72 +206,9 @@ class HttpPingUploaderTests: XCTestCase {
     }
 
     func testProcessingOfPingFilesAlternativeDirectory() {
-        // Get the ping directory
-        let pingDir = getAndClearPingDirectory()
-
-        // Write some simulated ping files into the directory for testing
-        let fileContents = "\(testPath)\n\(testPing)\n".data(using: .utf8)
-        let expectedFilesUploaded = 3
-        for _ in 0 ..< expectedFilesUploaded {
-            let fileName = UUID().description
-            let file = pingDir.appendingPathComponent(fileName)
-
-            if !FileManager.default.createFile(
-                atPath: file.relativePath,
-                contents: fileContents,
-                attributes: nil
-            ) {
-                XCTAssert(false, "Failed to write file \(file.relativePath)")
-            }
-        }
-
-        // Now let's write a ping with a non-conforming filename to ensure that they get
-        // handled by the processor correctly
-        let badFileName = "BadFileName"
-        let badFile = pingDir.appendingPathComponent(badFileName)
-        FileManager.default.createFile(
-            atPath: badFile.relativePath,
-            contents: fileContents,
-            attributes: nil
-        )
-
-        // Now set up our test server
-        var countFilesUploaded = 0
-
-        let host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
-        stub(condition: isHost(host)) { data in
-            let body = (data as NSURLRequest).ohhttpStubs_HTTPBody()
-            let json = try! JSONSerialization.jsonObject(with: body!, options: []) as? [String: Any]
-            XCTAssert(json != nil)
-            XCTAssertEqual(json?["ping"] as? String, "test")
-
-            countFilesUploaded += 1
-            if expectedFilesUploaded == countFilesUploaded {
-                DispatchQueue.main.async {
-                    // let the response get processed before we mark the expectation fulfilled
-                    self.expectation?.fulfill()
-                }
-            }
-
-            return OHHTTPStubsResponse(
-                jsonObject: [],
-                statusCode: 200,
-                headers: ["Content-Type": "application/json"]
-            )
-        }
-
-        // Set our expectation that will be fulfilled by the stub above
-        expectation = expectation(description: "Completed upload")
-
-        // Trigger file processing and wait for the expectation to be fulfilled.  This will cause
-        // a test failure if the expectation times out.
-        HttpPingUploader(configuration: testConfig).process()
-        wait(for: [expectation!], timeout: TimeInterval(5.0))
-    }
-
-    func testProcessingOfPingFilesAlternativeDirectoryAlternativeDirectory() {
+        // This is the same deletion request ping directory as defined in `glean-core/src/lib.rs`.
+        // We want to test interoperation between the Swift and Rust parts.
         let alternativePingdir = "deletion_request"
-        // Get the ping directory
         let pingDir = getAndClearPingDirectory(withDirectory: alternativePingdir)
 
         // Write some simulated ping files into the directory for testing
@@ -354,9 +257,12 @@ class HttpPingUploaderTests: XCTestCase {
         // Set our expectation that will be fulfilled by the stub above
         expectation = expectation(description: "Completed upload")
 
+        // Reset Glean to trigger refetching pending pings
+        Glean.shared.resetGlean(clearStores: true)
+
         // Trigger file processing and wait for the expectation to be fulfilled.  This will cause
         // a test failure if the expectation times out.
-        HttpPingUploader(configuration: testConfig, pingDirectory: alternativePingdir).process()
+        HttpPingUploader(configuration: testConfig).process()
         wait(for: [expectation!], timeout: TimeInterval(5.0))
     }
 }

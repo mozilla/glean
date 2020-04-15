@@ -254,7 +254,7 @@ jobs:
       - run:
           name: FFI header consistency check
           command: |
-            wget https://github.com/eqrion/cbindgen/releases/download/v0.10.0/cbindgen
+            wget https://github.com/eqrion/cbindgen/releases/download/v0.14.0/cbindgen
             mv cbindgen /usr/local/cargo/bin/cbindgen
             chmod +x /usr/local/cargo/bin/cbindgen
             make cbindgen

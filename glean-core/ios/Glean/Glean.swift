@@ -65,7 +65,6 @@ public class Glean {
     ///       If disabled, all persisted metrics, events and queued pings (except
     ///       first_run_date) are cleared.
     ///     * configuration: A Glean `Configuration` object with global settings.
-    // swiftlint:disable function_body_length
     public func initialize(uploadEnabled: Bool,
                            configuration: Configuration = Configuration()) {
         if self.isInitialized() {
@@ -115,7 +114,12 @@ public class Glean {
             }
 
             // Deal with any pending events so we can start recording new ones
-            if glean_on_ready_to_submit_pings().toBool() {
+            let pingSubmitted = glean_on_ready_to_submit_pings().toBool()
+
+            // We need to enqueue the ping uploader in these cases:
+            // 1. Pings were submitted through Glean and it is ready to upload those pings;
+            // 2. Upload is disabled, to upload a possible deletion-request ping.
+            if pingSubmitted || !uploadEnabled {
                 HttpPingUploader(configuration: configuration).process()
             }
 
@@ -149,13 +153,6 @@ public class Glean {
             }
 
             self.observer = GleanLifecycleObserver()
-
-            if !uploadEnabled {
-                HttpPingUploader(
-                    configuration: self.configuration!,
-                    pingDirectory: "deletion_request"
-                ).process()
-            }
         }
     }
 
@@ -220,10 +217,7 @@ public class Glean {
                 if originalEnabled && !enabled {
                     // If uploading is disabled, we need to send the deletion-request ping
                     Dispatchers.shared.launchConcurrent {
-                        HttpPingUploader(
-                            configuration: self.configuration!,
-                            pingDirectory: "deletion_request"
-                        ).process()
+                        HttpPingUploader(configuration: self.configuration!).process()
                     }
                 }
             }
