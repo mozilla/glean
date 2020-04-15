@@ -50,7 +50,6 @@ public class Glean {
         self.initialized = false
     }
 
-    // swiftlint:disable function_body_length
     /// Initialize the Glean SDK.
     ///
     /// This should only be initialized once by the application, and not by
