@@ -19,6 +19,14 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import java.util.concurrent.TimeUnit
 
+/**
+ * Testing correct behavior of the deletion ping.
+ *
+ * We already rely on the Rust side to do the right thing and delete pings at the right time.
+ * We still want to test this from the Kotlin side, as this is an important core part of Glean.
+ *
+ * Even if this seemingly duplicates some of the testing, this should be kept around.
+ */
 @RunWith(AndroidJUnit4::class)
 class DeletionPingTest {
     companion object {
