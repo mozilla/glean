@@ -13,6 +13,11 @@
 [Full changelog](https://github.com/mozilla/glean/compare/v27.1.0...v28.0.0)
 
 * General:
+  * The version of glean_parser has been upgraded to v1.20.0:
+    * **Breaking change:** glinter errors found during code generation will now return an error code.
+  * `glean_parser` now produces a linter warning when `user` lifetime metrics are
+    set to expire. See [bug 1604854](https://bugzilla.mozilla.org/show_bug.cgi?id=1604854)
+    for additional context.
   * The baseline ping is now sent when the application goes to foreground, in addition to background and dirty-startup.
 * Python:
   * BUGFIX: The ping uploader will no longer display a trace back when the upload fails due to a failed DNS lookup, network outage, or related issues that prevent communication with the telemetry endpoint.
