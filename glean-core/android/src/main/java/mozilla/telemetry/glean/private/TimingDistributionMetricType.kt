@@ -49,25 +49,16 @@ class TimingDistributionMetricType internal constructor(
         )
     }
 
-    /**
-     * Destroy this metric.
-     */
-    protected fun finalize() {
-        if (this.handle != 0L) {
-            LibGleanFFI.INSTANCE.glean_destroy_timing_distribution_metric(this.handle)
-        }
-    }
-
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     internal fun getElapsedTimeNanos(): Long {
         return SystemClock.elapsedRealtimeNanos()
     }
 
     /**
-     * Start tracking time for the provided metric and [GleanTimerId]. This
-     * records an error if it’s already tracking time (i.e. start was already
-     * called with no corresponding [stopAndAccumulate]): in that case the original
-     * start time will be preserved.
+     * Start tracking time for the provided metric. This records an error if
+     * it’s already tracking time (i.e. start was already called with no
+     * corresponding [stopAndAccumulate]): in that case the original start time will
+     * be preserved.
      *
      * @return The [GleanTimerId] object to associate with this timing.
      */
@@ -76,8 +67,10 @@ class TimingDistributionMetricType internal constructor(
             return null
         }
 
-        // The Rust code for [stopAndAccumulate] runs async and we need to use the same clock for start and stop.
-        // Therefore we take the time on the Kotlin side.
+        // Even though the Rust code for [start] runs synchronously, the Rust
+        // code for [stopAndAccumulate] runs asynchronously, and we need to use the same
+        // clock for start and stop. Therefore we take the time on the Kotlin side, both
+        // here and in [stopAndAccumulate].
         val startTime = getElapsedTimeNanos()
 
         // No dispatcher, we need the return value
@@ -92,7 +85,7 @@ class TimingDistributionMetricType internal constructor(
      * count to the corresponding bucket in the timing distribution.
      * This will record an error if no [start] was called.
      *
-     * @param timerId The [GleanTimerId] to associate with this timing.  This allows
+     * @param timerId The [GleanTimerId] associated with this timing.  This allows
      * for concurrent timing of events associated with different ids to the
      * same timespan metric.
      */
@@ -117,9 +110,29 @@ class TimingDistributionMetricType internal constructor(
     }
 
     /**
+     * Convenience method to simplify measuring a function or block of code.
+     *
+     * If the measured function throws, the measurement is canceled and the exception rethrown.
+     */
+    @Suppress("TooGenericExceptionCaught")
+    inline fun <U> measure(funcToMeasure: () -> U): U {
+        val timerId = start()
+
+        val returnValue = try {
+            funcToMeasure()
+        } catch (e: Exception) {
+            cancel(timerId)
+            throw e
+        }
+
+        stopAndAccumulate(timerId)
+        return returnValue
+    }
+
+    /**
      * Abort a previous [start] call. No error is recorded if no [start] was called.
      *
-     * @param timerId The [GleanTimerId] to associate with this timing. This allows
+     * @param timerId The [GleanTimerId] associated with this timing. This allows
      * for concurrent timing of events associated with different ids to the
      * same timing distribution metric.
      */
@@ -158,9 +171,7 @@ class TimingDistributionMetricType internal constructor(
     }
 
     /**
-     * Tests whether a value is stored for the metric for testing purposes only. This function will
-     * attempt to await the last task (if any) writing to the the metric's storage engine before
-     * returning a value.
+     * Tests whether a value is stored for the metric for testing purposes only.
      *
      * @param pingName represents the name of the ping to retrieve the metric for.
      *                 Defaults to the first value in `sendInPings`.
@@ -178,8 +189,7 @@ class TimingDistributionMetricType internal constructor(
     }
 
     /**
-     * Returns the stored value for testing purposes only. This function will attempt to await the
-     * last task (if any) writing to the the metric's storage engine before returning a value.
+     * Returns the stored value for testing purposes only.
      *
      * @param pingName represents the name of the ping to retrieve the metric for.
      *                 Defaults to the first value in `sendInPings`.

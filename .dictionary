@@ -1,4 +1,4 @@
-personal_ws-1.1 en 156 utf-8
+personal_ws-1.1 en 165 utf-8
 AAR
 AARs
 APIs
@@ -12,6 +12,7 @@ CODEOWNERS
 Cartfile
 CircleCI
 Ciufo
+DNS
 Datetime
 Datetimes
 Fenix
@@ -63,9 +64,11 @@ alphanumerics
 analytics
 aspell
 async
+autodetected
 backend
 barcode
 boolean
+booleans
 brizental
 bugfixes
 camelCase
@@ -77,6 +80,7 @@ codecov
 codepoints
 commandline
 conda
+config
 coroutine
 csh
 dataset
@@ -107,12 +111,14 @@ ios
 janerik
 ktlint
 lang
+latencies
 lfloor
 lifecycle
 linux
 logcat
 macOS
 manylinux
+md
 mdbook
 mdroettboom
 metric's
@@ -129,6 +135,7 @@ prebuilt
 preinit
 py
 pytest
+rethrow
 rfloor
 rkv
 runtime
@@ -150,6 +157,7 @@ toolchains
 tooltip
 transpiler
 travis
+und
 unhandled
 uploader
 vendored

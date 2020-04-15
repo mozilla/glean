@@ -1,12 +1,65 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v25.1.0...master)
+[Full changelog](https://github.com/mozilla/glean/compare/v27.1.0...master)
 
+* Python:
+  * BUGFIX: The ping uploader will no longer display a trace back when the upload fails due to a failed DNS lookup, network outage, or related issues that prevent communication with the telemetry endpoint.
+  * The dependency on `inflection` has been removed.
+
+# v27.1.0 (2020-04-09)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v27.0.0...v27.1.0)
+
+* General:
+  * BUGFIX: baseline pings sent at startup with the `dirty_startup` reason will now include application lifetime metrics ([#810](https://github.com/mozilla/glean/pull/810))
+* iOS:
+  * **Breaking change:** Change Glean iOS to use Application Support directory [#815](https://github.com/mozilla/glean/pull/815). No migration code is included. This will reset collected data if integrated without migration. Please [contact the Glean SDK team](https://github.com/mozilla/glean#contact) if this affects you.
+* Python
+  * BUGFIX: Fixed a race condition between uploading pings and deleting the temporary directory on shutdown of the process.
+
+# v27.0.0 (2020-04-08)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v26.0.0...v27.0.0)
+
+* General:
+  * Glean will now detect when the upload enabled flag changes outside of the application, for example due to a change in a config file. This means that if upload is disabled while the application wasn't running (e.g. between the runs of a Python command using the Glean SDK), the database is correctly cleared and a deletion request ping is sent. See [#791](https://github.com/mozilla/glean/pull/791).
+  * The `events` ping now includes a reason code: `startup`, `background` or `max_capacity`.
+* iOS:
+  * BUGFIX: A bug where the metrics ping is sent immediately at startup on the last day of the month has been fixed.
+  * Glean for iOS is now being built with Xcode 11.4.0
+  * The `measure` convenience function on timing distributions and time spans will now cancel the timing if the measured function throws, then rethrow the exception ([#808](https://github.com/mozilla/glean/pull/808))
+  * Broken doc generation has been fixed ([#805](https://github.com/mozilla/glean/pull/805)).
+* Kotlin
+  * The `measure` convenience function on timing distributions and time spans will now cancel the timing if the measured function throws, then rethrow the exception ([#808](https://github.com/mozilla/glean/pull/808))
+* Python:
+  * Glean will now wait at application exit for up to one second to let its worker thread complete.
+  * Ping uploading now happens in a separate child process by default. This can be disabled with the `allow_multiprocessing` configuration option.
+
+# v26.0.0 (2020-03-27)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v25.1.0...v26.0.0)
+
+* General:
+  * The version of `glean_parser` has been updated to 1.19.0:
+    * **Breaking change:** The regular expression used to validate labels is
+      stricter and more correct.
+    * Add more information about pings to markdown documentation:
+      * State whether the ping includes client id;
+      * Add list of data review links;
+      * Add list of related bugs links.
+    * `glean_parser` now makes it easier to write external translation functions for
+      different language targets.
+    * BUGFIX: glean_parser now works on 32-bit Windows.
 * Android:
   * `gradlew clean` will no longer remove the Miniconda installation in
     `~/.gradle/glean`. Therefore `clean` can be used without reinstalling
     Miniconda afterward every time.
-
+* Python:
+  * **Breaking Change**: The `glean.util` and `glean.hardware` modules, which
+    were unintentionally public, have been made private.
+  * Most Glean work and I/O is now done on its own worker thread. This brings the parallelism Python in line with the other platforms.
+  * The timing distribution, memory distribution, string list, labeled boolean and labeled string metric types are now supported in Python ([#762](https://github.com/mozilla/glean/pull/762), [#763](https://github.com/mozilla/glean/pull/763), [#765](https://github.com/mozilla/glean/pull/765), [#766](https://github.com/mozilla/glean/pull/766))
+  
 # v25.1.0 (2020-02-26)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v25.0.0...v25.1.0)

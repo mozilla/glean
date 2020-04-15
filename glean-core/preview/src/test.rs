@@ -66,7 +66,7 @@ fn client_info_reset_after_toggle() {
     // At start we should have a value.
     with_glean(|glean| {
         assert!(core_metrics
-            .os
+            .architecture
             .test_get_value(glean, "glean_client_info")
             .is_some());
     });
@@ -75,7 +75,7 @@ fn client_info_reset_after_toggle() {
     crate::set_upload_enabled(false);
     with_glean(|glean| {
         assert!(!core_metrics
-            .os
+            .architecture
             .test_get_value(glean, "glean_client_info")
             .is_some());
     });
@@ -84,7 +84,7 @@ fn client_info_reset_after_toggle() {
     crate::set_upload_enabled(true);
     with_glean(|glean| {
         assert!(core_metrics
-            .os
+            .architecture
             .test_get_value(glean, "glean_client_info")
             .is_some());
     });

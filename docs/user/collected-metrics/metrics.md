@@ -32,11 +32,23 @@ This is a built-in ping that is assembled out of the box by the Glean SDK.
 
 See the Glean SDK documentation for the [`baseline` ping](https://mozilla.github.io/glean/book/user/pings/baseline.html).
 
-Reasons this ping may be sent:
+This ping includes the [client id](https://mozilla.github.io/glean/book/user/pings/index.html#the-client_info-section).
 
-    - `background`: The ping was submitted before going to background.
+**Data reviews for this ping:**
 
-    - `dirty_startup`: The ping was submitted at startup, because the application process was
+- <https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3>
+- <https://bugzilla.mozilla.org/show_bug.cgi?id=1599877#c25>
+
+**Bugs related to this ping:**
+
+- <https://bugzilla.mozilla.org/1512938>
+- <https://bugzilla.mozilla.org/1599877>
+
+**Reasons this ping may be sent:**
+
+- `background`: The ping was submitted before going to background.
+
+- `dirty_startup`: The ping was submitted at startup, because the application process was
       killed before the Glean SDK had the chance to generate this ping, when
       going to background, in the last session.
 
@@ -48,7 +60,7 @@ The following metrics are added to the ping:
 | Name | Type | Description | Data reviews | Extras | Expiration |
 | --- | --- | --- | --- | --- | --- |
 | glean.baseline.duration |[timespan](https://mozilla.github.io/glean/book/user/metrics/timespan.html) |The duration of the last foreground session.  |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3)||never |
-| glean.baseline.locale |[string](https://mozilla.github.io/glean/book/user/metrics/string.html) |The locale of the application (e.g. "es-ES").  |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3)||never |
+| glean.baseline.locale |[string](https://mozilla.github.io/glean/book/user/metrics/string.html) |The locale of the application during initialization (e.g. "es-ES"). If the locale can't be determined on the system, the value is ["und"](https://unicode.org/reports/tr35/#Unknown_or_Invalid_Identifiers), to indicate "undetermined".  |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3)||never |
 
 ## deletion-request
 
@@ -56,6 +68,16 @@ This ping is submitted when a user opts out of sending technical and interaction
 
 
 This ping is sent if empty.
+
+This ping includes the [client id](https://mozilla.github.io/glean/book/user/pings/index.html#the-client_info-section).
+
+**Data reviews for this ping:**
+
+- <https://bugzilla.mozilla.org/show_bug.cgi?id=1587095#c6>
+
+**Bugs related to this ping:**
+
+- <https://bugzilla.mozilla.org/1587095>
 
 This ping contains no metrics.
 
@@ -65,22 +87,33 @@ This is a built-in ping that is assembled out of the box by the Glean SDK.
 
 See the Glean SDK documentation for the [`metrics` ping](https://mozilla.github.io/glean/book/user/pings/metrics.html).
 
-Reasons this ping may be sent:
+This ping includes the [client id](https://mozilla.github.io/glean/book/user/pings/index.html#the-client_info-section).
 
-    - `overdue`: The last ping wasn't submitted on the current calendar day, but it's after
+**Data reviews for this ping:**
+
+- <https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3>
+- <https://bugzilla.mozilla.org/show_bug.cgi?id=1557048#c13>
+
+**Bugs related to this ping:**
+
+- <https://bugzilla.mozilla.org/1512938>
+
+**Reasons this ping may be sent:**
+
+- `overdue`: The last ping wasn't submitted on the current calendar day, but it's after
       4am, so this ping submitted immediately
 
-    - `reschedule`: A ping was just submitted. This ping was rescheduled for the next calendar
+- `reschedule`: A ping was just submitted. This ping was rescheduled for the next calendar
       day at 4am.
 
-    - `today`: The last ping wasn't submitted on the current calendar day, but it is
+- `today`: The last ping wasn't submitted on the current calendar day, but it is
       still before 4am, so schedule to send this ping on the current calendar
       day at 4am.
 
-    - `tomorrow`: The last ping was already submitted on the current calendar day, so
+- `tomorrow`: The last ping was already submitted on the current calendar day, so
       schedule this ping for the next calendar day at 4am.
 
-    - `upgrade`: This ping was submitted at startup because the application was just
+- `upgrade`: This ping was submitted at startup because the application was just
       upgraded.
 
 

@@ -230,10 +230,6 @@ Follow these steps to automatically run the parser at build time:
 
 <div data-lang="Python" class="tab">
 
-> **Important:** The Python bindings are already being used internally for testing of Mozilla's data platform.
-> However, they are not ready for production or inclusion in applications that are distributed to end users.
-> Progress on this support is being [tracked in this bug](https://bugzilla.mozilla.org/show_bug.cgi?id=1598673).
-
 For Python, the `metrics.yaml` file must be available and loaded at runtime.
 
 If your project is a script (i.e. just Python files in a directory), you can load the `metrics.yaml` using:
@@ -269,6 +265,26 @@ Please refer to the [custom pings documentation](pings/custom.md).
 
 > **Important**: as stated [before](adding-glean-to-your-project.md#before-using-glean), any new data collection requires documentation and data-review.
 > This is also required for any new metric automatically collected by the Glean SDK.
+
+### Parallelism
+
+All of Glean's target languages use a separate worker thread to do most of Glean's work, including any I/O. This thread is fully managed by Glean as an implementation detail. Therefore, users should be free to use the Glean API wherever it is most convenient, without worrying about the performance impact of updating metrics and sending pings.
+
+{{#include ../tab_header.md}}
+
+<div data-lang="Python" class="tab">
+When using the Python bindings, Glean's work is done on a separate thread, managed by Glean itself.
+Glean releases the Global Interpreter Lock (GIL), therefore your application's threads should not be in contention with Glean's thread.
+
+Glean installs an [`atexit` handler](https://docs.python.org/3/library/atexit.html) so the Glean thread can attempt to cleanly shut down when your application exits.
+This handler will wait up to 1 second for any pending work to complete.
+
+In addition, by default ping uploading is performed in a separate child process using Python's multiprocessing module. This process will continue to upload any pending pings even after the main process shuts down.
+
+Since the multiprocessing module may not work in all contexts, such as in a [`PyInstaller`](https://www.pyinstaller.org/) application, there is an option to ensure that ping uploading occurs in the main process. To do this, set the `allow_multiprocessing` parameter on the `glean.Configuration` object to `False`.
+</div>
+
+{{#include ../tab_footer.md}}
 
 ### Testing metrics
 

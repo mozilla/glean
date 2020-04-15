@@ -22,6 +22,13 @@ public class HttpPingUploader {
 
     private let logger = Logger(tag: Constants.logTag)
 
+    /// Initialize the HTTP Ping uploader from a Glean configuration object
+    /// and an optional directory name.
+    ///
+    /// If the path is `nil` the default name will be used.
+    ///
+    /// - parameters:
+    ///     * configuration: The Glean configuration to use.
     public init(configuration: Configuration) {
         self.config = configuration
     }

@@ -192,6 +192,16 @@ open class GleanInternalAPI internal constructor () {
             metricsPingScheduler = MetricsPingScheduler(applicationContext)
             metricsPingScheduler.schedule()
 
+            // Check if the "dirty flag" is set. That means the product was probably
+            // force-closed. If that's the case, submit a 'baseline' ping with the
+            // reason "dirty_startup". We only do that from the second run.
+            if (!isFirstRun && LibGleanFFI.INSTANCE.glean_is_dirty_flag_set().toBoolean()) {
+                submitPingByNameSync("baseline", "dirty_startup")
+                // Note: while in theory we should set the "dirty flag" to true
+                // here, in practice it's not needed: if it hits this branch, it
+                // means the value was `true` and nothing needs to be done.
+            }
+
             // From the second time we run, after all startup pings are generated,
             // make sure to clear `lifetime: application` metrics and set them again.
             // Any new value will be sent in newly generated pings after startup.
@@ -202,16 +212,6 @@ open class GleanInternalAPI internal constructor () {
 
             // Signal Dispatcher that init is complete
             Dispatchers.API.flushQueuedInitialTasks()
-
-            // Check if the "dirty flag" is set. That means the product was probably
-            // force-closed. If that's the case, submit a 'baseline' ping with the
-            // reason "dirty_startup". We only do that from the second run.
-            if (!isFirstRun && LibGleanFFI.INSTANCE.glean_is_dirty_flag_set().toBoolean()) {
-                submitPingByNameSync("baseline", "dirty_startup")
-                // Note: while in theory we should set the "dirty flag" to true
-                // here, in practice it's not needed: if it hits this branch, it
-                // means the value was `true` and nothing needs to be done.
-            }
 
             // At this point, all metrics and events can be recorded.
             // This should only be called from the main thread. This is enforced by
@@ -423,7 +423,6 @@ open class GleanInternalAPI internal constructor () {
         // that they are guaranteed to be available with the first ping that is
         // generated. We use an internal only API to do that.
         GleanBaseline.locale.setSync(getLocaleTag())
-        GleanInternalMetrics.os.setSync("Android")
         // https://developer.android.com/reference/android/os/Build.VERSION
         GleanInternalMetrics.androidSdkVersion.setSync(Build.VERSION.SDK_INT.toString())
         GleanInternalMetrics.osVersion.setSync(Build.VERSION.RELEASE)
@@ -476,7 +475,7 @@ open class GleanInternalAPI internal constructor () {
      */
     internal fun handleBackgroundEvent() {
         Pings.baseline.submit(Pings.baselineReasonCodes.background)
-        Pings.events.submit()
+        Pings.events.submit(Pings.eventsReasonCodes.background)
     }
 
     /**
@@ -583,7 +582,8 @@ open class GleanInternalAPI internal constructor () {
     internal fun resetGlean(
         context: Context,
         config: Configuration,
-        clearStores: Boolean
+        clearStores: Boolean,
+        uploadEnabled: Boolean = true
     ) {
         Glean.enableTestingMode()
 
@@ -596,7 +596,7 @@ open class GleanInternalAPI internal constructor () {
 
         // Init Glean.
         Glean.testDestroyGleanHandle()
-        Glean.initialize(context, true, config)
+        Glean.initialize(context, uploadEnabled, config)
     }
 
     /**

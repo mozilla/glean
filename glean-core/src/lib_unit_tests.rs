@@ -7,7 +7,7 @@
 
 use super::*;
 use crate::metrics::RecordedExperimentData;
-use crate::metrics::StringMetric;
+use crate::metrics::{StringMetric, TimeUnit, TimespanMetric};
 
 const GLOBAL_APPLICATION_ID: &str = "org.mozilla.glean.test.app";
 pub fn new_glean(tempdir: Option<tempfile::TempDir>) -> (Glean, tempfile::TempDir) {
@@ -584,4 +584,63 @@ fn test_dirty_bit() {
         let glean = Glean::with_options(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
         assert!(!glean.is_dirty_flag_set());
     }
+}
+
+#[test]
+fn test_change_metric_type_runtime() {
+    let dir = tempfile::tempdir().unwrap();
+
+    let (glean, _) = new_glean(Some(dir));
+
+    // We attempt to create two metrics: one with a 'string' type and the other
+    // with a 'timespan' type, both being sent in the same pings and having the
+    // same lifetime.
+    let metric_name = "type_swap";
+    let metric_category = "test";
+    let metric_lifetime = Lifetime::Ping;
+    let ping_name = "store1";
+
+    let string_metric = StringMetric::new(CommonMetricData {
+        name: metric_name.into(),
+        category: metric_category.into(),
+        send_in_pings: vec![ping_name.into()],
+        disabled: false,
+        lifetime: metric_lifetime,
+        ..Default::default()
+    });
+
+    let string_value = "definitely-a-string!";
+    string_metric.set(&glean, string_value);
+
+    assert_eq!(
+        string_metric.test_get_value(&glean, ping_name).unwrap(),
+        string_value,
+        "Expected properly deserialized string"
+    );
+
+    let mut timespan_metric = TimespanMetric::new(
+        CommonMetricData {
+            name: metric_name.into(),
+            category: metric_category.into(),
+            send_in_pings: vec![ping_name.into()],
+            disabled: false,
+            lifetime: metric_lifetime,
+            ..Default::default()
+        },
+        TimeUnit::Nanosecond,
+    );
+
+    let duration = 60;
+    timespan_metric.set_start(&glean, 0);
+    timespan_metric.set_stop(&glean, duration);
+
+    assert_eq!(
+        timespan_metric.test_get_value(&glean, ping_name).unwrap(),
+        60,
+        "Expected properly deserialized time"
+    );
+
+    // We expect old data to be lost forever. See the following bug comment
+    // https://bugzilla.mozilla.org/show_bug.cgi?id=1621757#c1 for more context.
+    assert_eq!(None, string_metric.test_get_value(&glean, ping_name));
 }

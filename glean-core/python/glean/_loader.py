@@ -16,12 +16,10 @@ import sys
 from typing import Any, List, Union
 
 
-import inflection  # type: ignore
-
-
 from glean_parser.parser import parse_objects  # type: ignore
 import glean_parser.lint  # type: ignore
 import glean_parser.metrics  # type: ignore
+from glean_parser.util import Camelize  # type: ignore
 
 
 from . import metrics
@@ -34,10 +32,15 @@ _TYPE_MAPPING = {
     "counter": metrics.CounterMetricType,
     "datetime": metrics.DatetimeMetricType,
     "event": metrics.EventMetricType,
+    "labeled_boolean": metrics.LabeledBooleanMetricType,
     "labeled_counter": metrics.LabeledCounterMetricType,
+    "labeled_string": metrics.LabeledStringMetricType,
+    "memory_unit": metrics.MemoryDistributionMetricType,
     "ping": metrics.PingType,
     "string": metrics.StringMetricType,
+    "string_list": metrics.StringListMetricType,
     "timespan": metrics.TimespanMetricType,
+    "timing_distribution": metrics.TimingDistributionMetricType,
     "uuid": metrics.UuidMetricType,
 }
 
@@ -106,13 +109,13 @@ def _get_metric_objects(name: str, metric: glean_parser.metrics.Metric) -> Any:
     # Events and Pings also need to define an enumeration
     if metric.type == "event":
         enum_name = name + "_keys"
-        class_name = inflection.camelize(enum_name, True)
+        class_name = Camelize(enum_name)
         values = dict((x.upper(), i) for (i, x) in enumerate(metric.allowed_extra_keys))
         keys_enum = enum.Enum(class_name, values)  # type: ignore
         yield enum_name, keys_enum
     elif metric.type == "ping":
         enum_name = name + "_reason_codes"
-        class_name = inflection.camelize(enum_name, True)
+        class_name = Camelize(enum_name)
         values = dict((x.upper(), i) for (i, x) in enumerate(metric.reason_codes))
         keys_enum = enum.Enum(class_name, values)  # type: ignore
         yield enum_name, keys_enum
@@ -125,7 +128,7 @@ def load_metrics(
     Load metrics from a `metrics.yaml` file.
 
     Args:
-        filepath: The path to the file, or a list of paths, to load.
+        filepath (Path): The path to the file, or a list of paths, to load.
         config (dict): A dictionary of options that change parsing behavior.
             These are documented in glean_parser:
             https://mozilla.github.io/glean_parser/glean_parser.html#glean_parser.parser.parse_objects
@@ -178,7 +181,7 @@ def load_pings(
     Load pings from a `pings.yaml` file.
 
     Args:
-        filepath: The path to the file, or a list of paths, to load.
+        filepath (Path): The path to the file, or a list of paths, to load.
         config (dict): A dictionary of options that change parsing behavior.
             These are documented in glean_parser:
             https://mozilla.github.io/glean_parser/glean_parser.html#glean_parser.parser.parse_objects

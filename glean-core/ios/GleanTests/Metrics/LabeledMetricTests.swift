@@ -136,6 +136,11 @@ class LabeledMetricTypeTests: XCTestCase {
         labeledCounterMetric["with/slash"].add(1)
         labeledCounterMetric["this_string_has_more_than_thirty_characters"].add(1)
 
+        XCTAssertEqual(
+            4,
+            labeledCounterMetric.testGetNumRecordedErrors(.invalidLabel)
+        )
+
         XCTAssertEqual(4, try labeledCounterMetric["__other__"].testGetValue())
     }
 

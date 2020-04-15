@@ -28,7 +28,6 @@ pub struct InternalMetrics {
     pub app_build: StringMetric,
     pub app_display_version: StringMetric,
     pub app_channel: StringMetric,
-    pub os: StringMetric,
     pub os_version: StringMetric,
     pub architecture: StringMetric,
     pub device_manufacturer: StringMetric,
@@ -56,14 +55,6 @@ impl InternalMetrics {
             }),
             app_channel: StringMetric::new(CommonMetricData {
                 name: "app_channel".into(),
-                category: "".into(),
-                send_in_pings: vec!["glean_client_info".into()],
-                lifetime: Lifetime::Application,
-                disabled: false,
-                dynamic_label: None,
-            }),
-            os: StringMetric::new(CommonMetricData {
-                name: "os".into(),
                 category: "".into(),
                 send_in_pings: vec!["glean_client_info".into()],
                 lifetime: Lifetime::Application,

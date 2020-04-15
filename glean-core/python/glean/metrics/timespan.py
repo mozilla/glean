@@ -9,7 +9,7 @@ from typing import List, Optional
 from .. import _ffi
 from .._dispatcher import Dispatcher
 from ..testing import ErrorType
-from .. import util
+from .. import _util
 
 
 from .lifetime import Lifetime
@@ -65,7 +65,7 @@ class TimespanMetricType:
         if self._disabled:
             return
 
-        start_time = util.time_ns()
+        start_time = _util.time_ns()
 
         @Dispatcher.launch
         def start():
@@ -83,7 +83,7 @@ class TimespanMetricType:
         if self._disabled:
             return
 
-        stop_time = util.time_ns()
+        stop_time = _util.time_ns()
 
         @Dispatcher.launch
         def stop():

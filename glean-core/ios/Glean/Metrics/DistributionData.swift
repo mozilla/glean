@@ -14,6 +14,9 @@ public class DistributionData {
     let values: [UInt64: UInt64]
     let sum: UInt64
 
+    /// Parse the distribution data from the given JSON string.
+    ///
+    /// If the string is not valid JSON or data is missing `nil` is returned.
     public init?(fromJson json: String) {
         do {
             let data = json.data(using: .utf8)!

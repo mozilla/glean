@@ -153,10 +153,6 @@ the details of which are reproduced below.
     <url>https://github.com/uuid-rs/uuid</url>
   </license>
   <license>
-    <name>Apache License 2.0: uuid</name>
-    <url>https://github.com/uuid-rs/uuid</url>
-  </license>
-  <license>
     <name>Apache License 2.0: getrandom</name>
     <url>https://github.com/rust-random/getrandom</url>
   </license>
@@ -227,10 +223,6 @@ the details of which are reproduced below.
   <license>
     <name>MIT License: termcolor</name>
     <url>https://github.com/BurntSushi/termcolor</url>
-  </license>
-  <license>
-    <name>MIT License: wincolor</name>
-    <url>https://github.com/BurntSushi/termcolor/tree/master/wincolor</url>
   </license>
   <license>
     <name>MIT License: winapi-util</name>

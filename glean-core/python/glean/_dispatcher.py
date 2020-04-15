@@ -2,9 +2,118 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+"""
+This module implements a single-threaded (mostly FIFO) work queue on which
+most Glean work is done.
+"""
 
+import atexit
 import functools
+import logging
+import queue
+import threading
 from typing import Callable, List, Tuple
+
+
+# This module uses threading, rather than multiprocessing for parallelism. This
+# is normally not recommended for Python due to the Global Interpreter Lock
+# (GIL), however the usual problems with the GIL are lessened by the fact that:
+#
+#   - Most long-running work and I/O is done in the Rust extension. The cffi
+#     library used to interface with Rust releases the GIL around every foreign
+#     call. See https://cffi.readthedocs.io/en/latest/ref.html#conversions
+#
+#   - The other significant blocking I/O is in networking code, which runs
+#     in a separate child process (see net/ping_upload_worker.py).
+#
+# This approach greatly reduces complexity of the implementation. Using
+# multiprocessing would imply going to a 100% IPC-like approach, since the
+# Rust-side Glean objects could not be easily shared or message-passed across
+# the process boundary, whereas sharing across threads works transparently.
+
+
+log = logging.getLogger(__name__)
+
+
+class _ThreadWorker:
+    """
+    Manages a single worker to perform tasks in another thread.
+    """
+
+    END_MARKER = "END"
+
+    def __init__(self):
+        self._queue = queue.Queue()
+        # The worker thread is only started when work needs to be performed so
+        # that importing Glean alone does not start an unnecessary thread.
+        self._started = False
+
+    def add_task(self, sync: bool, task: Callable, *args, **kwargs):
+        """
+        Add a task to the worker queue.
+
+        Args:
+            sync (bool): If `True`, block until the task is complete.
+            task (Callable): The task to run.
+
+        Additional arguments are passed to the task.
+        """
+        if not self._started:
+            self._start_worker()
+        # If we are already on the worker thread, don't place the tasks in the
+        # queue, just run them now. This is required for synchronous testing
+        # mode, and also to run the tasks in the expected order.
+        if threading.get_ident() == self._ident:
+            task(*args, **kwargs)
+        else:
+            args = args or ()
+            kwargs = kwargs or {}
+            self._queue.put((task, args, kwargs))
+            if sync:
+                self._queue.join()
+
+    def _start_worker(self):
+        """
+        Starts the worker thread.
+        """
+        self._thread = threading.Thread(target=self._worker)
+        # Start the thread in daemon mode.
+        self._thread.daemon = True
+        self._thread.start()
+        self._started = True
+        self._ident = self._thread.ident
+        # Register an atexit function to wait for the worker thread to
+        # complete.
+        atexit.register(self._shutdown_thread)
+
+    def _worker(self):
+        """
+        Implements the worker thread. Takes tasks off of the queue and runs
+        them.
+        """
+        while True:
+            task, args, kwargs = self._queue.get()
+            if task == self.END_MARKER:
+                self._queue.task_done()
+                break
+            try:
+                task(*args, **kwargs)
+            except Exception:
+                log.exception("Glean error")
+            finally:
+                self._queue.task_done()
+
+    def _shutdown_thread(self):
+        """
+        An atexit handler to tell the worker thread to shutdown and then wait
+        for 1 seconds for it to finish.
+        """
+        # Send an END_MARKER to the worker thread to shut it down cleanly.
+        self._queue.put((self.END_MARKER, (), {}))
+        # Wait up to 1 second for the worker thread to complete.
+        self._thread.join(1.0)
+        if self._thread.is_alive():
+            log.error("Timeout sending Glean telemetry")
 
 
 class Dispatcher:
@@ -18,11 +127,17 @@ class Dispatcher:
     # are run immediately
     _queue_initial_tasks = True  # type: bool
 
-    # The task queue
-    _task_queue = []  # type: List[Tuple[Callable, tuple, dict]]
+    # The preinit task queue
+    _preinit_task_queue = []  # type: List[Tuple[Callable, tuple, dict]]
+
+    # The live task queue to run things in another thread
+    _task_worker = _ThreadWorker()
 
     # The number of tasks that overflowed the queue
     _overflow_count = 0  # type: int
+
+    # When `True`, all tasks are run synchronously
+    _testing_mode = False  # type: bool
 
     @classmethod
     def reset(cls):
@@ -31,8 +146,12 @@ class Dispatcher:
         queueing mode.
         """
         cls._queue_initial_tasks = True
-        cls._task_queue = []
+        cls._preinit_task_queue = []
         cls._overflow_count = 0
+
+    @classmethod
+    def _execute_task(cls, func: Callable, *args, **kwargs):
+        cls._task_worker.add_task(cls._testing_mode, func, *args, **kwargs)
 
     @classmethod
     def task(cls, func: Callable):
@@ -48,11 +167,11 @@ class Dispatcher:
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             if cls._queue_initial_tasks:
-                if len(cls._task_queue) >= cls.MAX_QUEUE_SIZE:
+                if len(cls._preinit_task_queue) >= cls.MAX_QUEUE_SIZE:
                     return
-                cls._task_queue.append((func, args, kwargs))
+                cls._preinit_task_queue.append((func, args, kwargs))
             else:
-                func(*args, **kwargs)
+                cls._execute_task(func, *args, **kwargs)
 
         return wrapper
 
@@ -82,16 +201,16 @@ class Dispatcher:
         """
 
         if cls._queue_initial_tasks:
-            if len(cls._task_queue) >= cls.MAX_QUEUE_SIZE:
+            if len(cls._preinit_task_queue) >= cls.MAX_QUEUE_SIZE:
                 # This value ends up in the `preinit_tasks_overflow` metric,
                 # but we can't record directly there, because that would only
                 # add the recording to an already-overflowing task queue and
                 # would be silently dropped.
                 cls._overflow_count += 1
                 return
-            cls._task_queue.append((func, (), {}))
+            cls._preinit_task_queue.append((func, (), {}))
         else:
-            func()
+            cls._execute_task(func)
 
     @classmethod
     def launch_at_front(cls, func: Callable):
@@ -102,7 +221,7 @@ class Dispatcher:
         """
 
         if cls._queue_initial_tasks:
-            cls._task_queue.insert(0, (func, (), {}))
+            cls._preinit_task_queue.insert(0, (func, (), {}))
         else:
             func()
 
@@ -123,9 +242,9 @@ class Dispatcher:
         Stops queueing tasks and processes any tasks in the queue.
         """
         cls.set_task_queueing(False)
-        for (task, args, kwargs) in cls._task_queue:
-            task(*args, **kwargs)
-        cls._task_queue.clear()
+        for (task, args, kwargs) in cls._preinit_task_queue:
+            cls._execute_task(task, *args, **kwargs)
+        cls._preinit_task_queue.clear()
 
         if cls._overflow_count > 0:
             from ._builtins import metrics

@@ -52,22 +52,10 @@ class StringListMetricType(
     }
 
     /**
-     * Destroy this metric.
-     */
-    protected fun finalize() {
-        if (this.handle != 0L) {
-            LibGleanFFI.INSTANCE.glean_destroy_string_list_metric(this.handle)
-        }
-        // Do nothing with the error, for now.
-        // It is expected to only ever error if this.handle's invalid.
-    }
-
-    /**
      * Appends a string value to one or more string list metric stores.  If the string exceeds the
      * maximum string length or if the list exceeds the maximum length it will be truncated.
      *
-     * @param value This is a user defined string value. The maximum length of
-     *              this string is `MAX_STRING_LENGTH`.
+     * @param value This is a user defined string value.
      */
     fun add(value: String) {
         if (disabled) {
