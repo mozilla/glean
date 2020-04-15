@@ -11,6 +11,7 @@ import mozilla.telemetry.glean.resetGlean
 import mozilla.telemetry.glean.testing.GleanTestRule
 import mozilla.telemetry.glean.triggerWorkManager
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -21,9 +22,10 @@ import java.util.concurrent.TimeUnit
 @RunWith(AndroidJUnit4::class)
 class DeletionPingTest {
     companion object {
-        // This is the same deletion request ping directory as defined in `glean-core/src/lib.rs`.
-        // We want to test interoperation between the Swift and Rust parts.
+        // These are the same ping directories as defined in `glean-core/src/lib.rs`.
+        // We want to test interoperation between the Kotlin and Rust parts.
         private const val DELETION_PING_DIR: String = "deletion_request"
+        private const val PENDING_PING_DIR: String = "pending_pings"
     }
 
     @get:Rule
@@ -88,5 +90,54 @@ class DeletionPingTest {
         assertFalse(getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued)
         // No new file should have been written
         assertEquals(0, pendingDeletionRequestDir.listFiles()?.size)
+    }
+
+    @Test
+    fun `non-deletion-pings are not uploaded when upload disabled`() {
+        // Create directory for pending pings
+        val pendingDeletionRequestDir = File(Glean.getDataDir(), DELETION_PING_DIR)
+        pendingDeletionRequestDir.mkdirs()
+        val pendingPingDir = File(Glean.getDataDir(), PENDING_PING_DIR)
+        pendingPingDir.mkdirs()
+
+        // Write a deletion-request ping file
+        var pingId = "775b6590-7f21-11ea-92e3-479998edf98c"
+        var submitPath = "/submit/org-mozilla-samples-gleancore/deletion-request/1/$pingId"
+        var content = "$submitPath\n{}"
+        var pingFile = File(pendingDeletionRequestDir, pingId)
+        assertTrue(pingFile.createNewFile())
+        pingFile.writeText(content)
+
+        // Write a baseline ping file
+        pingId = "899b0ab8-7f20-11ea-ac03-ff76f2a19f1c"
+        submitPath = "/submit/org-mozilla-samples-gleancore/baseline/1/$pingId"
+        content = "$submitPath\n{}"
+        pingFile = File(pendingPingDir, pingId)
+        assertTrue(pingFile.createNewFile())
+        pingFile.writeText(content)
+
+        val server = getMockWebServer()
+        val context = getContextWithMockedInfo()
+
+        resetGlean(context, Glean.configuration.copy(
+            serverEndpoint = "http://" + server.hostName + ":" + server.port,
+            logPings = true
+        ), clearStores = true, uploadEnabled = false)
+        triggerWorkManager(context)
+
+        var request = server.takeRequest(20L, TimeUnit.SECONDS)
+        var docType = request.path.split("/")[3]
+        assertEquals("Should have received a deletion-request ping", "deletion-request", docType)
+
+        // deletion-request ping is gone
+        assertEquals(0, pendingDeletionRequestDir.listFiles()?.size)
+
+        // Wait a bit to ensure no further ping is received.
+        // Unfortunately this requires us to wait for the timeout.
+        request = server.takeRequest(2L, TimeUnit.SECONDS)
+        assertNull("Should not receive any further pings", request)
+
+        // 'baseline' ping is removed from disk.
+        assertEquals(0, pendingPingDir.listFiles()?.size)
     }
 }
