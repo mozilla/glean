@@ -69,17 +69,7 @@ If the metric is still needed after its expiration date, it should go back for [
 
 The `lifetime` parameter of a metric defines when its value will be cleared. There are three lifetime options available:
 
-- `ping` (default): The metric is cleared each time it is submitted in the ping.
-  This is the most common case, and should be used for metrics that are highly dynamic, such as things computed in response to the user's interaction with the application.
-  
-- `application`: The metric is related to an application run, and is cleared after the application restarts and any Glean-owned ping, due at startup, is submitted.
-  This should be used for things that are constant during the run of an application, such as the operating system version.
-  In practice, these metrics are generally set during application startup.
-  A common mistake---using the `ping` lifetime for these type of metrics---means that they will only be included in the first ping sent during a particular run of the application.
-  
-- `user`: The metric is part of the user's profile.
-  This should be used for things that change only when the user's profile is created.
-  It is rare to use this lifetime outside of some metrics that are built in to Glean, such as `client_id`.
+{{#include lifetimes-parameters.md}}
 
 While lifetimes are important to understand for all metric types, they are particularly important for the metric types that record single values and don't aggregate on the client (`boolean`, `string`, `labeled_string`, `string_list`, `datetime` and `uuid`), since these metrics will send the "last known" value and missing the earlier values could be a form of unintended data loss.
 
@@ -87,7 +77,7 @@ While lifetimes are important to understand for all metric types, they are parti
 
 Let's work through an example to see how these lifetimes play out in practice. Let's suppose we have a user preference, "turbo mode", which defaults to `false`, but the user can turn it to `true` at any time.  We want to know when this flag is `true` so we can measure its affect on other metrics in the same ping.  In the following diagram, we look at a time period that sends 4 pings across two separate runs of the application. We assume here, that like Glean's built-in [metrics ping](pings/metrics.html), the developer writing the metric isn't in control of when the ping is submitted. 
 
-In this diagram, the ping "lifetimes" are represented as rectangles, but the moment the ping is "submitted" is represented by its right edge. The user changes the "turbo mode" setting from `false` to `true` in the first run, and then toggles it again twice in the second run. 
+In this diagram, the ping measurement windows are represented as rectangles, but the moment the ping is "submitted" is represented by its right edge. The user changes the "turbo mode" setting from `false` to `true` in the first run, and then toggles it again twice in the second run. 
   
 ![Metric lifetime timeline](metric-lifetime-timeline.svg)
 
@@ -137,6 +127,23 @@ For example, if defining a set of events related to search, put them in a catego
 The current set of metrics Glean supports is based on known common use cases, but new use cases are discovered all the time.
 
 Please reach out to us on [#glean:mozilla.org](https://chat.mozilla.org/#/room/#glean:mozilla.org). If you think you need a new metric type, we [have a process for that](metrics/index.html#adding-or-changing-metric-types).
+
+### How do I make sure my metric is working?
+
+Glean has rich support for writing unit tests involving metrics. Writing a good unit test is a large topic, but in general, you should write unit tests for all new telemetry that does the following:
+
+- Performs the operation being measured.
+
+- Asserts that metrics contain the expected data, using the `testGetValue` API on the metric.
+
+- Where applicable, asserts that no errors are recorded, such as when values are out of range, using the `testGetNumRecordedErrors` API.
+
+In addition to unit tests, it is good practice to validate the incoming data for the new metric on a pre-release channel to make sure things are working as expected.
+
+<!--
+TODO: This will be a good place to talk about the product telemetry health
+dashboard when that's ready
+-->
 
 ## Adding the metric to the `metrics.yaml` file
 

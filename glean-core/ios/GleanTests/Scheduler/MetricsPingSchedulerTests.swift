@@ -125,7 +125,7 @@ class MetricsPingSchedulerTests: XCTestCase {
                 byAdding: .day,
                 value: 1,
                 to: now,
-                wrappingComponents: true
+                wrappingComponents: false
             )!
         )!
         XCTAssertEqual(

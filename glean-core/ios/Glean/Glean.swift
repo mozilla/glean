@@ -50,6 +50,7 @@ public class Glean {
         self.initialized = false
     }
 
+    // swiftlint:disable function_body_length
     /// Initialize the Glean SDK.
     ///
     /// This should only be initialized once by the application, and not by
@@ -83,7 +84,7 @@ public class Glean {
                 // The FileManager returns `file://` URLS with absolute paths.
                 // The Rust side expects normal path strings to be used.
                 // `relativePath` for a file URL gives us the absolute filesystem path.
-                dataDir: getDocumentsDirectory().relativePath,
+                dataDir: getGleanDirectory().relativePath,
                 packageName: AppInfo.name,
                 uploadEnabled: uploadEnabled,
                 configuration: configuration
@@ -126,6 +127,18 @@ public class Glean {
             // Check for overdue metrics pings
             self.metricsPingScheduler.schedule()
 
+            // Check if the "dirty flag" is set. That means the product was probably
+            // force-closed. If that's the case, submit a 'baseline' ping with the
+            // reason "dirty_startup". We only do that from the second run.
+            if !isFirstRun {
+                if glean_is_dirty_flag_set().toBool() {
+                    self.submitPingByNameSync(
+                        pingName: "baseline",
+                        reason: "dirty_startup"
+                    )
+                }
+            }
+
             // From the second time we run, after all startup pings are generated,
             // make sure to clear `lifetime: application` metrics and set them again.
             // Any new value will be sent in newly generted pings after startup.
@@ -140,18 +153,6 @@ public class Glean {
             // Signal Dispatcher that init is complete
             Dispatchers.shared.flushQueuedInitialTasks()
 
-            // Check if the "dirty flag" is set. That means the product was probably
-            // force-closed. If that's the case, submit a 'baseline' ping with the
-            // reason "dirty_startup". We only do that from the second run.
-            if !isFirstRun {
-                if glean_is_dirty_flag_set().toBool() {
-                    self.submitPingByNameSync(
-                        pingName: "baseline",
-                        reason: "dirty_startup"
-                    )
-                }
-            }
-
             self.observer = GleanLifecycleObserver()
         }
     }
@@ -164,7 +165,6 @@ public class Glean {
         // generated. We use an internal only API to do that.
 
         GleanBaseline.locale.setSync(getLocaleTag())
-        GleanInternalMetrics.os.setSync(Sysctl.os)
         GleanInternalMetrics.osVersion.setSync(UIDevice.current.systemVersion)
         GleanInternalMetrics.deviceManufacturer.setSync(Sysctl.manufacturer)
         GleanInternalMetrics.deviceModel.setSync(Sysctl.model)
@@ -298,6 +298,14 @@ public class Glean {
         return glean_experiment_test_is_active(experimentId).toBool()
     }
 
+    /// PUBLIC TEST ONLY FUNCTION.
+    ///
+    /// Get recorded experiment data for a given `experimentId`.
+    ///
+    /// - parameters:
+    ///     * experimentId: The id of the experiment to look for.
+    ///
+    /// - returns: `RecordedExperimentData` if the experiment is active and reported in pings, `nil` otherwise.
     public func testGetExperimentData(experimentId: String) -> RecordedExperimentData? {
         Dispatchers.shared.assertInTestingMode()
         let jsonString = String(
@@ -322,8 +330,8 @@ public class Glean {
 
     /// Handle background event and submit appropriate pings
     func handleBackgroundEvent() {
-        Pings.shared.baseline.submit()
-        Pings.shared.events.submit()
+        Pings.shared.baseline.submit(reason: .background)
+        Pings.shared.events.submit(reason: .background)
     }
 
     /// Collect and submit a ping by name for eventual uploading
@@ -475,7 +483,9 @@ public class Glean {
     /// - parameters:
     ///     * configuration: the `Configuration` to init Glean with
     ///     * clearStores: if true, clear the contents of all stores
-    public func resetGlean(configuration: Configuration = Configuration(), clearStores: Bool) {
+    public func resetGlean(configuration: Configuration = Configuration(),
+                           clearStores: Bool,
+                           uploadEnabled: Bool = true) {
         enableTestingMode()
 
         if isInitialized() && clearStores {
@@ -485,6 +495,6 @@ public class Glean {
 
         // Init Glean.
         testDestroyGleanHandle()
-        initialize(uploadEnabled: true, configuration: configuration)
+        initialize(uploadEnabled: uploadEnabled, configuration: configuration)
     }
 }

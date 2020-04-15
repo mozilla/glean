@@ -451,7 +451,7 @@ class GleanTest {
         // Given the following block of code:
         //
         // Metric.A.set("SomeTestValue")
-        // Glean.sendPings(listOf("custom-ping-1"))
+        // Glean.submitPings(listOf("custom-ping-1"))
         //
         // This test ensures that "custom-ping-1" contains "metric.a" with a value of "SomeTestValue"
         // when the ping is collected.
@@ -642,5 +642,102 @@ class GleanTest {
         )
 
         Dispatchers.API.overflowCount = 0
+    }
+
+    @Test
+    fun `sending deletion ping if disabled outside of run`() {
+        val server = getMockWebServer()
+        resetGlean(
+            context,
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
+                logPings = true
+            ),
+            uploadEnabled = true
+        )
+
+        resetGlean(
+            context,
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
+                logPings = true
+            ),
+            uploadEnabled = false,
+            clearStores = false
+        )
+
+        // Now trigger it to upload
+        triggerWorkManager(context, DeletionPingUploadWorker.PING_WORKER_TAG)
+
+        val request = server.takeRequest(20L, TimeUnit.SECONDS)
+        val docType = request.path.split("/")[3]
+        assertEquals("deletion-request", docType)
+    }
+
+    @Test
+    fun `no sending of deletion ping if unchanged outside of run`() {
+        val server = getMockWebServer()
+        resetGlean(
+            context,
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
+                logPings = true
+            ),
+            uploadEnabled = false
+        )
+
+        resetGlean(
+            context,
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
+                logPings = true
+            ),
+            uploadEnabled = false,
+            clearStores = false
+        )
+
+        assertEquals(0, server.requestCount)
+    }
+
+    @Test
+    fun `test sending of startup baseline ping with application lifetime metric`() {
+        // Set the dirty flag.
+        LibGleanFFI.INSTANCE.glean_set_dirty_flag(true.toByte())
+
+        val stringMetric = StringMetricType(
+            disabled = false,
+            category = "telemetry",
+            lifetime = Lifetime.Application,
+            name = "app_lifetime",
+            sendInPings = listOf("baseline")
+        )
+        stringMetric.set("HELLOOOOO!")
+
+        // Restart glean and don't clear the stores.
+        val server = getMockWebServer()
+        val context = getContextWithMockedInfo()
+        resetGlean(context, Glean.configuration.copy(
+            serverEndpoint = "http://" + server.hostName + ":" + server.port,
+            logPings = true
+        ), false)
+
+        try {
+            // Trigger worker task to upload the pings in the background
+            triggerWorkManager(context)
+
+            val request = server.takeRequest(20L, TimeUnit.SECONDS)
+            val docType = request.path.split("/")[3]
+            assertEquals("The received ping must be a 'baseline' ping", "baseline", docType)
+
+            val baselineJson = JSONObject(request.body.readUtf8())
+            assertEquals("dirty_startup", baselineJson.getJSONObject("ping_info")["reason"])
+            checkPingSchema(baselineJson)
+
+            val appLifetimeMetricsObject = baselineJson.getJSONObject("metrics")
+            val appLifetimeStringMetrics = appLifetimeMetricsObject.getJSONObject("string")
+            assertEquals("HELLOOOOO!", appLifetimeStringMetrics.get("telemetry.app_lifetime"))
+        } finally {
+            server.shutdown()
+        }
     }
 }

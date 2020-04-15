@@ -2,6 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+"""
+The main Glean general API.
+"""
+
 
 import atexit
 import json
@@ -16,10 +20,10 @@ from typing import Dict, List, Optional, Set, TYPE_CHECKING
 from .config import Configuration
 from ._dispatcher import Dispatcher
 from . import _ffi
-from . import hardware
 from .net import PingUploadWorker
 from .net import DeletionPingUploadWorker
-from . import util
+from ._process_dispatcher import ProcessDispatcher
+from . import _util
 
 
 # To avoid cyclical imports, but still make mypy type-checking work.
@@ -31,6 +35,15 @@ if TYPE_CHECKING:
 log = logging.getLogger(__name__)
 
 
+def _rmtree(path) -> bool:
+    """
+    A small wrapper around shutil.rmtree to make it runnable on the
+    ProcessDispatcher.
+    """
+    shutil.rmtree(path)
+    return True
+
+
 class Glean:
     """
     The main Glean API.
@@ -38,7 +51,11 @@ class Glean:
     Before any data collection can take place, the Glean SDK **must** be
     initialized from the application.
 
-    >>> Glean.initialize(application_id="my-app", application_version="0.0.0", upload_enabled=True)
+    >>> Glean.initialize(
+    ...     application_id="my-app",
+    ...     application_version="0.0.0",
+    ...     upload_enabled=True
+    ... )
     """
 
     # Whether Glean was initialized
@@ -154,7 +171,7 @@ class Glean:
             def check_pending_deletion_request():
                 DeletionPingUploadWorker.process()
 
-    @util.classproperty
+    @_util.classproperty
     def configuration(cls):
         """
         Access the configuration object to change dynamic parameters.
@@ -162,17 +179,29 @@ class Glean:
         return cls._configuration
 
     @classmethod
-    def reset(cls):
+    def _reset(cls):
         """
         Resets the Glean singleton.
         """
         # TODO: 1594184 Send the metrics ping
+
+        # WARNING: Do not run any tasks on the Dispatcher from here since this
+        # is called atexit, which also waits for the Dispatcher queue to
+        # complete.
+
         Dispatcher.reset()
         if cls._initialized:
             _ffi.lib.glean_destroy_glean()
         cls._initialized = False
         if cls._destroy_data_dir and cls._data_dir.exists():
-            shutil.rmtree(str(cls._data_dir))
+            # This needs to be run in the same one-at-a-time process as the
+            # PingUploadWorker to avoid a race condition. This will block the
+            # main thread waiting for all pending uploads to complete, but this
+            # only happens during testing when the data directory is a
+            # temporary directory, so there is no concern about delaying
+            # application shutdown here.
+            p = ProcessDispatcher.dispatch(_rmtree, (str(cls._data_dir),))
+            p.join()
 
     @classmethod
     def is_initialized(cls) -> bool:
@@ -344,15 +373,10 @@ class Glean:
         """
         from ._builtins import metrics
 
-        metrics.glean.baseline.locale.set(util.get_locale_tag())
-        metrics.glean.internal.metrics.os.set(platform.system())
+        metrics.glean.baseline.locale.set(_util.get_locale_tag())
         metrics.glean.internal.metrics.os_version.set(platform.release())
         metrics.glean.internal.metrics.architecture.set(platform.machine())
-        metrics.glean.internal.metrics.locale.set(util.get_locale_tag())
-
-        sysinfo = hardware.get_system_information()
-        metrics.glean.internal.metrics.device_manufacturer.set(sysinfo.manufacturer)
-        metrics.glean.internal.metrics.device_model.set(sysinfo.model)
+        metrics.glean.internal.metrics.locale.set(_util.get_locale_tag())
 
         if cls._configuration.channel is not None:
             metrics.glean.internal.metrics.app_channel.set(cls._configuration.channel)
@@ -434,4 +458,4 @@ class Glean:
 __all__ = ["Glean"]
 
 
-atexit.register(Glean.reset)
+atexit.register(Glean._reset)

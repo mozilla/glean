@@ -4,12 +4,14 @@ Every Glean ping is in JSON format and contains one or more of the [common secti
 
 If data collection is enabled, the Glean SDK provides a set of built-in pings that are assembled out of the box without any developer intervention.  The following is a list of these built-in pings:
 
-- [`baseline` ping](baseline.md)
-- [`deletion-request` ping](deletion_request.md)
-- [`metrics` ping](metrics.md)
-- [`events` ping](events.md)
+- [`baseline` ping](baseline.md): A small ping sent every time the application goes to background.
+- [`metrics` ping](metrics.md): The default ping for metrics. Sent approximately daily.
+- [`events` ping](events.md): The default ping for events. Sent every time the application goes to background or a certain number of events is reached.
+- [`deletion-request` ping](deletion_request.md): Sent when the user disables telemetry in order to request a deletion of their data.
 
-Applications can also define and send their own [custom pings](custom.md).
+Applications can also define and send their own [custom pings](custom.md) when the schedules of these pings is not suitable.
+
+There is also a [high-level overview](ping-schedules-and-timings.html) of how the `metrics` and `baseline` pings relate and the timings they record.
 
 ## Ping sections
 
@@ -31,7 +33,7 @@ Optional fields are marked accordingly.
 | `experiments` | Object | *Optional*. A dictionary of [active experiments](#the-experiments-object) |
 | `start_time` | Datetime | The time of the start of collection of the data in the ping, in local time and with minute precision, including timezone information. |
 | `end_time` | Datetime | The time of the end of collection of the data in the ping, in local time and with minute precision, including timezone information. This is also the time this ping was generated and is likely well before ping transmission time. |
-| `reason` | String | The optional reason the ping was submitted. The specific set of values and their meanings are defined for each metric type in the `reasons` field in the `pings.yaml` file. |
+| `reason` | String | *Optional*. The reason the ping was submitted. The specific set of values and their meanings are defined for each metric type in the `reasons` field in the `pings.yaml` file. |
 
 All the metrics surviving application restarts (e.g. `seq`, ...) are removed once the application using the Glean SDK is uninstalled.
 
@@ -46,14 +48,14 @@ Optional fields are marked accordingly.
 | `app_display_version` | String | The user-visible version string (e.g. "1.0.3") |
 | `architecture` | String | The architecture of the device (e.g. "arm", "x86") |
 | `client_id` | UUID |  *Optional* A UUID identifying a profile and allowing user-oriented correlation of data |
-| `device_manufacturer` | String | The manufacturer of the device |
-| `device_model` | String | The model name of the device. On Android, this is [`Build.MODEL`], the user-visible name of the device. |
+| `device_manufacturer` | String | *Optional* The manufacturer of the device |
+| `device_model` | String | *Optional* The model name of the device. On Android, this is [`Build.MODEL`], the user-visible name of the device. |
 | `first_run_date` | Datetime | The date of the first run of the application, in local time and with day precision, including timezone information. |
 | `os` | String | The name of the operating system (e.g. "linux", "Android", "ios") |
 | `os_version` | String | The user-visible version of the operating system (e.g. "1.2.3") |
 | `android_sdk_version` | String | *Optional*. The Android specific SDK version of the software running on this hardware device (e.g. "23") |
 | `telemetry_sdk_build` | String | The version of the Glean SDK |
-| `locale` | String | The locale of the application (e.g. "es-ES") |
+| `locale` | String | *Optional*. The locale of the application during initialization (e.g. "es-ES"). If the locale can't be determined on the system, the value is "und", to indicate "undetermined". |
 
 All the metrics surviving application restarts (e.g. `client_id`, ...) are removed once the application using the Glean SDK is uninstalled.
 

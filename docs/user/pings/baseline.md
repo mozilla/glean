@@ -11,28 +11,22 @@ This ping is intended to provide metrics that are managed by the library itself,
 The `baseline` ping is automatically submitted with a `reason: background` when the application is moved to the [background](index.md#defining-background-state).
 The `baseline` ping will be submitted at startup with a `reason: dirty_startup`, if the previous session was not cleanly closed. This only happens from the second start.
 
+See also the [ping schedules and timing overview](ping-schedules-and-timings.html).
+
 ## Contents
 
 The baseline ping includes the following fields:
 
 | Field name | Type | Description |
 |---|---|---|
-| `duration` | Timespan | The duration, in seconds, of the last foreground session. Only available if `reason: background`. [^1]  |
-| `locale` | String | The locale of the application. |
+| `duration` | Timespan | The duration, in seconds, of the last foreground session. Only available if `reason: background`. [^1] |
+| `locale` | String | The locale of the application. [^2] |
 
-[^1]: A quick note about the `duration` metric: it measures specifically the time that the user spent in the last foreground session.
-This is distinct from the `start_time` and `end_time` values (on every ping), which measure the ping lifetime.  `start_time` is always set to be the time the previous ping of the same type was sent, so the span from `start_time` to `end_time` is normally longer than the span measured by `duration`.
+[^1]: See also the [ping schedules and timing overview](ping-schedules-and-timings.html) for how the `duration` metric relates to other sources of timing in the `baseline` ping.
 
-```
-  ↑   ↓           ↑          ↓
-      start_time             end_time
-                  ~~~~~~~~~~~duration
+[^2]: The locale metric in the baseline ping is deprecated. Use [`client_info.locale`](index.html#The-client-info-section) instead. 
 
-  ↑ = foreground
-  ↓ = background
-```
-
-The `baseline` ping shall also include the common [ping sections](index.md#ping-sections) found in all pings.
+The `baseline` ping also includes the common [ping sections](index.md#ping-sections) found in all pings.
 
 ### Querying ping contents
 

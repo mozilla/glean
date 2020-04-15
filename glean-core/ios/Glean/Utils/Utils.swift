@@ -22,6 +22,7 @@ extension UInt8 {
 ///
 /// This should only be used in tests.
 extension String: Error {
+    /// The string itself is the error description.
     public var errorDescription: String? { return self }
 }
 
@@ -97,11 +98,11 @@ extension String {
     }
 }
 
-/// Helper function to retrive the application's Documents directory for persistent file storage
+/// Helper function to retrive the application's Application Support directory for persistent file storage
 ///
-/// - returns: `String` representation of the path to the Documents directory
-func getDocumentsDirectory() -> URL {
-    let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+/// - returns: `URL` of the Application Support directory
+func getGleanDirectory() -> URL {
+    let paths = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
     let documentsDirectory = paths[0]
     return documentsDirectory.appendingPathComponent("glean_data")
 }
@@ -202,11 +203,13 @@ func timestampNanos() -> UInt64 {
 }
 
 /// Gets a gecko-compatible locale string (e.g. "es-ES")
+// If the locale can't be determined on the system, the value is "und",
+// to indicate "undetermined".
 ///
 /// - returns: a locale string that supports custom injected locale/languages.
 func getLocaleTag() -> String {
     if NSLocale.current.languageCode == nil {
-        return "??"
+        return "und"
     } else {
         if NSLocale.current.regionCode == nil {
             return NSLocale.current.languageCode!

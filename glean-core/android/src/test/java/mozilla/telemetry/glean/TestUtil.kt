@@ -114,7 +114,8 @@ internal fun resetGlean(
     context: Context = ApplicationProvider.getApplicationContext(),
     config: Configuration = Configuration(),
     clearStores: Boolean = true,
-    redirectRobolectricLogs: Boolean = true
+    redirectRobolectricLogs: Boolean = true,
+    uploadEnabled: Boolean = true
 ) {
     if (redirectRobolectricLogs) {
         ShadowLog.stream = System.out
@@ -123,7 +124,7 @@ internal fun resetGlean(
     // We're using the WorkManager in a bunch of places, and Glean will crash
     // in tests without this line. Let's simply put it here.
     WorkManagerTestInitHelper.initializeTestWorkManager(context)
-    Glean.resetGlean(context, config, clearStores)
+    Glean.resetGlean(context, config, clearStores, uploadEnabled = uploadEnabled)
 }
 
 /**

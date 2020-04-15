@@ -102,20 +102,75 @@ commands:
           name: Python tests
           command: make test-python
 
+  build-windows-x86_64-wheel:
+    steps:
+      - install-rustup
+      - setup-rust-toolchain
+      - install-mingw
+      - run:
+          name: Install Python development tools for host
+          command:
+            make python-setup
+      - run:
+          name: Build Windows glean_ffi.dll
+          command:
+            cargo build --target x86_64-pc-windows-gnu
+      - run:
+          name: Build Windows wheel
+          command: |
+            cd glean-core/python
+            GLEAN_PYTHON_MINGW_X86_64_BUILD=1 .venv3.7/bin/python3 setup.py bdist_wheel
+
+  build-windows-i686-wheel:
+    steps:
+      - install-rustup
+      - setup-rust-toolchain
+      - install-mingw
+      - run:
+          name: Install Python development tools for host
+          command:
+            make python-setup
+      - run:
+          name: Build Windows glean_ffi.dll
+          command:
+            RUSTFLAGS="-C panic=abort" cargo build --target i686-pc-windows-gnu
+      - run:
+          name: Build Windows wheel
+          command: |
+            cd glean-core/python
+            GLEAN_PYTHON_MINGW_I686_BUILD=1 .venv3.7/bin/python3 setup.py bdist_wheel
+
+  install-python-windows-deps:
+    steps:
+      - run:
+          name: Set up dependencies for Python for Windows
+          command: |
+            echo "export WINEDEBUG=-all" >> $BASH_ENV
+            wget https://bootstrap.pypa.io/get-pip.py
+            $WINPYTHON get-pip.py
+            echo "import site" >> winpython/python37._pth
+            echo "import sys; sys.path.insert(0, '')" >> winpython/sitecustomize.py
+            $WINPYTHON -m pip install -r glean-core/python/requirements_dev.txt --no-warn-script-location
+            $WINPYTHON -m pip install glean-core/python/dist/*.whl --no-warn-script-location
+
   install-mingw:
     steps:
       - run:
           name: Install mingw
           command: |
             sudo apt update
+            # This package contains tools for both i686 and x86_64 targets
             sudo apt install -y gcc-mingw-w64
       - run:
           name: Add mingw target
           command: |
             rustup target add x86_64-pc-windows-gnu
+            rustup target add i686-pc-windows-gnu
             # Set the linker to use for Rust/mingw
             echo '[target.x86_64-pc-windows-gnu]' >> ~/.cargo/config
             echo 'linker = "/usr/bin/x86_64-w64-mingw32-gcc"' >> ~/.cargo/config
+            echo '[target.i686-pc-windows-gnu]' >> ~/.cargo/config
+            echo 'linker = "/usr/bin/i686-w64-mingw32-gcc"' >> ~/.cargo/config
       - run:
           name: Fix broken mingw toolchain
           command: |
@@ -124,6 +179,7 @@ commands:
             # https://github.com/rust-lang/rust/issues/49078
             # https://wiki.archlinux.org/index.php/Rust#Windows
             for lib in crt2.o dllcrt2.o libmsvcrt.a; do cp -v /usr/x86_64-w64-mingw32/lib/$lib ~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-pc-windows-gnu/lib/; done
+            for lib in crt2.o dllcrt2.o libmsvcrt.a; do cp -v /usr/i686-w64-mingw32/lib/$lib ~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/i686-pc-windows-gnu/lib/; done
 
   install-ghr-darwin:
     steps:
@@ -471,7 +527,7 @@ jobs:
 
   Check Swift formatting:
     macos:
-      xcode: "11.3.0"
+      xcode: "11.4.0"
     steps:
       - checkout
       - run:
@@ -491,7 +547,7 @@ jobs:
 
   iOS build and test:
     macos:
-      xcode: "11.3.0"
+      xcode: "11.4.0"
     steps:
       - checkout
       - run:
@@ -522,7 +578,7 @@ jobs:
             rustup target add aarch64-apple-ios x86_64-apple-ios
             bin/bootstrap.sh
             # See https://circleci.com/docs/2.0/testing-ios/#pre-starting-the-simulator
-            xcrun instruments -w "iPhone 11 (13.3) [" || true
+            xcrun instruments -w "iPhone 11 (13.4) [" || true
             # Store build type for use in cache key
             if [ -z "${CIRCLE_TAG}" ]; then
               echo "release" > buildtype.txt
@@ -603,7 +659,7 @@ jobs:
 
   iOS integration test:
     macos:
-      xcode: "11.3.0"
+      xcode: "11.4.0"
     steps:
       - checkout
       - skip-if-doc-only
@@ -614,7 +670,7 @@ jobs:
           command: |
             rustup target add aarch64-apple-ios x86_64-apple-ios
             # See https://circleci.com/docs/2.0/testing-ios/#pre-starting-the-simulator
-            xcrun instruments -w "iPhone 11 (13.3) [" || true
+            xcrun instruments -w "iPhone 11 (13.4) [" || true
       - attach_workspace:
           at: .
       - run:
@@ -654,7 +710,7 @@ jobs:
 
   Carthage release:
     macos:
-      xcode: "11.3.0"
+      xcode: "11.4.0"
     steps:
       - checkout
       - attach_workspace:
@@ -667,7 +723,7 @@ jobs:
 
   macOS release build:
     macos:
-      xcode: "11.3.0"
+      xcode: "11.4.0"
     steps:
       - install-rustup
       - setup-rust-toolchain
@@ -716,7 +772,63 @@ jobs:
       - test-python
       - persist_to_workspace:
           root: glean-core/python/
-          paths: .venv
+          paths: .venv3.7
+
+  Python 3_8 tests:
+    docker:
+      - image: circleci/python:3.8.2
+    steps:
+      - checkout
+      - skip-if-doc-only
+      - test-python
+
+  Python Windows x86_64 tests:
+    docker:
+      - image: circleci/python:3.7.6
+    steps:
+      - checkout
+      - build-windows-x86_64-wheel
+      - run:
+          name: Install Wine
+          command: |
+            sudo apt install wine
+      - run:
+          name: Install Python for Windows
+          command: |
+            wget https://www.python.org/ftp/python/3.7.7/python-3.7.7-embed-amd64.zip
+            mkdir winpython
+            unzip python-3.7.7-embed-amd64.zip -d winpython
+            echo "export WINPYTHON=\"wine64 winpython/python.exe\"" >> $BASH_ENV
+      - install-python-windows-deps
+      - run:
+          name: Run tests
+          command: |
+            $WINPYTHON -m pytest glean-core/python/tests
+
+  Python Windows i686 tests:
+    docker:
+      - image: circleci/python:3.7.6
+    steps:
+      - checkout
+      - build-windows-i686-wheel
+      - run:
+          name: Install Wine
+          command: |
+            sudo dpkg --add-architecture i386
+            sudo apt update
+            sudo apt install wine32
+      - run:
+          name: Install Python for Windows
+          command: |
+            wget https://www.python.org/ftp/python/3.7.7/python-3.7.7-embed-win32.zip
+            mkdir winpython
+            unzip python-3.7.7-embed-win32.zip -d winpython
+            echo "export WINPYTHON=\"wine winpython/python.exe\"" >> $BASH_ENV
+      - install-python-windows-deps
+      - run:
+          name: Run tests
+          command: |
+            $WINPYTHON -m pytest glean-core/python/tests
 
   Generate Python documentation:
     docker:
@@ -727,7 +839,7 @@ jobs:
           at: glean-core/python/
       - run:
           name: Generate Python docs
-          command: glean-core/python/.venv/bin/python3 -m pdoc --html glean --force -o build/docs/python
+          command: glean-core/python/.venv3.7/bin/python3 -m pdoc --html glean --force -o build/docs/python
       - persist_to_workspace:
           root: build/
           paths: docs/python
@@ -752,11 +864,11 @@ jobs:
           name: Build Linux wheel
           command: |
             cd glean-core/python
-            .venv/bin/python3 setup.py bdist_wheel
-            .venv/bin/python3 -m auditwheel repair dist/*.whl
+            .venv3.7/bin/python3 setup.py bdist_wheel
+            .venv3.7/bin/python3 -m auditwheel repair dist/*.whl
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
-            .venv/bin/python3 -m twine upload wheelhouse/*
+            .venv3.7/bin/python3 -m twine upload wheelhouse/*
       - install-ghr-linux
       - run:
           name: Publish to Github
@@ -766,7 +878,7 @@ jobs:
 
   pypi-macos-release:
     macos:
-      xcode: "11.3.0"
+      xcode: "11.4.0"
     steps:
       - install-rustup
       - setup-rust-toolchain
@@ -779,10 +891,10 @@ jobs:
           name: Build macOS wheel
           command: |
             cd glean-core/python
-            .venv/bin/python3 setup.py bdist_wheel
+            .venv3.7/bin/python3 setup.py bdist_wheel
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
-            .venv/bin/python3 -m twine upload dist/*
+            .venv3.7/bin/python3 -m twine upload dist/*
       - install-ghr-darwin
       - run:
           name: Publish to Github
@@ -790,30 +902,39 @@ jobs:
             # Upload to GitHub
             ./ghr -replace ${CIRCLE_TAG} glean-core/python/dist
 
-  pypi-windows-release:
+  pypi-windows-x86_64-release:
     docker:
       - image: circleci/python:3.7.6
     steps:
-      - install-rustup
-      - setup-rust-toolchain
-      - install-mingw
       - checkout
+      - build-windows-x86_64-wheel
       - run:
-          name: Install Python development tools for host
-          command:
-            make python-setup
-      - run:
-          name: Build Windows glean_ffi.dll
-          command:
-            cargo build --target x86_64-pc-windows-gnu
-      - run:
-          name: Build Windows wheel
+          name: Upload to PyPI
           command: |
             cd glean-core/python
-            GLEAN_PYTHON_MINGW_BUILD=1 .venv/bin/python3 setup.py bdist_wheel
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
-            .venv/bin/python3 -m twine upload dist/*
+            .venv3.7/bin/python3 -m twine upload dist/*
+      - install-ghr-linux
+      - run:
+          name: Publish to Github
+          command: |
+            # Upload to GitHub
+            ./ghr -replace ${CIRCLE_TAG} glean-core/python/dist
+
+  pypi-windows-i686-release:
+    docker:
+      - image: circleci/python:3.7.6
+    steps:
+      - checkout
+      - build-windows-i686-wheel
+      - run:
+          name: Upload to PyPI
+          command: |
+            cd glean-core/python
+            # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
+            # variables are configured in CircleCI's environment variables.
+            .venv3.7/bin/python3 -m twine upload dist/*
       - install-ghr-linux
       - run:
           name: Publish to Github
@@ -933,6 +1054,9 @@ workflows:
       - Python 3_5 tests
       - Python 3_6 tests
       - Python 3_7 tests
+      - Python 3_8 tests
+      - Python Windows x86_64 tests
+      - Python Windows i686 tests
 
       - Generate Rust documentation:
           requires:
@@ -1001,7 +1125,11 @@ workflows:
           requires:
             - Python 3_7 tests
           filters: *release-filters
-      - pypi-windows-release:
+      - pypi-windows-i686-release:
+          requires:
+            - Python 3_7 tests
+          filters: *release-filters
+      - pypi-windows-x86_64-release:
           requires:
             - Python 3_7 tests
           filters: *release-filters

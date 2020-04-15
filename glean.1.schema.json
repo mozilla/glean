@@ -59,8 +59,6 @@
         "app_build",
         "app_display_version",
         "architecture",
-        "device_manufacturer",
-        "device_model",
         "first_run_date",
         "os",
         "os_version",

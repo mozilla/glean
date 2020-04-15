@@ -191,4 +191,69 @@ class TimespanMetricTypeTests: XCTestCase {
 
         XCTAssertEqual(1, metric.testGetNumRecordedErrors(.invalidState))
     }
+
+    func testMeasureFunctionCorrectlySavesValues() {
+        let metric = TimespanMetricType(
+            category: "telemetry",
+            name: "timespan_metric",
+            sendInPings: ["store1"],
+            lifetime: .application,
+            disabled: false,
+            timeUnit: .millisecond
+        )
+
+        XCTAssertFalse(metric.testHasValue())
+
+        // Create a test function that returns a value so we can measure
+        // it and check that it returns the correct value from the
+        // measure function.
+        func testFunc(value: Bool) -> Bool {
+            return value
+        }
+
+        // Perform the measurement
+        let testValue = metric.measure {
+            testFunc(value: true)
+        }
+
+        // Ensure the return value of the test function is the one
+        // returned by the `measure` function
+        XCTAssertTrue(testValue)
+
+        // Check that the count was incremented and properly recorded.
+        XCTAssert(metric.testHasValue())
+        XCTAssert(try metric.testGetValue() >= 0)
+    }
+
+    func testMeasureFunctionThrows() {
+        let metric = TimespanMetricType(
+            category: "telemetry",
+            name: "timespan_metric",
+            sendInPings: ["store1"],
+            lifetime: .application,
+            disabled: false,
+            timeUnit: .millisecond
+        )
+
+        XCTAssertFalse(metric.testHasValue())
+
+        // Create a test function that throws an exception.
+        func testFunc() throws {
+            throw "invalid"
+        }
+
+        // Perform the measurement
+        do {
+            _ = try metric.measure {
+                try testFunc()
+            }
+
+            // The function throws, so this is unreachable
+            XCTAssert(false)
+        } catch {
+            // intentionally left empty
+        }
+
+        XCTAssertFalse(metric.testHasValue())
+    }
 }

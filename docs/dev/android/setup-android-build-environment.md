@@ -82,3 +82,8 @@ and all the build details can be left to the IDE.
 - **Q: Android Studio complains about Python not being found when building.**
 - A: Make sure that the `python` binary is on your `PATH`. On Windows, in addition to that,
 it might be required to add its full path to the `rust.pythonCommand` entry in  `$project_root/local.properties`.
+
+- **Q: Android Studio complains about `Toolchain for X does not exist`.**
+- A: On Windows, make sure that the `ndk.dir` property in `$project_root/local.properties` points to an existing
+directory containing the Android NDK.
+

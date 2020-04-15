@@ -65,7 +65,9 @@ pip install -r requirements_dev.txt
   $ make python-setup
 ```
 
-> *Note:* If you wish to change the location of the virtual environment that the `Makefile` uses, set the `GLEAN_PYENV` environment variable.
+The default location of the virtual environment used by the make file is `glean-core/python/.venvX.Y`, where `X.Y` is the version of Python in use. This makes it possible to build and test for multiple versions of Python in the same checkout.
+
+> *Note:* If you wish to change the location of the virtual environment that the `Makefile` uses, pass the `GLEAN_PYENV` environment variable: `make test-python GLEAN_PYENV=mypyenv`.
 
 ## Build the Python bindings
 
@@ -110,6 +112,30 @@ You can send extra parameters to the `py.test` command by setting the `PYTEST_AR
 
 ```bash
   $ make test-python PYTEST_ARGS="-s --pdb"
+```
+
+## Viewing logging output
+
+The Glean Python bindings have two sources of log messages: those that come from Python and those that come from Rust.
+
+### Python log messages
+
+Python log messages are emitted using the Python standard library's [`logging` module](https://docs.python.org/3/library/logging.html).
+This module provides a lot of possibilities for customization, but the easiest way to control the log level globally is with [`logging.basicConfig`](https://docs.python.org/3/library/logging.html#logging.basicConfig):
+
+```python
+import logging
+logging.basicConfig(level=logging.DEBUG)
+```
+
+### Rust log messages
+
+Rust log messages are emitted using [`env_logger`](https://docs.rs/env_logger/latest/env_logger/).
+The log level can be controlled with the `RUST_LOG` environment variable:
+
+```python
+import os
+os.environ["RUST_LOG"] = "DEBUG"
 ```
 
 ## Linting, formatting and type checking
@@ -174,5 +200,4 @@ The official wheels for Windows are produced on a Linux virtual machine using th
 
 The CircleCI configuration handles making these wheels from tagged releases.
 If you need to reproduce this locally, see the CircleCI job `pypi-windows-release` for an example of how this is done in practice.
-
 

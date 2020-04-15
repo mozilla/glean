@@ -9,6 +9,8 @@ import java.util.Locale
 /**
  * Gets a gecko-compatible locale string (e.g. "es-ES" instead of Java [Locale]
  * "es_ES") for the default locale.
+ * If the locale can't be determined on the system, the value is "und",
+ * to indicate "undetermined".
  *
  * This method approximates the API21 method [Locale.toLanguageTag].
  *
@@ -24,7 +26,12 @@ internal fun getLocaleTag(): String {
     val locale = Locale.getDefault()
     val language = getLanguageFromLocale(locale)
     val country = locale.country // Can be an empty string.
-    return if (country.isEmpty()) language else "$language-$country"
+
+    return when {
+        language.isEmpty() -> "und"
+        country.isEmpty() -> language
+        else -> "$language-$country"
+    }
 }
 
 /**

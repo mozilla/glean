@@ -84,6 +84,37 @@ XCTAssertEqual(1, Search.engines.testGetNumRecordedErrors(.invalidValue))
 
 </div>
 
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+
+metrics = load_metrics("metrics.yaml")
+
+# Add them one at a time
+for engine in engines:
+    metrics.search.engines.add(engine)
+
+# Set them in one go
+metrics.search.engines.set(engines)
+```
+
+There are test APIs available too:
+
+```Python
+# Was anything recorded?
+assert metrics.search.engines.test_has_value()
+# Does it have the expected value?
+# IMPORTANT: It may have been truncated -- see "Limits" below
+assert ["Google", "DuckDuckGo"] == metrics.search.engines.test_get_value()
+# Were any of the values too long, and thus an error was recorded?
+assert 1 == metrics.search.engines.test_get_num_recorded_errors(
+    ErrorType.INVALID_VALUE
+)
+```
+
+</div>
+
 {{#include ../../tab_footer.md}}
 
 ## Limits
@@ -105,4 +136,5 @@ XCTAssertEqual(1, Search.engines.testGetNumRecordedErrors(.invalidValue))
 ## Reference
 
 * [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-string-list-metric-type/index.html)
+* [Python API docs](../../../python/glean/metrics/string_list.html)
 

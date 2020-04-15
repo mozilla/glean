@@ -15,6 +15,7 @@
     - [Using the experiments API](user/experiments-api.md)
     - [Metric types](user/metrics/index.md)
         - [Boolean](user/metrics/boolean.md)
+        - [Labeled Booleans](user/metrics/labeled_booleans.md)
         - [Counter](user/metrics/counter.md)
         - [Labeled Counters](user/metrics/labeled_counters.md)
         - [String](user/metrics/string.md)
@@ -29,6 +30,7 @@
         - [Custom Distribution](user/metrics/custom_distribution.md)
         - [Quantity](user/metrics/quantity.md)
     - [Pings](user/pings/index.md)
+        - [Ping schedules and timings overview](user/pings/ping-schedules-and-timings.md)
         - [Baseline Ping](user/pings/baseline.md)
         - [Deletion Request Ping](user/pings/deletion_request.md)
         - [Metrics Ping](user/pings/metrics.md)
@@ -67,6 +69,7 @@
         - [Payload format](dev/core/internal/payload.md).
         - [Directory structure](dev/core/internal/directory-structure.md)
         - [Debug Pings](dev/core/internal/debug-pings.md)
+        - [Implementations](dev/core/internal/implementations.md)
     - [Howtos](dev/howtos/index.md)
         - [Development with android-components](dev/howtos/development-with-android-components.md)
         - [Locally-published components in Fenix](dev/howtos/locally-published-components-in-fenix.md)

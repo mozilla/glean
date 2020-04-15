@@ -49,15 +49,6 @@ class CounterMetricType internal constructor(
     }
 
     /**
-     * Destroy this metric.
-     */
-    protected fun finalize() {
-        if (this.handle != 0L) {
-            LibGleanFFI.INSTANCE.glean_destroy_counter_metric(this.handle)
-        }
-    }
-
-    /**
      * Add to counter value.
      *
      * @param amount This is the amount to increment the counter by, defaulting to 1 if called

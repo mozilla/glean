@@ -51,10 +51,17 @@ where
     R: IntoFfi,
 {
     let mut error = ffi_support::ExternError::success();
-    let res = ffi_support::abort_on_panic::call_with_result(&mut error, || {
-        let glean = glean_core::global_glean().lock().unwrap();
-        callback(&glean)
-    });
+    let res =
+        ffi_support::abort_on_panic::call_with_result(
+            &mut error,
+            || match glean_core::global_glean() {
+                Some(glean) => {
+                    let glean = glean.lock().unwrap();
+                    callback(&glean)
+                }
+                None => Err(glean_core::Error::not_initialized()),
+            },
+        );
     handlemap_ext::log_if_error(error);
     res
 }
@@ -72,10 +79,17 @@ where
     R: IntoFfi,
 {
     let mut error = ffi_support::ExternError::success();
-    let res = ffi_support::abort_on_panic::call_with_result(&mut error, || {
-        let mut glean = glean_core::global_glean().lock().unwrap();
-        callback(&mut glean)
-    });
+    let res =
+        ffi_support::abort_on_panic::call_with_result(
+            &mut error,
+            || match glean_core::global_glean() {
+                Some(glean) => {
+                    let mut glean = glean.lock().unwrap();
+                    callback(&mut glean)
+                }
+                None => Err(glean_core::Error::not_initialized()),
+            },
+        );
     handlemap_ext::log_if_error(error);
     res
 }

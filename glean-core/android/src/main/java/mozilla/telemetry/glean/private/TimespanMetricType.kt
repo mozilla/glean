@@ -50,15 +50,6 @@ class TimespanMetricType internal constructor(
     }
 
     /**
-     * Destroy this metric.
-     */
-    protected fun finalize() {
-        if (this.handle != 0L) {
-            LibGleanFFI.INSTANCE.glean_destroy_timespan_metric(this.handle)
-        }
-    }
-
-    /**
      * Start tracking time for the provided metric.
      * This records an error if it’s already tracking time (i.e. start was already
      * called with no corresponding [stop]): in that case the original
@@ -95,6 +86,26 @@ class TimespanMetricType internal constructor(
         Dispatchers.API.launch {
             LibGleanFFI.INSTANCE.glean_timespan_set_stop(this@TimespanMetricType.handle, stopTime)
         }
+    }
+
+    /**
+     * Convenience method to simplify measuring a function or block of code
+     *
+     * If the measured function throws, the measurement is canceled and the exception rethrown.
+     */
+    @Suppress("TooGenericExceptionCaught")
+    inline fun <U> measure(funcToMeasure: () -> U): U {
+        start()
+
+        val returnValue = try {
+            funcToMeasure()
+        } catch (e: Exception) {
+            cancel()
+            throw e
+        }
+
+        stop()
+        return returnValue
     }
 
     /**
