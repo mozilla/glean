@@ -3,7 +3,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use ffi_support::{ConcurrentHandleMap, FfiStr};
-use lazy_static::lazy_static;
+use once_cell::sync::Lazy;
 
 use glean_core::metrics::PingType;
 
@@ -11,9 +11,8 @@ use crate::ffi_string_ext::FallibleToString;
 use crate::handlemap_ext::HandleMapExtension;
 use crate::{from_raw_string_array, with_glean_value, with_glean_value_mut, RawStringArray};
 
-lazy_static! {
-    pub(crate) static ref PING_TYPES: ConcurrentHandleMap<PingType> = ConcurrentHandleMap::new();
-}
+pub(crate) static PING_TYPES: Lazy<ConcurrentHandleMap<PingType>> =
+    Lazy::new(ConcurrentHandleMap::new);
 crate::define_infallible_handle_map_deleter!(PING_TYPES, glean_destroy_ping_type);
 
 #[no_mangle]
