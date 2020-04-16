@@ -6,6 +6,26 @@ use ffi_support::IntoFfi;
 use crate::glean_str_free;
 use glean_core::upload::PingUploadTask;
 
+/// Result values of attempted ping uploads encoded for FFI use.
+///
+/// These are defined in `glean-core/src/upload/result.rs`,
+/// but for cbindgen to also export them in header files we need to define them here as constants.
+///
+/// Tests below ensure they match.
+#[allow(dead_code)]
+mod upload_result {
+    /// A recoverable error.
+    pub const UPLOAD_RESULT_RECOVERABLE: u16 = 0x1;
+
+    /// An unrecoverable error.
+    pub const UPLOAD_RESULT_UNRECOVERABLE: u16 = 0x2;
+
+    /// A HTTP response code.
+    ///
+    /// The actual response code is encoded in the lower bits.
+    pub const UPLOAD_RESULT_HTTP_STATUS: u16 = 0x8000;
+}
+
 /// A FFI-compatible representation for the PingUploadTask
 ///
 /// The order of variants should be the same as in `glean-core/src/upload/mod.rs`
@@ -80,5 +100,26 @@ unsafe impl IntoFfi for FfiPingUploadTask {
     #[inline]
     fn into_ffi_value(self) -> FfiPingUploadTask {
         self
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn constants_match_with_glean_core() {
+        assert_eq!(
+            upload_result::UPLOAD_RESULT_RECOVERABLE,
+            glean_core::upload::ffi_upload_result::UPLOAD_RESULT_RECOVERABLE
+        );
+        assert_eq!(
+            upload_result::UPLOAD_RESULT_UNRECOVERABLE,
+            glean_core::upload::ffi_upload_result::UPLOAD_RESULT_UNRECOVERABLE
+        );
+        assert_eq!(
+            upload_result::UPLOAD_RESULT_HTTP_STATUS,
+            glean_core::upload::ffi_upload_result::UPLOAD_RESULT_HTTP_STATUS
+        );
     }
 }

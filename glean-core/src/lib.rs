@@ -50,7 +50,7 @@ use crate::internal_pings::InternalPings;
 use crate::metrics::{Metric, MetricType, PingType};
 use crate::ping::PingMaker;
 use crate::storage::StorageManager;
-use crate::upload::{PingUploadManager, PingUploadTask};
+use crate::upload::{PingUploadManager, PingUploadTask, UploadResult};
 use crate::util::{local_now_with_offset, sanitize_application_id};
 
 const GLEAN_SCHEMA_VERSION: u32 = 1;
@@ -480,7 +480,7 @@ impl Glean {
     ///
     /// `uuid` - The UUID of the ping in question.
     /// `status` - The HTTP status of the response.
-    pub fn process_ping_upload_response(&self, uuid: &str, status: u16) {
+    pub fn process_ping_upload_response(&self, uuid: &str, status: UploadResult) {
         self.upload_manager
             .process_ping_upload_response(uuid, status);
     }

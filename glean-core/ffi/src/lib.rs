@@ -9,6 +9,7 @@ use std::panic::UnwindSafe;
 
 use ffi_support::{define_string_destructor, ConcurrentHandleMap, FfiStr, IntoFfi};
 
+pub use glean_core::upload::ffi_upload_result::*;
 use glean_core::Glean;
 
 mod macros;
@@ -358,7 +359,7 @@ pub extern "C" fn glean_process_ping_upload_response(task: FfiPingUploadTask, st
                     .to_str()
                     .map_err(|_| glean_core::Error::utf8_error())
             }?;
-            glean.process_ping_upload_response(uuid_str, status);
+            glean.process_ping_upload_response(uuid_str, status.into());
         };
         Ok(())
     });
