@@ -82,7 +82,7 @@ See [Using the Experiments API](../experiments-api.md) on how to record experime
 The pings that the Glean SDK generates are submitted to the Mozilla servers at specific paths, in order to provide additional metadata without the need to unpack the ping payload.
 A typical submission URL looks like
 
-  `"<server-address>/submit/<application-id>/<doc-type>/<glean-schema-version>/<ping-uuid>"`
+  `"<server-address>/submit/<application-id>/<doc-type>/<glean-schema-version>/<document-id>"`
 
 where:
 
@@ -90,7 +90,7 @@ where:
 - `<application-id>`: a unique application id, automatically detected by the Glean SDK; this is the value returned by [`Context.getPackageName()`](http://developer.android.com/reference/android/content/Context.html#getPackageName());
 - `<doc-type>`: the name of the ping; this can be one of the pings available out of the box with the Glean SDK, or a custom ping;
 - `<glean-schema-version>`: the version of the Glean ping schema;
-- `<ping-uuid>`: a unique identifier for this ping.
+- `<document-id>`: a unique identifier for this ping.
 
 ### Submitted headers
 A pre-defined set of headers is additionally sent along with the submitted ping:
