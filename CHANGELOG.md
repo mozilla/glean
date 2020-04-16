@@ -7,6 +7,7 @@
 * Python:
   * BUGFIX: The ping uploader will no longer display a trace back when the upload fails due to a failed DNS lookup, network outage, or related issues that prevent communication with the telemetry endpoint.
   * The dependency on `inflection` has been removed.
+  * The Python bindings now use `subprocess` rather than `multiprocessing` to perform ping uploading in a separate process. This should be more compatible on all of the platforms Glean supports.
 
 # v27.1.0 (2020-04-09)
 
