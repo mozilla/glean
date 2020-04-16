@@ -568,14 +568,14 @@ jobs:
       - setup-rust-toolchain
       - restore_cache:
           name: Restore rubygems cache
-          key: swift-docs-gems-v6
+          key: swift-docs-gems-v7
       - run:
           name: Install jazzy and xcpretty
           command: gem install jazzy xcpretty
       - save_cache:
           name: Save rubygems cache
-          # NEEDS TO CHANGE WHEN JAZZY IS UPDATED
-          key: swift-docs-gems-v6
+          # NEEDS TO CHANGE WHEN JAZZY OR RUBY IS UPDATED
+          key: swift-docs-gems-v7
           paths:
             - ~/.gem/ruby/2.6.6
       - run:
