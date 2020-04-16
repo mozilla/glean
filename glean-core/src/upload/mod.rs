@@ -121,7 +121,7 @@ impl PingUploadManager {
 
         queue.retain(|ping| ping.is_deletion_request());
         log::trace!(
-            "{} pings left in the queue (only deletion-request)",
+            "{} pings left in the queue (only deletion-request expected)",
             queue.len()
         );
         queue
