@@ -667,7 +667,7 @@ class GleanTest {
         )
 
         // Now trigger it to upload
-        triggerWorkManager(context, PingUploadWorker.PING_WORKER_TAG)
+        triggerWorkManager(context)
 
         val request = server.takeRequest(20L, TimeUnit.SECONDS)
         val docType = request.path.split("/")[3]

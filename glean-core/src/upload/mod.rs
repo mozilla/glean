@@ -101,6 +101,8 @@ impl PingUploadManager {
 
     /// Creates a `PingRequest` and adds it to the queue.
     pub fn enqueue_ping(&self, uuid: &str, path: &str, body: JsonValue) {
+        log::trace!("Enqueuing ping {} at {}", uuid, path);
+
         let mut queue = self
             .queue
             .write()
@@ -111,12 +113,17 @@ impl PingUploadManager {
 
     /// Clears the pending pings queue, leaves the deletion-request pings.
     pub fn clear_ping_queue(&self) -> RwLockWriteGuard<'_, VecDeque<PingRequest>> {
+        log::trace!("Clearing ping queue");
         let mut queue = self
             .queue
             .write()
             .expect("Can't write to pending pings queue.");
 
         queue.retain(|ping| ping.is_deletion_request());
+        log::trace!(
+            "{} pings left in the queue (only deletion-request expected)",
+            queue.len()
+        );
         queue
     }
 
@@ -139,7 +146,11 @@ impl PingUploadManager {
             .expect("Can't write to pending pings queue.");
         match queue.pop_front() {
             Some(request) => {
-                log::info!("New upload task with id {}", &request.uuid);
+                log::info!(
+                    "New upload task with id {} (path: {})",
+                    request.uuid,
+                    request.path
+                );
                 PingUploadTask::Upload(request)
             }
             None => {
