@@ -8,8 +8,10 @@ This ping is intended to provide metrics that are managed by the library itself,
 
 ## Scheduling
 
+The `baseline` ping is automatically submitted with a `reason: foreground` when the application is moved to the [foreground](index.md#defining-background-state).  These baseline pings do not contain `duration`.
+
 The `baseline` ping is automatically submitted with a `reason: background` when the application is moved to the [background](index.md#defining-background-state).
-The `baseline` ping will be submitted at startup with a `reason: dirty_startup`, if the previous session was not cleanly closed. This only happens from the second start.
+Occasionally, the `baseline` ping may fail to send when going to background (e.g. the process is killed quickly).  In that case, it will be submitted at startup with a `reason: dirty_startup`, if the previous session was not cleanly closed. This only happens from the second start onward.
 
 See also the [ping schedules and timing overview](ping-schedules-and-timings.html).
 
@@ -44,7 +46,8 @@ A quick note about querying ping contents (i.e. for [sql.telemetry.mozilla.org](
     },
     "seq": 0,
     "start_time": "2019-03-29T09:50-04:00",
-    "end_time": "2019-03-29T09:53-04:00"
+    "end_time": "2019-03-29T09:53-04:00",
+    "reason": "foreground"
   },
   "client_info": {
     "telemetry_sdk_build": "0.49.0",

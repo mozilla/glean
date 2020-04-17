@@ -201,7 +201,7 @@ class Glean:
             # temporary directory, so there is no concern about delaying
             # application shutdown here.
             p = ProcessDispatcher.dispatch(_rmtree, (str(cls._data_dir),))
-            p.join()
+            p.wait()
 
     @classmethod
     def is_initialized(cls) -> bool:

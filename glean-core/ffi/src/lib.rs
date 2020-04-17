@@ -347,19 +347,19 @@ pub extern "C" fn glean_get_upload_task() -> FfiPingUploadTask {
     with_glean_value(|glean| FfiPingUploadTask::from(glean.get_upload_task()))
 }
 
-// We need to pass the whole task instead of only the uuid,
+// We need to pass the whole task instead of only the document id,
 // so that we can free the strings properly on Drop.
 #[no_mangle]
 pub extern "C" fn glean_process_ping_upload_response(task: FfiPingUploadTask, status: u32) {
     with_glean(|glean| {
-        if let FfiPingUploadTask::Upload { uuid, .. } = task {
-            assert!(!uuid.is_null());
-            let uuid_str = unsafe {
-                CStr::from_ptr(uuid)
+        if let FfiPingUploadTask::Upload { document_id, .. } = task {
+            assert!(!document_id.is_null());
+            let document_id_str = unsafe {
+                CStr::from_ptr(document_id)
                     .to_str()
                     .map_err(|_| glean_core::Error::utf8_error())
             }?;
-            glean.process_ping_upload_response(uuid_str, status.into());
+            glean.process_ping_upload_response(document_id_str, status.into());
         };
         Ok(())
     });

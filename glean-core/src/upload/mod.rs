@@ -102,14 +102,14 @@ impl PingUploadManager {
     }
 
     /// Creates a `PingRequest` and adds it to the queue.
-    pub fn enqueue_ping(&self, uuid: &str, path: &str, body: JsonValue) {
-        log::trace!("Enqueuing ping {} at {}", uuid, path);
+    pub fn enqueue_ping(&self, document_id: &str, path: &str, body: JsonValue) {
+        log::trace!("Enqueuing ping {} at {}", document_id, path);
 
         let mut queue = self
             .queue
             .write()
             .expect("Can't write to pending pings queue.");
-        let request = PingRequest::new(uuid, path, body);
+        let request = PingRequest::new(document_id, path, body);
         queue.push_back(request);
     }
 
@@ -150,7 +150,7 @@ impl PingUploadManager {
             Some(request) => {
                 log::info!(
                     "New upload task with id {} (path: {})",
-                    request.uuid,
+                    request.document_id,
                     request.path
                 );
                 PingUploadTask::Upload(request)
@@ -197,32 +197,32 @@ impl PingUploadManager {
     ///
     /// # Arguments
     ///
-    /// `uuid` - The UUID of the ping in question.
+    /// `document_id` - The UUID of the ping in question.
     /// `status` - The HTTP status of the response.
-    pub fn process_ping_upload_response(&self, uuid: &str, status: UploadResult) {
+    pub fn process_ping_upload_response(&self, document_id: &str, status: UploadResult) {
         use UploadResult::*;
         match status {
             HttpStatus(status @ 200..=299) => {
-                log::info!("Ping {} successfully sent {}.", uuid, status);
-                self.directory_manager.delete_file(uuid);
+                log::info!("Ping {} successfully sent {}.", document_id, status);
+                self.directory_manager.delete_file(document_id);
             }
 
             UnrecoverableFailure | HttpStatus(400..=499) => {
                 log::error!(
                     "Unrecoverable upload failure while attempting to send ping {}. Error was {:?}",
-                    uuid,
+                    document_id,
                     status
                 );
-                self.directory_manager.delete_file(uuid);
+                self.directory_manager.delete_file(document_id);
             }
 
             RecoverableFailure | HttpStatus(_) => {
                 log::error!(
                     "Recoverable upload failure while attempting to send ping {}, will retry. Error was {:?}",
-                    uuid,
+                    document_id,
                     status
                 );
-                if let Some(request) = self.directory_manager.process_file(uuid) {
+                if let Some(request) = self.directory_manager.process_file(document_id) {
                     let mut queue = self
                         .queue
                         .write()
@@ -246,7 +246,7 @@ mod test {
     use crate::metrics::PingType;
     use crate::{tests::new_glean, PENDING_PINGS_DIRECTORY};
 
-    const UUID: &str = "40e31919-684f-43b0-a5aa-e15c2d56a674"; // Just a random UUID.
+    const DOCUMENT_ID: &str = "40e31919-684f-43b0-a5aa-e15c2d56a674"; // Just a random UUID.
     const PATH: &str = "/submit/app_id/ping_name/schema_version/doc_id";
 
     #[test]
@@ -277,7 +277,7 @@ mod test {
         }
 
         // Enqueue a ping
-        upload_manager.enqueue_ping(UUID, PATH, json!({}));
+        upload_manager.enqueue_ping(DOCUMENT_ID, PATH, json!({}));
 
         // Try and get the next request.
         // Verify request was returned
@@ -301,7 +301,7 @@ mod test {
         // Enqueue a ping multiple times
         let n = 10;
         for _ in 0..n {
-            upload_manager.enqueue_ping(UUID, PATH, json!({}));
+            upload_manager.enqueue_ping(DOCUMENT_ID, PATH, json!({}));
         }
 
         // Verify a request is returned for each submitted ping
@@ -329,7 +329,7 @@ mod test {
 
         // Enqueue a ping multiple times
         for _ in 0..10 {
-            upload_manager.enqueue_ping(UUID, PATH, json!({}));
+            upload_manager.enqueue_ping(DOCUMENT_ID, PATH, json!({}));
         }
 
         // Clear the queue
@@ -438,10 +438,10 @@ mod test {
         match upload_task {
             PingUploadTask::Upload(request) => {
                 // Simulate the processing of a sucessfull request
-                let uuid = request.uuid;
-                upload_manager.process_ping_upload_response(&uuid, HttpStatus(200));
+                let document_id = request.document_id;
+                upload_manager.process_ping_upload_response(&document_id, HttpStatus(200));
                 // Verify file was deleted
-                assert!(!pending_pings_dir.join(uuid).exists());
+                assert!(!pending_pings_dir.join(document_id).exists());
             }
             _ => panic!("Expected upload manager to return the next request!"),
         }
@@ -478,10 +478,10 @@ mod test {
         match upload_task {
             PingUploadTask::Upload(request) => {
                 // Simulate the processing of a client error
-                let uuid = request.uuid;
-                upload_manager.process_ping_upload_response(&uuid, HttpStatus(404));
+                let document_id = request.document_id;
+                upload_manager.process_ping_upload_response(&document_id, HttpStatus(404));
                 // Verify file was deleted
-                assert!(!pending_pings_dir.join(uuid).exists());
+                assert!(!pending_pings_dir.join(document_id).exists());
             }
             _ => panic!("Expected upload manager to return the next request!"),
         }
@@ -515,12 +515,12 @@ mod test {
         match upload_task {
             PingUploadTask::Upload(request) => {
                 // Simulate the processing of a client error
-                let uuid = request.uuid;
-                upload_manager.process_ping_upload_response(&uuid, HttpStatus(500));
+                let document_id = request.document_id;
+                upload_manager.process_ping_upload_response(&document_id, HttpStatus(500));
                 // Verify this ping was indeed re-enqueued
                 match upload_manager.get_upload_task() {
                     PingUploadTask::Upload(request) => {
-                        assert_eq!(uuid, request.uuid);
+                        assert_eq!(document_id, request.document_id);
                     }
                     _ => panic!("Expected upload manager to return the next request!"),
                 }
@@ -560,10 +560,10 @@ mod test {
         match upload_task {
             PingUploadTask::Upload(request) => {
                 // Simulate the processing of a client error
-                let uuid = request.uuid;
-                upload_manager.process_ping_upload_response(&uuid, UnrecoverableFailure);
+                let document_id = request.document_id;
+                upload_manager.process_ping_upload_response(&document_id, UnrecoverableFailure);
                 // Verify file was deleted
-                assert!(!pending_pings_dir.join(uuid).exists());
+                assert!(!pending_pings_dir.join(document_id).exists());
             }
             _ => panic!("Expected upload manager to return the next request!"),
         }
