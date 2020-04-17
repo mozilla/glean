@@ -15,15 +15,15 @@ use glean_core::upload::PingUploadTask;
 #[allow(dead_code)]
 mod upload_result {
     /// A recoverable error.
-    pub const UPLOAD_RESULT_RECOVERABLE: u16 = 0x1;
+    pub const UPLOAD_RESULT_RECOVERABLE: u32 = 0x1;
 
     /// An unrecoverable error.
-    pub const UPLOAD_RESULT_UNRECOVERABLE: u16 = 0x2;
+    pub const UPLOAD_RESULT_UNRECOVERABLE: u32 = 0x2;
 
     /// A HTTP response code.
     ///
     /// The actual response code is encoded in the lower bits.
-    pub const UPLOAD_RESULT_HTTP_STATUS: u16 = 0x8000;
+    pub const UPLOAD_RESULT_HTTP_STATUS: u32 = 0x8000;
 }
 
 /// A FFI-compatible representation for the PingUploadTask

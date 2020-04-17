@@ -350,7 +350,7 @@ pub extern "C" fn glean_get_upload_task() -> FfiPingUploadTask {
 // We need to pass the whole task instead of only the uuid,
 // so that we can free the strings properly on Drop.
 #[no_mangle]
-pub extern "C" fn glean_process_ping_upload_response(task: FfiPingUploadTask, status: u16) {
+pub extern "C" fn glean_process_ping_upload_response(task: FfiPingUploadTask, status: u32) {
     with_glean(|glean| {
         if let FfiPingUploadTask::Upload { uuid, .. } = task {
             assert!(!uuid.is_null());

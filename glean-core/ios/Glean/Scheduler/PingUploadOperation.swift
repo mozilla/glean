@@ -6,7 +6,7 @@ enum UploadResult {
     /// A HTTP response code.
     ///
     /// This can still indicate an error, depending on the status code.
-    case httpResponse(UInt16)
+    case httpResponse(UInt32)
 
     /// An unrecoverable upload failure.
     ///
@@ -75,7 +75,7 @@ class PingUploadOperation: GleanOperation {
         // server responses.
         uploadTask = session.uploadTask(with: request, from: data) { _, response, error in
             let httpResponse = response as? HTTPURLResponse
-            let statusCode = UInt16(httpResponse?.statusCode ?? 0)
+            let statusCode = UInt32(httpResponse?.statusCode ?? 0)
 
             if let error = error {
                 // Upload failed on the client-side. We should try again.

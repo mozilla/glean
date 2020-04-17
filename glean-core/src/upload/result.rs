@@ -15,15 +15,15 @@
 /// THEY MUST BE THE SAME ACROSS BOTH FILES!
 pub mod ffi_upload_result {
     /// A recoverable error.
-    pub const UPLOAD_RESULT_RECOVERABLE: u16 = 0x1;
+    pub const UPLOAD_RESULT_RECOVERABLE: u32 = 0x1;
 
     /// An unrecoverable error.
-    pub const UPLOAD_RESULT_UNRECOVERABLE: u16 = 0x2;
+    pub const UPLOAD_RESULT_UNRECOVERABLE: u32 = 0x2;
 
     /// A HTTP response code.
     ///
     /// The actual response code is encoded in the lower bits.
-    pub const UPLOAD_RESULT_HTTP_STATUS: u16 = 0x8000;
+    pub const UPLOAD_RESULT_HTTP_STATUS: u32 = 0x8000;
 }
 use ffi_upload_result::*;
 
@@ -45,11 +45,11 @@ pub enum UploadResult {
     /// A HTTP response code.
     ///
     /// This can still indicate an error, depending on the status code.
-    HttpStatus(u16),
+    HttpStatus(u32),
 }
 
-impl From<u16> for UploadResult {
-    fn from(status: u16) -> Self {
+impl From<u32> for UploadResult {
+    fn from(status: u32) -> Self {
         match status {
             status if (status & UPLOAD_RESULT_HTTP_STATUS) == UPLOAD_RESULT_HTTP_STATUS => {
                 // Extract the status code from the lower bits.
