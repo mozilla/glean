@@ -101,7 +101,7 @@ typedef uint8_t FfiPingUploadTask_Tag;
 
 typedef struct {
   FfiPingUploadTask_Tag tag;
-  char *uuid;
+  char *document_id;
   char *path;
   char *body;
   char *headers;
