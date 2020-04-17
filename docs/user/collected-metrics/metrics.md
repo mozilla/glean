@@ -57,7 +57,7 @@ This ping includes the [client id](https://mozilla.github.io/glean/book/user/pin
 - `foreground`: The ping was submitted when the application went to foreground, which
       includes when the application starts.
 
-      The `glean.baseline.duration` metric is never sent in these pings.
+      *Note*: this ping will not contain the `glean.baseline.duration` metric.
 
 
 The following metrics are added to the ping:
