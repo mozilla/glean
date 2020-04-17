@@ -42,8 +42,9 @@ import Foundation
 
 /// A ping request contains all data required to upload a ping
 struct PingRequest {
-    /// The unique identifier of the string. This is also the filename on disk.
-    let uuid: String
+    /// The Job ID to identify this request,
+    /// This is the unique identifier for the ping.
+    let documentId: String
     /// The path to upload this ping to.
     let path: String
     /// The JSON-encoded payload of the ping.
@@ -51,8 +52,8 @@ struct PingRequest {
     /// A map of headers for the HTTP request to send.
     let headers: [String: String]
 
-    init(uuid: String, path: String, body: String, headers: [String: String]) {
-        self.uuid = uuid
+    init(documentId: String, path: String, body: String, headers: [String: String]) {
+        self.documentId = documentId
         self.path = path
         self.body = body
 
@@ -114,7 +115,7 @@ extension FfiPingUploadTask_Upload_Body {
     /// This decodes the JSON-encoded header map into a native map.
     /// If decoding as a string-to-string map fails, an empty map is used.
     func toPingRequest() -> PingRequest {
-        let uuid = String(cString: self.uuid)
+        let documentId = String(cString: self.document_id)
         let path = String(cString: self.path)
         let body = String(cString: self.body)
 
@@ -123,6 +124,6 @@ extension FfiPingUploadTask_Upload_Body {
         let data = json.data(using: .utf8)!
         let headers = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: String]
 
-        return PingRequest(uuid: uuid, path: path, body: body, headers: headers ?? [String: String]())
+        return PingRequest(documentId: documentId, path: path, body: body, headers: headers ?? [String: String]())
     }
 }

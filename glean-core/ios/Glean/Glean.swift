@@ -58,7 +58,7 @@ public class Glean {
     /// once.
     ///
     /// A LifecycleObserver will be added to submit pings when the application goes
-    /// into the background.
+    /// into the foreground and background.
     ///
     /// - parameters:
     ///     * uploadEnabled: A `Bool` that enables or disables telemetry.
@@ -325,6 +325,11 @@ public class Glean {
     /// Returns true if the Glean SDK has been initialized.
     func isInitialized() -> Bool {
         return self.initialized
+    }
+
+    /// Handle foreground event and submit appropriate pings
+    func handleForegroundEvent() {
+        Pings.shared.baseline.submit(reason: .foreground)
     }
 
     /// Handle background event and submit appropriate pings

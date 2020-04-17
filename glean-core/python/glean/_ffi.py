@@ -40,10 +40,19 @@ def _load_header(path: str) -> str:
     )
 
 
-ffi = FFI()
-ffi.cdef(_load_header("glean.h"))
-lib = ffi.dlopen(str(Path(__file__).parent / get_shared_object_filename()))
-lib.glean_enable_logging()
+# Don't load the Glean shared object / dll if we're in a (ping upload worker)
+# subprocess.
+#   (a) it's not likely to work anyway, because it won't be the same Glean
+#       singleton.
+#   (b) skipping it significantly improves startup time of the subprocess.
+if not getattr(__builtins__, "IN_GLEAN_SUBPROCESS", False):
+    ffi = FFI()
+    ffi.cdef(_load_header("glean.h"))
+    lib = ffi.dlopen(str(Path(__file__).parent / get_shared_object_filename()))
+    lib.glean_enable_logging()
+else:
+    ffi = None
+    lib = None
 
 
 def make_config(

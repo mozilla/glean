@@ -2,7 +2,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use lazy_static::lazy_static;
 use std::convert::TryFrom;
 
 use glean_core::{metrics::*, CommonMetricData, Lifetime};
@@ -30,10 +29,8 @@ use crate::*;
 /// * `get_name` - Function name to get a new instance of the underlying metric.
 macro_rules! impl_labeled_metric {
     ($metric:ty, $global:ident, $metric_global:ident, $new_name:ident, $destroy_name:ident, $get_name:ident, $test_get_num_recorded_errors:ident) => {
-        lazy_static! {
-            static ref $global: ConcurrentHandleMap<LabeledMetric<$metric>> =
-                ConcurrentHandleMap::new();
-        }
+        static $global: once_cell::sync::Lazy<ConcurrentHandleMap<LabeledMetric<$metric>>> =
+            once_cell::sync::Lazy::new(ConcurrentHandleMap::new);
         $crate::define_infallible_handle_map_deleter!($global, $destroy_name);
 
         /// Create a new labeled metric.

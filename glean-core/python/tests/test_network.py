@@ -103,11 +103,11 @@ def test_ping_upload_worker_single_process(safe_httpserver):
     p1 = PingUploadWorker._process()
     p2 = PingUploadWorker._process()
 
-    p1.join()
-    assert p1.exitcode == 0
+    p1.wait()
+    assert p1.returncode == 0
 
-    p2.join()
-    assert p2.exitcode == 0
+    p2.wait()
+    assert p2.returncode == 0
 
     assert 100 == len(safe_httpserver.requests)
 

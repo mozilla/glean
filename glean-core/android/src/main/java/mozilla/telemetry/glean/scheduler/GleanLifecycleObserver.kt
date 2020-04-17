@@ -50,6 +50,7 @@ internal class GleanLifecycleObserver : LifecycleEventObserver {
                 // Note that this is sending the length of the last foreground session
                 // because it belongs to the baseline ping and that ping is sent every
                 // time the app goes to background.
+                Glean.handleForegroundEvent()
                 GleanBaseline.duration.start()
 
                 // Set the "dirty flag" to `true`.

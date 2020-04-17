@@ -24,18 +24,18 @@ enum class UploadTaskTag {
     Done
 }
 
-@Structure.FieldOrder("tag", "uuid", "path", "body", "headers")
+@Structure.FieldOrder("tag", "documentId", "path", "body", "headers")
 internal class UploadBody(
     // NOTE: We need to provide defaults here, so that JNA can create this object.
     @JvmField val tag: Byte = UploadTaskTag.Done.ordinal.toByte(),
-    @JvmField val uuid: Pointer? = null,
+    @JvmField val documentId: Pointer? = null,
     @JvmField val path: Pointer? = null,
     @JvmField val body: Pointer? = null,
     @JvmField val headers: Pointer? = null
 ) : Structure() {
     fun toPingRequest(): PingRequest {
         return PingRequest(
-            this.uuid!!.getRustString(),
+            this.documentId!!.getRustString(),
             this.path!!.getRustString(),
             this.body!!.getRustString(),
             this.headers!!.getRustString()
@@ -67,7 +67,7 @@ internal open class FfiPingUploadTask(
  * Represents a request to upload a ping.
  */
 internal class PingRequest(
-    private val uuid: String,
+    private val documentId: String,
     val path: String,
     val body: String,
     headers: String
@@ -85,7 +85,7 @@ internal class PingRequest(
             // This JSON is created on the Rust side right before sending them over the FFI,
             // it's very unlikely that we get an exception here
             // unless there is some sort of memory corruption.
-            Log.e(LOG_TAG, "Error while parsing headers for ping $uuid")
+            Log.e(LOG_TAG, "Error while parsing headers for ping $documentId")
         }
 
         Glean.configuration.pingTag?.let {

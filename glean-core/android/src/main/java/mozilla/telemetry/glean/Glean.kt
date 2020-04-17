@@ -98,7 +98,7 @@ open class GleanInternalAPI internal constructor () {
      * once.
      *
      * A LifecycleObserver will be added to send pings when the application goes
-     * into the background.
+     * into foreground and background.
      *
      * This method must be called from the main thread.
      *
@@ -474,6 +474,13 @@ open class GleanInternalAPI internal constructor () {
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     internal fun testCollect(ping: PingTypeBase): String? {
         return LibGleanFFI.INSTANCE.glean_ping_collect(ping.handle)?.getAndConsumeRustString()
+    }
+
+    /**
+     * Handle the foreground event and send the appropriate pings.
+     */
+    internal fun handleForegroundEvent() {
+        Pings.baseline.submit(Pings.baselineReasonCodes.foreground)
     }
 
     /**

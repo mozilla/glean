@@ -65,10 +65,6 @@ the details of which are reproduced below.
     <url>https://github.com/dtolnay/itoa</url>
   </license>
   <license>
-    <name>Apache License 2.0: lazy_static</name>
-    <url>https://github.com/rust-lang-nursery/lazy-static.rs</url>
-  </license>
-  <license>
     <name>Apache License 2.0: libc</name>
     <url>https://github.com/rust-lang/libc</url>
   </license>
