@@ -25,9 +25,11 @@ use serde_json::Value as JsonValue;
 
 use directory::PingDirectoryManager;
 use request::PingRequest;
+pub use result::{ffi_upload_result, UploadResult};
 
 mod directory;
 mod request;
+mod result;
 
 /// When asking for the next ping request to upload,
 /// the requester may receive one out of three possible tasks.
@@ -197,25 +199,28 @@ impl PingUploadManager {
     ///
     /// `uuid` - The UUID of the ping in question.
     /// `status` - The HTTP status of the response.
-    pub fn process_ping_upload_response(&self, uuid: &str, status: u16) {
+    pub fn process_ping_upload_response(&self, uuid: &str, status: UploadResult) {
+        use UploadResult::*;
         match status {
-            200..=299 => {
+            HttpStatus(status @ 200..=299) => {
                 log::info!("Ping {} successfully sent {}.", uuid, status);
                 self.directory_manager.delete_file(uuid);
             }
-            400..=499 => {
+
+            UnrecoverableFailure | HttpStatus(400..=499) => {
                 log::error!(
-                    "Server returned client error code {} while attempting to send ping {}.",
-                    status,
-                    uuid
+                    "Unrecoverable upload failure while attempting to send ping {}. Error was {:?}",
+                    uuid,
+                    status
                 );
                 self.directory_manager.delete_file(uuid);
             }
-            _ => {
+
+            RecoverableFailure | HttpStatus(_) => {
                 log::error!(
-                    "Server returned response code {} while attempting to send ping {}.",
-                    status,
-                    uuid
+                    "Recoverable upload failure while attempting to send ping {}, will retry. Error was {:?}",
+                    uuid,
+                    status
                 );
                 if let Some(request) = self.directory_manager.process_file(uuid) {
                     let mut queue = self
@@ -236,6 +241,7 @@ mod test {
 
     use serde_json::json;
 
+    use super::UploadResult::*;
     use super::*;
     use crate::metrics::PingType;
     use crate::{tests::new_glean, PENDING_PINGS_DIRECTORY};
@@ -433,7 +439,7 @@ mod test {
             PingUploadTask::Upload(request) => {
                 // Simulate the processing of a sucessfull request
                 let uuid = request.uuid;
-                upload_manager.process_ping_upload_response(&uuid, 200);
+                upload_manager.process_ping_upload_response(&uuid, HttpStatus(200));
                 // Verify file was deleted
                 assert!(!pending_pings_dir.join(uuid).exists());
             }
@@ -473,7 +479,7 @@ mod test {
             PingUploadTask::Upload(request) => {
                 // Simulate the processing of a client error
                 let uuid = request.uuid;
-                upload_manager.process_ping_upload_response(&uuid, 404);
+                upload_manager.process_ping_upload_response(&uuid, HttpStatus(404));
                 // Verify file was deleted
                 assert!(!pending_pings_dir.join(uuid).exists());
             }
@@ -510,7 +516,7 @@ mod test {
             PingUploadTask::Upload(request) => {
                 // Simulate the processing of a client error
                 let uuid = request.uuid;
-                upload_manager.process_ping_upload_response(&uuid, 500);
+                upload_manager.process_ping_upload_response(&uuid, HttpStatus(500));
                 // Verify this ping was indeed re-enqueued
                 match upload_manager.get_upload_task() {
                     PingUploadTask::Upload(request) => {
@@ -518,6 +524,46 @@ mod test {
                     }
                     _ => panic!("Expected upload manager to return the next request!"),
                 }
+            }
+            _ => panic!("Expected upload manager to return the next request!"),
+        }
+
+        // Verify that after request is returned, none are left
+        assert_eq!(upload_manager.get_upload_task(), PingUploadTask::Done);
+    }
+
+    #[test]
+    fn test_processes_correctly_unrecoverable_upload_response() {
+        let (mut glean, dir) = new_glean(None);
+
+        // Register a ping for testing
+        let ping_type = PingType::new("test", true, /* send_if_empty */ true, vec![]);
+        glean.register_ping_type(&ping_type);
+
+        // Submit a ping
+        glean.submit_ping(&ping_type, None).unwrap();
+
+        // Create a new upload_manager
+        let upload_manager = PingUploadManager::new(&dir.path());
+
+        // Wait for processing of pending pings directory to finish.
+        let mut upload_task = upload_manager.get_upload_task();
+        while upload_task == PingUploadTask::Wait {
+            thread::sleep(Duration::from_millis(10));
+            upload_task = upload_manager.get_upload_task();
+        }
+
+        // Get the pending ping directory path
+        let pending_pings_dir = dir.path().join(PENDING_PINGS_DIRECTORY);
+
+        // Get the submitted PingRequest
+        match upload_task {
+            PingUploadTask::Upload(request) => {
+                // Simulate the processing of a client error
+                let uuid = request.uuid;
+                upload_manager.process_ping_upload_response(&uuid, UnrecoverableFailure);
+                // Verify file was deleted
+                assert!(!pending_pings_dir.join(uuid).exists());
             }
             _ => panic!("Expected upload manager to return the next request!"),
         }

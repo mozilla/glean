@@ -21,6 +21,26 @@ internal fun Boolean.toByte(): Byte = if (this) 1 else 0
 internal fun Byte.toBoolean(): Boolean = this != 0.toByte()
 
 /**
+ * Result values of attempted ping uploads encoded for FFI use.
+ * They are defined in `glean-core/src/upload/result.rs` and re-defined for use in Kotlin here.
+ *
+ * NOTE:
+ * THEY MUST BE THE SAME ACROSS BOTH FILES!
+ */
+class Constants {
+    companion object {
+        // A recoverable error.
+        val UPLOAD_RESULT_RECOVERABLE: Int = 0x1
+
+        // An unrecoverable error.
+        val UPLOAD_RESULT_UNRECOVERABLE: Int = 0x2
+
+        // A HTTP response code.
+        val UPLOAD_RESULT_HTTP_STATUS: Int = 0x8000
+    }
+}
+
+/**
  * Helper to read a null terminated String out of the Pointer and free it.
  *
  * Important: Do not use this pointer after this! For anything!

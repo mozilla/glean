@@ -9,6 +9,7 @@ use std::panic::UnwindSafe;
 
 use ffi_support::{define_string_destructor, ConcurrentHandleMap, FfiStr, IntoFfi};
 
+pub use glean_core::upload::ffi_upload_result::*;
 use glean_core::Glean;
 
 mod macros;
@@ -349,7 +350,7 @@ pub extern "C" fn glean_get_upload_task() -> FfiPingUploadTask {
 // We need to pass the whole task instead of only the uuid,
 // so that we can free the strings properly on Drop.
 #[no_mangle]
-pub extern "C" fn glean_process_ping_upload_response(task: FfiPingUploadTask, status: u16) {
+pub extern "C" fn glean_process_ping_upload_response(task: FfiPingUploadTask, status: u32) {
     with_glean(|glean| {
         if let FfiPingUploadTask::Upload { uuid, .. } = task {
             assert!(!uuid.is_null());
@@ -358,7 +359,7 @@ pub extern "C" fn glean_process_ping_upload_response(task: FfiPingUploadTask, st
                     .to_str()
                     .map_err(|_| glean_core::Error::utf8_error())
             }?;
-            glean.process_ping_upload_response(uuid_str, status);
+            glean.process_ping_upload_response(uuid_str, status.into());
         };
         Ok(())
     });

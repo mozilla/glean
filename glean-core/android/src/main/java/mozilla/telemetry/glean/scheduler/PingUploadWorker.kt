@@ -18,9 +18,6 @@ import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.utils.testFlushWorkManagerJob
 import mozilla.telemetry.glean.net.PingUploadTask
-import mozilla.telemetry.glean.net.HttpResponse
-import mozilla.telemetry.glean.net.UnrecoverableFailure
-import mozilla.telemetry.glean.net.RecoverableFailure
 
 /**
  * Build the constraints around which the worker can be run, such as whether network
@@ -120,15 +117,8 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
                         Glean.configuration
                     )
 
-                    // Translate the upload result into a status code the Rust side understands.
-                    val status = when (result) {
-                        is RecoverableFailure -> RECOVERABLE_ERROR_STATUS_CODE
-                        is UnrecoverableFailure -> UNRECOVERABLE_ERROR_STATUS_CODE
-                        is HttpResponse -> result.statusCode
-                    }
-
                     // Process the upload response
-                    LibGleanFFI.INSTANCE.glean_process_ping_upload_response(incomingTask, status)
+                    LibGleanFFI.INSTANCE.glean_process_ping_upload_response(incomingTask, result.toFfi())
                 }
                 PingUploadTask.Wait -> return Result.retry()
                 PingUploadTask.Done -> return Result.success()

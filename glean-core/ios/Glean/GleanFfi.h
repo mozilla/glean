@@ -17,6 +17,23 @@
 #include <stdlib.h>
 
 /**
+ * A HTTP response code.
+ *
+ * The actual response code is encoded in the lower bits.
+ */
+#define UPLOAD_RESULT_HTTP_STATUS 32768
+
+/**
+ * A recoverable error.
+ */
+#define UPLOAD_RESULT_RECOVERABLE 1
+
+/**
+ * An unrecoverable error.
+ */
+#define UPLOAD_RESULT_UNRECOVERABLE 2
+
+/**
  * `FfiStr<'a>` is a safe (`#[repr(transparent)]`) wrapper around a
  * nul-terminated `*const c_char` (e.g. a C string). Conceptually, it is
  * similar to [`std::ffi::CStr`], except that it may be used in the signatures
@@ -418,7 +435,7 @@ uint8_t glean_on_ready_to_submit_pings(void);
 
 char *glean_ping_collect(uint64_t ping_type_handle, FfiStr reason);
 
-void glean_process_ping_upload_response(FfiPingUploadTask task, uint16_t status);
+void glean_process_ping_upload_response(FfiPingUploadTask task, uint32_t status);
 
 void glean_quantity_set(uint64_t metric_id, int64_t value);
 
