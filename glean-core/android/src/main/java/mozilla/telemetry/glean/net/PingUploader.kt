@@ -4,6 +4,8 @@
 
 package mozilla.telemetry.glean.net
 
+import mozilla.telemetry.glean.rust.Constants
+
 /**
  * Store a list of headers as a String to String [Pair], with the first entry
  * being the header name and the second its value.
@@ -15,14 +17,22 @@ typealias HeadersList = List<Pair<String, String>>
  *
  * See below for the different possible cases.
  */
-sealed class UploadResult
+sealed class UploadResult {
+    open fun toFfi(): Int {
+        return Constants.UPLOAD_RESULT_UNRECOVERABLE
+    }
+}
 
 /**
  * A HTTP response code.
  *
  * This can still indicate an error, depending on the status code.
  */
-data class HttpResponse(val statusCode: Int) : UploadResult()
+data class HttpResponse(val statusCode: Int) : UploadResult() {
+    override fun toFfi(): Int {
+        return Constants.UPLOAD_RESULT_HTTP_STATUS or statusCode
+    }
+}
 
 /**
  * An unrecoverable upload failure.
@@ -30,7 +40,11 @@ data class HttpResponse(val statusCode: Int) : UploadResult()
  * A possible cause might be a malformed URL.
  * The ping data is removed afterwards.
  */
-object UnrecoverableFailure : UploadResult()
+object UnrecoverableFailure : UploadResult() {
+    override fun toFfi(): Int {
+        return Constants.UPLOAD_RESULT_UNRECOVERABLE
+    }
+}
 
 /**
  * A recoverable failure.
@@ -39,7 +53,11 @@ object UnrecoverableFailure : UploadResult()
  * e.g. the network connection failed.
  * The upload should be retried at a later time.
  */
-object RecoverableFailure : UploadResult()
+object RecoverableFailure : UploadResult() {
+    override fun toFfi(): Int {
+        return Constants.UPLOAD_RESULT_RECOVERABLE
+    }
+}
 
 /**
  * The interface defining how to send pings.

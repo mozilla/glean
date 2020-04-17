@@ -19,6 +19,17 @@ enum UploadResult {
     /// e.g. the network connection failed.
     /// The upload should be retried at a later time.
     case recoverableFailure(Error)
+
+    func toFfi() -> UInt32 {
+        switch self {
+        case let .httpResponse(status):
+            return UInt32(UPLOAD_RESULT_HTTP_STATUS) | status
+        case .unrecoverableFailure:
+            return UInt32(UPLOAD_RESULT_UNRECOVERABLE)
+        case .recoverableFailure:
+            return UInt32(UPLOAD_RESULT_RECOVERABLE)
+        }
+    }
 }
 
 /// Represents an `Operation` encapsulating an HTTP request that uploads a

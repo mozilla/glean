@@ -106,18 +106,7 @@ public class HttpPingUploader {
             switch task {
             case let .upload(request):
                 self.upload(path: request.path, data: request.body, headers: request.headers) { result in
-                    let status: UInt16
-
-                    switch result {
-                    case let .httpResponse(statusCode):
-                        status = statusCode
-                    case .unrecoverableFailure:
-                        status = Constants.unrecoverableErrorStatusCode
-                    case .recoverableFailure:
-                        status = Constants.recoverableErrorStatusCode
-                    }
-
-                    glean_process_ping_upload_response(incomingTask, status)
+                    glean_process_ping_upload_response(incomingTask, result.toFfi())
                 }
             case .wait:
                 continue
