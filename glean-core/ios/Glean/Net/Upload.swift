@@ -43,7 +43,7 @@ import Foundation
 /// A ping request contains all data required to upload a ping
 struct PingRequest {
     /// The Job ID to identify this request,
-    /// this is the same as the ping UUID.
+    /// This is the unique identifier for the ping.
     let documentId: String
     /// The path to upload this ping to.
     let path: String
