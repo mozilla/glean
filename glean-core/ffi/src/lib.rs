@@ -30,7 +30,7 @@ mod string;
 mod string_list;
 mod timespan;
 mod timing_distribution;
-mod upload;
+pub mod upload;
 mod uuid;
 
 use ffi_string_ext::FallibleToString;

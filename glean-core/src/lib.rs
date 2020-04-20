@@ -458,11 +458,13 @@ impl Glean {
         self.max_events
     }
 
-    /// Gets the next task for an uploader. Which can be either:
+    /// Gets the next task for an uploader.
     ///
-    /// * Wait - which means the requester should ask again later;
-    /// * Upload(PingRequest) - which means there is a ping to upload. This wraps the actual request object;
-    /// * Done - which means there are no more pings queued right now.
+    /// This can be one of:
+    ///
+    /// * `Wait` - which means the requester should ask again later;
+    /// * `Upload(PingRequest)` - which means there is a ping to upload. This wraps the actual request object;
+    /// * `Done` - which means there are no more pings queued right now.
     ///
     /// # Return value
     ///
@@ -475,8 +477,8 @@ impl Glean {
     ///
     /// # Arguments
     ///
-    /// `uuid` - The UUID of the ping in question.
-    /// `status` - The HTTP status of the response.
+    /// * `uuid` - The UUID of the ping in question.
+    /// * `status` - The upload result.
     pub fn process_ping_upload_response(&self, uuid: &str, status: UploadResult) {
         self.upload_manager
             .process_ping_upload_response(uuid, status);
