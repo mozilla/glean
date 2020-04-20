@@ -357,7 +357,7 @@ jobs:
               curl -sfSL --retry 5 --retry-delay 10 -O "https://github.com/badboy/mdbook-dtmo/releases/download/${MDBOOK_VERSION}/${MDBOOK}"
               echo "${MDBOOK_SHA256} *${MDBOOK}" | shasum -a 256 -c -
               tar -xvf "${MDBOOK}"
-              # We reanem it to mdbook here, so other tools keep working as expected
+              # We rename it to mdbook here, so other tools keep working as expected
               mv mdbook-dtmo /usr/local/cargo/bin/mdbook
               mdbook --version
       - run:
