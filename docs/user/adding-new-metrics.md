@@ -99,6 +99,8 @@ Note that for all of the metric configurations, the toggle of the preference off
 
 If the timing at which the metric is sent in the ping needs to closely match the timing of the metrics value, the best option is to use a [custom ping](pings/custom.html) to manually control when pings are sent.
 
+This is especially useful when metrics need to be tightly related to one another, for example when Metric A had value X during the exact same time frame as Metric B had value Y.  If these metrics were in different pings, with different measurement windows, it is much harder to do that kind of reasoning with much certainty.
+
 ### What should this new metric be called?
 
 #### Reuse names from other applications
