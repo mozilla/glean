@@ -8,7 +8,6 @@ import android.app.ActivityManager
 import android.util.Log
 import android.content.Context
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Process
 import androidx.annotation.MainThread
 import androidx.annotation.VisibleForTesting
@@ -35,6 +34,8 @@ import mozilla.telemetry.glean.scheduler.GleanLifecycleObserver
 import mozilla.telemetry.glean.scheduler.DeletionPingUploadWorker
 import mozilla.telemetry.glean.scheduler.PingUploadWorker
 import mozilla.telemetry.glean.scheduler.MetricsPingScheduler
+import mozilla.telemetry.glean.utils.AndroidBuildInfo
+import mozilla.telemetry.glean.utils.RealBuildInfo
 import mozilla.telemetry.glean.utils.ThreadUtils
 import org.json.JSONObject
 
@@ -90,6 +91,11 @@ open class GleanInternalAPI internal constructor () {
     // case pings are to be immediately submitted by the WorkManager.
     internal var isSendingToTestEndpoint: Boolean = false
 
+    // We need to store this whenever we call `Glean.initialize` in order to
+    // make sure tests have a consistent behaviour due to `setUploadEnabled`.
+    // This is not really required outside of testing.
+    private var buildInfoProvider: AndroidBuildInfo = RealBuildInfo()
+
     /**
      * Initialize the Glean SDK.
      *
@@ -132,11 +138,34 @@ open class GleanInternalAPI internal constructor () {
             return
         }
 
+        internalInitialize(
+            applicationContext,
+            uploadEnabled,
+            configuration,
+            RealBuildInfo(),
+            // Lifecycle registration must only be skipped in unit tests.
+            skipLifecycleRegistration = false
+        )
+    }
+
+    /**
+     * Internal-only function to perform the initialization. In addition to being used by
+     * the public API surface, this is used by the testing rules to stub out device info
+     * without using any third party package.
+     */
+    private fun internalInitialize(
+        applicationContext: Context,
+        uploadEnabled: Boolean,
+        configuration: Configuration = Configuration(),
+        buildInfo: AndroidBuildInfo,
+        skipLifecycleRegistration: Boolean
+    ) {
         if (isInitialized()) {
             Log.e(LOG_TAG, "Glean should not be initialized multiple times")
             return
         }
 
+        this.buildInfoProvider = buildInfo
         this.applicationContext = applicationContext
 
         this.configuration = configuration
@@ -174,7 +203,7 @@ open class GleanInternalAPI internal constructor () {
             // The next times we start, we would have them around already.
             val isFirstRun = LibGleanFFI.INSTANCE.glean_is_first_run().toBoolean()
             if (isFirstRun) {
-                initializeCoreMetrics(applicationContext)
+                initializeCoreMetrics(applicationContext, buildInfo)
             }
 
             // Deal with any pending events so we can start recording new ones
@@ -204,7 +233,7 @@ open class GleanInternalAPI internal constructor () {
             // Any new value will be sent in newly generated pings after startup.
             if (!isFirstRun) {
                 LibGleanFFI.INSTANCE.glean_clear_application_lifetime_metrics()
-                initializeCoreMetrics(applicationContext)
+                initializeCoreMetrics(applicationContext, buildInfo)
             }
 
             // Signal Dispatcher that init is complete
@@ -213,8 +242,10 @@ open class GleanInternalAPI internal constructor () {
             // At this point, all metrics and events can be recorded.
             // This should only be called from the main thread. This is enforced by
             // the @MainThread decorator and the `assertOnUiThread` call.
-            MainScope().launch {
-                ProcessLifecycleOwner.get().lifecycle.addObserver(gleanLifecycleObserver)
+            if (!skipLifecycleRegistration) {
+                MainScope().launch {
+                    ProcessLifecycleOwner.get().lifecycle.addObserver(gleanLifecycleObserver)
+                }
             }
 
             if (!uploadEnabled) {
@@ -279,7 +310,7 @@ open class GleanInternalAPI internal constructor () {
                 if (!originalEnabled && enabled) {
                     // If uploading is being re-enabled, we have to restore the
                     // application-lifetime metrics.
-                    initializeCoreMetrics((this@GleanInternalAPI).applicationContext)
+                    initializeCoreMetrics((this@GleanInternalAPI).applicationContext, buildInfoProvider)
                 }
 
                 if (originalEnabled && !enabled) {
@@ -427,19 +458,20 @@ open class GleanInternalAPI internal constructor () {
     /**
      * Initialize the core metrics internally managed by Glean (e.g. client id).
      */
-    private fun initializeCoreMetrics(applicationContext: Context) {
+    private fun initializeCoreMetrics(
+            applicationContext: Context,
+            buildInfo: AndroidBuildInfo
+    ) {
         // Set a few more metrics that will be sent as part of every ping.
         // Please note that the following metrics must be set synchronously, so
         // that they are guaranteed to be available with the first ping that is
         // generated. We use an internal only API to do that.
         GleanBaseline.locale.setSync(getLocaleTag())
-        // https://developer.android.com/reference/android/os/Build.VERSION
-        GleanInternalMetrics.androidSdkVersion.setSync(Build.VERSION.SDK_INT.toString())
-        GleanInternalMetrics.osVersion.setSync(Build.VERSION.RELEASE)
-        // https://developer.android.com/reference/android/os/Build
-        GleanInternalMetrics.deviceManufacturer.setSync(Build.MANUFACTURER)
-        GleanInternalMetrics.deviceModel.setSync(Build.MODEL)
-        GleanInternalMetrics.architecture.setSync(Build.SUPPORTED_ABIS[0])
+        GleanInternalMetrics.androidSdkVersion.setSync(buildInfo.getSdkVersion())
+        GleanInternalMetrics.osVersion.setSync(buildInfo.getVersionString())
+        GleanInternalMetrics.deviceManufacturer.setSync(buildInfo.getDeviceManufacturer())
+        GleanInternalMetrics.deviceModel.setSync(buildInfo.getDeviceModel())
+        GleanInternalMetrics.architecture.setSync(buildInfo.getPreferredABI())
         GleanInternalMetrics.locale.setSync(getLocaleTag())
 
         configuration.channel?.let {
@@ -594,13 +626,16 @@ open class GleanInternalAPI internal constructor () {
      * @param context the application context to init Glean with
      * @param config the [Configuration] to init Glean with
      * @param clearStores if true, clear the contents of all stores
+     * @param uploadEnabled whether or not to initialize Glean with upload enabled
+     * @param buildInfo the optional device information to init testing with
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     internal fun resetGlean(
         context: Context,
         config: Configuration,
         clearStores: Boolean,
-        uploadEnabled: Boolean = true
+        uploadEnabled: Boolean = true,
+        buildInfo: AndroidBuildInfo = RealBuildInfo()
     ) {
         Glean.enableTestingMode()
 
@@ -613,7 +648,9 @@ open class GleanInternalAPI internal constructor () {
 
         // Init Glean.
         Glean.testDestroyGleanHandle()
-        Glean.initialize(context, uploadEnabled, config)
+        // TODO: we're actually skipping over the main process and main theread asserts.
+        //Glean.initialize(context, uploadEnabled, config)
+        internalInitialize(context, uploadEnabled, config, buildInfo, skipLifecycleRegistration = true)
     }
 
     /**
