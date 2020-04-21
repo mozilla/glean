@@ -81,13 +81,13 @@ pub mod upload_result {
 /// It is therefore always valid to read the `tag` field of the returned union (always the first
 /// field in memory).
 ///
-/// Wrapper implementations should turn this into proper language types (e.g. enums/structs) and
+/// Language bindings should turn this into proper language types (e.g. enums/structs) and
 /// copy out data.
 ///
 /// String fields are encoded into null-terminated UTF-8 C strings.
 ///
-/// * The wrapper should copy out the data and turn these into their equivalent string type.
-/// * The wrapper should _not_ free these fields individually.
+/// * The language binding should copy out the data and turn these into their equivalent string type.
+/// * The language binding should _not_ free these fields individually.
 ///   Instead `glean_process_ping_upload_response` will receive the whole enum, taking care of
 ///   freeing the memory.
 ///

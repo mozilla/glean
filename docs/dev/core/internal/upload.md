@@ -58,7 +58,7 @@ See the documentation for further usage and explanation of the additional types:
 
 <div data-lang="FFI" class="tab">
 
-For FFI consumers (e.g. Kotlin/Swift/Python wrappers) these functions are available:
+For FFI consumers (e.g. Kotlin/Swift/Python implementations) these functions are available:
 
 ```rust
 /// Gets the next task for an uploader. Which can be either:
