@@ -185,7 +185,7 @@ tasks:
                       TASKGRAPH_HEAD_REPOSITORY: https://hg.mozilla.org/ci/${taskgraph.branch}
                       TASKGRAPH_HEAD_REV: ${taskgraph.revision}
                       TASKGRAPH_REPOSITORY_TYPE: hg
-                      REPOSITORIES: {$json: {appservices: "Application Services", taskgraph: "Taskgraph"}}
+                      REPOSITORIES: {$json: {glean: "Glean", taskgraph: "Taskgraph"}}
                       HG_STORE_PATH: /builds/worker/checkouts/hg-store
                       ANDROID_SDK_ROOT: /builds/worker/android-sdk
                       MOZ_FETCHES_DIR: /builds/worker/checkouts/src
@@ -205,7 +205,7 @@ tasks:
 
                 command:
                   - /usr/local/bin/run-task
-                  - '--appservices-checkout=/builds/worker/checkouts/src'
+                  - '--glean-checkout=/builds/worker/checkouts/src'
                   - '--taskgraph-checkout=/builds/worker/checkouts/taskgraph'
                   - '--task-cwd=/builds/worker/checkouts/src'
                   - '--'
