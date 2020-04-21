@@ -2,15 +2,15 @@
 
 The `glean-core` Rust crate does not handle the ping upload directly.
 Network stacks vastly differ between platforms, applications and operating systems.
-It is best to use the available platform capabilities to implement any network communication.
+The Glean SDK leverages the available platform capabilities to implement any network communication.
 
-Glean still controls all upload and coordinates the platform side with its own internals.
-All wrappers implement ping uploading around a common API.
+Glean core controls all upload and coordinates the platform side with its own internals.
+All language bindings implement ping uploading around a common API and protocol.
 
 ## Upload task API
 
 The following diagram visualizes the communication between Glean core (the Rust crate),
-a Glean wrapper (e.g. the Kotlin or Swift implementation) and a Glean end point server.
+a Glean language binding (e.g. the Kotlin or Swift implementation) and a Glean end point server.
 
 ```mermaid
 sequenceDiagram
@@ -38,7 +38,7 @@ Glean core will take care of file management, cleanup, rescheduling and throttli
 For direct Rust consumers the global `Glean` object provides these methods:
 
 ```rust
-/// Gets the next task for an uploader. Which can be either:
+/// Gets the next task for an uploader.
 fn get_upload_task(&self) -> PingUploadTask
 
 /// Processes the response from an attempt to upload a ping.

@@ -52,7 +52,7 @@ Swift has very good support for calling over the FFI.
    platform. JNA does handle this if you use `NativeSize`, but it's awkward.
    Use the size-defined integers instead, such as `i64`/`i32` and their language-equivalents
    (Kotlin: `Long`/`Int`, Swift:`UInt64`/`UInt32`).
-   *Caution:* In Kotlin integers are signed by default. You can use `u64`/`u32` for `Long`/`Int`, if you're certain the value is not negative.
+   *Caution:* In Kotlin integers are signed by default. You can use `u64`/`u32` for `Long`/`Int` if you ensure the values are non-negative through asserts or error reporting code.
 
 3. `char`: Avoid these if possible. If you really have a use case consider `u32` instead.
 
@@ -97,14 +97,14 @@ This is any type that's more complex than a primitive or a string (arrays,
 structures, and combinations there-in).
 There are two options we recommend for these cases:
 
-1. Passing data as JSON. This is very easy, and useful for prototyping, however
-   much slower, requires a great deal of copying and redundant encode/decode
+1. Passing data as JSON. This is very easy and useful for prototyping, but is
+   much slower and requires a great deal of copying and redundant encode/decode
    steps (in general, the data will be copied at least 4 times to make this
-   work, and almost certainly more in practice),
-   and can be done relatively easily by `derive(Serialize, Deserialize)`,
+   work, and almost certainly more in practice).
+   It can be done relatively easily by `derive(Serialize, Deserialize)`,
    and converting to a JSON string using `serde_json::to_string`.
 
-   This is a viable option for test-only function, where the overhead is not important.
+   This is a viable option for test-only functions, where the overhead is not important.
 
 2. Use `repr(C)` structures and copy the data across the boundary,
    carefully replicating the same structure on the wrapper side.

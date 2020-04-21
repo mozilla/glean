@@ -25,7 +25,7 @@ use glean_core::upload::PingUploadTask;
 /// #define UPLOAD_RESULT_HTTP_STATUS 0x8000
 /// ```
 ///
-/// The wrapper needs to replicate these constants exactly.
+/// The language binding needs to replicate these constants exactly.
 ///
 /// The `HTTP_STATUS` result can carry additional data (the HTTP response code).
 /// This is encoded in the lower bits.
