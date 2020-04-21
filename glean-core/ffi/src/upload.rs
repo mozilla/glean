@@ -1,3 +1,12 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
+//! FFI compatible types for the upload mechanism.
+//!
+//! These are used in the `glean_get_upload_task` and `glean_process_ping_upload_response`
+//! functions.
+
 use std::ffi::CString;
 use std::os::raw::c_char;
 
@@ -8,12 +17,28 @@ use glean_core::upload::PingUploadTask;
 
 /// Result values of attempted ping uploads encoded for FFI use.
 ///
+/// These are exposed as C `define`s, e.g.:
+///
+/// ```c
+/// #define UPLOAD_RESULT_RECOVERABLE 1
+/// #define UPLOAD_RESULT_UNRECOVERABLE 2
+/// #define UPLOAD_RESULT_HTTP_STATUS 0x8000
+/// ```
+///
+/// The language binding needs to replicate these constants exactly.
+///
+/// The `HTTP_STATUS` result can carry additional data (the HTTP response code).
+/// This is encoded in the lower bits.
+///
+/// The FFI layer can convert from a 32-bit integer (`u32`) representing the upload result (and
+/// associated HTTP response code) into the Glean-compatible `UploadResult` type.
+///
 /// These are defined in `glean-core/src/upload/result.rs`,
 /// but for cbindgen to also export them in header files we need to define them here as constants.
 ///
-/// Tests below ensure they match.
+/// Inline tests ensure they match across crates.
 #[allow(dead_code)]
-mod upload_result {
+pub mod upload_result {
     /// A recoverable error.
     pub const UPLOAD_RESULT_RECOVERABLE: u32 = 0x1;
 
@@ -26,10 +51,50 @@ mod upload_result {
     pub const UPLOAD_RESULT_HTTP_STATUS: u32 = 0x8000;
 }
 
-/// A FFI-compatible representation for the PingUploadTask
+/// A FFI-compatible representation for the PingUploadTask.
+///
+/// This is exposed as a C-compatible tagged union, like this:
+///
+/// ```c
+/// enum FfiPingUploadTask_Tag {
+///   FfiPingUploadTask_Upload,
+///   FfiPingUploadTask_Wait,
+///   FfiPingUploadTask_Done,
+/// };
+/// typedef uint8_t FfiPingUploadTask_Tag;
+///
+/// typedef struct {
+///   FfiPingUploadTask_Tag tag;
+///   char *document_id;
+///   char *path;
+///   char *body;
+///   char *headers;
+/// } FfiPingUploadTask_Upload_Body;
+///
+/// typedef union {
+///   FfiPingUploadTask_Tag tag;
+///   FfiPingUploadTask_Upload_Body upload;
+/// } FfiPingUploadTask;
+///
+/// ```
+///
+/// It is therefore always valid to read the `tag` field of the returned union (always the first
+/// field in memory).
+///
+/// Language bindings should turn this into proper language types (e.g. enums/structs) and
+/// copy out data.
+///
+/// String fields are encoded into null-terminated UTF-8 C strings.
+///
+/// * The language binding should copy out the data and turn these into their equivalent string type.
+/// * The language binding should _not_ free these fields individually.
+///   Instead `glean_process_ping_upload_response` will receive the whole enum, taking care of
+///   freeing the memory.
+///
 ///
 /// The order of variants should be the same as in `glean-core/src/upload/mod.rs`
 /// and `glean-core/android/src/main/java/mozilla/telemetry/glean/net/Upload.kt`.
+///
 /// cbindgen:prefix-with-name
 #[repr(u8)]
 pub enum FfiPingUploadTask {

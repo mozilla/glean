@@ -1,11 +1,5 @@
 # Dependency Management Guidelines
 
----
-
-This is currently copied from [application-services documentation](https://github.com/mozilla/application-services/blob/4347ea9c590d2319db1c994680832cc20bc3758d/docs/dependency-management.md).
-
----
-
 This repository uses third-party code from a variety of sources, so we need to be mindful
 of how these dependencies will affect our consumers.  Considerations include:
 
@@ -28,11 +22,7 @@ existing dependencies:
 * Check `Cargo.lock` into the repository.
 * Generate built artifacts using the `--locked` flag to `cargo build`, as an additional
   assurance that the existing `Cargo.lock` will be respected.
-    * TODO: how to actually make this happen via rust-android-gradle plugin?
-* Regularly run [cargo-audit](https://github.com/RustSec/cargo-audit) in CI to alert us to
-  security problems in our dependencies.
-    * It runs on every PR, and once per hour as a scheduled job with failures reported to slack.
-* Use [cargo-license](https://github.com/onur/cargo-license) for a basic license-compatibility
+* Use [cargo-deny](https://github.com/EmbarkStudios/cargo-deny) for a basic license-compatibility
   check as part of CI, to guard against human error.
 
 Adding a new dependency, whether we like it or not, is a big deal - that dependency and everything
@@ -45,7 +35,7 @@ We try to balance this responsibility against the many benefits of using existin
   * Check if we already have a crate in our dependency tree that can provide the needed functionality.
 * Prefer crates that have a a high level of due-diligence already applied, such as:
   * Crates that are [already vendored into Firefox](https://dxr.mozilla.org/mozilla-central/source/third_party/rust).
-  * Crates from [rust-lang-nursery](https://github.com/rust-lang-nursery).
+  * Crates from [rust-lang-nursery](https://github.com/rust-lang-nursery) or [rust-lang](https://github.com/rust-lang).
   * Crates that appear to be widely used in the Rust community.
 * Check that it is clearly licensed and is [MPL-2.0 compatible](https://www.mozilla.org/en-US/MPL/license-policy/#Licenses_Compatible_with_the_MPL).
 * Take the time to investigate the crate's source and ensure it is suitably high-quality.

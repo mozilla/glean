@@ -69,6 +69,7 @@
         - [Payload format](dev/core/internal/payload.md).
         - [Directory structure](dev/core/internal/directory-structure.md)
         - [Debug Pings](dev/core/internal/debug-pings.md)
+        - [Upload mechanism](dev/core/internal/upload.md)
         - [Implementations](dev/core/internal/implementations.md)
     - [Howtos](dev/howtos/index.md)
         - [Development with android-components](dev/howtos/development-with-android-components.md)
