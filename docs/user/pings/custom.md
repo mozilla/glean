@@ -4,9 +4,7 @@ Applications can define metrics that are sent in custom pings. Unlike the built-
 
 This is useful when the scheduling of the built-in pings ([metrics](metrics.html), [baseline](baseline.html) and [events](events.html)) are not appropriate for your data.  Since the timing of the submission of custom pings is handled by the application, the measurement window is under the application's control.
 
-This is especially useful when metrics need to be tightly related to one another, for example when you need to know that Metric A had value X during the exact same time frame as Metric B had value Y.  If these metrics were in different pings, with different measurement windows, it is much harder to do that kind of analysis with complete certainty.
-
-A real-world example of this is: when the WebRender backend is set to a particular value, what is the distribution of frame-rendering times?
+This is especially useful when metrics need to be tightly related to one another, for example when you need to measure the distribution of frame paint times when a particular rendering backend is in use.  If these metrics were in different pings, with different measurement windows, it is much harder to do that kind of reasoning with much certainty.
 
 ## Defining a custom ping
 
