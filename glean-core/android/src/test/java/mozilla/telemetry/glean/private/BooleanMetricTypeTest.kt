@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
 * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-/* This file is based on the tests in the Glean android-components implentation.
+/* This file is based on the tests in the Glean android-components implementation.
  *
  * Care should be taken to not reorder elements in this file so it will be easier
  * to track changes in Glean android-components.
@@ -10,21 +10,17 @@
 
 package mozilla.telemetry.glean.private
 
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import mozilla.telemetry.glean.testing.GleanTestRule
+import mozilla.telemetry.glean.testing.GleanTestNoUploads
 import org.junit.Assert.assertTrue
 import org.junit.Assert.assertFalse
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import java.lang.NullPointerException
 
-@RunWith(AndroidJUnit4::class)
 class BooleanMetricTypeTest {
 
     @get:Rule
-    val gleanRule = GleanTestRule(ApplicationProvider.getApplicationContext())
+    val gleanRule = GleanTestNoUploads()
 
     @Test
     fun `The API saves to its storage engine`() {
