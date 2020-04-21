@@ -13,7 +13,7 @@
 [Full changelog](https://github.com/mozilla/glean/compare/v27.1.0...v28.0.0)
 
 * General:
-  * The version of glean_parser has been upgraded to v1.20.0:
+  * The version of glean_parser has been upgraded to v1.20.1:
     * **Breaking change:** glinter errors found during code generation will now return an error code.
   * `glean_parser` now produces a linter warning when `user` lifetime metrics are
     set to expire. See [bug 1604854](https://bugzilla.mozilla.org/show_bug.cgi?id=1604854)
@@ -23,6 +23,7 @@
   * BUGFIX: The ping uploader will no longer display a trace back when the upload fails due to a failed DNS lookup, network outage, or related issues that prevent communication with the telemetry endpoint.
   * The dependency on `inflection` has been removed.
   * The Python bindings now use `subprocess` rather than `multiprocessing` to perform ping uploading in a separate process. This should be more compatible on all of the platforms Glean supports.
+  * The minimum versions of many secondary dependencies have been lowered to make the Glean SDK compatible with more environments.
 
 # v27.1.0 (2020-04-09)
 

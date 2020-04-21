@@ -47,9 +47,9 @@ with (ROOT.parent / "Cargo.toml").open() as cargo:
     version = parsed_toml["package"]["version"]
 
 requirements = [
-    "cffi==1.13.1",
-    "glean_parser==1.20.0",
-    "iso8601==0.1.12",
+    "cffi>=1",
+    "glean_parser==1.20.1",
+    "iso8601>=0.1.10",
 ]
 
 setup_requirements = []
@@ -75,7 +75,14 @@ else:
 shutil.copyfile("../ffi/glean.h", "glean/glean.h")
 shutil.copyfile("../metrics.yaml", "glean/metrics.yaml")
 shutil.copyfile("../pings.yaml", "glean/pings.yaml")
-shutil.copyfile(shared_object_build_dir + shared_object, "glean/" + shared_object)
+# When running inside of `requirements-builder`, the Rust shared object may not
+# yet exist, so ignore the exception when trying to copy it. Under normal
+# circumstances, this will still show up as an error when running the `build`
+# command as a missing `package_data` file.
+try:
+    shutil.copyfile(shared_object_build_dir + shared_object, "glean/" + shared_object)
+except FileNotFoundError:
+    pass
 
 
 class BinaryDistribution(Distribution):
