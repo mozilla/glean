@@ -279,9 +279,9 @@ Glean releases the Global Interpreter Lock (GIL), therefore your application's t
 Glean installs an [`atexit` handler](https://docs.python.org/3/library/atexit.html) so the Glean thread can attempt to cleanly shut down when your application exits.
 This handler will wait up to 1 second for any pending work to complete.
 
-In addition, by default ping uploading is performed in a separate child process using Python's multiprocessing module. This process will continue to upload any pending pings even after the main process shuts down.
+In addition, by default ping uploading is performed in a separate child process. This process will continue to upload any pending pings even after the main process shuts down.
 
-Since the multiprocessing module may not work in all contexts, such as in a [`PyInstaller`](https://www.pyinstaller.org/) application, there is an option to ensure that ping uploading occurs in the main process. To do this, set the `allow_multiprocessing` parameter on the `glean.Configuration` object to `False`.
+Since the subprocess approach may not work in all contexts, there is an option to ensure that ping uploading occurs in the main process. To do this, set the `allow_multiprocessing` parameter on the `glean.Configuration` object to `False`.
 </div>
 
 {{#include ../tab_footer.md}}
