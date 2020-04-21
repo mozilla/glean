@@ -33,7 +33,9 @@ Glean core will take care of file management, cleanup, rescheduling and throttli
 
 ## Available APIs
 
-### Rust
+{{#include ../../../tab_header.md}}
+
+<div data-lang="Rust" class="tab">
 
 For direct Rust consumers the global `Glean` object provides these methods:
 
@@ -52,7 +54,9 @@ See the documentation for further usage and explanation of the additional types:
 * [`PingUploadTask`](../../../../docs/glean_core/upload/enum.PingUploadTask.html)
 * [`UploadResult`](../../../../docs/glean_core/upload/enum.UploadResult.html)
 
-### FFI
+</div>
+
+<div data-lang="FFI" class="tab">
 
 For FFI consumers (e.g. Kotlin/Swift/Python wrappers) these functions are available:
 
@@ -67,3 +71,7 @@ extern "C" fn glean_process_ping_upload_response(task: FfiPingUploadTask, status
 See the documentation for additional information about the types:
 
 * [`glean_ffi::upload`](../../../../docs/glean_ffi/upload/index.html)
+
+</div>
+
+{{#include ../../../tab_footer.md}}
