@@ -532,7 +532,7 @@ impl Glean {
     /// * `reason`: A reason code to include in the ping
     pub fn submit_ping(&self, ping: &PingType, reason: Option<&str>) -> Result<bool> {
         if !self.is_upload_enabled() {
-            log::error!("Glean must be enabled before sending pings.");
+            log::error!("Glean disabled: not submitting any pings.");
             return Ok(false);
         }
 
