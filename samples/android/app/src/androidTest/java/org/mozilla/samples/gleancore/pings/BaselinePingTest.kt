@@ -18,15 +18,16 @@ import androidx.test.uiautomator.UiDevice
 import mozilla.telemetry.glean.testing.GleanTestLocalServer
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
-import org.mozilla.samples.gleancore.getPingServerPort
 
 @RunWith(AndroidJUnit4::class)
 class BaselinePingTest {
+    private val server = createMockWebServer()
+
     @get:Rule
     val activityRule: ActivityTestRule<MainActivity> = ActivityTestRule(MainActivity::class.java)
 
     @get:Rule
-    val gleanRule = GleanTestLocalServer(context, getPingServerPort())
+    val gleanRule = GleanTestLocalServer(context, server.port)
 
     private val context: Context
         get() = ApplicationProvider.getApplicationContext()
@@ -46,7 +47,7 @@ class BaselinePingTest {
         device.pressHome()
 
         // Validate the received data.
-        val baselinePing = waitForPingContent("baseline")!!
+        val baselinePing = waitForPingContent("baseline", server)!!
 
         val metrics = baselinePing.getJSONObject("metrics")
 
