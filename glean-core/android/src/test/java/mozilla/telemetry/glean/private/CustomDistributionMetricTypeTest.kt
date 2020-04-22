@@ -4,27 +4,23 @@
 
 package mozilla.telemetry.glean.private
 
-import androidx.test.core.app.ApplicationProvider
 import java.lang.NullPointerException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import mozilla.telemetry.glean.testing.ErrorType
-import mozilla.telemetry.glean.testing.GleanTestRule
+import mozilla.telemetry.glean.testing.GleanTestNoUploads
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
 @ObsoleteCoroutinesApi
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class CustomDistributionMetricTypeTest {
 
     @get:Rule
-    val gleanRule = GleanTestRule(ApplicationProvider.getApplicationContext())
+    val gleanRule = GleanTestNoUploads()
 
     @Test
     fun `The API saves to its storage engine`() {

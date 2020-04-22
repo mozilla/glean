@@ -6,24 +6,20 @@
 
 package mozilla.telemetry.glean.private
 
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import java.lang.NullPointerException
 import mozilla.telemetry.glean.testing.ErrorType
-import mozilla.telemetry.glean.testing.GleanTestRule
+import mozilla.telemetry.glean.testing.GleanTestNoUploads
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
 class TimespanMetricTypeTest {
 
     @get:Rule
-    val gleanRule = GleanTestRule(ApplicationProvider.getApplicationContext())
+    val gleanRule = GleanTestNoUploads()
 
     @Test
     fun `The API must record to its storage engine`() {

@@ -25,6 +25,8 @@ class LabeledMetricTypeTest {
     private val context: Context
         get() = ApplicationProvider.getApplicationContext()
 
+    // Note: this cannot use the `GleanTestNoUploads` because some test requires
+    // to call Glean.initialize directly.
     @get:Rule
     val gleanRule = GleanTestRule(ApplicationProvider.getApplicationContext())
 

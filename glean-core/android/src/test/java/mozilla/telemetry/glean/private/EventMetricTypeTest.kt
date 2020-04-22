@@ -11,8 +11,6 @@
 package mozilla.telemetry.glean.private
 
 import android.os.SystemClock
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import java.lang.NullPointerException
 import java.util.concurrent.TimeUnit
 import mozilla.telemetry.glean.Dispatchers
@@ -22,7 +20,7 @@ import mozilla.telemetry.glean.getContextWithMockedInfo
 import mozilla.telemetry.glean.getMockWebServer
 import mozilla.telemetry.glean.resetGlean
 import mozilla.telemetry.glean.testing.ErrorType
-import mozilla.telemetry.glean.testing.GleanTestRule
+import mozilla.telemetry.glean.testing.GleanTestNoUploads
 import mozilla.telemetry.glean.triggerWorkManager
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
@@ -32,7 +30,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
 // Declared here, since Kotlin can not declare nested enum classes.
 enum class clickKeys {
@@ -48,11 +45,10 @@ enum class SomeExtraKeys {
     SomeExtra
 }
 
-@RunWith(AndroidJUnit4::class)
 class EventMetricTypeTest {
 
     @get:Rule
-    val gleanRule = GleanTestRule(ApplicationProvider.getApplicationContext())
+    val gleanRule = GleanTestNoUploads()
 
     @Test
     fun `The API records to its storage engine`() {
