@@ -14,4 +14,4 @@
 
 [^1]: [glean-preview](https://crates.io/crates/glean-preview) is an experimental crate for prototyping integration into Firefox. It it not recommended for general use. See Project FOG.
 
-[^2]: [Firefox on Glean (FOG)](https://firefox-source-docs.mozilla.org/toolkit/components/glean/index.html) is the name of the layer that integrates the Glean SDK into Firefox Desktop. It is currently being designed and implemented.
+[^2]: [Firefox on Glean (FOG)](https://firefox-source-docs.mozilla.org/toolkit/components/glean/index.html) is the name of the layer that integrates the Glean SDK into Firefox Desktop. It is currently being designed and implemented. It is being used as a test bed for how best to write a generic Rust language binding layer and so temporarily ties directly to glean-core instead of an API crate. Prospective non-mozilla-central Rust consumers of the Glean SDK should not follow its example and should instead follow [bug 1631768](https://bugzilla.mozilla.org/show_bug.cgi?id=1631768) for updates on when the proper language binding crate will be available.

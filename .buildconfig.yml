@@ -1,4 +1,4 @@
-libraryVersion: 27.1.0
+libraryVersion: 28.0.0
 groupId: org.mozilla.telemetry
 projects:
   glean:
@@ -14,6 +14,7 @@ projects:
     path: samples/android/app
     artifactId: glean-sample-app
     description: 'An app demoing how to use the Glean library to collect and send telemetry data.'
+    publications: []
   glean-gradle-plugin:
     path: gradle-plugin
     artifactId: glean-gradle-plugin

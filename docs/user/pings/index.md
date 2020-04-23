@@ -4,7 +4,7 @@ Every Glean ping is in JSON format and contains one or more of the [common secti
 
 If data collection is enabled, the Glean SDK provides a set of built-in pings that are assembled out of the box without any developer intervention.  The following is a list of these built-in pings:
 
-- [`baseline` ping](baseline.md): A small ping sent every time the application goes to background.
+- [`baseline` ping](baseline.md): A small ping sent every time the application goes to foreground and background. Going to foreground also includes when the application starts.
 - [`metrics` ping](metrics.md): The default ping for metrics. Sent approximately daily.
 - [`events` ping](events.md): The default ping for events. Sent every time the application goes to background or a certain number of events is reached.
 - [`deletion-request` ping](deletion_request.md): Sent when the user disables telemetry in order to request a deletion of their data.
@@ -82,7 +82,7 @@ See [Using the Experiments API](../experiments-api.md) on how to record experime
 The pings that the Glean SDK generates are submitted to the Mozilla servers at specific paths, in order to provide additional metadata without the need to unpack the ping payload.
 A typical submission URL looks like
 
-  `"<server-address>/submit/<application-id>/<doc-type>/<glean-schema-version>/<ping-uuid>"`
+  `"<server-address>/submit/<application-id>/<doc-type>/<glean-schema-version>/<document-id>"`
 
 where:
 
@@ -90,7 +90,7 @@ where:
 - `<application-id>`: a unique application id, automatically detected by the Glean SDK; this is the value returned by [`Context.getPackageName()`](http://developer.android.com/reference/android/content/Context.html#getPackageName());
 - `<doc-type>`: the name of the ping; this can be one of the pings available out of the box with the Glean SDK, or a custom ping;
 - `<glean-schema-version>`: the version of the Glean ping schema;
-- `<ping-uuid>`: a unique identifier for this ping.
+- `<document-id>`: a unique identifier for this ping.
 
 ### Submitted headers
 A pre-defined set of headers is additionally sent along with the submitted ping:
@@ -103,16 +103,21 @@ A pre-defined set of headers is additionally sent along with the submitted ping:
 | `X-Client-Type` | `Glean` | Custom header to support handling of Glean pings in the legacy pipeline |
 | `X-Client-Version` | e.g. `0.40.0` | The Glean SDK version, sent as a custom header to support handling of Glean pings in the legacy pipeline |
 
-## Defining background state
+## Defining foreground and background state
 
-These docs refer to application 'background' state in several places.
+These docs refer to application 'foreground' and 'background' state in several places.
 
 {{#include ../../tab_header.md}}
 
 <div data-lang="Kotlin" class="tab">
 
-For Android, this specifically means when the activity is no longer visible to the user, it has entered the
-Stopped state, and the system invokes the [`onStop()`](https://developer.android.com/reference/android/app/Activity.html#onStop()) callback.
+#### Foreground
+
+For Android, this specifically means the activity becomes visible to the user, it has entered the `Started` state, and the system invokes the [`onStart()`](https://developer.android.com/reference/android/app/Activity.html#onStart()) callback.
+
+### Background
+
+This specifically means when the activity is no longer visible to the user, it has entered the `Stopped` state, and the system invokes the [`onStop()`](https://developer.android.com/reference/android/app/Activity.html#onStop()) callback.
 
 This may occur, if the user uses `Overview` button to change to another app, the user presses the `Back` button and
 navigates to a previous application or the home screen, or if the user presses the `Home` button to return to the
@@ -124,6 +129,13 @@ The system may also call `onStop()` when the activity has finished running, and 
 </div>
 
 <div data-lang="Swift" class="tab">
+
+### Foreground
+
+For iOS, Glean attaches to the [`willEnterForegroundNotification`](https://developer.apple.com/documentation/uikit/uiapplication/1622944-willenterforegroundnotification).
+This notification is posted by the OS shortly before an app leaves the background state on its way to becoming the active app.
+
+### Background
 
 For iOS, this specifically means when the app is no longer visible to the user, or when the `UIApplicationDelegate`
 receives the [`applicationDidEnterBackground`](https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622997-applicationdidenterbackground) event.

@@ -101,7 +101,58 @@ class GleanTests: XCTestCase {
         )
     }
 
-    func testSendingOfStartupBaselinePing() {
+    func testSendingOfForegroundBaselinePing() {
+        // Set up the test stub based on the default telemetry endpoint
+        let host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
+        stub(condition: isHost(host)) { data in
+            let body = (data as NSURLRequest).ohhttpStubs_HTTPBody()
+            let json = try! JSONSerialization.jsonObject(with: body!, options: []) as? [String: Any]
+            XCTAssert(json != nil)
+
+            // Check for the "dirty_startup" flag
+            let pingInfo = json?["ping_info"] as? [String: Any]
+            XCTAssertEqual("foreground", pingInfo?["reason"] as? String)
+
+            // Ensure there is only the expected locale string metric
+            let metrics = json?["metrics"] as? [String: Any]
+            let strings = metrics?["string"] as? [String: Any]
+            XCTAssertEqual(1, strings?.count, "Must contain only the expected metric")
+            let locale = strings?["glean.baseline.locale"] as? String
+            XCTAssertNotNil(locale, "Locale is not nil")
+
+            // We should not have a duration for a ping with the "foreground" flag
+            XCTAssertNil(metrics?["timespan"], "Duration is not nil")
+
+            DispatchQueue.main.async {
+                // let the response get processed before we mark the expectation fulfilled
+                self.expectation?.fulfill()
+            }
+
+            return OHHTTPStubsResponse(
+                jsonObject: [],
+                statusCode: 200,
+                headers: ["Content-Type": "application/json"]
+            )
+        }
+
+        // Set up the expectation that will be fulfilled by the stub above
+        expectation = expectation(description: "Baseline Ping Received")
+
+        // Set the last time the "metrics" ping was sent to now. This is required for us to not
+        // send a metrics pings the first time we initialize Glean and to keep it from interfering
+        // with these tests.
+        let now = Date()
+        Glean.shared.metricsPingScheduler.updateSentDate(now)
+
+        // Resetting Glean doesn't trigger lifecycle events in tests so we must call the method
+        // invoked by the lifecycle observer directly.
+        Glean.shared.handleForegroundEvent()
+        waitForExpectations(timeout: 5.0) { error in
+            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
+        }
+    }
+
+    func testSendingOfBaselinePingWithDirtyFlag() {
         // Set the dirty flag
         glean_set_dirty_flag(true.toByte())
 

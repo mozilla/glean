@@ -43,9 +43,7 @@ macro_rules! define_metric {
             $op:ident -> $op_fn:ident($($op_argname:ident: $op_argtyp:ty),* $(,)*)
         ),* $(,)*
     }) => {
-        lazy_static::lazy_static! {
-            pub static ref $metric_map: ffi_support::ConcurrentHandleMap<glean_core::metrics::$metric_type> = ffi_support::ConcurrentHandleMap::new();
-        }
+        pub static $metric_map: once_cell::sync::Lazy<ffi_support::ConcurrentHandleMap<glean_core::metrics::$metric_type>> = once_cell::sync::Lazy::new(ffi_support::ConcurrentHandleMap::new);
         $crate::define_infallible_handle_map_deleter!($metric_map, $destroy_fn);
 
         $(

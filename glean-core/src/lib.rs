@@ -16,7 +16,7 @@ use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 
 use chrono::{DateTime, FixedOffset};
-use lazy_static::lazy_static;
+use once_cell::sync::Lazy;
 use once_cell::sync::OnceCell;
 use std::sync::Mutex;
 use uuid::Uuid;
@@ -57,11 +57,8 @@ use crate::util::{local_now_with_offset, sanitize_application_id};
 
 const GLEAN_SCHEMA_VERSION: u32 = 1;
 const DEFAULT_MAX_EVENTS: usize = 500;
-lazy_static! {
-    static ref KNOWN_CLIENT_ID: Uuid =
-        Uuid::parse_str("c0ffeec0-ffee-c0ff-eec0-ffeec0ffeec0").unwrap();
-}
-
+static KNOWN_CLIENT_ID: Lazy<Uuid> =
+    Lazy::new(|| Uuid::parse_str("c0ffeec0-ffee-c0ff-eec0-ffeec0ffeec0").unwrap());
 // An internal ping name, not to be touched by anything else
 pub(crate) const INTERNAL_STORAGE: &str = "glean_internal_info";
 
@@ -535,7 +532,7 @@ impl Glean {
     /// * `reason`: A reason code to include in the ping
     pub fn submit_ping(&self, ping: &PingType, reason: Option<&str>) -> Result<bool> {
         if !self.is_upload_enabled() {
-            log::error!("Glean must be enabled before sending pings.");
+            log::error!("Glean disabled: not submitting any pings.");
             return Ok(false);
         }
 

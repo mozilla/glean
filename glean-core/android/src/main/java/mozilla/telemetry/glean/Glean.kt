@@ -99,7 +99,7 @@ open class GleanInternalAPI internal constructor () {
      * once.
      *
      * A LifecycleObserver will be added to send pings when the application goes
-     * into the background.
+     * into foreground and background.
      *
      * This method must be called from the main thread.
      *
@@ -481,6 +481,13 @@ open class GleanInternalAPI internal constructor () {
     }
 
     /**
+     * Handle the foreground event and send the appropriate pings.
+     */
+    internal fun handleForegroundEvent() {
+        Pings.baseline.submit(Pings.baselineReasonCodes.foreground)
+    }
+
+    /**
      * Handle the background event and send the appropriate pings.
      */
     internal fun handleBackgroundEvent() {
@@ -553,7 +560,7 @@ open class GleanInternalAPI internal constructor () {
         }
 
         if (!getUploadEnabled()) {
-            Log.e(LOG_TAG, "Glean must be enabled before submitting pings.")
+            Log.e(LOG_TAG, "Glean disabled: not submitting any pings.")
             return
         }
 

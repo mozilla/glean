@@ -201,7 +201,7 @@ class Glean:
             # temporary directory, so there is no concern about delaying
             # application shutdown here.
             p = ProcessDispatcher.dispatch(_rmtree, (str(cls._data_dir),))
-            p.join()
+            p.wait()
 
     @classmethod
     def is_initialized(cls) -> bool:
@@ -444,7 +444,7 @@ class Glean:
             return
 
         if not cls.get_upload_enabled():
-            log.error("Glean must be enabled before submitting pings.")
+            log.error("Glean disabled: not submitting any pings.")
             return
 
         sent_ping = _ffi.lib.glean_submit_ping_by_name(

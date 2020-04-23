@@ -114,6 +114,30 @@ You can send extra parameters to the `py.test` command by setting the `PYTEST_AR
   $ make test-python PYTEST_ARGS="-s --pdb"
 ```
 
+## Viewing logging output
+
+The Glean Python bindings have two sources of log messages: those that come from Python and those that come from Rust.
+
+### Python log messages
+
+Python log messages are emitted using the Python standard library's [`logging` module](https://docs.python.org/3/library/logging.html).
+This module provides a lot of possibilities for customization, but the easiest way to control the log level globally is with [`logging.basicConfig`](https://docs.python.org/3/library/logging.html#logging.basicConfig):
+
+```python
+import logging
+logging.basicConfig(level=logging.DEBUG)
+```
+
+### Rust log messages
+
+Rust log messages are emitted using [`env_logger`](https://docs.rs/env_logger/latest/env_logger/).
+The log level can be controlled with the `RUST_LOG` environment variable:
+
+```python
+import os
+os.environ["RUST_LOG"] = "DEBUG"
+```
+
 ## Linting, formatting and type checking
 
 The Glean Python bindings use the following tools:
