@@ -80,7 +80,7 @@ tasks:
                     then: ${event.action}
                     else: 'UNDEFINED'
             in:
-                $if: 'tasks_for == "github-pull-request" && pullRequestAction in ["opened", "reopened", "edited", "synchronize"]'
+                $if: 'tasks_for == "github-pull-request" && pullRequestAction in ["opened", "reopened", "synchronize"]'
                 then:
                     $let:
                         level:
