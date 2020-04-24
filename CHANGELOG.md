@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v27.1.0...master)
+[Full changelog](https://github.com/mozilla/glean/compare/v28.0.0...master)
+
+# v28.0.0 (2020-04-23)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v27.1.0...v28.0.0)
 
 * General:
   * The baseline ping is now sent when the application goes to foreground, in addition to background and dirty-startup.
