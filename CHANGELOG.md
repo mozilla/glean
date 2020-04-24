@@ -13,7 +13,7 @@
 [Full changelog](https://github.com/mozilla/glean/compare/v27.1.0...v28.0.0)
 
 * General:
-  * The version of glean_parser has been upgraded to v1.20.1:
+  * The version of glean_parser has been upgraded to v1.20.2:
     * **Breaking change:** glinter errors found during code generation will now return an error code.
   * `glean_parser` now produces a linter warning when `user` lifetime metrics are
     set to expire. See [bug 1604854](https://bugzilla.mozilla.org/show_bug.cgi?id=1604854)
@@ -24,6 +24,7 @@
   * The dependency on `inflection` has been removed.
   * The Python bindings now use `subprocess` rather than `multiprocessing` to perform ping uploading in a separate process. This should be more compatible on all of the platforms Glean supports.
   * The minimum versions of many secondary dependencies have been lowered to make the Glean SDK compatible with more environments.
+  * Dependencies that depend on the version of Python being used are now specified using the `Declaring platform specific dependencies syntax in setuptools <https://setuptools.readthedocs.io/en/latest/setuptools.html#declaring-platform-specific-dependencies>`__. This means that more recent versions of dependencies are likely to be installed on Python 3.6 and later, and unnecessary backport libraries won't be installed on more recent Python versions.
 
 # v27.1.0 (2020-04-09)
 
