@@ -9,6 +9,28 @@ This ping contains the client id.
 This ping is intended to communicate to the Data Pipeline that the user wishes to have their reported Telemetry data deleted.
 As such it attempts to send itself at the moment the user opts out of data collection, and continues to try and send itself.
 
+> **Note:** It is possible to send secondary ids in the deletion request ping.  For instance, if the application is migrating
+> from legacy telemetry to Glean, the legacy client ids can be added to the deletion request ping by creating a `metrics.yaml`
+> entry for the id to be added with a `send_in_pings` value of `deletion_request`.
+>
+> An example `metrics.yaml` entry might look like this:
+> ```
+> legacy_client_id:
+>    type: uuid
+>    description:
+>      A UUID uniquely identifying the legacy client.
+>    send_in_pings:
+>      - deletion_request
+>    lifetime: user
+>    bugs:
+>      - <relevant bug url>
+>    data_reviews:
+>      - <relevant data review url>
+>    notification_emails:
+>      - product-team@example.com
+>    expires: never
+> ```
+
 ## Scheduling
 
 The `deletion-request` ping is automatically submitted when upload is disabled in Glean.
@@ -16,7 +38,7 @@ If upload fails, it is retried after Glean is initialized.
 
 ## Contents
 
-The `deletion-request` does not contain additional metrics.
+The `deletion-request` does not contain additional metrics aside from secondary ids that have been added.
 
 ## Example `deletion-request` ping
 
@@ -39,6 +61,11 @@ The `deletion-request` does not contain additional metrics.
     "app_build": "1",
     "app_display_version": "1.0",
     "client_id": "35dab852-74db-43f4-8aa0-88884211e545"
+  },
+  "metrics": {
+    "uuid": {
+      "legacy_client_id": "5faffa6d-6147-4d22-a93e-c1dbd6e06171"
+    }
   }
 }
 ```
