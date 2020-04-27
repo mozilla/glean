@@ -51,6 +51,11 @@ internal open class FfiPingUploadTask(
 ) : Union() {
     class ByValue : FfiPingUploadTask(), Structure.ByValue
 
+    init {
+        // Initialize to be the `tag`-only variant
+        setType("tag")
+    }
+
     fun toPingUploadTask(): PingUploadTask {
         return when (this.tag.toInt()) {
             UploadTaskTag.Wait.ordinal -> PingUploadTask.Wait
