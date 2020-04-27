@@ -21,14 +21,7 @@ As such it attempts to send itself at the moment the user opts out of data colle
 >      A UUID uniquely identifying the legacy client.
 >    send_in_pings:
 >      - deletion_request
->    lifetime: user
->    bugs:
->      - <relevant bug url>
->    data_reviews:
->      - <relevant data review url>
->    notification_emails:
->      - product-team@example.com
->    expires: never
+>    ...
 > ```
 
 ## Scheduling
