@@ -5,9 +5,12 @@
 // NOTE: This is a test-only file that contains unit tests for
 // the lib.rs file.
 
+use std::collections::HashSet;
+use std::iter::FromIterator;
+
 use super::*;
 use crate::metrics::RecordedExperimentData;
-use crate::metrics::{StringMetric, TimeUnit, TimespanMetric};
+use crate::metrics::{StringMetric, TimeUnit, TimespanMetric, TimingDistributionMetric};
 
 const GLOBAL_APPLICATION_ID: &str = "org.mozilla.glean.test.app";
 pub fn new_glean(tempdir: Option<tempfile::TempDir>) -> (Glean, tempfile::TempDir) {
@@ -643,4 +646,116 @@ fn test_change_metric_type_runtime() {
     // We expect old data to be lost forever. See the following bug comment
     // https://bugzilla.mozilla.org/show_bug.cgi?id=1621757#c1 for more context.
     assert_eq!(None, string_metric.test_get_value(&glean, ping_name));
+}
+
+#[test]
+fn timing_distribution_truncation() {
+    let dir = tempfile::tempdir().unwrap();
+
+    let (glean, _) = new_glean(Some(dir));
+    let max_sample_time = 1000 * 1000 * 1000 * 60 * 10;
+
+    for (unit, expected_keys) in &[
+        (
+            TimeUnit::Nanosecond,
+            HashSet::<u64>::from_iter(vec![961_548, 939, 599_512_966_122, 1]),
+        ),
+        (
+            TimeUnit::Microsecond,
+            HashSet::<u64>::from_iter(vec![939, 562_949_953_421_318, 599_512_966_122, 961_548]),
+        ),
+        (
+            TimeUnit::Millisecond,
+            HashSet::<u64>::from_iter(vec![
+                961_548,
+                576_460_752_303_431_040,
+                599_512_966_122,
+                562_949_953_421_318,
+            ]),
+        ),
+    ] {
+        let mut dist = TimingDistributionMetric::new(
+            CommonMetricData {
+                name: format!("local_metric_{:?}", unit),
+                category: "local".into(),
+                send_in_pings: vec!["baseline".into()],
+                ..Default::default()
+            },
+            *unit,
+        );
+
+        for &value in &[
+            1,
+            1_000,
+            1_000_000,
+            max_sample_time,
+            max_sample_time * 1_000,
+            max_sample_time * 1_000_000,
+        ] {
+            let timer_id = dist.set_start(0);
+            dist.set_stop_and_accumulate(&glean, timer_id, value);
+        }
+
+        let hist = dist.test_get_value(&glean, "baseline").unwrap();
+
+        assert_eq!(4, hist.values().len());
+        for &key in hist.values().keys() {
+            assert!(key < max_sample_time * unit.as_nanos(1))
+        }
+
+        let keys = HashSet::<u64>::from_iter(hist.values().keys().cloned());
+        assert_eq!(keys, *expected_keys);
+
+        let snapshot = hist.snapshot();
+        // The number of samples was originally designed around 1ns to
+        // 10minutes, with 8 steps per power of 2, which works out to 316 items.
+        // This is to ensure that holds even when the time unit is changed.
+        assert!(snapshot.len() < 316);
+    }
+}
+
+#[test]
+fn timing_distribution_truncation_accumulate() {
+    let dir = tempfile::tempdir().unwrap();
+
+    let (glean, _) = new_glean(Some(dir));
+    let max_sample_time = 1000 * 1000 * 1000 * 60 * 10;
+
+    for &unit in &[
+        TimeUnit::Nanosecond,
+        TimeUnit::Microsecond,
+        TimeUnit::Millisecond,
+    ] {
+        let mut dist = TimingDistributionMetric::new(
+            CommonMetricData {
+                name: format!("local_metric_{:?}", unit),
+                category: "local".into(),
+                send_in_pings: vec!["baseline".into()],
+                ..Default::default()
+            },
+            unit,
+        );
+
+        dist.accumulate_samples_signed(
+            &glean,
+            vec![
+                1,
+                1_000,
+                1_000_000,
+                max_sample_time,
+                max_sample_time * 1_000,
+                max_sample_time * 1_000_000,
+            ],
+        );
+
+        let hist = dist.test_get_value(&glean, "baseline").unwrap();
+
+        assert_eq!(4, hist.values().len());
+
+        let snapshot = hist.snapshot();
+        // The number of samples was originally designed around 1ns to
+        // 10minutes, with 8 steps per power of 2, which works out to 316 items.
+        // This is to ensure that holds even when the time unit is changed.
+        assert!(snapshot.len() < 316);
+    }
 }

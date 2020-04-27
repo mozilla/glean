@@ -58,6 +58,7 @@ URIs
 UTF
 UUID
 UUIDs
+Underflowing
 WebRender
 Xcode
 YAML
@@ -129,6 +130,7 @@ mozilla
 mozregression
 mypy
 namespace
+ns
 ol
 pdoc
 pidcat
