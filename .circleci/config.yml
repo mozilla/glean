@@ -177,15 +177,6 @@ commands:
             echo 'linker = "/usr/bin/x86_64-w64-mingw32-gcc"' >> ~/.cargo/config
             echo '[target.i686-pc-windows-gnu]' >> ~/.cargo/config
             echo 'linker = "/usr/bin/i686-w64-mingw32-gcc"' >> ~/.cargo/config
-      - run:
-          name: Fix broken mingw toolchain
-          command: |
-            # Fix broken libraries
-            # https://github.com/rust-lang/rust/issues/47048
-            # https://github.com/rust-lang/rust/issues/49078
-            # https://wiki.archlinux.org/index.php/Rust#Windows
-            for lib in crt2.o dllcrt2.o libmsvcrt.a; do cp -v /usr/x86_64-w64-mingw32/lib/$lib ~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-pc-windows-gnu/lib/; done
-            for lib in crt2.o dllcrt2.o libmsvcrt.a; do cp -v /usr/i686-w64-mingw32/lib/$lib ~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/i686-pc-windows-gnu/lib/; done
 
   install-ghr-darwin:
     steps:
