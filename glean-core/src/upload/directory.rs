@@ -9,7 +9,6 @@ use std::fs::{self, File};
 use std::io::{BufRead, BufReader};
 use std::path::{Path, PathBuf};
 
-use log;
 use serde_json::Value as JsonValue;
 use uuid::Uuid;
 

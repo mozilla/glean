@@ -20,7 +20,6 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, RwLock, RwLockWriteGuard};
 use std::thread;
 
-use log;
 use serde_json::Value as JsonValue;
 
 use directory::PingDirectoryManager;
@@ -333,7 +332,7 @@ mod test {
         }
 
         // Clear the queue
-        let _ = upload_manager.clear_ping_queue();
+        drop(upload_manager.clear_ping_queue());
 
         // Verify there really isn't any ping in the queue
         assert_eq!(upload_manager.get_upload_task(), PingUploadTask::Done);
@@ -360,7 +359,7 @@ mod test {
             .unwrap();
 
         // Clear the queue
-        let _ = glean.upload_manager.clear_ping_queue();
+        drop(glean.upload_manager.clear_ping_queue());
 
         let upload_task = glean.get_upload_task();
         match upload_task {
