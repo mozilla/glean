@@ -20,7 +20,7 @@ All locations need to be updated on upgrades:
     * `dev/android/setup-android-build-environment.md`
 * CI configuration
     * `.circleci/config.yml`
-        * `sdkmanager 'build-tools;21.0.0'`
+        * `sdkmanager 'build-tools;28.0.3'`
         * `image: circleci/android:api-28-ndk`
     * `taskcluster/docker/linux/Dockerfile`.
         * `ENV ANDROID_BUILD_TOOLS "28.0.3"`
