@@ -70,6 +70,7 @@
         - [Directory structure](dev/core/internal/directory-structure.md)
         - [Debug Pings](dev/core/internal/debug-pings.md)
         - [Implementations](dev/core/internal/implementations.md)
+        - [Android SDK/NDK versions](dev/core/internal/sdk-ndk-versions.md)
     - [Howtos](dev/howtos/index.md)
         - [Development with android-components](dev/howtos/development-with-android-components.md)
         - [Locally-published components in Fenix](dev/howtos/locally-published-components-in-fenix.md)
