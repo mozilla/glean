@@ -98,7 +98,7 @@ shellcheck: ## Run shellcheck against important shell scripts
 
 pythonlint: python-setup ## Run flake8 and black to lint Python code
 	$(GLEAN_PYENV)/bin/python3 -m flake8 glean-core/python/glean glean-core/python/tests
-	$(GLEAN_PYENV)/bin/python3 -m black --check --exclude .venv\* glean-core/python
+	$(GLEAN_PYENV)/bin/python3 -m black --check --exclude \(.venv\*\)\|\(.eggs\) glean-core/python
 	$(GLEAN_PYENV)/bin/python3 -m mypy glean-core/python/glean
 
 .PHONY: lint clippy ktlint swiftlint yamllint
