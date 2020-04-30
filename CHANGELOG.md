@@ -1,5 +1,8 @@
 # Unreleased changes
 
+* Android
+  * The `PingType.submit()` can now be called without a `null` by Java consumers.
+
 [Full changelog](https://github.com/mozilla/glean/compare/v28.0.0...master)
 
 # v28.0.0 (2020-04-23)

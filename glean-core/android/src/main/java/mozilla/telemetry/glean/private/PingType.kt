@@ -72,6 +72,7 @@ class PingType<ReasonCodesEnum : Enum<ReasonCodesEnum>> (
      *
      * @param reason The reason the ping is being submitted.
      */
+    @JvmOverloads
     fun submit(reason: ReasonCodesEnum? = null) {
         val reasonString = reason?.let { this.reasonCodes[it.ordinal] }
         Glean.submitPing(this, reasonString)
