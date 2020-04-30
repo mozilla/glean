@@ -5,26 +5,25 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v28.0.0...master)
 
+* General:
+  * The version of glean_parser has been upgraded to v1.20.2:
+    * **Breaking change:** glinter errors found during code generation will now return an error code.
+    * `glean_parser` now produces a linter warning when `user` lifetime metrics are set to expire. See [bug 1604854](https://bugzilla.mozilla.org/show_bug.cgi?id=1604854) for additional context.
 * Python:
   * BUGFIX: Fixed a race condition in the `atexit` handler, that would have resulted in the message "No database found".  See [bug 1634310](https://bugzilla.mozilla.org/show_bug.cgi?id=1634310).
+  * The minimum versions of many secondary dependencies have been lowered to make the Glean SDK compatible with more environments.
+  * Dependencies that depend on the version of Python being used are now specified using the `Declaring platform specific dependencies syntax in setuptools <https://setuptools.readthedocs.io/en/latest/setuptools.html#declaring-platform-specific-dependencies>`__. This means that more recent versions of dependencies are likely to be installed on Python 3.6 and later, and unnecessary backport libraries won't be installed on more recent Python versions.
 
 # v28.0.0 (2020-04-23)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v27.1.0...v28.0.0)
 
 * General:
-  * The version of glean_parser has been upgraded to v1.20.2:
-    * **Breaking change:** glinter errors found during code generation will now return an error code.
-  * `glean_parser` now produces a linter warning when `user` lifetime metrics are
-    set to expire. See [bug 1604854](https://bugzilla.mozilla.org/show_bug.cgi?id=1604854)
-    for additional context.
   * The baseline ping is now sent when the application goes to foreground, in addition to background and dirty-startup.
 * Python:
   * BUGFIX: The ping uploader will no longer display a trace back when the upload fails due to a failed DNS lookup, network outage, or related issues that prevent communication with the telemetry endpoint.
   * The dependency on `inflection` has been removed.
   * The Python bindings now use `subprocess` rather than `multiprocessing` to perform ping uploading in a separate process. This should be more compatible on all of the platforms Glean supports.
-  * The minimum versions of many secondary dependencies have been lowered to make the Glean SDK compatible with more environments.
-  * Dependencies that depend on the version of Python being used are now specified using the `Declaring platform specific dependencies syntax in setuptools <https://setuptools.readthedocs.io/en/latest/setuptools.html#declaring-platform-specific-dependencies>`__. This means that more recent versions of dependencies are likely to be installed on Python 3.6 and later, and unnecessary backport libraries won't be installed on more recent Python versions.
 
 # v27.1.0 (2020-04-09)
 
