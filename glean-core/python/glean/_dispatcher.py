@@ -7,7 +7,6 @@ This module implements a single-threaded (mostly FIFO) work queue on which
 most Glean work is done.
 """
 
-import atexit
 import functools
 import logging
 import queue
@@ -82,9 +81,6 @@ class _ThreadWorker:
         self._thread.start()
         self._started = True
         self._ident = self._thread.ident
-        # Register an atexit function to wait for the worker thread to
-        # complete.
-        atexit.register(self._shutdown_thread)
 
     def _worker(self):
         """
@@ -105,15 +101,20 @@ class _ThreadWorker:
 
     def _shutdown_thread(self):
         """
-        An atexit handler to tell the worker thread to shutdown and then wait
-        for 1 seconds for it to finish.
+        Tell the worker thread to shutdown and then wait for 1 seconds for it
+        to finish.
         """
+        if not self._started:
+            return
+
         # Send an END_MARKER to the worker thread to shut it down cleanly.
         self._queue.put((self.END_MARKER, (), {}))
         # Wait up to 1 second for the worker thread to complete.
         self._thread.join(1.0)
         if self._thread.is_alive():
             log.error("Timeout sending Glean telemetry")
+        self._started = False
+        self._thread = None
 
 
 class Dispatcher:

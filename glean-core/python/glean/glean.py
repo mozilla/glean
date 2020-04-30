@@ -115,6 +115,8 @@ class Glean:
         if cls.is_initialized():
             return
 
+        atexit.register(Glean._reset)
+
         if configuration is None:
             configuration = Configuration()
 
@@ -189,10 +191,8 @@ class Glean:
         # is called atexit, which also waits for the Dispatcher queue to
         # complete.
 
+        Dispatcher._task_worker._shutdown_thread()
         Dispatcher.reset()
-        if cls._initialized:
-            _ffi.lib.glean_destroy_glean()
-        cls._initialized = False
         if cls._destroy_data_dir and cls._data_dir.exists():
             # This needs to be run in the same one-at-a-time process as the
             # PingUploadWorker to avoid a race condition. This will block the
@@ -202,6 +202,12 @@ class Glean:
             # application shutdown here.
             p = ProcessDispatcher.dispatch(_rmtree, (str(cls._data_dir),))
             p.wait()
+
+        # Destroying Glean must be the absolute last thing after all queued
+        # work on both the thread and the subprocess are complete.
+        if cls._initialized:
+            _ffi.lib.glean_destroy_glean()
+        cls._initialized = False
 
     @classmethod
     def is_initialized(cls) -> bool:
@@ -456,6 +462,3 @@ class Glean:
 
 
 __all__ = ["Glean"]
-
-
-atexit.register(Glean._reset)
