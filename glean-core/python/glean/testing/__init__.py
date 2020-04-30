@@ -36,14 +36,14 @@ def reset_glean(
     from glean import Glean
     from glean._dispatcher import Dispatcher
 
-    Dispatcher._testing_mode = True
-
     data_dir = None  # type: Optional[Path]
     if not clear_stores:
         Glean._destroy_data_dir = False
         data_dir = Glean._data_dir
 
     Glean._reset()
+    Dispatcher._testing_mode = True
+
     Glean.initialize(
         application_id=application_id,
         application_version=application_version,

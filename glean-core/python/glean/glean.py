@@ -188,11 +188,26 @@ class Glean:
         # TODO: 1594184 Send the metrics ping
 
         # WARNING: Do not run any tasks on the Dispatcher from here since this
-        # is called atexit, which also waits for the Dispatcher queue to
-        # complete.
+        # is called atexit.
 
+        # Wait for the dispatcher thread to complete.
         Dispatcher._task_worker._shutdown_thread()
+
         Dispatcher.reset()
+
+        # Wait for the subprocess to complete.  We only need to do this if
+        # we know we are going to be deleting the data directory.
+        if cls._destroy_data_dir and cls._data_dir.exists():
+            ProcessDispatcher._wait_for_last_process()
+
+        # Destroy the Glean object.
+        # Importantly on Windows, this closes the handle to the database so
+        # that the data directory can be deleted without a multiple access
+        # violation.
+        if cls._initialized:
+            _ffi.lib.glean_destroy_glean()
+        cls._initialized = False
+
         if cls._destroy_data_dir and cls._data_dir.exists():
             # This needs to be run in the same one-at-a-time process as the
             # PingUploadWorker to avoid a race condition. This will block the
@@ -202,12 +217,6 @@ class Glean:
             # application shutdown here.
             p = ProcessDispatcher.dispatch(_rmtree, (str(cls._data_dir),))
             p.wait()
-
-        # Destroying Glean must be the absolute last thing after all queued
-        # work on both the thread and the subprocess are complete.
-        if cls._initialized:
-            _ffi.lib.glean_destroy_glean()
-        cls._initialized = False
 
     @classmethod
     def is_initialized(cls) -> bool:

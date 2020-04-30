@@ -78,6 +78,12 @@ class ProcessDispatcher:
     _last_process = None  # type: Optional[subprocess.Popen]
 
     @classmethod
+    def _wait_for_last_process(cls):
+        if cls._last_process is not None:
+            cls._last_process.wait()
+            cls._last_process = None
+
+    @classmethod
     def dispatch(cls, func, args) -> Union[_SyncWorkWrapper, subprocess.Popen]:
         from . import Glean
 
@@ -85,9 +91,7 @@ class ProcessDispatcher:
             # We only want one of these processes running at a time, so if
             # there's already one, join on it. Therefore, this should not be
             # run from the main user thread.
-            if cls._last_process is not None:
-                cls._last_process.wait()
-                cls._last_process = None
+            cls._wait_for_last_process()
 
             # This sends the data over as a commandline argument, which has a
             # maximum length of:
