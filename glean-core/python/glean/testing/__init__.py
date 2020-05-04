@@ -36,14 +36,18 @@ def reset_glean(
     from glean import Glean
     from glean._dispatcher import Dispatcher
 
-    Dispatcher._testing_mode = True
-
     data_dir = None  # type: Optional[Path]
     if not clear_stores:
         Glean._destroy_data_dir = False
         data_dir = Glean._data_dir
 
     Glean._reset()
+
+    # `_testing_mode` should be changed *after* `Glean._reset()` is run, so
+    # that `Glean` properly joins on the worker thread when `_testing_mode` is
+    # False.
+    Dispatcher._testing_mode = True
+
     Glean.initialize(
         application_id=application_id,
         application_version=application_version,

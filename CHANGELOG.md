@@ -5,6 +5,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v28.0.0...master)
 
+* Python:
+  * BUGFIX: Fixed a race condition in the `atexit` handler, that would have resulted in the message "No database found".  See [bug 1634310](https://bugzilla.mozilla.org/show_bug.cgi?id=1634310).
+
 # v28.0.0 (2020-04-23)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v27.1.0...v28.0.0)
