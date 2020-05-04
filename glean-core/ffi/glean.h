@@ -87,10 +87,50 @@ typedef const int32_t *RawIntArray;
 typedef const char *const *RawStringArray;
 
 /**
- * A FFI-compatible representation for the PingUploadTask
+ * A FFI-compatible representation for the PingUploadTask.
+ *
+ * This is exposed as a C-compatible tagged union, like this:
+ *
+ * ```c
+ * enum FfiPingUploadTask_Tag {
+ *   FfiPingUploadTask_Upload,
+ *   FfiPingUploadTask_Wait,
+ *   FfiPingUploadTask_Done,
+ * };
+ * typedef uint8_t FfiPingUploadTask_Tag;
+ *
+ * typedef struct {
+ *   FfiPingUploadTask_Tag tag;
+ *   char *document_id;
+ *   char *path;
+ *   char *body;
+ *   char *headers;
+ * } FfiPingUploadTask_Upload_Body;
+ *
+ * typedef union {
+ *   FfiPingUploadTask_Tag tag;
+ *   FfiPingUploadTask_Upload_Body upload;
+ * } FfiPingUploadTask;
+ *
+ * ```
+ *
+ * It is therefore always valid to read the `tag` field of the returned union (always the first
+ * field in memory).
+ *
+ * Language bindings should turn this into proper language types (e.g. enums/structs) and
+ * copy out data.
+ *
+ * String fields are encoded into null-terminated UTF-8 C strings.
+ *
+ * * The language binding should copy out the data and turn these into their equivalent string type.
+ * * The language binding should _not_ free these fields individually.
+ *   Instead `glean_process_ping_upload_response` will receive the whole enum, taking care of
+ *   freeing the memory.
+ *
  *
  * The order of variants should be the same as in `glean-core/src/upload/mod.rs`
  * and `glean-core/android/src/main/java/mozilla/telemetry/glean/net/Upload.kt`.
+ *
  */
 enum FfiPingUploadTask_Tag {
   FfiPingUploadTask_Upload,
