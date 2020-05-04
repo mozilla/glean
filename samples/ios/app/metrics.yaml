@@ -13,7 +13,7 @@ $schema: moz://mozilla.org/schemas/glean/metrics/1-0-0
 browser.engagement:
   click:
     type: event
-    description: >
+    description: |
       Just testing events
     bugs:
       - https://bugzilla.mozilla.org/123456789
@@ -30,7 +30,7 @@ browser.engagement:
 
   event_no_keys:
     type: event
-    description: >
+    description: |
       Just testing events without keys
     bugs:
       - https://bugzilla.mozilla.org/123456789
@@ -43,7 +43,7 @@ browser.engagement:
 basic:
   os:
     type: string
-    description: >
+    description: |
       The name of the os
     bugs:
       - https://bugzilla.mozilla.org/123456789
@@ -56,7 +56,7 @@ basic:
 test:
   string_list:
     type: string_list
-    description: >
+    description: |
       Testing StringList ping
     send_in_pings:
       - test-string-list
@@ -68,10 +68,12 @@ test:
     notification_emails:
       - CHANGE-ME@example.com
     expires: 2100-01-01
+    no_lint:
+      - USER_LIFETIME_EXPIRATION
 
   counter:
     type: counter
-    description: >
+    description: |
       Testing counter
     send_in_pings:
       - test-string-list
@@ -83,10 +85,12 @@ test:
     notification_emails:
       - CHANGE-ME@example.com
     expires: 2100-01-01
+    no_lint:
+      - USER_LIFETIME_EXPIRATION
 
   timespan:
     type: timespan
-    description: >
+    description: |
       Testing a timespan
     time_unit: microsecond
     lifetime: application
@@ -100,7 +104,7 @@ test:
 
   is_started:
     type: boolean
-    description: >
+    description: |
       Testing boolean
     send_in_pings:
       - baseline
@@ -112,11 +116,13 @@ test:
     notification_emails:
       - CHANGE-ME@test-only.com
     expires: 2100-01-01
+    no_lint:
+      - BASELINE_PING
 
 custom:
   counter:
     type: counter
-    description: >
+    description: |
       A custom counter that goes on a custom ping
     lifetime: ping
     send_in_pings:

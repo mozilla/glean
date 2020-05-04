@@ -1,4 +1,4 @@
-personal_ws-1.1 en 166 utf-8
+personal_ws-1.1 en 167 utf-8
 AAR
 AARs
 APIs
@@ -67,6 +67,7 @@ aspell
 async
 autodetected
 backend
+backport
 barcode
 boolean
 booleans
@@ -115,6 +116,7 @@ lang
 latencies
 lfloor
 lifecycle
+linter
 linux
 logcat
 macOS

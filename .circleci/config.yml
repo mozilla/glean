@@ -753,6 +753,17 @@ jobs:
       - skip-if-doc-only
       - test-python
 
+  Python 3_5 tests minimum dependencies:
+    docker:
+      - image: circleci/python:3.5.9
+    steps:
+      - checkout
+      - skip-if-doc-only
+      - run:
+          command: |
+              echo "export GLEAN_PYDEPS=min" >> $BASH_ENV
+      - test-python
+
   Python 3_6 tests:
     docker:
       - image: circleci/python:3.6.9
@@ -777,6 +788,17 @@ jobs:
     steps:
       - checkout
       - skip-if-doc-only
+      - test-python
+
+  Python 3_8 tests minimum dependencies:
+    docker:
+      - image: circleci/python:3.8.2
+    steps:
+      - checkout
+      - skip-if-doc-only
+      - run:
+          command: |
+              echo "export GLEAN_PYDEPS=min" >> $BASH_ENV
       - test-python
 
   Python Windows x86_64 tests:
@@ -1049,9 +1071,11 @@ workflows:
             branches:
               only: master
       - Python 3_5 tests
+      - Python 3_5 tests minimum dependencies
       - Python 3_6 tests
       - Python 3_7 tests
       - Python 3_8 tests
+      - Python 3_8 tests minimum dependencies
       - Python Windows x86_64 tests
       - Python Windows i686 tests
 
