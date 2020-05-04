@@ -43,13 +43,17 @@ internal class UploadBody(
     }
 }
 
-@Structure.FieldOrder("tag", "upload")
 internal open class FfiPingUploadTask(
     // NOTE: We need to provide defaults here, so that JNA can create this object.
     @JvmField var tag: Byte = UploadTaskTag.Done.ordinal.toByte(),
     @JvmField var upload: UploadBody = UploadBody()
 ) : Union() {
     class ByValue : FfiPingUploadTask(), Structure.ByValue
+
+    init {
+        // Initialize to be the `tag`-only variant
+        setType("tag")
+    }
 
     fun toPingUploadTask(): PingUploadTask {
         return when (this.tag.toInt()) {
