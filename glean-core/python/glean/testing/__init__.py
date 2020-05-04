@@ -42,6 +42,10 @@ def reset_glean(
         data_dir = Glean._data_dir
 
     Glean._reset()
+
+    # `_testing_mode` should be changed *after* `Glean._reset()` is run, so
+    # that `Glean` properly joins on the worker thread when `_testing_mode` is
+    # False.
     Dispatcher._testing_mode = True
 
     Glean.initialize(
