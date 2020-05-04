@@ -13,6 +13,8 @@
   * BUGFIX: Fixed a race condition in the `atexit` handler, that would have resulted in the message "No database found".  See [bug 1634310](https://bugzilla.mozilla.org/show_bug.cgi?id=1634310).
   * The minimum versions of many secondary dependencies have been lowered to make the Glean SDK compatible with more environments.
   * Dependencies that depend on the version of Python being used are now specified using the `Declaring platform specific dependencies syntax in setuptools <https://setuptools.readthedocs.io/en/latest/setuptools.html#declaring-platform-specific-dependencies>`__. This means that more recent versions of dependencies are likely to be installed on Python 3.6 and later, and unnecessary backport libraries won't be installed on more recent Python versions.
+* iOS:
+  * Glean for iOS is now being built with Xcode 11.4.1
 
 # v28.0.0 (2020-04-23)
 
