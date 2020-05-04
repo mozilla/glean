@@ -68,6 +68,9 @@ class HttpClientUploader(base_uploader.BaseUploader):
         except OSError as e:
             log.error("OSError: '{}' {}".format(url, e))
             return False
+        except Exception as e:
+            log.error("Unknown Exception: '{}' {}".format(url, e))
+            return False
 
         log.debug("Ping upload: {}".format(response.status))
 
