@@ -43,7 +43,6 @@ internal class UploadBody(
     }
 }
 
-@Structure.FieldOrder("tag", "upload")
 internal open class FfiPingUploadTask(
     // NOTE: We need to provide defaults here, so that JNA can create this object.
     @JvmField var tag: Byte = UploadTaskTag.Done.ordinal.toByte(),
