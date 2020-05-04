@@ -23,7 +23,7 @@ use std::thread;
 use serde_json::Value as JsonValue;
 
 use directory::PingDirectoryManager;
-use request::PingRequest;
+pub use request::PingRequest;
 pub use result::{ffi_upload_result, UploadResult};
 
 mod directory;
