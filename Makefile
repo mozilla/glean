@@ -5,6 +5,7 @@ help:
 	  awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 GLEAN_PYENV := $(shell python3 -c "import sys; print('glean-core/python/.venv' + '.'.join(str(x) for x in sys.version_info[:2]))")
+GLEAN_PYDEPS := ${GLEAN_PYDEPS}
 
 # Setup environments
 
@@ -15,6 +16,11 @@ $(GLEAN_PYENV)/bin/python3:
 	python3 -m venv $(GLEAN_PYENV)
 	$(GLEAN_PYENV)/bin/pip install --upgrade pip
 	$(GLEAN_PYENV)/bin/pip install -r glean-core/python/requirements_dev.txt
+	bash -c "if [ \"$(GLEAN_PYDEPS)\" == \"min\" ]; then \
+		$(GLEAN_PYENV)/bin/pip install requirements-builder; \
+		$(GLEAN_PYENV)/bin/requirements-builder --level=min glean-core/python/setup.py > min_requirements.txt; \
+		$(GLEAN_PYENV)/bin/pip install -r min_requirements.txt; \
+	fi"
 	# black isn't installable on Python 3.5, but we can do without it
 	$(GLEAN_PYENV)/bin/pip install black || true
 
@@ -92,7 +98,7 @@ shellcheck: ## Run shellcheck against important shell scripts
 
 pythonlint: python-setup ## Run flake8 and black to lint Python code
 	$(GLEAN_PYENV)/bin/python3 -m flake8 glean-core/python/glean glean-core/python/tests
-	$(GLEAN_PYENV)/bin/python3 -m black --check --exclude .venv\* glean-core/python
+	$(GLEAN_PYENV)/bin/python3 -m black --check --exclude \(.venv\*\)\|\(.eggs\) glean-core/python
 	$(GLEAN_PYENV)/bin/python3 -m mypy glean-core/python/glean
 
 .PHONY: lint clippy ktlint swiftlint yamllint

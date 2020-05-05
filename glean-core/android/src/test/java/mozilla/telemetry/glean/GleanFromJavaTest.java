@@ -16,6 +16,8 @@ import org.robolectric.RobolectricTestRunner;
 import java.util.HashMap;
 import java.util.Map;
 
+import mozilla.telemetry.glean.GleanMetrics.GleanInternalMetrics;
+import mozilla.telemetry.glean.GleanMetrics.Pings;
 import mozilla.telemetry.glean.config.Configuration;
 
 @RunWith(RobolectricTestRunner.class)
@@ -65,5 +67,13 @@ public class GleanFromJavaTest {
         // Users are not really meant to instantiate this. Moreover, the constructor
         // visibility is `internal`, but looks like Java ignores it.
         GleanTimerId testId = new GleanTimerId(100);
+    }
+
+    @Test
+    public void testCanSendPing() {
+        // submit() can be called without parameters.
+        Pings.INSTANCE.baseline().submit();
+        // submit() can be called with a `reason`.
+        Pings.INSTANCE.baseline().submit(Pings.baselineReasonCodes.background);
     }
 }

@@ -13,7 +13,6 @@ use std::path::{Path, PathBuf};
 use std::sync::RwLock;
 
 use serde::{Deserialize, Serialize};
-use serde_json;
 use serde_json::{json, Value as JsonValue};
 
 use crate::CommonMetricData;

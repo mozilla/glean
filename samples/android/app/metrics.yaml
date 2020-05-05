@@ -13,12 +13,12 @@ $schema: moz://mozilla.org/schemas/glean/metrics/1-0-0
 browser.engagement:
   click:
     type: event
-    description: >
+    description: |
       Just testing events
     bugs:
       - https://bugzilla.mozilla.org/123456789
     data_reviews:
-      - N/A 
+      - N/A
     notification_emails:
       - CHANGE-ME@example.com
     extra_keys:
@@ -26,16 +26,16 @@ browser.engagement:
         description: "This is key one"
       key2:
         description: "This is key two"
-    expires: 2100-01-01 
-    
+    expires: 2100-01-01
+
   event_no_keys:
     type: event
-    description: >
+    description: |
       Just testing events without keys
     bugs:
       - https://bugzilla.mozilla.org/123456789
     data_reviews:
-      - N/A 
+      - N/A
     notification_emails:
       - CHANGE-ME@example.com
     expires: 2100-01-01
@@ -43,12 +43,12 @@ browser.engagement:
 basic:
   os:
     type: string
-    description: >
+    description: |
       The name of the os
     bugs:
       - https://bugzilla.mozilla.org/123456789
     data_reviews:
-      - N/A 
+      - N/A
     notification_emails:
       - CHANGE-ME@example.com
     expires: 2100-01-01
@@ -56,7 +56,7 @@ basic:
 test:
   string_list:
     type: string_list
-    description: >
+    description: |
       Testing StringList ping
     send_in_pings:
       - test-string-list
@@ -64,14 +64,16 @@ test:
     bugs:
       - https://bugzilla.mozilla.org/123456789
     data_reviews:
-      - N/A 
+      - N/A
     notification_emails:
       - CHANGE-ME@example.com
     expires: 2100-01-01
+    no_lint:
+      - USER_LIFETIME_EXPIRATION
 
   counter:
     type: counter
-    description: >
+    description: |
       Testing counter
     send_in_pings:
       - test-string-list
@@ -79,28 +81,30 @@ test:
     bugs:
       - https://bugzilla.mozilla.org/123456789
     data_reviews:
-      - N/A 
+      - N/A
     notification_emails:
       - CHANGE-ME@example.com
     expires: 2100-01-01
+    no_lint:
+      - USER_LIFETIME_EXPIRATION
 
   timespan:
     type: timespan
-    description: >
+    description: |
       Testing a timespan
     time_unit: microsecond
     lifetime: application
     bugs:
       - https://bugzilla.mozilla.org/1508948
     data_reviews:
-      - N/A 
+      - N/A
     notification_emails:
       - CHANGE-ME@example.com
     expires: 2100-01-01
 
   is_started:
     type: boolean
-    description: >
+    description: |
       Testing boolean
     send_in_pings:
       - baseline
@@ -112,11 +116,13 @@ test:
     notification_emails:
       - CHANGE-ME@test-only.com
     expires: 2100-01-01
+    no_lint:
+      - BASELINE_PING
 
 custom:
   counter:
     type: counter
-    description: >
+    description: |
       A custom counter that goes on a custom ping
     lifetime: ping
     send_in_pings:

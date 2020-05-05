@@ -115,6 +115,8 @@ class Glean:
         if cls.is_initialized():
             return
 
+        atexit.register(Glean._reset)
+
         if configuration is None:
             configuration = Configuration()
 
@@ -186,13 +188,26 @@ class Glean:
         # TODO: 1594184 Send the metrics ping
 
         # WARNING: Do not run any tasks on the Dispatcher from here since this
-        # is called atexit, which also waits for the Dispatcher queue to
-        # complete.
+        # is called atexit.
+
+        # Wait for the dispatcher thread to complete.
+        Dispatcher._task_worker._shutdown_thread()
 
         Dispatcher.reset()
+
+        # Wait for the subprocess to complete.  We only need to do this if
+        # we know we are going to be deleting the data directory.
+        if cls._destroy_data_dir and cls._data_dir.exists():
+            ProcessDispatcher._wait_for_last_process()
+
+        # Destroy the Glean object.
+        # Importantly on Windows, this closes the handle to the database so
+        # that the data directory can be deleted without a multiple access
+        # violation.
         if cls._initialized:
             _ffi.lib.glean_destroy_glean()
         cls._initialized = False
+
         if cls._destroy_data_dir and cls._data_dir.exists():
             # This needs to be run in the same one-at-a-time process as the
             # PingUploadWorker to avoid a race condition. This will block the
@@ -456,6 +471,3 @@ class Glean:
 
 
 __all__ = ["Glean"]
-
-
-atexit.register(Glean._reset)

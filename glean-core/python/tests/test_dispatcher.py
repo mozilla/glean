@@ -4,9 +4,13 @@
 
 
 import threading
+import time
 
 
 from glean._dispatcher import Dispatcher
+from glean import Glean
+from glean import metrics
+from glean.metrics import Lifetime
 
 
 def test_launch_correctly_adds_tasks_to_queue_if_queue_tasks_is_true():
@@ -143,3 +147,29 @@ def test_dispatched_tasks_throwing_exceptions_are_correctly_handled():
     Dispatcher._task_worker._queue.join()
 
     assert 3 == thread_canary[0]
+
+
+def test_that_thread_joins_before_directory_is_deleted_in_reset():
+    Dispatcher._testing_mode = False
+    Dispatcher._queue_initial_tasks = False
+    thread_canary = [0]
+
+    boolean_metric = metrics.BooleanMetricType(
+        disabled=False,
+        category="telemetry",
+        lifetime=Lifetime.APPLICATION,
+        name="boolean_metric",
+        send_in_pings=["store1"],
+    )
+
+    def slow_task():
+        time.sleep(1)
+        # This will cause a Rust panic if the data directory was deleted in
+        # Glean._reset() before this has a chance to run.
+        boolean_metric.set(True)
+        thread_canary[0] = 1
+
+    Dispatcher.launch(slow_task)
+    Glean._reset()
+
+    assert thread_canary[0] == 1

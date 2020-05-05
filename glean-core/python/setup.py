@@ -47,12 +47,12 @@ with (ROOT.parent / "Cargo.toml").open() as cargo:
     version = parsed_toml["package"]["version"]
 
 requirements = [
-    "cffi==1.13.1",
-    "glean_parser==1.19.0",
-    "iso8601==0.1.12",
+    "cffi>=1",
+    "glean_parser==1.20.2",
+    "iso8601>=0.1.10; python_version<='3.6'",
 ]
 
-setup_requirements = []
+setup_requirements = ["cffi>=1.0.0"]
 
 if mingw_arch == "i686":
     shared_object_build_dir = "../../target/i686-pc-windows-gnu/debug/"
@@ -72,10 +72,16 @@ else:
     raise ValueError("The platform {} is not supported.".format(sys.platform))
 
 
-shutil.copyfile("../ffi/glean.h", "glean/glean.h")
 shutil.copyfile("../metrics.yaml", "glean/metrics.yaml")
 shutil.copyfile("../pings.yaml", "glean/pings.yaml")
-shutil.copyfile(shared_object_build_dir + shared_object, "glean/" + shared_object)
+# When running inside of `requirements-builder`, the Rust shared object may not
+# yet exist, so ignore the exception when trying to copy it. Under normal
+# circumstances, this will still show up as an error when running the `build`
+# command as a missing `package_data` file.
+try:
+    shutil.copyfile(shared_object_build_dir + shared_object, "glean/" + shared_object)
+except FileNotFoundError:
+    pass
 
 
 class BinaryDistribution(Distribution):
@@ -136,9 +142,10 @@ setup(
     version=version,
     packages=find_packages(include=["glean", "glean.*"]),
     setup_requires=setup_requirements,
+    cffi_modules=["ffi_build.py:ffibuilder"],
     url="https://github.com/mozilla/glean",
     zip_safe=False,
-    package_data={"glean": ["glean.h", shared_object, "metrics.yaml", "pings.yaml"]},
+    package_data={"glean": [shared_object, "metrics.yaml", "pings.yaml"]},
     distclass=BinaryDistribution,
     cmdclass={"install": InstallPlatlib, "bdist_wheel": bdist_wheel},
 )

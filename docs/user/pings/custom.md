@@ -2,6 +2,10 @@
 
 Applications can define metrics that are sent in custom pings. Unlike the built-in pings, custom pings are sent explicitly by the application.
 
+This is useful when the scheduling of the built-in pings ([metrics](metrics.html), [baseline](baseline.html) and [events](events.html)) are not appropriate for your data.  Since the timing of the submission of custom pings is handled by the application, the measurement window is under the application's control.
+
+This is especially useful when metrics need to be tightly related to one another, for example when you need to measure the distribution of frame paint times when a particular rendering backend is in use.  If these metrics were in different pings, with different measurement windows, it is much harder to do that kind of reasoning with much certainty.
+
 ## Defining a custom ping
 
 Custom pings must be defined in a [`pings.yaml` file](https://mozilla.github.io/glean_parser/pings-yaml.html), which is in the same directory alongside your app's `metrics.yaml` file.

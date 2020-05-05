@@ -281,7 +281,7 @@ This handler will wait up to 1 second for any pending work to complete.
 
 In addition, by default ping uploading is performed in a separate child process. This process will continue to upload any pending pings even after the main process shuts down.
 
-Since the subprocess approach may not work in all contexts, there is an option to ensure that ping uploading occurs in the main process. To do this, set the `allow_multiprocessing` parameter on the `glean.Configuration` object to `False`.
+Note that this approach may not work with applications built using [`PyInstaller`](https://www.pyinstaller.org/) or similar tools which bundle an application together with a Python interpreter. For these cases (and any others which we haven't thought of), there is an option to ensure that ping uploading occurs in the main process. To do this, set the `allow_multiprocessing` parameter on the `glean.Configuration` object to `False`.
 </div>
 
 {{#include ../tab_footer.md}}
