@@ -25,7 +25,7 @@ import sys
 from typing import Optional, Union
 
 
-from .subprocess import _process_dispatcher_helper
+from ._subprocess import _process_dispatcher_helper
 
 
 log = logging.getLogger(__name__)
