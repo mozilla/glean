@@ -988,12 +988,12 @@ jobs:
 
   docs-spellcheck:
     docker:
-      # Use Debian Sid so we get aspell 0.60.8 or later (which contains markdown support)
-      - image: circleci/buildpack-deps:sid
+      # Use Ubuntu Focal (20.04) so we get aspell 0.60.8 or later (which contains markdown support)
+      - image: circleci/buildpack-deps:focal
     steps:
       - checkout
       - run:
-          name: Upgrade Debian packages
+          name: Upgrade packages
           command: sudo apt update
       - run:
           name: Install aspell
