@@ -1,4 +1,4 @@
-personal_ws-1.1 en 169 utf-8
+personal_ws-1.1 en 170 utf-8
 AAR
 AARs
 APIs
@@ -147,6 +147,7 @@ schemas
 sdk
 serializable
 serializer
+setuptools
 stateful
 struct
 subprocess
