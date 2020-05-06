@@ -669,7 +669,12 @@ open class GleanInternalAPI internal constructor () {
         // Or by the instrumentation tests (`connectedAndroidTest`), which relaunches the application activity,
         // but not the whole process, meaning globals, such as the ping types, still exist from the old run.
         // It's a set and keeping them around forever should not have much of an impact.
-        pingTypeQueue.add(pingType)
+
+        // Only add if it's not already there to avoid a ConcurrentModificationException.
+        // See https://bugzilla.mozilla.org/show_bug.cgi?id=1635865
+        if (!pingTypeQueue.contains(pingType)) {
+            pingTypeQueue.add(pingType)
+        }
     }
 
     /**
