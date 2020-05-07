@@ -17,6 +17,17 @@ If the Glean upload is disabled at the time `stopAndAccumulate` is called, nothi
 
 Multiple concurrent timespans in different threads may be measured at the same time.
 
+Timings are always stored and sent in the payload as nanoseconds. However, the `time_unit` parameter
+controls the minimum and maximum values that will recorded:
+
+  - `nanosecond`: 1ns <= x <= 10 minutes
+  - `microsecond`: 1μs <= x <= ~6.94 days
+  - `millisecond`: 1ms <= x <= ~19 years
+
+Overflowing this range is considered an error and is reported through the error reporting mechanism. Underflowing this range is not an error and the value is silently truncated to the minimum value.
+
+Additionally, when a metric comes from GeckoView (the `geckoview_datapoint` parameter is present), the `time_unit` parameter specifies the unit that the samples are in when passed to Glean. Glean will convert all of the incoming samples to nanoseconds internally.
+
 ## Configuration
 
 If you wanted to create a timing distribution to measure page load times, first you need to add an entry for it to the `metrics.yaml` file:
@@ -29,8 +40,6 @@ pages:
       Counts how long each page takes to load
     ...
 ```
-
-> Note: Timing distributions have an optional `time_unit` parameter that is only used when samples are provided directly from an external tool in a unit other than nanoseconds.
 
 ## API
 
@@ -226,7 +235,13 @@ assert 1 == metrics.pages.page_load.test_get_num_recorded_errors(
 
   * On Python 3.7 and later, [`time.monotonic_ns()`](https://docs.python.org/3/library/time.html#time.monotonic_ns) is used.  On earlier versions of Python, [`time.monotonics()`](https://docs.python.org/3/library/time.html#time.monotonic) is used, which is not guaranteed to have nanosecond resolution.
 
-* The maximum timing value that will be recorded is 10 minutes. Longer times will be truncated to 10 minutes and an error will be recorded.
+* The maximum timing value that will be recorded depends on the `time_unit` parameter:
+
+  - `nanosecond`: 1ns <= x <= 10 minutes
+  - `microsecond`: 1μs <= x <= ~6.94 days
+  - `millisecond`: 1ms <= x <= ~19 years
+
+  Longer times will be truncated to the maximum value and an error will be recorded.
 
 ## Examples
 
@@ -236,7 +251,7 @@ assert 1 == metrics.pages.page_load.test_get_num_recorded_errors(
 
 * `invalid_value`: If recording a negative timespan.
 * `invalid_state`: If a non-existing/stopped timer is stopped again.
-* `invalid_overflow`: If recording a time longer than 10 minutes.
+* `invalid_overflow`: If recording a time longer than the maximum for the given unit.
 
 ## Reference
 

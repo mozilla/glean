@@ -2,6 +2,10 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v29.0.0...master)
 
+* General:
+  * The version of glean_parser has been upgraded to v1.20.3
+  * The minimum and maximum values of a timing distribution can now be controlled by the `time_unit` parameter. See [bug 1630997](https://bugzilla.mozilla.org/show_bug.cgi?id=1630997) for more details.
+
 # v29.0.0 (2020-05-05)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v28.0.0...v29.0.0)

@@ -40,7 +40,7 @@ class TimingDistributionMetricTypeTest {
             lifetime = Lifetime.Ping,
             name = "timing_distribution",
             sendInPings = listOf("store1"),
-            timeUnit = TimeUnit.Millisecond
+            timeUnit = TimeUnit.Nanosecond
         ))
 
         // Accumulate a few values
@@ -74,7 +74,7 @@ class TimingDistributionMetricTypeTest {
             lifetime = Lifetime.Ping,
             name = "timing_distribution",
             sendInPings = listOf("store1"),
-            timeUnit = TimeUnit.Millisecond
+            timeUnit = TimeUnit.Nanosecond
         )
 
         // Attempt to store the timespan using set
@@ -95,7 +95,7 @@ class TimingDistributionMetricTypeTest {
             lifetime = Lifetime.Ping,
             name = "timing_distribution",
             sendInPings = listOf("store1"),
-            timeUnit = TimeUnit.Millisecond
+            timeUnit = TimeUnit.Nanosecond
         )
         metric.testGetValue()
     }
@@ -109,7 +109,7 @@ class TimingDistributionMetricTypeTest {
             lifetime = Lifetime.Ping,
             name = "timing_distribution",
             sendInPings = listOf("store1", "store2", "store3"),
-            timeUnit = TimeUnit.Millisecond
+            timeUnit = TimeUnit.Nanosecond
         ))
 
         // Accumulate a few values
@@ -244,7 +244,7 @@ class TimingDistributionMetricTypeTest {
             lifetime = Lifetime.Ping,
             name = "timing_distribution_samples",
             sendInPings = listOf("store1"),
-            timeUnit = TimeUnit.Second
+            timeUnit = TimeUnit.Nanosecond
         ))
 
         // Create a test function to "measure". This works by mocking the getElapsedNanos return
@@ -307,6 +307,43 @@ class TimingDistributionMetricTypeTest {
         } finally {
             // Check that data was still properly recorded even though there was an exception.
             assertTrue("Metric must not have a value", !metric.testHasValue())
+        }
+    }
+
+    @Test
+    fun `ensure that time_unit controls truncation`() {
+        val maxSampleTime = 1000L * 1000 * 1000 * 60 * 10
+
+        for (unit in listOf(
+                TimeUnit.Nanosecond,
+                TimeUnit.Microsecond,
+                TimeUnit.Millisecond
+        )) {
+            val metric = spy(TimingDistributionMetricType(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.Ping,
+                name = "test_${unit.name}",
+                sendInPings = listOf("store1"),
+                timeUnit = unit
+            ))
+
+            for (value in listOf(
+                    1L,
+                    1000L,
+                    100000L,
+                    maxSampleTime,
+                    maxSampleTime * 1000L,
+                    maxSampleTime * 1000000L
+            )) {
+                `when`(metric.getElapsedTimeNanos()).thenReturn(0L)
+                val timerId = metric.start()
+                `when`(metric.getElapsedTimeNanos()).thenReturn(value)
+                metric.stopAndAccumulate(timerId)
+            }
+
+            val snapshot = metric.testGetValue()
+            assertTrue(snapshot.values.size < 318)
         }
     }
 }
