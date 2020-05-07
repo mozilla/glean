@@ -670,7 +670,9 @@ open class GleanInternalAPI internal constructor () {
         // but not the whole process, meaning globals, such as the ping types, still exist from the old run.
         // It's a set and keeping them around forever should not have much of an impact.
 
-        // Only add if it's not already there to avoid a ConcurrentModificationException.
+        // This function is called from `Glean.initialize` while iterating over pingTypeQueue.
+        // Only add if it's not already there to avoid a
+        // ConcurrentModificationException on Android 5.
         // See https://bugzilla.mozilla.org/show_bug.cgi?id=1635865
         if (!pingTypeQueue.contains(pingType)) {
             pingTypeQueue.add(pingType)
