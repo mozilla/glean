@@ -255,6 +255,20 @@ metrics = load_metrics(resource_filename(__name__, "metrics.yaml"))
 metrics.your_category.your_metric.set("value")
 ```
 
+Additionally, Glean provides a mechanism for automatically generating markdown docs from your `metrics.yaml` and `pings.yaml` files. To perform that translation, run `glean_parser`'s `translate` command:
+
+```sh
+python3 -m glean_parser translate -f markdown -o docs metrics.yaml pings.yaml
+```
+
+To get more help about the commandline options:
+
+```sh
+python3 -m glean_parser translate --help
+```
+
+We recommend integrating this step into your project's documentation build. The details of that integration is left to you, since it depends on the documentation tool being used and how your project is set up.
+
 </div>
 
 {{#include ../tab_footer.md}}
