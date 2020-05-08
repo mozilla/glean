@@ -19,6 +19,8 @@ Windows.
 
 import base64
 import logging
+import os
+from pathlib import Path
 import pickle
 import subprocess
 import sys
@@ -77,6 +79,9 @@ class ProcessDispatcher:
     # another process.
     _last_process = None  # type: Optional[subprocess.Popen]
 
+    # Detect if coverage is being collected in the current run
+    _doing_coverage = "coverage" in sys.modules  # type: bool
+
     @classmethod
     def _wait_for_last_process(cls):
         if cls._last_process is not None:
@@ -107,6 +112,12 @@ class ProcessDispatcher:
 
             if len(payload) > 4096:
                 log.warning("data payload to subprocess is greater than 4096 bytes")
+
+            # Help coverage.py do coverage across processes
+            if cls._doing_coverage:
+                os.environ["COVERAGE_PROCESS_START"] = str(
+                    Path(".coveragerc").absolute()
+                )
 
             p = subprocess.Popen(
                 [sys.executable, _process_dispatcher_helper.__file__, payload]
