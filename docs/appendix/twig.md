@@ -25,3 +25,4 @@ They could be release notes, documentation, hopes, dreams, or whatever: so long 
 * 2020-04-15: [How Much Does That Data Cost](https://chuttenblog.wordpress.com/2020/04/15/this-week-in-glean-how-much-does-that-data-cost/)
 * 2020-04-27: [Glean for Python on Windows](https://blog.mozilla.org/data/2020/04/27/this-week-in-glean-glean-for-python-on-windows/)
 * 2020-05-04: [Bytes in Memory (on Android)](https://fnordig.de/2020/05/04/this-week-in-glean/)
+* 2020-05-08: [moregression telemetry (part 2)](https://wlach.github.io/blog/2020/05/this-week-in-glean-mozregression-telemetry-part-2/)
