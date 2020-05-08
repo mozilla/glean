@@ -44,27 +44,27 @@ class RecordedEventData:
         self._extra = extra
 
     @property
-    def category(self):
+    def category(self) -> str:
         """The event's category, part of the full identifier."""
         return self._category
 
     @property
-    def name(self):
+    def name(self) -> str:
         """The event's name, part of the full identifier."""
         return self._name
 
     @property
-    def timestamp(self):
+    def timestamp(self) -> int:
         """The event's timestamp."""
         return self._timestamp
 
     @property
-    def extra(self):
+    def extra(self) -> Optional[Dict[str, str]]:
         """Any extra data recorded for the event."""
         return self._extra
 
     @property
-    def identifier(self):
+    def identifier(self) -> str:
         if self.category == "":
             return self.name
         else:
@@ -111,7 +111,7 @@ class EventMetricType:
         if getattr(self, "_handle", 0) != 0:
             _ffi.lib.glean_destroy_event_metric(self._handle)
 
-    def record(self, extra: Optional[Dict[int, str]] = None):
+    def record(self, extra: Optional[Dict[int, str]] = None) -> None:
         """
         Record an event by using the information provided by the instance of
         this class.

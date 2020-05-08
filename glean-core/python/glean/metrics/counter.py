@@ -51,7 +51,7 @@ class CounterMetricType:
         if getattr(self, "_handle", 0) != 0:
             _ffi.lib.glean_destroy_counter_metric(self._handle)
 
-    def add(self, amount: int = 1):
+    def add(self, amount: int = 1) -> None:
         """
         Add to counter value.
 

@@ -13,7 +13,7 @@ import enum
 import io
 from pathlib import Path
 import sys
-from typing import Any, List, Union
+from typing import Any, Generator, List, Tuple, Union
 
 
 from glean_parser.parser import parse_objects  # type: ignore
@@ -85,7 +85,9 @@ class UnsupportedMetricType:
         )
 
 
-def _get_metric_objects(name: str, metric: glean_parser.metrics.Metric) -> Any:
+def _get_metric_objects(
+    name: str, metric: glean_parser.metrics.Metric
+) -> Generator[Tuple[str, Any], None, None]:
     """
     Given a `glean_parser.metrics.Metric` instance, return the Glean Python
     bindings metric instances for the metric.
