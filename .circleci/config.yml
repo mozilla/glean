@@ -37,6 +37,10 @@ commands:
         default: "stable"
     steps:
       - run:
+          name: Turn on RUST_BACKTRACE for any job that installs rustc
+          command: |
+              echo "export RUST_BACKTRACE=1" >> $BASH_ENV
+      - run:
           name: Setup Rust toolchain
           command: |
             rustup install <<parameters.rust-version>>
