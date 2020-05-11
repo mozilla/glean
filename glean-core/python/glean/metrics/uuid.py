@@ -62,7 +62,7 @@ class UuidMetricType:
         self.set(id)
         return id
 
-    def set(self, value: uuid.UUID):
+    def set(self, value: uuid.UUID) -> None:
         """
         Explicitly set an existing UUID value.
 

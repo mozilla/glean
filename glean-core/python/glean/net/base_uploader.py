@@ -32,7 +32,7 @@ class BaseUploader(ping_uploader.PingUploader):
     """
 
     @staticmethod
-    def _log_ping(path: str, data: str):
+    def _log_ping(path: str, data: str) -> None:
         """
         Log the contents of the ping to the console.
 
@@ -50,7 +50,7 @@ class BaseUploader(ping_uploader.PingUploader):
             log.debug("Glean ping to URL: {}\n{}".format(path, indented))
 
     @staticmethod
-    def _create_date_header_value():
+    def _create_date_header_value() -> str:
         """
         Generate an RFC 1123 date string to be used in the HTTP header.
         """

@@ -91,7 +91,7 @@ class Glean:
         upload_enabled: bool,
         configuration: Optional[Configuration] = None,
         data_dir: Optional[Path] = None,
-    ):
+    ) -> None:
         """
         Initialize the Glean SDK.
 
@@ -174,14 +174,14 @@ class Glean:
                 DeletionPingUploadWorker.process()
 
     @_util.classproperty
-    def configuration(cls):
+    def configuration(cls) -> Configuration:
         """
         Access the configuration object to change dynamic parameters.
         """
         return cls._configuration
 
     @classmethod
-    def _reset(cls):
+    def _reset(cls) -> None:
         """
         Resets the Glean singleton.
         """
@@ -226,7 +226,7 @@ class Glean:
         return cls._initialized
 
     @classmethod
-    def register_ping_type(cls, ping: "PingType"):
+    def register_ping_type(cls, ping: "PingType") -> None:
         """
         Register the ping type in the registry.
         """
@@ -240,7 +240,7 @@ class Glean:
         cls._ping_type_queue.add(ping)
 
     @classmethod
-    def test_has_ping_type(cls, ping_name: str):
+    def test_has_ping_type(cls, ping_name: str) -> bool:
         """
         Returns True if a ping by this name is in the ping registry.
         """
@@ -249,7 +249,7 @@ class Glean:
         )
 
     @classmethod
-    def set_upload_enabled(cls, enabled: bool):
+    def set_upload_enabled(cls, enabled: bool) -> None:
         """
         Enable or disable Glean collection and upload.
 
@@ -295,7 +295,7 @@ class Glean:
     @classmethod
     def set_experiment_active(
         cls, experiment_id: str, branch: str, extra: Optional[Dict[str, str]] = None
-    ):
+    ) -> None:
         """
         Indicate that an experiment is running. Glean will then add an
         experiment annotation to the environment which is sent with pings. This
@@ -325,7 +325,7 @@ class Glean:
             )
 
     @classmethod
-    def set_experiment_inactive(cls, experiment_id: str):
+    def set_experiment_inactive(cls, experiment_id: str) -> None:
         """
         Indicate that the experiment is no longer running.
 
@@ -382,7 +382,7 @@ class Glean:
         return RecordedExperimentData(**json_tree)  # type: ignore
 
     @classmethod
-    def _initialize_core_metrics(cls):
+    def _initialize_core_metrics(cls) -> None:
         """
         Set a few metrics that will be sent as part of every ping.
         """
@@ -424,7 +424,7 @@ class Glean:
         )
 
     @classmethod
-    def _submit_ping(cls, ping: "PingType", reason: Optional[str] = None):
+    def _submit_ping(cls, ping: "PingType", reason: Optional[str] = None) -> None:
         """
         Collect and submit a ping for eventual uploading.
 
@@ -439,7 +439,7 @@ class Glean:
 
     @classmethod
     @Dispatcher.task
-    def _submit_ping_by_name(cls, ping_name: str, reason: Optional[str] = None):
+    def _submit_ping_by_name(cls, ping_name: str, reason: Optional[str] = None) -> None:
         """
         Collect and submit a ping by name for eventual uploading.
 

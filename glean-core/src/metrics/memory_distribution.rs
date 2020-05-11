@@ -171,7 +171,7 @@ impl MemoryDistributionMetric {
 
         if num_too_log_samples > 0 {
             let msg = format!(
-                "Accumulated {} samples longer than 10 minutes",
+                "Accumulated {} samples larger than 1TB",
                 num_too_log_samples
             );
             record_error(

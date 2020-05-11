@@ -5,6 +5,7 @@
 package mozilla.telemetry.glean
 
 import android.content.Context
+import android.os.Build
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
@@ -46,6 +47,7 @@ import org.junit.runner.RunWith
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.spy
 import org.robolectric.shadows.ShadowProcess
+import org.robolectric.annotation.Config
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
@@ -755,5 +757,16 @@ class GleanTest {
         } finally {
             server.shutdown()
         }
+    }
+
+    @Test
+    @Config(sdk = [Build.VERSION_CODES.O])
+    fun `Initialize registering pings shouldn't crash with Oreo`() {
+        // Can't use resetGlean directly
+        Glean.testDestroyGleanHandle()
+
+        val config = Configuration()
+
+        Glean.initialize(context, true, config)
     }
 }

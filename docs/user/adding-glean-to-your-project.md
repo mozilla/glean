@@ -296,4 +296,4 @@ In order for data to be collected from your project, its application id must be 
 
 [File a data engineering bug][dataeng-bug] to enable your product's application id.
 
-[dataeng-bug]: https://bugzilla.mozilla.org/enter_bug.cgi?product=Data%20Platform%20and%20Tools&component=General&short_desc=Glean:%20Enable%20application%20id%20org.mozilla.myProduct
+[dataeng-bug]: https://bugzilla.mozilla.org/enter_bug.cgi?product=Data%20Platform%20and%20Tools&component=General&short_desc=Glean:%20Enable%20application%20id%20org.mozilla.myProduct&comment=%2A%2A%20Please%20needinfo%20mreid%40mozilla.com%20when%20filing%20this%20bug%20for%20the%20fastest%20response%20%2A%2A
