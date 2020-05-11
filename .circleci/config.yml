@@ -37,6 +37,10 @@ commands:
         default: "stable"
     steps:
       - run:
+          name: Turn on RUST_BACKTRACE for any job that installs rustc
+          command: |
+              echo "export RUST_BACKTRACE=1" >> $BASH_ENV
+      - run:
           name: Setup Rust toolchain
           command: |
             rustup install <<parameters.rust-version>>
@@ -86,7 +90,7 @@ commands:
       - run:
           name: Install missing Android SDK
           command: |
-              sdkmanager 'build-tools;21.0.0'
+              sdkmanager 'build-tools;28.0.3'
       # The Debian container in use is shipping libtinfo.so.6, but the Clang deployed in the NDK requires v5.
       # We hack around that by symlinking the new to the old version, they seem to be mostly compatible.
       - run:
@@ -171,15 +175,6 @@ commands:
             echo 'linker = "/usr/bin/x86_64-w64-mingw32-gcc"' >> ~/.cargo/config
             echo '[target.i686-pc-windows-gnu]' >> ~/.cargo/config
             echo 'linker = "/usr/bin/i686-w64-mingw32-gcc"' >> ~/.cargo/config
-      - run:
-          name: Fix broken mingw toolchain
-          command: |
-            # Fix broken libraries
-            # https://github.com/rust-lang/rust/issues/47048
-            # https://github.com/rust-lang/rust/issues/49078
-            # https://wiki.archlinux.org/index.php/Rust#Windows
-            for lib in crt2.o dllcrt2.o libmsvcrt.a; do cp -v /usr/x86_64-w64-mingw32/lib/$lib ~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-pc-windows-gnu/lib/; done
-            for lib in crt2.o dllcrt2.o libmsvcrt.a; do cp -v /usr/i686-w64-mingw32/lib/$lib ~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/i686-pc-windows-gnu/lib/; done
 
   install-ghr-darwin:
     steps:
@@ -188,7 +183,7 @@ commands:
           command: |
             GHR=ghr_v0.13.0_darwin_amd64
             GHR_SHA256=319988a001462f80b37cf40fbc41b9de60b0a1cffa2a338b47b9fe5eef25f60e
-            curl -sfSL --retry 5 --retry-delay 10 -O "https://github.com/tcnksm/ghr/releases/download/v0.13.0/${GHR}.zip"
+            curl -sfSL --retry 5 -O "https://github.com/tcnksm/ghr/releases/download/v0.13.0/${GHR}.zip"
             echo "${GHR_SHA256} *${GHR}.zip" | shasum -a 256 -c -
             unzip "${GHR}.zip"
             cp ./${GHR}/ghr ghr
@@ -200,7 +195,7 @@ commands:
           command: |
             GHR=ghr_v0.13.0_linux_amd64
             GHR_SHA256=c428627270ae26e206cb526cb8c7bdfba475dd278f6691ddaf863355adadfa13
-            curl -sfSL --retry 5 --retry-delay 10 -O "https://github.com/tcnksm/ghr/releases/download/v0.13.0/${GHR}.tar.gz"
+            curl -sfSL --retry 5 -O "https://github.com/tcnksm/ghr/releases/download/v0.13.0/${GHR}.tar.gz"
             echo "${GHR_SHA256} *${GHR}.tar.gz" | sha256sum -c -
             tar -xf "${GHR}.tar.gz"
             cp ./${GHR}/ghr ghr
@@ -220,7 +215,7 @@ jobs:
             DENY_VERSION=0.6.6
             DENY="cargo-deny-${DENY_VERSION}-x86_64-unknown-linux-musl"
             DENY_SHA256=41e2e71b7b07cd68e1275d694b1646c0c2873e40f4f809f29d88467b6a1e3c21
-            curl -sfSL --retry 5 --retry-delay 10 -O "https://github.com/EmbarkStudios/cargo-deny/releases/download/${DENY_VERSION}/${DENY}.tar.gz"
+            curl -sfSL --retry 5 -O "https://github.com/EmbarkStudios/cargo-deny/releases/download/${DENY_VERSION}/${DENY}.tar.gz"
             echo "${DENY_SHA256} *${DENY}.tar.gz" | shasum -a 256 -c -
             tar -xvf "${DENY}.tar.gz"
             mv "${DENY}/cargo-deny" /usr/local/cargo/bin/cargo-deny
@@ -519,27 +514,33 @@ jobs:
 
   Check Swift formatting:
     macos:
-      xcode: "11.4.0"
+      xcode: "11.4.1"
     steps:
       - checkout
       - run:
+          name: Update brew
+          command: |
+            # we want the latest versions of the tools
+            brew update
+      - run:
           name: Install lint tools
           command: |
-            # do not update brew (might takes ages)
-            export HOMEBREW_NO_AUTO_UPDATE=1
             brew install swiftlint swiftformat
       - run:
           name: Run swiftlint
-          command: swiftlint --strict
+          command: |
+            swiftlint version
+            swiftlint --strict
       - run:
           name: Run swiftformat
           command: |
+            swiftformat --version
             swiftformat glean-core/ios samples/ios --swiftversion 5 --verbose
             git diff --exit-code HEAD -- glean-core/ios samples/ios
 
   iOS build and test:
     macos:
-      xcode: "11.4.0"
+      xcode: "11.4.1"
     steps:
       - checkout
       - run:
@@ -651,7 +652,7 @@ jobs:
 
   iOS integration test:
     macos:
-      xcode: "11.4.0"
+      xcode: "11.4.1"
     steps:
       - checkout
       - skip-if-doc-only
@@ -702,7 +703,7 @@ jobs:
 
   Carthage release:
     macos:
-      xcode: "11.4.0"
+      xcode: "11.4.1"
     steps:
       - checkout
       - attach_workspace:
@@ -715,7 +716,7 @@ jobs:
 
   macOS release build:
     macos:
-      xcode: "11.4.0"
+      xcode: "11.4.1"
     steps:
       - install-rustup
       - setup-rust-toolchain
@@ -748,6 +749,17 @@ jobs:
       - skip-if-doc-only
       - test-python
 
+  Python 3_5 tests minimum dependencies:
+    docker:
+      - image: circleci/python:3.5.9
+    steps:
+      - checkout
+      - skip-if-doc-only
+      - run:
+          command: |
+              echo "export GLEAN_PYDEPS=min" >> $BASH_ENV
+      - test-python
+
   Python 3_6 tests:
     docker:
       - image: circleci/python:3.6.9
@@ -772,6 +784,17 @@ jobs:
     steps:
       - checkout
       - skip-if-doc-only
+      - test-python
+
+  Python 3_8 tests minimum dependencies:
+    docker:
+      - image: circleci/python:3.8.2
+    steps:
+      - checkout
+      - skip-if-doc-only
+      - run:
+          command: |
+              echo "export GLEAN_PYDEPS=min" >> $BASH_ENV
       - test-python
 
   Python Windows x86_64 tests:
@@ -870,7 +893,7 @@ jobs:
 
   pypi-macos-release:
     macos:
-      xcode: "11.4.0"
+      xcode: "11.4.1"
     steps:
       - install-rustup
       - setup-rust-toolchain
@@ -961,12 +984,12 @@ jobs:
 
   docs-spellcheck:
     docker:
-      # Use Debian Sid so we get aspell 0.60.8 or later (which contains markdown support)
-      - image: circleci/buildpack-deps:sid
+      # Use Ubuntu Focal (20.04) so we get aspell 0.60.8 or later (which contains markdown support)
+      - image: circleci/buildpack-deps:focal
     steps:
       - checkout
       - run:
-          name: Upgrade Debian packages
+          name: Upgrade packages
           command: sudo apt update
       - run:
           name: Install aspell
@@ -1044,9 +1067,11 @@ workflows:
             branches:
               only: master
       - Python 3_5 tests
+      - Python 3_5 tests minimum dependencies
       - Python 3_6 tests
       - Python 3_7 tests
       - Python 3_8 tests
+      - Python 3_8 tests minimum dependencies
       - Python Windows x86_64 tests
       - Python Windows i686 tests
 

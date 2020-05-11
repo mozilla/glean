@@ -54,7 +54,7 @@ class TimespanMetricType:
         if getattr(self, "_handle", 0) != 0:
             _ffi.lib.glean_destroy_timespan_metric(self._handle)
 
-    def start(self):
+    def start(self) -> None:
         """
         Start tracking time for the provided metric.
 
@@ -71,7 +71,7 @@ class TimespanMetricType:
         def start():
             _ffi.lib.glean_timespan_set_start(self._handle, start_time)
 
-    def stop(self):
+    def stop(self) -> None:
         """
         Stop tracking time for the provided metric.
 
@@ -89,7 +89,7 @@ class TimespanMetricType:
         def stop():
             _ffi.lib.glean_timespan_set_stop(self._handle, stop_time)
 
-    def cancel(self):
+    def cancel(self) -> None:
         """
         Abort a previous `start` call. No error is recorded if no `start` was called.
         """
@@ -100,7 +100,7 @@ class TimespanMetricType:
         def cancel():
             _ffi.lib.glean_timespan_cancel(self._handle)
 
-    def set_raw_nanos(self, elapsed_nanos: int):
+    def set_raw_nanos(self, elapsed_nanos: int) -> None:
         """
         Explicitly set the timespan value, in nanoseconds.
 

@@ -19,7 +19,7 @@ class TimingDistributionTypeTests: XCTestCase {
             sendInPings: ["store1"],
             lifetime: .ping,
             disabled: false,
-            timeUnit: .millisecond
+            timeUnit: .nanosecond
         )
 
         // Accumulate a few values
@@ -42,7 +42,7 @@ class TimingDistributionTypeTests: XCTestCase {
             sendInPings: ["store1"],
             lifetime: .ping,
             disabled: true,
-            timeUnit: .millisecond
+            timeUnit: .nanosecond
         )
 
         XCTAssertFalse(metric.testHasValue())
@@ -103,7 +103,7 @@ class TimingDistributionTypeTests: XCTestCase {
             sendInPings: ["store1"],
             lifetime: .ping,
             disabled: false,
-            timeUnit: .millisecond
+            timeUnit: .nanosecond
         )
 
         XCTAssertFalse(metric.testHasValue())
@@ -123,7 +123,7 @@ class TimingDistributionTypeTests: XCTestCase {
             sendInPings: ["store1"],
             lifetime: .ping,
             disabled: false,
-            timeUnit: .millisecond
+            timeUnit: .nanosecond
         )
 
         metric.stopAndAccumulate(0)
@@ -138,7 +138,7 @@ class TimingDistributionTypeTests: XCTestCase {
             sendInPings: ["store1"],
             lifetime: .ping,
             disabled: false,
-            timeUnit: .millisecond
+            timeUnit: .nanosecond
         )
 
         func testFunc(value: Bool) -> Bool {
@@ -170,7 +170,7 @@ class TimingDistributionTypeTests: XCTestCase {
             sendInPings: ["store1"],
             lifetime: .application,
             disabled: false,
-            timeUnit: .millisecond
+            timeUnit: .nanosecond
         )
 
         XCTAssertFalse(metric.testHasValue())

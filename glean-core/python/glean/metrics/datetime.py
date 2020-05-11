@@ -4,10 +4,8 @@
 
 
 import datetime
+import sys
 from typing import List, Optional
-
-
-import iso8601  # type: ignore
 
 
 from .. import _ffi
@@ -17,6 +15,12 @@ from ..testing import ErrorType
 
 from .lifetime import Lifetime
 from .timeunit import TimeUnit
+
+
+if sys.version_info < (3, 7):
+    import iso8601  # type: ignore
+else:
+    iso8601 = None
 
 
 class DatetimeMetricType:
@@ -56,7 +60,7 @@ class DatetimeMetricType:
         if getattr(self, "_handle", 0) != 0:
             _ffi.lib.glean_destroy_datetime_metric(self._handle)
 
-    def set(self, value: Optional[datetime.datetime] = None):
+    def set(self, value: Optional[datetime.datetime] = None) -> None:
         """
         Set a datetime value, truncating it to the metric's resolution.
 
@@ -144,7 +148,12 @@ class DatetimeMetricType:
         Returns:
             value (datetime.datetime): value of the stored metric.
         """
-        return iso8601.parse_date(self.test_get_value_as_str(ping_name))
+        if sys.version_info < (3, 7):
+            return iso8601.parse_date(self.test_get_value_as_str(ping_name))
+        else:
+            return datetime.datetime.fromisoformat(
+                self.test_get_value_as_str(ping_name)
+            )
 
     def test_get_num_recorded_errors(
         self, error_type: ErrorType, ping_name: Optional[str] = None

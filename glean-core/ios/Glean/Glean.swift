@@ -378,7 +378,7 @@ public class Glean {
         }
 
         if !self.getUploadEnabled() {
-            self.logger.error("Glean must be enabled before sending pings")
+            self.logger.error("Glean disabled: not submitting any pings")
             return
         }
 

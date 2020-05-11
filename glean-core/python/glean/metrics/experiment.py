@@ -24,12 +24,12 @@ class RecordedExperimentData:
         self._extra = extra
 
     @property
-    def branch(self):
+    def branch(self) -> str:
         """The experiment's branch."""
         return self._branch
 
     @property
-    def extra(self):
+    def extra(self) -> Dict[str, str]:
         """Any extra data associated with this experiment."""
         return self._extra
 

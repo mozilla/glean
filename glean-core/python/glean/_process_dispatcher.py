@@ -19,13 +19,15 @@ Windows.
 
 import base64
 import logging
+import os
+from pathlib import Path
 import pickle
 import subprocess
 import sys
 from typing import Optional, Union
 
 
-from .subprocess import _process_dispatcher_helper
+from ._subprocess import _process_dispatcher_helper
 
 
 log = logging.getLogger(__name__)
@@ -49,11 +51,11 @@ class _SyncWorkWrapper:
         self._result = func(*args)
         self._waited = False
 
-    def wait(self):
+    def wait(self) -> None:
         self._waited = True
 
     @property
-    def returncode(self):
+    def returncode(self) -> int:
         if not self._waited:
             raise RuntimeError("wait() must be called before returncode is available")
         if self._result:
@@ -77,6 +79,15 @@ class ProcessDispatcher:
     # another process.
     _last_process = None  # type: Optional[subprocess.Popen]
 
+    # Detect if coverage is being collected in the current run
+    _doing_coverage = "coverage" in sys.modules  # type: bool
+
+    @classmethod
+    def _wait_for_last_process(cls) -> None:
+        if cls._last_process is not None:
+            cls._last_process.wait()
+            cls._last_process = None
+
     @classmethod
     def dispatch(cls, func, args) -> Union[_SyncWorkWrapper, subprocess.Popen]:
         from . import Glean
@@ -85,9 +96,7 @@ class ProcessDispatcher:
             # We only want one of these processes running at a time, so if
             # there's already one, join on it. Therefore, this should not be
             # run from the main user thread.
-            if cls._last_process is not None:
-                cls._last_process.wait()
-                cls._last_process = None
+            cls._wait_for_last_process()
 
             # This sends the data over as a commandline argument, which has a
             # maximum length of:
@@ -103,6 +112,12 @@ class ProcessDispatcher:
 
             if len(payload) > 4096:
                 log.warning("data payload to subprocess is greater than 4096 bytes")
+
+            # Help coverage.py do coverage across processes
+            if cls._doing_coverage:
+                os.environ["COVERAGE_PROCESS_START"] = str(
+                    Path(".coveragerc").absolute()
+                )
 
             p = subprocess.Popen(
                 [sys.executable, _process_dispatcher_helper.__file__, payload]

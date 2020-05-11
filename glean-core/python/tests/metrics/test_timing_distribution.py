@@ -12,14 +12,14 @@ from glean import testing
 from glean import _util
 
 
-def test_the_api_saves_to_its_storage_engine():
+def test_the_api_saves_to_its_storage_engine(monkeypatch):
     metric = metrics.TimingDistributionMetricType(
         disabled=False,
         category="telemetry",
         lifetime=Lifetime.APPLICATION,
         name="timing_distribution",
         send_in_pings=["store1"],
-        time_unit=TimeUnit.MILLISECOND,
+        time_unit=TimeUnit.NANOSECOND,
     )
 
     override_time = 0
@@ -27,18 +27,13 @@ def test_the_api_saves_to_its_storage_engine():
     def override_time_ns():
         return override_time
 
-    original_time_ns = _util.time_ns
-    _util.time_ns = override_time_ns
+    monkeypatch.setattr(_util, "time_ns", override_time_ns)
 
-    try:
-        for i in range(1, 4):
-            override_time = 0
-            timer_id = metric.start()
-            override_time = i
-            metric.stop_and_accumulate(timer_id)
-
-    finally:
-        _util.time_ns = original_time_ns
+    for i in range(1, 4):
+        override_time = 0
+        timer_id = metric.start()
+        override_time = i
+        metric.stop_and_accumulate(timer_id)
 
     assert metric.test_has_value()
     snapshot = metric.test_get_value()
@@ -53,7 +48,7 @@ def test_disabled_timing_distributions_must_not_record_data():
         lifetime=Lifetime.APPLICATION,
         name="timing_distribution",
         send_in_pings=["store1"],
-        time_unit=TimeUnit.MILLISECOND,
+        time_unit=TimeUnit.NANOSECOND,
     )
 
     timer_id = metric.start()
@@ -69,21 +64,21 @@ def test_get_value_throws():
         lifetime=Lifetime.APPLICATION,
         name="timing_distribution",
         send_in_pings=["store1"],
-        time_unit=TimeUnit.MILLISECOND,
+        time_unit=TimeUnit.NANOSECOND,
     )
 
     with pytest.raises(ValueError):
         metric.test_get_value()
 
 
-def test_api_saves_to_secondary_pings():
+def test_api_saves_to_secondary_pings(monkeypatch):
     metric = metrics.TimingDistributionMetricType(
         disabled=False,
         category="telemetry",
         lifetime=Lifetime.APPLICATION,
         name="timing_distribution",
         send_in_pings=["store1", "store2", "store3"],
-        time_unit=TimeUnit.MILLISECOND,
+        time_unit=TimeUnit.NANOSECOND,
     )
 
     override_time = 0
@@ -91,18 +86,13 @@ def test_api_saves_to_secondary_pings():
     def override_time_ns():
         return override_time
 
-    original_time_ns = _util.time_ns
-    _util.time_ns = override_time_ns
+    monkeypatch.setattr(_util, "time_ns", override_time_ns)
 
-    try:
-        for i in range(1, 4):
-            override_time = 0
-            timer_id = metric.start()
-            override_time = i
-            metric.stop_and_accumulate(timer_id)
-
-    finally:
-        _util.time_ns = original_time_ns
+    for i in range(1, 4):
+        override_time = 0
+        timer_id = metric.start()
+        override_time = i
+        metric.stop_and_accumulate(timer_id)
 
     for store in ["store1", "store2", "store3"]:
         assert metric.test_has_value(store)
@@ -118,8 +108,45 @@ def test_stopping_a_non_existent_timer_records_an_error():
         lifetime=Lifetime.APPLICATION,
         name="timing_distribution",
         send_in_pings=["store1", "store2", "store3"],
-        time_unit=TimeUnit.SECOND,
+        time_unit=TimeUnit.NANOSECOND,
     )
 
     metric.stop_and_accumulate(-1)
     assert 1 == metric.test_get_num_recorded_errors(testing.ErrorType.INVALID_STATE)
+
+
+def test_time_unit_controls_truncation(monkeypatch):
+    max_sample_time = 1000 * 1000 * 1000 * 60 * 10
+
+    override_time = 0
+
+    def override_time_ns():
+        return override_time
+
+    monkeypatch.setattr(_util, "time_ns", override_time_ns)
+
+    for unit in [TimeUnit.NANOSECOND, TimeUnit.MICROSECOND, TimeUnit.MILLISECOND]:
+        metric = metrics.TimingDistributionMetricType(
+            disabled=False,
+            category="telemetry",
+            lifetime=Lifetime.APPLICATION,
+            name="timing_distribution_{}".format(unit.name),
+            send_in_pings=["baseline"],
+            time_unit=unit,
+        )
+
+        for value in [
+            1,
+            100,
+            100000,
+            max_sample_time,
+            max_sample_time * 1000,
+            max_sample_time * 1000000,
+        ]:
+            override_time = 0
+            timer_id = metric.start()
+            override_time = value
+            metric.stop_and_accumulate(timer_id)
+
+        snapshot = metric.test_get_value()
+        assert len(snapshot.values) < 318

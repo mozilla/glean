@@ -4,9 +4,26 @@
 
 package org.mozilla.samples.gleancore.pings
 
+import okhttp3.mockwebserver.Dispatcher
+import okhttp3.mockwebserver.MockResponse
+import okhttp3.mockwebserver.MockWebServer
+import okhttp3.mockwebserver.RecordedRequest
 import org.json.JSONObject
-import org.mozilla.samples.gleancore.getPingServer
 import java.util.concurrent.TimeUnit
+
+/**
+ * Create a mock webserver that accepts all requests and replies with "OK".
+ * @return a [MockWebServer] instance
+ */
+internal fun createMockWebServer(): MockWebServer {
+    val server = MockWebServer()
+    server.setDispatcher(object : Dispatcher() {
+        override fun dispatch(request: RecordedRequest): MockResponse {
+            return MockResponse().setBody("OK")
+        }
+    })
+    return server
+}
 
 /**
  * Waits for ping with the given name to be received
@@ -17,11 +34,10 @@ import java.util.concurrent.TimeUnit
  */
 fun waitForPingContent(
     pingName: String,
+    server: MockWebServer,
     maxAttempts: Int = 3
 ): JSONObject?
 {
-    val server = getPingServer()
-
     var attempts = 0
     do {
         attempts += 1

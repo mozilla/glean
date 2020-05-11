@@ -6,7 +6,19 @@
 # We also use that same version in decisionlib.py
 FROM ubuntu:bionic-20180821
 
-MAINTAINER Edouard Oger "eoger@mozilla.com"
+MAINTAINER Jan-Erik Rediger "janerik@mozilla.com"
+
+RUN echo "trigger rebuild"
+
+# Add worker user
+
+RUN mkdir /builds && \
+    useradd -d /builds/worker -s /bin/bash -m worker && \
+    chown worker:worker /builds/worker && \
+    mkdir /builds/worker/artifacts && \
+    chown worker:worker /builds/worker/artifacts
+
+WORKDIR /builds/worker/
 
 # Configuration
 
@@ -74,6 +86,7 @@ RUN apt-get update -qq \
         # <TODO: Delete p7zip once NSS windows is actually compiled instead of downloaded>.
         p7zip-full \
         ## End of NSS build dependencies
+        rsync \
     && apt-get clean
 
 RUN pip3 install --upgrade pip
@@ -86,18 +99,18 @@ RUN locale-gen en_US.UTF-8
 
 # Android SDK
 
-RUN mkdir -p /build/android-sdk
-WORKDIR /build
+RUN mkdir -p /builds/worker/android-sdk
+WORKDIR /builds/worker
 
-ENV ANDROID_HOME /build/android-sdk
-ENV ANDROID_SDK_HOME /build/android-sdk
+ENV ANDROID_HOME /builds/worker/android-sdk
+ENV ANDROID_SDK_HOME /builds/worker/android-sdk
 ENV PATH ${PATH}:${ANDROID_SDK_HOME}/tools:${ANDROID_SDK_HOME}/tools/bin:${ANDROID_SDK_HOME}/platform-tools:/opt/tools:${ANDROID_SDK_HOME}/build-tools/${ANDROID_BUILD_TOOLS}
 
 RUN curl -sfSL --retry 5 --retry-delay 10 https://dl.google.com/android/repository/sdk-tools-linux-${ANDROID_SDK_VERSION}.zip > sdk.zip \
     && unzip -q sdk.zip -d ${ANDROID_SDK_HOME} \
     && rm sdk.zip \
-    && mkdir -p /build/android-sdk/.android/ \
-    && touch /build/android-sdk/.android/repositories.cfg \
+    && mkdir -p /builds/worker/android-sdk/.android/ \
+    && touch /builds/worker/android-sdk/.android/repositories.cfg \
     && yes | sdkmanager --licenses \
     && sdkmanager --verbose "platform-tools" \
         "platforms;android-${ANDROID_PLATFORM_VERSION}" \
@@ -105,46 +118,49 @@ RUN curl -sfSL --retry 5 --retry-delay 10 https://dl.google.com/android/reposito
         "extras;android;m2repository" \
         "extras;google;m2repository"
 
+RUN chown -R worker:worker /builds/worker/android-sdk
+
 # Android NDK
 
-ENV ANDROID_NDK_VERSION "r19c"
+ENV ANDROID_NDK_VERSION "r20"
 
 # $ANDROID_NDK_ROOT is the preferred name, but the android gradle plugin uses $ANDROID_NDK_HOME.
-ENV ANDROID_NDK_ROOT /build/android-ndk
-ENV ANDROID_NDK_HOME /build/android-ndk
+ENV ANDROID_NDK_ROOT /builds/worker/android-ndk
+ENV ANDROID_NDK_HOME /builds/worker/android-ndk
 
 RUN curl -sfSL --retry 5 --retry-delay 10 https://dl.google.com/android/repository/android-ndk-${ANDROID_NDK_VERSION}-linux-x86_64.zip > ndk.zip \
-    && unzip -q ndk.zip -d /build \
+    && unzip -q ndk.zip -d /builds/worker \
     && rm ndk.zip \
-    && mv /build/android-ndk-${ANDROID_NDK_VERSION} ${ANDROID_NDK_ROOT}
+    && mv /builds/worker/android-ndk-${ANDROID_NDK_VERSION} ${ANDROID_NDK_ROOT}
 
-ENV ANDROID_NDK_TOOLCHAIN_DIR /root/.android-ndk-r19c-toolchain
+ENV ANDROID_NDK_TOOLCHAIN_DIR /builds/worker/.android-ndk-r20-toolchain
 ENV ANDROID_NDK_API_VERSION 21
-
-# Rust
-RUN set -eux; \
-    RUSTUP_PLATFORM='x86_64-unknown-linux-gnu'; \
-    RUSTUP_VERSION='1.18.3'; \
-    RUSTUP_SHA256='a46fe67199b7bcbbde2dcbc23ae08db6f29883e260e23899a88b9073effc9076'; \
-    curl -sfSL --retry 5 --retry-delay 10 -O "https://static.rust-lang.org/rustup/archive/${RUSTUP_VERSION}/${RUSTUP_PLATFORM}/rustup-init"; \
-    echo "${RUSTUP_SHA256} *rustup-init" | sha256sum -c -; \
-    chmod +x rustup-init; \
-    ./rustup-init -y --no-modify-path --default-toolchain none; \
-    rm rustup-init
-ENV PATH=/root/.cargo/bin:$PATH
 
 # sccache
 RUN \
     curl -sfSL --retry 5 --retry-delay 10 \
-        https://github.com/mozilla/sccache/releases/download/0.2.11/sccache-0.2.11-x86_64-unknown-linux-musl.tar.gz \
+        https://github.com/mozilla/sccache/releases/download/0.2.13/sccache-0.2.13-x86_64-unknown-linux-musl.tar.gz \
         | tar -xz --strip-components=1 -C /usr/local/bin/ \
-            sccache-0.2.11-x86_64-unknown-linux-musl/sccache
+            sccache-0.2.13-x86_64-unknown-linux-musl/sccache
 
 # tooltool
 RUN \
-    curl -sfSL --retry 5 --retry-delay 10 \
+    curl -sfSL --retry 10 --retry-delay 10 \
          -o /usr/local/bin/tooltool.py \
          https://raw.githubusercontent.com/mozilla/build-tooltool/36511dae0ead6848017e2d569b1f6f1b36984d40/tooltool.py && \
          chmod +x /usr/local/bin/tooltool.py
 
-RUN git init repo
+
+# %include-run-task
+
+ENV SHELL=/bin/bash \
+    HOME=/builds/worker \
+    PATH=/builds/worker/.local/bin:$PATH
+
+
+VOLUME /builds/worker/checkouts
+VOLUME /builds/worker/.cache
+
+
+# run-task expects to run as root
+USER root

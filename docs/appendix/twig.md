@@ -22,4 +22,7 @@ They could be release notes, documentation, hopes, dreams, or whatever: so long 
 * 2020-03-09: [Metric lifetimes](https://blog.mozilla.org/data/2020/03/09/this-week-in-glean-metric-lifetimes/)
 * 2020-03-13: [Adding support for GLAM on Glean](https://blog.mozilla.org/data/2020/03/13/this-week-in-glean-adding-support-for-glam-on-glean/)
 * 2020-03-25: [Comparing Apples to Oranges](https://blog.mozilla.org/data/2020/03/25/this-week-in-glean-comparing-apples-to-oranges/)
-* 2020-04-15 [How Much Does That Data Cost](https://chuttenblog.wordpress.com/2020/04/15/this-week-in-glean-how-much-does-that-data-cost/)
+* 2020-04-15: [How Much Does That Data Cost](https://chuttenblog.wordpress.com/2020/04/15/this-week-in-glean-how-much-does-that-data-cost/)
+* 2020-04-27: [Glean for Python on Windows](https://blog.mozilla.org/data/2020/04/27/this-week-in-glean-glean-for-python-on-windows/)
+* 2020-05-04: [Bytes in Memory (on Android)](https://fnordig.de/2020/05/04/this-week-in-glean/)
+* 2020-05-08: [mozregression telemetry (part 2)](https://wlach.github.io/blog/2020/05/this-week-in-glean-mozregression-telemetry-part-2/)

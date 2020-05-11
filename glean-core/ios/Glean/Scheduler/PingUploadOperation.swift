@@ -56,7 +56,7 @@ class PingUploadOperation: GleanOperation {
     }
 
     /// Handles cancelling the underlying data task
-    public override func cancel() {
+    override public func cancel() {
         uploadTask?.cancel()
         super.cancel()
     }

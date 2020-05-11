@@ -3,12 +3,9 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from pathlib import Path
-import pkgutil
 import sys
 from typing import Any, List, Optional
 import weakref
-
-from cffi import FFI  # type: ignore
 
 
 def get_shared_object_filename() -> str:  # pragma: no cover
@@ -27,27 +24,14 @@ def get_shared_object_filename() -> str:  # pragma: no cover
 _global_weakkeydict = weakref.WeakKeyDictionary()  # type: Any
 
 
-def _load_header(path: str) -> str:
-    """
-    Load a C header file and convert it to something parseable by cffi.
-    """
-    data = pkgutil.get_data(__name__, path)
-    if data is None:  # pragma: no cover
-        raise RuntimeError("Couldn't load 'glean.h'")
-    data_str = data.decode("utf-8")
-    return "\n".join(
-        line for line in data_str.splitlines() if not line.startswith("#include")
-    )
-
-
 # Don't load the Glean shared object / dll if we're in a (ping upload worker)
 # subprocess.
 #   (a) it's not likely to work anyway, because it won't be the same Glean
 #       singleton.
 #   (b) skipping it significantly improves startup time of the subprocess.
 if not getattr(__builtins__, "IN_GLEAN_SUBPROCESS", False):
-    ffi = FFI()
-    ffi.cdef(_load_header("glean.h"))
+    from ._glean_ffi import ffi  # type: ignore
+
     lib = ffi.dlopen(str(Path(__file__).parent / get_shared_object_filename()))
     lib.glean_enable_logging()
 else:

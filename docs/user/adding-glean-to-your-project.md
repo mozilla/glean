@@ -279,9 +279,9 @@ Glean releases the Global Interpreter Lock (GIL), therefore your application's t
 Glean installs an [`atexit` handler](https://docs.python.org/3/library/atexit.html) so the Glean thread can attempt to cleanly shut down when your application exits.
 This handler will wait up to 1 second for any pending work to complete.
 
-In addition, by default ping uploading is performed in a separate child process using Python's multiprocessing module. This process will continue to upload any pending pings even after the main process shuts down.
+In addition, by default ping uploading is performed in a separate child process. This process will continue to upload any pending pings even after the main process shuts down.
 
-Since the multiprocessing module may not work in all contexts, such as in a [`PyInstaller`](https://www.pyinstaller.org/) application, there is an option to ensure that ping uploading occurs in the main process. To do this, set the `allow_multiprocessing` parameter on the `glean.Configuration` object to `False`.
+Note that this approach may not work with applications built using [`PyInstaller`](https://www.pyinstaller.org/) or similar tools which bundle an application together with a Python interpreter. For these cases (and any others which we haven't thought of), there is an option to ensure that ping uploading occurs in the main process. To do this, set the `allow_multiprocessing` parameter on the `glean.Configuration` object to `False`.
 </div>
 
 {{#include ../tab_footer.md}}
@@ -296,4 +296,4 @@ In order for data to be collected from your project, its application id must be 
 
 [File a data engineering bug][dataeng-bug] to enable your product's application id.
 
-[dataeng-bug]: https://bugzilla.mozilla.org/enter_bug.cgi?product=Data%20Platform%20and%20Tools&component=General&short_desc=Glean:%20Enable%20application%20id%20org.mozilla.myProduct
+[dataeng-bug]: https://bugzilla.mozilla.org/enter_bug.cgi?product=Data%20Platform%20and%20Tools&component=General&short_desc=Glean:%20Enable%20application%20id%20org.mozilla.myProduct&comment=%2A%2A%20Please%20needinfo%20mreid%40mozilla.com%20when%20filing%20this%20bug%20for%20the%20fastest%20response%20%2A%2A

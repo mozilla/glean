@@ -22,7 +22,7 @@ DEFAULT_TELEMETRY_ENDPOINT = "https://incoming.telemetry.mozilla.org"
 DEFAULT_MAX_EVENTS = 500
 
 
-def _get_default_user_agent():
+def _get_default_user_agent() -> str:
     import glean
 
     return "Glean/{} (Python on {})".format(glean.__version__, sys.platform)
@@ -86,7 +86,7 @@ class Configuration:
         self._server_endpoint = value
 
     @property
-    def user_agent(self) -> Optional[str]:
+    def user_agent(self) -> str:
         """The user agent used when sending pings."""
         return self._user_agent
 

@@ -34,7 +34,7 @@ class GleanMetricsYamlTransform extends ArtifactTransform {
 @SuppressWarnings("GrPackage")
 class GleanPlugin implements Plugin<Project> {
     // The version of glean_parser to install from PyPI.
-    private String GLEAN_PARSER_VERSION = "1.19.0"
+    private String GLEAN_PARSER_VERSION = "1.20.4"
     // The version of Miniconda is explicitly specified.
     // Miniconda3-4.5.12 is known to not work on Windows.
     private String MINICONDA_VERSION = "4.5.11"
@@ -369,7 +369,7 @@ subprocess.check_call([
     }
 
     void apply(Project project) {
-        project.ext.glean_version = "27.1.0"
+        project.ext.glean_version = "29.1.0"
 
         File condaDir = setupPythonEnvironmentTasks(project)
         project.ext.set("gleanCondaDir", condaDir)
