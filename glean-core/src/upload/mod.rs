@@ -570,4 +570,54 @@ mod test {
         // Verify that after request is returned, none are left
         assert_eq!(upload_manager.get_upload_task(), PingUploadTask::Done);
     }
+
+    #[test]
+    fn new_pings_are_added_while_upload_in_progress() {
+        // Create a new upload_manager
+        let dir = tempfile::tempdir().unwrap();
+        let upload_manager = PingUploadManager::new(dir.path());
+
+        // Wait for processing of pending pings directory to finish.
+        while upload_manager.get_upload_task() == PingUploadTask::Wait {
+            thread::sleep(Duration::from_millis(10));
+        }
+
+        let doc1 = "684fa150-8dff-11ea-8faf-cb1ff3b11119";
+        let path1 = format!("/submit/app_id/test-ping/1/{}", doc1);
+
+        let doc2 = "74f14e9a-8dff-11ea-b45a-6f936923f639";
+        let path2 = format!("/submit/app_id/test-ping/1/{}", doc2);
+
+        // Enqueue a ping
+        upload_manager.enqueue_ping(doc1, &path1, json!({}));
+
+        // Try and get the first request.
+        let req = match upload_manager.get_upload_task() {
+            PingUploadTask::Upload(req) => req,
+            _ => panic!("Expected upload manager to return the next request!"),
+        };
+        assert_eq!(doc1, req.document_id);
+
+        // Schedule the next one while the first one is "in progress"
+        upload_manager.enqueue_ping(doc2, &path2, json!({}));
+
+        // Mark as processed
+        upload_manager.process_ping_upload_response(&req.document_id, HttpStatus(200));
+
+        // Get the second request.
+        let req = match upload_manager.get_upload_task() {
+            PingUploadTask::Upload(req) => req,
+            _ => panic!("Expected upload manager to return the next request!"),
+        };
+        assert_eq!(doc2, req.document_id);
+
+        // Mark as processed
+        upload_manager.process_ping_upload_response(&req.document_id, HttpStatus(200));
+
+        // ... and then we're done.
+        match upload_manager.get_upload_task() {
+            PingUploadTask::Done => {}
+            _ => panic!("Expected upload manager to return the next request!"),
+        }
+    }
 }
