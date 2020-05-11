@@ -51,7 +51,7 @@ class StringMetricType:
         if getattr(self, "_handle", 0) != 0:
             _ffi.lib.glean_destroy_string_metric(self._handle)
 
-    def set(self, value: str):
+    def set(self, value: str) -> None:
         """
         Set a string value.
 

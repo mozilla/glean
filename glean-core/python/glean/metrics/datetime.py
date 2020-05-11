@@ -60,7 +60,7 @@ class DatetimeMetricType:
         if getattr(self, "_handle", 0) != 0:
             _ffi.lib.glean_destroy_datetime_metric(self._handle)
 
-    def set(self, value: Optional[datetime.datetime] = None):
+    def set(self, value: Optional[datetime.datetime] = None) -> None:
         """
         Set a datetime value, truncating it to the metric's resolution.
 

@@ -3,12 +3,17 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-import abc
+import sys
 from typing import List, Tuple
 
 
-class PingUploader(abc.ABC):
-    @abc.abstractmethod
+if sys.version_info >= (3, 8):
+    from typing import Protocol
+else:
+    Protocol = object
+
+
+class PingUploader(Protocol):
     def upload(self, url: str, data: str, headers: List[Tuple[str, str]]) -> bool:
         """
         Upload a ping to a server.

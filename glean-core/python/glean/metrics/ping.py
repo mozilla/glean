@@ -40,13 +40,13 @@ class PingType:
             _ffi.lib.glean_destroy_ping_type(self._handle)
 
     @property
-    def name(self):
+    def name(self) -> str:
         """
         Get the name of the ping.
         """
         return self._name
 
-    def submit(self, reason: Optional[int] = None):
+    def submit(self, reason: Optional[int] = None) -> None:
         """
         Collect and submit the ping for eventual uploading.
 

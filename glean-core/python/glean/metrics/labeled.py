@@ -3,8 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-import abc
-from typing import Callable, List, Optional, Set, Type
+from typing import Any, Callable, List, Optional, Set, Type
 
 
 from .. import _ffi
@@ -15,7 +14,7 @@ from .string import StringMetricType
 from ..testing import ErrorType
 
 
-class LabeledMetricBase(abc.ABC):
+class LabeledMetricBase:
     """
     This implements the developer-facing API for labeled metrics.
 
@@ -76,7 +75,7 @@ class LabeledMetricBase(abc.ABC):
             label_len,
         )
 
-    def __getitem__(self, item: str):
+    def __getitem__(self, item: str) -> Any:
         """
         Get the specific metric for a given label.
 

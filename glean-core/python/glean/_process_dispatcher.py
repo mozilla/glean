@@ -51,11 +51,11 @@ class _SyncWorkWrapper:
         self._result = func(*args)
         self._waited = False
 
-    def wait(self):
+    def wait(self) -> None:
         self._waited = True
 
     @property
-    def returncode(self):
+    def returncode(self) -> int:
         if not self._waited:
             raise RuntimeError("wait() must be called before returncode is available")
         if self._result:
@@ -83,7 +83,7 @@ class ProcessDispatcher:
     _doing_coverage = "coverage" in sys.modules  # type: bool
 
     @classmethod
-    def _wait_for_last_process(cls):
+    def _wait_for_last_process(cls) -> None:
         if cls._last_process is not None:
             cls._last_process.wait()
             cls._last_process = None
