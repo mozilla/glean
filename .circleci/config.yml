@@ -189,7 +189,7 @@ commands:
           command: |
             GHR=ghr_v0.13.0_darwin_amd64
             GHR_SHA256=319988a001462f80b37cf40fbc41b9de60b0a1cffa2a338b47b9fe5eef25f60e
-            curl -sfSL --retry 5 --retry-delay 10 -O "https://github.com/tcnksm/ghr/releases/download/v0.13.0/${GHR}.zip"
+            curl -sfSL --retry 5 -O "https://github.com/tcnksm/ghr/releases/download/v0.13.0/${GHR}.zip"
             echo "${GHR_SHA256} *${GHR}.zip" | shasum -a 256 -c -
             unzip "${GHR}.zip"
             cp ./${GHR}/ghr ghr
@@ -201,7 +201,7 @@ commands:
           command: |
             GHR=ghr_v0.13.0_linux_amd64
             GHR_SHA256=c428627270ae26e206cb526cb8c7bdfba475dd278f6691ddaf863355adadfa13
-            curl -sfSL --retry 5 --retry-delay 10 -O "https://github.com/tcnksm/ghr/releases/download/v0.13.0/${GHR}.tar.gz"
+            curl -sfSL --retry 5 -O "https://github.com/tcnksm/ghr/releases/download/v0.13.0/${GHR}.tar.gz"
             echo "${GHR_SHA256} *${GHR}.tar.gz" | sha256sum -c -
             tar -xf "${GHR}.tar.gz"
             cp ./${GHR}/ghr ghr
@@ -221,7 +221,7 @@ jobs:
             DENY_VERSION=0.6.6
             DENY="cargo-deny-${DENY_VERSION}-x86_64-unknown-linux-musl"
             DENY_SHA256=41e2e71b7b07cd68e1275d694b1646c0c2873e40f4f809f29d88467b6a1e3c21
-            curl -sfSL --retry 5 --retry-delay 10 -O "https://github.com/EmbarkStudios/cargo-deny/releases/download/${DENY_VERSION}/${DENY}.tar.gz"
+            curl -sfSL --retry 5 -O "https://github.com/EmbarkStudios/cargo-deny/releases/download/${DENY_VERSION}/${DENY}.tar.gz"
             echo "${DENY_SHA256} *${DENY}.tar.gz" | shasum -a 256 -c -
             tar -xvf "${DENY}.tar.gz"
             mv "${DENY}/cargo-deny" /usr/local/cargo/bin/cargo-deny
@@ -355,7 +355,7 @@ jobs:
               MDBOOK_VERSION=v0.3.5
               MDBOOK="mdbook-${MDBOOK_VERSION}-x86_64-unknown-linux-gnu.tar.gz"
               MDBOOK_SHA256=e03cc253650fa0b4780fab4d75df64c48d35d48f452fcf61c5ec0ae652f9bd8e
-              curl -sfSL --retry 5 --retry-delay 10 -O "https://github.com/rust-lang-nursery/mdBook/releases/download/${MDBOOK_VERSION}/${MDBOOK}"
+              curl -sfSL --retry 5 -O "https://github.com/rust-lang-nursery/mdBook/releases/download/${MDBOOK_VERSION}/${MDBOOK}"
               echo "${MDBOOK_SHA256} *${MDBOOK}" | shasum -a 256 -c -
               tar -xvf "${MDBOOK}"
               mv mdbook /usr/local/cargo/bin/mdbook
@@ -365,7 +365,7 @@ jobs:
               OPENON_VERSION=1.0.1
               OPENON="mdbook-open-on-gh-${OPENON_VERSION}-x86_64-unknown-linux-gnu.tar.gz"
               OPENON_SHA256=ca5901ef58844f5a6e6b84aa31d99fc0bab1dd7f7d6913e1d8399a6a2dc80955
-              curl -sfSL --retry 5 --retry-delay 10 -O "https://github.com/badboy/mdbook-open-on-gh/releases/download/${OPENON_VERSION}/${OPENON}"
+              curl -sfSL --retry 5 -O "https://github.com/badboy/mdbook-open-on-gh/releases/download/${OPENON_VERSION}/${OPENON}"
               echo "${OPENON_SHA256} *${OPENON}" | shasum -a 256 -c -
               tar -xvf "${OPENON}"
               mv mdbook-open-on-gh /usr/local/cargo/bin/mdbook-open-on-gh
