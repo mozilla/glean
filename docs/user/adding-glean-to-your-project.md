@@ -5,6 +5,7 @@
 Products using the Glean SDK to collect telemetry **must**:
 
 - add documentation for any new metric collected with the library in its repository (see [an example](pings/index.md));
+- include the markdown-formatted documentation generated from the `metrics.yaml` and `pings.yaml` files in the project's documentation;
 - go through data review for the newly collected data by following [this process](https://wiki.mozilla.org/Firefox/Data_Collection);
 - provide a way for users to turn data collection off (e.g. providing settings to control
   `Glean.setUploadEnabled()`).
