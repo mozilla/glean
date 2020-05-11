@@ -255,7 +255,9 @@ metrics = load_metrics(resource_filename(__name__, "metrics.yaml"))
 metrics.your_category.your_metric.set("value")
 ```
 
-Additionally, Glean provides a mechanism for automatically generating markdown documentation from your `metrics.yaml` and `pings.yaml` files. To perform that translation, run `glean_parser`'s `translate` command:
+The documentation for your application or library's metrics and pings are written in `metrics.yaml` and `pings.yaml`. However, you should also provide human-readable markdown files based on this information, and this is a requirement for Mozilla projects using Glean. For other languages and platforms, this transformation is done automatically as part of the build. However, for Python the integration to automatically generate docs is an additional step.
+
+Glean provides a commandline tool for automatically generating markdown documentation from your `metrics.yaml` and `pings.yaml` files. To perform that translation, run `glean_parser`'s `translate` command:
 
 ```sh
 python3 -m glean_parser translate -f markdown -o docs metrics.yaml pings.yaml
