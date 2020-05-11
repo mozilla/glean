@@ -1,11 +1,5 @@
 # When to use what method of passing data between Rust and Java/Swift
 
----
-
-This is currently copied from [application-services documentation](https://github.com/mozilla/application-services/blob/4347ea9c590d2319db1c994680832cc20bc3758d/docs/howtos/when-to-use-what-in-the-ffi.md).
-
----
-
 There are a bunch of options here. For the purposes of our discussion,
 there are two kinds of values you may want to pass over the FFI.
 
@@ -15,39 +9,24 @@ there are two kinds of values you may want to pass over the FFI.
 
 ## Types with identity
 
-Examples of this are things like database connections, the `FirefoxAccounts`
-struct, etc. These types are complex, implemented in Rust, and it's not
-unreasonable for them to come to Java/Kotlin as a type representing a
-resource (e.g. implementing `Closable`/`AutoClosable`).
+Examples of this are all metric type implementations, e.g. `StringMetric`.
+These types are complex, implemented in Rust and make use of the global Glean singleton on the Rust side,
+They have an equivalent on the wrapper side (Kotlin/Swift/Python), that forwards calls through FFI.
 
-You have two choices here:
+They all follow the same pattern:
 
-1. Use a `ConcurrentHandleMap` to store all instances of your object, and
-   pass the handle back and forth as a u64 from Rust / Long from Kotlin.
+A `ConcurrentHandleMap` stores all instances of the same type,
+A handle is passed back and forth as a `u64` from Rust, `Long` from Kotlin, `UInt64` from Swift
+or other equivalent type in other languages.
 
-   This is recommended for most cases, as it's the hardest to mess up.
-   Additionally, for types T such that `&T: Sync + Send`, or that you
-   need to call `&mut self` method, this is the safest choice.
+This is recommended for most cases, as it's the hardest to mess up.
+Additionally, for types T such that `&T: Sync + Send`, or that you
+need to call `&mut self` method, this is the safest choice.
 
-   Additionally, this will ensure panic-safety, as you'll poison your Mutex.
+Additionally, this will ensure panic-safety, as it will poison the internal Mutex, making further access impossible.
 
-   The [`ffi_support::handle_map` docs](https://docs.rs/ffi-support/*/ffi_support/handle_map/index.html)
-   are good, and under `ConcurrentHandleMap` include an example of how to set
-   this up. You can also look at most of the FFI crates, as they do this (with
-   the exception of `rc_log`, which has unique requirements).
-
-2. Using an opaque pointer. This is generally only recommended for rare cases
-   like the `PlacesInterruptHandle` (or the `LogAdapterState` from `rc_log`,
-   although it will probably eventually use a handle).
-
-   It's good if your synchronization or threading requirements are somewhat
-   complex and handled separately, such that the additional overhead of
-   the `ConcurrentHandleMap` is undesirable. You should probably talk to us
-   before adding another type that works this way, to make sure it's sound.
-
-   The [`ffi_support` docs](https://docs.rs/ffi-support/*/ffi_support/macro.implement_into_ffi_by_pointer.html)
-   discuss how to do this, or take a look at how it's done for
-   `PlacesInterruptHandle`).
+The [`ffi_support::handle_map` docs](https://docs.rs/ffi-support/*/ffi_support/handle_map/index.html) are good,
+and under `ConcurrentHandleMap` include an example of how to set this up.
 
 ## Plain Old Data
 
@@ -56,27 +35,26 @@ structures containing them.
 
 ### Primitives
 
-Specifically numeric primitives. These we'll tackle first since they're the
-easiest.
+Numeric primitives are the easiest to pass between languages.
+The main recommendation is: use the equivalent and same-sized type as the one provided by Rust.
 
-In general, you can just pass them as you wish. There are a couple of
-exceptions/caveats. All of them are caused by JNA/Android issues (Swift has very
-good support for calling over the FFI), but it's our lowest common denominator.
+There are a couple of exceptions/caveats, especially for Kotlin. All of them are caused by JNA/Android issues.
+Swift has very good support for calling over the FFI.
 
 1. `bool`: Don't use it. JNA doesn't handle it well. Instead, use a numeric type
-    (like `u8`) and represent 0 for false and 1 for true for interchange over the
-    FFI, converting back to a Kotlin `Boolean` or swift `Bool` after (as to
+    (like `u8`) and represent 0 for `false` and 1 for `true` for interchange over the
+    FFI, converting back to Kotlin's `Boolean` or Swift's `Bool` after (as to
     not expose this somewhat annoying limitation in our public API).
+    All wrappers already include utility functions to turn 8-bit integers (`u8`) back to booleans
+    (`toBool()` or equivalent methods).
 
 2. `usize`/`isize`: These cause the structure size to be different based on the
-   platform. JNA does handle this if you use `NativeSize`, but it's awkward,
-   incompatible with it's Direct Mapping optimization (which we don't use but
-   want to in the future), and has more overhead than just using `i64`/`i32` for
-   `Long`/`Int`. (You can also use `u64`/`u32` for `Long`/`Int`, if you're certain the
-   value is not negative)
+   platform. JNA does handle this if you use `NativeSize`, but it's awkward.
+   Use the size-defined integers instead, such as `i64`/`i32` and their language-equivalents
+   (Kotlin: `Long`/`Int`, Swift:`UInt64`/`UInt32`).
+   *Caution:* In Kotlin integers are signed by default. You can use `u64`/`u32` for `Long`/`Int` if you ensure the values are non-negative through asserts or error reporting code.
 
-3. `char`: I really don't see a reason you need to pass a single code point over the
-   FFI, but if someone needs to do this, they instead should just pass it as a `u32`.
+3. `char`: Avoid these if possible. If you really have a use case consider `u32` instead.
 
     If you do this, you should probably be aware of the fact that Java chars are 16
     bit, and Swift `Character`s are actually strings (they represent Extended
@@ -108,32 +86,32 @@ For return values, used `*mut c_char`, and for input, use
     to the destructor, it will allocate a temporary buffer, pass it to Rust, which
     we'll free, corrupting both heaps 💥. Oops!
 
-2. If the string is passed into Rust from Kotlin/Swift, the rust code should
+2. If the string is passed into Rust from Kotlin/Swift, the Rust code should
    declare the parameter as a [`FfiStr<'_>`](https://docs.rs/ffi-support/*/ffi_support/struct.FfiStr.html).
    and things should then work more or less automatically. The `FfiStr` has methods
    for extracting it's data as `&str`, `Option<&str>`, `String`, and `Option<String>`.
 
-It's also completely fine to use Protobufs or JSON for this case!
-
 ### Aggregates
 
 This is any type that's more complex than a primitive or a string (arrays,
-structures, and combinations there-in). There are two options we recommend for
-these cases:
+structures, and combinations there-in).
+There are two options we recommend for these cases:
 
-1. Passing data using Protobufs. See the
-   "[Using Protobufs-encoded data over Rust FFI](https://github.com/mozilla/application-services/blob/master/docs/howtos/passing-protobuf-data-over-ffi.md)"
-   document for details on how to do this. We recommend this for all new use cases, unless
-   you have a specific reason that JSON is better (e.g. semi-opaque JSON encoded data is
-   desired on the other side).
-
-2. Passing data as JSON. This is very easy, and useful for prototyping, however
-   much slower, requires a great deal of copying and redundant encode/decode
+1. Passing data as JSON. This is very easy and useful for prototyping, but is
+   much slower and requires a great deal of copying and redundant encode/decode
    steps (in general, the data will be copied at least 4 times to make this
-   work, and almost certainly more in practice), and can be done relatively
-   easily by `derive(Serialize, Deserialize)`, and adding
-   [`ffi_support::implement_into_ffi_by_json`](https://docs.rs/ffi-support/*/ffi_support/macro.implement_into_ffi_by_json.html)
-   into the crate that defines the type.
+   work, and almost certainly more in practice).
+   It can be done relatively easily by `derive(Serialize, Deserialize)`,
+   and converting to a JSON string using `serde_json::to_string`.
 
-   For new non-test code this is not a recommended approach.
-   For test code, this can be a useful performance/simplicity trade off to make.
+   This is a viable option for test-only functions, where the overhead is not important.
+
+2. Use `repr(C)` structures and copy the data across the boundary,
+   carefully replicating the same structure on the wrapper side.
+   In Kotlin this will require `@Structure.FieldOrder` annotations.
+   Swift can directly handle C types.
+
+   **Caution:** This is error prone! Structures, enumerations and unions need to be kept the same across all layers
+   (Rust, generated C header, Kotlin, Swift, ...).
+   Be extra careful, avoid adding references to structures and ensure the structures are correctly freed inside Rust.
+   Copy out the data and convert into language-appropriate types (e.g. convert `*mut c_char` into Swift/Kotlin strings) as soon as possible.

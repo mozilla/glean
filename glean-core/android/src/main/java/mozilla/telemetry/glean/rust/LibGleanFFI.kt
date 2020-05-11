@@ -12,12 +12,33 @@ import com.sun.jna.Pointer
 import com.sun.jna.StringArray
 import java.lang.reflect.Proxy
 import mozilla.telemetry.glean.config.FfiConfiguration
+import mozilla.telemetry.glean.net.FfiPingUploadTask
 
 // Turn a boolean into its Byte (u8) representation
 internal fun Boolean.toByte(): Byte = if (this) 1 else 0
 
 // Turn a Byte into a boolean where zero is false and non-zero is true
 internal fun Byte.toBoolean(): Boolean = this != 0.toByte()
+
+/**
+ * Result values of attempted ping uploads encoded for FFI use.
+ * They are defined in `glean-core/src/upload/result.rs` and re-defined for use in Kotlin here.
+ *
+ * NOTE:
+ * THEY MUST BE THE SAME ACROSS BOTH FILES!
+ */
+class Constants {
+    companion object {
+        // A recoverable error.
+        val UPLOAD_RESULT_RECOVERABLE: Int = 0x1
+
+        // An unrecoverable error.
+        val UPLOAD_RESULT_UNRECOVERABLE: Int = 0x2
+
+        // A HTTP response code.
+        val UPLOAD_RESULT_HTTP_STATUS: Int = 0x8000
+    }
+}
 
 /**
  * Helper to read a null terminated String out of the Pointer and free it.
@@ -534,6 +555,10 @@ internal interface LibGleanFFI : Library {
         error_type: Int,
         storage_name: String
     ): Int
+
+    fun glean_get_upload_task(): FfiPingUploadTask.ByValue
+
+    fun glean_process_ping_upload_response(task: FfiPingUploadTask.ByValue, status: Int)
 
     // Misc
 

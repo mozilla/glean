@@ -60,12 +60,6 @@ commands:
       - run:
           name: Test
           command: cargo test --all --verbose
-      - run:
-          name: Test with upload feature
-          command: |
-              # Changing to the core crate due to: --features is not allowed in the root of a virtual workspace#
-              cd glean-core
-              cargo test --lib --verbose --features upload
 
   install-rustup:
     steps:
@@ -311,7 +305,7 @@ jobs:
       - run:
           name: FFI header consistency check
           command: |
-            wget https://github.com/eqrion/cbindgen/releases/download/v0.10.0/cbindgen
+            wget https://github.com/eqrion/cbindgen/releases/download/v0.14.0/cbindgen
             mv cbindgen /usr/local/cargo/bin/cbindgen
             chmod +x /usr/local/cargo/bin/cbindgen
             make cbindgen
@@ -350,25 +344,17 @@ jobs:
           name: Version information
           command: rustc --version; cargo --version; rustup --version
       - run:
-          name: Install mdbook
+          name: Install mdbook-dtmo
           command: |
-              MDBOOK_VERSION=v0.3.5
-              MDBOOK="mdbook-${MDBOOK_VERSION}-x86_64-unknown-linux-gnu.tar.gz"
-              MDBOOK_SHA256=e03cc253650fa0b4780fab4d75df64c48d35d48f452fcf61c5ec0ae652f9bd8e
-              curl -sfSL --retry 5 -O "https://github.com/rust-lang-nursery/mdBook/releases/download/${MDBOOK_VERSION}/${MDBOOK}"
+              MDBOOK_VERSION=0.5.0
+              MDBOOK="mdbook-dtmo-${MDBOOK_VERSION}-x86_64-unknown-linux-gnu.tar.gz"
+              MDBOOK_SHA256=ce96727a7d066dc69b9148db46b737f45f79bec738446177806e645673ed8a4e
+              curl -sfSL --retry 5 --retry-delay 10 -O "https://github.com/badboy/mdbook-dtmo/releases/download/${MDBOOK_VERSION}/${MDBOOK}"
               echo "${MDBOOK_SHA256} *${MDBOOK}" | shasum -a 256 -c -
               tar -xvf "${MDBOOK}"
-              mv mdbook /usr/local/cargo/bin/mdbook
-      - run:
-          name: Install mdbook-open-on-gh
-          command: |
-              OPENON_VERSION=1.0.1
-              OPENON="mdbook-open-on-gh-${OPENON_VERSION}-x86_64-unknown-linux-gnu.tar.gz"
-              OPENON_SHA256=ca5901ef58844f5a6e6b84aa31d99fc0bab1dd7f7d6913e1d8399a6a2dc80955
-              curl -sfSL --retry 5 -O "https://github.com/badboy/mdbook-open-on-gh/releases/download/${OPENON_VERSION}/${OPENON}"
-              echo "${OPENON_SHA256} *${OPENON}" | shasum -a 256 -c -
-              tar -xvf "${OPENON}"
-              mv mdbook-open-on-gh /usr/local/cargo/bin/mdbook-open-on-gh
+              # We rename it to mdbook here, so other tools keep working as expected
+              mv mdbook-dtmo /usr/local/cargo/bin/mdbook
+              mdbook --version
       - run:
           name: Build Rust documentation
           command: bin/build-rust-docs.sh
