@@ -532,10 +532,13 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Update brew
+          command: |
+            # we want the latest versions of the tools
+            brew update
+      - run:
           name: Install lint tools
           command: |
-            # do not update brew (might takes ages)
-            export HOMEBREW_NO_AUTO_UPDATE=1
             brew install swiftlint swiftformat
       - run:
           name: Run swiftlint
