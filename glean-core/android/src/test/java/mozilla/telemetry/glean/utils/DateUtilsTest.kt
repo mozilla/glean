@@ -3,10 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+package mozilla.telemetry.glean.utils
+
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import mozilla.telemetry.glean.private.TimeUnit
-import mozilla.telemetry.glean.utils.getISOTimeString
-import mozilla.telemetry.glean.utils.parseISOTimeString
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.Assert.assertEquals
