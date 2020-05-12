@@ -41,7 +41,7 @@ private class TestPingTagClient(
     private val responseUrl: String = Configuration.DEFAULT_TELEMETRY_ENDPOINT,
     private val debugHeaderValue: String? = null
 ) : PingUploader {
-    override fun upload(url: String, data: String, headers: HeadersList): UploadResult {
+    override fun upload(url: String, data: ByteArray, headers: HeadersList): UploadResult {
         assertTrue("URL must be redirected for tagged pings",
             url.startsWith(responseUrl))
         assertEquals("Debug headers must match what the ping tag was set to",

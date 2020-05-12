@@ -7,6 +7,7 @@ package mozilla.telemetry.glean.net
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import mozilla.components.support.test.argumentCaptor
 import mozilla.telemetry.glean.config.Configuration
+import mozilla.telemetry.glean.getPlainBody
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Assert.assertEquals
@@ -45,9 +46,9 @@ class HttpURLConnectionUploaderTest {
         val client = spy<HttpURLConnectionUploader>(HttpURLConnectionUploader())
 
         doReturn(connection).`when`(client).openConnection(anyString())
-        doReturn(200).`when`(client).doUpload(connection, testPing)
+        doReturn(200).`when`(client).doUpload(connection, testPing.toByteArray(Charsets.UTF_8))
 
-        client.upload(testPath, testPing, emptyList())
+        client.upload(testPath, testPing.toByteArray(Charsets.UTF_8), emptyList())
 
         verify<HttpURLConnection>(connection).readTimeout = HttpURLConnectionUploader.DEFAULT_READ_TIMEOUT
         verify<HttpURLConnection>(connection).connectTimeout = HttpURLConnectionUploader.DEFAULT_CONNECTION_TIMEOUT
@@ -59,14 +60,14 @@ class HttpURLConnectionUploaderTest {
         val uploader = spy<HttpURLConnectionUploader>(HttpURLConnectionUploader())
         val connection = mock<HttpURLConnection>(HttpURLConnection::class.java)
         doReturn(connection).`when`(uploader).openConnection(anyString())
-        doReturn(200).`when`(uploader).doUpload(connection, testPing)
+        doReturn(200).`when`(uploader).doUpload(connection, testPing.toByteArray(Charsets.UTF_8))
 
         val expectedHeaders = mapOf(
             "Content-Type" to "application/json; charset=utf-8",
             "Test-header" to "SomeValue",
             "OtherHeader" to "Glean/Test 25.0.2"
         )
-        uploader.upload(testPath, testPing, expectedHeaders.toList())
+        uploader.upload(testPath, testPing.toByteArray(Charsets.UTF_8), expectedHeaders.toList())
 
         val headerNameCaptor = argumentCaptor<String>()
         val headerValueCaptor = argumentCaptor<String>()
@@ -100,7 +101,10 @@ class HttpURLConnectionUploaderTest {
         val client = spy<HttpURLConnectionUploader>(HttpURLConnectionUploader())
         doReturn(connection).`when`(client).openConnection(anyString())
 
-        assertEquals(client.upload(testPath, testPing, emptyList()), HttpResponse(200))
+        assertEquals(
+                client.upload(testPath, testPing.toByteArray(Charsets.UTF_8), emptyList()),
+                HttpResponse(200)
+        )
         verify<HttpURLConnection>(connection, times(1)).disconnect()
     }
 
@@ -116,12 +120,12 @@ class HttpURLConnectionUploaderTest {
 
         val client = HttpURLConnectionUploader()
         val url = testConfig.serverEndpoint + testPath
-        assertNotNull(client.upload(url, testPing, emptyList()))
+        assertNotNull(client.upload(url, testPing.toByteArray(Charsets.UTF_8), emptyList()))
 
         val request = server.takeRequest()
         assertEquals(testPath, request.path)
         assertEquals("POST", request.method)
-        assertEquals(testPing, request.body.readUtf8())
+        assertEquals(testPing, request.getPlainBody())
 
         server.shutdown()
     }
@@ -172,12 +176,12 @@ class HttpURLConnectionUploaderTest {
         // Trigger the connection.
         val url = testConfig.serverEndpoint + testPath
         val client = HttpURLConnectionUploader()
-        assertNotNull(client.upload(url, testPing, emptyList()))
+        assertNotNull(client.upload(url, testPing.toByteArray(Charsets.UTF_8), emptyList()))
 
         val request = server.takeRequest()
         assertEquals(testPath, request.path)
         assertEquals("POST", request.method)
-        assertEquals(testPing, request.body.readUtf8())
+        assertEquals(testPing, request.getPlainBody())
         assertTrue(request.headers.values("Cookie").isEmpty())
 
         // Check that we still have a cookie.
@@ -191,6 +195,6 @@ class HttpURLConnectionUploaderTest {
     fun `upload() discards pings on malformed URLs`() {
         val client = spy<HttpURLConnectionUploader>(HttpURLConnectionUploader())
         doThrow(MalformedURLException()).`when`(client).openConnection(anyString())
-        assertEquals(UnrecoverableFailure, client.upload("path", "ping", emptyList()))
+        assertEquals(UnrecoverableFailure, client.upload("path", "ping".toByteArray(Charsets.UTF_8), emptyList()))
     }
 }

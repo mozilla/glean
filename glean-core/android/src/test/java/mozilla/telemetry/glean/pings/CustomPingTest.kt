@@ -6,6 +6,7 @@ package mozilla.telemetry.glean.scheduler
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import mozilla.telemetry.glean.Glean
+import mozilla.telemetry.glean.getPlainBody
 import mozilla.telemetry.glean.getContextWithMockedInfo
 import mozilla.telemetry.glean.getMockWebServer
 import mozilla.telemetry.glean.private.NoReasonCodes
@@ -96,7 +97,7 @@ class CustomPingTest {
         // Not much data in these pings,
         // but order should be preserved, so we can check the sequence number.
 
-        var pingJson = JSONObject(request.body.readUtf8())
+        var pingJson = JSONObject(request.getPlainBody())
         var pingInfo = pingJson.getJSONObject("ping_info")
         assertEquals(0L, pingInfo.tryGetLong("seq"))
 
@@ -105,7 +106,7 @@ class CustomPingTest {
         docType = request.path.split("/")[3]
         assertEquals("custom-ping", docType)
 
-        pingJson = JSONObject(request.body.readUtf8())
+        pingJson = JSONObject(request.getPlainBody())
         pingInfo = pingJson.getJSONObject("ping_info")
         assertEquals(1L, pingInfo.tryGetLong("seq")!!)
     }

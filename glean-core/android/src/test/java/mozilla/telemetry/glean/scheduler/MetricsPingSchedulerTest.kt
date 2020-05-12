@@ -11,18 +11,19 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.work.testing.WorkManagerTestInitHelper
 import mozilla.components.support.test.any
 import mozilla.components.support.test.eq
-import mozilla.telemetry.glean.Dispatchers
-import mozilla.telemetry.glean.getContextWithMockedInfo
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.GleanMetrics.Pings
+import mozilla.telemetry.glean.checkPingSchema
 import mozilla.telemetry.glean.private.Lifetime
-import mozilla.telemetry.glean.resetGlean
 import mozilla.telemetry.glean.private.StringMetricType
 import mozilla.telemetry.glean.private.TimeUnit
-import mozilla.telemetry.glean.checkPingSchema
-import mozilla.telemetry.glean.triggerWorkManager
 import mozilla.telemetry.glean.config.Configuration
+import mozilla.telemetry.glean.getContextWithMockedInfo
 import mozilla.telemetry.glean.getMockWebServer
+import mozilla.telemetry.glean.getPlainBody
+import mozilla.telemetry.glean.Dispatchers
+import mozilla.telemetry.glean.resetGlean
+import mozilla.telemetry.glean.triggerWorkManager
 import mozilla.telemetry.glean.utils.getISOTimeString
 import mozilla.telemetry.glean.utils.parseISOTimeString
 import org.json.JSONObject
@@ -42,7 +43,6 @@ import org.mockito.Mockito.never
 import org.mockito.Mockito.spy
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
-import org.mockito.Mockito.`when`
 import java.util.Calendar
 import java.util.concurrent.TimeUnit as AndroidTimeUnit
 
@@ -291,7 +291,7 @@ class MetricsPingSchedulerTest {
             val docType = request.path.split("/")[3]
             assertEquals("The received ping must be a 'metrics' ping", "metrics", docType)
 
-            val metricsJsonData = request.body.readUtf8()
+            val metricsJsonData = request.getPlainBody()
             val metricsJson = JSONObject(metricsJsonData)
 
             // Validate the received data.
@@ -532,7 +532,7 @@ class MetricsPingSchedulerTest {
             val docType = request.path.split("/")[3]
             assertEquals("The received ping must be a 'metrics' ping", "metrics", docType)
 
-            val metricsJsonData = request.body.readUtf8()
+            val metricsJsonData = request.getPlainBody()
             val pingJson = JSONObject(metricsJsonData)
 
             assertEquals("The received ping must contain the old version",
@@ -709,7 +709,7 @@ class MetricsPingSchedulerTest {
             val docType = request.path.split("/")[3]
             assertEquals("The received ping must be a 'metrics' ping", "metrics", docType)
 
-            val metricsJsonData = request.body.readUtf8()
+            val metricsJsonData = request.getPlainBody()
 
             assertFalse("The canary metric must not be present in this ping",
                 metricsJsonData.contains("must-not-be-in-the-first-ping"))
@@ -788,7 +788,7 @@ class MetricsPingSchedulerTest {
             val docType = request.path.split("/")[3]
             assertEquals("The received ping must be a 'metrics' ping", "metrics", docType)
 
-            val metricsJsonData = request.body.readUtf8()
+            val metricsJsonData = request.getPlainBody()
 
             assertTrue("The expected metric must be in this ping",
                 metricsJsonData.contains(expectedString))
@@ -875,7 +875,7 @@ class MetricsPingSchedulerTest {
     //         }
 
     //         // Parse the received ping payload to a JSON object.
-    //         val metricsJsonData = request.body.readUtf8()
+    //         val metricsJsonData = request.getPlainBody()
     //         val metricsJson = JSONObject(metricsJsonData)
 
     //         // Validate the received data.
