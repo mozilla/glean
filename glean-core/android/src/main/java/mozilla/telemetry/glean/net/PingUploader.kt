@@ -73,5 +73,5 @@ interface PingUploader {
      * @return return the status code of the upload response,
      *         or null in case upload could not be attempted at all.
      */
-    fun upload(url: String, data: String, headers: HeadersList): UploadResult
+    fun upload(url: String, data: ByteArray, headers: HeadersList): UploadResult
 }

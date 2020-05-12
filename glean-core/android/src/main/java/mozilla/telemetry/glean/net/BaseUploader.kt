@@ -7,6 +7,7 @@ package mozilla.telemetry.glean.net
 import android.util.Log
 import androidx.annotation.VisibleForTesting
 import mozilla.telemetry.glean.config.Configuration
+import mozilla.telemetry.glean.utils.decompressGZIP
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -84,9 +85,10 @@ class BaseUploader(d: PingUploader) : PingUploader by d {
      *
      * @return return the status code of the upload response or null in case unable to upload.
      */
-    internal fun doUpload(path: String, data: String, headers: HeadersList, config: Configuration): UploadResult {
+    internal fun doUpload(path: String, data: ByteArray, headers: HeadersList, config: Configuration): UploadResult {
+        val isGzip = !headers.none { (it.first == "Content-Encoding") && (it.second == "gzip") }
         if (config.logPings) {
-            logPing(path, data)
+            logPing(path, if (isGzip) decompressGZIP(data) else data.toString(Charsets.UTF_8))
         }
 
         return upload(
