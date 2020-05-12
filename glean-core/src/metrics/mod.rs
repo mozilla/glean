@@ -28,6 +28,7 @@ mod timespan;
 mod timing_distribution;
 mod uuid;
 
+pub use crate::event_database::RecordedEvent;
 use crate::histogram::{Functional, Histogram, PrecomputedExponential, PrecomputedLinear};
 use crate::util::get_iso_time_string;
 use crate::CommonMetricData;
