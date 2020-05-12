@@ -8,7 +8,7 @@ Otherwise, look at the standard distribution metric types:
 * [Timing Distributions](timing_distribution.md)
 * [Memory Distributions](memory_distribution.md)
 
-> Note: Custom distributions are currently only allowed for GeckoView metrics (the `gecko_datapoint` parameter is present).
+> **Note**: Custom distributions are currently only allowed for GeckoView metrics (the `gecko_datapoint` parameter is present) and thus have only a Kotlin API.
 
 ## Configuration
 
