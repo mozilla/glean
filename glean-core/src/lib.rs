@@ -53,6 +53,7 @@ use crate::storage::StorageManager;
 use crate::upload::{PingUploadManager, PingUploadTask, UploadResult};
 use crate::util::{local_now_with_offset, sanitize_application_id};
 
+const GLEAN_VERSION: &str = env!("CARGO_PKG_VERSION");
 const GLEAN_SCHEMA_VERSION: u32 = 1;
 const DEFAULT_MAX_EVENTS: usize = 500;
 static KNOWN_CLIENT_ID: Lazy<Uuid> =
@@ -180,7 +181,7 @@ impl Glean {
     /// This will create the necessary directories and files in `data_path`.
     /// This will also initialize the core metrics.
     pub fn new(cfg: Configuration) -> Result<Self> {
-        log::info!("Creating new Glean");
+        log::info!("Creating new Glean v{}", GLEAN_VERSION);
 
         let application_id = sanitize_application_id(&cfg.application_id);
 

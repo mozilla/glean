@@ -57,7 +57,7 @@ impl PingRequest {
             "Content-Type",
             "application/json; charset=utf-8".to_string(),
         );
-        headers.insert("X-Client-Version", env!("CARGO_PKG_VERSION").to_string());
+        headers.insert("X-Client-Version", crate::GLEAN_VERSION.to_string());
         headers
     }
 }
