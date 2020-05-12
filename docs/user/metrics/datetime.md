@@ -66,25 +66,25 @@ assertEquals(1, Install.firstRun.testGetNumRecordedErrors(ErrorType.InvalidValue
 <div data-lang="Java" class="tab">
 
 ```Java
-import org.mozilla.yourApplication.GleanMetrics.Install
+import org.mozilla.yourApplication.GleanMetrics.Install;
 
-Install.INSTANCE.firstRun.set() // Records "now"
-Install.INSTANCE.firstRun.set(Calendar(2019, 3, 25)) // Records a custom datetime
+Install.INSTANCE.firstRun.set(); // Records "now"
+Install.INSTANCE.firstRun.set(Calendar(2019, 3, 25)); // Records a custom datetime
 ```
 
 There are test APIs available too:
 
 ```Java
-import org.mozilla.yourApplication.GleanMetrics.Install
+import org.mozilla.yourApplication.GleanMetrics.Install;
 
 // Was anything recorded?
-assertTrue(Install.INSTANCE.firstRun.testHasValue())
+assertTrue(Install.INSTANCE.firstRun.testHasValue());
 // Was it the expected value?
 // NOTE: Datetimes always include a timezone offset from UTC, hence the
 // "-05:00" suffix.
-assertEquals("2019-03-25-05:00", Install.INSTANCE.firstRun.testGetValueAsString())
+assertEquals("2019-03-25-05:00", Install.INSTANCE.firstRun.testGetValueAsString());
 // Was the value invalid?
-assertEquals(1, Install.INSTANCE.firstRun.testGetNumRecordedErrors(ErrorType.InvalidValue))
+assertEquals(1, Install.INSTANCE.firstRun.testGetNumRecordedErrors(ErrorType.InvalidValue));
 ```
 
 </div>

@@ -77,20 +77,20 @@ assertEquals(1, Auth.loginTime.testGetNumRecordedErrors(ErrorType.InvalidValue))
 <div data-lang="Java" class="tab">
 
 ```Java
-import org.mozilla.yourApplication.GleanMetrics.Auth
+import org.mozilla.yourApplication.GleanMetrics.Auth;
 
-fun onShowLogin() {
-    Auth.INSTANCE.loginTime.start()
+void onShowLogin() {
+    Auth.INSTANCE.loginTime.start();
     // ...
 }
 
-fun onLogin() {
-    Auth.INSTANCE.loginTime.stop()
+void onLogin() {
+    Auth.INSTANCE.loginTime.stop();
     // ...
 }
 
-fun onLoginCancel() {
-    Auth.INSTANCE.loginTime.cancel()
+void onLoginCancel() {
+    Auth.INSTANCE.loginTime.cancel();
     // ...
 }
 ```
@@ -100,19 +100,19 @@ The time reported in the telemetry ping will be timespan recorded during the lif
 There are test APIs available too:
 
 ```Java
-import org.mozilla.yourApplication.GleanMetrics.Auth
+import org.mozilla.yourApplication.GleanMetrics.Auth;
 
 // Was anything recorded?
-assertTrue(Auth.INSTANCE.loginTime.testHasValue())
+assertTrue(Auth.INSTANCE.loginTime.testHasValue());
 // Does the timer have the expected value
-assertTrue(Auth.INSTANCE.loginTime.testGetValue() > 0)
+assertTrue(Auth.INSTANCE.loginTime.testGetValue() > 0);
 // Was the timing recorded incorrectly?
 assertEquals(
     1,
     Auth.INSTANCE.loginTime.testGetNumRecordedErrors(
         ErrorType.InvalidValue
     )
-)
+);
 ```
 
 </div>

@@ -95,17 +95,17 @@ assertEquals(1, pages.pageLoad.testGetNumRecordedErrors(ErrorType.InvalidValue))
 <div data-lang="Java" class="tab">
 
 ```Java
-import mozilla.components.service.glean.GleanTimerId
-import org.mozilla.yourApplication.GleanMetrics.Pages
+import mozilla.components.service.glean.GleanTimerId;
+import org.mozilla.yourApplication.GleanMetrics.Pages;
 
-val timerId : GleanTimerId
+GleanTimerId timerId;
 
-fun onPageStart(e: Event) {
-    timerId = Pages.INSTANCE.pageLoad.start()
+void onPageStart(Event e) {
+    timerId = Pages.INSTANCE.pageLoad.start();
 }
 
-fun onPageLoaded(e: Event) {
-    Pages.INSTANCE.pageLoad.stopAndAccumulate(timerId)
+void onPageLoaded(Event e) {
+    Pages.INSTANCE.pageLoad.stopAndAccumulate(timerId);
 }
 ```
 
@@ -114,19 +114,19 @@ There are test APIs available too.  For convenience, properties `sum` and `count
 Continuing the `pageLoad` example above, at this point the metric should have a `sum == 11` and a `count == 2`:
 
 ```Java
-import org.mozilla.yourApplication.GleanMetrics.Pages
+import org.mozilla.yourApplication.GleanMetrics.Pages;
 
 // Was anything recorded?
-assertTrue(pages.INSTANCE.pageLoad.testHasValue())
+assertTrue(pages.INSTANCE.pageLoad.testHasValue());
 
 // Get snapshot.
-val snapshot = pages.INSTANCE.pageLoad.testGetValue()
+DistributionData snapshot = pages.INSTANCE.pageLoad.testGetValue();
 
 // Does the sum have the expected value?
-assertEquals(11, snapshot.getSum)
+assertEquals(11, snapshot.getSum);
 
 // Usually you don't know the exact timing values, but how many should have been recorded.
-assertEquals(2L, snapshot.getCount)
+assertEquals(2L, snapshot.getCount);
 
 // Was an error recorded?
 assertEquals(
@@ -134,7 +134,7 @@ assertEquals(
     pages.INSTANCE.pageLoad.testGetNumRecordedErrors(
         ErrorType.InvalidValue
     )
-)
+);
 ```
 
 </div>
