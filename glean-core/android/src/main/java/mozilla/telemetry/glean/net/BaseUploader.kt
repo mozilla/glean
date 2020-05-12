@@ -9,7 +9,6 @@ import androidx.annotation.VisibleForTesting
 import mozilla.telemetry.glean.config.Configuration
 import org.json.JSONException
 import org.json.JSONObject
-import java.util.Calendar
 
 /**
  * The logic for uploading pings: this leaves the actual upload implementation
@@ -73,12 +72,6 @@ class BaseUploader(d: PingUploader) : PingUploader by d {
             Log.d(LOG_TAG, "Exception parsing ping as JSON: $e") // $COVERAGE-IGNORE$
         }
     }
-
-    /**
-     * TEST-ONLY. Allows to set specific dates for testing.
-     */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    internal fun getCalendarInstance(): Calendar { return Calendar.getInstance() }
 
     /**
      * This function triggers the actual upload: logs the ping and calls the implementation
