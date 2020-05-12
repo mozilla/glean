@@ -219,13 +219,15 @@ Follow these steps to automatically run the parser at build time:
    > **Important**: The parser generates one file per category.
    > If you are unsure which files those are, skip this step and add the files after they are generated for the first time.
 
-5. If you are using Git, add the following line to your `.gitignore` file:
+5. If you are using Git, add the following lines to your `.gitignore` file:
 
    ```
+   .venv/
    {project-name}/Generated
    ```
 
-
+   This will ignore files that are generated at build time by the `sdk_generator.sh` script.
+   They don't need to be kept in version control, as they can be re-generated from your `metrics.yaml` and `pings.yaml` files.
 
 </div>
 
