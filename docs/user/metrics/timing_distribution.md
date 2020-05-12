@@ -233,6 +233,10 @@ assert 1 == metrics.pages.page_load.test_get_num_recorded_errors(
 
   * On Android, the [`SystemClock.elapsedRealtimeNanos()`](https://developer.android.com/reference/android/os/SystemClock.html#elapsedRealtimeNanos()) function is used, so it is limited by the accuracy and performance of that timer. The time measurement includes time spent in sleep.
 
+  * On iOS, the [`mach_absolute_time`](https://developer.apple.com/library/archive/documentation/Darwin/Conceptual/KernelProgramming/services/services.html) function is used,
+    so it is limited by the accuracy and performance of that timer.
+    The time measurement does not include time spent in sleep.
+
   * On Python 3.7 and later, [`time.monotonic_ns()`](https://docs.python.org/3/library/time.html#time.monotonic_ns) is used.  On earlier versions of Python, [`time.monotonics()`](https://docs.python.org/3/library/time.html#time.monotonic) is used, which is not guaranteed to have nanosecond resolution.
 
 * The maximum timing value that will be recorded depends on the `time_unit` parameter:
