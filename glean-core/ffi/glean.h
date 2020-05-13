@@ -17,6 +17,23 @@
 #include <stdlib.h>
 
 /**
+ * A HTTP response code.
+ *
+ * The actual response code is encoded in the lower bits.
+ */
+#define UPLOAD_RESULT_HTTP_STATUS 32768
+
+/**
+ * A recoverable error.
+ */
+#define UPLOAD_RESULT_RECOVERABLE 1
+
+/**
+ * An unrecoverable error.
+ */
+#define UPLOAD_RESULT_UNRECOVERABLE 2
+
+/**
  * `FfiStr<'a>` is a safe (`#[repr(transparent)]`) wrapper around a
  * nul-terminated `*const c_char` (e.g. a C string). Conceptually, it is
  * similar to [`std::ffi::CStr`], except that it may be used in the signatures
@@ -68,6 +85,72 @@ typedef const int64_t *RawInt64Array;
 typedef const int32_t *RawIntArray;
 
 typedef const char *const *RawStringArray;
+
+/**
+ * A FFI-compatible representation for the PingUploadTask.
+ *
+ * This is exposed as a C-compatible tagged union, like this:
+ *
+ * ```c
+ * enum FfiPingUploadTask_Tag {
+ *   FfiPingUploadTask_Upload,
+ *   FfiPingUploadTask_Wait,
+ *   FfiPingUploadTask_Done,
+ * };
+ * typedef uint8_t FfiPingUploadTask_Tag;
+ *
+ * typedef struct {
+ *   FfiPingUploadTask_Tag tag;
+ *   char *document_id;
+ *   char *path;
+ *   char *body;
+ *   char *headers;
+ * } FfiPingUploadTask_Upload_Body;
+ *
+ * typedef union {
+ *   FfiPingUploadTask_Tag tag;
+ *   FfiPingUploadTask_Upload_Body upload;
+ * } FfiPingUploadTask;
+ *
+ * ```
+ *
+ * It is therefore always valid to read the `tag` field of the returned union (always the first
+ * field in memory).
+ *
+ * Language bindings should turn this into proper language types (e.g. enums/structs) and
+ * copy out data.
+ *
+ * String fields are encoded into null-terminated UTF-8 C strings.
+ *
+ * * The language binding should copy out the data and turn these into their equivalent string type.
+ * * The language binding should _not_ free these fields individually.
+ *   Instead `glean_process_ping_upload_response` will receive the whole enum, taking care of
+ *   freeing the memory.
+ *
+ *
+ * The order of variants should be the same as in `glean-core/src/upload/mod.rs`
+ * and `glean-core/android/src/main/java/mozilla/telemetry/glean/net/Upload.kt`.
+ *
+ */
+enum FfiPingUploadTask_Tag {
+  FfiPingUploadTask_Upload,
+  FfiPingUploadTask_Wait,
+  FfiPingUploadTask_Done,
+};
+typedef uint8_t FfiPingUploadTask_Tag;
+
+typedef struct {
+  FfiPingUploadTask_Tag tag;
+  char *document_id;
+  char *path;
+  char *body;
+  char *headers;
+} FfiPingUploadTask_Upload_Body;
+
+typedef union {
+  FfiPingUploadTask_Tag tag;
+  FfiPingUploadTask_Upload_Body upload;
+} FfiPingUploadTask;
 
 /**
  * Configuration over FFI.
@@ -194,6 +277,8 @@ uint8_t glean_event_test_has_value(uint64_t metric_id, FfiStr storage_name);
 char *glean_experiment_test_get_data(FfiStr experiment_id);
 
 uint8_t glean_experiment_test_is_active(FfiStr experiment_id);
+
+FfiPingUploadTask glean_get_upload_task(void);
 
 /**
  * # Safety
@@ -389,6 +474,8 @@ uint64_t glean_new_uuid_metric(FfiStr category,
 uint8_t glean_on_ready_to_submit_pings(void);
 
 char *glean_ping_collect(uint64_t ping_type_handle, FfiStr reason);
+
+void glean_process_ping_upload_response(FfiPingUploadTask task, uint32_t status);
 
 void glean_quantity_set(uint64_t metric_id, int64_t value);
 

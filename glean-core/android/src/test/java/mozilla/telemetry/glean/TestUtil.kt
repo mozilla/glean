@@ -211,8 +211,9 @@ internal fun waitForEnqueuedWorker(
  * @param context the application [Context] to get the [WorkManager] instance for
  * @param workerTag the tag for the expected worker (default: `PingUploadWorker.PING_WORKER_TAG`)
  */
-internal fun triggerWorkManager(context: Context, workerTag: String = PingUploadWorker.PING_WORKER_TAG) {
+internal fun triggerWorkManager(context: Context) {
     // Check that the work is scheduled
+    val workerTag = PingUploadWorker.PING_WORKER_TAG
     val status = getWorkerStatus(context, workerTag)
     Assert.assertTrue("A scheduled $workerTag must exist",
         status.isEnqueued)

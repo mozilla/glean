@@ -5,6 +5,7 @@
 Products using the Glean SDK to collect telemetry **must**:
 
 - add documentation for any new metric collected with the library in its repository (see [an example](pings/index.md));
+- include the markdown-formatted documentation generated from the `metrics.yaml` and `pings.yaml` files in the project's documentation;
 - go through data review for the newly collected data by following [this process](https://wiki.mozilla.org/Firefox/Data_Collection);
 - provide a way for users to turn data collection off (e.g. providing settings to control
   `Glean.setUploadEnabled()`).
@@ -218,13 +219,15 @@ Follow these steps to automatically run the parser at build time:
    > **Important**: The parser generates one file per category.
    > If you are unsure which files those are, skip this step and add the files after they are generated for the first time.
 
-5. If you are using Git, add the following line to your `.gitignore` file:
+5. If you are using Git, add the following lines to your `.gitignore` file:
 
    ```
+   .venv/
    {project-name}/Generated
    ```
 
-
+   This will ignore files that are generated at build time by the `sdk_generator.sh` script.
+   They don't need to be kept in version control, as they can be re-generated from your `metrics.yaml` and `pings.yaml` files.
 
 </div>
 
@@ -254,6 +257,22 @@ metrics = load_metrics(resource_filename(__name__, "metrics.yaml"))
 # Use a metric on the returned object
 metrics.your_category.your_metric.set("value")
 ```
+
+The documentation for your application or library's metrics and pings are written in `metrics.yaml` and `pings.yaml`. However, you should also provide human-readable markdown files based on this information, and this is a requirement for Mozilla projects using Glean. For other languages and platforms, this transformation is done automatically as part of the build. However, for Python the integration to automatically generate docs is an additional step.
+
+Glean provides a commandline tool for automatically generating markdown documentation from your `metrics.yaml` and `pings.yaml` files. To perform that translation, run `glean_parser`'s `translate` command:
+
+```sh
+python3 -m glean_parser translate -f markdown -o docs metrics.yaml pings.yaml
+```
+
+To get more help about the commandline options:
+
+```sh
+python3 -m glean_parser translate --help
+```
+
+We recommend integrating this step into your project's documentation build. The details of that integration is left to you, since it depends on the documentation tool being used and how your project is set up.
 
 </div>
 

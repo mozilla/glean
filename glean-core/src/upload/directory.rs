@@ -78,7 +78,7 @@ impl PingDirectoryManager {
         };
         match fs::remove_file(&path) {
             Err(e) => log::error!("Error deleting file {}. {}", path.display(), e),
-            _ => log::info!("Files was deleted {}", path.display()),
+            _ => log::info!("File was deleted {}", path.display()),
         };
     }
 
@@ -178,7 +178,7 @@ impl PingDirectoryManager {
             // We might not be able to get the modified date for a given file,
             // in which case we just put it at the end.
             if let (Ok(a), Ok(b)) = (a, b) {
-                a.partial_cmp(b).unwrap()
+                a.cmp(b)
             } else {
                 Ordering::Less
             }

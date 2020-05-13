@@ -696,21 +696,28 @@ fn timing_distribution_truncation() {
             dist.set_stop_and_accumulate(&glean, timer_id, value);
         }
 
-        let hist = dist.test_get_value(&glean, "baseline").unwrap();
+        let snapshot = dist.test_get_value(&glean, "baseline").unwrap();
 
-        assert_eq!(4, hist.values().len());
-        for &key in hist.values().keys() {
-            assert!(key < max_sample_time * unit.as_nanos(1))
+        let mut keys = HashSet::new();
+        let mut recorded_values = 0;
+
+        for (&key, &value) in &snapshot.values {
+            // A snapshot potentially includes buckets with a 0 count.
+            // We can ignore them here.
+            if value > 0 {
+                assert!(key < max_sample_time * unit.as_nanos(1));
+                keys.insert(key);
+                recorded_values += 1;
+            }
         }
 
-        let keys = HashSet::<u64>::from_iter(hist.values().keys().cloned());
+        assert_eq!(4, recorded_values);
         assert_eq!(keys, *expected_keys);
 
-        let snapshot = hist.snapshot();
         // The number of samples was originally designed around 1ns to
         // 10minutes, with 8 steps per power of 2, which works out to 316 items.
         // This is to ensure that holds even when the time unit is changed.
-        assert!(snapshot.len() < 316);
+        assert!(snapshot.values.len() < 316);
     }
 }
 
@@ -748,14 +755,11 @@ fn timing_distribution_truncation_accumulate() {
             ],
         );
 
-        let hist = dist.test_get_value(&glean, "baseline").unwrap();
+        let snapshot = dist.test_get_value(&glean, "baseline").unwrap();
 
-        assert_eq!(4, hist.values().len());
-
-        let snapshot = hist.snapshot();
         // The number of samples was originally designed around 1ns to
         // 10minutes, with 8 steps per power of 2, which works out to 316 items.
         // This is to ensure that holds even when the time unit is changed.
-        assert!(snapshot.len() < 316);
+        assert!(snapshot.values.len() < 316);
     }
 }

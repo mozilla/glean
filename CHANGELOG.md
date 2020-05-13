@@ -1,6 +1,22 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v29.1.0...master)
+[Full changelog](https://github.com/mozilla/glean/compare/v30.0.0...master)
+
+# v30.0.0 (2020-05-13)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v29.1.0...v30.0.0)
+
+* General:
+  * We completely replaced how the upload mechanism works.
+    glean-core (the Rust part) now controls all upload and coordinates the platform side with its own internals.
+    All language bindings implement ping uploading around a common API and protocol.
+    There is no change for users of Glean, the language bindings for Android and iOS have been adopted to the new mechanism already.
+  * Expose `RecordedEvent` and `DistributionData` types to Rust consumers ([#876](https://github.com/mozilla/glean/pull/876))
+  * Log crate version at initialize ([#873](https://github.com/mozilla/glean/pull/873))
+* Android:
+  * Refactor the ping uploader to use the new upload mechanism.
+* iOS:
+  * Refactor the ping uploader to use the new upload mechanism.
 
 # v29.1.0 (2020-05-11)
 
@@ -19,7 +35,7 @@
   * The version of glean_parser has been upgraded to v1.20.2 ([#827](https://github.com/mozilla/glean/pull/827)):
     * **Breaking change:** glinter errors found during code generation will now return an error code.
     * `glean_parser` now produces a linter warning when `user` lifetime metrics are set to expire. See [bug 1604854](https://bugzilla.mozilla.org/show_bug.cgi?id=1604854) for additional context.
-* Android
+* Android:
   * The `PingType.submit()` can now be called without a `null` by Java consumers ([#853](https://github.com/mozilla/glean/pull/853)).
 * Python:
   * BUGFIX: Fixed a race condition in the `atexit` handler, that would have resulted in the message "No database found" ([#854](https://github.com/mozilla/glean/pull/854)).

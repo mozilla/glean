@@ -37,8 +37,7 @@ pub mod metrics;
 pub mod ping;
 pub mod storage;
 mod system;
-#[cfg(feature = "upload")]
-mod upload;
+pub mod upload;
 mod util;
 
 pub use crate::common_metric_data::{CommonMetricData, Lifetime};
@@ -51,10 +50,10 @@ use crate::internal_pings::InternalPings;
 use crate::metrics::{Metric, MetricType, PingType};
 use crate::ping::PingMaker;
 use crate::storage::StorageManager;
-#[cfg(feature = "upload")]
-use crate::upload::{PingUploadManager, PingUploadTask};
+use crate::upload::{PingUploadManager, PingUploadTask, UploadResult};
 use crate::util::{local_now_with_offset, sanitize_application_id};
 
+const GLEAN_VERSION: &str = env!("CARGO_PKG_VERSION");
 const GLEAN_SCHEMA_VERSION: u32 = 1;
 const DEFAULT_MAX_EVENTS: usize = 500;
 static KNOWN_CLIENT_ID: Lazy<Uuid> =
@@ -173,7 +172,6 @@ pub struct Glean {
     start_time: DateTime<FixedOffset>,
     max_events: usize,
     is_first_run: bool,
-    #[cfg(feature = "upload")]
     upload_manager: PingUploadManager,
 }
 
@@ -183,7 +181,7 @@ impl Glean {
     /// This will create the necessary directories and files in `data_path`.
     /// This will also initialize the core metrics.
     pub fn new(cfg: Configuration) -> Result<Self> {
-        log::info!("Creating new Glean");
+        log::info!("Creating new Glean v{}", GLEAN_VERSION);
 
         let application_id = sanitize_application_id(&cfg.application_id);
 
@@ -198,7 +196,6 @@ impl Glean {
             event_data_store,
             core_metrics: CoreMetrics::new(),
             internal_pings: InternalPings::new(),
-            #[cfg(feature = "upload")]
             upload_manager: PingUploadManager::new(&cfg.data_path),
             data_path: PathBuf::from(cfg.data_path),
             application_id,
@@ -381,7 +378,6 @@ impl Glean {
     fn clear_metrics(&mut self) {
         // Clear the pending pings queue and acquire the lock
         // so that it can't be accessed until this function is done.
-        #[cfg(feature = "upload")]
         let _lock = self.upload_manager.clear_ping_queue();
 
         // There is only one metric that we want to survive after clearing all
@@ -463,16 +459,17 @@ impl Glean {
         self.max_events
     }
 
-    /// Gets the next task for an uploader. Which can be either:
+    /// Gets the next task for an uploader.
     ///
-    /// * Wait - which means the requester should ask again later;
-    /// * Upload(PingRequest) - which means there is a ping to upload. This wraps the actual request object;
-    /// * Done - which means there are no more pings queued right now.
+    /// This can be one of:
+    ///
+    /// * `Wait` - which means the requester should ask again later;
+    /// * `Upload(PingRequest)` - which means there is a ping to upload. This wraps the actual request object;
+    /// * `Done` - which means there are no more pings queued right now.
     ///
     /// # Return value
     ///
     /// `PingUploadTask` - an enum representing the possible tasks.
-    #[cfg(feature = "upload")]
     pub fn get_upload_task(&self) -> PingUploadTask {
         self.upload_manager.get_upload_task()
     }
@@ -481,10 +478,9 @@ impl Glean {
     ///
     /// # Arguments
     ///
-    /// `uuid` - The UUID of the ping in question.
-    /// `status` - The HTTP status of the response.
-    #[cfg(feature = "upload")]
-    pub fn process_ping_upload_response(&self, uuid: &str, status: u16) {
+    /// * `uuid` - The UUID of the ping in question.
+    /// * `status` - The upload result.
+    pub fn process_ping_upload_response(&self, uuid: &str, status: UploadResult) {
         self.upload_manager
             .process_ping_upload_response(uuid, status);
     }
@@ -559,7 +555,6 @@ impl Glean {
                     return Err(e.into());
                 }
 
-                #[cfg(feature = "upload")]
                 self.upload_manager
                     .enqueue_ping(&doc_id, &url_path, content);
 

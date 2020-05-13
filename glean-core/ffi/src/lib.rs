@@ -3,11 +3,13 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use std::convert::TryFrom;
+use std::ffi::CStr;
 use std::os::raw::c_char;
 use std::panic::UnwindSafe;
 
 use ffi_support::{define_string_destructor, ConcurrentHandleMap, FfiStr, IntoFfi};
 
+pub use glean_core::upload::ffi_upload_result::*;
 use glean_core::Glean;
 
 mod macros;
@@ -28,12 +30,14 @@ mod string;
 mod string_list;
 mod timespan;
 mod timing_distribution;
+pub mod upload;
 mod uuid;
 
 use ffi_string_ext::FallibleToString;
 use from_raw::*;
 use handlemap_ext::HandleMapExtension;
 use ping_type::PING_TYPES;
+use upload::FfiPingUploadTask;
 
 /// Execute the callback with a reference to the Glean singleton, returning a `Result`.
 ///
@@ -336,6 +340,29 @@ pub extern "C" fn glean_destroy_glean() {
 #[no_mangle]
 pub extern "C" fn glean_is_first_run() -> u8 {
     with_glean_value(|glean| glean.is_first_run())
+}
+
+#[no_mangle]
+pub extern "C" fn glean_get_upload_task() -> FfiPingUploadTask {
+    with_glean_value(|glean| FfiPingUploadTask::from(glean.get_upload_task()))
+}
+
+// We need to pass the whole task instead of only the document id,
+// so that we can free the strings properly on Drop.
+#[no_mangle]
+pub extern "C" fn glean_process_ping_upload_response(task: FfiPingUploadTask, status: u32) {
+    with_glean(|glean| {
+        if let FfiPingUploadTask::Upload { document_id, .. } = task {
+            assert!(!document_id.is_null());
+            let document_id_str = unsafe {
+                CStr::from_ptr(document_id)
+                    .to_str()
+                    .map_err(|_| glean_core::Error::utf8_error())
+            }?;
+            glean.process_ping_upload_response(document_id_str, status.into());
+        };
+        Ok(())
+    });
 }
 
 define_string_destructor!(glean_str_free);

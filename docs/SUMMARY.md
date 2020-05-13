@@ -69,6 +69,7 @@
         - [Payload format](dev/core/internal/payload.md).
         - [Directory structure](dev/core/internal/directory-structure.md)
         - [Debug Pings](dev/core/internal/debug-pings.md)
+        - [Upload mechanism](dev/core/internal/upload.md)
         - [Implementations](dev/core/internal/implementations.md)
         - [Android SDK/NDK versions](dev/core/internal/sdk-ndk-versions.md)
     - [Howtos](dev/howtos/index.md)
