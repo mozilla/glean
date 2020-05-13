@@ -44,20 +44,20 @@ assertTrue(Flags.a11yEnabled.testGetValue())
 <div data-lang="Java" class="tab">
 
 ```Java
-import org.mozilla.yourApplication.GleanMetrics.Flags
+import org.mozilla.yourApplication.GleanMetrics.Flags;
 
-Flags.INSTANCE.a11yEnabled.set(System.isAccessibilityEnabled())
+Flags.INSTANCE.a11yEnabled.set(System.isAccessibilityEnabled());
 ```
 
 There are test APIs available too:
 
 ```Java
-import org.mozilla.yourApplication.GleanMetrics.Flags
+import org.mozilla.yourApplication.GleanMetrics.Flags;
 
 // Was anything recorded?
-assertTrue(Flags.INSTANCE.a11yEnabled.testHasValue())
+assertTrue(Flags.INSTANCE.a11yEnabled.testHasValue());
 // Does it have the expected value?
-assertTrue(Flags.INSTANCE.a11yEnabled.testGetValue())
+assertTrue(Flags.INSTANCE.a11yEnabled.testGetValue());
 ```
 
 </div>

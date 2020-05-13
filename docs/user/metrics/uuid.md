@@ -47,21 +47,21 @@ assertEquals(uuid, User.clientId.testGetValue())
 <div data-lang="Java" class="tab">
 
 ```Java
-import org.mozilla.yourApplication.GleanMetrics.User
+import org.mozilla.yourApplication.GleanMetrics.User;
 
-User.INSTANCE.clientId.generateAndSet() // Generate a new UUID and record it
-User.INSTANCE.clientId.set(UUID.randomUUID())  // Set a UUID explicitly
+User.INSTANCE.clientId.generateAndSet(); // Generate a new UUID and record it
+User.INSTANCE.clientId.set(UUID.randomUUID());  // Set a UUID explicitly
 ```
 
 There are test APIs available too:
 
 ```Java
-import org.mozilla.yourApplication.GleanMetrics.User
+import org.mozilla.yourApplication.GleanMetrics.User;
 
 // Was anything recorded?
-assertTrue(User.INSTANCE.clientId.testHasValue())
+assertTrue(User.INSTANCE.clientId.testHasValue());
 // Was it the expected value?
-assertEquals(uuid, User.INSTANCE.clientId.testGetValue())
+assertEquals(uuid, User.INSTANCE.clientId.testGetValue());
 ```
 
 </div>

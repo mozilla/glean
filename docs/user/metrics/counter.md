@@ -50,25 +50,25 @@ assertEquals(
 <div data-lang="Java" class="tab">
 
 ```Java
-import org.mozilla.yourApplication.GleanMetrics.Controls
+import org.mozilla.yourApplication.GleanMetrics.Controls;
 
-Controls.INSTANCE.refreshPressed.add() // Adds 1 to the counter.
-Controls.INSTANCE.refreshPressed.add(5) // Adds 5 to the counter.
+Controls.INSTANCE.refreshPressed.add(); // Adds 1 to the counter.
+Controls.INSTANCE.refreshPressed.add(5); // Adds 5 to the counter.
 ```
 
 There are test APIs available too:
 
 ```Java
-import org.mozilla.yourApplication.GleanMetrics.Controls
+import org.mozilla.yourApplication.GleanMetrics.Controls;
 
 // Was anything recorded?
-assertTrue(Controls.INSTANCE.refreshPressed.testHasValue())
+assertTrue(Controls.INSTANCE.refreshPressed.testHasValue());
 // Does the counter have the expected value?
-assertEquals(6, Controls.INSTANCE.refreshPressed.testGetValue())
+assertEquals(6, Controls.INSTANCE.refreshPressed.testGetValue());
 // Did the counter record an negative value?
 assertEquals(
     1, Controls.INSTANCE.refreshPressed.testGetNumRecordedErrors(ErrorType.InvalidValue)
-)
+);
 ```
 
 </div>

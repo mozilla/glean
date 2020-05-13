@@ -3,7 +3,7 @@
 Used to record a single non-negative integer value.
 For example, the width of the display in pixels.
 
-> Quantities are only available for metrics that come from Gecko.
+> **Note**: Quantities are currently only allowed for GeckoView metrics (the `gecko_datapoint` parameter is present) and thus have only a Kotlin API.
 
 ## Configuration
 
