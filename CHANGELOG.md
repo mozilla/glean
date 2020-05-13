@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v29.1.0...master)
+[Full changelog](https://github.com/mozilla/glean/compare/v30.0.0...master)
+
+# v30.0.0 (2020-05-13)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v29.1.0...v30.0.0)
 
 * General:
   * We completely replaced how the upload mechanism works.
