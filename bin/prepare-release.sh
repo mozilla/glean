@@ -144,6 +144,11 @@ ${CHANGELOG}
 EOL
 fi
 
+### Dependency summary ###
+
+echo "Updating dependency summary"
+run "${WORKSPACE_ROOT}"/bin/dependency-summary.sh
+
 echo "Everything prepared for v${NEW_VERSION}"
 echo
 echo "Changed files:"
