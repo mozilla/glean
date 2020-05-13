@@ -232,7 +232,7 @@ jobs:
       - run:
           name: Check vendored schema for upstream updates
           command: |
-            bin/update-schema.sh latest
+            bin/update-schema.sh master
             if ! git diff --exit-code HEAD -- glean-core/preview/tests/glean.1.schema.json; then
               echo "===================================="
               echo "Latest schema from upstream changed."
