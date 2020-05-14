@@ -342,23 +342,58 @@ pub extern "C" fn glean_is_first_run() -> u8 {
     with_glean_value(|glean| glean.is_first_run())
 }
 
+// Unfortunately, the way we use CFFI in Python ("out-of-line", "ABI mode") does not
+// allow return values to be `union`s, so we need to use an output parameter instead of
+// a return value to get the task. The output data will be consumed and freed by the
+// `glean_process_ping_upload_response` below.
+//
+// Arguments:
+//
+// * `result`: the object the output task will be written to.
 #[no_mangle]
-pub extern "C" fn glean_get_upload_task() -> FfiPingUploadTask {
-    with_glean_value(|glean| FfiPingUploadTask::from(glean.get_upload_task()))
+pub extern "C" fn glean_get_upload_task(result: *mut FfiPingUploadTask) {
+    with_glean_value(|glean| {
+        let ffi_task = FfiPingUploadTask::from(glean.get_upload_task());
+        unsafe {
+            std::ptr::write(result, ffi_task);
+        }
+    });
 }
 
-// We need to pass the whole task instead of only the document id,
-// so that we can free the strings properly on Drop.
+/// Process and free a `FfiPingUploadTask`.
+///
+/// We need to pass the whole task instead of only the document id,
+/// so that we can free the strings properly on Drop.
+///
+/// After return the `task` should not be used further by the caller.
+///
+/// # Safety
+///
+/// A valid and non-null upload task object is required for this function.
 #[no_mangle]
-pub extern "C" fn glean_process_ping_upload_response(task: FfiPingUploadTask, status: u32) {
+pub unsafe extern "C" fn glean_process_ping_upload_response(
+    task: *mut FfiPingUploadTask,
+    status: u32,
+) {
+    // Safety:
+    // * We null-check the passed task before dereferencing.
+    // * We replace data behind the pointer with another valid variant.
+    // * We gracefully handle invalid data in strings.
+    if task.is_null() {
+        return;
+    }
+
+    // Take out task and replace with valid value.
+    // This value should never be read again on the FFI side,
+    // but as it controls the memory, we put something valid in place, just in case.
+    let task = std::ptr::replace(task, FfiPingUploadTask::Done);
+
     with_glean(|glean| {
         if let FfiPingUploadTask::Upload { document_id, .. } = task {
             assert!(!document_id.is_null());
-            let document_id_str = unsafe {
-                CStr::from_ptr(document_id)
-                    .to_str()
-                    .map_err(|_| glean_core::Error::utf8_error())
-            }?;
+            let document_id_str = CStr::from_ptr(document_id)
+                .to_str()
+                .map_err(|_| glean_core::Error::utf8_error())?;
             glean.process_ping_upload_response(document_id_str, status.into());
         };
         Ok(())
