@@ -117,7 +117,7 @@ from glean import testing
 
 @pytest.fixture(name="reset_glean", scope="function", autouse=True)
 def fixture_reset_glean():
-    testing.reset_glean("my-app-id", "0.1.0")
+    testing.reset_glean(application_id="my-app-id", application_version="0.1.0")
 ```
 
 To check if a value exists (i.e. it has been recorded), there is a `test_has_value()` function on each of the metric instances:
