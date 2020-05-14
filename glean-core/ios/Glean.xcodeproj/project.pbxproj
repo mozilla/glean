@@ -114,6 +114,7 @@
 		BF30FDC3233260B500840607 /* TimespanMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimespanMetric.swift; sourceTree = "<group>"; };
 		BF30FDC5233260C400840607 /* TimespanMetricTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimespanMetricTests.swift; sourceTree = "<group>"; };
 		BF30FDC72332640400840607 /* TimeUnit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeUnit.swift; sourceTree = "<group>"; };
+		BF3A3055246E936E00E4A18E /* Gzip.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Gzip.framework; path = ../../Carthage/Build/iOS/Gzip.framework; sourceTree = "<group>"; };
 		BF3DE3912243A2F20018E23F /* Glean.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Glean.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF3DE3942243A2F20018E23F /* Glean.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Glean.h; sourceTree = "<group>"; };
 		BF3DE3952243A2F20018E23F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -369,6 +370,7 @@
 		BF6F2DA6224BF8F000394062 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				BF3A3055246E936E00E4A18E /* Gzip.framework */,
 				BF1BF3F72333787E0036F4CC /* OHHTTPStubs.framework */,
 				BF6F2DA7224BF8F100394062 /* libglean_ffi.a */,
 			);
@@ -518,6 +520,7 @@
 			);
 			outputPaths = (
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/OHHTTPStubs.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Gzip.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;

@@ -20,9 +20,6 @@ raw_xcode*log
 /glean-core/ios/Pipfile.lock
 /glean-core/ios/.venv
 
-# Due to a bug in Carthage, we ignore this file.
-# See `tests-only-Cartfile` for more info.
-/Cartfile
 # Carthage build artifacts
 Cartfile.resolved
 Carthage
