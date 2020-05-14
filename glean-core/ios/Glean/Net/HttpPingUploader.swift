@@ -54,8 +54,15 @@ public class HttpPingUploader {
     /// us to easily handle pings coming from Glean on the legacy Mozilla pipeline.
     func upload(path: String, data: Data, headers: [String: String], callback: @escaping (UploadResult) -> Void) {
         if config.logPings {
-            // FIXME: ungzip data if it is gzipped.
-            ///logPing(path: path, data: data)
+            // FIXME(bug 1637914): Logging should happen inside glean-core (Rust).
+            // For now we don't ship Gzip decompression in the Glean SDK for iOS
+            // due to difficulties delivering dependencies, so we skip logging them.
+            if headers["Content-Encoding"] == "gzip" {
+                logPing(path: path, data: "<error: can't handle compressed payload>")
+            } else {
+                let payload = String(data: data, encoding: .utf8) ?? "<error: invalid UTF-8 in payload>"
+                logPing(path: path, data: payload)
+            }
         }
 
         // Build the request and create an async upload operation and launch it through the
