@@ -162,6 +162,7 @@ cbindgen: ## Regenerate the FFI header file
 	RUSTUP_TOOLCHAIN=nightly \
 	cbindgen glean-core/ffi --lockfile Cargo.lock -o glean-core/ffi/glean.h
 	cp glean-core/ffi/glean.h glean-core/ios/Glean/GleanFfi.h
+	cp glean-core/ffi/glean.h glean-core/python/glean/glean.h
 .PHONY: cbindgen
 
 rust-coverage: export CARGO_INCREMENTAL=0
