@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 @testable import Glean
+import Gzip
 import OHHTTPStubs
 
 /// Stub out receiving a request on Glean's default Telemetry endpoint.
@@ -24,7 +25,11 @@ func stubServerReceive(callback: @escaping (String, [String: Any]?) -> Void) {
         let parts = url.absoluteString.split(separator: "/")
         let pingType = String(parts[4])
 
-        let body = request.ohhttpStubs_HTTPBody()!
+        var body = request.ohhttpStubs_HTTPBody()!
+        if request.value(forHTTPHeaderField: "Content-Encoding") == "gzip" {
+            body = try! body.gunzipped()
+        }
+
         let payload = try! JSONSerialization.jsonObject(with: body, options: []) as? [String: Any]
 
         callback(pingType, payload)

@@ -514,6 +514,7 @@
 			);
 			inputPaths = (
 				../../Carthage/Build/iOS/OHHTTPStubs.framework,
+				../../Carthage/Build/iOS/Gzip.framework,
 			);
 			name = "Copy Carthage Dependencies";
 			outputFileListPaths = (
