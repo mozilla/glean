@@ -66,7 +66,9 @@ if platform == "linux":
     shared_object = "libglean_ffi.so"
 elif platform == "darwin":
     shared_object = "libglean_ffi.dylib"
-elif platform == "windows":
+elif platform.startswith("win"):
+    # `platform` can be both "windows" (if running within MinGW) or "win32"
+    # if running in a standard Python environment. Account for both.
     shared_object = "glean_ffi.dll"
 else:
     raise ValueError("The platform {} is not supported.".format(sys.platform))
