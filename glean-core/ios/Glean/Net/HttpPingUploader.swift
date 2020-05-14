@@ -52,15 +52,16 @@ public class HttpPingUploader {
     /// Note that the `X-Client-Type`: `Glean` and `X-Client-Version`: <SDK version>
     /// headers are added to the HTTP request in addition to the UserAgent. This allows
     /// us to easily handle pings coming from Glean on the legacy Mozilla pipeline.
-    func upload(path: String, data: String, headers: [String: String], callback: @escaping (UploadResult) -> Void) {
+    func upload(path: String, data: Data, headers: [String: String], callback: @escaping (UploadResult) -> Void) {
         if config.logPings {
-            logPing(path: path, data: data)
+            // FIXME: ungzip data if it is gzipped.
+            ///logPing(path: path, data: data)
         }
 
         // Build the request and create an async upload operation and launch it through the
         // Dispatchers
         if let request = buildRequest(path: path, data: data, headers: headers) {
-            let uploadOperation = PingUploadOperation(request: request, data: Data(data.utf8), callback: callback)
+            let uploadOperation = PingUploadOperation(request: request, data: data, callback: callback)
             Dispatchers.shared.launchConcurrent(operation: uploadOperation)
         }
     }
@@ -73,7 +74,7 @@ public class HttpPingUploader {
     ///     * callback: A callback to return the success/failure of the upload
     ///
     /// - returns: Optional `URLRequest` object with the configured headings set.
-    func buildRequest(path: String, data: String, headers: [String: String]) -> URLRequest? {
+    func buildRequest(path: String, data: Data, headers: [String: String]) -> URLRequest? {
         if let url = URL(string: config.serverEndpoint + path) {
             var request = URLRequest(url: url)
             for (field, value) in headers {
@@ -81,8 +82,21 @@ public class HttpPingUploader {
             }
             request.timeoutInterval = TimeInterval(Constants.connectionTimeout)
             request.httpMethod = "POST"
-            request.httpBody = Data(data.utf8)
             request.httpShouldHandleCookies = false
+
+            // NOTE: We're using `URLSession.uploadTask` in `PingUploadOperation`,
+            // which ignores the `httpBody` and instead takes the body payload as a parameter
+            // to add to the request.
+            // However in tests we're using OHHTTPStubs to stub out the HTTP upload.
+            // It has the known limitation that it doesn't simulate data upload,
+            // because the underlying protocol doesn't expose a hook for that.
+            // By setting `httpBody` here the data is still attached to the request,
+            // so OHHTTPStubs sees it.
+            // It shouldn't be too bad memory-wise and not duplicate the data in memory.
+            // This should only be a reference and Swift keeps track of all the places it's needed.
+            //
+            // See https://github.com/AliSoftware/OHHTTPStubs#known-limitations.
+            request.httpBody = data
 
             if let tag = config.pingTag {
                 request.addValue(tag, forHTTPHeaderField: "X-Debug-ID")

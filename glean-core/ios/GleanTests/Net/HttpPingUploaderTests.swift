@@ -88,7 +88,7 @@ class HttpPingUploaderTests: XCTestCase {
         expectation = expectation(description: "Completed upload")
 
         let httpPingUploader = HttpPingUploader(configuration: testConfig)
-        httpPingUploader.upload(path: testPath, data: testPing, headers: [:]) { result in
+        httpPingUploader.upload(path: testPath, data: Data(testPing.utf8), headers: [:]) { result in
             testValue = result
             self.expectation?.fulfill()
         }
@@ -109,7 +109,7 @@ class HttpPingUploaderTests: XCTestCase {
         // We specify a single additional header here.
         // In usual code they are generated on the Rust side.
         let request = HttpPingUploader(configuration: testConfig)
-            .buildRequest(path: testPath, data: testPing, headers: ["X-Client-Type": "Glean"])
+            .buildRequest(path: testPath, data: Data(testPing.utf8), headers: ["X-Client-Type": "Glean"])
 
         XCTAssertEqual(
             request?.url?.path,
