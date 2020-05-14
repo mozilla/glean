@@ -13,14 +13,9 @@ class DeletionRequestPingTests: XCTestCase {
     var lastPingJson: [String: Any]?
 
     private func setupHttpResponseStub(_ expectedPingType: String) {
-        let host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
-        stub(condition: isHost(host)) { request in
-            let request = request as NSURLRequest
-            let pingType = request.url?.path.split(separator: "/")[2]
-            XCTAssertEqual(String(pingType!), expectedPingType, "Wrong ping type received")
+        stubServerReceive { pingType, json in
+            XCTAssertEqual(pingType, expectedPingType, "Wrong ping type received")
 
-            let body = request.ohhttpStubs_HTTPBody()
-            let json = try! JSONSerialization.jsonObject(with: body!, options: []) as? [String: Any]
             XCTAssert(json != nil)
             self.lastPingJson = json
 
@@ -29,13 +24,6 @@ class DeletionRequestPingTests: XCTestCase {
                 // Let the response get processed before we mark the expectation fulfilled
                 self.expectation?.fulfill()
             }
-
-            // Ensure a response so that the uploader does its job.
-            return OHHTTPStubsResponse(
-                jsonObject: [],
-                statusCode: 200,
-                headers: ["Content-Type": "application/json"]
-            )
         }
     }
 

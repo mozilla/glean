@@ -37,11 +37,8 @@ class EventMetricTypeTests: XCTestCase {
     var expectation: XCTestExpectation?
     var lastPingJson: [String: Any]?
 
-    private func setupHttpResponseStub(statusCode: Int32 = 200) {
-        let host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
-        stub(condition: isHost(host)) { data in
-            let body = (data as NSURLRequest).ohhttpStubs_HTTPBody()
-            let json = try! JSONSerialization.jsonObject(with: body!, options: []) as? [String: Any]
+    private func setupHttpResponseStub() {
+        stubServerReceive { _, json in
             XCTAssert(json != nil)
             self.lastPingJson = json
 
@@ -50,13 +47,6 @@ class EventMetricTypeTests: XCTestCase {
                 // Let the response get processed before we mark the expectation fulfilled
                 self.expectation?.fulfill()
             }
-
-            // Ensure a response so that the uploader does its job.
-            return OHHTTPStubsResponse(
-                jsonObject: [],
-                statusCode: statusCode,
-                headers: ["Content-Type": "application/json"]
-            )
         }
     }
 

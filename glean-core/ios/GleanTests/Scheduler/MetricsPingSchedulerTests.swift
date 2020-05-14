@@ -135,8 +135,6 @@ class MetricsPingSchedulerTests: XCTestCase {
         )
     }
 
-    // swiftlint:disable function_body_length
-    // REASON: Used in a test
     func testQueuedDataNotInOverdueMetricsPings() {
         // Reset Glean and do not start it right away
         Glean.shared.testDestroyGleanHandle()
@@ -182,10 +180,7 @@ class MetricsPingSchedulerTests: XCTestCase {
         let yesterday = Calendar.current.date(byAdding: Calendar.Component.day, value: -1, to: now)
         Glean.shared.metricsPingScheduler.updateSentDate(yesterday!)
 
-        let host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
-        stub(condition: isHost(host)) { data in
-            let body = (data as NSURLRequest).ohhttpStubs_HTTPBody()
-            let json = try! JSONSerialization.jsonObject(with: body!, options: []) as? [String: Any]
+        stubServerReceive { _, json in
             XCTAssert(json != nil)
             let metrics = json?["metrics"] as? [String: Any]
             let strings = metrics?["string"] as? [String: Any]
@@ -201,12 +196,6 @@ class MetricsPingSchedulerTests: XCTestCase {
                 // let the response get processed before we mark the expectation fulfilled
                 self.expectation?.fulfill()
             }
-
-            return OHHTTPStubsResponse(
-                jsonObject: [],
-                statusCode: 200,
-                headers: ["Content-Type": "application/json"]
-            )
         }
 
         // Set our expectation that will be fulfilled by the stub above
@@ -257,24 +246,18 @@ class MetricsPingSchedulerTests: XCTestCase {
         Glean.shared.metricsPingScheduler.updateSentDate(yesterday!)
 
         // Set up the interception of the ping for inspection
-        let host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
-        stub(condition: isHost(host)) { data in
-            let docType = (data as NSURLRequest).url!.path.split(separator: "/")[2]
-            XCTAssertEqual(docType, "metrics", "Must be a metrics ping")
+        stubServerReceive { pingType, json in
+            XCTAssertEqual(pingType, "metrics", "Must be a metrics ping")
 
-            let body = String(decoding: (data as NSURLRequest).ohhttpStubs_HTTPBody(), as: UTF8.self)
-            XCTAssertTrue(body.contains(expectedValue), "Must contain expected value")
+            let metrics = json?["metrics"] as? [String: Any]
+            let strings = metrics?["string"] as? [String: Any]
+            let testMetric = strings?["telemetry.test_applifetime_metric"] as? String
+            XCTAssertEqual(expectedValue, testMetric, "Must contain expected value")
 
             DispatchQueue.main.async {
                 // let the response get processed before we mark the expectation fulfilled
                 self.expectation?.fulfill()
             }
-
-            return OHHTTPStubsResponse(
-                jsonObject: [],
-                statusCode: 200,
-                headers: ["Content-Type": "application/json"]
-            )
         }
 
         // Set our expectation that will be fulfilled by the stub above

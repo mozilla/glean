@@ -59,6 +59,7 @@
 		BFB59A9D2342A24000F40CA8 /* GleanBaseline.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFB59A992342A24000F40CA8 /* GleanBaseline.swift */; };
 		BFB59A9E2342A24000F40CA8 /* Pings.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFB59A9A2342A24000F40CA8 /* Pings.swift */; };
 		BFB59A9F2342A24000F40CA8 /* GleanInternalMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFB59A9B2342A24000F40CA8 /* GleanInternalMetrics.swift */; };
+		BFCBD6AB246D55CC0032096D /* TestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFCBD6AA246D55CC0032096D /* TestUtils.swift */; };
 		BFE1CDC4233B63A70019EE47 /* LabeledMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFE1CDC3233B63A70019EE47 /* LabeledMetric.swift */; };
 		BFE1CDC6233B6B6D0019EE47 /* LabeledMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFE1CDC5233B6B6D0019EE47 /* LabeledMetricTests.swift */; };
 		BFE1CDC8233B73B30019EE47 /* Unreachable.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFE1CDC7233B73B30019EE47 /* Unreachable.swift */; };
@@ -139,6 +140,7 @@
 		BFB59A992342A24000F40CA8 /* GleanBaseline.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GleanBaseline.swift; sourceTree = "<group>"; };
 		BFB59A9A2342A24000F40CA8 /* Pings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Pings.swift; sourceTree = "<group>"; };
 		BFB59A9B2342A24000F40CA8 /* GleanInternalMetrics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GleanInternalMetrics.swift; sourceTree = "<group>"; };
+		BFCBD6AA246D55CC0032096D /* TestUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestUtils.swift; sourceTree = "<group>"; };
 		BFE1CDC3233B63A70019EE47 /* LabeledMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabeledMetric.swift; sourceTree = "<group>"; };
 		BFE1CDC5233B6B6D0019EE47 /* LabeledMetricTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabeledMetricTests.swift; sourceTree = "<group>"; };
 		BFE1CDC7233B73B30019EE47 /* Unreachable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Unreachable.swift; sourceTree = "<group>"; };
@@ -316,6 +318,7 @@
 				1F70B787232A81A4007395FB /* DispatchersTest.swift */,
 				BF3DE39F2243A2F20018E23F /* GleanTests.swift */,
 				BF3DE3A12243A2F20018E23F /* Info.plist */,
+				BFCBD6AA246D55CC0032096D /* TestUtils.swift */,
 			);
 			path = GleanTests;
 			sourceTree = "<group>";
@@ -616,6 +619,7 @@
 				1F39E7B3239F0777009B13B3 /* GleanDebugUtilityTests.swift in Sources */,
 				BFAED50A2369752400DF293D /* StringListMetricTests.swift in Sources */,
 				BF890561232BC227003CA2BA /* StringMetricTests.swift in Sources */,
+				BFCBD6AB246D55CC0032096D /* TestUtils.swift in Sources */,
 				1F58921223C923C4007D2D80 /* MetricsPingSchedulerTests.swift in Sources */,
 				1FD4527723395EEB00F4C7E8 /* UuidMetricTests.swift in Sources */,
 				BF80AA5B2399301300A8B172 /* HttpPingUploaderTests.swift in Sources */,
