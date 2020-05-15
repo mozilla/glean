@@ -410,7 +410,6 @@
 			buildPhases = (
 				BF6F2DA5224BF2E000394062 /* Run Script */,
 				BFB59A9723429FC000F40CA8 /* Run Glean SDK generator */,
-				AC0C2B5E2328090D00A50CC8 /* Copy Carthage Dependencies */,
 				BF3DE38C2243A2F20018E23F /* Headers */,
 				BF3DE38D2243A2F20018E23F /* Sources */,
 				BF3DE38E2243A2F20018E23F /* Frameworks */,
@@ -510,24 +509,6 @@
 			);
 			inputPaths = (
 				../../Carthage/Build/iOS/OHHTTPStubs.framework,
-			);
-			name = "Copy Carthage Dependencies";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "/usr/local/bin/carthage copy-frameworks\n";
-		};
-		AC0C2B5E2328090D00A50CC8 /* Copy Carthage Dependencies */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
 			);
 			name = "Copy Carthage Dependencies";
 			outputFileListPaths = (
