@@ -20,6 +20,7 @@ class HttpPingUploaderTests: XCTestCase {
     override func tearDown() {
         // Reset expectations
         expectation = nil
+        OHHTTPStubs.removeAllStubs()
     }
 
     func getOrCreatePingDirectory(_ pingDirectory: String) -> URL {
