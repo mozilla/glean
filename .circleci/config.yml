@@ -685,9 +685,9 @@ jobs:
       - run:
           name: Bootstrap dependencies
           command: |
-            # Build in Debug mode to speed it all up
+            # We need release mode to correctly ship bitcode for dependencies
             pushd samples/ios/app
-            carthage bootstrap --platform iOS --cache-builds --configuration Debug --verbose
+            carthage bootstrap --platform iOS --cache-builds --configuration Release --verbose
             popd
       - run:
           name: Build sample app
