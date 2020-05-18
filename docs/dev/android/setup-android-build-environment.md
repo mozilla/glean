@@ -23,7 +23,7 @@ If Android Studio asks you to upgrade the version of Gradle, decline.
 The following dependencies can be installed in Android Studio through `Tools > SDK Manager > SDK Tools`:
 
 - Android SDK Tools (may already be selected)
-- NDK r20
+- NDK r21
 - CMake
 - LLDB
 
@@ -45,11 +45,11 @@ sdk.dir=/path/to/sdk
 
 For the Android NDK:
 
-1. Download NDK r20 from <https://developer.android.com/ndk/downloads>.
-2. Extract it and put it somewhere (`$HOME/.android-ndk-r20` is a reasonable choice, but it doesn't matter).
+1. Download NDK r21 from <https://developer.android.com/ndk/downloads>.
+2. Extract it and put it somewhere (`$HOME/.android-ndk-r21` is a reasonable choice, but it doesn't matter).
 3. Add the following line to the `local.properties` file in the root of the Glean checkout (create the file if it does not exist):
    ```
-   ndk.dir=/path/to/.android-ndk-r20
+   ndk.dir=/path/to/.android-ndk-r21
    ```
 
 ### Setting up Rust
