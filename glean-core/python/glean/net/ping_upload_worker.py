@@ -3,11 +3,17 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
+import json
 import logging
 from pathlib import Path
 import re
+import time
+from typing import List, Tuple
 
+from .upload_task_tag import UploadTaskTag
 
+from .. import _ffi
+from .._glean_ffi import ffi as ffi_support  # type: ignore
 from .._dispatcher import Dispatcher
 from .._process_dispatcher import ProcessDispatcher
 
@@ -15,17 +21,11 @@ from .._process_dispatcher import ProcessDispatcher
 log = logging.getLogger(__name__)
 
 
+# How many times to attempt waiting when told to by glean-core's upload API.
+MAX_WAIT_ATTEMPTS = 3
+
+
 class PingUploadWorker:
-
-    # NOTE: The `PINGS_DIR" must be kept in sync with the one in the Rust implementation.
-    _PINGS_DIR = "pending_pings"
-
-    @classmethod
-    def storage_directory(cls) -> Path:
-        from .. import Glean
-
-        return Glean.get_data_dir() / cls._PINGS_DIR
-
     @classmethod
     def process(cls):
         """
@@ -46,7 +46,7 @@ class PingUploadWorker:
         from .. import Glean
 
         return ProcessDispatcher.dispatch(
-            _process, (cls.storage_directory(), Glean._configuration)
+            _process, (Glean._data_dir, Glean._configuration)
         )
 
     @classmethod
@@ -75,65 +75,82 @@ _FILE_PATTERN = re.compile(
 )
 
 
-def _process(storage_dir: Path, configuration) -> bool:
-    success = True
-
-    log.debug("Processing persisted pings at {}".format(storage_dir.resolve()))
-
-    try:
-        for path in storage_dir.iterdir():
-            if path.is_file():
-                if _FILE_PATTERN.match(path.name):
-                    log.debug("Processing ping: {}".format(path.name))
-                    if not _process_file(path, configuration):
-                        log.error("Error processing ping file: {}".format(path.name))
-                        success = False
-                else:
-                    log.debug("Pattern mismatch. Deleting {}".format(path.name))
-                    path.unlink()
-    except FileNotFoundError:
-        log.debug("File not found: {}".format(storage_dir.resolve()))
-        success = False
-
-    return success
-
-
-def _process_file(path: Path, configuration) -> bool:
+def _parse_ping_headers(
+    headers_as_json: str, document_id: str
+) -> List[Tuple[str, str]]:
     """
-    Processes a single ping file.
+    Parse the headers coming from FFI.
+
+    Args:
+        headers_as_json (str): The JSON key-value map of the headers.
+        document_id (str): The id of the document the headers are for.
+
+    Returns:
+        headers (list of (str, str)): The headers to send.
     """
-    processed = False
-
+    headers = []  # type: List[Tuple[str, str]]
     try:
-        with path.open("r", encoding="utf-8") as fd:
-            lines = iter(fd)
-            try:
-                url_path = next(lines).strip()
-                serialized_ping = next(lines)
-                valid_content = True
-            except StopIteration:
-                valid_content = False
-        # On Windows, we must close the file before deleting it
-        if not valid_content:
-            path.unlink()
-            log.error("Invalid ping content in {}".format(path.resolve()))
-            return False
-    except FileNotFoundError:
-        log.error("Could not find ping file {}".format(path.resolve()))
-        return False
-    except IOError as e:
-        log.error("IOError when reading {}: {}".format(path.resolve(), e))
-        return False
+        headers = list(json.loads(headers_as_json).items())
+    except json.decoder.JSONDecodeError:
+        log.error("Error while parsing headers for ping " + document_id)
 
-    processed = configuration.ping_uploader.do_upload(
-        url_path, serialized_ping, configuration
-    )
+    return headers
 
-    if processed:
-        path.unlink()
-        log.debug("{} was deleted".format(path.name))
 
-    return processed
+def _process(data_dir: Path, configuration) -> bool:
+
+    # Import here to avoid cyclical import
+    from ..glean import Glean
+
+    if not Glean.is_initialized():
+        # Always load the Glean shared object / dll even if we're in a (ping upload worker)
+        # subprocess.
+        # To make startup time better in subprocesses, consumers can initialize just the
+        # ping upload manager.
+        data_dir = ffi_support.new("char[]", _ffi.ffi_encode_string(str(data_dir)))
+        _ffi.lib.glean_initialize_standalone_uploader(data_dir)
+
+    wait_attempts = 0
+
+    while True:
+        incoming_task = ffi_support.new("FfiPingUploadTask *")
+        _ffi.lib.glean_get_upload_task(incoming_task, configuration.log_pings)
+
+        tag = incoming_task.tag
+        if tag == UploadTaskTag.UPLOAD:
+            # Ping data is available for upload: parse the structure but make
+            # sure to let Rust free the memory.
+            doc_id = _ffi.ffi_decode_string(
+                incoming_task.upload.document_id, free_memory=False
+            )
+            url_path = _ffi.ffi_decode_string(
+                incoming_task.upload.path, free_memory=False
+            )
+            body = _ffi.ffi_decode_byte_buffer(incoming_task.upload.body)
+            headers = _ffi.ffi_decode_string(
+                incoming_task.upload.headers, free_memory=False
+            )
+
+            # Delegate the upload to the uploader.
+            upload_result = configuration.ping_uploader.do_upload(
+                url_path, body, _parse_ping_headers(headers, doc_id), configuration
+            )
+
+            # Process the response.
+            _ffi.lib.glean_process_ping_upload_response(
+                incoming_task, upload_result.to_ffi()
+            )
+        elif tag == UploadTaskTag.WAIT:
+            # Try not to be stuck waiting forever.
+            if wait_attempts < MAX_WAIT_ATTEMPTS:
+                wait_attempts += 1
+                time.sleep(1)
+            else:
+                return False
+        elif tag == UploadTaskTag.DONE:
+            break
+
+    return True
 
 
 __all__ = ["PingUploadWorker"]

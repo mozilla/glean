@@ -7,11 +7,7 @@ A base class for ping uploaders.
 """
 
 
-import datetime
-from email.utils import formatdate
-import json
 import logging
-import time
 from typing import List, Tuple, TYPE_CHECKING
 
 
@@ -31,85 +27,34 @@ class BaseUploader(ping_uploader.PingUploader):
     to the user-provided delegate.
     """
 
-    @staticmethod
-    def _log_ping(path: str, data: str) -> None:
-        """
-        Log the contents of the ping to the console.
-
-        Args:
-            path (str): The URL path to append to the server address.
-            data (str): The serialized text data to send.
-        """
-        try:
-            parsed_json = json.loads(data)
-        except json.decoder.JSONDecodeError as e:
-            log.debug("Exception parsing ping as JSON: " + str(e))
-        else:
-            indented = json.dumps(parsed_json, indent=2)
-
-            log.debug("Glean ping to URL: {}\n{}".format(path, indented))
-
-    @staticmethod
-    def _create_date_header_value() -> str:
-        """
-        Generate an RFC 1123 date string to be used in the HTTP header.
-        """
-        # Roundabout way to do this using only the standard library and without
-        # monkeying with the global locale state.
-        dt = datetime.datetime.now()
-        stamp = time.mktime(dt.timetuple())
-        return formatdate(timeval=stamp, localtime=False, usegmt=True)
-
-    @classmethod
-    def _get_headers_to_send(cls, config: "Configuration") -> List[Tuple[str, str]]:
-        """
-        Generate a list of headers to send with the request.
-
-        Args:
-            config (glean.Configuration): The Glean Configuration object.
-
-        Returns:
-            headers (list of (str, str)): The headers to send.
-        """
-        import glean
-
-        headers = [
-            ("Content-Type", "application/json; charset=utf-8"),
-            ("User-Agent", config.user_agent),
-            ("Date", cls._create_date_header_value()),
-            # Add headers for supporting the legacy pipeline
-            ("X-Client-Type", "Glean"),
-            ("X-Client-Version", glean.__version__),
-        ]
-
-        if config.ping_tag is not None:
-            headers.append(("X-Debug-ID", config.ping_tag))
-
-        return headers
-
-    def do_upload(self, path: str, data: str, config: "Configuration") -> bool:
+    def do_upload(
+        self,
+        path: str,
+        data: bytes,
+        headers: List[Tuple[str, str]],
+        config: "Configuration",
+    ) -> ping_uploader.UploadResult:
         """
         This function triggers the actual upload.
 
         It logs the ping and calls the implementation-specific upload function.
 
         Args:
-            path (str): The URL path to append to the server address.
-            data (str): The serialized text data to send.
+            url (str): The URL path to upload the data to.
+            data (bytes): The serialized data to send.
+            headers (list of (str, str)): List of header entries as tuple
+                pairs, where the first element is the header name and the
+                second is its value.
             config (glean.Configuration): The Glean Configuration object.
 
         Returns:
-            sent (bool): True if the ping was correctly dealt with (sent
-                successfully or faced and unrecoverable error). False if there
-                was a recoverable error that callers can deal with.
+            result (UploadResult): the status code of the upload response.
         """
-        if config.log_pings:
-            self._log_ping(path, data)
+        if config.ping_tag is not None:
+            headers.append(("X-Debug-ID", config.ping_tag))
 
         return self.upload(
-            url=config.server_endpoint + path,
-            data=data,
-            headers=self._get_headers_to_send(config),
+            url=config.server_endpoint + path, data=data, headers=headers,
         )
 
 
