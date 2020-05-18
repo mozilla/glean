@@ -556,9 +556,9 @@ internal interface LibGleanFFI : Library {
         storage_name: String
     ): Int
 
-    fun glean_get_upload_task(): FfiPingUploadTask.ByValue
+    fun glean_get_upload_task(task: FfiPingUploadTask.ByReference)
 
-    fun glean_process_ping_upload_response(task: FfiPingUploadTask.ByValue, status: Int)
+    fun glean_process_ping_upload_response(task: FfiPingUploadTask.ByReference, status: Int)
 
     // Misc
 

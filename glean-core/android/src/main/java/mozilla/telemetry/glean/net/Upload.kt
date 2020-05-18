@@ -48,7 +48,7 @@ internal open class FfiPingUploadTask(
     @JvmField var tag: Byte = UploadTaskTag.Done.ordinal.toByte(),
     @JvmField var upload: UploadBody = UploadBody()
 ) : Union() {
-    class ByValue : FfiPingUploadTask(), Structure.ByValue
+    class ByReference : FfiPingUploadTask(), Structure.ByReference
 
     init {
         // Initialize to be the `tag`-only variant
