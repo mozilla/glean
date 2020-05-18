@@ -17,11 +17,13 @@
 use std::collections::VecDeque;
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::{Arc, RwLock, RwLockWriteGuard};
+use std::sync::{Arc, Mutex, RwLock, RwLockWriteGuard};
 use std::thread;
 
+use once_cell::sync::OnceCell;
 use serde_json::Value as JsonValue;
 
+use crate::error::Result;
 use directory::PingDirectoryManager;
 pub use request::PingRequest;
 pub use result::{ffi_upload_result, UploadResult};
@@ -29,6 +31,43 @@ pub use result::{ffi_upload_result, UploadResult};
 mod directory;
 mod request;
 mod result;
+
+/// A global Glean upload manager instance.
+///
+/// This is only used by processes who exclusively need to manage
+/// ping upload and do not want to perform a full Glean initialization.
+static UPLOAD_MANAGER: OnceCell<Mutex<PingUploadManager>> = OnceCell::new();
+
+/// Get a reference to the global Upload Manager object.
+pub fn global_upload_manager() -> Option<&'static Mutex<PingUploadManager>> {
+    UPLOAD_MANAGER.get()
+}
+
+/// Set or replace the global Glean object.
+pub fn setup_upload_manager(upload_manager: PingUploadManager) -> Result<()> {
+    // The `OnceCell` type wrapping our PingUploadManager is thread-safe and can only be set once.
+    // Therefore even if our check for it being empty succeeds, setting it could fail if a
+    // concurrent thread is quicker in setting it.
+    // However this will not cause a bigger problem, as the second `set` operation will just fail.
+    // We can log it and move on.
+    //
+    // For all wrappers this is not a problem, as the uploader object is intialized exactly once on
+    // calling the FFI `glean_standalone_uploader`.
+    if UPLOAD_MANAGER.get().is_none() {
+        if UPLOAD_MANAGER.set(Mutex::new(upload_manager)).is_err() {
+            log::error!(
+                "Global Upload Manager object is initialized already. This probably happened concurrently."
+            )
+        }
+    } else {
+        // We allow overriding the global upload manager object to support test mode.
+        // In test mode the upload manager object is fully destroyed and recreated.
+        // This all happens behind a mutex and is therefore also thread-safe..
+        let mut lock = UPLOAD_MANAGER.get().unwrap().lock().unwrap();
+        *lock = upload_manager;
+    }
+    Ok(())
+}
 
 /// When asking for the next ping request to upload,
 /// the requester may receive one out of three possible tasks.
