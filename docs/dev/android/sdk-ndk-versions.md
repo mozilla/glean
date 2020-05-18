@@ -10,7 +10,7 @@ The Glean SDK implementation is currently build against the following versions:
 * NDK r21
     * Download link: <https://dl.google.com/android/repository/android-ndk-r21-linux-x86_64.zip>
 
-For the full setup see [Setup the Android Build Environment](../../android/setup-android-build-environment.html).
+For the full setup see [Setup the Android Build Environment](setup-android-build-environment.html).
 
 The versions are defined in the following files.
 All locations need to be updated on upgrades:
