@@ -683,12 +683,15 @@ jobs:
             sed -i.bak "/mozilla\/glean/s#.*#binary \"$JSON_URL\" ~> 0.0.1-SNAPSHOT#" "$CARTFILE_PATH"
             cat "${CARTFILE_PATH}"
       - run:
-          name: Build sample app
+          name: Bootstrap dependencies
           command: |
             # Build in Debug mode to speed it all up
             pushd samples/ios/app
             carthage bootstrap --platform iOS --cache-builds --configuration Debug --verbose
             popd
+      - run:
+          name: Build sample app
+          command: |
             bash bin/run-ios-sample-app-build.sh
       - store_artifacts:
           path: raw_sample_xcodebuild.log
