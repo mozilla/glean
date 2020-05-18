@@ -122,7 +122,7 @@ RUN chown -R worker:worker /builds/worker/android-sdk
 
 # Android NDK
 
-ENV ANDROID_NDK_VERSION "r20"
+ENV ANDROID_NDK_VERSION "r21"
 
 # $ANDROID_NDK_ROOT is the preferred name, but the android gradle plugin uses $ANDROID_NDK_HOME.
 ENV ANDROID_NDK_ROOT /builds/worker/android-ndk
@@ -133,7 +133,7 @@ RUN curl -sfSL --retry 5 --retry-delay 10 https://dl.google.com/android/reposito
     && rm ndk.zip \
     && mv /builds/worker/android-ndk-${ANDROID_NDK_VERSION} ${ANDROID_NDK_ROOT}
 
-ENV ANDROID_NDK_TOOLCHAIN_DIR /builds/worker/.android-ndk-r20-toolchain
+ENV ANDROID_NDK_TOOLCHAIN_DIR /builds/worker/.android-ndk-r21-toolchain
 ENV ANDROID_NDK_API_VERSION 21
 
 # sccache
