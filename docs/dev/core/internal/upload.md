@@ -62,10 +62,10 @@ For FFI consumers (e.g. Kotlin/Swift/Python implementations) these functions are
 
 ```rust
 /// Gets the next task for an uploader. Which can be either:
-extern "C" fn glean_get_upload_task() -> FfiPingUploadTask
+extern "C" fn glean_get_upload_task(result: *mut FfiPingUploadTask)
 
 /// Processes the response from an attempt to upload a ping.
-extern "C" fn glean_process_ping_upload_response(task: FfiPingUploadTask, status: u32)
+extern "C" fn glean_process_ping_upload_response(task: *mut FfiPingUploadTask, status: u32)
 ```
 
 See the documentation for additional information about the types:
