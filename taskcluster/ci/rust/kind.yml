@@ -5,7 +5,6 @@
 loader: taskgraph.loader.transform:loader
 
 transforms:
-  - glean_taskgraph.transforms.script_to_run_task:transforms
   - taskgraph.transforms.job:transforms
   - taskgraph.transforms.task:transforms
 
@@ -15,21 +14,20 @@ job-defaults:
     docker-image: {in-tree: linux}
     max-run-time: 1800
   run:
-    using: run-task
-    cwd: '{checkout}'
+    using: run-commands
 
 jobs:
   clippy:
     description: 'Rust: Clippy'
     run:
-      script: |
-          . ./taskcluster/scripts/rust/rustup-setup.sh
-          rustup component add clippy
-          cargo clippy --version
-          cargo clippy --all --all-targets --all-features -- -D warnings
+      commands:
+        - ['.', './taskcluster/scripts/rust/rustup-setup.sh'] # this should be a pre-command, but those don't run in the same shell (yet)
+        - ['rustup', 'component', 'add', 'clippy']
+        - ['cargo', 'clippy', '--version']
+        - ['cargo clippy --all --all-targets --all-features -- -D warnings']
   tests:
     description: 'Rust: Tests'
     run:
-      script: |
-          . ./taskcluster/scripts/rust/rustup-setup.sh
-          cargo test --all --verbose
+      commands:
+        - ['.', './taskcluster/scripts/rust/rustup-setup.sh'] # this should be a pre-command, but those don't run in the same shell (yet)
+        - ['cargo', 'test', '--all', '--verbose']

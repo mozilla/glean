@@ -1,0 +1,35 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+from __future__ import absolute_import, print_function, unicode_literals
+
+from taskgraph.transforms.base import TransformSequence
+
+from ..build_config import get_version, get_extensions
+
+
+transforms = TransformSequence()
+
+
+@transforms.add
+def build_task(config, tasks):
+    for task in tasks:
+        module_info = task["attributes"]["buildconfig"]
+        name = module_info["name"]
+        version = get_version()
+
+        task["description"] = task["description"].format(module_name=name)
+        task["worker"]["artifacts"] = artifacts = []
+
+        all_extensions = get_extensions(name)
+        for publication_name, extensions in all_extensions.items():
+            for extension in extensions:
+                artifact_filename = "{}-{}{}".format(publication_name, version, extension)
+                artifacts.append({
+                    "name": "public/build/{}".format(artifact_filename),
+                    "path": "/builds/worker/checkouts/src/build/maven/org/mozilla/telemetry/{}/{}/{}".format(name, version, artifact_filename),
+                    "type": "file",
+                })
+
+        yield task
