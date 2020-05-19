@@ -35,7 +35,7 @@ _TYPE_MAPPING = {
     "labeled_boolean": metrics.LabeledBooleanMetricType,
     "labeled_counter": metrics.LabeledCounterMetricType,
     "labeled_string": metrics.LabeledStringMetricType,
-    "memory_unit": metrics.MemoryDistributionMetricType,
+    "memory_distribution": metrics.MemoryDistributionMetricType,
     "ping": metrics.PingType,
     "string": metrics.StringMetricType,
     "string_list": metrics.StringListMetricType,
