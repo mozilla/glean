@@ -229,6 +229,8 @@ Follow these steps to automatically run the parser at build time:
    This will ignore files that are generated at build time by the `sdk_generator.sh` script.
    They don't need to be kept in version control, as they can be re-generated from your `metrics.yaml` and `pings.yaml` files.
 
+> **Important information about Glean and embedded extensions:** Applications for iOS have the ability to define [application extensions](https://developer.apple.com/library/archive/documentation/General/Conceptual/ExtensibilityPG/ExtensionOverview.html#//apple_ref/doc/uid/TP40014214-CH2-SW2) which, while they are contained within the application, do not have access to the same data or APIs, and even run in different processes. Since the extension runs in a separate sandbox from the application, Glean would run in the extension as if it were a completely separate application with different client ids and storage. This complicates the use of Glean because Glean doesn’t know or care about other processes. Because of this, Glean is purposefully prevented from running in an application extension and if metrics are to be collected from extensions, it's up to the integrating application to pass the information to the base application to record in Glean.
+
 </div>
 
 <div data-lang="Python" class="tab">
