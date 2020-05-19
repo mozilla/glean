@@ -24,7 +24,7 @@ jobs:
         - ['.', './taskcluster/scripts/rust/rustup-setup.sh'] # this should be a pre-command, but those don't run in the same shell (yet)
         - ['rustup', 'component', 'add', 'clippy']
         - ['cargo', 'clippy', '--version']
-        - ['cargo clippy --all --all-targets --all-features -- -D warnings']
+        - ['cargo', 'clippy', '--all', '--all-targets', '--all-features', '--', '-D', 'warnings']
   tests:
     description: 'Rust: Tests'
     run:
