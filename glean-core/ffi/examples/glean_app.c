@@ -45,15 +45,17 @@ int main(void)
   // they will also be consumed here by `glean_process_ping_upload_response`.
   FfiPingUploadTask task;
   glean_get_upload_task(&task);
-  while (task.tag != 2) {
-    printf("tag: %d\n", task.tag);
-    printf("path: %s\n", task.upload.path);
-    printf("body: %s\n", task.upload.body);
 
-    glean_process_ping_upload_response(&task, 200);
-    glean_get_upload_task(&task);
+  while (task.tag != FfiPingUploadTask_Done) {
+      printf("tag: %d\n", task.tag);
+
+      if (task.tag == FfiPingUploadTask_Upload) {
+          printf("path: %s\n", task.upload.path);
+          printf("body length: %lld\n", task.upload.body.len);
+
+          glean_process_ping_upload_response(&task, UPLOAD_RESULT_HTTP_STATUS | 200);
+      }
   }
-  printf("tag: %d\n", task.tag);
 
   glean_destroy_counter_metric(metric);
 
