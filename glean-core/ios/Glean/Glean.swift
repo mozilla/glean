@@ -39,6 +39,10 @@ public class Glean {
 
     private let logger = Logger(tag: Constants.logTag)
 
+    // Cache variable for checking if running in main process.  Also used to override for tests in
+    // order to simulate not running in the main process.  DO NOT SET EXCEPT IN TESTS!
+    var isMainProcess: Bool?
+
     private init() {
         // intentionally left private, no external user can instantiate a new global object.
 
@@ -50,6 +54,7 @@ public class Glean {
         self.initialized = false
     }
 
+    // swiftlint:disable function_body_length
     /// Initialize the Glean SDK.
     ///
     /// This should only be initialized once by the application, and not by
@@ -67,6 +72,14 @@ public class Glean {
     ///     * configuration: A Glean `Configuration` object with global settings.
     public func initialize(uploadEnabled: Bool,
                            configuration: Configuration = Configuration()) {
+        // In certain situations Glean.initialize may be called from a process other than the main
+        // process such as an embedded extension. In this case we want to just return.
+        // See https://bugzilla.mozilla.org/show_bug.cgi?id=1625157 for more information.
+        if !checkIsMainProcess() {
+            logger.error("Attempted to initialize Glean on a process other than the main process")
+            return
+        }
+
         if self.isInitialized() {
             logger.error("Glean should not be initialized multiple times")
             return
@@ -155,6 +168,8 @@ public class Glean {
             self.observer = GleanLifecycleObserver()
         }
     }
+
+    // swiftlint:enable function_body_length
 
     /// Initialize the core metrics internally managed by Glean (e.g. client id).
     private func initializeCoreMetrics() {
@@ -450,6 +465,21 @@ public class Glean {
     /// - Special characters should be properly URL encoded and escaped since this needs to represent a valid URL.
     public func handleCustomUrl(url: URL) {
         GleanDebugUtility.handleCustomUrl(url: url)
+    }
+
+    /// Returns true if running in the base application process, otherwise returns false
+    private func checkIsMainProcess() -> Bool {
+        if isMainProcess == nil {
+            if let packageType = Bundle.main.object(forInfoDictionaryKey: "CFBundlePackageType") as? String {
+                isMainProcess = packageType != "XPC!"
+            } else {
+                // The `CFBundlePackageType` doesn't get set in tests so we return true to indicate that we are
+                // running in the main process.
+                isMainProcess = true
+            }
+        }
+
+        return isMainProcess!
     }
 
     /// PUBLIC TEST ONLY FUNCTION.

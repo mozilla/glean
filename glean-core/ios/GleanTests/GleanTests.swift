@@ -277,4 +277,19 @@ class GleanTests: XCTestCase {
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
         }
     }
+
+    func testGleanIsNotInitializedFromOtherProcesses() {
+        // Check to see if Glean is initialized
+        XCTAssert(Glean.shared.isInitialized())
+
+        // Set the control variable to false to simulate that we are not running
+        // in the main process
+        Glean.shared.isMainProcess = false
+
+        // Restart glean
+        Glean.shared.resetGlean(clearStores: false)
+
+        // Check to see if Glean is initialized
+        XCTAssertFalse(Glean.shared.isInitialized())
+    }
 }
