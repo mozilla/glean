@@ -336,7 +336,7 @@ char *glean_experiment_test_get_data(FfiStr experiment_id);
 
 uint8_t glean_experiment_test_is_active(FfiStr experiment_id);
 
-FfiPingUploadTask glean_get_upload_task(void);
+void glean_get_upload_task(FfiPingUploadTask *result);
 
 /**
  * # Safety
@@ -533,7 +533,19 @@ uint8_t glean_on_ready_to_submit_pings(void);
 
 char *glean_ping_collect(uint64_t ping_type_handle, FfiStr reason);
 
-void glean_process_ping_upload_response(FfiPingUploadTask task, uint32_t status);
+/**
+ * Process and free a `FfiPingUploadTask`.
+ *
+ * We need to pass the whole task instead of only the document id,
+ * so that we can free the strings properly on Drop.
+ *
+ * After return the `task` should not be used further by the caller.
+ *
+ * # Safety
+ *
+ * A valid and non-null upload task object is required for this function.
+ */
+void glean_process_ping_upload_response(FfiPingUploadTask *task, uint32_t status);
 
 void glean_quantity_set(uint64_t metric_id, int64_t value);
 
