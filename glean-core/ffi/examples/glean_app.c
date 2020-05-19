@@ -41,16 +41,17 @@ int main(void)
   // 1 - "upload", there is a new ping to upload and the task will also include the request data;
   // 2 - "done", there are no more pings to upload.
   //
-  //  NOTE: If, there are other ping files inside tmp/glean_data directory
+  // NOTE: If, there are other ping files inside tmp/glean_data directory
   // they will also be consumed here by `glean_process_ping_upload_response`.
-  FfiPingUploadTask task = glean_get_upload_task();
-  while (task.tag == 1) {
+  FfiPingUploadTask task;
+  glean_get_upload_task(&task);
+  while (task.tag != 2) {
     printf("tag: %d\n", task.tag);
     printf("path: %s\n", task.upload.path);
     printf("body: %s\n", task.upload.body);
 
-    glean_process_ping_upload_response(task, 200);
-    task = glean_get_upload_task();
+    glean_process_ping_upload_response(&task, 200);
+    glean_get_upload_task(&task);
   }
   printf("tag: %d\n", task.tag);
 
