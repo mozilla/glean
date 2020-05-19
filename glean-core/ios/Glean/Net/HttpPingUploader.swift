@@ -100,13 +100,14 @@ public class HttpPingUploader {
     /// It will continue upload as long as it can fetch new tasks.
     func process() {
         while true {
-            let incomingTask = glean_get_upload_task()
+            var incomingTask = FfiPingUploadTask()
+            glean_get_upload_task(&incomingTask)
             let task = incomingTask.toPingUploadTask()
 
             switch task {
             case let .upload(request):
                 self.upload(path: request.path, data: request.body, headers: request.headers) { result in
-                    glean_process_ping_upload_response(incomingTask, result.toFfi())
+                    glean_process_ping_upload_response(&incomingTask, result.toFfi())
                 }
             case .wait:
                 continue
