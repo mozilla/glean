@@ -94,7 +94,7 @@ def _extract_gradlew_command(run):
         _generate_secret_command(secret) for secret in run.get("secrets", [])
     ]
 
-    gradle_command = ["./gradlew"] + run.pop("gradlew")
+    gradle_command = ["./gradlew", "--no-daemon"] + run.pop("gradlew")
     post_gradle_commands = run.pop("post-gradlew", [])
 
     commands = pre_gradle_commands + [gradle_command] + post_gradle_commands
