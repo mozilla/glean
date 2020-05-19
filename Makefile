@@ -178,7 +178,7 @@ rust-coverage: ## Generate code coverage information for Rust code
 .PHONY: rust-coverage
 
 python-coverage: build-python ## Generate a code coverage report for Python
-	$(GLEAN_PYENV)/bin/python3 -m coverage run --parallel-mode -m pytest
+	GLEAN_COVERAGE=1 $(GLEAN_PYENV)/bin/python3 -m coverage run --parallel-mode -m pytest
 	$(GLEAN_PYENV)/bin/python3 -m coverage combine
 	$(GLEAN_PYENV)/bin/python3 -m coverage html
 .PHONY: python-coverage
