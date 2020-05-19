@@ -7,10 +7,11 @@ package mozilla.telemetry.glean.private
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import mozilla.telemetry.glean.Glean
-import mozilla.telemetry.glean.getWorkerStatus
 import mozilla.telemetry.glean.checkPingSchema
+import mozilla.telemetry.glean.getPlainBody
 import mozilla.telemetry.glean.getContextWithMockedInfo
 import mozilla.telemetry.glean.getMockWebServer
+import mozilla.telemetry.glean.getWorkerStatus
 import mozilla.telemetry.glean.resetGlean
 import mozilla.telemetry.glean.scheduler.PingUploadWorker
 import mozilla.telemetry.glean.testing.GleanTestRule
@@ -68,7 +69,7 @@ class PingTypeTest {
         val docType = request.path.split("/")[3]
         assertEquals("custom", docType)
 
-        val pingJson = JSONObject(request.body.readUtf8())
+        val pingJson = JSONObject(request.getPlainBody())
         assertNotNull(pingJson.getJSONObject("client_info")["client_id"])
         checkPingSchema(pingJson)
     }
@@ -109,7 +110,7 @@ class PingTypeTest {
         val docType = request.path.split("/")[3]
         assertEquals("custom_ping", docType)
 
-        val pingJson = JSONObject(request.body.readUtf8())
+        val pingJson = JSONObject(request.getPlainBody())
         assertNotNull(pingJson.getJSONObject("client_info")["client_id"])
         checkPingSchema(pingJson)
     }
@@ -150,7 +151,7 @@ class PingTypeTest {
         val docType = request.path.split("/")[3]
         assertEquals("custom-ping", docType)
 
-        val pingJson = JSONObject(request.body.readUtf8())
+        val pingJson = JSONObject(request.getPlainBody())
         assertNotNull(pingJson.getJSONObject("client_info")["client_id"])
         checkPingSchema(pingJson)
     }
@@ -191,7 +192,7 @@ class PingTypeTest {
         val docType = request.path.split("/")[3]
         assertEquals("custom", docType)
 
-        val pingJson = JSONObject(request.body.readUtf8())
+        val pingJson = JSONObject(request.getPlainBody())
         assertNull(pingJson.getJSONObject("client_info").opt("client_id"))
         checkPingSchema(pingJson)
     }

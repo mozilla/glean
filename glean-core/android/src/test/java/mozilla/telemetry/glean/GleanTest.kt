@@ -239,7 +239,7 @@ class GleanTest {
             for (i in 0..3) {
                 val request = server.takeRequest(20L, TimeUnit.SECONDS)
                 val docType = request.path.split("/")[3]
-                val json = JSONObject(request.body.readUtf8())
+                val json = JSONObject(request.getPlainBody())
                 checkPingSchema(json)
                 if (docType == "events") {
                     assertEquals(1, json.getJSONArray("events").length())
@@ -294,7 +294,7 @@ class GleanTest {
             val docType = request.path.split("/")[3]
             assertEquals("The received ping must be a 'baseline' ping", "baseline", docType)
 
-            val baselineJson = JSONObject(request.body.readUtf8())
+            val baselineJson = JSONObject(request.getPlainBody())
             assertEquals("dirty_startup", baselineJson.getJSONObject("ping_info")["reason"])
             checkPingSchema(baselineJson)
 
@@ -517,7 +517,7 @@ class GleanTest {
         val docType = request.path.split("/")[3]
         assertEquals(pingName, docType)
 
-        val pingJson = JSONObject(request.body.readUtf8())
+        val pingJson = JSONObject(request.getPlainBody())
         checkPingSchema(pingJson)
 
         val pingMetricsObject = pingJson.getJSONObject("metrics")
@@ -647,7 +647,7 @@ class GleanTest {
         triggerWorkManager(context)
 
         val request = server.takeRequest(20L, TimeUnit.SECONDS)
-        val jsonContent = JSONObject(request.body.readUtf8())
+        val jsonContent = JSONObject(request.getPlainBody())
         assertEquals(
             110,
             jsonContent
@@ -744,7 +744,7 @@ class GleanTest {
             val docType = request.path.split("/")[3]
             assertEquals("The received ping must be a 'baseline' ping", "baseline", docType)
 
-            val baselineJson = JSONObject(request.body.readUtf8())
+            val baselineJson = JSONObject(request.getPlainBody())
             assertEquals("dirty_startup", baselineJson.getJSONObject("ping_info")["reason"])
             checkPingSchema(baselineJson)
 

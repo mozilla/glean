@@ -13,14 +13,15 @@ package mozilla.telemetry.glean.private
 import android.os.SystemClock
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import java.lang.NullPointerException
-import java.util.concurrent.TimeUnit
-import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.Glean
+import mozilla.telemetry.glean.getPlainBody
 import mozilla.telemetry.glean.checkPingSchema
+import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.getContextWithMockedInfo
 import mozilla.telemetry.glean.getMockWebServer
 import mozilla.telemetry.glean.resetGlean
+import java.lang.NullPointerException
+import java.util.concurrent.TimeUnit
 import mozilla.telemetry.glean.testing.ErrorType
 import mozilla.telemetry.glean.testing.GleanTestRule
 import mozilla.telemetry.glean.triggerWorkManager
@@ -273,7 +274,7 @@ class EventMetricTypeTest {
         assert(
             request.path.startsWith("/submit/$applicationId/events/")
         )
-        val pingJsonData = request.body.readUtf8()
+        val pingJsonData = request.getPlainBody()
         val pingJson = JSONObject(pingJsonData)
         checkPingSchema(pingJson)
         assertNotNull(pingJson.opt("events"))
@@ -334,7 +335,7 @@ class EventMetricTypeTest {
         triggerWorkManager(context)
 
         var request = server.takeRequest(20L, TimeUnit.SECONDS)
-        var pingJsonData = request.body.readUtf8()
+        var pingJsonData = request.getPlainBody()
         var pingJson = JSONObject(pingJsonData)
         checkPingSchema(pingJson)
         assertNotNull(pingJson.opt("events"))
@@ -359,7 +360,7 @@ class EventMetricTypeTest {
         triggerWorkManager(context)
 
         request = server.takeRequest(20L, TimeUnit.SECONDS)
-        pingJsonData = request.body.readUtf8()
+        pingJsonData = request.getPlainBody()
         pingJson = JSONObject(pingJsonData)
         checkPingSchema(pingJson)
         assertNotNull(pingJson.opt("events"))

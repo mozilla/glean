@@ -571,7 +571,7 @@ jobs:
             rustup target add aarch64-apple-ios x86_64-apple-ios
             bin/bootstrap.sh
             # See https://circleci.com/docs/2.0/testing-ios/#pre-starting-the-simulator
-            xcrun instruments -w "iPhone 11 (13.4) [" || true
+            xcrun instruments -w "iPhone 11 (13" || true
             # Store build type for use in cache key
             if [ -z "${CIRCLE_TAG}" ]; then
               echo "release" > buildtype.txt
@@ -663,7 +663,7 @@ jobs:
           command: |
             rustup target add aarch64-apple-ios x86_64-apple-ios
             # See https://circleci.com/docs/2.0/testing-ios/#pre-starting-the-simulator
-            xcrun instruments -w "iPhone 11 (13.4) [" || true
+            xcrun instruments -w "iPhone 11 (13" || true
       - attach_workspace:
           at: .
       - run:
@@ -683,12 +683,15 @@ jobs:
             sed -i.bak "/mozilla\/glean/s#.*#binary \"$JSON_URL\" ~> 0.0.1-SNAPSHOT#" "$CARTFILE_PATH"
             cat "${CARTFILE_PATH}"
       - run:
+          name: Bootstrap dependencies
+          command: |
+            # We need release mode to correctly ship bitcode for dependencies
+            pushd samples/ios/app
+            carthage bootstrap --platform iOS --cache-builds --configuration Release --verbose
+            popd
+      - run:
           name: Build sample app
           command: |
-            # Build in Debug mode to speed it all up
-            pushd samples/ios/app
-            carthage bootstrap --platform iOS --cache-builds --configuration Debug --verbose
-            popd
             bash bin/run-ios-sample-app-build.sh
       - store_artifacts:
           path: raw_sample_xcodebuild.log

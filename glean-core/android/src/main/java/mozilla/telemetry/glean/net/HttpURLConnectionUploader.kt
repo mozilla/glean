@@ -6,6 +6,7 @@ package mozilla.telemetry.glean.net
 
 import android.util.Log
 import androidx.annotation.VisibleForTesting
+import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.net.CookieHandler
 import java.net.CookieManager
@@ -37,12 +38,13 @@ class HttpURLConnectionUploader : PingUploader {
      * @param data the serialized text data to send
      * @param headers a [HeadersList] containing String to String [Pair] with
      *        the first entry being the header name and the second its value.
+     * @param isGzipped whether or not the payload is gzipped
      *
      * @return return the status code of the upload response,
      *         or null in case unable to upload.
      */
     @Suppress("ReturnCount", "MagicNumber")
-    override fun upload(url: String, data: String, headers: HeadersList): UploadResult {
+    override fun upload(url: String, data: ByteArray, headers: HeadersList): UploadResult {
         var connection: HttpURLConnection? = null
         try {
             connection = openConnection(url)
@@ -61,7 +63,7 @@ class HttpURLConnectionUploader : PingUploader {
             removeCookies(url)
 
             // Finally upload.
-            var statusCode = doUpload(connection, data)
+            val statusCode = doUpload(connection, data)
             return HttpResponse(statusCode)
         } catch (e: MalformedURLException) {
             // There's nothing we can do to recover from this here. So let's just log an error and
@@ -104,9 +106,11 @@ class HttpURLConnectionUploader : PingUploader {
     }
 
     @Throws(IOException::class)
-    internal fun doUpload(connection: HttpURLConnection, data: String): Int {
-        connection.outputStream.bufferedWriter().use {
-            it.write(data)
+    internal fun doUpload(connection: HttpURLConnection, data: ByteArray): Int {
+        connection.outputStream.use {
+            val byteOutputStream = ByteArrayOutputStream()
+            byteOutputStream.write(data)
+            byteOutputStream.writeTo(it)
             it.flush()
         }
 

@@ -10,7 +10,7 @@
 use std::ffi::CString;
 use std::os::raw::c_char;
 
-use ffi_support::IntoFfi;
+use ffi_support::{ByteBuffer, IntoFfi};
 
 use crate::glean_str_free;
 use glean_core::upload::PingUploadTask;
@@ -101,7 +101,7 @@ pub enum FfiPingUploadTask {
     Upload {
         document_id: *mut c_char,
         path: *mut c_char,
-        body: *mut c_char,
+        body: ByteBuffer,
         headers: *mut c_char,
     },
     Wait,
@@ -114,17 +114,15 @@ impl From<PingUploadTask> for FfiPingUploadTask {
             PingUploadTask::Upload(request) => {
                 // Safe unwraps:
                 // 1. CString::new(..) should not fail as we are the ones that created the strings being transformed;
-                // 2. serde_json::to_string(&request.body) should not fail as request.body is a JsonValue;
-                // 3. serde_json::to_string(&request.headers) should not fail as request.headers is a HashMap of Strings.
+                // 2. serde_json::to_string(&request.headers) should not fail as request.headers is a HashMap of Strings.
                 let document_id = CString::new(request.document_id.to_owned()).unwrap();
                 let path = CString::new(request.path.to_owned()).unwrap();
-                let body = CString::new(serde_json::to_string(&request.body).unwrap()).unwrap();
                 let headers =
                     CString::new(serde_json::to_string(&request.headers).unwrap()).unwrap();
                 FfiPingUploadTask::Upload {
                     document_id: document_id.into_raw(),
                     path: path.into_raw(),
-                    body: body.into_raw(),
+                    body: ByteBuffer::from_vec(request.body),
                     headers: headers.into_raw(),
                 }
             }
@@ -147,9 +145,14 @@ impl Drop for FfiPingUploadTask {
             unsafe {
                 glean_str_free(*document_id);
                 glean_str_free(*path);
-                glean_str_free(*body);
                 glean_str_free(*headers);
             }
+            // Unfortunately, we cannot directly call `body.destroy();` as
+            // we're behind a mutable reference, so we have to manually take the
+            // ownership and drop. Moreover, `ByteBuffer::new_with_size(0)`
+            // does not allocate, so we are not leaking memory.
+            let body = std::mem::replace(body, ByteBuffer::new_with_size(0));
+            body.destroy();
         }
     }
 }

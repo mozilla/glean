@@ -4,11 +4,13 @@
 
 package org.mozilla.samples.gleancore.pings
 
+import mozilla.telemetry.glean.utils.decompressGZIP
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import org.json.JSONObject
+import java.io.ByteArrayInputStream
 import java.util.concurrent.TimeUnit
 
 /**
@@ -44,7 +46,12 @@ fun waitForPingContent(
         val request = server.takeRequest(20L, TimeUnit.SECONDS)
         val docType = request.path.split("/")[3]
         if (pingName == docType) {
-            return JSONObject(request.body.readUtf8())
+            return if (request.getHeader("Content-Encoding") == "gzip") {
+                val bodyInBytes = ByteArrayInputStream(request.body.readByteArray()).readBytes()
+                JSONObject(decompressGZIP(bodyInBytes))
+            } else {
+                JSONObject(request.body.readUtf8())
+            }
         }
     } while (attempts < maxAttempts)
 
