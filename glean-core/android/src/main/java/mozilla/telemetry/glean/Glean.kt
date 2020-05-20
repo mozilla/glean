@@ -79,7 +79,7 @@ open class GleanInternalAPI internal constructor () {
     internal lateinit var metricsPingScheduler: MetricsPingScheduler
 
     // Keep track of ping types that have been registered before Glean is initialized.
-    private val pingTypeQueue: MutableSet<PingTypeBase> = mutableSetOf()
+    internal val pingTypeQueue: MutableSet<PingTypeBase> = mutableSetOf()
 
     // This is used to cache the process state and is used by the function `isMainProcess()`
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -166,7 +166,13 @@ open class GleanInternalAPI internal constructor () {
 
             // If any pings were registered before initializing, do so now.
             // We're not clearing this queue in case Glean is reset by tests.
-            pingTypeQueue.forEach { registerPingType(it) }
+            synchronized(this@GleanInternalAPI) {
+                pingTypeQueue.forEach {
+                    LibGleanFFI.INSTANCE.glean_register_ping_type(
+                            it.handle
+                    )
+                }
+            }
 
             // If this is the first time ever the Glean SDK runs, make sure to set
             // some initial core metrics in case we need to generate early pings.
@@ -666,13 +672,7 @@ open class GleanInternalAPI internal constructor () {
         // but not the whole process, meaning globals, such as the ping types, still exist from the old run.
         // It's a set and keeping them around forever should not have much of an impact.
 
-        // This function is called from `Glean.initialize` while iterating over pingTypeQueue.
-        // Only add if it's not already there to avoid a
-        // ConcurrentModificationException on Android 5.
-        // See https://bugzilla.mozilla.org/show_bug.cgi?id=1635865
-        if (!pingTypeQueue.contains(pingType)) {
-            pingTypeQueue.add(pingType)
-        }
+        pingTypeQueue.add(pingType)
     }
 
     /**
