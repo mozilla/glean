@@ -423,7 +423,11 @@ def test_tempdir_is_cleared_multiprocess(safe_httpserver):
     safe_httpserver.serve_content(b"", code=200)
     Glean._configuration.server_endpoint = safe_httpserver.url
 
-    pings_dir = PingUploadWorker.storage_directory()
+    # This test requires us to write a few files in the pending pings
+    # directory, to which language bindings have theoretically no access.
+    # Manually create the path to that directory, at the risk of breaking
+    # the test in the future, if that changes in the Rust code.
+    pings_dir = Glean._data_dir / "pending_pings"
     pings_dir.mkdir()
 
     for i in range(100):
