@@ -7,8 +7,7 @@
 use std::collections::HashMap;
 
 use chrono::prelude::{DateTime, Utc};
-use flate2::write::GzEncoder;
-use flate2::Compression;
+use flate2::{read::GzDecoder, write::GzEncoder, Compression};
 use serde_json::{self, Value as JsonValue};
 use std::io::prelude::*;
 
@@ -58,6 +57,22 @@ impl PingRequest {
             .nth(3)
             .map(|url| url == "deletion-request")
             .unwrap_or(false)
+    }
+
+    /// Decompress and pretty-format the ping payload
+    ///
+    /// Should be used for logging when required.
+    /// This decompresses the payload in memory.
+    pub fn pretty_body(&self) -> Option<String> {
+        let mut gz = GzDecoder::new(&self.body[..]);
+        let mut s = String::with_capacity(self.body.len());
+
+        gz.read_to_string(&mut s)
+            .ok()
+            .map(|_| &s[..])
+            .or_else(|| std::str::from_utf8(&self.body).ok())
+            .and_then(|payload| serde_json::from_str::<JsonValue>(payload).ok())
+            .and_then(|json| serde_json::to_string_pretty(&json).ok())
     }
 
     /// Attempt to gzip the provided ping content.

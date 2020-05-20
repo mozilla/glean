@@ -352,9 +352,9 @@ pub extern "C" fn glean_is_first_run() -> u8 {
 //
 // * `result`: the object the output task will be written to.
 #[no_mangle]
-pub extern "C" fn glean_get_upload_task(result: *mut FfiPingUploadTask) {
+pub extern "C" fn glean_get_upload_task(result: *mut FfiPingUploadTask, log_ping: u8) {
     with_glean_value(|glean| {
-        let ffi_task = FfiPingUploadTask::from(glean.get_upload_task());
+        let ffi_task = FfiPingUploadTask::from(glean.get_upload_task(log_ping != 0));
         unsafe {
             std::ptr::write(result, ffi_task);
         }
