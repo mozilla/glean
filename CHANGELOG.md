@@ -2,6 +2,8 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v30.0.0...master)
 
+* Android
+  * BUGFIX: Fix a race condition that leads to a ConcurrentModificationException. [Bug 1635865](https://bugzilla.mozilla.org/1635865)
 * Android & iOS
   * Ping payloads are now compressed using gzip.
 
