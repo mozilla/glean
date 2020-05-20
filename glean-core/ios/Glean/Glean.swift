@@ -471,6 +471,16 @@ public class Glean {
     private func checkIsMainProcess() -> Bool {
         if isMainProcess == nil {
             if let packageType = Bundle.main.object(forInfoDictionaryKey: "CFBundlePackageType") as? String {
+                // This is the bundle type reported by embedded application extensions and so we test for it to
+                // make sure that we are not running in an extension.
+                //
+                // For more info on XPC services see:
+                // https://developer.apple.com/library/archive/documentation/MacOSX/Conceptual/BPSystemStartup/Chapters/CreatingXPCServices.html
+                //
+                // For more info on CFBundlePackageType see:
+                // https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundlepackagetype
+                // and
+                // https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html#//apple_ref/doc/uid/20001431-111321
                 isMainProcess = packageType != "XPC!"
             } else {
                 // The `CFBundlePackageType` doesn't get set in tests so we return true to indicate that we are
