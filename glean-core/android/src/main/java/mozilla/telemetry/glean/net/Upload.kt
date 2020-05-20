@@ -34,7 +34,7 @@ internal class UploadBody(
     // structure, on the Rust side, called `ByteBuffer`. While the ideal would be to
     // use something like `RustBuffer` (as provided by application-services), this
     // does not work in the context of JNA unions out of the box.
-    @JvmField var bodyLen: Long = 0,
+    @JvmField var bodyLen: Int = 0,
     @JvmField var body: Pointer? = null,
     @JvmField val headers: Pointer? = null
 ) : Structure() {
