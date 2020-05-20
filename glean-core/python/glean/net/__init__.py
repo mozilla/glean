@@ -12,7 +12,6 @@ from .base_uploader import BaseUploader
 from .http_client import HttpClientUploader
 from .ping_uploader import PingUploader
 from .ping_upload_worker import PingUploadWorker
-from .deletion_ping_upload_worker import DeletionPingUploadWorker
 
 
 __all__ = [
@@ -20,5 +19,4 @@ __all__ = [
     "HttpClientUploader",
     "PingUploader",
     "PingUploadWorker",
-    "DeletionPingUploadWorker",
 ]

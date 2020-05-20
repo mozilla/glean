@@ -21,7 +21,6 @@ from .config import Configuration
 from ._dispatcher import Dispatcher
 from . import _ffi
 from .net import PingUploadWorker
-from .net import DeletionPingUploadWorker
 from ._process_dispatcher import ProcessDispatcher
 from . import _util
 
@@ -163,7 +162,10 @@ class Glean:
         # Deal with any pending events so we can start recording new ones
         @Dispatcher.launch_at_front
         def submit_pending_events():
-            if _ffi.lib.glean_on_ready_to_submit_pings():
+            if (
+                _ffi.lib.glean_on_ready_to_submit_pings()
+                or cls._upload_enabled is False
+            ):
                 PingUploadWorker.process()
 
         # Glean Android checks for the "dirty bit" and sends the `baseline` ping
@@ -180,12 +182,6 @@ class Glean:
 
         # Glean Android sets up the lifecycle observer here. We don't really
         # have a lifecycle.
-
-        if cls._upload_enabled is False:
-
-            @Dispatcher.launch
-            def check_pending_deletion_request():
-                DeletionPingUploadWorker.process()
 
     @_util.classproperty
     def configuration(cls) -> Configuration:
@@ -291,7 +287,7 @@ class Glean:
 
                 if original_enabled is True and cls.get_upload_enabled() is False:
                     # If uploading is disabled, we need to send the deletion-request ping
-                    DeletionPingUploadWorker.process()
+                    PingUploadWorker.process()
 
         else:
             cls._upload_enabled = enabled
