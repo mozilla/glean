@@ -291,5 +291,8 @@ class GleanTests: XCTestCase {
 
         // Check to see if Glean is initialized
         XCTAssertFalse(Glean.shared.isInitialized())
+
+        // Reset variable so as to not interfere with other tests.
+        Glean.shared.isMainProcess = true
     }
 }
