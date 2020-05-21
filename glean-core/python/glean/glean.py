@@ -150,8 +150,12 @@ class Glean:
         for ping in cls._ping_type_queue:
             cls.register_ping_type(ping)
 
-        # Initialize the core metrics
-        cls._initialize_core_metrics()
+        # If this is the first time ever the Glean SDK runs, make sure to set
+        # some initial core metrics in case we need to generate early pings.
+        # The next times we start, we would have them around already.
+        is_first_run = _ffi.lib.glean_is_first_run() != 0
+        if is_first_run:
+            cls._initialize_core_metrics()
 
         # Glean Android sets up the metrics ping scheduler here, but we don't
         # have one.
@@ -161,6 +165,16 @@ class Glean:
         def submit_pending_events():
             if _ffi.lib.glean_on_ready_to_submit_pings():
                 PingUploadWorker.process()
+
+        # Glean Android checks for the "dirty bit" and sends the `baseline` ping
+        # with reason `dirty_startup`.
+
+        # From the second time we run, after all startup pings are generated,
+        # make sure to clear `lifetime: application` metrics and set them again.
+        # Any new value will be sent in newly generated pings after startup.
+        if not is_first_run:
+            _ffi.lib.glean_clear_application_lifetime_metrics()
+            cls._initialize_core_metrics()
 
         Dispatcher.flush_queued_initial_tasks()
 
