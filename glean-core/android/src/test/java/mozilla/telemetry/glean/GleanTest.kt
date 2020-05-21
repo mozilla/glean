@@ -5,7 +5,6 @@
 package mozilla.telemetry.glean
 
 import android.content.Context
-import android.os.Build
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
@@ -50,7 +49,6 @@ import org.junit.runner.RunWith
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.spy
 import org.robolectric.shadows.ShadowProcess
-import org.robolectric.annotation.Config
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
@@ -793,7 +791,7 @@ class GleanTest {
 
         for (i in 1..1000) {
             val ping = PingType<NoReasonCodes>(
-                    name = "race-condition-ping${i}",
+                    name = "race-condition-ping$i",
                     includeClientId = true,
                     sendIfEmpty = false,
                     reasonCodes = listOf()
@@ -826,7 +824,6 @@ class GleanTest {
                         Glean.registerPingType(ping)
                     }
                 }
-
             }.join()
         }
 
@@ -837,4 +834,3 @@ class GleanTest {
         }
     }
 }
-
