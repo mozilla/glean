@@ -8,6 +8,9 @@
   * Ping payloads are now compressed using gzip.
 * iOS
   * `Glean.initialize` is now a no-op if called from an embedded extension. This means that Glean will only run in the base application process in order to prevent extensions from behaving like separate applications with different client ids from the base application. Applications are responsible for ensuring that extension metrics are only collected within the base application.
+* Python
+  * `lifetime: application` metrics are now cleared after the Glean-owned pings are sent,
+    after the product starts.
 
 # v30.0.0 (2020-05-13)
 
