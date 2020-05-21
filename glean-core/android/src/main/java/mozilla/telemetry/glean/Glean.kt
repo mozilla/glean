@@ -167,11 +167,7 @@ open class GleanInternalAPI internal constructor () {
             // If any pings were registered before initializing, do so now.
             // We're not clearing this queue in case Glean is reset by tests.
             synchronized(this@GleanInternalAPI) {
-                pingTypeQueue.forEach {
-                    LibGleanFFI.INSTANCE.glean_register_ping_type(
-                            it.handle
-                    )
-                }
+                pingTypeQueue.forEach { registerPingType(it) }
             }
 
             // If this is the first time ever the Glean SDK runs, make sure to set
