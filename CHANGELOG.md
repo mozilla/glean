@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v29.1.0...master)
 
+* Android
+  * BUGFIX: Fix a race condition that leads to a `ConcurrentModificationException`. [Bug 1635865](https://bugzilla.mozilla.org/1635865)
+
 # v29.1.0 (2020-05-11)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v29.0.0...v29.1.0)
