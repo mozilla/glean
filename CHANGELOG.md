@@ -2,8 +2,6 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v30.0.0...master)
 
-* Android
-  * BUGFIX: Fix a race condition that leads to a `ConcurrentModificationException`. [Bug 1635865](https://bugzilla.mozilla.org/1635865)
 * Android & iOS
   * Ping payloads are now compressed using gzip.
 * iOS
@@ -11,6 +9,9 @@
 * Python
   * `lifetime: application` metrics are now cleared after the Glean-owned pings are sent,
     after the product starts.
+  * Glean Python bindings now build in a native Windows environment.
+  * BUGFIX: `MemoryDistributionMetric` now parses correctly in `metrics.yaml` files.
+  * BUGFIX: Glean will no longer crash if run as part of another library's coverage testing.
 
 # v30.0.0 (2020-05-13)
 
@@ -27,6 +28,13 @@
   * Refactor the ping uploader to use the new upload mechanism.
 * iOS:
   * Refactor the ping uploader to use the new upload mechanism.
+
+# v29.1.1 (2020-05-22)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v29.1.0...v29.1.1)
+
+* Android
+  * BUGFIX: Fix a race condition that leads to a `ConcurrentModificationException`. [Bug 1635865](https://bugzilla.mozilla.org/1635865)
 
 # v29.1.0 (2020-05-11)
 
@@ -119,7 +127,7 @@
     were unintentionally public, have been made private.
   * Most Glean work and I/O is now done on its own worker thread. This brings the parallelism Python in line with the other platforms.
   * The timing distribution, memory distribution, string list, labeled boolean and labeled string metric types are now supported in Python ([#762](https://github.com/mozilla/glean/pull/762), [#763](https://github.com/mozilla/glean/pull/763), [#765](https://github.com/mozilla/glean/pull/765), [#766](https://github.com/mozilla/glean/pull/766))
-  
+
 # v25.1.0 (2020-02-26)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v25.0.0...v25.1.0)
