@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v30.0.0...master)
+[Full changelog](https://github.com/mozilla/glean/compare/v30.1.0...master)
+
+# v30.1.0 (2020-05-22)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v30.0.0...v30.1.0)
 
 * Android & iOS
   * Ping payloads are now compressed using gzip.
