@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v29.1.0...master)
+[Full changelog](https://github.com/mozilla/glean/compare/v29.1.1...master)
+
+# v29.1.1 (2020-05-22)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v29.1.0...v29.1.1)
 
 * Android
   * BUGFIX: Fix a race condition that leads to a `ConcurrentModificationException`. [Bug 1635865](https://bugzilla.mozilla.org/1635865)
