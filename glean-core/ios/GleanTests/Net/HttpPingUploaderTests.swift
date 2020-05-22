@@ -22,22 +22,6 @@ class HttpPingUploaderTests: XCTestCase {
         expectation = nil
     }
 
-    private func setupHttpResponseStub(statusCode: Int32 = 200) {
-        let host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
-        stub(condition: isHost(host)) { data in
-            let body = (data as NSURLRequest).ohhttpStubs_HTTPBody()
-            let json = try! JSONSerialization.jsonObject(with: body!, options: []) as? [String: Any]
-            XCTAssert(json != nil)
-            XCTAssertEqual(json?["ping"] as? String, "test")
-
-            return OHHTTPStubsResponse(
-                jsonObject: [],
-                statusCode: statusCode,
-                headers: ["Content-Type": "application/json"]
-            )
-        }
-    }
-
     func getOrCreatePingDirectory(_ pingDirectory: String) -> URL {
         let dataPath = getGleanDirectory().appendingPathComponent(pingDirectory)
 
@@ -83,12 +67,15 @@ class HttpPingUploaderTests: XCTestCase {
 
     func testHTTPStatusCode() {
         var testValue: UploadResult?
-        setupHttpResponseStub(statusCode: 200)
+        stubServerReceive { _, json in
+            XCTAssert(json != nil)
+            XCTAssertEqual(json?["ping"] as? String, "test")
+        }
 
         expectation = expectation(description: "Completed upload")
 
         let httpPingUploader = HttpPingUploader(configuration: testConfig)
-        httpPingUploader.upload(path: testPath, data: testPing, headers: [:]) { result in
+        httpPingUploader.upload(path: testPath, data: Data(testPing.utf8), headers: [:]) { result in
             testValue = result
             self.expectation?.fulfill()
         }
@@ -109,7 +96,7 @@ class HttpPingUploaderTests: XCTestCase {
         // We specify a single additional header here.
         // In usual code they are generated on the Rust side.
         let request = HttpPingUploader(configuration: testConfig)
-            .buildRequest(path: testPath, data: testPing, headers: ["X-Client-Type": "Glean"])
+            .buildRequest(path: testPath, data: Data(testPing.utf8), headers: ["X-Client-Type": "Glean"])
 
         XCTAssertEqual(
             request?.url?.path,
@@ -171,10 +158,7 @@ class HttpPingUploaderTests: XCTestCase {
         // Now set up our test server
         var countFilesUploaded = 0
 
-        let host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
-        stub(condition: isHost(host)) { data in
-            let body = (data as NSURLRequest).ohhttpStubs_HTTPBody()
-            let json = try! JSONSerialization.jsonObject(with: body!, options: []) as? [String: Any]
+        stubServerReceive { _, json in
             XCTAssert(json != nil)
             XCTAssertEqual(json?["ping"] as? String, "test")
 
@@ -185,12 +169,6 @@ class HttpPingUploaderTests: XCTestCase {
                     self.expectation?.fulfill()
                 }
             }
-
-            return OHHTTPStubsResponse(
-                jsonObject: [],
-                statusCode: 200,
-                headers: ["Content-Type": "application/json"]
-            )
         }
 
         // Set our expectation that will be fulfilled by the stub above
@@ -235,10 +213,7 @@ class HttpPingUploaderTests: XCTestCase {
         )
 
         // Now set up our test server
-        let host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
-        stub(condition: isHost(host)) { data in
-            let body = (data as NSURLRequest).ohhttpStubs_HTTPBody()
-            let json = try! JSONSerialization.jsonObject(with: body!, options: []) as? [String: Any]
+        stubServerReceive { _, json in
             XCTAssert(json != nil)
             XCTAssertEqual(json?["ping"] as? String, "test")
 
@@ -246,12 +221,6 @@ class HttpPingUploaderTests: XCTestCase {
                 // let the response get processed before we mark the expectation fulfilled
                 self.expectation?.fulfill()
             }
-
-            return OHHTTPStubsResponse(
-                jsonObject: [],
-                statusCode: 200,
-                headers: ["Content-Type": "application/json"]
-            )
         }
 
         // Set our expectation that will be fulfilled by the stub above

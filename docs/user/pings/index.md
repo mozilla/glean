@@ -28,7 +28,6 @@ Optional fields are marked accordingly.
 
 | Field name | Type | Description |
 |---|---|---|
-| `ping_type` | String | The name of the ping type (e.g. "baseline", "metrics") |
 | `seq` | Counter | A running counter of the number of times pings of this type have been sent |
 | `experiments` | Object | *Optional*. A dictionary of [active experiments](#the-experiments-object) |
 | `start_time` | Datetime | The time of the start of collection of the data in the ping, in local time and with minute precision, including timezone information. |

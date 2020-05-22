@@ -232,7 +232,7 @@ jobs:
       - run:
           name: Check vendored schema for upstream updates
           command: |
-            bin/update-schema.sh latest
+            bin/update-schema.sh master
             if ! git diff --exit-code HEAD -- glean-core/preview/tests/glean.1.schema.json; then
               echo "===================================="
               echo "Latest schema from upstream changed."
@@ -346,10 +346,10 @@ jobs:
       - run:
           name: Install mdbook-dtmo
           command: |
-              MDBOOK_VERSION=0.5.0
+              MDBOOK_VERSION=0.6.1
               MDBOOK="mdbook-dtmo-${MDBOOK_VERSION}-x86_64-unknown-linux-gnu.tar.gz"
-              MDBOOK_SHA256=ce96727a7d066dc69b9148db46b737f45f79bec738446177806e645673ed8a4e
-              curl -sfSL --retry 5 --retry-delay 10 -O "https://github.com/badboy/mdbook-dtmo/releases/download/${MDBOOK_VERSION}/${MDBOOK}"
+              MDBOOK_SHA256=775124f302e633db91696ff955509e8567305949c79a76ef51649b9871fdd590
+              curl -sfSL --retry 5 -O "https://github.com/badboy/mdbook-dtmo/releases/download/${MDBOOK_VERSION}/${MDBOOK}"
               echo "${MDBOOK_SHA256} *${MDBOOK}" | shasum -a 256 -c -
               tar -xvf "${MDBOOK}"
               # We rename it to mdbook here, so other tools keep working as expected
@@ -571,7 +571,7 @@ jobs:
             rustup target add aarch64-apple-ios x86_64-apple-ios
             bin/bootstrap.sh
             # See https://circleci.com/docs/2.0/testing-ios/#pre-starting-the-simulator
-            xcrun instruments -w "iPhone 11 (13.4) [" || true
+            xcrun instruments -w "iPhone 11 (13" || true
             # Store build type for use in cache key
             if [ -z "${CIRCLE_TAG}" ]; then
               echo "release" > buildtype.txt
@@ -663,7 +663,7 @@ jobs:
           command: |
             rustup target add aarch64-apple-ios x86_64-apple-ios
             # See https://circleci.com/docs/2.0/testing-ios/#pre-starting-the-simulator
-            xcrun instruments -w "iPhone 11 (13.4) [" || true
+            xcrun instruments -w "iPhone 11 (13" || true
       - attach_workspace:
           at: .
       - run:
@@ -683,12 +683,15 @@ jobs:
             sed -i.bak "/mozilla\/glean/s#.*#binary \"$JSON_URL\" ~> 0.0.1-SNAPSHOT#" "$CARTFILE_PATH"
             cat "${CARTFILE_PATH}"
       - run:
+          name: Bootstrap dependencies
+          command: |
+            # We need release mode to correctly ship bitcode for dependencies
+            pushd samples/ios/app
+            carthage bootstrap --platform iOS --cache-builds --configuration Release --verbose
+            popd
+      - run:
           name: Build sample app
           command: |
-            # Build in Debug mode to speed it all up
-            pushd samples/ios/app
-            carthage bootstrap --platform iOS --cache-builds --configuration Debug --verbose
-            popd
             bash bin/run-ios-sample-app-build.sh
       - store_artifacts:
           path: raw_sample_xcodebuild.log

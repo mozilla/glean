@@ -81,7 +81,7 @@ You should now be able to build and run Fenix (assuming you could before all thi
 
 ## Caveats
 
-1. This assumes you have followed the [android/rust build setup](../android/setup-android-build-environment.md)
+1. This assumes you have followed the [Android/Rust build setup](setup-android-build-environment.md)
 2. Make sure you're fully up to date in all repositories, unless you know you need to not be.
 3. This omits the steps if changes needed because, e.g. Glean made a breaking change to an API used in android-components.
    These should be understandable to fix, you usually should be able to find a PR with the fixes somewhere in the android-component's list of pending PRs

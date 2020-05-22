@@ -59,6 +59,7 @@
 		BFB59A9D2342A24000F40CA8 /* GleanBaseline.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFB59A992342A24000F40CA8 /* GleanBaseline.swift */; };
 		BFB59A9E2342A24000F40CA8 /* Pings.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFB59A9A2342A24000F40CA8 /* Pings.swift */; };
 		BFB59A9F2342A24000F40CA8 /* GleanInternalMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFB59A9B2342A24000F40CA8 /* GleanInternalMetrics.swift */; };
+		BFCBD6AB246D55CC0032096D /* TestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFCBD6AA246D55CC0032096D /* TestUtils.swift */; };
 		BFE1CDC4233B63A70019EE47 /* LabeledMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFE1CDC3233B63A70019EE47 /* LabeledMetric.swift */; };
 		BFE1CDC6233B6B6D0019EE47 /* LabeledMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFE1CDC5233B6B6D0019EE47 /* LabeledMetricTests.swift */; };
 		BFE1CDC8233B73B30019EE47 /* Unreachable.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFE1CDC7233B73B30019EE47 /* Unreachable.swift */; };
@@ -113,6 +114,7 @@
 		BF30FDC3233260B500840607 /* TimespanMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimespanMetric.swift; sourceTree = "<group>"; };
 		BF30FDC5233260C400840607 /* TimespanMetricTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimespanMetricTests.swift; sourceTree = "<group>"; };
 		BF30FDC72332640400840607 /* TimeUnit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeUnit.swift; sourceTree = "<group>"; };
+		BF3A3055246E936E00E4A18E /* Gzip.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Gzip.framework; path = ../../Carthage/Build/iOS/Gzip.framework; sourceTree = "<group>"; };
 		BF3DE3912243A2F20018E23F /* Glean.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Glean.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF3DE3942243A2F20018E23F /* Glean.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Glean.h; sourceTree = "<group>"; };
 		BF3DE3952243A2F20018E23F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -139,6 +141,7 @@
 		BFB59A992342A24000F40CA8 /* GleanBaseline.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GleanBaseline.swift; sourceTree = "<group>"; };
 		BFB59A9A2342A24000F40CA8 /* Pings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Pings.swift; sourceTree = "<group>"; };
 		BFB59A9B2342A24000F40CA8 /* GleanInternalMetrics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GleanInternalMetrics.swift; sourceTree = "<group>"; };
+		BFCBD6AA246D55CC0032096D /* TestUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestUtils.swift; sourceTree = "<group>"; };
 		BFE1CDC3233B63A70019EE47 /* LabeledMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabeledMetric.swift; sourceTree = "<group>"; };
 		BFE1CDC5233B6B6D0019EE47 /* LabeledMetricTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabeledMetricTests.swift; sourceTree = "<group>"; };
 		BFE1CDC7233B73B30019EE47 /* Unreachable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Unreachable.swift; sourceTree = "<group>"; };
@@ -316,6 +319,7 @@
 				1F70B787232A81A4007395FB /* DispatchersTest.swift */,
 				BF3DE39F2243A2F20018E23F /* GleanTests.swift */,
 				BF3DE3A12243A2F20018E23F /* Info.plist */,
+				BFCBD6AA246D55CC0032096D /* TestUtils.swift */,
 			);
 			path = GleanTests;
 			sourceTree = "<group>";
@@ -366,6 +370,7 @@
 		BF6F2DA6224BF8F000394062 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				BF3A3055246E936E00E4A18E /* Gzip.framework */,
 				BF1BF3F72333787E0036F4CC /* OHHTTPStubs.framework */,
 				BF6F2DA7224BF8F100394062 /* libglean_ffi.a */,
 			);
@@ -410,7 +415,6 @@
 			buildPhases = (
 				BF6F2DA5224BF2E000394062 /* Run Script */,
 				BFB59A9723429FC000F40CA8 /* Run Glean SDK generator */,
-				AC0C2B5E2328090D00A50CC8 /* Copy Carthage Dependencies */,
 				BF3DE38C2243A2F20018E23F /* Headers */,
 				BF3DE38D2243A2F20018E23F /* Sources */,
 				BF3DE38E2243A2F20018E23F /* Frameworks */,
@@ -510,29 +514,14 @@
 			);
 			inputPaths = (
 				../../Carthage/Build/iOS/OHHTTPStubs.framework,
+				../../Carthage/Build/iOS/Gzip.framework,
 			);
 			name = "Copy Carthage Dependencies";
 			outputFileListPaths = (
 			);
 			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "/usr/local/bin/carthage copy-frameworks\n";
-		};
-		AC0C2B5E2328090D00A50CC8 /* Copy Carthage Dependencies */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Copy Carthage Dependencies";
-			outputFileListPaths = (
-			);
-			outputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/OHHTTPStubs.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Gzip.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -634,6 +623,7 @@
 				1F39E7B3239F0777009B13B3 /* GleanDebugUtilityTests.swift in Sources */,
 				BFAED50A2369752400DF293D /* StringListMetricTests.swift in Sources */,
 				BF890561232BC227003CA2BA /* StringMetricTests.swift in Sources */,
+				BFCBD6AB246D55CC0032096D /* TestUtils.swift in Sources */,
 				1F58921223C923C4007D2D80 /* MetricsPingSchedulerTests.swift in Sources */,
 				1FD4527723395EEB00F4C7E8 /* UuidMetricTests.swift in Sources */,
 				BF80AA5B2399301300A8B172 /* HttpPingUploaderTests.swift in Sources */,

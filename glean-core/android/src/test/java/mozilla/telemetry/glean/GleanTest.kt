@@ -5,15 +5,17 @@
 package mozilla.telemetry.glean
 
 import android.content.Context
-import android.os.Build
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.Dispatchers as KotlinDispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 import mozilla.telemetry.glean.GleanMetrics.GleanError
 import mozilla.telemetry.glean.GleanMetrics.GleanInternalMetrics
 import mozilla.telemetry.glean.GleanMetrics.Pings
@@ -47,7 +49,6 @@ import org.junit.runner.RunWith
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.spy
 import org.robolectric.shadows.ShadowProcess
-import org.robolectric.annotation.Config
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
@@ -239,7 +240,7 @@ class GleanTest {
             for (i in 0..3) {
                 val request = server.takeRequest(20L, TimeUnit.SECONDS)
                 val docType = request.path.split("/")[3]
-                val json = JSONObject(request.body.readUtf8())
+                val json = JSONObject(request.getPlainBody())
                 checkPingSchema(json)
                 if (docType == "events") {
                     assertEquals(1, json.getJSONArray("events").length())
@@ -294,7 +295,7 @@ class GleanTest {
             val docType = request.path.split("/")[3]
             assertEquals("The received ping must be a 'baseline' ping", "baseline", docType)
 
-            val baselineJson = JSONObject(request.body.readUtf8())
+            val baselineJson = JSONObject(request.getPlainBody())
             assertEquals("dirty_startup", baselineJson.getJSONObject("ping_info")["reason"])
             checkPingSchema(baselineJson)
 
@@ -517,7 +518,7 @@ class GleanTest {
         val docType = request.path.split("/")[3]
         assertEquals(pingName, docType)
 
-        val pingJson = JSONObject(request.body.readUtf8())
+        val pingJson = JSONObject(request.getPlainBody())
         checkPingSchema(pingJson)
 
         val pingMetricsObject = pingJson.getJSONObject("metrics")
@@ -647,7 +648,7 @@ class GleanTest {
         triggerWorkManager(context)
 
         val request = server.takeRequest(20L, TimeUnit.SECONDS)
-        val jsonContent = JSONObject(request.body.readUtf8())
+        val jsonContent = JSONObject(request.getPlainBody())
         assertEquals(
             110,
             jsonContent
@@ -744,7 +745,7 @@ class GleanTest {
             val docType = request.path.split("/")[3]
             assertEquals("The received ping must be a 'baseline' ping", "baseline", docType)
 
-            val baselineJson = JSONObject(request.body.readUtf8())
+            val baselineJson = JSONObject(request.getPlainBody())
             assertEquals("dirty_startup", baselineJson.getJSONObject("ping_info")["reason"])
             checkPingSchema(baselineJson)
 
@@ -757,13 +758,79 @@ class GleanTest {
     }
 
     @Test
-    @Config(sdk = [Build.VERSION_CODES.O])
-    fun `Initialize registering pings shouldn't crash with Oreo`() {
-        // Can't use resetGlean directly
+    fun `Initializing while registering pings isn't a race condition`() {
+        // See bug 1635865
+
         Glean.testDestroyGleanHandle()
 
-        val config = Configuration()
+        // We need a signal for when "initialization is done", and one doesn't
+        // really exist. For that, this sets a StringMetric on the pre-init task queue and
+        // then waits for the task queue to be empty.
 
+        Dispatchers.API.setTaskQueueing(true)
+        Dispatchers.API.setTestingMode(false)
+
+        val stringMetric = StringMetricType(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.Application,
+                name = "string_metric",
+                sendInPings = listOf("store1")
+        )
+        stringMetric.set("foo")
+
+        // Add a bunch of ping types to the pingTypeQueue. We need many in here so
+        // that registering pings during initialization is slow enough that we can
+        // get other pings to be registered at the same time from another thread.
+
+        // However, we don't want to add them to the queue and leave them there for
+        // other tests (that makes the whole testing suite slower), so we first take
+        // a copy of the current state, and restore it at the end of this test.
+
+        val pingTypeQueueInitialState = HashSet(Glean.pingTypeQueue)
+
+        for (i in 1..1000) {
+            val ping = PingType<NoReasonCodes>(
+                    name = "race-condition-ping$i",
+                    includeClientId = true,
+                    sendIfEmpty = false,
+                    reasonCodes = listOf()
+            )
+            Glean.registerPingType(ping)
+        }
+
+        // Initialize Glean.  This will do most of the Glean initialization in the main
+        // Glean coroutine in Dispatchers.API.
+        val config = Configuration()
         Glean.initialize(context, true, config)
+
+        // From another coroutine, just register pings as fast as we can to simulate the
+        // ping registration race condition. Do this until any queued tasks in Glean are
+        // complete (which signals the end of initialization). After that, restore the
+        // pingTypeQueue state.
+        runBlocking {
+            GlobalScope.launch {
+                val ping = PingType<NoReasonCodes>(
+                        name = "race-condition-ping",
+                        includeClientId = true,
+                        sendIfEmpty = false,
+                        reasonCodes = listOf()
+                )
+
+                // This timeout will fail and thereby fail the unit test if the
+                // Glean.initialize coroutine crashes.
+                withTimeout(500) {
+                    while (Dispatchers.API.taskQueue.size > 0) {
+                        Glean.registerPingType(ping)
+                    }
+                }
+            }.join()
+        }
+
+        // Restore the initial state of the pingTypeQueue
+        Glean.pingTypeQueue.clear()
+        for (it in pingTypeQueueInitialState) {
+            Glean.pingTypeQueue.add(it)
+        }
     }
 }

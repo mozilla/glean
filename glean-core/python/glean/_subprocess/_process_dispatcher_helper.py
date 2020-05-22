@@ -18,7 +18,7 @@ if __name__ == "__main__":  # pragma: no cover
     import sys
 
     # Run coverage in the subprocess if necessary
-    if "COVERAGE_PROCESS_START" in os.environ:
+    if "GLEAN_COVERAGE" in os.environ and "COVERAGE_PROCESS_START" in os.environ:
         import coverage  # type: ignore
 
         config_path = os.environ.get("COVERAGE_PROCESS_START")

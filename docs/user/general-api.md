@@ -57,7 +57,7 @@ class SampleApplication : Application() {
 
         // Initialize the Glean library.
         Glean.initialize(
-            applicationContext, 
+            applicationContext,
             // Here, `settings()` is a method to get user preferences, specific to
             // your application and not part of the Glean SDK API.
             uploadEnabled = settings().isTelemetryEnabled
@@ -76,6 +76,25 @@ Library code should never call `Glean.initialize`, since it should be called exa
 
 ```Kotlin
 Glean.initialize(applicationContext, Configuration(channel = "beta"))
+```
+
+> **Note**: When the Glean SDK is consumed through Android Components, it is required to configure an HTTP client to be used for upload.
+> For example:
+
+```Kotlin
+// Requires `org.mozilla.components:concept-fetch`
+import mozilla.components.concept.fetch.Client
+// Requires `org.mozilla.components:lib-fetch-httpurlconnection`.
+// This can be replaced by other implementations, e.g. `lib-fetch-okhttp`
+// or an implementation from `browser-engine-gecko`.
+import mozilla.components.lib.fetch.httpurlconnection.HttpURLConnectionClient
+
+import mozilla.components.service.glean.config.Configuration
+import mozilla.components.service.glean.net.ConceptFetchHttpUploader
+
+val httpClient = ConceptFetchHttpUploader(lazy { HttpURLConnectionClient() as Client })
+val config = Configuration(httpClient = httpClient)
+Glean.initialize(context, uploadEnabled = true, configuration = config)
 ```
 
 </div>

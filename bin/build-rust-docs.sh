@@ -7,7 +7,7 @@
 # Build all docs with one command
 # Documentation will be placed in `build/docs`.
 
-set -e
+set -xe
 
 CRATE_NAME=glean_core
 

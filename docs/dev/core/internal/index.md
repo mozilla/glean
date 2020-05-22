@@ -10,4 +10,3 @@ This includes:
 * [Directory structure](directory-structure.md)
 * [Debug Pings](debug-pings.md)
 * [Implementations](implementations.md)
-* [Android SDK/NDK versions](sdk-ndk-versions.md)

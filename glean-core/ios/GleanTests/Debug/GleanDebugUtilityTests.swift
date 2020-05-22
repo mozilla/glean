@@ -18,38 +18,6 @@ class GleanDebugUtilityTests: XCTestCase {
         Glean.shared.setUploadEnabled(true)
     }
 
-    private func setupHttpResponseStub(statusCode: Int32 = 200) {
-        expectation = expectation(description: "Ping sent")
-        // This function will be handling one each of baseline, events, and metrics pings
-        // so we set the expected count to 3 and set it to assert for overfulfill in order
-        // to test that unknown pings aren't being sent.
-        expectation!.expectedFulfillmentCount = 3
-        expectation!.assertForOverFulfill = true
-        let host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
-        stub(condition: isHost(host)) { request in
-            let request = request as NSURLRequest
-            let body = request.ohhttpStubs_HTTPBody()
-            let json = try! JSONSerialization.jsonObject(with: body!, options: []) as? [String: Any]
-            XCTAssert(json != nil)
-            let pingType = request.url?.path.split(separator: "/")[2]
-            XCTAssertTrue(
-                Glean.shared.testHasPingType(String(pingType!)),
-                "\(String(pingType!)) should be registered, but is missing"
-            )
-
-            DispatchQueue.main.async {
-                // Let the response get processed before we mark the expectation fulfilled
-                self.expectation?.fulfill()
-            }
-
-            return OHHTTPStubsResponse(
-                jsonObject: [],
-                statusCode: statusCode,
-                headers: ["Content-Type": "application/json"]
-            )
-        }
-    }
-
     func testHandleCustomUrlTagPings() {
         // Check invalid tags: This should have the configuration keep the
         // default value of nil because they don't match the accepted
@@ -105,7 +73,23 @@ class GleanDebugUtilityTests: XCTestCase {
     }
 
     func testHandleCustomUrlSendPing() {
-        setupHttpResponseStub()
+        expectation = expectation(description: "Ping sent")
+        // This test will be sending one each of baseline, events, and metrics pings
+        // so we set the expected count to 3 and set it to assert for overfulfill in order
+        // to test that unknown pings aren't being sent.
+        expectation!.expectedFulfillmentCount = 3
+        expectation!.assertForOverFulfill = true
+        stubServerReceive { pingType, _ in
+            XCTAssertTrue(
+                Glean.shared.testHasPingType(pingType),
+                "\(pingType) should be registered, but is missing"
+            )
+
+            DispatchQueue.main.async {
+                // Let the response get processed before we mark the expectation fulfilled
+                self.expectation?.fulfill()
+            }
+        }
 
         // Create a dummy event and a dummy metric so that the
         // respective pings will be sent

@@ -102,13 +102,7 @@ class GleanTests: XCTestCase {
     }
 
     func testSendingOfForegroundBaselinePing() {
-        // Set up the test stub based on the default telemetry endpoint
-        let host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
-        stub(condition: isHost(host)) { data in
-            let body = (data as NSURLRequest).ohhttpStubs_HTTPBody()
-            let json = try! JSONSerialization.jsonObject(with: body!, options: []) as? [String: Any]
-            XCTAssert(json != nil)
-
+        stubServerReceive { _, json in
             // Check for the "dirty_startup" flag
             let pingInfo = json?["ping_info"] as? [String: Any]
             XCTAssertEqual("foreground", pingInfo?["reason"] as? String)
@@ -127,12 +121,6 @@ class GleanTests: XCTestCase {
                 // let the response get processed before we mark the expectation fulfilled
                 self.expectation?.fulfill()
             }
-
-            return OHHTTPStubsResponse(
-                jsonObject: [],
-                statusCode: 200,
-                headers: ["Content-Type": "application/json"]
-            )
         }
 
         // Set up the expectation that will be fulfilled by the stub above
@@ -157,10 +145,7 @@ class GleanTests: XCTestCase {
         glean_set_dirty_flag(true.toByte())
 
         // Set up the test stub based on the default telemetry endpoint
-        let host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
-        stub(condition: isHost(host)) { data in
-            let body = (data as NSURLRequest).ohhttpStubs_HTTPBody()
-            let json = try! JSONSerialization.jsonObject(with: body!, options: []) as? [String: Any]
+        stubServerReceive { _, json in
             XCTAssert(json != nil)
 
             // Check for the "dirty_startup" flag
@@ -181,12 +166,6 @@ class GleanTests: XCTestCase {
                 // let the response get processed before we mark the expectation fulfilled
                 self.expectation?.fulfill()
             }
-
-            return OHHTTPStubsResponse(
-                jsonObject: [],
-                statusCode: 200,
-                headers: ["Content-Type": "application/json"]
-            )
         }
 
         // Set up the expectation that will be fulfilled by the stub above
@@ -205,25 +184,13 @@ class GleanTests: XCTestCase {
     }
 
     func testSendingDeletionPingIfDisabledOutsideOfRun() {
-        // Set up the test stub based on the default telemetry endpoint
-        let host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
-        stub(condition: isHost(host)) { data in
-            let path = (data as NSURLRequest).url!
-
-            let parts = path.absoluteString.split(separator: "/")
-
-            XCTAssertEqual("deletion-request", parts[4])
+        stubServerReceive { pingType, _ in
+            XCTAssertEqual("deletion-request", pingType)
 
             DispatchQueue.main.async {
                 // let the response get processed before we mark the expectation fulfilled
                 self.expectation?.fulfill()
             }
-
-            return OHHTTPStubsResponse(
-                jsonObject: [],
-                statusCode: 200,
-                headers: ["Content-Type": "application/json"]
-            )
         }
 
         // Set up the expectation that will be fulfilled by the stub above
@@ -242,20 +209,8 @@ class GleanTests: XCTestCase {
 
     func testNotSendingDeletionRequestIfUnchangedOutsideOfRun() {
         // Set up the test stub based on the default telemetry endpoint
-        let host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
-        stub(condition: isHost(host)) { _ in
+        stubServerReceive { _, _ in
             XCTFail("Should not have recieved any ping")
-
-            DispatchQueue.main.async {
-                // let the response get processed before we mark the expectation fulfilled
-                self.expectation?.fulfill()
-            }
-
-            return OHHTTPStubsResponse(
-                jsonObject: [],
-                statusCode: 200,
-                headers: ["Content-Type": "application/json"]
-            )
         }
 
         // Set up the expectation that will NOT be fulfilled by the stub above.  If it is
@@ -293,14 +248,8 @@ class GleanTests: XCTestCase {
         stringMetric.set("HELLOOOOO!")
 
         // Set up the test stub based on the default telemetry endpoint
-        let host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
-        stub(condition: isHost(host)) { data in
-            let path = (data as NSURLRequest).url!
-            let parts = path.absoluteString.split(separator: "/")
-            XCTAssertEqual("baseline", parts[4])
-
-            let body = (data as NSURLRequest).ohhttpStubs_HTTPBody()
-            let json = try! JSONSerialization.jsonObject(with: body!, options: []) as? [String: Any]
+        stubServerReceive { pingType, json in
+            XCTAssertEqual("baseline", pingType)
             XCTAssert(json != nil)
 
             // Check for the "dirty_startup" flag
@@ -317,12 +266,6 @@ class GleanTests: XCTestCase {
                 // let the response get processed before we mark the expectation fulfilled
                 self.expectation?.fulfill()
             }
-
-            return OHHTTPStubsResponse(
-                jsonObject: [],
-                statusCode: 200,
-                headers: ["Content-Type": "application/json"]
-            )
         }
 
         expectation = expectation(description: "baseline ping received")
@@ -333,5 +276,23 @@ class GleanTests: XCTestCase {
         waitForExpectations(timeout: 5.0) { error in
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
         }
+    }
+
+    func testGleanIsNotInitializedFromOtherProcesses() {
+        // Check to see if Glean is initialized
+        XCTAssert(Glean.shared.isInitialized())
+
+        // Set the control variable to false to simulate that we are not running
+        // in the main process
+        Glean.shared.isMainProcess = false
+
+        // Restart glean
+        Glean.shared.resetGlean(clearStores: false)
+
+        // Check to see if Glean is initialized
+        XCTAssertFalse(Glean.shared.isInitialized())
+
+        // Reset variable so as to not interfere with other tests.
+        Glean.shared.isMainProcess = true
     }
 }

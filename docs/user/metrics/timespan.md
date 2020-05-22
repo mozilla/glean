@@ -77,20 +77,20 @@ assertEquals(1, Auth.loginTime.testGetNumRecordedErrors(ErrorType.InvalidValue))
 <div data-lang="Java" class="tab">
 
 ```Java
-import org.mozilla.yourApplication.GleanMetrics.Auth
+import org.mozilla.yourApplication.GleanMetrics.Auth;
 
-fun onShowLogin() {
-    Auth.INSTANCE.loginTime.start()
+void onShowLogin() {
+    Auth.INSTANCE.loginTime.start();
     // ...
 }
 
-fun onLogin() {
-    Auth.INSTANCE.loginTime.stop()
+void onLogin() {
+    Auth.INSTANCE.loginTime.stop();
     // ...
 }
 
-fun onLoginCancel() {
-    Auth.INSTANCE.loginTime.cancel()
+void onLoginCancel() {
+    Auth.INSTANCE.loginTime.cancel();
     // ...
 }
 ```
@@ -100,19 +100,19 @@ The time reported in the telemetry ping will be timespan recorded during the lif
 There are test APIs available too:
 
 ```Java
-import org.mozilla.yourApplication.GleanMetrics.Auth
+import org.mozilla.yourApplication.GleanMetrics.Auth;
 
 // Was anything recorded?
-assertTrue(Auth.INSTANCE.loginTime.testHasValue())
+assertTrue(Auth.INSTANCE.loginTime.testHasValue());
 // Does the timer have the expected value
-assertTrue(Auth.INSTANCE.loginTime.testGetValue() > 0)
+assertTrue(Auth.INSTANCE.loginTime.testGetValue() > 0);
 // Was the timing recorded incorrectly?
 assertEquals(
     1,
     Auth.INSTANCE.loginTime.testGetNumRecordedErrors(
         ErrorType.InvalidValue
     )
-)
+);
 ```
 
 </div>
@@ -236,7 +236,15 @@ HistorySync.setRawNanos(duration)
 
 ## Limits
 
-* None.
+* Timings are recorded in nanoseconds.
+
+  * On Android, the [`SystemClock.elapsedRealtimeNanos()`](https://developer.android.com/reference/android/os/SystemClock.html#elapsedRealtimeNanos()) function is used, so it is limited by the accuracy and performance of that timer. The time measurement includes time spent in sleep.
+
+  * On iOS, the [`mach_absolute_time`](https://developer.apple.com/library/archive/documentation/Darwin/Conceptual/KernelProgramming/services/services.html) function is used,
+    so it is limited by the accuracy and performance of that timer.
+    The time measurement does not include time spent in sleep.
+
+  * On Python 3.7 and later, [`time.monotonic_ns()`](https://docs.python.org/3/library/time.html#time.monotonic_ns) is used.  On earlier versions of Python, [`time.monotonics()`](https://docs.python.org/3/library/time.html#time.monotonic) is used, which is not guaranteed to have nanosecond resolution.
 
 ## Examples
 

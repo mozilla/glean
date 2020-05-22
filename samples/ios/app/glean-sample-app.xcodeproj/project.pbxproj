@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		BF1BF3FF23337E6F0036F4CC /* Glean.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF1BF3FE23337E6F0036F4CC /* Glean.framework */; };
 		BF89665A2371C82E0097B7F2 /* pings.yaml in Resources */ = {isa = PBXBuildFile; fileRef = BF8966592371C82E0097B7F2 /* pings.yaml */; };
+		BF8C3866246D749400274ACE /* Gzip.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF8C3865246D749400274ACE /* Gzip.framework */; };
 		BF90C913236B43A10045BD0E /* Swifter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF90C911236B42F00045BD0E /* Swifter.framework */; };
 		BFD3AB2E224D475E00AD9255 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFD3AB2D224D475E00AD9255 /* AppDelegate.swift */; };
 		BFD3AB30224D475E00AD9255 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFD3AB2F224D475E00AD9255 /* ViewController.swift */; };
@@ -48,6 +49,7 @@
 		BF1BF3FE23337E6F0036F4CC /* Glean.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Glean.framework; path = Carthage/Build/iOS/Glean.framework; sourceTree = "<group>"; };
 		BF6F41C4234346A000E222A8 /* metrics.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = metrics.yaml; sourceTree = "<group>"; };
 		BF8966592371C82E0097B7F2 /* pings.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = pings.yaml; sourceTree = "<group>"; };
+		BF8C3865246D749400274ACE /* Gzip.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Gzip.framework; path = Carthage/Build/iOS/Gzip.framework; sourceTree = "<group>"; };
 		BF90C911236B42F00045BD0E /* Swifter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Swifter.framework; path = Carthage/Build/iOS/Swifter.framework; sourceTree = "<group>"; };
 		BFD3AB2A224D475E00AD9255 /* glean-sample-app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "glean-sample-app.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BFD3AB2D224D475E00AD9255 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -96,6 +98,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BF8C3866246D749400274ACE /* Gzip.framework in Frameworks */,
 				BF90C913236B43A10045BD0E /* Swifter.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -180,6 +183,7 @@
 		BFD3AB68224D4F9500AD9255 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				BF8C3865246D749400274ACE /* Gzip.framework */,
 				BF90C911236B42F00045BD0E /* Swifter.framework */,
 				BF1BF3FE23337E6F0036F4CC /* Glean.framework */,
 			);
@@ -352,12 +356,14 @@
 			);
 			inputPaths = (
 				"$(SRCROOT)/Carthage/Build/iOS/Swifter.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/Gzip.framework",
 			);
 			name = "Copy Carthage frameworks";
 			outputFileListPaths = (
 			);
 			outputPaths = (
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Swifter.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Gzip.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -372,12 +378,14 @@
 			);
 			inputPaths = (
 				"$(SRCROOT)/Carthage/Build/iOS/Glean.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/Gzip.framework",
 			);
 			name = "Copy Carthage frameworks";
 			outputFileListPaths = (
 			);
 			outputPaths = (
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Glean.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Gzip.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;

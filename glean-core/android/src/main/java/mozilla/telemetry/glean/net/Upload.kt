@@ -24,20 +24,25 @@ enum class UploadTaskTag {
     Done
 }
 
-@Structure.FieldOrder("tag", "documentId", "path", "body", "headers")
+@Structure.FieldOrder("tag", "documentId", "path", "bodyLen", "body", "headers")
 internal class UploadBody(
     // NOTE: We need to provide defaults here, so that JNA can create this object.
     @JvmField val tag: Byte = UploadTaskTag.Done.ordinal.toByte(),
     @JvmField val documentId: Pointer? = null,
     @JvmField val path: Pointer? = null,
-    @JvmField val body: Pointer? = null,
+    // Note that the next two fields (`bodyLen` and `body`) are defined as a single
+    // structure, on the Rust side, called `ByteBuffer`. While the ideal would be to
+    // use something like `RustBuffer` (as provided by application-services), this
+    // does not work in the context of JNA unions out of the box.
+    @JvmField var bodyLen: Long = 0,
+    @JvmField var body: Pointer? = null,
     @JvmField val headers: Pointer? = null
 ) : Structure() {
     fun toPingRequest(): PingRequest {
         return PingRequest(
             this.documentId!!.getRustString(),
             this.path!!.getRustString(),
-            this.body!!.getRustString(),
+            this.body!!.getByteArray(0, this.bodyLen.toInt()),
             this.headers!!.getRustString()
         )
     }
@@ -48,7 +53,7 @@ internal open class FfiPingUploadTask(
     @JvmField var tag: Byte = UploadTaskTag.Done.ordinal.toByte(),
     @JvmField var upload: UploadBody = UploadBody()
 ) : Union() {
-    class ByValue : FfiPingUploadTask(), Structure.ByValue
+    class ByReference : FfiPingUploadTask(), Structure.ByReference
 
     init {
         // Initialize to be the `tag`-only variant
@@ -73,7 +78,7 @@ internal open class FfiPingUploadTask(
 internal class PingRequest(
     private val documentId: String,
     val path: String,
-    val body: String,
+    val body: ByteArray,
     headers: String
 ) {
     val headers: HeadersList = headersFromJSONString(headers)

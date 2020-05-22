@@ -22,12 +22,14 @@ import org.mockito.Mockito
 import mozilla.telemetry.glean.config.Configuration
 import mozilla.telemetry.glean.scheduler.PingUploadWorker
 import mozilla.telemetry.glean.private.PingTypeBase
+import mozilla.telemetry.glean.utils.decompressGZIP
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import org.junit.Assert
 import org.robolectric.shadows.ShadowLog
+import java.io.ByteArrayInputStream
 import java.util.UUID
 import java.util.concurrent.ExecutionException
 
@@ -235,4 +237,20 @@ internal fun getMockWebServer(): MockWebServer {
         }
     })
     return server
+}
+
+/**
+ * Convenience method to get the body of a request as a String.
+ * The UTF8 representation of the request body will be returned.
+ * If the request body is gzipped, it will be decompressed first.
+ *
+ * @return a [String] containing the body of the request.
+ */
+fun RecordedRequest.getPlainBody(): String {
+    return if (this.getHeader("Content-Encoding") == "gzip") {
+        val bodyInBytes = ByteArrayInputStream(this.body.readByteArray()).readBytes()
+        decompressGZIP(bodyInBytes)
+    } else {
+        this.body.readUtf8()
+    }
 }

@@ -16,6 +16,7 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.Glean
+import mozilla.telemetry.glean.net.FfiPingUploadTask
 import mozilla.telemetry.glean.utils.testFlushWorkManagerJob
 import mozilla.telemetry.glean.net.PingUploadTask
 
@@ -54,11 +55,6 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
         // NOTE: The `PINGS_DIR` must be kept in sync with the one in the Rust implementation.
         @VisibleForTesting
         internal const val PINGS_DIR = "pending_pings"
-
-        // For this error, the ping will be retried later
-        internal const val RECOVERABLE_ERROR_STATUS_CODE = 500
-        // For this error, the ping data will be deleted and no retry happens
-        internal const val UNRECOVERABLE_ERROR_STATUS_CODE = 400
 
         /**
          * Function to aid in properly enqueuing the worker in [WorkManager]
@@ -103,7 +99,10 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
      */
     override fun doWork(): Result {
         do {
-            val incomingTask = LibGleanFFI.INSTANCE.glean_get_upload_task()
+            // Create a slot of memory for the task: glean-core will write data into
+            // the allocated memory.
+            val incomingTask = FfiPingUploadTask.ByReference()
+            LibGleanFFI.INSTANCE.glean_get_upload_task(incomingTask)
             when (val action = incomingTask.toPingUploadTask()) {
                 is PingUploadTask.Upload -> {
                     // Upload the ping request.

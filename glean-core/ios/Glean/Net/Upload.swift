@@ -47,12 +47,15 @@ struct PingRequest {
     let documentId: String
     /// The path to upload this ping to.
     let path: String
-    /// The JSON-encoded payload of the ping.
-    let body: String
+    /// The body of the request.
+    ///
+    /// If gzip encoded, then the `headers` list will
+    /// contain a `Content-Encoding` header with the value `gzip`.
+    let body: Data
     /// A map of headers for the HTTP request to send.
     let headers: [String: String]
 
-    init(documentId: String, path: String, body: String, headers: [String: String]) {
+    init(documentId: String, path: String, body: Data, headers: [String: String]) {
         self.documentId = documentId
         self.path = path
         self.body = body
@@ -117,7 +120,7 @@ extension FfiPingUploadTask_Upload_Body {
     func toPingRequest() -> PingRequest {
         let documentId = String(cString: self.document_id)
         let path = String(cString: self.path)
-        let body = String(cString: self.body)
+        let body = Data(bytes: self.body.data, count: Int(self.body.len))
 
         // Decode the header object from JSON
         let json = String(cString: self.headers)

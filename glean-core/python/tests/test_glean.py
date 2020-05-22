@@ -594,3 +594,38 @@ def test_dont_allow_multiprocessing(monkeypatch, safe_httpserver):
     assert process.returncode == 0
 
     assert 1 == len(safe_httpserver.requests)
+
+
+def test_clear_application_lifetime_metrics(tmpdir):
+    Glean._reset()
+
+    Glean.initialize(
+        application_id=GLEAN_APP_ID,
+        application_version=glean_version,
+        upload_enabled=True,
+        data_dir=Path(str(tmpdir)),
+    )
+
+    counter_metric = CounterMetricType(
+        disabled=False,
+        category="test.telemetry",
+        lifetime=Lifetime.APPLICATION,
+        name="lifetime_reset",
+        send_in_pings=["store1"],
+    )
+
+    counter_metric.add(10)
+
+    assert counter_metric.test_has_value()
+    assert counter_metric.test_get_value() == 10
+
+    Glean._reset()
+
+    Glean.initialize(
+        application_id=GLEAN_APP_ID,
+        application_version=glean_version,
+        upload_enabled=True,
+        data_dir=Path(str(tmpdir)),
+    )
+
+    assert not counter_metric.test_has_value()
