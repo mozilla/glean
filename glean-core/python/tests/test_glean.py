@@ -18,7 +18,7 @@ from glean_parser import validate_ping
 import pytest
 
 
-from glean import Configuration, Glean
+from glean import Configuration, Glean, load_metrics
 from glean import __version__ as glean_version
 from glean import _builtins
 from glean import _util
@@ -29,6 +29,9 @@ from glean.testing import _RecordingUploader
 
 
 GLEAN_APP_ID = "glean-python-test"
+
+
+ROOT = Path(__file__).parent
 
 
 def test_setting_upload_enabled_before_initialization_should_not_crash():
@@ -614,10 +617,17 @@ def test_clear_application_lifetime_metrics(tmpdir):
         send_in_pings=["store1"],
     )
 
+    # Additionally get metrics using the loader.
+    metrics = load_metrics(ROOT / "data" / "core.yaml", config={"allow_reserved": True})
+
     counter_metric.add(10)
+    metrics.core_ping.seq.add(10)
 
     assert counter_metric.test_has_value()
     assert counter_metric.test_get_value() == 10
+
+    assert metrics.core_ping.seq.test_has_value()
+    assert metrics.core_ping.seq.test_get_value() == 10
 
     Glean._reset()
 
@@ -629,3 +639,4 @@ def test_clear_application_lifetime_metrics(tmpdir):
     )
 
     assert not counter_metric.test_has_value()
+    assert not metrics.core_ping.seq.test_has_value()
