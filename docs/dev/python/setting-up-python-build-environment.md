@@ -137,7 +137,7 @@ The log level can be controlled with the `RUST_LOG` environment variable:
 
 ```python
 import os
-os.environ["RUST_LOG"] = "DEBUG"
+os.environ["RUST_LOG"] = "glean_core=DEBUG"
 ```
 
 ## Linting, formatting and type checking
