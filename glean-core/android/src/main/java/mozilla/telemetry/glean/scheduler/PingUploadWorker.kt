@@ -15,6 +15,7 @@ import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import mozilla.telemetry.glean.rust.LibGleanFFI
+import mozilla.telemetry.glean.rust.toByte
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.net.FfiPingUploadTask
 import mozilla.telemetry.glean.utils.testFlushWorkManagerJob
@@ -102,7 +103,8 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
             // Create a slot of memory for the task: glean-core will write data into
             // the allocated memory.
             val incomingTask = FfiPingUploadTask.ByReference()
-            LibGleanFFI.INSTANCE.glean_get_upload_task(incomingTask)
+            val logPings = Glean.configuration.logPings.toByte()
+            LibGleanFFI.INSTANCE.glean_get_upload_task(incomingTask, logPings)
             when (val action = incomingTask.toPingUploadTask()) {
                 is PingUploadTask.Upload -> {
                     // Upload the ping request.

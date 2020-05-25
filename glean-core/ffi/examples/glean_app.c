@@ -44,7 +44,7 @@ int main(void)
   // NOTE: If, there are other ping files inside tmp/glean_data directory
   // they will also be consumed here by `glean_process_ping_upload_response`.
   FfiPingUploadTask task;
-  glean_get_upload_task(&task);
+  glean_get_upload_task(&task, 1);
 
   while (task.tag != FfiPingUploadTask_Done) {
       printf("tag: %d\n", task.tag);

@@ -467,11 +467,15 @@ impl Glean {
     /// * `Upload(PingRequest)` - which means there is a ping to upload. This wraps the actual request object;
     /// * `Done` - which means there are no more pings queued right now.
     ///
+    /// ## Arguments
+    ///
+    /// * `log_ping` - Whether to log the ping before returning.
+    ///
     /// # Return value
     ///
     /// `PingUploadTask` - an enum representing the possible tasks.
-    pub fn get_upload_task(&self) -> PingUploadTask {
-        self.upload_manager.get_upload_task()
+    pub fn get_upload_task(&self, log_ping: bool) -> PingUploadTask {
+        self.upload_manager.get_upload_task(log_ping)
     }
 
     /// Processes the response from an attempt to upload a ping.

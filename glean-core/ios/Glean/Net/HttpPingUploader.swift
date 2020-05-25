@@ -33,15 +33,6 @@ public class HttpPingUploader {
         self.config = configuration
     }
 
-    /// A function to aid in logging the ping to the console via `NSLog`.
-    ///
-    /// - parameters:
-    ///     * path: The URL path to append to the server address
-    ///     * data: The serialized text data to send
-    func logPing(path: String, data: String) {
-        logger.debug("Glean ping to URL: \(path)\n\(data)")
-    }
-
     /// Synchronously upload a ping to Mozilla servers.
     ///
     /// - parameters:
@@ -53,18 +44,6 @@ public class HttpPingUploader {
     /// headers are added to the HTTP request in addition to the UserAgent. This allows
     /// us to easily handle pings coming from Glean on the legacy Mozilla pipeline.
     func upload(path: String, data: Data, headers: [String: String], callback: @escaping (UploadResult) -> Void) {
-        if config.logPings {
-            // FIXME(bug 1637914): Logging should happen inside glean-core (Rust).
-            // For now we don't ship Gzip decompression in the Glean SDK for iOS
-            // due to difficulties delivering dependencies, so we skip logging them.
-            if headers["Content-Encoding"] == "gzip" {
-                logPing(path: path, data: "<error: can't handle compressed payload>")
-            } else {
-                let payload = String(data: data, encoding: .utf8) ?? "<error: invalid UTF-8 in payload>"
-                logPing(path: path, data: payload)
-            }
-        }
-
         // Build the request and create an async upload operation and launch it through the
         // Dispatchers
         if let request = buildRequest(path: path, data: data, headers: headers) {
@@ -122,7 +101,7 @@ public class HttpPingUploader {
     func process() {
         while true {
             var incomingTask = FfiPingUploadTask()
-            glean_get_upload_task(&incomingTask)
+            glean_get_upload_task(&incomingTask, config.logPings.toByte())
             let task = incomingTask.toPingUploadTask()
 
             switch task {
