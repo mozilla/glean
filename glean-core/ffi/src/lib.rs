@@ -15,6 +15,7 @@ use glean_core::Glean;
 mod macros;
 
 mod boolean;
+pub mod byte_buffer;
 mod counter;
 mod custom_distribution;
 mod datetime;

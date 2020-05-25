@@ -95,9 +95,9 @@ typedef const char *const *RawStringArray;
  *
  * ## Caveats
  *
- * Note that the order of the fields is `len` (an i64) then `data` (a `*mut u8`), getting
+ * Note that the order of the fields is `len` (an i32) then `data` (a `*mut u8`), getting
  * this wrong on the other side of the FFI will cause memory corruption and crashes.
- * `i64` is used for the length instead of `u64` and `usize` because JNA has interop
+ * `i32` is used for the length instead of `u64` and `usize` because JNA has interop
  * issues with both these types.
  *
  * ByteBuffer does not implement Drop. This is intentional. Memory passed into it will
@@ -105,13 +105,13 @@ typedef const char *const *RawStringArray;
  * is because in the future, we may allow it's use for passing data into Rust code.
  * ByteBuffer assuming ownership of the data would make this a problem.
  *
- * Note that alling `destroy` manually is not typically needed or recommended,
+ * Note that calling `destroy` manually is not typically needed or recommended,
  * and instead you should use [`define_bytebuffer_destructor!`].
  *
  * ## Layout/fields
  *
  * This struct's field are not `pub` (mostly so that we can soundly implement `Send`, but also so
- * that we can verify rust users are constructing them appropriately), the fields, their types, and
+ * that we can verify Rust users are constructing them appropriately), the fields, their types, and
  * their order are *very much* a part of the public API of this type. Consumers on the other side
  * of the FFI will need to know its layout.
  *
@@ -124,7 +124,7 @@ typedef const char *const *RawStringArray;
  * };
  * ```
  *
- * In rust, there are two fields, in this order: `len: i64`, and `data: *mut u8`.
+ * In Rust, there are two fields, in this order: `len: i32`, and `data: *mut u8`.
  *
  * ### Description of fields
  *
@@ -140,7 +140,7 @@ typedef const char *const *RawStringArray;
  * using the [`define_bytebuffer_destructor!`] macro provided by this crate.
  */
 typedef struct {
-  int64_t len;
+  int32_t len;
   uint8_t *data;
 } ByteBuffer;
 

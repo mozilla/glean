@@ -12,6 +12,7 @@ import com.sun.jna.Pointer
 import com.sun.jna.Union
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.rust.getRustString
+import mozilla.telemetry.glean.rust.RustBuffer
 
 // Rust represents the upload task as an Enum
 // and to go through the FFI that gets transformed into a tagged union.
@@ -24,25 +25,20 @@ enum class UploadTaskTag {
     Done
 }
 
-@Structure.FieldOrder("tag", "documentId", "path", "bodyLen", "body", "headers")
+@Structure.FieldOrder("tag", "documentId", "path", "body", "headers")
 internal class UploadBody(
     // NOTE: We need to provide defaults here, so that JNA can create this object.
     @JvmField val tag: Byte = UploadTaskTag.Done.ordinal.toByte(),
     @JvmField val documentId: Pointer? = null,
     @JvmField val path: Pointer? = null,
-    // Note that the next two fields (`bodyLen` and `body`) are defined as a single
-    // structure, on the Rust side, called `ByteBuffer`. While the ideal would be to
-    // use something like `RustBuffer` (as provided by application-services), this
-    // does not work in the context of JNA unions out of the box.
-    @JvmField var bodyLen: Long = 0,
-    @JvmField var body: Pointer? = null,
+    @JvmField var body: RustBuffer = RustBuffer(),
     @JvmField val headers: Pointer? = null
 ) : Structure() {
     fun toPingRequest(): PingRequest {
         return PingRequest(
             this.documentId!!.getRustString(),
             this.path!!.getRustString(),
-            this.body!!.getByteArray(0, this.bodyLen.toInt()),
+            this.body.getByteArray(),
             this.headers!!.getRustString()
         )
     }
