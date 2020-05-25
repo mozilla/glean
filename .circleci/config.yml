@@ -514,7 +514,7 @@ jobs:
 
   Check Swift formatting:
     macos:
-      xcode: "11.4.1"
+      xcode: "11.5.0"
     steps:
       - checkout
       - run:
@@ -540,7 +540,7 @@ jobs:
 
   iOS build and test:
     macos:
-      xcode: "11.4.1"
+      xcode: "11.5.0"
     steps:
       - checkout
       - run:
@@ -652,7 +652,7 @@ jobs:
 
   iOS integration test:
     macos:
-      xcode: "11.4.1"
+      xcode: "11.5.0"
     steps:
       - checkout
       - skip-if-doc-only
@@ -706,7 +706,7 @@ jobs:
 
   Carthage release:
     macos:
-      xcode: "11.4.1"
+      xcode: "11.5.0"
     steps:
       - checkout
       - attach_workspace:
@@ -719,7 +719,7 @@ jobs:
 
   macOS release build:
     macos:
-      xcode: "11.4.1"
+      xcode: "11.5.0"
     steps:
       - install-rustup
       - setup-rust-toolchain
@@ -896,7 +896,7 @@ jobs:
 
   pypi-macos-release:
     macos:
-      xcode: "11.4.1"
+      xcode: "11.5.0"
     steps:
       - install-rustup
       - setup-rust-toolchain
