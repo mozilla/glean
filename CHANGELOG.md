@@ -2,6 +2,11 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v30.1.0...master)
 
+* General:
+  * The version of glean_parser has been upgraded to v1.21.0
+* Python:
+  * BUGFIX: `lifetime: application` metrics are no longer recorded as `lifetime: user`. 
+
 # v30.1.0 (2020-05-22)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v30.0.0...v30.1.0)
