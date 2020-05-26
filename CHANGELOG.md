@@ -5,7 +5,8 @@
 * General:
   * The version of glean_parser has been upgraded to v1.21.0
 * Python:
-  * BUGFIX: `lifetime: application` metrics are no longer recorded as `lifetime: user`. 
+  * BUGFIX: `lifetime: application` metrics are no longer recorded as `lifetime: user`.
+  * BUGFIX: glean-core is no longer crashing when calling `uuid.set` with invalid UUIDs. 
 
 # v30.1.0 (2020-05-22)
 
