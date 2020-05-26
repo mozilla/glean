@@ -21,8 +21,14 @@ pub extern "C" fn glean_uuid_set(metric_id: u64, value: FfiStr) {
     with_glean_value(|glean| {
         UUID_METRICS.call_with_log(metric_id, |metric| {
             let value = value.to_string_fallible()?;
-            let uuid = uuid::Uuid::parse_str(&value);
-            metric.set(glean, uuid.unwrap());
+            if let Ok(uuid) = uuid::Uuid::parse_str(&value) {
+                metric.set(glean, uuid);
+            } else {
+                log::error!(
+                    "Unexpected `uuid` value coming from platform code '{}'",
+                    value
+                );
+            }
             Ok(())
         })
     })
