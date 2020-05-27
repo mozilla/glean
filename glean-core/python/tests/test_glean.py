@@ -288,7 +288,7 @@ def test_get_language_reports_the_modern_translation_for_some_languages():
 
 
 def test_ping_collection_must_happen_after_currently_scheduled_metrics_recordings(
-    tmpdir, ping_schema_url,
+    tmpdir, ping_schema_url, monkeypatch
 ):
     # Given the following block of code:
     #
@@ -300,9 +300,9 @@ def test_ping_collection_must_happen_after_currently_scheduled_metrics_recording
 
     info_path = Path(str(tmpdir)) / "info.txt"
 
-    real_uploader = Glean._configuration.ping_uploader
-    test_uploader = _RecordingUploader(info_path)
-    Glean._configuration.ping_uploader = test_uploader
+    monkeypatch.setattr(
+        Glean._configuration, "ping_uploader", _RecordingUploader(info_path)
+    )
 
     Glean._configuration.log_pings = True
 
@@ -348,8 +348,6 @@ def test_ping_collection_must_happen_after_currently_scheduled_metrics_recording
     )
 
     assert {"category.string_metric": test_value} == json_content["metrics"]["string"]
-
-    Glean._configuration.ping_uploader = real_uploader
 
 
 def test_basic_metrics_should_be_cleared_when_disabling_uploading():
@@ -521,17 +519,18 @@ def test_configuration_property(safe_httpserver):
     assert "foo" == request.headers["X-Debug-Id"]
 
 
-def test_sending_deletion_ping_if_disabled_outside_of_run(safe_httpserver, tmpdir):
-    safe_httpserver.serve_content(b"", code=200)
+def test_sending_deletion_ping_if_disabled_outside_of_run(tmpdir, ping_schema_url):
+    info_path = Path(str(tmpdir)) / "info.txt"
+    data_dir = Path(str(tmpdir)) / "glean"
+
     Glean._reset()
-    config = Configuration(server_endpoint=safe_httpserver.url)
 
     Glean.initialize(
         application_id=GLEAN_APP_ID,
         application_version=glean_version,
         upload_enabled=True,
-        data_dir=Path(str(tmpdir)),
-        configuration=config,
+        data_dir=data_dir,
+        configuration=Configuration(ping_uploader=_RecordingUploader(info_path)),
     )
 
     Glean._reset()
@@ -540,14 +539,26 @@ def test_sending_deletion_ping_if_disabled_outside_of_run(safe_httpserver, tmpdi
         application_id=GLEAN_APP_ID,
         application_version=glean_version,
         upload_enabled=False,
-        data_dir=Path(str(tmpdir)),
-        configuration=config,
+        data_dir=data_dir,
+        configuration=Configuration(ping_uploader=_RecordingUploader(info_path)),
     )
 
-    assert 1 == len(safe_httpserver.requests)
+    while not info_path.exists():
+        time.sleep(0.1)
 
-    request = safe_httpserver.requests[0]
-    assert "deletion-request" in request.url
+    with info_path.open("r") as fd:
+        url_path = fd.readline()
+        serialized_ping = fd.readline()
+
+    assert "deletion-request" == url_path.split("/")[3]
+
+    json_content = json.loads(serialized_ping)
+
+    assert 0 == validate_ping.validate_ping(
+        io.StringIO(serialized_ping), sys.stdout, schema_url=ping_schema_url,
+    )
+
+    assert not json_content["client_info"]["client_id"].startswith("c0ffee")
 
 
 def test_no_sending_deletion_ping_if_unchanged_outside_of_run(safe_httpserver, tmpdir):
