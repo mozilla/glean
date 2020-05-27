@@ -1,6 +1,9 @@
 # Counter
 
-Used to count how often something happens, say how often a certain button was pressed. A counter always starts from `0`. Each time you record to a counter, its value is incremented.
+Used to count how often something happens, say how often a certain button was pressed.
+A counter always starts from `0`.
+Each time you record to a counter, its value is incremented.
+Unless incremented by a positive value, a counter will not be reported in pings.
 
 > **IMPORTANT:** When using a counter metric, it is important to let the Glean metric do the counting. Using your own variable for counting and setting the counter yourself could be problematic because it will be difficult to reset the value at the exact moment that the value is sent in a ping. Instead, just use `counter.add` to increment the value and let Glean handle resetting the counter.
 
