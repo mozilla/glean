@@ -125,11 +125,11 @@ assert 1 == metrics.controls.refresh_pressed.test_get_num_recorded_errors(
 
 ## Limits
 
-* Only increments, saturates at the limits of a 32-bit signed integer.
+* Only increments, saturates at the largest value that can be represented as a 32-bit signed integer (`2147483647`).
 
 ## Examples
 
-* How often a certain button was pressed?
+* How often was a certain button was pressed?
 
 ## Recorded errors
 
