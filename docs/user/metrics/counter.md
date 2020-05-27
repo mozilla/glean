@@ -1,6 +1,9 @@
 # Counter
 
-Used to count how often something happens, say how often a certain button was pressed. A counter always starts from `0`. Each time you record to a counter, its value is incremented.
+Used to count how often something happens, say how often a certain button was pressed.
+A counter always starts from `0`.
+Each time you record to a counter, its value is incremented.
+Unless incremented by a positive value, a counter will not be reported in pings.
 
 > **IMPORTANT:** When using a counter metric, it is important to let the Glean metric do the counting. Using your own variable for counting and setting the counter yourself could be problematic because it will be difficult to reset the value at the exact moment that the value is sent in a ping. Instead, just use `counter.add` to increment the value and let Glean handle resetting the counter.
 
@@ -125,15 +128,15 @@ assert 1 == metrics.controls.refresh_pressed.test_get_num_recorded_errors(
 
 ## Limits
 
-* Only increments, saturates at the limits of a 32-bit signed integer.
+* Only increments, saturates at the largest value that can be represented as a 32-bit signed integer (`2147483647`).
 
 ## Examples
 
-* How often a certain button was pressed?
+* How often was a certain button was pressed?
 
 ## Recorded errors
 
-* `invalid_value`: If the counter is incremented by a non-positive value.
+* `invalid_value`: If the counter is incremented by `0` or a negative value.
 
 ## Reference
 
