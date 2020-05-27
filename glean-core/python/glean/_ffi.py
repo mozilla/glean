@@ -7,6 +7,8 @@ import sys
 from typing import Any, List, Optional
 import weakref
 
+from ._glean_ffi import ffi  # type: ignore
+
 
 def get_shared_object_filename() -> str:  # pragma: no cover
     """
@@ -24,19 +26,8 @@ def get_shared_object_filename() -> str:  # pragma: no cover
 _global_weakkeydict = weakref.WeakKeyDictionary()  # type: Any
 
 
-# Don't load the Glean shared object / dll if we're in a (ping upload worker)
-# subprocess.
-#   (a) it's not likely to work anyway, because it won't be the same Glean
-#       singleton.
-#   (b) skipping it significantly improves startup time of the subprocess.
-if not getattr(__builtins__, "IN_GLEAN_SUBPROCESS", False):
-    from ._glean_ffi import ffi  # type: ignore
-
-    lib = ffi.dlopen(str(Path(__file__).parent / get_shared_object_filename()))
-    lib.glean_enable_logging()
-else:
-    ffi = None
-    lib = None
+lib = ffi.dlopen(str(Path(__file__).parent / get_shared_object_filename()))
+lib.glean_enable_logging()
 
 
 def make_config(
@@ -96,19 +87,36 @@ def ffi_encode_vec_int32(values: List[int]) -> Any:
     return ffi.new("int32_t []", values)
 
 
-def ffi_decode_string(cdata) -> str:
+def ffi_decode_string(cdata, free_memory=True) -> str:
     """
-    Convert a string returned from Rust to a Python string, and free the Rust
+    Convert a string returned from Rust to a Python string, and optionally free the Rust
     string.
+
+    Args:
+        cdata: The C data containing the string value.
+        free_memory (bool): Whether or not to free the memory allocated in Rust.
     """
     try:
         return ffi.string(cdata).decode("utf-8")
     finally:
-        lib.glean_str_free(cdata)
+        if free_memory:
+            lib.glean_str_free(cdata)
+
+
+def ffi_decode_byte_buffer(byte_buffer) -> bytes:
+    """
+    Convert a ByteBuffer returned from Rust to a Python bytes object.
+    Does not free the Rust buffer.
+
+    Args:
+        byte_buffer: The byte buffer.
+    """
+    return ffi.buffer(byte_buffer.data, byte_buffer.len)
 
 
 __all__ = [
     "ffi",
+    "ffi_decode_byte_buffer",
     "ffi_decode_string",
     "ffi_encode_string",
     "ffi_encode_vec_string",

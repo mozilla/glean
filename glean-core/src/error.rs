@@ -79,7 +79,7 @@ impl Error {
         }
     }
 
-    /// Indicates an error that no global Glean object is initialized
+    /// Indicates an error that no requested global object is initialized
     pub fn not_initialized() -> Error {
         Error {
             kind: ErrorKind::NotInitialized,

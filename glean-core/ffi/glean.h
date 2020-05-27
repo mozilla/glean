@@ -345,6 +345,8 @@ void glean_get_upload_task(FfiPingUploadTask *result, uint8_t log_ping);
  */
 uint8_t glean_initialize(const FfiConfiguration *cfg);
 
+uint8_t glean_initialize_standalone_uploader(FfiStr data_dir);
+
 uint8_t glean_is_dirty_flag_set(void);
 
 uint8_t glean_is_first_run(void);

@@ -10,6 +10,7 @@ use std::panic::UnwindSafe;
 use ffi_support::{define_string_destructor, ConcurrentHandleMap, FfiStr, IntoFfi};
 
 pub use glean_core::upload::ffi_upload_result::*;
+use glean_core::upload::PingUploadManager;
 use glean_core::Glean;
 
 mod macros;
@@ -122,6 +123,48 @@ where
     R: IntoFfi,
 {
     with_glean_mut(|glean| Ok(callback(glean)))
+}
+
+/// Execute the callback with a reference to the PingUploadManager singleton,
+/// returning a `Result`.
+///
+/// The callback returns a `Result<T, E>` while:
+///
+/// - Catching panics, and logging them.
+/// - Converting `T` to a C-compatible type using [`IntoFfi`].
+/// - Logging `E` and returning a default value.
+pub(crate) fn with_standalone_uploader<R, F>(callback: F) -> R::Value
+where
+    F: UnwindSafe + FnOnce(&PingUploadManager) -> Result<R, glean_core::Error>,
+    R: IntoFfi,
+{
+    let mut error = ffi_support::ExternError::success();
+    let res = ffi_support::abort_on_panic::call_with_result(&mut error, || {
+        match glean_core::upload::global_upload_manager() {
+            Some(upload_manager) => {
+                let upload_manager = upload_manager.lock().unwrap();
+                callback(&upload_manager)
+            }
+            None => Err(glean_core::Error::not_initialized()),
+        }
+    });
+    handlemap_ext::log_if_error(error);
+    res
+}
+
+/// Execute the callback with a reference to the PingUploadManager singleton,
+/// returning a value.
+///
+/// The callback returns a value while:
+///
+/// - Catching panics, and logging them.
+/// - Converting the returned value to a C-compatible type using [`IntoFfi`].
+pub(crate) fn with_standalone_uploader_value<R, F>(callback: F) -> R::Value
+where
+    F: UnwindSafe + FnOnce(&PingUploadManager) -> R,
+    R: IntoFfi,
+{
+    with_standalone_uploader(|ping_uploader| Ok(callback(ping_uploader)))
 }
 
 /// Initialize the logging system based on the target platform. This ensures
@@ -353,6 +396,19 @@ pub extern "C" fn glean_is_first_run() -> u8 {
 // * `result`: the object the output task will be written to.
 #[no_mangle]
 pub extern "C" fn glean_get_upload_task(result: *mut FfiPingUploadTask, log_ping: u8) {
+    // If an upload manager instance is available, use that (it should only happen
+    // in processes which do not initialize Glean).
+    if glean_core::upload::global_upload_manager().is_some() {
+        with_standalone_uploader_value(|ping_uploader| {
+            let ffi_task = FfiPingUploadTask::from(ping_uploader.get_upload_task(log_ping != 0));
+            unsafe {
+                std::ptr::write(result, ffi_task);
+            }
+        });
+        return;
+    }
+
+    // Otherwise
     with_glean_value(|glean| {
         let ffi_task = FfiPingUploadTask::from(glean.get_upload_task(log_ping != 0));
         unsafe {
@@ -389,6 +445,22 @@ pub unsafe extern "C" fn glean_process_ping_upload_response(
     // but as it controls the memory, we put something valid in place, just in case.
     let task = std::ptr::replace(task, FfiPingUploadTask::Done);
 
+    // If an upload manager instance is available, use that (it should only happen
+    // in processes which do not initialize Glean).
+    if glean_core::upload::global_upload_manager().is_some() {
+        with_standalone_uploader(|ping_uploader| {
+            if let FfiPingUploadTask::Upload { document_id, .. } = task {
+                assert!(!document_id.is_null());
+                let document_id_str = CStr::from_ptr(document_id)
+                    .to_str()
+                    .map_err(|_| glean_core::Error::utf8_error())?;
+                ping_uploader.process_ping_upload_response(document_id_str, status.into());
+            };
+            Ok(())
+        });
+        return;
+    }
+
     with_glean(|glean| {
         if let FfiPingUploadTask::Upload { document_id, .. } = task {
             assert!(!document_id.is_null());
@@ -399,6 +471,16 @@ pub unsafe extern "C" fn glean_process_ping_upload_response(
         };
         Ok(())
     });
+}
+
+#[no_mangle]
+pub extern "C" fn glean_initialize_standalone_uploader(data_dir: FfiStr) -> u8 {
+    handlemap_ext::handle_result(|| {
+        let upload_manager = PingUploadManager::new(data_dir.to_string_fallible()?);
+        glean_core::upload::setup_upload_manager(upload_manager)?;
+        log::info!("Glean initialized in upload-only mode");
+        Ok(true)
+    })
 }
 
 define_string_destructor!(glean_str_free);

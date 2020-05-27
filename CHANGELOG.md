@@ -7,6 +7,7 @@
 * Python:
   * BUGFIX: `lifetime: application` metrics are no longer recorded as `lifetime: user`.
   * BUGFIX: glean-core is no longer crashing when calling `uuid.set` with invalid UUIDs. 
+  * Refactor the ping uploader to use the new upload mechanism and add gzip compression.
 
 # v30.1.0 (2020-05-22)
 
