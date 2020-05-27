@@ -218,6 +218,10 @@ class Glean:
             _ffi.lib.glean_destroy_glean()
         cls._initialized = False
 
+        # Remove the atexit handler or it will get called multiple times at
+        # exit.
+        atexit.unregister(cls._reset)
+
         if cls._destroy_data_dir and cls._data_dir.exists():
             # This needs to be run in the same one-at-a-time process as the
             # PingUploadWorker to avoid a race condition. This will block the
