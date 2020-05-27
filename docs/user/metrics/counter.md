@@ -133,7 +133,7 @@ assert 1 == metrics.controls.refresh_pressed.test_get_num_recorded_errors(
 
 ## Recorded errors
 
-* `invalid_value`: If the counter is incremented by a non-positive value.
+* `invalid_value`: If the counter is incremented by `0` or a negative value.
 
 ## Reference
 
