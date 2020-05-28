@@ -130,12 +130,16 @@ class Glean:
         cls._application_id = application_id
         cls._application_version = application_version
 
-        cls._upload_enabled = upload_enabled
+        cls.set_upload_enabled(upload_enabled)
 
         # Use `Glean._execute_task` rather than `Glean.launch` here, since we
         # never want to put this work on the `Dispatcher._preinit_queue`.
         @Dispatcher._execute_task
         def initialize():
+            # Other platforms register the built-in pings here. That is not
+            # necessary on Python since it doesn't have the problem with static
+            # initializers that Kotlin and Swift have.
+
             cfg = _ffi.make_config(
                 cls._data_dir,
                 application_id,
@@ -150,6 +154,8 @@ class Glean:
             if not cls._initialized:
                 return
 
+            # Kotlin bindings have a "synchronized" here, but that is
+            # unnecessary given that Python has a GIL.
             for ping in cls._ping_type_queue:
                 cls.register_ping_type(ping)
 
@@ -160,15 +166,15 @@ class Glean:
             if is_first_run:
                 cls._initialize_core_metrics()
 
-            # Glean Android sets up the metrics ping scheduler here, but we don't
-            # have one.
-
             # Deal with any pending events so we can start recording new ones
             if (
                 _ffi.lib.glean_on_ready_to_submit_pings()
                 or cls._upload_enabled is False
             ):
                 PingUploadWorker.process()
+
+            # Glean Android sets up the metrics ping scheduler here, but we don't
+            # have one.
 
             # Other platforms check for the "dirty bit" and send the `baseline` ping
             # with reason `dirty_startup`.
