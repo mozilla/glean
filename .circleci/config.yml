@@ -404,6 +404,9 @@ jobs:
       - store_artifacts:
           path: ~/test-results/tests
           destination: test-results
+      - store_artifacts:
+          path: glean-core/android/core
+          destination: coredump
       - store_test_results:
           path: ~/test-results
 
