@@ -5,24 +5,25 @@
 from enum import IntEnum
 
 
+from .. import _ffi
+
+
 class UploadTaskTag(IntEnum):
     """
     An enumeration for the different upload tasks that the Glean uploader supports.
-
-    This *MUST* have the same order as the variants in `glean-core/ffi/src/upload.rs`.
     """
 
-    UPLOAD = 0
+    UPLOAD = _ffi.lib.FfiPingUploadTask_Upload
     """
     Ping data is available for upload
     """
 
-    WAIT = 1
+    WAIT = _ffi.lib.FfiPingUploadTask_Wait
     """
     Caller needs to wait before requesting new data
     """
 
-    DONE = 2
+    DONE = _ffi.lib.FfiPingUploadTask_Done
     """
     No data available
     """

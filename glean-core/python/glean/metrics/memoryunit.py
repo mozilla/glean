@@ -6,6 +6,9 @@
 from enum import IntEnum
 
 
+from .. import _ffi
+
+
 class MemoryUnit(IntEnum):
     """
     An enumeration of different resolutions supported by the
@@ -15,22 +18,22 @@ class MemoryUnit(IntEnum):
     pedantically a Kibibyte.
     """
 
-    BYTE = 0
+    BYTE = _ffi.lib.MemoryUnit_Byte
     """
     Byte: 1 byte.
     """
 
-    KILOBYTE = 1
+    KILOBYTE = _ffi.lib.MemoryUnit_Kilobyte
     """
     Kilobyte: 2^10 bytes
     """
 
-    MEGABYTE = 2
+    MEGABYTE = _ffi.lib.MemoryUnit_Megabyte
     """
     Megabyte: 2^20 bytes
     """
 
-    GIGABYTE = 3
+    GIGABYTE = _ffi.lib.MemoryUnit_Gigabyte
     """
     Gigabyte: 2^30 bytes
     """

@@ -8,7 +8,7 @@ use ffi_support::FfiStr;
 
 use crate::{
     define_metric, from_raw_int64_array, handlemap_ext::HandleMapExtension, with_glean_value,
-    RawInt64Array,
+    Lifetime, RawInt64Array,
 };
 
 define_metric!(CustomDistributionMetric => CUSTOM_DISTRIBUTION_METRICS {

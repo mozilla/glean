@@ -8,7 +8,7 @@ use ffi_support::FfiStr;
 
 use crate::{
     define_metric, ffi_string_ext::FallibleToString, from_raw_string_array,
-    handlemap_ext::HandleMapExtension, with_glean_value, RawStringArray,
+    handlemap_ext::HandleMapExtension, with_glean_value, Lifetime, RawStringArray,
 };
 
 define_metric!(StringListMetric => STRING_LIST_METRICS {

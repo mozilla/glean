@@ -9,9 +9,12 @@ use std::panic::UnwindSafe;
 
 use ffi_support::{define_string_destructor, ConcurrentHandleMap, FfiStr, IntoFfi};
 
+pub use glean_core::metrics::MemoryUnit;
+pub use glean_core::metrics::TimeUnit;
 pub use glean_core::upload::ffi_upload_result::*;
 use glean_core::upload::PingUploadManager;
 use glean_core::Glean;
+pub use glean_core::Lifetime;
 
 mod macros;
 
