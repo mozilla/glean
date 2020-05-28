@@ -17,6 +17,7 @@ class PingTests: XCTestCase {
     override func tearDown() {
         lastPingJson = nil
         expectation = nil
+        OHHTTPStubs.removeAllStubs()
     }
 
     private func setupHttpResponseStub(_ expectedPingType: String) {

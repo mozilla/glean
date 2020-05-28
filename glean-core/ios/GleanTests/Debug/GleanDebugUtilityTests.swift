@@ -16,6 +16,7 @@ class GleanDebugUtilityTests: XCTestCase {
 
     override func tearDown() {
         Glean.shared.setUploadEnabled(true)
+        OHHTTPStubs.removeAllStubs()
     }
 
     func testHandleCustomUrlTagPings() {
