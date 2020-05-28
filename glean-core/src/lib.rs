@@ -196,7 +196,7 @@ impl Glean {
             event_data_store,
             core_metrics: CoreMetrics::new(),
             internal_pings: InternalPings::new(),
-            upload_manager: PingUploadManager::new(&cfg.data_path),
+            upload_manager: PingUploadManager::new(&cfg.data_path, false),
             data_path: PathBuf::from(cfg.data_path),
             application_id,
             ping_registry: HashMap::new(),
