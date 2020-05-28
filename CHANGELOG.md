@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v30.1.0...master)
+[Full changelog](https://github.com/mozilla/glean/compare/v31.0.0...master)
+
+# v31.0.0 (2020-05-28)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v30.1.0...v31.0.0)
 
 * General:
   * The version of `glean_parser` has been upgraded to v1.22.0

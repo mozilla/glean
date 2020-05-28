@@ -2823,8 +2823,8 @@ THE SOFTWARE.
 The following text applies to code linked from these dependencies:
 
 * [benchmark 0.1.0]( https://crates.io/crates/benchmark )
-* [glean-core 30.1.0]( https://github.com/mozilla/glean )
-* [glean-ffi 30.1.0]( https://github.com/mozilla/glean )
+* [glean-core 31.0.0]( https://github.com/mozilla/glean )
+* [glean-ffi 31.0.0]( https://github.com/mozilla/glean )
 * [glean-preview 0.0.5]( https://github.com/mozilla/glean )
 
 
