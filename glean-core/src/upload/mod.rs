@@ -105,11 +105,12 @@ impl PingUploadManager {
     /// # Arguments
     ///
     /// * `data_path` - Path to the pending pings directory.
+    /// * `sync_scan` - Whether or not ping directory scanning should be synchronous.
     ///
     /// # Panics
     ///
     /// Will panic if unable to spawn a new thread.
-    pub fn new<P: Into<PathBuf>>(data_path: P) -> Self {
+    pub fn new<P: Into<PathBuf>>(data_path: P, sync_scan: bool) -> Self {
         let queue = Arc::new(RwLock::new(VecDeque::new()));
         let directory_manager = PingDirectoryManager::new(data_path);
         let processed_pending_pings = Arc::new(AtomicBool::new(false));
@@ -117,7 +118,7 @@ impl PingUploadManager {
         let local_queue = queue.clone();
         let local_flag = processed_pending_pings.clone();
         let local_manager = directory_manager.clone();
-        let _ = thread::Builder::new()
+        let ping_scanning_thread = thread::Builder::new()
             .name("glean.ping_directory_manager.process_dir".to_string())
             .spawn(move || {
                 let mut local_queue = local_queue
@@ -127,6 +128,12 @@ impl PingUploadManager {
                 local_flag.store(true, Ordering::SeqCst);
             })
             .expect("Unable to spawn thread to process pings directories.");
+
+        if sync_scan {
+            ping_scanning_thread
+                .join()
+                .expect("Unable to wait for startup ping processing to finish.");
+        }
 
         Self {
             queue,
@@ -370,7 +377,7 @@ mod test {
     fn test_doesnt_error_when_there_are_no_pending_pings() {
         // Create a new upload_manager
         let dir = tempfile::tempdir().unwrap();
-        let upload_manager = PingUploadManager::new(dir.path());
+        let upload_manager = PingUploadManager::new(dir.path(), false);
 
         // Wait for processing of pending pings directory to finish.
         while upload_manager.get_upload_task(false) == PingUploadTask::Wait {
@@ -386,7 +393,7 @@ mod test {
     fn test_returns_ping_request_when_there_is_one() {
         // Create a new upload_manager
         let dir = tempfile::tempdir().unwrap();
-        let upload_manager = PingUploadManager::new(dir.path());
+        let upload_manager = PingUploadManager::new(dir.path(), false);
 
         // Wait for processing of pending pings directory to finish.
         while upload_manager.get_upload_task(false) == PingUploadTask::Wait {
@@ -408,7 +415,7 @@ mod test {
     fn test_returns_as_many_ping_requests_as_there_are() {
         // Create a new upload_manager
         let dir = tempfile::tempdir().unwrap();
-        let upload_manager = PingUploadManager::new(dir.path());
+        let upload_manager = PingUploadManager::new(dir.path(), false);
 
         // Wait for processing of pending pings directory to finish.
         while upload_manager.get_upload_task(false) == PingUploadTask::Wait {
@@ -437,7 +444,7 @@ mod test {
     fn test_clearing_the_queue_works_correctly() {
         // Create a new upload_manager
         let dir = tempfile::tempdir().unwrap();
-        let upload_manager = PingUploadManager::new(dir.path());
+        let upload_manager = PingUploadManager::new(dir.path(), false);
 
         // Wait for processing of pending pings directory to finish.
         while upload_manager.get_upload_task(false) == PingUploadTask::Wait {
@@ -504,7 +511,7 @@ mod test {
         }
 
         // Create a new upload_manager
-        let upload_manager = PingUploadManager::new(dir.path());
+        let upload_manager = PingUploadManager::new(dir.path(), false);
 
         // Wait for processing of pending pings directory to finish.
         let mut upload_task = upload_manager.get_upload_task(false);
@@ -539,7 +546,7 @@ mod test {
         glean.submit_ping(&ping_type, None).unwrap();
 
         // Create a new upload_manager
-        let upload_manager = PingUploadManager::new(&dir.path());
+        let upload_manager = PingUploadManager::new(&dir.path(), false);
 
         // Wait for processing of pending pings directory to finish.
         let mut upload_task = upload_manager.get_upload_task(false);
@@ -579,7 +586,7 @@ mod test {
         glean.submit_ping(&ping_type, None).unwrap();
 
         // Create a new upload_manager
-        let upload_manager = PingUploadManager::new(&dir.path());
+        let upload_manager = PingUploadManager::new(&dir.path(), false);
 
         // Wait for processing of pending pings directory to finish.
         let mut upload_task = upload_manager.get_upload_task(false);
@@ -619,7 +626,7 @@ mod test {
         glean.submit_ping(&ping_type, None).unwrap();
 
         // Create a new upload_manager
-        let upload_manager = PingUploadManager::new(dir.path());
+        let upload_manager = PingUploadManager::new(dir.path(), false);
 
         // Wait for processing of pending pings directory to finish.
         let mut upload_task = upload_manager.get_upload_task(false);
@@ -661,7 +668,7 @@ mod test {
         glean.submit_ping(&ping_type, None).unwrap();
 
         // Create a new upload_manager
-        let upload_manager = PingUploadManager::new(&dir.path());
+        let upload_manager = PingUploadManager::new(&dir.path(), false);
 
         // Wait for processing of pending pings directory to finish.
         let mut upload_task = upload_manager.get_upload_task(false);
@@ -693,7 +700,7 @@ mod test {
     fn new_pings_are_added_while_upload_in_progress() {
         // Create a new upload_manager
         let dir = tempfile::tempdir().unwrap();
-        let upload_manager = PingUploadManager::new(dir.path());
+        let upload_manager = PingUploadManager::new(dir.path(), false);
 
         // Wait for processing of pending pings directory to finish.
         while upload_manager.get_upload_task(false) == PingUploadTask::Wait {
@@ -737,5 +744,16 @@ mod test {
             PingUploadTask::Done => {}
             _ => panic!("Expected upload manager to return the next request!"),
         }
+    }
+
+    #[test]
+    fn test_uploader_sync_init() {
+        // Create a new upload_manager, with a synchronous ping dir scan.
+        let dir = tempfile::tempdir().unwrap();
+        let upload_manager = PingUploadManager::new(dir.path(), true);
+
+        // Since the scan was synchronous and the directory was empty,
+        // we expect the upload task to always be `Done`.
+        assert_eq!(PingUploadTask::Done, upload_manager.get_upload_task(false))
     }
 }
