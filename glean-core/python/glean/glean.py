@@ -164,15 +164,13 @@ class Glean:
             # have one.
 
             # Deal with any pending events so we can start recording new ones
-            @Dispatcher.launch_at_front
-            def submit_pending_events():
-                if (
-                    _ffi.lib.glean_on_ready_to_submit_pings()
-                    or cls._upload_enabled is False
-                ):
-                    PingUploadWorker.process()
+            if (
+                _ffi.lib.glean_on_ready_to_submit_pings()
+                or cls._upload_enabled is False
+            ):
+                PingUploadWorker.process()
 
-            # Glean Android checks for the "dirty bit" and sends the `baseline` ping
+            # Other platforms check for the "dirty bit" and send the `baseline` ping
             # with reason `dirty_startup`.
 
             # From the second time we run, after all startup pings are generated,
