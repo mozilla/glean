@@ -37,8 +37,7 @@ build-kotlin: ## Build all Kotlin code
 build-swift: ## Build all Swift code
 	bin/run-ios-build.sh
 
-build-apk: ## Build an apk of the Glean sample app
-	./gradlew glean-core:build
+build-apk: build-kotlin ## Build an apk of the Glean sample app
 	./gradlew glean-sample-app:build
 
 build-python: python-setup build-rust ## Build the Python bindings

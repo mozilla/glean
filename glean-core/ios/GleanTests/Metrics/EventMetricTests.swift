@@ -57,6 +57,7 @@ class EventMetricTypeTests: XCTestCase {
     override func tearDown() {
         lastPingJson = nil
         expectation = nil
+        OHHTTPStubs.removeAllStubs()
     }
 
     func testEventSavesToStorage() {

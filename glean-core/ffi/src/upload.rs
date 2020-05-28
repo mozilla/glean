@@ -10,9 +10,9 @@
 use std::ffi::CString;
 use std::os::raw::c_char;
 
-use ffi_support::{ByteBuffer, IntoFfi};
+use ffi_support::IntoFfi;
 
-use crate::glean_str_free;
+use crate::{byte_buffer::ByteBuffer, glean_str_free};
 use glean_core::upload::PingUploadTask;
 
 /// Result values of attempted ping uploads encoded for FFI use.

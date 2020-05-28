@@ -18,7 +18,7 @@ from glean_parser import validate_ping
 import pytest
 
 
-from glean import Configuration, Glean
+from glean import Configuration, Glean, load_metrics
 from glean import __version__ as glean_version
 from glean import _builtins
 from glean import _util
@@ -29,6 +29,9 @@ from glean.testing import _RecordingUploader
 
 
 GLEAN_APP_ID = "glean-python-test"
+
+
+ROOT = Path(__file__).parent
 
 
 def test_setting_upload_enabled_before_initialization_should_not_crash():
@@ -420,7 +423,11 @@ def test_tempdir_is_cleared_multiprocess(safe_httpserver):
     safe_httpserver.serve_content(b"", code=200)
     Glean._configuration.server_endpoint = safe_httpserver.url
 
-    pings_dir = PingUploadWorker.storage_directory()
+    # This test requires us to write a few files in the pending pings
+    # directory, to which language bindings have theoretically no access.
+    # Manually create the path to that directory, at the risk of breaking
+    # the test in the future, if that changes in the Rust code.
+    pings_dir = Glean._data_dir / "pending_pings"
     pings_dir.mkdir()
 
     for i in range(100):
@@ -614,10 +621,17 @@ def test_clear_application_lifetime_metrics(tmpdir):
         send_in_pings=["store1"],
     )
 
+    # Additionally get metrics using the loader.
+    metrics = load_metrics(ROOT / "data" / "core.yaml", config={"allow_reserved": True})
+
     counter_metric.add(10)
+    metrics.core_ping.seq.add(10)
 
     assert counter_metric.test_has_value()
     assert counter_metric.test_get_value() == 10
+
+    assert metrics.core_ping.seq.test_has_value()
+    assert metrics.core_ping.seq.test_get_value() == 10
 
     Glean._reset()
 
@@ -629,3 +643,4 @@ def test_clear_application_lifetime_metrics(tmpdir):
     )
 
     assert not counter_metric.test_has_value()
+    assert not metrics.core_ping.seq.test_has_value()

@@ -84,3 +84,19 @@ def test_the_api_saves_to_secondary_pings():
     # Check that the data was properly recorded
     assert uuid_metric.test_has_value("store2")
     assert uuid2 == uuid_metric.test_get_value("store2")
+
+
+def test_invalid_uuid_must_not_crash():
+    uuid_metric = metrics.UuidMetricType(
+        disabled=False,
+        category="telemetry",
+        lifetime=Lifetime.PING,
+        name="uuid_metric",
+        send_in_pings=["store1"],
+    )
+
+    # Attempt to set an invalid UUID.
+    uuid_metric.set("well, this is not a UUID")
+
+    # Check that no value was stored.
+    assert not uuid_metric.test_has_value()

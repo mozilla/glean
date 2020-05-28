@@ -15,6 +15,7 @@ class MetricsPingSchedulerTests: XCTestCase {
 
     override func tearDown() {
         expectation = nil
+        OHHTTPStubs.removeAllStubs()
     }
 
     func testIsAfterDueTime() {

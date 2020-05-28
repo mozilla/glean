@@ -17,6 +17,7 @@ class GleanTests: XCTestCase {
     override func tearDown() {
         Glean.shared.setUploadEnabled(true)
         expectation = nil
+        OHHTTPStubs.removeAllStubs()
     }
 
     func testInitializeGlean() {

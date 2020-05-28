@@ -39,3 +39,7 @@ samples/ios/app/.venv/
 .coverage
 htmlcov/
 *.log
+
+__pycache__
+*.py[cod]
+.Python

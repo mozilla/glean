@@ -9,86 +9,50 @@ import uuid
 from glean import Glean
 from glean.net import PingUploadWorker
 from glean.net.http_client import HttpClientUploader
-
-
-def test_invalid_filename():
-    pings_dir = PingUploadWorker.storage_directory()
-    pings_dir.mkdir()
-
-    with (pings_dir / "ping").open("wb") as fd:
-        fd.write(b"\n")
-
-    assert PingUploadWorker._test_process_sync()
-
-    assert 0 == len(list(pings_dir.iterdir()))
-
-
-def test_invalid_content():
-    pings_dir = PingUploadWorker.storage_directory()
-    pings_dir.mkdir()
-
-    with (pings_dir / str(uuid.uuid4())).open("wb") as fd:
-        fd.write(b"\n")
-
-    assert not PingUploadWorker.process()
-
-    assert 0 == len(list(pings_dir.iterdir()))
+from glean.net import ping_uploader
 
 
 def test_400_error(safe_httpserver):
     safe_httpserver.serve_content(b"", code=400)
-    Glean._configuration.server_endpoint = safe_httpserver.url
 
-    pings_dir = PingUploadWorker.storage_directory()
-    pings_dir.mkdir()
+    response = HttpClientUploader.upload(
+        url=safe_httpserver.url, data=b"{}", headers=[]
+    )
 
-    with (pings_dir / str(uuid.uuid4())).open("wb") as fd:
-        fd.write(b"/data/path/\n")
-        fd.write(b"{}\n")
-
-    assert PingUploadWorker._test_process_sync()
-
-    assert 0 == len(list(pings_dir.iterdir()))
-
+    assert type(response) is ping_uploader.HttpResponse
+    assert 400 == response._status_code
     assert 1 == len(safe_httpserver.requests)
 
 
 def test_500_error(safe_httpserver):
     safe_httpserver.serve_content(b"", code=500)
-    Glean._configuration.server_endpoint = safe_httpserver.url
 
-    pings_dir = PingUploadWorker.storage_directory()
-    pings_dir.mkdir()
+    response = HttpClientUploader.upload(
+        url=safe_httpserver.url, data=b"{}", headers=[]
+    )
 
-    with (pings_dir / str(uuid.uuid4())).open("wb") as fd:
-        fd.write(b"/data/path/\n")
-        fd.write(b"{}\n")
-
-    assert not PingUploadWorker._test_process_sync()
-
-    assert 1 == len(list(pings_dir.iterdir()))
-
+    assert type(response) is ping_uploader.HttpResponse
+    assert 500 == response._status_code
     assert 1 == len(safe_httpserver.requests)
 
 
 def test_unknown_scheme():
-    Glean._configuration.server_endpoint = "ftp://example.com/"
+    response = HttpClientUploader.upload(
+        url="ftp://example.com/", data=b"{}", headers=[]
+    )
 
-    pings_dir = PingUploadWorker.storage_directory()
-    pings_dir.mkdir()
-
-    with (pings_dir / str(uuid.uuid4())).open("wb") as fd:
-        fd.write(b"/data/path/\n")
-        fd.write(b"{}\n")
-
-    assert False is PingUploadWorker._test_process_sync()
+    assert type(response) is ping_uploader.UnrecoverableFailure
 
 
 def test_ping_upload_worker_single_process(safe_httpserver):
     safe_httpserver.serve_content(b"", code=200)
     Glean._configuration.server_endpoint = safe_httpserver.url
 
-    pings_dir = PingUploadWorker.storage_directory()
+    # This test requires us to write a few files in the pending pings
+    # directory, to which language bindings have theoretically no access.
+    # Manually create the path to that directory, at the risk of breaking
+    # the test in the future, if that changes in the Rust code.
+    pings_dir = Glean._data_dir / "pending_pings"
     pings_dir.mkdir()
 
     for i in range(100):
@@ -114,4 +78,8 @@ def test_ping_upload_worker_single_process(safe_httpserver):
 
 def test_unknown_url_no_exception():
     # Shouldn't leak any socket or HTTPExceptions
-    assert not HttpClientUploader.upload("http://nowhere.example.com", "{}", [])
+    response = HttpClientUploader.upload(
+        url="http://nowhere.example.com", data=b"{}", headers=[]
+    )
+
+    assert type(response) is ping_uploader.RecoverableFailure
