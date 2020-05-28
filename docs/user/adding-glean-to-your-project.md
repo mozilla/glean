@@ -210,14 +210,13 @@ Follow these steps to automatically run the parser at build time:
    $(SRCROOT)/{project-name}/pings.yaml
    ```
 
-4. Add the paths to the generated code files to the "Output Files":
+4. Add the path to the generated code file to the "Output Files":
 
    ```
-   $(SRCROOT)/{project-name}/Generated/{YourCategory}.swift
+   $(SRCROOT)/{project-name}/Generated/Metrics.swift
    ```
 
-   > **Important**: The parser generates one file per category.
-   > If you are unsure which files those are, skip this step and add the files after they are generated for the first time.
+   > **Important**: The parser now generates a single file called `Metrics.swift` (since Glean v31.0.0).
 
 5. If you are using Git, add the following lines to your `.gitignore` file:
 
