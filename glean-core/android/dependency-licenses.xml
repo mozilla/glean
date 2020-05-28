@@ -21,6 +21,10 @@ the details of which are reproduced below.
     <url>https://github.com/retep998/winapi-rs</url>
   </license>
   <license>
+    <name>Apache License 2.0: crc32fast</name>
+    <url>https://github.com/srijs/rust-crc32fast</url>
+  </license>
+  <license>
     <name>Apache License 2.0: humantime</name>
     <url>https://crates.io/crates/humantime</url>
   </license>
@@ -55,6 +59,10 @@ the details of which are reproduced below.
   <license>
     <name>Apache License 2.0: ffi-support</name>
     <url>https://github.com/mozilla/application-services</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: flate2</name>
+    <url>https://github.com/alexcrichton/flate2-rs</url>
   </license>
   <license>
     <name>Apache License 2.0: idna</name>
@@ -213,6 +221,10 @@ the details of which are reproduced below.
     <url>https://github.com/mystor/synstructure</url>
   </license>
   <license>
+    <name>MIT License: miniz_oxide</name>
+    <url>https://github.com/Frommi/miniz_oxide/tree/master/miniz_oxide</url>
+  </license>
+  <license>
     <name>MIT License: bincode</name>
     <url>https://github.com/servo/bincode</url>
   </license>
@@ -243,6 +255,10 @@ the details of which are reproduced below.
   <license>
     <name>Mozilla Public License 2.0: glean-preview</name>
     <url>https://github.com/mozilla/glean</url>
+  </license>
+  <license>
+    <name>zlib License: adler32</name>
+    <url>https://github.com/remram44/adler32-rs</url>
   </license>
 </licenses>
 

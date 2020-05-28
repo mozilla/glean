@@ -8,6 +8,7 @@ the details of which are reproduced below.
 * [MIT License](#MIT)
 * [BSD 2-Clause "Simplified" License](#BSD-2-Clause)
 * [Mozilla Public License 2.0](#MPL-2.0)
+* [zlib License](#Zlib)
 
 -------------
 
@@ -866,6 +867,7 @@ The following text applies to code linked from these dependencies:
 
 The following text applies to code linked from these dependencies:
 
+* [crc32fast 1.2.0]( https://github.com/srijs/rust-crc32fast )
 * [humantime 1.3.0]( https://crates.io/crates/humantime )
 * [quick-error 1.2.3]( http://github.com/tailhook/quick-error )
 
@@ -1298,6 +1300,7 @@ The following text applies to code linked from these dependencies:
 * [env_logger 0.7.1]( https://github.com/sebasmagri/env_logger/ )
 * [failure 0.1.6]( https://github.com/rust-lang-nursery/failure )
 * [ffi-support 0.4.0]( https://github.com/mozilla/application-services )
+* [flate2 1.0.14]( https://github.com/alexcrichton/flate2-rs )
 * [idna 0.2.0]( https://github.com/servo/rust-url/ )
 * [itoa 0.4.5]( https://github.com/dtolnay/itoa )
 * [lazy_static 1.4.0]( https://github.com/rust-lang-nursery/lazy-static.rs )
@@ -2690,6 +2693,38 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 The following text applies to code linked from these dependencies:
 
+* [miniz_oxide 0.3.6]( https://github.com/Frommi/miniz_oxide/tree/master/miniz_oxide )
+
+
+```
+MIT License
+
+Copyright (c) 2017 Frommi
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+```
+## MIT License
+<span id="MIT"></span>
+
+The following text applies to code linked from these dependencies:
+
 * [bincode 1.2.1]( https://github.com/servo/bincode )
 
 
@@ -2788,8 +2823,8 @@ THE SOFTWARE.
 The following text applies to code linked from these dependencies:
 
 * [benchmark 0.1.0]( https://crates.io/crates/benchmark )
-* [glean-core 30.0.0]( https://github.com/mozilla/glean )
-* [glean-ffi 30.0.0]( https://github.com/mozilla/glean )
+* [glean-core 30.1.0]( https://github.com/mozilla/glean )
+* [glean-ffi 30.1.0]( https://github.com/mozilla/glean )
 * [glean-preview 0.0.5]( https://github.com/mozilla/glean )
 
 
@@ -3168,5 +3203,26 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
   This Source Code Form is "Incompatible With Secondary Licenses", as
   defined by the Mozilla Public License, v. 2.0.
 
+```
+## zlib License
+<span id="Zlib"></span>
+
+The following text applies to code linked from these dependencies:
+
+* [adler32 1.0.4]( https://github.com/remram44/adler32-rs )
+
+
+```
+zlib License Copyright (c) <year> <copyright holders>
+
+This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable for any damages arising from the use of this software.
+
+Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
+
+   1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not required.
+
+   2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
+
+   3. This notice may not be removed or altered from any source distribution.
 ```
 
