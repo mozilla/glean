@@ -11,8 +11,6 @@ transforms:
 
 jobs:
   pr:
-    attributes:
-      run-on-pr-type: normal-ci
     add-megazord-checks: true
     needs-sccache: false # TODO: Bug 1623426 deal with this once we're in prod
     run-on-tasks-for: [github-pull-request]
