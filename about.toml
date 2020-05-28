@@ -6,6 +6,7 @@ accepted = [
     "BSD-2-Clause",
     "BSD-3-Clause",
     "ISC",
+    "Zlib",
 ]
 
 # Subset of targets we build for
