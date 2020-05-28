@@ -26,7 +26,6 @@ jobs:
         # and the gradle command. Another options could be to set those env vars
         # here like: [export, 'PATH=$HOME/.cargo/bin:$PATH'
         - [source, taskcluster/scripts/rust/rustup-setup.sh]
-        - [rsync, '-a', /builds/worker/fetches/libs/, /builds/worker/checkouts/src/libs/]
         - [bash, '-c', 'echo "rust.targets=linux-x86-64,x86_64\n" > local.properties']
       gradlew:
         - 'clean'
