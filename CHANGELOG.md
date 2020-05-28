@@ -3,10 +3,15 @@
 [Full changelog](https://github.com/mozilla/glean/compare/v30.1.0...master)
 
 * General:
-  * The version of glean_parser has been upgraded to v1.21.0
+  * The version of `glean_parser` has been upgraded to v1.22.0
+    * A maximum of 10 `extra_keys` is now enforced for event metric types.
+    * **Breaking change**: (Swift only) Combine all metrics and pings into a single generated file Metrics.swift.
+      * For Swift users this requires to change the list of output files for the `sdk_generator.sh` script.
+        It now only needs to include the single file `Generated/Metrics.swift`.
+
 * Python:
   * BUGFIX: `lifetime: application` metrics are no longer recorded as `lifetime: user`.
-  * BUGFIX: glean-core is no longer crashing when calling `uuid.set` with invalid UUIDs. 
+  * BUGFIX: glean-core is no longer crashing when calling `uuid.set` with invalid UUIDs.
   * Refactor the ping uploader to use the new upload mechanism and add gzip compression.
 * Rust:
   * Expose `Datetime` types to Rust consumers.

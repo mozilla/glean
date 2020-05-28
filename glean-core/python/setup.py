@@ -48,7 +48,7 @@ with (ROOT.parent / "Cargo.toml").open() as cargo:
 
 requirements = [
     "cffi>=1",
-    "glean_parser==1.21.0",
+    "glean_parser==1.22.0",
     "iso8601>=0.1.10; python_version<='3.6'",
 ]
 

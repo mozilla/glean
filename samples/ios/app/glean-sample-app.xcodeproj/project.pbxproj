@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		BF1BF3FF23337E6F0036F4CC /* Glean.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF1BF3FE23337E6F0036F4CC /* Glean.framework */; };
+		BF7CC0A82473F68C003B166D /* Metrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF7CC0A72473F68C003B166D /* Metrics.swift */; };
 		BF89665A2371C82E0097B7F2 /* pings.yaml in Resources */ = {isa = PBXBuildFile; fileRef = BF8966592371C82E0097B7F2 /* pings.yaml */; };
 		BF8C3866246D749400274ACE /* Gzip.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF8C3865246D749400274ACE /* Gzip.framework */; };
 		BF90C913236B43A10045BD0E /* Swifter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF90C911236B42F00045BD0E /* Swifter.framework */; };
@@ -18,11 +19,6 @@
 		BFD3AB38224D475E00AD9255 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BFD3AB36224D475E00AD9255 /* LaunchScreen.storyboard */; };
 		BFD3AB43224D475E00AD9255 /* glean_sample_appTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFD3AB42224D475E00AD9255 /* glean_sample_appTests.swift */; };
 		BFD3AB4E224D475E00AD9255 /* BaselinePingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFD3AB4D224D475E00AD9255 /* BaselinePingTest.swift */; };
-		BFDA7ACA2371C9B800575C7B /* Custom.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFDA7AC52371C9B800575C7B /* Custom.swift */; };
-		BFDA7ACB2371C9B800575C7B /* Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFDA7AC62371C9B800575C7B /* Test.swift */; };
-		BFDA7ACC2371C9B800575C7B /* Pings.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFDA7AC72371C9B800575C7B /* Pings.swift */; };
-		BFDA7ACD2371C9B800575C7B /* Basic.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFDA7AC82371C9B800575C7B /* Basic.swift */; };
-		BFDA7ACE2371C9B800575C7B /* BrowserEngagement.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFDA7AC92371C9B800575C7B /* BrowserEngagement.swift */; };
 		BFDA7AD02371CE4900575C7B /* ViewControllerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFDA7ACF2371CE4900575C7B /* ViewControllerTest.swift */; };
 		BFDA7AD22371D2BA00575C7B /* MockServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFDA7AD12371D2BA00575C7B /* MockServer.swift */; };
 		BFED6B2C238C1638006E2BC4 /* DeletionRequestPingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFED6B2B238C1638006E2BC4 /* DeletionRequestPingTest.swift */; };
@@ -48,6 +44,7 @@
 /* Begin PBXFileReference section */
 		BF1BF3FE23337E6F0036F4CC /* Glean.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Glean.framework; path = Carthage/Build/iOS/Glean.framework; sourceTree = "<group>"; };
 		BF6F41C4234346A000E222A8 /* metrics.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = metrics.yaml; sourceTree = "<group>"; };
+		BF7CC0A72473F68C003B166D /* Metrics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Metrics.swift; sourceTree = "<group>"; };
 		BF8966592371C82E0097B7F2 /* pings.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = pings.yaml; sourceTree = "<group>"; };
 		BF8C3865246D749400274ACE /* Gzip.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Gzip.framework; path = Carthage/Build/iOS/Gzip.framework; sourceTree = "<group>"; };
 		BF90C911236B42F00045BD0E /* Swifter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Swifter.framework; path = Carthage/Build/iOS/Swifter.framework; sourceTree = "<group>"; };
@@ -67,11 +64,6 @@
 		BFD3AB5B224D490000AD9255 /* debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = debug.xcconfig; sourceTree = "<group>"; };
 		BFD3AB5C224D490000AD9255 /* base.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = base.xcconfig; sourceTree = "<group>"; };
 		BFD3AB5D224D490000AD9255 /* release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = release.xcconfig; sourceTree = "<group>"; };
-		BFDA7AC52371C9B800575C7B /* Custom.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Custom.swift; sourceTree = "<group>"; };
-		BFDA7AC62371C9B800575C7B /* Test.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Test.swift; sourceTree = "<group>"; };
-		BFDA7AC72371C9B800575C7B /* Pings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Pings.swift; sourceTree = "<group>"; };
-		BFDA7AC82371C9B800575C7B /* Basic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Basic.swift; sourceTree = "<group>"; };
-		BFDA7AC92371C9B800575C7B /* BrowserEngagement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrowserEngagement.swift; sourceTree = "<group>"; };
 		BFDA7ACF2371CE4900575C7B /* ViewControllerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerTest.swift; sourceTree = "<group>"; };
 		BFDA7AD12371D2BA00575C7B /* MockServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockServer.swift; sourceTree = "<group>"; };
 		BFE1E7D523435A600067A12A /* sdk_generator.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = sdk_generator.sh; sourceTree = "<group>"; };
@@ -109,11 +101,7 @@
 		BF6F41CA23434A1700E222A8 /* Generated */ = {
 			isa = PBXGroup;
 			children = (
-				BFDA7AC82371C9B800575C7B /* Basic.swift */,
-				BFDA7AC92371C9B800575C7B /* BrowserEngagement.swift */,
-				BFDA7AC52371C9B800575C7B /* Custom.swift */,
-				BFDA7AC72371C9B800575C7B /* Pings.swift */,
-				BFDA7AC62371C9B800575C7B /* Test.swift */,
+				BF7CC0A72473F68C003B166D /* Metrics.swift */,
 			);
 			path = Generated;
 			sourceTree = "<group>";
@@ -337,11 +325,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(SRCROOT)/glean-sample-app/Generated/Basic.swift",
-				"$(SRCROOT)/glean-sample-app/Generated/BrowserEngagement.swift",
-				"$(SRCROOT)/glean-sample-app/Generated/Custom.swift",
-				"$(SRCROOT)/glean-sample-app/Generated/Pings.swift",
-				"$(SRCROOT)/glean-sample-app/Generated/Test.swift",
+				"$(SRCROOT)/glean-sample-app/Generated/Metrics.swift",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -399,12 +383,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				BFD3AB30224D475E00AD9255 /* ViewController.swift in Sources */,
-				BFDA7ACC2371C9B800575C7B /* Pings.swift in Sources */,
-				BFDA7ACD2371C9B800575C7B /* Basic.swift in Sources */,
-				BFDA7ACB2371C9B800575C7B /* Test.swift in Sources */,
+				BF7CC0A82473F68C003B166D /* Metrics.swift in Sources */,
 				BFD3AB2E224D475E00AD9255 /* AppDelegate.swift in Sources */,
-				BFDA7ACA2371C9B800575C7B /* Custom.swift in Sources */,
-				BFDA7ACE2371C9B800575C7B /* BrowserEngagement.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
