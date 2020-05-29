@@ -48,6 +48,11 @@ android {
     }
 
     buildTypes {
+        debug {
+            // Export our rules in debug, as a consumer might still enable proguard/r8
+            consumerProguardFiles "$projectDir/proguard-rules-consumer.pro"
+        }
+
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
