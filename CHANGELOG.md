@@ -1,6 +1,13 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v31.0.0...master)
+[Full changelog](https://github.com/mozilla/glean/compare/v31.0.1...master)
+
+# Unreleased changes
+
+[Full changelog](https://github.com/mozilla/glean/compare/v31.0.0...v31.0.1)
+
+* Rust
+    * Relax version requirement for `flate2` for compatibility reasons
 
 # v31.0.0 (2020-05-28)
 
@@ -17,6 +24,8 @@
   * BUGFIX: `lifetime: application` metrics are no longer recorded as `lifetime: user`.
   * BUGFIX: glean-core is no longer crashing when calling `uuid.set` with invalid UUIDs.
   * Refactor the ping uploader to use the new upload mechanism and add gzip compression.
+  * Most of the work in `Glean.initialize` happens on a worker thread and no longer blocks
+    the main thread.
 * Rust:
   * Expose `Datetime` types to Rust consumers.
 

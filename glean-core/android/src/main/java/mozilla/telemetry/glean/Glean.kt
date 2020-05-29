@@ -474,8 +474,8 @@ open class GleanInternalAPI internal constructor () {
      * Collect a ping and return a string
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    internal fun testCollect(ping: PingTypeBase): String? {
-        return LibGleanFFI.INSTANCE.glean_ping_collect(ping.handle)?.getAndConsumeRustString()
+    internal fun testCollect(ping: PingTypeBase, reason: String? = null): String? {
+        return LibGleanFFI.INSTANCE.glean_ping_collect(ping.handle, reason)?.getAndConsumeRustString()
     }
 
     /**
