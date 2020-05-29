@@ -1304,7 +1304,7 @@ The following text applies to code linked from these dependencies:
 * [idna 0.2.0]( https://github.com/servo/rust-url/ )
 * [itoa 0.4.5]( https://github.com/dtolnay/itoa )
 * [lazy_static 1.4.0]( https://github.com/rust-lang-nursery/lazy-static.rs )
-* [libc 0.2.67]( https://github.com/rust-lang/libc )
+* [libc 0.2.71]( https://github.com/rust-lang/libc )
 * [log 0.4.8]( https://github.com/rust-lang/log )
 * [num-integer 0.1.42]( https://github.com/rust-num/num-integer )
 * [num-traits 0.2.11]( https://github.com/rust-num/num-traits )
@@ -2823,8 +2823,8 @@ THE SOFTWARE.
 The following text applies to code linked from these dependencies:
 
 * [benchmark 0.1.0]( https://crates.io/crates/benchmark )
-* [glean-core 31.0.0]( https://github.com/mozilla/glean )
-* [glean-ffi 31.0.0]( https://github.com/mozilla/glean )
+* [glean-core 31.0.1]( https://github.com/mozilla/glean )
+* [glean-ffi 31.0.1]( https://github.com/mozilla/glean )
 * [glean-preview 0.0.5]( https://github.com/mozilla/glean )
 
 
