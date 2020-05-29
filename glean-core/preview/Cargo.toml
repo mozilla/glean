@@ -9,12 +9,12 @@ license = "MPL-2.0"
 edition = "2018"
 keywords = ["telemetry", "glean"]
 include = [
-  "README.md",
-  "LICENSE",
-  "CHANGELOG.md",
-  "src/**/*",
-  "tests/**/*",
-  "Cargo.toml",
+  "/README.md",
+  "/LICENSE",
+  "/CHANGELOG.md",
+  "/src",
+  "/tests",
+  "/Cargo.toml",
 ]
 
 [badges]
