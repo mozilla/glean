@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v31.0.0...master)
 
+* Rust
+    * Relax version requirement for `flate2` for compatibility reasons
+
 # v31.0.0 (2020-05-28)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v30.1.0...v31.0.0)
