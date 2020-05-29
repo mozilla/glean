@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v31.0.0...master)
+[Full changelog](https://github.com/mozilla/glean/compare/v31.0.1...master)
+
+# Unreleased changes
+
+[Full changelog](https://github.com/mozilla/glean/compare/v31.0.0...v31.0.1)
 
 * Rust
     * Relax version requirement for `flate2` for compatibility reasons
