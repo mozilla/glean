@@ -388,6 +388,11 @@ jobs:
           command: |
               echo "rust.targets=linux-x86-64" > local.properties
       - run:
+          name: Remove coredump file restriction
+          command: |
+              # tell the operating system to remove the file size limit on core dump files
+              ulimit -c unlimited
+      - run:
           name: Android tests
           command: ./gradlew --no-daemon :glean:testDebugUnitTest
           environment:
@@ -404,9 +409,17 @@ jobs:
       - store_artifacts:
           path: ~/test-results/tests
           destination: test-results
+      - run:
+          name: Detect and gather coredump files
+          command: |
+              mkdir -p ~/coredumps
+              # Try to copy the core file from a default location. Don't fail if it doesn't exist.
+              cp -a glean-core/android/core ~/coredumps || true
+              # The JVM/Gradle might also produce a log file named like "hs_err_pid3247.log", let's copy that as well
+              find . -type f -name "hs_*.log" | xargs -I% cp -a % ~/coredumps/%
       - store_artifacts:
-          path: glean-core/android/core
-          destination: coredump
+          path: ~/coredumps
+          destination: coredumps
       - store_test_results:
           path: ~/test-results
 
