@@ -6,10 +6,12 @@ use std::os::raw::c_char;
 
 use ffi_support::FfiStr;
 
-use crate::{define_metric, handlemap_ext::HandleMapExtension, with_glean_value};
+use crate::{
+    define_metric, handlemap_ext::HandleMapExtension, with_glean_value, Lifetime, TimeUnit,
+};
 
 define_metric!(DatetimeMetric => DATETIME_METRICS {
-    new           -> glean_new_datetime_metric(time_unit: i32),
+    new           -> glean_new_datetime_metric(time_unit: TimeUnit),
     test_get_num_recorded_errors -> glean_datetime_test_get_num_recorded_errors,
     destroy       -> glean_destroy_datetime_metric,
 });

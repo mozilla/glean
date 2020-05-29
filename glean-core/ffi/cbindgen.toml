@@ -19,3 +19,6 @@ crates = ["glean-ffi"]
 [parse]
 parse_deps = true
 include = ["glean-core", "ffi-support"]
+
+[enum]
+prefix_with_name = true

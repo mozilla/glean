@@ -6,7 +6,7 @@ use std::time::Duration;
 
 use ffi_support::FfiStr;
 
-use crate::{define_metric, handlemap_ext::HandleMapExtension, with_glean_value};
+use crate::{define_metric, handlemap_ext::HandleMapExtension, with_glean_value, Lifetime};
 
 define_metric!(TimespanMetric => TIMESPAN_METRICS {
     new           -> glean_new_timespan_metric(time_unit: i32),

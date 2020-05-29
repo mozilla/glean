@@ -8,7 +8,7 @@ use ffi_support::FfiStr;
 
 use crate::{
     define_metric, ffi_string_ext::FallibleToString, handlemap_ext::HandleMapExtension,
-    with_glean_value,
+    with_glean_value, Lifetime,
 };
 
 define_metric!(UuidMetric => UUID_METRICS {
