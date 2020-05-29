@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v31.0.1...master)
 
+* Rust
+    * Fix list of included files in published crates
+
 # v31.0.1 (2020-05-29)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v31.0.0...v31.0.1)
