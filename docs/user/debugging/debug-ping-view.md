@@ -21,4 +21,4 @@ If nothing is showing up on the dashboard, try checking the following:
 - If no error is reported when triggering tagged pings, but the data won't
   show up on the dashboard, check if the `<application-id>` used is the same
   expected by the Glean pipeline (i.e. the one used to publish the
-  application on the Play Store).
+  application on the Google Play Store or Apple App Store).
