@@ -1,16 +1,10 @@
 # Glean Debug Ping View
 
-<!-- toc -->
-
-## What is this good for?
-
-The [Glean Debug Ping View](debug_view) enables you to easily see in real-time what data your application is sending.
+The [Glean Debug Ping View](https://debug-ping-preview.firebaseapp.com/) enables you to easily see in real-time what data your application is sending.
 
 This data is what actually arrives in our data pipeline, shown in a web
 interface that is automatically updated when new data arrives. Any data sent from a Glean SDK-instrumented application usually shows up within 10 seconds,
 updating the pages automatically. Pings are retained for 3 weeks.
-
-[debug_view]: https://debug-ping-preview.firebaseapp.com/
 
 ## What setup is needed for applications?
 
