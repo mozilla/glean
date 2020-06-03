@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Mozilla</Authors>
+    <RepositoryUrl>https://github.com/mozilla/glean</RepositoryUrl>
+    <Description>The Glean SDK is a modern approach for a telemetry library by Mozilla.</Description>
+    <Version>0.0.1</Version>
+    <RootNamespace>Mozilla.Glean</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Make sure to pack the glean-core DLL in the final package -->
+    <!-- TODO: pick the appropriate DLL depending on the target -->
+    <Content Include="../../../target/debug/glean_ffi.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Pack>true</Pack>
+      <PackagePath>lib\$(TargetFramework)</PackagePath>
+    </Content>
+  </ItemGroup>
+
+</Project>
