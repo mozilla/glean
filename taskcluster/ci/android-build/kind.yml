@@ -11,6 +11,8 @@ transforms:
 
 jobs:
   pr:
+    attributes:
+      run-on-pr-type: normal-ci
     needs-sccache: false # TODO: Bug 1623426 deal with this once we're in prod
     run-on-tasks-for: [github-pull-request]
     description: Build and test (Android - linux-x86-64)
@@ -25,7 +27,7 @@ jobs:
         # to be able to access `rustup` and `rustc` from within the cc script
         # and the gradle command. Another options could be to set those env vars
         # here like: [export, 'PATH=$HOME/.cargo/bin:$PATH'
-        - [source, taskcluster/scripts/rust/rustup-setup.sh]
+        - [source, taskcluster/scripts/rustup-setup.sh]
         - [bash, '-c', 'echo "rust.targets=linux-x86-64,x86_64\n" > local.properties']
       gradlew:
         - 'clean'

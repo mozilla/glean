@@ -19,6 +19,8 @@ def build_task(config, tasks):
         name = module_info["name"]
         version = get_version()
 
+        for i,item in enumerate(task["run"]["gradlew"]):
+            task["run"]["gradlew"][i] = task["run"]["gradlew"][i].format(module_name=name)
         task["description"] = task["description"].format(module_name=name)
         task["worker"]["artifacts"] = artifacts = []
 
@@ -28,7 +30,7 @@ def build_task(config, tasks):
                 artifact_filename = "{}-{}{}".format(publication_name, version, extension)
                 artifacts.append({
                     "name": "public/build/{}".format(artifact_filename),
-                    "path": "/builds/worker/checkouts/src/build/maven/org/mozilla/telemetry/{}/{}/{}".format(name, version, artifact_filename),
+                    "path": "/builds/worker/checkouts/src/build/maven/org/mozilla/telemetry/{}/{}/{}".format(publication_name, version, artifact_filename),
                     "type": "file",
                 })
 

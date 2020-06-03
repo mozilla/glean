@@ -177,6 +177,4 @@ ext.configurePublish = { jnaForTestConfiguration = null ->
             }
         }
     }
-
-    task checkMavenArtifacts
 }
