@@ -20,5 +20,5 @@ projects:
     artifactId: glean-gradle-plugin
     publications:
       - name: glean-gradle-plugin
-        type: aar
+        type: jar
     description: 'A Gradle plugin to enable Glean SDK build-time support (metrics and pings API, docs, ...)'
