@@ -462,7 +462,6 @@ jobs:
 
             ./gradlew --no-daemon assembleRelease
             ./gradlew --no-daemon publish
-            ./gradlew --no-daemon checkMavenArtifacts
           environment:
             GRADLE_OPTS: -Xmx2048m
             TARGET_CFLAGS: -DNDEBUG
