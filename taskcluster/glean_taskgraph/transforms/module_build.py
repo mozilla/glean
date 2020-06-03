@@ -30,7 +30,7 @@ def build_task(config, tasks):
                 artifact_filename = "{}-{}{}".format(publication_name, version, extension)
                 artifacts.append({
                     "name": "public/build/{}".format(artifact_filename),
-                    "path": "/builds/worker/checkouts/src/build/maven/org/mozilla/telemetry/{}/{}/{}".format(name, version, artifact_filename),
+                    "path": "/builds/worker/checkouts/src/build/maven/org/mozilla/telemetry/{}/{}/{}".format(publication_name, version, artifact_filename),
                     "type": "file",
                 })
 
