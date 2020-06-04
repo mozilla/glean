@@ -3,6 +3,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 using Mozilla.Glean.FFI;
+using static Mozilla.Glean.GleanMetrics.GleanInternalMetricsOuter;
 using System;
 using System.Runtime.CompilerServices;
 
@@ -236,7 +237,13 @@ namespace Mozilla.Glean
 
         private void InitializeCoreMetrics()
         {
-            // TODO:
+            Console.WriteLine("Setting metric");
+            GleanInternalMetrics.architecture.SetSync("test");
+            Console.WriteLine("Check has value");
+            bool hasValue = GleanInternalMetrics.architecture.TestHasValue();
+            Console.WriteLine("Has value {0} ", hasValue);
+            string storedvalue = GleanInternalMetrics.architecture.TestGetValue();
+            Console.WriteLine("InitializeCoreMetrics - has value {0} and that's {1}", hasValue, storedvalue);
         }
     }
 }
