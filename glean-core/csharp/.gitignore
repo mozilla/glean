@@ -1,0 +1,7 @@
+*.suo
+*.user
+*.pubxml
+
+# Build output
+bin/
+obj/
