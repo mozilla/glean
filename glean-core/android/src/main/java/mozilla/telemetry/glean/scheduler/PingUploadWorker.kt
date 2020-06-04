@@ -53,10 +53,6 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
     companion object {
         internal const val PING_WORKER_TAG = "mozac_service_glean_ping_upload_worker"
 
-        // NOTE: The `PINGS_DIR` must be kept in sync with the one in the Rust implementation.
-        @VisibleForTesting
-        internal const val PINGS_DIR = "pending_pings"
-
         /**
          * Function to aid in properly enqueuing the worker in [WorkManager]
          *

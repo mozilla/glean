@@ -32,7 +32,6 @@ import mozilla.telemetry.glean.rust.toBoolean
 import mozilla.telemetry.glean.rust.toByte
 import mozilla.telemetry.glean.scheduler.GleanLifecycleObserver
 import mozilla.telemetry.glean.scheduler.PingUploadWorker
-import mozilla.telemetry.glean.scheduler.PingUploadWorker.Companion.PINGS_DIR
 import mozilla.telemetry.glean.testing.GleanTestRule
 import mozilla.telemetry.glean.utils.getLanguageFromLocale
 import mozilla.telemetry.glean.utils.getLocaleTag
@@ -49,9 +48,7 @@ import org.junit.runner.RunWith
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.spy
 import org.robolectric.shadows.ShadowProcess
-import java.io.BufferedReader
 import java.io.File
-import java.io.FileReader
 import java.util.Calendar
 import java.util.Locale
 import java.util.concurrent.TimeUnit
@@ -104,17 +101,15 @@ class GleanTest {
         ))
 
         Glean.handleBackgroundEvent()
-        // Make sure the file is on the disk
-        val pingPath = File(Glean.getDataDir(), PINGS_DIR)
-        // Only the baseline ping should have been written
-        assertEquals(1, pingPath.listFiles()?.size)
-
-        // Now trigger it to upload
+        // Trigger it to upload
         triggerWorkManager(context)
 
         val request = server.takeRequest(20L, TimeUnit.SECONDS)
         val docType = request.path.split("/")[3]
         assertEquals("baseline", docType)
+
+        // Make sure baseline was the only ping on queue
+        assertEquals(server.takeRequest(20L, TimeUnit.SECONDS), null)
     }
 
     @Test
@@ -382,27 +377,6 @@ class GleanTest {
         gleanSpy.testDestroyGleanHandle()
         runBlocking {
             assertFalse(LibGleanFFI.INSTANCE.glean_submit_ping_by_name("events", null).toBoolean())
-        }
-    }
-
-    @Test
-    fun `Don't schedule pings if there is no ping content`() {
-        resetGlean(getContextWithMockedInfo())
-
-        runBlocking {
-            Glean.handleBackgroundEvent()
-        }
-
-        // We should only have a baseline ping and no events or metrics pings since nothing was
-        // recorded
-        val files = File(Glean.getDataDir(), PINGS_DIR).listFiles()!!
-
-        // Make sure only the baseline ping is present and no events or metrics pings
-        assertEquals(1, files.count())
-        val file = files.first()
-        BufferedReader(FileReader(file)).use {
-            val lines = it.readLines()
-            assert(lines[0].contains("baseline"))
         }
     }
 
