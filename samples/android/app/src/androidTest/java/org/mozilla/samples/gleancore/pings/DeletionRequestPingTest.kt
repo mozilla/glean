@@ -43,13 +43,17 @@ class DeletionRequestPingTest {
         val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
         device.waitForIdle()
 
-        // Disable upload by toggline the switch
+        // Wait for any ping to make sure there are no pending requests before going forward
+        waitForPingContent("", server)
+
+        // Disable upload by toggling the switch
         onView(withId(R.id.uploadSwitch))
             .perform(closeSoftKeyboard())
             .perform(click())
 
-        // We might receive previous baseline or events ping, let's ignore that
-        val deletionPing = waitForPingContent("deletion-request", server)!!
+        // We must get the deletion request on the first attempt,
+        // no other ping should be sent after disabling upload
+        val deletionPing = waitForPingContent("deletion-request", server, 1)!!
 
         // Validate the received data.
 
