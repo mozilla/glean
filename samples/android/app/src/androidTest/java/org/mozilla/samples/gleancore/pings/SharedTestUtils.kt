@@ -69,24 +69,25 @@ fun waitForPingContent(
     maxAttempts: Int = 3
 ): JSONObject?
 {
+    var parsedPayload: JSONObject? = null
     var attempts = 0
     do {
         attempts += 1
-        val request = server.takeRequest(20L, TimeUnit.SECONDS) ?: break
+        val request = server.takeRequest(20L, TimeUnit.SECONDS) ?: continue
         val docType = request.path.split("/")[3]
         if (pingName == docType) {
-            val parsedPayload = JSONObject(request.getPlainBody())
+            parsedPayload = JSONObject(request.getPlainBody())
             if (pingReason == null) {
-                return parsedPayload
+                break
             }
 
             // If we requested a specific ping reason, look for it.
             val reason = parsedPayload.getJSONObject("ping_info").getString("reason")
             if (reason == pingReason) {
-                return parsedPayload
+                break
             }
         }
     } while (attempts < maxAttempts)
 
-    return null
+    return parsedPayload
 }
