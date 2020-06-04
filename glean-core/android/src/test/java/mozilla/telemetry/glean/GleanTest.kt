@@ -108,8 +108,8 @@ class GleanTest {
         val docType = request.path.split("/")[3]
         assertEquals("baseline", docType)
 
-        // Make sure baseline was the only ping on queue
-        assertEquals(server.takeRequest(20L, TimeUnit.SECONDS), null)
+        // Make sure the number of request received thus far is only 1
+        assertEquals(server.requestCount, 1)
     }
 
     @Test
