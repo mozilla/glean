@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -10,14 +10,75 @@
     <RootNamespace>Mozilla.Glean</RootNamespace>
   </PropertyGroup>
 
-  <ItemGroup>
-    <!-- Make sure to pack the glean-core DLL in the final package -->
-    <!-- TODO: pick the appropriate DLL depending on the target -->
-    <Content Include="../../target/debug/glean_ffi.dll">
+  <!--
+    TODO: Bug 1643564 will add an option to pack all the required native libraries in the
+    nuGet package.
+  -->
+  
+  <!--
+    The following properties were determined by following the solution outlined here:
+    https://github.com/Microsoft/msbuild/issues/539#issuecomment-289930591
+  -->
+  <PropertyGroup>
+    <IsWindows Condition="'$(OS)' == 'Windows_NT'">true</IsWindows>
+    <IsOSX Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">true</IsOSX>
+    <IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>
+  </PropertyGroup>
+
+  <Target Name="TestMessage" AfterTargets="Build" >
+    <Message Text="OS: $(OS)" Importance="high"/>
+    <Message Text="Platform: $(Platform)" Importance="high"/>
+    <Message Text="Config: $(Configuration)" Importance="high"/>
+    <Message Text="isWindows: $(IsWindows)" Importance="high"/>
+    <Message Text="IsOSX: $(IsOSX)" Importance="high"/>
+    <Message Text="IsLinux: $(IsLinux)" Importance="high"/>
+  </Target>
+ 
+  <!--
+    For local developer builds, pick the default glean-core target
+    locations.
+   -->
+  <ItemGroup Condition="$(IsWindows) == true">
+    <!--
+      Note: cargo build will produce the file in target/<buildtype>/glean_ffi.dll based
+      on the current architecture. For example, if we run `cargo build`-->
+    <Content Include="../../target/$(Configuration.ToLowerInvariant())/glean_ffi.dll" Link="runtimes/win-64/native/glean_ffi.dll" Condition="'$(Platform)'=='x64'">
+      <PackagePath>runtimes/win-x64/native</PackagePath>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Pack>true</Pack>
-      <PackagePath>lib\$(TargetFramework)</PackagePath>
+    </Content>
+    <Content Include="../../target/$(Configuration.ToLowerInvariant())/glean_ffi.dll" Link="runtimes/win-86/native/glean_ffi.dll" Condition="'$(Platform)'=='x86'">
+      <PackagePath>runtimes/win-x86/native</PackagePath>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <!-- Fall back to AnyCPU and hope for the best? -->
+    <Content Include="../../target/$(Configuration.ToLowerInvariant())/glean_ffi.dll" Link="runtimes/win-64/native/glean_ffi.dll" Condition="'$(Platform)'=='AnyCPU'">
+      <PackagePath>runtimes/win-x64/native</PackagePath>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
+  <!-- Local developer builds on Linux. -->
+  <ItemGroup Condition="$(IsLinux) == true">
+    <Content Include="../../target/$(Configuration.ToLowerInvariant())/libglean_ffi.so" Link="runtimes/linux-64/native/libglean_ffi.so" Condition="'$(Platform)'=='x64'">
+      <PackagePath>runtimes/linux-x64/native</PackagePath>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="../../target/$(Configuration.ToLowerInvariant())/libglean_ffi.so" Link="runtimes/linux-86/native/libglean_ffi.so" Condition="'$(Platform)'=='x86'">
+      <PackagePath>runtimes/linux-x86/native</PackagePath>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <!-- Fall back to AnyCPU and hope for the best? -->
+    <Content Include="../../target/$(Configuration.ToLowerInvariant())/libglean_ffi.so" Link="runtimes/linux-64/native/libglean_ffi.so" Condition="'$(Platform)'=='x64'">
+      <PackagePath>runtimes/linux-x64/native</PackagePath>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <!-- Local developer builds on OSX. -->
+  <ItemGroup Condition="$(IsOSX) == true">
+    <Content Include="../../target/$(Configuration.ToLowerInvariant())/libglean_ffi.dylib" Link="runtimes/osx-64/native/libglean_ffi.dylib">
+      <PackagePath>runtimes/osx-x64/native</PackagePath>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>

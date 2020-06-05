@@ -10,7 +10,7 @@ namespace Mozilla.Glean.FFI
 {
     static class LibGleanFFI
     {
-        private const string SharedGleanLibrary = "glean_ffi.dll";
+        private const string SharedGleanLibrary = "glean_ffi";
 
         // Define the order of fields as laid out in memory.
         // **CAUTION**: This must match _exactly_ the definition on the Rust side.
