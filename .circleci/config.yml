@@ -128,7 +128,8 @@ commands:
   build-windows-i686-wheel:
     steps:
       - install-rustup
-      - setup-rust-toolchain
+      - setup-rust-toolchain:
+          rust-version: "1.43.0"
       - install-mingw
       - run:
           name: Install Python development tools for host
