@@ -13,7 +13,7 @@
   <ItemGroup>
     <!-- Make sure to pack the glean-core DLL in the final package -->
     <!-- TODO: pick the appropriate DLL depending on the target -->
-    <Content Include="../../../target/debug/glean_ffi.dll">
+    <Content Include="../../target/debug/glean_ffi.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Pack>true</Pack>
       <PackagePath>lib\$(TargetFramework)</PackagePath>
