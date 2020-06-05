@@ -73,7 +73,7 @@ fun waitForPingContent(
     var attempts = 0
     do {
         attempts += 1
-        val request = server.takeRequest(20L, TimeUnit.SECONDS) ?: continue
+        val request = server.takeRequest(20L, TimeUnit.SECONDS) ?: break
         val docType = request.path.split("/")[3]
         if (pingName == docType) {
             parsedPayload = JSONObject(request.getPlainBody())
