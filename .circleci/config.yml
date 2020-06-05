@@ -103,8 +103,16 @@ commands:
       - install-rustup
       - setup-rust-toolchain
       - run:
+          name: Remove coredump file restriction
+          command: |
+              # tell the operating system to remove the file size limit on core dump files
+              ulimit -c unlimited
+      - run:
           name: Python tests
           command: make test-python
+      - store_artifacts:
+          path: core
+          destination: core
 
   build-windows-x86_64-wheel:
     steps:
