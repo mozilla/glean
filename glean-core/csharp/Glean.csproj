@@ -8,6 +8,14 @@
     <Description>The Glean SDK is a modern approach for a telemetry library by Mozilla.</Description>
     <Version>0.0.1</Version>
     <RootNamespace>Mozilla.Glean</RootNamespace>
+    <PackageId>Mozilla.Telemetry.Glean</PackageId>
+    <!--
+      The following properties were determined by following the solution outlined here:
+      https://github.com/Microsoft/msbuild/issues/539#issuecomment-289930591
+    -->
+    <IsWindows Condition="'$(OS)' == 'Windows_NT'">true</IsWindows>
+    <IsOSX Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">true</IsOSX>
+    <IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>
   </PropertyGroup>
 
   <!--
@@ -15,23 +23,13 @@
     nuGet package.
   -->
   
-  <!--
-    The following properties were determined by following the solution outlined here:
-    https://github.com/Microsoft/msbuild/issues/539#issuecomment-289930591
-  -->
-  <PropertyGroup>
-    <IsWindows Condition="'$(OS)' == 'Windows_NT'">true</IsWindows>
-    <IsOSX Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">true</IsOSX>
-    <IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>
-  </PropertyGroup>
-
-  <Target Name="TestMessage" AfterTargets="Build" >
-    <Message Text="OS: $(OS)" Importance="high"/>
-    <Message Text="Platform: $(Platform)" Importance="high"/>
-    <Message Text="Config: $(Configuration)" Importance="high"/>
-    <Message Text="isWindows: $(IsWindows)" Importance="high"/>
-    <Message Text="IsOSX: $(IsOSX)" Importance="high"/>
-    <Message Text="IsLinux: $(IsLinux)" Importance="high"/>
+  <Target Name="TestMessage" AfterTargets="Build">
+    <Message Text="OS: $(OS)" Importance="high" />
+    <Message Text="Platform: $(Platform)" Importance="high" />
+    <Message Text="Config: $(Configuration)" Importance="high" />
+    <Message Text="isWindows: $(IsWindows)" Importance="high" />
+    <Message Text="IsOSX: $(IsOSX)" Importance="high" />
+    <Message Text="IsLinux: $(IsLinux)" Importance="high" />
   </Target>
  
   <!--
