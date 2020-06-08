@@ -6,9 +6,18 @@
     <Authors>Mozilla</Authors>
     <RepositoryUrl>https://github.com/mozilla/glean</RepositoryUrl>
     <Description>The Glean SDK is a modern approach for a telemetry library by Mozilla.</Description>
-    <Version>0.0.1</Version>
+    <!--
+      While we're still testing, mark this as a pre-release package.
+      See https://docs.microsoft.com/en-us/nuget/concepts/package-versioning#pre-release-versions
+    -->
+    <Version>0.0.1-alpha</Version>
     <RootNamespace>Mozilla.Glean</RootNamespace>
     <PackageId>Mozilla.Telemetry.Glean</PackageId>
+    <PackageProjectUrl>https://github.com/mozilla/glean/</PackageProjectUrl>
+    <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>telemetry analytics glean</PackageTags>
+    <Product>Glean SDK</Product>
     <!--
       The following properties were determined by following the solution outlined here:
       https://github.com/Microsoft/msbuild/issues/539#issuecomment-289930591
@@ -19,18 +28,50 @@
   </PropertyGroup>
 
   <!--
-    TODO: Bug 1643564 will add an option to pack all the required native libraries in the
-    nuGet package.
-  -->
-  
-  <Target Name="TestMessage" AfterTargets="Build">
-    <Message Text="OS: $(OS)" Importance="high" />
-    <Message Text="Platform: $(Platform)" Importance="high" />
-    <Message Text="Config: $(Configuration)" Importance="high" />
-    <Message Text="isWindows: $(IsWindows)" Importance="high" />
-    <Message Text="IsOSX: $(IsOSX)" Importance="high" />
-    <Message Text="IsLinux: $(IsLinux)" Importance="high" />
+    Print a message to warn user this is attempting to build a multi-platform nuGet
+    package meant for uploading.
+  --> 
+  <Target Condition="'$(IsPublicPackage)' == 'True'" Name="TestMessage" AfterTargets="Build">
+    <Message Text="Building a multi-platform nuGet package." Importance="high" />
   </Target>
+
+  <!--
+    Provide a way to pack all the native libraries when creating a nuGet package
+    intended for the public.
+    
+    This can be built using, from the glean root:
+
+      `dotnet pack glean-core/csharp/csharp.sln -c Release -p:IsPublicPackage=true`
+      
+    TODO: package will be built even if any of the file listed below is missing.
+    This is a bug and we should fix it by making the package step fail if any
+    of the files are missing.
+  -->
+  <ItemGroup Condition="'$(IsPublicPackage)' == 'True'">
+    <!-- Windows libraries -->
+    <Content Include="../../target/x86_64-pc-windows-gnu/$(Configuration.ToLowerInvariant())/glean_ffi.dll" Link="runtimes/win-64/native/glean_ffi.dll" Condition="'$(Platform)'=='x64'">
+      <PackagePath>runtimes/win-x64/native</PackagePath>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="../../target/i686-pc-windows-gnu/$(Configuration.ToLowerInvariant())/glean_ffi.dll" Link="runtimes/win-86/native/glean_ffi.dll" Condition="'$(Platform)'=='x86'">
+      <PackagePath>runtimes/win-x86/native</PackagePath>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <!-- Linux libraries -->
+    <Content Include="../../target/$(Configuration.ToLowerInvariant())/libglean_ffi.so" Link="runtimes/linux-64/native/libglean_ffi.so" Condition="'$(Platform)'=='x64'">
+      <PackagePath>runtimes/linux-x64/native</PackagePath>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="../../target/$(Configuration.ToLowerInvariant())/libglean_ffi.so" Link="runtimes/linux-86/native/libglean_ffi.so" Condition="'$(Platform)'=='x86'">
+      <PackagePath>runtimes/linux-x86/native</PackagePath>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <!-- MacOS libraries -->
+    <Content Include="../../target/$(Configuration.ToLowerInvariant())/libglean_ffi.dylib" Link="runtimes/osx-64/native/libglean_ffi.dylib">
+      <PackagePath>runtimes/osx-x64/native</PackagePath>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
  
   <!--
     For local developer builds, pick the default glean-core target
