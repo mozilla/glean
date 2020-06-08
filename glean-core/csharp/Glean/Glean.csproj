@@ -41,7 +41,7 @@
     
     This can be built using, from the glean root:
 
-      `dotnet pack glean-core/csharp/csharp.sln -c Release -p:IsPublicPackage=true`
+      `dotnet pack glean-core/csharp/Glean/csharp.sln -c Release -p:IsPublicPackage=true`
       
     TODO: package will be built even if any of the file listed below is missing.
     This is a bug and we should fix it by making the package step fail if any
@@ -49,25 +49,25 @@
   -->
   <ItemGroup Condition="'$(IsPublicPackage)' == 'True'">
     <!-- Windows libraries -->
-    <Content Include="../../target/x86_64-pc-windows-gnu/$(Configuration.ToLowerInvariant())/glean_ffi.dll" Link="runtimes/win-64/native/glean_ffi.dll" Condition="'$(Platform)'=='x64'">
+    <Content Include="../../../target/x86_64-pc-windows-gnu/$(Configuration.ToLowerInvariant())/glean_ffi.dll" Link="runtimes/win-64/native/glean_ffi.dll" Condition="'$(Platform)'=='x64'">
       <PackagePath>runtimes/win-x64/native</PackagePath>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="../../target/i686-pc-windows-gnu/$(Configuration.ToLowerInvariant())/glean_ffi.dll" Link="runtimes/win-86/native/glean_ffi.dll" Condition="'$(Platform)'=='x86'">
+    <Content Include="../../../target/i686-pc-windows-gnu/$(Configuration.ToLowerInvariant())/glean_ffi.dll" Link="runtimes/win-86/native/glean_ffi.dll" Condition="'$(Platform)'=='x86'">
       <PackagePath>runtimes/win-x86/native</PackagePath>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <!-- Linux libraries -->
-    <Content Include="../../target/$(Configuration.ToLowerInvariant())/libglean_ffi.so" Link="runtimes/linux-64/native/libglean_ffi.so" Condition="'$(Platform)'=='x64'">
+    <Content Include="../../../target/$(Configuration.ToLowerInvariant())/libglean_ffi.so" Link="runtimes/linux-64/native/libglean_ffi.so" Condition="'$(Platform)'=='x64'">
       <PackagePath>runtimes/linux-x64/native</PackagePath>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="../../target/$(Configuration.ToLowerInvariant())/libglean_ffi.so" Link="runtimes/linux-86/native/libglean_ffi.so" Condition="'$(Platform)'=='x86'">
+    <Content Include="../../../target/$(Configuration.ToLowerInvariant())/libglean_ffi.so" Link="runtimes/linux-86/native/libglean_ffi.so" Condition="'$(Platform)'=='x86'">
       <PackagePath>runtimes/linux-x86/native</PackagePath>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <!-- MacOS libraries -->
-    <Content Include="../../target/$(Configuration.ToLowerInvariant())/libglean_ffi.dylib" Link="runtimes/osx-64/native/libglean_ffi.dylib">
+    <Content Include="../../../target/$(Configuration.ToLowerInvariant())/libglean_ffi.dylib" Link="runtimes/osx-64/native/libglean_ffi.dylib">
       <PackagePath>runtimes/osx-x64/native</PackagePath>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -81,16 +81,16 @@
     <!--
       Note: cargo build will produce the file in target/<buildtype>/glean_ffi.dll based
       on the current architecture. For example, if we run `cargo build`-->
-    <Content Include="../../target/$(Configuration.ToLowerInvariant())/glean_ffi.dll" Link="runtimes/win-64/native/glean_ffi.dll" Condition="'$(Platform)'=='x64'">
+    <Content Include="../../../target/$(Configuration.ToLowerInvariant())/glean_ffi.dll" Link="runtimes/win-64/native/glean_ffi.dll" Condition="'$(Platform)'=='x64'">
       <PackagePath>runtimes/win-x64/native</PackagePath>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="../../target/$(Configuration.ToLowerInvariant())/glean_ffi.dll" Link="runtimes/win-86/native/glean_ffi.dll" Condition="'$(Platform)'=='x86'">
+    <Content Include="../../../target/$(Configuration.ToLowerInvariant())/glean_ffi.dll" Link="runtimes/win-86/native/glean_ffi.dll" Condition="'$(Platform)'=='x86'">
       <PackagePath>runtimes/win-x86/native</PackagePath>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <!-- Fall back to AnyCPU and hope for the best? -->
-    <Content Include="../../target/$(Configuration.ToLowerInvariant())/glean_ffi.dll" Link="runtimes/win-64/native/glean_ffi.dll" Condition="'$(Platform)'=='AnyCPU'">
+    <Content Include="../../../target/$(Configuration.ToLowerInvariant())/glean_ffi.dll" Link="runtimes/win-64/native/glean_ffi.dll" Condition="'$(Platform)'=='AnyCPU'">
       <PackagePath>runtimes/win-x64/native</PackagePath>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -98,16 +98,16 @@
 
   <!-- Local developer builds on Linux. -->
   <ItemGroup Condition="$(IsLinux) == true">
-    <Content Include="../../target/$(Configuration.ToLowerInvariant())/libglean_ffi.so" Link="runtimes/linux-64/native/libglean_ffi.so" Condition="'$(Platform)'=='x64'">
+    <Content Include="../../../target/$(Configuration.ToLowerInvariant())/libglean_ffi.so" Link="runtimes/linux-64/native/libglean_ffi.so" Condition="'$(Platform)'=='x64'">
       <PackagePath>runtimes/linux-x64/native</PackagePath>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="../../target/$(Configuration.ToLowerInvariant())/libglean_ffi.so" Link="runtimes/linux-86/native/libglean_ffi.so" Condition="'$(Platform)'=='x86'">
+    <Content Include="../../../target/$(Configuration.ToLowerInvariant())/libglean_ffi.so" Link="runtimes/linux-86/native/libglean_ffi.so" Condition="'$(Platform)'=='x86'">
       <PackagePath>runtimes/linux-x86/native</PackagePath>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <!-- Fall back to AnyCPU and hope for the best? -->
-    <Content Include="../../target/$(Configuration.ToLowerInvariant())/libglean_ffi.so" Link="runtimes/linux-64/native/libglean_ffi.so" Condition="'$(Platform)'=='x64'">
+    <Content Include="../../../target/$(Configuration.ToLowerInvariant())/libglean_ffi.so" Link="runtimes/linux-64/native/libglean_ffi.so" Condition="'$(Platform)'=='x64'">
       <PackagePath>runtimes/linux-x64/native</PackagePath>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -115,7 +115,7 @@
 
   <!-- Local developer builds on OSX. -->
   <ItemGroup Condition="$(IsOSX) == true">
-    <Content Include="../../target/$(Configuration.ToLowerInvariant())/libglean_ffi.dylib" Link="runtimes/osx-64/native/libglean_ffi.dylib">
+    <Content Include="../../../target/$(Configuration.ToLowerInvariant())/libglean_ffi.dylib" Link="runtimes/osx-64/native/libglean_ffi.dylib">
       <PackagePath>runtimes/osx-x64/native</PackagePath>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
