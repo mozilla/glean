@@ -91,7 +91,7 @@ You should now be able to build and run Fenix (assuming you could before all thi
 ## Notes
 
 This document is based on the equivalent documentation for application-services:
-[Using locally-published components in Fenix](https://github.com/mozilla/application-services/blob/master/docs/howtos/locally-published-components-in-fenix.md)
+[Using locally-published components in Fenix](https://github.com/mozilla/application-services/blob/HEAD/docs/howtos/locally-published-components-in-fenix.md)
 
 ---
 
@@ -101,8 +101,8 @@ so we avoid it.
 Additionally, while the `$N` we have used in our running example has matched
 (e.g. all of the identifiers ended in `-TESTING1`, this is not required, so long as you match everything up correctly at the end).
 
-[glean-yaml]: https://github.com/mozilla/glean/blob/master/.buildconfig.yml#L1
-[android-components-yaml]: https://github.com/mozilla-mobile/android-components/blob/master/.buildconfig.yml#L1
+[glean-yaml]: https://github.com/mozilla/glean/blob/main/.buildconfig.yml#L1
+[android-components-yaml]: https://github.com/mozilla-mobile/android-components/blob/HEAD/.buildconfig.yml#L1
 [android-components-deps]: https://github.com/mozilla-mobile/android-components/blob/50a2f28027f291bf1c6056d42b55e75ba3c050db/buildSrc/src/main/java/Dependencies.kt#L32
 [android-components-build-gradle]: https://github.com/mozilla-mobile/android-components/blob/b98206cf8de818499bdc87c00de942a41f8aa2fb/build.gradle#L28
 [fenix-build-gradle-1]: https://github.com/mozilla-mobile/fenix/blob/f897c2e295cd1b97d4024c7a9cb45dceb7a2fa89/build.gradle#L26
