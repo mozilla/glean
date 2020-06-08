@@ -26,6 +26,11 @@ def get_components():
             components.append({
                 'name': name,
                 'path': project['path'],
+                'artifactId': project['artifactId'],
+                'publications': [{
+                    'name': publication['name'],
+                    'type': publication['type'],
+                    } for publication in project['publications']]
             })
     return components
 
