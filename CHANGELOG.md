@@ -2,6 +2,10 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v31.0.2...master)
 
+* General:
+    * The `regex` crate is no longer required, making the Glean release binary
+      about 0.5MB smaller.
+
 # v31.0.2 (2020-05-29)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v31.0.1...v31.0.2)
