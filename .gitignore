@@ -32,8 +32,8 @@ Carthage
 *.suo
 *.user
 *.pubxml
-/glean-core/csharp/bin/
-/glean-core/csharp/obj/
+/glean-core/csharp/*/bin/
+/glean-core/csharp/*/obj/
 /samples/csharp/bin/
 /samples/csharp/obj/
 
