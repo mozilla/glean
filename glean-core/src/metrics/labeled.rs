@@ -2,9 +2,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use once_cell::sync::Lazy;
-use regex::Regex;
-
 use crate::common_metric_data::CommonMetricData;
 use crate::error_recording::{record_error, ErrorType};
 use crate::metrics::{Metric, MetricType};
@@ -14,9 +11,19 @@ const MAX_LABELS: usize = 16;
 const OTHER_LABEL: &str = "__other__";
 const MAX_LABEL_LENGTH: usize = 61;
 
-/// This regex is used for matching against labels and should allow for dots, underscores,
-/// and/or hyphens. Labels are also limited to starting with either a letter or an
-/// underscore character.
+/// Checks whether the given value matches the label regex.
+///
+/// This regex is used for matching against labels and should allow for dots,
+/// underscores, and/or hyphens. Labels are also limited to starting with either
+/// a letter or an underscore character.
+///
+/// The exact regex (from the pipeline schema [here](https://github.com/mozilla-services/mozilla-pipeline-schemas/blob/master/templates/include/glean/dot_separated_short_id.1.schema.json)) is:
+///
+///    "^[a-z_][a-z0-9_-]{0,29}(\\.[a-z_][a-z0-9_-]{0,29})*$"
+///
+/// The regex crate isn't used here because it adds to the binary size, and the
+/// Glean SDK doesn't use regular expressions anywhere else.
+///
 /// Some examples of good and bad labels:
 ///
 /// Good:
@@ -32,8 +39,38 @@ const MAX_LABEL_LENGTH: usize = 61;
 /// * `1.not_fine`
 /// * `this.$isnotfine`
 /// * `-.not_fine`
-static LABEL_REGEX: Lazy<Regex> =
-    Lazy::new(|| Regex::new("^[a-z_][a-z0-9_-]{0,29}(\\.[a-z_][a-z0-9_-]{0,29})*$").unwrap());
+fn matches_label_regex(value: &str) -> bool {
+    let mut iter = value.chars();
+
+    loop {
+        // Match the first letter in the word.
+        match iter.next() {
+            Some('_') | Some('a'..='z') => (),
+            _ => return false,
+        };
+
+        // Match subsequent letters in the word.
+        let mut count = 0;
+        loop {
+            match iter.next() {
+                // We are done, so the whole expression is valid.
+                None => return true,
+                // Valid characters.
+                Some('_') | Some('-') | Some('a'..='z') | Some('0'..='9') => (),
+                // We ended a word, so iterate over the outer loop again.
+                Some('.') => break,
+                // An invalid character
+                _ => return false,
+            }
+            count += 1;
+            // We allow 30 characters per word, but the first one is handled
+            // above outside of this loop, so we have a maximum of 29 here.
+            if count == 29 {
+                return false;
+            }
+        }
+    }
+}
 
 /// A labeled metric.
 ///
@@ -200,7 +237,7 @@ pub fn dynamic_label(
         );
         record_error(glean, meta, ErrorType::InvalidLabel, msg, None);
         true
-    } else if !LABEL_REGEX.is_match(label) {
+    } else if !matches_label_regex(label) {
         let msg = format!("label must be snake_case, got '{}'", label);
         record_error(glean, meta, ErrorType::InvalidLabel, msg, None);
         true
