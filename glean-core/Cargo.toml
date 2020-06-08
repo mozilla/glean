@@ -18,7 +18,7 @@ include = [
 ]
 
 [badges]
-circle-ci = { repository = "mozilla/glean", branch = "master" }
+circle-ci = { repository = "mozilla/glean", branch = "main" }
 maintenance = { status = "actively-developed" }
 
 [dependencies]

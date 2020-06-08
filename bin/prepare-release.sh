@@ -129,7 +129,7 @@ run rm "${WORKSPACE_ROOT}/${FILE}.bak"
 FILE=CHANGELOG.md
 run $SED -i.bak -E \
     -e "s/# Unreleased changes/# v${NEW_VERSION} (${DATE})/" \
-    -e "s/\.\.\.master/...v${NEW_VERSION}/" \
+    -e "s/\.\.\.main/...v${NEW_VERSION}/" \
     "${WORKSPACE_ROOT}/${FILE}"
 run rm "${WORKSPACE_ROOT}/${FILE}.bak"
 
@@ -138,7 +138,7 @@ if [ "$DOIT" = y ]; then
     cat > "${WORKSPACE_ROOT}/${FILE}" <<EOL
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v${NEW_VERSION}...master)
+[Full changelog](https://github.com/mozilla/glean/compare/v${NEW_VERSION}...main)
 
 ${CHANGELOG}
 EOL
