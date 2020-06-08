@@ -63,6 +63,8 @@ fn matches_label_regex(value: &str) -> bool {
                 _ => return false,
             }
             count += 1;
+            // We allow 30 characters per word, but the first one is handled
+            // above outside of this loop, so we have a maximum of 29 here.
             if count == 29 {
                 return false;
             }
