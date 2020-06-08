@@ -90,7 +90,7 @@ namespace Mozilla.Glean
                     data_dir = dataDir,
                     package_name = applicationId,
                     upload_enabled = uploadEnabled,
-                    max_events = (int)configuration.maxEvents, // TODO: can we pass in null?
+                    max_events = configuration.maxEvents ?? null,
                     delay_ping_lifetime_io = false
                 };
 

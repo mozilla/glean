@@ -21,7 +21,7 @@ namespace Mozilla.Glean.FFI
             public string data_dir;
             public string package_name;
             public bool upload_enabled;
-            public Int32 max_events;
+            public Int32? max_events;
             public bool delay_ping_lifetime_io;
         }
 
