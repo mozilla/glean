@@ -485,6 +485,11 @@ impl Glean {
     /// * `uuid` - The UUID of the ping in question.
     /// * `status` - The upload result.
     pub fn process_ping_upload_response(&self, uuid: &str, status: UploadResult) {
+        if let Some(label) = status.get_label() {
+            let metric = self.core_metrics.ping_upload_failure.get(label);
+            metric.add(self, 1);
+        }
+
         self.upload_manager
             .process_ping_upload_response(uuid, status);
     }
