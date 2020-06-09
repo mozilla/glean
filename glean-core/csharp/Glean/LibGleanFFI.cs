@@ -161,6 +161,47 @@ namespace Mozilla.Glean.FFI
              string storage_name
          );
 
+        // Boolean
+
+        /// <summary>
+        /// A handle for the boolean metric type, which performs cleanup.
+        /// </summary>
+        internal sealed class BooleanMetricTypeHandle : BaseGleanHandle
+        {
+          protected override bool ReleaseHandle()
+          {
+            if (!this.IsInvalid)
+            {
+              Console.WriteLine("Freeing boolean metric type handle");
+              glean_destroy_boolean_metric(handle);
+            }
+
+            return true;
+          }
+        }
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern BooleanMetricTypeHandle glean_new_boolean_metric(
+            string category,
+            string name,
+            string[] send_in_pings,
+            Int32 send_in_pings_len,
+            Int32 lifetime,
+            bool disabled
+        );
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void glean_destroy_boolean_metric(IntPtr handle);
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void glean_boolean_set(BooleanMetricTypeHandle metric_id, byte value);
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern byte glean_boolean_test_get_value(BooleanMetricTypeHandle metric_id, string storage_name);
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern byte glean_boolean_test_has_value(BooleanMetricTypeHandle metric_id, string storage_name);
+
         // Misc
 
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
