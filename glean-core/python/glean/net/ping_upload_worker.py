@@ -28,6 +28,7 @@ MAX_WAIT_ATTEMPTS = 3
 # Maximum number of recoverable errors allowed before aborting the ping uploader
 MAX_RETRIES = 3
 
+
 class PingUploadWorker:
     @classmethod
     def process(cls):
