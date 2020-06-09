@@ -197,7 +197,7 @@ class PageHandler:
 
     def on_page_loaded(self, event):
         # ...
-        metrics.pages.page_load.store_and_accumulate(self.timer_id)
+        metrics.pages.page_load.stop_and_accumulate(self.timer_id)
 ```
 
 There are test APIs available too.  For convenience, properties `sum` and `count` are exposed to facilitate validating that data was recorded correctly.
