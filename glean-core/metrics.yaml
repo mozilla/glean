@@ -320,3 +320,25 @@ glean.error:
     expires: never
     no_lint:
       - COMMON_PREFIX
+
+glean.upload:
+  ping_upload_failure:
+    type: labeled_counter
+    description:
+      Counts the number of times pings fail to upload
+      and the reason why they failed.
+    labels:
+      - "status_code_4xx"
+      - "status_code_5xx"
+      - "status_code_unknown"
+      - "unrecoverable"
+      - "recoverable"
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1589124
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1589124#c1
+    notification_emails:
+      - glean-team@mozilla.com
+    expires: never
+    no_lint:
+      - COMMON_PREFIX
