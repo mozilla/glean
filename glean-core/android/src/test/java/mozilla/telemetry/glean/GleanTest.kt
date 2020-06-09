@@ -68,16 +68,6 @@ class GleanTest {
     }
 
     @Test
-    fun `setting uploadEnabled before initialization should not crash`() {
-        // Can't use resetGlean directly
-        Glean.testDestroyGleanHandle()
-
-        val config = Configuration()
-
-        Glean.initialize(context, true, config)
-    }
-
-    @Test
     fun `getting uploadEnabled before initialization should not crash`() {
         // Can't use resetGlean directly
         Glean.testDestroyGleanHandle()
