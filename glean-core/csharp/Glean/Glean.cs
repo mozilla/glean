@@ -3,7 +3,12 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 using Mozilla.Glean.FFI;
+using static Mozilla.Glean.GleanMetrics.GleanInternalMetricsOuter;
 using System;
+using System.Runtime.CompilerServices;
+
+// Make sure internals are accessible by the Glean test suites.
+[assembly: InternalsVisibleTo("GleanTests")]
 
 namespace Mozilla.Glean
 {
@@ -16,6 +21,8 @@ namespace Mozilla.Glean
         private static readonly Lazy<Glean>
           lazy = new Lazy<Glean>(() => new Glean());
         public static Glean GleanInstance => lazy.Value;
+
+        private bool initialized = false;
 
         private Glean()
         {
@@ -42,8 +49,7 @@ namespace Mozilla.Glean
         /// If disabled, all persisted metrics, events and queued pings (except first_run_date)
         /// are cleared.</param>
         /// <param name="configuration">A Glean `Configuration` object with global settings</param>
-        /// <param name="dataDir">The path to the Glean data directory.If not provided, uses
-        /// a temporary directory.</param>
+        /// <param name="dataDir">The path to the Glean data directory.</param>
         public void Initialize(
             string applicationId,
             string applicationVersion,
@@ -94,7 +100,7 @@ namespace Mozilla.Glean
                     delay_ping_lifetime_io = false
                 };
 
-                bool initialized = LibGleanFFI.glean_initialize(cfg) != 0;
+                initialized = LibGleanFFI.glean_initialize(cfg) != 0;
 
                 // If initialization of Glean fails we bail out and don't initialize further.
                 if (!initialized)
@@ -168,9 +174,76 @@ namespace Mozilla.Glean
             });
         }
 
+        /// <summary>
+        /// Whether or not the Glean SDK has been initialized.
+        /// </summary>
+        /// <returns>Returns true if the Glean SDK has been initialized.</returns>
+        internal bool IsInitialized()
+        {
+            return initialized;
+        }
+
+        /// <summary>
+        /// TEST ONLY FUNCTION.
+        /// Resets the Glean state and triggers init again.
+        /// </summary>
+        /// <param name="applicationId">The application id to use when sending pings.</param>
+        /// <param name="applicationVersion">The version of the application sending
+        /// Glean data.</param>
+        /// <param name="uploadEnabled">A `bool` that determines whether telemetry is enabled.
+        /// If disabled, all persisted metrics, events and queued pings (except first_run_date)
+        /// are cleared.</param>
+        /// <param name="configuration">A Glean `Configuration` object with global settings</param>
+        /// <param name="dataDir">The path to the Glean data directory.</param>
+        /// <param name="clearStores">If `true` clear the contents of all stores.</param>
+        internal void Reset(
+            string applicationId,
+            string applicationVersion,
+            bool uploadEnabled,
+            Configuration configuration,
+            string dataDir,
+            bool clearStores = true)
+        {
+            // TODO: Glean.enableTestingMode()
+
+            if (IsInitialized() && clearStores)
+            {
+                // Clear all the stored data.
+                LibGleanFFI.glean_test_clear_all_stores();
+            }
+
+            // TODO: isMainProcess = null
+
+            // Init Glean.
+            TestDestroyGleanHandle();
+            Initialize(applicationId, applicationVersion, uploadEnabled, configuration, dataDir);
+        }
+
+        /// <summary>
+        /// TEST ONLY FUNCTION.
+        /// Destroy the owned glean-core handle.
+        /// </summary>
+        internal void TestDestroyGleanHandle()
+        {
+            if (!IsInitialized())
+            {
+                // We don't need to destroy Glean: it wasn't initialized.
+                return;
+            }
+
+            LibGleanFFI.glean_destroy_glean();
+            initialized = false;
+        }
+
         private void InitializeCoreMetrics()
         {
-            // TODO:
+            Console.WriteLine("Setting metric");
+            GleanInternalMetrics.architecture.SetSync("test");
+            Console.WriteLine("Check has value");
+            bool hasValue = GleanInternalMetrics.architecture.TestHasValue();
+            Console.WriteLine("Has value {0} ", hasValue);
+            string storedvalue = GleanInternalMetrics.architecture.TestGetValue();
+            Console.WriteLine("InitializeCoreMetrics - has value {0} and that's {1}", hasValue, storedvalue);
         }
     }
 }

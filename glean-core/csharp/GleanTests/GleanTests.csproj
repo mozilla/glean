@@ -2,10 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-
     <IsPackable>false</IsPackable>
-
     <RootNamespace>Mozilla.Glean.Tests</RootNamespace>
+    <!--
+      The following properties were determined by following the solution outlined here:
+      https://github.com/Microsoft/msbuild/issues/539#issuecomment-289930591
+    -->
+    <IsWindows Condition="'$(OS)' == 'Windows_NT'">true</IsWindows>
+    <IsOSX Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">true</IsOSX>
+    <IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,6 +22,17 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Glean\Glean.csproj" />
-  </ItemGroup>
 
+    <!-- Use the xUnit configuration file. -->
+    <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
+
+    <!--
+      Unfortunately, tests won't be able to find the native dlls, even though they
+      live within the runtimes/<rid>/native directory. To make it possible to run
+      tests, manually copy the Glean FFI dll to $(OutDir).
+    -->
+    <Content Condition="$(IsWindows) == true" Include="../../../target/$(Configuration.ToLowerInvariant())/glean_ffi.dll" CopyToOutputDirectory="Always" />
+    <Content Condition="$(Condition) == true" Include="../../../target/$(Configuration.ToLowerInvariant())/libglean_ffi.so" CopyToOutputDirectory="Always" />
+    <Content Condition="$(IsOSX) == true" Include="../../../target/$(Configuration.ToLowerInvariant())/libglean_ffi.dylib" CopyToOutputDirectory="Always" />
+  </ItemGroup>
 </Project>
