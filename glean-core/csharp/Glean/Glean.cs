@@ -24,6 +24,9 @@ namespace Mozilla.Glean
 
         private bool initialized = false;
 
+        // Keep track of this flag before Glean is initialized
+        private bool uploadEnabled = true;
+
         private Glean()
         {
             // Private constructor to disallow instantiation since
@@ -58,8 +61,6 @@ namespace Mozilla.Glean
             string dataDir
             )
         {
-            Console.WriteLine("Glean.init dir: {0}", dataDir);
-
             /*
             // Glean initialization must be called on the main thread, or lifecycle
             // registration may fail. This is also enforced at build time by the
@@ -84,9 +85,8 @@ namespace Mozilla.Glean
             this.configuration = configuration
             this.httpClient = BaseUploader(configuration.httpClient)
             this.gleanDataDir = File(applicationContext.applicationInfo.dataDir, GLEAN_DATA_DIR)
-
-            setUploadEnabled(uploadEnabled)
-             */
+                         */
+            SetUploadEnabled(uploadEnabled);
 
             Dispatchers.LaunchAPI(() => {
                 // TODO: registerPings(Pings)
@@ -181,6 +181,76 @@ namespace Mozilla.Glean
         internal bool IsInitialized()
         {
             return initialized;
+        }
+
+        /// <summary>
+        /// Enable or disable Glean collection and upload.
+        /// 
+        /// Metric collection is enabled by default.
+        /// 
+        /// When uploading is disabled, metrics aren't recorded at all and no data
+        /// is uploaded.
+        /// 
+        /// When disabling, all pending metrics, events and queued pings are cleared
+        /// and a `deletion-request` is generated.
+        /// 
+        /// When enabling, the core Glean metrics are recreated.
+        /// </summary>
+        /// <param name="enabled">When `true`, enable metric collection.</param>
+        public void SetUploadEnabled(bool enabled)
+        {
+            if (IsInitialized())
+            {
+                bool originalEnabled = GetUploadEnabled();
+    
+                Dispatchers.LaunchAPI(() => {
+                LibGleanFFI.glean_set_upload_enabled(enabled);
+
+                if (!enabled)
+                {
+                    // Cancel any pending workers here so that we don't accidentally upload or
+                    // collect data after the upload has been disabled.
+                    // TODO: metricsPingScheduler.cancel()
+
+                    // Cancel any pending workers here so that we don't accidentally upload
+                    // data after the upload has been disabled.
+                    // TODO: PingUploadWorker.cancel(applicationContext)
+                }
+
+                if (!originalEnabled && enabled)
+                {
+                    // If uploading is being re-enabled, we have to restore the
+                    // application-lifetime metrics.
+                    InitializeCoreMetrics();
+                }
+
+                if (originalEnabled && !enabled)
+                {
+                    // If uploading is disabled, we need to send the deletion-request ping
+                    // TODO: PingUploadWorker.enqueueWorker(applicationContext)
+                }
+                });
+            }
+            else
+            {
+                uploadEnabled = enabled;
+            }
+        }
+
+        /// <summary>
+        /// Get whether or not Glean is allowed to record and upload data.
+        /// </summary>
+        /// <returns>`true` if Glean is allowed to record and upload data.</returns>
+        public bool GetUploadEnabled()
+        {
+            if (IsInitialized())
+            {
+                return LibGleanFFI.glean_is_upload_enabled() != 0;
+            }
+            else
+            {
+                return uploadEnabled;
+            }
         }
 
         /// <summary>

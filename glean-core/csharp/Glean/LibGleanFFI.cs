@@ -106,7 +106,7 @@ namespace Mozilla.Glean.FFI
         internal static extern void glean_enable_logging();
 
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void glean_set_upload_enabled(byte flag);
+        internal static extern void glean_set_upload_enabled(bool flag);
 
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
         internal static extern byte glean_is_upload_enabled();
