@@ -6,7 +6,6 @@
 [![License: MPL-2.0](https://img.shields.io/crates/l/glean-core)](https://github.com/mozilla/glean/blob/main/LICENSE)
 [![The Glean SDK book](https://img.shields.io/badge/Docs-Glean%20SDK-brightgreen)][book]
 [![Build Status](https://img.shields.io/circleci/build/github/mozilla/glean/main)](https://circleci.com/gh/mozilla/glean)
-[![Code coverage](https://img.shields.io/codecov/c/github/mozilla/glean)](https://codecov.io/gh/mozilla/glean)
 
 ## Documentation
 
