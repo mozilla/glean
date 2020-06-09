@@ -123,10 +123,9 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
                         Glean.configuration
                     ).toFfi()
 
-                    if (result == Constants.UPLOAD_RESULT_RECOVERABLE ||
-                        result == Constants.UPLOAD_RESULT_UNRECOVERABLE) {
-                            uploadFailures++
-                        }
+                    if (result == Constants.UPLOAD_RESULT_RECOVERABLE) {
+                        uploadFailures++
+                    }
 
                     // Process the upload response
                     LibGleanFFI.INSTANCE.glean_process_ping_upload_response(incomingTask, result)
