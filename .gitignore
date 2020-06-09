@@ -34,9 +34,10 @@ Carthage
 *.pubxml
 /glean-core/csharp/*/bin/
 /glean-core/csharp/*/obj/
+/glean-core/csharp/.vs/
 /samples/csharp/bin/
 /samples/csharp/obj/
-
+/samples/csharp/.vs/
 
 # local stuff
 data/
