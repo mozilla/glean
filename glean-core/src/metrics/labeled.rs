@@ -127,7 +127,7 @@ where
     ///
     /// If the requested label is in the list of allowed labels, it is returned.
     /// Otherwise the `OTHER_LABEL` is returned.
-    fn static_label<'a>(&mut self, label: &'a str) -> &'a str {
+    fn static_label<'a>(&self, label: &'a str) -> &'a str {
         debug_assert!(self.labels.is_some());
         let labels = self.labels.as_ref().unwrap();
         if labels.iter().any(|l| l == label) {
@@ -148,7 +148,7 @@ where
     ///
     /// Labels must be `snake_case` and less than 30 characters.
     /// If an invalid label is used, the metric will be recorded in the special `OTHER_LABEL` label.
-    pub fn get(&mut self, label: &str) -> T {
+    pub fn get(&self, label: &str) -> T {
         // We have 2 scenarios to consider:
         // * Static labels. No database access needed. We just look at what is in memory.
         // * Dynamic labels. We look up in the database all previously stored
