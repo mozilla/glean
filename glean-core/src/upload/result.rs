@@ -66,8 +66,10 @@ impl From<u32> for UploadResult {
 }
 
 impl UploadResult {
+    /// Get the label to be used in recording error counts for upload.
+    ///
+    /// Returns `None` if the upload finished succesfully.
     /// Failures are recorded in the `ping_upload_failure` metric.
-    /// This metric is defined in the `metrics.yaml` for documentation purposes.
     pub fn get_label(&self) -> Option<&str> {
         match self {
             UploadResult::HttpStatus(200..=299) => None,
