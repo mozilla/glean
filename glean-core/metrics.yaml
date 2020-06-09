@@ -325,8 +325,9 @@ glean.upload:
   ping_upload_failure:
     type: labeled_counter
     description:
-      Counts the number of times pings fail to upload
-      and the reason why they failed.
+      Counts the number of ping upload failures, by type of failure.
+      This includes failures for all ping types,
+      though the counts appear in the next successfully sent `metrics` ping.
     labels:
       - "status_code_4xx"
       - "status_code_5xx"
