@@ -44,5 +44,13 @@ namespace Mozilla.Glean.Tests
                 dataDir: tempDataDir
                 );
         }
+
+        [Fact]
+        public void SendAPing()
+        {
+            // TODO: This test needs a server to verify data are submitted successfully.
+            // We should take `GleanTest.kt` as a reference to implement. 
+            GleanInstance.HandleBackgroundEvent();
+        }
     }
 }
