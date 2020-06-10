@@ -8,6 +8,25 @@ using System.Text;
 
 namespace Mozilla.Glean.FFI
 {
+    /// <summary>
+    /// Result values of attempted ping uploads encoded for FFI use.
+    /// They are defined in `glean-core/src/upload/result.rs` and re-defined for use in Kotlin here.
+    /// 
+    /// NOTE:
+    /// THEY MUST BE THE SAME ACROSS BOTH FILES!
+    /// </summary>
+    internal enum Constants : int
+    {
+        // A recoverable error.
+        UPLOAD_RESULT_RECOVERABLE = 0x1,
+
+        // An unrecoverable error.
+        UPLOAD_RESULT_UNRECOVERABLE = 0x2,
+
+        // A HTTP response code.
+        UPLOAD_RESULT_HTTP_STATUS = 0x8000
+    }
+
     internal static class LibGleanFFI
     {
         private const string SharedGleanLibrary = "glean_ffi";
