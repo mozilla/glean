@@ -171,9 +171,16 @@ commands:
       - run:
           name: Install mingw
           command: |
-            sudo apt update
-            # This package contains tools for both i686 and x86_64 targets
-            sudo apt install -y gcc-mingw-w64
+            # Some images do not have `sudo` installed as they already run as root.
+            if [[ $(id -u) -eq 0 ]]; then
+              apt update
+              # This package contains tools for both i686 and x86_64 targets
+              apt install -y gcc-mingw-w64
+            else
+              sudo apt update
+              # This package contains tools for both i686 and x86_64 targets
+              sudo apt install -y gcc-mingw-w64
+            fi
       - run:
           name: Add mingw target
           command: |
@@ -985,6 +992,32 @@ jobs:
             ./ghr -replace ${CIRCLE_TAG} glean-core/python/dist
 
   ###########################################################################
+  # C#
+
+  CSharp tests:
+    docker:
+      - image: mcr.microsoft.com/dotnet/core/sdk:3.1-buster
+    steps:
+      - checkout
+      - install-rustup
+      - setup-rust-toolchain:
+          rust-version: "1.43.0"
+      - run:
+          name: Install the dependencies
+          command: |
+            apt update
+            apt install -y gcc
+      - run:
+          name: Build glean_ffi
+          command: cargo build
+      - run:
+          name: Build the C# bindings
+          command: dotnet build glean-core/csharp/csharp.sln
+      - run:
+          name: Test C#
+          command: dotnet test glean-core/csharp/csharp.sln
+
+  ###########################################################################
   # Docs
 
   docs-linkcheck:
@@ -1059,69 +1092,70 @@ jobs:
 
 workflows:
   version: 2
-  check-formating:
-    jobs:
-      - Check Rust formatting
-      - Check Swift formatting
+  # check-formating:
+  #  jobs:
+  #    - Check Rust formatting
+  #    - Check Swift formatting
 
-  lint:
-    jobs:
-      - Lint YAML with yamllint
-      - License check
-      - Lint Rust with clippy
-      - Rust FFI header check
-      - Lint Android with ktlint and detekt
-      - Lint Python
-      - Check vendored schema
+  # lint:
+  #   jobs:
+  #     - Lint YAML with yamllint
+  #     - License check
+  #     - Lint Rust with clippy
+  #     - Rust FFI header check
+  #     - Lint Android with ktlint and detekt
+  #     - Lint Python
+  #     - Check vendored schema
 
   ci:
     jobs:
-      - Rust tests - stable
+      - CSharp tests
+      # - Rust tests - stable
       # FIXME: Disabled due to failing to often, bug 1574424
       # - Rust tests - beta
-      - Rust tests - minimum version
-      - C tests
-      - Android tests
+      # - Rust tests - minimum version
+      # - C tests
+      # - Android tests
       # iOS jobs run only on master by default, see below for manual-approved jobs
-      - iOS build and test:
-          filters:
-            branches:
-              only: master
-      - iOS integration test:
-          requires:
-            - iOS build and test
-          filters:
-            branches:
-              only: master
-      - Python 3_5 tests
-      - Python 3_5 tests minimum dependencies
-      - Python 3_6 tests
-      - Python 3_7 tests
-      - Python 3_8 tests
-      - Python 3_8 tests minimum dependencies
-      - Python Windows x86_64 tests
-      - Python Windows i686 tests
+      # - iOS build and test:
+      #     filters:
+      #       branches:
+      #         only: master
+      # - iOS integration test:
+      #     requires:
+      #       - iOS build and test
+      #     filters:
+      #       branches:
+      #         only: master
+      # - Python 3_5 tests
+      # - Python 3_5 tests minimum dependencies
+      # - Python 3_6 tests
+      # - Python 3_7 tests
+      # - Python 3_8 tests
+      # - Python 3_8 tests minimum dependencies
+      # - Python Windows x86_64 tests
+      # - Python Windows i686 tests
 
-      - Generate Rust documentation:
-          requires:
-            - docs-spellcheck
-      - Generate Kotlin documentation
-      - Generate Python documentation:
-          requires:
-            - Python 3_7 tests
-      - docs-linkcheck:
-          requires:
-            - Generate Rust documentation
-            - Generate Kotlin documentation
-            - Generate Python documentation
-      - docs-spellcheck
-      - docs-deploy:
-          requires:
-            - docs-linkcheck
-            - iOS build and test
-          filters:
-            branches:
-              only: master
+      # - Generate Rust documentation:
+      #     requires:
+      #       - docs-spellcheck
+      # - Generate Kotlin documentation
+      # - Generate Python documentation:
+      #     requires:
+      #       - Python 3_7 tests
+      # - docs-linkcheck:
+      #     requires:
+      #       - Generate Rust documentation
+      #       - Generate Kotlin documentation
+      #       - Generate Python documentation
+      # - docs-spellcheck
+      # - docs-deploy:
+      #     requires:
+      #       - docs-linkcheck
+      #       - iOS build and test
+      #     filters:
+      #       branches:
+      #         only: master
 
   # iOS jobs require manual approval on PRs
   iOS:
