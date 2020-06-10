@@ -161,6 +161,47 @@ namespace Mozilla.Glean.FFI
              string storage_name
          );
 
+        // Custom pings
+
+        /// <summary>
+        /// This implements the developer facing API for custom pings.
+        /// The Ping API only exposes the [send] method, which schedules a ping for sending.
+        /// </summary>
+        internal sealed class PingTypeHandle : BaseGleanHandle
+        {
+            protected override bool ReleaseHandle()
+            {
+                if (!this.IsInvalid)
+                {
+                    Console.WriteLine("Freeing boolean metric type handle");
+                    glean_destroy_ping_type(handle);
+                }
+
+                return true;
+            }
+        }
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern PingTypeHandle glean_new_ping_type(
+            string name,
+            byte include_client_id,
+            byte send_if_empty,
+            string[] reason,
+            Int32 reason_codes_len
+        );
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void glean_destroy_ping_type(IntPtr handle);
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern StringAsReturnValue glean_ping_collect(PingTypeHandle ping_type_handle, string reason);
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+       internal static extern void glean_register_ping_type(PingTypeHandle ping_type_handle);
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern byte glean_test_has_ping_type(string ping_name);
+
         // Misc
 
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
