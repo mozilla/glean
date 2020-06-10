@@ -120,4 +120,11 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+
+  <!-- Expose internal access objects to unit tests -->
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>GleanTests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
 </Project>

@@ -6,7 +6,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Collections.Concurrent;
 
@@ -42,7 +41,8 @@ namespace Mozilla.Glean
         /// When true, tasks will be queued and not ran until triggered by
         /// calling FlushQueuedInitialTasks.
         /// </summary>
-        internal static bool QueueInitialTasks {
+        internal static bool QueueInitialTasks
+        {
             get => _queueInitialTasks == 1;
             set => Interlocked.Exchange(ref _queueInitialTasks, value ? 1 : 0);
         }
@@ -99,8 +99,11 @@ namespace Mozilla.Glean
         /// immediately and synchronously to avoid asynchronous issues in tests.
         /// </summary>
         /// <param name="action">The Action to invoke</param>
-        internal static void LaunchAPI(Action action)
+        /// <returns>A Task or null if queued or run synchronously</returns>
+        internal static Task LaunchAPI(Action action)
         {
+            Task task = null;
+
             if (QueueInitialTasks)
             {
                 // If we are queuing tasks, typically before Glean has been
@@ -113,9 +116,24 @@ namespace Mozilla.Glean
                 if (!TestingMode)
                 {
                     // If we are not queuing initial tasks, we can go ahead and
-                    // execute the task asynchronously on the ExclusiveScheduler
-                    new Task(action, cancellationToken)
-                        .Start(taskSchedulerPair.ExclusiveScheduler);
+                    // execute the task asynchronously on the ExclusiveScheduler                    
+                    task = Task.Factory.StartNew(
+                        () =>
+                        {
+                            // In order to prevent tasks from causing exceptions
+                            // we wrap the action invocation in try/catch
+                            try
+                            {
+                                action.Invoke();
+                            }
+                            catch (Exception)
+                            {
+                                //TODO Exception eaten by Glean
+                            }
+                        },
+                        cancellationToken,
+                        TaskCreationOptions.None,
+                        taskSchedulerPair.ExclusiveScheduler);
                 }
                 else
                 {
@@ -124,7 +142,8 @@ namespace Mozilla.Glean
                     action.Invoke();
                 }
             }
-         
+
+            return task;
         }
 
         /// <summary>
@@ -147,17 +166,37 @@ namespace Mozilla.Glean
         /// avoid asynchronous issues while testing.
         /// </summary>
         /// <param name="action">The Action to perform</param>
-        internal static void LaunchConcurrent(Action action)
+        /// <returns>A Task or null if run synchronously</returns>
+        internal static Task LaunchConcurrent(Action action)
         {
+            Task task = null;
+
             if (TestingMode)
             {
-                action.Invoke();        
+                action.Invoke();
             }
             else
             {
-                new Task(action, cancellationToken)
-                    .Start(taskSchedulerPair.ConcurrentScheduler);
+                task = Task.Factory.StartNew(
+                    () =>
+                    {
+                        // In order to prevent tasks from causing exceptions
+                        // we wrap the action invocation in try/catch
+                        try
+                        {
+                            action.Invoke();
+                        }
+                        catch (Exception)
+                        {
+                            //TODO Exception eaten by Glean
+                        }
+                    },
+                    cancellationToken,
+                    TaskCreationOptions.None,
+                    taskSchedulerPair.ConcurrentScheduler);
             }
+
+            return task;
         }
 
         /// <summary>
@@ -184,7 +223,7 @@ namespace Mozilla.Glean
         /// new tasks are executed.
         /// </summary>
         internal static void FlushQueuedInitialTasks()
-        { 
+        {
             // Set the flag first to guarantee new tasks are executed after
             // this one.
             QueueInitialTasks = false;
@@ -200,7 +239,7 @@ namespace Mozilla.Glean
             });
 
             // Wait for the initial tasks to execute
-            task.Wait();
+            task.Wait(QueueProcessingTimeout);
 
             if (OverflowCount > 0)
             {
