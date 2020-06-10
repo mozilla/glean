@@ -73,7 +73,7 @@ and click on the arrow in the left margin next to the test.
 
 ## Testing in CI
 
-We run multiple tests on CI for every Pull Request and every commit to the `master` branch.
+We run multiple tests on CI for every Pull Request and every commit to the `main` branch.
 These include:
 
 * Full Android tests

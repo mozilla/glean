@@ -1,6 +1,6 @@
 #!/bin/bash
 # Copied, and modified, from the Rust Cookbook.
-# https://github.com/rust-lang-nursery/rust-cookbook/blob/master/ci/spellcheck.sh
+# https://github.com/rust-lang-nursery/rust-cookbook/blob/HEAD/ci/spellcheck.sh
 
 # Copyright 2016 The Rust Project Developers. See the COPYRIGHT
 # file at the top-level directory of this distribution and at

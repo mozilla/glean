@@ -241,7 +241,7 @@ jobs:
       - run:
           name: Check vendored schema for upstream updates
           command: |
-            bin/update-schema.sh master
+            bin/update-schema.sh HEAD
             if ! git diff --exit-code HEAD -- glean-core/preview/tests/glean.1.schema.json; then
               echo "===================================="
               echo "Latest schema from upstream changed."
@@ -1082,17 +1082,17 @@ workflows:
       - Rust tests - minimum version
       - C tests
       - Android tests
-      # iOS jobs run only on master by default, see below for manual-approved jobs
+      # iOS jobs run only on main by default, see below for manual-approved jobs
       - iOS build and test:
           filters:
             branches:
-              only: master
+              only: main
       - iOS integration test:
           requires:
             - iOS build and test
           filters:
             branches:
-              only: master
+              only: main
       - Python 3_5 tests
       - Python 3_5 tests minimum dependencies
       - Python 3_6 tests
@@ -1121,7 +1121,7 @@ workflows:
             - iOS build and test
           filters:
             branches:
-              only: master
+              only: main
 
   # iOS jobs require manual approval on PRs
   iOS:
@@ -1130,19 +1130,19 @@ workflows:
           type: approval
           filters:
             branches:
-              ignore: master
+              ignore: main
       - iOS build and test:
           requires:
             - hold
           filters:
             branches:
-              ignore: master
+              ignore: main
       - iOS integration test:
           requires:
             - iOS build and test
           filters:
             branches:
-              ignore: master
+              ignore: main
 
   release:
     jobs:

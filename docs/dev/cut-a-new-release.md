@@ -30,16 +30,16 @@ The development & release process roughly follows the [GitFlow model](https://nv
 
 Releases can only be done by one of the Glean maintainers.
 
-* Main development branch: `master`
+* Main development branch: `main`
 * Main release branch: `release`
 * Specific release branch: `release-vX.Y.Z`
 * Hotfix branch: `hotfix-X.Y.(Z+1)`
 
 ### Create a release branch
 
-1. Create a release branch from the `master` branch:
+1. Create a release branch from the `main` branch:
     ```
-    git checkout -b release-v25.0.0 master
+    git checkout -b release-v25.0.0 main
     ```
 2. Update the changelog .
     1. Add any missing important changes under the `Unreleased changes` headline.
@@ -53,7 +53,7 @@ Releases can only be done by one of the Glean maintainers.
     ```
 5. Wait for CI to finish on that branch and ensure it's green: <https://circleci.com/gh/mozilla/glean/tree/release-v25.0.0>
 6. Apply additional commits for bug fixes to this branch.
-    * Adding large new features here is strictly prohibited. They need to go to the `master` branch and wait for the next release.
+    * Adding large new features here is strictly prohibited. They need to go to the `main` branch and wait for the next release.
 
 ### Finish a release branch
 
@@ -85,9 +85,9 @@ When CI has finished and is green for your specific release branch, you are read
     cd ffi
     cargo publish --verbose
     ```
-7. Send a pull request to merge back the specific release branch to the development branch: <https://github.com/mozilla/glean/compare/master...release-v25.0.0?expand=1>
+7. Send a pull request to merge back the specific release branch to the development branch: <https://github.com/mozilla/glean/compare/main...release-v25.0.0?expand=1>
     * This is important so that no changes are lost.
-    * This might have merge conflicts with the `master` branch, which you need to fix before it is merged.
+    * This might have merge conflicts with the `main` branch, which you need to fix before it is merged.
 8. Once the above pull request lands, delete the specific release branch.
 
 ## Hotfix release for latest version
@@ -145,9 +145,9 @@ When CI has finished and is green for your hotfix branch, you are ready to cut a
     cd ffi
     cargo publish --verbose
     ```
-7. Send a pull request to merge back the hotfix branch to the development branch: <https://github.com/mozilla/glean/compare/master...hotfix-v25.0.1?expand=1>
+7. Send a pull request to merge back the hotfix branch to the development branch: <https://github.com/mozilla/glean/compare/main...hotfix-v25.0.1?expand=1>
     * This is important so that no changes are lost.
-    * This might have merge conflicts with the `master` branch, which you need to fix before it is merged.
+    * This might have merge conflicts with the `main` branch, which you need to fix before it is merged.
 8. Once the above pull request lands, delete the hotfix branch.
 
 ## Hotfix release for previous version
@@ -201,9 +201,9 @@ If you need to release a hotfix for a previously released version (that is: not 
     cd ffi
     cargo publish --verbose
     ```
-7. Send a pull request to merge back any bug fixes to the development branch: <https://github.com/mozilla/glean/compare/master...support/v24.0?expand=1>
+7. Send a pull request to merge back any bug fixes to the development branch: <https://github.com/mozilla/glean/compare/main...support/v24.0?expand=1>
     * This is important so that no changes are lost.
-    * This might have merge conflicts with the `master` branch, which you need to fix before it is merged.
+    * This might have merge conflicts with the `main` branch, which you need to fix before it is merged.
 8. Once the above pull request lands, delete the support branch.
 
 ## Upgrading android-components to a new version of Glean
@@ -223,7 +223,7 @@ After following one of the above instructions to make a Glean SDK release:
 
    - The Glean version is updated in the `mozilla_glean` variable in the [`buildSrc/src/main/java/Dependencies.kt`](https://github.com/mozilla-mobile/android-components/blob/69546999739ab19d21425e9a98e107e438a3f905/buildSrc/src/main/java/Dependencies.kt#L32) file.
 
-   - The relevant parts of the Glean changelog copied into the top part of the [`android-components` changelog](https://github.com/mozilla-mobile/android-components/blob/master/docs/changelog.md).
+   - The relevant parts of the Glean changelog copied into the top part of the [`android-components` changelog](https://github.com/mozilla-mobile/android-components/blob/main/docs/changelog.md).
      This involves copying the Android-specific changes and the general changes to Glean, but can omit other platform-specific changes.
 
 **IMPORTANT:** Until the [Glean Gradle plugin work is complete](https://bugzilla.mozilla.org/show_bug.cgi?id=1592947), all downstream consumers of android-components will also need to update their version of Glean to match the version used in android-components so that their unit tests can run correctly.

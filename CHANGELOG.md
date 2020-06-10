@@ -1,6 +1,6 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v31.0.2...master)
+[Full changelog](https://github.com/mozilla/glean/compare/v31.0.2...main)
 
 * General:
     * The `regex` crate is no longer required, making the Glean binary smaller.

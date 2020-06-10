@@ -9,10 +9,10 @@ Since Glean is consumed through [Carthage](https://github.com/Carthage/Carthage)
 For consuming the latest version of Glean, the Cartfile contents would include the following line:
 
 ```
-github "mozilla/glean" "master"
+github "mozilla/glean" "main"
 ```
 
-This will fetch and compile Glean from the [mozilla/glean GitHub](https://github.com/mozilla/glean/) repository from the "master" branch.
+This will fetch and compile Glean from the [mozilla/glean GitHub](https://github.com/mozilla/glean/) repository from the "main" branch.
 
 ## Building against a specific release of Glean
 

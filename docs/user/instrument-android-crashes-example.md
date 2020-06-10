@@ -6,7 +6,7 @@ basic strategy for instrumenting an Android application with crash telemetry usi
 **Note:**  This is a _very_ simple example of instrumenting crashes using the Glean SDK.  There will be challenges to
 using this approach in a production application that should be considered.  For instance, when an app crashes it can be in an
 unknown state and may not be able to do things like upload data to a server.  The recommended way of instrumenting crashes with
-Android Components is called [lib-crash](https://github.com/mozilla-mobile/android-components/tree/master/components/lib/crash), which takes into consideration things like multiple processes and persistence.
+Android Components is called [lib-crash](https://github.com/mozilla-mobile/android-components/tree/HEAD/components/lib/crash), which takes into consideration things like multiple processes and persistence.
 
 ## Before You Start
 
@@ -67,7 +67,7 @@ is important to note here that it has a value of `- crash`.  This means that the
 ping named `crash` (which hasn't been created yet).  Finally, note the `extra_keys` field which has two keys defined, `cause`
 and `message`.  This allows for sending additional information along with the event to be associated with these keys.
 
-**Note:**  For Mozilla applications, a mandatory [data review](https://github.com/mozilla/data-review/blob/master/request.md) is required in order to collect information with the Glean SDK.
+**Note:**  For Mozilla applications, a mandatory [data review](https://github.com/mozilla/data-review/blob/HEAD/request.md) is required in order to collect information with the Glean SDK.
 
 ### Add A Custom Ping
 
@@ -98,7 +98,7 @@ to execute and generate the API files that represent the metric and ping that we
 building any time one of the Glean YAML files has been modified.  
 
 It is recommended that Glean be initialized as early in the application startup as possible, which is why it's good to use a
-custom `Application`, like the Glean Sample App [`GleanApplication.kt`](https://github.com/mozilla/glean/blob/master/samples/android/app/src/main/java/org/mozilla/samples/glean/GleanApplication.kt).
+custom `Application`, like the Glean Sample App [`GleanApplication.kt`](https://github.com/mozilla/glean/blob/main/samples/android/app/src/main/java/org/mozilla/samples/glean/GleanApplication.kt).
 
 Initializing Glean in the `Application.onCreate()` is ideal for this purpose.  Start by adding the import statement to allow
 the usage of the custom ping that was created, adding the following to the top of the file:

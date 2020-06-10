@@ -7,7 +7,7 @@ This is less relevant for end users of the Glean SDK.
 ## JSON Schema
 
 Glean's ping payloads have a formal JSON schema defined in the [mozilla-pipeline-schemas](https://github.com/mozilla-services/mozilla-pipeline-schemas/) project.
-It is written as a set of [templates](https://github.com/mozilla-services/mozilla-pipeline-schemas/tree/master/templates/include/glean) that are expanded by the mozilla-pipeline-schemas build infrastructure into a [fully expanded schema](https://github.com/mozilla-services/mozilla-pipeline-schemas/blob/master/schemas/glean/baseline/baseline.1.schema.json).
+It is written as a set of [templates](https://github.com/mozilla-services/mozilla-pipeline-schemas/tree/HEAD/templates/include/glean) that are expanded by the mozilla-pipeline-schemas build infrastructure into a [fully expanded schema](https://github.com/mozilla-services/mozilla-pipeline-schemas/blob/HEAD/schemas/glean/baseline/baseline.1.schema.json).
 
 ## Metric types
 
@@ -190,7 +190,7 @@ Each event object has the following keys:
 ]
 ```
 
-Also see [the JSON schema for events](https://github.com/mozilla-services/mozilla-pipeline-schemas/blob/master/templates/include/glean/event.1.schema.json).
+Also see [the JSON schema for events](https://github.com/mozilla-services/mozilla-pipeline-schemas/blob/HEAD/templates/include/glean/event.1.schema.json).
 
 To avoid losing events when the application is killed by the operating system, events are queued on disk as they are recorded.
 When the application starts up again, there is no good way to determine if the device has rebooted since the last run and therefore any timestamps recorded in the new run could not be guaranteed to be consistent with those recorded in the previous run.
