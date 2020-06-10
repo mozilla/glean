@@ -32,7 +32,7 @@
       tests, manually copy the Glean FFI dll to $(OutDir).
     -->
     <Content Condition="$(IsWindows) == true" Include="../../../target/$(Configuration.ToLowerInvariant())/glean_ffi.dll" CopyToOutputDirectory="Always" />
-    <Content Condition="$(Condition) == true" Include="../../../target/$(Configuration.ToLowerInvariant())/libglean_ffi.so" CopyToOutputDirectory="Always" />
+    <Content Condition="$(IsLinux) == true" Include="../../../target/$(Configuration.ToLowerInvariant())/libglean_ffi.so" CopyToOutputDirectory="Always" />
     <Content Condition="$(IsOSX) == true" Include="../../../target/$(Configuration.ToLowerInvariant())/libglean_ffi.dylib" CopyToOutputDirectory="Always" />
   </ItemGroup>
 </Project>
