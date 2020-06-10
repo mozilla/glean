@@ -16,6 +16,7 @@ from .. import _ffi
 from .._glean_ffi import ffi as ffi_support  # type: ignore
 from .._dispatcher import Dispatcher
 from .._process_dispatcher import ProcessDispatcher
+from .ping_uploader import RecoverableFailure
 
 
 log = logging.getLogger(__name__)
@@ -23,6 +24,9 @@ log = logging.getLogger(__name__)
 
 # How many times to attempt waiting when told to by glean-core's upload API.
 MAX_WAIT_ATTEMPTS = 3
+
+# Maximum number of recoverable errors allowed before aborting the ping uploader
+MAX_RETRIES = 3
 
 
 class PingUploadWorker:
@@ -112,7 +116,9 @@ def _process(data_dir: Path, configuration) -> bool:
 
     wait_attempts = 0
 
-    while True:
+    upload_failures = 0
+
+    while upload_failures < MAX_RETRIES:
         incoming_task = ffi_support.new("FfiPingUploadTask *")
         _ffi.lib.glean_get_upload_task(incoming_task, configuration.log_pings)
 
@@ -135,6 +141,9 @@ def _process(data_dir: Path, configuration) -> bool:
             upload_result = configuration.ping_uploader.do_upload(
                 url_path, body, _parse_ping_headers(headers, doc_id), configuration
             )
+
+            if isinstance(upload_result, RecoverableFailure):
+                upload_failures = upload_failures + 1
 
             # Process the response.
             _ffi.lib.glean_process_ping_upload_response(
