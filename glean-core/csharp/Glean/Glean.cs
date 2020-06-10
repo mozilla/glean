@@ -5,10 +5,6 @@
 using Mozilla.Glean.FFI;
 using static Mozilla.Glean.GleanMetrics.GleanInternalMetricsOuter;
 using System;
-using System.Runtime.CompilerServices;
-
-// Make sure internals are accessible by the Glean test suites.
-[assembly: InternalsVisibleTo("GleanTests")]
 
 namespace Mozilla.Glean
 {
@@ -88,7 +84,7 @@ namespace Mozilla.Glean
                          */
             SetUploadEnabled(uploadEnabled);
 
-            Dispatchers.LaunchAPI(() => {
+            Dispatchers.LaunchConcurrent(() => {
                 // TODO: registerPings(Pings)
 
                 LibGleanFFI.FfiConfiguration cfg = new LibGleanFFI.FfiConfiguration
@@ -274,7 +270,7 @@ namespace Mozilla.Glean
             string dataDir,
             bool clearStores = true)
         {
-            // TODO: Glean.enableTestingMode()
+            Dispatchers.TestingMode = true;
 
             if (IsInitialized() && clearStores)
             {
