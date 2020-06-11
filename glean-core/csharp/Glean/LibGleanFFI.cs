@@ -200,6 +200,46 @@ namespace Mozilla.Glean.FFI
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
         internal static extern byte glean_boolean_test_has_value(BooleanMetricTypeHandle metric_id, string storage_name);
 
+        // Uuid
+
+        /// <summary>
+        /// A handle for the uuid metric type, which performs cleanup.
+        /// </summary>
+        internal sealed class UuidMetricTypeHandle : BaseGleanHandle
+        {
+            protected override bool ReleaseHandle()
+            {
+                if (!this.IsInvalid)
+                {
+                    glean_destroy_uuid_metric(handle);
+                }
+
+                return true;
+            }
+        }
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern UuidMetricTypeHandle glean_new_uuid_metric(
+            string category,
+            string name,
+            string[] send_in_pings,
+            Int32 send_in_pings_len,
+            Int32 lifetime,
+            bool disabled
+        );
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void glean_destroy_uuid_metric(IntPtr handle);
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void glean_uuid_set(UuidMetricTypeHandle metric_id, string value);
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern StringAsReturnValue glean_uuid_test_get_value(UuidMetricTypeHandle metric_id, string storage_name);
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern byte glean_uuid_test_has_value(UuidMetricTypeHandle metric_id, string storage_name);
+
         // Misc
 
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
