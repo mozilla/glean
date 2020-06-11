@@ -11,7 +11,7 @@ import functools
 import logging
 import queue
 import threading
-from typing import Callable, List, Tuple
+from typing import Callable, Dict, List, Tuple
 
 
 # This module uses threading, rather than multiprocessing for parallelism. This
@@ -140,6 +140,9 @@ class Dispatcher:
     # When `True`, all tasks are run synchronously
     _testing_mode = False  # type: bool
 
+    # A threading lock for synchronized work
+    _thread_lock = threading.RLock()
+
     @classmethod
     def reset(cls):
         """
@@ -155,6 +158,23 @@ class Dispatcher:
         cls._task_worker.add_task(cls._testing_mode, func, *args, **kwargs)
 
     @classmethod
+    def _add_task_to_queue(cls, func: Callable, args: Tuple, kwargs: Dict):
+        """
+        Helper function to add a task to the task queue.
+        """
+        with cls._thread_lock:
+            if len(cls._preinit_task_queue) >= cls.MAX_QUEUE_SIZE:
+                log.error("Exceeded maximum queue size, discarding task")
+
+                # This value ends up in the `preinit_tasks_overflow` metric,
+                # but we can't record directly there, because that would only
+                # add the recording to an already-overflowing task queue and
+                # would be silently dropped.
+                cls._overflow_count += 1
+                return
+            cls._preinit_task_queue.append((func, args, kwargs))
+
+    @classmethod
     def task(cls, func: Callable):
         """
         A decorator for coroutines that might either run in the task queue or
@@ -168,9 +188,7 @@ class Dispatcher:
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             if cls._queue_initial_tasks:
-                if len(cls._preinit_task_queue) >= cls.MAX_QUEUE_SIZE:
-                    return
-                cls._preinit_task_queue.append((func, args, kwargs))
+                cls._add_task_to_queue(func, args, kwargs)
             else:
                 cls._execute_task(func, *args, **kwargs)
 
@@ -202,14 +220,7 @@ class Dispatcher:
         """
 
         if cls._queue_initial_tasks:
-            if len(cls._preinit_task_queue) >= cls.MAX_QUEUE_SIZE:
-                # This value ends up in the `preinit_tasks_overflow` metric,
-                # but we can't record directly there, because that would only
-                # add the recording to an already-overflowing task queue and
-                # would be silently dropped.
-                cls._overflow_count += 1
-                return
-            cls._preinit_task_queue.append((func, (), {}))
+            cls._add_task_to_queue(func, (), {})
         else:
             cls._execute_task(func)
 
@@ -222,7 +233,8 @@ class Dispatcher:
         """
 
         if cls._queue_initial_tasks:
-            cls._preinit_task_queue.insert(0, (func, (), {}))
+            with cls._thread_lock:
+                cls._preinit_task_queue.insert(0, (func, (), {}))
         else:
             func()
 
@@ -243,7 +255,12 @@ class Dispatcher:
         Stops queueing tasks and processes any tasks in the queue.
         """
         cls.set_task_queueing(False)
-        for (task, args, kwargs) in cls._preinit_task_queue:
+
+        with cls._thread_lock:
+            queue_copy = cls._preinit_task_queue[:]
+            cls._preinit_task_queue.clear()
+
+        for (task, args, kwargs) in queue_copy:
             cls._execute_task(task, *args, **kwargs)
         cls._preinit_task_queue.clear()
 

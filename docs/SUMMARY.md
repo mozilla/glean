@@ -8,6 +8,7 @@
     - [Metric parameters](user/metric-parameters.md)
     - [Testing metrics](user/testing-metrics.md)
     - [Debugging products using Glean](user/debugging/index.md)
+        - [Glean Debug Ping View](user/debugging/debug-ping-view.md)
         - [Android](user/debugging/android.md)
         - [iOS](user/debugging/ios.md)
         - [Python](user/debugging/python.md)

@@ -15,6 +15,9 @@ import uuid
 
 
 from glean_parser import validate_ping
+from glean_parser.metrics import Lifetime as ParserLifetime
+from glean_parser.metrics import TimeUnit as ParserTimeUnit
+from glean_parser.metrics import MemoryUnit as ParserMemoryUnit
 import pytest
 
 
@@ -23,7 +26,14 @@ from glean import __version__ as glean_version
 from glean import _builtins
 from glean import _util
 from glean._dispatcher import Dispatcher
-from glean.metrics import CounterMetricType, Lifetime, PingType, StringMetricType
+from glean.metrics import (
+    CounterMetricType,
+    Lifetime,
+    MemoryUnit,
+    PingType,
+    StringMetricType,
+    TimeUnit,
+)
 from glean.net import PingUploadWorker
 from glean.testing import _RecordingUploader
 
@@ -655,3 +665,20 @@ def test_clear_application_lifetime_metrics(tmpdir):
 
     assert not counter_metric.test_has_value()
     assert not metrics.core_ping.seq.test_has_value()
+
+
+def test_confirm_enums_match_values_in_glean_parser():
+    """
+    Make sure the values in the glean_parser enums match those in Glean's enums
+    (which come directly from the canonical source in the Rust implementation).
+
+    This should ensure we never update to a glean_parser version with incorrect
+    enumeration values.
+    """
+    for g_enum, gp_enum in [
+        (Lifetime, ParserLifetime),
+        (TimeUnit, ParserTimeUnit),
+        (MemoryUnit, ParserMemoryUnit),
+    ]:
+        for name in gp_enum.__members__.keys():
+            assert g_enum[name.upper()].value == gp_enum[name].value

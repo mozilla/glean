@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!--
+      This is currently referencing the package from the package from the public
+      nuGet listing. However, the sample application should not reference online
+      resources but rather build by referencing ../../glean-core/csharp.
+      Unfortunately this does not seem to be possible because that project is
+      part of a different VS Solution.
+    -->
+    <PackageReference Include="Mozilla.Telemetry.Glean" Version="0.0.1-alpha" />
+  </ItemGroup>
+
+</Project>

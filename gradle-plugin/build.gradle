@@ -59,4 +59,10 @@ if (project.name == 'glean-gradle-plugin') {
             }
         }
     }
+
+    // Task alias to match the main glean module's tasks.
+    // For simpler use on CI.
+    task assembleRelease {
+      dependsOn assemble
+    }
 }

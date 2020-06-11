@@ -53,7 +53,7 @@ macro_rules! define_metric {
             name: ffi_support::FfiStr,
             send_in_pings: crate::RawStringArray,
             send_in_pings_len: i32,
-            lifetime: i32,
+            lifetime: Lifetime,
             disabled: u8,
             $($new_argname: $new_argtyp),*
         ) -> u64 {

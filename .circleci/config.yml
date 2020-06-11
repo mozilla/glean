@@ -103,8 +103,16 @@ commands:
       - install-rustup
       - setup-rust-toolchain
       - run:
+          name: Remove coredump file restriction
+          command: |
+              # tell the operating system to remove the file size limit on core dump files
+              ulimit -c unlimited
+      - run:
           name: Python tests
           command: make test-python
+      - store_artifacts:
+          path: core
+          destination: core
 
   build-windows-x86_64-wheel:
     steps:
@@ -128,7 +136,8 @@ commands:
   build-windows-i686-wheel:
     steps:
       - install-rustup
-      - setup-rust-toolchain
+      - setup-rust-toolchain:
+          rust-version: "1.43.0"
       - install-mingw
       - run:
           name: Install Python development tools for host
@@ -232,7 +241,7 @@ jobs:
       - run:
           name: Check vendored schema for upstream updates
           command: |
-            bin/update-schema.sh master
+            bin/update-schema.sh HEAD
             if ! git diff --exit-code HEAD -- glean-core/preview/tests/glean.1.schema.json; then
               echo "===================================="
               echo "Latest schema from upstream changed."
@@ -462,7 +471,6 @@ jobs:
 
             ./gradlew --no-daemon assembleRelease
             ./gradlew --no-daemon publish
-            ./gradlew --no-daemon checkMavenArtifacts
           environment:
             GRADLE_OPTS: -Xmx2048m
             TARGET_CFLAGS: -DNDEBUG
@@ -977,6 +985,32 @@ jobs:
             ./ghr -replace ${CIRCLE_TAG} glean-core/python/dist
 
   ###########################################################################
+  # C#
+
+  CSharp tests:
+    docker:
+      - image: mcr.microsoft.com/dotnet/core/sdk:3.1-buster
+    steps:
+      - checkout
+      - skip-if-doc-only
+      - install-rustup
+      - setup-rust-toolchain
+      - run:
+          name: Install the dependencies
+          command: |
+            apt update
+            apt install -y gcc
+      - run:
+          name: Build glean_ffi
+          command: cargo build
+      - run:
+          name: Build the C# bindings
+          command: dotnet build glean-core/csharp/csharp.sln
+      - run:
+          name: Test C#
+          command: dotnet test glean-core/csharp/csharp.sln
+
+  ###########################################################################
   # Docs
 
   docs-linkcheck:
@@ -1068,23 +1102,24 @@ workflows:
 
   ci:
     jobs:
+      - CSharp tests
       - Rust tests - stable
       # FIXME: Disabled due to failing to often, bug 1574424
       # - Rust tests - beta
       - Rust tests - minimum version
       - C tests
       - Android tests
-      # iOS jobs run only on master by default, see below for manual-approved jobs
+      # iOS jobs run only on main by default, see below for manual-approved jobs
       - iOS build and test:
           filters:
             branches:
-              only: master
+              only: main
       - iOS integration test:
           requires:
             - iOS build and test
           filters:
             branches:
-              only: master
+              only: main
       - Python 3_5 tests
       - Python 3_5 tests minimum dependencies
       - Python 3_6 tests
@@ -1113,7 +1148,7 @@ workflows:
             - iOS build and test
           filters:
             branches:
-              only: master
+              only: main
 
   # iOS jobs require manual approval on PRs
   iOS:
@@ -1122,19 +1157,19 @@ workflows:
           type: approval
           filters:
             branches:
-              ignore: master
+              ignore: main
       - iOS build and test:
           requires:
             - hold
           filters:
             branches:
-              ignore: master
+              ignore: main
       - iOS integration test:
           requires:
             - iOS build and test
           filters:
             branches:
-              ignore: master
+              ignore: main
 
   release:
     jobs:

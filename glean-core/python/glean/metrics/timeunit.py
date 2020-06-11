@@ -6,43 +6,46 @@
 from enum import IntEnum
 
 
+from .. import _ffi
+
+
 class TimeUnit(IntEnum):
     """
     An enumeration of different resolutions supported by the time-related
     metric types.
     """
 
-    NANOSECOND = 0
+    NANOSECOND = _ffi.lib.TimeUnit_Nanosecond
     """
     Represents nanosecond precision.
     """
 
-    MICROSECOND = 1
+    MICROSECOND = _ffi.lib.TimeUnit_Microsecond
     """
     Represents microsecond precision.
     """
 
-    MILLISECOND = 2
+    MILLISECOND = _ffi.lib.TimeUnit_Millisecond
     """
     Represents millisecond precision.
     """
 
-    SECOND = 3
+    SECOND = _ffi.lib.TimeUnit_Second
     """
     Represents second precision.
     """
 
-    MINUTE = 4
+    MINUTE = _ffi.lib.TimeUnit_Minute
     """
     Represents minute precision.
     """
 
-    HOUR = 5
+    HOUR = _ffi.lib.TimeUnit_Hour
     """
     Represents hour precision.
     """
 
-    DAY = 6
+    DAY = _ffi.lib.TimeUnit_Day
     """
     Represents day precision.
     """

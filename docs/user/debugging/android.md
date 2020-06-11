@@ -21,7 +21,7 @@ In the above:
 |---|----|-----------|
 | `logPings` | boolean (`--ez`)  | If set to `true`, pings are dumped to logcat; defaults to `false` |
 | `sendPing` | string (`--es`)  | Sends the ping with the given name immediately |
-| `tagPings` | string (`--es`)  | Tags all outgoing pings as debug pings to make them available for real-time validation, on the [Glean Debug View](https://docs.telemetry.mozilla.org/concepts/glean/debug_ping_view.html). The value must match the pattern `[a-zA-Z0-9-]{1,20}` |
+| `tagPings` | string (`--es`)  | Tags all outgoing pings as debug pings to make them available for real-time validation, on the [Glean Debug View](./debug-ping-view.md). The value must match the pattern `[a-zA-Z0-9-]{1,20}` |
 
 > **Note:** Due to limitations on Android logcat message size, pings larger than 4KB are broken into multiple log messages when using `logPings`.
 
@@ -34,7 +34,12 @@ adb shell am start -n org.mozilla.samples.glean/mozilla.telemetry.glean.debug.Gl
   --es tagPings test-metrics-ping
 ```
 
-The `logPings` command doesn't trigger ping submission and you won't see any output until a ping has been submitted. You can use the `sendPings` command to force a ping to be sent, but it could be more desirable to trigger the pings submission on their normal schedule. For instance, the `baseline` and `events` pings can be triggered by moving the app out of the foreground and the `metrics` ping can be triggered normally if it is overdue for the current calendar day. See the [ping documentation](../pings/index.md) for more information on ping scheduling to learn when pings are sent.
+The `logPings` command doesn't trigger ping submission and you won't see any output until a ping has been submitted. You can use the `sendPing` command to force a ping to be sent, but it could be more desirable to trigger the pings submission on their normal schedule. For instance, the `baseline` and `events` pings can be triggered by moving the app out of the foreground and the `metrics` ping can be triggered normally if it is overdue for the current calendar day.
+
+Note that if no metrics have been collected, then no pings will be sent *unless* [`send_if_empty` is set on your ping](../pings/custom.md#defining-a-custom-ping). See the [ping documentation](../pings/index.md) for more information on ping scheduling to learn when pings are sent.
+
+Options that are set using the `adb` flags are not immediately reset and will
+persist until the application is closed or manually reset.
 
 > **Note:** In previous versions of Glean the activity was available with the name `mozilla.components.service.glean.debug.GleanDebugActivity`.
 >

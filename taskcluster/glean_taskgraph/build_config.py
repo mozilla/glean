@@ -20,10 +20,14 @@ CHECKSUMS_EXTENSIONS = ('.sha1', '.md5')
 
 def get_components():
     build_config = _read_build_config()
-    return [{
-        'name': name,
-        'path': project['path'],
-    } for (name, project) in build_config['projects'].items()]
+    components = []
+    for (name, project) in build_config['projects'].items():
+        if len(project['publications']) > 0:
+            components.append({
+                'name': name,
+                'path': project['path'],
+            })
+    return components
 
 
 def get_version():

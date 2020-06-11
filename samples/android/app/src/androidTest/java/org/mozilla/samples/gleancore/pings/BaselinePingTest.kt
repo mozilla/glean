@@ -47,7 +47,7 @@ class BaselinePingTest {
         device.pressHome()
 
         // Validate the received data.
-        val baselinePing = waitForPingContent("baseline", server)!!
+        val baselinePing = waitForPingContent("baseline", "background", server)!!
 
         val metrics = baselinePing.getJSONObject("metrics")
 

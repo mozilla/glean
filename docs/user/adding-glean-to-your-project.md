@@ -22,7 +22,7 @@ Products using the Glean SDK to collect telemetry **must**:
 
 Glean is published on [maven.mozilla.org](https://maven.mozilla.org/).
 To use it, you need to add the following to your project's top-level build file,
-in the `allprojects` block (see e.g. [Glean's own `build.gradle`](https://github.com/mozilla/glean/blob/master/build.gradle)):
+in the `allprojects` block (see e.g. [Glean's own `build.gradle`](https://github.com/mozilla/glean/blob/main/build.gradle)):
 
 ```Groovy
 repositories {
@@ -134,7 +134,7 @@ To learn more, see [adding new metrics](adding-new-metrics.md).
 
 In order for the Glean SDK to generate an API for your metrics, two Gradle plugins must be included in your build:
 
-- The [Glean Gradle plugin](https://github.com/mozilla/glean/tree/master/gradle-plugin/)
+- The [Glean Gradle plugin](https://github.com/mozilla/glean/tree/main/gradle-plugin/)
 - JetBrains' [Python envs plugin](https://github.com/JetBrains/gradle-python-envs/)
 
 The Glean Gradle plugin is distributed through Mozilla's Maven, so we need to tell your build where to look for it by adding the following to the top of your `build.gradle`:

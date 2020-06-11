@@ -28,6 +28,17 @@ Carthage
 .DS_Store
 *.dSYM
 
+# C# stuff
+*.suo
+*.user
+*.pubxml
+/glean-core/csharp/*/bin/
+/glean-core/csharp/*/obj/
+/glean-core/csharp/.vs/
+/samples/csharp/bin/
+/samples/csharp/obj/
+/samples/csharp/.vs/
+
 # local stuff
 data/
 glean-core/data

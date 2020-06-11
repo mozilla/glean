@@ -4,7 +4,7 @@
 
 use ffi_support::FfiStr;
 
-use crate::{define_metric, handlemap_ext::HandleMapExtension, with_glean_value};
+use crate::{define_metric, handlemap_ext::HandleMapExtension, with_glean_value, Lifetime};
 
 define_metric!(CounterMetric => COUNTER_METRICS {
     new           -> glean_new_counter_metric(),

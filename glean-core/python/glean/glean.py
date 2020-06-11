@@ -14,6 +14,7 @@ from pathlib import Path
 import platform
 import shutil
 import tempfile
+import threading
 from typing import Dict, List, Optional, Set, TYPE_CHECKING
 
 
@@ -82,6 +83,9 @@ class Glean:
     # The version of the application sending Glean data.
     _application_version = None  # type: str
 
+    # A thread lock for Glean operations that need to be synchronized
+    _thread_lock = threading.RLock()
+
     @classmethod
     def initialize(
         cls,
@@ -111,26 +115,27 @@ class Glean:
             data_dir (pathlib.Path): (optional) The path to the Glean data
                 directory. If not provided, uses a temporary directory.
         """
-        if cls.is_initialized():
-            return
+        with cls._thread_lock:
+            if cls.is_initialized():
+                return
 
-        atexit.register(Glean._reset)
+            atexit.register(Glean._reset)
 
-        if configuration is None:
-            configuration = Configuration()
+            if configuration is None:
+                configuration = Configuration()
 
-        if data_dir is None:
-            data_dir = Path(tempfile.TemporaryDirectory().name)
-            cls._destroy_data_dir = True
-        else:
-            cls._destroy_data_dir = False
-        cls._data_dir = data_dir
+            if data_dir is None:
+                data_dir = Path(tempfile.TemporaryDirectory().name)
+                cls._destroy_data_dir = True
+            else:
+                cls._destroy_data_dir = False
+            cls._data_dir = data_dir
 
-        cls._configuration = configuration
-        cls._application_id = application_id
-        cls._application_version = application_version
+            cls._configuration = configuration
+            cls._application_id = application_id
+            cls._application_version = application_version
 
-        cls.set_upload_enabled(upload_enabled)
+            cls.set_upload_enabled(upload_enabled)
 
         # Use `Glean._execute_task` rather than `Glean.launch` here, since we
         # never want to put this work on the `Dispatcher._preinit_queue`.
@@ -156,8 +161,9 @@ class Glean:
 
             # Kotlin bindings have a "synchronized" here, but that is
             # unnecessary given that Python has a GIL.
-            for ping in cls._ping_type_queue:
-                cls.register_ping_type(ping)
+            with cls._thread_lock:
+                for ping in cls._ping_type_queue:
+                    cls.register_ping_type(ping)
 
             # If this is the first time ever the Glean SDK runs, make sure to set
             # some initial core metrics in case we need to generate early pings.
@@ -252,14 +258,15 @@ class Glean:
         """
         Register the ping type in the registry.
         """
-        if cls.is_initialized():
-            _ffi.lib.glean_register_ping_type(ping._handle)
+        with cls._thread_lock:
+            if cls.is_initialized():
+                _ffi.lib.glean_register_ping_type(ping._handle)
 
-        # We need to keep track of pings, so they get re-registered after a
-        # reset. This state is kept across Glean resets, which should only ever
-        # happen in test mode. It's a set and keeping them around forever
-        # should not have much of an impact.
-        cls._ping_type_queue.add(ping)
+            # We need to keep track of pings, so they get re-registered after a
+            # reset. This state is kept across Glean resets, which should only
+            # ever happen in test mode. It's a set and keeping them around
+            # forever should not have much of an impact.
+            cls._ping_type_queue.add(ping)
 
     @classmethod
     def test_has_ping_type(cls, ping_name: str) -> bool:

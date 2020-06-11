@@ -21,7 +21,7 @@ git clone https://github.com/mozilla-mobile/android-components
 By default when building Android Components using gradle, the gradle-cargo plugin will compile Glean for every possible platform,
 which might end up in failures.
 You can customize which targets are built in `glean/local.properties`
-([more information](https://github.com/ncalexan/rust-android-gradle/blob/master/README.md#specifying-local-targets)):
+([more information](https://github.com/ncalexan/rust-android-gradle/blob/HEAD/README.md#specifying-local-targets)):
 
 ```
 # For physical devices:
@@ -76,6 +76,6 @@ Other tests like `:service-glean:testDebugUnitTest` or `:support-sync-telemetry:
 ## Notes
 
 This document is based on the equivalent documentation for application-services:
-[Development with the Reference Browser](https://github.com/mozilla/application-services/blob/master/docs/howtos/working-with-reference-browser.md)
+[Development with the Reference Browser](https://github.com/mozilla/application-services/blob/HEAD/docs/howtos/working-with-reference-browser.md)
 
 1. Transitive substitutions (as shown above) work but require newer Gradle versions (4.10+).

@@ -34,6 +34,87 @@
 #define UPLOAD_RESULT_UNRECOVERABLE 2
 
 /**
+ * The supported metrics' lifetimes.
+ *
+ * A metric's lifetime determines when its stored data gets reset.
+ */
+enum Lifetime {
+  /**
+   * The metric is reset with each sent ping
+   */
+  Lifetime_Ping,
+  /**
+   * The metric is reset on application restart
+   */
+  Lifetime_Application,
+  /**
+   * The metric is reset with each user profile
+   */
+  Lifetime_User,
+};
+typedef int32_t Lifetime;
+
+/**
+ * Different resolutions supported by the memory related metric types (e.g.
+ * MemoryDistributionMetric).
+ */
+enum MemoryUnit {
+  /**
+   * 1 byte
+   */
+  MemoryUnit_Byte,
+  /**
+   * 2^10 bytes
+   */
+  MemoryUnit_Kilobyte,
+  /**
+   * 2^20 bytes
+   */
+  MemoryUnit_Megabyte,
+  /**
+   * 2^30 bytes
+   */
+  MemoryUnit_Gigabyte,
+};
+typedef int32_t MemoryUnit;
+
+/**
+ * Different resolutions supported by the time related
+ * metric types (e.g. DatetimeMetric).
+ */
+enum TimeUnit {
+  /**
+   * Truncate to nanosecond precision.
+   */
+  TimeUnit_Nanosecond,
+  /**
+   * Truncate to microsecond precision.
+   */
+  TimeUnit_Microsecond,
+  /**
+   * Truncate to millisecond precision.
+   */
+  TimeUnit_Millisecond,
+  /**
+   * Truncate to second precision.
+   */
+  TimeUnit_Second,
+  /**
+   * Truncate to minute precision.
+   */
+  TimeUnit_Minute,
+  /**
+   * Truncate to hour precision.
+   */
+  TimeUnit_Hour,
+  /**
+   * Truncate to day precision.
+   */
+  TimeUnit_Day,
+};
+typedef int32_t TimeUnit;
+
+/**
  * `FfiStr<'a>` is a safe (`#[repr(transparent)]`) wrapper around a
  * nul-terminated `*const c_char` (e.g. a C string). Conceptually, it is
  * similar to [`std::ffi::CStr`], except that it may be used in the signatures
@@ -399,21 +480,21 @@ uint64_t glean_new_boolean_metric(FfiStr category,
                                   FfiStr name,
                                   RawStringArray send_in_pings,
                                   int32_t send_in_pings_len,
-                                  int32_t lifetime,
+                                  Lifetime lifetime,
                                   uint8_t disabled);
 
 uint64_t glean_new_counter_metric(FfiStr category,
                                   FfiStr name,
                                   RawStringArray send_in_pings,
                                   int32_t send_in_pings_len,
-                                  int32_t lifetime,
+                                  Lifetime lifetime,
                                   uint8_t disabled);
 
 uint64_t glean_new_custom_distribution_metric(FfiStr category,
                                               FfiStr name,
                                               RawStringArray send_in_pings,
                                               int32_t send_in_pings_len,
-                                              int32_t lifetime,
+                                              Lifetime lifetime,
                                               uint8_t disabled,
                                               uint64_t range_min,
                                               uint64_t range_max,
@@ -424,9 +505,9 @@ uint64_t glean_new_datetime_metric(FfiStr category,
                                    FfiStr name,
                                    RawStringArray send_in_pings,
                                    int32_t send_in_pings_len,
-                                   int32_t lifetime,
+                                   Lifetime lifetime,
                                    uint8_t disabled,
-                                   int32_t time_unit);
+                                   TimeUnit time_unit);
 
 uint64_t glean_new_event_metric(FfiStr category,
                                 FfiStr name,
@@ -477,9 +558,9 @@ uint64_t glean_new_memory_distribution_metric(FfiStr category,
                                               FfiStr name,
                                               RawStringArray send_in_pings,
                                               int32_t send_in_pings_len,
-                                              int32_t lifetime,
+                                              Lifetime lifetime,
                                               uint8_t disabled,
-                                              int32_t memory_unit);
+                                              MemoryUnit memory_unit);
 
 uint64_t glean_new_ping_type(FfiStr ping_name,
                              uint8_t include_client_id,
@@ -491,28 +572,28 @@ uint64_t glean_new_quantity_metric(FfiStr category,
                                    FfiStr name,
                                    RawStringArray send_in_pings,
                                    int32_t send_in_pings_len,
-                                   int32_t lifetime,
+                                   Lifetime lifetime,
                                    uint8_t disabled);
 
 uint64_t glean_new_string_list_metric(FfiStr category,
                                       FfiStr name,
                                       RawStringArray send_in_pings,
                                       int32_t send_in_pings_len,
-                                      int32_t lifetime,
+                                      Lifetime lifetime,
                                       uint8_t disabled);
 
 uint64_t glean_new_string_metric(FfiStr category,
                                  FfiStr name,
                                  RawStringArray send_in_pings,
                                  int32_t send_in_pings_len,
-                                 int32_t lifetime,
+                                 Lifetime lifetime,
                                  uint8_t disabled);
 
 uint64_t glean_new_timespan_metric(FfiStr category,
                                    FfiStr name,
                                    RawStringArray send_in_pings,
                                    int32_t send_in_pings_len,
-                                   int32_t lifetime,
+                                   Lifetime lifetime,
                                    uint8_t disabled,
                                    int32_t time_unit);
 
@@ -520,15 +601,15 @@ uint64_t glean_new_timing_distribution_metric(FfiStr category,
                                               FfiStr name,
                                               RawStringArray send_in_pings,
                                               int32_t send_in_pings_len,
-                                              int32_t lifetime,
+                                              Lifetime lifetime,
                                               uint8_t disabled,
-                                              int32_t time_unit);
+                                              TimeUnit time_unit);
 
 uint64_t glean_new_uuid_metric(FfiStr category,
                                FfiStr name,
                                RawStringArray send_in_pings,
                                int32_t send_in_pings_len,
-                               int32_t lifetime,
+                               Lifetime lifetime,
                                uint8_t disabled);
 
 uint8_t glean_on_ready_to_submit_pings(void);

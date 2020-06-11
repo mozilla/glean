@@ -18,12 +18,12 @@ include = [
 ]
 
 [badges]
-circle-ci = { repository = "mozilla/glean", branch = "master" }
+circle-ci = { repository = "mozilla/glean", branch = "main" }
 maintenance = { status = "actively-developed" }
 
 [dependencies.glean-core]
 path = ".."
-version = "31.0.2"
+version = "31.1.0"
 
 [dependencies]
 once_cell = "1.2.0"

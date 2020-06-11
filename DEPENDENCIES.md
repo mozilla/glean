@@ -1312,8 +1312,6 @@ The following text applies to code linked from these dependencies:
 * [percent-encoding 2.1.0]( https://github.com/servo/rust-url/ )
 * [proc-macro2 1.0.9]( https://github.com/alexcrichton/proc-macro2 )
 * [quote 1.0.2]( https://github.com/dtolnay/quote )
-* [regex 1.3.4]( https://github.com/rust-lang/regex )
-* [regex-syntax 0.6.16]( https://github.com/rust-lang/regex )
 * [serde 1.0.104]( https://github.com/serde-rs/serde )
 * [serde_derive 1.0.104]( https://github.com/serde-rs/serde )
 * [serde_json 1.0.48]( https://github.com/serde-rs/json )
@@ -2823,8 +2821,8 @@ THE SOFTWARE.
 The following text applies to code linked from these dependencies:
 
 * [benchmark 0.1.0]( https://crates.io/crates/benchmark )
-* [glean-core 31.0.2]( https://github.com/mozilla/glean )
-* [glean-ffi 31.0.2]( https://github.com/mozilla/glean )
+* [glean-core 31.1.0]( https://github.com/mozilla/glean )
+* [glean-ffi 31.1.0]( https://github.com/mozilla/glean )
 * [glean-preview 0.0.5]( https://github.com/mozilla/glean )
 
 

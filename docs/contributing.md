@@ -1,6 +1,6 @@
 # Contributing to the Glean SDK
 
-Anyone is welcome to help with the Glean SDK project. Feel free to get in touch with other community members on `chat.mozilla.org` 
+Anyone is welcome to help with the Glean SDK project. Feel free to get in touch with other community members on `chat.mozilla.org`
 or through issues on GitHub or Bugzilla.
 
 - Matrix: [#glean channel on chat.mozilla.org](https://chat.mozilla.org/#/room/#glean:mozilla.org)
@@ -34,7 +34,7 @@ make test-rust
 ```
 
 If you plan to work on the Android component bindings, you should also review
-the instructions for [setting up an Android build environment](https://github.com/mozilla/glean/blob/master/docs/dev/setup-android-build-environment.md)
+the instructions for [setting up an Android build environment](dev/android/setup-android-build-environment.md).
 
 To run all Kotlin tests:
 
@@ -74,7 +74,7 @@ Before submitting a PR:
 
 When submitting a PR:
 - You agree to license your code under the project's open source license ([MPL 2.0](https://mozilla.org/MPL/2.0/)).
-- Base your branch off the current `master` (see below for an example workflow).
+- Base your branch off the current `main`.
 - Add both your code and new tests if relevant.
 - Please do not include merge commits in pull requests; include only commits with the new relevant code.
 
@@ -84,7 +84,7 @@ This project is production Mozilla code and subject to our
 [engineering practices and quality standards](https://developer.mozilla.org/en-US/docs/Mozilla/Developer_guide/Committing_Rules_and_Responsibilities).
 Every patch must be peer reviewed by a member of the Glean core team.
 
-Reviewers are defined in the [CODEOWNERS](https://github.com/mozilla/glean/blob/master/.github/CODEOWNERS) file
+Reviewers are defined in the [CODEOWNERS](https://github.com/mozilla/glean/blob/main/.github/CODEOWNERS) file
 and are automatically added for every pull request.
 Every pull request needs to be approved by at least one of these people before landing.
 

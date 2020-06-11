@@ -26,3 +26,5 @@ They could be release notes, documentation, hopes, dreams, or whatever: so long 
 * 2020-04-27: [Glean for Python on Windows](https://blog.mozilla.org/data/2020/04/27/this-week-in-glean-glean-for-python-on-windows/)
 * 2020-05-04: [Bytes in Memory (on Android)](https://fnordig.de/2020/05/04/this-week-in-glean/)
 * 2020-05-08: [mozregression telemetry (part 2)](https://wlach.github.io/blog/2020/05/this-week-in-glean-mozregression-telemetry-part-2/)
+* 2020-05-26: [How does the Glean SDK send gzipped pings](https://blog.mozilla.org/data/2020/05/26/how-does-the-glean-sdk-send-gzipped-pings/)
+* 2020-06-03: [The Glean SDK and iOS Application Extensions, or a Tale of Two Sandboxes](https://blog.mozilla.org/data/2020/06/03/this-week-in-glean-the-glean-sdk-and-ios-application-extensions-or-a-tale-of-two-sandboxes/)

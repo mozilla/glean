@@ -1,4 +1,4 @@
-personal_ws-1.1 en 173 utf-8
+personal_ws-1.1 en 174 utf-8
 AAR
 AARs
 APIs
@@ -106,6 +106,7 @@ glinter
 gradle
 grcov
 gzip
+gzipped
 hotfix
 html
 init
