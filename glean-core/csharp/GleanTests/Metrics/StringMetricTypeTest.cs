@@ -53,7 +53,6 @@ namespace Mozilla.Glean.Tests.Metrics
             Assert.Equal("overriddenValue", stringMetric.TestGetValue());
         }
 
-
         [Fact]
         public void DisabledstringsMustNotRecordData()
         {
