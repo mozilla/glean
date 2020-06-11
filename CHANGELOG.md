@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v31.0.2...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v31.1.0...main)
+
+# v31.1.0 (2020-06-11)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v31.0.2...v31.1.0)
 
 * General:
     * The `regex` crate is no longer required, making the Glean binary smaller ([#949](https://github.com/mozilla/glean/pull/949))

@@ -109,14 +109,6 @@ the details of which are reproduced below.
     <url>https://github.com/dtolnay/quote</url>
   </license>
   <license>
-    <name>Apache License 2.0: regex</name>
-    <url>https://github.com/rust-lang/regex</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: regex-syntax</name>
-    <url>https://github.com/rust-lang/regex</url>
-  </license>
-  <license>
     <name>Apache License 2.0: serde</name>
     <url>https://github.com/serde-rs/serde</url>
   </license>
