@@ -3,10 +3,12 @@
 [Full changelog](https://github.com/mozilla/glean/compare/v31.0.2...main)
 
 * General:
-    * The `regex` crate is no longer required, making the Glean binary smaller.
-
+    * The `regex` crate is no longer required, making the Glean binary smaller ([#949](https://github.com/mozilla/glean/pull/949))
+    * Record upload failures into a new metric ([#967](https://github.com/mozilla/glean/pull/967))
+    * Log FFI errors as actual errors ([#935](https://github.com/mozilla/glean/pull/935))
+    * Limit the number of upload retries in all implementations ([#953](https://github.com/mozilla/glean/pull/953), [#968](https://github.com/mozilla/glean/pull/968))
 * Python
-    * Additional safety guarantees for applications that use Python `threading`.
+    * Additional safety guarantees for applications that use Python `threading` ([#962](https://github.com/mozilla/glean/pull/962))
 
 # v31.0.2 (2020-05-29)
 
