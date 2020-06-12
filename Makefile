@@ -158,7 +158,7 @@ android-emulator: ## Start the Android emulator with a predefined image
 .PHONY: android-emulator
 
 cbindgen: ## Regenerate the FFI header file
-	RUSTUP_TOOLCHAIN=nightly \
+	RUSTC_BOOTSTRAP=1 \
 	cbindgen glean-core/ffi --lockfile Cargo.lock -o glean-core/ffi/glean.h
 	cp glean-core/ffi/glean.h glean-core/ios/Glean/GleanFfi.h
 .PHONY: cbindgen

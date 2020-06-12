@@ -309,8 +309,7 @@ jobs:
     steps:
       - checkout
       - skip-if-doc-only
-      - setup-rust-toolchain:
-          rust-version: "nightly"
+      - setup-rust-toolchain
       - run:
           name: FFI header consistency check
           command: |
