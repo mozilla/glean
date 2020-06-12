@@ -190,13 +190,19 @@ impl Glean {
         let data_store = Some(Database::new(&cfg.data_path, cfg.delay_ping_lifetime_io)?);
         let event_data_store = EventDatabase::new(&cfg.data_path)?;
 
+        // Create an upload manager with rate limiting of 10 pings every 60 seconds.
+        let mut upload_manager = PingUploadManager::new(&cfg.data_path, false);
+        upload_manager.set_rate_limiter(
+            /* seconds per interval */ 60, /* max tasks per interval */ 10,
+        );
+
         let mut glean = Self {
             upload_enabled: cfg.upload_enabled,
             data_store,
             event_data_store,
             core_metrics: CoreMetrics::new(),
             internal_pings: InternalPings::new(),
-            upload_manager: PingUploadManager::new(&cfg.data_path, false),
+            upload_manager,
             data_path: PathBuf::from(cfg.data_path),
             application_id,
             ping_registry: HashMap::new(),
