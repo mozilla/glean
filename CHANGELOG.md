@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v31.1.0...main)
 
+* Android
+    * Dropping the version requirement for lifecycle extensions down again. Upping the required version caused problems in A-C.
+
 # v31.1.0 (2020-06-11)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v31.0.2...v31.1.0)
