@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v31.1.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v31.1.1...main)
+
+# v31.1.1 (2020-06-12)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v31.1.0...v31.1.1)
 
 * Android
     * Dropping the version requirement for lifecycle extensions down again. Upping the required version caused problems in A-C.
