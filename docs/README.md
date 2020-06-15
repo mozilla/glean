@@ -36,3 +36,8 @@ This is relevant if you plan to contribute to the Glean SDK code base.
 
 “This Week in Glean” is a series of blog posts that the Glean Team at Mozilla is using to try to communicate better about our work.
 They could be release notes, documentation, hopes, dreams, or whatever: so long as it is inspired by Glean.
+
+## License
+
+The Glean SDK Source Code is subject to the terms of the Mozilla Public License v2.0.
+You can obtain a copy of the MPL at <https://mozilla.org/MPL/2.0/>.
