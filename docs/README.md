@@ -12,6 +12,22 @@ To contact us you can:
 
 The source code is available [on GitHub](https://github.com/mozilla/glean/).
 
-## License
+## Using this book
 
-This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at <https://mozilla.org/MPL/2.0/>.
+This book is divided into 3 main chapters:
+
+### [Using the Glean SDK](user/index.html)
+
+If you want to use the Glean SDK to report data then this is the section you should read.
+It explains the first steps from integrating Glean into your project,
+contains details about all available metric types
+and how to do send your own custom pings.
+
+### [Metrics collected by the Glean SDK](user/collected-metrics/metrics.md)
+
+This chapter lists all metrics collected by the Glean SDK itself.
+
+### [Developing the Glean SDK](dev/index.md)
+
+This chapter describes how to develop the Glean SDK and its various implementations.
+This is relevant if you plan to contribute to the Glean SDK code base.
