@@ -14,7 +14,7 @@ The source code is available [on GitHub](https://github.com/mozilla/glean/).
 
 ## Using this book
 
-This book is divided into 3 main chapters:
+This book is divided into 4 main chapters:
 
 ### [Using the Glean SDK](user/index.html)
 
@@ -31,3 +31,8 @@ This chapter lists all metrics collected by the Glean SDK itself.
 
 This chapter describes how to develop the Glean SDK and its various implementations.
 This is relevant if you plan to contribute to the Glean SDK code base.
+
+### [This Week in Glean](appendix/twig.md)
+
+“This Week in Glean” is a series of blog posts that the Glean Team at Mozilla is using to try to communicate better about our work.
+They could be release notes, documentation, hopes, dreams, or whatever: so long as it is inspired by Glean.
