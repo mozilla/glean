@@ -100,7 +100,8 @@ namespace Mozilla.Glean
 
             SetUploadEnabled(uploadEnabled);
 
-            Dispatchers.LaunchConcurrent(() => {
+            Dispatchers.ExecuteTask(() =>
+            {
                 RegisterPings(GleanInternalPings);
 
                 LibGleanFFI.FfiConfiguration cfg = new LibGleanFFI.FfiConfiguration
@@ -170,7 +171,8 @@ namespace Mozilla.Glean
                 // From the second time we run, after all startup pings are generated,
                 // make sure to clear `lifetime: application` metrics and set them again.
                 // Any new value will be sent in newly generated pings after startup.
-                if (!isFirstRun) {
+                if (!isFirstRun)
+                {
                     LibGleanFFI.glean_clear_application_lifetime_metrics();
                     InitializeCoreMetrics();
                 }
