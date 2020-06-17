@@ -164,7 +164,7 @@ namespace Mozilla.Glean
                 // This is not invoked on the apiScheduler to ensure that it
                 // gets executed now, ahead of anything on the queue. The task
                 // is returned so that it can be awaited if needed.
-                return Task.Factory.StartNew(action);
+                return factory.StartNew(action);
             }
         }
 
