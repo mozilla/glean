@@ -19,10 +19,10 @@ namespace Mozilla.Glean
         private const string LogTag = "glean/Dispatchers";
 
         /// <summary>
-        /// This is the number of seconds that are allowed for the initial
+        /// This is the number of milliseconds that are allowed for the initial
         /// tasks queue to process all of the queued tasks.
         /// </summary>
-        private const int QueueProcessingTimeout = 5;
+        private const int QueueProcessingTimeout = 5000;
 
         /// <summary>
         /// This is the maximum number of tasks that will be queued before
@@ -50,33 +50,33 @@ namespace Mozilla.Glean
         }
 
         // Create a scheduler that uses a single thread
-        private static LimitedConcurrencyLevelTaskScheduler lcts =
+        private static readonly LimitedConcurrencyLevelTaskScheduler lcts =
             new LimitedConcurrencyLevelTaskScheduler(1);
 
         // Create a new TaskFactory and pass it the scheduler and cancellation
         // token.
-        internal static TaskFactory factory = new TaskFactory(lcts);
+        private static readonly TaskFactory factory = new TaskFactory(lcts);
 
         /// <summary>
-        /// This Queue holds the initial tasks that are launched before Glean is
-        /// initialized.
+        /// This Queue holds the initial Actions that are launched before Glean
+        /// is initialized.
         /// </summary>
-        internal static List<Action> taskQueue =
-            new List<Action>();
+        internal static List<Action> preInitActionQueue = new List<Action>();
 
         /// <summary>
-        /// The number of tasks added to the queue beyond the MaxQueueSize.
+        /// The number of Actions added to the queue beyond the MaxQueueSize.
         /// </summary>
-        private static int OverflowCount { get; set; } = 0;
+        private static int overflowCount = 0;
 
         /// <summary>
         /// Launch a block of work asynchronously.
         ///
-        /// Takes an Action and launches it as a Task while ensuring the tasks
-        /// are executed serially in the order the were launched.
+        /// Takes an Action and launches it using the TaskFactory ensuring the
+        /// tasks are executed serially in the order the were launched.
         ///
         /// If `QueueInitialTasks` is enabled, then the operation will be
-        /// created and added to the `taskQueue` but not executed until flushed.
+        /// created and added to the `preInitActionQueue` but not executed until
+        /// flushed.
         ///
         /// If `TestingMode` is enabled, then `LaunchAPI` will execute the task
         /// immediately and synchronously to avoid asynchronous issues in tests.
@@ -87,21 +87,21 @@ namespace Mozilla.Glean
         {
             Task task = null;
 
-            lock (taskQueue)
+            lock (preInitActionQueue)
             {
                 if (QueueInitialTasks)
                 {
-                    // If we are queuing tasks, typically before Glean has been
-                    // initialized, then we should just add the created Task to
-                    // the taskQueue.
+                    // If we are queuing, typically before Glean has been
+                    // initialized, then we should just add the action to
+                    // the queue.
                     AddActionToQueue(action);
                 }
                 else
                 {
                     if (!TestingMode)
                     {
-                        // If we are not queuing initial tasks, we can go ahead
-                        // and execute the task asynchronously                    
+                        // If we are not queuing we can go ahead and execute the
+                        // task asynchronously                    
                         task = factory.StartNew(() =>
                         {
                             // In order to prevent tasks from causing exceptions
@@ -119,7 +119,7 @@ namespace Mozilla.Glean
                     else
                     {
                         // If we are in testing mode, then go ahead and await
-                        // the action to ensure synchronous execution.
+                        // the task to ensure synchronous execution.
                         factory.StartNew(action).Wait();
                     }
                 }
@@ -129,7 +129,7 @@ namespace Mozilla.Glean
         }
 
         /// <summary>
-        /// Stops queueing tasks and processes any tasks in the queue. 
+        /// Stops queueing Actions and processes any Actions in the queue. 
         /// </summary>
         internal static void FlushQueuedInitialTasks()
         {
@@ -137,9 +137,9 @@ namespace Mozilla.Glean
             // their execution
             List<Task> tasks = new List<Task>();
 
-            lock (taskQueue)
+            lock (preInitActionQueue)
             {                
-                taskQueue.ForEach(action =>
+                preInitActionQueue.ForEach(action =>
                 {
                     var task = ExecuteTask(action);
                     if (task != null)
@@ -154,14 +154,15 @@ namespace Mozilla.Glean
                 // tasks after that and not queued.
                 QueueInitialTasks = false;
 
-                taskQueue.Clear();
+                preInitActionQueue.Clear();
             }
 
-            Task.WaitAll(tasks.ToArray());
+            // Await all of the tasks up to QueueProcessingTimeout
+            Task.WaitAll(tasks.ToArray(), QueueProcessingTimeout);
 
-            // This must happen after `queueInitialTasks.set(false)` is run, or
+            // This must happen after `QueueInitialTasks = false` is run, or
             // it would be added to a full task queue and be silently dropped.
-            if (OverflowCount > 0)
+            if (overflowCount > 0)
             {
                 //TODO GleanError.preinitTasksOverflow
                 //         .addSync(MaxQueueSize + OverflowCount)
@@ -185,13 +186,14 @@ namespace Mozilla.Glean
         }
 
         /// <summary>
-        /// Helper function to add task to queue and monitor the MaxQueueSize
+        /// Helper function to add an Action to the queue and monitor the
+        /// MaxQueueSize.
         /// </summary>
         /// <param name="task">The Task to add to the queue</param>
         [MethodImpl(MethodImplOptions.Synchronized)]
         private static void AddActionToQueue(Action action)
         {
-            if (taskQueue.Count >= MaxQueueSize)
+            if (preInitActionQueue.Count >= MaxQueueSize)
             {
                 //TODO Log.e(LOG_TAG, "Exceeded maximum queue size, discarding task")
 
@@ -199,7 +201,7 @@ namespace Mozilla.Glean
                 // but we can't record directly there, because that would only
                 // add the recording to an already-overflowing task queue and
                 // would be silently dropped.
-                OverflowCount += 1;
+                overflowCount += 1;
                 return;
             }
 
@@ -212,7 +214,7 @@ namespace Mozilla.Glean
                 //TODO Log.i(LOG_TAG, "Task queued for execution and delayed until flushed")
             }
             
-            taskQueue.Add(action);            
+            preInitActionQueue.Add(action);            
         }
 
         /// <summary>
