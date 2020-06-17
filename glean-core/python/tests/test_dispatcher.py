@@ -80,13 +80,16 @@ def test_queue_tasks_are_flushed_off_the_main_thread():
     Dispatcher._testing_mode = False
     Dispatcher._queue_initial_tasks = True
 
-    for i in range(3):
-        Dispatcher.launch(test_task)
+    def task_runner():
+        for i in range(3):
+            Dispatcher.launch(test_task)
 
-    assert 3 == len(Dispatcher._preinit_task_queue)
-    assert 0 == thread_canary[0]
+        assert 3 == len(Dispatcher._preinit_task_queue)
+        assert 0 == thread_canary[0]
 
-    Dispatcher.flush_queued_initial_tasks()
+        Dispatcher.flush_queued_initial_tasks()
+
+    Dispatcher._task_worker.add_task(True, task_runner)
 
     Dispatcher._task_worker._queue.join()
 
@@ -114,13 +117,16 @@ def test_queued_tasks_are_executed_in_the_order_they_are_received():
             self.thread_counter[0] += 1
             self.thread_list.append(self.num)
 
-    for i in range(50):
-        Dispatcher.launch(Job(i))
+    def task_runner():
+        for i in range(50):
+            Dispatcher.launch(Job(i))
 
-    Dispatcher.flush_queued_initial_tasks()
+        Dispatcher.flush_queued_initial_tasks()
 
-    for i in range(50, 100):
-        Dispatcher.launch(Job(i))
+        for i in range(50, 100):
+            Dispatcher.launch(Job(i))
+
+    Dispatcher._task_worker.add_task(True, task_runner)
 
     Dispatcher._task_worker._queue.join()
 

@@ -63,7 +63,10 @@ class _ThreadWorker:
         # queue, just run them now. This is required for synchronous testing
         # mode, and also to run the tasks in the expected order.
         if threading.get_ident() == self._ident:
-            task(*args, **kwargs)
+            try:
+                task(*args, **kwargs)
+            except Exception:
+                log.exception("Glean error")
         else:
             args = args or ()
             kwargs = kwargs or {}
@@ -109,8 +112,10 @@ class _ThreadWorker:
 
         # Send an END_MARKER to the worker thread to shut it down cleanly.
         self._queue.put((self.END_MARKER, (), {}))
-        # Wait up to 1 second for the worker thread to complete.
-        self._thread.join(1.0)
+        # Wait for the worker thread to complete. This timeout is long -- we no
+        # longer expect the uploader to timeout for a very long time, but we
+        # also don't want to wait forever in the event of an unexpected bug.
+        self._thread.join(30.0)
         if self._thread.is_alive():
             log.error("Timeout sending Glean telemetry")
         self._started = False
@@ -254,15 +259,14 @@ class Dispatcher:
         """
         Stops queueing tasks and processes any tasks in the queue.
         """
-        cls.set_task_queueing(False)
-
         with cls._thread_lock:
-            queue_copy = cls._preinit_task_queue[:]
+            cls.set_task_queueing(False)
+            for (task, args, kwargs) in cls._preinit_task_queue:
+                try:
+                    task(*args, **kwargs)
+                except Exception:
+                    log.exception("Glean exception")
             cls._preinit_task_queue.clear()
-
-        for (task, args, kwargs) in queue_copy:
-            cls._execute_task(task, *args, **kwargs)
-        cls._preinit_task_queue.clear()
 
         if cls._overflow_count > 0:
             from ._builtins import metrics
