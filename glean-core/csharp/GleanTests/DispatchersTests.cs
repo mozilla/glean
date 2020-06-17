@@ -55,13 +55,13 @@ namespace Mozilla.Glean.Tests
                 }));
             }       
 
-            Assert.Equal(3, Dispatchers.taskQueue.Count);
+            Assert.Equal(3, Dispatchers.preInitActionQueue.Count);
             Assert.Equal(0, threadCanary);
 
             Dispatchers.FlushQueuedInitialTasks();
 
             Assert.Equal(3, threadCanary);
-            Assert.Empty(Dispatchers.taskQueue);
+            Assert.Empty(Dispatchers.preInitActionQueue);
         }
 
         [Fact]
@@ -84,14 +84,14 @@ namespace Mozilla.Glean.Tests
                 });
             }
 
-            Assert.Equal(3, Dispatchers.taskQueue.Count);
+            Assert.Equal(3, Dispatchers.preInitActionQueue.Count);
             Assert.Equal(0, Interlocked.Read(ref threadCanary));
 
             // Trigger execution to ensure tasks have fired
             Dispatchers.FlushQueuedInitialTasks();
 
             Assert.Equal(3, Interlocked.Read(ref threadCanary));
-            Assert.Empty(Dispatchers.taskQueue);
+            Assert.Empty(Dispatchers.preInitActionQueue);
         }
 
         [Fact]
