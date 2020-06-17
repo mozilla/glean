@@ -3,6 +3,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -14,7 +15,7 @@ namespace Mozilla.Glean
     internal static class Dispatchers
     {
         /// <summary>
-        /// This is the tag used for logging from this class
+        /// This is the tag used for logging from this class.
         /// </summary>
         private const string LogTag = "glean/Dispatchers";
 
@@ -49,19 +50,19 @@ namespace Mozilla.Glean
             set => Interlocked.Exchange(ref _queueInitialTasks, value ? 1 : 0);
         }
 
-        // Create a scheduler that uses a single thread
-        private static readonly LimitedConcurrencyLevelTaskScheduler lcts =
-            new LimitedConcurrencyLevelTaskScheduler(1);
+        // Create a scheduler that uses a single thread.
+        private static readonly LimitedConcurrencyLevelTaskScheduler
+            apiScheduler = new LimitedConcurrencyLevelTaskScheduler(1);
 
-        // Create a new TaskFactory and pass it the scheduler and cancellation
-        // token.
-        private static readonly TaskFactory factory = new TaskFactory(lcts);
+        // Create a new TaskFactory and pass it the scheduler.
+        private static readonly TaskFactory factory = new TaskFactory(apiScheduler);
 
         /// <summary>
         /// This Queue holds the initial Actions that are launched before Glean
         /// is initialized.
         /// </summary>
-        internal static List<Action> preInitActionQueue = new List<Action>();
+        internal static ConcurrentQueue<Action> preInitActionQueue =
+            new ConcurrentQueue<Action>();
 
         /// <summary>
         /// The number of Actions added to the queue beyond the MaxQueueSize.
@@ -87,41 +88,38 @@ namespace Mozilla.Glean
         {
             Task task = null;
 
-            lock (preInitActionQueue)
+            if (QueueInitialTasks)
             {
-                if (QueueInitialTasks)
+                // If we are queuing, typically before Glean has been
+                // initialized, then we should just add the action to
+                // the queue.
+                AddActionToQueue(action);
+            }
+            else
+            {
+                if (!TestingMode)
                 {
-                    // If we are queuing, typically before Glean has been
-                    // initialized, then we should just add the action to
-                    // the queue.
-                    AddActionToQueue(action);
-                }
-                else
-                {
-                    if (!TestingMode)
+                    // If we are not queuing we can go ahead and execute the
+                    // task asynchronously                    
+                    task = factory.StartNew(() =>
                     {
-                        // If we are not queuing we can go ahead and execute the
-                        // task asynchronously                    
-                        task = factory.StartNew(() =>
-                        {
                             // In order to prevent tasks from causing exceptions
                             // we wrap the action invocation in try/catch
                             try
-                            {
-                                action.Invoke();
-                            }
-                            catch (Exception)
-                            {
+                        {
+                            action.Invoke();
+                        }
+                        catch (Exception)
+                        {
                                 //TODO Exception eaten by Glean
                             }
-                        });
-                    }
-                    else
-                    {
-                        // If we are in testing mode, then go ahead and await
-                        // the task to ensure synchronous execution.
-                        factory.StartNew(action).Wait();
-                    }
+                    });
+                }
+                else
+                {
+                    // If we are in testing mode, then go ahead and await
+                    // the task to ensure synchronous execution.
+                    factory.StartNew(action).Wait();
                 }
             }
 
@@ -133,32 +131,15 @@ namespace Mozilla.Glean
         /// </summary>
         internal static void FlushQueuedInitialTasks()
         {
-            // Create a list to store the created tasks in order to await
-            // their execution
-            List<Task> tasks = new List<Task>();
-
-            lock (preInitActionQueue)
+            factory.StartNew(() =>
             {                
-                preInitActionQueue.ForEach(action =>
-                {
-                    var task = ExecuteTask(action);
-                    if (task != null)
-                    {
-                        tasks.Add(task);
-                    }
-                });
-
-                // Set the flag here after the initial tasks are added,
-                // combined with the lock on taskQueue to ensure initial tasks
-                // are executed first and subsequent tasks get executed as
-                // tasks after that and not queued.
                 QueueInitialTasks = false;
 
-                preInitActionQueue.Clear();
-            }
-
-            // Await all of the tasks up to QueueProcessingTimeout
-            Task.WaitAll(tasks.ToArray(), QueueProcessingTimeout);
+                while (preInitActionQueue.TryDequeue(out Action action))
+                {
+                    action.Invoke();
+                }                
+            }).Wait();
 
             // This must happen after `QueueInitialTasks = false` is run, or
             // it would be added to a full task queue and be silently dropped.
@@ -171,17 +152,19 @@ namespace Mozilla.Glean
 
         internal static Task ExecuteTask(Action action)
         {
-
             if (TestingMode)
             {
-                // If we are in testing mode, then await the task and return
+                // If we are in testing mode, then invoke the action and return
                 // null
-                factory.StartNew(action).Wait();
+                action.Invoke();
                 return null;
             }
             else
             {
-                return factory.StartNew(action);
+                // This is not invoked on the apiScheduler to ensure that it
+                // gets executed now, ahead of anything on the queue. The task
+                // is returned so that it can be awaited if needed.
+                return Task.Factory.StartNew(action);
             }
         }
 
@@ -214,7 +197,7 @@ namespace Mozilla.Glean
                 //TODO Log.i(LOG_TAG, "Task queued for execution and delayed until flushed")
             }
             
-            preInitActionQueue.Add(action);            
+            preInitActionQueue.Enqueue(action);
         }
 
         /// <summary>
