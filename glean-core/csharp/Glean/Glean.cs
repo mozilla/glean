@@ -4,7 +4,11 @@
 
 using Mozilla.Glean.FFI;
 using static Mozilla.Glean.GleanMetrics.GleanInternalMetricsOuter;
+using static Mozilla.Glean.GleanPings.GleanInternalPingsOuter;
 using System;
+using Mozilla.Glean.Private;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace Mozilla.Glean
 {
@@ -22,6 +26,9 @@ namespace Mozilla.Glean
 
         // Keep track of this flag before Glean is initialized
         private bool uploadEnabled = true;
+
+        // Keep track of ping types that have been registered before Glean is initialized.
+        private HashSet<PingTypeBase> pingTypeQueue = new HashSet<PingTypeBase>();
 
         private Glean()
         {
@@ -49,6 +56,7 @@ namespace Mozilla.Glean
         /// are cleared.</param>
         /// <param name="configuration">A Glean `Configuration` object with global settings</param>
         /// <param name="dataDir">The path to the Glean data directory.</param>
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public void Initialize(
             string applicationId,
             string applicationVersion,
@@ -85,7 +93,7 @@ namespace Mozilla.Glean
             SetUploadEnabled(uploadEnabled);
 
             Dispatchers.LaunchConcurrent(() => {
-                // TODO: registerPings(Pings)
+                RegisterPings(GleanInternalPings);
 
                 LibGleanFFI.FfiConfiguration cfg = new LibGleanFFI.FfiConfiguration
                 {
@@ -104,13 +112,15 @@ namespace Mozilla.Glean
                     return;
                 }
 
-                /* TODO:
                 // If any pings were registered before initializing, do so now.
                 // We're not clearing this queue in case Glean is reset by tests.
-                synchronized(this@GleanInternalAPI) {
-                    pingTypeQueue.forEach { registerPingType(it) }
+                lock (this)
+                {
+                    foreach (var ping in pingTypeQueue)
+                    {
+                        RegisterPingType(ping);
+                    }
                 }
-                */
 
                 // If this is the first time ever the Glean SDK runs, make sure to set
                 // some initial core metrics in case we need to generate early pings.
@@ -311,5 +321,57 @@ namespace Mozilla.Glean
             string storedvalue = GleanInternalMetrics.architecture.TestGetValue();
             Console.WriteLine("InitializeCoreMetrics - has value {0} and that's {1}", hasValue, storedvalue);
         }
-    }
+
+        /// <summary>
+        /// Register the pings generated from `ManualPings` with the Glean SDK.
+        /// </summary>
+        /// <param name="pings"> The `Pings` object generated for your library or application
+        /// by the Glean SDK.</param>
+        private void RegisterPings(object pings)
+        {
+            // Instantiating the Pings object to send this function is enough to
+            // call the constructor and have it registered through [Glean.registerPingType].
+            Console.WriteLine("Registering pings");
+        }
+
+        /// <summary>
+        /// Handle the background event and send the appropriate pings.
+        /// </summary>
+        internal void HandleBackgroundEvent()
+        {
+            GleanInternalPings.baseline.Submit(BaselineReasonCodes.background);
+            GleanInternalPings.events.Submit(EventsReasonCodes.background);
+        }
+
+        /// <summary>
+        /// Register a [PingType] in the registry associated with this [Glean] object.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        internal void RegisterPingType(PingTypeBase pingType)
+        {
+            if (IsInitialized())
+            {
+                LibGleanFFI.glean_register_ping_type(
+                    pingType.handle
+                );
+            }
+
+            // We need to keep track of pings, so they get re-registered after a reset.
+            // This state is kept across Glean resets, which should only ever happen in test mode.
+            // Or by the instrumentation tests (`connectedAndroidTest`), which relaunches the application activity,
+            // but not the whole process, meaning globals, such as the ping types, still exist from the old run.
+            // It's a set and keeping them around forever should not have much of an impact.
+
+            pingTypeQueue.Add(pingType);
+        }
+
+        /// <summary>
+        /// TEST ONLY FUNCTION.
+        /// Returns true if a ping by this name is in the ping registry.
+        /// </summary>
+        internal bool TestHasPingType(string pingName)
+        {
+            return LibGleanFFI.glean_test_has_ping_type(pingName) != 0;
+        }
+}
 }

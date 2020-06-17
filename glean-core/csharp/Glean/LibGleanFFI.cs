@@ -111,6 +111,12 @@ namespace Mozilla.Glean.FFI
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
         internal static extern byte glean_is_upload_enabled();
 
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern StringAsReturnValue glean_ping_collect(PingTypeHandle ping_type_handle, string reason);
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern byte glean_submit_ping_by_name(string ping_name, string reason);
+
         // TODO: add the rest of the ffi.
 
         // String
@@ -158,7 +164,7 @@ namespace Mozilla.Glean.FFI
              StringMetricTypeHandle metric_id,
              Int32 error_type,
              string storage_name
-         );
+        );
 
         // Boolean
 
@@ -239,6 +245,42 @@ namespace Mozilla.Glean.FFI
 
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
         internal static extern byte glean_uuid_test_has_value(UuidMetricTypeHandle metric_id, string storage_name);
+
+        // Custom pings
+
+        /// <summary>
+        /// A handle for the ping metric type, which performs cleanup.
+        /// </summary>
+        internal sealed class PingTypeHandle : BaseGleanHandle
+        {
+            protected override bool ReleaseHandle()
+            {
+                if (!this.IsInvalid)
+                {
+                    glean_destroy_ping_type(handle);
+                }
+
+                return true;
+            }
+        }
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern PingTypeHandle glean_new_ping_type(
+            string name,
+            byte include_client_id,
+            byte send_if_empty,
+            string[] reason,
+            Int32 reason_codes_len
+        );
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void glean_destroy_ping_type(IntPtr handle);
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void glean_register_ping_type(PingTypeHandle ping_type_handle);
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern byte glean_test_has_ping_type(string ping_name);
 
         // Misc
 
