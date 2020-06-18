@@ -53,7 +53,7 @@ namespace Mozilla.Glean.Tests
                 {
                     threadCanary += 1;
                 }));
-            }       
+            }
 
             Assert.Equal(3, Dispatchers.preInitActionQueue.Count);
             Assert.Equal(0, threadCanary);
