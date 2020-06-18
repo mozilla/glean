@@ -4,7 +4,11 @@
 
 
 import threading
+import sys
 import time
+
+
+import pytest
 
 
 from glean._dispatcher import Dispatcher
@@ -179,3 +183,40 @@ def test_that_thread_joins_before_directory_is_deleted_in_reset():
     Glean._reset()
 
     assert thread_canary[0] == 1
+
+
+def _subprocess():
+    # If this runs on a thread, it won't complete before the process is
+    # shutdown
+
+    string_metric = metrics.StringMetricType(
+        disabled=False,
+        category="telemetry",
+        lifetime=Lifetime.APPLICATION,
+        name="string_metric",
+        send_in_pings=["store1"],
+    )
+
+    for i in range(1000):
+        string_metric.set(str(i))
+
+
+@pytest.mark.skipif(
+    not sys.platform.startswith("linux"), reason="Test only works on Linux"
+)
+def test_single_threaded_in_multiprocessing_subprocess():
+    import multiprocessing
+
+    p = multiprocessing.Process(target=_subprocess)
+    p.start()
+    p.join()
+
+    string_metric = metrics.StringMetricType(
+        disabled=False,
+        category="telemetry",
+        lifetime=Lifetime.APPLICATION,
+        name="string_metric",
+        send_in_pings=["store1"],
+    )
+
+    assert string_metric.test_get_value() == "999"

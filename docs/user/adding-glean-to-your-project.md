@@ -293,15 +293,29 @@ All of Glean's target languages use a separate worker thread to do most of Glean
 {{#include ../tab_header.md}}
 
 <div data-lang="Python" class="tab">
-When using the Python bindings, Glean's work is done on a separate thread, managed by Glean itself.
+Since Glean performs disk and networking I/O, it tries to do as much of its work as possible on separate threads and processes. 
+Since there are complex tradeoffs and corner cases to support Python parallelism, it is hard to design a one-size-fits-all approach.
+
+#### Default behavior
+
+When using the Python bindings, most of Glean's work is done on a separate thread, managed by Glean itself.
 Glean releases the Global Interpreter Lock (GIL), therefore your application's threads should not be in contention with Glean's thread.
 
-Glean installs an [`atexit` handler](https://docs.python.org/3/library/atexit.html) so the Glean thread can attempt to cleanly shut down when your application exits.
-This handler will wait up to 1 second for any pending work to complete.
+Glean installs an [`atexit` handler](https://docs.python.org/3/library/atexit.html) so the Glean thread can cleanly finish when your application exits.
+This handler will wait up to 30 seconds for any pending work to complete.
 
-In addition, by default ping uploading is performed in a separate child process. This process will continue to upload any pending pings even after the main process shuts down.
+In addition, by default ping uploading is performed in a separate child process. This process will continue to upload any pending pings even after the main process shuts down. This is important for commandline tools where you want to return control to the shell as soon as possible and not be delayed by network connectivity.
 
-Note that this approach may not work with applications built using [`PyInstaller`](https://www.pyinstaller.org/) or similar tools which bundle an application together with a Python interpreter. For these cases (and any others which we haven't thought of), there is an option to ensure that ping uploading occurs in the main process. To do this, set the `allow_multiprocessing` parameter on the `glean.Configuration` object to `False`.
+#### Cases where subprocesses aren't possible
+
+The default approach may not work with applications built using [`PyInstaller`](https://www.pyinstaller.org/) or similar tools which bundle an application together with a Python interpreter making it impossible to spawn new subprocesses of that interpreter. For these cases, there is an option to ensure that ping uploading occurs in the main process. To do this, set the `allow_multiprocessing` parameter on the `glean.Configuration` object to `False`.
+
+#### Using the `multiprocessing` module
+
+Additionally, the default approach does not work if your application uses the `multiprocessing` module for parallelism. 
+Glean can not wait to finish its work in a `multiprocessing` subprocess, since `atexit` handlers are not supported in that context.  
+Therefore, if Glean detects that it is running in a `multiprocessing` subprocess, all of its work that would normally run on a worker thread will run on the main thread.
+In practice, this should not be a performance issue: since the work is already in a subprocess, it will not block the main process of your application.
 </div>
 
 {{#include ../tab_footer.md}}

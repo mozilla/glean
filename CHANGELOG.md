@@ -4,6 +4,7 @@
 
 * Python
     * BUGFIX: Additional time is taken at shutdown to make sure pings are sent and telemetry is recorded. ([1646173](https://bugzilla.mozilla.org/show_bug.cgi?id=1646173))
+    * BUGFIX: Glean will run on the main thread when running in a `multiprocessing` subprocess.
 
 # v31.1.1 (2020-06-12)
 
