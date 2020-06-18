@@ -9,6 +9,8 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Schedulers;
+using Serilog;
+using static Mozilla.Glean.Utils.GleanLogger;
 
 namespace Mozilla.Glean
 {
@@ -70,6 +72,11 @@ namespace Mozilla.Glean
         private static int overflowCount = 0;
 
         /// <summary>
+        /// A logger configured for this class.
+        /// </summary>
+        private static readonly ILogger Log = GetLogger(LogTag);
+
+        /// <summary>
         /// Launch a block of work asynchronously.
         ///
         /// Takes an Action and launches it using the TaskFactory ensuring the
@@ -103,16 +110,17 @@ namespace Mozilla.Glean
                     // task asynchronously                    
                     task = factory.StartNew(() =>
                     {
-                            // In order to prevent tasks from causing exceptions
-                            // we wrap the action invocation in try/catch
-                            try
+                        // In order to prevent tasks from causing exceptions
+                        // we wrap the action invocation in try/catch
+                        try
                         {
                             action.Invoke();
                         }
                         catch (Exception)
                         {
-                                //TODO Exception eaten by Glean
-                            }
+                            Log.Error("Exception thrown by queued initial task and swallowed.");
+                            
+                        }
                     });
                 }
                 else
@@ -178,7 +186,7 @@ namespace Mozilla.Glean
         {
             if (preInitActionQueue.Count >= MaxQueueSize)
             {
-                //TODO Log.e(LOG_TAG, "Exceeded maximum queue size, discarding task")
+                Log.Error("Exceeded maximum queue size, discarding task");
 
                 // This value ends up in the `preinit_tasks_overflow` metric,
                 // but we can't record directly there, because that would only
@@ -190,11 +198,11 @@ namespace Mozilla.Glean
 
             if (TestingMode)
             {
-                //TODO Log.i(LOG_TAG, "Task queued for execution in test mode")
+                Log.Information("Task queued for execution in test mode");
             }
             else
             {
-                //TODO Log.i(LOG_TAG, "Task queued for execution and delayed until flushed")
+                Log.Information("Task queued for execution and delayed until flushed");
             }
             
             preInitActionQueue.Enqueue(action);

@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading;
+using Serilog;
+using static Mozilla.Glean.Utils.GleanLogger;
 
 namespace Mozilla.Glean.Net
 {
@@ -24,6 +26,16 @@ namespace Mozilla.Glean.Net
         private const int MAX_RETRIES = 3;
 
         private readonly IPingUploader uploader;
+
+        /// <summary>
+        /// This is the tag used for logging from this class.
+        /// </summary>
+        private const string LogTag = "glean/BaseUploader";
+
+        /// <summary>
+        /// A logger configured for this class
+        /// </summary>
+        private static readonly ILogger Log = GetLogger(LogTag);
 
         internal BaseUploader(IPingUploader uploader)
         {
@@ -46,7 +58,7 @@ namespace Mozilla.Glean.Net
             // Bail out if we don't have a valid uploader. This should never happen outside of tests.
             if (uploader == null)
             {
-                Console.WriteLine("No HTTP uploader defined. Please set it in the Glean SDK configuration.");
+                Log.Error("No HTTP uploader defined. Please set it in the Glean SDK configuration.");
                 return new RecoverableFailure();
             }
 
@@ -68,7 +80,7 @@ namespace Mozilla.Glean.Net
             }
             catch (JsonException)
             {
-                Console.WriteLine($"Error while parsing headers for ping {documentId}");
+                Log.Error("Error while parsing headers for ping {0}", documentId);
             }
 
             if (config.pingTag != null)
