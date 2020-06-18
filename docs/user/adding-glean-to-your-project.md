@@ -294,7 +294,7 @@ All of Glean's target languages use a separate worker thread to do most of Glean
 
 <div data-lang="Python" class="tab">
 Since Glean performs disk and networking I/O, it tries to do as much of its work as possible on separate threads and processes. 
-Since there are complex tradeoffs and corner cases to support Python parallelism, it is hard to design a one-size-fits-all approach.
+Since there are complex trade-offs and corner cases to support Python parallelism, it is hard to design a one-size-fits-all approach.
 
 #### Default behavior
 
