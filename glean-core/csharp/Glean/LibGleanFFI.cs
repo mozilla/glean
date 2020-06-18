@@ -5,6 +5,8 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
+using Serilog;
+using static Mozilla.Glean.Utils.GleanLogger;
 
 namespace Mozilla.Glean.FFI
 {
@@ -114,6 +116,16 @@ namespace Mozilla.Glean.FFI
 
         internal class StringAsReturnValue : SafeHandle
         {
+            /// <summary>
+            /// This is the tag used for logging from this class.
+            /// </summary>
+            private const string LogTag = "glean/StringAsReturnValue";
+
+            /// <summary>
+            /// A logger configured for this class
+            /// </summary>
+            private static readonly ILogger Log = GetLogger(LogTag);
+
             public StringAsReturnValue() : base(IntPtr.Zero, true) { }
 
             public override bool IsInvalid
@@ -130,7 +142,7 @@ namespace Mozilla.Glean.FFI
             {
                 if (!this.IsInvalid)
                 {
-                    Console.WriteLine("Freeing string handle");
+                    Log.Information("Freeing string handle");
                     glean_str_free(handle);
                 }
 

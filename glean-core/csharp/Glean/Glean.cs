@@ -2,14 +2,16 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-using Mozilla.Glean.FFI;
-using static Mozilla.Glean.GleanMetrics.GleanInternalMetricsOuter;
-using static Mozilla.Glean.GleanPings.GleanInternalPingsOuter;
 using System;
-using Mozilla.Glean.Net;
-using Mozilla.Glean.Private;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Mozilla.Glean.FFI;
+using Mozilla.Glean.Net;
+using Mozilla.Glean.Private;
+using Serilog;
+using static Mozilla.Glean.GleanMetrics.GleanInternalMetricsOuter;
+using static Mozilla.Glean.GleanPings.GleanInternalPingsOuter;
+using static Mozilla.Glean.Utils.GleanLogger;
 
 namespace Mozilla.Glean
 {
@@ -37,6 +39,16 @@ namespace Mozilla.Glean
         // for logging and delegates the actual upload to the implementation in
         // the `Configuration`.
         private BaseUploader httpClient;
+
+        /// <summary>
+        /// This is the tag used for logging from this class.
+        /// </summary>
+        private const string LogTag = "glean/Glean";
+
+        /// <summary>
+        /// A logger configured for this class
+        /// </summary>
+        private static readonly ILogger Log = GetLogger(LogTag);
 
         private Glean()
         {
@@ -87,12 +99,12 @@ namespace Mozilla.Glean
                 return
             }
 
-            if (isInitialized()) {
-                Log.e(LOG_TAG, "Glean should not be initialized multiple times")
-                return
-            }
-
             this.applicationContext = applicationContext*/
+
+            if (IsInitialized()) {
+                Log.Error("Glean should not be initialized multiple times");
+                return;
+            }
 
             this.configuration = configuration;
             httpClient = new BaseUploader(configuration.httpClient);
@@ -322,13 +334,13 @@ namespace Mozilla.Glean
 
         private void InitializeCoreMetrics()
         {
-            Console.WriteLine("Setting metric");
+            Log.Information("Setting metric");
             GleanInternalMetrics.architecture.SetSync("test");
-            Console.WriteLine("Check has value");
+            Log.Information("Check has value");
             bool hasValue = GleanInternalMetrics.architecture.TestHasValue();
-            Console.WriteLine("Has value {0} ", hasValue);
+            Log.Information("Has value {0} ", hasValue);
             string storedvalue = GleanInternalMetrics.architecture.TestGetValue();
-            Console.WriteLine("InitializeCoreMetrics - has value {0} and that's {1}", hasValue, storedvalue);
+            Log.Information("InitializeCoreMetrics - has value {0} and that's {1}", hasValue, storedvalue);
         }
 
         /// <summary>
@@ -340,7 +352,7 @@ namespace Mozilla.Glean
         {
             // Instantiating the Pings object to send this function is enough to
             // call the constructor and have it registered through [Glean.registerPingType].
-            Console.WriteLine("Registering pings");
+            Log.Information("Registering pings");
         }
 
         /// <summary>
@@ -413,13 +425,13 @@ namespace Mozilla.Glean
         {
             if (!IsInitialized())
             {
-                Console.WriteLine("Glean must be initialized before submitting pings.");
+                Log.Error("Glean must be initialized before submitting pings.");
                 return;
             }
 
             if (!GetUploadEnabled())
             {
-                Console.WriteLine("Glean disabled: not submitting any pings.");
+                Log.Error("Glean disabled: not submitting any pings.");
                 return;
             }
 
