@@ -24,7 +24,7 @@ namespace Mozilla.Glean.Net
     /// </summary>
     public class HttpResponse : UploadResult
     {
-        private readonly int statusCode;
+        internal readonly int statusCode;
 
         public HttpResponse(int statusCode)
         {

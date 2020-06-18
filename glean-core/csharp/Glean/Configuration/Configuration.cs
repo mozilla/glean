@@ -43,7 +43,7 @@ namespace Mozilla.Glean
             this.serverEndpoint = serverEndpoint;
             this.channel = channel;
             this.maxEvents = maxEvents;
-            this.httpClient = httpClient;
+            this.httpClient = httpClient ?? new HttpClientUploader();
             this.logPings = logPings;
             this.pingTag = pingTag;
         }
