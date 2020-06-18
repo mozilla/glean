@@ -20,10 +20,10 @@ def get_shared_object_filename() -> str:  # pragma: no cover
         return "libglean_ffi.dylib"
     elif sys.platform.startswith("win"):
         return "glean_ffi.dll"
-    raise ValueError("The platform {} is not supported.".format(sys.platform))
+    raise ValueError(f"The platform {sys.platform} is not supported.")
 
 
-_global_weakkeydict = weakref.WeakKeyDictionary()  # type: Any
+_global_weakkeydict: Any = weakref.WeakKeyDictionary()
 
 
 lib = ffi.dlopen(str(Path(__file__).parent / get_shared_object_filename()))

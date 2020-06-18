@@ -59,29 +59,29 @@ class Glean:
     """
 
     # Whether Glean was initialized
-    _initialized = False  # type: bool
+    _initialized: bool = False
 
     # The Configuration that was passed to `initialize`
-    _configuration = None  # type: Configuration
+    _configuration: Configuration
 
     # The directory that Glean stores data in
-    _data_dir = Path()  # type: Path
+    _data_dir: Path = Path()
 
     # Whether Glean "owns" the data directory and should destroy it upon reset.
-    _destroy_data_dir = False  # type: bool
+    _destroy_data_dir: bool = False
 
     # Keep track of this setting before Glean is initialized
-    _upload_enabled = True  # type: bool
+    _upload_enabled: bool = True
 
     # The ping types, so they can be registered prior to Glean initialization,
     # and saved between test runs.
-    _ping_type_queue = set()  # type: Set[PingType]
+    _ping_type_queue: Set["PingType"] = set()
 
     # The application id to send in the ping.
-    _application_id = None  # type: str
+    _application_id: str
 
     # The version of the application sending Glean data.
-    _application_version = None  # type: str
+    _application_version: str
 
     # A thread lock for Glean operations that need to be synchronized
     _thread_lock = threading.RLock()
@@ -338,8 +338,8 @@ class Glean:
                 ping
         """
         if extra is None:
-            keys = []  # type: List[str]
-            values = []  # type: List[str]
+            keys: List[str] = []
+            values: List[str] = []
         else:
             keys, values = zip(*extra.items())  # type: ignore
 

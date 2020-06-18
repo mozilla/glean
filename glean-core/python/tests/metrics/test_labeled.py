@@ -190,7 +190,7 @@ def test_other_label_without_predefined_labels(ping_schema_url):
     )
 
     for i in range(21):
-        labeled_counter_metric["label_{}".format(i)].add(1)
+        labeled_counter_metric["label_{i}".format(i)].add(1)
 
     labeled_counter_metric["label_0"].add(1)
 

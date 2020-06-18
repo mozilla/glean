@@ -77,10 +77,10 @@ class ProcessDispatcher:
 
     # Store the last run process object so we can `join` it when starting
     # another process.
-    _last_process = None  # type: Optional[subprocess.Popen]
+    _last_process: Optional[subprocess.Popen] = None
 
     # Detect if coverage is being collected in the current run
-    _doing_coverage = "coverage" in sys.modules  # type: bool
+    _doing_coverage: bool = "coverage" in sys.modules
 
     @classmethod
     def _wait_for_last_process(cls) -> None:
