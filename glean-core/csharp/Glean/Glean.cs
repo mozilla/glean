@@ -6,6 +6,7 @@ using Mozilla.Glean.FFI;
 using static Mozilla.Glean.GleanMetrics.GleanInternalMetricsOuter;
 using static Mozilla.Glean.GleanPings.GleanInternalPingsOuter;
 using System;
+using Mozilla.Glean.Net;
 using Mozilla.Glean.Private;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -29,6 +30,13 @@ namespace Mozilla.Glean
 
         // Keep track of ping types that have been registered before Glean is initialized.
         private HashSet<PingTypeBase> pingTypeQueue = new HashSet<PingTypeBase>();
+
+        private Configuration configuration;
+
+        // This is the wrapped http uploading mechanism: provides base functionalities
+        // for logging and delegates the actual upload to the implementation in
+        // the `Configuration`.
+        private BaseUploader httpClient;
 
         private Glean()
         {
@@ -84,12 +92,12 @@ namespace Mozilla.Glean
                 return
             }
 
-            this.applicationContext = applicationContext
+            this.applicationContext = applicationContext*/
 
-            this.configuration = configuration
-            this.httpClient = BaseUploader(configuration.httpClient)
-            this.gleanDataDir = File(applicationContext.applicationInfo.dataDir, GLEAN_DATA_DIR)
-                         */
+            this.configuration = configuration;
+            httpClient = new BaseUploader(configuration.httpClient);
+            // this.gleanDataDir = File(applicationContext.applicationInfo.dataDir, GLEAN_DATA_DIR)
+
             SetUploadEnabled(uploadEnabled);
 
             Dispatchers.LaunchConcurrent(() => {
@@ -135,13 +143,12 @@ namespace Mozilla.Glean
                 // Deal with any pending events so we can start recording new ones
                 bool pingSubmitted = LibGleanFFI.glean_on_ready_to_submit_pings() != 0;
 
-                // We need to enqueue the PingUploadWorker in these cases:
+                // We need to enqueue the BaseUploader in these cases:
                 // 1. Pings were submitted through Glean and it is ready to upload those pings;
                 // 2. Upload is disabled, to upload a possible deletion-request ping.
                 if (pingSubmitted || !uploadEnabled)
                 {
-                    //PingUploadWorker.enqueueWorker(applicationContext)
-                    Console.WriteLine("TODO: trigger ping upload now");
+                    httpClient.TriggerUpload(configuration);
                 }
                 /*
                 // Set up information and scheduling for Glean owned pings. Ideally, the "metrics"
@@ -220,7 +227,7 @@ namespace Mozilla.Glean
 
                     // Cancel any pending workers here so that we don't accidentally upload
                     // data after the upload has been disabled.
-                    // TODO: PingUploadWorker.cancel(applicationContext)
+                    httpClient.CancelUploads();
                 }
 
                 if (!originalEnabled && enabled)
@@ -233,7 +240,7 @@ namespace Mozilla.Glean
                 if (originalEnabled && !enabled)
                 {
                     // If uploading is disabled, we need to send the deletion-request ping
-                    // TODO: PingUploadWorker.enqueueWorker(applicationContext)
+                    httpClient.TriggerUpload(configuration);
                 }
                 });
             }
@@ -341,6 +348,84 @@ namespace Mozilla.Glean
         {
             GleanInternalPings.baseline.Submit(BaselineReasonCodes.background);
             GleanInternalPings.events.Submit(EventsReasonCodes.background);
+        }
+
+        /// <summary>
+        /// Collect and submit a ping for eventual upload.
+        /// 
+        /// The ping content is assembled as soon as possible, but upload is not
+        /// guaranteed to happen immediately, as that depends on the upload
+        /// policies.
+        /// 
+        /// If the ping currently contains no content, it will not be assembled and
+        /// queued for sending.
+        /// </summary>
+        /// <param name="ping">Ping to submit.</param>
+        /// <param name="reason">The reason the ping is being submitted.</param>
+        internal void SubmitPing(PingTypeBase ping, string reason = null)
+        {
+            SubmitPingByName(ping.name, reason);
+        }
+
+        /// <summary>
+        /// Collect and submit a ping for eventual upload by name.
+        /// 
+        /// The ping will be looked up in the known instances of `PingType`. If the
+        /// ping isn't known, an error is logged and the ping isn't queued for uploading.
+        /// 
+        /// The ping content is assembled as soon as possible, but upload is not
+        /// guaranteed to happen immediately, as that depends on the upload
+        /// policies.
+        /// 
+        /// If the ping currently contains no content, it will not be assembled and
+        /// queued for sending, unless explicitly specified otherwise in the registry
+        /// file.
+        /// </summary>
+        /// <param name="name">Name of the ping to submit.</param>
+        /// <param name="reason">The reason the ping is being submitted.</param>
+        internal void SubmitPingByName(string name, string reason = null)
+        {
+            Dispatchers.LaunchAPI(() =>
+            {
+                SubmitPingByNameSync(name, reason);
+            });
+        }
+
+        /// <summary>
+        /// Collect and submit a ping (by its name) for eventual upload, synchronously.
+        /// 
+        /// The ping will be looked up in the known instances of `PingType`. If the
+        /// ping isn't known, an error is logged and the ping isn't queued for uploading.
+        /// 
+        /// The ping content is assembled as soon as possible, but upload is not
+        /// guaranteed to happen immediately, as that depends on the upload
+        /// policies.
+        /// 
+        /// If the ping currently contains no content, it will not be assembled and
+        /// queued for sending, unless explicitly specified otherwise in the registry
+        /// file.
+        /// </summary>
+        /// <param name="name">Name of the ping to submit.</param>
+        /// <param name="reason">The reason the ping is being submitted.</param>
+        internal void SubmitPingByNameSync(string name, string reason = null)
+        {
+            if (!IsInitialized())
+            {
+                Console.WriteLine("Glean must be initialized before submitting pings.");
+                return;
+            }
+
+            if (!GetUploadEnabled())
+            {
+                Console.WriteLine("Glean disabled: not submitting any pings.");
+                return;
+            }
+
+            bool hasSubmittedPing = Convert.ToBoolean(LibGleanFFI.glean_submit_ping_by_name(name, reason));
+            if (hasSubmittedPing)
+            {
+                httpClient.TriggerUpload(configuration);
+            }
         }
 
         /// <summary>

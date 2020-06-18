@@ -1008,7 +1008,7 @@ jobs:
           command: dotnet build glean-core/csharp/csharp.sln
       - run:
           name: Test C#
-          command: dotnet test glean-core/csharp/csharp.sln
+          command: dotnet test glean-core/csharp/csharp.sln --blame
 
   ###########################################################################
   # Docs

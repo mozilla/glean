@@ -8,6 +8,63 @@ using System.Text;
 
 namespace Mozilla.Glean.FFI
 {
+    /// <summary>
+    /// Result values of attempted ping uploads encoded for FFI use.
+    /// They are defined in `glean-core/src/upload/result.rs` and re-defined for use in Kotlin here.
+    /// 
+    /// NOTE:
+    /// THEY MUST BE THE SAME ACROSS BOTH FILES!
+    /// </summary>
+    internal enum Constants : int
+    {
+        // A recoverable error.
+        UPLOAD_RESULT_RECOVERABLE = 0x1,
+
+        // An unrecoverable error.
+        UPLOAD_RESULT_UNRECOVERABLE = 0x2,
+
+        // A HTTP response code.
+        UPLOAD_RESULT_HTTP_STATUS = 0x8000
+    }
+
+    /// <summary>
+    /// Rust represents the upload task as an Enum
+    /// and to go through the FFI that gets transformed into a tagged union.
+    /// Each variant is represented as an 8-bit unsigned integer.
+    ///
+    /// This *MUST* have the same order as the variants in `glean-core/ffi/src/upload.rs`.
+    /// </summary>
+    enum UploadTaskTag : int
+    {
+        Upload,
+        Wait,
+        Done
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct FfiUploadTaskBody
+    {
+        public byte tag;
+        public IntPtr documentId;
+        public IntPtr path;
+        public int bodyLen;
+        public IntPtr body;
+        public IntPtr headers;
+    }
+
+    /// <summary>
+    /// Represent an upload task by simulating the union passed through
+    /// the FFI layer.
+    /// </summary>
+    [StructLayout(LayoutKind.Explicit)]
+    internal struct FfiUploadTask
+    {
+        [FieldOffset(0)]
+        public byte tag;
+        [FieldOffset(0), MarshalAs(UnmanagedType.Struct)]
+        public FfiUploadTaskBody body;
+    }
+
     internal static class LibGleanFFI
     {
         private const string SharedGleanLibrary = "glean_ffi";
@@ -46,6 +103,15 @@ namespace Mozilla.Glean.FFI
             }
         }
 
+        public static string GetFromRustString(IntPtr pointer)
+        {
+            int len = 0;
+            while (Marshal.ReadByte(pointer, len) != 0) { ++len; }
+            byte[] buffer = new byte[len];
+            Marshal.Copy(pointer, buffer, 0, buffer.Length);
+            return Encoding.UTF8.GetString(buffer);
+        }
+
         internal class StringAsReturnValue : SafeHandle
         {
             public StringAsReturnValue() : base(IntPtr.Zero, true) { }
@@ -57,11 +123,7 @@ namespace Mozilla.Glean.FFI
 
             public string AsString()
             {
-                int len = 0;
-                while (Marshal.ReadByte(handle, len) != 0) { ++len; }
-                byte[] buffer = new byte[len];
-                Marshal.Copy(handle, buffer, 0, buffer.Length);
-                return Encoding.UTF8.GetString(buffer);
+                return GetFromRustString(handle);
             }
 
             protected override bool ReleaseHandle()
@@ -281,6 +343,14 @@ namespace Mozilla.Glean.FFI
 
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
         internal static extern byte glean_test_has_ping_type(string ping_name);
+
+        // Upload API
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void glean_get_upload_task(ref FfiUploadTask result, bool logPing);
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void glean_process_ping_upload_response(IntPtr task, int status);
 
         // Misc
 
