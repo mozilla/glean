@@ -308,6 +308,55 @@ namespace Mozilla.Glean.FFI
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
         internal static extern byte glean_uuid_test_has_value(UuidMetricTypeHandle metric_id, string storage_name);
 
+        // Datetime
+
+        /// <summary>
+        /// A handle for the datetime metric type, which performs cleanup.
+        /// </summary>
+        internal sealed class DatetimeMetricTypeHandle : BaseGleanHandle
+        {
+            protected override bool ReleaseHandle()
+            {
+                if (!this.IsInvalid)
+                {
+                    glean_destroy_datetime_metric(handle);
+                }
+
+                return true;
+            }
+        }
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern DatetimeMetricTypeHandle glean_new_datetime_metric(
+            string category,
+            string name,
+            string[] send_in_pings,
+            Int32 send_in_pings_len,
+            Int32 lifetime,
+            bool disabled,
+            Int32 time_unit
+        );
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void glean_destroy_datetime_metric(IntPtr handle);
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void glean_datetime_set(DatetimeMetricTypeHandle metric_id, Int32 year,
+            Int32 month, Int32 day, Int32 hour, Int32 minute, Int32 second, long nano, Int32 offset_seconds);
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern byte glean_datetime_test_has_value(DatetimeMetricTypeHandle metric_id, string storage_name);
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern StringAsReturnValue glean_datetime_test_get_value_as_string(DatetimeMetricTypeHandle metric_id, string storage_name);
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern Int32 glean_datetime_test_get_num_recorded_errors(
+             DatetimeMetricTypeHandle metric_id,
+             Int32 error_type,
+             string storage_name
+        );
+
         // Custom pings
 
         /// <summary>
