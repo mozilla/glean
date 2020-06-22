@@ -2,6 +2,8 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v31.1.1...main)
 
+* General
+    * BUGFIX: Correctly format the date and time in the `Date` header. 
 * Python
     * BUGFIX: Additional time is taken at shutdown to make sure pings are sent and telemetry is recorded. ([1646173](https://bugzilla.mozilla.org/show_bug.cgi?id=1646173))
 
