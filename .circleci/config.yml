@@ -175,7 +175,7 @@ commands:
             echo "export WINEDEBUG=-all" >> $BASH_ENV
             wget https://bootstrap.pypa.io/get-pip.py
             $WINPYTHON get-pip.py
-            echo "import site" >> winpython/python37._pth
+            echo "import site" >> winpython/python38._pth
             echo "import sys; sys.path.insert(0, '')" >> winpython/sitecustomize.py
             $WINPYTHON -m pip install -r glean-core/python/requirements_dev.txt --no-warn-script-location
             $WINPYTHON -m pip install glean-core/python/dist/*.whl --no-warn-script-location
@@ -903,7 +903,7 @@ jobs:
       - run:
           name: Setup default Python version
           command: |
-            echo "export PATH=/opt/python/cp37-cp37m/bin:$PATH" >> $BASH_ENV
+            echo "export PATH=/opt/python/cp38-cp38m/bin:$PATH" >> $BASH_ENV
       - run:
           name: Build Python extension
           command: |
