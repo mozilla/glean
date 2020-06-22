@@ -14,7 +14,7 @@ import mozilla.telemetry.glean.Glean
  * For example, invoking debug mode in the Glean sample application
  * can be done via adb using the following command:
  *
- * adb shell am start -n org.mozilla.samples.glean/mozilla.telemetry.glean.debug.GleanDebugActivity
+ * adb shell am start -n org.mozilla.samples.gleancore/mozilla.telemetry.glean.debug.GleanDebugActivity
  *
  * See the adb developer docs for more info:
  * https://developer.android.com/studio/command-line/adb#am
