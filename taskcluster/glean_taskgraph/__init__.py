@@ -37,7 +37,7 @@ def get_decision_parameters(graph_config, parameters):
                              "'GLEAN_HEAD_TAG' is not defined")
         parameters["head_tag"] = head_tag.decode("utf-8")
     elif parameters["tasks_for"] == "github-pull-request":
-        pr_title = os.environ.get("GLEAN_PULL_REQUEST_TITLE", "")
+        pr_title = os.environ.get("GLEAN_PULL_REQUEST_TITLE", "").decode("UTF-8")
         if "[ci full]" in pr_title:
             parameters["target_tasks_method"] = "pr-full"
         elif "[ci skip]" in pr_title:

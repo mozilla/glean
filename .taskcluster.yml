@@ -14,7 +14,7 @@ tasks:
           trustDomain: glean
       in:
           $let:
-              # Github events have this stuff in different places...
+              # Github events have this stuff in different places
               ownerEmail:
                   $if: 'tasks_for in ["cron", "action"]'
                   then: '${tasks_for}@noreply.mozilla.org'
