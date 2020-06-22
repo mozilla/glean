@@ -78,9 +78,9 @@ namespace Mozilla.Glean.Net
                     headerList.Add((h.Key, h.Value));
                 }
             }
-            catch (JsonException)
+            catch (JsonException e)
             {
-                Log.Error($"Error while parsing headers for ping {documentId}");
+                Log.Error(e, $"Error while parsing headers for ping {documentId}");
             }
 
             if (config.pingTag != null)
