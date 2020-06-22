@@ -338,9 +338,9 @@ namespace Mozilla.Glean
             GleanInternalMetrics.architecture.SetSync("test");
             Log.Information("Check has value");
             bool hasValue = GleanInternalMetrics.architecture.TestHasValue();
-            Log.Information("Has value {0} ", hasValue);
+            Log.Information($"Has value {hasValue}");
             string storedvalue = GleanInternalMetrics.architecture.TestGetValue();
-            Log.Information("InitializeCoreMetrics - has value {0} and that's {1}", hasValue, storedvalue);
+            Log.Information($"InitializeCoreMetrics - has value {hasValue} and that's {storedvalue}");
         }
 
         /// <summary>
