@@ -211,6 +211,7 @@ def test_single_threaded_in_multiprocessing_subprocess():
     p.start()
     p.join()
 
+    # This must match the definition in _subprocess() above.
     string_metric = metrics.StringMetricType(
         disabled=False,
         category="telemetry",
