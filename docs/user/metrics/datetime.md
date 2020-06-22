@@ -4,7 +4,7 @@ Datetimes are used to record an absolute date and time, for example the date and
 
 The device's offset from UTC is recorded and sent with the Datetime value in the ping.
 
-To measure the distribution of multiple timespans, see [Timing Distributions](timing_distribution.md). To record absolute times, see [Datetimes](datetime.md).
+To record a single elapsed time, see [Timespan](timespan.md). To measure the distribution of multiple timespans, see [Timing Distributions](timing_distribution.md).
 
 ## Configuration
 
