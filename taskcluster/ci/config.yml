@@ -25,11 +25,6 @@ workers:
       implementation: docker-worker
       os: linux
       worker-type: 'images'
-    dep-signing:
-      provisioner: scriptworker-k8s
-      implementation: scriptworker-signing
-      os: scriptworker
-      worker-type: glean-t-signing
     signing:
       provisioner: scriptworker-k8s
       implementation: scriptworker-signing
