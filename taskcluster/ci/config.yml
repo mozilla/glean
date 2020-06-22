@@ -33,6 +33,11 @@ workers:
         by-level:
           "3": glean-3-signing
           default: glean-t-signing
+    beetmover:
+      provisioner: scriptworker-k8s
+      implementation: scriptworker-beetmover
+      os: scriptworker
+      worker-type: 'glean-{level}-beetmover'
 
 scriptworker:
   scope-prefix: project:mozilla:glean:releng
