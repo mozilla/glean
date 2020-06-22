@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <!--
+      The following properties were determined by following the solution outlined here:
+      https://github.com/Microsoft/msbuild/issues/539#issuecomment-289930591
+    -->
+    <IsWindows Condition="'$(OS)' == 'Windows_NT'">true</IsWindows>
+    <IsOSX Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">true</IsOSX>
+    <IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../glean-core/csharp/Glean/Glean.csproj" />
+
+    <!--
+      Unfortunately, the sample won't be able to find the native dlls, even though they
+      live within the runtimes/<rid>/native directory. To make it possible to run
+      the sample, manually copy the Glean FFI dll to $(OutDir).
+    -->
+    <Content Condition="$(IsWindows) == true" Include="../../target/$(Configuration.ToLowerInvariant())/glean_ffi.dll" CopyToOutputDirectory="Always" />
+    <Content Condition="$(IsLinux) == true" Include="../../target/$(Configuration.ToLowerInvariant())/libglean_ffi.so" CopyToOutputDirectory="Always" />
+    <Content Condition="$(IsOSX) == true" Include="../../target/$(Configuration.ToLowerInvariant())/libglean_ffi.dylib" CopyToOutputDirectory="Always" />
+
+  </ItemGroup>
+
+</Project>
