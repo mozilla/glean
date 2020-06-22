@@ -156,6 +156,7 @@ setuptools
 stateful
 struct
 subprocess
+subprocesses
 swiftlint
 tcsh
 timespan
