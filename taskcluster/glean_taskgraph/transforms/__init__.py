@@ -4,9 +4,11 @@
 
 from __future__ import absolute_import, print_function, unicode_literals
 
+from ..build_config import EXTENSIONS
+
 
 def _extensions(type, secondary_extensions):
-    primary_extensions = ('.pom', '.aar', '-sources.jar') if type == "aar" else ('.pom', '.jar')
+    primary_extensions = EXTENSIONS[type]
     return [package_ext + secondary_ext for package_ext in primary_extensions for secondary_ext in secondary_extensions]
 
 
@@ -18,7 +20,7 @@ def publications_to_artifact_paths(name, version, publications, secondary_extens
     paths = []
     for publication in publications:
         for extension in _extensions(publication["type"], secondary_extensions):
-            artifact_filename = _artifact_filename(name, version, extension)
+            artifact_filename = _artifact_filename(publication['name'], version, extension)
             paths.append("public/build/{}".format(artifact_filename))
 
     return paths
@@ -28,10 +30,10 @@ def publications_to_artifact_map_paths(name, version, publications, secondary_ex
     build_map_paths = {}
     for publication in publications:
         for extension in _extensions(publication["type"], secondary_extensions):
-            artifact_filename = _artifact_filename(name, version, extension)
+            artifact_filename = _artifact_filename(publication['name'], version, extension)
             build_map_paths["public/build/{}".format(artifact_filename)] = {
                 "checksums_path": "",  # TODO beetmover marks this as required, but it's not needed
-                "destinations": ["maven2/org/mozilla/telemetry/{}/{}/{}".format(name, version, artifact_filename)]
+                "destinations": ["maven2/org/mozilla/telemetry/{}/{}/{}".format(publication['name'], version, artifact_filename)]
             }
 
     return build_map_paths

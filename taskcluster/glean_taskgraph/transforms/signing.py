@@ -5,6 +5,7 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 from taskgraph.transforms.base import TransformSequence
+from taskgraph.util.schema import resolve_keyed_by
 
 from . import publications_to_artifact_paths
 from ..build_config import get_version
@@ -35,7 +36,10 @@ def build_upstream_artifacts(config, tasks):
 @transforms.add
 def signing_task(config, tasks):
     for task in tasks:
-        task["worker"]["signing-type"] = 'dep-signing' if config.params["level"] != u'3' else 'release-signing'
+        task["description"] = task["description"].format(task["attributes"]["buildconfig"]["name"])
+        resolve_keyed_by(task, "worker.cert", item_name=task["name"], **{
+            "level": config.params["level"],
+        })
         yield task
 
 
