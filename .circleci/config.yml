@@ -131,10 +131,14 @@ commands:
           name: Build Windows wheel
           command: |
             cd glean-core/python
+<<<<<<< HEAD
             .venv3.7/bin/python3 setup.py bdist_wheel
           environment:
             GLEAN_PYTHON_MINGW_X86_64_BUILD: 1
             GLEAN_BUILD_VARIANT: release
+=======
+            GLEAN_PYTHON_MINGW_X86_64_BUILD=1 .venv3.8/bin/python3 setup.py bdist_wheel
+>>>>>>> python 3.8 upgrade
 
   build-windows-i686-wheel:
     steps:
@@ -154,10 +158,14 @@ commands:
           name: Build Windows wheel
           command: |
             cd glean-core/python
+<<<<<<< HEAD
              .venv3.7/bin/python3 setup.py bdist_wheel
           environment:
             GLEAN_PYTHON_MINGW_I686_BUILD: 1
             GLEAN_BUILD_VARIANT: release
+=======
+            GLEAN_PYTHON_MINGW_I686_BUILD=1 .venv3.8/bin/python3 setup.py bdist_wheel
+>>>>>>> python 3.8 upgrade
 
   install-python-windows-deps:
     steps:
@@ -260,7 +268,7 @@ jobs:
 
   Lint YAML with yamllint:
     docker:
-      - image: circleci/python:3.7.5
+      - image: circleci/python:3.8.2
     steps:
       - checkout
       - run: sudo pip install yamllint
@@ -767,7 +775,7 @@ jobs:
 
   Lint Python:
     docker:
-      - image: circleci/python:3.7.5
+      - image: circleci/python:3.8.2
     steps:
       - checkout
       - run:
@@ -824,7 +832,7 @@ jobs:
 
   Python Windows x86_64 tests:
     docker:
-      - image: circleci/python:3.7.6
+      - image: circleci/python:3.8.2
     steps:
       - checkout
       - build-windows-x86_64-wheel
@@ -835,9 +843,9 @@ jobs:
       - run:
           name: Install Python for Windows
           command: |
-            wget https://www.python.org/ftp/python/3.7.7/python-3.7.7-embed-amd64.zip
+            wget https://www.python.org/ftp/python/3.8.2/python-3.8.2-embed-amd64.zip
             mkdir winpython
-            unzip python-3.7.7-embed-amd64.zip -d winpython
+            unzip python-3.8.2-embed-amd64.zip -d winpython
             echo "export WINPYTHON=\"wine64 winpython/python.exe\"" >> $BASH_ENV
       - install-python-windows-deps
       - run:
@@ -847,7 +855,7 @@ jobs:
 
   Python Windows i686 tests:
     docker:
-      - image: circleci/python:3.7.6
+      - image: circleci/python:3.8.2
     steps:
       - checkout
       - build-windows-i686-wheel
@@ -860,9 +868,9 @@ jobs:
       - run:
           name: Install Python for Windows
           command: |
-            wget https://www.python.org/ftp/python/3.7.7/python-3.7.7-embed-win32.zip
+            wget https://www.python.org/ftp/python/3.8.2/python-3.8.2-embed-win32.zip
             mkdir winpython
-            unzip python-3.7.7-embed-win32.zip -d winpython
+            unzip python-3.8.2-embed-win32.zip -d winpython
             echo "export WINPYTHON=\"wine winpython/python.exe\"" >> $BASH_ENV
       - install-python-windows-deps
       - run:
@@ -872,14 +880,14 @@ jobs:
 
   Generate Python documentation:
     docker:
-      - image: circleci/python:3.7.6
+      - image: circleci/python:3.8.2
     steps:
       - checkout
       - attach_workspace:
           at: glean-core/python/
       - run:
           name: Generate Python docs
-          command: glean-core/python/.venv3.7/bin/python3 -m pdoc --html glean --force -o build/docs/python
+          command: glean-core/python/.venv3.8/bin/python3 -m pdoc --html glean --force -o build/docs/python
       - persist_to_workspace:
           root: build/
           paths: docs/python
@@ -906,13 +914,17 @@ jobs:
           name: Build Linux wheel
           command: |
             cd glean-core/python
-            .venv3.7/bin/python3 setup.py bdist_wheel
-            .venv3.7/bin/python3 -m auditwheel repair dist/*.whl
+            .venv3.8/bin/python3 setup.py bdist_wheel
+            .venv3.8/bin/python3 -m auditwheel repair dist/*.whl
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
+<<<<<<< HEAD
             .venv3.7/bin/python3 -m twine upload wheelhouse/*
           environment:
             GLEAN_BUILD_VARIANT: release
+=======
+            .venv3.8/bin/python3 -m twine upload wheelhouse/*
+>>>>>>> python 3.8 upgrade
       - install-ghr-linux
       - run:
           name: Publish to Github
@@ -937,12 +949,16 @@ jobs:
           name: Build macOS wheel
           command: |
             cd glean-core/python
-            .venv3.7/bin/python3 setup.py bdist_wheel
+            .venv3.8/bin/python3 setup.py bdist_wheel
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
+<<<<<<< HEAD
             .venv3.7/bin/python3 -m twine upload dist/*
           environment:
             GLEAN_BUILD_VARIANT: release
+=======
+            .venv3.8/bin/python3 -m twine upload dist/*
+>>>>>>> python 3.8 upgrade
       - install-ghr-darwin
       - run:
           name: Publish to Github
@@ -952,7 +968,7 @@ jobs:
 
   pypi-windows-x86_64-release:
     docker:
-      - image: circleci/python:3.7.6
+      - image: circleci/python:3.8.2
     steps:
       - checkout
       - build-windows-x86_64-wheel
@@ -962,7 +978,7 @@ jobs:
             cd glean-core/python
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
-            .venv3.7/bin/python3 -m twine upload dist/*
+            .venv3.8/bin/python3 -m twine upload dist/*
       - install-ghr-linux
       - run:
           name: Publish to Github
@@ -972,7 +988,7 @@ jobs:
 
   pypi-windows-i686-release:
     docker:
-      - image: circleci/python:3.7.6
+      - image: circleci/python:3.8.2
     steps:
       - checkout
       - build-windows-i686-wheel
@@ -982,7 +998,7 @@ jobs:
             cd glean-core/python
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
-            .venv3.7/bin/python3 -m twine upload dist/*
+            .venv3.8/bin/python3 -m twine upload dist/*
       - install-ghr-linux
       - run:
           name: Publish to Github
