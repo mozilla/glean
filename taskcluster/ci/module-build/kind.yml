@@ -19,6 +19,7 @@ job-defaults:
     - project:releng:services/tooltool/api/download/internal
   worker-type: b-linux
   worker:
+    chain-of-trust: true
     docker-image: { in-tree: linux }
     max-run-time: 1800
   run:

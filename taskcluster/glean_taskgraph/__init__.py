@@ -16,7 +16,11 @@ def register(graph_config):
     Import all modules that are siblings of this one, triggering decorators in
     the process.
     """
-    _import_modules(["job", "target_tasks", "worker_types"])
+    _import_modules([
+        "job",
+        "target_tasks",
+        "worker_types"
+    ])
 
 
 def _import_modules(modules):
@@ -25,8 +29,15 @@ def _import_modules(modules):
 
 
 def get_decision_parameters(graph_config, parameters):
-    if parameters["tasks_for"] == "github-pull-request":
-        pr_title = os.environ.get("GLEAN_PULL_REQUEST_TITLE", "")
+    parameters["head_tag"] = ''
+    if parameters["tasks_for"] == "github-release":
+        head_tag = os.environ.get("GLEAN_HEAD_TAG")
+        if head_tag is None:
+            raise ValueError("Cannot run github-release if the environment variable "
+                             "'GLEAN_HEAD_TAG' is not defined")
+        parameters["head_tag"] = head_tag.decode("utf-8")
+    elif parameters["tasks_for"] == "github-pull-request":
+        pr_title = os.environ.get("GLEAN_PULL_REQUEST_TITLE", "").decode("UTF-8")
         if "[ci full]" in pr_title:
             parameters["target_tasks_method"] = "pr-full"
         elif "[ci skip]" in pr_title:
