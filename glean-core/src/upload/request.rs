@@ -88,11 +88,25 @@ impl PingRequest {
         gzipper.finish().ok()
     }
 
+    /// Creates a formatted date string that can be used with Date headers.
+    fn create_date_header_value(current_time: DateTime<Utc>) -> String {
+        // Date headers are required to be in the following format:
+        //
+        // <day-name>, <day> <month> <year> <hour>:<minute>:<second> GMT
+        //
+        // as documented here:
+        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Date
+        // Unfortunately we can't use `current_time.to_rfc2822()` as it
+        // formats as "Mon, 22 Jun 2020 10:40:34 +0000", with an ending
+        // "+0000" instead of "GMT". That's why we need to go with manual
+        // formatting.
+        current_time.format("%a, %d %b %Y %T GMT").to_string()
+    }
+
     /// Creates the default request headers.
     fn create_request_headers(is_gzipped: bool, body_len: usize) -> HashMap<&'static str, String> {
         let mut headers = HashMap::new();
-        let date: DateTime<Utc> = Utc::now();
-        headers.insert("Date", date.to_string());
+        headers.insert("Date", Self::create_date_header_value(Utc::now()));
         headers.insert("X-Client-Type", "Glean".to_string());
         headers.insert(
             "Content-Type",
@@ -104,5 +118,18 @@ impl PingRequest {
         }
         headers.insert("X-Client-Version", crate::GLEAN_VERSION.to_string());
         headers
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use chrono::offset::TimeZone;
+
+    #[test]
+    fn test_date_header_resolution() {
+        let date: DateTime<Utc> = Utc.ymd(2018, 2, 25).and_hms(11, 10, 37);
+        let test_value = PingRequest::create_date_header_value(date);
+        assert_eq!("Sun, 25 Feb 2018 11:10:37 GMT", test_value);
     }
 }
