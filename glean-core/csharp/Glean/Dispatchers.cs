@@ -116,9 +116,9 @@ namespace Mozilla.Glean
                         {
                             action.Invoke();
                         }
-                        catch (Exception)
+                        catch (Exception e)
                         {
-                            Log.Error("Exception thrown by queued initial task and swallowed.");
+                            Log.Error(e, "Exception thrown by queued initial task and swallowed.");
                             
                         }
                     });

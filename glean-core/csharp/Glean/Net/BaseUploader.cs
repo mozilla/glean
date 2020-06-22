@@ -80,7 +80,7 @@ namespace Mozilla.Glean.Net
             }
             catch (JsonException)
             {
-                Log.Error("Error while parsing headers for ping {0}", documentId);
+                Log.Error($"Error while parsing headers for ping {documentId}");
             }
 
             if (config.pingTag != null)
