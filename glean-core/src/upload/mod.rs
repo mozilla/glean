@@ -104,7 +104,7 @@ impl RateLimiter {
     /// The counter should reset if
     ///
     /// 1. It has never started;
-    /// 2. It has been started more than one minute ago;
+    /// 2. It has been started more than the interval time ago;
     /// 3. Something goes wrong while trying to calculate the elapsed time since the last reset.
     fn should_reset(&self) -> bool {
         if self.started.is_none() {
@@ -219,9 +219,12 @@ impl PingUploadManager {
         self.processed_pending_pings.load(Ordering::SeqCst)
     }
 
-    /// Adds rate limiting capability to this upload manager.
+    /// Adds rate limiting capability to this upload manager. The rate limiter
+    /// will limit the amount of calls to `get_upload_task` per interval.
     ///
-    /// The rate limiter will limit the amount of calls to `get_upload_task` per interval.
+    /// Setting will restart count and timer, in case there was a previous rate limiter set
+    /// (e.g. if we have reached the current limit and call this function, we start counting again
+    /// and the caller is allowed to asks for tasks).
     ///
     /// ## Arguments
     ///
