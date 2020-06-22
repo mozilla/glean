@@ -54,7 +54,7 @@ The Glean SDK provides default pings and allows for custom ping, see [Glean Ping
 
 ## Submission
 
-"To submit" means to collect & to en-queue a ping for uploading.
+"To submit" means to collect & to enqueue a ping for uploading.
 
 The Glean SDK stores locally all the metrics set by it or by its clients.
 Each ping has its own schedule to gather all its locally saved metrics and create a JSON payload with them. This is called "collection".
