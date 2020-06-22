@@ -29,7 +29,7 @@ def _import_modules(modules):
 
 
 def get_decision_parameters(graph_config, parameters):
-    parameters["head_tag"] = None
+    parameters["head_tag"] = ''
     if parameters["tasks_for"] == "github-release":
         head_tag = os.environ.get("GLEAN_HEAD_TAG")
         if head_tag is None:
