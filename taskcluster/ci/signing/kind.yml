@@ -26,3 +26,5 @@ job-template:
           release-signing
         default:
           dep-signing
+  routes:
+    - notify.email.glean-team@mozilla.com.on-failed

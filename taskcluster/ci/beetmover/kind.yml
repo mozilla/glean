@@ -28,3 +28,5 @@ job-template:
           maven-production
         default:
           maven-staging
+  routes:
+    - notify.email.glean-team@mozilla.com.on-failed
