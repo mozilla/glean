@@ -4,6 +4,8 @@
     * Add rate limiting capabilities to the upload manager. ([1543612](https://bugzilla.mozilla.org/show_bug.cgi?id=1543612))
 * Android
     * BUGFIX: baseline pings with reason "dirty startup" are no longer sent if Glean did not full initialize in the previous run.
+* Python
+    * Support for Python 3.5 was dropped.
 
 [Full changelog](https://github.com/mozilla/glean/compare/v31.1.2...main)
 

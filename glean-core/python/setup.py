@@ -25,8 +25,8 @@ else:
 if mingw_arch is not None:
     platform = "windows"
 
-if sys.version_info < (3, 5):
-    print("glean requires at least Python 3.5", file=sys.stderr)
+if sys.version_info < (3, 6):
+    print("glean requires at least Python 3.6", file=sys.stderr)
     sys.exit(1)
 
 from pathlib import Path  # noqa
@@ -71,7 +71,7 @@ elif platform.startswith("win"):
     # if running in a standard Python environment. Account for both.
     shared_object = "glean_ffi.dll"
 else:
-    raise ValueError("The platform {} is not supported.".format(sys.platform))
+    raise ValueError(f"The platform {sys.platform} is not supported.")
 
 
 shutil.copyfile("../metrics.yaml", "glean/metrics.yaml")
@@ -129,7 +129,6 @@ setup(
         "Intended Audience :: Developers",
         "Natural Language :: English",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",

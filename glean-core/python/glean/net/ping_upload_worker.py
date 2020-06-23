@@ -92,7 +92,7 @@ def _parse_ping_headers(
     Returns:
         headers (list of (str, str)): The headers to send.
     """
-    headers = []  # type: List[Tuple[str, str]]
+    headers: List[Tuple[str, str]] = []
     try:
         headers = list(json.loads(headers_as_json).items())
     except json.decoder.JSONDecodeError:

@@ -21,8 +21,6 @@ $(GLEAN_PYENV)/bin/python3:
 		$(GLEAN_PYENV)/bin/requirements-builder --level=min glean-core/python/setup.py > min_requirements.txt; \
 		$(GLEAN_PYENV)/bin/pip install -r min_requirements.txt; \
 	fi"
-	# black isn't installable on Python 3.5, but we can do without it
-	$(GLEAN_PYENV)/bin/pip install black || true
 
 # All builds
 
