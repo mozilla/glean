@@ -19,7 +19,7 @@ sequenceDiagram
     participant Server
 
     Glean wrapper->>Glean core: get_upload_task()
-    Glean core->>Glean wrapper: Task::Upload(task)
+    Glean core->>Glean wrapper: Task::Upload(PingRequest)
     Glean wrapper-->>Server: POST /submit/{task.id}
     Server-->>Glean wrapper: 200 OK
     Glean wrapper->>Glean core: upload_response(200)
@@ -27,9 +27,9 @@ sequenceDiagram
     Glean core->>Glean wrapper: Task::Done
 ```
 
-Glean core will take care of file management, cleanup, rescheduling and throttling[^1].
+Glean core will take care of file management, cleanup, rescheduling and rate limiting[^1].
 
-> [^1] Note: At this point throttling is not implemented. Follow [Bug 1543612](https://bugzilla.mozilla.org/show_bug.cgi?id=1543612) for updates.
+> [^1] Rate limiting is achieved by limiting the amount of times a language binding is allowed to get a `Task::Upload(PingRequest)` from `get_upload_task` in a given time interval. Currently, the default limit is for a maximum of 10 upload tasks every 60 seconds and there are no exposed methods that allow changing this default (follow [Bug 1647630](https://bugzilla.mozilla.org/show_bug.cgi?id=1647630) for updates). If the caller has reached the maximum tasks for the current interval, they will get a `Task::Wait` regardless if there are other `Task::Upload(PingRequest)`s queued.
 
 ## Available APIs
 

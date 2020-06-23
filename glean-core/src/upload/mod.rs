@@ -9,16 +9,12 @@
 //! * Exposes `process_ping_upload_response` API to check the HTTP response from the ping upload
 //!   and either delete the corresponding ping from disk or re-enqueue it for sending.
 
-// !IMPORTANT!
-// Remove the next line when this module's functionality is in the Glean object.
-// This is here just to not have lint error for now.
-#![allow(dead_code)]
-
 use std::collections::VecDeque;
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex, RwLock, RwLockWriteGuard};
 use std::thread;
+use std::time::{Duration, Instant};
 
 use once_cell::sync::OnceCell;
 use serde_json::Value as JsonValue;
@@ -69,6 +65,77 @@ pub fn setup_upload_manager(upload_manager: PingUploadManager) -> Result<()> {
     Ok(())
 }
 
+#[derive(Debug)]
+struct RateLimiter {
+    /// The instant the current interval has started.
+    started: Option<Instant>,
+    /// The count for the current interval.
+    count: u32,
+    /// The duration of each interval.
+    interval: Duration,
+    /// The maximum count per interval.
+    max_count: u32,
+}
+
+/// An enum to represent the current state of the RateLimiter.
+#[derive(PartialEq)]
+enum RateLimiterState {
+    /// The RateLimiter has not reached the maximum count and is still incrementing.
+    Incrementing,
+    /// The RateLimiter has reached the maximum count for the  current interval.
+    Throttled,
+}
+
+impl RateLimiter {
+    pub fn new(interval: Duration, max_count: u32) -> Self {
+        Self {
+            started: None,
+            count: 0,
+            interval,
+            max_count,
+        }
+    }
+
+    fn reset(&mut self) {
+        self.started = Some(Instant::now());
+        self.count = 0;
+    }
+
+    /// The counter should reset if
+    ///
+    /// 1. It has never started;
+    /// 2. It has been started more than the interval time ago;
+    /// 3. Something goes wrong while trying to calculate the elapsed time since the last reset.
+    fn should_reset(&self) -> bool {
+        if self.started.is_none() {
+            return true;
+        }
+
+        // Safe unwrap, we already stated that `self.started` is not `None` above.
+        let elapsed = self.started.unwrap().elapsed();
+        if elapsed > self.interval {
+            return true;
+        }
+
+        false
+    }
+
+    /// Tries to increment the internal counter
+    /// and returns the current state of the RateLimiter.
+    pub fn get_state(&mut self) -> RateLimiterState {
+        if self.should_reset() {
+            self.reset();
+        }
+
+        if self.count == self.max_count {
+            return RateLimiterState::Throttled;
+        }
+
+        self.count += 1;
+        RateLimiterState::Incrementing
+    }
+}
+
 /// When asking for the next ping request to upload,
 /// the requester may receive one out of three possible tasks.
 ///
@@ -94,6 +161,11 @@ pub struct PingUploadManager {
     directory_manager: PingDirectoryManager,
     /// A flag signaling if we are done processing the pending pings directories.
     processed_pending_pings: Arc<AtomicBool>,
+    /// A ping counter to help rate limit the ping uploads.
+    ///
+    /// To keep resource usage in check,
+    /// we may want to limit the amount of pings sent in a given interval.
+    rate_limiter: Option<RwLock<RateLimiter>>,
 }
 
 impl PingUploadManager {
@@ -139,11 +211,30 @@ impl PingUploadManager {
             queue,
             processed_pending_pings,
             directory_manager,
+            rate_limiter: None,
         }
     }
 
     fn has_processed_pings_dir(&self) -> bool {
         self.processed_pending_pings.load(Ordering::SeqCst)
+    }
+
+    /// Adds rate limiting capability to this upload manager. The rate limiter
+    /// will limit the amount of calls to `get_upload_task` per interval.
+    ///
+    /// Setting will restart count and timer, in case there was a previous rate limiter set
+    /// (e.g. if we have reached the current limit and call this function, we start counting again
+    /// and the caller is allowed to asks for tasks).
+    ///
+    /// ## Arguments
+    ///
+    /// * `interval` - the amount of seconds in each rate limiting window.
+    /// * `max_tasks` - the maximum amount of task requests allowed per interval.
+    pub fn set_rate_limiter(&mut self, interval: u64, max_tasks: u32) {
+        self.rate_limiter = Some(RwLock::new(RateLimiter::new(
+            Duration::from_secs(interval),
+            max_tasks,
+        )));
     }
 
     /// Creates a `PingRequest` and adds it to the queue.
@@ -195,8 +286,20 @@ impl PingUploadManager {
             .queue
             .write()
             .expect("Can't write to pending pings queue.");
-        match queue.pop_front() {
+        match queue.front() {
             Some(request) => {
+                if let Some(rate_limiter) = &self.rate_limiter {
+                    let mut rate_limiter = rate_limiter
+                        .write()
+                        .expect("Can't write to the rate limiter.");
+                    if rate_limiter.get_state() == RateLimiterState::Throttled {
+                        log::info!(
+                            "Tried getting an upload task, but we are throttled at the moment."
+                        );
+                        return PingUploadTask::Wait;
+                    }
+                }
+
                 log::info!(
                     "New upload task with id {} (path: {})",
                     request.document_id,
@@ -211,7 +314,7 @@ impl PingUploadManager {
                     }
                 }
 
-                PingUploadTask::Upload(request)
+                PingUploadTask::Upload(queue.pop_front().unwrap())
             }
             None => {
                 log::info!("No more pings to upload! You are done.");
@@ -438,6 +541,50 @@ mod test {
 
         // Verify that after all requests are returned, none are left
         assert_eq!(upload_manager.get_upload_task(false), PingUploadTask::Done);
+    }
+
+    #[test]
+    fn test_limits_the_number_of_pings_when_there_is_rate_limiting() {
+        // Create a new upload_manager
+        let dir = tempfile::tempdir().unwrap();
+        let mut upload_manager = PingUploadManager::new(dir.path(), false);
+
+        // Add a rate limiter to the upload mangager with max of 10 pings every 3 seconds.
+        let secs_per_interval = 3;
+        let max_pings_per_interval = 10;
+        upload_manager.set_rate_limiter(secs_per_interval, 10);
+
+        // Wait for processing of pending pings directory to finish.
+        while upload_manager.get_upload_task(false) == PingUploadTask::Wait {
+            thread::sleep(Duration::from_millis(10));
+        }
+
+        // Enqueue a ping multiple times
+        for _ in 0..max_pings_per_interval {
+            upload_manager.enqueue_ping(DOCUMENT_ID, PATH, json!({}));
+        }
+
+        // Verify a request is returned for each submitted ping
+        for _ in 0..max_pings_per_interval {
+            match upload_manager.get_upload_task(false) {
+                PingUploadTask::Upload(_) => {}
+                _ => panic!("Expected upload manager to return the next request!"),
+            }
+        }
+
+        // Enqueue just one more ping.
+        // We should still be within the default rate limit time.
+        upload_manager.enqueue_ping(DOCUMENT_ID, PATH, json!({}));
+
+        // Verify that we are indeed told to wait because we are at capacity
+        assert_eq!(PingUploadTask::Wait, upload_manager.get_upload_task(false));
+
+        thread::sleep(Duration::from_secs(secs_per_interval));
+
+        match upload_manager.get_upload_task(false) {
+            PingUploadTask::Upload(_) => {}
+            _ => panic!("Expected upload manager to return the next request!"),
+        }
     }
 
     #[test]

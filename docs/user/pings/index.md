@@ -79,6 +79,9 @@ See [Using the Experiments API](../experiments-api.md) on how to record experime
 ## Ping submission
 
 The pings that the Glean SDK generates are submitted to the Mozilla servers at specific paths, in order to provide additional metadata without the need to unpack the ping payload.
+
+> **Note**: To keep resource usage in check, the Glean SDK allows only up to 10 ping submissions every 60 seconds. There are no exposed methods to change these rate limiting defaults yet, follow [Bug 1647630](https://bugzilla.mozilla.org/show_bug.cgi?id=1647630) for updates.
+
 A typical submission URL looks like
 
   `"<server-address>/submit/<application-id>/<doc-type>/<glean-schema-version>/<document-id>"`
@@ -101,6 +104,7 @@ A pre-defined set of headers is additionally sent along with the submitted ping:
 | `Date` | e.g. `Mon, 23 Jan 2019 10:10:10 GMT+00:00` | Submission date/time in GMT/UTC+0 offset |
 | `X-Client-Type` | `Glean` | Custom header to support handling of Glean pings in the legacy pipeline |
 | `X-Client-Version` | e.g. `0.40.0` | The Glean SDK version, sent as a custom header to support handling of Glean pings in the legacy pipeline |
+
 
 ## Defining foreground and background state
 
