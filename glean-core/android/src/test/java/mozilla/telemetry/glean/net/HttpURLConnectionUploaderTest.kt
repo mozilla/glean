@@ -35,9 +35,7 @@ import java.net.URI
 class HttpURLConnectionUploaderTest {
     private val testPath: String = "/some/random/path/not/important"
     private val testPing: String = "{ 'ping': 'test' }"
-    private val testDefaultConfig = Configuration().copy(
-        userAgent = "Glean/Test 25.0.2"
-    )
+    private val testDefaultConfig = Configuration().copy()
 
     @Test
     fun `connection timeouts must be properly set`() {
@@ -114,7 +112,6 @@ class HttpURLConnectionUploaderTest {
         server.enqueue(MockResponse().setBody("OK"))
 
         val testConfig = testDefaultConfig.copy(
-            userAgent = "Telemetry/42.23",
             serverEndpoint = "http://" + server.hostName + ":" + server.port
         )
 
@@ -143,7 +140,6 @@ class HttpURLConnectionUploaderTest {
         server.enqueue(MockResponse().setBody("OK"))
 
         val testConfig = testDefaultConfig.copy(
-            userAgent = "Telemetry/42.23",
             serverEndpoint = "http://localhost:" + server.port
         )
 

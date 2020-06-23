@@ -4,7 +4,6 @@
 
 package mozilla.telemetry.glean.config
 
-import mozilla.telemetry.glean.BuildConfig
 import mozilla.telemetry.glean.rust.toByte
 
 import com.sun.jna.Structure
@@ -52,7 +51,6 @@ internal class FfiConfiguration(
  *
  * @property serverEndpoint the server pings are sent to. Please note that this is
  *           is only meant to be changed for tests.
- * @property userAgent the user agent used when sending pings, only to be used internally.
  * @property maxEvents the number of events to store before the events ping is sent
  * @property logPings whether to log ping contents to the console. This is only meant to be used
  *           internally by the `GleanDebugActivity`.
@@ -65,7 +63,6 @@ internal class FfiConfiguration(
 data class Configuration internal constructor(
     val serverEndpoint: String,
     val channel: String? = null,
-    val userAgent: String = DEFAULT_USER_AGENT,
     val maxEvents: Int? = null,
     val logPings: Boolean = DEFAULT_LOG_PINGS,
     // NOTE: since only simple object or strings can be made `const val`s, if the
@@ -97,7 +94,6 @@ data class Configuration internal constructor(
         httpClient: PingUploader = HttpURLConnectionUploader()
     ) : this (
         serverEndpoint = serverEndpoint,
-        userAgent = DEFAULT_USER_AGENT,
         maxEvents = maxEvents,
         logPings = DEFAULT_LOG_PINGS,
         httpClient = httpClient,
@@ -110,10 +106,6 @@ data class Configuration internal constructor(
          * The default server pings are sent to.
          */
         const val DEFAULT_TELEMETRY_ENDPOINT = "https://incoming.telemetry.mozilla.org"
-        /**
-         * The default user agent used when sending pings.
-         */
-        const val DEFAULT_USER_AGENT = "Glean/${BuildConfig.LIBRARY_VERSION} (Android)"
         /**
          * Whether to log pings by default.
          */

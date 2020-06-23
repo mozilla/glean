@@ -18,9 +18,7 @@ class BaseUploaderTest {
     private val testPath: String = "/some/random/path/not/important"
     private val testPing: String = "{ 'ping': 'test' }"
     private val testHeaders: HeadersList = mutableListOf(Pair("X-Test-Glean", "nothing-to-see-here"))
-    private val testDefaultConfig = Configuration().copy(
-        userAgent = "Glean/Test 25.0.2"
-    )
+    private val testDefaultConfig = Configuration().copy()
 
     /**
      * A stub uploader class that does not upload anything.
