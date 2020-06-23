@@ -11,7 +11,7 @@ namespace Mozilla.Glean
         /// <summary>
         /// The default server pings are sent to.
         /// </summary>
-        public const string DefaultTelemetryEndpoint = "https://incoming.telemetry.mozilla.org";
+        public static readonly string DefaultTelemetryEndpoint = "https://incoming.telemetry.mozilla.org";
 
         public string serverEndpoint;
         public string channel;
@@ -24,8 +24,8 @@ namespace Mozilla.Glean
         /// <summary>
         /// Configuration for Glean.
         /// </summary>
-        /// <param name="serverEndpoint"> the server pings are sent to. Please note that this
-        /// is only meant to be changed for tests.</param>
+        /// <param name="serverEndpoint"> the server pings are sent to. It is `Configuration.DefaultTelemetryEndpoint`
+        /// by default. Please note that this is only meant to be changed for tests.</param>
         /// <param name="channel">the release channel the application is on, if known. This will be
         /// sent along with all the pings, in the `client_info` section.</param>
         /// <param name="maxEvents">the number of events to store before the events ping is sent.</param>
@@ -33,14 +33,14 @@ namespace Mozilla.Glean
         /// <param name="logPings">Whether to log ping contents to the console</param>
         /// <param name="pingTag">String tag to be applied to headers when uploading pings for debug view.</param>
         public Configuration(
-            string serverEndpoint = DefaultTelemetryEndpoint,
+            string serverEndpoint = null,
             string channel = null,
             int? maxEvents = null,
             IPingUploader httpClient = null,
             bool logPings = false,
             string pingTag = null)
         {
-            this.serverEndpoint = serverEndpoint;
+            this.serverEndpoint = serverEndpoint ?? DefaultTelemetryEndpoint;
             this.channel = channel;
             this.maxEvents = maxEvents;
             this.httpClient = httpClient ?? new HttpClientUploader();
