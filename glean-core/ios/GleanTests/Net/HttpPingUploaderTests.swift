@@ -12,7 +12,6 @@ class HttpPingUploaderTests: XCTestCase {
     private let testPath = "/some/random/path/not/important"
     private let testPing = "{ \"ping\": \"test\" }"
     private let testConfig = Configuration(
-        userAgent: "Glean/Test 25.0.2",
         logPings: true,
         pingTag: "Tag"
     )
