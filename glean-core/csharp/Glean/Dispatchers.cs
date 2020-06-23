@@ -3,26 +3,29 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 using System;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using System.Collections.Concurrent;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Threading.Tasks.Schedulers;
+using Serilog;
+using static Mozilla.Glean.Utils.GleanLogger;
 
 namespace Mozilla.Glean
 {
-    internal class Dispatchers
+    internal static class Dispatchers
     {
         /// <summary>
-        /// This is the tag used for logging from this class
+        /// This is the tag used for logging from this class.
         /// </summary>
         private const string LogTag = "glean/Dispatchers";
 
         /// <summary>
-        /// This is the number of seconds that are allowed for the initial
+        /// This is the number of milliseconds that are allowed for the initial
         /// tasks queue to process all of the queued tasks.
         /// </summary>
-        private const int QueueProcessingTimeout = 5;
+        private const int QueueProcessingTimeoutMs = 5000;
 
         /// <summary>
         /// This is the maximum number of tasks that will be queued before
@@ -39,7 +42,9 @@ namespace Mozilla.Glean
         private static int _queueInitialTasks = 1;
         /// <summary>
         /// When true, tasks will be queued and not ran until triggered by
-        /// calling FlushQueuedInitialTasks.
+        /// calling FlushQueuedInitialTasks.  This uses an int backing field
+        /// in order to take advantage of Interlocked.Exchange for thread
+        /// safety.
         /// </summary>
         internal static bool QueueInitialTasks
         {
@@ -47,53 +52,39 @@ namespace Mozilla.Glean
             set => Interlocked.Exchange(ref _queueInitialTasks, value ? 1 : 0);
         }
 
-        // Create a ConcurrentExclusiveSchedulerPair object.
-        // All API tasks will be executed on the exclusive part of the scheduler
-        // in order to ensure single threaded behavior
-        private static readonly
-            ConcurrentExclusiveSchedulerPair taskSchedulerPair =
-            new ConcurrentExclusiveSchedulerPair();
+        // Create a scheduler that uses a single thread.
+        private static readonly LimitedConcurrencyLevelTaskScheduler
+            apiScheduler = new LimitedConcurrencyLevelTaskScheduler(1);
+
+        // Create a new TaskFactory and pass it the scheduler.
+        private static readonly TaskFactory factory = new TaskFactory(apiScheduler);
 
         /// <summary>
-        /// This Queue holds the initial tasks that are launched before Glean is
-        /// initialized.
+        /// This Queue holds the initial Actions that are launched before Glean
+        /// is initialized.
         /// </summary>
-        internal static ConcurrentQueue<Action> taskQueue =
+        internal static ConcurrentQueue<Action> preInitActionQueue =
             new ConcurrentQueue<Action>();
 
         /// <summary>
-        /// The number of tasks added to the queue beyond the MaxQueueSize.
+        /// The number of Actions added to the queue beyond the MaxQueueSize.
         /// </summary>
-        private static int OverflowCount { get; set; } = 0;
+        private static int overflowCount = 0;
 
         /// <summary>
-        /// Provides the token source for cancellation tokens used to cancel
-        /// running background tasks.
+        /// A logger configured for this class.
         /// </summary>
-        private static readonly CancellationTokenSource tokenSource =
-            new CancellationTokenSource();
-
-        /// <summary>
-        /// This is the token that is used along with the tasks in order to be
-        /// able to cancel them.
-        /// </summary>
-        private static CancellationToken cancellationToken = tokenSource.Token;
+        private static readonly ILogger Log = GetLogger(LogTag);
 
         /// <summary>
         /// Launch a block of work asynchronously.
         ///
-        /// Takes an Action and launches it as a Task on the ExclusiveScheduler
-        /// of the ConcurrentExclusiveSchedulerPair which ensures the tasks are
-        /// executed serially in the order the were launched.
-        ///
-        /// **Note:** Tasks that should be processed in order and finish before
-        /// successive tasks are run should be launched using the `LaunchAPI`
-        /// function.  This includes all metric recording functions. For
-        /// launching of tasks that need to be processed asynchronously but
-        /// should not block other tasks, see `LaunchConcurrent`.
+        /// Takes an Action and launches it using the TaskFactory ensuring the
+        /// tasks are executed serially in the order the were launched.
         ///
         /// If `QueueInitialTasks` is enabled, then the operation will be
-        /// created and added to the `taskQueue` but not executed until flushed.
+        /// created and added to the `preInitActionQueue` but not executed until
+        /// flushed.
         ///
         /// If `TestingMode` is enabled, then `LaunchAPI` will execute the task
         /// immediately and synchronously to avoid asynchronous issues in tests.
@@ -106,39 +97,36 @@ namespace Mozilla.Glean
 
             if (QueueInitialTasks)
             {
-                // If we are queuing tasks, typically before Glean has been
-                // initialized, then we should just add the created Task to the
-                // taskQueue.
+                // If we are queuing, typically before Glean has been
+                // initialized, then we should just add the action to
+                // the queue.
                 AddActionToQueue(action);
             }
             else
             {
                 if (!TestingMode)
                 {
-                    // If we are not queuing initial tasks, we can go ahead and
-                    // execute the task asynchronously on the ExclusiveScheduler                    
-                    task = Task.Factory.StartNew(
-                        () =>
+                    // If we are not queuing we can go ahead and execute the
+                    // task asynchronously                    
+                    task = factory.StartNew(() =>
+                    {
+                        // In order to prevent tasks from causing exceptions
+                        // we wrap the action invocation in try/catch
+                        try
                         {
-                            // In order to prevent tasks from causing exceptions
-                            // we wrap the action invocation in try/catch
-                            try
-                            {
-                                action.Invoke();
-                            }
-                            catch (Exception)
-                            {
-                                //TODO Exception eaten by Glean
-                            }
-                        },
-                        cancellationToken,
-                        TaskCreationOptions.None,
-                        taskSchedulerPair.ExclusiveScheduler);
+                            action.Invoke();
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Error(e, "Exception thrown by queued initial task and swallowed.");
+                            
+                        }
+                    });
                 }
                 else
                 {
-                    // If we are in testing mode, then go ahead and invoke the
-                    // action to ensure synchronous execution.
+                    // If we are in testing mode, then go ahead and await
+                    // the task to ensure synchronous execution.
                     action.Invoke();
                 }
             }
@@ -147,136 +135,77 @@ namespace Mozilla.Glean
         }
 
         /// <summary>
-        /// This function launches an Action as an asynchronous Task on a
-        /// concurrently executed queue.
-        ///
-        /// **Note:** Tasks that need to be executed asynchronously but should
-        /// not block other tasks such as recording data should use the
-        /// `LaunchConcurrent` function. For example, tasks performed during
-        /// initialization or an upload task could be executed concurrently.
-        /// For tasks that need to be executed serially, see `LaunchAPI`.
-        ///
-        /// This function specifically ignores the `QueueInitialTasks` flag
-        /// because the only tasks that should be launched by this are the ping
-        /// upload schedulers and those should run regardless of the initialized
-        /// state.
-        ///
-        /// If `TestingMode` is enabled, then `LaunchConcurrent` will just
-        /// execute the task rather than adding it to the concurrent queue to
-        /// avoid asynchronous issues while testing.
-        /// </summary>
-        /// <param name="action">The Action to perform</param>
-        /// <returns>A Task or null if run synchronously</returns>
-        internal static Task LaunchConcurrent(Action action)
-        {
-            Task task = null;
-
-            if (TestingMode)
-            {
-                action.Invoke();
-            }
-            else
-            {
-                task = Task.Factory.StartNew(
-                    () =>
-                    {
-                        // In order to prevent tasks from causing exceptions
-                        // we wrap the action invocation in try/catch
-                        try
-                        {
-                            action.Invoke();
-                        }
-                        catch (Exception)
-                        {
-                            //TODO Exception eaten by Glean
-                        }
-                    },
-                    cancellationToken,
-                    TaskCreationOptions.None,
-                    taskSchedulerPair.ConcurrentScheduler);
-            }
-
-            return task;
-        }
-
-        /// <summary>
-        /// Cancels any pending background tasks.
-        /// </summary>
-        internal static void CancelBackgroundTasks()
-        {
-            // Calling Complete on the taskSchedulerPair prevents it from
-            // accepting any new tasks.
-            taskSchedulerPair.Complete();
-
-            // Cancel tasks associated with the tokenSource
-            tokenSource.Cancel();
-
-            // Clear the taskQueue
-            taskQueue = new ConcurrentQueue<Action>();
-        }
-
-        /// <summary>
-        /// Stops queueing tasks and processes any tasks in the queue. Since
-        /// QueueInitialTasks is set to false prior to processing the queue, and
-        /// this function launches tasks from the ExclusiveScheduler back onto
-        /// the ExclusiveScheduler, the tasks should execute in order before any
-        /// new tasks are executed.
+        /// Stops queueing Actions and processes any Actions in the queue. 
         /// </summary>
         internal static void FlushQueuedInitialTasks()
         {
-            // Set the flag first to guarantee new tasks are executed after
-            // this one.
-            QueueInitialTasks = false;
+            factory.StartNew(() =>
+            {                
+                QueueInitialTasks = false;
 
-            var task = Task.Factory.StartNew(() =>
-            {
-                // Add the tasks to the ExclusiveScheduler and execute them
-                // synchronously
-                while (taskQueue.TryDequeue(out Action localValue))
+                while (preInitActionQueue.TryDequeue(out Action action))
                 {
-                    localValue.Invoke();
-                }
-            });
+                    action.Invoke();
+                }                
+            }).Wait();
 
-            // Wait for the initial tasks to execute
-            task.Wait(QueueProcessingTimeout);
-
-            if (OverflowCount > 0)
+            // This must happen after `QueueInitialTasks = false` is run, or
+            // it would be added to a full task queue and be silently dropped.
+            if (overflowCount > 0)
             {
                 //TODO GleanError.preinitTasksOverflow
                 //         .addSync(MaxQueueSize + OverflowCount)
             }
         }
 
+        internal static Task ExecuteTask(Action action)
+        {
+            if (TestingMode)
+            {
+                // If we are in testing mode, then invoke the action and return
+                // null
+                action.Invoke();
+                return null;
+            }
+            else
+            {
+                // **NOTE** This does not ensure that this task is executed at
+                // the front of the apiScheduler. This will be addressed with
+                // https://bugzilla.mozilla.org/show_bug.cgi?id=1646750
+                return factory.StartNew(action);
+            }
+        }
+
         /// <summary>
-        /// Helper function to add task to queue and monitor the MaxQueueSize
+        /// Helper function to add an Action to the queue and monitor the
+        /// MaxQueueSize.
         /// </summary>
         /// <param name="task">The Task to add to the queue</param>
         [MethodImpl(MethodImplOptions.Synchronized)]
         private static void AddActionToQueue(Action action)
         {
-            if (taskQueue.Count >= MaxQueueSize)
+            if (preInitActionQueue.Count >= MaxQueueSize)
             {
-                //TODO Log.e(LOG_TAG, "Exceeded maximum queue size, discarding task")
+                Log.Error("Exceeded maximum queue size, discarding task");
 
                 // This value ends up in the `preinit_tasks_overflow` metric,
                 // but we can't record directly there, because that would only
                 // add the recording to an already-overflowing task queue and
                 // would be silently dropped.
-                OverflowCount += 1;
+                overflowCount += 1;
                 return;
             }
 
             if (TestingMode)
             {
-                //TODO Log.i(LOG_TAG, "Task queued for execution in test mode")
+                Log.Information("Task queued for execution in test mode");
             }
             else
             {
-                //TODO Log.i(LOG_TAG, "Task queued for execution and delayed until flushed")
+                Log.Information("Task queued for execution and delayed until flushed");
             }
-
-            taskQueue.Enqueue(action);
+            
+            preInitActionQueue.Enqueue(action);
         }
 
         /// <summary>
@@ -288,6 +217,6 @@ namespace Mozilla.Glean
         public static void AssertInTestingMode()
         {
             Debug.Assert(TestingMode);
-        }
+        }        
     }
 }

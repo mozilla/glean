@@ -36,29 +36,6 @@ namespace Mozilla.Glean.Tests
         }
 
         [Fact]
-        public void LaunchAConcurrentDoesNotRunOnMainThread()
-        {
-            var mainThread = Thread.CurrentThread;
-            var threadCanary = false;
-
-            Dispatchers.TestingMode = false;
-            Dispatchers.QueueInitialTasks = false;
-
-            var task = Dispatchers.LaunchConcurrent(() =>
-            {
-                Assert.NotSame(mainThread, Thread.CurrentThread);
-                threadCanary = true;
-            });
-
-            // Wait for the task to complete
-            task.Wait();
-
-            Dispatchers.TestingMode = true;
-            Assert.True(threadCanary);
-            Assert.Same(mainThread, Thread.CurrentThread);
-        }
-
-        [Fact]
         public void TestTaskQueueing()
         {
             var threadCanary = 0;
@@ -66,23 +43,25 @@ namespace Mozilla.Glean.Tests
             Dispatchers.TestingMode = true;
             Dispatchers.QueueInitialTasks = true;
 
+            List<Task> tasks = new List<Task>();
+
             // Add 3 tasks to the queue, each one incrementing threadCanary to
             // indicate the task has executed.
             for (int i = 0; i < 3; ++i)
             {
-                Dispatchers.LaunchAPI(() =>
+                tasks.Add(Dispatchers.LaunchAPI(() =>
                 {
                     threadCanary += 1;
-                });
+                }));
             }
 
-            Assert.Equal(3, Dispatchers.taskQueue.Count);
+            Assert.Equal(3, Dispatchers.preInitActionQueue.Count);
             Assert.Equal(0, threadCanary);
 
             Dispatchers.FlushQueuedInitialTasks();
 
             Assert.Equal(3, threadCanary);
-            Assert.Empty(Dispatchers.taskQueue);
+            Assert.Empty(Dispatchers.preInitActionQueue);
         }
 
         [Fact]
@@ -101,18 +80,18 @@ namespace Mozilla.Glean.Tests
                 Dispatchers.LaunchAPI(() =>
                 {
                     Assert.NotSame(mainThread, Thread.CurrentThread);
-                    threadCanary += 1;
+                    Interlocked.Add(ref threadCanary, 1);
                 });
             }
 
-            Assert.Equal(3, Dispatchers.taskQueue.Count);
+            Assert.Equal(3, Dispatchers.preInitActionQueue.Count);
             Assert.Equal(0, Interlocked.Read(ref threadCanary));
 
             // Trigger execution to ensure tasks have fired
             Dispatchers.FlushQueuedInitialTasks();
 
-            Assert.Equal(3, threadCanary);
-            Assert.Empty(Dispatchers.taskQueue);
+            Assert.Equal(3, Interlocked.Read(ref threadCanary));
+            Assert.Empty(Dispatchers.preInitActionQueue);
         }
 
         [Fact]
@@ -126,10 +105,11 @@ namespace Mozilla.Glean.Tests
 
             var task1 = Task.Factory.StartNew(() =>
             {
-                while (!flushTasks) { Thread.Sleep(1); }
+                while (!flushTasks) { Thread.Yield(); }
                 Dispatchers.FlushQueuedInitialTasks();
             });
 
+            List<Task> tasks = new List<Task>();
             var counter = 0;
             var task2 = Task.Factory.StartNew(() =>
             {
@@ -138,57 +118,39 @@ namespace Mozilla.Glean.Tests
                     if (num == 50)
                     {
                         flushTasks = true;
-                    }
+                    }                   
 
                     // Need to "capture" the value here with a local variable.
                     // Just using `num` was insufficient as it appeared to be
                     // not getting captured by the lambda below.
                     var value = num;
-                    Dispatchers.LaunchAPI(() =>
+                    var t = Dispatchers.LaunchAPI(() =>
                     {
                         orderedList.Add(value);
                         counter += 1;
                     });
+
+                    if (t != null) { tasks.Add(t); }
                 }
             });
 
             task1.Wait();
-            task2.Wait();
+            task2.Wait(5000);
 
-            while (counter < 99) { Thread.Sleep(1); }
+            Task.WaitAll(tasks.ToArray());
+
+            var counterTimeout = 0;
+            while (counter < 99)
+            {
+                Thread.Sleep(1);
+
+                Assert.True(++counterTimeout < 5000);
+            }
 
             for (int num = 0; num < 99; num++)
             {
                 Assert.Equal(num, orderedList[num]);
             }
-        }
-
-        [Fact]
-        public void TestCancellingBackgroundTasksClearsQueue()
-        {
-            // Set testing mode to false to allow for background execution.
-            Dispatchers.TestingMode = false;
-
-            // Set task queuing to true to ensure that we queue tasks when we
-            // launch them.
-            Dispatchers.QueueInitialTasks = true;
-
-            // Assert the queue is empty
-            Assert.Empty(Dispatchers.taskQueue);
-
-            // Add a task to the pre-init queue
-            Dispatchers.LaunchAPI(() =>
-            {
-                Console.WriteLine("A queued task");
-            });
-
-            // Assert the task was queued
-            Assert.NotEmpty(Dispatchers.taskQueue);
-
-            Dispatchers.CancelBackgroundTasks();
-
-            // Assert the queue is empty
-            Assert.Empty(Dispatchers.taskQueue);
         }
 
         [Fact]
@@ -220,8 +182,7 @@ namespace Mozilla.Glean.Tests
                 }));
             }
 
-            // Wait for the tasks to complete
-            tasks.ForEach(task => task.Wait());
+            Task.WaitAll(tasks.ToArray());
 
             Assert.Equal(3, threadCanary);
         }

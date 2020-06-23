@@ -2,9 +2,16 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-using Mozilla.Glean.FFI;
-using static Mozilla.Glean.GleanMetrics.GleanInternalMetricsOuter;
 using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using Mozilla.Glean.FFI;
+using Mozilla.Glean.Net;
+using Mozilla.Glean.Private;
+using Serilog;
+using static Mozilla.Glean.GleanMetrics.GleanInternalMetricsOuter;
+using static Mozilla.Glean.GleanPings.GleanInternalPingsOuter;
+using static Mozilla.Glean.Utils.GleanLogger;
 
 namespace Mozilla.Glean
 {
@@ -22,6 +29,26 @@ namespace Mozilla.Glean
 
         // Keep track of this flag before Glean is initialized
         private bool uploadEnabled = true;
+
+        // Keep track of ping types that have been registered before Glean is initialized.
+        private HashSet<PingTypeBase> pingTypeQueue = new HashSet<PingTypeBase>();
+
+        private Configuration configuration;
+
+        // This is the wrapped http uploading mechanism: provides base functionalities
+        // for logging and delegates the actual upload to the implementation in
+        // the `Configuration`.
+        private BaseUploader httpClient;
+
+        /// <summary>
+        /// This is the tag used for logging from this class.
+        /// </summary>
+        private const string LogTag = "glean/Glean";
+
+        /// <summary>
+        /// A logger configured for this class
+        /// </summary>
+        private static readonly ILogger Log = GetLogger(LogTag);
 
         private Glean()
         {
@@ -49,6 +76,7 @@ namespace Mozilla.Glean
         /// are cleared.</param>
         /// <param name="configuration">A Glean `Configuration` object with global settings</param>
         /// <param name="dataDir">The path to the Glean data directory.</param>
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public void Initialize(
             string applicationId,
             string applicationVersion,
@@ -71,21 +99,22 @@ namespace Mozilla.Glean
                 return
             }
 
-            if (isInitialized()) {
-                Log.e(LOG_TAG, "Glean should not be initialized multiple times")
-                return
+            this.applicationContext = applicationContext*/
+
+            if (IsInitialized()) {
+                Log.Error("Glean should not be initialized multiple times");
+                return;
             }
 
-            this.applicationContext = applicationContext
+            this.configuration = configuration;
+            httpClient = new BaseUploader(configuration.httpClient);
+            // this.gleanDataDir = File(applicationContext.applicationInfo.dataDir, GLEAN_DATA_DIR)
 
-            this.configuration = configuration
-            this.httpClient = BaseUploader(configuration.httpClient)
-            this.gleanDataDir = File(applicationContext.applicationInfo.dataDir, GLEAN_DATA_DIR)
-                         */
             SetUploadEnabled(uploadEnabled);
 
-            Dispatchers.LaunchConcurrent(() => {
-                // TODO: registerPings(Pings)
+            Dispatchers.ExecuteTask(() =>
+            {
+                RegisterPings(GleanInternalPings);
 
                 LibGleanFFI.FfiConfiguration cfg = new LibGleanFFI.FfiConfiguration
                 {
@@ -104,13 +133,15 @@ namespace Mozilla.Glean
                     return;
                 }
 
-                /* TODO:
                 // If any pings were registered before initializing, do so now.
                 // We're not clearing this queue in case Glean is reset by tests.
-                synchronized(this@GleanInternalAPI) {
-                    pingTypeQueue.forEach { registerPingType(it) }
+                lock (this)
+                {
+                    foreach (var ping in pingTypeQueue)
+                    {
+                        RegisterPingType(ping);
+                    }
                 }
-                */
 
                 // If this is the first time ever the Glean SDK runs, make sure to set
                 // some initial core metrics in case we need to generate early pings.
@@ -125,13 +156,12 @@ namespace Mozilla.Glean
                 // Deal with any pending events so we can start recording new ones
                 bool pingSubmitted = LibGleanFFI.glean_on_ready_to_submit_pings() != 0;
 
-                // We need to enqueue the PingUploadWorker in these cases:
+                // We need to enqueue the BaseUploader in these cases:
                 // 1. Pings were submitted through Glean and it is ready to upload those pings;
                 // 2. Upload is disabled, to upload a possible deletion-request ping.
                 if (pingSubmitted || !uploadEnabled)
                 {
-                    //PingUploadWorker.enqueueWorker(applicationContext)
-                    Console.WriteLine("TODO: trigger ping upload now");
+                    httpClient.TriggerUpload(configuration);
                 }
                 /*
                 // Set up information and scheduling for Glean owned pings. Ideally, the "metrics"
@@ -153,7 +183,8 @@ namespace Mozilla.Glean
                 // From the second time we run, after all startup pings are generated,
                 // make sure to clear `lifetime: application` metrics and set them again.
                 // Any new value will be sent in newly generated pings after startup.
-                if (!isFirstRun) {
+                if (!isFirstRun)
+                {
                     LibGleanFFI.glean_clear_application_lifetime_metrics();
                     InitializeCoreMetrics();
                 }
@@ -210,7 +241,7 @@ namespace Mozilla.Glean
 
                     // Cancel any pending workers here so that we don't accidentally upload
                     // data after the upload has been disabled.
-                    // TODO: PingUploadWorker.cancel(applicationContext)
+                    httpClient.CancelUploads();
                 }
 
                 if (!originalEnabled && enabled)
@@ -223,7 +254,7 @@ namespace Mozilla.Glean
                 if (originalEnabled && !enabled)
                 {
                     // If uploading is disabled, we need to send the deletion-request ping
-                    // TODO: PingUploadWorker.enqueueWorker(applicationContext)
+                    httpClient.TriggerUpload(configuration);
                 }
                 });
             }
@@ -303,13 +334,143 @@ namespace Mozilla.Glean
 
         private void InitializeCoreMetrics()
         {
-            Console.WriteLine("Setting metric");
+            Log.Information("Setting metric");
             GleanInternalMetrics.architecture.SetSync("test");
-            Console.WriteLine("Check has value");
+            Log.Information("Check has value");
             bool hasValue = GleanInternalMetrics.architecture.TestHasValue();
-            Console.WriteLine("Has value {0} ", hasValue);
+            Log.Information($"Has value {hasValue}");
             string storedvalue = GleanInternalMetrics.architecture.TestGetValue();
-            Console.WriteLine("InitializeCoreMetrics - has value {0} and that's {1}", hasValue, storedvalue);
+            Log.Information($"InitializeCoreMetrics - has value {hasValue} and that's {storedvalue}");
         }
-    }
+
+        /// <summary>
+        /// Register the pings generated from `ManualPings` with the Glean SDK.
+        /// </summary>
+        /// <param name="pings"> The `Pings` object generated for your library or application
+        /// by the Glean SDK.</param>
+        private void RegisterPings(object pings)
+        {
+            // Instantiating the Pings object to send this function is enough to
+            // call the constructor and have it registered through [Glean.registerPingType].
+            Log.Information("Registering pings");
+        }
+
+        /// <summary>
+        /// Handle the background event and send the appropriate pings.
+        /// </summary>
+        internal void HandleBackgroundEvent()
+        {
+            GleanInternalPings.baseline.Submit(BaselineReasonCodes.background);
+            GleanInternalPings.events.Submit(EventsReasonCodes.background);
+        }
+
+        /// <summary>
+        /// Collect and submit a ping for eventual upload.
+        /// 
+        /// The ping content is assembled as soon as possible, but upload is not
+        /// guaranteed to happen immediately, as that depends on the upload
+        /// policies.
+        /// 
+        /// If the ping currently contains no content, it will not be assembled and
+        /// queued for sending.
+        /// </summary>
+        /// <param name="ping">Ping to submit.</param>
+        /// <param name="reason">The reason the ping is being submitted.</param>
+        internal void SubmitPing(PingTypeBase ping, string reason = null)
+        {
+            SubmitPingByName(ping.name, reason);
+        }
+
+        /// <summary>
+        /// Collect and submit a ping for eventual upload by name.
+        /// 
+        /// The ping will be looked up in the known instances of `PingType`. If the
+        /// ping isn't known, an error is logged and the ping isn't queued for uploading.
+        /// 
+        /// The ping content is assembled as soon as possible, but upload is not
+        /// guaranteed to happen immediately, as that depends on the upload
+        /// policies.
+        /// 
+        /// If the ping currently contains no content, it will not be assembled and
+        /// queued for sending, unless explicitly specified otherwise in the registry
+        /// file.
+        /// </summary>
+        /// <param name="name">Name of the ping to submit.</param>
+        /// <param name="reason">The reason the ping is being submitted.</param>
+        internal void SubmitPingByName(string name, string reason = null)
+        {
+            Dispatchers.LaunchAPI(() =>
+            {
+                SubmitPingByNameSync(name, reason);
+            });
+        }
+
+        /// <summary>
+        /// Collect and submit a ping (by its name) for eventual upload, synchronously.
+        /// 
+        /// The ping will be looked up in the known instances of `PingType`. If the
+        /// ping isn't known, an error is logged and the ping isn't queued for uploading.
+        /// 
+        /// The ping content is assembled as soon as possible, but upload is not
+        /// guaranteed to happen immediately, as that depends on the upload
+        /// policies.
+        /// 
+        /// If the ping currently contains no content, it will not be assembled and
+        /// queued for sending, unless explicitly specified otherwise in the registry
+        /// file.
+        /// </summary>
+        /// <param name="name">Name of the ping to submit.</param>
+        /// <param name="reason">The reason the ping is being submitted.</param>
+        internal void SubmitPingByNameSync(string name, string reason = null)
+        {
+            if (!IsInitialized())
+            {
+                Log.Error("Glean must be initialized before submitting pings.");
+                return;
+            }
+
+            if (!GetUploadEnabled())
+            {
+                Log.Error("Glean disabled: not submitting any pings.");
+                return;
+            }
+
+            bool hasSubmittedPing = Convert.ToBoolean(LibGleanFFI.glean_submit_ping_by_name(name, reason));
+            if (hasSubmittedPing)
+            {
+                httpClient.TriggerUpload(configuration);
+            }
+        }
+
+        /// <summary>
+        /// Register a [PingType] in the registry associated with this [Glean] object.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        internal void RegisterPingType(PingTypeBase pingType)
+        {
+            if (IsInitialized())
+            {
+                LibGleanFFI.glean_register_ping_type(
+                    pingType.handle
+                );
+            }
+
+            // We need to keep track of pings, so they get re-registered after a reset.
+            // This state is kept across Glean resets, which should only ever happen in test mode.
+            // Or by the instrumentation tests (`connectedAndroidTest`), which relaunches the application activity,
+            // but not the whole process, meaning globals, such as the ping types, still exist from the old run.
+            // It's a set and keeping them around forever should not have much of an impact.
+
+            pingTypeQueue.Add(pingType);
+        }
+
+        /// <summary>
+        /// TEST ONLY FUNCTION.
+        /// Returns true if a ping by this name is in the ping registry.
+        /// </summary>
+        internal bool TestHasPingType(string pingName)
+        {
+            return LibGleanFFI.glean_test_has_ping_type(pingName) != 0;
+        }
+}
 }

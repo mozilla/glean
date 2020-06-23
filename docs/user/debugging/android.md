@@ -12,7 +12,7 @@ Users can invoke this special activity, at run-time, using the following [`adb`]
 
 In the above:
 
-- `[applicationId]` is the product's application id as defined in the manifest file and/or build script. For the Glean sample application, this is `org.mozilla.samples.glean` for a release build and `org.mozilla.samples.glean.debug` for a debug build.
+- `[applicationId]` is the product's application id as defined in the manifest file and/or build script. For the Glean sample application, this is `org.mozilla.samples.gleancore` for a release build and `org.mozilla.samples.gleancore.debug` for a debug build.
 
 - `[extra keys]` is a list of extra keys to be passed to the debug activity. See the [documentation](https://developer.android.com/studio/command-line/adb#IntentSpec) for the command line switches used to pass the extra keys.
   These are the currently supported keys:
@@ -28,15 +28,17 @@ In the above:
 For example, to direct a release build of the Glean sample application to (1) dump pings to logcat, (2) tag the ping with the `test-metrics-ping` tag, and (3) send the "metrics" ping immediately, the following command can be used:
 
 ```shell
-adb shell am start -n org.mozilla.samples.glean/mozilla.telemetry.glean.debug.GleanDebugActivity \
+adb shell am start -n org.mozilla.samples.gleancore/mozilla.telemetry.glean.debug.GleanDebugActivity \
   --ez logPings true \
   --es sendPing metrics \
   --es tagPings test-metrics-ping
 ```
 
-The `logPings` command doesn't trigger ping submission and you won't see any output until a ping has been submitted. You can use the `sendPing` command to force a ping to be sent, but it could be more desirable to trigger the pings submission on their normal schedule. For instance, the `baseline` and `events` pings can be triggered by moving the app out of the foreground and the `metrics` ping can be triggered normally if it is overdue for the current calendar day.
+The `logPings` command doesn't trigger ping submission and you won't see any output until a ping has been sent. You can use the `sendPing` command to force a ping to be sent, but it could be more desirable to trigger the pings submission on their normal schedule. For instance, the `baseline` and `events` pings can be triggered by moving the app out of the foreground and the `metrics` ping can be triggered normally if it is overdue for the current calendar day.
 
-Note that if no metrics have been collected, then no pings will be sent *unless* [`send_if_empty` is set on your ping](../pings/custom.md#defining-a-custom-ping). See the [ping documentation](../pings/index.md) for more information on ping scheduling to learn when pings are sent.
+> **Note:** The device or emulator must be connected to the internet for this to work. Otherwise the job that sends the pings won't be triggered.
+
+If no metrics have been collected, no pings will be sent *unless* [`send_if_empty` is set on your ping](../pings/custom.md#defining-a-custom-ping). See the [ping documentation](../pings/index.md) for more information on ping scheduling to learn when pings are sent.
 
 Options that are set using the `adb` flags are not immediately reset and will
 persist until the application is closed or manually reset.
@@ -46,7 +48,7 @@ persist until the application is closed or manually reset.
 > If you're debugging an old build, try running:
 >
 > ```shell
-> adb shell am start -n org.mozilla.samples.glean/mozilla.components.service.glean.debug.GleanDebugActivity \
+> adb shell am start -n org.mozilla.samples.gleancore/mozilla.components.service.glean.debug.GleanDebugActivity \
 >   --ez logPings true \
 >   --es sendPing metrics \
 >   --es tagPings test-metrics-ping
@@ -94,6 +96,6 @@ Run it like this to filter for an application:
 pidcat [applicationId]
 ```
 
-In the above `[applicationId]` is the product's application id as defined in the manifest file and/or build script. For the Glean sample application, this is `org.mozilla.samples.glean` for a release build and `org.mozilla.samples.glean.debug` for a debug build.
+In the above `[applicationId]` is the product's application id as defined in the manifest file and/or build script. For the Glean sample application, this is `org.mozilla.samples.gleancore` for a release build and `org.mozilla.samples.gleancore.debug` for a debug build.
 
 [pidcat]: https://github.com/JakeWharton/pidcat

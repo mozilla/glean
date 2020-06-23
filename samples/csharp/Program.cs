@@ -20,9 +20,35 @@ namespace csharp
                 applicationId: "org.mozilla.glean.csharp.sample",
                 applicationVersion: "1.0",
                 uploadEnabled: true,
-                configuration: new Configuration(maxEvents: 37),
+                configuration: new Configuration(),
                 dataDir: gleanDataDir
                 );
+
+            // Create a sample ping and metric. Note that, once we'll have C# code
+            // generation in place (bug 1647214), we would be able to remove the
+            // manual definitions below and move them to the appropriate registry files.
+            Mozilla.Glean.Private.PingType<Mozilla.Glean.Private.NoReasonCodes> samplePing =
+                new Mozilla.Glean.Private.PingType<Mozilla.Glean.Private.NoReasonCodes>(
+                    includeClientId: true,
+                    sendIfEmpty: false,
+                    name: "sample",
+                    reasonCodes: null
+                    );
+
+            Mozilla.Glean.Private.StringMetricType sampleString = new Mozilla.Glean.Private.StringMetricType(
+                category: "csharp.test",
+                disabled: false,
+                lifetime: Mozilla.Glean.Private.Lifetime.Application,
+                name: "mystring",
+                sendInPings: new string[] { "sample" }
+            );
+
+            sampleString.Set("test-string");
+
+            samplePing.Submit();
+
+            Console.WriteLine("Press any key to exit the sample...");
+            Console.ReadKey();
         }
     }
 }

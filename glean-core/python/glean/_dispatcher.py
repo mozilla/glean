@@ -10,6 +10,7 @@ most Glean work is done.
 import functools
 import logging
 import queue
+import sys
 import threading
 from typing import Callable, Dict, List, Tuple
 
@@ -29,9 +30,32 @@ from typing import Callable, Dict, List, Tuple
 # multiprocessing would imply going to a 100% IPC-like approach, since the
 # Rust-side Glean objects could not be easily shared or message-passed across
 # the process boundary, whereas sharing across threads works transparently.
+#
+# Note that using a worker thread is not compatible with running in a
+# subprocess created by the `multiprocessing` module. In those subprocesses,
+# `atexit` handlers are not available, so we can't wait for the worker thread
+# to complete before shutting the process down. In subprocesses that are fired
+# up to quickly record some telemetry, Glean will almost certainly not be given
+# the time to record values and send a ping. Therefore, Glean detects when it
+# is being run in a `multiprocessing` subprocess and runs everything on the
+# main thread.
 
 
 log = logging.getLogger(__name__)
+
+
+def _is_multiprocessing_subprocess():
+    """
+    Returns True if this process is a subprocess created by the `multiprocessing`
+    library.
+    """
+    # We very carefully don't want to import multiprocessing, a large, complex
+    # module with import side-effects, unless it's already imported.
+    if "multiprocessing" in sys.modules:
+        from multiprocessing import current_process
+
+        return current_process().name.startswith("Process-")
+    return False
 
 
 class _ThreadWorker:
@@ -63,7 +87,10 @@ class _ThreadWorker:
         # queue, just run them now. This is required for synchronous testing
         # mode, and also to run the tasks in the expected order.
         if threading.get_ident() == self._ident:
-            task(*args, **kwargs)
+            try:
+                task(*args, **kwargs)
+            except Exception:
+                log.exception("Glean error")
         else:
             args = args or ()
             kwargs = kwargs or {}
@@ -109,8 +136,10 @@ class _ThreadWorker:
 
         # Send an END_MARKER to the worker thread to shut it down cleanly.
         self._queue.put((self.END_MARKER, (), {}))
-        # Wait up to 1 second for the worker thread to complete.
-        self._thread.join(1.0)
+        # Wait for the worker thread to complete. This timeout is long -- we no
+        # longer expect the uploader to timeout for a very long time, but we
+        # also don't want to wait forever in the event of an unexpected bug.
+        self._thread.join(30.0)
         if self._thread.is_alive():
             log.error("Timeout sending Glean telemetry")
         self._started = False
@@ -155,7 +184,13 @@ class Dispatcher:
 
     @classmethod
     def _execute_task(cls, func: Callable, *args, **kwargs):
-        cls._task_worker.add_task(cls._testing_mode, func, *args, **kwargs)
+        if _is_multiprocessing_subprocess():
+            try:
+                func(*args, **kwargs)
+            except Exception:
+                log.exception("Glean exception")
+        else:
+            cls._task_worker.add_task(cls._testing_mode, func, *args, **kwargs)
 
     @classmethod
     def _add_task_to_queue(cls, func: Callable, args: Tuple, kwargs: Dict):
@@ -254,15 +289,14 @@ class Dispatcher:
         """
         Stops queueing tasks and processes any tasks in the queue.
         """
-        cls.set_task_queueing(False)
-
         with cls._thread_lock:
-            queue_copy = cls._preinit_task_queue[:]
+            cls.set_task_queueing(False)
+            for (task, args, kwargs) in cls._preinit_task_queue:
+                try:
+                    task(*args, **kwargs)
+                except Exception:
+                    log.exception("Glean exception")
             cls._preinit_task_queue.clear()
-
-        for (task, args, kwargs) in queue_copy:
-            cls._execute_task(task, *args, **kwargs)
-        cls._preinit_task_queue.clear()
 
         if cls._overflow_count > 0:
             from ._builtins import metrics
