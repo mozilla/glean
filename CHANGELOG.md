@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v31.1.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v31.1.2...main)
+
+# v31.1.2 (2020-06-23)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v31.1.1...v31.1.2)
 
 * General
     * BUGFIX: Correctly format the date and time in the `Date` header ([#993](https://github.com/mozilla/glean/pull/993)).
