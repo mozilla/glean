@@ -3,6 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Version>0.3.7</Version>
     <!--
       The following properties were determined by following the solution outlined here:
       https://github.com/Microsoft/msbuild/issues/539#issuecomment-289930591
