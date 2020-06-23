@@ -31,7 +31,6 @@ impl PingRequest {
     /// Creates a new PingRequest.
     ///
     /// Automatically creates the default request headers.
-    /// Clients may add more headers such as `userAgent` to this list.
     pub fn new(document_id: &str, path: &str, body: JsonValue) -> Self {
         // We want uploads to be gzip'd. Instead of doing this for each platform
         // we have language bindings for, apply compression here.
