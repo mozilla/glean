@@ -798,4 +798,16 @@ class GleanTest {
             Glean.pingTypeQueue.add(it)
         }
     }
+
+    @Test
+    fun `test dirty flag is reset to false`() {
+        // Set the dirty flag.
+        LibGleanFFI.INSTANCE.glean_set_dirty_flag(true.toByte())
+
+        resetGlean(context, Glean.configuration.copy(
+            logPings = true
+        ), false)
+
+        assertFalse(LibGleanFFI.INSTANCE.glean_is_dirty_flag_set().toBoolean())
+    }
 }
