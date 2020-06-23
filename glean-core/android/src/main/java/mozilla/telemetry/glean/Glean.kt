@@ -7,6 +7,7 @@ package mozilla.telemetry.glean
 import android.app.ActivityManager
 import android.util.Log
 import android.content.Context
+import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Process
@@ -164,6 +165,14 @@ open class GleanInternalAPI internal constructor () {
                 return@executeTask
             }
 
+            // Get the current value of the dirty flag so we know whether to
+            // send a dirty startup baseline ping below.  Immediately set it to
+            // `false` so that dirty startup pings won't be sent if Glean
+            // initialization does not complete successfully. It is set to `true`
+            // again in the ON_START lifecycle event.
+            val isDirtyFlagSet = LibGleanFFI.INSTANCE.glean_is_dirty_flag_set().toBoolean()
+            LibGleanFFI.INSTANCE.glean_set_dirty_flag(false.toByte())
+
             // If any pings were registered before initializing, do so now.
             // We're not clearing this queue in case Glean is reset by tests.
             synchronized(this@GleanInternalAPI) {
@@ -197,11 +206,8 @@ open class GleanInternalAPI internal constructor () {
             // Check if the "dirty flag" is set. That means the product was probably
             // force-closed. If that's the case, submit a 'baseline' ping with the
             // reason "dirty_startup". We only do that from the second run.
-            if (!isFirstRun && LibGleanFFI.INSTANCE.glean_is_dirty_flag_set().toBoolean()) {
+            if (!isFirstRun && isDirtyFlagSet) {
                 submitPingByNameSync("baseline", "dirty_startup")
-                // Note: while in theory we should set the "dirty flag" to true
-                // here, in practice it's not needed: if it hits this branch, it
-                // means the value was `true` and nothing needs to be done.
             }
 
             // From the second time we run, after all startup pings are generated,
@@ -444,23 +450,30 @@ open class GleanInternalAPI internal constructor () {
             GleanInternalMetrics.appChannel.setSync(it)
         }
 
-        try {
-            val packageInfo = applicationContext.packageManager.getPackageInfo(
-                    applicationContext.packageName, 0
-            )
-            @Suppress("DEPRECATION")
-            GleanInternalMetrics.appBuild.setSync(packageInfo.versionCode.toString())
+        val packageInfo: PackageInfo
 
-            GleanInternalMetrics.appDisplayVersion.setSync(
-                    packageInfo.versionName?.let { it } ?: "Unknown"
+        try {
+            packageInfo = applicationContext.packageManager.getPackageInfo(
+                    applicationContext.packageName, 0
             )
         } catch (e: PackageManager.NameNotFoundException) {
             Log.e(
                 LOG_TAG,
                 "Could not get own package info, unable to report build id and display version"
             )
-            throw AssertionError("Could not get own package info, aborting init")
+
+            GleanInternalMetrics.appBuild.setSync("inaccessible")
+            GleanInternalMetrics.appDisplayVersion.setSync("inaccessible")
+
+            return
         }
+
+        @Suppress("DEPRECATION")
+        GleanInternalMetrics.appBuild.setSync(packageInfo.versionCode.toString())
+
+        GleanInternalMetrics.appDisplayVersion.setSync(
+            packageInfo.versionName?.let { it } ?: "Unknown"
+        )
     }
 
     /**
