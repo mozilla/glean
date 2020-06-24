@@ -492,4 +492,12 @@ pub extern "C" fn glean_initialize_standalone_uploader(data_dir: FfiStr) -> u8 {
     })
 }
 
+#[no_mangle]
+pub extern "C" fn glean_set_debug_view_tag(tag: FfiStr) -> u8 {
+    with_glean_mut(|glean| {
+        let tag = tag.to_string_fallible()?;
+        Ok(glean.set_debug_view_tag(&tag))
+    })
+}
+
 define_string_destructor!(glean_str_free);
