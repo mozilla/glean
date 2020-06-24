@@ -684,9 +684,7 @@ def test_confirm_enums_match_values_in_glean_parser():
             assert g_enum[name.upper()].value == gp_enum[name].value
 
 
-def test_presubmit_makes_a_valid_ping(
-    tmpdir, ping_schema_url, monkeypatch
-):
+def test_presubmit_makes_a_valid_ping(tmpdir, ping_schema_url, monkeypatch):
     # Bug 1648140: Submitting a ping prior to initialize meant that the core
     # metrics wouldn't yet be set.
 
@@ -710,7 +708,7 @@ def test_presubmit_makes_a_valid_ping(
         application_id=GLEAN_APP_ID,
         application_version=glean_version,
         upload_enabled=True,
-        configuration=Glean._configuration
+        configuration=Glean._configuration,
     )
 
     monkeypatch.setattr(

@@ -423,7 +423,9 @@ class Glean:
         metrics.glean.internal.metrics.locale._set_sync(_util.get_locale_tag())
 
         if cls._configuration.channel is not None:
-            metrics.glean.internal.metrics.app_channel._set_sync(cls._configuration.channel)
+            metrics.glean.internal.metrics.app_channel._set_sync(
+                cls._configuration.channel
+            )
 
         metrics.glean.internal.metrics.app_build._set_sync(cls._application_id)
 
