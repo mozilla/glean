@@ -66,6 +66,19 @@ class StringMetricType:
         def set():
             _ffi.lib.glean_string_set(self._handle, _ffi.ffi_encode_string(value))
 
+    def _set_sync(self, value: str) -> None:
+        """
+        Set a string value, synchronously.
+
+        Args:
+            value (str): This is a user-defined string value. If the length of
+                the string exceeds the maximum length, it will be truncated.
+        """
+        if self._disabled:
+            return
+
+        _ffi.lib.glean_string_set(self._handle, _ffi.ffi_encode_string(value))
+
     def test_has_value(self, ping_name: Optional[str] = None) -> bool:
         """
         Tests whether a value is stored for the metric for testing purposes

@@ -417,18 +417,18 @@ class Glean:
         """
         from ._builtins import metrics
 
-        metrics.glean.baseline.locale.set(_util.get_locale_tag())
-        metrics.glean.internal.metrics.os_version.set(platform.release())
-        metrics.glean.internal.metrics.architecture.set(platform.machine())
-        metrics.glean.internal.metrics.locale.set(_util.get_locale_tag())
+        metrics.glean.baseline.locale._set_sync(_util.get_locale_tag())
+        metrics.glean.internal.metrics.os_version._set_sync(platform.release())
+        metrics.glean.internal.metrics.architecture._set_sync(platform.machine())
+        metrics.glean.internal.metrics.locale._set_sync(_util.get_locale_tag())
 
         if cls._configuration.channel is not None:
-            metrics.glean.internal.metrics.app_channel.set(cls._configuration.channel)
+            metrics.glean.internal.metrics.app_channel._set_sync(cls._configuration.channel)
 
-        metrics.glean.internal.metrics.app_build.set(cls._application_id)
+        metrics.glean.internal.metrics.app_build._set_sync(cls._application_id)
 
         if cls._application_version is not None:
-            metrics.glean.internal.metrics.app_display_version.set(
+            metrics.glean.internal.metrics.app_display_version._set_sync(
                 cls._application_version
             )
 
