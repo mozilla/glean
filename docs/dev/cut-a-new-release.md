@@ -213,13 +213,9 @@ Therefore, when a new Glean SDK release is made, `android-components` must also 
 
 After following one of the above instructions to make a Glean SDK release:
 
-1. Ensure that CI has completed and the artifacts have published to [the Glean GitHub releases page](https://github.com/mozilla/glean/releases/).
+1. Ensure that CI has completed and the artifacts are published on [Mozilla's Maven repository](https://maven.mozilla.org/?prefix=maven2/org/mozilla/telemetry/).
 
-2. Publish Glean to [Mozilla's Maven repository](https://maven.mozilla.org/).
-   This is currently a manual step that can only performed by individuals with the necessary credentials.
-   Ask in `#releaseduty-mobile` on Mozilla's internal Slack for assistance.
-
-3. Create a pull request against `android-components` to update the Glean version with the following changes:
+2. Create a pull request against `android-components` to update the Glean version with the following changes:
 
    - The Glean version is updated in the `mozilla_glean` variable in the [`buildSrc/src/main/java/Dependencies.kt`](https://github.com/mozilla-mobile/android-components/blob/69546999739ab19d21425e9a98e107e438a3f905/buildSrc/src/main/java/Dependencies.kt#L32) file.
 
