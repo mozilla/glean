@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v31.2.0...main)
 
+* Python
+    * BUGFIX: Core metrics are now present in every ping, even if submit is called before initialize has a chance to complete. ([#1012](https://github.com/mozilla/glean/pull/1012))
+
 # v31.2.0 (2020-06-24)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v31.1.2...v31.2.0)
