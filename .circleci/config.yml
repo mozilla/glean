@@ -131,14 +131,10 @@ commands:
           name: Build Windows wheel
           command: |
             cd glean-core/python
-<<<<<<< HEAD
-            .venv3.7/bin/python3 setup.py bdist_wheel
+            .venv3.8/bin/python3 setup.py bdist_wheel
           environment:
             GLEAN_PYTHON_MINGW_X86_64_BUILD: 1
             GLEAN_BUILD_VARIANT: release
-=======
-            GLEAN_PYTHON_MINGW_X86_64_BUILD=1 .venv3.8/bin/python3 setup.py bdist_wheel
->>>>>>> python 3.8 upgrade
 
   build-windows-i686-wheel:
     steps:
@@ -158,14 +154,10 @@ commands:
           name: Build Windows wheel
           command: |
             cd glean-core/python
-<<<<<<< HEAD
-             .venv3.7/bin/python3 setup.py bdist_wheel
+             .venv3.8/bin/python3 setup.py bdist_wheel
           environment:
             GLEAN_PYTHON_MINGW_I686_BUILD: 1
             GLEAN_BUILD_VARIANT: release
-=======
-            GLEAN_PYTHON_MINGW_I686_BUILD=1 .venv3.8/bin/python3 setup.py bdist_wheel
->>>>>>> python 3.8 upgrade
 
   install-python-windows-deps:
     steps:
@@ -918,13 +910,9 @@ jobs:
             .venv3.8/bin/python3 -m auditwheel repair dist/*.whl
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
-<<<<<<< HEAD
-            .venv3.7/bin/python3 -m twine upload wheelhouse/*
+            .venv3.8/bin/python3 -m twine upload wheelhouse/*
           environment:
             GLEAN_BUILD_VARIANT: release
-=======
-            .venv3.8/bin/python3 -m twine upload wheelhouse/*
->>>>>>> python 3.8 upgrade
       - install-ghr-linux
       - run:
           name: Publish to Github
@@ -952,13 +940,9 @@ jobs:
             .venv3.8/bin/python3 setup.py bdist_wheel
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
-<<<<<<< HEAD
-            .venv3.7/bin/python3 -m twine upload dist/*
+            .venv3.8/bin/python3 -m twine upload dist/*
           environment:
             GLEAN_BUILD_VARIANT: release
-=======
-            .venv3.8/bin/python3 -m twine upload dist/*
->>>>>>> python 3.8 upgrade
       - install-ghr-darwin
       - run:
           name: Publish to Github
