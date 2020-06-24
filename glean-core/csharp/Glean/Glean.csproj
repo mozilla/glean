@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk" DefaultTargets="Build" InitialTargets="ValidateContentFiles">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -10,7 +10,7 @@
       While we're still testing, mark this as a pre-release package.
       See https://docs.microsoft.com/en-us/nuget/concepts/package-versioning#pre-release-versions
     -->
-    <Version>0.0.1-alpha</Version>
+    <Version>0.0.2-alpha</Version>
     <RootNamespace>Mozilla.Glean</RootNamespace>
     <PackageId>Mozilla.Telemetry.Glean</PackageId>
     <PackageProjectUrl>https://github.com/mozilla/glean/</PackageProjectUrl>
@@ -31,7 +31,7 @@
     Print a message to warn user this is attempting to build a multi-platform nuGet
     package meant for uploading.
   --> 
-  <Target Condition="'$(IsPublicPackage)' == 'True'" Name="TestMessage" AfterTargets="Build">
+  <Target Condition="$(IsPublicPackage) == true" Name="TestMessage" AfterTargets="Build">
     <Message Text="Building a multi-platform nuGet package." Importance="high" />
   </Target>
 
@@ -41,28 +41,32 @@
     
     This can be built using, from the glean root:
 
-      `dotnet pack glean-core/csharp/Glean/csharp.sln -c Release -p:IsPublicPackage=true`
+      `dotnet pack glean-core/csharp/csharp.sln -c Release -p:IsPublicPackage=true`
       
     TODO: package will be built even if any of the file listed below is missing.
     This is a bug and we should fix it by making the package step fail if any
     of the files are missing.
   -->
-  <ItemGroup Condition="'$(IsPublicPackage)' == 'True'">
+  <ItemGroup Condition="$(IsPublicPackage) == true">
+    <!--
+      TODO: once we enable building from CI, the paths below will require tweaking
+      to point at the appropriate directory under target/.
+    -->
     <!-- Windows libraries -->
-    <Content Include="../../../target/x86_64-pc-windows-gnu/$(Configuration.ToLowerInvariant())/glean_ffi.dll" Link="runtimes/win-64/native/glean_ffi.dll" Condition="'$(Platform)'=='x64'">
+    <Content Include="../../../target/$(Configuration.ToLowerInvariant())/glean_ffi.dll" Link="runtimes/win-64/native/glean_ffi.dll">
       <PackagePath>runtimes/win-x64/native</PackagePath>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="../../../target/i686-pc-windows-gnu/$(Configuration.ToLowerInvariant())/glean_ffi.dll" Link="runtimes/win-86/native/glean_ffi.dll" Condition="'$(Platform)'=='x86'">
+    <Content Include="../../../target/$(Configuration.ToLowerInvariant())/glean_ffi.dll" Link="runtimes/win-86/native/glean_ffi.dll">
       <PackagePath>runtimes/win-x86/native</PackagePath>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <!-- Linux libraries -->
-    <Content Include="../../../target/$(Configuration.ToLowerInvariant())/libglean_ffi.so" Link="runtimes/linux-64/native/libglean_ffi.so" Condition="'$(Platform)'=='x64'">
+    <Content Include="../../../target/$(Configuration.ToLowerInvariant())/libglean_ffi.so" Link="runtimes/linux-64/native/libglean_ffi.so">
       <PackagePath>runtimes/linux-x64/native</PackagePath>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="../../../target/$(Configuration.ToLowerInvariant())/libglean_ffi.so" Link="runtimes/linux-86/native/libglean_ffi.so" Condition="'$(Platform)'=='x86'">
+    <Content Include="../../../target/$(Configuration.ToLowerInvariant())/libglean_ffi.so" Link="runtimes/linux-86/native/libglean_ffi.so">
       <PackagePath>runtimes/linux-x86/native</PackagePath>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -77,7 +81,7 @@
     For local developer builds, pick the default glean-core target
     locations.
    -->
-  <ItemGroup Condition="$(IsWindows) == true">
+  <ItemGroup Condition="$(IsWindows) == true AND $(IsPublicPackage) != true">
     <!--
       Note: cargo build will produce the file in target/<buildtype>/glean_ffi.dll based
       on the current architecture. For example, if we run `cargo build`-->
@@ -97,7 +101,7 @@
   </ItemGroup>
 
   <!-- Local developer builds on Linux. -->
-  <ItemGroup Condition="$(IsLinux) == true">
+  <ItemGroup Condition="$(IsLinux) == true AND $(IsPublicPackage) != true">
     <Content Include="../../../target/$(Configuration.ToLowerInvariant())/libglean_ffi.so" Link="runtimes/linux-64/native/libglean_ffi.so" Condition="'$(Platform)'=='x64'">
       <PackagePath>runtimes/linux-x64/native</PackagePath>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -114,7 +118,7 @@
   </ItemGroup>
 
   <!-- Local developer builds on OSX. -->
-  <ItemGroup Condition="$(IsOSX) == true">
+  <ItemGroup Condition="$(IsOSX) == true AND $(IsPublicPackage) != true">
     <Content Include="../../../target/$(Configuration.ToLowerInvariant())/libglean_ffi.dylib" Link="runtimes/osx-64/native/libglean_ffi.dylib">
       <PackagePath>runtimes/osx-x64/native</PackagePath>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -132,4 +136,12 @@
     <PackageReference Include="Serilog" Version="2.9.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
   </ItemGroup>
+
+  <!--
+    We create a new target to make sure that all the required files are present
+    when building a cumulative nuGet package. Thanks https://stackoverflow.com/a/1028860/261698 !
+  -->
+  <Target Name="ValidateContentFiles" Condition="$(IsPublicPackage) == true">
+    <Error Condition="!Exists(%(Content.FullPath))" Text="Missing Glean FFI file [%(Content.FullPath)]" />
+  </Target>
 </Project>
