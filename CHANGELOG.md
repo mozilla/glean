@@ -1,15 +1,15 @@
 # Unreleased changes
 
-* General
-    * Add rate limiting capabilities to the upload manager. ([1543612](https://bugzilla.mozilla.org/show_bug.cgi?id=1543612))
-* Android
-    * BUGFIX: baseline pings with reason "dirty startup" are no longer sent if Glean did not full initialize in the previous run.
-* Python
-    * Support for Python 3.5 was dropped.
-    * Python wheels are now shipped with Glean release builds, resulting in much smaller libraries ([#1002](https://github.com/mozilla/glean/pull/1002))
-    * The Python bindings now use `locale.getdefaultlocale()` rather than `locale.getlocale()` to determine the locale.
-
 [Full changelog](https://github.com/mozilla/glean/compare/v31.1.2...main)
+
+* General
+    * Add rate limiting capabilities to the upload manager. ([1543612](https://bugzilla.mozilla.org/show_bug.cgi?id=1543612), [#974](https://github.com/mozilla/glean/pull/974))
+* Android
+    * BUGFIX: baseline pings with reason "dirty startup" are no longer sent if Glean did not full initialize in the previous run ([#996](https://github.com/mozilla/glean/pull/996)).
+* Python
+    * Support for Python 3.5 was dropped ([#987](https://github.com/mozilla/glean/pull/987)).
+    * Python wheels are now shipped with Glean release builds, resulting in much smaller libraries ([#1002](https://github.com/mozilla/glean/pull/1002))
+    * The Python bindings now use `locale.getdefaultlocale()` rather than `locale.getlocale()` to determine the locale ([#1004](https://github.com/mozilla/glean/pull/1004)).
 
 # v31.1.2 (2020-06-23)
 
