@@ -14,7 +14,6 @@
 
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
-use std::process;
 
 use chrono::{DateTime, FixedOffset};
 use once_cell::sync::Lazy;
@@ -211,8 +210,6 @@ impl Glean {
             max_events: cfg.max_events.unwrap_or(DEFAULT_MAX_EVENTS),
             is_first_run: false,
         };
-
-        process::abort();
 
         // The upload enabled flag may have changed since the last run, for
         // example by the changing of a config file.
