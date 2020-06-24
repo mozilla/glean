@@ -6,6 +6,7 @@
     * BUGFIX: baseline pings with reason "dirty startup" are no longer sent if Glean did not full initialize in the previous run.
 * Python
     * Support for Python 3.5 was dropped.
+    * Python wheels are now shipped with Glean release builds, resulting in much smaller libraries ([#1002](https://github.com/mozilla/glean/pull/1002))
 
 [Full changelog](https://github.com/mozilla/glean/compare/v31.1.2...main)
 

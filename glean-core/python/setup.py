@@ -54,12 +54,15 @@ requirements = [
 
 setup_requirements = ["cffi>=1.0.0"]
 
+# The environment variable `GLEAN_BUILD_VARIANT` can be set to `debug` or `release`
+buildvariant = os.environ.get("GLEAN_BUILD_VARIANT", "debug")
+
 if mingw_arch == "i686":
-    shared_object_build_dir = "../../target/i686-pc-windows-gnu/debug/"
+    shared_object_build_dir = "../../target/i686-pc-windows-gnu"
 elif mingw_arch == "x86_64":
-    shared_object_build_dir = "../../target/x86_64-pc-windows-gnu/debug/"
+    shared_object_build_dir = "../../target/x86_64-pc-windows-gnu"
 else:
-    shared_object_build_dir = "../../target/debug/"
+    shared_object_build_dir = "../../target"
 
 
 if platform == "linux":
@@ -73,6 +76,7 @@ elif platform.startswith("win"):
 else:
     raise ValueError(f"The platform {sys.platform} is not supported.")
 
+shared_object_path = f"{shared_object_build_dir}/{buildvariant}/{shared_object}"
 
 shutil.copyfile("../metrics.yaml", "glean/metrics.yaml")
 shutil.copyfile("../pings.yaml", "glean/pings.yaml")
@@ -81,7 +85,7 @@ shutil.copyfile("../pings.yaml", "glean/pings.yaml")
 # circumstances, this will still show up as an error when running the `build`
 # command as a missing `package_data` file.
 try:
-    shutil.copyfile(shared_object_build_dir + shared_object, "glean/" + shared_object)
+    shutil.copyfile(shared_object_path, "glean/" + shared_object)
 except FileNotFoundError:
     pass
 
