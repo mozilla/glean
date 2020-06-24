@@ -4,7 +4,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using Mozilla.Glean.FFI;
 using Mozilla.Glean.Net;
 using Mozilla.Glean.Private;
@@ -334,13 +336,55 @@ namespace Mozilla.Glean
 
         private void InitializeCoreMetrics()
         {
-            Log.Information("Setting metric");
-            GleanInternalMetrics.architecture.SetSync("test");
-            Log.Information("Check has value");
-            bool hasValue = GleanInternalMetrics.architecture.TestHasValue();
-            Log.Information($"Has value {hasValue}");
-            string storedvalue = GleanInternalMetrics.architecture.TestGetValue();
-            Log.Information($"InitializeCoreMetrics - has value {hasValue} and that's {storedvalue}");
+            // The `Environment.OSVersion` object will return a version that represents an approximate
+            // version of the OS. As the MSDN docs state, this is unreliable:
+            // https://docs.microsoft.com/en-us/dotnet/api/system.environment.osversion?redirectedfrom=MSDN&view=netstandard-2.0
+            // However, there's really nothing we could do about it. Unless the product using the
+            // Glean SDK correctly marks their manifest as Windows 10 compatible, this API will report
+            // Windows 8 version (6.2). See the remarks section here:
+            // https://docs.microsoft.com/en-gb/windows/win32/api/winnt/ns-winnt-osversioninfoexa?redirectedfrom=MSDN#remarks
+            try
+            {
+                GleanInternalMetrics.osVersion.SetSync(Environment.OSVersion.Version.ToString());
+            }
+            catch (InvalidOperationException)
+            {
+                GleanInternalMetrics.osVersion.SetSync("Unknown");
+            }
+
+            // Possible values for `RuntimeInformation.OSArchitecture` are documented here:
+            // https://docs.microsoft.com/en-us/dotnet/api/system.runtime.interopservices.architecture?view=netstandard-2.0
+            GleanInternalMetrics.architecture.SetSync(RuntimeInformation.OSArchitecture.ToString());
+
+            try
+            {
+                // CurrentUiCulture is used for representing the locale of the UI, coming from the OS,
+                // while CurrentCulture is the general locale used for other things (e.g. currency).
+                GleanInternalMetrics.locale.SetSync(CultureInfo.CurrentUICulture.Name);
+            }
+            catch (Exception)
+            {
+                GleanInternalMetrics.locale.SetSync("und");
+            }
+
+            if (configuration.channel != null)
+            {
+                GleanInternalMetrics.appChannel.SetSync(configuration.channel);
+            }
+
+            // Try to get the version of the product using the Glean SDK. Unfortunately,
+            // this uses reflection.
+            var mainAssembly = System.Reflection.Assembly.GetEntryAssembly();
+            if (mainAssembly != null)
+            {
+                GleanInternalMetrics.appDisplayVersion.SetSync(mainAssembly.GetName().Version.ToString());
+            }
+            else
+            {
+                GleanInternalMetrics.appDisplayVersion.SetSync("inaccessible");
+            }
+
+            GleanInternalMetrics.appBuild.SetSync(configuration.buildId ?? "Unknown");
         }
 
         /// <summary>
