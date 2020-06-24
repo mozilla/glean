@@ -586,6 +586,21 @@ open class GleanInternalAPI internal constructor () {
     }
 
     /**
+     * Set a tag to be applied to headers when uploading pings for debug view.
+     * This is only meant to be used internally by the `GleanDebugActivity`.
+     *
+     * @param value The value of the tag, which must be a valid HTTP header value.
+     */
+    fun setDebugViewTag(value: String): Boolean {
+        if (isInitialized()) {
+            return LibGleanFFI.INSTANCE.glean_set_debug_view_tag(value).toBoolean()
+        } else {
+            Log.e(LOG_TAG, "Glean must be initialized before setting a debug view tag.")
+            return false
+        }
+    }
+
+    /**
      * TEST ONLY FUNCTION.
      * This is called by the GleanTestRule, to enable test mode.
      *

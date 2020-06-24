@@ -37,9 +37,6 @@ class GleanDebugActivity : Activity() {
          * The value must match the pattern `[a-zA-Z0-9-]{1,20}`.
          */
         const val TAG_DEBUG_VIEW_EXTRA_KEY = "tagPings"
-
-        // Regular expression filter for debugId
-        internal val pingTagPattern = "[a-zA-Z0-9-]{1,20}".toRegex()
     }
 
     // IMPORTANT: These activities are unsecured, and may be triggered by
@@ -83,19 +80,15 @@ class GleanDebugActivity : Activity() {
 
             // Check for ping debug view tag to apply to the X-Debug-ID header when uploading the
             // ping to the endpoint
-            var pingTag: String? = intent.getStringExtra(TAG_DEBUG_VIEW_EXTRA_KEY)
+            var debugViewTag: String? = intent.getStringExtra(TAG_DEBUG_VIEW_EXTRA_KEY)
 
-            // Validate the ping tag against the regex pattern
-            pingTag?.let {
-                if (!pingTagPattern.matches(it)) {
-                    Log.e(LOG_TAG, "tagPings value $it does not match accepted pattern $pingTagPattern")
-                    pingTag = null
-                }
+            // Set the debug view tag, if the tag is invalid it won't be set
+            debugViewTag?.let {
+                Glean.setDebugViewTag(debugViewTag)
             }
 
             val debugConfig = Glean.configuration.copy(
-                logPings = intent.getBooleanExtra(LOG_PINGS_EXTRA_KEY, Glean.configuration.logPings),
-                pingTag = pingTag
+                logPings = intent.getBooleanExtra(LOG_PINGS_EXTRA_KEY, Glean.configuration.logPings)
             )
 
             // Finally set the default configuration before starting

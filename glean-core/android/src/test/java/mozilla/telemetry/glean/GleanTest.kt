@@ -104,14 +104,14 @@ class GleanTest {
     }
 
     @Test
-    fun `X-Debug-ID header is correctly added when pingTag is not null`() {
+    fun `X-Debug-ID header is correctly added when debug view tag is set`() {
         val server = getMockWebServer()
         resetGlean(context, Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port,
-            logPings = true,
-            pingTag = "this-ping-is-tagged"
+            logPings = true
         ))
 
+        Glean.setDebugViewTag("this-ping-is-tagged")
         Glean.handleBackgroundEvent()
 
         // Now trigger it to upload

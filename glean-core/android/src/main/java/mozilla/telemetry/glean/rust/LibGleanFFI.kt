@@ -560,6 +560,8 @@ internal interface LibGleanFFI : Library {
 
     fun glean_process_ping_upload_response(task: FfiPingUploadTask.ByReference, status: Int)
 
+    fun glean_set_debug_view_tag(value: String): Byte
+
     // Misc
 
     fun glean_str_free(ptr: Pointer)
