@@ -112,6 +112,7 @@ commands:
           command: make test-python
       - run:
           name: Detect and gather coredump files
+          when: always
           command: |
               mkdir -p ~/coredumps
               # Try to copy the core file(s). Don't fail if they don't exist.
