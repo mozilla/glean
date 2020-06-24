@@ -19,25 +19,6 @@ class GleanDebugUtilityTests: XCTestCase {
         OHHTTPStubs.removeAllStubs()
     }
 
-    func testHandleCustomUrlTagPings() {
-        // Check invalid tags: This should have the configuration keep the
-        // default value of nil because they don't match the accepted
-        // regex for ping tag names.
-        var url = URL(string: "test://glean?tagPings=This-tag-is-not-valid-because-it-is-too-long")
-        Glean.shared.handleCustomUrl(url: url!)
-        XCTAssertNil(Glean.shared.configuration?.pingTag)
-
-        url = URL(string: "test://glean?tagPings=Invalid_Chars@!!$")
-        Glean.shared.handleCustomUrl(url: url!)
-        XCTAssertNil(Glean.shared.configuration?.pingTag)
-
-        // Check valid tag: This should update the pingTag value of the
-        // configuration object.
-        url = URL(string: "test://glean?tagPings=Glean-Ping")
-        Glean.shared.handleCustomUrl(url: url!)
-        XCTAssertEqual("Glean-Ping", Glean.shared.configuration?.pingTag)
-    }
-
     func testHandleCustomUrlLogPings() {
         // Test initial state
         XCTAssertFalse(Glean.shared.configuration!.logPings)

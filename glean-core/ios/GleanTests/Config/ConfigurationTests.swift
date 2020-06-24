@@ -32,10 +32,6 @@ class ConfigurationTests: XCTestCase {
             "Default max events are set"
         )
         XCTAssertNil(
-            config?.pingTag,
-            "Default pingTag is set"
-        )
-        XCTAssertNil(
             config?.channel,
             "Default channel is set"
         )

@@ -435,6 +435,20 @@ public class Glean {
         }
     }
 
+    /// Set a tag to be applied to headers when uploading pings for debug view.
+    /// This is only meant to be used internally by the `GleanDebugActivity`.
+    ///
+    /// - parameters:
+    ///     * value: The value of the tag, which must be a valid HTTP header value.
+    public func setDebugViewTag(_ value: String) -> Bool {
+        if self.isInitialized() {
+            return glean_set_debug_view_tag(value).toBool()
+        } else {
+            self.logger.error("Glean must be initialized before setting a debug view tag.")
+            return false
+        }
+    }
+
     /// When applications are launched using the custom URL scheme, this helper function will process
     /// the URL and parse the debug commands
     ///

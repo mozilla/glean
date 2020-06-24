@@ -9,10 +9,6 @@ class GleanDebugUtility {
     // This struct is used for organizational purposes to keep the class constants in a single place
     struct Constants {
         static let logTag = "glean/GleanDebugUtility"
-        // Since ping tags are transmitted via HTTP in a header, and since they are displayed to the
-        // user on the Glean Debug View, we need to constrain the tag to a safe character set and
-        // limit the length to prevent possible attack vectors.
-        static let pingTagRegexPattern = "^[a-zA-Z0-9-]{1,20}$"
     }
 
     private static let logger = Logger(tag: Constants.logTag)
@@ -58,8 +54,12 @@ class GleanDebugUtility {
 
         if let parsedCommands = processCustomUrlQuery(urlQueryItems: params) {
             if let tag = parsedCommands.pingTag {
-                Glean.shared.configuration?.pingTag = tag
-                logger.debug("Pings tagged with: \(tag)")
+                if Glean.shared.setDebugViewTag(tag) {
+                    logger.debug("Pings tagged with: \(tag)")
+                } else {
+                    logger.error("Invalid ping tag name, aborting Glean debug tools")
+                    return
+                }
             }
 
             if let logPings = parsedCommands.logPings {
@@ -104,11 +104,6 @@ class GleanDebugUtility {
                 if pingTagName != nil {
                     logger.error(
                         "Multiple `tagPings` commands not allowed, aborting Glean debug tools")
-                    return nil
-                }
-
-                if !param.value!.matches(Constants.pingTagRegexPattern) {
-                    logger.error("Invalid ping tag name, aborting Glean debug tools")
                     return nil
                 }
 
