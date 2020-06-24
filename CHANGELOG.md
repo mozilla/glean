@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v31.1.2...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v31.2.0...main)
+
+# v31.2.0 (2020-06-24)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v31.1.2...v31.2.0)
 
 * General
     * Add rate limiting capabilities to the upload manager. ([1543612](https://bugzilla.mozilla.org/show_bug.cgi?id=1543612), [#974](https://github.com/mozilla/glean/pull/974))
