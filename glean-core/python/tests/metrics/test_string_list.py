@@ -122,7 +122,7 @@ def test_long_string_lists_are_truncated():
     )
 
     for i in range(21):
-        metric.add("value{}".format(i))
+        metric.add(f"value{i}")
 
     snapshot = metric.test_get_value()
     assert 20 == len(snapshot)

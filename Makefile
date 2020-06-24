@@ -6,6 +6,16 @@ help:
 
 GLEAN_PYENV := $(shell python3 -c "import sys; print('glean-core/python/.venv' + '.'.join(str(x) for x in sys.version_info[:2]))")
 GLEAN_PYDEPS := ${GLEAN_PYDEPS}
+# Read the `GLEAN_BUILD_VARIANT` variable, default to debug.
+# If set it is passed as a flag to cargo, so we prefix it with `--`
+ifeq ($(GLEAN_BUILD_VARIANT),)
+GLEAN_BUILD_PROFILE :=
+else ifeq ($(GLEAN_BUILD_VARIANT),debug)
+# `--debug` is invalid and `--profile debug` is unstable.
+GLEAN_BUILD_PROFILE :=
+else
+GLEAN_BUILD_PROFILE := --$(GLEAN_BUILD_VARIANT)
+endif
 
 # Setup environments
 
@@ -21,15 +31,13 @@ $(GLEAN_PYENV)/bin/python3:
 		$(GLEAN_PYENV)/bin/requirements-builder --level=min glean-core/python/setup.py > min_requirements.txt; \
 		$(GLEAN_PYENV)/bin/pip install -r min_requirements.txt; \
 	fi"
-	# black isn't installable on Python 3.5, but we can do without it
-	$(GLEAN_PYENV)/bin/pip install black || true
 
 # All builds
 
 build: build-rust
 
 build-rust: ## Build all Rust code
-	cargo build --all
+	cargo build --all $(GLEAN_BUILD_PROFILE)
 
 build-kotlin: ## Build all Kotlin code
 	./gradlew build -x test

@@ -126,12 +126,15 @@ commands:
       - run:
           name: Build Windows glean_ffi.dll
           command:
-            cargo build --target x86_64-pc-windows-gnu
+            cargo build --target x86_64-pc-windows-gnu --release
       - run:
           name: Build Windows wheel
           command: |
             cd glean-core/python
-            GLEAN_PYTHON_MINGW_X86_64_BUILD=1 .venv3.7/bin/python3 setup.py bdist_wheel
+            .venv3.7/bin/python3 setup.py bdist_wheel
+          environment:
+            GLEAN_PYTHON_MINGW_X86_64_BUILD: 1
+            GLEAN_BUILD_VARIANT: release
 
   build-windows-i686-wheel:
     steps:
@@ -146,12 +149,15 @@ commands:
       - run:
           name: Build Windows glean_ffi.dll
           command:
-            RUSTFLAGS="-C panic=abort" cargo build --target i686-pc-windows-gnu
+            RUSTFLAGS="-C panic=abort" cargo build --target i686-pc-windows-gnu --release
       - run:
           name: Build Windows wheel
           command: |
             cd glean-core/python
-            GLEAN_PYTHON_MINGW_I686_BUILD=1 .venv3.7/bin/python3 setup.py bdist_wheel
+             .venv3.7/bin/python3 setup.py bdist_wheel
+          environment:
+            GLEAN_PYTHON_MINGW_I686_BUILD: 1
+            GLEAN_BUILD_VARIANT: release
 
   install-python-windows-deps:
     steps:
@@ -768,31 +774,23 @@ jobs:
           name: Python lints
           command: make pythonlint
 
-  Python 3_5 tests:
-    docker:
-      - image: circleci/python:3.5.9
-    steps:
-      - checkout
-      - skip-if-doc-only
-      - test-python
-
-  Python 3_5 tests minimum dependencies:
-    docker:
-      - image: circleci/python:3.5.9
-    steps:
-      - checkout
-      - skip-if-doc-only
-      - run:
-          command: |
-              echo "export GLEAN_PYDEPS=min" >> $BASH_ENV
-      - test-python
-
   Python 3_6 tests:
     docker:
       - image: circleci/python:3.6.9
     steps:
       - checkout
       - skip-if-doc-only
+      - test-python
+
+  Python 3_6 tests minimum dependencies:
+    docker:
+      - image: circleci/python:3.6.9
+    steps:
+      - checkout
+      - skip-if-doc-only
+      - run:
+          command: |
+              echo "export GLEAN_PYDEPS=min" >> $BASH_ENV
       - test-python
 
   Python 3_7 tests:
@@ -902,6 +900,8 @@ jobs:
           name: Build Python extension
           command: |
             make build-python
+          environment:
+            GLEAN_BUILD_VARIANT: release
       - run:
           name: Build Linux wheel
           command: |
@@ -911,6 +911,8 @@ jobs:
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
             .venv3.7/bin/python3 -m twine upload wheelhouse/*
+          environment:
+            GLEAN_BUILD_VARIANT: release
       - install-ghr-linux
       - run:
           name: Publish to Github
@@ -929,6 +931,8 @@ jobs:
           name: Build and Test Python extension
           command: |
             make test-python
+          environment:
+            GLEAN_BUILD_VARIANT: release
       - run:
           name: Build macOS wheel
           command: |
@@ -937,6 +941,8 @@ jobs:
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
             .venv3.7/bin/python3 -m twine upload dist/*
+          environment:
+            GLEAN_BUILD_VARIANT: release
       - install-ghr-darwin
       - run:
           name: Publish to Github
@@ -1120,9 +1126,8 @@ workflows:
           filters:
             branches:
               only: main
-      - Python 3_5 tests
-      - Python 3_5 tests minimum dependencies
       - Python 3_6 tests
+      - Python 3_6 tests minimum dependencies
       - Python 3_7 tests
       - Python 3_8 tests
       - Python 3_8 tests minimum dependencies

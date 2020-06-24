@@ -155,19 +155,19 @@ class Dispatcher:
 
     # When True, tasks will be queued for running later, otherwise, they
     # are run immediately
-    _queue_initial_tasks = True  # type: bool
+    _queue_initial_tasks: bool = True
 
     # The preinit task queue
-    _preinit_task_queue = []  # type: List[Tuple[Callable, tuple, dict]]
+    _preinit_task_queue: List[Tuple[Callable, tuple, dict]] = []
 
     # The live task queue to run things in another thread
     _task_worker = _ThreadWorker()
 
     # The number of tasks that overflowed the queue
-    _overflow_count = 0  # type: int
+    _overflow_count: int = 0
 
     # When `True`, all tasks are run synchronously
-    _testing_mode = False  # type: bool
+    _testing_mode: bool = False
 
     # A threading lock for synchronized work
     _thread_lock = threading.RLock()

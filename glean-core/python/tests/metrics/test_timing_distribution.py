@@ -130,7 +130,7 @@ def test_time_unit_controls_truncation(monkeypatch):
             disabled=False,
             category="telemetry",
             lifetime=Lifetime.APPLICATION,
-            name="timing_distribution_{}".format(unit.name),
+            name=f"timing_distribution_{unit.name}",
             send_in_pings=["baseline"],
             time_unit=unit,
         )

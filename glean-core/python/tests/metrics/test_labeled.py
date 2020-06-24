@@ -190,13 +190,13 @@ def test_other_label_without_predefined_labels(ping_schema_url):
     )
 
     for i in range(21):
-        labeled_counter_metric["label_{}".format(i)].add(1)
+        labeled_counter_metric[f"label_{i}"].add(1)
 
     labeled_counter_metric["label_0"].add(1)
 
     assert 2 == labeled_counter_metric["label_0"].test_get_value()
     for i in range(1, 16):
-        assert 1 == labeled_counter_metric["label_{}".format(i)].test_get_value()
+        assert 1 == labeled_counter_metric[f"label_{i}"].test_get_value()
     assert 5 == labeled_counter_metric["__other__"].test_get_value()
 
     json_content = Glean.test_collect(_builtins.pings.metrics)
@@ -219,7 +219,7 @@ def test_other_label_without_predefined_labels_before_glean_init():
     Dispatcher.set_task_queueing(True)
 
     for i in range(21):
-        labeled_counter_metric["label_{}".format(i)].add(1)
+        labeled_counter_metric[f"label_{i}"].add(1)
     labeled_counter_metric["label_0"].add(1)
 
     Glean.initialize(
@@ -230,7 +230,7 @@ def test_other_label_without_predefined_labels_before_glean_init():
 
     assert 2 == labeled_counter_metric["label_0"].test_get_value()
     for i in range(1, 16):
-        assert 1 == labeled_counter_metric["label_{}".format(i)].test_get_value()
+        assert 1 == labeled_counter_metric[f"label_{i}"].test_get_value()
     assert 5 == labeled_counter_metric["__other__"].test_get_value()
 
 

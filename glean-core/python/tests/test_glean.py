@@ -438,7 +438,7 @@ def test_tempdir_is_cleared_multiprocess(safe_httpserver):
     pings_dir = Glean._data_dir / "pending_pings"
     pings_dir.mkdir()
 
-    for i in range(100):
+    for i in range(10):
         with (pings_dir / str(uuid.uuid4())).open("wb") as fd:
             fd.write(b"/data/path/\n")
             fd.write(b"{}\n")
@@ -451,7 +451,7 @@ def test_tempdir_is_cleared_multiprocess(safe_httpserver):
     p1.wait()
     assert p1.returncode == 0
 
-    assert 100 == len(safe_httpserver.requests)
+    assert 10 == len(safe_httpserver.requests)
 
 
 def test_set_application_id_and_version():

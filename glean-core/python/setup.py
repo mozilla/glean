@@ -25,8 +25,8 @@ else:
 if mingw_arch is not None:
     platform = "windows"
 
-if sys.version_info < (3, 5):
-    print("glean requires at least Python 3.5", file=sys.stderr)
+if sys.version_info < (3, 6):
+    print("glean requires at least Python 3.6", file=sys.stderr)
     sys.exit(1)
 
 from pathlib import Path  # noqa
@@ -54,12 +54,15 @@ requirements = [
 
 setup_requirements = ["cffi>=1.0.0"]
 
+# The environment variable `GLEAN_BUILD_VARIANT` can be set to `debug` or `release`
+buildvariant = os.environ.get("GLEAN_BUILD_VARIANT", "debug")
+
 if mingw_arch == "i686":
-    shared_object_build_dir = "../../target/i686-pc-windows-gnu/debug/"
+    shared_object_build_dir = "../../target/i686-pc-windows-gnu"
 elif mingw_arch == "x86_64":
-    shared_object_build_dir = "../../target/x86_64-pc-windows-gnu/debug/"
+    shared_object_build_dir = "../../target/x86_64-pc-windows-gnu"
 else:
-    shared_object_build_dir = "../../target/debug/"
+    shared_object_build_dir = "../../target"
 
 
 if platform == "linux":
@@ -71,8 +74,9 @@ elif platform.startswith("win"):
     # if running in a standard Python environment. Account for both.
     shared_object = "glean_ffi.dll"
 else:
-    raise ValueError("The platform {} is not supported.".format(sys.platform))
+    raise ValueError(f"The platform {sys.platform} is not supported.")
 
+shared_object_path = f"{shared_object_build_dir}/{buildvariant}/{shared_object}"
 
 shutil.copyfile("../metrics.yaml", "glean/metrics.yaml")
 shutil.copyfile("../pings.yaml", "glean/pings.yaml")
@@ -81,7 +85,7 @@ shutil.copyfile("../pings.yaml", "glean/pings.yaml")
 # circumstances, this will still show up as an error when running the `build`
 # command as a missing `package_data` file.
 try:
-    shutil.copyfile(shared_object_build_dir + shared_object, "glean/" + shared_object)
+    shutil.copyfile(shared_object_path, "glean/" + shared_object)
 except FileNotFoundError:
     pass
 
@@ -129,7 +133,6 @@ setup(
         "Intended Audience :: Developers",
         "Natural Language :: English",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",

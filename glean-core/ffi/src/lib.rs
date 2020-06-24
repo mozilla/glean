@@ -482,7 +482,10 @@ pub extern "C" fn glean_initialize_standalone_uploader(data_dir: FfiStr) -> u8 {
         // Init the upload manager to perform a synchronous ping directory scan.
         // Since this method is meant to be called from a process used exclusively
         // for uploading, this is fine.
-        let upload_manager = PingUploadManager::new(data_dir.to_string_fallible()?, true);
+        let mut upload_manager = PingUploadManager::new(data_dir.to_string_fallible()?, true);
+        upload_manager.set_rate_limiter(
+            /* seconds per interval */ 60, /* max tasks per interval */ 10,
+        );
         glean_core::upload::setup_upload_manager(upload_manager)?;
         log::info!("Glean initialized in upload-only mode");
         Ok(true)

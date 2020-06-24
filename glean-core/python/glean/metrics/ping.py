@@ -55,7 +55,7 @@ class PingType:
         Args:
             reason (enum, optional): The reason the ping was submitted.
         """
-        reason_string = None  # type: Optional[str]
+        reason_string: Optional[str] = None
         if reason is not None:
             reason_string = self._reason_codes[reason]
         else:
