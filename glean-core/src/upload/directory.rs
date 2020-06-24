@@ -113,7 +113,7 @@ impl PingDirectoryManager {
         let mut lines = BufReader::new(file).lines();
         if let (Some(Ok(path)), Some(Ok(body))) = (lines.next(), lines.next()) {
             if let Ok(parsed_body) = serde_json::from_str::<JsonValue>(&body) {
-                return Some(PingRequest::new(document_id, &path, parsed_body));
+                return Some(PingRequest::new(document_id, &path, parsed_body, None));
             } else {
                 log::warn!(
                     "Error processing ping file: {}. Can't parse ping contents as JSON.",

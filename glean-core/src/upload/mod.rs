@@ -238,14 +238,20 @@ impl PingUploadManager {
     }
 
     /// Creates a `PingRequest` and adds it to the queue.
-    pub fn enqueue_ping(&self, document_id: &str, path: &str, body: JsonValue) {
+    pub fn enqueue_ping(
+        &self,
+        document_id: &str,
+        path: &str,
+        body: JsonValue,
+        debug_view_tag: Option<&String>,
+    ) {
         log::trace!("Enqueuing ping {} at {}", document_id, path);
 
         let mut queue = self
             .queue
             .write()
             .expect("Can't write to pending pings queue.");
-        let request = PingRequest::new(document_id, path, body);
+        let request = PingRequest::new(document_id, path, body, debug_view_tag);
         queue.push_back(request);
     }
 
@@ -504,7 +510,7 @@ mod test {
         }
 
         // Enqueue a ping
-        upload_manager.enqueue_ping(DOCUMENT_ID, PATH, json!({}));
+        upload_manager.enqueue_ping(DOCUMENT_ID, PATH, json!({}), None);
 
         // Try and get the next request.
         // Verify request was returned
@@ -528,7 +534,7 @@ mod test {
         // Enqueue a ping multiple times
         let n = 10;
         for _ in 0..n {
-            upload_manager.enqueue_ping(DOCUMENT_ID, PATH, json!({}));
+            upload_manager.enqueue_ping(DOCUMENT_ID, PATH, json!({}), None);
         }
 
         // Verify a request is returned for each submitted ping
@@ -600,7 +606,7 @@ mod test {
 
         // Enqueue a ping multiple times
         for _ in 0..10 {
-            upload_manager.enqueue_ping(DOCUMENT_ID, PATH, json!({}));
+            upload_manager.enqueue_ping(DOCUMENT_ID, PATH, json!({}), None);
         }
 
         // Clear the queue
@@ -861,7 +867,7 @@ mod test {
         let path2 = format!("/submit/app_id/test-ping/1/{}", doc2);
 
         // Enqueue a ping
-        upload_manager.enqueue_ping(doc1, &path1, json!({}));
+        upload_manager.enqueue_ping(doc1, &path1, json!({}), None);
 
         // Try and get the first request.
         let req = match upload_manager.get_upload_task(false) {
@@ -871,7 +877,7 @@ mod test {
         assert_eq!(doc1, req.document_id);
 
         // Schedule the next one while the first one is "in progress"
-        upload_manager.enqueue_ping(doc2, &path2, json!({}));
+        upload_manager.enqueue_ping(doc2, &path2, json!({}), None);
 
         // Mark as processed
         upload_manager.process_ping_upload_response(&req.document_id, HttpStatus(200));
