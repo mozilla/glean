@@ -567,7 +567,7 @@ mod test {
 
         // Enqueue a ping multiple times
         for _ in 0..max_pings_per_interval {
-            upload_manager.enqueue_ping(DOCUMENT_ID, PATH, json!({}));
+            upload_manager.enqueue_ping(DOCUMENT_ID, PATH, json!({}), None);
         }
 
         // Verify a request is returned for each submitted ping
@@ -580,7 +580,7 @@ mod test {
 
         // Enqueue just one more ping.
         // We should still be within the default rate limit time.
-        upload_manager.enqueue_ping(DOCUMENT_ID, PATH, json!({}));
+        upload_manager.enqueue_ping(DOCUMENT_ID, PATH, json!({}), None);
 
         // Verify that we are indeed told to wait because we are at capacity
         assert_eq!(PingUploadTask::Wait, upload_manager.get_upload_task(false));
@@ -651,7 +651,7 @@ mod test {
 
     #[test]
     fn test_fills_up_queue_successfully_from_disk() {
-        let (mut glean, dir) = new_glean(None);
+        let (mut glean, _) = new_glean(None);
 
         // Register a ping for testing
         let ping_type = PingType::new("test", true, /* send_if_empty */ true, vec![]);
@@ -663,14 +663,11 @@ mod test {
             glean.submit_ping(&ping_type, None).unwrap();
         }
 
-        // Create a new upload_manager
-        let upload_manager = PingUploadManager::new(dir.path(), false);
-
         // Wait for processing of pending pings directory to finish.
-        let mut upload_task = upload_manager.get_upload_task(false);
+        let mut upload_task = glean.get_upload_task(false);
         while upload_task == PingUploadTask::Wait {
             thread::sleep(Duration::from_millis(10));
-            upload_task = upload_manager.get_upload_task(false);
+            upload_task = glean.get_upload_task(false);
         }
 
         // Verify the requests were properly enqueued
@@ -680,11 +677,11 @@ mod test {
                 _ => panic!("Expected upload manager to return the next request!"),
             }
 
-            upload_task = upload_manager.get_upload_task(false);
+            upload_task = glean.get_upload_task(false);
         }
 
         // Verify that after all requests are returned, none are left
-        assert_eq!(upload_manager.get_upload_task(false), PingUploadTask::Done);
+        assert_eq!(glean.get_upload_task(false), PingUploadTask::Done);
     }
 
     #[test]
@@ -698,25 +695,15 @@ mod test {
         // Submit a ping
         glean.submit_ping(&ping_type, None).unwrap();
 
-        // Create a new upload_manager
-        let upload_manager = PingUploadManager::new(&dir.path(), false);
-
-        // Wait for processing of pending pings directory to finish.
-        let mut upload_task = upload_manager.get_upload_task(false);
-        while upload_task == PingUploadTask::Wait {
-            thread::sleep(Duration::from_millis(10));
-            upload_task = upload_manager.get_upload_task(false);
-        }
-
         // Get the pending ping directory path
         let pending_pings_dir = dir.path().join(PENDING_PINGS_DIRECTORY);
 
         // Get the submitted PingRequest
-        match upload_task {
+        match glean.get_upload_task(false) {
             PingUploadTask::Upload(request) => {
                 // Simulate the processing of a sucessfull request
                 let document_id = request.document_id;
-                upload_manager.process_ping_upload_response(&document_id, HttpStatus(200));
+                glean.process_ping_upload_response(&document_id, HttpStatus(200));
                 // Verify file was deleted
                 assert!(!pending_pings_dir.join(document_id).exists());
             }
@@ -724,7 +711,7 @@ mod test {
         }
 
         // Verify that after request is returned, none are left
-        assert_eq!(upload_manager.get_upload_task(false), PingUploadTask::Done);
+        assert_eq!(glean.get_upload_task(false), PingUploadTask::Done);
     }
 
     #[test]
@@ -738,25 +725,15 @@ mod test {
         // Submit a ping
         glean.submit_ping(&ping_type, None).unwrap();
 
-        // Create a new upload_manager
-        let upload_manager = PingUploadManager::new(&dir.path(), false);
-
-        // Wait for processing of pending pings directory to finish.
-        let mut upload_task = upload_manager.get_upload_task(false);
-        while upload_task == PingUploadTask::Wait {
-            thread::sleep(Duration::from_millis(10));
-            upload_task = upload_manager.get_upload_task(false);
-        }
-
         // Get the pending ping directory path
         let pending_pings_dir = dir.path().join(PENDING_PINGS_DIRECTORY);
 
         // Get the submitted PingRequest
-        match upload_task {
+        match glean.get_upload_task(false) {
             PingUploadTask::Upload(request) => {
                 // Simulate the processing of a client error
                 let document_id = request.document_id;
-                upload_manager.process_ping_upload_response(&document_id, HttpStatus(404));
+                glean.process_ping_upload_response(&document_id, HttpStatus(404));
                 // Verify file was deleted
                 assert!(!pending_pings_dir.join(document_id).exists());
             }
@@ -764,12 +741,12 @@ mod test {
         }
 
         // Verify that after request is returned, none are left
-        assert_eq!(upload_manager.get_upload_task(false), PingUploadTask::Done);
+        assert_eq!(glean.get_upload_task(false), PingUploadTask::Done);
     }
 
     #[test]
     fn test_processes_correctly_server_error_upload_response() {
-        let (mut glean, dir) = new_glean(None);
+        let (mut glean, _) = new_glean(None);
 
         // Register a ping for testing
         let ping_type = PingType::new("test", true, /* send_if_empty */ true, vec![]);
@@ -778,24 +755,14 @@ mod test {
         // Submit a ping
         glean.submit_ping(&ping_type, None).unwrap();
 
-        // Create a new upload_manager
-        let upload_manager = PingUploadManager::new(dir.path(), false);
-
-        // Wait for processing of pending pings directory to finish.
-        let mut upload_task = upload_manager.get_upload_task(false);
-        while upload_task == PingUploadTask::Wait {
-            thread::sleep(Duration::from_millis(10));
-            upload_task = upload_manager.get_upload_task(false);
-        }
-
         // Get the submitted PingRequest
-        match upload_task {
+        match glean.get_upload_task(false) {
             PingUploadTask::Upload(request) => {
                 // Simulate the processing of a client error
                 let document_id = request.document_id;
-                upload_manager.process_ping_upload_response(&document_id, HttpStatus(500));
+                glean.process_ping_upload_response(&document_id, HttpStatus(500));
                 // Verify this ping was indeed re-enqueued
-                match upload_manager.get_upload_task(false) {
+                match glean.get_upload_task(false) {
                     PingUploadTask::Upload(request) => {
                         assert_eq!(document_id, request.document_id);
                     }
@@ -806,7 +773,7 @@ mod test {
         }
 
         // Verify that after request is returned, none are left
-        assert_eq!(upload_manager.get_upload_task(false), PingUploadTask::Done);
+        assert_eq!(glean.get_upload_task(false), PingUploadTask::Done);
     }
 
     #[test]
@@ -820,25 +787,15 @@ mod test {
         // Submit a ping
         glean.submit_ping(&ping_type, None).unwrap();
 
-        // Create a new upload_manager
-        let upload_manager = PingUploadManager::new(&dir.path(), false);
-
-        // Wait for processing of pending pings directory to finish.
-        let mut upload_task = upload_manager.get_upload_task(false);
-        while upload_task == PingUploadTask::Wait {
-            thread::sleep(Duration::from_millis(10));
-            upload_task = upload_manager.get_upload_task(false);
-        }
-
         // Get the pending ping directory path
         let pending_pings_dir = dir.path().join(PENDING_PINGS_DIRECTORY);
 
         // Get the submitted PingRequest
-        match upload_task {
+        match glean.get_upload_task(false) {
             PingUploadTask::Upload(request) => {
                 // Simulate the processing of a client error
                 let document_id = request.document_id;
-                upload_manager.process_ping_upload_response(&document_id, UnrecoverableFailure);
+                glean.process_ping_upload_response(&document_id, UnrecoverableFailure);
                 // Verify file was deleted
                 assert!(!pending_pings_dir.join(document_id).exists());
             }
@@ -846,7 +803,7 @@ mod test {
         }
 
         // Verify that after request is returned, none are left
-        assert_eq!(upload_manager.get_upload_task(false), PingUploadTask::Done);
+        assert_eq!(glean.get_upload_task(false), PingUploadTask::Done);
     }
 
     #[test]
@@ -908,5 +865,26 @@ mod test {
         // Since the scan was synchronous and the directory was empty,
         // we expect the upload task to always be `Done`.
         assert_eq!(PingUploadTask::Done, upload_manager.get_upload_task(false))
+    }
+
+    #[test]
+    fn test_adds_debug_view_header_to_requests_when_tag_is_set() {
+        let (mut glean, _) = new_glean(None);
+        glean.set_debug_view_tag("valid-tag");
+
+        // Register a ping for testing
+        let ping_type = PingType::new("test", true, /* send_if_empty */ true, vec![]);
+        glean.register_ping_type(&ping_type);
+
+        // Submit a ping
+        glean.submit_ping(&ping_type, None).unwrap();
+
+        // Get the submitted PingRequest
+        match glean.get_upload_task(false) {
+            PingUploadTask::Upload(request) => {
+                assert_eq!(request.headers.get("X-Debug-ID").unwrap(), "valid-tag")
+            }
+            _ => panic!("Expected upload manager to return the next request!"),
+        }
     }
 }
