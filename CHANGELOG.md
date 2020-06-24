@@ -7,6 +7,7 @@
 * Python
     * Support for Python 3.5 was dropped.
     * Python wheels are now shipped with Glean release builds, resulting in much smaller libraries ([#1002](https://github.com/mozilla/glean/pull/1002))
+    * The Python bindings now use `locale.getdefaultlocale()` rather than `locale.getlocale()` to determine the locale.
 
 [Full changelog](https://github.com/mozilla/glean/compare/v31.1.2...main)
 

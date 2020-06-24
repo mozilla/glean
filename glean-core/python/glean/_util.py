@@ -16,7 +16,11 @@ def get_locale_tag() -> str:
     Returns:
         locale (str): The locale string.
     """
-    value = locale.getlocale()[0]
+    # getdefaultlocale() returns the default locale specified for a user on the
+    # system, and isn't affected by the locale that may have been explicitly
+    # set by the application. This is used primarily to have a cross-platform
+    # way to get the locale in RFC 1766 format.
+    value = locale.getdefaultlocale()[0]
 
     # In some contexts, especially on Windows, there is no locale set. Use "und"
     # to indicate "undetermined", as recommended by the Unicode TR35:
