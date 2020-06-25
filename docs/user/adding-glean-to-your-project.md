@@ -116,6 +116,12 @@ If you are not on one of these platforms, you will need to build the Glean Pytho
 
 </div>
 
+<div data-lang="C#" class="tab">
+
+TODO. To be implemented in [bug 1643568](https://bugzilla.mozilla.org/show_bug.cgi?id=1643568).
+
+</div>
+
 {{#include ../tab_footer.md}}
 
 ### Adding new metrics
@@ -274,6 +280,12 @@ python3 -m glean_parser translate --help
 ```
 
 We recommend integrating this step into your project's documentation build. The details of that integration is left to you, since it depends on the documentation tool being used and how your project is set up.
+
+</div>
+
+<div data-lang="C#" class="tab">
+
+TODO. To be implemented in [bug 1643568](https://bugzilla.mozilla.org/show_bug.cgi?id=1643568).
 
 </div>
 

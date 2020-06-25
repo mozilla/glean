@@ -115,6 +115,12 @@ assert 1 == metrics.search.engines.test_get_num_recorded_errors(
 
 </div>
 
+<div data-lang="C#" class="tab">
+
+TODO. To be implemented in [bug 1648441](https://bugzilla.mozilla.org/show_bug.cgi?id=1648441).
+
+</div>
+
 {{#include ../../tab_footer.md}}
 
 ## Limits
@@ -137,4 +143,3 @@ assert 1 == metrics.search.engines.test_get_num_recorded_errors(
 
 * [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-string-list-metric-type/index.html)
 * [Python API docs](../../../python/glean/metrics/string_list.html)
-

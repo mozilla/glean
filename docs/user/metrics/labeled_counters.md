@@ -103,6 +103,12 @@ assert 0 == metrics.stability.crash_count.test_get_num_recorded_errors(
 
 </div>
 
+<div data-lang="C#" class="tab">
+
+TODO. To be implemented in [bug 1648437](https://bugzilla.mozilla.org/show_bug.cgi?id=1648437).
+
+</div>
+
 {{#include ../../tab_footer.md}}
 
 ## Limits
