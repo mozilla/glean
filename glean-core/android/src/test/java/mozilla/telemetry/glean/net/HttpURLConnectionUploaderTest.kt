@@ -35,7 +35,7 @@ import java.net.URI
 class HttpURLConnectionUploaderTest {
     private val testPath: String = "/some/random/path/not/important"
     private val testPing: String = "{ 'ping': 'test' }"
-    private val testDefaultConfig = Configuration().copy()
+    private val testDefaultConfig = Configuration()
 
     @Test
     fun `connection timeouts must be properly set`() {
