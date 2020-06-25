@@ -82,6 +82,12 @@ The generated documentation is saved in `build/docs/python`.
 
 </div>
 
+<div data-lang="C#" class="tab">
+
+TODO. To be implemented in [this bug](https://bugzilla.mozilla.org/show_bug.cgi?id=1648410).
+
+</div>
+
 {{#include ../tab_footer.md}}
 
 ### Checking links

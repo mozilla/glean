@@ -136,6 +136,39 @@ assert 1 == metrics.search_default.name.test_get_num_recorded_errors(
 
 </div>
 
+<div data-lang="C#" class="tab">
+
+```C#
+using static Mozilla.YourApplication.GleanMetrics.SearchDefault;
+
+// Record a value into the metric.
+SearchDefault.name.Set("duck duck go");
+// If it changed later, you can record the new value:
+SearchDefault.name.Set("wikipedia");
+```
+
+There are test APIs available too:
+
+```C#
+using static Mozilla.YourApplication.GleanMetrics.SearchDefault;
+
+// Was anything recorded?
+Assert.True(SearchDefault.name.TestHasValue());
+// Does the string metric have the expected value?
+// IMPORTANT: It may have been truncated -- see "Limits" below
+Assert.Equal("wikipedia", SearchDefault.name.TestGetValue());
+// Was the string truncated, and an error reported?
+Assert.Equal(
+    1,
+    SearchDefault.name.TestGetNumRecordedErrors(
+        ErrorType.InvalidValue
+    )
+);
+```
+
+
+</div>
+
 {{#include ../../tab_footer.md}}
 
 ## Limits

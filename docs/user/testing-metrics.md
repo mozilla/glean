@@ -144,6 +144,12 @@ assert (
 
 </div>
 
+<div data-lang="Python" class="tab">
+
+TODO. To be implemented in [this bug](https://bugzilla.mozilla.org/show_bug.cgi?id=1648448).
+
+</div>
+
 {{#include ../tab_footer.md}}
 
 ## Testing metrics for custom pings
@@ -241,6 +247,12 @@ assert metrics.url.visit.test_has_value()
 # Retrieve a snapshot of the recorded events
 assert 1 == metrics.url.visit.test_get_value()
 ```
+
+</div>
+
+<div data-lang="Python" class="tab">
+
+TODO. To be implemented in [this bug](https://bugzilla.mozilla.org/show_bug.cgi?id=1648448).
 
 </div>
 

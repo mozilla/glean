@@ -187,6 +187,14 @@ assert 1 == metrics.auth.local_time.test_get_num_recorded_errors(
 )
 ```
 
+</div>
+
+<div data-lang="C#" class="tab">
+
+TODO. To be implemented in [this bug](https://bugzilla.mozilla.org/show_bug.cgi?id=1648442).
+
+</div>
+
 {{#include ../../tab_footer.md}}
 
 ## Raw API
@@ -229,6 +237,12 @@ import org.mozilla.yourApplication.GleanMetrics.HistorySync
 val duration = SyncResult.status.syncs.took.toLong()
 HistorySync.setRawNanos(duration)
 ```
+
+</div>
+
+<div data-lang="C#" class="tab">
+
+TODO. To be implemented in [this bug](https://bugzilla.mozilla.org/show_bug.cgi?id=1648442).
 
 </div>
 

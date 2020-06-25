@@ -115,6 +115,12 @@ assert 1 == metrics.search.engines.test_get_num_recorded_errors(
 
 </div>
 
+<div data-lang="C#" class="tab">
+
+TODO. To be implemented in [this bug](https://bugzilla.mozilla.org/show_bug.cgi?id=1648441).
+
+</div>
+
 {{#include ../../tab_footer.md}}
 
 ## Limits

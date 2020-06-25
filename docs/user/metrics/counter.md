@@ -124,6 +124,32 @@ assert 1 == metrics.controls.refresh_pressed.test_get_num_recorded_errors(
 
 </div>
 
+<div data-lang="C#" class="tab">
+
+```C#
+using static Mozilla.YourApplication.GleanMetrics.Controls;
+
+Controls.refreshPressed.Add(); // Adds 1 to the counter.
+Controls.refreshPressed.Add(5); // Adds 5 to the counter.
+```
+
+There are test APIs available too:
+
+```C#
+using static Mozilla.YourApplication.GleanMetrics.Controls;
+
+// Was anything recorded?
+Assert.True(Controls.refreshPressed.TestHasValue());
+// Does the counter have the expected value?
+Assert.Equal(6, Controls.refreshPressed.TestGetValue());
+// Did the counter record an negative value?
+Assert.Equal(
+    1, Controls.refreshPressed.TestGetNumRecordedErrors(ErrorType.InvalidValue)
+);
+```
+
+</div>
+
 {{#include ../../tab_footer.md}}
 
 ## Limits

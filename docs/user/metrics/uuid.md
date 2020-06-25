@@ -112,6 +112,28 @@ assert uuid == metrics.user.client_id.test_get_value()
 
 </div>
 
+<div data-lang="C#" class="tab">
+
+```C#
+using static Mozilla.YourApplication.GleanMetrics.User;
+
+User.clientId.GenerateAndSet(); // Generate a new UUID and record it
+User.clientId.Set(System.Guid.NewGuid()); // Set a UUID explicitly
+```
+
+There are test APIs available too:
+
+```C#
+using static Mozilla.YourApplication.GleanMetrics.User;
+
+// Was anything recorded?
+Assert.True(User.clientId.TestHasValue());
+// Was it the expected value?
+Assert.Equal(uuid, User.clientId.TestGetValue());
+```
+
+</div>
+
 {{#include ../../tab_footer.md}}
 
 ## Limits
