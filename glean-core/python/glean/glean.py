@@ -211,26 +211,31 @@ class Glean:
         """
         # TODO: 1594184 Send the metrics ping
 
-        # WARNING: Do not run any tasks on the Dispatcher from here since this
-        # is called atexit.
+        def destroy_glean():
+            # Destroy the Glean object.
+            # Importantly, this does it on the same thread as Glean was
+            # initialized on, which *may* workaround a potential segfault /
+            # thread safety problem in LMDB.
+            # On Windows, this closes the handle to the database so that the
+            # data directory can be deleted without a multiple access
+            # violation.
+            if cls._initialized:
+                _ffi.lib.glean_destroy_glean()
+
+        Dispatcher.launch(destroy_glean)
 
         # Wait for the dispatcher thread to complete.
         Dispatcher._task_worker._shutdown_thread()
-
+        cls._initialized = False
         Dispatcher.reset()
+
+        # WARNING: Do not run any tasks on the Dispatcher beyond here since
+        # this is called atexit.
 
         # Wait for the subprocess to complete.  We only need to do this if
         # we know we are going to be deleting the data directory.
         if cls._destroy_data_dir and cls._data_dir.exists():
             ProcessDispatcher._wait_for_last_process()
-
-        # Destroy the Glean object.
-        # Importantly on Windows, this closes the handle to the database so
-        # that the data directory can be deleted without a multiple access
-        # violation.
-        if cls._initialized:
-            _ffi.lib.glean_destroy_glean()
-        cls._initialized = False
 
         # Remove the atexit handler or it will get called multiple times at
         # exit.
