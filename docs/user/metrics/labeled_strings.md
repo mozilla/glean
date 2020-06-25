@@ -90,7 +90,7 @@ assert 0 == metrics.login.errors_by_stage.test_get_num_recorded_errors(
 
 <div data-lang="C#" class="tab">
 
-TODO. To be implemented in [this bug](https://bugzilla.mozilla.org/show_bug.cgi?id=1648438).
+TODO. To be implemented in [bug 1648438](https://bugzilla.mozilla.org/show_bug.cgi?id=1648438).
 
 </div>
 

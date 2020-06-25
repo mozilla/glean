@@ -146,7 +146,7 @@ assert (
 
 <div data-lang="Python" class="tab">
 
-TODO. To be implemented in [this bug](https://bugzilla.mozilla.org/show_bug.cgi?id=1648448).
+TODO. To be implemented in [bug 1648448](https://bugzilla.mozilla.org/show_bug.cgi?id=1648448).
 
 </div>
 
@@ -252,7 +252,7 @@ assert 1 == metrics.url.visit.test_get_value()
 
 <div data-lang="Python" class="tab">
 
-TODO. To be implemented in [this bug](https://bugzilla.mozilla.org/show_bug.cgi?id=1648448).
+TODO. To be implemented in [bug 1648448](https://bugzilla.mozilla.org/show_bug.cgi?id=1648448).
 
 </div>
 

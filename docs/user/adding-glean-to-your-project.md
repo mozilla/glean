@@ -118,7 +118,7 @@ If you are not on one of these platforms, you will need to build the Glean Pytho
 
 <div data-lang="C#" class="tab">
 
-TODO. To be implemented in [this bug](https://bugzilla.mozilla.org/show_bug.cgi?id=1643568).
+TODO. To be implemented in [bug 1643568](https://bugzilla.mozilla.org/show_bug.cgi?id=1643568).
 
 </div>
 
@@ -285,7 +285,7 @@ We recommend integrating this step into your project's documentation build. The 
 
 <div data-lang="C#" class="tab">
 
-TODO. To be implemented in [this bug](https://bugzilla.mozilla.org/show_bug.cgi?id=1643568).
+TODO. To be implemented in [bug 1643568](https://bugzilla.mozilla.org/show_bug.cgi?id=1643568).
 
 </div>
 

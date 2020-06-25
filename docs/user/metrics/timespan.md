@@ -191,7 +191,7 @@ assert 1 == metrics.auth.local_time.test_get_num_recorded_errors(
 
 <div data-lang="C#" class="tab">
 
-TODO. To be implemented in [this bug](https://bugzilla.mozilla.org/show_bug.cgi?id=1648442).
+TODO. To be implemented in [bug 1648442](https://bugzilla.mozilla.org/show_bug.cgi?id=1648442).
 
 </div>
 
@@ -242,7 +242,7 @@ HistorySync.setRawNanos(duration)
 
 <div data-lang="C#" class="tab">
 
-TODO. To be implemented in [this bug](https://bugzilla.mozilla.org/show_bug.cgi?id=1648442).
+TODO. To be implemented in [bug 1648442](https://bugzilla.mozilla.org/show_bug.cgi?id=1648442).
 
 </div>
 
