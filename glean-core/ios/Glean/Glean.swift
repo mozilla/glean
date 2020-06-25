@@ -27,6 +27,7 @@ public class Glean {
 
     var initialized: Bool = false
     private var uploadEnabled: Bool = true
+    private var debugViewTag: String?
     var configuration: Configuration?
     private var observer: GleanLifecycleObserver?
 
@@ -108,6 +109,10 @@ public class Glean {
             // If initialization of Glean fails, bail out and don't initialize further
             if !self.initialized {
                 return
+            }
+
+            if self.debugViewTag != nil {
+                _ = self.setDebugViewTag(self.debugViewTag!)
             }
 
             // If any pings were registered before initializing, do so now
@@ -444,8 +449,8 @@ public class Glean {
         if self.isInitialized() {
             return glean_set_debug_view_tag(value).toBool()
         } else {
-            self.logger.error("Glean must be initialized before setting a debug view tag.")
-            return false
+            debugViewTag = value
+            return true
         }
     }
 
