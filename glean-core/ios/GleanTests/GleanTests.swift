@@ -310,7 +310,7 @@ class GleanTests: XCTestCase {
         Glean.shared.metricsPingScheduler.updateSentDate(now)
         // Restart glean
         Glean.shared.resetGlean(clearStores: false)
-        
+
         let host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
         stub(condition: isHost(host)) { data in
             let request = data as NSURLRequest
