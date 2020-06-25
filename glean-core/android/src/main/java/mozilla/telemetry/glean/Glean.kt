@@ -26,7 +26,6 @@ import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.getAndConsumeRustString
 import mozilla.telemetry.glean.rust.toBoolean
 import mozilla.telemetry.glean.rust.toByte
-import mozilla.telemetry.glean.GleanMetrics.GleanBaseline
 import mozilla.telemetry.glean.GleanMetrics.GleanInternalMetrics
 import mozilla.telemetry.glean.GleanMetrics.Pings
 import mozilla.telemetry.glean.net.BaseUploader

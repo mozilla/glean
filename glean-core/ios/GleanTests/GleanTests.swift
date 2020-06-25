@@ -108,7 +108,6 @@ class GleanTests: XCTestCase {
             let pingInfo = json?["ping_info"] as? [String: Any]
             XCTAssertEqual("foreground", pingInfo?["reason"] as? String)
 
-
             // We should not have any metrics for a ping with the "foreground" flag
             XCTAssertNil(json?["metrics"], "metrics is not nil")
 
