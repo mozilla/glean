@@ -55,8 +55,6 @@ internal class FfiConfiguration(
  * @property logPings whether to log ping contents to the console. This is only meant to be used
  *           internally by the `GleanDebugActivity`.
  * @property httpClient The HTTP client implementation to use for uploading pings.
- * @property pingTag String tag to be applied to headers when uploading pings for debug view.
- *           This is only meant to be used internally by the `GleanDebugActivity`.
  * @property channel the release channel the application is on, if known. This will be
  *           sent along with all the pings, in the `client_info` section.
  */
@@ -68,8 +66,7 @@ data class Configuration internal constructor(
     // NOTE: since only simple object or strings can be made `const val`s, if the
     // default values for the lines below are ever changed, they are required
     // to change in the public constructor below.
-    val httpClient: PingUploader = HttpURLConnectionUploader(),
-    val pingTag: String? = null
+    val httpClient: PingUploader = HttpURLConnectionUploader()
 ) {
     /**
      * Configuration for Glean.
@@ -97,7 +94,6 @@ data class Configuration internal constructor(
         maxEvents = maxEvents,
         logPings = DEFAULT_LOG_PINGS,
         httpClient = httpClient,
-        pingTag = null,
         channel = channel
     )
 

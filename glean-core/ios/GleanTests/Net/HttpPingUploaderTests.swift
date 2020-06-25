@@ -12,8 +12,7 @@ class HttpPingUploaderTests: XCTestCase {
     private let testPath = "/some/random/path/not/important"
     private let testPing = "{ \"ping\": \"test\" }"
     private let testConfig = Configuration(
-        logPings: true,
-        pingTag: "Tag"
+        logPings: true
     )
 
     override func tearDown() {

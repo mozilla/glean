@@ -10,7 +10,6 @@ import org.json.JSONException
 import com.sun.jna.Structure
 import com.sun.jna.Pointer
 import com.sun.jna.Union
-import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.rust.getRustString
 import mozilla.telemetry.glean.rust.RustBuffer
 
@@ -91,10 +90,6 @@ internal class PingRequest(
             // it's very unlikely that we get an exception here
             // unless there is some sort of memory corruption.
             Log.e(LOG_TAG, "Error while parsing headers for ping $documentId")
-        }
-
-        Glean.configuration.pingTag?.let {
-            headers.add(Pair("X-Debug-ID", it))
         }
 
         return headers

@@ -31,7 +31,19 @@ impl PingRequest {
     /// Creates a new PingRequest.
     ///
     /// Automatically creates the default request headers.
-    pub fn new(document_id: &str, path: &str, body: JsonValue) -> Self {
+    ///
+    /// ## Arguments
+    ///
+    /// * `document_id` - The UUID of the ping in question.
+    /// * `path` - The path to upload this ping to. The format should be `/submit/<app_id>/<ping_name>/<schema_version/<doc_id>`.
+    /// * `body` - A JSON object with the contents of the ping in question.
+    /// * `debug_view_tag` - The value of the `X-Debug-Id` header, if this is `None` the header is not added.
+    pub fn new(
+        document_id: &str,
+        path: &str,
+        body: JsonValue,
+        debug_view_tag: Option<&String>,
+    ) -> Self {
         // We want uploads to be gzip'd. Instead of doing this for each platform
         // we have language bindings for, apply compression here.
         let original_as_string = body.to_string();
@@ -44,7 +56,7 @@ impl PingRequest {
             document_id: document_id.into(),
             path: path.into(),
             body,
-            headers: Self::create_request_headers(add_gzip_header, body_len),
+            headers: Self::create_request_headers(add_gzip_header, body_len, debug_view_tag),
         }
     }
 
@@ -103,7 +115,11 @@ impl PingRequest {
     }
 
     /// Creates the default request headers.
-    fn create_request_headers(is_gzipped: bool, body_len: usize) -> HashMap<&'static str, String> {
+    fn create_request_headers(
+        is_gzipped: bool,
+        body_len: usize,
+        debug_view_tag: Option<&String>,
+    ) -> HashMap<&'static str, String> {
         let mut headers = HashMap::new();
         headers.insert("Date", Self::create_date_header_value(Utc::now()));
         headers.insert("X-Client-Type", "Glean".to_string());
@@ -116,6 +132,9 @@ impl PingRequest {
             headers.insert("Content-Encoding", "gzip".to_string());
         }
         headers.insert("X-Client-Version", crate::GLEAN_VERSION.to_string());
+        if let Some(tag) = debug_view_tag {
+            headers.insert("X-Debug-ID", tag.clone());
+        }
         headers
     }
 }
