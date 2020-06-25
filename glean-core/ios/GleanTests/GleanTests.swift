@@ -108,15 +108,9 @@ class GleanTests: XCTestCase {
             let pingInfo = json?["ping_info"] as? [String: Any]
             XCTAssertEqual("foreground", pingInfo?["reason"] as? String)
 
-            // Ensure there is only the expected locale string metric
-            let metrics = json?["metrics"] as? [String: Any]
-            let strings = metrics?["string"] as? [String: Any]
-            XCTAssertEqual(1, strings?.count, "Must contain only the expected metric")
-            let locale = strings?["glean.baseline.locale"] as? String
-            XCTAssertNotNil(locale, "Locale is not nil")
 
-            // We should not have a duration for a ping with the "foreground" flag
-            XCTAssertNil(metrics?["timespan"], "Duration is not nil")
+            // We should not have any metrics for a ping with the "foreground" flag
+            XCTAssertNil(json?["metrics"], "metrics is not nil")
 
             DispatchQueue.main.async {
                 // let the response get processed before we mark the expectation fulfilled
@@ -153,15 +147,8 @@ class GleanTests: XCTestCase {
             let pingInfo = json?["ping_info"] as? [String: Any]
             XCTAssertEqual("dirty_startup", pingInfo?["reason"] as? String)
 
-            // Ensure there is only the expected locale string metric
-            let metrics = json?["metrics"] as? [String: Any]
-            let strings = metrics?["string"] as? [String: Any]
-            XCTAssertEqual(1, strings?.count, "Must contain only the expected metric")
-            let locale = strings?["glean.baseline.locale"] as? String
-            XCTAssertNotNil(locale, "Locale is not nil")
-
-            // We should not have a duration for a ping with the "dirty_startup" flag
-            XCTAssertNil(metrics?["timespan"])
+            // We should not have any metrics for a ping with the "dirty_startup" flag
+            XCTAssertNil(json?["metrics"], "metrics is not nil")
 
             DispatchQueue.main.async {
                 // let the response get processed before we mark the expectation fulfilled

@@ -232,19 +232,16 @@ class GleanTest {
                     assertEquals(1, json.getJSONArray("events").length())
                 } else if (docType == "baseline") {
                     val seq = json.getJSONObject("ping_info").getInt("seq")
-                    val baselineMetricsObject = json.getJSONObject("metrics")
-                    val baselineStringMetrics = baselineMetricsObject.getJSONObject("string")
-                    assertEquals(1, baselineStringMetrics.length())
-                    assertNotNull(baselineStringMetrics.get("glean.baseline.locale"))
 
                     // There are three baseline pings:
                     //   - seq: 0, reason: foreground, duration: null
                     //   - seq: 1, reason: background, duration: non-null
                     //   - seq: 2, reason: foreground, duration: null
                     if (seq == 0 || seq == 2) {
-                        assertFalse(baselineMetricsObject.has("timespan"))
+                        assertFalse(json.has("metrics"))
                         assertEquals("foreground", json.getJSONObject("ping_info").getString("reason"))
                     } else if (seq == 1) {
+                        val baselineMetricsObject = json.getJSONObject("metrics")
                         assertEquals("background", json.getJSONObject("ping_info").getString("reason"))
                         val baselineTimespanMetrics = baselineMetricsObject.getJSONObject("timespan")
                         assertEquals(1, baselineTimespanMetrics.length())
@@ -285,14 +282,9 @@ class GleanTest {
             assertEquals("dirty_startup", baselineJson.getJSONObject("ping_info")["reason"])
             checkPingSchema(baselineJson)
 
-            val baselineMetricsObject = baselineJson.getJSONObject("metrics")
-            val baselineStringMetrics = baselineMetricsObject.getJSONObject("string")
-            assertEquals(1, baselineStringMetrics.length())
-            assertNotNull(baselineStringMetrics.get("glean.baseline.locale"))
-
             assertFalse(
-                "The baseline ping from startup must not have a duration",
-                baselineMetricsObject.has("timespan")
+                "The baseline ping from startup must not have any metrics",
+                baselineJson.has("metrics")
             )
         } finally {
             server.shutdown()
