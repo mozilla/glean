@@ -23,11 +23,6 @@ class ConfigurationTests: XCTestCase {
             "Default endpoint is set"
         )
         XCTAssertEqual(
-            config?.userAgent,
-            Configuration.Constants.defaultUserAgent,
-            "Default UserAgent is set"
-        )
-        XCTAssertEqual(
             config?.logPings,
             Configuration.Constants.defaultLogPings,
             "Default log pings is set"

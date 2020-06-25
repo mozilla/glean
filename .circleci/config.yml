@@ -110,9 +110,16 @@ commands:
       - run:
           name: Python tests
           command: make test-python
+      - run:
+          name: Detect and gather coredump files
+          when: always
+          command: |
+              mkdir -p ~/coredumps
+              # Try to copy the core file(s). Don't fail if they don't exist.
+              cp core.* ~/coredumps || true
       - store_artifacts:
-          path: core
-          destination: core
+          path: ~/coredumps
+          destination: coredumps
 
   build-windows-x86_64-wheel:
     steps:
@@ -438,95 +445,6 @@ jobs:
       - store_test_results:
           path: ~/test-results
 
-  android-packaging:
-    docker:
-      - image: circleci/android:api-28-ndk
-    steps:
-      - android-setup
-      - install-mingw
-      - run:
-          name: Install llvm
-          command: |
-            sudo apt install -y llvm-7
-            # We need this tool under its common name
-            sudo ln -s /usr/lib/llvm-7/bin/dsymutil /usr/bin/dsymutil
-      - run:
-          name: Add darwin target
-          command: |
-            rustup target add x86_64-apple-darwin
-      - attach_workspace:
-          at: macos
-      - run:
-          name: Put macOS build in place
-          command: |
-            mkdir -p target/x86_64-apple-darwin/release
-            cp -a macos/target/release/libglean_ffi.dylib target/x86_64-apple-darwin/release
-      - run:
-          name: Package a release artifact
-          command: |
-            export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_PC_WINDOWS_GNU_RUSTFLAGS="-C linker=x86_64-w64-mingw32-gcc"
-            export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_PC_WINDOWS_GNU_AR=x86_64-w64-mingw32-ar
-            export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_PC_WINDOWS_GNU_CC=x86_64-w64-mingw32-gcc
-            # A hack to force-skip macOS builds.
-            # We re-use the dylib generated in the "macOS release build" step.
-            export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_AR=true
-            export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_CC=true
-            export RUSTC=$(pwd)/bin/rust-wrapper-hack.sh
-
-            echo "rust.targets=arm,arm64,x86_64,x86,linux-x86-64,win32-x86-64-gnu,darwin" > local.properties
-
-            ./gradlew --no-daemon assembleRelease
-            ./gradlew --no-daemon publish
-          environment:
-            GRADLE_OPTS: -Xmx2048m
-            TARGET_CFLAGS: -DNDEBUG
-      - store_artifacts:
-          path: build/maven
-          destination: build
-      - persist_to_workspace:
-          root: .
-          paths: build
-
-  android-release:
-    docker:
-      - image: circleci/rust:latest
-    steps:
-      - checkout
-      - attach_workspace:
-          at: .
-      - install-ghr-linux
-      - run:
-          name: Publish a release on GitHub
-          command: |
-            VERSION="${CIRCLE_TAG}"
-            RAWVERSION="${VERSION#v}"
-            VERSIONFILE=.buildconfig.yml
-            if ! grep -q "libraryVersion: ${RAWVERSION}" "${VERSIONFILE}"; then
-               echo "=================================================="
-               echo "${VERSIONFILE} does not contain the expected tagged version ${RAWVERSION}"
-               echo "Instead it has:"
-               grep "libraryVersion:" "${VERSIONFILE}"
-               echo "Ensure the tag corresponds to the version in ${VERSIONFILE}"
-               echo "=================================================="
-               exit 1
-            fi
-
-            PKGDIR=./build/package
-            # Collect all files into a single directory
-            mkdir -p ${PKGDIR}
-            # The glean-gradle-plugin also creates releases with an "unspecified" version
-            # when used internally. We don't need to ship those.
-            find ./build/maven/org/mozilla/telemetry/ \( \( -name "*.aar*" -or -name "*.jar*" -or -name "*.pom*" \) -and -not -name "*unspecified*" \) \
-              -exec cp {} ${PKGDIR} \;
-
-            # Bundle all release files up into a single zip file
-            ZIPFILE=glean-${VERSION}.zip
-            zip --junk-paths ${ZIPFILE} ${PKGDIR}/*
-            mv ${ZIPFILE} ${PKGDIR}
-
-            # Upload to GitHub
-            ./ghr -replace ${VERSION} ${PKGDIR}
-
   Generate Kotlin documentation:
     docker:
       - image: circleci/android:api-28-ndk
@@ -746,21 +664,6 @@ jobs:
           name: Release Carthage archive on GitHub
           command: |
             ./ghr -replace "${CIRCLE_TAG}" Glean.framework.zip
-
-  macOS release build:
-    macos:
-      xcode: "11.5.0"
-    steps:
-      - install-rustup
-      - setup-rust-toolchain
-      - checkout
-      - run:
-          name: Build for release
-          command: |
-              cargo build --release --all
-      - persist_to_workspace:
-          root: .
-          paths: target/release/libglean_ffi.dylib
 
   ###########################################################################
   # Python
@@ -1178,19 +1081,6 @@ workflows:
 
   release:
     jobs:
-      - Android tests:
-          filters: *release-filters
-      - android-packaging:
-          requires:
-            - Android tests
-            - macOS release build
-          filters: *release-filters
-      - android-release:
-          requires:
-            - android-packaging
-          filters: *release-filters
-      - macOS release build:
-          filters: *release-filters
       - Python 3_7 tests:
           filters: *release-filters
       - pypi-linux-release:

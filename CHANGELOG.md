@@ -1,6 +1,13 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v31.2.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v31.2.1...main)
+
+# v31.2.1 (2020-06-25)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v31.2.0...v31.2.1)
+
+* Python
+    * BUGFIX: Core metrics are now present in every ping, even if submit is called before initialize has a chance to complete. ([#1012](https://github.com/mozilla/glean/pull/1012))
 
 # v31.2.0 (2020-06-24)
 

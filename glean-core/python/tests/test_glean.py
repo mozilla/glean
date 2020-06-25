@@ -682,3 +682,51 @@ def test_confirm_enums_match_values_in_glean_parser():
     ]:
         for name in gp_enum.__members__.keys():
             assert g_enum[name.upper()].value == gp_enum[name].value
+
+
+def test_presubmit_makes_a_valid_ping(tmpdir, ping_schema_url, monkeypatch):
+    # Bug 1648140: Submitting a ping prior to initialize meant that the core
+    # metrics wouldn't yet be set.
+
+    info_path = Path(str(tmpdir)) / "info.txt"
+
+    Glean._reset()
+
+    ping_name = "preinit_ping"
+    ping = PingType(
+        name=ping_name, include_client_id=True, send_if_empty=True, reason_codes=[]
+    )
+
+    # This test relies on testing mode to be disabled, since we need to prove the
+    # real-world async behaviour of this.
+    Dispatcher._testing_mode = False
+    Dispatcher._queue_initial_tasks = True
+
+    # Submit a ping prior to calling initialize
+    ping.submit()
+    Glean.initialize(
+        application_id=GLEAN_APP_ID,
+        application_version=glean_version,
+        upload_enabled=True,
+        configuration=Glean._configuration,
+    )
+
+    monkeypatch.setattr(
+        Glean._configuration, "ping_uploader", _RecordingUploader(info_path)
+    )
+
+    # Wait until the work is complete
+    Dispatcher._task_worker._queue.join()
+
+    while not info_path.exists():
+        time.sleep(0.1)
+
+    with info_path.open("r") as fd:
+        url_path = fd.readline()
+        serialized_ping = fd.readline()
+
+    assert ping_name == url_path.split("/")[3]
+
+    assert 0 == validate_ping.validate_ping(
+        io.StringIO(serialized_ping), sys.stdout, schema_url=ping_schema_url,
+    )
