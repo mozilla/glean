@@ -12,8 +12,11 @@ use std::path::{Path, PathBuf};
 use serde_json::Value as JsonValue;
 use uuid::Uuid;
 
-use super::PingRequest;
 use crate::{DELETION_REQUEST_PINGS_DIRECTORY, PENDING_PINGS_DIRECTORY};
+
+/// A representation of the data extracted from a ping file,
+/// this will contain the document_id, path and JSON encoded body of a ping, respectively.
+type PingPayload = (String, String, JsonValue);
 
 /// Get the file name from a path as a &str.
 ///
@@ -82,14 +85,14 @@ impl PingDirectoryManager {
         };
     }
 
-    /// Reads a ping file and returns a `PingRequest` from it.
+    /// Reads a ping file and returns the data from it.
     ///
     /// If the file is not properly formatted, it will be deleted and `None` will be returned.
     ///
     /// ## Arguments
     ///
     /// * `document_id` - The UUID of the ping file to be processed
-    pub fn process_file(&self, document_id: &str) -> Option<PingRequest> {
+    pub fn process_file(&self, document_id: &str) -> Option<PingPayload> {
         let path = match self.get_file_path(document_id) {
             Some(path) => path,
             None => {
@@ -113,7 +116,7 @@ impl PingDirectoryManager {
         let mut lines = BufReader::new(file).lines();
         if let (Some(Ok(path)), Some(Ok(body))) = (lines.next(), lines.next()) {
             if let Ok(parsed_body) = serde_json::from_str::<JsonValue>(&body) {
-                return Some(PingRequest::new(document_id, &path, parsed_body, None));
+                return Some((document_id.to_string(), path, parsed_body));
             } else {
                 log::warn!(
                     "Error processing ping file: {}. Can't parse ping contents as JSON.",
@@ -130,7 +133,7 @@ impl PingDirectoryManager {
         None
     }
 
-    /// Process the pings directory and return a vector of `PingRequest`s
+    /// Process the pings directory and return a vector with the ping data
     /// corresponding to each valid ping file in the directory.
     /// This vector will be ordered by file `modified_date`.
     ///
@@ -141,8 +144,9 @@ impl PingDirectoryManager {
     ///
     /// # Return value
     ///
-    /// `Vec<PingRequest>` - see [`PingRequest`](struct.PingRequest.html) for more information.
-    pub fn process_dir(&self) -> Vec<PingRequest> {
+    /// `Vec<(String, String, JsonValue)>` -
+    ///     a vector of tuples containing the document_id, path and body of each request.
+    pub fn process_dir(&self) -> Vec<PingPayload> {
         log::info!("Processing persisted pings.");
 
         // Walk the pings directory and process each file in it,
@@ -162,11 +166,11 @@ impl PingDirectoryManager {
                         return None;
                     }
                     // In case we can't process the file we just ignore it.
-                    if let Some(request) = self.process_file(file_name) {
+                    if let Some(data) = self.process_file(file_name) {
                         // Get the modified date of the file, which will later be used
                         // for sorting the resulting vector.
                         let modified_date = fs::metadata(&path).and_then(|data| data.modified());
-                        return Some((modified_date, request));
+                        return Some((modified_date, data));
                     }
                 };
                 None
@@ -184,11 +188,8 @@ impl PingDirectoryManager {
             }
         });
 
-        // Return the vector leaving only the `PingRequest`s in it
-        pending_pings
-            .into_iter()
-            .map(|(_, request)| request)
-            .collect()
+        // Return the vector leaving only the `PingPayload`s in it
+        pending_pings.into_iter().map(|(_, data)| data).collect()
     }
 
     /// Get all the ping entries in all ping directories.
@@ -228,7 +229,7 @@ mod test {
     use crate::tests::new_glean;
 
     #[test]
-    fn test_doesnt_panic_if_no_pending_pings_directory() {
+    fn doesnt_panic_if_no_pending_pings_directory() {
         let dir = tempfile::tempdir().unwrap();
         let directory_manager = PingDirectoryManager::new(dir.path());
 
@@ -237,7 +238,7 @@ mod test {
     }
 
     #[test]
-    fn test_creates_requests_correctly_from_valid_ping_file() {
+    fn gets_correct_data_from_valid_ping_file() {
         let (mut glean, dir) = new_glean(None);
 
         // Register a ping for testing
@@ -250,18 +251,18 @@ mod test {
         let directory_manager = PingDirectoryManager::new(dir.path());
 
         // Try and process the pings folder
-        let requests = directory_manager.process_dir();
+        let data = directory_manager.process_dir();
 
         // Verify there is just the one request
-        assert_eq!(requests.len(), 1);
+        assert_eq!(data.len(), 1);
 
         // Verify request was returned for the "test" ping
-        let request_ping_type = requests[0].path.split('/').nth(3).unwrap();
+        let request_ping_type = data[0].1.split('/').nth(3).unwrap();
         assert_eq!(request_ping_type, "test");
     }
 
     #[test]
-    fn test_non_uuid_files_are_deleted_and_ignored() {
+    fn non_uuid_files_are_deleted_and_ignored() {
         let (mut glean, dir) = new_glean(None);
 
         // Register a ping for testing
@@ -280,13 +281,13 @@ mod test {
         File::create(&not_uuid_path).unwrap();
 
         // Try and process the pings folder
-        let requests = directory_manager.process_dir();
+        let data = directory_manager.process_dir();
 
         // Verify there is just the one request
-        assert_eq!(requests.len(), 1);
+        assert_eq!(data.len(), 1);
 
         // Verify request was returned for the "test" ping
-        let request_ping_type = requests[0].path.split('/').nth(3).unwrap();
+        let request_ping_type = data[0].1.split('/').nth(3).unwrap();
         assert_eq!(request_ping_type, "test");
 
         // Verify that file was indeed deleted
@@ -294,7 +295,7 @@ mod test {
     }
 
     #[test]
-    fn test_wrongly_formatted_files_are_deleted_and_ignored() {
+    fn wrongly_formatted_files_are_deleted_and_ignored() {
         let (mut glean, dir) = new_glean(None);
 
         // Register a ping for testing
@@ -313,13 +314,13 @@ mod test {
         File::create(&wrong_contents_file_path).unwrap();
 
         // Try and process the pings folder
-        let requests = directory_manager.process_dir();
+        let data = directory_manager.process_dir();
 
         // Verify there is just the one request
-        assert_eq!(requests.len(), 1);
+        assert_eq!(data.len(), 1);
 
         // Verify request was returned for the "test" ping
-        let request_ping_type = requests[0].path.split('/').nth(3).unwrap();
+        let request_ping_type = data[0].1.split('/').nth(3).unwrap();
         assert_eq!(request_ping_type, "test");
 
         // Verify that file was indeed deleted
@@ -327,7 +328,7 @@ mod test {
     }
 
     #[test]
-    fn test_non_json_ping_body_files_are_deleted_and_ignored() {
+    fn non_json_ping_body_files_are_deleted_and_ignored() {
         let (mut glean, dir) = new_glean(None);
 
         // Register a ping for testing
@@ -352,13 +353,13 @@ mod test {
             .unwrap();
 
         // Try and process the pings folder
-        let requests = directory_manager.process_dir();
+        let data = directory_manager.process_dir();
 
         // Verify there is just the one request
-        assert_eq!(requests.len(), 1);
+        assert_eq!(data.len(), 1);
 
         // Verify request was returned for the "test" ping
-        let request_ping_type = requests[0].path.split('/').nth(3).unwrap();
+        let request_ping_type = data[0].1.split('/').nth(3).unwrap();
         assert_eq!(request_ping_type, "test");
 
         // Verify that file was indeed deleted
@@ -366,7 +367,7 @@ mod test {
     }
 
     #[test]
-    fn test_takes_deletion_request_pings_into_account_while_processing() {
+    fn takes_deletion_request_pings_into_account_while_processing() {
         let (glean, dir) = new_glean(None);
 
         // Submit a deletion request ping to populate deletion request folder.
@@ -379,10 +380,12 @@ mod test {
         let directory_manager = PingDirectoryManager::new(dir.path());
 
         // Try and process the pings folder
-        let requests = directory_manager.process_dir();
+        let data = directory_manager.process_dir();
 
-        assert_eq!(requests.len(), 1);
+        assert_eq!(data.len(), 1);
 
-        assert!(requests[0].is_deletion_request());
+        // Verify request was returned for the "deletion-request" ping
+        let request_ping_type = data[0].1.split('/').nth(3).unwrap();
+        assert_eq!(request_ping_type, "deletion-request");
     }
 }
