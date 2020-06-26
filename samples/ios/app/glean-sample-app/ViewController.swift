@@ -48,7 +48,8 @@ class ViewController: UIViewController {
         // declared in the metrics.yaml file under the 'extra_keys' section of an event metric.
         BrowserEngagement.click.record(extra: [
             .key1: "extra_value_1",
-            .key2: "extra_value_2"
+            .key2: "extra_value_2",
+            .debug: "debug"
         ])
     }
 
