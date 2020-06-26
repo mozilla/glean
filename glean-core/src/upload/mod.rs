@@ -620,6 +620,11 @@ mod test {
     fn test_clearing_the_queue_doesnt_clear_deletion_request_pings() {
         let (mut glean, _) = new_glean(None);
 
+        // Wait for processing of pending pings directory to finish.
+        while glean.get_upload_task(false) == PingUploadTask::Wait {
+            thread::sleep(Duration::from_millis(10));
+        }
+
         // Register a ping for testing
         let ping_type = PingType::new("test", true, /* send_if_empty */ true, vec![]);
         glean.register_ping_type(&ping_type);
@@ -652,6 +657,11 @@ mod test {
     #[test]
     fn test_fills_up_queue_successfully_from_disk() {
         let (mut glean, _) = new_glean(None);
+
+        // Wait for processing of pending pings directory to finish.
+        while glean.get_upload_task(false) == PingUploadTask::Wait {
+            thread::sleep(Duration::from_millis(10));
+        }
 
         // Register a ping for testing
         let ping_type = PingType::new("test", true, /* send_if_empty */ true, vec![]);
@@ -688,6 +698,11 @@ mod test {
     fn test_processes_correctly_success_upload_response() {
         let (mut glean, dir) = new_glean(None);
 
+        // Wait for processing of pending pings directory to finish.
+        while glean.get_upload_task(false) == PingUploadTask::Wait {
+            thread::sleep(Duration::from_millis(10));
+        }
+
         // Register a ping for testing
         let ping_type = PingType::new("test", true, /* send_if_empty */ true, vec![]);
         glean.register_ping_type(&ping_type);
@@ -718,6 +733,11 @@ mod test {
     fn test_processes_correctly_client_error_upload_response() {
         let (mut glean, dir) = new_glean(None);
 
+        // Wait for processing of pending pings directory to finish.
+        while glean.get_upload_task(false) == PingUploadTask::Wait {
+            thread::sleep(Duration::from_millis(10));
+        }
+
         // Register a ping for testing
         let ping_type = PingType::new("test", true, /* send_if_empty */ true, vec![]);
         glean.register_ping_type(&ping_type);
@@ -747,6 +767,11 @@ mod test {
     #[test]
     fn test_processes_correctly_server_error_upload_response() {
         let (mut glean, _) = new_glean(None);
+
+        // Wait for processing of pending pings directory to finish.
+        while glean.get_upload_task(false) == PingUploadTask::Wait {
+            thread::sleep(Duration::from_millis(10));
+        }
 
         // Register a ping for testing
         let ping_type = PingType::new("test", true, /* send_if_empty */ true, vec![]);
@@ -779,6 +804,11 @@ mod test {
     #[test]
     fn test_processes_correctly_unrecoverable_upload_response() {
         let (mut glean, dir) = new_glean(None);
+
+        // Wait for processing of pending pings directory to finish.
+        while glean.get_upload_task(false) == PingUploadTask::Wait {
+            thread::sleep(Duration::from_millis(10));
+        }
 
         // Register a ping for testing
         let ping_type = PingType::new("test", true, /* send_if_empty */ true, vec![]);
@@ -850,10 +880,7 @@ mod test {
         upload_manager.process_ping_upload_response(&req.document_id, HttpStatus(200));
 
         // ... and then we're done.
-        match upload_manager.get_upload_task(false) {
-            PingUploadTask::Done => {}
-            _ => panic!("Expected upload manager to return the next request!"),
-        }
+        assert_eq!(upload_manager.get_upload_task(false), PingUploadTask::Done);
     }
 
     #[test]
@@ -870,6 +897,12 @@ mod test {
     #[test]
     fn test_adds_debug_view_header_to_requests_when_tag_is_set() {
         let (mut glean, _) = new_glean(None);
+
+        // Wait for processing of pending pings directory to finish.
+        while glean.get_upload_task(false) == PingUploadTask::Wait {
+            thread::sleep(Duration::from_millis(10));
+        }
+
         glean.set_debug_view_tag("valid-tag");
 
         // Register a ping for testing
