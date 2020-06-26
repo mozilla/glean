@@ -55,7 +55,7 @@ public class Glean {
         self.initialized = false
     }
 
-    // swiftlint:disable function_body_length
+    // swiftlint:disable function_body_length cyclomatic_complexity
     /// Initialize the Glean SDK.
     ///
     /// This should only be initialized once by the application, and not by
@@ -174,7 +174,7 @@ public class Glean {
         }
     }
 
-    // swiftlint:enable function_body_length
+    // swiftlint:enable function_body_length cyclomatic_complexity
 
     /// Initialize the core metrics internally managed by Glean (e.g. client id).
     private func initializeCoreMetrics() {
