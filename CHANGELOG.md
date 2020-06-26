@@ -2,6 +2,10 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v31.2.1...main)
 
+* Android
+    * BUGFIX: Compile dependencies with `NDEBUG` to avoid linking unavailable symbols.
+      This fixes a crash due to a missing `stderr` symbol on older Android ([#1020](https://github.com/mozilla/glean/pull/1020))
+
 # v31.2.1 (2020-06-25)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v31.2.0...v31.2.1)
