@@ -39,7 +39,8 @@ open class MainActivity : AppCompatActivity() {
             BrowserEngagement.click.record(
                     mapOf(
                         BrowserEngagement.clickKeys.key1 to "extra_value_1",
-                        BrowserEngagement.clickKeys.key2 to "extra_value_2"
+                        BrowserEngagement.clickKeys.key2 to "extra_value_2",
+                        BrowserEngagement.clickKeys.debug to "Debug"
                     )
             )
         }

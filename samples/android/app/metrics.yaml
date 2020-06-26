@@ -26,6 +26,8 @@ browser.engagement:
         description: "This is key one"
       key2:
         description: "This is key two"
+      debug:
+        description: "Debug"
     expires: 2100-01-01
 
   event_no_keys:
