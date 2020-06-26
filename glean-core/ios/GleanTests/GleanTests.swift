@@ -296,4 +296,30 @@ class GleanTests: XCTestCase {
         // Reset variable so as to not interfere with other tests.
         Glean.shared.isMainProcess = true
     }
+
+    func testSettingDebugViewTagBeforeInitialization() {
+        // This test relies on Glean not being initialized
+        Glean.shared.testDestroyGleanHandle()
+
+        XCTAssert(Glean.shared.setDebugViewTag("valid-tag"))
+
+        // Set the last time the "metrics" ping was sent to now. This is required for us to not
+        // send a metrics pings the first time we initialize Glean and to keep it from interfering
+        // with these tests.
+        let now = Date()
+        Glean.shared.metricsPingScheduler.updateSentDate(now)
+        // Restart glean
+        Glean.shared.resetGlean(clearStores: false)
+
+        let host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
+        stub(condition: isHost(host)) { data in
+            let request = data as NSURLRequest
+            XCTAssertEqual(request.value(forHTTPHeaderField: "X-Debug-ID"), "valid-tag")
+            return OHHTTPStubsResponse(
+                jsonObject: [],
+                statusCode: 200,
+                headers: ["Content-Type": "application/json"]
+            )
+        }
+    }
 }

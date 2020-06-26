@@ -810,4 +810,27 @@ class GleanTest {
 
         assertFalse(LibGleanFFI.INSTANCE.glean_is_dirty_flag_set().toBoolean())
     }
+
+    @Test
+    fun `setting debugViewTag before initialization should not crash`() {
+        // Can't use resetGlean directly
+        Glean.testDestroyGleanHandle()
+
+        val context: Context = ApplicationProvider.getApplicationContext()
+        val server = getMockWebServer()
+        val config = Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port
+        )
+
+        Glean.setDebugViewTag("valid-tag")
+        Glean.initialize(context, true, config)
+
+        // Send a ping
+        Glean.handleBackgroundEvent()
+        // Trigger it to upload
+        triggerWorkManager(context)
+
+        val request = server.takeRequest(20L, TimeUnit.SECONDS)
+        assertEquals(request.getHeader("X-Debug-ID"), "valid-tag")
+    }
 }
