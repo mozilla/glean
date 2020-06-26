@@ -1,5 +1,8 @@
 # Unreleased changes
 
+* General
+    * Move debug view tag management to the Rust core. ([1640575](https://bugzilla.mozilla.org/show_bug.cgi?id=1640575), [#998](https://github.com/mozilla/glean/pull/998))
+
 [Full changelog](https://github.com/mozilla/glean/compare/v31.2.2...main)
 
 # v31.2.2 (2020-06-26)
