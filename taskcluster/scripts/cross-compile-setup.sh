@@ -11,6 +11,10 @@ export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_CFLAGS_
 # The wrong linker gets used otherwise: https://github.com/rust-lang/rust/issues/33465.
 export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_PC_WINDOWS_GNU_RUSTFLAGS="-C linker=x86_64-w64-mingw32-gcc"
 
+# Ensure we're compiling dependencies in non-debug mode.
+# This is required for rkv/lmdb to work correctly on Android targets and not link to unavailable symbols.
+export TARGET_CFLAGS="-DNDEBUG"
+
 # Install clang, a port of cctools, and the macOS SDK into /tmp. This
 # is all cribbed from mozilla-central; start at
 # https://searchfox.org/mozilla-central/rev/39cb1e96cf97713c444c5a0404d4f84627aee85d/build/macosx/cross-mozconfig.common.
