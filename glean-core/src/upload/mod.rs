@@ -197,7 +197,7 @@ impl PingUploadManager {
                     .write()
                     .expect("Can't write to pending pings queue.");
                 for (document_id, path, body) in local_manager.process_dir() {
-                    if Self::has_enqueued(&local_queue, &document_id) {
+                    if Self::is_enqueued(&local_queue, &document_id) {
                         continue;
                     }
                     let request = PingRequest::new(&document_id, &path, body, None);
@@ -226,10 +226,7 @@ impl PingUploadManager {
     }
 
     /// Gets the ping queue and checks in a ping with a certain document_id is already enqueued.
-    fn has_enqueued(
-        queue: &RwLockWriteGuard<'_, VecDeque<PingRequest>>,
-        document_id: &str,
-    ) -> bool {
+    fn is_enqueued(queue: &VecDeque<PingRequest>, document_id: &str) -> bool {
         queue
             .iter()
             .any(|request| request.document_id == document_id)
@@ -268,8 +265,8 @@ impl PingUploadManager {
             .write()
             .expect("Can't write to pending pings queue.");
 
-        // Check if a request with the same document_id is already enqueued.
-        if Self::has_enqueued(&queue, document_id) {
+        // Checks if a ping with a certain `document_id` is already enqueued.
+        if Self::is_enqueued(&queue, document_id) {
             log::trace!(
                 "Attempted to enqueue a duplicate ping {} at {}.",
                 document_id,
@@ -394,6 +391,7 @@ impl PingUploadManager {
     ///
     /// `document_id` - The UUID of the ping in question.
     /// `status` - The HTTP status of the response.
+    /// `debug_view_tag` - The value of the `X-Debug-Id` header, if this is `None` the header is not added.
     pub fn process_ping_upload_response(
         &self,
         document_id: &str,
@@ -514,7 +512,7 @@ mod test {
     const PATH: &str = "/submit/app_id/ping_name/schema_version/doc_id";
 
     #[test]
-    fn test_doesnt_error_when_there_are_no_pending_pings() {
+    fn doesnt_error_when_there_are_no_pending_pings() {
         // Create a new upload_manager
         let dir = tempfile::tempdir().unwrap();
         let upload_manager = PingUploadManager::new(dir.path(), false);
@@ -530,7 +528,7 @@ mod test {
     }
 
     #[test]
-    fn test_returns_ping_request_when_there_is_one() {
+    fn returns_ping_request_when_there_is_one() {
         // Create a new upload_manager
         let dir = tempfile::tempdir().unwrap();
         let upload_manager = PingUploadManager::new(dir.path(), false);
@@ -552,7 +550,7 @@ mod test {
     }
 
     #[test]
-    fn test_returns_as_many_ping_requests_as_there_are() {
+    fn returns_as_many_ping_requests_as_there_are() {
         // Create a new upload_manager
         let dir = tempfile::tempdir().unwrap();
         let upload_manager = PingUploadManager::new(dir.path(), false);
@@ -581,7 +579,7 @@ mod test {
     }
 
     #[test]
-    fn test_limits_the_number_of_pings_when_there_is_rate_limiting() {
+    fn limits_the_number_of_pings_when_there_is_rate_limiting() {
         // Create a new upload_manager
         let dir = tempfile::tempdir().unwrap();
         let mut upload_manager = PingUploadManager::new(dir.path(), false);
@@ -625,7 +623,7 @@ mod test {
     }
 
     #[test]
-    fn test_clearing_the_queue_works_correctly() {
+    fn clearing_the_queue_works_correctly() {
         // Create a new upload_manager
         let dir = tempfile::tempdir().unwrap();
         let upload_manager = PingUploadManager::new(dir.path(), false);
@@ -648,7 +646,7 @@ mod test {
     }
 
     #[test]
-    fn test_clearing_the_queue_doesnt_clear_deletion_request_pings() {
+    fn clearing_the_queue_doesnt_clear_deletion_request_pings() {
         let (mut glean, _) = new_glean(None);
 
         // Wait for processing of pending pings directory to finish.
@@ -686,7 +684,7 @@ mod test {
     }
 
     #[test]
-    fn test_fills_up_queue_successfully_from_disk() {
+    fn fills_up_queue_successfully_from_disk() {
         let (mut glean, _) = new_glean(None);
 
         // Wait for processing of pending pings directory to finish.
@@ -726,7 +724,7 @@ mod test {
     }
 
     #[test]
-    fn test_processes_correctly_success_upload_response() {
+    fn processes_correctly_success_upload_response() {
         let (mut glean, dir) = new_glean(None);
 
         // Wait for processing of pending pings directory to finish.
@@ -761,7 +759,7 @@ mod test {
     }
 
     #[test]
-    fn test_processes_correctly_client_error_upload_response() {
+    fn processes_correctly_client_error_upload_response() {
         let (mut glean, dir) = new_glean(None);
 
         // Wait for processing of pending pings directory to finish.
@@ -796,7 +794,7 @@ mod test {
     }
 
     #[test]
-    fn test_processes_correctly_server_error_upload_response() {
+    fn processes_correctly_server_error_upload_response() {
         let (mut glean, _) = new_glean(None);
 
         // Wait for processing of pending pings directory to finish.
@@ -833,7 +831,7 @@ mod test {
     }
 
     #[test]
-    fn test_processes_correctly_unrecoverable_upload_response() {
+    fn processes_correctly_unrecoverable_upload_response() {
         let (mut glean, dir) = new_glean(None);
 
         // Wait for processing of pending pings directory to finish.
@@ -915,7 +913,7 @@ mod test {
     }
 
     #[test]
-    fn test_uploader_sync_init() {
+    fn uploader_sync_init() {
         // Create a new upload_manager, with a synchronous ping dir scan.
         let dir = tempfile::tempdir().unwrap();
         let upload_manager = PingUploadManager::new(dir.path(), true);
@@ -926,7 +924,7 @@ mod test {
     }
 
     #[test]
-    fn test_adds_debug_view_header_to_requests_when_tag_is_set() {
+    fn adds_debug_view_header_to_requests_when_tag_is_set() {
         let (mut glean, _) = new_glean(None);
 
         // Wait for processing of pending pings directory to finish.
@@ -953,7 +951,7 @@ mod test {
     }
 
     #[test]
-    fn test_duplicates_are_not_enqueued() {
+    fn duplicates_are_not_enqueued() {
         // Create a new upload_manager
         let dir = tempfile::tempdir().unwrap();
         let upload_manager = PingUploadManager::new(dir.path(), false);

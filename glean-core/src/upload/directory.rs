@@ -14,8 +14,9 @@ use uuid::Uuid;
 
 use crate::{DELETION_REQUEST_PINGS_DIRECTORY, PENDING_PINGS_DIRECTORY};
 
-/// A representation of the PingData extracted from a ping file.
-type PingData = (String, String, JsonValue);
+/// A representation of the data extracted from a ping file,
+/// this will contain the document_id, path and JSON encoded body of a ping, respectively.
+type PingPayload = (String, String, JsonValue);
 
 /// Get the file name from a path as a &str.
 ///
@@ -91,7 +92,7 @@ impl PingDirectoryManager {
     /// ## Arguments
     ///
     /// * `document_id` - The UUID of the ping file to be processed
-    pub fn process_file(&self, document_id: &str) -> Option<PingData> {
+    pub fn process_file(&self, document_id: &str) -> Option<PingPayload> {
         let path = match self.get_file_path(document_id) {
             Some(path) => path,
             None => {
@@ -145,7 +146,7 @@ impl PingDirectoryManager {
     ///
     /// `Vec<(String, String, JsonValue)>` -
     ///     a vector of tuples containing the document_id, path and body of each request.
-    pub fn process_dir(&self) -> Vec<PingData> {
+    pub fn process_dir(&self) -> Vec<PingPayload> {
         log::info!("Processing persisted pings.");
 
         // Walk the pings directory and process each file in it,
@@ -187,7 +188,7 @@ impl PingDirectoryManager {
             }
         });
 
-        // Return the vector leaving only the `PingData`s in it
+        // Return the vector leaving only the `PingPayload`s in it
         pending_pings.into_iter().map(|(_, data)| data).collect()
     }
 
@@ -228,7 +229,7 @@ mod test {
     use crate::tests::new_glean;
 
     #[test]
-    fn test_doesnt_panic_if_no_pending_pings_directory() {
+    fn doesnt_panic_if_no_pending_pings_directory() {
         let dir = tempfile::tempdir().unwrap();
         let directory_manager = PingDirectoryManager::new(dir.path());
 
@@ -237,7 +238,7 @@ mod test {
     }
 
     #[test]
-    fn test_gets_correct_data_from_valid_ping_file() {
+    fn gets_correct_data_from_valid_ping_file() {
         let (mut glean, dir) = new_glean(None);
 
         // Register a ping for testing
@@ -261,7 +262,7 @@ mod test {
     }
 
     #[test]
-    fn test_non_uuid_files_are_deleted_and_ignored() {
+    fn non_uuid_files_are_deleted_and_ignored() {
         let (mut glean, dir) = new_glean(None);
 
         // Register a ping for testing
@@ -294,7 +295,7 @@ mod test {
     }
 
     #[test]
-    fn test_wrongly_formatted_files_are_deleted_and_ignored() {
+    fn wrongly_formatted_files_are_deleted_and_ignored() {
         let (mut glean, dir) = new_glean(None);
 
         // Register a ping for testing
@@ -327,7 +328,7 @@ mod test {
     }
 
     #[test]
-    fn test_non_json_ping_body_files_are_deleted_and_ignored() {
+    fn non_json_ping_body_files_are_deleted_and_ignored() {
         let (mut glean, dir) = new_glean(None);
 
         // Register a ping for testing
@@ -366,7 +367,7 @@ mod test {
     }
 
     #[test]
-    fn test_takes_deletion_request_pings_into_account_while_processing() {
+    fn takes_deletion_request_pings_into_account_while_processing() {
         let (glean, dir) = new_glean(None);
 
         // Submit a deletion request ping to populate deletion request folder.
