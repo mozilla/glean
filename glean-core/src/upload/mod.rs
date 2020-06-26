@@ -225,7 +225,7 @@ impl PingUploadManager {
         self.processed_pending_pings.load(Ordering::SeqCst)
     }
 
-    /// Gets the ping queue and checks in a ping with a certain document_id is already enqueued.
+    /// Checks if a ping with a certain `document_id` is already enqueued.
     fn is_enqueued(queue: &VecDeque<PingRequest>, document_id: &str) -> bool {
         queue
             .iter()
