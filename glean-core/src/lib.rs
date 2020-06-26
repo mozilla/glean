@@ -499,7 +499,7 @@ impl Glean {
         }
 
         self.upload_manager
-            .process_ping_upload_response(uuid, status);
+            .process_ping_upload_response(uuid, status, self.debug_view_tag());
     }
 
     /// Take a snapshot for the given store and optionally clear it.

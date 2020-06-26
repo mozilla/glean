@@ -457,7 +457,7 @@ pub unsafe extern "C" fn glean_process_ping_upload_response(
                 let document_id_str = CStr::from_ptr(document_id)
                     .to_str()
                     .map_err(|_| glean_core::Error::utf8_error())?;
-                ping_uploader.process_ping_upload_response(document_id_str, status.into());
+                ping_uploader.process_ping_upload_response(document_id_str, status.into(), None);
             };
             Ok(())
         });
