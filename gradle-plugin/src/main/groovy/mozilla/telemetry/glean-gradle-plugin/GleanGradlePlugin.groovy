@@ -66,11 +66,16 @@ if found_version != expected_version:
         '--upgrade',
         f'{module_name}=={expected_version}'
     ])
-subprocess.check_call([
-    sys.executable,
-    '-m',
-    module_name
-] + sys.argv[3:])
+try:
+    subprocess.check_call([
+        sys.executable,
+        '-m',
+        module_name
+    ] + sys.argv[3:])
+except:
+    # We don't need to show a traceback in this helper script.
+    # Only the output of the subprocess is interesting.
+    sys.exit(1)
 """
 
     static File getPythonCommand(File condaDir) {
@@ -177,7 +182,7 @@ subprocess.check_call([
                 errorOutput = standardOutput
                 doLast {
                     if (execResult.exitValue != 0) {
-                        throw new GradleException("Process '${commandLine}' finished with non-zero exit value ${execResult.exitValue}:\n\n${standardOutput.toString()}")
+                        throw new GradleException("Glean code generation failed.\n\n${standardOutput.toString()}")
                     }
                 }
             }
@@ -244,7 +249,7 @@ subprocess.check_call([
                 errorOutput = standardOutput
                 doLast {
                     if (execResult.exitValue != 0) {
-                        throw new GradleException("Process '${commandLine}' finished with non-zero exit value ${execResult.exitValue}:\n\n${standardOutput.toString()}")
+                        throw new GradleException("Glean documentation generation failed.\n\n${standardOutput.toString()}")
                     }
                 }
             }
