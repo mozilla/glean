@@ -59,12 +59,6 @@ struct PingRequest {
         self.documentId = documentId
         self.path = path
         self.body = body
-
-        var headers = headers
-        if let pingTag = Glean.shared.configuration?.pingTag {
-            headers["X-Debug-ID"] = pingTag
-        }
-
         self.headers = headers
     }
 }

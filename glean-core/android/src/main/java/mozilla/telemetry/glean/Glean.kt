@@ -75,6 +75,9 @@ open class GleanInternalAPI internal constructor () {
     // Keep track of this flag before Glean is initialized
     private var uploadEnabled: Boolean = true
 
+    // Keep track of this value before Glean is initialized
+    private var debugViewTag: String? = null
+
     // This object holds data related to any persistent information about the metrics ping,
     // such as the last time it was sent and the store name
     internal lateinit var metricsPingScheduler: MetricsPingScheduler
@@ -163,6 +166,12 @@ open class GleanInternalAPI internal constructor () {
             // If initialization of Glean fails we bail out and don't initialize further.
             if (!initialized) {
                 return@executeTask
+            }
+
+            // The debug view tag might have been set before initialize,
+            // get the cached value and set it.
+            if (debugViewTag != null) {
+                setDebugViewTag(debugViewTag!!)
             }
 
             // Get the current value of the dirty flag so we know whether to
@@ -582,6 +591,27 @@ open class GleanInternalAPI internal constructor () {
 
         if (submittedPing) {
             PingUploadWorker.enqueueWorker(applicationContext)
+        }
+    }
+
+    /**
+     * Set a tag to be applied to headers when uploading pings for debug view.
+     *
+     * If the tag is invalid it won't be set and this function will return `false`,
+     * although if we are not initialized yet, there won't be any validation.
+     *
+     * This is only meant to be used internally by the `GleanDebugActivity`.
+     *
+     * @param value The value of the tag, which must be a valid HTTP header value.
+     */
+    fun setDebugViewTag(value: String): Boolean {
+        if (isInitialized()) {
+            return LibGleanFFI.INSTANCE.glean_set_debug_view_tag(value).toBoolean()
+        } else {
+            debugViewTag = value
+            // When setting the debug view tag before initialization,
+            // we don't validate the tag, thus this function always returns true.
+            return true
         }
     }
 

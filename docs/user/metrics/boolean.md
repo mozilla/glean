@@ -102,6 +102,27 @@ assert True is metrics.flags.a11y_enabled.test_get_value()
 
 </div>
 
+<div data-lang="C#" class="tab">
+
+```C#
+using static Mozilla.YourApplication.GleanMetrics.FlagsOuter;
+
+Flags.a11yEnabled.Set(System.IsAccessibilityEnabled());
+```
+
+There are test APIs available too:
+
+```C#
+using static Mozilla.YourApplication.GleanMetrics.FlagsOuter;
+
+// Was anything recorded?
+Assert.True(Flags.a11yEnabled.TestHasValue());
+// Does it have the expected value?
+Assert.True(Flags.a11yEnabled.TestGetValue());
+```
+
+</div>
+
 {{#include ../../tab_footer.md}}
 
 ## Limits

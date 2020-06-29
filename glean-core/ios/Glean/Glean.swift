@@ -27,6 +27,7 @@ public class Glean {
 
     var initialized: Bool = false
     private var uploadEnabled: Bool = true
+    private var debugViewTag: String?
     var configuration: Configuration?
     private var observer: GleanLifecycleObserver?
 
@@ -54,7 +55,7 @@ public class Glean {
         self.initialized = false
     }
 
-    // swiftlint:disable function_body_length
+    // swiftlint:disable function_body_length cyclomatic_complexity
     /// Initialize the Glean SDK.
     ///
     /// This should only be initialized once by the application, and not by
@@ -108,6 +109,10 @@ public class Glean {
             // If initialization of Glean fails, bail out and don't initialize further
             if !self.initialized {
                 return
+            }
+
+            if self.debugViewTag != nil {
+                _ = self.setDebugViewTag(self.debugViewTag!)
             }
 
             // If any pings were registered before initializing, do so now
@@ -169,7 +174,7 @@ public class Glean {
         }
     }
 
-    // swiftlint:enable function_body_length
+    // swiftlint:enable function_body_length cyclomatic_complexity
 
     /// Initialize the core metrics internally managed by Glean (e.g. client id).
     private func initializeCoreMetrics() {
@@ -432,6 +437,20 @@ public class Glean {
             self.pingTypeQueue.append(pingType)
         } else {
             glean_register_ping_type(pingType.handle)
+        }
+    }
+
+    /// Set a tag to be applied to headers when uploading pings for debug view.
+    /// This is only meant to be used internally by the `GleanDebugActivity`.
+    ///
+    /// - parameters:
+    ///     * value: The value of the tag, which must be a valid HTTP header value.
+    public func setDebugViewTag(_ value: String) -> Bool {
+        if self.isInitialized() {
+            return glean_set_debug_view_tag(value).toBool()
+        } else {
+            debugViewTag = value
+            return true
         }
     }
 

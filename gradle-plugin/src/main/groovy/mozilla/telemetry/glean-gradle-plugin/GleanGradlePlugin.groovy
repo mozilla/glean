@@ -34,7 +34,7 @@ class GleanMetricsYamlTransform extends ArtifactTransform {
 @SuppressWarnings("GrPackage")
 class GleanPlugin implements Plugin<Project> {
     // The version of glean_parser to install from PyPI.
-    private String GLEAN_PARSER_VERSION = "1.22.0"
+    private String GLEAN_PARSER_VERSION = "1.23.0"
     // The version of Miniconda is explicitly specified.
     // Miniconda3-4.5.12 is known to not work on Windows.
     private String MINICONDA_VERSION = "4.5.11"
@@ -66,11 +66,16 @@ if found_version != expected_version:
         '--upgrade',
         f'{module_name}=={expected_version}'
     ])
-subprocess.check_call([
-    sys.executable,
-    '-m',
-    module_name
-] + sys.argv[3:])
+try:
+    subprocess.check_call([
+        sys.executable,
+        '-m',
+        module_name
+    ] + sys.argv[3:])
+except:
+    # We don't need to show a traceback in this helper script.
+    # Only the output of the subprocess is interesting.
+    sys.exit(1)
 """
 
     static File getPythonCommand(File condaDir) {
@@ -177,7 +182,7 @@ subprocess.check_call([
                 errorOutput = standardOutput
                 doLast {
                     if (execResult.exitValue != 0) {
-                        throw new GradleException("Process '${commandLine}' finished with non-zero exit value ${execResult.exitValue}:\n\n${standardOutput.toString()}")
+                        throw new GradleException("Glean code generation failed.\n\n${standardOutput.toString()}")
                     }
                 }
             }
@@ -244,7 +249,7 @@ subprocess.check_call([
                 errorOutput = standardOutput
                 doLast {
                     if (execResult.exitValue != 0) {
-                        throw new GradleException("Process '${commandLine}' finished with non-zero exit value ${execResult.exitValue}:\n\n${standardOutput.toString()}")
+                        throw new GradleException("Glean documentation generation failed.\n\n${standardOutput.toString()}")
                     }
                 }
             }
@@ -369,7 +374,7 @@ subprocess.check_call([
     }
 
     void apply(Project project) {
-        project.ext.glean_version = "31.2.2"
+        project.ext.glean_version = "31.2.3"
 
         File condaDir = setupPythonEnvironmentTasks(project)
         project.ext.set("gleanCondaDir", condaDir)

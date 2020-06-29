@@ -241,6 +241,12 @@ Category and metric names in the `metrics.yaml` are in `snake_case`, which match
 
 </div>
 
+<div data-lang="C#" class="tab">
+
+TODO. To be implemented in [this bug](https://bugzilla.mozilla.org/show_bug.cgi?id=1643568).
+
+</div>
+
 {{#include ../tab_footer.md}}
 
 [lean-data]: https://www.mozilla.org/en-US/about/policy/lean-data/stay-lean/

@@ -642,6 +642,8 @@ uint8_t glean_quantity_test_has_value(uint64_t metric_id, FfiStr storage_name);
 
 void glean_register_ping_type(uint64_t ping_type_handle);
 
+uint8_t glean_set_debug_view_tag(FfiStr tag);
+
 void glean_set_dirty_flag(uint8_t flag);
 
 void glean_set_experiment_active(FfiStr experiment_id,

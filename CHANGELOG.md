@@ -1,6 +1,14 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v31.2.2...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v31.2.3...main)
+
+# v31.2.3 (2020-06-29)
+
+* General
+    * Move debug view tag management to the Rust core. ([1640575](https://bugzilla.mozilla.org/show_bug.cgi?id=1640575), [#998](https://github.com/mozilla/glean/pull/998))
+    * BUGFIX: Fix mismatch in `event`s keys and values by using `glean_parser` version 1.23.0.
+
+[Full changelog](https://github.com/mozilla/glean/compare/v31.2.2...v31.2.3)
 
 # v31.2.2 (2020-06-26)
 

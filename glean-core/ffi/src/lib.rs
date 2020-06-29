@@ -457,7 +457,7 @@ pub unsafe extern "C" fn glean_process_ping_upload_response(
                 let document_id_str = CStr::from_ptr(document_id)
                     .to_str()
                     .map_err(|_| glean_core::Error::utf8_error())?;
-                ping_uploader.process_ping_upload_response(document_id_str, status.into());
+                ping_uploader.process_ping_upload_response(document_id_str, status.into(), None);
             };
             Ok(())
         });
@@ -489,6 +489,14 @@ pub extern "C" fn glean_initialize_standalone_uploader(data_dir: FfiStr) -> u8 {
         glean_core::upload::setup_upload_manager(upload_manager)?;
         log::info!("Glean initialized in upload-only mode");
         Ok(true)
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn glean_set_debug_view_tag(tag: FfiStr) -> u8 {
+    with_glean_mut(|glean| {
+        let tag = tag.to_string_fallible()?;
+        Ok(glean.set_debug_view_tag(&tag))
     })
 }
 

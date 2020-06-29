@@ -148,6 +148,34 @@ assert 1 == metrics.install.test_get_num_recorded_errors(
 
 </div>
 
+<div data-lang="C#" class="tab">
+
+```C#
+using static Mozilla.YourApplication.GleanMetrics.Install;
+
+// Records "now"
+Install.firstRun.Set();
+// Records a custom datetime
+Install.firstRun.Set(new DateTimeOffset(2018, 2, 25, 11, 10, 0, TimeZone.CurrentTimeZone.BaseUtcOffset));
+```
+
+There are test APIs available too:
+
+```C#
+using static Mozilla.YourApplication.GleanMetrics.Install;
+
+// Was anything recorded?
+Assert.True(Install.firstRun.TestHasValue());
+// Was it the expected value?
+// NOTE: Datetimes always include a timezone offset from UTC, hence the
+// "-05:00" suffix.
+Assert.Equal("2019-03-25-05:00", Install.firstRun.TestGetValueAsString());
+// Was the value invalid?
+Assert.Equal(1, Install.firstRun.TestGetNumRecordedErrors(ErrorType.InvalidValue));
+```
+
+</div>
+
 {{#include ../../tab_footer.md}}
 
 ## Limits
