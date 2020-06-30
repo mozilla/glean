@@ -127,7 +127,19 @@ namespace Mozilla.Glean
                     delay_ping_lifetime_io = false
                 };
 
-                initialized = LibGleanFFI.glean_initialize(cfg) != 0;
+                // To work around a bug in the version of Mono shipped with Unity 2019.4.1f1,
+                // copy the FFI configuration structure to unmanaged memory and pass that over
+                // to glean-core, otherwise calling `glean_initialize` will crash and have
+                // `__icall_wrapper_mono_struct_delete_old` in the stack. See bug 1648784 for
+                // more details.
+                IntPtr ptrCfg = Marshal.AllocHGlobal(Marshal.SizeOf(cfg));
+                Marshal.StructureToPtr(cfg, ptrCfg, false);
+
+                initialized = LibGleanFFI.glean_initialize(ptrCfg) != 0;
+
+                // We were able to call `glean_initialize`, free the memory allocated for the
+                // FFI configuration object.
+                Marshal.FreeHGlobal(ptrCfg);
 
                 // If initialization of Glean fails we bail out and don't initialize further.
                 if (!initialized)
