@@ -79,7 +79,7 @@ namespace Mozilla.Glean.FFI
             public string data_dir;
             public string package_name;
             public bool upload_enabled;
-            public Int32? max_events;
+            public IntPtr max_events;
             public bool delay_ping_lifetime_io;
         }
 
@@ -141,7 +141,7 @@ namespace Mozilla.Glean.FFI
         // Glean top-level API.
 
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern byte glean_initialize(FfiConfiguration cfg);
+        internal static extern byte glean_initialize(IntPtr cfg);
 
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void glean_clear_application_lifetime_metrics();
