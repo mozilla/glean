@@ -104,7 +104,7 @@ public class LabeledMetricType<T> {
     /// - parameters:
     ///     * label: The label
     /// - returns: The specific metric for that label
-    subscript(label: String) -> T {
+    public subscript(label: String) -> T {
         // swiftlint:disable force_cast
         // REASON: We return the same type as the `subMetric` we match against
 
