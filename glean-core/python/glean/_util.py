@@ -18,7 +18,7 @@ def get_platform_name() -> str:
         platform (str): The platform name.
     """
 
-    f'Python on {sys.platform}'
+    f"Python on {sys.platform}"
 
 
 def get_locale_tag() -> str:

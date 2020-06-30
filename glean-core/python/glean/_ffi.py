@@ -8,6 +8,7 @@ from typing import Any, List, Optional
 import weakref
 
 from ._glean_ffi import ffi  # type: ignore
+from ._util import get_platform_name
 
 
 def get_shared_object_filename() -> str:  # pragma: no cover
@@ -31,7 +32,7 @@ lib.glean_enable_logging()
 
 
 def make_config(
-    data_dir: Path, package_name: str, platform: str, upload_enabled: bool, max_events: int,
+    data_dir: Path, package_name: str, upload_enabled: bool, max_events: int,
 ) -> Any:
     """
     Make an `FfiConfiguration` object.
@@ -42,7 +43,7 @@ def make_config(
     """
     data_dir = ffi.new("char[]", ffi_encode_string(str(data_dir)))
     package_name = ffi.new("char[]", ffi_encode_string(package_name))
-    platform = ffi.new("char[]", ffi_encode_string(platform))
+    platform = ffi.new("char[]", ffi_encode_string(str(get_platform_name())))
     max_events = ffi.new("int32_t *", max_events)
 
     cfg = ffi.new("FfiConfiguration *")

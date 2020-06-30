@@ -145,6 +145,7 @@ func withFfiConfiguration<R>(
     )
     return body(cfg)
 }
+
 // swiftlint:enable function_parameter_count
 
 /// Create a temporary array of C-compatible (null-terminated) strings to pass over FFI.

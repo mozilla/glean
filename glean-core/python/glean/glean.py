@@ -148,7 +148,6 @@ class Glean:
             cfg = _ffi.make_config(
                 cls._data_dir,
                 application_id,
-                _util.get_platform_name(),
                 cls._upload_enabled,
                 configuration.max_events,
             )

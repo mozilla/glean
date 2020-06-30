@@ -113,7 +113,9 @@ def _process(data_dir: Path, configuration) -> bool:
         # To make startup time better in subprocesses, consumers can initialize just the
         # ping upload manager.
         data_dir = ffi_support.new("char[]", _ffi.ffi_encode_string(str(data_dir)))
-        platform = ffi_support.new("char[]", _ffi.ffi_encode_string(str(get_platform_name())))
+        platform = ffi_support.new(
+            "char[]", _ffi.ffi_encode_string(str(get_platform_name()))
+        )
         _ffi.lib.glean_initialize_standalone_uploader(data_dir, platform)
 
     wait_attempts = 0
