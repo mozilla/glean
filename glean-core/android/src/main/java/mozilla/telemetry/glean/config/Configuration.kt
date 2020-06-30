@@ -16,10 +16,11 @@ import mozilla.telemetry.glean.net.PingUploader
  * **CAUTION**: This must match _exactly_ the definition on the Rust side.
  *  If this side is changed, the Rust side need to be changed, too.
  */
-@Structure.FieldOrder("dataDir", "packageName", "uploadEnabled", "maxEvents", "delayPingLifetimeIO")
+@Structure.FieldOrder("dataDir", "packageName", "platform", "uploadEnabled", "maxEvents", "delayPingLifetimeIO")
 internal class FfiConfiguration(
     dataDir: String,
     packageName: String,
+    platform: String,
     uploadEnabled: Boolean,
     maxEvents: Int? = null,
     delayPingLifetimeIO: Boolean
@@ -33,6 +34,8 @@ internal class FfiConfiguration(
     public var dataDir: String = dataDir
     @JvmField
     public var packageName: String = packageName
+    @JvmField
+    public var platform: String = platform
     @JvmField
     public var uploadEnabled: Byte = uploadEnabled.toByte()
     @JvmField

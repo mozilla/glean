@@ -113,12 +113,14 @@ func getGleanDirectory() -> URL {
 func withFfiConfiguration<R>(
     dataDir: String,
     packageName: String,
+    platform: String,
     uploadEnabled: Bool,
     configuration: Configuration,
     _ body: (FfiConfiguration) -> R
 ) -> R {
     let dataDir = strdup(dataDir)
     let packageName = strdup(packageName)
+    let platform = strdup(platform)
 
     var maxEventsPtr: UnsafeMutablePointer<Int32>?
     if let maxEvents = configuration.maxEvents {
@@ -135,6 +137,7 @@ func withFfiConfiguration<R>(
     let cfg = FfiConfiguration(
         data_dir: dataDir,
         package_name: packageName,
+        platform: platform,
         upload_enabled: uploadEnabled.toByte(),
         max_events: maxEventsPtr,
         delay_ping_lifetime_io: false.toByte()

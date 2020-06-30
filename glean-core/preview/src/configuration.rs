@@ -13,6 +13,8 @@ pub struct Configuration {
     pub data_path: String,
     /// The application ID (will be sanitized during initialization).
     pub application_id: String,
+    /// The platform this instance of Glean is running on e.g. "Android" or "Python on Windows".
+    pub platform: String,
     /// The maximum number of events to store before sending a ping containing events.
     pub max_events: Option<usize>,
     /// Whether Glean should delay persistence of data from metrics with ping lifetime.

@@ -31,7 +31,7 @@ lib.glean_enable_logging()
 
 
 def make_config(
-    data_dir: Path, package_name: str, upload_enabled: bool, max_events: int,
+    data_dir: Path, package_name: str, platform: str, upload_enabled: bool, max_events: int,
 ) -> Any:
     """
     Make an `FfiConfiguration` object.
@@ -42,12 +42,14 @@ def make_config(
     """
     data_dir = ffi.new("char[]", ffi_encode_string(str(data_dir)))
     package_name = ffi.new("char[]", ffi_encode_string(package_name))
+    platform = ffi.new("char[]", ffi_encode_string(platform))
     max_events = ffi.new("int32_t *", max_events)
 
     cfg = ffi.new("FfiConfiguration *")
 
     cfg.data_dir = data_dir
     cfg.package_name = package_name
+    cfg.platform = platform
     cfg.upload_enabled = upload_enabled
     cfg.max_events = max_events
     cfg.delay_ping_lifetime_io = False

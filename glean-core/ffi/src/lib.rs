@@ -230,6 +230,7 @@ pub extern "C" fn glean_enable_logging() {
 pub struct FfiConfiguration<'a> {
     pub data_dir: FfiStr<'a>,
     pub package_name: FfiStr<'a>,
+    pub platform: FfiStr<'a>,
     pub upload_enabled: u8,
     pub max_events: Option<&'a i32>,
     pub delay_ping_lifetime_io: u8,
@@ -242,6 +243,7 @@ impl TryFrom<&FfiConfiguration<'_>> for glean_core::Configuration {
     fn try_from(cfg: &FfiConfiguration) -> Result<Self, Self::Error> {
         let data_path = cfg.data_dir.to_string_fallible()?;
         let application_id = cfg.package_name.to_string_fallible()?;
+        let platform = cfg.platform.to_string_fallible()?;
         let upload_enabled = cfg.upload_enabled != 0;
         let max_events = cfg.max_events.filter(|&&i| i >= 0).map(|m| *m as usize);
         let delay_ping_lifetime_io = cfg.delay_ping_lifetime_io != 0;
@@ -250,6 +252,7 @@ impl TryFrom<&FfiConfiguration<'_>> for glean_core::Configuration {
             upload_enabled,
             data_path,
             application_id,
+            platform,
             max_events,
             delay_ping_lifetime_io,
         })

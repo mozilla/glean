@@ -22,6 +22,7 @@
 //! let cfg = Configuration {
 //!     data_path: "/tmp/data".into(),
 //!     application_id: "org.mozilla.glean_core.example".into(),
+//!     platform: "Firefox on Windows".into(),
 //!     upload_enabled: true,
 //!     max_events: None,
 //!     delay_ping_lifetime_io: false,
@@ -108,6 +109,7 @@ pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) -> Result<
         upload_enabled: cfg.upload_enabled,
         data_path: cfg.data_path.clone(),
         application_id: cfg.application_id.clone(),
+        platform: cfg.platform.clone(),
         max_events: cfg.max_events,
         delay_ping_lifetime_io: cfg.delay_ping_lifetime_io,
     };

@@ -117,6 +117,8 @@ pub struct Configuration {
     pub data_path: String,
     /// The application ID (will be sanitized during initialization).
     pub application_id: String,
+    /// The platform this instance of Glean is running on e.g. "Android" or "Python on Windows".
+    pub platform: String,
     /// The maximum number of events to store before sending a ping containing events.
     pub max_events: Option<usize>,
     /// Whether Glean should delay persistence of data from metrics with ping lifetime.
@@ -135,6 +137,7 @@ pub struct Configuration {
 /// let cfg = Configuration {
 ///     data_path: "/tmp/glean".into(),
 ///     application_id: "glean.sample.app".into(),
+///     platform: "Rust on Windows".into(),
 ///     upload_enabled: true,
 ///     max_events: None,
 ///     delay_ping_lifetime_io: false,
@@ -257,6 +260,7 @@ impl Glean {
         let cfg = Configuration {
             data_path: data_path.into(),
             application_id: application_id.into(),
+            platform: "Testing".into(),
             upload_enabled,
             max_events: None,
             delay_ping_lifetime_io: false,

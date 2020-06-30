@@ -13,6 +13,7 @@ import logging
 from pathlib import Path
 import platform
 import shutil
+import sys
 import tempfile
 import threading
 from typing import Dict, List, Optional, Set, TYPE_CHECKING
@@ -148,6 +149,7 @@ class Glean:
             cfg = _ffi.make_config(
                 cls._data_dir,
                 application_id,
+                f'Python on {sys.platform}'
                 cls._upload_enabled,
                 configuration.max_events,
             )
