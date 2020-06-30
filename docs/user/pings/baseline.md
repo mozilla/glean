@@ -22,11 +22,8 @@ The baseline ping includes the following fields:
 | Field name | Type | Description |
 |---|---|---|
 | `duration` | Timespan | The duration, in seconds, of the last foreground session. Only available if `reason: background`. [^1] |
-| `locale` | String | The locale of the application. [^2] |
 
 [^1]: See also the [ping schedules and timing overview](ping-schedules-and-timings.html) for how the `duration` metric relates to other sources of timing in the `baseline` ping.
-
-[^2]: The locale metric in the baseline ping is deprecated. Use [`client_info.locale`](index.html#The-client-info-section) instead. 
 
 The `baseline` ping also includes the common [ping sections](index.md#ping-sections) found in all pings.
 
@@ -63,9 +60,6 @@ A quick note about querying ping contents (i.e. for [sql.telemetry.mozilla.org](
     "client_id": "35dab852-74db-43f4-8aa0-88884211e545"
   },
   "metrics": {
-    "string": {
-      "glean.baseline.locale": "en-US"
-    },
     "timespan": {
       "glean.baseline.duration": {
         "value": 52,

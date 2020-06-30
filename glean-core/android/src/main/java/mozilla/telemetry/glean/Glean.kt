@@ -26,7 +26,6 @@ import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.getAndConsumeRustString
 import mozilla.telemetry.glean.rust.toBoolean
 import mozilla.telemetry.glean.rust.toByte
-import mozilla.telemetry.glean.GleanMetrics.GleanBaseline
 import mozilla.telemetry.glean.GleanMetrics.GleanInternalMetrics
 import mozilla.telemetry.glean.GleanMetrics.Pings
 import mozilla.telemetry.glean.net.BaseUploader
@@ -445,7 +444,6 @@ open class GleanInternalAPI internal constructor () {
         // Please note that the following metrics must be set synchronously, so
         // that they are guaranteed to be available with the first ping that is
         // generated. We use an internal only API to do that.
-        GleanBaseline.locale.setSync(getLocaleTag())
         // https://developer.android.com/reference/android/os/Build.VERSION
         GleanInternalMetrics.androidSdkVersion.setSync(Build.VERSION.SDK_INT.toString())
         GleanInternalMetrics.osVersion.setSync(Build.VERSION.RELEASE)

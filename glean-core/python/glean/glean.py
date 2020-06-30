@@ -417,7 +417,6 @@ class Glean:
         """
         from ._builtins import metrics
 
-        metrics.glean.baseline.locale._set_sync(_util.get_locale_tag())
         metrics.glean.internal.metrics.os_version._set_sync(platform.release())
         metrics.glean.internal.metrics.architecture._set_sync(platform.machine())
         metrics.glean.internal.metrics.locale._set_sync(_util.get_locale_tag())

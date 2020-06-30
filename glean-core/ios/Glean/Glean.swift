@@ -183,7 +183,6 @@ public class Glean {
         // that they are guaranteed to be available with the first ping that is
         // generated. We use an internal only API to do that.
 
-        GleanBaseline.locale.setSync(getLocaleTag())
         GleanInternalMetrics.osVersion.setSync(UIDevice.current.systemVersion)
         GleanInternalMetrics.deviceManufacturer.setSync(Sysctl.manufacturer)
         GleanInternalMetrics.deviceModel.setSync(Sysctl.model)

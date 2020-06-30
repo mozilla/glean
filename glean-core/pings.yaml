@@ -17,6 +17,7 @@ baseline:
     The `baseline` ping is automatically sent when the application is moved to
     the background.
   include_client_id: true
+  send_if_empty: true
   bugs:
     - https://bugzilla.mozilla.org/1512938
     - https://bugzilla.mozilla.org/1599877

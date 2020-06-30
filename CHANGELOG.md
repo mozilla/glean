@@ -1,5 +1,7 @@
 # Unreleased changes
 
+* Remove locale from baseline ping. ([1609968](https://bugzilla.mozilla.org/show_bug.cgi?id=1609968), [#1016](https://github.com/mozilla/glean/pull/1016))
+
 [Full changelog](https://github.com/mozilla/glean/compare/v31.2.3...main)
 
 # v31.2.3 (2020-06-29)
