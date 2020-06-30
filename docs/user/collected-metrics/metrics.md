@@ -62,7 +62,11 @@ This ping includes the [client id](https://mozilla.github.io/glean/book/user/pin
       *Note*: this ping will not contain the `glean.baseline.duration` metric.
 
 
-This ping contains no metrics.
+The following metrics are added to the ping:
+
+| Name | Type | Description | Data reviews | Extras | Expiration |
+| --- | --- | --- | --- | --- | --- |
+| glean.baseline.duration |[timespan](https://mozilla.github.io/glean/book/user/metrics/timespan.html) |The duration of the last foreground session.  |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3)||never |
 
 ## deletion-request
 
