@@ -107,6 +107,7 @@ func getGleanDirectory() -> URL {
     return documentsDirectory.appendingPathComponent("glean_data")
 }
 
+// swiftlint:disable function_parameter_count
 /// Create a temporary FFI configuration for the span of the closure.
 ///
 /// We need to ensure strings exist across the FFI call, so we `strdup` them and clean up afterwards.
@@ -144,6 +145,7 @@ func withFfiConfiguration<R>(
     )
     return body(cfg)
 }
+// swiftlint:enable function_parameter_count
 
 /// Create a temporary array of C-compatible (null-terminated) strings to pass over FFI.
 ///

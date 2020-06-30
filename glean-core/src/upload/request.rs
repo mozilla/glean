@@ -76,7 +76,12 @@ impl PingRequest {
             document_id: document_id.into(),
             path: path.into(),
             body,
-            headers: Self::create_request_headers(add_gzip_header, body_len, platform, debug_view_tag),
+            headers: Self::create_request_headers(
+                add_gzip_header,
+                body_len,
+                platform,
+                debug_view_tag,
+            ),
         }
     }
 

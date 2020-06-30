@@ -203,7 +203,8 @@ impl PingUploadManager {
                     if Self::is_enqueued(&local_queue, &document_id) {
                         continue;
                     }
-                    let request = PingRequest::new(&document_id, &path, body, &local_platform, None);
+                    let request =
+                        PingRequest::new(&document_id, &path, body, &local_platform, None);
                     local_queue.push_back(request);
                 }
                 local_flag.store(true, Ordering::SeqCst);
@@ -280,7 +281,13 @@ impl PingUploadManager {
         }
 
         log::trace!("Enqueuing ping {} at {}", document_id, path);
-        let request = PingRequest::new(&document_id, &path, body, self.platform.as_str(), debug_view_tag);
+        let request = PingRequest::new(
+            &document_id,
+            &path,
+            body,
+            self.platform.as_str(),
+            debug_view_tag,
+        );
         queue.push_back(request);
     }
 
