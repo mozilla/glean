@@ -195,7 +195,7 @@ impl Glean {
         let event_data_store = EventDatabase::new(&cfg.data_path)?;
 
         // Create an upload manager with rate limiting of 10 pings every 60 seconds.
-        let mut upload_manager = PingUploadManager::new(&cfg.data_path, false);
+        let mut upload_manager = PingUploadManager::new(&cfg.data_path, &cfg.platform, false);
         upload_manager.set_rate_limiter(
             /* seconds per interval */ 60, /* max tasks per interval */ 10,
         );

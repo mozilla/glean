@@ -166,6 +166,8 @@ pub struct PingUploadManager {
     /// To keep resource usage in check,
     /// we may want to limit the amount of pings sent in a given interval.
     rate_limiter: Option<RwLock<RateLimiter>>,
+    /// The platform this instance of the upload manager is running on.
+    platform: String,
 }
 
 impl PingUploadManager {
@@ -182,7 +184,7 @@ impl PingUploadManager {
     /// # Panics
     ///
     /// Will panic if unable to spawn a new thread.
-    pub fn new<P: Into<PathBuf>>(data_path: P, sync_scan: bool) -> Self {
+    pub fn new<P: Into<PathBuf>>(data_path: P, platform: &str, sync_scan: bool) -> Self {
         let queue = Arc::new(RwLock::new(VecDeque::new()));
         let directory_manager = PingDirectoryManager::new(data_path);
         let processed_pending_pings = Arc::new(AtomicBool::new(false));
@@ -190,6 +192,7 @@ impl PingUploadManager {
         let local_queue = queue.clone();
         let local_flag = processed_pending_pings.clone();
         let local_manager = directory_manager.clone();
+        let local_platform = platform.to_string();
         let ping_scanning_thread = thread::Builder::new()
             .name("glean.ping_directory_manager.process_dir".to_string())
             .spawn(move || {
@@ -200,7 +203,7 @@ impl PingUploadManager {
                     if Self::is_enqueued(&local_queue, &document_id) {
                         continue;
                     }
-                    let request = PingRequest::new(&document_id, &path, body, None);
+                    let request = PingRequest::new(&document_id, &path, body, &local_platform, None);
                     local_queue.push_back(request);
                 }
                 local_flag.store(true, Ordering::SeqCst);
@@ -218,6 +221,7 @@ impl PingUploadManager {
             processed_pending_pings,
             directory_manager,
             rate_limiter: None,
+            platform: platform.into(),
         }
     }
 
@@ -276,7 +280,7 @@ impl PingUploadManager {
         }
 
         log::trace!("Enqueuing ping {} at {}", document_id, path);
-        let request = PingRequest::new(&document_id, &path, body, debug_view_tag);
+        let request = PingRequest::new(&document_id, &path, body, self.platform.as_str(), debug_view_tag);
         queue.push_back(request);
     }
 
@@ -515,7 +519,7 @@ mod test {
     fn doesnt_error_when_there_are_no_pending_pings() {
         // Create a new upload_manager
         let dir = tempfile::tempdir().unwrap();
-        let upload_manager = PingUploadManager::new(dir.path(), false);
+        let upload_manager = PingUploadManager::new(dir.path(), "Testing", false);
 
         // Wait for processing of pending pings directory to finish.
         while upload_manager.get_upload_task(false) == PingUploadTask::Wait {
@@ -531,7 +535,7 @@ mod test {
     fn returns_ping_request_when_there_is_one() {
         // Create a new upload_manager
         let dir = tempfile::tempdir().unwrap();
-        let upload_manager = PingUploadManager::new(dir.path(), false);
+        let upload_manager = PingUploadManager::new(dir.path(), "Testing", false);
 
         // Wait for processing of pending pings directory to finish.
         while upload_manager.get_upload_task(false) == PingUploadTask::Wait {
@@ -553,7 +557,7 @@ mod test {
     fn returns_as_many_ping_requests_as_there_are() {
         // Create a new upload_manager
         let dir = tempfile::tempdir().unwrap();
-        let upload_manager = PingUploadManager::new(dir.path(), false);
+        let upload_manager = PingUploadManager::new(dir.path(), "Testing", false);
 
         // Wait for processing of pending pings directory to finish.
         while upload_manager.get_upload_task(false) == PingUploadTask::Wait {
@@ -582,7 +586,7 @@ mod test {
     fn limits_the_number_of_pings_when_there_is_rate_limiting() {
         // Create a new upload_manager
         let dir = tempfile::tempdir().unwrap();
-        let mut upload_manager = PingUploadManager::new(dir.path(), false);
+        let mut upload_manager = PingUploadManager::new(dir.path(), "Testing", false);
 
         // Add a rate limiter to the upload mangager with max of 10 pings every 3 seconds.
         let secs_per_interval = 3;
@@ -626,7 +630,7 @@ mod test {
     fn clearing_the_queue_works_correctly() {
         // Create a new upload_manager
         let dir = tempfile::tempdir().unwrap();
-        let upload_manager = PingUploadManager::new(dir.path(), false);
+        let upload_manager = PingUploadManager::new(dir.path(), "Testing", false);
 
         // Wait for processing of pending pings directory to finish.
         while upload_manager.get_upload_task(false) == PingUploadTask::Wait {
@@ -869,7 +873,7 @@ mod test {
     fn new_pings_are_added_while_upload_in_progress() {
         // Create a new upload_manager
         let dir = tempfile::tempdir().unwrap();
-        let upload_manager = PingUploadManager::new(dir.path(), false);
+        let upload_manager = PingUploadManager::new(dir.path(), "Testing", false);
 
         // Wait for processing of pending pings directory to finish.
         while upload_manager.get_upload_task(false) == PingUploadTask::Wait {
@@ -916,7 +920,7 @@ mod test {
     fn uploader_sync_init() {
         // Create a new upload_manager, with a synchronous ping dir scan.
         let dir = tempfile::tempdir().unwrap();
-        let upload_manager = PingUploadManager::new(dir.path(), true);
+        let upload_manager = PingUploadManager::new(dir.path(), "Testing", true);
 
         // Since the scan was synchronous and the directory was empty,
         // we expect the upload task to always be `Done`.
@@ -954,7 +958,7 @@ mod test {
     fn duplicates_are_not_enqueued() {
         // Create a new upload_manager
         let dir = tempfile::tempdir().unwrap();
-        let upload_manager = PingUploadManager::new(dir.path(), false);
+        let upload_manager = PingUploadManager::new(dir.path(), "Testing", false);
 
         // Wait for processing of pending pings directory to finish.
         while upload_manager.get_upload_task(false) == PingUploadTask::Wait {
