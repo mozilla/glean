@@ -118,12 +118,21 @@ namespace Mozilla.Glean
             {
                 RegisterPings(GleanInternalPings);
 
+                IntPtr maxEventsPtr = IntPtr.Zero;
+                if (configuration.maxEvents != null)
+                {
+                    maxEventsPtr = Marshal.AllocHGlobal(sizeof(int));
+                    // It's safe to call `configuration.maxEvents.Value` because we know
+                    // `configuration.maxEvents` is not null.
+                    Marshal.WriteInt32(maxEventsPtr, configuration.maxEvents.Value);
+                }
+
                 LibGleanFFI.FfiConfiguration cfg = new LibGleanFFI.FfiConfiguration
                 {
                     data_dir = dataDir,
                     package_name = applicationId,
                     upload_enabled = uploadEnabled,
-                    max_events = configuration.maxEvents ?? null,
+                    max_events = maxEventsPtr,
                     delay_ping_lifetime_io = false
                 };
 
@@ -137,6 +146,8 @@ namespace Mozilla.Glean
 
                 initialized = LibGleanFFI.glean_initialize(ptrCfg) != 0;
 
+                // This is safe to call even if `maxEventsPtr = IntPtr.Zero`.
+                Marshal.FreeHGlobal(maxEventsPtr);
                 // We were able to call `glean_initialize`, free the memory allocated for the
                 // FFI configuration object.
                 Marshal.FreeHGlobal(ptrCfg);
