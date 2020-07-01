@@ -1,6 +1,9 @@
 # Unreleased changes
 
-* Remove locale from baseline ping. ([1609968](https://bugzilla.mozilla.org/show_bug.cgi?id=1609968), [#1016](https://github.com/mozilla/glean/pull/1016))
+* General
+    * Remove locale from baseline ping. ([1609968](https://bugzilla.mozilla.org/show_bug.cgi?id=1609968), [#1016](https://github.com/mozilla/glean/pull/1016))
+* Python
+    * BUGFIX: correctly set the `app_build` metric to the newly provided `application_build_id` initialization option.
 
 [Full changelog](https://github.com/mozilla/glean/compare/v31.2.3...main)
 
