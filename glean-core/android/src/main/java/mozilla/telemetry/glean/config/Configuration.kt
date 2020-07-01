@@ -19,7 +19,7 @@ import mozilla.telemetry.glean.net.PingUploader
 @Structure.FieldOrder(
     "dataDir",
     "packageName",
-    "bindingLanguageName",
+    "languageBindingName",
     "uploadEnabled",
     "maxEvents",
     "delayPingLifetimeIO"
@@ -27,7 +27,7 @@ import mozilla.telemetry.glean.net.PingUploader
 internal class FfiConfiguration(
     dataDir: String,
     packageName: String,
-    bindingLanguageName: String,
+    languageBindingName: String,
     uploadEnabled: Boolean,
     maxEvents: Int? = null,
     delayPingLifetimeIO: Boolean
@@ -42,7 +42,7 @@ internal class FfiConfiguration(
     @JvmField
     public var packageName: String = packageName
     @JvmField
-    public var bindingLanguageName: String = bindingLanguageName
+    public var languageBindingName: String = languageBindingName
     @JvmField
     public var uploadEnabled: Byte = uploadEnabled.toByte()
     @JvmField

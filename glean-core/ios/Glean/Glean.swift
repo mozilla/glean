@@ -34,7 +34,7 @@ public class Glean {
     // This struct is used for organizational purposes to keep the class constants in a single place
     struct Constants {
         static let logTag = "glean/Glean"
-        static let bindingLanguageName = "Swift"
+        static let languageBindingName = "Swift"
     }
 
     private var pingTypeQueue = [PingBase]()
@@ -100,7 +100,7 @@ public class Glean {
                 // `relativePath` for a file URL gives us the absolute filesystem path.
                 dataDir: getGleanDirectory().relativePath,
                 packageName: AppInfo.name,
-                bindingLanguageName: Constants.bindingLanguageName,
+                languageBindingName: Constants.languageBindingName,
                 uploadEnabled: uploadEnabled,
                 configuration: configuration
             ) { cfg in

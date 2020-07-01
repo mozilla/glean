@@ -28,11 +28,11 @@ fn create_date_header_value(current_time: DateTime<Utc>) -> String {
     current_time.format("%a, %d %b %Y %T GMT").to_string()
 }
 
-fn create_user_agent_header_value(binding_language_name: &str) -> String {
+fn create_user_agent_header_value(language_binding_name: &str) -> String {
     format!(
         "Glean/{} ({} on {})",
         crate::GLEAN_VERSION,
-        binding_language_name,
+        language_binding_name,
         system::OS
     )
 }
@@ -68,7 +68,7 @@ impl PingRequest {
         document_id: &str,
         path: &str,
         body: JsonValue,
-        binding_language_name: &str,
+        language_binding_name: &str,
         debug_view_tag: Option<&String>,
     ) -> Self {
         // We want uploads to be gzip'd. Instead of doing this for each platform
@@ -86,7 +86,7 @@ impl PingRequest {
             headers: Self::create_request_headers(
                 add_gzip_header,
                 body_len,
-                binding_language_name,
+                language_binding_name,
                 debug_view_tag,
             ),
         }
@@ -135,14 +135,14 @@ impl PingRequest {
     fn create_request_headers(
         is_gzipped: bool,
         body_len: usize,
-        binding_language_name: &str,
+        language_binding_name: &str,
         debug_view_tag: Option<&String>,
     ) -> HashMap<&'static str, String> {
         let mut headers = HashMap::new();
         headers.insert("Date", create_date_header_value(Utc::now()));
         headers.insert(
             "User-Agent",
-            create_user_agent_header_value(binding_language_name),
+            create_user_agent_header_value(language_binding_name),
         );
         headers.insert("X-Client-Type", "Glean".to_string());
         headers.insert(

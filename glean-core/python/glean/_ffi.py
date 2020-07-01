@@ -11,7 +11,7 @@ from ._glean_ffi import ffi  # type: ignore
 
 
 # The name of the language used by this Glean binding.
-BINDING_LANGUAGE_NAME = "Python"
+LANGUAGE_BINDING_NAME = "Python"
 
 
 def get_shared_object_filename() -> str:  # pragma: no cover
@@ -46,14 +46,14 @@ def make_config(
     """
     data_dir = ffi.new("char[]", ffi_encode_string(str(data_dir)))
     package_name = ffi.new("char[]", ffi_encode_string(package_name))
-    binding_language_name = ffi.new("char[]", ffi_encode_string(BINDING_LANGUAGE_NAME))
+    language_binding_name = ffi.new("char[]", ffi_encode_string(LANGUAGE_BINDING_NAME))
     max_events = ffi.new("int32_t *", max_events)
 
     cfg = ffi.new("FfiConfiguration *")
 
     cfg.data_dir = data_dir
     cfg.package_name = package_name
-    cfg.binding_language_name = binding_language_name
+    cfg.language_binding_name = language_binding_name
     cfg.upload_enabled = upload_enabled
     cfg.max_events = max_events
     cfg.delay_ping_lifetime_io = False

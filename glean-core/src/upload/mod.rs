@@ -169,7 +169,7 @@ pub struct PingUploadManager {
     /// The name of the programming language used by the binding creating this instance of PingUploadManager.
     ///
     /// This will be used to build the value User-Agent header for each ping request.
-    binding_language_name: String,
+    language_binding_name: String,
 }
 
 impl PingUploadManager {
@@ -188,7 +188,7 @@ impl PingUploadManager {
     /// Will panic if unable to spawn a new thread.
     pub fn new<P: Into<PathBuf>>(
         data_path: P,
-        binding_language_name: &str,
+        language_binding_name: &str,
         sync_scan: bool,
     ) -> Self {
         let queue = Arc::new(RwLock::new(VecDeque::new()));
@@ -198,7 +198,7 @@ impl PingUploadManager {
         let local_queue = queue.clone();
         let local_flag = processed_pending_pings.clone();
         let local_manager = directory_manager.clone();
-        let local_binding_language_name = binding_language_name.to_string();
+        let local_language_binding_name = language_binding_name.to_string();
         let ping_scanning_thread = thread::Builder::new()
             .name("glean.ping_directory_manager.process_dir".to_string())
             .spawn(move || {
@@ -213,7 +213,7 @@ impl PingUploadManager {
                         &document_id,
                         &path,
                         body,
-                        &local_binding_language_name,
+                        &local_language_binding_name,
                         None,
                     );
                     local_queue.push_back(request);
@@ -233,7 +233,7 @@ impl PingUploadManager {
             processed_pending_pings,
             directory_manager,
             rate_limiter: None,
-            binding_language_name: binding_language_name.into(),
+            language_binding_name: language_binding_name.into(),
         }
     }
 
@@ -296,7 +296,7 @@ impl PingUploadManager {
             &document_id,
             &path,
             body,
-            self.binding_language_name.as_str(),
+            self.language_binding_name.as_str(),
             debug_view_tag,
         );
         queue.push_back(request);

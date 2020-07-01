@@ -50,7 +50,7 @@ mod core_metrics;
 pub mod metrics;
 mod system;
 
-const BINDING_LANGUAGE_NAME: &str = "Rust";
+const LANGUAGE_BINDING_NAME: &str = "Rust";
 
 /// Application state to keep track of.
 #[derive(Debug)]
@@ -110,7 +110,7 @@ pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) -> Result<
         upload_enabled: cfg.upload_enabled,
         data_path: cfg.data_path.clone(),
         application_id: cfg.application_id.clone(),
-        binding_language_name: BINDING_LANGUAGE_NAME.into(),
+        language_binding_name: LANGUAGE_BINDING_NAME.into(),
         max_events: cfg.max_events,
         delay_ping_lifetime_io: cfg.delay_ping_lifetime_io,
     };

@@ -300,7 +300,7 @@ typedef union {
 typedef struct {
   FfiStr data_dir;
   FfiStr package_name;
-  FfiStr binding_language_name;
+  FfiStr language_binding_name;
   uint8_t upload_enabled;
   const int32_t *max_events;
   uint8_t delay_ping_lifetime_io;
@@ -427,7 +427,7 @@ void glean_get_upload_task(FfiPingUploadTask *result, uint8_t log_ping);
  */
 uint8_t glean_initialize(const FfiConfiguration *cfg);
 
-uint8_t glean_initialize_standalone_uploader(FfiStr data_dir, FfiStr binding_language_name);
+uint8_t glean_initialize_standalone_uploader(FfiStr data_dir, FfiStr language_binding_name);
 
 uint8_t glean_is_dirty_flag_set(void);
 
