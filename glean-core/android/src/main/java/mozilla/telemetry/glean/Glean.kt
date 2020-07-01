@@ -52,7 +52,7 @@ data class GleanTimerId internal constructor(internal val id: Long)
 open class GleanInternalAPI internal constructor () {
     companion object {
         private const val LOG_TAG: String = "glean/Glean"
-        private const val PLATFORM_NAME: String = "Android"
+        private const val BINDING_LANGUAGE_NAME: String = "Kotlin"
         internal const val GLEAN_DATA_DIR: String = "glean_data"
     }
 
@@ -156,7 +156,7 @@ open class GleanInternalAPI internal constructor () {
             val cfg = FfiConfiguration(
                 dataDir = gleanDataDir.path,
                 packageName = applicationContext.packageName,
-                platform = PLATFORM_NAME,
+                bindingLanguageName = BINDING_LANGUAGE_NAME,
                 uploadEnabled = uploadEnabled,
                 maxEvents = configuration.maxEvents,
                 delayPingLifetimeIO = false

@@ -11,7 +11,7 @@ int main(void)
   FfiConfiguration cfg = {
     "/tmp/glean_data",
     "c-app",
-    "C App",
+    "C",
     true,
     NULL
   };

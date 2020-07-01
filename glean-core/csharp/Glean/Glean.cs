@@ -51,9 +51,9 @@ namespace Mozilla.Glean
         private const string LogTag = "glean/Glean";
 
         /// <summary>
-        /// This is the name of the platform this instance is running on.
+        /// This is the name of the language used by this Glean binding.
         /// </summary>
-        private readonly static string PlatformName = $"C# on {Environment.OSVersion}";
+        private readonly static string BindingLanguageName = "C#";
 
         /// <summary>
         /// A logger configured for this class
@@ -140,7 +140,7 @@ namespace Mozilla.Glean
                 {
                     data_dir = dataDir,
                     package_name = applicationId,
-                    platform = PlatformName,
+                    binding_language_name = BindingLanguageName,
                     upload_enabled = uploadEnabled,
                     max_events = maxEventsPtr,
                     delay_ping_lifetime_io = false

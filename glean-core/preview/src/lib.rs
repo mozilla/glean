@@ -22,7 +22,6 @@
 //! let cfg = Configuration {
 //!     data_path: "/tmp/data".into(),
 //!     application_id: "org.mozilla.glean_core.example".into(),
-//!     platform: "Firefox on Windows".into(),
 //!     upload_enabled: true,
 //!     max_events: None,
 //!     delay_ping_lifetime_io: false,
@@ -50,6 +49,8 @@ mod configuration;
 mod core_metrics;
 pub mod metrics;
 mod system;
+
+const BINDING_LANGUAGE_NAME: &str = "Rust";
 
 /// Application state to keep track of.
 #[derive(Debug)]
@@ -109,7 +110,7 @@ pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) -> Result<
         upload_enabled: cfg.upload_enabled,
         data_path: cfg.data_path.clone(),
         application_id: cfg.application_id.clone(),
-        platform: cfg.platform.clone(),
+        binding_language_name: BINDING_LANGUAGE_NAME.into(),
         max_events: cfg.max_events,
         delay_ping_lifetime_io: cfg.delay_ping_lifetime_io,
     };

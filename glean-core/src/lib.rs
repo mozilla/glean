@@ -117,8 +117,8 @@ pub struct Configuration {
     pub data_path: String,
     /// The application ID (will be sanitized during initialization).
     pub application_id: String,
-    /// The platform this instance of Glean is running on e.g. "Android" or "Python on Windows".
-    pub platform: String,
+    /// The name of the programming language used by the binding creating this instance of Glean.
+    pub binding_language_name: String,
     /// The maximum number of events to store before sending a ping containing events.
     pub max_events: Option<usize>,
     /// Whether Glean should delay persistence of data from metrics with ping lifetime.
@@ -137,7 +137,7 @@ pub struct Configuration {
 /// let cfg = Configuration {
 ///     data_path: "/tmp/glean".into(),
 ///     application_id: "glean.sample.app".into(),
-///     platform: "Rust on Windows".into(),
+///     binding_language_name: "Rust".into(),
 ///     upload_enabled: true,
 ///     max_events: None,
 ///     delay_ping_lifetime_io: false,
@@ -195,7 +195,8 @@ impl Glean {
         let event_data_store = EventDatabase::new(&cfg.data_path)?;
 
         // Create an upload manager with rate limiting of 10 pings every 60 seconds.
-        let mut upload_manager = PingUploadManager::new(&cfg.data_path, &cfg.platform, false);
+        let mut upload_manager =
+            PingUploadManager::new(&cfg.data_path, &cfg.binding_language_name, false);
         upload_manager.set_rate_limiter(
             /* seconds per interval */ 60, /* max tasks per interval */ 10,
         );
@@ -260,7 +261,7 @@ impl Glean {
         let cfg = Configuration {
             data_path: data_path.into(),
             application_id: application_id.into(),
-            platform: "Testing".into(),
+            binding_language_name: "Rust".into(),
             upload_enabled,
             max_events: None,
             delay_ping_lifetime_io: false,

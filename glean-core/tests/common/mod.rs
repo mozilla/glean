@@ -53,7 +53,7 @@ pub fn new_glean(tempdir: Option<tempfile::TempDir>) -> (Glean, tempfile::TempDi
     let cfg = glean_core::Configuration {
         data_path: tmpname,
         application_id: GLOBAL_APPLICATION_ID.into(),
-        platform: "Tests".into(),
+        binding_language_name: "Rust".into(),
         upload_enabled: true,
         max_events: None,
         delay_ping_lifetime_io: false,

@@ -8,19 +8,6 @@ import sys
 import time
 
 
-def get_platform_name() -> str:
-    """
-    Get the name of the platform we are currently running on.
-
-    This will be added to each ping requests User-Agent header.
-
-    Returns:
-        platform (str): The platform name.
-    """
-
-    f"Python on {sys.platform}"
-
-
 def get_locale_tag() -> str:
     """
     Get a Gecko-compatible locale string (e.g. "es-ES", instead of the "es_ES")

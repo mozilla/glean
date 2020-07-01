@@ -230,7 +230,7 @@ pub extern "C" fn glean_enable_logging() {
 pub struct FfiConfiguration<'a> {
     pub data_dir: FfiStr<'a>,
     pub package_name: FfiStr<'a>,
-    pub platform: FfiStr<'a>,
+    pub binding_language_name: FfiStr<'a>,
     pub upload_enabled: u8,
     pub max_events: Option<&'a i32>,
     pub delay_ping_lifetime_io: u8,
@@ -243,7 +243,7 @@ impl TryFrom<&FfiConfiguration<'_>> for glean_core::Configuration {
     fn try_from(cfg: &FfiConfiguration) -> Result<Self, Self::Error> {
         let data_path = cfg.data_dir.to_string_fallible()?;
         let application_id = cfg.package_name.to_string_fallible()?;
-        let platform = cfg.platform.to_string_fallible()?;
+        let binding_language_name = cfg.binding_language_name.to_string_fallible()?;
         let upload_enabled = cfg.upload_enabled != 0;
         let max_events = cfg.max_events.filter(|&&i| i >= 0).map(|m| *m as usize);
         let delay_ping_lifetime_io = cfg.delay_ping_lifetime_io != 0;
@@ -252,7 +252,7 @@ impl TryFrom<&FfiConfiguration<'_>> for glean_core::Configuration {
             upload_enabled,
             data_path,
             application_id,
-            platform,
+            binding_language_name,
             max_events,
             delay_ping_lifetime_io,
         })
@@ -480,14 +480,17 @@ pub unsafe extern "C" fn glean_process_ping_upload_response(
 }
 
 #[no_mangle]
-pub extern "C" fn glean_initialize_standalone_uploader(data_dir: FfiStr, platform: FfiStr) -> u8 {
+pub extern "C" fn glean_initialize_standalone_uploader(
+    data_dir: FfiStr,
+    binding_language_name: FfiStr,
+) -> u8 {
     handlemap_ext::handle_result(|| {
         // Init the upload manager to perform a synchronous ping directory scan.
         // Since this method is meant to be called from a process used exclusively
         // for uploading, this is fine.
         let mut upload_manager = PingUploadManager::new(
             data_dir.to_string_fallible()?,
-            &platform.to_string_fallible()?,
+            &binding_language_name.to_string_fallible()?,
             true,
         );
         upload_manager.set_rate_limiter(

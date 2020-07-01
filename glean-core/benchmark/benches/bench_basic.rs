@@ -12,7 +12,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
         upload_enabled: true,
         data_path: tmpname,
         application_id: "glean.bench".into(),
-        platform: "Benchmark".into(),
+        binding_language_name: "Rust".into(),
         max_events: None,
         delay_ping_lifetime_io: false,
     };

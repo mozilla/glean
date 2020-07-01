@@ -29,7 +29,6 @@ fn main() -> Result<(), Error> {
     let cfg = Configuration {
         data_path,
         application_id: "org.mozilla.glean_core.example".into(),
-        platform: "Prototype".into(),
         upload_enabled: true,
         max_events: None,
         delay_ping_lifetime_io: false,

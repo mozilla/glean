@@ -11,6 +11,8 @@ use flate2::{read::GzDecoder, write::GzEncoder, Compression};
 use serde_json::{self, Value as JsonValue};
 use std::io::prelude::*;
 
+use crate::system;
+
 /// Creates a formatted date string that can be used with Date headers.
 fn create_date_header_value(current_time: DateTime<Utc>) -> String {
     // Date headers are required to be in the following format:
@@ -26,8 +28,13 @@ fn create_date_header_value(current_time: DateTime<Utc>) -> String {
     current_time.format("%a, %d %b %Y %T GMT").to_string()
 }
 
-fn create_user_agent_header_value(platform: &str) -> String {
-    format!("Glean/{} ({})", crate::GLEAN_VERSION, platform)
+fn create_user_agent_header_value(binding_language_name: &str) -> String {
+    format!(
+        "Glean/{} ({} on {})",
+        crate::GLEAN_VERSION,
+        binding_language_name,
+        system::OS
+    )
 }
 
 /// Represents a request to upload a ping.
@@ -61,7 +68,7 @@ impl PingRequest {
         document_id: &str,
         path: &str,
         body: JsonValue,
-        platform: &str,
+        binding_language_name: &str,
         debug_view_tag: Option<&String>,
     ) -> Self {
         // We want uploads to be gzip'd. Instead of doing this for each platform
@@ -79,7 +86,7 @@ impl PingRequest {
             headers: Self::create_request_headers(
                 add_gzip_header,
                 body_len,
-                platform,
+                binding_language_name,
                 debug_view_tag,
             ),
         }
@@ -128,12 +135,15 @@ impl PingRequest {
     fn create_request_headers(
         is_gzipped: bool,
         body_len: usize,
-        platform: &str,
+        binding_language_name: &str,
         debug_view_tag: Option<&String>,
     ) -> HashMap<&'static str, String> {
         let mut headers = HashMap::new();
         headers.insert("Date", create_date_header_value(Utc::now()));
-        headers.insert("User-Agent", create_user_agent_header_value(platform));
+        headers.insert(
+            "User-Agent",
+            create_user_agent_header_value(binding_language_name),
+        );
         headers.insert("X-Client-Type", "Glean".to_string());
         headers.insert(
             "Content-Type",

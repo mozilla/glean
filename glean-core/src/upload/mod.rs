@@ -166,8 +166,10 @@ pub struct PingUploadManager {
     /// To keep resource usage in check,
     /// we may want to limit the amount of pings sent in a given interval.
     rate_limiter: Option<RwLock<RateLimiter>>,
-    /// The platform this instance of the upload manager is running on.
-    platform: String,
+    /// The name of the programming language used by the binding creating this instance of PingUploadManager.
+    ///
+    /// This will be used to build the value User-Agent header for each ping request.
+    binding_language_name: String,
 }
 
 impl PingUploadManager {
@@ -184,7 +186,11 @@ impl PingUploadManager {
     /// # Panics
     ///
     /// Will panic if unable to spawn a new thread.
-    pub fn new<P: Into<PathBuf>>(data_path: P, platform: &str, sync_scan: bool) -> Self {
+    pub fn new<P: Into<PathBuf>>(
+        data_path: P,
+        binding_language_name: &str,
+        sync_scan: bool,
+    ) -> Self {
         let queue = Arc::new(RwLock::new(VecDeque::new()));
         let directory_manager = PingDirectoryManager::new(data_path);
         let processed_pending_pings = Arc::new(AtomicBool::new(false));
@@ -192,7 +198,7 @@ impl PingUploadManager {
         let local_queue = queue.clone();
         let local_flag = processed_pending_pings.clone();
         let local_manager = directory_manager.clone();
-        let local_platform = platform.to_string();
+        let local_binding_language_name = binding_language_name.to_string();
         let ping_scanning_thread = thread::Builder::new()
             .name("glean.ping_directory_manager.process_dir".to_string())
             .spawn(move || {
@@ -203,8 +209,13 @@ impl PingUploadManager {
                     if Self::is_enqueued(&local_queue, &document_id) {
                         continue;
                     }
-                    let request =
-                        PingRequest::new(&document_id, &path, body, &local_platform, None);
+                    let request = PingRequest::new(
+                        &document_id,
+                        &path,
+                        body,
+                        &local_binding_language_name,
+                        None,
+                    );
                     local_queue.push_back(request);
                 }
                 local_flag.store(true, Ordering::SeqCst);
@@ -222,7 +233,7 @@ impl PingUploadManager {
             processed_pending_pings,
             directory_manager,
             rate_limiter: None,
-            platform: platform.into(),
+            binding_language_name: binding_language_name.into(),
         }
     }
 
@@ -285,7 +296,7 @@ impl PingUploadManager {
             &document_id,
             &path,
             body,
-            self.platform.as_str(),
+            self.binding_language_name.as_str(),
             debug_view_tag,
         );
         queue.push_back(request);
