@@ -239,7 +239,7 @@ class GleanTest {
                     //   - seq: 2, reason: foreground, duration: null
                     if (seq == 0 || seq == 2) {
                         // We may get error metrics in foreground pings,
-                        // so 'metrics' may not exist.
+                        // so 'metrics' may exist.
                         if (json.has("metrics")) {
                             val baselineMetricsObject = json.getJSONObject("metrics")
                             assertFalse(baselineMetricsObject.has("timespan"))
@@ -288,7 +288,7 @@ class GleanTest {
             checkPingSchema(baselineJson)
 
             // We may get error metrics in dirty startup pings,
-            // so 'metrics' may not exist.
+            // so 'metrics' may exist.
             if (baselineJson.has("metrics")) {
                 val baselineMetricsObject = baselineJson.getJSONObject("metrics")
                 assertFalse(baselineMetricsObject.has("timespan"))
