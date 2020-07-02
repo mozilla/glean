@@ -28,12 +28,12 @@ fn create_date_header_value(current_time: DateTime<Utc>) -> String {
     current_time.format("%a, %d %b %Y %T GMT").to_string()
 }
 
-fn create_user_agent_header_value(language_binding_name: &str) -> String {
+fn create_user_agent_header_value(version: &str, language_binding_name: &str,  system: &str) -> String {
     format!(
         "Glean/{} ({} on {})",
-        crate::GLEAN_VERSION,
+        version,
         language_binding_name,
-        system::OS
+        system
     )
 }
 
@@ -142,7 +142,7 @@ impl PingRequest {
         headers.insert("Date", create_date_header_value(Utc::now()));
         headers.insert(
             "User-Agent",
-            create_user_agent_header_value(language_binding_name),
+            create_user_agent_header_value(crate::GLEAN_VERSION, language_binding_name, system::OS),
         );
         headers.insert("X-Client-Type", "Glean".to_string());
         headers.insert(
@@ -171,5 +171,11 @@ mod test {
         let date: DateTime<Utc> = Utc.ymd(2018, 2, 25).and_hms(11, 10, 37);
         let test_value = create_date_header_value(date);
         assert_eq!("Sun, 25 Feb 2018 11:10:37 GMT", test_value);
+    }
+
+    #[test]
+    fn test_user_agent_header_resolution() {
+        let test_value = create_user_agent_header_value("0.0.0", "Rust", "Windows");
+        assert_eq!("Glean/0.0.0 (Rust on Windows)", test_value);
     }
 }
