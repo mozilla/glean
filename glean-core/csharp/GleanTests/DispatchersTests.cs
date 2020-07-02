@@ -186,5 +186,45 @@ namespace Mozilla.Glean.Tests
 
             Assert.Equal(3, threadCanary);
         }
+
+        [Fact]
+        public void QueuedTasksExceptionsAreCaughtWhenFlushing()
+        {
+            var mainThread = Thread.CurrentThread;
+            long threadCanary = 0;
+
+            Dispatchers.TestingMode = false;
+            Dispatchers.QueueInitialTasks = true;
+
+            Assert.Empty(Dispatchers.preInitActionQueue);
+
+            // Dispatch an initial task that throws an exception. Even if this
+            // throws, the dispatcher should catch and keep on executing other
+            // tasks while flushing.
+            Dispatchers.LaunchAPI(() =>
+            {
+                throw new Exception("Test exception for DispatchersTest");
+            });
+
+            // Add 3 tasks to queue each one setting threadCanary to true
+            // to indicate if any task has ran.
+            for (int i = 0; i < 3; i++)
+            {
+                Dispatchers.LaunchAPI(() =>
+                {
+                    Assert.NotSame(mainThread, Thread.CurrentThread);
+                    threadCanary += 1;
+                });
+            }
+
+            Assert.Equal(4, Dispatchers.preInitActionQueue.Count);
+            Assert.Equal(0, threadCanary);
+
+            // Trigger execution to ensure tasks have fired
+            Dispatchers.FlushQueuedInitialTasks();
+
+            Assert.Equal(3, threadCanary);
+            Assert.Empty(Dispatchers.preInitActionQueue);
+        }
     }
 }
