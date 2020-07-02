@@ -42,6 +42,9 @@ namespace Mozilla.Glean
         // the `Configuration`.
         private BaseUploader httpClient;
 
+        // The version of the application sending Glean data.
+        private string applicationVersion;
+
         /// <summary>
         /// This is the tag used for logging from this class.
         /// </summary>
@@ -109,6 +112,7 @@ namespace Mozilla.Glean
             }
 
             this.configuration = configuration;
+            this.applicationVersion = applicationVersion;
             httpClient = new BaseUploader(configuration.httpClient);
             // this.gleanDataDir = File(applicationContext.applicationInfo.dataDir, GLEAN_DATA_DIR)
 
@@ -395,18 +399,7 @@ namespace Mozilla.Glean
                 GleanInternalMetrics.appChannel.SetSync(configuration.channel);
             }
 
-            // Try to get the version of the product using the Glean SDK. Unfortunately,
-            // this uses reflection.
-            var mainAssembly = System.Reflection.Assembly.GetEntryAssembly();
-            if (mainAssembly != null)
-            {
-                GleanInternalMetrics.appDisplayVersion.SetSync(mainAssembly.GetName().Version.ToString());
-            }
-            else
-            {
-                GleanInternalMetrics.appDisplayVersion.SetSync("inaccessible");
-            }
-
+            GleanInternalMetrics.appDisplayVersion.SetSync(applicationVersion);
             GleanInternalMetrics.appBuild.SetSync(configuration.buildId ?? "Unknown");
         }
 
