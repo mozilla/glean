@@ -110,13 +110,13 @@ class GleanTests: XCTestCase {
 
             // We may get error metrics in foreground pings,
             // so 'metrics' may exist.
-            let metrics = json?["metrics"]  as? [String: Any]
+            let metrics = json?["metrics"] as? [String: Any]
             if metrics != nil {
                 // Since we are only expecting error metrics,
                 // let's check that this is all we got.
                 XCTAssertEqual(metrics?.count, 1, "metrics has more keys than expected: \(JSONStringify(metrics!))")
-                let labeledCounters = metrics?["labeled_counter"]  as? [String: Any]
-                labeledCounters!.forEach { (key, _) in
+                let labeledCounters = metrics?["labeled_counter"] as? [String: Any]
+                labeledCounters!.forEach { key, _ in
                     XCTAssertTrue(key.starts(with: "glean.error"))
                 }
             }
@@ -158,13 +158,13 @@ class GleanTests: XCTestCase {
 
             // We may get error metrics in dirty startup pings,
             // so 'metrics' may exist.
-            let metrics = json?["metrics"]  as? [String: Any]
+            let metrics = json?["metrics"] as? [String: Any]
             if metrics != nil {
                 // Since we are only expecting error metrics,
                 // let's check that this is all we got.
                 XCTAssertEqual(metrics?.count, 1, "metrics has more keys than expected: \(JSONStringify(metrics!))")
-                let labeledCounters = metrics?["labeled_counter"]  as? [String: Any]
-                labeledCounters!.forEach { (key, _) in
+                let labeledCounters = metrics?["labeled_counter"] as? [String: Any]
+                labeledCounters!.forEach { key, _ in
                     XCTAssertTrue(key.starts(with: "glean.error"))
                 }
             }

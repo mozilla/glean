@@ -47,12 +47,12 @@ func JSONStringify(_ json: Any) -> String {
     var options: JSONSerialization.WritingOptions = JSONSerialization.WritingOptions.prettyPrinted
 
     do {
-      let data = try JSONSerialization.data(withJSONObject: json, options: options)
-      if let string = String(data: data, encoding: String.Encoding.utf8) {
-        return string
-      }
+        let data = try JSONSerialization.data(withJSONObject: json, options: options)
+        if let string = String(data: data, encoding: String.Encoding.utf8) {
+            return string
+        }
     } catch {
-      print(error)
+        print(error)
     }
 
     return ""
