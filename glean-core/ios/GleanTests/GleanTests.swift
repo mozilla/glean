@@ -108,9 +108,18 @@ class GleanTests: XCTestCase {
             let pingInfo = json?["ping_info"] as? [String: Any]
             XCTAssertEqual("foreground", pingInfo?["reason"] as? String)
 
-            // We should not have any metrics for a ping with the "foreground" flag
-            let metrics = json?["metrics"] as? [String: Any]
-            XCTAssertNil(metrics?["timespan"], "metrics['timespan'] is not nil: \(JSONStringify(metrics))")
+            // We may get error metrics in foreground pings,
+            // so 'metrics' may exist.
+            let metrics = json?["metrics"]  as? [String: Any]
+            if metrics != nil {
+                // Since we are only expecting error metrics,
+                // let's check that this is all we got.
+                XCTAssertEqual(metrics?.count, 1, "metrics has more keys than expected: \(JSONStringify(metrics!))")
+                let labeledCounters = metrics?["labeled_counter"]  as? [String: Any]
+                labeledCounters!.forEach { (key, _) in
+                    XCTAssertTrue(key.starts(with: "glean.error"))
+                }
+            }
 
             DispatchQueue.main.async {
                 // let the response get processed before we mark the expectation fulfilled
@@ -147,9 +156,18 @@ class GleanTests: XCTestCase {
             let pingInfo = json?["ping_info"] as? [String: Any]
             XCTAssertEqual("dirty_startup", pingInfo?["reason"] as? String)
 
-            // We should not have any metrics for a ping with the "dirty_startup" flag
+            // We may get error metrics in dirty startup pings,
+            // so 'metrics' may exist.
             let metrics = json?["metrics"]  as? [String: Any]
-            XCTAssertNil(metrics?["timespan"], "metrics['timespan']  is not nil: \(JSONStringify(metrics))")
+            if metrics != nil {
+                // Since we are only expecting error metrics,
+                // let's check that this is all we got.
+                XCTAssertEqual(metrics?.count, 1, "metrics has more keys than expected: \(JSONStringify(metrics!))")
+                let labeledCounters = metrics?["labeled_counter"]  as? [String: Any]
+                labeledCounters!.forEach { (key, _) in
+                    XCTAssertTrue(key.starts(with: "glean.error"))
+                }
+            }
 
             DispatchQueue.main.async {
                 // let the response get processed before we mark the expectation fulfilled

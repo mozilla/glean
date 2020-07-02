@@ -185,7 +185,7 @@ class GleanTest {
     }
 
     @Test
-    @Suppress("ComplexMethod")
+    @Suppress("ComplexMethod", "LongMethod")
     fun `test sending of foreground and background pings`() {
         val server = getMockWebServer()
 
@@ -242,7 +242,13 @@ class GleanTest {
                         // so 'metrics' may exist.
                         if (json.has("metrics")) {
                             val baselineMetricsObject = json.getJSONObject("metrics")
-                            assertFalse(baselineMetricsObject.has("timespan"))
+                            // Since we are only expecting error metrics,
+                            // let's check that this is all we got.
+                            assertEquals(1, baselineMetricsObject.length())
+                            val baselineLabeledCounters = baselineMetricsObject.getJSONObject("labeled_counter")
+                            baselineLabeledCounters.keys().forEach {
+                                assert(it.startsWith("glean.error"))
+                            }
                         }
                         assertEquals("foreground", json.getJSONObject("ping_info").getString("reason"))
                     } else if (seq == 1) {
@@ -291,7 +297,13 @@ class GleanTest {
             // so 'metrics' may exist.
             if (baselineJson.has("metrics")) {
                 val baselineMetricsObject = baselineJson.getJSONObject("metrics")
-                assertFalse(baselineMetricsObject.has("timespan"))
+                // Since we are only expecting error metrics,
+                // let's check that this is all we got.
+                assertEquals(1, baselineMetricsObject.length())
+                val baselineLabeledCounters = baselineMetricsObject.getJSONObject("labeled_counter")
+                baselineLabeledCounters.keys().forEach {
+                    assert(it.startsWith("glean.error"))
+                }
             }
         } finally {
             server.shutdown()
