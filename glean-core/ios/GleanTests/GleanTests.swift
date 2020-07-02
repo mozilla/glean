@@ -109,7 +109,8 @@ class GleanTests: XCTestCase {
             XCTAssertEqual("foreground", pingInfo?["reason"] as? String)
 
             // We should not have any metrics for a ping with the "foreground" flag
-            XCTAssertNil(json?["metrics"], "metrics is not nil")
+            let metrics = json?["metrics"] as? [String: Any]
+            XCTAssertNil(metrics?["timespan"], "metrics['timespan'] is not nil: \(JSONStringify(metrics))")
 
             DispatchQueue.main.async {
                 // let the response get processed before we mark the expectation fulfilled
@@ -147,7 +148,8 @@ class GleanTests: XCTestCase {
             XCTAssertEqual("dirty_startup", pingInfo?["reason"] as? String)
 
             // We should not have any metrics for a ping with the "dirty_startup" flag
-            XCTAssertNil(json?["metrics"], "metrics is not nil")
+            let metrics = json?["metrics"]  as? [String: Any]
+            XCTAssertNil(metrics?["timespan"], "metrics['timespan']  is not nil: \(JSONStringify(metrics))")
 
             DispatchQueue.main.async {
                 // let the response get processed before we mark the expectation fulfilled
