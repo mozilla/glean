@@ -55,6 +55,10 @@ implementation "org.mozilla.components:service-glean:33.0.0"
 
 <div data-lang="Swift" class="tab">
 
+#### Requirements
+
+* Python >= 3.6
+
 #### Setting up the dependency
 
 Glean can be consumed through [Carthage](https://github.com/Carthage/Carthage), a dependency manager for macOS and iOS.
