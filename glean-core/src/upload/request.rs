@@ -28,12 +28,14 @@ fn create_date_header_value(current_time: DateTime<Utc>) -> String {
     current_time.format("%a, %d %b %Y %T GMT").to_string()
 }
 
-fn create_user_agent_header_value(version: &str, language_binding_name: &str,  system: &str) -> String {
+fn create_user_agent_header_value(
+    version: &str,
+    language_binding_name: &str,
+    system: &str,
+) -> String {
     format!(
         "Glean/{} ({} on {})",
-        version,
-        language_binding_name,
-        system
+        version, language_binding_name, system
     )
 }
 

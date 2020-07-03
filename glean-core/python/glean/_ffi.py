@@ -60,8 +60,13 @@ def make_config(
 
     # This ensures the ffi objects created live as long as cfg lives,
     # otherwise they get garbage collected once this function returns.
-    # See: https://cffi.readthedocs.io/en/latest/using.html#working-with-pointers-structures-and-arrays
-    _global_weakkeydict[cfg] = (data_dir, package_name, language_binding_name, max_events)
+    # https://cffi.readthedocs.io/en/latest/using.html#working-with-pointers-structures-and-arrays
+    _global_weakkeydict[cfg] = (
+        data_dir,
+        package_name,
+        language_binding_name,
+        max_events,
+    )
 
     return cfg
 
