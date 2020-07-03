@@ -11,6 +11,34 @@ use flate2::{read::GzDecoder, write::GzEncoder, Compression};
 use serde_json::{self, Value as JsonValue};
 use std::io::prelude::*;
 
+use crate::system;
+
+/// Creates a formatted date string that can be used with Date headers.
+fn create_date_header_value(current_time: DateTime<Utc>) -> String {
+    // Date headers are required to be in the following format:
+    //
+    // <day-name>, <day> <month> <year> <hour>:<minute>:<second> GMT
+    //
+    // as documented here:
+    // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Date
+    // Unfortunately we can't use `current_time.to_rfc2822()` as it
+    // formats as "Mon, 22 Jun 2020 10:40:34 +0000", with an ending
+    // "+0000" instead of "GMT". That's why we need to go with manual
+    // formatting.
+    current_time.format("%a, %d %b %Y %T GMT").to_string()
+}
+
+fn create_user_agent_header_value(
+    version: &str,
+    language_binding_name: &str,
+    system: &str,
+) -> String {
+    format!(
+        "Glean/{} ({} on {})",
+        version, language_binding_name, system
+    )
+}
+
 /// Represents a request to upload a ping.
 #[derive(PartialEq, Debug, Clone)]
 pub struct PingRequest {
@@ -42,6 +70,7 @@ impl PingRequest {
         document_id: &str,
         path: &str,
         body: JsonValue,
+        language_binding_name: &str,
         debug_view_tag: Option<&String>,
     ) -> Self {
         // We want uploads to be gzip'd. Instead of doing this for each platform
@@ -56,7 +85,12 @@ impl PingRequest {
             document_id: document_id.into(),
             path: path.into(),
             body,
-            headers: Self::create_request_headers(add_gzip_header, body_len, debug_view_tag),
+            headers: Self::create_request_headers(
+                add_gzip_header,
+                body_len,
+                language_binding_name,
+                debug_view_tag,
+            ),
         }
     }
 
@@ -99,29 +133,19 @@ impl PingRequest {
         gzipper.finish().ok()
     }
 
-    /// Creates a formatted date string that can be used with Date headers.
-    fn create_date_header_value(current_time: DateTime<Utc>) -> String {
-        // Date headers are required to be in the following format:
-        //
-        // <day-name>, <day> <month> <year> <hour>:<minute>:<second> GMT
-        //
-        // as documented here:
-        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Date
-        // Unfortunately we can't use `current_time.to_rfc2822()` as it
-        // formats as "Mon, 22 Jun 2020 10:40:34 +0000", with an ending
-        // "+0000" instead of "GMT". That's why we need to go with manual
-        // formatting.
-        current_time.format("%a, %d %b %Y %T GMT").to_string()
-    }
-
     /// Creates the default request headers.
     fn create_request_headers(
         is_gzipped: bool,
         body_len: usize,
+        language_binding_name: &str,
         debug_view_tag: Option<&String>,
     ) -> HashMap<&'static str, String> {
         let mut headers = HashMap::new();
-        headers.insert("Date", Self::create_date_header_value(Utc::now()));
+        headers.insert("Date", create_date_header_value(Utc::now()));
+        headers.insert(
+            "User-Agent",
+            create_user_agent_header_value(crate::GLEAN_VERSION, language_binding_name, system::OS),
+        );
         headers.insert("X-Client-Type", "Glean".to_string());
         headers.insert(
             "Content-Type",
@@ -147,7 +171,13 @@ mod test {
     #[test]
     fn test_date_header_resolution() {
         let date: DateTime<Utc> = Utc.ymd(2018, 2, 25).and_hms(11, 10, 37);
-        let test_value = PingRequest::create_date_header_value(date);
+        let test_value = create_date_header_value(date);
         assert_eq!("Sun, 25 Feb 2018 11:10:37 GMT", test_value);
+    }
+
+    #[test]
+    fn test_user_agent_header_resolution() {
+        let test_value = create_user_agent_header_value("0.0.0", "Rust", "Windows");
+        assert_eq!("Glean/0.0.0 (Rust on Windows)", test_value);
     }
 }

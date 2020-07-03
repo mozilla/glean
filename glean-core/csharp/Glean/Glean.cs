@@ -51,6 +51,11 @@ namespace Mozilla.Glean
         private const string LogTag = "glean/Glean";
 
         /// <summary>
+        /// This is the name of the language used by this Glean binding.
+        /// </summary>
+        private readonly static string LanguageBindingName = "C#";
+
+        /// <summary>
         /// A logger configured for this class
         /// </summary>
         private static readonly ILogger Log = GetLogger(LogTag);
@@ -135,6 +140,7 @@ namespace Mozilla.Glean
                 {
                     data_dir = dataDir,
                     package_name = applicationId,
+                    language_binding_name = LanguageBindingName,
                     upload_enabled = uploadEnabled,
                     max_events = maxEventsPtr,
                     delay_ping_lifetime_io = false

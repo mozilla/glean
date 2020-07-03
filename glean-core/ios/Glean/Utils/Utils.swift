@@ -107,18 +107,21 @@ func getGleanDirectory() -> URL {
     return documentsDirectory.appendingPathComponent("glean_data")
 }
 
+// swiftlint:disable function_parameter_count
 /// Create a temporary FFI configuration for the span of the closure.
 ///
 /// We need to ensure strings exist across the FFI call, so we `strdup` them and clean up afterwards.
 func withFfiConfiguration<R>(
     dataDir: String,
     packageName: String,
+    languageBindingName: String,
     uploadEnabled: Bool,
     configuration: Configuration,
     _ body: (FfiConfiguration) -> R
 ) -> R {
     let dataDir = strdup(dataDir)
     let packageName = strdup(packageName)
+    let languageBindingName = strdup(languageBindingName)
 
     var maxEventsPtr: UnsafeMutablePointer<Int32>?
     if let maxEvents = configuration.maxEvents {
@@ -135,12 +138,15 @@ func withFfiConfiguration<R>(
     let cfg = FfiConfiguration(
         data_dir: dataDir,
         package_name: packageName,
+        language_binding_name: languageBindingName,
         upload_enabled: uploadEnabled.toByte(),
         max_events: maxEventsPtr,
         delay_ping_lifetime_io: false.toByte()
     )
     return body(cfg)
 }
+
+// swiftlint:enable function_parameter_count
 
 /// Create a temporary array of C-compatible (null-terminated) strings to pass over FFI.
 ///

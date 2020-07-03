@@ -10,6 +10,10 @@ import weakref
 from ._glean_ffi import ffi  # type: ignore
 
 
+# The name of the language used by this Glean binding.
+LANGUAGE_BINDING_NAME = "Python"
+
+
 def get_shared_object_filename() -> str:  # pragma: no cover
     """
     Get the extension used for shared objects on the current platform.
@@ -42,17 +46,27 @@ def make_config(
     """
     data_dir = ffi.new("char[]", ffi_encode_string(str(data_dir)))
     package_name = ffi.new("char[]", ffi_encode_string(package_name))
+    language_binding_name = ffi.new("char[]", ffi_encode_string(LANGUAGE_BINDING_NAME))
     max_events = ffi.new("int32_t *", max_events)
 
     cfg = ffi.new("FfiConfiguration *")
 
     cfg.data_dir = data_dir
     cfg.package_name = package_name
+    cfg.language_binding_name = language_binding_name
     cfg.upload_enabled = upload_enabled
     cfg.max_events = max_events
     cfg.delay_ping_lifetime_io = False
 
-    _global_weakkeydict[cfg] = (data_dir, package_name, max_events)
+    # This ensures the ffi objects created live as long as cfg lives,
+    # otherwise they get garbage collected once this function returns.
+    # https://cffi.readthedocs.io/en/latest/using.html#working-with-pointers-structures-and-arrays
+    _global_weakkeydict[cfg] = (
+        data_dir,
+        package_name,
+        language_binding_name,
+        max_events,
+    )
 
     return cfg
 
