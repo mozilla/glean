@@ -12,3 +12,4 @@ transforms:
 
 jobs:
     linux: {}
+    csharp: {}

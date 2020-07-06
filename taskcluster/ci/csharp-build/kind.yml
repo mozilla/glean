@@ -1,0 +1,43 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+---
+loader: glean_taskgraph.loader.build_config:loader
+
+transforms:
+  - taskgraph.transforms.job:transforms
+  - taskgraph.transforms.task:transforms
+
+job-defaults:
+  attributes:
+    run-on-pr-type: full-ci
+  run-on-tasks-for: [github-pull-request, github-push]
+  description: "C# - Build and test"
+  scopes:
+    - project:releng:services/tooltool/api/download/internal
+  worker-type: b-linux
+  worker:
+    chain-of-trust: true
+    docker-image: { in-tree: csharp }
+    max-run-time: 1800
+  run:
+    using: run-commands
+    pre-commands:
+      # XXX: scripts subshell at runtime so we need to source this here
+      # to be able to access `rustup` and `rustc` from within the cc script
+      # and the gradle command. Another options could be to set those env vars
+      # here like: [export, 'PATH=$HOME/.cargo/bin:$PATH'
+      - [source, taskcluster/scripts/rustup-setup.sh]
+      - [source, taskcluster/scripts/cross-compile-setup.sh]
+    commands:
+      # Manually build glean-core for all the targets. The list of possible targets is
+      # in the `about.toml` file repo.
+      - ['cargo', 'build', '--target', 'x86_64-unknown-linux-gnu']
+      - ['cargo', 'build', '--target', 'x86_64-pc-windows-gnu']
+      - ['cargo', 'build', '--target', 'x86_64-apple-darwin']
+      # Package the C# library.
+      - ['dotnet', 'pack', 'glean-core/csharp/csharp.sln', '-c', 'Release', '-p:IsPublicPackage=true']
+      # Run the tests.
+      - ['dotnet', 'test', 'glean-core/csharp/csharp.sln']
+    use-caches: true
