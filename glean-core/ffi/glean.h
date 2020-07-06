@@ -427,7 +427,12 @@ void glean_get_upload_task(FfiPingUploadTask *result, uint8_t log_ping);
  */
 uint8_t glean_initialize(const FfiConfiguration *cfg);
 
-uint8_t glean_initialize_standalone_uploader(FfiStr data_dir, FfiStr language_binding_name);
+/**
+ * # Safety
+ *
+ * A valid and non-null configuration object is required for this function.
+ */
+uint8_t glean_initialize_for_subprocess(const FfiConfiguration *cfg);
 
 uint8_t glean_is_dirty_flag_set(void);
 

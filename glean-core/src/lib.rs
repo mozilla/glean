@@ -180,11 +180,10 @@ pub struct Glean {
 }
 
 impl Glean {
-    /// Create and initialize a new Glean object.
-    ///
-    /// This will create the necessary directories and files in `data_path`.
-    /// This will also initialize the core metrics.
-    pub fn new(cfg: Configuration) -> Result<Self> {
+    /// Create and initialize a new Glean object for use in a subprocess.
+    /// Importantly, this will not send any pings at startup, since that
+    /// sort of management should only happen in the main process.
+    pub fn new_for_subprocess(cfg: &Configuration) -> Result<Self> {
         log::info!("Creating new Glean v{}", GLEAN_VERSION);
 
         let application_id = sanitize_application_id(&cfg.application_id);
@@ -204,21 +203,29 @@ impl Glean {
             /* seconds per interval */ 60, /* max tasks per interval */ 10,
         );
 
-        let mut glean = Self {
+        Ok(Self {
             upload_enabled: cfg.upload_enabled,
             data_store,
             event_data_store,
             core_metrics: CoreMetrics::new(),
             internal_pings: InternalPings::new(),
             upload_manager,
-            data_path: PathBuf::from(cfg.data_path),
+            data_path: PathBuf::from(cfg.data_path.to_string()),
             application_id,
             ping_registry: HashMap::new(),
             start_time: local_now_with_offset(),
             max_events: cfg.max_events.unwrap_or(DEFAULT_MAX_EVENTS),
             is_first_run: false,
             debug_view_tag: None,
-        };
+        })
+    }
+
+    /// Create and initialize a new Glean object.
+    ///
+    /// This will create the necessary directories and files in `data_path`.
+    /// This will also initialize the core metrics.
+    pub fn new(cfg: Configuration) -> Result<Self> {
+        let mut glean = Self::new_for_subprocess(&cfg)?;
 
         // The upload enabled flag may have changed since the last run, for
         // example by the changing of a config file.
