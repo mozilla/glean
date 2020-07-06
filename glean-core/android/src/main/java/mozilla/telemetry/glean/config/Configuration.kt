@@ -4,7 +4,6 @@
 
 package mozilla.telemetry.glean.config
 
-import mozilla.telemetry.glean.BuildConfig
 import mozilla.telemetry.glean.rust.toByte
 
 import com.sun.jna.Structure
@@ -17,10 +16,18 @@ import mozilla.telemetry.glean.net.PingUploader
  * **CAUTION**: This must match _exactly_ the definition on the Rust side.
  *  If this side is changed, the Rust side need to be changed, too.
  */
-@Structure.FieldOrder("dataDir", "packageName", "uploadEnabled", "maxEvents", "delayPingLifetimeIO")
+@Structure.FieldOrder(
+    "dataDir",
+    "packageName",
+    "languageBindingName",
+    "uploadEnabled",
+    "maxEvents",
+    "delayPingLifetimeIO"
+)
 internal class FfiConfiguration(
     dataDir: String,
     packageName: String,
+    languageBindingName: String,
     uploadEnabled: Boolean,
     maxEvents: Int? = null,
     delayPingLifetimeIO: Boolean
@@ -34,6 +41,8 @@ internal class FfiConfiguration(
     public var dataDir: String = dataDir
     @JvmField
     public var packageName: String = packageName
+    @JvmField
+    public var languageBindingName: String = languageBindingName
     @JvmField
     public var uploadEnabled: Byte = uploadEnabled.toByte()
     @JvmField
@@ -52,27 +61,22 @@ internal class FfiConfiguration(
  *
  * @property serverEndpoint the server pings are sent to. Please note that this is
  *           is only meant to be changed for tests.
- * @property userAgent the user agent used when sending pings, only to be used internally.
  * @property maxEvents the number of events to store before the events ping is sent
  * @property logPings whether to log ping contents to the console. This is only meant to be used
  *           internally by the `GleanDebugActivity`.
  * @property httpClient The HTTP client implementation to use for uploading pings.
- * @property pingTag String tag to be applied to headers when uploading pings for debug view.
- *           This is only meant to be used internally by the `GleanDebugActivity`.
  * @property channel the release channel the application is on, if known. This will be
  *           sent along with all the pings, in the `client_info` section.
  */
 data class Configuration internal constructor(
     val serverEndpoint: String,
     val channel: String? = null,
-    val userAgent: String = DEFAULT_USER_AGENT,
     val maxEvents: Int? = null,
     val logPings: Boolean = DEFAULT_LOG_PINGS,
     // NOTE: since only simple object or strings can be made `const val`s, if the
     // default values for the lines below are ever changed, they are required
     // to change in the public constructor below.
-    val httpClient: PingUploader = HttpURLConnectionUploader(),
-    val pingTag: String? = null
+    val httpClient: PingUploader = HttpURLConnectionUploader()
 ) {
     /**
      * Configuration for Glean.
@@ -97,11 +101,9 @@ data class Configuration internal constructor(
         httpClient: PingUploader = HttpURLConnectionUploader()
     ) : this (
         serverEndpoint = serverEndpoint,
-        userAgent = DEFAULT_USER_AGENT,
         maxEvents = maxEvents,
         logPings = DEFAULT_LOG_PINGS,
         httpClient = httpClient,
-        pingTag = null,
         channel = channel
     )
 
@@ -110,10 +112,6 @@ data class Configuration internal constructor(
          * The default server pings are sent to.
          */
         const val DEFAULT_TELEMETRY_ENDPOINT = "https://incoming.telemetry.mozilla.org"
-        /**
-         * The default user agent used when sending pings.
-         */
-        const val DEFAULT_USER_AGENT = "Glean/${BuildConfig.LIBRARY_VERSION} (Android)"
         /**
          * Whether to log pings by default.
          */

@@ -32,6 +32,8 @@ This is a built-in ping that is assembled out of the box by the Glean SDK.
 
 See the Glean SDK documentation for the [`baseline` ping](https://mozilla.github.io/glean/book/user/pings/baseline.html).
 
+This ping is sent if empty.
+
 This ping includes the [client id](https://mozilla.github.io/glean/book/user/pings/index.html#the-client_info-section).
 
 **Data reviews for this ping:**
@@ -65,7 +67,6 @@ The following metrics are added to the ping:
 | Name | Type | Description | Data reviews | Extras | Expiration |
 | --- | --- | --- | --- | --- | --- |
 | glean.baseline.duration |[timespan](https://mozilla.github.io/glean/book/user/metrics/timespan.html) |The duration of the last foreground session.  |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3)||never |
-| glean.baseline.locale |[string](https://mozilla.github.io/glean/book/user/metrics/string.html) |The locale of the application during initialization (e.g. "es-ES"). If the locale can't be determined on the system, the value is ["und"](https://unicode.org/reports/tr35/#Unknown_or_Invalid_Identifiers), to indicate "undetermined".  |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3)||never |
 
 ## deletion-request
 

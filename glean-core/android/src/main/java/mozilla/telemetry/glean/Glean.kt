@@ -26,7 +26,6 @@ import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.getAndConsumeRustString
 import mozilla.telemetry.glean.rust.toBoolean
 import mozilla.telemetry.glean.rust.toByte
-import mozilla.telemetry.glean.GleanMetrics.GleanBaseline
 import mozilla.telemetry.glean.GleanMetrics.GleanInternalMetrics
 import mozilla.telemetry.glean.GleanMetrics.Pings
 import mozilla.telemetry.glean.net.BaseUploader
@@ -53,6 +52,7 @@ data class GleanTimerId internal constructor(internal val id: Long)
 open class GleanInternalAPI internal constructor () {
     companion object {
         private const val LOG_TAG: String = "glean/Glean"
+        private const val LANGUAGE_BINDING_NAME: String = "Kotlin"
         internal const val GLEAN_DATA_DIR: String = "glean_data"
     }
 
@@ -74,6 +74,9 @@ open class GleanInternalAPI internal constructor () {
 
     // Keep track of this flag before Glean is initialized
     private var uploadEnabled: Boolean = true
+
+    // Keep track of this value before Glean is initialized
+    private var debugViewTag: String? = null
 
     // This object holds data related to any persistent information about the metrics ping,
     // such as the last time it was sent and the store name
@@ -153,6 +156,7 @@ open class GleanInternalAPI internal constructor () {
             val cfg = FfiConfiguration(
                 dataDir = gleanDataDir.path,
                 packageName = applicationContext.packageName,
+                languageBindingName = LANGUAGE_BINDING_NAME,
                 uploadEnabled = uploadEnabled,
                 maxEvents = configuration.maxEvents,
                 delayPingLifetimeIO = false
@@ -163,6 +167,12 @@ open class GleanInternalAPI internal constructor () {
             // If initialization of Glean fails we bail out and don't initialize further.
             if (!initialized) {
                 return@executeTask
+            }
+
+            // The debug view tag might have been set before initialize,
+            // get the cached value and set it.
+            if (debugViewTag != null) {
+                setDebugViewTag(debugViewTag!!)
             }
 
             // Get the current value of the dirty flag so we know whether to
@@ -436,7 +446,6 @@ open class GleanInternalAPI internal constructor () {
         // Please note that the following metrics must be set synchronously, so
         // that they are guaranteed to be available with the first ping that is
         // generated. We use an internal only API to do that.
-        GleanBaseline.locale.setSync(getLocaleTag())
         // https://developer.android.com/reference/android/os/Build.VERSION
         GleanInternalMetrics.androidSdkVersion.setSync(Build.VERSION.SDK_INT.toString())
         GleanInternalMetrics.osVersion.setSync(Build.VERSION.RELEASE)
@@ -582,6 +591,27 @@ open class GleanInternalAPI internal constructor () {
 
         if (submittedPing) {
             PingUploadWorker.enqueueWorker(applicationContext)
+        }
+    }
+
+    /**
+     * Set a tag to be applied to headers when uploading pings for debug view.
+     *
+     * If the tag is invalid it won't be set and this function will return `false`,
+     * although if we are not initialized yet, there won't be any validation.
+     *
+     * This is only meant to be used internally by the `GleanDebugActivity`.
+     *
+     * @param value The value of the tag, which must be a valid HTTP header value.
+     */
+    fun setDebugViewTag(value: String): Boolean {
+        if (isInitialized()) {
+            return LibGleanFFI.INSTANCE.glean_set_debug_view_tag(value).toBoolean()
+        } else {
+            debugViewTag = value
+            // When setting the debug view tag before initialization,
+            // we don't validate the tag, thus this function always returns true.
+            return true
         }
     }
 

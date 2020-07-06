@@ -12,58 +12,13 @@ class HttpPingUploaderTests: XCTestCase {
     private let testPath = "/some/random/path/not/important"
     private let testPing = "{ \"ping\": \"test\" }"
     private let testConfig = Configuration(
-        userAgent: "Glean/Test 25.0.2",
-        logPings: true,
-        pingTag: "Tag"
+        logPings: true
     )
 
     override func tearDown() {
         // Reset expectations
         expectation = nil
         OHHTTPStubs.removeAllStubs()
-    }
-
-    func getOrCreatePingDirectory(_ pingDirectory: String) -> URL {
-        let dataPath = getGleanDirectory().appendingPathComponent(pingDirectory)
-
-        if !FileManager.default.fileExists(atPath: dataPath.relativePath) {
-            do {
-                try FileManager.default.createDirectory(
-                    atPath: dataPath.relativePath,
-                    withIntermediateDirectories: true,
-                    attributes: nil
-                )
-            } catch {
-                print(error.localizedDescription)
-            }
-        }
-
-        return dataPath
-    }
-
-    private func getAndClearPingDirectory(withDirectory pingDirectory: String? = nil) -> URL {
-        // Get the ping directory.
-        //
-        // This is the same pending pings directory as defined in `glean-core/src/lib.rs`.
-        // We want to test interoperation between the Swift and Rust parts.
-        let pingDir = getOrCreatePingDirectory(pingDirectory ?? "pending_pings")
-
-        // Clear the directory to ensure we start fresh
-        // Verify all the files were removed, including the bad ones
-        do {
-            let directoryContents = try FileManager.default.contentsOfDirectory(
-                atPath: pingDir.relativePath
-            )
-            for file in directoryContents {
-                try FileManager.default.removeItem(
-                    atPath: pingDir.appendingPathComponent(file).relativePath
-                )
-            }
-        } catch {
-            // Do nothing
-        }
-
-        return pingDir
     }
 
     func testHTTPStatusCode() {
@@ -124,115 +79,5 @@ class HttpPingUploaderTests: XCTestCase {
             "Glean",
             "Request X-Client-Type set correctly"
         )
-    }
-
-    func testProcessingOfPingFiles() {
-        // Get the ping directory
-        let pingDir = getAndClearPingDirectory()
-
-        // Write some simulated ping files into the directory for testing
-        let fileContents = "\(testPath)\n\(testPing)\n".data(using: .utf8)
-        let expectedFilesUploaded = 3
-        for _ in 0 ..< expectedFilesUploaded {
-            let fileName = UUID().description
-            let file = pingDir.appendingPathComponent(fileName)
-
-            if !FileManager.default.createFile(
-                atPath: file.relativePath,
-                contents: fileContents,
-                attributes: nil
-            ) {
-                print("Argh!!")
-            }
-        }
-
-        // Now let's write a ping with a non-conforming filename to ensure that they get
-        // handled by the processor correctly
-        let badFileName = "BadFileName"
-        let badFile = pingDir.appendingPathComponent(badFileName)
-        FileManager.default.createFile(
-            atPath: badFile.relativePath,
-            contents: fileContents,
-            attributes: nil
-        )
-
-        // Now set up our test server
-        var countFilesUploaded = 0
-
-        stubServerReceive { _, json in
-            XCTAssert(json != nil)
-            XCTAssertEqual(json?["ping"] as? String, "test")
-
-            countFilesUploaded += 1
-            if expectedFilesUploaded == countFilesUploaded {
-                DispatchQueue.main.async {
-                    // let the response get processed before we mark the expectation fulfilled
-                    self.expectation?.fulfill()
-                }
-            }
-        }
-
-        // Set our expectation that will be fulfilled by the stub above
-        expectation = expectation(description: "Completed upload")
-
-        // Reset Glean to trigger refetching pending pings
-        Glean.shared.resetGlean(clearStores: true)
-
-        // Trigger file processing and wait for the expectation to be fulfilled.  This will cause
-        // a test failure if the expectation times out.
-        HttpPingUploader(configuration: testConfig).process()
-        wait(for: [expectation!], timeout: TimeInterval(5.0))
-    }
-
-    func testProcessingOfPingFilesAlternativeDirectory() {
-        // This is the same deletion request ping directory as defined in `glean-core/src/lib.rs`.
-        // We want to test interoperation between the Swift and Rust parts.
-        let alternativePingdir = "deletion_request"
-        let pingDir = getAndClearPingDirectory(withDirectory: alternativePingdir)
-
-        // Write some simulated ping files into the directory for testing
-        let fileContents = "\(testPath)\n\(testPing)\n".data(using: .utf8)
-        let fileName = UUID().description
-        let file = pingDir.appendingPathComponent(fileName)
-
-        if !FileManager.default.createFile(
-            atPath: file.relativePath,
-            contents: fileContents,
-            attributes: nil
-        ) {
-            XCTAssert(false, "Failed to write file \(file.relativePath)")
-        }
-
-        // Now let's write a ping with a non-conforming filename to ensure that they get
-        // handled by the processor correctly
-        let badFileName = "BadFileName"
-        let badFile = pingDir.appendingPathComponent(badFileName)
-        FileManager.default.createFile(
-            atPath: badFile.relativePath,
-            contents: fileContents,
-            attributes: nil
-        )
-
-        // Now set up our test server
-        stubServerReceive { _, json in
-            XCTAssert(json != nil)
-            XCTAssertEqual(json?["ping"] as? String, "test")
-
-            DispatchQueue.main.async {
-                // let the response get processed before we mark the expectation fulfilled
-                self.expectation?.fulfill()
-            }
-        }
-
-        // Set our expectation that will be fulfilled by the stub above
-        expectation = expectation(description: "Completed upload")
-
-        // Reset Glean to trigger refetching pending pings
-        Glean.shared.resetGlean(clearStores: true)
-
-        // Trigger file processing and wait for the expectation to be fulfilled.  This will cause
-        // a test failure if the expectation times out.
-        HttpPingUploader(configuration: testConfig).process()
-        wait(for: [expectation!], timeout: TimeInterval(5.0))
     }
 }

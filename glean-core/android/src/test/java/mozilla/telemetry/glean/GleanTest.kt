@@ -104,14 +104,14 @@ class GleanTest {
     }
 
     @Test
-    fun `X-Debug-ID header is correctly added when pingTag is not null`() {
+    fun `X-Debug-ID header is correctly added when debug view tag is set`() {
         val server = getMockWebServer()
         resetGlean(context, Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port,
-            logPings = true,
-            pingTag = "this-ping-is-tagged"
+            logPings = true
         ))
 
+        Glean.setDebugViewTag("this-ping-is-tagged")
         Glean.handleBackgroundEvent()
 
         // Now trigger it to upload
@@ -185,7 +185,7 @@ class GleanTest {
     }
 
     @Test
-    @Suppress("ComplexMethod")
+    @Suppress("ComplexMethod", "LongMethod")
     fun `test sending of foreground and background pings`() {
         val server = getMockWebServer()
 
@@ -232,19 +232,27 @@ class GleanTest {
                     assertEquals(1, json.getJSONArray("events").length())
                 } else if (docType == "baseline") {
                     val seq = json.getJSONObject("ping_info").getInt("seq")
-                    val baselineMetricsObject = json.getJSONObject("metrics")
-                    val baselineStringMetrics = baselineMetricsObject.getJSONObject("string")
-                    assertEquals(1, baselineStringMetrics.length())
-                    assertNotNull(baselineStringMetrics.get("glean.baseline.locale"))
 
                     // There are three baseline pings:
                     //   - seq: 0, reason: foreground, duration: null
                     //   - seq: 1, reason: background, duration: non-null
                     //   - seq: 2, reason: foreground, duration: null
                     if (seq == 0 || seq == 2) {
-                        assertFalse(baselineMetricsObject.has("timespan"))
+                        // We may get error metrics in foreground pings,
+                        // so 'metrics' may exist.
+                        if (json.has("metrics")) {
+                            val baselineMetricsObject = json.getJSONObject("metrics")
+                            // Since we are only expecting error metrics,
+                            // let's check that this is all we got.
+                            assertEquals(1, baselineMetricsObject.length())
+                            val baselineLabeledCounters = baselineMetricsObject.getJSONObject("labeled_counter")
+                            baselineLabeledCounters.keys().forEach {
+                                assert(it.startsWith("glean.error"))
+                            }
+                        }
                         assertEquals("foreground", json.getJSONObject("ping_info").getString("reason"))
                     } else if (seq == 1) {
+                        val baselineMetricsObject = json.getJSONObject("metrics")
                         assertEquals("background", json.getJSONObject("ping_info").getString("reason"))
                         val baselineTimespanMetrics = baselineMetricsObject.getJSONObject("timespan")
                         assertEquals(1, baselineTimespanMetrics.length())
@@ -285,15 +293,18 @@ class GleanTest {
             assertEquals("dirty_startup", baselineJson.getJSONObject("ping_info")["reason"])
             checkPingSchema(baselineJson)
 
-            val baselineMetricsObject = baselineJson.getJSONObject("metrics")
-            val baselineStringMetrics = baselineMetricsObject.getJSONObject("string")
-            assertEquals(1, baselineStringMetrics.length())
-            assertNotNull(baselineStringMetrics.get("glean.baseline.locale"))
-
-            assertFalse(
-                "The baseline ping from startup must not have a duration",
-                baselineMetricsObject.has("timespan")
-            )
+            // We may get error metrics in dirty startup pings,
+            // so 'metrics' may exist.
+            if (baselineJson.has("metrics")) {
+                val baselineMetricsObject = baselineJson.getJSONObject("metrics")
+                // Since we are only expecting error metrics,
+                // let's check that this is all we got.
+                assertEquals(1, baselineMetricsObject.length())
+                val baselineLabeledCounters = baselineMetricsObject.getJSONObject("labeled_counter")
+                baselineLabeledCounters.keys().forEach {
+                    assert(it.startsWith("glean.error"))
+                }
+            }
         } finally {
             server.shutdown()
         }
@@ -809,5 +820,28 @@ class GleanTest {
         ), false)
 
         assertFalse(LibGleanFFI.INSTANCE.glean_is_dirty_flag_set().toBoolean())
+    }
+
+    @Test
+    fun `setting debugViewTag before initialization should not crash`() {
+        // Can't use resetGlean directly
+        Glean.testDestroyGleanHandle()
+
+        val context: Context = ApplicationProvider.getApplicationContext()
+        val server = getMockWebServer()
+        val config = Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port
+        )
+
+        Glean.setDebugViewTag("valid-tag")
+        Glean.initialize(context, true, config)
+
+        // Send a ping
+        Glean.handleBackgroundEvent()
+        // Trigger it to upload
+        triggerWorkManager(context)
+
+        val request = server.takeRequest(20L, TimeUnit.SECONDS)
+        assertEquals(request.getHeader("X-Debug-ID"), "valid-tag")
     }
 }

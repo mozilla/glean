@@ -454,20 +454,46 @@ def test_tempdir_is_cleared_multiprocess(safe_httpserver):
     assert 10 == len(safe_httpserver.requests)
 
 
-def test_set_application_id_and_version():
+def test_set_application_build_id():
     Glean._reset()
 
     Glean.initialize(
-        application_id="my-id", application_version="my-version", upload_enabled=True
+        application_id="my-id",
+        application_version="my-version",
+        application_build_id="123ABC",
+        upload_enabled=True,
     )
 
     assert (
-        "my-id" == _builtins.metrics.glean.internal.metrics.app_build.test_get_value()
+        "123ABC" == _builtins.metrics.glean.internal.metrics.app_build.test_get_value()
     )
+
+
+def test_set_application_id_and_version(safe_httpserver):
+    safe_httpserver.serve_content(b"", code=200)
+    Glean._reset()
+
+    Glean.initialize(
+        application_id="my-id",
+        application_version="my-version",
+        upload_enabled=True,
+        configuration=Configuration(server_endpoint=safe_httpserver.url),
+    )
+
     assert (
         "my-version"
         == _builtins.metrics.glean.internal.metrics.app_display_version.test_get_value()
     )
+
+    Glean._configuration.server_endpoint = safe_httpserver.url
+
+    _builtins.pings.baseline.submit()
+
+    assert 1 == len(safe_httpserver.requests)
+
+    request = safe_httpserver.requests[0]
+    assert "baseline" in request.url
+    assert "my-id" in request.url
 
 
 def test_disabling_upload_sends_deletion_request(safe_httpserver):
@@ -682,3 +708,51 @@ def test_confirm_enums_match_values_in_glean_parser():
     ]:
         for name in gp_enum.__members__.keys():
             assert g_enum[name.upper()].value == gp_enum[name].value
+
+
+def test_presubmit_makes_a_valid_ping(tmpdir, ping_schema_url, monkeypatch):
+    # Bug 1648140: Submitting a ping prior to initialize meant that the core
+    # metrics wouldn't yet be set.
+
+    info_path = Path(str(tmpdir)) / "info.txt"
+
+    Glean._reset()
+
+    ping_name = "preinit_ping"
+    ping = PingType(
+        name=ping_name, include_client_id=True, send_if_empty=True, reason_codes=[]
+    )
+
+    # This test relies on testing mode to be disabled, since we need to prove the
+    # real-world async behaviour of this.
+    Dispatcher._testing_mode = False
+    Dispatcher._queue_initial_tasks = True
+
+    # Submit a ping prior to calling initialize
+    ping.submit()
+    Glean.initialize(
+        application_id=GLEAN_APP_ID,
+        application_version=glean_version,
+        upload_enabled=True,
+        configuration=Glean._configuration,
+    )
+
+    monkeypatch.setattr(
+        Glean._configuration, "ping_uploader", _RecordingUploader(info_path)
+    )
+
+    # Wait until the work is complete
+    Dispatcher._task_worker._queue.join()
+
+    while not info_path.exists():
+        time.sleep(0.1)
+
+    with info_path.open("r") as fd:
+        url_path = fd.readline()
+        serialized_ping = fd.readline()
+
+    assert ping_name == url_path.split("/")[3]
+
+    assert 0 == validate_ping.validate_ping(
+        io.StringIO(serialized_ping), sys.stdout, schema_url=ping_schema_url,
+    )

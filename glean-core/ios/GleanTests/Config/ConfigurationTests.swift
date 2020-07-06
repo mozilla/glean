@@ -23,11 +23,6 @@ class ConfigurationTests: XCTestCase {
             "Default endpoint is set"
         )
         XCTAssertEqual(
-            config?.userAgent,
-            Configuration.Constants.defaultUserAgent,
-            "Default UserAgent is set"
-        )
-        XCTAssertEqual(
             config?.logPings,
             Configuration.Constants.defaultLogPings,
             "Default log pings is set"
@@ -35,10 +30,6 @@ class ConfigurationTests: XCTestCase {
         XCTAssertNil(
             config?.maxEvents,
             "Default max events are set"
-        )
-        XCTAssertNil(
-            config?.pingTag,
-            "Default pingTag is set"
         )
         XCTAssertNil(
             config?.channel,

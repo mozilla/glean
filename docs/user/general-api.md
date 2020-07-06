@@ -170,6 +170,28 @@ See the [custom pings documentation](pings/custom.md) about adding custom pings 
 
 </div>
 
+<div data-lang="C#" class="tab">
+
+The main control for Glean is on the `GleanInstance` singleton.
+
+The Glean SDK should be initialized as soon as possible, and importantly, before any other libraries in the application start using Glean.
+Library code should never call `Glean.initialize`, since it should be called exactly once per application.
+
+
+```C#
+using static Mozilla.Glean.Glean;
+
+GleanInstance.Initialize(
+    applicationId: "my.app.id",
+    applicationVersion: "0.1.1",
+    uploadEnabled: true,
+    configuration: new Configuration(),
+    dataDir: gleanDataDir
+    );
+```
+
+</div>
+
 {{#include ../tab_footer.md}}
 
 ## Behavior when uninitialized
@@ -202,6 +224,12 @@ Built-in pings are only available after initialization.
 <div data-lang="Python" class="tab">
 
 `Glean.set_upload_enabled()` should be called in response to the user enabling or disabling telemetry.
+
+</div>
+
+<div data-lang="C#" class="tab">
+
+`GleanInstance.SetUploadEnabled()` should be called in response to the user enabling or disabling telemetry.
 
 </div>
 

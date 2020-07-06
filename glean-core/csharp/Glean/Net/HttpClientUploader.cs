@@ -67,7 +67,6 @@ namespace Mozilla.Glean.Net
 
                 // While `SendAsync` is triggering an off-the-main thread request, we synchronously wait
                 // for it to finish by adding `.Result`. We're fine with doing that as we want the non-blocking
-
                 var httpResponseMessage = httpClient.SendAsync(request).Result;
 
                 return new HttpResponse((int)httpResponseMessage.StatusCode);
@@ -80,9 +79,11 @@ namespace Mozilla.Glean.Net
                 Console.WriteLine("Glean - Could not upload telemetry due to malformed URL");
                 return new UnrecoverableFailure();
             }
-            catch (HttpRequestException)
+            catch (Exception ex) when (ex is HttpRequestException || ex is System.Threading.Tasks.TaskCanceledException)
             {
-                // The request failed due to an underlying issue such as network connectivity.
+                // The request failed due to an underlying issue such as network connectivity. We need to catch
+                // both `HttpRequestException` and `TaskCanceledException`: the former for HTTP specific exception
+                // and the latter for the task being cancelled due to hitting the provided connection timeout.
                 Console.WriteLine("Glean - there was a problem while performing the network request.");
                 return new RecoverableFailure();
             }

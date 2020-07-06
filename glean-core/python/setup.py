@@ -48,7 +48,7 @@ with (ROOT.parent / "Cargo.toml").open() as cargo:
 
 requirements = [
     "cffi>=1",
-    "glean_parser==1.22.0",
+    "glean_parser==1.23.0",
     "iso8601>=0.1.10; python_version<='3.6'",
 ]
 
@@ -107,9 +107,9 @@ class BinaryDistribution(Distribution):
 class bdist_wheel(wheel.bdist_wheel.bdist_wheel):
     def get_tag(self):
         if platform == "linux":
-            return ("cp35", "abi3", "linux_x86_64")
+            return ("cp36", "abi3", "linux_x86_64")
         elif platform == "darwin":
-            return ("cp35", "abi3", "macosx_10_7_x86_64")
+            return ("cp36", "abi3", "macosx_10_7_x86_64")
         elif platform == "windows":
             if mingw_arch == "i686":
                 return ("py3", "none", "win32")

@@ -52,5 +52,19 @@ namespace Mozilla.Glean.Tests
             // We should take `GleanTest.kt` as a reference to implement. 
             GleanInstance.HandleBackgroundEvent();
         }
+
+        [Fact]
+        public void SettingMaxEventsDoesNotCrash()
+        {
+            string tempDataDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+
+            GleanInstance.Reset(
+                applicationId: "org.mozilla.csharp.tests",
+                applicationVersion: "1.0-test",
+                uploadEnabled: true,
+                configuration: new Configuration(maxEvents: 500),
+                dataDir: tempDataDir
+                );
+        }
     }
 }

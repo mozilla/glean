@@ -1,6 +1,34 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v31.2.0...main)
+* General
+    * Remove locale from baseline ping. ([1609968](https://bugzilla.mozilla.org/show_bug.cgi?id=1609968), [#1016](https://github.com/mozilla/glean/pull/1016))
+* Python
+    * BUGFIX: correctly set the `app_build` metric to the newly provided `application_build_id` initialization option.
+
+[Full changelog](https://github.com/mozilla/glean/compare/v31.2.3...main)
+
+# v31.2.3 (2020-06-29)
+
+* General
+    * Move debug view tag management to the Rust core. ([1640575](https://bugzilla.mozilla.org/show_bug.cgi?id=1640575), [#998](https://github.com/mozilla/glean/pull/998))
+    * BUGFIX: Fix mismatch in `event`s keys and values by using `glean_parser` version 1.23.0.
+
+[Full changelog](https://github.com/mozilla/glean/compare/v31.2.2...v31.2.3)
+
+# v31.2.2 (2020-06-26)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v31.2.1...v31.2.2)
+
+* Android
+    * BUGFIX: Compile dependencies with `NDEBUG` to avoid linking unavailable symbols.
+      This fixes a crash due to a missing `stderr` symbol on older Android ([#1020](https://github.com/mozilla/glean/pull/1020))
+
+# v31.2.1 (2020-06-25)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v31.2.0...v31.2.1)
+
+* Python
+    * BUGFIX: Core metrics are now present in every ping, even if submit is called before initialize has a chance to complete. ([#1012](https://github.com/mozilla/glean/pull/1012))
 
 # v31.2.0 (2020-06-24)
 

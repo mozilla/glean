@@ -42,10 +42,18 @@ namespace Mozilla.Glean
         // the `Configuration`.
         private BaseUploader httpClient;
 
+        // The version of the application sending Glean data.
+        private string applicationVersion;
+
         /// <summary>
         /// This is the tag used for logging from this class.
         /// </summary>
         private const string LogTag = "glean/Glean";
+
+        /// <summary>
+        /// This is the name of the language used by this Glean binding.
+        /// </summary>
+        private readonly static string LanguageBindingName = "C#";
 
         /// <summary>
         /// A logger configured for this class
@@ -109,6 +117,7 @@ namespace Mozilla.Glean
             }
 
             this.configuration = configuration;
+            this.applicationVersion = applicationVersion;
             httpClient = new BaseUploader(configuration.httpClient);
             // this.gleanDataDir = File(applicationContext.applicationInfo.dataDir, GLEAN_DATA_DIR)
 
@@ -118,16 +127,40 @@ namespace Mozilla.Glean
             {
                 RegisterPings(GleanInternalPings);
 
+                IntPtr maxEventsPtr = IntPtr.Zero;
+                if (configuration.maxEvents != null)
+                {
+                    maxEventsPtr = Marshal.AllocHGlobal(sizeof(int));
+                    // It's safe to call `configuration.maxEvents.Value` because we know
+                    // `configuration.maxEvents` is not null.
+                    Marshal.WriteInt32(maxEventsPtr, configuration.maxEvents.Value);
+                }
+
                 LibGleanFFI.FfiConfiguration cfg = new LibGleanFFI.FfiConfiguration
                 {
                     data_dir = dataDir,
                     package_name = applicationId,
+                    language_binding_name = LanguageBindingName,
                     upload_enabled = uploadEnabled,
-                    max_events = configuration.maxEvents ?? null,
+                    max_events = maxEventsPtr,
                     delay_ping_lifetime_io = false
                 };
 
-                initialized = LibGleanFFI.glean_initialize(cfg) != 0;
+                // To work around a bug in the version of Mono shipped with Unity 2019.4.1f1,
+                // copy the FFI configuration structure to unmanaged memory and pass that over
+                // to glean-core, otherwise calling `glean_initialize` will crash and have
+                // `__icall_wrapper_mono_struct_delete_old` in the stack. See bug 1648784 for
+                // more details.
+                IntPtr ptrCfg = Marshal.AllocHGlobal(Marshal.SizeOf(cfg));
+                Marshal.StructureToPtr(cfg, ptrCfg, false);
+
+                initialized = LibGleanFFI.glean_initialize(ptrCfg) != 0;
+
+                // This is safe to call even if `maxEventsPtr = IntPtr.Zero`.
+                Marshal.FreeHGlobal(maxEventsPtr);
+                // We were able to call `glean_initialize`, free the memory allocated for the
+                // FFI configuration object.
+                Marshal.FreeHGlobal(ptrCfg);
 
                 // If initialization of Glean fails we bail out and don't initialize further.
                 if (!initialized)
@@ -372,18 +405,7 @@ namespace Mozilla.Glean
                 GleanInternalMetrics.appChannel.SetSync(configuration.channel);
             }
 
-            // Try to get the version of the product using the Glean SDK. Unfortunately,
-            // this uses reflection.
-            var mainAssembly = System.Reflection.Assembly.GetEntryAssembly();
-            if (mainAssembly != null)
-            {
-                GleanInternalMetrics.appDisplayVersion.SetSync(mainAssembly.GetName().Version.ToString());
-            }
-            else
-            {
-                GleanInternalMetrics.appDisplayVersion.SetSync("inaccessible");
-            }
-
+            GleanInternalMetrics.appDisplayVersion.SetSync(applicationVersion);
             GleanInternalMetrics.appBuild.SetSync(configuration.buildId ?? "Unknown");
         }
 

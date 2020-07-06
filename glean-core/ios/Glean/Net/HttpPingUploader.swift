@@ -87,10 +87,6 @@ public class HttpPingUploader {
             // See https://github.com/AliSoftware/OHHTTPStubs#known-limitations.
             request.httpBody = data
 
-            if let tag = config.pingTag {
-                request.addValue(tag, forHTTPHeaderField: "X-Debug-ID")
-            }
-
             return request
         }
 

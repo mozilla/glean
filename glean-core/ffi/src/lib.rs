@@ -230,6 +230,7 @@ pub extern "C" fn glean_enable_logging() {
 pub struct FfiConfiguration<'a> {
     pub data_dir: FfiStr<'a>,
     pub package_name: FfiStr<'a>,
+    pub language_binding_name: FfiStr<'a>,
     pub upload_enabled: u8,
     pub max_events: Option<&'a i32>,
     pub delay_ping_lifetime_io: u8,
@@ -242,6 +243,7 @@ impl TryFrom<&FfiConfiguration<'_>> for glean_core::Configuration {
     fn try_from(cfg: &FfiConfiguration) -> Result<Self, Self::Error> {
         let data_path = cfg.data_dir.to_string_fallible()?;
         let application_id = cfg.package_name.to_string_fallible()?;
+        let language_binding_name = cfg.language_binding_name.to_string_fallible()?;
         let upload_enabled = cfg.upload_enabled != 0;
         let max_events = cfg.max_events.filter(|&&i| i >= 0).map(|m| *m as usize);
         let delay_ping_lifetime_io = cfg.delay_ping_lifetime_io != 0;
@@ -250,6 +252,7 @@ impl TryFrom<&FfiConfiguration<'_>> for glean_core::Configuration {
             upload_enabled,
             data_path,
             application_id,
+            language_binding_name,
             max_events,
             delay_ping_lifetime_io,
         })
@@ -457,7 +460,7 @@ pub unsafe extern "C" fn glean_process_ping_upload_response(
                 let document_id_str = CStr::from_ptr(document_id)
                     .to_str()
                     .map_err(|_| glean_core::Error::utf8_error())?;
-                ping_uploader.process_ping_upload_response(document_id_str, status.into());
+                ping_uploader.process_ping_upload_response(document_id_str, status.into(), None);
             };
             Ok(())
         });
@@ -477,18 +480,33 @@ pub unsafe extern "C" fn glean_process_ping_upload_response(
 }
 
 #[no_mangle]
-pub extern "C" fn glean_initialize_standalone_uploader(data_dir: FfiStr) -> u8 {
+pub extern "C" fn glean_initialize_standalone_uploader(
+    data_dir: FfiStr,
+    language_binding_name: FfiStr,
+) -> u8 {
     handlemap_ext::handle_result(|| {
         // Init the upload manager to perform a synchronous ping directory scan.
         // Since this method is meant to be called from a process used exclusively
         // for uploading, this is fine.
-        let mut upload_manager = PingUploadManager::new(data_dir.to_string_fallible()?, true);
+        let mut upload_manager = PingUploadManager::new(
+            data_dir.to_string_fallible()?,
+            &language_binding_name.to_string_fallible()?,
+            true,
+        );
         upload_manager.set_rate_limiter(
             /* seconds per interval */ 60, /* max tasks per interval */ 10,
         );
         glean_core::upload::setup_upload_manager(upload_manager)?;
         log::info!("Glean initialized in upload-only mode");
         Ok(true)
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn glean_set_debug_view_tag(tag: FfiStr) -> u8 {
+    with_glean_mut(|glean| {
+        let tag = tag.to_string_fallible()?;
+        Ok(glean.set_debug_view_tag(&tag))
     })
 }
 

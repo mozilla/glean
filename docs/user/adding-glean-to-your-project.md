@@ -55,6 +55,10 @@ implementation "org.mozilla.components:service-glean:33.0.0"
 
 <div data-lang="Swift" class="tab">
 
+#### Requirements
+
+* Python >= 3.6
+
 #### Setting up the dependency
 
 Glean can be consumed through [Carthage](https://github.com/Carthage/Carthage), a dependency manager for macOS and iOS.
@@ -113,6 +117,12 @@ $ python -m pip install glean_sdk
 ```
 
 If you are not on one of these platforms, you will need to build the Glean Python bindings from source using [these instructions](../dev/python/setting-up-python-build-environment.html).
+
+</div>
+
+<div data-lang="C#" class="tab">
+
+TODO. To be implemented in [bug 1643568](https://bugzilla.mozilla.org/show_bug.cgi?id=1643568).
 
 </div>
 
@@ -274,6 +284,12 @@ python3 -m glean_parser translate --help
 ```
 
 We recommend integrating this step into your project's documentation build. The details of that integration is left to you, since it depends on the documentation tool being used and how your project is set up.
+
+</div>
+
+<div data-lang="C#" class="tab">
+
+TODO. To be implemented in [bug 1643568](https://bugzilla.mozilla.org/show_bug.cgi?id=1643568).
 
 </div>
 

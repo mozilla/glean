@@ -51,7 +51,7 @@ use crate::metrics::{Metric, MetricType, PingType};
 use crate::ping::PingMaker;
 use crate::storage::StorageManager;
 use crate::upload::{PingUploadManager, PingUploadTask, UploadResult};
-use crate::util::{local_now_with_offset, sanitize_application_id};
+use crate::util::{local_now_with_offset, sanitize_application_id, validate_debug_view_tag};
 
 const GLEAN_VERSION: &str = env!("CARGO_PKG_VERSION");
 const GLEAN_SCHEMA_VERSION: u32 = 1;
@@ -117,6 +117,8 @@ pub struct Configuration {
     pub data_path: String,
     /// The application ID (will be sanitized during initialization).
     pub application_id: String,
+    /// The name of the programming language used by the binding creating this instance of Glean.
+    pub language_binding_name: String,
     /// The maximum number of events to store before sending a ping containing events.
     pub max_events: Option<usize>,
     /// Whether Glean should delay persistence of data from metrics with ping lifetime.
@@ -135,6 +137,7 @@ pub struct Configuration {
 /// let cfg = Configuration {
 ///     data_path: "/tmp/glean".into(),
 ///     application_id: "glean.sample.app".into(),
+///     language_binding_name: "Rust".into(),
 ///     upload_enabled: true,
 ///     max_events: None,
 ///     delay_ping_lifetime_io: false,
@@ -173,6 +176,7 @@ pub struct Glean {
     max_events: usize,
     is_first_run: bool,
     upload_manager: PingUploadManager,
+    debug_view_tag: Option<String>,
 }
 
 impl Glean {
@@ -191,7 +195,8 @@ impl Glean {
         let event_data_store = EventDatabase::new(&cfg.data_path)?;
 
         // Create an upload manager with rate limiting of 10 pings every 60 seconds.
-        let mut upload_manager = PingUploadManager::new(&cfg.data_path, false);
+        let mut upload_manager =
+            PingUploadManager::new(&cfg.data_path, &cfg.language_binding_name, false);
         upload_manager.set_rate_limiter(
             /* seconds per interval */ 60, /* max tasks per interval */ 10,
         );
@@ -209,6 +214,7 @@ impl Glean {
             start_time: local_now_with_offset(),
             max_events: cfg.max_events.unwrap_or(DEFAULT_MAX_EVENTS),
             is_first_run: false,
+            debug_view_tag: None,
         };
 
         // The upload enabled flag may have changed since the last run, for
@@ -255,6 +261,7 @@ impl Glean {
         let cfg = Configuration {
             data_path: data_path.into(),
             application_id: application_id.into(),
+            language_binding_name: "Rust".into(),
             upload_enabled,
             max_events: None,
             delay_ping_lifetime_io: false,
@@ -497,7 +504,7 @@ impl Glean {
         }
 
         self.upload_manager
-            .process_ping_upload_response(uuid, status);
+            .process_ping_upload_response(uuid, status, self.debug_view_tag());
     }
 
     /// Take a snapshot for the given store and optionally clear it.
@@ -570,8 +577,12 @@ impl Glean {
                     return Err(e.into());
                 }
 
-                self.upload_manager
-                    .enqueue_ping(&doc_id, &url_path, content);
+                self.upload_manager.enqueue_ping(
+                    &doc_id,
+                    &url_path,
+                    content,
+                    self.debug_view_tag(),
+                );
 
                 log::info!(
                     "The ping '{}' was submitted and will be sent as soon as possible",
@@ -693,6 +704,36 @@ impl Glean {
     /// Return whether or not this is the first run on this profile.
     pub fn is_first_run(&self) -> bool {
         self.is_first_run
+    }
+
+    /// Set a debug view tag.
+    ///
+    /// This will return `false` in case `value` is not a valid tag.
+    ///
+    /// When the debug view tag is set pings requests receive a `X-Debug-Id` header with the value of the tag
+    /// and are sent to the ["Ping Debug Viewer"](https://mozilla.github.io/glean/book/dev/core/internal/debug-pings.html).
+    ///
+    /// ## Arguments
+    ///
+    /// * `value` - A valid HTTP header value. Must match the regex: "[a-zA-Z0-9-]{1,20}".
+    pub fn set_debug_view_tag(&mut self, value: &str) -> bool {
+        let debug_view_tag = validate_debug_view_tag(value);
+        if debug_view_tag.is_none() {
+            log::error!(
+                "Debug view tag cannot be set. '{}' is not a valid header value.",
+                value
+            );
+            return false;
+        }
+
+        log::info!("Setting debug view tag to {}.", value);
+        self.debug_view_tag = debug_view_tag;
+        true
+    }
+
+    /// Return the value for the debug view tag or `None` if it hasn't been set.
+    pub(crate) fn debug_view_tag(&self) -> Option<&String> {
+        self.debug_view_tag.as_ref()
     }
 
     fn get_dirty_bit_metric(&self) -> metrics::BooleanMetric {
