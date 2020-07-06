@@ -879,7 +879,7 @@ jobs:
           at: glean-core/python/
       - run:
           name: Generate Python docs
-          command: glean-core/python/.venv3.8/bin/python3 -m pdoc --html glean --force -o build/docs/python
+          command: glean-core/python/.venv3.8/bin/python -m pdoc --html glean --force -o build/docs/python
       - persist_to_workspace:
           root: build/
           paths: docs/python
