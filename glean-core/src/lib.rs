@@ -567,6 +567,7 @@ impl Glean {
             }
             Some(content) => {
                 if let Err(e) = ping_maker.store_ping(
+                    self,
                     &doc_id,
                     &ping.name,
                     &self.get_data_path(),
