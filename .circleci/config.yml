@@ -924,7 +924,7 @@ jobs:
 
   docs-linkcheck:
     docker:
-      - image: circleci/python:3.8.2
+      - image: circleci/python
     steps:
       - checkout
       - run:
