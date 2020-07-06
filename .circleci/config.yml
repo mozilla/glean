@@ -924,7 +924,7 @@ jobs:
 
   docs-linkcheck:
     docker:
-      - image: circleci/python
+      - image: circleci/python:3.8.2
     steps:
       - checkout
       - run:
@@ -1105,4 +1105,3 @@ workflows:
           requires:
             - iOS build and test
           filters: *release-filters
-          
