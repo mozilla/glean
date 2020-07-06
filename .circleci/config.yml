@@ -879,7 +879,7 @@ jobs:
           at: glean-core/python/
       - run:
           name: Generate Python docs
-          command: glean-core/python/.venv3.8/bin/python -m pdoc --html glean --force -o build/docs/python
+          command: glean-core/python/.venv3.8/bin/python3 -m pdoc --html glean --force -o build/docs/python
       - persist_to_workspace:
           root: build/
           paths: docs/python
@@ -1140,7 +1140,7 @@ workflows:
       - Generate Kotlin documentation
       - Generate Python documentation:
           requires:
-            - Python 3_7 tests
+            - Python 3_8 tests
       - docs-linkcheck:
           requires:
             - Generate Rust documentation
@@ -1191,23 +1191,23 @@ workflows:
           filters: *release-filters
       - macOS release build:
           filters: *release-filters
-      - Python 3_7 tests:
+      - Python 3_8 tests:
           filters: *release-filters
       - pypi-linux-release:
           requires:
-            - Python 3_7 tests
+            - Python 3_8 tests
           filters: *release-filters
       - pypi-macos-release:
           requires:
-            - Python 3_7 tests
+            - Python 3_8 tests
           filters: *release-filters
       - pypi-windows-i686-release:
           requires:
-            - Python 3_7 tests
+            - Python 3_8 tests
           filters: *release-filters
       - pypi-windows-x86_64-release:
           requires:
-            - Python 3_7 tests
+            - Python 3_8 tests
           filters: *release-filters
       - iOS build and test:
           filters: *release-filters
