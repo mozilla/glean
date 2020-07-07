@@ -792,6 +792,10 @@ jobs:
       # The official docker image for building manylinux1 wheels
       - image: quay.io/pypa/manylinux1_x86_64
     steps:
+      - run:
+          name: Install ssh and git packages
+          command: |
+            yum install -y openssh-clients git
       - install-rustup
       - setup-rust-toolchain
       - checkout
