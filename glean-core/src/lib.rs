@@ -504,7 +504,7 @@ impl Glean {
         }
 
         self.upload_manager
-            .process_ping_upload_response(uuid, status, self.debug_view_tag());
+            .process_ping_upload_response(uuid, status);
     }
 
     /// Take a snapshot for the given store and optionally clear it.
@@ -578,12 +578,7 @@ impl Glean {
                     return Err(e.into());
                 }
 
-                self.upload_manager.enqueue_ping(
-                    &doc_id,
-                    &url_path,
-                    content,
-                    self.debug_view_tag(),
-                );
+                self.upload_manager.enqueue_ping_from_file(&doc_id);
 
                 log::info!(
                     "The ping '{}' was submitted and will be sent as soon as possible",
