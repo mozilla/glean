@@ -13,7 +13,7 @@ namespace csharp
     {
         static void Main(string[] args)
         {
-            string gleanDataDir = Directory.GetCurrentDirectory() + "\\glean_data";
+            string gleanDataDir = Path.Combine(Directory.GetCurrentDirectory(), "glean_data");
             Console.WriteLine("Adding Glean data to {0}", gleanDataDir);
 
             GleanInstance.Initialize(
