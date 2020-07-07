@@ -6,6 +6,7 @@
     * BUGFIX: raise an error if Glean is initialized with an empty string as the `application_id`.
 * Python
     * BUGFIX: correctly set the `app_build` metric to the newly provided `application_build_id` initialization option.
+    * The Python bindings now report networking errors in the `glean.upload.ping_upload_failure` metric (like all the other bindings).
 
 [Full changelog](https://github.com/mozilla/glean/compare/v31.2.3...main)
 
