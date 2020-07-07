@@ -161,7 +161,7 @@ impl PingMaker {
 
     /// Build the metadata JSON to be persisted with a ping.
     ///
-    /// Currently the only type of metadata we need to persist is the value of the `X-Debug-Id` header.
+    /// Currently the only type of metadata we need to persist is the value of the `X-Debug-ID` header.
     ///
     /// ## Arguments
     ///
