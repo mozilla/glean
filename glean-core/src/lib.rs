@@ -210,7 +210,7 @@ impl Glean {
             core_metrics: CoreMetrics::new(),
             internal_pings: InternalPings::new(),
             upload_manager,
-            data_path: PathBuf::from(cfg.data_path.to_string()),
+            data_path: PathBuf::from(&cfg.data_path),
             application_id,
             ping_registry: HashMap::new(),
             start_time: local_now_with_offset(),
