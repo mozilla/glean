@@ -147,7 +147,7 @@ class Glean:
                 cls._application_build_id = application_build_id
 
             # We know we're not initialized,
-            # so we can skip the check inside `setUploadEnabled`
+            # so we can skip the check inside `set_upload_enabled`
             # by setting the variable directly.
             cls._upload_enabled = upload_enabled
 
