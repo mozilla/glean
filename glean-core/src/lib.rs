@@ -42,7 +42,7 @@ mod util;
 
 pub use crate::common_metric_data::{CommonMetricData, Lifetime};
 use crate::database::Database;
-pub use crate::error::{Error, Result};
+pub use crate::error::{Error, ErrorKind, Result};
 pub use crate::error_recording::{test_get_num_recorded_errors, ErrorType};
 use crate::event_database::EventDatabase;
 use crate::internal_metrics::CoreMetrics;
@@ -188,6 +188,9 @@ impl Glean {
         log::info!("Creating new Glean v{}", GLEAN_VERSION);
 
         let application_id = sanitize_application_id(&cfg.application_id);
+        if application_id.is_empty() {
+            return Err(ErrorKind::InvalidConfig.into());
+        }
 
         // Creating the data store creates the necessary path as well.
         // If that fails we bail out and don't initialize further.

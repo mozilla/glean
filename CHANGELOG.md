@@ -3,6 +3,7 @@
 * General
     * Remove locale from baseline ping. ([1609968](https://bugzilla.mozilla.org/show_bug.cgi?id=1609968), [#1016](https://github.com/mozilla/glean/pull/1016))
     * Persist X-Debug-ID header on store ping. ([1605097](https://bugzilla.mozilla.org/show_bug.cgi?id=1605097), [#1042](https://github.com/mozilla/glean/pull/1042))
+    * BUGFIX: raise an error if Glean is initialized with an empty string as the `application_id`.
 * Python
     * BUGFIX: correctly set the `app_build` metric to the newly provided `application_build_id` initialization option.
 
