@@ -504,7 +504,7 @@ impl Glean {
         }
 
         self.upload_manager
-            .process_ping_upload_response(uuid, status, self.debug_view_tag());
+            .process_ping_upload_response(uuid, status);
     }
 
     /// Take a snapshot for the given store and optionally clear it.
@@ -567,6 +567,7 @@ impl Glean {
             }
             Some(content) => {
                 if let Err(e) = ping_maker.store_ping(
+                    self,
                     &doc_id,
                     &ping.name,
                     &self.get_data_path(),
@@ -577,12 +578,7 @@ impl Glean {
                     return Err(e.into());
                 }
 
-                self.upload_manager.enqueue_ping(
-                    &doc_id,
-                    &url_path,
-                    content,
-                    self.debug_view_tag(),
-                );
+                self.upload_manager.enqueue_ping_from_file(&doc_id);
 
                 log::info!(
                     "The ping '{}' was submitted and will be sent as soon as possible",
@@ -710,7 +706,7 @@ impl Glean {
     ///
     /// This will return `false` in case `value` is not a valid tag.
     ///
-    /// When the debug view tag is set pings requests receive a `X-Debug-Id` header with the value of the tag
+    /// When the debug view tag is set, pings are sent with a `X-Debug-ID` header with the value of the tag
     /// and are sent to the ["Ping Debug Viewer"](https://mozilla.github.io/glean/book/dev/core/internal/debug-pings.html).
     ///
     /// ## Arguments

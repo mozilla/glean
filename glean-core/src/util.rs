@@ -179,7 +179,7 @@ pub mod floating_point_context {
     }
 }
 
-/// The debug view tag is the value for the `X-Debug-Id` header of tagged ping requests,
+/// The debug view tag is the value for the `X-Debug-ID` header of tagged ping requests,
 /// thus is it must be a valid header value.
 ///
 /// In other words, it must match the regex: "[a-zA-Z0-9-]{1,20}"
