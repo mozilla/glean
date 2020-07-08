@@ -153,8 +153,8 @@ impl Builder {
     ///
     /// # Panics
     ///
-    /// This method will panic in case we try to create a request,
-    /// but have not set the required fields for that: document_id, path and body.
+    /// This method will panic if an of the required fields are missing:
+    /// `document_id`, `path` and `body`.
     pub fn build(self) -> PingRequest {
         PingRequest {
             document_id: self

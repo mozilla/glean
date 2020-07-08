@@ -169,7 +169,7 @@ impl PingMaker {
     ///
     /// ## Return value
     ///
-    /// Returns a JSON representing the metadata that needs to be persisted with this ping.
+    /// Returns a JSON object representing the metadata that needs to be persisted with this ping.
     ///
     /// The structure of the metadata json is:
     ///

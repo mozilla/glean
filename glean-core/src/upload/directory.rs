@@ -40,9 +40,9 @@ fn get_file_name_as_str(path: &Path) -> Option<&str> {
     }
 }
 
-/// Process a pings metadata.
+/// Process a ping's metadata.
 ///
-/// The metadata is an optional thrid line in the ping file,
+/// The metadata is an optional third line in the ping file,
 /// currently it contains only additonal headers to be added to each ping request.
 /// Therefore, we will process the contents of this line
 /// and return a HeaderMap of the persisted headers.
@@ -139,10 +139,7 @@ impl PingDirectoryManager {
         if let (Some(Ok(path)), Some(Ok(body)), Ok(metadata)) =
             (lines.next(), lines.next(), lines.next().transpose())
         {
-            let mut headers = None;
-            if let Some(metadata) = metadata {
-                headers = process_metadata(&path, &metadata)
-            };
+            let headers = metadata.map(|m| process_metadata(&path, &m));
             return Some((document_id.into(), path, body, headers));
         } else {
             log::warn!(
@@ -166,7 +163,7 @@ impl PingDirectoryManager {
     /// # Return value
     ///
     /// `Vec<(String, String, JsonValue, HeaderMap)>` -
-    ///     a vector of tuples containing the document_id, path and body of each request.
+    ///     a vector of tuples containing the document_id, path, body and headers of each request.
     pub fn process_dir(&self) -> Vec<PingPayload> {
         log::info!("Processing persisted pings.");
 

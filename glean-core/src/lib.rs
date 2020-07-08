@@ -706,7 +706,7 @@ impl Glean {
     ///
     /// This will return `false` in case `value` is not a valid tag.
     ///
-    /// When the debug view tag is set pings requests receive a `X-Debug-ID` header with the value of the tag
+    /// When the debug view tag is set, pings are sent with a `X-Debug-ID` header with the value of the tag
     /// and are sent to the ["Ping Debug Viewer"](https://mozilla.github.io/glean/book/dev/core/internal/debug-pings.html).
     ///
     /// ## Arguments
