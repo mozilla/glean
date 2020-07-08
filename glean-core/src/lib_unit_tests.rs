@@ -778,3 +778,14 @@ fn test_setting_debug_view_tag() {
     assert_eq!(false, glean.set_debug_view_tag(invalid_tag));
     assert_eq!(valid_tag, glean.debug_view_tag().unwrap());
 }
+
+#[test]
+#[should_panic]
+fn test_empty_application_id() {
+    let dir = tempfile::tempdir().unwrap();
+    let tmpname = dir.path().display().to_string();
+
+    let glean = Glean::with_options(&tmpname, "", true).unwrap();
+    // Check that this is indeed the first run.
+    assert!(glean.is_first_run());
+}
