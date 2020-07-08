@@ -146,7 +146,10 @@ class Glean:
             else:
                 cls._application_build_id = application_build_id
 
-            cls.set_upload_enabled(upload_enabled)
+            # We know we're not initialized,
+            # so we can skip the check inside `set_upload_enabled`
+            # by setting the variable directly.
+            cls._upload_enabled = upload_enabled
 
         # Use `Glean._execute_task` rather than `Glean.launch` here, since we
         # never want to put this work on the `Dispatcher._preinit_queue`.
@@ -202,6 +205,13 @@ class Glean:
             if not is_first_run:
                 _ffi.lib.glean_clear_application_lifetime_metrics()
                 cls._initialize_core_metrics()
+
+            # Upload might have been changed in between the call to `initialize`
+            # and this task actually running.
+            # This actually enqueues a task, which will execute after other user-submitted tasks
+            # as part of the queue flush below.
+            if cls._upload_enabled != upload_enabled:
+                cls.set_upload_enabled(cls._upload_enabled)
 
             Dispatcher.flush_queued_initial_tasks()
 

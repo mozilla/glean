@@ -44,10 +44,8 @@ func stubServerReceive(callback: @escaping (String, [String: Any]?) -> Void) {
 
 /// Stringify a JSON object and if unable to, just return an empty string.
 func JSONStringify(_ json: Any) -> String {
-    var options: JSONSerialization.WritingOptions = JSONSerialization.WritingOptions.prettyPrinted
-
     do {
-        let data = try JSONSerialization.data(withJSONObject: json, options: options)
+        let data = try JSONSerialization.data(withJSONObject: json, options: .prettyPrinted)
         if let string = String(data: data, encoding: String.Encoding.utf8) {
             return string
         }
