@@ -5,10 +5,10 @@
 * General
     * Remove locale from baseline ping. ([1609968](https://bugzilla.mozilla.org/show_bug.cgi?id=1609968), [#1016](https://github.com/mozilla/glean/pull/1016))
     * Persist X-Debug-ID header on store ping. ([1605097](https://bugzilla.mozilla.org/show_bug.cgi?id=1605097), [#1042](https://github.com/mozilla/glean/pull/1042))
-    * BUGFIX: raise an error if Glean is initialized with an empty string as the `application_id`.
+    * BUGFIX: raise an error if Glean is initialized with an empty string as the `application_id` ([#1043](https://github.com/mozilla/glean/pull/1043)).
 * Python
-    * BUGFIX: correctly set the `app_build` metric to the newly provided `application_build_id` initialization option.
-    * The Python bindings now report networking errors in the `glean.upload.ping_upload_failure` metric (like all the other bindings).
+    * BUGFIX: correctly set the `app_build` metric to the newly provided `application_build_id` initialization option ([#1031](https://github.com/mozilla/glean/pull/1031)).
+    * The Python bindings now report networking errors in the `glean.upload.ping_upload_failure` metric (like all the other bindings) ([#1039](https://github.com/mozilla/glean/pull/1039)).
 
 # v31.2.3 (2020-06-29)
 
