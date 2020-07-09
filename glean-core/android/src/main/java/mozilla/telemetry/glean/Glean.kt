@@ -293,7 +293,7 @@ open class GleanInternalAPI internal constructor () {
         // we can safely enqueue here and it will execute after initialization.
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.launch {
-            val originalEnabled = getUploadEnabled()
+            val originalEnabled = internalGetUploadEnabled()
             LibGleanFFI.INSTANCE.glean_set_upload_enabled(enabled.toByte())
 
             if (!enabled) {
@@ -322,8 +322,25 @@ open class GleanInternalAPI internal constructor () {
      * Get whether or not Glean is allowed to record and upload data.
      *
      * Caution: the result is only correct if Glean is already initialized.
+     *
+     * **THIS METHOD IS DEPRECATED.**
+     * Applications should not rely on Glean's internal state.
+     * Upload enabled status should be tracked by the application and communicated to Glean if it changes.
      */
+    @Deprecated("Upload enabled should be tracked by the application and communicated to Glean if it changes")
     fun getUploadEnabled(): Boolean {
+        return internalGetUploadEnabled()
+    }
+
+    /**
+     * Get whether or not Glean is allowed to record and upload data.
+     *
+     * Caution: the result is only correct if Glean is already initialized.
+     *
+     * Note: due to the deprecation notice and because warnings break the build,
+     * we pull out the implementation into an internal method.
+     */
+    internal fun internalGetUploadEnabled(): Boolean {
         if (isInitialized()) {
             return LibGleanFFI.INSTANCE.glean_is_upload_enabled().toBoolean()
         } else {
@@ -593,7 +610,7 @@ open class GleanInternalAPI internal constructor () {
             return
         }
 
-        if (!getUploadEnabled()) {
+        if (!internalGetUploadEnabled()) {
             Log.e(LOG_TAG, "Glean disabled: not submitting any pings.")
             return
         }

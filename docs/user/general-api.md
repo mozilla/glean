@@ -18,7 +18,6 @@ The Glean SDK provides a general API that supports the following operations. See
 | --------- | ----------- | ----- |
 | `initialize` | Configure and initialize the Glean SDK. | [Initializing the Glean SDK](#initializing-the-glean-sdk) |
 | `setUploadEnabled` | Enable or disable Glean collection and upload. | [Enabling and disabling Metrics](#enabling-and-disabling-metrics) |
-| `getUploadEnabled` | Get whether or not Glean is allowed to record and upload data. | |
 | `registerPings` | Register custom pings generated from `pings.yaml`. | [Custom pings][custom-pings] |
 | `setExperimentActive` | Indicate that an experiment is running. | [Using the Experiments API][experiments-api] |
 | `setExperimentInactive` | Indicate that an experiment is no longer running.. | [Using the Experiments API][experiments-api] |

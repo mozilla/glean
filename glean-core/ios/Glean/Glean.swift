@@ -18,8 +18,7 @@ public class Glean {
     /// The main Glean object.
     ///
     /// ```swift
-    /// Glean.shared.setUploadEnabled(true)
-    /// Glean.shared.initialize()
+    /// Glean.shared.initialize(uploadEnabled: true)
     /// ```
     public static let shared = Glean()
 
@@ -228,7 +227,7 @@ public class Glean {
             // at which point it will pick up scheduled pings before the setting was toggled.
             // Or it is scheduled afterwards and will not schedule or find any left-over pings to send.
 
-            let originalEnabled = getUploadEnabled()
+            let originalEnabled = self.internalGetUploadEnabled()
             glean_set_upload_enabled(enabled.toByte())
 
             if !enabled {
@@ -254,7 +253,19 @@ public class Glean {
     ///
     /// Caution: the result is only correct if Glean is already initialized.
     ///
+    /// **THIS METHOD IS DEPRECATED.**
+    /// Applications should not rely on Glean's internal state.
+    /// Upload enabled status should be tracked by the application and communicated to Glean if it changes.
+    @available(*, deprecated,
+               message: "Upload enabled should be tracked by the application and communicated to Glean if it changes")
     public func getUploadEnabled() -> Bool {
+        return internalGetUploadEnabled()
+    }
+
+    /// Get whether or not Glean is allowed to record and upload data.
+    ///
+    /// Caution: the result is only correct if Glean is already initialized.
+    func internalGetUploadEnabled() -> Bool {
         if isInitialized() {
             return glean_is_upload_enabled() != 0
         } else {
@@ -405,7 +416,7 @@ public class Glean {
             return
         }
 
-        if !self.getUploadEnabled() {
+        if !self.internalGetUploadEnabled() {
             self.logger.error("Glean disabled: not submitting any pings")
             return
         }

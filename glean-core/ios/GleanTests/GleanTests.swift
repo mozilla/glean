@@ -23,7 +23,6 @@ class GleanTests: XCTestCase {
     func testInitializeGlean() {
         // Glean is already initialized by the `setUp()` function
         XCTAssert(Glean.shared.isInitialized(), "Glean should be initialized")
-        XCTAssert(Glean.shared.getUploadEnabled(), "Upload is enabled by default")
     }
 
     func testExperimentRecording() {

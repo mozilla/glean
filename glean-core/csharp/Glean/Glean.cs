@@ -298,7 +298,7 @@ namespace Mozilla.Glean
         /// Caution: the result is only correct if Glean is already initialized.
         /// </summary>
         /// <returns>`true` if Glean is allowed to record and upload data.</returns>
-        public bool GetUploadEnabled()
+        bool GetUploadEnabled()
         {
             if (IsInitialized())
             {

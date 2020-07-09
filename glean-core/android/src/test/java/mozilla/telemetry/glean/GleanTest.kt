@@ -67,20 +67,6 @@ class GleanTest {
         Glean.setUploadEnabled(true)
     }
 
-    @Test
-    fun `getting uploadEnabled before initialization should not crash`() {
-        // Can't use resetGlean directly
-        Glean.testDestroyGleanHandle()
-
-        val config = Configuration()
-
-        Glean.setUploadEnabled(true)
-        assertTrue(Glean.getUploadEnabled())
-
-        Glean.initialize(context, true, config)
-        assertTrue(Glean.getUploadEnabled())
-    }
-
     // New from glean-core.
     @Test
     fun `send a ping`() {
@@ -131,7 +117,7 @@ class GleanTest {
                 sendInPings = listOf("store1")
         )
         Glean.setUploadEnabled(false)
-        assertEquals(false, Glean.getUploadEnabled())
+
         stringMetric.set("foo")
         assertFalse(stringMetric.testHasValue())
     }
