@@ -713,6 +713,9 @@ jobs:
       - checkout
       - skip-if-doc-only
       - test-python
+      - persist_to_workspace:
+          root: glean-core/python/
+          paths: .venv3.8
 
   Python 3_8 tests minimum dependencies:
     docker:
