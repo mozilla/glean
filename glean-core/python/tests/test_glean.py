@@ -767,3 +767,48 @@ def test_app_display_version_unknown():
         "Unknown"
         == _builtins.metrics.glean.internal.metrics.app_display_version.test_get_value()
     )
+
+
+def test_flipping_upload_enabled_respects_order_of_events(tmpdir, monkeypatch):
+    Glean._reset()
+
+    info_path = Path(str(tmpdir)) / "info.txt"
+
+    # We create a ping and a metric before we initialize Glean
+    ping = PingType(
+        name="sample_ping_1",
+        include_client_id=True,
+        send_if_empty=True,
+        reason_codes=[],
+    )
+
+    # This test relies on testing mode to be disabled, since we need to prove the
+    # real-world async behaviour of this.
+    Dispatcher._testing_mode = False
+    Dispatcher._queue_initial_tasks = True
+
+    configuration = Glean._configuration
+    configuration.ping_uploader = _RecordingUploader(info_path)
+    Glean.initialize(
+        application_id=GLEAN_APP_ID,
+        application_version=glean_version,
+        upload_enabled=True,
+        configuration=Glean._configuration,
+    )
+
+    # Glean might still be initializing. Disable upload.
+    Glean.set_upload_enabled(False)
+    # Submit a custom ping.
+    ping.submit()
+
+    # Wait until the work is complete
+    Dispatcher._task_worker._queue.join()
+
+    while not info_path.exists():
+        time.sleep(0.1)
+
+    with info_path.open("r") as fd:
+        url_path = fd.readline()
+
+    # Validate we got the deletion-request ping
+    assert "deletion-request" == url_path.split("/")[3]

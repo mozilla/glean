@@ -48,6 +48,7 @@ import org.junit.runner.RunWith
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.spy
 import org.robolectric.shadows.ShadowProcess
+import org.robolectric.shadows.ShadowLog
 import java.io.File
 import java.util.Calendar
 import java.util.Locale
@@ -816,5 +817,74 @@ class GleanTest {
 
         val request = server.takeRequest(20L, TimeUnit.SECONDS)
         assertEquals(request.getHeader("X-Debug-ID"), "valid-tag")
+    }
+
+    @Test
+    fun `flipping upload enabled respects order of events`() {
+        // NOTES(janerik):
+        // I'm reasonably sure this test is excercising the right code paths
+        // and from the log output it does the right thing:
+        //
+        // * It fully initializes with the assumption uploadEnabled=true
+        // * It then disables upload
+        // * Then it submits the custom ping, which rightfully is ignored because uploadEnabled=false.
+        //
+        // The test passes.
+        // But it also does that for the old code and I think it's because of some weird WorkManager behaviour,
+        // where it doesn't actually start the work (= the upload).
+
+        // Redirecting log output, usually done by resetGlean, which we don't use here.
+        ShadowLog.stream = System.out
+        // This test relies on Glean not being initialized, we do that ourselves.
+        Glean.testDestroyGleanHandle()
+
+        // This test relies on testing mode to be disabled, since we need to prove the
+        // real-world async behaviour of this.
+        // We don't need to care about clearing it,
+        // the test-unit hooks will call `resetGlean` anyway.
+        Dispatchers.API.setTaskQueueing(true)
+        Dispatchers.API.setTestingMode(false)
+
+        // We create a ping and a metric before we initialize Glean
+        val pingName = "sample_ping_1"
+        val ping = PingType<NoReasonCodes>(
+            name = pingName,
+            includeClientId = true,
+            sendIfEmpty = false,
+            reasonCodes = listOf()
+        )
+        val stringMetric = StringMetricType(
+            disabled = false,
+            category = "telemetry",
+            lifetime = Lifetime.Ping,
+            name = "string_metric",
+            sendInPings = listOf(pingName)
+        )
+
+        val server = getMockWebServer()
+        val context = getContextWithMockedInfo()
+        val config = Glean.configuration.copy(
+            serverEndpoint = "http://" + server.hostName + ":" + server.port
+        )
+        Glean.initialize(context, true, config)
+
+        // Glean might still be initializing. Disable upload.
+        Glean.setUploadEnabled(false)
+
+        // Set data and try to submit a custom ping.
+        val testValue = "SomeTestValue"
+        stringMetric.set(testValue)
+        ping.submit()
+
+        // Trigger worker task to upload any submitted ping.
+        // We need to wait for the work to be enqueued first,
+        // since this test runs asynchronously.
+        waitForEnqueuedWorker(context, PingUploadWorker.PING_WORKER_TAG)
+        triggerWorkManager(context)
+
+        // Validate the received data.
+        val request = server.takeRequest(20L, TimeUnit.SECONDS)
+        val docType = request.path.split("/")[3]
+        assertEquals("deletion-request", docType)
     }
 }
