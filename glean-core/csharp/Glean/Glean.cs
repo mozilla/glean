@@ -29,9 +29,6 @@ namespace Mozilla.Glean
 
         private bool initialized = false;
 
-        // Keep track of this flag before Glean is initialized
-        private bool uploadEnabled = true;
-
         // Keep track of ping types that have been registered before Glean is initialized.
         private HashSet<PingTypeBase> pingTypeQueue = new HashSet<PingTypeBase>();
 
@@ -120,10 +117,6 @@ namespace Mozilla.Glean
             this.applicationVersion = applicationVersion;
             httpClient = new BaseUploader(configuration.httpClient);
             // this.gleanDataDir = File(applicationContext.applicationInfo.dataDir, GLEAN_DATA_DIR)
-
-            // We know we're not initialized, so we can skip the check inside `setUploadEnabled`
-            // by setting the variable directly.
-            this.uploadEnabled = uploadEnabled;
 
             Dispatchers.ExecuteTask(() =>
             {
@@ -226,14 +219,6 @@ namespace Mozilla.Glean
                     InitializeCoreMetrics();
                 }
 
-                // Upload might have been changed in between the call to `initialize`
-                // and this task actually running.
-                // This actually enqueues a task, which will execute after other user-submitted tasks
-                // as part of the queue flush below.
-                if (this.uploadEnabled != uploadEnabled) {
-                    SetUploadEnabled(this.uploadEnabled);
-                }
-
                 // Signal Dispatcher that init is complete
                 Dispatchers.FlushQueuedInitialTasks();
                 /*
@@ -271,11 +256,14 @@ namespace Mozilla.Glean
         /// <param name="enabled">When `true`, enable metric collection.</param>
         public void SetUploadEnabled(bool enabled)
         {
-            if (IsInitialized())
-            {
-                bool originalEnabled = GetUploadEnabled();
-
-                Dispatchers.LaunchAPI(() => {
+            // Changing upload enabled always happens asynchronous.
+            // That way it follows what a user expect when calling it inbetween other calls:
+            // It executes in the right order.
+            //
+            // Because the dispatch queue is halted until Glean is fully initialized
+            // we can safely enqueue here and it will execute after initialization.
+            Dispatchers.LaunchAPI(() => {
+                bool originalEnabled = this.GetUploadEnabled();
                 LibGleanFFI.glean_set_upload_enabled(enabled);
 
                 if (!enabled)
@@ -301,16 +289,13 @@ namespace Mozilla.Glean
                     // If uploading is disabled, we need to send the deletion-request ping
                     httpClient.TriggerUpload(configuration);
                 }
-                });
-            }
-            else
-            {
-                uploadEnabled = enabled;
-            }
+            });
         }
 
         /// <summary>
         /// Get whether or not Glean is allowed to record and upload data.
+        ///
+        /// Caution: the result is only correct if Glean is already initialized.
         /// </summary>
         /// <returns>`true` if Glean is allowed to record and upload data.</returns>
         public bool GetUploadEnabled()
@@ -321,7 +306,7 @@ namespace Mozilla.Glean
             }
             else
             {
-                return uploadEnabled;
+                return true;
             }
         }
 

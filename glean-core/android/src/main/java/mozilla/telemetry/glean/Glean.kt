@@ -72,9 +72,6 @@ open class GleanInternalAPI internal constructor () {
 
     private lateinit var gleanDataDir: File
 
-    // Keep track of this flag before Glean is initialized
-    private var uploadEnabled: Boolean = true
-
     // Keep track of this value before Glean is initialized
     private var debugViewTag: String? = null
 
@@ -151,10 +148,6 @@ open class GleanInternalAPI internal constructor () {
         this.configuration = configuration
         this.httpClient = BaseUploader(configuration.httpClient)
         this.gleanDataDir = File(applicationContext.applicationInfo.dataDir, GLEAN_DATA_DIR)
-
-        // We know we're not initialized, so we can skip the check inside `setUploadEnabled`
-        // by setting the variable directly.
-        this.uploadEnabled = uploadEnabled
 
         // Execute startup off the main thread.
         @Suppress("EXPERIMENTAL_API_USAGE")
@@ -246,14 +239,6 @@ open class GleanInternalAPI internal constructor () {
                 initializeCoreMetrics(applicationContext)
             }
 
-            // Upload might have been changed in between the call to `initialize`
-            // and this task actually running.
-            // This actually enqueues a task, which will execute after other user-submitted tasks
-            // as part of the queue flush below.
-            if (this@GleanInternalAPI.uploadEnabled != uploadEnabled) {
-                setUploadEnabled(this@GleanInternalAPI.uploadEnabled)
-            }
-
             // Signal Dispatcher that init is complete
             Dispatchers.API.flushQueuedInitialTasks()
 
@@ -300,46 +285,49 @@ open class GleanInternalAPI internal constructor () {
      * @param enabled When true, enable metric collection.
      */
     fun setUploadEnabled(enabled: Boolean) {
-        if (isInitialized()) {
+        // Changing upload enabled always happens asynchronous.
+        // That way it follows what a user expect when calling it inbetween other calls:
+        // It executes in the right order.
+        //
+        // Because the dispatch queue is halted until Glean is fully initialized
+        // we can safely enqueue here and it will execute after initialization.
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        Dispatchers.API.launch {
             val originalEnabled = getUploadEnabled()
+            LibGleanFFI.INSTANCE.glean_set_upload_enabled(enabled.toByte())
 
-            @Suppress("EXPERIMENTAL_API_USAGE")
-            Dispatchers.API.launch {
-                LibGleanFFI.INSTANCE.glean_set_upload_enabled(enabled.toByte())
-
-                if (!enabled) {
-                    // Cancel any pending workers here so that we don't accidentally upload or
-                    // collect data after the upload has been disabled.
-                    metricsPingScheduler.cancel()
-                    // Cancel any pending workers here so that we don't accidentally upload
-                    // data after the upload has been disabled.
-                    PingUploadWorker.cancel(applicationContext)
-                }
-
-                if (!originalEnabled && enabled) {
-                    // If uploading is being re-enabled, we have to restore the
-                    // application-lifetime metrics.
-                    initializeCoreMetrics((this@GleanInternalAPI).applicationContext)
-                }
-
-                if (originalEnabled && !enabled) {
-                    // If uploading is disabled, we need to send the deletion-request ping
-                    PingUploadWorker.enqueueWorker(applicationContext)
-                }
+            if (!enabled) {
+                // Cancel any pending workers here so that we don't accidentally upload or
+                // collect data after the upload has been disabled.
+                metricsPingScheduler.cancel()
+                // Cancel any pending workers here so that we don't accidentally upload
+                // data after the upload has been disabled.
+                PingUploadWorker.cancel(applicationContext)
             }
-        } else {
-            uploadEnabled = enabled
+
+            if (!originalEnabled && enabled) {
+                // If uploading is being re-enabled, we have to restore the
+                // application-lifetime metrics.
+                initializeCoreMetrics((this@GleanInternalAPI).applicationContext)
+            }
+
+            if (originalEnabled && !enabled) {
+                // If uploading is disabled, we need to send the deletion-request ping
+                PingUploadWorker.enqueueWorker(applicationContext)
+            }
         }
     }
 
     /**
      * Get whether or not Glean is allowed to record and upload data.
+     *
+     * Caution: the result is only correct if Glean is already initialized.
      */
     fun getUploadEnabled(): Boolean {
         if (isInitialized()) {
             return LibGleanFFI.INSTANCE.glean_is_upload_enabled().toBoolean()
         } else {
-            return uploadEnabled
+            return true
         }
     }
 

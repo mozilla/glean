@@ -152,11 +152,6 @@ class Glean:
             else:
                 cls._application_build_id = application_build_id
 
-            # We know we're not initialized,
-            # so we can skip the check inside `set_upload_enabled`
-            # by setting the variable directly.
-            cls._upload_enabled = upload_enabled
-
         # Use `Glean._execute_task` rather than `Glean.launch` here, since we
         # never want to put this work on the `Dispatcher._preinit_queue`.
         @Dispatcher._execute_task
@@ -166,10 +161,7 @@ class Glean:
             # initializers that Kotlin and Swift have.
 
             cfg = _ffi.make_config(
-                cls._data_dir,
-                application_id,
-                cls._upload_enabled,
-                configuration.max_events,
+                cls._data_dir, application_id, upload_enabled, configuration.max_events,
             )
 
             cls._initialized = _ffi.lib.glean_initialize(cfg) != 0
@@ -193,10 +185,7 @@ class Glean:
                 cls._initialize_core_metrics()
 
             # Deal with any pending events so we can start recording new ones
-            if (
-                _ffi.lib.glean_on_ready_to_submit_pings()
-                or cls._upload_enabled is False
-            ):
+            if _ffi.lib.glean_on_ready_to_submit_pings() or upload_enabled is False:
                 PingUploadWorker.process()
 
             # Glean Android sets up the metrics ping scheduler here, but we don't
@@ -211,13 +200,6 @@ class Glean:
             if not is_first_run:
                 _ffi.lib.glean_clear_application_lifetime_metrics()
                 cls._initialize_core_metrics()
-
-            # Upload might have been changed in between the call to `initialize`
-            # and this task actually running.
-            # This actually enqueues a task, which will execute after other user-submitted tasks
-            # as part of the queue flush below.
-            if cls._upload_enabled != upload_enabled:
-                cls.set_upload_enabled(cls._upload_enabled)
 
             Dispatcher.flush_queued_initial_tasks()
 
@@ -321,32 +303,35 @@ class Glean:
         Args:
             enabled (bool): When True, enable metric collection.
         """
-        if cls.is_initialized():
+        # Changing upload enabled always happens asynchronous.
+        # That way it follows what a user expect when calling it inbetween other calls:
+        # It executes in the right order.
+        #
+        # Because the dispatch queue is halted until Glean is fully initialized
+        # we can safely enqueue here and it will execute after initialization.
+        @Dispatcher.launch
+        def set_upload_enabled():
             original_enabled = cls.get_upload_enabled()
+            _ffi.lib.glean_set_upload_enabled(enabled)
 
-            @Dispatcher.launch
-            def set_upload_enabled():
-                _ffi.lib.glean_set_upload_enabled(enabled)
+            if original_enabled is False and cls.get_upload_enabled() is True:
+                cls._initialize_core_metrics()
 
-                if original_enabled is False and cls.get_upload_enabled() is True:
-                    cls._initialize_core_metrics()
-
-                if original_enabled is True and cls.get_upload_enabled() is False:
-                    # If uploading is disabled, we need to send the deletion-request ping
-                    PingUploadWorker.process()
-
-        else:
-            cls._upload_enabled = enabled
+            if original_enabled is True and cls.get_upload_enabled() is False:
+                # If uploading is disabled, we need to send the deletion-request ping
+                PingUploadWorker.process()
 
     @classmethod
     def get_upload_enabled(cls) -> bool:
         """
         Get whether or not Glean is allowed to record and upload data.
+
+        Caution: the result is only correct if Glean is already initialized.
         """
         if cls.is_initialized():
             return bool(_ffi.lib.glean_is_upload_enabled())
         else:
-            return cls._upload_enabled
+            return True
 
     @classmethod
     def set_experiment_active(
