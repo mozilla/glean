@@ -72,7 +72,6 @@ def test_submit_a_ping(safe_httpserver):
     safe_httpserver.serve_content(b"", code=200)
 
     Glean._configuration.server_endpoint = safe_httpserver.url
-    Glean._configuration.log_pings = True
 
     counter_metric = CounterMetricType(
         disabled=False,
@@ -314,8 +313,6 @@ def test_ping_collection_must_happen_after_currently_scheduled_metrics_recording
         Glean._configuration, "ping_uploader", _RecordingUploader(info_path)
     )
 
-    Glean._configuration.log_pings = True
-
     ping_name = "custom_ping_1"
     ping = PingType(
         name=ping_name, include_client_id=True, send_if_empty=False, reason_codes=[]
@@ -531,7 +528,6 @@ def test_configuration_property(safe_httpserver):
     safe_httpserver.serve_content(b"", code=200)
 
     Glean._configuration.server_endpoint = safe_httpserver.url
-    Glean._configuration.log_pings = True
 
     counter_metric = CounterMetricType(
         disabled=False,
