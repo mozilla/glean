@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v31.2.3...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v31.3.0...main)
+
+# v31.3.0 (2020-07-10)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v31.2.3...v31.3.0)
 
 * General
     * Remove locale from baseline ping. ([1609968](https://bugzilla.mozilla.org/show_bug.cgi?id=1609968), [#1016](https://github.com/mozilla/glean/pull/1016))
