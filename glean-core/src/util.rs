@@ -179,42 +179,6 @@ pub mod floating_point_context {
     }
 }
 
-/// The debug view tag is the value for the `X-Debug-ID` header of tagged ping requests,
-/// thus is it must be a valid header value.
-///
-/// In other words, it must match the regex: "[a-zA-Z0-9-]{1,20}"
-///
-/// The regex crate isn't used here because it adds to the binary size,
-/// and the Glean SDK doesn't use regular expressions anywhere else.
-pub fn validate_debug_view_tag(value: &str) -> Option<String> {
-    if value.is_empty() {
-        log::error!("Debug view tag must have at least one character.");
-        return None;
-    }
-
-    let mut iter = value.chars();
-    let mut count = 0;
-
-    loop {
-        match iter.next() {
-            // We are done, so the whole expression is valid.
-            None => return Some(value.into()),
-            // Valid characters.
-            Some('-') | Some('a'..='z') | Some('A'..='Z') | Some('0'..='9') => (),
-            // An invalid character
-            Some(c) => {
-                log::error!("Invalid character '{}' in debug view tag.", c);
-                return None;
-            }
-        }
-        count += 1;
-        if count == 20 {
-            log::error!("Debug view tag cannot exceed 20 characters");
-            return None;
-        }
-    }
-}
-
 #[cfg(test)]
 mod test {
     use super::*;
@@ -305,16 +269,5 @@ mod test {
         // Ensure that truncating the naïve way on this string would panic
         let value = "电脑坏了".to_string();
         value[0..10].to_string();
-    }
-
-    #[test]
-    fn validates_debug_view_tag_correctly() {
-        assert!(validate_debug_view_tag("valid-value").is_some());
-        assert!(validate_debug_view_tag("-also-valid-value").is_some());
-        assert!(validate_debug_view_tag("invalid_value").is_none());
-        assert!(validate_debug_view_tag("invalid value").is_none());
-        assert!(validate_debug_view_tag("!nv@lid-val*e").is_none());
-        assert!(validate_debug_view_tag("invalid-value-because-way-too-long").is_none());
-        assert!(validate_debug_view_tag("").is_none());
     }
 }
