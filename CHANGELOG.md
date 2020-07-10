@@ -9,6 +9,7 @@
 * Python
     * BUGFIX: correctly set the `app_build` metric to the newly provided `application_build_id` initialization option ([#1031](https://github.com/mozilla/glean/pull/1031)).
     * The Python bindings now report networking errors in the `glean.upload.ping_upload_failure` metric (like all the other bindings) ([#1039](https://github.com/mozilla/glean/pull/1039)).
+    * Python default upgraded to Python 3.8 ([#995](https://github.com/mozilla/glean/pull/995))
 * iOS
     * BUGFIX: Make `LabeledMetric` subscript public, so consuming applications can actually access it ([#1027](https://github.com/mozilla/glean/pull/1027))
 
