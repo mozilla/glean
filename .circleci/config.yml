@@ -138,7 +138,7 @@ commands:
           name: Build Windows wheel
           command: |
             cd glean-core/python
-            .venv3.7/bin/python3 setup.py bdist_wheel
+            .venv3.8/bin/python3 setup.py bdist_wheel
           environment:
             GLEAN_PYTHON_MINGW_X86_64_BUILD: 1
             GLEAN_BUILD_VARIANT: release
@@ -161,7 +161,7 @@ commands:
           name: Build Windows wheel
           command: |
             cd glean-core/python
-             .venv3.7/bin/python3 setup.py bdist_wheel
+             .venv3.8/bin/python3 setup.py bdist_wheel
           environment:
             GLEAN_PYTHON_MINGW_I686_BUILD: 1
             GLEAN_BUILD_VARIANT: release
@@ -174,7 +174,7 @@ commands:
             echo "export WINEDEBUG=-all" >> $BASH_ENV
             wget https://bootstrap.pypa.io/get-pip.py
             $WINPYTHON get-pip.py
-            echo "import site" >> winpython/python37._pth
+            echo "import site" >> winpython/python38._pth
             echo "import sys; sys.path.insert(0, '')" >> winpython/sitecustomize.py
             $WINPYTHON -m pip install -r glean-core/python/requirements_dev.txt --no-warn-script-location
             $WINPYTHON -m pip install glean-core/python/dist/*.whl --no-warn-script-location
@@ -267,7 +267,7 @@ jobs:
 
   Lint YAML with yamllint:
     docker:
-      - image: circleci/python:3.7.5
+      - image: circleci/python:3.8.2
     steps:
       - checkout
       - run: sudo pip install yamllint
@@ -670,7 +670,7 @@ jobs:
 
   Lint Python:
     docker:
-      - image: circleci/python:3.7.5
+      - image: circleci/python:3.8.2
     steps:
       - checkout
       - run:
@@ -713,6 +713,9 @@ jobs:
       - checkout
       - skip-if-doc-only
       - test-python
+      - persist_to_workspace:
+          root: glean-core/python/
+          paths: .venv3.8
 
   Python 3_8 tests minimum dependencies:
     docker:
@@ -727,7 +730,7 @@ jobs:
 
   Python Windows x86_64 tests:
     docker:
-      - image: circleci/python:3.7.6
+      - image: circleci/python:3.8.2
     steps:
       - checkout
       - build-windows-x86_64-wheel
@@ -738,9 +741,9 @@ jobs:
       - run:
           name: Install Python for Windows
           command: |
-            wget https://www.python.org/ftp/python/3.7.7/python-3.7.7-embed-amd64.zip
+            wget https://www.python.org/ftp/python/3.8.2/python-3.8.2-embed-amd64.zip
             mkdir winpython
-            unzip python-3.7.7-embed-amd64.zip -d winpython
+            unzip python-3.8.2-embed-amd64.zip -d winpython
             echo "export WINPYTHON=\"wine64 winpython/python.exe\"" >> $BASH_ENV
       - install-python-windows-deps
       - run:
@@ -750,7 +753,7 @@ jobs:
 
   Python Windows i686 tests:
     docker:
-      - image: circleci/python:3.7.6
+      - image: circleci/python:3.8.2
     steps:
       - checkout
       - build-windows-i686-wheel
@@ -763,9 +766,9 @@ jobs:
       - run:
           name: Install Python for Windows
           command: |
-            wget https://www.python.org/ftp/python/3.7.7/python-3.7.7-embed-win32.zip
+            wget https://www.python.org/ftp/python/3.8.2/python-3.8.2-embed-win32.zip
             mkdir winpython
-            unzip python-3.7.7-embed-win32.zip -d winpython
+            unzip python-3.8.2-embed-win32.zip -d winpython
             echo "export WINPYTHON=\"wine winpython/python.exe\"" >> $BASH_ENV
       - install-python-windows-deps
       - run:
@@ -775,14 +778,14 @@ jobs:
 
   Generate Python documentation:
     docker:
-      - image: circleci/python:3.7.6
+      - image: circleci/python:3.8.2
     steps:
       - checkout
       - attach_workspace:
           at: glean-core/python/
       - run:
           name: Generate Python docs
-          command: glean-core/python/.venv3.7/bin/python3 -m pdoc --html glean --force -o build/docs/python
+          command: glean-core/python/.venv3.8/bin/python3 -m pdoc --html glean --force -o build/docs/python
       - persist_to_workspace:
           root: build/
           paths: docs/python
@@ -802,7 +805,7 @@ jobs:
       - run:
           name: Setup default Python version
           command: |
-            echo "export PATH=/opt/python/cp37-cp37m/bin:$PATH" >> $BASH_ENV
+            echo "export PATH=/opt/python/cp38-cp38m/bin:$PATH" >> $BASH_ENV
       - run:
           name: Build Python extension
           command: |
@@ -813,11 +816,11 @@ jobs:
           name: Build Linux wheel
           command: |
             cd glean-core/python
-            .venv3.7/bin/python3 setup.py bdist_wheel
-            .venv3.7/bin/python3 -m auditwheel repair dist/*.whl
+            .venv3.8/bin/python3 setup.py bdist_wheel
+            .venv3.8/bin/python3 -m auditwheel repair dist/*.whl
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
-            .venv3.7/bin/python3 -m twine upload wheelhouse/*
+            .venv3.8/bin/python3 -m twine upload wheelhouse/*
           environment:
             GLEAN_BUILD_VARIANT: release
       - install-ghr-linux
@@ -844,10 +847,10 @@ jobs:
           name: Build macOS wheel
           command: |
             cd glean-core/python
-            .venv3.7/bin/python3 setup.py bdist_wheel
+            .venv3.8/bin/python3 setup.py bdist_wheel
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
-            .venv3.7/bin/python3 -m twine upload dist/*
+            .venv3.8/bin/python3 -m twine upload dist/*
           environment:
             GLEAN_BUILD_VARIANT: release
       - install-ghr-darwin
@@ -859,7 +862,7 @@ jobs:
 
   pypi-windows-x86_64-release:
     docker:
-      - image: circleci/python:3.7.6
+      - image: circleci/python:3.8.2
     steps:
       - checkout
       - build-windows-x86_64-wheel
@@ -869,7 +872,7 @@ jobs:
             cd glean-core/python
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
-            .venv3.7/bin/python3 -m twine upload dist/*
+            .venv3.8/bin/python3 -m twine upload dist/*
       - install-ghr-linux
       - run:
           name: Publish to Github
@@ -879,7 +882,7 @@ jobs:
 
   pypi-windows-i686-release:
     docker:
-      - image: circleci/python:3.7.6
+      - image: circleci/python:3.8.2
     steps:
       - checkout
       - build-windows-i686-wheel
@@ -889,7 +892,7 @@ jobs:
             cd glean-core/python
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
-            .venv3.7/bin/python3 -m twine upload dist/*
+            .venv3.8/bin/python3 -m twine upload dist/*
       - install-ghr-linux
       - run:
           name: Publish to Github
@@ -1047,7 +1050,7 @@ workflows:
       - Generate Kotlin documentation
       - Generate Python documentation:
           requires:
-            - Python 3_7 tests
+            - Python 3_8 tests
       - docs-linkcheck:
           requires:
             - Generate Rust documentation
@@ -1085,23 +1088,23 @@ workflows:
 
   release:
     jobs:
-      - Python 3_7 tests:
+      - Python 3_8 tests:
           filters: *release-filters
       - pypi-linux-release:
           requires:
-            - Python 3_7 tests
+            - Python 3_8 tests
           filters: *release-filters
       - pypi-macos-release:
           requires:
-            - Python 3_7 tests
+            - Python 3_8 tests
           filters: *release-filters
       - pypi-windows-i686-release:
           requires:
-            - Python 3_7 tests
+            - Python 3_8 tests
           filters: *release-filters
       - pypi-windows-x86_64-release:
           requires:
-            - Python 3_7 tests
+            - Python 3_8 tests
           filters: *release-filters
       - iOS build and test:
           filters: *release-filters
