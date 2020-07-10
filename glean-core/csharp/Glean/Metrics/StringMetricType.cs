@@ -19,7 +19,7 @@ namespace Mozilla.Glean.Private
     {
         private readonly bool disabled;
         private readonly string[] sendInPings;
-        private readonly LibGleanFFI.StringMetricTypeHandle handle;
+        private readonly UInt64 handle;
 
         public StringMetricType(
             bool disabled,
@@ -27,7 +27,7 @@ namespace Mozilla.Glean.Private
             Lifetime lifetime,
             string name,
             string[] sendInPings
-            ) : this(new LibGleanFFI.StringMetricTypeHandle(), disabled, sendInPings)
+            ) : this(0, disabled, sendInPings)
         {
             handle = LibGleanFFI.glean_new_string_metric(
                     category: category,
@@ -39,7 +39,7 @@ namespace Mozilla.Glean.Private
         }
 
         internal StringMetricType(
-            LibGleanFFI.StringMetricTypeHandle handle,
+            UInt64 handle,
             bool disabled,
             string[] sendInPings
             )
