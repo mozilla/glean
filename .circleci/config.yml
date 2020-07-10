@@ -781,8 +781,9 @@ jobs:
       - image: circleci/python:3.8.2
     steps:
       - checkout
-      - attach_workspace:
-          at: glean-core/python/
+      - run:
+          name: Setup Python environment
+          command: make python-setup
       - run:
           name: Generate Python docs
           command: glean-core/python/.venv3.8/bin/python3 -m pdoc --html glean --force -o build/docs/python
@@ -1048,9 +1049,7 @@ workflows:
           requires:
             - docs-spellcheck
       - Generate Kotlin documentation
-      - Generate Python documentation:
-          requires:
-            - Python 3_8 tests
+      - Generate Python documentation
       - docs-linkcheck:
           requires:
             - Generate Rust documentation
