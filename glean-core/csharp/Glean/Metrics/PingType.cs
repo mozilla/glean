@@ -23,7 +23,7 @@ namespace Mozilla.Glean.Private
     public class PingTypeBase
     {
         internal string name;
-        internal LibGleanFFI.PingTypeHandle handle;
+        internal UInt64 handle;
 
         protected internal PingTypeBase() { }
     }

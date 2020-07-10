@@ -18,7 +18,7 @@ namespace Mozilla.Glean.Private
     {
         private bool disabled;
         private string[] sendInPings;
-        private LibGleanFFI.DatetimeMetricTypeHandle handle;
+        private UInt64 handle;
 
         /// <summary>
         /// The public constructor used by automatically generated metrics.
@@ -30,7 +30,7 @@ namespace Mozilla.Glean.Private
             string name,
             string[] sendInPings,
             TimeUnit timeUnit = TimeUnit.Minute
-            ) : this(new LibGleanFFI.DatetimeMetricTypeHandle(), disabled, sendInPings)
+            ) : this(0, disabled, sendInPings)
         {
             handle = LibGleanFFI.glean_new_datetime_metric(
                        category: category,
@@ -43,7 +43,7 @@ namespace Mozilla.Glean.Private
         }
 
         internal DatetimeMetricType(
-           LibGleanFFI.DatetimeMetricTypeHandle handle,
+           UInt64 handle,
            bool disabled,
            string[] sendInPings
            )

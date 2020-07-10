@@ -5,7 +5,6 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
-using Serilog;
 
 namespace Mozilla.Glean.FFI
 {
@@ -84,27 +83,6 @@ namespace Mozilla.Glean.FFI
             public bool delay_ping_lifetime_io;
         }
 
-        /// <summary>
-        /// A base handle class meant to be extended by the different metric types to allow
-        /// for calling metric specific clearing functions.
-        /// </summary>
-        internal class BaseGleanHandle : SafeHandle
-        {
-            public BaseGleanHandle() : base(invalidHandleValue: IntPtr.Zero, ownsHandle: true) { }
-
-            public override bool IsInvalid
-            {
-                get { return this.handle == IntPtr.Zero; }
-            }
-
-            protected override bool ReleaseHandle()
-            {
-                // Note: this is meant to be implemented by the inheriting class in order to
-                // provide a specific cleanup action.
-                return false;
-            }
-        }
-
         public static string GetFromRustString(IntPtr pointer)
         {
             int len = 0;
@@ -175,7 +153,7 @@ namespace Mozilla.Glean.FFI
         internal static extern byte glean_is_upload_enabled();
 
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern StringAsReturnValue glean_ping_collect(PingTypeHandle ping_type_handle, string reason);
+        internal static extern StringAsReturnValue glean_ping_collect(UInt64 ping_type_handle, string reason);
 
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
         internal static extern byte glean_submit_ping_by_name(string ping_name, string reason);
@@ -184,24 +162,8 @@ namespace Mozilla.Glean.FFI
 
         // String
 
-        /// <summary>
-        /// A handle for the string metric type, which performs cleanup.
-        /// </summary>
-        internal sealed class StringMetricTypeHandle : BaseGleanHandle
-        {
-            protected override bool ReleaseHandle()
-            {
-                if (!this.IsInvalid)
-                {
-                    glean_destroy_string_metric(handle);
-                }
-
-                return true;
-            }
-        }
-
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern StringMetricTypeHandle glean_new_string_metric(
+        internal static extern UInt64 glean_new_string_metric(
             string category,
             string name,
             string[] send_in_pings,
@@ -211,44 +173,28 @@ namespace Mozilla.Glean.FFI
         );
 
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void glean_destroy_string_metric(IntPtr handle);
+        internal static extern void glean_destroy_string_metric(UInt64 handle);
 
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void glean_string_set(StringMetricTypeHandle metric_id, string value);
+        internal static extern void glean_string_set(UInt64 metric_id, string value);
 
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern StringAsReturnValue glean_string_test_get_value(StringMetricTypeHandle metric_id, string storage_name);
+        internal static extern StringAsReturnValue glean_string_test_get_value(UInt64 metric_id, string storage_name);
 
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern byte glean_string_test_has_value(StringMetricTypeHandle metric_id, string storage_name);
+        internal static extern byte glean_string_test_has_value(UInt64 metric_id, string storage_name);
 
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
         internal static extern Int32 glean_string_test_get_num_recorded_errors(
-             StringMetricTypeHandle metric_id,
+             UInt64 metric_id,
              Int32 error_type,
              string storage_name
         );
 
         // Boolean
 
-        /// <summary>
-        /// A handle for the boolean metric type, which performs cleanup.
-        /// </summary>
-        internal sealed class BooleanMetricTypeHandle : BaseGleanHandle
-        {
-            protected override bool ReleaseHandle()
-            {
-                if (!this.IsInvalid)
-                {
-                    glean_destroy_boolean_metric(handle);
-                }
-
-                return true;
-            }
-        }
-
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern BooleanMetricTypeHandle glean_new_boolean_metric(
+        internal static extern UInt64 glean_new_boolean_metric(
             string category,
             string name,
             string[] send_in_pings,
@@ -261,34 +207,18 @@ namespace Mozilla.Glean.FFI
         internal static extern void glean_destroy_boolean_metric(IntPtr handle);
 
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void glean_boolean_set(BooleanMetricTypeHandle metric_id, byte value);
+        internal static extern void glean_boolean_set(UInt64 metric_id, byte value);
 
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern byte glean_boolean_test_get_value(BooleanMetricTypeHandle metric_id, string storage_name);
+        internal static extern byte glean_boolean_test_get_value(UInt64 metric_id, string storage_name);
 
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern byte glean_boolean_test_has_value(BooleanMetricTypeHandle metric_id, string storage_name);
+        internal static extern byte glean_boolean_test_has_value(UInt64 metric_id, string storage_name);
 
         // Uuid
 
-        /// <summary>
-        /// A handle for the uuid metric type, which performs cleanup.
-        /// </summary>
-        internal sealed class UuidMetricTypeHandle : BaseGleanHandle
-        {
-            protected override bool ReleaseHandle()
-            {
-                if (!this.IsInvalid)
-                {
-                    glean_destroy_uuid_metric(handle);
-                }
-
-                return true;
-            }
-        }
-
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern UuidMetricTypeHandle glean_new_uuid_metric(
+        internal static extern UInt64 glean_new_uuid_metric(
             string category,
             string name,
             string[] send_in_pings,
@@ -301,34 +231,18 @@ namespace Mozilla.Glean.FFI
         internal static extern void glean_destroy_uuid_metric(IntPtr handle);
 
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void glean_uuid_set(UuidMetricTypeHandle metric_id, string value);
+        internal static extern void glean_uuid_set(UInt64 metric_id, string value);
 
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern StringAsReturnValue glean_uuid_test_get_value(UuidMetricTypeHandle metric_id, string storage_name);
+        internal static extern StringAsReturnValue glean_uuid_test_get_value(UInt64 metric_id, string storage_name);
 
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern byte glean_uuid_test_has_value(UuidMetricTypeHandle metric_id, string storage_name);
+        internal static extern byte glean_uuid_test_has_value(UInt64 metric_id, string storage_name);
 
         // Datetime
 
-        /// <summary>
-        /// A handle for the datetime metric type, which performs cleanup.
-        /// </summary>
-        internal sealed class DatetimeMetricTypeHandle : BaseGleanHandle
-        {
-            protected override bool ReleaseHandle()
-            {
-                if (!this.IsInvalid)
-                {
-                    glean_destroy_datetime_metric(handle);
-                }
-
-                return true;
-            }
-        }
-
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern DatetimeMetricTypeHandle glean_new_datetime_metric(
+        internal static extern UInt64 glean_new_datetime_metric(
             string category,
             string name,
             string[] send_in_pings,
@@ -342,42 +256,26 @@ namespace Mozilla.Glean.FFI
         internal static extern void glean_destroy_datetime_metric(IntPtr handle);
 
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void glean_datetime_set(DatetimeMetricTypeHandle metric_id, Int32 year,
+        internal static extern void glean_datetime_set(UInt64 metric_id, Int32 year,
             Int32 month, Int32 day, Int32 hour, Int32 minute, Int32 second, long nano, Int32 offset_seconds);
 
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern byte glean_datetime_test_has_value(DatetimeMetricTypeHandle metric_id, string storage_name);
+        internal static extern byte glean_datetime_test_has_value(UInt64 metric_id, string storage_name);
 
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern StringAsReturnValue glean_datetime_test_get_value_as_string(DatetimeMetricTypeHandle metric_id, string storage_name);
+        internal static extern StringAsReturnValue glean_datetime_test_get_value_as_string(UInt64 metric_id, string storage_name);
 
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
         internal static extern Int32 glean_datetime_test_get_num_recorded_errors(
-             DatetimeMetricTypeHandle metric_id,
+             UInt64 metric_id,
              Int32 error_type,
              string storage_name
         );
 
         // Custom pings
 
-        /// <summary>
-        /// A handle for the ping metric type, which performs cleanup.
-        /// </summary>
-        internal sealed class PingTypeHandle : BaseGleanHandle
-        {
-            protected override bool ReleaseHandle()
-            {
-                if (!this.IsInvalid)
-                {
-                    glean_destroy_ping_type(handle);
-                }
-
-                return true;
-            }
-        }
-
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern PingTypeHandle glean_new_ping_type(
+        internal static extern UInt64 glean_new_ping_type(
             string name,
             byte include_client_id,
             byte send_if_empty,
@@ -389,7 +287,7 @@ namespace Mozilla.Glean.FFI
         internal static extern void glean_destroy_ping_type(IntPtr handle);
 
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void glean_register_ping_type(PingTypeHandle ping_type_handle);
+        internal static extern void glean_register_ping_type(UInt64 ping_type_handle);
 
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
         internal static extern byte glean_test_has_ping_type(string ping_name);

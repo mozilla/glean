@@ -21,7 +21,7 @@ namespace Mozilla.Glean.Private
     {
         private bool disabled;
         private string[] sendInPings;
-        private LibGleanFFI.BooleanMetricTypeHandle handle;
+        private UInt64 handle;
 
         /// <summary>
         /// The public constructor used by automatically generated metrics.
@@ -32,7 +32,7 @@ namespace Mozilla.Glean.Private
             Lifetime lifetime,
             string name,
             string[] sendInPings
-            ) : this(new LibGleanFFI.BooleanMetricTypeHandle(), disabled, sendInPings)
+            ) : this(0, disabled, sendInPings)
         {
             handle = LibGleanFFI.glean_new_boolean_metric(
                         category: category,
@@ -44,7 +44,7 @@ namespace Mozilla.Glean.Private
         }
 
         internal BooleanMetricType(
-            LibGleanFFI.BooleanMetricTypeHandle handle,
+            UInt64 handle,
             bool disabled,
             string[] sendInPings
             )
