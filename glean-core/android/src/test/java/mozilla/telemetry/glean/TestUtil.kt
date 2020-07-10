@@ -127,6 +127,8 @@ internal fun resetGlean(
     // in tests without this line. Let's simply put it here.
     WorkManagerTestInitHelper.initializeTestWorkManager(context)
     Glean.resetGlean(context, config, clearStores, uploadEnabled = uploadEnabled)
+    // Always log pings for tests
+    Glean.setLogPings(true)
 }
 
 /**

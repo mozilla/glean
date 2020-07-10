@@ -87,14 +87,10 @@ class GleanDebugActivity : Activity() {
                 Glean.setDebugViewTag(debugViewTag)
             }
 
-            val debugConfig = Glean.configuration.copy(
-                logPings = intent.getBooleanExtra(LOG_PINGS_EXTRA_KEY, Glean.configuration.logPings)
-            )
-
-            // Finally set the default configuration before starting
-            // the real product's activity.
-            Log.i(LOG_TAG, "Setting debug config $debugConfig")
-            Glean.configuration = debugConfig
+            var logPings: Boolean? = intent.getBooleanExtra(LOG_PINGS_EXTRA_KEY, false)
+            logPings?.let {
+                Glean.setLogPings(logPings)
+            }
 
             intent.getStringExtra(SEND_PING_EXTRA_KEY)?.let {
                 Glean.submitPingByName(it)

@@ -61,8 +61,7 @@ class DeletionPingTest {
         val context = getContextWithMockedInfo()
 
         resetGlean(context, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port,
-            logPings = true
+            serverEndpoint = "http://" + server.hostName + ":" + server.port
         ), clearStores = true, uploadEnabled = false)
         triggerWorkManager(context)
 
@@ -77,8 +76,7 @@ class DeletionPingTest {
         val context = getContextWithMockedInfo()
 
         resetGlean(context, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port,
-            logPings = true
+            serverEndpoint = "http://" + server.hostName + ":" + server.port
         ), clearStores = true, uploadEnabled = true)
 
         // Get directory for pending deletion-request pings
@@ -132,8 +130,7 @@ class DeletionPingTest {
         val context = getContextWithMockedInfo()
 
         resetGlean(context, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port,
-            logPings = true
+            serverEndpoint = "http://" + server.hostName + ":" + server.port
         ), clearStores = true, uploadEnabled = false)
         triggerWorkManager(context)
 
