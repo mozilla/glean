@@ -21,7 +21,7 @@ namespace Mozilla.Glean.Private
     {
         private bool disabled;
         private string[] sendInPings;
-        private LibGleanFFI.UuidMetricTypeHandle handle;
+        private UInt64 handle;
 
         /// <summary>
         /// The public constructor used by automatically generated metrics.
@@ -32,7 +32,7 @@ namespace Mozilla.Glean.Private
             Lifetime lifetime,
             string name,
             string[] sendInPings
-            ) : this(new LibGleanFFI.UuidMetricTypeHandle(), disabled, sendInPings)
+            ) : this(0, disabled, sendInPings)
         {
             handle = LibGleanFFI.glean_new_uuid_metric(
                        category: category,
@@ -44,7 +44,7 @@ namespace Mozilla.Glean.Private
         }
 
         internal UuidMetricType(
-           LibGleanFFI.UuidMetricTypeHandle handle,
+           UInt64 handle,
            bool disabled,
            string[] sendInPings
            )

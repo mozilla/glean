@@ -12,58 +12,17 @@
 use std::collections::VecDeque;
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::{Arc, Mutex, RwLock, RwLockWriteGuard};
+use std::sync::{Arc, RwLock, RwLockWriteGuard};
 use std::thread;
 use std::time::{Duration, Instant};
 
-use once_cell::sync::OnceCell;
-use serde_json::Value as JsonValue;
-
-use crate::error::Result;
 use directory::PingDirectoryManager;
-pub use request::PingRequest;
+pub use request::{HeaderMap, PingRequest};
 pub use result::{ffi_upload_result, UploadResult};
 
 mod directory;
 mod request;
 mod result;
-
-/// A global Glean upload manager instance.
-///
-/// This is only used by processes who exclusively need to manage
-/// ping upload and do not want to perform a full Glean initialization.
-static UPLOAD_MANAGER: OnceCell<Mutex<PingUploadManager>> = OnceCell::new();
-
-/// Get a reference to the global Upload Manager object.
-pub fn global_upload_manager() -> Option<&'static Mutex<PingUploadManager>> {
-    UPLOAD_MANAGER.get()
-}
-
-/// Set or replace the global Glean object.
-pub fn setup_upload_manager(upload_manager: PingUploadManager) -> Result<()> {
-    // The `OnceCell` type wrapping our PingUploadManager is thread-safe and can only be set once.
-    // Therefore even if our check for it being empty succeeds, setting it could fail if a
-    // concurrent thread is quicker in setting it.
-    // However this will not cause a bigger problem, as the second `set` operation will just fail.
-    // We can log it and move on.
-    //
-    // For all wrappers this is not a problem, as the uploader object is intialized exactly once on
-    // calling the FFI `glean_standalone_uploader`.
-    if UPLOAD_MANAGER.get().is_none() {
-        if UPLOAD_MANAGER.set(Mutex::new(upload_manager)).is_err() {
-            log::error!(
-                "Global Upload Manager object is initialized already. This probably happened concurrently."
-            )
-        }
-    } else {
-        // We allow overriding the global upload manager object to support test mode.
-        // In test mode the upload manager object is fully destroyed and recreated.
-        // This all happens behind a mutex and is therefore also thread-safe..
-        let mut lock = UPLOAD_MANAGER.get().unwrap().lock().unwrap();
-        *lock = upload_manager;
-    }
-    Ok(())
-}
 
 #[derive(Debug)]
 struct RateLimiter {
@@ -166,6 +125,10 @@ pub struct PingUploadManager {
     /// To keep resource usage in check,
     /// we may want to limit the amount of pings sent in a given interval.
     rate_limiter: Option<RwLock<RateLimiter>>,
+    /// The name of the programming language used by the binding creating this instance of PingUploadManager.
+    ///
+    /// This will be used to build the value User-Agent header for each ping request.
+    language_binding_name: String,
 }
 
 impl PingUploadManager {
@@ -182,7 +145,11 @@ impl PingUploadManager {
     /// # Panics
     ///
     /// Will panic if unable to spawn a new thread.
-    pub fn new<P: Into<PathBuf>>(data_path: P, sync_scan: bool) -> Self {
+    pub fn new<P: Into<PathBuf>>(
+        data_path: P,
+        language_binding_name: &str,
+        sync_scan: bool,
+    ) -> Self {
         let queue = Arc::new(RwLock::new(VecDeque::new()));
         let directory_manager = PingDirectoryManager::new(data_path);
         let processed_pending_pings = Arc::new(AtomicBool::new(false));
@@ -190,18 +157,25 @@ impl PingUploadManager {
         let local_queue = queue.clone();
         let local_flag = processed_pending_pings.clone();
         let local_manager = directory_manager.clone();
+        let local_language_binding_name = language_binding_name.to_string();
         let ping_scanning_thread = thread::Builder::new()
             .name("glean.ping_directory_manager.process_dir".to_string())
             .spawn(move || {
                 let mut local_queue = local_queue
                     .write()
                     .expect("Can't write to pending pings queue.");
-                for (document_id, path, body) in local_manager.process_dir() {
+                for (document_id, path, body, headers) in local_manager.process_dir() {
                     if Self::is_enqueued(&local_queue, &document_id) {
                         continue;
                     }
-                    let request = PingRequest::new(&document_id, &path, body, None);
-                    local_queue.push_back(request);
+                    let mut request = PingRequest::builder(&local_language_binding_name)
+                        .document_id(document_id)
+                        .path(path)
+                        .body(body);
+                    if let Some(headers) = headers {
+                        request = request.headers(headers);
+                    }
+                    local_queue.push_back(request.build());
                 }
                 local_flag.store(true, Ordering::SeqCst);
             })
@@ -218,6 +192,7 @@ impl PingUploadManager {
             processed_pending_pings,
             directory_manager,
             rate_limiter: None,
+            language_binding_name: language_binding_name.into(),
         }
     }
 
@@ -250,23 +225,14 @@ impl PingUploadManager {
         )));
     }
 
-    /// Creates a `PingRequest` and adds it to the queue.
-    ///
-    /// Duplicate requests won't be added.
-    pub fn enqueue_ping(
-        &self,
-        document_id: &str,
-        path: &str,
-        body: JsonValue,
-        debug_view_tag: Option<&String>,
-    ) {
+    fn enqueue_ping(&self, document_id: &str, path: &str, body: &str, headers: Option<HeaderMap>) {
         let mut queue = self
             .queue
             .write()
             .expect("Can't write to pending pings queue.");
 
-        // Checks if a ping with a certain `document_id` is already enqueued.
-        if Self::is_enqueued(&queue, document_id) {
+        // Checks if a ping with this `document_id` is already enqueued.
+        if Self::is_enqueued(&queue, &document_id) {
             log::trace!(
                 "Attempted to enqueue a duplicate ping {} at {}.",
                 document_id,
@@ -276,8 +242,30 @@ impl PingUploadManager {
         }
 
         log::trace!("Enqueuing ping {} at {}", document_id, path);
-        let request = PingRequest::new(&document_id, &path, body, debug_view_tag);
-        queue.push_back(request);
+        let mut request = PingRequest::builder(&self.language_binding_name)
+            .document_id(document_id)
+            .path(path)
+            .body(body);
+        if let Some(headers) = headers {
+            request = request.headers(headers);
+        }
+
+        queue.push_back(request.build());
+    }
+
+    /// Reads a ping file, creates a `PingRequest` and adds it to the queue.
+    ///
+    /// Duplicate requests won't be added.
+    ///
+    /// # Arguments
+    ///
+    /// * `document_id` - The UUID of the ping in question.
+    pub fn enqueue_ping_from_file(&self, document_id: &str) {
+        if let Some((doc_id, path, body, headers)) =
+            self.directory_manager.process_file(document_id)
+        {
+            self.enqueue_ping(&doc_id, &path, &body, headers)
+        }
     }
 
     /// Clears the pending pings queue, leaves the deletion-request pings.
@@ -391,13 +379,7 @@ impl PingUploadManager {
     ///
     /// `document_id` - The UUID of the ping in question.
     /// `status` - The HTTP status of the response.
-    /// `debug_view_tag` - The value of the `X-Debug-Id` header, if this is `None` the header is not added.
-    pub fn process_ping_upload_response(
-        &self,
-        document_id: &str,
-        status: UploadResult,
-        debug_view_tag: Option<&String>,
-    ) {
+    pub fn process_ping_upload_response(&self, document_id: &str, status: UploadResult) {
         use UploadResult::*;
         match status {
             HttpStatus(status @ 200..=299) => {
@@ -420,11 +402,7 @@ impl PingUploadManager {
                     document_id,
                     status
                 );
-                if let Some((document_id, path, body)) =
-                    self.directory_manager.process_file(document_id)
-                {
-                    self.enqueue_ping(&document_id, &path, body, debug_view_tag);
-                }
+                self.enqueue_ping_from_file(&document_id);
             }
         };
     }
@@ -501,7 +479,6 @@ mod test {
     use std::thread;
     use std::time::Duration;
 
-    use serde_json::json;
     use uuid::Uuid;
 
     use super::UploadResult::*;
@@ -515,7 +492,7 @@ mod test {
     fn doesnt_error_when_there_are_no_pending_pings() {
         // Create a new upload_manager
         let dir = tempfile::tempdir().unwrap();
-        let upload_manager = PingUploadManager::new(dir.path(), false);
+        let upload_manager = PingUploadManager::new(dir.path(), "Testing", false);
 
         // Wait for processing of pending pings directory to finish.
         while upload_manager.get_upload_task(false) == PingUploadTask::Wait {
@@ -531,7 +508,7 @@ mod test {
     fn returns_ping_request_when_there_is_one() {
         // Create a new upload_manager
         let dir = tempfile::tempdir().unwrap();
-        let upload_manager = PingUploadManager::new(dir.path(), false);
+        let upload_manager = PingUploadManager::new(dir.path(), "Testing", false);
 
         // Wait for processing of pending pings directory to finish.
         while upload_manager.get_upload_task(false) == PingUploadTask::Wait {
@@ -539,7 +516,7 @@ mod test {
         }
 
         // Enqueue a ping
-        upload_manager.enqueue_ping(&Uuid::new_v4().to_string(), PATH, json!({}), None);
+        upload_manager.enqueue_ping(&Uuid::new_v4().to_string(), PATH, "", None);
 
         // Try and get the next request.
         // Verify request was returned
@@ -553,7 +530,7 @@ mod test {
     fn returns_as_many_ping_requests_as_there_are() {
         // Create a new upload_manager
         let dir = tempfile::tempdir().unwrap();
-        let upload_manager = PingUploadManager::new(dir.path(), false);
+        let upload_manager = PingUploadManager::new(dir.path(), "Testing", false);
 
         // Wait for processing of pending pings directory to finish.
         while upload_manager.get_upload_task(false) == PingUploadTask::Wait {
@@ -563,7 +540,7 @@ mod test {
         // Enqueue a ping multiple times
         let n = 10;
         for _ in 0..n {
-            upload_manager.enqueue_ping(&Uuid::new_v4().to_string(), PATH, json!({}), None);
+            upload_manager.enqueue_ping(&Uuid::new_v4().to_string(), PATH, "", None);
         }
 
         // Verify a request is returned for each submitted ping
@@ -582,7 +559,7 @@ mod test {
     fn limits_the_number_of_pings_when_there_is_rate_limiting() {
         // Create a new upload_manager
         let dir = tempfile::tempdir().unwrap();
-        let mut upload_manager = PingUploadManager::new(dir.path(), false);
+        let mut upload_manager = PingUploadManager::new(dir.path(), "Testing", false);
 
         // Add a rate limiter to the upload mangager with max of 10 pings every 3 seconds.
         let secs_per_interval = 3;
@@ -596,7 +573,7 @@ mod test {
 
         // Enqueue a ping multiple times
         for _ in 0..max_pings_per_interval {
-            upload_manager.enqueue_ping(&Uuid::new_v4().to_string(), PATH, json!({}), None);
+            upload_manager.enqueue_ping(&Uuid::new_v4().to_string(), PATH, "", None);
         }
 
         // Verify a request is returned for each submitted ping
@@ -609,7 +586,7 @@ mod test {
 
         // Enqueue just one more ping.
         // We should still be within the default rate limit time.
-        upload_manager.enqueue_ping(&Uuid::new_v4().to_string(), PATH, json!({}), None);
+        upload_manager.enqueue_ping(&Uuid::new_v4().to_string(), PATH, "", None);
 
         // Verify that we are indeed told to wait because we are at capacity
         assert_eq!(PingUploadTask::Wait, upload_manager.get_upload_task(false));
@@ -626,7 +603,7 @@ mod test {
     fn clearing_the_queue_works_correctly() {
         // Create a new upload_manager
         let dir = tempfile::tempdir().unwrap();
-        let upload_manager = PingUploadManager::new(dir.path(), false);
+        let upload_manager = PingUploadManager::new(dir.path(), "Testing", false);
 
         // Wait for processing of pending pings directory to finish.
         while upload_manager.get_upload_task(false) == PingUploadTask::Wait {
@@ -635,7 +612,7 @@ mod test {
 
         // Enqueue a ping multiple times
         for _ in 0..10 {
-            upload_manager.enqueue_ping(&Uuid::new_v4().to_string(), PATH, json!({}), None);
+            upload_manager.enqueue_ping(&Uuid::new_v4().to_string(), PATH, "", None);
         }
 
         // Clear the queue
@@ -869,7 +846,7 @@ mod test {
     fn new_pings_are_added_while_upload_in_progress() {
         // Create a new upload_manager
         let dir = tempfile::tempdir().unwrap();
-        let upload_manager = PingUploadManager::new(dir.path(), false);
+        let upload_manager = PingUploadManager::new(dir.path(), "Testing", false);
 
         // Wait for processing of pending pings directory to finish.
         while upload_manager.get_upload_task(false) == PingUploadTask::Wait {
@@ -883,7 +860,7 @@ mod test {
         let path2 = format!("/submit/app_id/test-ping/1/{}", doc2);
 
         // Enqueue a ping
-        upload_manager.enqueue_ping(&doc1, &path1, json!({}), None);
+        upload_manager.enqueue_ping(&doc1, &path1, "", None);
 
         // Try and get the first request.
         let req = match upload_manager.get_upload_task(false) {
@@ -893,10 +870,10 @@ mod test {
         assert_eq!(doc1, req.document_id);
 
         // Schedule the next one while the first one is "in progress"
-        upload_manager.enqueue_ping(&doc2, &path2, json!({}), None);
+        upload_manager.enqueue_ping(&doc2, &path2, "", None);
 
         // Mark as processed
-        upload_manager.process_ping_upload_response(&req.document_id, HttpStatus(200), None);
+        upload_manager.process_ping_upload_response(&req.document_id, HttpStatus(200));
 
         // Get the second request.
         let req = match upload_manager.get_upload_task(false) {
@@ -906,7 +883,7 @@ mod test {
         assert_eq!(doc2, req.document_id);
 
         // Mark as processed
-        upload_manager.process_ping_upload_response(&req.document_id, HttpStatus(200), None);
+        upload_manager.process_ping_upload_response(&req.document_id, HttpStatus(200));
 
         // ... and then we're done.
         assert_eq!(upload_manager.get_upload_task(false), PingUploadTask::Done);
@@ -916,7 +893,7 @@ mod test {
     fn uploader_sync_init() {
         // Create a new upload_manager, with a synchronous ping dir scan.
         let dir = tempfile::tempdir().unwrap();
-        let upload_manager = PingUploadManager::new(dir.path(), true);
+        let upload_manager = PingUploadManager::new(dir.path(), "Testing", true);
 
         // Since the scan was synchronous and the directory was empty,
         // we expect the upload task to always be `Done`.
@@ -954,7 +931,7 @@ mod test {
     fn duplicates_are_not_enqueued() {
         // Create a new upload_manager
         let dir = tempfile::tempdir().unwrap();
-        let upload_manager = PingUploadManager::new(dir.path(), false);
+        let upload_manager = PingUploadManager::new(dir.path(), "Testing", false);
 
         // Wait for processing of pending pings directory to finish.
         while upload_manager.get_upload_task(false) == PingUploadTask::Wait {
@@ -965,8 +942,8 @@ mod test {
         let path = format!("/submit/app_id/test-ping/1/{}", doc_id);
 
         // Try to enqueue a ping with the same doc_id twice
-        upload_manager.enqueue_ping(&doc_id, &path, json!({}), None);
-        upload_manager.enqueue_ping(&doc_id, &path, json!({}), None);
+        upload_manager.enqueue_ping(&doc_id, &path, "", None);
+        upload_manager.enqueue_ping(&doc_id, &path, "", None);
 
         // Get a task once
         match upload_manager.get_upload_task(false) {

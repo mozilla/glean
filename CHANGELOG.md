@@ -1,14 +1,29 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v31.2.3...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v31.3.0...main)
+
+# v31.3.0 (2020-07-10)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v31.2.3...v31.3.0)
+
+* General
+    * Remove locale from baseline ping. ([1609968](https://bugzilla.mozilla.org/show_bug.cgi?id=1609968), [#1016](https://github.com/mozilla/glean/pull/1016))
+    * Persist X-Debug-ID header on store ping. ([1605097](https://bugzilla.mozilla.org/show_bug.cgi?id=1605097), [#1042](https://github.com/mozilla/glean/pull/1042))
+    * BUGFIX: raise an error if Glean is initialized with an empty string as the `application_id` ([#1043](https://github.com/mozilla/glean/pull/1043)).
+* Python
+    * BUGFIX: correctly set the `app_build` metric to the newly provided `application_build_id` initialization option ([#1031](https://github.com/mozilla/glean/pull/1031)).
+    * The Python bindings now report networking errors in the `glean.upload.ping_upload_failure` metric (like all the other bindings) ([#1039](https://github.com/mozilla/glean/pull/1039)).
+    * Python default upgraded to Python 3.8 ([#995](https://github.com/mozilla/glean/pull/995))
+* iOS
+    * BUGFIX: Make `LabeledMetric` subscript public, so consuming applications can actually access it ([#1027](https://github.com/mozilla/glean/pull/1027))
 
 # v31.2.3 (2020-06-29)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v31.2.2...v31.2.3)
 
 * General
     * Move debug view tag management to the Rust core. ([1640575](https://bugzilla.mozilla.org/show_bug.cgi?id=1640575), [#998](https://github.com/mozilla/glean/pull/998))
     * BUGFIX: Fix mismatch in `event`s keys and values by using `glean_parser` version 1.23.0.
-
-[Full changelog](https://github.com/mozilla/glean/compare/v31.2.2...v31.2.3)
 
 # v31.2.2 (2020-06-26)
 

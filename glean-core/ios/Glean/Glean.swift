@@ -34,6 +34,7 @@ public class Glean {
     // This struct is used for organizational purposes to keep the class constants in a single place
     struct Constants {
         static let logTag = "glean/Glean"
+        static let languageBindingName = "Swift"
     }
 
     private var pingTypeQueue = [PingBase]()
@@ -87,7 +88,9 @@ public class Glean {
         }
 
         self.configuration = configuration
-        setUploadEnabled(uploadEnabled)
+        // We know we're not initialized, so we can skip the check inside `setUploadEnabled`
+        // by setting the variable directly.
+        self.uploadEnabled = uploadEnabled
 
         // Execute startup off the main thread
         Dispatchers.shared.launchConcurrent {
@@ -99,6 +102,7 @@ public class Glean {
                 // `relativePath` for a file URL gives us the absolute filesystem path.
                 dataDir: getGleanDirectory().relativePath,
                 packageName: AppInfo.name,
+                languageBindingName: Constants.languageBindingName,
                 uploadEnabled: uploadEnabled,
                 configuration: configuration
             ) { cfg in
@@ -167,6 +171,14 @@ public class Glean {
                 self.initializeCoreMetrics()
             }
 
+            // Upload might have been changed in between the call to `initialize`
+            // and this task actually running.
+            // This actually enqueues a task, which will execute after other user-submitted tasks
+            // as part of the queue flush below.
+            if self.uploadEnabled != uploadEnabled {
+                self.setUploadEnabled(self.uploadEnabled)
+            }
+
             // Signal Dispatcher that init is complete
             Dispatchers.shared.flushQueuedInitialTasks()
 
@@ -183,7 +195,6 @@ public class Glean {
         // that they are guaranteed to be available with the first ping that is
         // generated. We use an internal only API to do that.
 
-        GleanBaseline.locale.setSync(getLocaleTag())
         GleanInternalMetrics.osVersion.setSync(UIDevice.current.systemVersion)
         GleanInternalMetrics.deviceManufacturer.setSync(Sysctl.manufacturer)
         GleanInternalMetrics.deviceModel.setSync(Sysctl.model)

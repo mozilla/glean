@@ -26,7 +26,6 @@ import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.getAndConsumeRustString
 import mozilla.telemetry.glean.rust.toBoolean
 import mozilla.telemetry.glean.rust.toByte
-import mozilla.telemetry.glean.GleanMetrics.GleanBaseline
 import mozilla.telemetry.glean.GleanMetrics.GleanInternalMetrics
 import mozilla.telemetry.glean.GleanMetrics.Pings
 import mozilla.telemetry.glean.net.BaseUploader
@@ -53,6 +52,7 @@ data class GleanTimerId internal constructor(internal val id: Long)
 open class GleanInternalAPI internal constructor () {
     companion object {
         private const val LOG_TAG: String = "glean/Glean"
+        private const val LANGUAGE_BINDING_NAME: String = "Kotlin"
         internal const val GLEAN_DATA_DIR: String = "glean_data"
     }
 
@@ -146,7 +146,9 @@ open class GleanInternalAPI internal constructor () {
         this.httpClient = BaseUploader(configuration.httpClient)
         this.gleanDataDir = File(applicationContext.applicationInfo.dataDir, GLEAN_DATA_DIR)
 
-        setUploadEnabled(uploadEnabled)
+        // We know we're not initialized, so we can skip the check inside `setUploadEnabled`
+        // by setting the variable directly.
+        this.uploadEnabled = uploadEnabled
 
         // Execute startup off the main thread.
         @Suppress("EXPERIMENTAL_API_USAGE")
@@ -156,6 +158,7 @@ open class GleanInternalAPI internal constructor () {
             val cfg = FfiConfiguration(
                 dataDir = gleanDataDir.path,
                 packageName = applicationContext.packageName,
+                languageBindingName = LANGUAGE_BINDING_NAME,
                 uploadEnabled = uploadEnabled,
                 maxEvents = configuration.maxEvents,
                 delayPingLifetimeIO = false
@@ -225,6 +228,14 @@ open class GleanInternalAPI internal constructor () {
             if (!isFirstRun) {
                 LibGleanFFI.INSTANCE.glean_clear_application_lifetime_metrics()
                 initializeCoreMetrics(applicationContext)
+            }
+
+            // Upload might have been changed in between the call to `initialize`
+            // and this task actually running.
+            // This actually enqueues a task, which will execute after other user-submitted tasks
+            // as part of the queue flush below.
+            if (this@GleanInternalAPI.uploadEnabled != uploadEnabled) {
+                setUploadEnabled(this@GleanInternalAPI.uploadEnabled)
             }
 
             // Signal Dispatcher that init is complete
@@ -445,7 +456,6 @@ open class GleanInternalAPI internal constructor () {
         // Please note that the following metrics must be set synchronously, so
         // that they are guaranteed to be available with the first ping that is
         // generated. We use an internal only API to do that.
-        GleanBaseline.locale.setSync(getLocaleTag())
         // https://developer.android.com/reference/android/os/Build.VERSION
         GleanInternalMetrics.androidSdkVersion.setSync(Build.VERSION.SDK_INT.toString())
         GleanInternalMetrics.osVersion.setSync(Build.VERSION.RELEASE)

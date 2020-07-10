@@ -7,9 +7,28 @@ import uuid
 
 
 from glean import Glean
+from glean import metrics
+from glean._process_dispatcher import ProcessDispatcher
 from glean.net import PingUploadWorker
 from glean.net.http_client import HttpClientUploader
 from glean.net import ping_uploader
+
+
+def get_upload_failure_metric():
+    return metrics.LabeledCounterMetricType(
+        disabled=False,
+        send_in_pings=["metrics"],
+        name="ping_upload_failure",
+        category="glean.upload",
+        labels=[
+            "status_code_4xx",
+            "status_code_5xx",
+            "status_code_unknown",
+            "unrecoverable",
+            "recoverable",
+        ],
+        lifetime=metrics.Lifetime.PING,
+    )
 
 
 def test_400_error(safe_httpserver):
@@ -24,6 +43,22 @@ def test_400_error(safe_httpserver):
     assert 1 == len(safe_httpserver.requests)
 
 
+def test_400_error_submit(safe_httpserver, monkeypatch):
+    safe_httpserver.serve_content(b"", code=400)
+
+    # Force the ping upload worker into a separate process
+    monkeypatch.setattr(PingUploadWorker, "process", PingUploadWorker._process)
+    Glean._configuration._server_endpoint = safe_httpserver.url
+    Glean._submit_ping_by_name("baseline")
+    ProcessDispatcher._wait_for_last_process()
+
+    assert 1 == len(safe_httpserver.requests)
+
+    metric = get_upload_failure_metric()
+    assert 1 == metric["status_code_4xx"].test_get_value()
+    assert not metric["status_code_5xx"].test_has_value()
+
+
 def test_500_error(safe_httpserver):
     safe_httpserver.serve_content(b"", code=500)
 
@@ -34,6 +69,59 @@ def test_500_error(safe_httpserver):
     assert type(response) is ping_uploader.HttpResponse
     assert 500 == response._status_code
     assert 1 == len(safe_httpserver.requests)
+
+
+def test_500_error_submit(safe_httpserver, monkeypatch):
+    safe_httpserver.serve_content(b"", code=500)
+
+    # Force the ping upload worker into a separate process
+    monkeypatch.setattr(PingUploadWorker, "process", PingUploadWorker._process)
+    Glean._configuration._server_endpoint = safe_httpserver.url
+    Glean._submit_ping_by_name("baseline")
+    ProcessDispatcher._wait_for_last_process()
+
+    # This kind of recoverable error will be tried 10 times
+    assert 10 == len(safe_httpserver.requests)
+
+    metric = get_upload_failure_metric()
+    assert not metric["status_code_4xx"].test_has_value()
+    assert 10 == metric["status_code_5xx"].test_get_value()
+
+
+def test_500_error_submit_concurrent_writing(slow_httpserver, monkeypatch):
+    # This tests that concurrently writing to the database from the main process
+    # and the ping uploading subprocess.
+    slow_httpserver.serve_content(b"", code=500)
+
+    counter = metrics.CounterMetricType(
+        disabled=False,
+        category="test",
+        name="counter",
+        send_in_pings=["metrics"],
+        lifetime=metrics.Lifetime.PING,
+    )
+
+    # Force the ping upload worker into a separate process
+    monkeypatch.setattr(PingUploadWorker, "process", PingUploadWorker._process)
+    Glean._configuration._server_endpoint = slow_httpserver.url
+    Glean._submit_ping_by_name("baseline")
+
+    # While the uploader is running, increment the counter as fast as we can
+    times = 0
+    last_process = ProcessDispatcher._last_process
+    while last_process.poll() is None:
+        counter.add()
+        times += 1
+
+    # This kind of recoverable error will be tried 10 times
+    assert 10 == len(slow_httpserver.requests)
+
+    metric = get_upload_failure_metric()
+    assert not metric["status_code_4xx"].test_has_value()
+    assert 10 == metric["status_code_5xx"].test_get_value()
+
+    assert times > 0
+    assert times == counter.test_get_value()
 
 
 def test_unknown_scheme():

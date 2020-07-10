@@ -7,6 +7,7 @@ import json
 import logging
 from pathlib import Path
 import re
+import sys
 import time
 from typing import List, Tuple
 
@@ -50,7 +51,7 @@ class PingUploadWorker:
         from .. import Glean
 
         return ProcessDispatcher.dispatch(
-            _process, (Glean._data_dir, Glean._configuration)
+            _process, (Glean._data_dir, Glean._application_id, Glean._configuration)
         )
 
     @classmethod
@@ -101,18 +102,21 @@ def _parse_ping_headers(
     return headers
 
 
-def _process(data_dir: Path, configuration) -> bool:
+def _process(data_dir: Path, application_id: str, configuration) -> bool:
 
     # Import here to avoid cyclical import
     from ..glean import Glean
 
     if not Glean.is_initialized():
-        # Always load the Glean shared object / dll even if we're in a (ping upload worker)
-        # subprocess.
-        # To make startup time better in subprocesses, consumers can initialize just the
-        # ping upload manager.
-        data_dir = ffi_support.new("char[]", _ffi.ffi_encode_string(str(data_dir)))
-        _ffi.lib.glean_initialize_standalone_uploader(data_dir)
+        # We don't want to send pings or otherwise update the database during
+        # initialization in a subprocess, so we use
+        # `glean_initialize_for_subprocess` rather than `glean_initialize` here.
+        cfg = _ffi.make_config(
+            data_dir, application_id, True, configuration.max_events,
+        )
+        if _ffi.lib.glean_initialize_for_subprocess(cfg) == 0:
+            log.error("Couldn't initialize Glean in subprocess")
+            sys.exit(1)
 
     wait_attempts = 0
 

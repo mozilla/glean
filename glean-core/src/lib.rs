@@ -42,7 +42,7 @@ mod util;
 
 pub use crate::common_metric_data::{CommonMetricData, Lifetime};
 use crate::database::Database;
-pub use crate::error::{Error, Result};
+pub use crate::error::{Error, ErrorKind, Result};
 pub use crate::error_recording::{test_get_num_recorded_errors, ErrorType};
 use crate::event_database::EventDatabase;
 use crate::internal_metrics::CoreMetrics;
@@ -117,6 +117,8 @@ pub struct Configuration {
     pub data_path: String,
     /// The application ID (will be sanitized during initialization).
     pub application_id: String,
+    /// The name of the programming language used by the binding creating this instance of Glean.
+    pub language_binding_name: String,
     /// The maximum number of events to store before sending a ping containing events.
     pub max_events: Option<usize>,
     /// Whether Glean should delay persistence of data from metrics with ping lifetime.
@@ -135,6 +137,7 @@ pub struct Configuration {
 /// let cfg = Configuration {
 ///     data_path: "/tmp/glean".into(),
 ///     application_id: "glean.sample.app".into(),
+///     language_binding_name: "Rust".into(),
 ///     upload_enabled: true,
 ///     max_events: None,
 ///     delay_ping_lifetime_io: false,
@@ -177,14 +180,16 @@ pub struct Glean {
 }
 
 impl Glean {
-    /// Create and initialize a new Glean object.
-    ///
-    /// This will create the necessary directories and files in `data_path`.
-    /// This will also initialize the core metrics.
-    pub fn new(cfg: Configuration) -> Result<Self> {
+    /// Create and initialize a new Glean object for use in a subprocess.
+    /// Importantly, this will not send any pings at startup, since that
+    /// sort of management should only happen in the main process.
+    pub fn new_for_subprocess(cfg: &Configuration) -> Result<Self> {
         log::info!("Creating new Glean v{}", GLEAN_VERSION);
 
         let application_id = sanitize_application_id(&cfg.application_id);
+        if application_id.is_empty() {
+            return Err(ErrorKind::InvalidConfig.into());
+        }
 
         // Creating the data store creates the necessary path as well.
         // If that fails we bail out and don't initialize further.
@@ -192,26 +197,35 @@ impl Glean {
         let event_data_store = EventDatabase::new(&cfg.data_path)?;
 
         // Create an upload manager with rate limiting of 10 pings every 60 seconds.
-        let mut upload_manager = PingUploadManager::new(&cfg.data_path, false);
+        let mut upload_manager =
+            PingUploadManager::new(&cfg.data_path, &cfg.language_binding_name, false);
         upload_manager.set_rate_limiter(
             /* seconds per interval */ 60, /* max tasks per interval */ 10,
         );
 
-        let mut glean = Self {
+        Ok(Self {
             upload_enabled: cfg.upload_enabled,
             data_store,
             event_data_store,
             core_metrics: CoreMetrics::new(),
             internal_pings: InternalPings::new(),
             upload_manager,
-            data_path: PathBuf::from(cfg.data_path),
+            data_path: PathBuf::from(&cfg.data_path),
             application_id,
             ping_registry: HashMap::new(),
             start_time: local_now_with_offset(),
             max_events: cfg.max_events.unwrap_or(DEFAULT_MAX_EVENTS),
             is_first_run: false,
             debug_view_tag: None,
-        };
+        })
+    }
+
+    /// Create and initialize a new Glean object.
+    ///
+    /// This will create the necessary directories and files in `data_path`.
+    /// This will also initialize the core metrics.
+    pub fn new(cfg: Configuration) -> Result<Self> {
+        let mut glean = Self::new_for_subprocess(&cfg)?;
 
         // The upload enabled flag may have changed since the last run, for
         // example by the changing of a config file.
@@ -257,6 +271,7 @@ impl Glean {
         let cfg = Configuration {
             data_path: data_path.into(),
             application_id: application_id.into(),
+            language_binding_name: "Rust".into(),
             upload_enabled,
             max_events: None,
             delay_ping_lifetime_io: false,
@@ -499,7 +514,7 @@ impl Glean {
         }
 
         self.upload_manager
-            .process_ping_upload_response(uuid, status, self.debug_view_tag());
+            .process_ping_upload_response(uuid, status);
     }
 
     /// Take a snapshot for the given store and optionally clear it.
@@ -562,6 +577,7 @@ impl Glean {
             }
             Some(content) => {
                 if let Err(e) = ping_maker.store_ping(
+                    self,
                     &doc_id,
                     &ping.name,
                     &self.get_data_path(),
@@ -572,12 +588,7 @@ impl Glean {
                     return Err(e.into());
                 }
 
-                self.upload_manager.enqueue_ping(
-                    &doc_id,
-                    &url_path,
-                    content,
-                    self.debug_view_tag(),
-                );
+                self.upload_manager.enqueue_ping_from_file(&doc_id);
 
                 log::info!(
                     "The ping '{}' was submitted and will be sent as soon as possible",
@@ -705,7 +716,7 @@ impl Glean {
     ///
     /// This will return `false` in case `value` is not a valid tag.
     ///
-    /// When the debug view tag is set pings requests receive a `X-Debug-Id` header with the value of the tag
+    /// When the debug view tag is set, pings are sent with a `X-Debug-ID` header with the value of the tag
     /// and are sent to the ["Ping Debug Viewer"](https://mozilla.github.io/glean/book/dev/core/internal/debug-pings.html).
     ///
     /// ## Arguments

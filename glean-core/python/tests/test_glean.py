@@ -454,20 +454,46 @@ def test_tempdir_is_cleared_multiprocess(safe_httpserver):
     assert 10 == len(safe_httpserver.requests)
 
 
-def test_set_application_id_and_version():
+def test_set_application_build_id():
     Glean._reset()
 
     Glean.initialize(
-        application_id="my-id", application_version="my-version", upload_enabled=True
+        application_id="my-id",
+        application_version="my-version",
+        application_build_id="123ABC",
+        upload_enabled=True,
     )
 
     assert (
-        "my-id" == _builtins.metrics.glean.internal.metrics.app_build.test_get_value()
+        "123ABC" == _builtins.metrics.glean.internal.metrics.app_build.test_get_value()
     )
+
+
+def test_set_application_id_and_version(safe_httpserver):
+    safe_httpserver.serve_content(b"", code=200)
+    Glean._reset()
+
+    Glean.initialize(
+        application_id="my-id",
+        application_version="my-version",
+        upload_enabled=True,
+        configuration=Configuration(server_endpoint=safe_httpserver.url),
+    )
+
     assert (
         "my-version"
         == _builtins.metrics.glean.internal.metrics.app_display_version.test_get_value()
     )
+
+    Glean._configuration.server_endpoint = safe_httpserver.url
+
+    _builtins.pings.baseline.submit()
+
+    assert 1 == len(safe_httpserver.requests)
+
+    request = safe_httpserver.requests[0]
+    assert "baseline" in request.url
+    assert "my-id" in request.url
 
 
 def test_disabling_upload_sends_deletion_request(safe_httpserver):

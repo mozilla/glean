@@ -95,12 +95,26 @@ namespace Mozilla.Glean
         {
             Task task = null;
 
+            // Wrap the provided action in a try/catch block: we don't want to
+            // break execution if something throws.
+            Action safeAction = () => {
+                try
+                {
+                    action.Invoke();
+                }
+                catch (Exception e)
+                {
+                    Log.Error(e, "Exception thrown by task and swallowed.");
+
+                }
+            };
+
             if (QueueInitialTasks)
             {
                 // If we are queuing, typically before Glean has been
                 // initialized, then we should just add the action to
                 // the queue.
-                AddActionToQueue(action);
+                AddActionToQueue(safeAction);
             }
             else
             {
@@ -108,26 +122,13 @@ namespace Mozilla.Glean
                 {
                     // If we are not queuing we can go ahead and execute the
                     // task asynchronously                    
-                    task = factory.StartNew(() =>
-                    {
-                        // In order to prevent tasks from causing exceptions
-                        // we wrap the action invocation in try/catch
-                        try
-                        {
-                            action.Invoke();
-                        }
-                        catch (Exception e)
-                        {
-                            Log.Error(e, "Exception thrown by queued initial task and swallowed.");
-                            
-                        }
-                    });
+                    task = factory.StartNew(safeAction);
                 }
                 else
                 {
                     // If we are in testing mode, then go ahead and await
                     // the task to ensure synchronous execution.
-                    action.Invoke();
+                    safeAction.Invoke();
                 }
             }
 

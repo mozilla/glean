@@ -9,14 +9,15 @@ use std::fs::{self, File};
 use std::io::{BufRead, BufReader};
 use std::path::{Path, PathBuf};
 
-use serde_json::Value as JsonValue;
+use serde::Deserialize;
 use uuid::Uuid;
 
+use super::request::HeaderMap;
 use crate::{DELETION_REQUEST_PINGS_DIRECTORY, PENDING_PINGS_DIRECTORY};
 
 /// A representation of the data extracted from a ping file,
-/// this will contain the document_id, path and JSON encoded body of a ping, respectively.
-type PingPayload = (String, String, JsonValue);
+/// this will contain the document_id, path, JSON encoded body of a ping and the persisted headers.
+type PingPayload = (String, String, String, Option<HeaderMap>);
 
 /// Get the file name from a path as a &str.
 ///
@@ -37,6 +38,26 @@ fn get_file_name_as_str(path: &Path) -> Option<&str> {
             file_name
         }
     }
+}
+
+/// Process a ping's metadata.
+///
+/// The metadata is an optional third line in the ping file,
+/// currently it contains only additonal headers to be added to each ping request.
+/// Therefore, we will process the contents of this line
+/// and return a HeaderMap of the persisted headers.
+fn process_metadata(path: &str, metadata: &str) -> Option<HeaderMap> {
+    #[derive(Deserialize)]
+    struct PingMetadata {
+        pub headers: HeaderMap,
+    }
+
+    if let Ok(metadata) = serde_json::from_str::<PingMetadata>(metadata) {
+        return Some(metadata.headers);
+    } else {
+        log::warn!("Error while parsing ping metadata: {}", path);
+    }
+    None
 }
 
 /// Manages the pending pings directories.
@@ -110,19 +131,16 @@ impl PingDirectoryManager {
 
         log::info!("Processing ping at: {}", path.display());
 
-        // The way the ping file is structured,
-        // first line should always have the path
-        // and second line should have the body with the ping contents in JSON format
+        // The way the ping file is structured:
+        // first line should always have the path,
+        // second line should have the body with the ping contents in JSON format
+        // and third line might contain ping metadata e.g. additional headers.
         let mut lines = BufReader::new(file).lines();
-        if let (Some(Ok(path)), Some(Ok(body))) = (lines.next(), lines.next()) {
-            if let Ok(parsed_body) = serde_json::from_str::<JsonValue>(&body) {
-                return Some((document_id.to_string(), path, parsed_body));
-            } else {
-                log::warn!(
-                    "Error processing ping file: {}. Can't parse ping contents as JSON.",
-                    document_id
-                );
-            }
+        if let (Some(Ok(path)), Some(Ok(body)), Ok(metadata)) =
+            (lines.next(), lines.next(), lines.next().transpose())
+        {
+            let headers = metadata.map(|m| process_metadata(&path, &m)).flatten();
+            return Some((document_id.into(), path, body, headers));
         } else {
             log::warn!(
                 "Error processing ping file: {}. Ping file is not formatted as expected.",
@@ -144,8 +162,8 @@ impl PingDirectoryManager {
     ///
     /// # Return value
     ///
-    /// `Vec<(String, String, JsonValue)>` -
-    ///     a vector of tuples containing the document_id, path and body of each request.
+    /// `Vec<(String, String, JsonValue, HeaderMap)>` -
+    ///     a vector of tuples containing the document_id, path, body and headers of each request.
     pub fn process_dir(&self) -> Vec<PingPayload> {
         log::info!("Processing persisted pings.");
 
@@ -221,8 +239,6 @@ impl PingDirectoryManager {
 #[cfg(test)]
 mod test {
     use std::fs::File;
-    use std::io::prelude::*;
-    use uuid::Uuid;
 
     use super::*;
     use crate::metrics::PingType;
@@ -325,45 +341,6 @@ mod test {
 
         // Verify that file was indeed deleted
         assert!(!wrong_contents_file_path.exists());
-    }
-
-    #[test]
-    fn non_json_ping_body_files_are_deleted_and_ignored() {
-        let (mut glean, dir) = new_glean(None);
-
-        // Register a ping for testing
-        let ping_type = PingType::new("test", true, true, vec![]);
-        glean.register_ping_type(&ping_type);
-
-        // Submit the ping to populate the pending_pings directory
-        glean.submit_ping(&ping_type, None).unwrap();
-
-        let directory_manager = PingDirectoryManager::new(&dir.path());
-
-        let non_json_body_file_path = dir
-            .path()
-            .join(PENDING_PINGS_DIRECTORY)
-            .join(Uuid::new_v4().to_string());
-        let mut non_json_body_file = File::create(&non_json_body_file_path).unwrap();
-        non_json_body_file
-            .write_all(
-                b"https://doc.rust-lang.org/std/fs/struct.File.html
-                This is not JSON!!!!",
-            )
-            .unwrap();
-
-        // Try and process the pings folder
-        let data = directory_manager.process_dir();
-
-        // Verify there is just the one request
-        assert_eq!(data.len(), 1);
-
-        // Verify request was returned for the "test" ping
-        let request_ping_type = data[0].1.split('/').nth(3).unwrap();
-        assert_eq!(request_ping_type, "test");
-
-        // Verify that file was indeed deleted
-        assert!(!non_json_body_file_path.exists());
     }
 
     #[test]
