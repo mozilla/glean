@@ -701,6 +701,7 @@ jobs:
       - image: circleci/python:3.7.6
     steps:
       - checkout
+      - skip-if-doc-only
       - test-python
       - persist_to_workspace:
           root: glean-core/python/
@@ -711,7 +712,6 @@ jobs:
       - image: circleci/python:3.8.2
     steps:
       - checkout
-      - skip-if-doc-only
       - test-python
       - persist_to_workspace:
           root: glean-core/python/
