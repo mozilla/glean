@@ -418,7 +418,7 @@ char *glean_experiment_test_get_data(FfiStr experiment_id);
 
 uint8_t glean_experiment_test_is_active(FfiStr experiment_id);
 
-void glean_get_upload_task(FfiPingUploadTask *result, uint8_t log_ping);
+void glean_get_upload_task(FfiPingUploadTask *result);
 
 /**
  * # Safety
@@ -659,6 +659,8 @@ void glean_set_experiment_active(FfiStr experiment_id,
                                  int32_t extra_len);
 
 void glean_set_experiment_inactive(FfiStr experiment_id);
+
+void glean_set_log_pings(uint8_t value);
 
 void glean_set_upload_enabled(uint8_t flag);
 

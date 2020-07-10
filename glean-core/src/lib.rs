@@ -499,8 +499,8 @@ impl Glean {
     /// # Return value
     ///
     /// `PingUploadTask` - an enum representing the possible tasks.
-    pub fn get_upload_task(&self, log_ping: bool) -> PingUploadTask {
-        self.upload_manager.get_upload_task(log_ping)
+    pub fn get_upload_task(&self) -> PingUploadTask {
+        self.upload_manager.get_upload_task(self.log_pings())
     }
 
     /// Processes the response from an attempt to upload a ping.
@@ -734,6 +734,28 @@ impl Glean {
     /// or through the `set_debug_view_tag` function.
     pub(crate) fn debug_view_tag(&self) -> Option<&String> {
         self.debug.debug_view_tag.get()
+    }
+
+    /// Set the log pings debug option.
+    ///
+    /// This will return `false` in case we are unable to set the option.
+    ///
+    /// When the log pings debug option is `true`,
+    /// we log the payload of all succesfully assembled pings.
+    ///
+    /// ## Arguments
+    ///
+    /// * `value` - The value of the log pings option
+    pub fn set_log_pings(&mut self, value: bool) -> bool {
+        self.debug.log_pings.set(value)
+    }
+
+    /// Return the value for the log pings debug option or `None` if it hasn't been set.
+    ///
+    /// The log_pings option may be set from an environment variable (GLEAN_LOG_PINGS)
+    /// or through the `set_log_pings` function.
+    pub(crate) fn log_pings(&self) -> bool {
+        self.debug.log_pings.get().copied().unwrap_or(false)
     }
 
     fn get_dirty_bit_metric(&self) -> metrics::BooleanMetric {
