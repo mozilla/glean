@@ -101,7 +101,7 @@ public class HttpPingUploader {
         var uploadFailures = 0
         while uploadFailures < Constants.maxRetries {
             var incomingTask = FfiPingUploadTask()
-            glean_get_upload_task(&incomingTask, config.logPings.toByte())
+            glean_get_upload_task(&incomingTask)
             let task = incomingTask.toPingUploadTask()
 
             switch task {

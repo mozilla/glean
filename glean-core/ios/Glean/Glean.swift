@@ -28,6 +28,7 @@ public class Glean {
     var initialized: Bool = false
     private var uploadEnabled: Bool = true
     private var debugViewTag: String?
+    var logPings: Bool?
     var configuration: Configuration?
     private var observer: GleanLifecycleObserver?
 
@@ -117,6 +118,10 @@ public class Glean {
 
             if self.debugViewTag != nil {
                 _ = self.setDebugViewTag(self.debugViewTag!)
+            }
+
+            if self.logPings != nil {
+                _ = self.setLogPings(self.logPings!)
             }
 
             // If any pings were registered before initializing, do so now
@@ -465,6 +470,19 @@ public class Glean {
         }
     }
 
+    /// Set the log_pings debug option,
+    /// when this option is `true` the pings that are successfully submitted get logged.
+    ///
+    /// - parameters:
+    ///     * value: The value of the option.
+    public func setLogPings(_ value: Bool) {
+        if self.isInitialized() {
+            glean_set_log_pings(value.toByte())
+        } else {
+            logPings = value
+        }
+    }
+
     /// When applications are launched using the custom URL scheme, this helper function will process
     /// the URL and parse the debug commands
     ///
@@ -473,7 +491,6 @@ public class Glean {
     ///
     /// There are 3 available commands that you can use with the Glean SDK debug tools
     ///
-    /// - `logPings`: If "true", will cause pings that are submitted to also be echoed to the device's log
     /// - `tagPings`:  This command expects a string to tag the pings with and redirects them to the Glean Debug View
     /// - `sendPing`: This command expects a string name of a ping to force immediate collection and submission of.
     ///
@@ -570,5 +587,7 @@ public class Glean {
         // Init Glean.
         testDestroyGleanHandle()
         initialize(uploadEnabled: uploadEnabled, configuration: configuration)
+        // Enable ping logging for all tests
+        setLogPings(true)
     }
 }
