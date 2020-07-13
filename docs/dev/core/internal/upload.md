@@ -7,6 +7,67 @@ The Glean SDK leverages the available platform capabilities to implement any net
 Glean core controls all upload and coordinates the platform side with its own internals.
 All language bindings implement ping uploading around a common API and protocol.
 
+## The upload module in the language bindings
+
+```mermaid
+classDiagram
+    class UploadResult {
+        ~ToFFI()* int
+    }
+
+    class HttpResponse {
+        int statusCode
+        ~ToFFI() int
+    }
+
+    class UnrecoverableFailure {
+        ~ToFFI() int
+    }
+
+    class RecoverableFailure {
+        ~ToFFI() int
+    }
+
+    class PingUploader {
+        <<interface>>
+        +Upload() UploadResult
+    }
+
+    class BaseUploader {
+        +BaseUploader(PingUploader)
+        ~TriggerUploads()
+        ~CancelUploads()
+    }
+
+    class HttpUploader {
+        +Upload() UploadResult
+    }
+
+    UploadResult <|-- HttpResponse
+    UploadResult <|-- UnrecoverableFailure
+    UploadResult <|-- RecoverableFailure
+    PingUploader <|-- HttpUploader
+    PingUploader o-- BaseUploader
+
+```
+
+### `PingUploader`
+The `PingUploader` interface describes the contract between the `BaseUploader` and the SDK or user-provided upload modules.
+
+### `BaseUploader`
+The `BaseUploader` component is responsible for interfacing with the lower level `get_upload_task` calls and dealing with the logic in a platform-coherent way.
+
+  * Every Glean instance will always have a single `BaseUploader` instance.
+  * The `BaseUploader` is fed, at Glean initialization, with an instance of an implementation of the `PingUploader` interface.
+  * Whenever `BaseUploader` thinks it should perform an upload, it will call the provided instance of the `PingUploader` interface and call `upload` with the data it's getting from the glean-core/FFI.
+  * Any throttling happens at this layer: the core will orchestrate the throttling, while this layer will be responsible to abide to what the core is telling it to do.
+  * Any logic for aborting uploads or triggering uploads is provided by this object.
+
+### `HttpClientUploader`
+The `HttpClientUploader` is the default SDK-provided HTTP uploader. It acts as an adapter between the platform-specific upload library and the Glean upload APIs.
+
+> Note that most of the languages have now diverged, due to the many iterations, from this design. For example, in Kotlin, the [`BaseUploader` is mostly empty](https://searchfox.org/glean/source/glean-core/android/src/main/java/mozilla/telemetry/glean/net/BaseUploader.kt) and its functionalities are spread in the [`PingUploadWorker`](https://searchfox.org/glean/source/glean-core/android/src/main/java/mozilla/telemetry/glean/scheduler/PingUploadWorker.kt).
+
 ## Upload task API
 
 The following diagram visualizes the communication between Glean core (the Rust crate),
