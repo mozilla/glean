@@ -37,7 +37,7 @@ class GleanPlugin implements Plugin<Project> {
     private String GLEAN_PARSER_VERSION = "1.24.0"
     // The version of Miniconda is explicitly specified.
     // Miniconda3-4.5.12 is known to not work on Windows.
-    private String MINICONDA_VERSION = "4.5.11"
+    private String MINICONDA_VERSION = "py38_4.8.3"
 
     private String TASK_NAME_PREFIX = "gleanGenerateMetrics"
 
