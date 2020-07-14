@@ -171,8 +171,8 @@ mod test {
 
     #[test]
     fn debug_option_is_correctly_loaded_from_env() {
-        env::set_var("GLEAN_TEST", "test");
-        let option: DebugOption<String> = DebugOption::new("GLEAN_TEST", None);
+        env::set_var("GLEAN_TEST_1", "test");
+        let option: DebugOption<String> = DebugOption::new("GLEAN_TEST_1", None);
         assert_eq!(option.get().unwrap(), "test");
     }
 
@@ -187,8 +187,8 @@ mod test {
         }
 
         // Invalid values from the env are not set
-        env::set_var("GLEAN_TEST", "invalid");
-        let mut option: DebugOption<String> = DebugOption::new("GLEAN_TEST", Some(validate));
+        env::set_var("GLEAN_TEST_2", "invalid");
+        let mut option: DebugOption<String> = DebugOption::new("GLEAN_TEST_2", Some(validate));
         assert!(option.get().is_none());
 
         // Valid values are set using the `set` function
