@@ -1,37 +1,24 @@
 # Debugging Python applications using the Glean SDK
 
-Glean provides a couple of configuration flags to assist with debugging Python applications.
+Debugging features in Python can be enabled using environment variables.
+For more information on the available features and how to enable them,
+see [Enabling debugging features through environment variables](./index.md).
 
-## Tagging pings
+## Sending pings
 
-The `Glean.configuration.ping_tag` property can be used to add a special flag to the HTTP header so that the ping will end up in the [Glean Debug View](./debug-ping-view.md).
+Unlike other platforms, Python doesn't expose convenience methods to send pings on demand.
 
-You can set it after `Glean.initialize` is called:
-
-```py
-from Glean import Glean, Configuration
-Glean.initialize(
-    application_id="my-app-id",
-    application_version="0.1.0",
-    upload_enabled=True,
-)
-
-# ...
-
-Glean.configuration.ping_tag = "my-ping-tag"
-```
-
-After doing so, something like `pings.custom_ping.submit()` will send the custom ping to the Glean Debug View.
+In case that is necessary, calling the `submit` function for a given ping,
+such as `pings.custom_ping.submit()`, will send it.
 
 ## Logging pings
 
-If the `Glean.configuration.log_pings` property is set to `True`, pings are
-logged to the console on `DEBUG` level whenever they are submitted. You can set
-this property in a similar way as the `ping_tag` property above.
+If the `GLEAN_LOG_PINGS` environment variable is set to `true`, pings are
+logged to the console on `DEBUG` level whenever they are submitted.
 
 Make sure that when you configure logging in your application, you set the
 level for the `glean` logger to `DEBUG` or higher. Otherwise pings won't be
-logged even if `log_pings` is set to `True`.
+logged even if `GLEAN_LOG_PINGS` is set to `true`.
 
 You can set the logging level for Glean to `DEBUG` as follows:
 
