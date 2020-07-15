@@ -66,7 +66,7 @@ internal class FfiConfiguration(
  * @property channel the release channel the application is on, if known. This will be
  *           sent along with all the pings, in the `client_info` section.
  */
-data class Configuration @JvmOverloads internal constructor(
+data class Configuration @JvmOverloads constructor(
     val serverEndpoint: String = DEFAULT_TELEMETRY_ENDPOINT,
     val channel: String? = null,
     val maxEvents: Int? = null,

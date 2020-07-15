@@ -79,7 +79,7 @@ open class GleanInternalAPI internal constructor () {
     private var debugViewTag: String? = null
 
     // Keep track of this value before Glean is initialized
-    private var logPings: Boolean? = null
+    private var logPings: Boolean = false
 
     // This object holds data related to any persistent information about the metrics ping,
     // such as the last time it was sent and the store name
@@ -182,8 +182,8 @@ open class GleanInternalAPI internal constructor () {
 
             // The log pings debug option might have been set before initialize,
             // get the cached value and set it.
-            if (logPings != null) {
-                setLogPings(logPings!!)
+            if (logPings) {
+                setLogPings(logPings)
             }
 
             // Get the current value of the dirty flag so we know whether to
@@ -623,7 +623,7 @@ open class GleanInternalAPI internal constructor () {
      *
      * @param value The value of the tag, which must be a valid HTTP header value.
      */
-    fun setDebugViewTag(value: String): Boolean {
+    internal fun setDebugViewTag(value: String): Boolean {
         if (isInitialized()) {
             return LibGleanFFI.INSTANCE.glean_set_debug_view_tag(value).toBoolean()
         } else {
@@ -642,7 +642,7 @@ open class GleanInternalAPI internal constructor () {
      *
      * @param value The value of the option.
      */
-    fun setLogPings(value: Boolean) {
+    internal fun setLogPings(value: Boolean) {
         if (isInitialized()) {
             return LibGleanFFI.INSTANCE.glean_set_log_pings(value.toByte())
         } else {
@@ -689,6 +689,8 @@ open class GleanInternalAPI internal constructor () {
 
         // Init Glean.
         Glean.testDestroyGleanHandle()
+        // Always log pings for tests
+        Glean.setLogPings(true)
         Glean.initialize(context, uploadEnabled, config)
     }
 

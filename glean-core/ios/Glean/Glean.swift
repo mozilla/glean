@@ -28,7 +28,7 @@ public class Glean {
     var initialized: Bool = false
     private var uploadEnabled: Bool = true
     private var debugViewTag: String?
-    var logPings: Bool?
+    var logPings: Bool = false
     var configuration: Configuration?
     private var observer: GleanLifecycleObserver?
 
@@ -116,12 +116,12 @@ public class Glean {
                 return
             }
 
-            if self.debugViewTag != nil {
-                _ = self.setDebugViewTag(self.debugViewTag!)
+            if let debugViewTag = self.debugViewTag {
+                self.setDebugViewTag(debugViewTag)
             }
 
-            if self.logPings != nil {
-                _ = self.setLogPings(self.logPings!)
+            if self.logPings {
+                self.setLogPings(self.logPings)
             }
 
             // If any pings were registered before initializing, do so now
@@ -461,7 +461,7 @@ public class Glean {
     ///
     /// - parameters:
     ///     * value: The value of the tag, which must be a valid HTTP header value.
-    public func setDebugViewTag(_ value: String) -> Bool {
+    func setDebugViewTag(_ value: String) -> Bool {
         if self.isInitialized() {
             return glean_set_debug_view_tag(value).toBool()
         } else {
@@ -475,7 +475,7 @@ public class Glean {
     ///
     /// - parameters:
     ///     * value: The value of the option.
-    public func setLogPings(_ value: Bool) {
+    func setLogPings(_ value: Bool) {
         if self.isInitialized() {
             glean_set_log_pings(value.toByte())
         } else {
@@ -586,8 +586,8 @@ public class Glean {
 
         // Init Glean.
         testDestroyGleanHandle()
-        initialize(uploadEnabled: uploadEnabled, configuration: configuration)
         // Enable ping logging for all tests
         setLogPings(true)
+        initialize(uploadEnabled: uploadEnabled, configuration: configuration)
     }
 }

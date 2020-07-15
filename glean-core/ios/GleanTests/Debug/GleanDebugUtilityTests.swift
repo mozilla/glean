@@ -27,7 +27,7 @@ class GleanDebugUtilityTests: XCTestCase {
         // Test toggle true
         var url = URL(string: "test://glean?logPings=true")
         Glean.shared.handleCustomUrl(url: url!)
-        XCTAssertTrue(Glean.shared.logPings!)
+        XCTAssertTrue(Glean.shared.logPings)
 
         // Test invalid value doesn't cause setting to toggle
         var previousValue = Glean.shared.logPings
@@ -38,7 +38,7 @@ class GleanDebugUtilityTests: XCTestCase {
         // Test toggle false
         url = URL(string: "test://glean?logPings=false")
         Glean.shared.handleCustomUrl(url: url!)
-        XCTAssertFalse(Glean.shared.logPings!)
+        XCTAssertFalse(Glean.shared.logPings)
 
         // Test invalid value doesn't cause setting to toggle
         previousValue = Glean.shared.logPings

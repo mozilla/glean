@@ -31,6 +31,8 @@ These variables must be set at runtime, not at compile time. They will be checke
 
 Enabling debugging features using environment variables is available for all supported platforms.
 
+> **Note** Although it is technically possible to use the environment variables described here to enable debugging features in Android. The Glean team is not currently aware of a proper way to set environment variables in Android devices or emulators.
+
 ### Important considerations when using Glean SDK debug tools
 
 - Options that are set using the flags are not immediately reset and will persist until the application is closed or manually reset.

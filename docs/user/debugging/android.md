@@ -54,12 +54,6 @@ persist until the application is closed or manually reset.
 >   --es tagPings test-metrics-ping
 > ```
 
-Debugging features in Android can also be enabled using environment variables.
-For more information on the available features accessible through this method
-and how to enable them, see [Enabling debugging features through environment variables](./index.md).
-
-These environment variables must be set on the device that is running the application.
-
 ### Glean Log messages
 
 When running a Glean-powered app in the Android emulator or on a device connected to your computer via cable, there are several ways to read the log output.
