@@ -105,7 +105,7 @@ namespace Mozilla.Glean.Net
             while (uploadFailures < MAX_RETRIES)
             {
                 FfiUploadTask incomingTask = new FfiUploadTask();
-                LibGleanFFI.glean_get_upload_task(ref incomingTask, config.logPings);
+                LibGleanFFI.glean_get_upload_task(ref incomingTask);
 
                 UploadTaskTag tag = (UploadTaskTag)incomingTask.tag;
                 switch (tag)

@@ -31,7 +31,6 @@ class Configuration:
         server_endpoint: str = DEFAULT_TELEMETRY_ENDPOINT,
         channel: Optional[str] = None,
         max_events: int = DEFAULT_MAX_EVENTS,
-        log_pings: bool = False,
         ping_tag: Optional[str] = None,
         ping_uploader: Optional[net.BaseUploader] = None,
         allow_multiprocessing: bool = True,
@@ -44,8 +43,6 @@ class Configuration:
                 if known.
             max_events (int): Optional.The number of events to store before
                 force-sending. Defaults to `DEFAULT_MAX_EVENTS`.
-            log_pings (bool): Optional. Whether to log ping contents to the
-                console. Defaults to `False`.
             ping_tag (str): Optional. String tag to be applied to headers when
                 uploading pings for debug view.
             ping_uploader (glean.net.BaseUploader): Optional. The ping uploader
@@ -56,7 +53,6 @@ class Configuration:
         self._server_endpoint = server_endpoint
         self._channel = channel
         self._max_events = max_events
-        self._log_pings = log_pings
         self._ping_tag = ping_tag
         if ping_uploader is None:
             ping_uploader = net.HttpClientUploader()
@@ -91,15 +87,6 @@ class Configuration:
         return self._max_events
 
     # max_events can't be changed after Glean is initialized
-
-    @property
-    def log_pings(self) -> bool:
-        """Whether to log ping contents to the console."""
-        return self._log_pings
-
-    @log_pings.setter
-    def log_pings(self, value: bool):
-        self._log_pings = value
 
     @property
     def ping_tag(self) -> Optional[str]:

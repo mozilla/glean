@@ -556,11 +556,13 @@ internal interface LibGleanFFI : Library {
         storage_name: String
     ): Int
 
-    fun glean_get_upload_task(task: FfiPingUploadTask.ByReference, logPing: Byte)
+    fun glean_get_upload_task(task: FfiPingUploadTask.ByReference)
 
     fun glean_process_ping_upload_response(task: FfiPingUploadTask.ByReference, status: Int)
 
     fun glean_set_debug_view_tag(value: String): Byte
+
+    fun glean_set_log_pings(value: Byte)
 
     // Misc
 

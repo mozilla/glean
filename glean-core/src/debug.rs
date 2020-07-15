@@ -48,6 +48,8 @@ impl DebugOptions {
 /// where the value can be set programmatically or come from an environment variable.
 #[derive(Debug)]
 pub struct DebugOption<T, F = fn(T) -> Option<T>> {
+    /// The name of the environment variable related to this debug option.
+    env: String,
     /// The actual value of this option.
     value: Option<T>,
     /// Optional function to validade the value parsed from the environment
@@ -64,11 +66,12 @@ where
     /// tries to get the initial value of the option from the environment.
     pub fn new(env: &str, validation: Option<F>) -> Self {
         let mut option = Self {
+            env: env.into(),
             value: None,
             validation,
         };
 
-        option.set_from_env(env);
+        option.set_from_env();
         option
     }
 
@@ -80,29 +83,23 @@ where
         }
     }
 
-    fn set_from_env(&mut self, env: &str) {
-        match env::var(&env) {
+    fn set_from_env(&mut self) {
+        match env::var(&self.env) {
             Ok(env_value) => match T::from_str(&env_value) {
                 Ok(v) => {
-                    if !self.set(v) {
-                        log::error!(
-                            "Invalid value for debug option {}={}. Ignoring.",
-                            &env,
-                            env_value,
-                        );
-                    }
+                    self.set(v);
                 }
                 Err(_) => {
                     log::error!(
                         "Unable to parse debug option {}={} into {}. Ignoring.",
-                        &env,
+                        self.env,
                         env_value,
                         std::any::type_name::<T>()
                     );
                 }
             },
             Err(env::VarError::NotUnicode(_)) => {
-                log::error!("The value of {} is not valid unicode. Ignoring.", &env)
+                log::error!("The value of {} is not valid unicode. Ignoring.", self.env)
             }
             // The other possible error is that the env var is not set,
             // which is not an error for us and can safely be ignored.
@@ -117,9 +114,11 @@ where
     pub fn set(&mut self, value: T) -> bool {
         let validated = self.validate(value);
         if validated.is_some() {
+            log::info!("Setting the debug option {}.", self.env);
             self.value = validated;
             return true;
         }
+        log::info!("Invalid value for debug option {}.", self.env);
         false
     }
 
@@ -172,8 +171,8 @@ mod test {
 
     #[test]
     fn debug_option_is_correctly_loaded_from_env() {
-        env::set_var("GLEAN_TEST", "test");
-        let option: DebugOption<String> = DebugOption::new("GLEAN_TEST", None);
+        env::set_var("GLEAN_TEST_1", "test");
+        let option: DebugOption<String> = DebugOption::new("GLEAN_TEST_1", None);
         assert_eq!(option.get().unwrap(), "test");
     }
 
@@ -188,8 +187,8 @@ mod test {
         }
 
         // Invalid values from the env are not set
-        env::set_var("GLEAN_TEST", "invalid");
-        let mut option: DebugOption<String> = DebugOption::new("GLEAN_TEST", Some(validate));
+        env::set_var("GLEAN_TEST_2", "invalid");
+        let mut option: DebugOption<String> = DebugOption::new("GLEAN_TEST_2", Some(validate));
         assert!(option.get().is_none());
 
         // Valid values are set using the `set` function

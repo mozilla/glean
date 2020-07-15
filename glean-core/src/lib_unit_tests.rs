@@ -780,6 +780,20 @@ fn test_setting_debug_view_tag() {
 }
 
 #[test]
+fn test_setting_log_pings() {
+    let dir = tempfile::tempdir().unwrap();
+
+    let (mut glean, _) = new_glean(Some(dir));
+    assert!(!glean.log_pings());
+
+    glean.set_log_pings(true);
+    assert!(glean.log_pings());
+
+    glean.set_log_pings(false);
+    assert!(!glean.log_pings());
+}
+
+#[test]
 #[should_panic]
 fn test_empty_application_id() {
     let dir = tempfile::tempdir().unwrap();

@@ -11,9 +11,6 @@ class HttpPingUploaderTests: XCTestCase {
     var expectation: XCTestExpectation?
     private let testPath = "/some/random/path/not/important"
     private let testPing = "{ \"ping\": \"test\" }"
-    private let testConfig = Configuration(
-        logPings: true
-    )
 
     override func tearDown() {
         // Reset expectations
@@ -30,7 +27,7 @@ class HttpPingUploaderTests: XCTestCase {
 
         expectation = expectation(description: "Completed upload")
 
-        let httpPingUploader = HttpPingUploader(configuration: testConfig)
+        let httpPingUploader = HttpPingUploader(configuration: Configuration())
         httpPingUploader.upload(path: testPath, data: Data(testPing.utf8), headers: [:]) { result in
             testValue = result
             self.expectation?.fulfill()
@@ -51,7 +48,7 @@ class HttpPingUploaderTests: XCTestCase {
         // Build a request.
         // We specify a single additional header here.
         // In usual code they are generated on the Rust side.
-        let request = HttpPingUploader(configuration: testConfig)
+        let request = HttpPingUploader(configuration: Configuration())
             .buildRequest(path: testPath, data: Data(testPing.utf8), headers: ["X-Client-Type": "Glean"])
 
         XCTAssertEqual(

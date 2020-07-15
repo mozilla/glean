@@ -124,7 +124,7 @@ def _process(data_dir: Path, application_id: str, configuration) -> bool:
 
     while upload_failures < MAX_RETRIES:
         incoming_task = ffi_support.new("FfiPingUploadTask *")
-        _ffi.lib.glean_get_upload_task(incoming_task, configuration.log_pings)
+        _ffi.lib.glean_get_upload_task(incoming_task)
 
         tag = incoming_task.tag
         if tag == UploadTaskTag.UPLOAD:

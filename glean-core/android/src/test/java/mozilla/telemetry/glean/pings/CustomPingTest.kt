@@ -44,8 +44,7 @@ class CustomPingTest {
         val server = getMockWebServer()
 
         resetGlean(context, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port,
-            logPings = true
+            serverEndpoint = "http://" + server.hostName + ":" + server.port
         ), clearStores = true, uploadEnabled = true)
 
         // Define a new custom ping inline.
@@ -69,8 +68,7 @@ class CustomPingTest {
         val server = getMockWebServer()
 
         resetGlean(context, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port,
-            logPings = true
+            serverEndpoint = "http://" + server.hostName + ":" + server.port
         ), clearStores = true, uploadEnabled = true)
 
         // Define a new custom ping inline.
