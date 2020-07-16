@@ -372,6 +372,7 @@ fn correct_order() {
         Timespan(Duration::new(5, 0), TimeUnit::Second),
         TimingDistribution(Histogram::functional(2.0, 8.0)),
         MemoryDistribution(Histogram::functional(2.0, 8.0)),
+        Jwe("a...a.".into()),
     ];
 
     for metric in all_metrics {
@@ -396,6 +397,7 @@ fn correct_order() {
             Timespan(..)                      => assert_eq!(10, disc),
             TimingDistribution(..)            => assert_eq!(11, disc),
             MemoryDistribution(..)            => assert_eq!(12, disc),
+            Jwe(..)                           => assert_eq!(13, disc),
         }
     }
 }
