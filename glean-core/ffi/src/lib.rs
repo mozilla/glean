@@ -358,9 +358,9 @@ pub extern "C" fn glean_is_first_run() -> u8 {
 //
 // * `result`: the object the output task will be written to.
 #[no_mangle]
-pub extern "C" fn glean_get_upload_task(result: *mut FfiPingUploadTask, log_ping: u8) {
+pub extern "C" fn glean_get_upload_task(result: *mut FfiPingUploadTask) {
     with_glean_value(|glean| {
-        let ffi_task = FfiPingUploadTask::from(glean.get_upload_task(log_ping != 0));
+        let ffi_task = FfiPingUploadTask::from(glean.get_upload_task());
         unsafe {
             std::ptr::write(result, ffi_task);
         }
@@ -433,6 +433,11 @@ pub extern "C" fn glean_set_debug_view_tag(tag: FfiStr) -> u8 {
         let tag = tag.to_string_fallible()?;
         Ok(glean.set_debug_view_tag(&tag))
     })
+}
+
+#[no_mangle]
+pub extern "C" fn glean_set_log_pings(value: u8) {
+    with_glean_mut(|glean| Ok(glean.set_log_pings(value != 0)));
 }
 
 define_string_destructor!(glean_str_free);

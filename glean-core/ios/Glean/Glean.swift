@@ -28,6 +28,7 @@ public class Glean {
     var initialized: Bool = false
     private var uploadEnabled: Bool = true
     private var debugViewTag: String?
+    var logPings: Bool = false
     var configuration: Configuration?
     private var observer: GleanLifecycleObserver?
 
@@ -115,8 +116,12 @@ public class Glean {
                 return
             }
 
-            if self.debugViewTag != nil {
-                _ = self.setDebugViewTag(self.debugViewTag!)
+            if let debugViewTag = self.debugViewTag {
+                self.setDebugViewTag(debugViewTag)
+            }
+
+            if self.logPings {
+                self.setLogPings(self.logPings)
             }
 
             // If any pings were registered before initializing, do so now
@@ -456,12 +461,25 @@ public class Glean {
     ///
     /// - parameters:
     ///     * value: The value of the tag, which must be a valid HTTP header value.
-    public func setDebugViewTag(_ value: String) -> Bool {
+    func setDebugViewTag(_ value: String) -> Bool {
         if self.isInitialized() {
             return glean_set_debug_view_tag(value).toBool()
         } else {
             debugViewTag = value
             return true
+        }
+    }
+
+    /// Set the log_pings debug option,
+    /// when this option is `true` the pings that are successfully submitted get logged.
+    ///
+    /// - parameters:
+    ///     * value: The value of the option.
+    func setLogPings(_ value: Bool) {
+        if self.isInitialized() {
+            glean_set_log_pings(value.toByte())
+        } else {
+            logPings = value
         }
     }
 
@@ -473,7 +491,6 @@ public class Glean {
     ///
     /// There are 3 available commands that you can use with the Glean SDK debug tools
     ///
-    /// - `logPings`: If "true", will cause pings that are submitted to also be echoed to the device's log
     /// - `tagPings`:  This command expects a string to tag the pings with and redirects them to the Glean Debug View
     /// - `sendPing`: This command expects a string name of a ping to force immediate collection and submission of.
     ///
@@ -569,6 +586,8 @@ public class Glean {
 
         // Init Glean.
         testDestroyGleanHandle()
+        // Enable ping logging for all tests
+        setLogPings(true)
         initialize(uploadEnabled: uploadEnabled, configuration: configuration)
     }
 }

@@ -12,9 +12,7 @@ import androidx.test.core.app.ApplicationProvider
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.config.Configuration
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import android.content.pm.ActivityInfo
@@ -74,41 +72,6 @@ class GleanDebugActivityTest {
         resolveInfo.activityInfo.name = "LauncherActivity"
         @Suppress("DEPRECATION")
         shadowOf(pm).addResolveInfoForIntent(launchIntent, resolveInfo)
-    }
-
-    @Test
-    fun `the default configuration is not changed if no extras are provided`() {
-        val originalConfig = Configuration()
-        Glean.configuration = originalConfig
-
-        // Build the intent that will call our debug activity, with no extra.
-        val intent = Intent(ApplicationProvider.getApplicationContext<Context>(),
-            GleanDebugActivity::class.java)
-        assertNull(intent.extras)
-
-        // Start the activity through our intent.
-        launch<GleanDebugActivity>(intent)
-
-        // Verify that the original configuration and the one after init took place
-        // are the same.
-        assertEquals(originalConfig, Glean.configuration)
-    }
-
-    @Test
-    fun `command line extra arguments are correctly parsed`() {
-        // Make sure to set a baseline configuration to check against.
-        val originalConfig = Configuration()
-        Glean.configuration = originalConfig
-        assertFalse(originalConfig.logPings)
-
-        // Set the extra values and start the intent.
-        val intent = Intent(ApplicationProvider.getApplicationContext<Context>(),
-            GleanDebugActivity::class.java)
-        intent.putExtra(GleanDebugActivity.LOG_PINGS_EXTRA_KEY, true)
-        launch<GleanDebugActivity>(intent)
-
-        // Check that the configuration option was correctly flipped.
-        assertTrue(Glean.configuration.logPings)
     }
 
     @Test

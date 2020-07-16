@@ -39,8 +39,7 @@ class PingTypeTest {
 
         val context = getContextWithMockedInfo()
         resetGlean(context, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port,
-            logPings = true
+            serverEndpoint = "http://" + server.hostName + ":" + server.port
         ))
 
         val customPing = PingType<NoReasonCodes>(
@@ -80,8 +79,7 @@ class PingTypeTest {
 
         val context = getContextWithMockedInfo()
         resetGlean(context, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port,
-            logPings = true
+            serverEndpoint = "http://" + server.hostName + ":" + server.port
         ))
 
         val customPing = PingType<NoReasonCodes>(
@@ -121,8 +119,7 @@ class PingTypeTest {
 
         val context = getContextWithMockedInfo()
         resetGlean(context, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port,
-            logPings = true
+            serverEndpoint = "http://" + server.hostName + ":" + server.port
         ))
 
         val customPing = PingType<NoReasonCodes>(
@@ -162,8 +159,7 @@ class PingTypeTest {
 
         val context = getContextWithMockedInfo()
         resetGlean(context, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port,
-            logPings = true
+            serverEndpoint = "http://" + server.hostName + ":" + server.port
         ))
 
         val customPing = PingType<NoReasonCodes>(
@@ -211,8 +207,7 @@ class PingTypeTest {
 
         val context = getContextWithMockedInfo()
         resetGlean(context, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port,
-            logPings = true
+            serverEndpoint = "http://" + server.hostName + ":" + server.port
         ))
 
         counter.add()

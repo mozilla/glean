@@ -295,7 +295,7 @@ namespace Mozilla.Glean.FFI
         // Upload API
 
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void glean_get_upload_task(ref FfiUploadTask result, bool logPing);
+        internal static extern void glean_get_upload_task(ref FfiUploadTask result);
 
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void glean_process_ping_upload_response(IntPtr task, int status);

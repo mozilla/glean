@@ -86,8 +86,7 @@ class GleanTest {
     fun `send a ping`() {
         val server = getMockWebServer()
         resetGlean(context, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port,
-            logPings = true
+            serverEndpoint = "http://" + server.hostName + ":" + server.port
         ))
 
         Glean.handleBackgroundEvent()
@@ -107,8 +106,7 @@ class GleanTest {
     fun `X-Debug-ID header is correctly added when debug view tag is set`() {
         val server = getMockWebServer()
         resetGlean(context, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port,
-            logPings = true
+            serverEndpoint = "http://" + server.hostName + ":" + server.port
         ))
 
         Glean.setDebugViewTag("this-ping-is-tagged")
@@ -199,8 +197,7 @@ class GleanTest {
 
         val context = getContextWithMockedInfo()
         resetGlean(context, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port,
-            logPings = true
+            serverEndpoint = "http://" + server.hostName + ":" + server.port
         ))
 
         // Fake calling the lifecycle observer.
@@ -277,8 +274,7 @@ class GleanTest {
         val server = getMockWebServer()
         val context = getContextWithMockedInfo()
         resetGlean(context, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port,
-            logPings = true
+            serverEndpoint = "http://" + server.hostName + ":" + server.port
         ), false)
 
         try {
@@ -452,8 +448,7 @@ class GleanTest {
 
         val context = getContextWithMockedInfo()
         resetGlean(context, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port,
-            logPings = true
+            serverEndpoint = "http://" + server.hostName + ":" + server.port
         ))
 
         val pingName = "custom_ping_1"
@@ -610,8 +605,7 @@ class GleanTest {
         Glean.testDestroyGleanHandle()
         // Now trigger execution to ensure the tasks fired
         Glean.initialize(context, true, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port,
-            logPings = true
+            serverEndpoint = "http://" + server.hostName + ":" + server.port
         ))
 
         assertEquals(110, GleanError.preinitTasksOverflow.testGetValue())
@@ -642,8 +636,7 @@ class GleanTest {
         resetGlean(
             context,
             Glean.configuration.copy(
-                serverEndpoint = "http://" + server.hostName + ":" + server.port,
-                logPings = true
+                serverEndpoint = "http://" + server.hostName + ":" + server.port
             ),
             uploadEnabled = true
         )
@@ -651,8 +644,7 @@ class GleanTest {
         resetGlean(
             context,
             Glean.configuration.copy(
-                serverEndpoint = "http://" + server.hostName + ":" + server.port,
-                logPings = true
+                serverEndpoint = "http://" + server.hostName + ":" + server.port
             ),
             uploadEnabled = false,
             clearStores = false
@@ -672,8 +664,7 @@ class GleanTest {
         resetGlean(
             context,
             Glean.configuration.copy(
-                serverEndpoint = "http://" + server.hostName + ":" + server.port,
-                logPings = true
+                serverEndpoint = "http://" + server.hostName + ":" + server.port
             ),
             uploadEnabled = false
         )
@@ -681,8 +672,7 @@ class GleanTest {
         resetGlean(
             context,
             Glean.configuration.copy(
-                serverEndpoint = "http://" + server.hostName + ":" + server.port,
-                logPings = true
+                serverEndpoint = "http://" + server.hostName + ":" + server.port
             ),
             uploadEnabled = false,
             clearStores = false
@@ -709,8 +699,7 @@ class GleanTest {
         val server = getMockWebServer()
         val context = getContextWithMockedInfo()
         resetGlean(context, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port,
-            logPings = true
+            serverEndpoint = "http://" + server.hostName + ":" + server.port
         ), false)
 
         try {
@@ -815,9 +804,7 @@ class GleanTest {
         // Set the dirty flag.
         LibGleanFFI.INSTANCE.glean_set_dirty_flag(true.toByte())
 
-        resetGlean(context, Glean.configuration.copy(
-            logPings = true
-        ), false)
+        resetGlean(context, Glean.configuration, false)
 
         assertFalse(LibGleanFFI.INSTANCE.glean_is_dirty_flag_set().toBoolean())
     }

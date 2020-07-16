@@ -22,11 +22,6 @@ class ConfigurationTests: XCTestCase {
             Configuration.Constants.defaultTelemetryEndpoint,
             "Default endpoint is set"
         )
-        XCTAssertEqual(
-            config?.logPings,
-            Configuration.Constants.defaultLogPings,
-            "Default log pings is set"
-        )
         XCTAssertNil(
             config?.maxEvents,
             "Default max events are set"

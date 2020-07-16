@@ -27,6 +27,7 @@ mod macros;
 
 mod common_metric_data;
 mod database;
+mod debug;
 mod error;
 mod error_recording;
 mod event_database;
@@ -42,6 +43,7 @@ mod util;
 
 pub use crate::common_metric_data::{CommonMetricData, Lifetime};
 use crate::database::Database;
+use crate::debug::DebugOptions;
 pub use crate::error::{Error, ErrorKind, Result};
 pub use crate::error_recording::{test_get_num_recorded_errors, ErrorType};
 use crate::event_database::EventDatabase;
@@ -51,7 +53,7 @@ use crate::metrics::{Metric, MetricType, PingType};
 use crate::ping::PingMaker;
 use crate::storage::StorageManager;
 use crate::upload::{PingUploadManager, PingUploadTask, UploadResult};
-use crate::util::{local_now_with_offset, sanitize_application_id, validate_debug_view_tag};
+use crate::util::{local_now_with_offset, sanitize_application_id};
 
 const GLEAN_VERSION: &str = env!("CARGO_PKG_VERSION");
 const GLEAN_SCHEMA_VERSION: u32 = 1;
@@ -176,7 +178,7 @@ pub struct Glean {
     max_events: usize,
     is_first_run: bool,
     upload_manager: PingUploadManager,
-    debug_view_tag: Option<String>,
+    debug: DebugOptions,
 }
 
 impl Glean {
@@ -216,7 +218,7 @@ impl Glean {
             start_time: local_now_with_offset(),
             max_events: cfg.max_events.unwrap_or(DEFAULT_MAX_EVENTS),
             is_first_run: false,
-            debug_view_tag: None,
+            debug: DebugOptions::new(),
         })
     }
 
@@ -497,8 +499,8 @@ impl Glean {
     /// # Return value
     ///
     /// `PingUploadTask` - an enum representing the possible tasks.
-    pub fn get_upload_task(&self, log_ping: bool) -> PingUploadTask {
-        self.upload_manager.get_upload_task(log_ping)
+    pub fn get_upload_task(&self) -> PingUploadTask {
+        self.upload_manager.get_upload_task(self.log_pings())
     }
 
     /// Processes the response from an attempt to upload a ping.
@@ -723,23 +725,37 @@ impl Glean {
     ///
     /// * `value` - A valid HTTP header value. Must match the regex: "[a-zA-Z0-9-]{1,20}".
     pub fn set_debug_view_tag(&mut self, value: &str) -> bool {
-        let debug_view_tag = validate_debug_view_tag(value);
-        if debug_view_tag.is_none() {
-            log::error!(
-                "Debug view tag cannot be set. '{}' is not a valid header value.",
-                value
-            );
-            return false;
-        }
-
-        log::info!("Setting debug view tag to {}.", value);
-        self.debug_view_tag = debug_view_tag;
-        true
+        self.debug.debug_view_tag.set(value.into())
     }
 
     /// Return the value for the debug view tag or `None` if it hasn't been set.
+    ///
+    /// The debug_view_tag may be set from an environment variable (GLEAN_DEBUG_VIEW_TAG)
+    /// or through the `set_debug_view_tag` function.
     pub(crate) fn debug_view_tag(&self) -> Option<&String> {
-        self.debug_view_tag.as_ref()
+        self.debug.debug_view_tag.get()
+    }
+
+    /// Set the log pings debug option.
+    ///
+    /// This will return `false` in case we are unable to set the option.
+    ///
+    /// When the log pings debug option is `true`,
+    /// we log the payload of all succesfully assembled pings.
+    ///
+    /// ## Arguments
+    ///
+    /// * `value` - The value of the log pings option
+    pub fn set_log_pings(&mut self, value: bool) -> bool {
+        self.debug.log_pings.set(value)
+    }
+
+    /// Return the value for the log pings debug option or `None` if it hasn't been set.
+    ///
+    /// The log_pings option may be set from an environment variable (GLEAN_LOG_PINGS)
+    /// or through the `set_log_pings` function.
+    pub(crate) fn log_pings(&self) -> bool {
+        self.debug.log_pings.get().copied().unwrap_or(false)
     }
 
     fn get_dirty_bit_metric(&self) -> metrics::BooleanMetric {

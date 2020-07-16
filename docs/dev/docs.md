@@ -14,7 +14,7 @@ API docs are also generated from docstrings for Rust, Kotlin, Swift and Python.
 The `mdbook` crate is required in order to build the narrative documentation:
 
 ```sh
-cargo install mdbook
+cargo install mdbook mdbook-mermaid mdbook-open-on-gh
 ```
 
 Then both the narrative and Rust API docs can be built with:

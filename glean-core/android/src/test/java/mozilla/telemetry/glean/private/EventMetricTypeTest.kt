@@ -238,8 +238,7 @@ class EventMetricTypeTest {
         resetGlean(
             context,
             Glean.configuration.copy(
-                serverEndpoint = "http://" + server.hostName + ":" + server.port,
-                logPings = true
+                serverEndpoint = "http://" + server.hostName + ":" + server.port
             ),
             clearStores = true
         )
@@ -260,8 +259,7 @@ class EventMetricTypeTest {
         resetGlean(
             context,
             Glean.configuration.copy(
-                serverEndpoint = "http://" + server.hostName + ":" + server.port,
-                logPings = true
+                serverEndpoint = "http://" + server.hostName + ":" + server.port
             ),
             clearStores = false
         )
@@ -299,8 +297,7 @@ class EventMetricTypeTest {
         resetGlean(
             context,
             Glean.configuration.copy(
-                serverEndpoint = "http://" + server.hostName + ":" + server.port,
-                logPings = true
+                serverEndpoint = "http://" + server.hostName + ":" + server.port
             ),
             clearStores = true
         )
@@ -323,8 +320,7 @@ class EventMetricTypeTest {
         resetGlean(
             context,
             Glean.configuration.copy(
-                serverEndpoint = "http://" + server.hostName + ":" + server.port,
-                logPings = true
+                serverEndpoint = "http://" + server.hostName + ":" + server.port
             ),
             clearStores = false
         )

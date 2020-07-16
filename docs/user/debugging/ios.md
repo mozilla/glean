@@ -1,3 +1,13 @@
+# Enabling debugging features in iOS through environment variables
+
+Debugging features in iOS can be enabled using environment variables.
+For more information on the available features accessible through this method
+and how to enable them, see [Enabling debugging features through environment variables](./index.md).
+
+These environment variables must be set on the device that is running the application.
+
+> **Note** To set environment variables to the process running your app in an iOS device or emulator you need to edit the scheme for your app. In the Xcode IDE, you can use the shortcut `Cmd + <` to open the scheme editor popup. The environment variables editor is under the `Arguments` tab on this popup.
+
 # Debugging iOS applications using the Glean SDK
 
 For debugging and validation purposes on iOS, Glean makes use of a custom URL scheme which is implemented _within the application_ that is consuming Glean.  Glean provides some convenience functions to facilitate this, but it's up to the consuming application to enable this functionality.  Applications that enable this Glean SDK feature will be able to launch the application from a URL with the Glean debug commands embedded in the URL itself.

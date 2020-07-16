@@ -258,8 +258,7 @@ class MetricsPingSchedulerTest {
 
         val context = getContextWithMockedInfo()
         resetGlean(context, Configuration(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port,
-            logPings = true
+            serverEndpoint = "http://" + server.hostName + ":" + server.port
         ))
 
         try {
@@ -481,7 +480,7 @@ class MetricsPingSchedulerTest {
         // Start the web-server that will receive the metrics ping.
         val server = getMockWebServer()
         val configuration = Configuration(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port, logPings = true
+            serverEndpoint = "http://" + server.hostName + ":" + server.port
         )
 
         val oldVersion = "version.0"
@@ -697,7 +696,7 @@ class MetricsPingSchedulerTest {
                 context,
                 true,
                 Configuration(
-                    serverEndpoint = "http://" + server.hostName + ":" + server.port, logPings = true
+                    serverEndpoint = "http://" + server.hostName + ":" + server.port
                 )
             )
 
@@ -775,7 +774,7 @@ class MetricsPingSchedulerTest {
             resetGlean(
                 context,
                 Configuration(
-                    serverEndpoint = "http://" + server.hostName + ":" + server.port, logPings = true
+                    serverEndpoint = "http://" + server.hostName + ":" + server.port
                 ),
                 false
             )

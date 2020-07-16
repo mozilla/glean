@@ -201,7 +201,6 @@ def test_flush_queued_events_on_startup(safe_httpserver):
     safe_httpserver.serve_content(b"", code=200)
 
     Glean._configuration.server_endpoint = safe_httpserver.url
-    Glean._configuration.log_pings = True
 
     class EventKeys(enum.Enum):
         SOME_EXTRA = 0
@@ -222,9 +221,7 @@ def test_flush_queued_events_on_startup(safe_httpserver):
         application_id="glean-python-test",
         application_version=glean_version,
         clear_stores=False,
-        configuration=Configuration(
-            server_endpoint=safe_httpserver.url, log_pings=True
-        ),
+        configuration=Configuration(server_endpoint=safe_httpserver.url),
     )
 
     assert 1 == len(safe_httpserver.requests)
@@ -239,7 +236,6 @@ def test_flush_queued_events_on_startup_and_correctly_handle_preinit_events(
     safe_httpserver.serve_content(b"", code=200)
 
     Glean._configuration.server_endpoint = safe_httpserver.url
-    Glean._configuration.log_pings = True
 
     class EventKeys(enum.Enum):
         SOME_EXTRA = 0
@@ -264,7 +260,7 @@ def test_flush_queued_events_on_startup_and_correctly_handle_preinit_events(
         application_version=glean_version,
         clear_stores=False,
         configuration=Configuration(
-            server_endpoint=safe_httpserver.url, log_pings=True
+            server_endpoint=safe_httpserver.url
         ),
     )
 
