@@ -23,6 +23,7 @@ pub type Result<T> = result::Result<T, Error>;
 /// This list is intended to grow over time and it is not recommended to
 /// exhaustively match against it.
 #[derive(Debug)]
+#[non_exhaustive]
 pub enum ErrorKind {
     /// Lifetime conversion failed
     Lifetime(i32),
@@ -59,9 +60,6 @@ pub enum ErrorKind {
 
     /// Glean not initialized
     NotInitialized,
-
-    #[doc(hidden)]
-    __NonExhaustive,
 }
 
 /// A specialized [`Error`] type for this crate's operations.
@@ -108,7 +106,6 @@ impl Display for Error {
             Utf8Error => write!(f, "Invalid UTF-8 byte sequence in string"),
             InvalidConfig => write!(f, "Invalid Glean configuration provided"),
             NotInitialized => write!(f, "Global Glean object missing"),
-            __NonExhaustive => write!(f, "Unknown error"),
         }
     }
 }
