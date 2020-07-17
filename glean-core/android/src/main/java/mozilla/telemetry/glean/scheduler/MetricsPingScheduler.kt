@@ -201,10 +201,10 @@ internal class MetricsPingScheduler(
         if (isDifferentVersion()) {
             Log.i(LOG_TAG, "The application just updated. Send metrics ping now.")
 
-            @Suppress("EXPERIMENTAL_API_USAGE")
-            Dispatchers.API.executeTask {
-                collectPingAndReschedule(now, startupPing = true, reason = Pings.metricsReasonCodes.upgrade)
-            }
+            // Since `schedule` is only ever called from Glean.initialize, we need to ensure
+            // that this gets executed now before the Application lifetime metrics get cleared.
+            collectPingAndReschedule(now, startupPing = true, reason = Pings.metricsReasonCodes.upgrade)
+
             return
         }
 
@@ -231,31 +231,14 @@ internal class MetricsPingScheduler(
                 Log.i(LOG_TAG, "The 'metrics' ping was already sent today, ${now.time}.")
                 schedulePingCollection(now, sendTheNextCalendarDay = true, reason = Pings.metricsReasonCodes.tomorrow)
             }
-            // The ping wasn't already sent today. Are we overdue or just waiting for
-            // the right time?  This covers (2)
             isAfterDueTime(now) -> {
+                // The ping wasn't already sent today. Are we overdue or just waiting for
+                // the right time?  This covers (2)
                 Log.i(LOG_TAG, "The 'metrics' ping is scheduled for immediate collection, ${now.time}")
 
-                // **IMPORTANT**
-                //
-                // The reason why we're collecting the "metrics" ping in the `Dispatchers.API`
-                // context is that we want to make sure no other metric API adds data before
-                // the ping is collected. All the exposed metrics API dispatch calls to the
-                // engines through the `Dispatchers.API` context, so this ensures we are enqueued
-                // before any other recording API call.
-                //
-                // * Do not change `Dispatchers.API.executeTask` to `Dispatchers.API.launch` as
-                // this would break startup overdue ping collection. *
-                // `executeTask` schedules the task for immediate execution on the
-                // `Dispatchers.API` thread pool, before any other enqueued task. For more
-                // context, see bug 1604861 and the implementation of
-                // `collectPingAndReschedule`.
-
-                @Suppress("EXPERIMENTAL_API_USAGE")
-                Dispatchers.API.executeTask {
-                    // This addresses (2).
-                    collectPingAndReschedule(now, startupPing = true, reason = Pings.metricsReasonCodes.overdue)
-                }
+                // Since `schedule` is only ever called from Glean.initialize, we need to ensure
+                // that this gets executed now before the Application lifetime metrics get cleared.
+                collectPingAndReschedule(now, startupPing = true, reason = Pings.metricsReasonCodes.overdue)
             }
             else -> {
                 // This covers (3).
