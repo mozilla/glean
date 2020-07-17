@@ -23,6 +23,9 @@ In the above:
 | `sendPing` | string (`--es`)  | Sends the ping with the given name immediately |
 | `tagPings` | string (`--es`)  | Tags all outgoing pings as debug pings to make them available for real-time validation, on the [Glean Debug View](./debug-ping-view.md). The value must match the pattern `[a-zA-Z0-9-]{1,20}` |
 
+All [the options](https://developer.android.com/studio/command-line/adb#am) provided to start the activity are passed over to the main activity for the application to process.
+This is useful if SDK users wants to debug telemetry while providing additional options to the product to enable specific behaviors.  
+
 > **Note:** Due to limitations on Android logcat message size, pings larger than 4KB are broken into multiple log messages when using `logPings`.
 
 For example, to direct a release build of the Glean sample application to (1) dump pings to logcat, (2) tag the ping with the `test-metrics-ping` tag, and (3) send the "metrics" ping immediately, the following command can be used:

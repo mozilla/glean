@@ -5,12 +5,15 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v31.4.0...main)
 
+* General
+  * Enable propagating options to the main product Activity when using the `GleanDebugActivity`.
+
 # v31.4.0 (2020-07-16)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v31.3.0...v31.4.0)
 
 * General
   * Enable debugging features through environment variables. ([#1058](https://github.com/mozilla/glean/pull/1058))
-
-[Full changelog](https://github.com/mozilla/glean/compare/v31.3.0...v31.4.0)
 
 # v31.3.0 (2020-07-10)
 

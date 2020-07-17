@@ -5,6 +5,7 @@
 package mozilla.telemetry.glean.debug
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import mozilla.telemetry.glean.Glean
@@ -80,14 +81,14 @@ class GleanDebugActivity : Activity() {
 
             // Check for ping debug view tag to apply to the X-Debug-ID header when uploading the
             // ping to the endpoint
-            var debugViewTag: String? = intent.getStringExtra(TAG_DEBUG_VIEW_EXTRA_KEY)
+            val debugViewTag: String? = intent.getStringExtra(TAG_DEBUG_VIEW_EXTRA_KEY)
 
             // Set the debug view tag, if the tag is invalid it won't be set
             debugViewTag?.let {
                 Glean.setDebugViewTag(debugViewTag)
             }
 
-            var logPings: Boolean? = intent.getBooleanExtra(LOG_PINGS_EXTRA_KEY, false)
+            val logPings: Boolean? = intent.getBooleanExtra(LOG_PINGS_EXTRA_KEY, false)
             logPings?.let {
                 Glean.setLogPings(logPings)
             }
@@ -97,8 +98,18 @@ class GleanDebugActivity : Activity() {
             }
         }
 
-        val intent = packageManager.getLaunchIntentForPackage(packageName)
-        startActivity(intent)
+        // This Activity can be used to tag tests on CI or start products with specific
+        // options. We need to make sure to retain and propagate all the options that
+        // we were passed to the next intent. Our strategy:
+        // - use the `Intent` copy constructor to copy all the intent options from the
+        //   intent which started this activity;
+        // - get the main launch intent for the product using the Glean SDK;
+        // - change the starting "component" and package to the one from the previous step.
+        val nextIntent = Intent(intent)
+        val defaultLaunchIntent = packageManager.getLaunchIntentForPackage(packageName)!!
+        nextIntent.component = defaultLaunchIntent.component
+        nextIntent.`package` = defaultLaunchIntent.`package`
+        startActivity(nextIntent)
 
         finish()
     }
