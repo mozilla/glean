@@ -148,7 +148,7 @@ impl ExperimentMetric {
         };
 
         // Apply limits to extras
-        let truncated_extras = extra.and_then(|extra| {
+        let truncated_extras = extra.map(|extra| {
             if extra.len() > MAX_EXPERIMENTS_EXTRAS_SIZE {
                 let msg = format!(
                     "Extra hash map length {} exceeds maximum of {}",
@@ -183,7 +183,7 @@ impl ExperimentMetric {
 
                 temp_map.insert(truncated_key, truncated_value);
             }
-            Some(temp_map)
+            temp_map
         });
 
         let value = Metric::Experiment(RecordedExperimentData {
