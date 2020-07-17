@@ -801,7 +801,7 @@ jobs:
       - run:
           name: Setup default Python version
           command: |
-            echo "export PATH=/opt/python/cp38-cp38m/bin:$PATH" >> $BASH_ENV
+            echo "export PATH=/opt/python/cp38-cp38/bin:$PATH" >> $BASH_ENV
       - run:
           name: Build Python extension
           command: |
