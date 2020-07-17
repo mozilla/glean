@@ -29,4 +29,4 @@ They could be release notes, documentation, hopes, dreams, or whatever: so long 
 * 2020-05-26: [How does the Glean SDK send gzipped pings](https://blog.mozilla.org/data/2020/05/26/how-does-the-glean-sdk-send-gzipped-pings/)
 * 2020-06-03: [The Glean SDK and iOS Application Extensions, or a Tale of Two Sandboxes](https://blog.mozilla.org/data/2020/06/03/this-week-in-glean-the-glean-sdk-and-ios-application-extensions-or-a-tale-of-two-sandboxes/)
 * 2020-06-12: [Project FOG Update, end of H12020](https://blog.mozilla.org/data/2020/06/12/this-week-in-glean-project-fog-update-end-of-h12020/)
-* 2020-07-16: [Mozilla Telemetry in 2020: From “Just Firefox” to a “Galaxy of Data”](https://wlach.github.io/blog/2020/07/mozilla-telemetry-in-2020-from-just-firefox-to-a-galaxy-of-data/)
+* 2020-07-16: [Mozilla Telemetry in 2020: From “Just Firefox” to a “Galaxy of Data”](https://blog.mozilla.org/data/2020/07/16/mozilla-telemetry-in-2020-from-just-firefox-to-a-galaxy-of-data/)
