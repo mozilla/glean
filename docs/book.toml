@@ -11,6 +11,7 @@ create-missing = false
 additional-css = ["glean.css", "mermaid.css"]
 additional-js = ["tabs.js", "mermaid.min.js", "mermaid-init.js"]
 git-repository-url = "https://github.com/mozilla/glean"
+git-branch = "main"
 mathjax-support = true
 
 [preprocessor.open-on-gh]
