@@ -43,7 +43,7 @@ fn validate_base64url_encoding(value: &str) -> bool {
 /// Representation of a [JWE](https://tools.ietf.org/html/rfc7516).
 ///
 /// **Note** Variable sized elements will be constrained to a length of DEFAULT_MAX_CHARS_PER_VARIABLE_SIZE_ELEMENT,
-/// this is a constraint introduced by Glean and not part of the spec.
+/// this is a constraint introduced by Glean to prevent abuses and not part of the spec.
 #[derive(Serialize)]
 struct Jwe {
     /// A variable-size JWE protected header.
