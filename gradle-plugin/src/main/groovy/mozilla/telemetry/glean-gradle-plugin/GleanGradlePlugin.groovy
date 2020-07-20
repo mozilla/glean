@@ -374,7 +374,7 @@ except:
     }
 
     void apply(Project project) {
-        project.ext.glean_version = "31.4.0"
+        project.ext.glean_version = "31.4.1"
 
         File condaDir = setupPythonEnvironmentTasks(project)
         project.ext.set("gleanCondaDir", condaDir)

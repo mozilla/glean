@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v31.4.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v31.4.1...main)
+
+# v31.4.1 (2020-07-20)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v31.4.0...v31.4.1)
 
 * General
   * BUGFIX: fix `int32` to `ErrorType` mapping. The `InvalidOverflow` had a value mismatch between glean-core and the bindings. This would only be a problem in unit tests. ([#1063](https://github.com/mozilla/glean/pull/1063))
