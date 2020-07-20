@@ -11,6 +11,8 @@
 * Android
   * Enable propagating options to the main product Activity when using the `GleanDebugActivity`.
   * BUGFIX: Fix the metrics ping collection for startup pings such as `reason=upgrade` to occur in the same thread/task as Glean initialize. Otherwise, it gets collected after the application lifetime metrics are cleared such as experiments that should be in the ping. ([#1069](https://github.com/mozilla/glean/pull/1069))
+* Python
+  * The Python unit tests no longer send telemetry to the production telemetry endpoint.
 
 # v31.4.0 (2020-07-16)
 
