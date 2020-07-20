@@ -104,6 +104,8 @@ A pre-defined set of headers is additionally sent along with the submitted ping:
 | `Date` | e.g. `Mon, 23 Jan 2019 10:10:10 GMT+00:00` | Submission date/time in GMT/UTC+0 offset |
 | `X-Client-Type` | `Glean` | Custom header to support handling of Glean pings in the legacy pipeline |
 | `X-Client-Version` | e.g. `0.40.0` | The Glean SDK version, sent as a custom header to support handling of Glean pings in the legacy pipeline |
+| `X-Debug-ID` | *Optional*, e.g. `test-tag` | Debug header attached to Glean pings when using the [debug tools](../../user/debugging/index.md) |
+| `X-Source-Tags` | *Optional*, e.g. `automation, perf` | A list of tags to associate with the ping, useful for clustering pings at analysis time, for example to tell data generated from CI from other data. |
 
 
 ## Defining foreground and background state
