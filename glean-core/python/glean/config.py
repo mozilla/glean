@@ -28,7 +28,7 @@ class Configuration:
 
     def __init__(
         self,
-        server_endpoint: str = DEFAULT_TELEMETRY_ENDPOINT,
+        server_endpoint: str = None,
         channel: Optional[str] = None,
         max_events: int = DEFAULT_MAX_EVENTS,
         ping_tag: Optional[str] = None,
@@ -50,6 +50,8 @@ class Configuration:
             allow_multiprocessing (bool): When True (default), use a subprocess
                 to offload some work (such as ping uploading).
         """
+        if server_endpoint is None:
+            server_endpoint = DEFAULT_TELEMETRY_ENDPOINT
         self._server_endpoint = server_endpoint
         self._channel = channel
         self._max_events = max_events

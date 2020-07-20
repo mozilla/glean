@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v31.4.1...main)
 
+* Python
+  * The Python unit tests no longer send telemetry to the production telemetry endpoint.
+
 # v31.4.1 (2020-07-20)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v31.4.0...v31.4.1)
