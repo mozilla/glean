@@ -183,7 +183,7 @@ Assert.Equal(
 
 ## Recorded errors
 
-* `invalid_value`: if the string is too long
+* `invalid_overflow`: if the string is too long. (Prior to Glean TODO, this recorded an `invalid_value`).
 
 ## Reference
 
