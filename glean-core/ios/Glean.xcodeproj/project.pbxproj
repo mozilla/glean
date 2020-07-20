@@ -100,7 +100,7 @@
 		1FD4527423395B4500F4C7E8 /* UuidMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UuidMetric.swift; sourceTree = "<group>"; };
 		1FD4527623395EEB00F4C7E8 /* UuidMetricTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UuidMetricTests.swift; sourceTree = "<group>"; };
 		5FE1C4CE24C0A676000CAA1A /* JweMetricTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JweMetricTests.swift; sourceTree = "<group>"; };
-		5FE1C4D024C0A6A2000CAA1A /* JweMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = JweMetric.swift; path = "/Users/beatrizmachado/Documents/work/glean/glean-core/ios/Glean/Metrics/JweMetric.swift"; sourceTree = "<absolute>"; };
+		5FE1C4D024C0A6A2000CAA1A /* JweMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = JweMetric.swift; path = JweMetric.swift; sourceTree = "<absolute>"; };
 		97C5C1A323708C6700B79C93 /* ErrorType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorType.swift; sourceTree = "<group>"; };
 		AC54D224233133DB0019319A /* PingUploadOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PingUploadOperation.swift; sourceTree = "<group>"; };
 		AC54D226233134A30019319A /* GleanOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GleanOperation.swift; sourceTree = "<group>"; };
