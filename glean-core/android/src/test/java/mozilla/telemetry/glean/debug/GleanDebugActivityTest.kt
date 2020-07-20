@@ -75,19 +75,22 @@ class GleanDebugActivityTest {
     }
 
     @Test
-    fun `the main activity is correctly started`() {
+    fun `the main activity is correctly started and intent args are propagated`() {
         // Build the intent that will call our debug activity, with no extra.
         val intent = Intent(ApplicationProvider.getApplicationContext<Context>(),
             GleanDebugActivity::class.java)
         // Add at least an option, otherwise the activity will be removed.
         intent.putExtra(GleanDebugActivity.LOG_PINGS_EXTRA_KEY, true)
+        intent.putExtra("TestOptionFromCLI", "TestValue")
         // Start the activity through our intent.
         val scenario = launch<GleanDebugActivity>(intent)
 
         // Check that our main activity was launched.
         scenario.onActivity { activity ->
-            assertEquals(testPackageName,
-                shadowOf(activity).peekNextStartedActivityForResult().intent.`package`!!)
+            val startedIntent = shadowOf(activity).peekNextStartedActivityForResult().intent
+            assertEquals(testPackageName, startedIntent.`package`!!)
+            // Make sure that the extra intent option was propagated to this intent.
+            assertEquals("TestValue", startedIntent.getStringExtra("TestOptionFromCLI"))
         }
     }
 
