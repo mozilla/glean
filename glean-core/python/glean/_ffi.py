@@ -71,9 +71,17 @@ def make_config(
     return cfg
 
 
-def ffi_encode_string(value: Optional[str]) -> Optional[bytes]:
+def ffi_encode_string(value: str) -> bytes:
     """
     Convert a Python string to a UTF-8 encoded char* for sending over FFI.
+    """
+    return value.encode("utf-8")
+
+
+def ffi_encode_string_or_none(value: Optional[str]) -> Optional[bytes]:
+    """
+    Convert a Python string (or None) to a UTF-8 encoded char* (or NULL) for
+    sending over FFI.
     """
     if value is None:
         return ffi.NULL
