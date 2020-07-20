@@ -198,8 +198,8 @@ class GleanDebugActivityTest {
     }
 
     @Test
-    fun `pings are correctly tagged using debugViewTag`() {
-        val pingTag = "test-debug-ID"
+    fun `pings are correctly tagged using legacy tagPings`() {
+        val pingTag = "legacy-debug-ID"
 
         // Use the test client in the Glean configuration
         val context = ApplicationProvider.getApplicationContext<Context>()
@@ -207,25 +207,23 @@ class GleanDebugActivityTest {
             httpClient = TestPingTagClient(debugHeaderValue = pingTag)
         ))
 
-        // Put some metric data in the store, otherwise we won't get a ping out
-        // Define a 'booleanMetric' boolean metric, which will be stored in "store1"
-        val booleanMetric = BooleanMetricType(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.Application,
-            name = "boolean_metric",
-            sendInPings = listOf("metrics")
+        // Create a custom ping for testing. Since we're testing headers,
+        // it's fine for this to be empty.
+        val customPing = PingType<NoReasonCodes>(
+            name = "custom",
+            includeClientId = false,
+            sendIfEmpty = true,
+            reasonCodes = listOf()
         )
-
-        booleanMetric.set(true)
-        assertTrue(booleanMetric.testHasValue())
 
         // Set the extra values and start the intent.
         val intent = Intent(ApplicationProvider.getApplicationContext<Context>(),
             GleanDebugActivity::class.java)
         intent.putExtra(GleanDebugActivity.SEND_PING_EXTRA_KEY, "metrics")
-        intent.putExtra(GleanDebugActivity.TAG_DEBUG_VIEW_EXTRA_KEY, pingTag)
+        intent.putExtra(GleanDebugActivity.LEGACY_TAG_PINGS, pingTag)
         launch<GleanDebugActivity>(intent)
+
+        customPing.submit()
 
         // This will trigger the call to `fetch()` in the TestPingTagClient which is where the
         // test assertions will occur
