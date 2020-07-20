@@ -29,12 +29,12 @@ def test_the_api_saves_to_its_storage_engine():
     jwe_metric.set(header, key, init_vector, cipher_text, auth_tag)
 
     assert jwe_metric.test_has_value()
-    assert jwe == jwe_metric.test_get_value_as_period_delimited_string()
+    assert jwe == jwe_metric.test_get_compact_representation()
 
     jwe_metric.set(header, "", "", cipher_text, "")
 
     assert jwe_metric.test_has_value()
-    assert minimum_jwe == jwe_metric.test_get_value_as_period_delimited_string()
+    assert minimum_jwe == jwe_metric.test_get_compact_representation()
 
 
 def test_disabled_jwes_must_not_record_data():
@@ -63,12 +63,12 @@ def test_the_api_saves_to_secondary_pings():
     jwe_metric.set(header, key, init_vector, cipher_text, auth_tag)
 
     assert jwe_metric.test_has_value("store2")
-    assert jwe == jwe_metric.test_get_value_as_period_delimited_string("store2")
+    assert jwe == jwe_metric.test_get_compact_representation("store2")
 
     jwe_metric.set(header, "", "", cipher_text, "")
 
     assert jwe_metric.test_has_value("store2")
-    assert minimum_jwe == jwe_metric.test_get_value_as_period_delimited_string("store2")
+    assert minimum_jwe == jwe_metric.test_get_compact_representation("store2")
 
 
 def test_setting_invalid_values_record_errors():
@@ -85,5 +85,5 @@ def test_setting_invalid_values_record_errors():
         testing.ErrorType.INVALID_OVERFLOW
     )
 
-    jwe_metric.set_with_compact_repr("")
+    jwe_metric.set_with_compact_representation("")
     assert 1 == jwe_metric.test_get_num_recorded_errors(testing.ErrorType.INVALID_VALUE)

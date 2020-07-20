@@ -36,12 +36,12 @@ class JweMetricTests: XCTestCase {
         jweMetric.set(self.header, self.key, self.initVector, self.cipherText, self.authTag)
 
         XCTAssert(jweMetric.testHasValue())
-        XCTAssertEqual(self.jwe, try jweMetric.testGetValueAsPeriodDelimitedString())
+        XCTAssertEqual(self.jwe, try jweMetric.testGetCompactRepresentation())
 
         jweMetric.set(self.header, "", "", self.cipherText, "")
 
         XCTAssert(jweMetric.testHasValue())
-        XCTAssertEqual(self.minimumJwe, try jweMetric.testGetValueAsPeriodDelimitedString())
+        XCTAssertEqual(self.minimumJwe, try jweMetric.testGetCompactRepresentation())
     }
 
     func testJweMustNotRecordIfDisabled() {
@@ -55,7 +55,7 @@ class JweMetricTests: XCTestCase {
 
         XCTAssertFalse(jweMetric.testHasValue())
 
-        jweMetric.setWithCompactRepr(self.jwe)
+        jweMetric.setWithCompactRepresentation(self.jwe)
 
         XCTAssertFalse(jweMetric.testHasValue(), "JWEs must not be recorded if they are disabled")
     }
@@ -86,12 +86,12 @@ class JweMetricTests: XCTestCase {
         jweMetric.set(self.header, self.key, self.initVector, self.cipherText, self.authTag)
 
         XCTAssert(jweMetric.testHasValue("store2"))
-        XCTAssertEqual(jwe, try jweMetric.testGetValueAsPeriodDelimitedString())
+        XCTAssertEqual(jwe, try jweMetric.testGetCompactRepresentation())
 
         jweMetric.set(self.header, "", "", self.cipherText, "")
 
         XCTAssert(jweMetric.testHasValue())
-        XCTAssertEqual(self.minimumJwe, try jweMetric.testGetValueAsPeriodDelimitedString())
+        XCTAssertEqual(self.minimumJwe, try jweMetric.testGetCompactRepresentation())
     }
 
     func testSettingInvalidValuesRecordsErrors() {
@@ -108,7 +108,7 @@ class JweMetricTests: XCTestCase {
         XCTAssertEqual(1, jweMetric.testGetNumRecordedErrors(ErrorType.invalidOverflow))
 
         // Invalid compact string representation yield a InvalidValue error
-        jweMetric.setWithCompactRepr("")
+        jweMetric.setWithCompactRepresentation("")
         XCTAssertEqual(1, jweMetric.testGetNumRecordedErrors(ErrorType.invalidValue))
     }
 }

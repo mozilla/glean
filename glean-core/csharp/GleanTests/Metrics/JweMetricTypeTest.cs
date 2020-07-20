@@ -52,13 +52,13 @@ namespace Mozilla.Glean.Tests.Metrics
 
             // Check that data was properly recorded.
             Assert.True(jweMetric.TestHasValue());
-            Assert.Equal(this.jwe, jweMetric.TestGetValueAsPeriodDelimitedString());
+            Assert.Equal(this.jwe, jweMetric.testGetCompactRepresentation());
 
             jweMetric.Set(this.header, "", "", this.cipherText, "");
 
             // Check that data was properly recorded.
             Assert.True(jweMetric.TestHasValue());
-            Assert.Equal(this.minimumJwe, jweMetric.TestGetValueAsPeriodDelimitedString());
+            Assert.Equal(this.minimumJwe, jweMetric.testGetCompactRepresentation());
         }
 
         [Fact]
@@ -108,12 +108,12 @@ namespace Mozilla.Glean.Tests.Metrics
 
             // Check that data was properly recorded in the second ping.
             Assert.True(jweMetric.TestHasValue("store2"));
-            Assert.Equal(this.jwe, jweMetric.TestGetValueAsPeriodDelimitedString("store2"));
+            Assert.Equal(this.jwe, jweMetric.testGetCompactRepresentation("store2"));
 
             jweMetric.Set(this.header, "", "", this.cipherText, "");
             // Check that data was properly recorded in the second ping.
             Assert.True(jweMetric.TestHasValue("store2"));
-            Assert.Equal(this.minimumJwe, jweMetric.TestGetValueAsPeriodDelimitedString("store2"));
+            Assert.Equal(this.minimumJwe, jweMetric.testGetCompactRepresentation("store2"));
         }
 
         [Fact]
@@ -132,7 +132,7 @@ namespace Mozilla.Glean.Tests.Metrics
             Assert.Equal(1, jweMetric.TestGetNumRecordedErrors(ErrorType.InvalidOverflow));
 
             // Invalid compact string representation yield a InvalidValue error
-            jweMetric.SetWithCompactRepr("");
+            jweMetric.setWithCompactRepresentation("");
             Assert.Equal(1, jweMetric.TestGetNumRecordedErrors(ErrorType.InvalidValue));
         }
     }

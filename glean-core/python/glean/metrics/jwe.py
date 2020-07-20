@@ -23,7 +23,7 @@ class JweMetricType:
     previously registered in the metrics.yaml file.
 
     The string API exposes the `JweMetricType.set` and
-    `JweMetricType.setWithCompactRepr` methods,
+    `JweMetricType.setWithCompactRepresentation` methods,
     which take care of validating the input data
     and making sure that limits are enforced.
     """
@@ -52,7 +52,7 @@ class JweMetricType:
         if getattr(self, "_handle", 0) != 0:
             _ffi.lib.glean_destroy_jwe_metric(self._handle)
 
-    def set_with_compact_repr(self, value: str):
+    def set_with_compact_representation(self, value: str):
         """
         Set to the specified JWE value.
 
@@ -64,7 +64,7 @@ class JweMetricType:
 
         @Dispatcher.launch
         def set():
-            _ffi.lib.glean_jwe_set_with_compact_repr(
+            _ffi.lib.glean_jwe_set_with_compact_representation(
                 self._handle, _ffi.ffi_encode_string(value)
             )
 
@@ -142,7 +142,7 @@ class JweMetricType:
             )
         )
 
-    def test_get_value_as_period_delimited_string(
+    def test_get_compact_representation(
         self, ping_name: Optional[str] = None
     ) -> str:
         """

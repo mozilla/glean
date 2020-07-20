@@ -569,7 +569,7 @@ internal interface LibGleanFFI : Library {
 
     fun glean_destroy_jwe_metric(handle: Long)
 
-    fun glean_jwe_set_with_compact_repr(metric_id: Long, value: String)
+    fun glean_jwe_set_with_compact_representation(metric_id: Long, value: String)
 
     fun glean_jwe_set(
         metric_id: Long,

@@ -54,12 +54,12 @@ class JweMetricTypeTest {
 
         // Check that data was properly recorded.
         assertTrue(jweMetric.testHasValue())
-        assertEquals(JWE, jweMetric.testGetValueAsPeriodDelimitedString())
+        assertEquals(JWE, jweMetric.testGetCompactRepresentation())
 
         jweMetric.set(HEADER, "", "", CIPHER_TEXT, "")
         // Check that data was properly recorded.
         assertTrue(jweMetric.testHasValue())
-        assertEquals(MINIMUM_JWE, jweMetric.testGetValueAsPeriodDelimitedString())
+        assertEquals(MINIMUM_JWE, jweMetric.testGetCompactRepresentation())
     }
 
     @Test
@@ -111,12 +111,12 @@ class JweMetricTypeTest {
 
         // Check that data was properly recorded in the second ping.
         assertTrue(jweMetric.testHasValue("store2"))
-        assertEquals(JWE, jweMetric.testGetValueAsPeriodDelimitedString("store2"))
+        assertEquals(JWE, jweMetric.testGetCompactRepresentation("store2"))
 
         jweMetric.set(HEADER, "", "", CIPHER_TEXT, "")
         // Check that data was properly recorded in the second ping.
         assertTrue(jweMetric.testHasValue("store2"))
-        assertEquals(MINIMUM_JWE, jweMetric.testGetValueAsPeriodDelimitedString())
+        assertEquals(MINIMUM_JWE, jweMetric.testGetCompactRepresentation())
     }
 
     @Test
@@ -135,7 +135,7 @@ class JweMetricTypeTest {
         assertEquals(1, jweMetric.testGetNumRecordedErrors(ErrorType.InvalidOverflow))
 
         // Invalid compact string representation yield a InvalidValue error
-        jweMetric.setWithCompactRepr("")
+        jweMetric.setWithCompactRepresentation("")
         assertEquals(1, jweMetric.testGetNumRecordedErrors(ErrorType.InvalidValue))
     }
 }

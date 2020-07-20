@@ -298,7 +298,7 @@ namespace Mozilla.Glean.FFI
         );
 
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void glean_jwe_set_with_compact_repr(UInt64 metric_id, string value);
+        internal static extern void glean_jwe_set_with_compact_representation(UInt64 metric_id, string value);
 
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
         internal static extern StringAsReturnValue glean_jwe_test_get_value(UInt64 metric_id, string storage_name);

@@ -53,7 +53,7 @@ namespace Mozilla.Glean.Private
         /// Set a JWE value.
         /// </summary>
         /// <param name="value"> The [`compact representation`](https://tools.ietf.org/html/rfc7516#appendix-A.2.7) of a JWE value.</param>
-        public void SetWithCompactRepr(string value)
+        public void setWithCompactRepresentation(string value)
         {
             if (disabled)
             {
@@ -61,7 +61,7 @@ namespace Mozilla.Glean.Private
             }
 
             Dispatchers.LaunchAPI(() => {
-                LibGleanFFI.glean_jwe_set_with_compact_repr(this.handle, value);
+                LibGleanFFI.glean_jwe_set_with_compact_representation(this.handle, value);
             });
         }
 
@@ -136,7 +136,7 @@ namespace Mozilla.Glean.Private
         /// Defaults to the first value in `sendInPings`</param>
         /// <returns>value of the stored metric</returns>
         /// <exception cref="System.NullReferenceException">Thrown when the metric contains no value</exception>
-        public string TestGetValueAsPeriodDelimitedString(string pingName = null)
+        public string testGetCompactRepresentation(string pingName = null)
         {
             Dispatchers.AssertInTestingMode();
 
