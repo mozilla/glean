@@ -13,6 +13,7 @@ from .counter import CounterMetricType
 from .datetime import DatetimeMetricType
 from .event import EventMetricType, RecordedEventData
 from .experiment import RecordedExperimentData
+from .jwe import JweMetricType
 from .labeled import (
     LabeledBooleanMetricType,
     LabeledCounterMetricType,
@@ -35,6 +36,7 @@ __all__ = [
     "CounterMetricType",
     "DatetimeMetricType",
     "EventMetricType",
+    "JweMetricType",
     "LabeledBooleanMetricType",
     "LabeledCounterMetricType",
     "LabeledStringMetricType",
