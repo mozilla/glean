@@ -441,4 +441,12 @@ pub extern "C" fn glean_set_log_pings(value: u8) {
     with_glean_mut(|glean| Ok(glean.set_log_pings(value != 0)));
 }
 
+#[no_mangle]
+pub extern "C" fn glean_set_source_tags(raw_tags: RawStringArray, tags_count: i32) -> u8 {
+    with_glean_mut(|glean| {
+        let tags = from_raw_string_array(raw_tags, tags_count)?;
+        Ok(glean.set_source_tags(tags))
+    })
+}
+
 define_string_destructor!(glean_str_free);

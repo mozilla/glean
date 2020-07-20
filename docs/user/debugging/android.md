@@ -22,6 +22,7 @@ In the above:
 | `logPings` | boolean (`--ez`)  | If set to `true`, pings are dumped to logcat; defaults to `false` |
 | `sendPing` | string (`--es`)  | Sends the ping with the given name immediately |
 | `debugViewTag` | string (`--es`)  | Tags all outgoing pings as debug pings to make them available for real-time validation, on the [Glean Debug View](./debug-ping-view.md). The value must match the pattern `[a-zA-Z0-9-]{1,20}`. **Important**: in older versions of the Glean SDK, this was named `tagPings` |
+| `sourceTags` | string array (`--esa`)  | Tags outgoing pings with a maximum of 5 comma-separated tags. The tags must match the pattern `[a-zA-Z0-9-]{1,20}`. The `automation` tag is meant for tagging pings generated on automation: such pings will be specially handled on the pipeline (i.e. discarded from [non-live views](https://docs.telemetry.mozilla.org/cookbooks/bigquery/querying.html#table-layout-and-naming)). Tags starting with `glean` are reserved for future use. Subsequent calls of this overwrite any previously stored tag |
 
 All [the options](https://developer.android.com/studio/command-line/adb#am) provided to start the activity are passed over to the main activity for the application to process.
 This is useful if SDK users wants to debug telemetry while providing additional options to the product to enable specific behaviors.  

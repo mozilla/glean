@@ -28,6 +28,8 @@ import mozilla.telemetry.glean.net.HeadersList
 import mozilla.telemetry.glean.net.PingUploader
 import mozilla.telemetry.glean.net.UploadResult
 import mozilla.telemetry.glean.net.HttpResponse
+import mozilla.telemetry.glean.private.NoReasonCodes
+import mozilla.telemetry.glean.private.PingType
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Rule
 import org.robolectric.Shadows.shadowOf
@@ -38,13 +40,20 @@ import java.util.concurrent.TimeUnit
  */
 private class TestPingTagClient(
     private val responseUrl: String = Configuration.DEFAULT_TELEMETRY_ENDPOINT,
-    private val debugHeaderValue: String? = null
+    private val debugHeaderValue: String? = null,
+    private val sourceTagsValue: Set<String>? = null
 ) : PingUploader {
     override fun upload(url: String, data: ByteArray, headers: HeadersList): UploadResult {
         assertTrue("URL must be redirected for tagged pings",
             url.startsWith(responseUrl))
-        assertEquals("Debug headers must match what the ping tag was set to",
-            debugHeaderValue, headers.find { it.first == "X-Debug-ID" }!!.second)
+        debugHeaderValue?.let {
+            assertEquals("The debug view header must match what the ping tag was set to",
+                debugHeaderValue, headers.find { it.first == "X-Debug-ID" }!!.second)
+        }
+        sourceTagsValue?.let {
+            assertEquals("The source tags header must match what the ping tag was set to",
+                sourceTagsValue.joinToString(","), headers.find { it.first == "X-Source-Tags" }!!.second)
+        }
 
         return HttpResponse(200)
     }
@@ -217,6 +226,39 @@ class GleanDebugActivityTest {
         intent.putExtra(GleanDebugActivity.SEND_PING_EXTRA_KEY, "metrics")
         intent.putExtra(GleanDebugActivity.TAG_DEBUG_VIEW_EXTRA_KEY, pingTag)
         launch<GleanDebugActivity>(intent)
+
+        // This will trigger the call to `fetch()` in the TestPingTagClient which is where the
+        // test assertions will occur
+        triggerWorkManager(context)
+    }
+
+    @Test
+    fun `pings are correctly tagged using sourceTags`() {
+        val testTags = setOf("tag1", "tag2")
+
+        // Use the test client in the Glean configuration
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        resetGlean(context, Glean.configuration.copy(
+                httpClient = TestPingTagClient(sourceTagsValue = testTags)
+        ))
+
+        // Create a custom ping for testing. Since we're testing headers,
+        // it's fine for this to be empty.
+        val customPing = PingType<NoReasonCodes>(
+            name = "custom",
+            includeClientId = false,
+            sendIfEmpty = true,
+            reasonCodes = listOf()
+        )
+
+        // Set the extra values and start the intent.
+        val intent = Intent(ApplicationProvider.getApplicationContext<Context>(),
+                GleanDebugActivity::class.java)
+        intent.putExtra(GleanDebugActivity.SEND_PING_EXTRA_KEY, "metrics")
+        intent.putExtra(GleanDebugActivity.SOURCE_TAGS_KEY, testTags.toTypedArray())
+        launch<GleanDebugActivity>(intent)
+
+        customPing.submit()
 
         // This will trigger the call to `fetch()` in the TestPingTagClient which is where the
         // test assertions will occur
