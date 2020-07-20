@@ -140,7 +140,7 @@ class GleanDebugActivityTest {
     }
 
     @Test
-    fun `tagPings filters ID's that don't match the pattern`() {
+    fun `debugViewTag filters ID's that don't match the pattern`() {
         val server = getMockWebServer()
 
         val context = ApplicationProvider.getApplicationContext<Context>()
@@ -189,7 +189,7 @@ class GleanDebugActivityTest {
     }
 
     @Test
-    fun `pings are correctly tagged using tagPings`() {
+    fun `pings are correctly tagged using debugViewTag`() {
         val pingTag = "test-debug-ID"
 
         // Use the test client in the Glean configuration

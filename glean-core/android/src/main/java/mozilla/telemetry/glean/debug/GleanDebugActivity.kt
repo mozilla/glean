@@ -37,7 +37,7 @@ class GleanDebugActivity : Activity() {
          * Tags all outgoing pings as debug pings to make them available for real-time validation.
          * The value must match the pattern `[a-zA-Z0-9-]{1,20}`.
          */
-        const val TAG_DEBUG_VIEW_EXTRA_KEY = "tagPings"
+        const val TAG_DEBUG_VIEW_EXTRA_KEY = "debugViewTag"
     }
 
     // IMPORTANT: These activities are unsecured, and may be triggered by
