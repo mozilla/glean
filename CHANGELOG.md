@@ -1,11 +1,9 @@
 # Unreleased changes
 
-* General
-  * BUGFIX: fix `int32` to `ErrorType` mapping. The `InvalidOverflow` had a value mismatch between glean-core and the bindings. This would only be a problem in unit tests. ([#1063](https://github.com/mozilla/glean/pull/1063))
-
 [Full changelog](https://github.com/mozilla/glean/compare/v31.4.0...main)
 
 * General
+  * BUGFIX: fix `int32` to `ErrorType` mapping. The `InvalidOverflow` had a value mismatch between glean-core and the bindings. This would only be a problem in unit tests. ([#1063](https://github.com/mozilla/glean/pull/1063))
   * Enable propagating options to the main product Activity when using the `GleanDebugActivity`.
 
 # v31.4.0 (2020-07-16)
