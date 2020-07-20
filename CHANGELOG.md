@@ -6,6 +6,8 @@
   * BUGFIX: fix `int32` to `ErrorType` mapping. The `InvalidOverflow` had a value mismatch between glean-core and the bindings. This would only be a problem in unit tests. ([#1063](https://github.com/mozilla/glean/pull/1063))
   * Implement a JWE metric type ([#1062](https://github.com/mozilla/glean/pull/1062)).
   * Enable propagating options to the main product Activity when using the `GleanDebugActivity`.
+* Android
+  * BUGFIX: Fix the metrics ping collection for startup pings such as `reason=upgrade` to occur in the same thread/task as Glean initialize. Otherwise, it gets collected after the application lifetime metrics are cleared such as experiments that should be in the ping. ([#1069](https://github.com/mozilla/glean/pull/1069))
 
 # v31.4.0 (2020-07-16)
 
