@@ -1,13 +1,23 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v31.4.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v31.4.1...main)
+
+# v31.4.1 (2020-07-20)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v31.4.0...v31.4.1)
+
+* General
+  * BUGFIX: fix `int32` to `ErrorType` mapping. The `InvalidOverflow` had a value mismatch between glean-core and the bindings. This would only be a problem in unit tests. ([#1063](https://github.com/mozilla/glean/pull/1063))
+* Android
+  * Enable propagating options to the main product Activity when using the `GleanDebugActivity`.
+  * BUGFIX: Fix the metrics ping collection for startup pings such as `reason=upgrade` to occur in the same thread/task as Glean initialize. Otherwise, it gets collected after the application lifetime metrics are cleared such as experiments that should be in the ping. ([#1069](https://github.com/mozilla/glean/pull/1069))
 
 # v31.4.0 (2020-07-16)
 
+[Full changelog](https://github.com/mozilla/glean/compare/v31.3.0...v31.4.0)
+
 * General
   * Enable debugging features through environment variables. ([#1058](https://github.com/mozilla/glean/pull/1058))
-
-[Full changelog](https://github.com/mozilla/glean/compare/v31.3.0...v31.4.0)
 
 # v31.3.0 (2020-07-10)
 

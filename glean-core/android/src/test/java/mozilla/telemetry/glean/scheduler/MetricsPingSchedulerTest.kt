@@ -476,7 +476,8 @@ class MetricsPingSchedulerTest {
     }
 
     @Test
-    fun `startup ping sends old version when upgraded`() {
+    @Suppress("LongMethod")
+    fun `startup ping sends correct data when upgraded`() {
         // Start the web-server that will receive the metrics ping.
         val server = getMockWebServer()
         val configuration = Configuration(
@@ -510,10 +511,15 @@ class MetricsPingSchedulerTest {
             val expectedValue = "canary"
             expectedStringMetric.set(expectedValue)
 
+            // Set an experiment active to verify it gets sent in the pings
+            Glean.setExperimentActive("test-experiment", "a")
+
             // Reset Glean.
             Glean.testDestroyGleanHandle()
             @Suppress("EXPERIMENTAL_API_USAGE")
             Dispatchers.API.setTaskQueueing(true)
+            @Suppress("EXPERIMENTAL_API_USAGE")
+            Dispatchers.API.setTestingMode(false)
 
             // Initialize Glean again with the new version.
             // This should trigger a metrics ping after an upgrade (differing version).
@@ -522,6 +528,10 @@ class MetricsPingSchedulerTest {
                 true,
                 configuration
             )
+
+            // Unfortunately, we need to delay a bit here to give init time to run because we are
+            // running async at this point in the test.
+            Thread.sleep(500)
 
             // Trigger worker task to upload the pings in the background.
             triggerWorkManager(context)
@@ -534,8 +544,22 @@ class MetricsPingSchedulerTest {
             val metricsJsonData = request.getPlainBody()
             val pingJson = JSONObject(metricsJsonData)
 
+            assertEquals("The metrics ping reason must be 'upgrade'",
+                "upgrade", pingJson.getJSONObject("ping_info")["reason"])
+
             assertEquals("The received ping must contain the old version",
                 oldVersion, pingJson.getJSONObject("client_info")["app_display_version"])
+
+            val stringMetrics = pingJson.getJSONObject("metrics")["string"] as JSONObject
+            assertEquals("The received ping must contain the expected metric",
+                expectedValue, stringMetrics.getString("telemetry.expected_metric"))
+
+            val experiments = pingJson.getJSONObject("ping_info")["experiments"] as JSONObject
+            val testExperiment = experiments["test-experiment"] as JSONObject
+            assertNotNull("The received ping must contain the experiment",
+                testExperiment)
+            assertEquals("Experiment branch should exist and match",
+                "a", testExperiment.getString("branch"))
         } finally {
             server.shutdown()
 
@@ -543,6 +567,8 @@ class MetricsPingSchedulerTest {
             Glean.testDestroyGleanHandle()
             @Suppress("EXPERIMENTAL_API_USAGE")
             Dispatchers.API.setTaskQueueing(true)
+            @Suppress("EXPERIMENTAL_API_USAGE")
+            Dispatchers.API.setTestingMode(true)
         }
     }
 

@@ -372,6 +372,8 @@ void glean_destroy_event_metric(uint64_t v);
 
 void glean_destroy_glean(void);
 
+void glean_destroy_jwe_metric(uint64_t v);
+
 void glean_destroy_labeled_boolean_metric(uint64_t v);
 
 void glean_destroy_labeled_counter_metric(uint64_t v);
@@ -439,6 +441,25 @@ uint8_t glean_is_dirty_flag_set(void);
 uint8_t glean_is_first_run(void);
 
 uint8_t glean_is_upload_enabled(void);
+
+void glean_jwe_set(uint64_t metric_id,
+                   FfiStr header,
+                   FfiStr key,
+                   FfiStr init_vector,
+                   FfiStr cipher_text,
+                   FfiStr auth_tag);
+
+void glean_jwe_set_with_compact_repr(uint64_t metric_id, FfiStr value);
+
+int32_t glean_jwe_test_get_num_recorded_errors(uint64_t metric_id,
+                                               int32_t error_type,
+                                               FfiStr storage_name);
+
+char *glean_jwe_test_get_value(uint64_t metric_id, FfiStr storage_name);
+
+char *glean_jwe_test_get_value_as_json_string(uint64_t metric_id, FfiStr storage_name);
+
+uint8_t glean_jwe_test_has_value(uint64_t metric_id, FfiStr storage_name);
 
 /**
  * Create a new instance of the sub-metric of this labeled metric.
@@ -523,6 +544,13 @@ uint64_t glean_new_event_metric(FfiStr category,
                                 uint8_t disabled,
                                 RawStringArray extra_keys,
                                 int32_t extra_keys_len);
+
+uint64_t glean_new_jwe_metric(FfiStr category,
+                              FfiStr name,
+                              RawStringArray send_in_pings,
+                              int32_t send_in_pings_len,
+                              Lifetime lifetime,
+                              uint8_t disabled);
 
 /**
  * Create a new labeled metric.
