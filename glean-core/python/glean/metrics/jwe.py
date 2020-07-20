@@ -142,9 +142,7 @@ class JweMetricType:
             )
         )
 
-    def test_get_compact_representation(
-        self, ping_name: Optional[str] = None
-    ) -> str:
+    def test_get_compact_representation(self, ping_name: Optional[str] = None) -> str:
         """
         Returns the stored value as the compact representation
         for testing purposes only.
