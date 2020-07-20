@@ -33,7 +33,6 @@ const GLEAN_SOURCE_TAGS: &str = "GLEAN_SOURCE_TAGS";
 const GLEAN_MAX_SOURCE_TAGS: usize = 5;
 
 /// A representation of all of Glean's debug options.
-#[derive(Debug)]
 pub struct DebugOptions {
     /// Option to log the payload of pings that are successfully assembled into a ping request.
     pub log_pings: DebugOption<bool>,
@@ -42,6 +41,16 @@ pub struct DebugOptions {
     /// Option to add the X-Source-Tags header to ping requests. This will allow the data
     /// consumers to classify data depending on the applied tags.
     pub source_tags: DebugOption<Vec<String>>,
+}
+
+impl std::fmt::Debug for DebugOptions {
+    fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
+        fmt.debug_struct("DebugOptions")
+            .field("log_pings", &self.log_pings.get())
+            .field("debug_view_tag", &self.debug_view_tag.get())
+            .field("source_tags", &self.source_tags.get())
+            .finish()
+    }
 }
 
 impl DebugOptions {
@@ -61,7 +70,7 @@ impl DebugOptions {
 /// A representation of a debug option,
 /// where the value can be set programmatically or come from an environment variable.
 #[derive(Debug)]
-pub struct DebugOption<T, E = fn(String) -> Option<T>, F = fn(T) -> bool> {
+pub struct DebugOption<T, E = fn(String) -> Option<T>, F = fn(&T) -> bool> {
     /// The name of the environment variable related to this debug option.
     env: String,
     /// The actual value of this option.
@@ -78,7 +87,7 @@ impl<T, E, F> DebugOption<T, E, F>
 where
     T: Clone,
     E: Fn(String) -> Option<T>,
-    F: Fn(T) -> bool,
+    F: Fn(&T) -> bool,
 {
     /// Create a new debug option,
     /// tries to get the initial value of the option from the environment.
@@ -94,7 +103,7 @@ where
         option
     }
 
-    fn validate(&self, value: T) -> bool {
+    fn validate(&self, value: &T) -> bool {
         if let Some(f) = self.validation.as_ref() {
             f(value)
         } else {
@@ -132,7 +141,7 @@ where
     ///
     /// Validates the value in case a validation function is available.
     pub fn set(&mut self, value: T) -> bool {
-        let validated = self.validate(value.clone());
+        let validated = self.validate(&value);
         if validated {
             log::info!("Setting the debug option {}.", self.env);
             self.value = Some(value);
@@ -168,7 +177,7 @@ fn tokenize_string(value: String) -> Option<Vec<String>> {
 ///
 /// The regex crate isn't used here because it adds to the binary size,
 /// and the Glean SDK doesn't use regular expressions anywhere else.
-fn validate_tag(value: String) -> bool {
+fn validate_tag(value: &String) -> bool {
     if value.is_empty() {
         log::error!("A tag must have at least one character.");
         return false;
@@ -201,7 +210,7 @@ fn validate_tag(value: String) -> bool {
 ///
 /// This builds upon the existing `validate_tag` function, since all the
 /// tags should respect the same rules to make the pipeline happy.
-fn validate_source_tags(tags: Vec<String>) -> bool {
+fn validate_source_tags(tags: &Vec<String>) -> bool {
     if tags.is_empty() {
         return false;
     }
@@ -220,7 +229,7 @@ fn validate_source_tags(tags: Vec<String>) -> bool {
         return false;
     }
 
-    tags.iter().all(|x| validate_tag(x.to_string()))
+    tags.iter().all(|x| validate_tag(&x))
 }
 
 #[cfg(test)]
@@ -237,7 +246,7 @@ mod test {
 
     #[test]
     fn debug_option_is_correctly_validated_when_necessary() {
-        fn validate(value: String) -> bool {
+        fn validate(value: &String) -> bool {
             value == "test"
         }
 
@@ -270,23 +279,23 @@ mod test {
 
     #[test]
     fn validates_tag_correctly() {
-        assert!(validate_tag("valid-value".to_string()));
-        assert!(validate_tag("-also-valid-value".to_string()));
-        assert!(!validate_tag("invalid_value".to_string()));
-        assert!(!validate_tag("invalid value".to_string()));
-        assert!(!validate_tag("!nv@lid-val*e".to_string()));
+        assert!(validate_tag(&"valid-value".to_string()));
+        assert!(validate_tag(&"-also-valid-value".to_string()));
+        assert!(!validate_tag(&"invalid_value".to_string()));
+        assert!(!validate_tag(&"invalid value".to_string()));
+        assert!(!validate_tag(&"!nv@lid-val*e".to_string()));
         assert!(!validate_tag(
-            "invalid-value-because-way-too-long".to_string()
+            &"invalid-value-because-way-too-long".to_string()
         ));
-        assert!(!validate_tag("".to_string()));
+        assert!(!validate_tag(&"".to_string()));
     }
 
     #[test]
     fn validates_source_tags_correctly() {
         // Empty tags.
-        assert!(!validate_source_tags(vec!["".to_string()]));
+        assert!(!validate_source_tags(&vec!["".to_string()]));
         // Too many tags.
-        assert!(!validate_source_tags(vec![
+        assert!(!validate_source_tags(&vec![
             "1".to_string(),
             "2".to_string(),
             "3".to_string(),
@@ -295,9 +304,9 @@ mod test {
             "6".to_string()
         ]));
         // Invalid tags.
-        assert!(!validate_source_tags(vec!["!nv@lid-val*e".to_string()]));
+        assert!(!validate_source_tags(&vec!["!nv@lid-val*e".to_string()]));
         // Entries starting with 'glean' are filtered out.
-        assert!(!validate_source_tags(vec![
+        assert!(!validate_source_tags(&vec![
             "glean-test1".to_string(),
             "test2".to_string()
         ]));
