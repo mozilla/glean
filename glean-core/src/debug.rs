@@ -18,6 +18,10 @@
 //!         allowing these tagged pings to be sent to the ["Ping Debug Viewer"](https://mozilla.github.io/glean/book/dev/core/internal/debug-pings.html).
 //!         This may be set by calling glean.set_debug_view_tag(value: &str)
 //!         or by setting the environment variable GLEAN_DEBUG_VIEW_TAG=<some tag>;
+//! * **Source tagging** - Adding the X-Source-Tags header to every ping request,
+//!         allowing pings to be tagged with custom labels.
+//!         This may be set by calling glean.set_source_tags(value: Vec<String>)
+//!         or by setting the environment variable GLEAN_SOURCE_TAGS=<some, tags>;
 //!
 //! Bindings may implement other debugging features, e.g. sending pings on demand.
 
@@ -25,6 +29,8 @@ use std::env;
 
 const GLEAN_LOG_PINGS: &str = "GLEAN_LOG_PINGS";
 const GLEAN_DEBUG_VIEW_TAG: &str = "GLEAN_DEBUG_VIEW_TAG";
+const GLEAN_SOURCE_TAGS: &str = "GLEAN_SOURCE_TAGS";
+const GLEAN_MAX_SOURCE_TAGS: usize = 5;
 
 /// A representation of all of Glean's debug options.
 #[derive(Debug)]
@@ -33,13 +39,21 @@ pub struct DebugOptions {
     pub log_pings: DebugOption<bool>,
     /// Option to add the X-Debug-ID header to every ping request.
     pub debug_view_tag: DebugOption<String>,
+    /// Option to add the X-Source-Tags header to ping requests. This will allow the data
+    /// consumers to classify data depending on the applied tags.
+    pub source_tags: DebugOption<Vec<String>>,
 }
 
 impl DebugOptions {
     pub fn new() -> Self {
         Self {
             log_pings: DebugOption::new(GLEAN_LOG_PINGS, get_bool_from_str, None),
-            debug_view_tag: DebugOption::new(GLEAN_DEBUG_VIEW_TAG, Some, Some(validate_debug_view_tag)),
+            debug_view_tag: DebugOption::new(GLEAN_DEBUG_VIEW_TAG, Some, Some(validate_tag)),
+            source_tags: DebugOption::new(
+                GLEAN_SOURCE_TAGS,
+                tokenize_string,
+                Some(validate_source_tags),
+            ),
         }
     }
 }
@@ -138,16 +152,25 @@ fn get_bool_from_str(value: String) -> Option<bool> {
     std::str::FromStr::from_str(&value).ok()
 }
 
-/// The debug view tag is the value for the `X-Debug-ID` header of tagged ping requests,
-/// thus is it must be a valid header value.
+fn tokenize_string(value: String) -> Option<Vec<String>> {
+    let trimmed = value.trim();
+    if trimmed.is_empty() {
+        return None;
+    }
+
+    Some(trimmed.split(',').map(|s| s.trim().to_string()).collect())
+}
+
+/// A tag is the value used in both the `X-Debug-ID` and `X-Source-Tags` headers
+/// of tagged ping requests, thus is it must be a valid header value.
 ///
 /// In other words, it must match the regex: "[a-zA-Z0-9-]{1,20}"
 ///
 /// The regex crate isn't used here because it adds to the binary size,
 /// and the Glean SDK doesn't use regular expressions anywhere else.
-fn validate_debug_view_tag(value: String) -> bool {
+fn validate_tag(value: String) -> bool {
     if value.is_empty() {
-        log::error!("Debug view tag must have at least one character.");
+        log::error!("A tag must have at least one character.");
         return false;
     }
 
@@ -162,16 +185,42 @@ fn validate_debug_view_tag(value: String) -> bool {
             Some('-') | Some('a'..='z') | Some('A'..='Z') | Some('0'..='9') => (),
             // An invalid character
             Some(c) => {
-                log::error!("Invalid character '{}' in debug view tag.", c);
+                log::error!("Invalid character '{}' in the tag.", c);
                 return false;
             }
         }
         count += 1;
         if count == 20 {
-            log::error!("Debug view tag cannot exceed 20 characters");
+            log::error!("A tag cannot exceed 20 characters.");
             return false;
         }
     }
+}
+
+/// Validate the list of source tags.
+///
+/// This builds upon the existing `validate_tag` function, since all the
+/// tags should respect the same rules to make the pipeline happy.
+fn validate_source_tags(tags: Vec<String>) -> bool {
+    if tags.is_empty() {
+        return false;
+    }
+
+    if tags.len() > GLEAN_MAX_SOURCE_TAGS {
+        log::error!(
+            "A list of tags cannot contain more than {} elements.",
+            GLEAN_MAX_SOURCE_TAGS
+        );
+        return false;
+    }
+
+    // Filter out tags starting with "glean". They are reserved.
+    if tags.iter().any(|s| s.starts_with("glean")) {
+        log::error!("Tags starting with `glean` are reserved and must not be used.");
+        return false;
+    }
+
+    tags.iter().all(|x| validate_tag(x.to_string()))
 }
 
 #[cfg(test)]
@@ -208,15 +257,49 @@ mod test {
     }
 
     #[test]
-    fn validates_debug_view_tag_correctly() {
-        assert!(validate_debug_view_tag("valid-value".to_string()));
-        assert!(validate_debug_view_tag("-also-valid-value".to_string()));
-        assert!(!validate_debug_view_tag("invalid_value".to_string()));
-        assert!(!validate_debug_view_tag("invalid value".to_string()));
-        assert!(!validate_debug_view_tag("!nv@lid-val*e".to_string()));
-        assert!(
-            !validate_debug_view_tag("invalid-value-because-way-too-long".to_string())
+    fn tokenize_string_splits_correctly() {
+        // Valid list is properly tokenized and spaces are trimmed.
+        assert_eq!(
+            Some(vec!["test1".to_string(), "test2".to_string()]),
+            tokenize_string("    test1,        test2  ".to_string())
         );
-        assert!(!validate_debug_view_tag("".to_string()));
+
+        // Empty strings return no item.
+        assert_eq!(None, tokenize_string("".to_string()));
+    }
+
+    #[test]
+    fn validates_tag_correctly() {
+        assert!(validate_tag("valid-value".to_string()));
+        assert!(validate_tag("-also-valid-value".to_string()));
+        assert!(!validate_tag("invalid_value".to_string()));
+        assert!(!validate_tag("invalid value".to_string()));
+        assert!(!validate_tag("!nv@lid-val*e".to_string()));
+        assert!(!validate_tag(
+            "invalid-value-because-way-too-long".to_string()
+        ));
+        assert!(!validate_tag("".to_string()));
+    }
+
+    #[test]
+    fn validates_source_tags_correctly() {
+        // Empty tags.
+        assert!(!validate_source_tags(vec!["".to_string()]));
+        // Too many tags.
+        assert!(!validate_source_tags(vec![
+            "1".to_string(),
+            "2".to_string(),
+            "3".to_string(),
+            "4".to_string(),
+            "5".to_string(),
+            "6".to_string()
+        ]));
+        // Invalid tags.
+        assert!(!validate_source_tags(vec!["!nv@lid-val*e".to_string()]));
+        // Entries starting with 'glean' are filtered out.
+        assert!(!validate_source_tags(vec![
+            "glean-test1".to_string(),
+            "test2".to_string()
+        ]));
     }
 }
