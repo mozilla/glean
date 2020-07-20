@@ -120,7 +120,7 @@ namespace Mozilla.Glean.Tests.Metrics
 
             stringMetric.Set(new string('3', 110));
 
-            Assert.Equal(1, stringMetric.TestGetNumRecordedErrors(ErrorType.InvalidValue));
+            Assert.Equal(1, stringMetric.TestGetNumRecordedErrors(ErrorType.InvalidOverflow));
         }
     }
 }

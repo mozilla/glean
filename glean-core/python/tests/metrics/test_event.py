@@ -297,7 +297,7 @@ def test_long_extra_values_record_an_error():
 
     click.record(extra={ClickKeys.OBJECT_ID: long_string})
 
-    assert 1 == click.test_get_num_recorded_errors(testing.ErrorType.INVALID_VALUE)
+    assert 1 == click.test_get_num_recorded_errors(testing.ErrorType.INVALID_OVERFLOW)
 
 
 def test_event_enum_is_generated_correctly():

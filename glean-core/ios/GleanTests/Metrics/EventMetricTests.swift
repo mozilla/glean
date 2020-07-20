@@ -302,6 +302,6 @@ class EventMetricTypeTests: XCTestCase {
         )
 
         metric.record(extra: [.testName: String(repeating: "0123456789", count: 11)])
-        XCTAssertEqual(1, metric.testGetNumRecordedErrors(.invalidValue))
+        XCTAssertEqual(1, metric.testGetNumRecordedErrors(.invalidOverflow))
     }
 }

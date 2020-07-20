@@ -74,7 +74,7 @@ def test_setting_a_long_string_records_an_error():
     string_metric.set("0123456789" * 11)
 
     assert 1 == string_metric.test_get_num_recorded_errors(
-        testing.ErrorType.INVALID_VALUE
+        testing.ErrorType.INVALID_OVERFLOW
     )
 
 
