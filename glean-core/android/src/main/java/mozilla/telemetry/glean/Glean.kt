@@ -344,7 +344,7 @@ open class GleanInternalAPI internal constructor () {
         if (isInitialized()) {
             return LibGleanFFI.INSTANCE.glean_is_upload_enabled().toBoolean()
         } else {
-            return true
+            return false
         }
     }
 

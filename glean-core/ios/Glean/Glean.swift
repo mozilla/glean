@@ -269,7 +269,7 @@ public class Glean {
         if isInitialized() {
             return glean_is_upload_enabled() != 0
         } else {
-            return true
+            return false
         }
     }
 

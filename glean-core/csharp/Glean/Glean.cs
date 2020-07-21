@@ -306,7 +306,7 @@ namespace Mozilla.Glean
             }
             else
             {
-                return true;
+                return false;
             }
         }
 

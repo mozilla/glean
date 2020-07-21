@@ -331,7 +331,7 @@ class Glean:
         if cls.is_initialized():
             return bool(_ffi.lib.glean_is_upload_enabled())
         else:
-            return True
+            return False
 
     @classmethod
     def set_experiment_active(
