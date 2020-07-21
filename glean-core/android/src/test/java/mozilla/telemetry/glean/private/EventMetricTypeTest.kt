@@ -396,6 +396,6 @@ class EventMetricTypeTest {
 
         click.record(extra = mapOf(clickKeys.objectId to longString))
 
-        assertEquals(1, click.testGetNumRecordedErrors(ErrorType.InvalidValue))
+        assertEquals(1, click.testGetNumRecordedErrors(ErrorType.InvalidOverflow))
     }
 }

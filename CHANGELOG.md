@@ -4,6 +4,7 @@
 
 * General
   * Implement ping tagging (i.e. the `X-Source-Tags` header) ([#1074](https://github.com/mozilla/glean/pull/1074)). Note that this is not yet implemented for iOS.
+  * String values that are too long now record `invalid_overflow` rather than `invalid_value` through the Glean error reporting mechanism. This affects the string, event and string list metrics.
 * Python
   * The Python unit tests no longer send telemetry to the production telemetry endpoint.
 * Android

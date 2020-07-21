@@ -94,6 +94,6 @@ class StringMetricTests: XCTestCase {
 
         stringMetric.set(String(repeating: "0123456789", count: 11))
 
-        XCTAssertEqual(1, stringMetric.testGetNumRecordedErrors(.invalidValue))
+        XCTAssertEqual(1, stringMetric.testGetNumRecordedErrors(.invalidOverflow))
     }
 }

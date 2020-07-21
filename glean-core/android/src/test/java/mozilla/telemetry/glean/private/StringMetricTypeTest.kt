@@ -120,6 +120,6 @@ class StringMetricTypeTest {
 
         stringMetric.set("0123456789".repeat(11))
 
-        assertEquals(1, stringMetric.testGetNumRecordedErrors(ErrorType.InvalidValue))
+        assertEquals(1, stringMetric.testGetNumRecordedErrors(ErrorType.InvalidOverflow))
     }
 }

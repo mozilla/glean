@@ -135,7 +135,7 @@ TODO. To be implemented in [bug 1648441](https://bugzilla.mozilla.org/show_bug.c
 
 ## Recorded errors
 
-* `invalid_value`: if the string is too long
+* `invalid_overflow`: if the string is too long. (Prior to Glean TODO, this recorded an `invalid_value`).
 
 * `invalid_value`: if the list is too long
 
