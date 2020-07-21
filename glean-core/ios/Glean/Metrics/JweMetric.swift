@@ -131,6 +131,7 @@ public class JweMetricType {
 
         return data!
     }
+
     // swiftlint:enable force_cast
 
     /// Returns the stored value in the compact representation for testing purposes only.
