@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v31.5.0...main)
 
+* General
+  * Implement JWE metric type ([#1073](https://github.com/mozilla/glean/pull/1073), [#1062](https://github.com/mozilla/glean/pull/1062)).
+
 # v31.5.0 (2020-07-22)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v31.4.1...v31.5.0)

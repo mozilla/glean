@@ -10,6 +10,8 @@ There are different metrics to choose from, depending on what you want to achiev
 
 * [Labeled counter](labeled_counters.md): Used to count how often something happens, for example which kind of crash occurred (`"uncaught_exception"` or `"native_code_crash"`).
 
+* [JWE](jwe.md): Records an instance of a [JWE](https://tools.ietf.org/html/rfc7516) encrypted value.
+
 * [String](string.md): Records a single Unicode string value, for example the name of the OS.
 
 * [Labeled strings](labeled_strings.md): Records multiple Unicode string values, for example to record which kind of error occurred in different stages of a login process.
