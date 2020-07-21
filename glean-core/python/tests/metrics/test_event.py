@@ -257,9 +257,7 @@ def test_flush_queued_events_on_startup_and_correctly_handle_preinit_events(
         application_id="glean-python-test",
         application_version=glean_version,
         clear_stores=False,
-        configuration=Configuration(
-            server_endpoint=safe_httpserver.url
-        ),
+        configuration=Configuration(server_endpoint=safe_httpserver.url),
     )
 
     event.record(extra={EventKeys.SOME_EXTRA: "post-init"})
