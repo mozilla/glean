@@ -51,7 +51,10 @@ build-apk: build-kotlin ## Build an apk of the Glean sample app
 build-python: python-setup build-rust ## Build the Python bindings
 	$(GLEAN_PYENV)/bin/python3 glean-core/python/setup.py install
 
-.PHONY: build build-rust build-kotlin build-swift build-apk
+build-csharp: ## Build the C# bindings
+	dotnet build glean-core/csharp/csharp.sln
+
+.PHONY: build build-rust build-kotlin build-swift build-apk build-csharp
 
 # All tests
 
@@ -75,7 +78,10 @@ test-ios-sample: ## Run the iOS UI tests on the sample app
 test-python: build-python ## Run all Python tests
 	$(GLEAN_PYENV)/bin/py.test glean-core/python/tests $(PYTEST_ARGS)
 
-.PHONY: test test-rust test-rust-with-logs test-kotlin test-swift test-ios-sample
+test-csharp: ## Run all C# tests
+	dotnet test glean-core/csharp/csharp.sln
+
+.PHONY: test test-rust test-rust-with-logs test-kotlin test-swift test-ios-sample test-csharp
 
 # Benchmarks
 
