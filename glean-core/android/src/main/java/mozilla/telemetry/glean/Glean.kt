@@ -776,8 +776,12 @@ open class GleanInternalAPI internal constructor () {
         }
 
         LibGleanFFI.INSTANCE.glean_destroy_glean()
-        initialized = false
+
+        // Reset all state.
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        Dispatchers.API.setTaskQueueing(true)
         initFinished = false
+        initialized = false
     }
 
     /**
