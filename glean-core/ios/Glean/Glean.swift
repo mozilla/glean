@@ -14,6 +14,7 @@ public typealias GleanTimerId = UInt64
 /// The main Glean API.
 ///
 /// This is exposed through the global `Glean.shared` object.
+// swiftlint:disable type_body_length
 public class Glean {
     /// The main Glean object.
     ///
@@ -25,6 +26,11 @@ public class Glean {
     var metricsPingScheduler: MetricsPingScheduler = MetricsPingScheduler()
 
     var initialized: Bool = false
+    // Set when `initialize()` returns.
+    // This allows to detect calls that happen before `Glean.shared.initialize()` was called.
+    // Note: The initialization might still be in progress, as it runs in a separate thread.
+    var initFinished: Bool = false
+
     private var debugViewTag: String?
     var logPings: Bool = false
     var configuration: Configuration?
@@ -176,6 +182,8 @@ public class Glean {
 
             self.observer = GleanLifecycleObserver()
         }
+
+        self.initFinished = true
     }
 
     // swiftlint:enable function_body_length cyclomatic_complexity
@@ -215,6 +223,16 @@ public class Glean {
     /// - parameters:
     ///     * enabled: When true, enable metric collection.
     public func setUploadEnabled(_ enabled: Bool) {
+        if !self.initFinished {
+            let msg = """
+            Changing upload enabled before Glean is initialized is not supported.
+            Pass the correct state into `Glean.initialize()`.
+            See documentation at https://mozilla.github.io/glean/book/user/general-api.html#initializing-the-glean-sdk
+            """
+            self.logger.warn(msg)
+
+            return
+        }
         // Changing upload enabled always happens asynchronous.
         // That way it follows what a user expect when calling it inbetween other calls:
         // It executes in the right order.
@@ -558,7 +576,10 @@ public class Glean {
         }
 
         glean_destroy_glean()
-        initialized = false
+        // Reset all state.
+        Dispatchers.shared.setTaskQueuing(enabled: true)
+        self.initFinished = false
+        self.initialized = false
     }
 
     /// PUBLIC TEST ONLY FUNCTION.
