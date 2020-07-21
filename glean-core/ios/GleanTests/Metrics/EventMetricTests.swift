@@ -256,7 +256,7 @@ class EventMetricTypeTests: XCTestCase {
         event.record(extra: [.someExtra: "run1"])
         XCTAssertEqual(1, try! event.testGetValue().count)
 
-        Dispatchers.shared.setTaskQueuing(enabled: true)
+        Dispatchers.shared.setTaskQueueing(enabled: true)
         event.record(extra: [.someExtra: "pre-init"])
 
         Glean.shared.resetGlean(clearStores: false)
