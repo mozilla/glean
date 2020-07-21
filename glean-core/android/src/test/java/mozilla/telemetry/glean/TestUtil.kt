@@ -73,7 +73,7 @@ internal fun checkPingSchema(content: JSONObject) {
     }
 
     val exitCode = process.waitFor()
-    assert(exitCode == 0)
+    Assert.assertEquals("glean_parser check failed with exit code $exitCode", 0, exitCode)
 }
 
 /**
