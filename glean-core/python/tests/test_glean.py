@@ -752,3 +752,17 @@ def test_presubmit_makes_a_valid_ping(tmpdir, ping_schema_url, monkeypatch):
     assert 0 == validate_ping.validate_ping(
         io.StringIO(serialized_ping), sys.stdout, schema_url=ping_schema_url,
     )
+
+
+def test_app_display_version_unknown():
+    from glean import _builtins
+
+    Glean._reset()
+    Glean.initialize(
+        application_id=GLEAN_APP_ID, application_version=None, upload_enabled=True,
+    )
+
+    assert (
+        "Unknown"
+        == _builtins.metrics.glean.internal.metrics.app_display_version.test_get_value()
+    )

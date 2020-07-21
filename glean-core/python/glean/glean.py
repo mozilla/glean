@@ -110,7 +110,9 @@ class Glean:
         Args:
             application_id (str): The application id to use when sending pings.
             application_version (str): The version of the application sending
-                Glean data.
+                Glean data. The meaning of this field is application-specific,
+                but it is highly recommended to set this to something
+                meaningful.
             upload_enabled (bool): Controls whether telemetry is enabled. If
                 disabled, all persisted metrics, events and queued pings
                 (except first_run_date) are cleared.
@@ -139,7 +141,11 @@ class Glean:
 
             cls._configuration = configuration
             cls._application_id = application_id
-            cls._application_version = application_version
+
+            if application_version is None:
+                cls._application_version = "Unknown"
+            else:
+                cls._application_version = application_version
 
             if application_build_id is None:
                 cls._application_build_id = "Unknown"
@@ -449,10 +455,9 @@ class Glean:
 
         metrics.glean.internal.metrics.app_build._set_sync(cls._application_build_id)
 
-        if cls._application_version is not None:
-            metrics.glean.internal.metrics.app_display_version._set_sync(
-                cls._application_version
-            )
+        metrics.glean.internal.metrics.app_display_version._set_sync(
+            cls._application_version
+        )
 
     @classmethod
     def get_data_dir(cls) -> Path:

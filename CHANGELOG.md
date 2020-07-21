@@ -7,6 +7,7 @@
   * String values that are too long now record `invalid_overflow` rather than `invalid_value` through the Glean error reporting mechanism. This affects the string, event and string list metrics.
 * Python
   * The Python unit tests no longer send telemetry to the production telemetry endpoint.
+  * BUGFIX: If an `application_version` isn't provided to `Glean.initialize`, the `client_info.app_display_version` metric is set to `"Unknown"`, rather than resulting in invalid pings.
 * Android
   * Allow defining which `Activity` to run next when using the `GleanDebugActivity`.
 
