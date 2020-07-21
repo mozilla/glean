@@ -764,5 +764,5 @@ def test_app_display_version_unknown():
 
     assert (
         "Unknown"
-        == _builtins.metrics.glean.internal.metrics.app_display_version.test_get_value
+        == _builtins.metrics.glean.internal.metrics.app_display_version.test_get_value()
     )
