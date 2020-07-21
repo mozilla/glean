@@ -54,20 +54,6 @@ def test_setting_upload_enabled_before_initialization_should_not_crash():
     )
 
 
-def test_getting_upload_enabled_before_initialization_should_not_crash():
-    Glean._reset()
-
-    Glean.set_upload_enabled(True)
-    assert Glean.get_upload_enabled()
-
-    Glean.initialize(
-        application_id=GLEAN_APP_ID,
-        application_version=glean_version,
-        upload_enabled=True,
-    )
-    assert Glean.get_upload_enabled()
-
-
 def test_submit_a_ping(safe_httpserver):
     safe_httpserver.serve_content(b"", code=200)
 
@@ -108,7 +94,6 @@ def test_disabling_upload_should_disable_metrics_recording():
     )
 
     Glean.set_upload_enabled(False)
-    assert False is Glean.get_upload_enabled()
     counter_metric.add(1)
     assert False is counter_metric.test_has_value()
 

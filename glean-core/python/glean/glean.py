@@ -311,18 +311,18 @@ class Glean:
         # we can safely enqueue here and it will execute after initialization.
         @Dispatcher.launch
         def set_upload_enabled():
-            original_enabled = cls.get_upload_enabled()
+            original_enabled = cls._get_upload_enabled()
             _ffi.lib.glean_set_upload_enabled(enabled)
 
-            if original_enabled is False and cls.get_upload_enabled() is True:
+            if original_enabled is False and cls._get_upload_enabled() is True:
                 cls._initialize_core_metrics()
 
-            if original_enabled is True and cls.get_upload_enabled() is False:
+            if original_enabled is True and cls._get_upload_enabled() is False:
                 # If uploading is disabled, we need to send the deletion-request ping
                 PingUploadWorker.process()
 
     @classmethod
-    def get_upload_enabled(cls) -> bool:
+    def _get_upload_enabled(cls) -> bool:
         """
         Get whether or not Glean is allowed to record and upload data.
 
@@ -501,7 +501,7 @@ class Glean:
             log.error("Glean must be initialized before submitting pings.")
             return
 
-        if not cls.get_upload_enabled():
+        if not cls._get_upload_enabled():
             log.error("Glean disabled: not submitting any pings.")
             return
 

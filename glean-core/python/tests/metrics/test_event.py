@@ -181,13 +181,11 @@ def test_events_should_not_record_when_upload_is_disabled():
         allowed_extra_keys=["test_name"],
     )
 
-    assert Glean.get_upload_enabled()
     Glean.set_upload_enabled(True)
     event_metric.record({EventKeys.TEST_NAME: "event1"})
     snapshot1 = event_metric.test_get_value()
     assert 1 == len(snapshot1)
     Glean.set_upload_enabled(False)
-    assert not Glean.get_upload_enabled()
     event_metric.record({EventKeys.TEST_NAME: "event2"})
     with pytest.raises(ValueError):
         event_metric.test_get_value()
