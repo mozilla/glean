@@ -690,6 +690,8 @@ void glean_set_experiment_inactive(FfiStr experiment_id);
 
 void glean_set_log_pings(uint8_t value);
 
+uint8_t glean_set_source_tags(RawStringArray raw_tags, int32_t tags_count);
+
 void glean_set_upload_enabled(uint8_t flag);
 
 /**

@@ -22,7 +22,7 @@ class GleanDebugUtility {
     /// There are 3 available commands that you can use with the Glean SDK debug tools
     ///
     /// - `logPings`: If "true", will cause pings that are submitted successfully to also be echoed to the device's log
-    /// - `tagPings`:  This command expects a string to tag the pings with and redirects them to the Glean Debug View
+    /// - `debugViewTag`:  This command expects a string to tag the pings with and redirects them to the Debug View
     /// - `sendPing`: This command expects a string name of a ping to force immediate collection and submission of.
     ///
     /// The structure of the custom URL uses the following format:
@@ -100,10 +100,10 @@ class GleanDebugUtility {
             }
 
             switch param.name {
-            case "tagPings":
+            case "debugViewTag":
                 if pingTagName != nil {
                     logger.error(
-                        "Multiple `tagPings` commands not allowed, aborting Glean debug tools")
+                        "Multiple `debugViewTag` commands not allowed, aborting Glean debug tools")
                     return nil
                 }
 

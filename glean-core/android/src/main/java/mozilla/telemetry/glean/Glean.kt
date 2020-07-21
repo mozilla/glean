@@ -81,6 +81,9 @@ open class GleanInternalAPI internal constructor () {
     // Keep track of this value before Glean is initialized
     private var logPings: Boolean = false
 
+    // Keep track of source tags if set before Glean is initialized.
+    private var sourceTags: Set<String>? = null
+
     // This object holds data related to any persistent information about the metrics ping,
     // such as the last time it was sent and the store name
     internal lateinit var metricsPingScheduler: MetricsPingScheduler
@@ -185,6 +188,10 @@ open class GleanInternalAPI internal constructor () {
             if (logPings) {
                 setLogPings(logPings)
             }
+
+            // The source tags might have been set before initialize,
+            // get the cached value and set them.
+            sourceTags?.let { setSourceTags(it) }
 
             // Get the current value of the dirty flag so we know whether to
             // send a dirty startup baseline ping below.  Immediately set it to
@@ -631,6 +638,28 @@ open class GleanInternalAPI internal constructor () {
             // When setting the debug view tag before initialization,
             // we don't validate the tag, thus this function always returns true.
             return true
+        }
+    }
+
+    /**
+     * Set the source tags to be applied as headers when uploading pings.
+     *
+     * If any of the tags is invalid nothing will be set and this function will
+     * return `false`, although if we are not initialized yet, there won't be any validation.
+     *
+     * This is only meant to be used internally by the `GleanDebugActivity`.
+     *
+     * @param tags A list of tags, which must be valid HTTP header values.
+     */
+    internal fun setSourceTags(tags: Set<String>): Boolean {
+        return if (isInitialized()) {
+            val tagList = StringArray(tags.toList().toTypedArray(), "utf-8")
+            LibGleanFFI.INSTANCE.glean_set_source_tags(tagList, tags.size).toBoolean()
+        } else {
+            sourceTags = tags
+            // When setting the source tags before initialization,
+            // we don't validate the tags, thus this function always returns true.
+            true
         }
     }
 

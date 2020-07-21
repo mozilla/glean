@@ -21,7 +21,8 @@ In the above:
 |---|----|-----------|
 | `logPings` | boolean (`--ez`)  | If set to `true`, pings are dumped to logcat; defaults to `false` |
 | `sendPing` | string (`--es`)  | Sends the ping with the given name immediately |
-| `tagPings` | string (`--es`)  | Tags all outgoing pings as debug pings to make them available for real-time validation, on the [Glean Debug View](./debug-ping-view.md). The value must match the pattern `[a-zA-Z0-9-]{1,20}` |
+| `debugViewTag` | string (`--es`)  | Tags all outgoing pings as debug pings to make them available for real-time validation, on the [Glean Debug View](./debug-ping-view.md). The value must match the pattern `[a-zA-Z0-9-]{1,20}`. **Important**: in older versions of the Glean SDK, this was named `tagPings` |
+| `sourceTags` | string array (`--esa`)  | Tags outgoing pings with a maximum of 5 comma-separated tags. The tags must match the pattern `[a-zA-Z0-9-]{1,20}`. The `automation` tag is meant for tagging pings generated on automation: such pings will be specially handled on the pipeline (i.e. discarded from [non-live views](https://docs.telemetry.mozilla.org/cookbooks/bigquery/querying.html#table-layout-and-naming)). Tags starting with `glean` are reserved for future use. Subsequent calls of this overwrite any previously stored tag |
 
 All [the options](https://developer.android.com/studio/command-line/adb#am) provided to start the activity are passed over to the main activity for the application to process.
 This is useful if SDK users wants to debug telemetry while providing additional options to the product to enable specific behaviors.  
@@ -34,7 +35,7 @@ For example, to direct a release build of the Glean sample application to (1) du
 adb shell am start -n org.mozilla.samples.gleancore/mozilla.telemetry.glean.debug.GleanDebugActivity \
   --ez logPings true \
   --es sendPing metrics \
-  --es tagPings test-metrics-ping
+  --es debugViewTag test-metrics-ping
 ```
 
 The `logPings` command doesn't trigger ping submission and you won't see any output until a ping has been sent. You can use the `sendPing` command to force a ping to be sent, but it could be more desirable to trigger the pings submission on their normal schedule. For instance, the `baseline` and `events` pings can be triggered by moving the app out of the foreground and the `metrics` ping can be triggered normally if it is overdue for the current calendar day.
@@ -54,7 +55,7 @@ persist until the application is closed or manually reset.
 > adb shell am start -n org.mozilla.samples.gleancore/mozilla.components.service.glean.debug.GleanDebugActivity \
 >   --ez logPings true \
 >   --es sendPing metrics \
->   --es tagPings test-metrics-ping
+>   --es debugViewTag test-metrics-ping
 > ```
 
 ### Glean Log messages

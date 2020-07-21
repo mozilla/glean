@@ -37,7 +37,14 @@ class GleanDebugActivity : Activity() {
          * Tags all outgoing pings as debug pings to make them available for real-time validation.
          * The value must match the pattern `[a-zA-Z0-9-]{1,20}`.
          */
-        const val TAG_DEBUG_VIEW_EXTRA_KEY = "tagPings"
+        const val TAG_DEBUG_VIEW_EXTRA_KEY = "debugViewTag"
+        const val LEGACY_TAG_PINGS = "tagPings"
+
+        /**
+         * Tags all outgoing pings as debug pings to make them available for real-time validation.
+         * The value must match the pattern `[a-zA-Z0-9-]{1,20}`.
+         */
+        const val SOURCE_TAGS_KEY = "sourceTags"
     }
 
     // IMPORTANT: These activities are unsecured, and may be triggered by
@@ -49,6 +56,7 @@ class GleanDebugActivity : Activity() {
     /**
      * On creation of the debug activity, launch the requested command.
      */
+    @Suppress("ComplexMethod")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -68,8 +76,10 @@ class GleanDebugActivity : Activity() {
         }
 
         // Make sure that at least one of the supported commands was used.
-        val supportedCommands =
-            listOf(SEND_PING_EXTRA_KEY, LOG_PINGS_EXTRA_KEY, TAG_DEBUG_VIEW_EXTRA_KEY)
+        val supportedCommands = listOf(
+            SEND_PING_EXTRA_KEY, LOG_PINGS_EXTRA_KEY,
+            TAG_DEBUG_VIEW_EXTRA_KEY, SOURCE_TAGS_KEY, LEGACY_TAG_PINGS
+        )
 
         // Enable debugging options and start the application.
         intent.extras?.let {
@@ -86,6 +96,13 @@ class GleanDebugActivity : Activity() {
             // Set the debug view tag, if the tag is invalid it won't be set
             debugViewTag?.let {
                 Glean.setDebugViewTag(debugViewTag)
+            } ?: run {
+                // If the 'debugViewTag' was not used, try to look for the legacy
+                // way of setting debug view tags. We should leave this block of
+                // code around at most until December 2020.
+                intent.getStringExtra(LEGACY_TAG_PINGS)?.let { legacyTag ->
+                    Glean.setDebugViewTag(legacyTag)
+                }
             }
 
             val logPings: Boolean? = intent.getBooleanExtra(LOG_PINGS_EXTRA_KEY, false)
@@ -93,8 +110,14 @@ class GleanDebugActivity : Activity() {
                 Glean.setLogPings(logPings)
             }
 
-            intent.getStringExtra(SEND_PING_EXTRA_KEY)?.let {
-                Glean.submitPingByName(it)
+            intent.getStringArrayExtra(SOURCE_TAGS_KEY)?.let { tags ->
+                Glean.setSourceTags(tags.toSet())
+            }
+
+            // Important: this should be applied as the last one, so that
+            // any other option will affect the ping submission as well.
+            intent.getStringExtra(SEND_PING_EXTRA_KEY)?.let { name ->
+                Glean.submitPingByName(name)
             }
         }
 

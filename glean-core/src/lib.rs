@@ -732,6 +732,27 @@ impl Glean {
         self.debug.debug_view_tag.get()
     }
 
+    /// Set source tags.
+    ///
+    /// This will return `false` in case `value` contains invalid tags.
+    ///
+    /// Ping tags will show in the destination datasets, after ingestion.
+    ///
+    /// ## Arguments
+    ///
+    /// * `value` - A vector of at most 5 valid HTTP header values. Individual tags must match the regex: "[a-zA-Z0-9-]{1,20}".
+    pub fn set_source_tags(&mut self, value: Vec<String>) -> bool {
+        self.debug.source_tags.set(value)
+    }
+
+    /// Return the value for the source tags or `None` if it hasn't been set.
+    ///
+    /// The source_tags may be set from an environment variable (GLEAN_SOURCE_TAGS)
+    /// or through the `set_source_tags` function.
+    pub(crate) fn source_tags(&self) -> Option<&Vec<String>> {
+        self.debug.source_tags.get()
+    }
+
     /// Set the log pings debug option.
     ///
     /// This will return `false` in case we are unable to set the option.

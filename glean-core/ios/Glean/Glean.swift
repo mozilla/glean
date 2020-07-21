@@ -491,7 +491,8 @@ public class Glean {
     ///
     /// There are 3 available commands that you can use with the Glean SDK debug tools
     ///
-    /// - `tagPings`:  This command expects a string to tag the pings with and redirects them to the Glean Debug View
+    /// - `logPings`: If "true", will cause pings that are submitted successfully to also be echoed to the device's log
+    /// - `debugViewTag`:  This command expects a string to tag the pings with and redirects them to the Debug View
     /// - `sendPing`: This command expects a string name of a ping to force immediate collection and submission of.
     ///
     /// The structure of the custom URL uses the following format:

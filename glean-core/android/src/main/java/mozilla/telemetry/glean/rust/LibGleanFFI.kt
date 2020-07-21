@@ -564,6 +564,8 @@ internal interface LibGleanFFI : Library {
 
     fun glean_set_log_pings(value: Byte)
 
+    fun glean_set_source_tags(raw_tags: StringArray, raw_tags_count: Int): Byte
+
     // Misc
 
     fun glean_str_free(ptr: Pointer)
