@@ -5,6 +5,7 @@
 package mozilla.telemetry.glean.debug
 
 import android.app.Activity
+import android.content.ComponentName
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -45,6 +46,12 @@ class GleanDebugActivity : Activity() {
          * The value must match the pattern `[a-zA-Z0-9-]{1,20}`.
          */
         const val SOURCE_TAGS_KEY = "sourceTags"
+
+        /**
+         * Executes the activity with the provided name instead of the main one
+         * after finishing with the `GleanDebugActivity`.
+         */
+        const val NEXT_ACTIVITY_TO_RUN = "startNext"
     }
 
     // IMPORTANT: These activities are unsecured, and may be triggered by
@@ -56,7 +63,7 @@ class GleanDebugActivity : Activity() {
     /**
      * On creation of the debug activity, launch the requested command.
      */
-    @Suppress("ComplexMethod")
+    @Suppress("ComplexMethod", "LongMethod")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -77,9 +84,11 @@ class GleanDebugActivity : Activity() {
 
         // Make sure that at least one of the supported commands was used.
         val supportedCommands = listOf(
-            SEND_PING_EXTRA_KEY, LOG_PINGS_EXTRA_KEY,
+            SEND_PING_EXTRA_KEY, LOG_PINGS_EXTRA_KEY, NEXT_ACTIVITY_TO_RUN,
             TAG_DEBUG_VIEW_EXTRA_KEY, SOURCE_TAGS_KEY, LEGACY_TAG_PINGS
         )
+
+        var nextActivityName: String? = null
 
         // Enable debugging options and start the application.
         intent.extras?.let {
@@ -114,6 +123,10 @@ class GleanDebugActivity : Activity() {
                 Glean.setSourceTags(tags.toSet())
             }
 
+            intent.getStringExtra(NEXT_ACTIVITY_TO_RUN)?.let { nextActivity ->
+                nextActivityName = nextActivity
+            }
+
             // Important: this should be applied as the last one, so that
             // any other option will affect the ping submission as well.
             intent.getStringExtra(SEND_PING_EXTRA_KEY)?.let { name ->
@@ -123,15 +136,25 @@ class GleanDebugActivity : Activity() {
 
         // This Activity can be used to tag tests on CI or start products with specific
         // options. We need to make sure to retain and propagate all the options that
-        // we were passed to the next intent. Our strategy:
-        // - use the `Intent` copy constructor to copy all the intent options from the
+        // we were passed to the next intent. Our 3 steps strategy:
+        // 1. use the `Intent` copy constructor to copy all the intent options from the
         //   intent which started this activity;
-        // - get the main launch intent for the product using the Glean SDK;
-        // - change the starting "component" and package to the one from the previous step.
         val nextIntent = Intent(intent)
-        val defaultLaunchIntent = packageManager.getLaunchIntentForPackage(packageName)!!
-        nextIntent.component = defaultLaunchIntent.component
-        nextIntent.`package` = defaultLaunchIntent.`package`
+
+        // 2. get the main launch intent for the product using the Glean SDK or lookup
+        //    the one passed as a command line argument to this activity.
+        val launchIntent = packageManager.getLaunchIntentForPackage(packageName)!!
+        nextIntent.`package` = launchIntent.`package`
+
+        val nextComponent = nextActivityName?.let { name ->
+            // Try to lookup the Activity that was asked by the caller.
+            ComponentName(packageName, name)
+        } ?: launchIntent.component
+
+        Log.i(LOG_TAG, "Running next: ${nextComponent!!.packageName}/${nextComponent.className}")
+
+        // 3. change the starting "component" to the one from the previous step.
+        nextIntent.component = nextComponent
         startActivity(nextIntent)
 
         finish()

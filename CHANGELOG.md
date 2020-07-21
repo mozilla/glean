@@ -2,8 +2,12 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v31.4.1...main)
 
+* General
+  * Implement ping tagging (i.e. the `X-Source-Tags` header) ([#1074](https://github.com/mozilla/glean/pull/1074)). Note that this is not yet implemented for iOS.
 * Python
   * The Python unit tests no longer send telemetry to the production telemetry endpoint.
+* Android
+  * Allow defining which `Activity` to run next when using the `GleanDebugActivity`.
 
 # v31.4.1 (2020-07-20)
 

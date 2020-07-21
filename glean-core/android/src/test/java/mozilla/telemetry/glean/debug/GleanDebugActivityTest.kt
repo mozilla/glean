@@ -79,8 +79,14 @@ class GleanDebugActivityTest {
         resolveInfo.activityInfo = ActivityInfo()
         resolveInfo.activityInfo.packageName = testPackageName
         resolveInfo.activityInfo.name = "LauncherActivity"
+        val otherResolveInfo = ResolveInfo()
+        otherResolveInfo.activityInfo = ActivityInfo()
+        otherResolveInfo.activityInfo.packageName = testPackageName
+        otherResolveInfo.activityInfo.name = "OtherActivity"
         @Suppress("DEPRECATION")
         shadowOf(pm).addResolveInfoForIntent(launchIntent, resolveInfo)
+        @Suppress("DEPRECATION")
+        shadowOf(pm).addResolveInfoForIntent(launchIntent, otherResolveInfo)
     }
 
     @Test
@@ -261,5 +267,26 @@ class GleanDebugActivityTest {
         // This will trigger the call to `fetch()` in the TestPingTagClient which is where the
         // test assertions will occur
         triggerWorkManager(context)
+    }
+
+    @Test
+    fun `a custom activity is correctly started`() {
+        // Build the intent that will call our debug activity, with no extra.
+        val intent = Intent(ApplicationProvider.getApplicationContext<Context>(),
+            GleanDebugActivity::class.java)
+        // Add at least an option, otherwise the activity will be removed.
+        intent.putExtra(GleanDebugActivity.NEXT_ACTIVITY_TO_RUN, "OtherActivity")
+        intent.putExtra("TestOptionFromCLI", "TestValue")
+        // Start the activity through our intent.
+        val scenario = launch<GleanDebugActivity>(intent)
+
+        // Check that our main activity was launched.
+        scenario.onActivity { activity ->
+            val startedIntent = shadowOf(activity).peekNextStartedActivityForResult().intent
+            assertEquals(testPackageName, startedIntent.`package`!!)
+            assertEquals("OtherActivity", startedIntent.component!!.className)
+            // Make sure that the extra intent option was propagated to this intent.
+            assertEquals("TestValue", startedIntent.getStringExtra("TestOptionFromCLI"))
+        }
     }
 }
