@@ -19,7 +19,7 @@ public struct JweData {
 /// allowing developers to record values that were previously registered in the metrics.yaml file.
 ///
 /// The JWE API exposes the `JweMetricType.set(_:)` and `JweMetricType.setWithCompactRepresentation(_:)` methods,
-///  which take care of validating the input data.
+/// which takes care of validating the input data.
 public class JweMetricType {
     let handle: UInt64
     let disabled: Bool
@@ -36,7 +36,7 @@ public class JweMetricType {
                 pingArray,
                 Int32(sendInPings.count),
                 lifetime.rawValue,
-                disabled ? 1 : 0
+                disabled.toByte()
             )
         }
     }
