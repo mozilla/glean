@@ -70,7 +70,7 @@ impl DebugOptions {
 /// A representation of a debug option,
 /// where the value can be set programmatically or come from an environment variable.
 #[derive(Debug)]
-pub struct DebugOption<T, E = fn(String) -> Option<T>, F = fn(&T) -> bool> {
+pub struct DebugOption<T, E = fn(String) -> Option<T>, V = fn(&T) -> bool> {
     /// The name of the environment variable related to this debug option.
     env: String,
     /// The actual value of this option.
@@ -80,18 +80,18 @@ pub struct DebugOption<T, E = fn(String) -> Option<T>, F = fn(&T) -> bool> {
     extraction: E,
     /// Optional function to validate the value parsed from the environment
     /// or passed to the `set` function.
-    validation: Option<F>,
+    validation: Option<V>,
 }
 
-impl<T, E, F> DebugOption<T, E, F>
+impl<T, E, V> DebugOption<T, E, V>
 where
     T: Clone,
     E: Fn(String) -> Option<T>,
-    F: Fn(&T) -> bool,
+    V: Fn(&T) -> bool,
 {
     /// Create a new debug option,
     /// tries to get the initial value of the option from the environment.
-    pub fn new(env: &str, extraction: E, validation: Option<F>) -> Self {
+    pub fn new(env: &str, extraction: E, validation: Option<V>) -> Self {
         let mut option = Self {
             env: env.into(),
             value: None,
@@ -177,6 +177,7 @@ fn tokenize_string(value: String) -> Option<Vec<String>> {
 ///
 /// The regex crate isn't used here because it adds to the binary size,
 /// and the Glean SDK doesn't use regular expressions anywhere else.
+#[allow(clippy::ptr_arg)]
 fn validate_tag(value: &String) -> bool {
     if value.is_empty() {
         log::error!("A tag must have at least one character.");
@@ -210,6 +211,7 @@ fn validate_tag(value: &String) -> bool {
 ///
 /// This builds upon the existing `validate_tag` function, since all the
 /// tags should respect the same rules to make the pipeline happy.
+#[allow(clippy::ptr_arg)]
 fn validate_source_tags(tags: &Vec<String>) -> bool {
     if tags.is_empty() {
         return false;
@@ -246,6 +248,7 @@ mod test {
 
     #[test]
     fn debug_option_is_correctly_validated_when_necessary() {
+        #[allow(clippy::ptr_arg)]
         fn validate(value: &String) -> bool {
             value == "test"
         }
