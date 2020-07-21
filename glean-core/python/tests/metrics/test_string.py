@@ -76,3 +76,17 @@ def test_setting_a_long_string_records_an_error():
     assert 1 == string_metric.test_get_num_recorded_errors(
         testing.ErrorType.INVALID_VALUE
     )
+
+
+def test_setting_a_string_as_none():
+    string_metric = metrics.StringMetricType(
+        disabled=False,
+        category="telemetry",
+        lifetime=Lifetime.APPLICATION,
+        name="string_metric",
+        send_in_pings=["store1", "store2"],
+    )
+
+    string_metric.set(None)
+
+    assert not string_metric.test_has_value()

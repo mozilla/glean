@@ -471,7 +471,9 @@ class Glean:
             reason (str, optional): The reason code to record in the ping.
         """
         return _ffi.ffi_decode_string(
-            _ffi.lib.glean_ping_collect(ping._handle, _ffi.ffi_encode_string(reason))
+            _ffi.lib.glean_ping_collect(
+                ping._handle, _ffi.ffi_encode_string_or_none(reason)
+            )
         )
 
     @classmethod
@@ -514,7 +516,7 @@ class Glean:
             return
 
         sent_ping = _ffi.lib.glean_submit_ping_by_name(
-            _ffi.ffi_encode_string(ping_name), _ffi.ffi_encode_string(reason),
+            _ffi.ffi_encode_string(ping_name), _ffi.ffi_encode_string_or_none(reason),
         )
 
         if sent_ping:
