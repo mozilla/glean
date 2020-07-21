@@ -74,6 +74,25 @@ class JweMetricTests: XCTestCase {
         }
     }
 
+    func testJweGetValueReturnsCorrectJweDataRepresentation() {
+        let jweMetric = JweMetricType(
+            category: "telemetry",
+            name: "jwe_metric",
+            sendInPings: ["store1"],
+            lifetime: .application,
+            disabled: false
+        )
+
+        jweMetric.set(self.header, self.key, self.initVector, self.cipherText, self.authTag)
+
+        let data = try! jweMetric.testGetValue()
+        XCTAssertEqual(data.header, self.header)
+        XCTAssertEqual(data.key, self.key)
+        XCTAssertEqual(data.initVector, self.initVector)
+        XCTAssertEqual(data.cipherText, self.cipherText)
+        XCTAssertEqual(data.authTag, self.authTag)
+    }
+
     func testJweSavesToSecondaryPings() {
         let jweMetric = JweMetricType(
             category: "telemetry",

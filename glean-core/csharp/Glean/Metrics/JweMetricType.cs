@@ -4,9 +4,31 @@
 
 using Mozilla.Glean.FFI;
 using System;
+using System.Text.Json;
 
 namespace Mozilla.Glean.Private
 {
+    /// <summary>
+    ///  A representation of a JWE value.
+    /// </summary>
+    public readonly struct JweData
+    {
+        public JweData(string header, string key, string initVector, string cipherText, string authTag)
+        {
+            Header = header;
+            Key = key;
+            InitVector = initVector;
+            CipherText = cipherText;
+            AuthTag = authTag;
+        }
+
+        public string Header { get; }
+        public string Key { get; }
+        public string InitVector { get; }
+        public string CipherText { get; }
+        public string AuthTag { get; }
+    }
+
     /// <summary>
     /// This implements the developer facing API for recording string metrics.
     /// 
@@ -114,7 +136,7 @@ namespace Mozilla.Glean.Private
         /// Defaults to the first value in `sendInPings`</param>
         /// <returns>value of the stored metric</returns>
         /// <exception cref="System.NullReferenceException">Thrown when the metric contains no value</exception>
-        public string TestGetValue(string pingName = null)
+        public JweData TestGetValue(string pingName = null)
         {
             Dispatchers.AssertInTestingMode();
 
@@ -123,7 +145,18 @@ namespace Mozilla.Glean.Private
             }
 
             string ping = pingName ?? sendInPings[0];
-            return LibGleanFFI.glean_jwe_test_get_value_as_json_string(this.handle, ping).AsString();
+
+            JsonDocument jsonPayload = JsonDocument.Parse(
+                LibGleanFFI.glean_jwe_test_get_value_as_json_string(this.handle, ping).AsString()
+            );
+            JsonElement root = jsonPayload.RootElement;
+            return new JweData(
+                root.GetProperty("header").GetString(),
+                root.GetProperty("key").GetString(),
+                root.GetProperty("init_vector").GetString(),
+                root.GetProperty("cipher_text").GetString(),
+                root.GetProperty("auth_tag").GetString()
+            );
         }
 
         /// <summary>

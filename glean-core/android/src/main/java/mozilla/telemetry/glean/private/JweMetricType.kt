@@ -12,6 +12,18 @@ import mozilla.telemetry.glean.rust.getAndConsumeRustString
 import mozilla.telemetry.glean.rust.toBoolean
 import mozilla.telemetry.glean.rust.toByte
 import mozilla.telemetry.glean.testing.ErrorType
+import org.json.JSONObject
+
+/**
+ * A representation of a JWE value.
+ */
+data class JweData(
+    val header: String,
+    val key: String,
+    val initVector: String,
+    val cipherText: String,
+    val authTag: String
+)
 
 /**
  * This implements the developer facing API for recording JWE metrics.
@@ -118,15 +130,24 @@ class JweMetricType internal constructor(
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     @JvmOverloads
-    fun testGetValue(pingName: String = sendInPings.first()): String {
+    fun testGetValue(pingName: String = sendInPings.first()): JweData {
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.assertInTestingMode()
 
         if (!testHasValue(pingName)) {
             throw NullPointerException()
         }
+
         val ptr = LibGleanFFI.INSTANCE.glean_jwe_test_get_value_as_json_string(this.handle, pingName)!!
-        return ptr.getAndConsumeRustString()
+        val json = JSONObject(ptr.getAndConsumeRustString())
+
+        return JweData(
+            header = json.get("header") as String,
+            key = json.get("key") as String,
+            initVector = json.get("init_vector") as String,
+            cipherText = json.get("cipher_text") as String,
+            authTag = json.get("auth_tag") as String
+        )
     }
 
     /**

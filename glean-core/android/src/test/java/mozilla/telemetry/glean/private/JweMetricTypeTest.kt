@@ -96,6 +96,28 @@ class JweMetricTypeTest {
     }
 
     @Test
+    fun `testGetValue() returns correct JweData representation`() {
+        // Define a 'jweMetric' jwe metric, which will be stored in "store1".
+        val jweMetric = JweMetricType(
+            disabled = false,
+            category = "telemetry",
+            lifetime = Lifetime.Application,
+            name = "jwe_metric",
+            sendInPings = listOf("store1")
+        )
+
+        // Attempt to store the JWE.
+        jweMetric.set(HEADER, KEY, INIT_VECTOR, CIPHER_TEXT, AUTH_TAG)
+
+        val data = jweMetric.testGetValue()
+        assertEquals(data.header, HEADER)
+        assertEquals(data.key, KEY)
+        assertEquals(data.initVector, INIT_VECTOR)
+        assertEquals(data.cipherText, CIPHER_TEXT)
+        assertEquals(data.authTag, AUTH_TAG)
+    }
+
+    @Test
     fun `The API saves to secondary pings`() {
         // Define a 'jweMetric' jwe metric, which will be stored in "store1" and "store2"
         val jweMetric = JweMetricType(

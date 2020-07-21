@@ -51,6 +51,25 @@ def test_disabled_jwes_must_not_record_data():
     assert not jwe_metric.test_has_value()
 
 
+def test_jwe_get_value_returns_correct_jwe_data_representation():
+    jwe_metric = metrics.JweMetricType(
+        disabled=False,
+        category="telemetry",
+        lifetime=Lifetime.APPLICATION,
+        name="jwe_metric",
+        send_in_pings=["store1"],
+    )
+
+    jwe_metric.set(header, key, init_vector, cipher_text, auth_tag)
+
+    data = jwe_metric.test_get_value()
+    assert data.header == header
+    assert data.key == key
+    assert data.init_vector == init_vector
+    assert data.cipher_text == cipher_text
+    assert data.auth_tag == auth_tag
+
+
 def test_the_api_saves_to_secondary_pings():
     jwe_metric = metrics.JweMetricType(
         disabled=False,

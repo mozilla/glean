@@ -93,6 +93,27 @@ namespace Mozilla.Glean.Tests.Metrics
         }
 
         [Fact]
+        public void TestJweGetValueReturnsCorrectJweDataRepresentation()
+        {
+            Private.JweMetricType jweMetric = new Private.JweMetricType(
+                category: "telemetry",
+                disabled: false,
+                lifetime: Private.Lifetime.Application,
+                name: "jwe_metric",
+                sendInPings: new string[] { "store1" }
+            );
+
+            jweMetric.Set(this.header, this.key, this.initVector, this.cipherText, this.authTag);
+
+            Private.JweData data = jweMetric.TestGetValue();
+            Assert.Equal(data.Header, this.header);
+            Assert.Equal(data.Key, this.key);
+            Assert.Equal(data.InitVector, this.initVector);
+            Assert.Equal(data.CipherText, this.cipherText);
+            Assert.Equal(data.AuthTag, this.authTag);
+        }
+
+        [Fact]
         public void APISavesToSecondaryPings()
         {
             Private.JweMetricType jweMetric = new Private.JweMetricType(

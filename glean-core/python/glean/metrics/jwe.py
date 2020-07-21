@@ -4,6 +4,7 @@
 
 
 from typing import List, Optional
+import json
 
 
 from .. import _ffi
@@ -12,6 +13,22 @@ from ..testing import ErrorType
 
 
 from .lifetime import Lifetime
+
+
+class JweData:
+    """
+    A representation of a JWE value.
+    """
+
+    def __init__(
+        self, header: str, key: str, init_vector: str, cipher_text: str, auth_tag: str
+    ):
+
+        self.header = header
+        self.key = key
+        self.init_vector = init_vector
+        self.cipher_text = cipher_text
+        self.auth_tag = auth_tag
 
 
 class JweMetricType:
@@ -119,7 +136,7 @@ class JweMetricType:
             )
         )
 
-    def test_get_value(self, ping_name: Optional[str] = None) -> str:
+    def test_get_value(self, ping_name: Optional[str] = None) -> JweData:
         """
         Returns the stored value for testing purposes only.
 
@@ -128,7 +145,7 @@ class JweMetricType:
                 of the ping to retrieve the metric for.
 
         Returns:
-            value (int): value of the stored metric.
+            value (JweData): value of the stored metric.
         """
         if ping_name is None:
             ping_name = self._send_in_pings[0]
@@ -136,10 +153,20 @@ class JweMetricType:
         if not self.test_has_value(ping_name):
             raise ValueError("metric has no value")
 
-        return _ffi.ffi_decode_string(
-            _ffi.lib.glean_jwe_test_get_value_as_json_string(
-                self._handle, _ffi.ffi_encode_string(ping_name)
+        json_payload = json.loads(
+            _ffi.ffi_decode_string(
+                _ffi.lib.glean_jwe_test_get_value_as_json_string(
+                    self._handle, _ffi.ffi_encode_string(ping_name)
+                )
             )
+        )
+
+        return JweData(
+            json_payload["header"],
+            json_payload["key"],
+            json_payload["init_vector"],
+            json_payload["cipher_text"],
+            json_payload["auth_tag"],
         )
 
     def test_get_compact_representation(self, ping_name: Optional[str] = None) -> str:
@@ -152,7 +179,7 @@ class JweMetricType:
                 of the ping to retrieve the metric for.
 
         Returns:
-            value (int): value of the stored metric.
+            value (JweData): value of the stored metric.
         """
         if ping_name is None:
             ping_name = self._send_in_pings[0]
