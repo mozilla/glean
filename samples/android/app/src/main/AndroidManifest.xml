@@ -36,5 +36,14 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
+        <!--
+          Sample activity alias for testing.
+        -->
+        <activity-alias
+            android:name=".TestActivity"
+            android:targetActivity=".MainActivity"
+            android:exported="true">
+        </activity-alias>
     </application>
 </manifest>
