@@ -30,7 +30,7 @@ fn jwe_metric_is_generated_and_stored() {
         ..Default::default()
     });
 
-    metric.set_with_compact_repr(&glean, JWE);
+    metric.set_with_compact_representation(&glean, JWE);
     let snapshot = StorageManager
         .snapshot_as_json(glean.storage(), "core", false)
         .unwrap();
@@ -55,7 +55,7 @@ fn set_properly_sets_the_value_in_all_stores() {
         ..Default::default()
     });
 
-    metric.set_with_compact_repr(&glean, JWE);
+    metric.set_with_compact_representation(&glean, JWE);
 
     // Check that the data was correctly set in each store.
     for store_name in store_names {
@@ -83,7 +83,7 @@ fn get_test_value_returns_the_period_delimited_string() {
         ..Default::default()
     });
 
-    metric.set_with_compact_repr(&glean, JWE);
+    metric.set_with_compact_representation(&glean, JWE);
 
     assert_eq!(metric.test_get_value(&glean, "core").unwrap(), JWE);
 }
@@ -101,7 +101,7 @@ fn get_test_value_as_json_string_returns_the_expected_repr() {
         ..Default::default()
     });
 
-    metric.set_with_compact_repr(&glean, JWE);
+    metric.set_with_compact_representation(&glean, JWE);
 
     let expected_json = format!("{{\"header\":\"{}\",\"key\":\"{}\",\"init_vector\":\"{}\",\"cipher_text\":\"{}\",\"auth_tag\":\"{}\"}}", HEADER, KEY, INIT_VECTOR, CIPHER_TEXT, AUTH_TAG);
     assert_eq!(

@@ -235,7 +235,7 @@ impl JweMetric {
     ///
     /// * `glean` - the Glean instance this metric belongs to.
     /// * `value` - the [`compact representation`](https://tools.ietf.org/html/rfc7516#appendix-A.2.7) of a JWE value.
-    pub fn set_with_compact_repr<S: Into<String>>(&self, glean: &Glean, value: S) {
+    pub fn set_with_compact_representation<S: Into<String>>(&self, glean: &Glean, value: S) {
         if !self.should_record(glean) {
             return;
         }

@@ -449,7 +449,7 @@ void glean_jwe_set(uint64_t metric_id,
                    FfiStr cipher_text,
                    FfiStr auth_tag);
 
-void glean_jwe_set_with_compact_repr(uint64_t metric_id, FfiStr value);
+void glean_jwe_set_with_compact_representation(uint64_t metric_id, FfiStr value);
 
 int32_t glean_jwe_test_get_num_recorded_errors(uint64_t metric_id,
                                                int32_t error_type,
