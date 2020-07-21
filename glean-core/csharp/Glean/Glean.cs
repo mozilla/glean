@@ -28,6 +28,10 @@ namespace Mozilla.Glean
         public static Glean GleanInstance => lazy.Value;
 
         private bool initialized = false;
+        // Set when `initialize()` returns.
+        // This allows to detect calls that happen before `Glean.initialize()` was called.
+        // Note: The initialization might still be in progress, as it runs in a separate thread.
+        private bool initFinished = false;
 
         // Keep track of ping types that have been registered before Glean is initialized.
         private HashSet<PingTypeBase> pingTypeQueue = new HashSet<PingTypeBase>();
@@ -229,6 +233,8 @@ namespace Mozilla.Glean
                     ProcessLifecycleOwner.get().lifecycle.addObserver(gleanLifecycleObserver)
                 }*/
             });
+
+            this.initFinished = true;
         }
 
         /// <summary>
@@ -256,6 +262,14 @@ namespace Mozilla.Glean
         /// <param name="enabled">When `true`, enable metric collection.</param>
         public void SetUploadEnabled(bool enabled)
         {
+            if (!this.initFinished) {
+                string msg = "Changing upload enabled before Glean is initialized is not supported.\n" +
+                    "Pass the correct state into `Glean.initialize()`.\n" +
+                    "See documentation at https://mozilla.github.io/glean/book/user/general-api.html#initializing-the-glean-sdk";
+                Log.Warning(msg);
+
+                return;
+            }
             // Changing upload enabled always happens asynchronous.
             // That way it follows what a user expect when calling it inbetween other calls:
             // It executes in the right order.
@@ -359,6 +373,9 @@ namespace Mozilla.Glean
             }
 
             LibGleanFFI.glean_destroy_glean();
+            // Reset all state.
+            Dispatchers.QueueInitialTasks = true;
+            initFinished = false;
             initialized = false;
         }
 
