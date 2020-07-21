@@ -148,6 +148,6 @@ class StringListMetricTests: XCTestCase {
         }
 
         XCTAssertEqual(20, try stringListMetric.testGetValue().count)
-        XCTAssertEqual(1, stringListMetric.testGetNumRecordedErrors(.invalidOverflow))
+        XCTAssertEqual(1, stringListMetric.testGetNumRecordedErrors(.invalidValue))
     }
 }
