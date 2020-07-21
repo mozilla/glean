@@ -6,6 +6,7 @@
   * Implement ping tagging (i.e. the `X-Source-Tags` header) ([#1074](https://github.com/mozilla/glean/pull/1074)). Note that this is not yet implemented for iOS.
 * Python
   * The Python unit tests no longer send telemetry to the production telemetry endpoint.
+  * BUGFIX: If an `application_version` isn't provided to `Glean.initialize`, the `client_info.app_display_version` metric is set to `"Unknown"`, rather than resulting in invalid pings.
 * Android
   * Allow defining which `Activity` to run next when using the `GleanDebugActivity`.
 
