@@ -12,7 +12,7 @@
 * Android
   * Allow defining which `Activity` to run next when using the `GleanDebugActivity`.
 * iOS
-  * BUGFIX: The memory unit is now correctly set on the MemoryDistribution metric type in Swift in generated metrics code.
+  * BUGFIX: The memory unit is now correctly set on the `MemoryDistribution` metric type in Swift in generated metrics code.
 * C#
   * Metrics can now be generated from the `metrics.yaml` files.
 
