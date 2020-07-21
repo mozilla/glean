@@ -27,15 +27,14 @@ run() {
   fi
 }
 
-SED=sed
-if command -v gsed >/dev/null; then
-    SED=gsed
-fi
+# All sed commands below work with either
+# GNU sed (standard on Linux distrubtions) or BSD sed (standard on macOS)
+SED="sed"
 
 WORKSPACE_ROOT="$( cd "$(dirname "$0")/.." ; pwd -P )"
 
 if [ -z "$1" ]; then
-    echo "Usage: $(basename $0) <new version>"
+    echo "Usage: $(basename "$0") <new version>"
     echo
     echo "Prepare for a new release by setting the version number"
     exit 1
@@ -88,9 +87,18 @@ run rm "${WORKSPACE_ROOT}/${FILE}.bak"
 # Update the glean-ffi version, and its glean-core dependency
 
 FILE=glean-core/ffi/Cargo.toml
+# sed explanation:
+# s/^version.../... - replace old version with the new one
+# /glean-core/      - match to the line of '[dependencies.glean-core]'
+# !bLBL             - if not matched, jump to label LBL, otherwise continue
+# n;n               - skip two lines ahead
+# s/ver../ver/      - replace old version
+# : LBL             - define label (followed by no command)
 run $SED -i.bak -E \
     -e "s/^version = \"[0-9a-z.-]+\"/version = \"${NEW_VERSION}\"/" \
-    -e "/glean-core/!b;n;n;s/version = \"[0-9a-z.-]+\"/version = \"${NEW_VERSION}\"/" \
+    -e "/glean-core/!bLBL" \
+    -e "n;n;s/version = \"[0-9a-z.-]+\"/version = \"${NEW_VERSION}\"/" \
+    -e ": LBL" \
     "${WORKSPACE_ROOT}/${FILE}"
 run rm "${WORKSPACE_ROOT}/${FILE}.bak"
 
@@ -99,8 +107,16 @@ run rm "${WORKSPACE_ROOT}/${FILE}.bak"
 # Update the version of the glean-core dependency
 
 FILE=glean-core/preview/Cargo.toml
+# sed explanation:
+# /glean-core/ - match to the line of '[dependencies.glean-core]'
+# !bLBL        - if not matched, jump to label LBL, otherwise continue
+# n;n          - skip two lines ahead
+# s/ver../ver/ - replace old version
+# : LBL        - define label (followed by no command)
 run $SED -i.bak -E \
-    -e "/glean-core/!b;n;n;s/version = \"[0-9a-z.-]+\"/version = \"${NEW_VERSION}\"/" \
+    -e "/glean-core/!bLBL" \
+    -e ";n;n;s/version = \"[0-9a-z.-]+\"/version = \"${NEW_VERSION}\"/" \
+    -e ": LBL" \
     "${WORKSPACE_ROOT}/${FILE}"
 run rm "${WORKSPACE_ROOT}/${FILE}.bak"
 
