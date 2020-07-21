@@ -57,6 +57,10 @@ open class GleanInternalAPI internal constructor () {
     }
 
     private var initialized: Boolean = false
+    // Set when `initialize()` returns.
+    // This allows to detect calls that happen before `Glean.initialize()` was called.
+    // Note: The initialization might still be in progress, as it runs in a separate thread.
+    private var initFinished: Boolean = false
 
     internal lateinit var configuration: Configuration
 
@@ -249,6 +253,7 @@ open class GleanInternalAPI internal constructor () {
                 ProcessLifecycleOwner.get().lifecycle.addObserver(gleanLifecycleObserver)
             }
         }
+        this.initFinished = true
     }
 
     /**
@@ -285,6 +290,15 @@ open class GleanInternalAPI internal constructor () {
      * @param enabled When true, enable metric collection.
      */
     fun setUploadEnabled(enabled: Boolean) {
+        if (!this.initFinished) {
+            val msg = """
+            Changing upload enabled before Glean is initialized is not supported.
+            Pass the correct state into `Glean.initialize()`.
+            See documentation at https://mozilla.github.io/glean/book/user/general-api.html#initializing-the-glean-sdk
+            """.trimIndent()
+            Log.w(LOG_TAG, msg)
+            return
+        }
         // Changing upload enabled always happens asynchronous.
         // That way it follows what a user expect when calling it inbetween other calls:
         // It executes in the right order.
@@ -763,6 +777,7 @@ open class GleanInternalAPI internal constructor () {
 
         LibGleanFFI.INSTANCE.glean_destroy_glean()
         initialized = false
+        initFinished = false
     }
 
     /**
