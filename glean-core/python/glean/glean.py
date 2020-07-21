@@ -110,7 +110,9 @@ class Glean:
         Args:
             application_id (str): The application id to use when sending pings.
             application_version (str): The version of the application sending
-                Glean data.
+                Glean data. The meaning of this field is application-specific,
+                but it is highly recommended to set this to something
+                meaningful.
             upload_enabled (bool): Controls whether telemetry is enabled. If
                 disabled, all persisted metrics, events and queued pings
                 (except first_run_date) are cleared.
