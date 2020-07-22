@@ -181,13 +181,11 @@ def test_events_should_not_record_when_upload_is_disabled():
         allowed_extra_keys=["test_name"],
     )
 
-    assert Glean.get_upload_enabled()
     Glean.set_upload_enabled(True)
     event_metric.record({EventKeys.TEST_NAME: "event1"})
     snapshot1 = event_metric.test_get_value()
     assert 1 == len(snapshot1)
     Glean.set_upload_enabled(False)
-    assert not Glean.get_upload_enabled()
     event_metric.record({EventKeys.TEST_NAME: "event2"})
     with pytest.raises(ValueError):
         event_metric.test_get_value()
@@ -259,9 +257,7 @@ def test_flush_queued_events_on_startup_and_correctly_handle_preinit_events(
         application_id="glean-python-test",
         application_version=glean_version,
         clear_stores=False,
-        configuration=Configuration(
-            server_endpoint=safe_httpserver.url
-        ),
+        configuration=Configuration(server_endpoint=safe_httpserver.url),
     )
 
     event.record(extra={EventKeys.SOME_EXTRA: "post-init"})

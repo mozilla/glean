@@ -27,25 +27,6 @@ namespace Mozilla.Glean.Tests
         }
 
         [Fact]
-        public void GettingUploadEnabledBeforeInitShouldNotCrash()
-        {
-            // Can't use resetGlean directly
-            GleanInstance.TestDestroyGleanHandle();
-
-            GleanInstance.SetUploadEnabled(true);
-            Assert.True(GleanInstance.GetUploadEnabled());
-
-            string tempDataDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-            GleanInstance.Initialize(
-                applicationId: "org.mozilla.csharp.tests",
-                applicationVersion: "1.0-test",
-                uploadEnabled: true,
-                configuration: new Configuration(),
-                dataDir: tempDataDir
-                );
-        }
-
-        [Fact]
         public void SendAPing()
         {
             // TODO: This test needs a server to verify data are submitted successfully.

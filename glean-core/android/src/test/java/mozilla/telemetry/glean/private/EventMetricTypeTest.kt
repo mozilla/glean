@@ -209,13 +209,11 @@ class EventMetricTypeTest {
             sendInPings = listOf("store1"),
             allowedExtraKeys = listOf("test_name")
         )
-        assertEquals(true, Glean.getUploadEnabled())
         Glean.setUploadEnabled(true)
         eventMetric.record(mapOf(testNameKeys.testName to "event1"))
         val snapshot1 = eventMetric.testGetValue()
         assertEquals(1, snapshot1.size)
         Glean.setUploadEnabled(false)
-        assertEquals(false, Glean.getUploadEnabled())
         eventMetric.record(mapOf(testNameKeys.testName to "event2"))
         @Suppress("EmptyCatchBlock")
         try {
