@@ -17,7 +17,7 @@ For debugging and validation purposes on iOS, Glean makes use of a custom URL sc
 There are 3 available commands that you can use with the Glean SDK debug tools
 
 - `logPings`: This is either true or false and will cause pings that are submitted to also be echoed to the device's log
-- `tagPings`: This command will tag outgoing pings with the provided value, in order to identify them in the Glean Debug View. Tags need to be string with upper and lower case letters, numbers and dashes, with a max length of 20 characters.
+- `debugViewTag`: This command will tag outgoing pings with the provided value, in order to identify them in the Glean Debug View. Tags need to be string with upper and lower case letters, numbers and dashes, with a max length of 20 characters. **Important**: in older versions of the Glean SDK, this was named `tagPings`.
 - `sendPing`: This command expects a string name of a ping to force immediate collection and submission of.
 
 The structure of the custom URL uses the following format:
@@ -90,7 +90,7 @@ Perhaps the simplest way to invoke the Glean SDK debug functionality is to open 
 Using the glean-sample-app as an example: to activate ping logging, tag the pings to go to the Glean Debug View, and force the `events` ping to be sent, enter the following URL in a web browser on the iOS device:
 
 ```shell
-glean-sample-app://glean?logPings=true&tagPings=My-ping-tag&sendPing=events
+glean-sample-app://glean?logPings=true&debugViewTag=My-ping-tag&sendPing=events
 ```
 
 This should cause iOS to prompt you with a dialog asking if you want to open the URL in the Glean Sample App, and if you select "Okay" then it will launch (or resume if it's already running) the application with the indicated commands and parameters and immediately force the collection and submission of the events ping.
@@ -104,7 +104,7 @@ It is also possible to encode the URL into a 2D barcode or QR code and launch th
 This method is useful for testing via the Simulator, which typically requires a Mac with Xcode installed, including the Xcode command line tools.  In order to perform the same command as above with using the browser to input the URL, you can use the following command in the command line terminal of the Mac:
 
 ```shell
-xcrun simctl openurl booted "glean-sample-app://glean?logPings=true&tagPings=My-ping-tag&sendPing=events"
+xcrun simctl openurl booted "glean-sample-app://glean?logPings=true&debugViewTag=My-ping-tag&sendPing=events"
 ```
 
 This will launch the simulator and again prompt the user with a dialog box asking if you want to open the URL in the Glean Sample App (or whichever app you are instrumenting and testing).

@@ -556,6 +556,42 @@ internal interface LibGleanFFI : Library {
         storage_name: String
     ): Int
 
+    // JWE
+
+    fun glean_new_jwe_metric(
+        category: String,
+        name: String,
+        send_in_pings: StringArray,
+        send_in_pings_len: Int,
+        lifetime: Int,
+        disabled: Byte
+    ): Long
+
+    fun glean_destroy_jwe_metric(handle: Long)
+
+    fun glean_jwe_set_with_compact_representation(metric_id: Long, value: String)
+
+    fun glean_jwe_set(
+        metric_id: Long,
+        header: String,
+        key: String,
+        init_vector: String,
+        cipher_text: String,
+        auth_tag: String
+    )
+
+    fun glean_jwe_test_has_value(metric_id: Long, storage_name: String): Byte
+
+    fun glean_jwe_test_get_value(metric_id: Long, storage_name: String): Pointer?
+
+    fun glean_jwe_test_get_value_as_json_string(metric_id: Long, storage_name: String): Pointer?
+
+    fun glean_jwe_test_get_num_recorded_errors(
+        metric_id: Long,
+        error_type: Int,
+        storage_name: String
+    ): Int
+
     fun glean_get_upload_task(task: FfiPingUploadTask.ByReference)
 
     fun glean_process_ping_upload_response(task: FfiPingUploadTask.ByReference, status: Int)
@@ -563,6 +599,8 @@ internal interface LibGleanFFI : Library {
     fun glean_set_debug_view_tag(value: String): Byte
 
     fun glean_set_log_pings(value: Byte)
+
+    fun glean_set_source_tags(raw_tags: StringArray, raw_tags_count: Int): Byte
 
     // Misc
 

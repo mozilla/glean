@@ -118,6 +118,8 @@ $ python -m pip install glean_sdk
 
 If you are not on one of these platforms, you will need to build the Glean Python bindings from source using [these instructions](../dev/python/setting-up-python-build-environment.html).
 
+The Python Glean bindings make extensive use of type annotations to catch type related errors at build time. We highly recommend adding [mypy](https://mypy-lang.org) to your continuous integration workflow to catch errors related to type mismatches early.
+
 </div>
 
 <div data-lang="C#" class="tab">

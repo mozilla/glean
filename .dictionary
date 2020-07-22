@@ -1,4 +1,4 @@
-personal_ws-1.1 en 175 utf-8
+personal_ws-1.1 en 178 utf-8
 AAR
 AARs
 APIs
@@ -29,6 +29,7 @@ JNA
 JNI
 JSON
 JUnit
+JWE
 JetBrains
 Karlton
 Kotlin
@@ -115,7 +116,6 @@ integrations
 io
 ios
 janerik
-JWE
 ktlint
 lang
 latencies
@@ -151,6 +151,7 @@ runtime
 rustup
 schemas
 sdk
+semver
 serializable
 serializer
 setuptools

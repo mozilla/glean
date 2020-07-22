@@ -449,7 +449,7 @@ void glean_jwe_set(uint64_t metric_id,
                    FfiStr cipher_text,
                    FfiStr auth_tag);
 
-void glean_jwe_set_with_compact_repr(uint64_t metric_id, FfiStr value);
+void glean_jwe_set_with_compact_representation(uint64_t metric_id, FfiStr value);
 
 int32_t glean_jwe_test_get_num_recorded_errors(uint64_t metric_id,
                                                int32_t error_type,
@@ -689,6 +689,8 @@ void glean_set_experiment_active(FfiStr experiment_id,
 void glean_set_experiment_inactive(FfiStr experiment_id);
 
 void glean_set_log_pings(uint8_t value);
+
+uint8_t glean_set_source_tags(RawStringArray raw_tags, int32_t tags_count);
 
 void glean_set_upload_enabled(uint8_t flag);
 

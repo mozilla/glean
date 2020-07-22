@@ -1,6 +1,24 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v31.4.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v31.5.0...main)
+
+# v31.5.0 (2020-07-22)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v31.4.1...v31.5.0)
+
+* General
+  * Implement ping tagging (i.e. the `X-Source-Tags` header) ([#1074](https://github.com/mozilla/glean/pull/1074)). Note that this is not yet implemented for iOS.
+  * String values that are too long now record `invalid_overflow` rather than `invalid_value` through the Glean error reporting mechanism. This affects the string, event and string list metrics.
+  * `metrics.yaml` files now support a `data_sensitivity` field to all metrics for specifying the type of data collected in the field.
+* Python
+  * The Python unit tests no longer send telemetry to the production telemetry endpoint.
+  * BUGFIX: If an `application_version` isn't provided to `Glean.initialize`, the `client_info.app_display_version` metric is set to `"Unknown"`, rather than resulting in invalid pings.
+* Android
+  * Allow defining which `Activity` to run next when using the `GleanDebugActivity`.
+* iOS
+  * BUGFIX: The memory unit is now correctly set on the `MemoryDistribution` metric type in Swift in generated metrics code.
+* C#
+  * Metrics can now be generated from the `metrics.yaml` files.
 
 # v31.4.1 (2020-07-20)
 

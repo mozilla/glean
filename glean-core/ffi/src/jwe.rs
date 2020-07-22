@@ -16,11 +16,11 @@ define_metric!(JweMetric => JWE_METRICS {
 });
 
 #[no_mangle]
-pub extern "C" fn glean_jwe_set_with_compact_repr(metric_id: u64, value: FfiStr) {
+pub extern "C" fn glean_jwe_set_with_compact_representation(metric_id: u64, value: FfiStr) {
     with_glean_value(|glean| {
         JWE_METRICS.call_with_log(metric_id, |metric| {
             let value = value.to_string_fallible()?;
-            metric.set_with_compact_repr(&glean, value);
+            metric.set_with_compact_representation(&glean, value);
             Ok(())
         })
     })

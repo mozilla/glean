@@ -137,7 +137,7 @@ TODO. To be implemented in [bug 1648422](https://bugzilla.mozilla.org/show_bug.c
 
 ## Recorded errors
 
-* `invalid_value`: if any of the values in the `extras` object are greater than 50 bytes in length.
+* `invalid_overflow`: if any of the values in the `extras` object are greater than 50 bytes in length.  (Prior to Glean TODO, this recorded an `invalid_value`).
  
 ## Reference
 

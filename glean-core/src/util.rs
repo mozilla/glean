@@ -104,7 +104,7 @@ pub(crate) fn truncate_string_at_boundary_with_error<S: Into<String>>(
     let s = value.into();
     if s.len() > length {
         let msg = format!("Value length {} exceeds maximum of {}", s.len(), length);
-        record_error(glean, meta, ErrorType::InvalidValue, msg, None);
+        record_error(glean, meta, ErrorType::InvalidOverflow, msg, None);
         truncate_string_at_boundary(s, length)
     } else {
         s

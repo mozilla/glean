@@ -10,6 +10,9 @@ from pathlib import Path
 
 import pytest
 
+import pytest_localserver.http
+
+from glean import config
 from glean import testing
 from glean import __version__ as glean_version
 
@@ -81,3 +84,15 @@ def wait_for_server(httpserver, timeout=30):
         except socket.error:
             if time.time() - start_time > timeout:
                 raise TimeoutError()
+
+
+# Setup a default webserver that pings will go to by default, so we don't hit
+# the real telemetry endpoint from unit tests. Some tests that care about the
+# pings actually being sent may still set up their own webservers using the
+# `safe_httpserver` fixture that overrides this one. This is just to catch the
+# pings from the majority of unit tests that don't care by default.
+default_server = pytest_localserver.http.ContentServer()
+default_server.daemon = True
+default_server.start()
+wait_for_server(default_server)
+config.DEFAULT_TELEMETRY_ENDPOINT = default_server.url

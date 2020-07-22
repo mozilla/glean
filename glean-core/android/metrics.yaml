@@ -22,6 +22,8 @@ glean.internal.metrics:
       - https://bugzilla.mozilla.org/1525606
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1525606#c14
+    data_sensitivity:
+      - technical
     notification_emails:
       - glean-team@mozilla.com
     expires: never
