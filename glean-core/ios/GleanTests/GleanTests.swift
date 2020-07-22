@@ -71,7 +71,7 @@ class GleanTests: XCTestCase {
     func testExperimentRecordingBeforeGleanInit() {
         // This test relies on Glean not being initialized and the task queueing to be on
         Glean.shared.testDestroyGleanHandle()
-        Dispatchers.shared.setTaskQueuing(enabled: true)
+        Dispatchers.shared.setTaskQueueing(enabled: true)
 
         Glean.shared.setExperimentActive(
             experimentId: "experiment_set_preinit",
@@ -335,7 +335,7 @@ class GleanTests: XCTestCase {
         // real-world async behaviour of this.
         // We don't need to care about clearing it,
         // the test-unit hooks will call `resetGlean` anyway.
-        Dispatchers.shared.setTaskQueuing(enabled: true)
+        Dispatchers.shared.setTaskQueueing(enabled: true)
         Dispatchers.shared.setTestingMode(enabled: false)
 
         // We expect only a single ping later

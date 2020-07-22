@@ -139,7 +139,7 @@ class MetricsPingSchedulerTests: XCTestCase {
     func testQueuedDataNotInOverdueMetricsPings() {
         // Reset Glean and do not start it right away
         Glean.shared.testDestroyGleanHandle()
-        Dispatchers.shared.setTaskQueuing(enabled: true)
+        Dispatchers.shared.setTaskQueueing(enabled: true)
 
         // Set the last time the "metrics" ping was sent to now. This is required for us to not
         // send a metrics pings the first time we initialize Glean.
@@ -162,7 +162,7 @@ class MetricsPingSchedulerTests: XCTestCase {
 
         // Destroy Glean, it will retain the recorded metric.
         Glean.shared.testDestroyGleanHandle()
-        Dispatchers.shared.setTaskQueuing(enabled: true)
+        Dispatchers.shared.setTaskQueueing(enabled: true)
 
         // Create data and attempt to record data before Glean is initialized.  This will
         // be queued in the dispatcher.
@@ -219,7 +219,7 @@ class MetricsPingSchedulerTests: XCTestCase {
     func testGleanPreservesLifetimeApplicationMetrics() {
         // Reset Glean and do not start it right away
         Glean.shared.testDestroyGleanHandle()
-        Dispatchers.shared.setTaskQueuing(enabled: true)
+        Dispatchers.shared.setTaskQueueing(enabled: true)
 
         // Set the last time the "metrics" ping was sent to now. This is required for us to not
         // send a metrics pings the first time we initialize Glean.

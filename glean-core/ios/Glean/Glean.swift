@@ -577,7 +577,7 @@ public class Glean {
 
         glean_destroy_glean()
         // Reset all state.
-        Dispatchers.shared.setTaskQueuing(enabled: true)
+        Dispatchers.shared.setTaskQueueing(enabled: true)
         self.initFinished = false
         self.initialized = false
     }
