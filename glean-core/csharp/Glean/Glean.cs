@@ -266,7 +266,7 @@ namespace Mozilla.Glean
                 string msg = "Changing upload enabled before Glean is initialized is not supported.\n" +
                     "Pass the correct state into `Glean.initialize()`.\n" +
                     "See documentation at https://mozilla.github.io/glean/book/user/general-api.html#initializing-the-glean-sdk";
-                Log.Warning(msg);
+                Log.Error(msg);
 
                 return;
             }

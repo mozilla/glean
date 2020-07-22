@@ -296,7 +296,7 @@ open class GleanInternalAPI internal constructor () {
             Pass the correct state into `Glean.initialize()`.
             See documentation at https://mozilla.github.io/glean/book/user/general-api.html#initializing-the-glean-sdk
             """.trimIndent()
-            Log.w(LOG_TAG, msg)
+            Log.e(LOG_TAG, msg)
             return
         }
         // Changing upload enabled always happens asynchronous.

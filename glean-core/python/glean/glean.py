@@ -318,7 +318,7 @@ class Glean:
                   See documentation at
                   https://mozilla.github.io/glean/book/user/general-api.html#initializing-the-glean-sdk
                   """
-            log.warning(inspect.cleandoc(msg))
+            log.error(inspect.cleandoc(msg))
             return
 
         # Changing upload enabled always happens asynchronous.
