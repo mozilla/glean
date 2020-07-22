@@ -106,7 +106,7 @@ assertEquals(cipherText, snapshot.cipherText);
 assertEquals(authTag, snapshot.authTag);
 
 // Or check against the compact representation
-assertEquals(anonId, User.INSTANCE.anonId.testGetCompactRepresentation()));
+assertEquals(anonId, User.INSTANCE.anonId.testGetCompactRepresentation());
 ```
 
 </div>
@@ -180,7 +180,7 @@ assert metrics.user.anon_id.test_has_value()
 # Was it the expected value?
 
 # Get a snapshot of the data
-snapshot = metrics.user.anon_id.test_get_value();
+snapshot = metrics.user.anon_id.test_get_value()
 assert header == snapshot.header
 assert key == snapshot.key
 assert init_vector == snapshot.init_vector
