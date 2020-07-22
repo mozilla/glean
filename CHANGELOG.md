@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v31.4.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v31.5.0...main)
+
+# v31.5.0 (2020-07-22)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v31.4.1...v31.5.0)
 
 * General
   * Implement ping tagging (i.e. the `X-Source-Tags` header) ([#1074](https://github.com/mozilla/glean/pull/1074)). Note that this is not yet implemented for iOS.
