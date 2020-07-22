@@ -747,6 +747,7 @@ def test_presubmit_makes_a_valid_ping(tmpdir, ping_schema_url, monkeypatch):
         url_path = fd.readline()
         serialized_ping = fd.readline()
 
+    print(url_path)
     assert ping_name == url_path.split("/")[3]
 
     assert 0 == validate_ping.validate_ping(
