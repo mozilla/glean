@@ -52,7 +52,7 @@ A [String](../../../user/metrics/string.md) is represented by its string value.
 "sample string"
 ```
 
-### String
+### JWE
 
 A [JWE](../../../user/metrics/jwe.md) is represented by its [compact representation](https://tools.ietf.org/html/rfc7516#appendix-A.2.7).
 
