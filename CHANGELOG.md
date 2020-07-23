@@ -9,6 +9,8 @@
       Applications should not rely on Glean's internal state.
       Upload enabled status should be tracked by the application and communicated to Glean if it changes.
       Note: The method was removed from the C# and Python implementation.
+  * Update `glean_parser` to `v1.28.0`
+    * **Breaking change:** `glean_parser` linting was leading consumers astray by incorrectly suggesting that `deletion-request` be instead `deletion_request` when used for `send_in_pings`. This was causing metrics intended for the `deletion-request` ping to not be included when it was collected and submitted. Consumers that are sending metrics in the `deletion-request` ping will need to update the `send_in_pings` value in their metrics.yaml to correct this.
 
 # v31.5.0 (2020-07-22)
 
