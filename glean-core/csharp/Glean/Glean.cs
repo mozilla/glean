@@ -11,8 +11,8 @@ using Mozilla.Glean.FFI;
 using Mozilla.Glean.Net;
 using Mozilla.Glean.Private;
 using Serilog;
-using static Mozilla.Glean.GleanMetrics.GleanInternalMetricsOuter;
-using static Mozilla.Glean.GleanPings.GleanInternalPingsOuter;
+using static Mozilla.Glean.GleanMetrics.GleanInternalMetricsDefinition;
+using static Mozilla.Glean.GleanMetrics.PingsDefinition;
 using static Mozilla.Glean.Utils.GleanLogger;
 
 namespace Mozilla.Glean
@@ -124,7 +124,7 @@ namespace Mozilla.Glean
 
             Dispatchers.ExecuteTask(() =>
             {
-                RegisterPings(GleanInternalPings);
+                RegisterPings(Pings);
 
                 IntPtr maxEventsPtr = IntPtr.Zero;
                 if (configuration.maxEvents != null)
@@ -438,8 +438,8 @@ namespace Mozilla.Glean
         /// </summary>
         internal void HandleBackgroundEvent()
         {
-            GleanInternalPings.baseline.Submit(BaselineReasonCodes.background);
-            GleanInternalPings.events.Submit(EventsReasonCodes.background);
+            Pings.baseline.Submit(baselineReasonCodes.background);
+            Pings.events.Submit(eventsReasonCodes.background);
         }
 
         /// <summary>

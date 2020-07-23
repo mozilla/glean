@@ -178,10 +178,23 @@ except:
         {
             Log.LogMessage(MessageImportance.High, "Creating a Glean SDK virtual environment at: " + venvDir);
             
-            CommandLineBuilder builder = new CommandLineBuilder();
-            builder.AppendSwitch("-m venv " + venvDir);
+            CommandLineBuilder venvCommand = new CommandLineBuilder();
+            venvCommand.AppendSwitch("-m venv " + venvDir);
 
-            return ExecuteTool(GenerateFullPathToTool(), string.Empty, builder.ToString()) == 0;
+            if (ExecuteTool(GenerateFullPathToTool(), string.Empty, venvCommand.ToString()) != 0)
+            {
+                // We failed to create the virtual environment. Bail out.
+                return false;
+            }
+
+            // Install bdist_wheel.
+            string pipTool = Path.Combine(GetVirtualEnvironmentPath(venvDir), IsWindows() ? "pip3.exe" : "pip3");
+
+            CommandLineBuilder pipCommand = new CommandLineBuilder();
+            pipCommand.AppendSwitch("install");
+            pipCommand.AppendSwitch("wheel");
+
+            return ExecuteTool(pipTool, string.Empty, pipCommand.ToString()) == 0;
         }
 
         private bool Setup()
