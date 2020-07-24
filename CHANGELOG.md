@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v31.5.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v31.6.0...main)
+
+# v31.6.0 (2020-07-24)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v31.5.0...v31.6.0)
 
 * General
   * Implement JWE metric type ([#1073](https://github.com/mozilla/glean/pull/1073), [#1062](https://github.com/mozilla/glean/pull/1062)).
