@@ -191,7 +191,42 @@ assert 1 == metrics.auth.local_time.test_get_num_recorded_errors(
 
 <div data-lang="C#" class="tab">
 
-TODO. To be implemented in [bug 1648442](https://bugzilla.mozilla.org/show_bug.cgi?id=1648442).
+```csharp
+using static Mozilla.YourApplication.GleanMetrics.Auth;
+
+void OnShowLogin()
+{
+    Auth.loginTime.Start();
+    // ...
+}
+
+void OnLogin()
+{
+    Auth.loginTime.Stop();
+    // ...
+}
+
+void OnLoginCancel()
+{
+    Auth.loginTime.Cancel();
+    // ...
+}
+```
+
+The time reported in the telemetry ping will be timespan recorded during the lifetime of the ping.
+
+There are test APIs available too:
+
+```csharp
+using static Mozilla.YourApplication.GleanMetrics.Auth;
+
+// Was anything recorded?
+Assert.True(Auth.loginTime.TestHasValue());
+// Does the timer have the expected value
+Assert.True(Auth.loginTime.TestGetValue() > 0);
+// Was the timing recorded incorrectly?
+Assert.Equals(1, Auth.loginTime.TestGetNumRecordedErrors(ErrorType.InvalidValue));
+```
 
 </div>
 
