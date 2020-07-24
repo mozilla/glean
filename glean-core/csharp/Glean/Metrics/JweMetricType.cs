@@ -181,14 +181,13 @@ namespace Mozilla.Glean.Private
             return LibGleanFFI.glean_jwe_test_get_value(this.handle, ping).AsString();
         }
 
-        /**
-         * Returns the number of errors recorded for the given metric.
-         *
-         * @param errorType The type of the error recorded.
-         * @param pingName represents the name of the ping to retrieve the metric for.
-         *                 Defaults to the first value in `sendInPings`.
-         * @return the number of errors recorded for the metric.
-         */
+        /// <summary>
+        /// Returns the number of errors recorded for the given metric.
+        /// </summary>
+        /// <param name="errorType">The type of the error recorded.</param>
+        /// <param name="pingName">represents the name of the ping to retrieve the metric for.
+        /// Defaults to the first value in `sendInPings`.</param>
+        /// <returns>the number of errors recorded for the metric.</returns>
         public Int32 TestGetNumRecordedErrors(Testing.ErrorType errorType, string pingName = null)
         {
             Dispatchers.AssertInTestingMode();
