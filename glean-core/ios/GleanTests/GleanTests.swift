@@ -23,7 +23,6 @@ class GleanTests: XCTestCase {
     func testInitializeGlean() {
         // Glean is already initialized by the `setUp()` function
         XCTAssert(Glean.shared.isInitialized(), "Glean should be initialized")
-        XCTAssert(Glean.shared.getUploadEnabled(), "Upload is enabled by default")
     }
 
     func testExperimentRecording() {
@@ -72,7 +71,7 @@ class GleanTests: XCTestCase {
     func testExperimentRecordingBeforeGleanInit() {
         // This test relies on Glean not being initialized and the task queueing to be on
         Glean.shared.testDestroyGleanHandle()
-        Dispatchers.shared.setTaskQueuing(enabled: true)
+        Dispatchers.shared.setTaskQueueing(enabled: true)
 
         Glean.shared.setExperimentActive(
             experimentId: "experiment_set_preinit",
@@ -326,6 +325,64 @@ class GleanTests: XCTestCase {
                 statusCode: 200,
                 headers: ["Content-Type": "application/json"]
             )
+        }
+    }
+
+    func testFlippingUploadEnabledRespectsOrderOfEvents() {
+        // This test relies on Glean not being initialized
+        Glean.shared.testDestroyGleanHandle()
+        // This test relies on testing mode to be disabled, since we need to prove the
+        // real-world async behaviour of this.
+        // We don't need to care about clearing it,
+        // the test-unit hooks will call `resetGlean` anyway.
+        Dispatchers.shared.setTaskQueueing(enabled: true)
+        Dispatchers.shared.setTestingMode(enabled: false)
+
+        // We expect only a single ping later
+        stubServerReceive { pingType, _ in
+            XCTAssertEqual("deletion-request", pingType)
+
+            // Fulfill test's expectation once we parsed the incoming data.
+            DispatchQueue.main.async {
+                // Let the response get processed before we mark the expectation fulfilled
+                self.expectation?.fulfill()
+            }
+        }
+
+        let customPing = Ping<NoReasonCodes>(
+            name: "custom",
+            includeClientId: true,
+            sendIfEmpty: false,
+            reasonCodes: []
+        )
+
+        let counter = CounterMetricType(
+            category: "telemetry",
+            name: "counter_metric",
+            sendInPings: ["custom"],
+            lifetime: .application,
+            disabled: false
+        )
+
+        expectation = expectation(description: "Completed upload")
+
+        // Set the last time the "metrics" ping was sent to now. This is required for us to not
+        // send a metrics pings the first time we initialize Glean and to keep it from interfering
+        // with these tests.
+        let now = Date()
+        Glean.shared.metricsPingScheduler.updateSentDate(now)
+        // Restart glean
+        Glean.shared.resetGlean(clearStores: false)
+
+        // Glean might still be initializing. Disable upload.
+        Glean.shared.setUploadEnabled(false)
+
+        // Set data and try to submit a custom ping.
+        counter.add(1)
+        customPing.submit()
+
+        waitForExpectations(timeout: 5.0) { error in
+            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
         }
     }
 }

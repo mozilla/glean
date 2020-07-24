@@ -19,6 +19,7 @@
         - [Labeled Booleans](user/metrics/labeled_booleans.md)
         - [Counter](user/metrics/counter.md)
         - [Labeled Counters](user/metrics/labeled_counters.md)
+        - [JWE](user/metrics/jwe.md)
         - [String](user/metrics/string.md)
         - [Labeled Strings](user/metrics/labeled_strings.md)
         - [String List](user/metrics/string_list.md)

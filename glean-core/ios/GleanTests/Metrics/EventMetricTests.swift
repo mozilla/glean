@@ -194,18 +194,15 @@ class EventMetricTypeTests: XCTestCase {
         )
 
         Glean.shared.setUploadEnabled(true)
-        XCTAssert(Glean.shared.getUploadEnabled())
         metric.record(extra: [.testName: "event1"])
         let snapshot1 = try! metric.testGetValue()
         XCTAssertEqual(1, snapshot1.count)
 
         Glean.shared.setUploadEnabled(false)
-        XCTAssertFalse(Glean.shared.getUploadEnabled())
         metric.record(extra: [.testName: "event2"])
         XCTAssertFalse(metric.testHasValue())
 
         Glean.shared.setUploadEnabled(true)
-        XCTAssert(Glean.shared.getUploadEnabled())
         metric.record(extra: [.testName: "event3"])
         let snapshot3 = try! metric.testGetValue()
         XCTAssertEqual(1, snapshot3.count)
@@ -259,7 +256,7 @@ class EventMetricTypeTests: XCTestCase {
         event.record(extra: [.someExtra: "run1"])
         XCTAssertEqual(1, try! event.testGetValue().count)
 
-        Dispatchers.shared.setTaskQueuing(enabled: true)
+        Dispatchers.shared.setTaskQueueing(enabled: true)
         event.record(extra: [.someExtra: "pre-init"])
 
         Glean.shared.resetGlean(clearStores: false)

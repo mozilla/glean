@@ -10,7 +10,7 @@ class DispatchersTest: XCTestCase {
         var threadCanary = 0
 
         Dispatchers.shared.setTestingMode(enabled: true)
-        Dispatchers.shared.setTaskQueuing(enabled: true)
+        Dispatchers.shared.setTaskQueueing(enabled: true)
 
         // Add 3 tasks to the queue, each one incrementing threadCanary to indicate the task has executed
         for _ in 0 ..< 3 {
@@ -56,7 +56,7 @@ class DispatchersTest: XCTestCase {
         var flushTasks = AtomicBoolean(false)
 
         Dispatchers.shared.setTestingMode(enabled: false)
-        Dispatchers.shared.setTaskQueuing(enabled: true)
+        Dispatchers.shared.setTaskQueueing(enabled: true)
 
         // This background task will monitor the size of the cached initial
         // operations and attempt to flush it when it reaches 50 elements.
@@ -108,7 +108,7 @@ class DispatchersTest: XCTestCase {
         Dispatchers.shared.setTestingMode(enabled: false)
 
         // Set task queueing to true to ensure that we queue tasks when we launch them
-        Dispatchers.shared.setTaskQueuing(enabled: true)
+        Dispatchers.shared.setTaskQueueing(enabled: true)
 
         // Add a task to the pre-init queue
         Dispatchers.shared.launchAPI {
@@ -130,7 +130,7 @@ class DispatchersTest: XCTestCase {
         Dispatchers.shared.setTestingMode(enabled: false)
 
         // Set up our test conditions for normal execution by setting queuing to false
-        Dispatchers.shared.setTaskQueuing(enabled: false)
+        Dispatchers.shared.setTaskQueueing(enabled: false)
 
         // Create a counter to use to determine if the task is actually cancelled
         var counter = 0
@@ -176,7 +176,7 @@ class DispatchersTest: XCTestCase {
         Dispatchers.shared.setTestingMode(enabled: false)
 
         // Set up our test conditions for normal execution by setting queuing to false
-        Dispatchers.shared.setTaskQueuing(enabled: false)
+        Dispatchers.shared.setTaskQueueing(enabled: false)
 
         // Create a counter to use to determine if the task is actually cancelled
         var counter = 0
@@ -221,7 +221,7 @@ class DispatchersTest: XCTestCase {
         Glean.shared.resetGlean(clearStores: true)
         Dispatchers.shared.preInitOperations.removeAll()
         Dispatchers.shared.setTestingMode(enabled: true)
-        Dispatchers.shared.setTaskQueuing(enabled: true)
+        Dispatchers.shared.setTaskQueueing(enabled: true)
 
         for _ in 0 ..< (Dispatchers.Constants.maxQueueSize + 10) {
             Dispatchers.shared.launchAPI {

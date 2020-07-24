@@ -52,6 +52,16 @@ A [String](../../../user/metrics/string.md) is represented by its string value.
 "sample string"
 ```
 
+### JWE
+
+A [JWE](../../../user/metrics/jwe.md) is represented by its [compact representation](https://tools.ietf.org/html/rfc7516#appendix-A.2.7).
+
+#### Example
+
+```json
+"eyJhbGciOiJSU0EtT0FFUCIsImVuYyI6IkEyNTZHQ00ifQ..48V1_ALb6US04U3b.5eym8TW_c8SuK0ltJ3rpYIzOeDQz7TALvtu6UG9oMo4vpzs9tX_EFShS8iB7j6jiSdiwkIr3ajwQzaBtQD_A.XFBoMYUZodetZdvTiFvSkQ"
+```
+
 ### String list
 
 A [String List](../../../user/metrics/string_list.md) is represented as an array of strings.

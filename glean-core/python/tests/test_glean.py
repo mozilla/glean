@@ -54,20 +54,6 @@ def test_setting_upload_enabled_before_initialization_should_not_crash():
     )
 
 
-def test_getting_upload_enabled_before_initialization_should_not_crash():
-    Glean._reset()
-
-    Glean.set_upload_enabled(True)
-    assert Glean.get_upload_enabled()
-
-    Glean.initialize(
-        application_id=GLEAN_APP_ID,
-        application_version=glean_version,
-        upload_enabled=True,
-    )
-    assert Glean.get_upload_enabled()
-
-
 def test_submit_a_ping(safe_httpserver):
     safe_httpserver.serve_content(b"", code=200)
 
@@ -108,7 +94,6 @@ def test_disabling_upload_should_disable_metrics_recording():
     )
 
     Glean.set_upload_enabled(False)
-    assert False is Glean.get_upload_enabled()
     counter_metric.add(1)
     assert False is counter_metric.test_has_value()
 
@@ -767,3 +752,48 @@ def test_app_display_version_unknown():
         "Unknown"
         == _builtins.metrics.glean.internal.metrics.app_display_version.test_get_value()
     )
+
+
+def test_flipping_upload_enabled_respects_order_of_events(tmpdir, monkeypatch):
+    Glean._reset()
+
+    info_path = Path(str(tmpdir)) / "info.txt"
+
+    # We create a ping and a metric before we initialize Glean
+    ping = PingType(
+        name="sample_ping_1",
+        include_client_id=True,
+        send_if_empty=True,
+        reason_codes=[],
+    )
+
+    # This test relies on testing mode to be disabled, since we need to prove the
+    # real-world async behaviour of this.
+    Dispatcher._testing_mode = False
+    Dispatcher._queue_initial_tasks = True
+
+    configuration = Glean._configuration
+    configuration.ping_uploader = _RecordingUploader(info_path)
+    Glean.initialize(
+        application_id=GLEAN_APP_ID,
+        application_version=glean_version,
+        upload_enabled=True,
+        configuration=Glean._configuration,
+    )
+
+    # Glean might still be initializing. Disable upload.
+    Glean.set_upload_enabled(False)
+    # Submit a custom ping.
+    ping.submit()
+
+    # Wait until the work is complete
+    Dispatcher._task_worker._queue.join()
+
+    while not info_path.exists():
+        time.sleep(0.1)
+
+    with info_path.open("r") as fd:
+        url_path = fd.readline()
+
+    # Validate we got the deletion-request ping
+    assert "deletion-request" == url_path.split("/")[3]

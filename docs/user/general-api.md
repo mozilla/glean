@@ -18,7 +18,6 @@ The Glean SDK provides a general API that supports the following operations. See
 | --------- | ----------- | ----- |
 | `initialize` | Configure and initialize the Glean SDK. | [Initializing the Glean SDK](#initializing-the-glean-sdk) |
 | `setUploadEnabled` | Enable or disable Glean collection and upload. | [Enabling and disabling Metrics](#enabling-and-disabling-metrics) |
-| `getUploadEnabled` | Get whether or not Glean is allowed to record and upload data. | |
 | `registerPings` | Register custom pings generated from `pings.yaml`. | [Custom pings][custom-pings] |
 | `setExperimentActive` | Indicate that an experiment is running. | [Using the Experiments API][experiments-api] |
 | `setExperimentInactive` | Indicate that an experiment is no longer running.. | [Using the Experiments API][experiments-api] |
@@ -213,11 +212,19 @@ Built-in pings are only available after initialization.
 
 `Glean.setUploadEnabled()` should be called in response to the user enabling or disabling telemetry.
 
+**Note**:
+If called before `Glean.initialize()` the call to `Glean.setUploadEnabled()` will be ignored.
+Set the initial state using `uploadEnabled` on `Glean.initialize()`.
+
 </div>
 
 <div data-lang="Swift" class="tab">
 
 `Glean.shared.setUploadEnabled()` should be called in response to the user enabling or disabling telemetry.
+
+**Note**:
+If called before `Glean.shared.initialize()` the call to `Glean.shared.setUploadEnabled()` will be ignored.
+Set the initial state using `uploadEnabled` on `Glean.shared.initialize()`.
 
 </div>
 
@@ -225,11 +232,19 @@ Built-in pings are only available after initialization.
 
 `Glean.set_upload_enabled()` should be called in response to the user enabling or disabling telemetry.
 
+**Note**:
+If called before `Glean.initialize()` the call to `Glean.set_upload_enabled()` will be ignored.
+Set the initial state using `upload_enabled` on `Glean.initialize()`.
+
 </div>
 
 <div data-lang="C#" class="tab">
 
 `GleanInstance.SetUploadEnabled()` should be called in response to the user enabling or disabling telemetry.
+
+**Note**:
+If called before `GleanInstance.initialize()` the call to `GleanInstance.SetUploadEnabled()` will be ignored.
+Set the initial state using `uploadEnabled` on `GleanInstance.initialize()`.
 
 </div>
 

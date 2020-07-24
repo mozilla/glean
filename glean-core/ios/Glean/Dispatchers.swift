@@ -249,7 +249,7 @@ class Dispatchers {
     ///   * enabled: `Bool` whether or not to enable the queuing mode
     ///
     /// When enabled, tasks are queued until launched by calling `flushQueuedInitialTasks()`
-    func setTaskQueuing(enabled: Bool) {
+    func setTaskQueueing(enabled: Bool) {
         queueInitialTasks.value = enabled
     }
 }

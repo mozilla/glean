@@ -1,6 +1,21 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v31.5.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v31.6.0...main)
+
+# v31.6.0 (2020-07-24)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v31.5.0...v31.6.0)
+
+* General
+  * Implement JWE metric type ([#1073](https://github.com/mozilla/glean/pull/1073), [#1062](https://github.com/mozilla/glean/pull/1062)).
+  * DEPRECATION: `getUploadEnabled` is deprecated (respectively `get_upload_enabled` in Python) ([#1046](https://github.com/mozilla/glean/pull/1046))
+    * Due to Glean's asynchronous initialization the return value can be incorrect.
+      Applications should not rely on Glean's internal state.
+      Upload enabled status should be tracked by the application and communicated to Glean if it changes.
+      Note: The method was removed from the C# and Python implementation.
+  * Update `glean_parser` to `v1.28.1`
+    * The `glean_parser` linting was leading consumers astray by incorrectly suggesting that `deletion-request` be instead `deletion_request` when used for `send_in_pings`. This was causing metrics intended for the `deletion-request` ping to not be included when it was collected and submitted. Consumers that are sending metrics in the `deletion-request` ping will need to update the `send_in_pings` value in their metrics.yaml to correct this.
+    * Fixes a bug in doc rendering.
 
 # v31.5.0 (2020-07-22)
 
