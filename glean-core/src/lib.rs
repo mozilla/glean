@@ -496,7 +496,7 @@ impl Glean {
     ///
     /// `PingUploadTask` - an enum representing the possible tasks.
     pub fn get_upload_task(&self) -> PingUploadTask {
-        self.upload_manager.get_upload_task(self.log_pings())
+        self.upload_manager.get_upload_task(self, self.log_pings())
     }
 
     /// Processes the response from an attempt to upload a ping.
@@ -506,13 +506,8 @@ impl Glean {
     /// * `uuid` - The UUID of the ping in question.
     /// * `status` - The upload result.
     pub fn process_ping_upload_response(&self, uuid: &str, status: UploadResult) {
-        if let Some(label) = status.get_label() {
-            let metric = self.core_metrics.ping_upload_failure.get(label);
-            metric.add(self, 1);
-        }
-
         self.upload_manager
-            .process_ping_upload_response(uuid, status);
+            .process_ping_upload_response(self, uuid, status);
     }
 
     /// Take a snapshot for the given store and optionally clear it.
@@ -586,7 +581,7 @@ impl Glean {
                     return Err(e.into());
                 }
 
-                self.upload_manager.enqueue_ping_from_file(&doc_id);
+                self.upload_manager.enqueue_ping_from_file(self, &doc_id);
 
                 log::info!(
                     "The ping '{}' was submitted and will be sent as soon as possible",

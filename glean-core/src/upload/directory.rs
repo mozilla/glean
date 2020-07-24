@@ -17,7 +17,7 @@ use crate::{DELETION_REQUEST_PINGS_DIRECTORY, PENDING_PINGS_DIRECTORY};
 
 /// A representation of the data extracted from a ping file,
 /// this will contain the document_id, path, JSON encoded body of a ping and the persisted headers.
-type PingPayload = (String, String, String, Option<HeaderMap>);
+pub type PingPayload = (String, String, String, Option<HeaderMap>);
 
 /// Get the file name from a path as a &str.
 ///

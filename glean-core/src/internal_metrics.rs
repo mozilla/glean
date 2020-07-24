@@ -9,7 +9,6 @@ pub struct CoreMetrics {
     pub client_id: UuidMetric,
     pub first_run_date: DatetimeMetric,
     pub os: StringMetric,
-    pub ping_upload_failure: LabeledMetric<CounterMetric>,
 }
 
 impl CoreMetrics {
@@ -44,7 +43,20 @@ impl CoreMetrics {
                 disabled: false,
                 dynamic_label: None,
             }),
+        }
+    }
+}
 
+#[derive(Debug)]
+pub struct UploadMetrics {
+    pub ping_upload_failure: LabeledMetric<CounterMetric>,
+    pub discarded_exceeding_ping_size: MemoryDistributionMetric,
+    pub discarded_exceeding_pings: CounterMetric,
+}
+
+impl UploadMetrics {
+    pub fn new() -> UploadMetrics {
+        UploadMetrics {
             ping_upload_failure: LabeledMetric::new(
                 CounterMetric::new(CommonMetricData {
                     name: "ping_upload_failure".into(),
@@ -62,6 +74,27 @@ impl CoreMetrics {
                     "recoverable".into(),
                 ]),
             ),
+
+            discarded_exceeding_ping_size: MemoryDistributionMetric::new(
+                CommonMetricData {
+                    name: "discarded_exceeding_ping_size".into(),
+                    category: "glean.upload".into(),
+                    send_in_pings: vec!["metrics".into()],
+                    lifetime: Lifetime::Ping,
+                    disabled: false,
+                    dynamic_label: None,
+                },
+                MemoryUnit::Kilobyte,
+            ),
+
+            discarded_exceeding_pings: CounterMetric::new(CommonMetricData {
+                name: "discarded_exceeding_pings".into(),
+                category: "glean.upload".into(),
+                send_in_pings: vec!["metrics".into()],
+                lifetime: Lifetime::Ping,
+                disabled: false,
+                dynamic_label: None,
+            }),
         }
     }
 }
