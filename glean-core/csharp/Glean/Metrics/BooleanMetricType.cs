@@ -57,7 +57,7 @@ namespace Mozilla.Glean.Private
         /// <summary>
         /// Set a boolean value.
         /// </summary>
-        /// <param name="value"> This is a user defined boolean value.
+        /// <param name="value"> This is a user defined boolean value.</param>
         public void Set(bool value)
         {
             if (disabled)
