@@ -395,7 +395,8 @@ glean.upload:
   discarded_exceeding_pings:
     type: counter
     description: >
-      Counts the pings that get discarded for exceeding the maximum ping size allowed for upload.
+      Counts the pings that get discarded for
+      exceeding the maximum ping size allowed for upload.
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1597761
     data_reviews:
