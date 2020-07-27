@@ -32,6 +32,7 @@ public class Glean {
     var initFinished: Bool = false
 
     private var debugViewTag: String?
+    private var sourceTags: [String]?
     var logPings: Bool = false
     var configuration: Configuration?
     private var observer: GleanLifecycleObserver?
@@ -119,6 +120,10 @@ public class Glean {
 
             if let debugViewTag = self.debugViewTag {
                 _ = self.setDebugViewTag(debugViewTag)
+            }
+
+            if let sourceTags = self.sourceTags {
+                _ = self.setSourceTags(sourceTags)
             }
 
             if self.logPings {
@@ -501,6 +506,18 @@ public class Glean {
             glean_set_log_pings(value.toByte())
         } else {
             logPings = value
+        }
+    }
+
+    func setSourceTags(_ value: [String]) -> Bool {
+        if self.isInitialized() {
+            let len = value.count
+            return withArrayOfCStrings(value) { value in
+                glean_set_source_tags(value, Int32(len)).toBool()
+            }
+        } else {
+            sourceTags = value
+            return true
         }
     }
 
