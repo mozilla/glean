@@ -2,8 +2,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import json
+import logging
+import os
 from pathlib import Path
 import sys
+import threading
 from typing import Any, List, Optional
 import weakref
 
@@ -31,7 +35,44 @@ _global_weakkeydict: Any = weakref.WeakKeyDictionary()
 
 
 lib = ffi.dlopen(str(Path(__file__).parent / get_shared_object_filename()))
-lib.glean_enable_logging()
+
+
+def setup_logging():
+    """
+    Sets up a pipe for communication of logging messages from the Rust core to
+    the Python logging system. A thread is created to listen for messages on
+    the pipe, convert them from JSON and send them to the Python stdlib logging
+    module.
+
+    Must be called after the Glean core has been dlopen'd.
+    """
+    r, w = os.pipe()
+    lib.glean_enable_logging_to_pipe(w)
+
+    reader = os.fdopen(r, encoding="utf-8")
+
+    name = "glean.rust_core"
+    log = logging.getLogger(name)
+    level_map = {
+        "CRITICAL": logging.CRITICAL,
+        "ERROR": logging.ERROR,
+        "WARNING": logging.WARNING,
+        "INFO": logging.INFO,
+        "DEBUG": logging.DEBUG,
+    }
+
+    def log_handler():
+        while True:
+            data = reader.readline().rstrip()
+            json_content = json.loads(data)
+            log.log(level_map.get(json_content["level"], 0), json_content["message"])
+
+    logging_thread = threading.Thread(target=log_handler)
+    logging_thread.daemon = True
+    logging_thread.start()
+
+
+setup_logging()
 
 
 def make_config(
