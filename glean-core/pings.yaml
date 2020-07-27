@@ -10,7 +10,7 @@
 $schema: moz://mozilla.org/schemas/glean/pings/1-0-0
 
 baseline:
-  description: >
+  description: |
     This ping is intended to provide metrics that are managed by the library
     itself, and not explicitly set by the application or included in the
     application's `metrics.yaml` file.
@@ -42,7 +42,7 @@ baseline:
       *Note*: this ping will not contain the `glean.baseline.duration` metric.
 
 metrics:
-  description: >
+  description: |
     The `metrics` ping is intended for all of the metrics that are explicitly
     set by the application or are included in the application's `metrics.yaml`
     file (except events).
@@ -78,7 +78,7 @@ metrics:
       day at 4am.
 
 events:
-  description: >
+  description: |
     The events ping's purpose is to transport all of the event metric
     information. The `events` ping is automatically sent when the application is
     moved to the background.
@@ -100,7 +100,7 @@ events:
       The maximum number of events was reached (default 500 events).
 
 deletion-request:
-  description: >
+  description: |
     This ping is submitted when a user opts out of
     sending technical and interaction data to Mozilla.
     This ping is intended to communicate to the Data Pipeline
