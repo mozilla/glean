@@ -1,6 +1,6 @@
 # The General API
 
-Glean has a minimal API available on its top-level `Glean` object.
+The Glean SDK has a minimal API available on its top-level `Glean` object.
 This API allows one to enable and disable upload, register [custom pings][custom-pings] and set [experiment data][experiments-api].
 
 [custom-pings]: pings/custom.md
@@ -8,7 +8,7 @@ This API allows one to enable and disable upload, register [custom pings][custom
 
 > **Important:** The Glean SDK should only be initialized from the main application, not individual libraries.
 
-If you are adding Glean support to a library, you can safely skip this section.
+If you are adding Glean SDK support to a library, you can safely skip this section.
 
 ## The API
 
@@ -143,7 +143,7 @@ Glean.shared.initialize(Configuration(channel: "beta"))
 
 <div data-lang="Python" class="tab">
 
-The main control for Glean is on the `glean.Glean` singleton.
+The main control for the Glean SDK is on the `glean.Glean` singleton.
 
 The Glean SDK should be initialized as soon as possible, and importantly, before any other libraries in the application start using Glean.
 Library code should never call `Glean.initialize`, since it should be called exactly once per application.
@@ -159,7 +159,7 @@ Glean.initialize(
 )
 ```
 
-Once initialized, if `upload_enabled` is true, the Glean SDK will automatically start collecting [baseline metrics](pings/metrics.md) and sending its [pings](pings/index.md), according to their respective schedules.  
+Once initialized, if `upload_enabled` is true, the Glean SDK will automatically start collecting [baseline metrics](pings/metrics.md).
 If `upload_enabled` is false, any persisted metrics, events and pings (other than `first_run_date`) are cleared, and subsequent calls to record metrics will be no-ops.
 
 Additional configuration is available on the `glean.Configuration` object, which can be passed into `Glean.initialize()`.
@@ -171,7 +171,7 @@ See the [custom pings documentation](pings/custom.md) about adding custom pings 
 
 <div data-lang="C#" class="tab">
 
-The main control for Glean is on the `GleanInstance` singleton.
+The main control for the Glean SDK is on the `GleanInstance` singleton.
 
 The Glean SDK should be initialized as soon as possible, and importantly, before any other libraries in the application start using Glean.
 Library code should never call `Glean.initialize`, since it should be called exactly once per application.
@@ -195,13 +195,12 @@ GleanInstance.Initialize(
 
 ## Behavior when uninitialized
 
-Metric recording that happens before Glean is initialized is queued and applied when Glean is initialized.
-To avoid unbounded memory growth the queue is bounded (currently to a maximum of 100 tasks).
-Further recordings are dropped.
+Metric recording that happens before the Glean SDK is initialized is queued and applied at initialization.
+To avoid unbounded memory growth the queue is bounded (currently to a maximum of 100 tasks), and further recordings are dropped.
 The number of recordings dropped, if any, is recorded in the `glean.error.preinit_tasks_overflow` metric.
 
 Custom ping submission will not fail before initialization.
-Collection and upload of the custom ping is delayed until Glean is initialized.
+Collection and upload of the custom ping is delayed until the Glean SDK is initialized.
 Built-in pings are only available after initialization.
 
 ## Enabling and disabling metrics

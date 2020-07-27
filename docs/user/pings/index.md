@@ -137,7 +137,7 @@ The system may also call `onStop()` when the activity has finished running, and 
 
 ### Foreground
 
-For iOS, Glean attaches to the [`willEnterForegroundNotification`](https://developer.apple.com/documentation/uikit/uiapplication/1622944-willenterforegroundnotification).
+For iOS, the Glean SDK attaches to the [`willEnterForegroundNotification`](https://developer.apple.com/documentation/uikit/uiapplication/1622944-willenterforegroundnotification).
 This notification is posted by the OS shortly before an app leaves the background state on its way to becoming the active app.
 
 ### Background

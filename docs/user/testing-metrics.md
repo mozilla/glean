@@ -11,7 +11,7 @@ These functions expose a way to inspect and validate recorded metric values with
 
 <div data-lang="Kotlin" class="tab">
 
-In order to prevent issues with async calls when unit testing Glean,
+In order to prevent issues with async calls when unit testing the Glean SDK,
 it is important to put the Glean SDK into testing mode by applying the JUnit `GleanTestRule` to your test class.
 When the Glean SDK is in testing mode, it enables uploading and clears the recorded metrics at the beginning of each test run.
 The rule can be used as shown below:
@@ -56,7 +56,7 @@ so the IDE should complain if you attempt to use them inside of client code.
 
 > **NOTE**: There's no automatic test rule for Glean tests implemented.
 
-In order to prevent issues with async calls when unit testing Glean, it is important to put the Glean SDK into testing mode.
+In order to prevent issues with async calls when unit testing the Glean SDK, it is important to put the Glean SDK into testing mode.
 When the Glean SDK is in testing mode, it enables uploading and clears the recorded metrics at the beginning of each test run.
 
 Activate it by resetting Glean in your test's setup:
@@ -100,11 +100,11 @@ Note that each of these functions is marked as `internal`, you need to import `G
 
 <div data-lang="Python" class="tab">
 
-It is generally a good practice to "reset" Glean prior to every unit test that uses Glean, to prevent side effects of one unit test impacting others.
-Glean contains a helper function `glean.testing.reset_glean()` for this purpose.
+It is generally a good practice to "reset" the Glean SDK prior to every unit test that uses the Glean SDK, to prevent side effects of one unit test impacting others.
+The Glean SDK contains a helper function `glean.testing.reset_glean()` for this purpose.
 It has two required arguments: the application ID, and the application version.
-Each reset of Glean will create a new temporary directory for Glean to store its data in.
-This temporary directory is automatically cleaned up the next time Glean is reset or when the testing framework finishes.
+Each reset of the Glean SDK will create a new temporary directory for Glean to store its data in.
+This temporary directory is automatically cleaned up the next time the Glean SDK is reset or when the testing framework finishes.
 
 The instructions below assume you are using [pytest](https://pypi.org/project/pytest/) as the test runner.
 Other test-running libraries have similar features, but are different in the details.
@@ -144,7 +144,7 @@ assert (
 
 </div>
 
-<div data-lang="Python" class="tab">
+<div data-lang="C#" class="tab">
 
 TODO. To be implemented in [bug 1648448](https://bugzilla.mozilla.org/show_bug.cgi?id=1648448).
 
@@ -250,7 +250,7 @@ assert 1 == metrics.url.visit.test_get_value()
 
 </div>
 
-<div data-lang="Python" class="tab">
+<div data-lang="C#" class="tab">
 
 TODO. To be implemented in [bug 1648448](https://bugzilla.mozilla.org/show_bug.cgi?id=1648448).
 

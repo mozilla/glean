@@ -10,7 +10,7 @@
 
 ### Available commands and query format
 
-There are 4 available commands that you can use with the Glean SDK debug tools
+There are 4 available commands that you can use with the Glean SDK debug tools:
 
 - `logPings`: This is either true or false and will cause pings that are submitted to also be echoed to the device's log.
 - `debugViewTag`: This command will tag outgoing pings with the provided value, in order to identify them in the Glean Debug View. Tags need to be string with upper and lower case letters, numbers and dashes, with a max length of 20 characters.
@@ -45,9 +45,9 @@ Enabling debugging features using environment variables is available for all sup
     2. You can tag _and_ send pings using the debug tools.  This has the side effect of potentially sending a ping which does not include all fields because `sendPing` triggers pings to be sent before certain application behaviors can occur which would record that information.  For example, `duration` is not calculated or included in a baseline ping sent with `sendPing` because it forces the ping to be sent before the `duration` metric has been recorded.  Keep in mind that there may be nothing to send, in which case no ping is generated.
     3. You can trigger a command while the instrumented application is still running.  This is useful for toggling commands or for triggering pings that have schedules that are difficult to trigger manually.  This is especially useful if you need to trigger a ping submission after some activity within the application, such as with the metrics ping.
 
-### Glean Log messages
+### Glean SDK Log messages
 
-Glean logs warnings and errors through the platform-specific logging frameworks.  See the platform-specific instructions for information on how to view the logs.
+The Glean SDK logs warnings and errors through the platform-specific logging frameworks.  See the platform-specific instructions for information on how to view the logs.
 
 ### Implementation details
 

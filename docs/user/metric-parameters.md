@@ -39,4 +39,14 @@
 
 - `version`: (default: 0) The version of the metric. A monotonically increasing integer value. This should be bumped if the metric changes in a backward-incompatible way.
 
+- `data_sensitivity`: (default: []) A list of data sensitivity categories that the metric falls under. There are four data collection categories related to data sensitivity [defined in Mozilla's data collection review process](https://wiki.mozilla.org/Firefox/Data_Collection):
+   
+    - **Category 1: Technical Data:** (`technical`) Information about the machine or Firefox itself. Examples include OS, available memory, crashes and errors, outcome of automated processes like updates, safe browsing, activation, version \#s, and build id. This also includes compatibility information about features and APIs used by websites, add-ons, and other 3rd-party software that interact with Firefox during usage.
+
+    - **Category 2: Interaction Data:** (`interaction`) Information about the user’s direct engagement with Firefox. Examples include how many tabs, add-ons, or windows a user has open; uses of specific Firefox features; session length, scrolls and clicks; and the status of discrete user preferences.
+
+    - **Category 3: Web activity data:** (`web_activity`) Information about user web browsing that could be considered sensitive. Examples include users’ specific web browsing history; general information about their web browsing history (such as TLDs or categories of webpages visited over time); and potentially certain types of interaction data about specific webpages visited.
+
+    - **Category 4: Highly sensitive data:** (`highly_sensitive`) Information that directly identifies a person, or if combined with other data could identify a person. Examples include e-mail, usernames, identifiers such as google ad id, apple id, Firefox account, city or country (unless small ones are explicitly filtered out), or certain cookies. It may be embedded within specific website content, such as memory contents, dumps, captures of screen data, or DOM data.
+
 
