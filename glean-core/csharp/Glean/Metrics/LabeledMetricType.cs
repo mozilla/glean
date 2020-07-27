@@ -102,7 +102,7 @@ namespace Mozilla.Glean.Private
                 // required in order to make the compiler not complain. Since the `where` clause for
                 // this class cannot list more than one class, we need all our supported subtypes to
                 // implement a common interface and use that interface as the T type constraint. This
-                // allows us to then explicitly cast back to T, which is otherwise impossible.
+                // allows us to then explicitly cast bach to T, which is otherwise impossible.
                 switch (submetric)
                 {
                     case BooleanMetricType _:
