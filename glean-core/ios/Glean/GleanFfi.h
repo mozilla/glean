@@ -409,7 +409,7 @@ void glean_enable_logging(void);
  *
  * # Safety
  * Unsafe because the fd u64 passed in will be interpreted as either a file
- * descriptor (Unix) or file hangle (Windows) without any checking.
+ * descriptor (Unix) or file handle (Windows) without any checking.
  */
 void glean_enable_logging_to_pipe(uint64_t fd);
 

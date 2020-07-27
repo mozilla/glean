@@ -195,7 +195,7 @@ static FD_LOGGER: OnceCell<fd_logger::FdLogger> = OnceCell::new();
 ///
 /// # Safety
 /// Unsafe because the fd u64 passed in will be interpreted as either a file
-/// descriptor (Unix) or file hangle (Windows) without any checking.
+/// descriptor (Unix) or file handle (Windows) without any checking.
 #[cfg(all(not(target_os = "android"), not(target_os = "ios")))]
 #[no_mangle]
 pub unsafe extern "C" fn glean_enable_logging_to_pipe(fd: u64) {
