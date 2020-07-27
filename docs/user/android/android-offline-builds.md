@@ -12,7 +12,7 @@ To build a Glean-using application in offline mode, do the following:
 
   - On Linux, installing Python from your Linux distribution's package manager is usually sufficient. 
   
-  - On macOS, installing Python from [homebrew](https://brew.sh/) is known to work, but other package managers may also work.
+  - On macOS, installing Python from [`homebrew`](https://brew.sh/) is known to work, but other package managers may also work.
   
   - On Windows, we recommend installing one of the official Python installers from [python.org](https://python.org).
   
