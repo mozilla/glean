@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v31.6.0...main)
 
+* C#
+  * Add support for Labeled Strings and Labeled Booleans.
+
 # v31.6.0 (2020-07-24)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v31.5.0...v31.6.0)
