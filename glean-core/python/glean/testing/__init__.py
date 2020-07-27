@@ -50,7 +50,7 @@ def reset_glean(
     # False.
     Dispatcher._testing_mode = True
 
-    Glean.initialize(
+    Glean._initialize_with_tempdir_for_testing(
         application_id=application_id,
         application_version=application_version,
         upload_enabled=True,

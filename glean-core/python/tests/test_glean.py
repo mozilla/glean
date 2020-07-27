@@ -47,7 +47,7 @@ ROOT = Path(__file__).parent
 def test_setting_upload_enabled_before_initialization_should_not_crash():
     Glean._reset()
     Glean.set_upload_enabled(True)
-    Glean.initialize(
+    Glean._initialize_with_tempdir_for_testing(
         application_id=GLEAN_APP_ID,
         application_version=glean_version,
         upload_enabled=True,
@@ -127,7 +127,7 @@ def test_experiments_recording_before_glean_inits():
     Glean.set_experiment_inactive("experiment_preinit_disabled")
 
     # This will init Glean and flush the dispatcher's queue.
-    Glean.initialize(
+    Glean._initialize_with_tempdir_for_testing(
         application_id=GLEAN_APP_ID,
         application_version=glean_version,
         upload_enabled=True,
@@ -153,7 +153,7 @@ def test_initialize_must_not_crash_if_data_dir_is_messed_up(tmpdir):
     assert False is Glean.is_initialized()
 
     # Pass in the filename as the data_dir
-    Glean.initialize(
+    Glean._initialize_with_tempdir_for_testing(
         application_id=GLEAN_APP_ID,
         application_version=glean_version,
         upload_enabled=True,
@@ -183,7 +183,7 @@ def test_queued_recorded_metrics_correctly_during_init():
     for i in range(2):
         counter_metric.add()
 
-    Glean.initialize(
+    Glean._initialize_with_tempdir_for_testing(
         application_id=GLEAN_APP_ID,
         application_version=glean_version,
         upload_enabled=True,
@@ -196,7 +196,7 @@ def test_queued_recorded_metrics_correctly_during_init():
 def test_initializing_twice_is_a_no_op():
     before_config = Glean._configuration
 
-    Glean.initialize(
+    Glean._initialize_with_tempdir_for_testing(
         application_id=GLEAN_APP_ID,
         application_version=glean_version,
         upload_enabled=True,
@@ -248,7 +248,7 @@ def test_dont_schedule_pings_if_there_is_no_ping_content(safe_httpserver):
 
 def test_the_app_channel_must_be_correctly_set():
     Glean._reset()
-    Glean.initialize(
+    Glean._initialize_with_tempdir_for_testing(
         application_id=GLEAN_APP_ID,
         application_version=glean_version,
         upload_enabled=True,
@@ -439,7 +439,7 @@ def test_tempdir_is_cleared_multiprocess(safe_httpserver):
 def test_set_application_build_id():
     Glean._reset()
 
-    Glean.initialize(
+    Glean._initialize_with_tempdir_for_testing(
         application_id="my-id",
         application_version="my-version",
         application_build_id="123ABC",
@@ -455,7 +455,7 @@ def test_set_application_id_and_version(safe_httpserver):
     safe_httpserver.serve_content(b"", code=200)
     Glean._reset()
 
-    Glean.initialize(
+    Glean._initialize_with_tempdir_for_testing(
         application_id="my-id",
         application_version="my-version",
         upload_enabled=True,
@@ -542,7 +542,7 @@ def test_sending_deletion_ping_if_disabled_outside_of_run(tmpdir, ping_schema_ur
 
     Glean._reset()
 
-    Glean.initialize(
+    Glean._initialize_with_tempdir_for_testing(
         application_id=GLEAN_APP_ID,
         application_version=glean_version,
         upload_enabled=True,
@@ -552,7 +552,7 @@ def test_sending_deletion_ping_if_disabled_outside_of_run(tmpdir, ping_schema_ur
 
     Glean._reset()
 
-    Glean.initialize(
+    Glean._initialize_with_tempdir_for_testing(
         application_id=GLEAN_APP_ID,
         application_version=glean_version,
         upload_enabled=False,
@@ -583,7 +583,7 @@ def test_no_sending_deletion_ping_if_unchanged_outside_of_run(safe_httpserver, t
     Glean._reset()
     config = Configuration(server_endpoint=safe_httpserver.url)
 
-    Glean.initialize(
+    Glean._initialize_with_tempdir_for_testing(
         application_id=GLEAN_APP_ID,
         application_version=glean_version,
         upload_enabled=False,
@@ -595,7 +595,7 @@ def test_no_sending_deletion_ping_if_unchanged_outside_of_run(safe_httpserver, t
 
     Glean._reset()
 
-    Glean.initialize(
+    Glean._initialize_with_tempdir_for_testing(
         application_id=GLEAN_APP_ID,
         application_version=glean_version,
         upload_enabled=False,
@@ -634,7 +634,7 @@ def test_dont_allow_multiprocessing(monkeypatch, safe_httpserver):
 def test_clear_application_lifetime_metrics(tmpdir):
     Glean._reset()
 
-    Glean.initialize(
+    Glean._initialize_with_tempdir_for_testing(
         application_id=GLEAN_APP_ID,
         application_version=glean_version,
         upload_enabled=True,
@@ -663,7 +663,7 @@ def test_clear_application_lifetime_metrics(tmpdir):
 
     Glean._reset()
 
-    Glean.initialize(
+    Glean._initialize_with_tempdir_for_testing(
         application_id=GLEAN_APP_ID,
         application_version=glean_version,
         upload_enabled=True,
@@ -711,7 +711,7 @@ def test_presubmit_makes_a_valid_ping(tmpdir, ping_schema_url, monkeypatch):
 
     # Submit a ping prior to calling initialize
     ping.submit()
-    Glean.initialize(
+    Glean._initialize_with_tempdir_for_testing(
         application_id=GLEAN_APP_ID,
         application_version=glean_version,
         upload_enabled=True,
@@ -744,7 +744,7 @@ def test_app_display_version_unknown():
     from glean import _builtins
 
     Glean._reset()
-    Glean.initialize(
+    Glean._initialize_with_tempdir_for_testing(
         application_id=GLEAN_APP_ID, application_version=None, upload_enabled=True,
     )
 
@@ -774,7 +774,7 @@ def test_flipping_upload_enabled_respects_order_of_events(tmpdir, monkeypatch):
 
     configuration = Glean._configuration
     configuration.ping_uploader = _RecordingUploader(info_path)
-    Glean.initialize(
+    Glean._initialize_with_tempdir_for_testing(
         application_id=GLEAN_APP_ID,
         application_version=glean_version,
         upload_enabled=True,
@@ -797,3 +797,15 @@ def test_flipping_upload_enabled_respects_order_of_events(tmpdir, monkeypatch):
 
     # Validate we got the deletion-request ping
     assert "deletion-request" == url_path.split("/")[3]
+
+
+def test_data_dir_is_required():
+    Glean._reset()
+
+    with pytest.raises(TypeError):
+        Glean.initialize(
+            application_id=GLEAN_APP_ID,
+            application_version=glean_version,
+            upload_enabled=True,
+            configuration=Glean._configuration,
+        )
