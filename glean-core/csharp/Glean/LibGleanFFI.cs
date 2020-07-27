@@ -314,6 +314,55 @@ namespace Mozilla.Glean.FFI
              string storage_name
         );
 
+
+        // Labeled Boolean
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern UInt64 glean_new_labeled_boolean_metric(
+            string category,
+            string name,
+            string [] send_in_pings,
+            Int32 send_in_pings_len,
+            Int32 lifetime,
+            bool disabled,
+            string [] labels,
+            Int32 label_count
+        );
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern UInt64 glean_labeled_boolean_metric_get(UInt64 handle, string label);
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern Int32 glean_labeled_boolean_test_get_num_recorded_errors(
+             UInt64 metric_id,
+             Int32 error_type,
+             string storage_name
+         );
+
+        // Labeled string
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern UInt64 glean_new_labeled_string_metric(
+            string category,
+            string name,
+            string[] send_in_pings,
+            Int32 send_in_pings_len,
+            Int32 lifetime,
+            bool disabled,
+            string[] labels,
+            Int32 label_count
+          );
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern UInt64 glean_labeled_string_metric_get(UInt64 handle, string label);
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern Int32 glean_labeled_string_test_get_num_recorded_errors(
+             UInt64 metric_id,
+             Int32 error_type,
+             string storage_name
+        );
+
         // JWE
 
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
