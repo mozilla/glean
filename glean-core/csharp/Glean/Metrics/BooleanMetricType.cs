@@ -17,7 +17,7 @@ namespace Mozilla.Glean.Private
     ///
     /// The internal constructor is only used by [LabeledMetricType] directly.
     /// </summary>
-    public sealed class BooleanMetricType
+    public sealed class BooleanMetricType : ILabeledSubmetricInterface
     {
         private bool disabled;
         private string[] sendInPings;
