@@ -5,6 +5,7 @@
 using Mozilla.Glean.Private;
 using Mozilla.Glean.Testing;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Xunit;
 using static Mozilla.Glean.Glean;
@@ -13,11 +14,11 @@ namespace Mozilla.Glean.Tests.Metrics
 {
     public class LabeledMetricTypeTest
     {
+        // Get a random test directory just for this single test.
+        string TempDataDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+
         public LabeledMetricTypeTest()
         {
-            // Get a random test directory just for this single test.
-            string tempDataDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-
             // In xUnit, the constructor will be called before each test. This
             // feels like a natural place to initialize / reset Glean.
             GleanInstance.Reset(
@@ -25,38 +26,201 @@ namespace Mozilla.Glean.Tests.Metrics
                 applicationVersion: "1.0-test",
                 uploadEnabled: true,
                 configuration: new Configuration(),
-                dataDir: tempDataDir
+                dataDir: TempDataDir
                 );
         }
 
         [Fact]
         public void TestLabeledCounterType()
         {
-            // TODO: Placeholder. Implement in bug 1648437 by converting the Kotlin test.
+            CounterMetricType counterMetric = new CounterMetricType(
+                disabled: false,
+                category: "telemetry",
+                lifetime: Lifetime.Application,
+                name: "labeled_counter_metric",
+                sendInPings: new string[] { "metrics" }
+            );
+
+            var labeledCounterMetric = new LabeledMetricType<CounterMetricType>(
+                disabled: false,
+                category: "telemetry",
+                lifetime: Lifetime.Application,
+                name: "labeled_counter_metric",
+                sendInPings: new string[] { "metrics" },
+                submetric: counterMetric
+            );
+
+            labeledCounterMetric["label1"].Add(1);
+            labeledCounterMetric["label2"].Add(2);
+
+            // Record a regular non-labeled counter. This isn't normally
+            // possible with the generated code because the subMetric is private,
+            // but it's useful to test here that it works.
+            counterMetric.Add(3);
+
+            Assert.True(labeledCounterMetric["label1"].TestHasValue());
+            Assert.Equal(1, labeledCounterMetric["label1"].TestGetValue());
+
+            Assert.True(labeledCounterMetric["label2"].TestHasValue());
+            Assert.Equal(2, labeledCounterMetric["label2"].TestGetValue());
+
+            Assert.True(counterMetric.TestHasValue());
+            Assert.Equal(3, counterMetric.TestGetValue());
         }
 
         [Fact]
         public void TestOtherLabelWithPredefinedLabels()
         {
-            // TODO: Placeholder. Implement in bug 1648437 by converting the Kotlin test.
+            CounterMetricType counterMetric = new CounterMetricType(
+                disabled: false,
+                category: "telemetry",
+                lifetime: Lifetime.Application,
+                name: "labeled_counter_metric",
+                sendInPings: new string[] { "metrics" }
+            );
+
+            var labeledCounterMetric = new LabeledMetricType<CounterMetricType>(
+                disabled: false,
+                category: "telemetry",
+                lifetime: Lifetime.Application,
+                name: "labeled_counter_metric",
+                sendInPings: new string[] { "metrics" },
+                submetric: counterMetric,
+                labels: new HashSet<string>() { "foo", "bar", "baz" }
+            );
+
+            labeledCounterMetric["foo"].Add(1);
+            labeledCounterMetric["foo"].Add(2);
+            labeledCounterMetric["bar"].Add(1);
+            labeledCounterMetric["not_there"].Add(1);
+            labeledCounterMetric["also_not_there"].Add(1);
+            labeledCounterMetric["not_me"].Add(1);
+
+            Assert.Equal(3, labeledCounterMetric["foo"].TestGetValue());
+            Assert.Equal(1, labeledCounterMetric["bar"].TestGetValue());
+            Assert.False(labeledCounterMetric["baz"].TestHasValue());
+            // The rest all lands in the __other__ bucket
+            Assert.Equal(3, labeledCounterMetric["not_there"].TestGetValue());
         }
 
         [Fact]
         public void TestOtherLabelWithoutPredefinedLabels()
         {
-            // TODO: Placeholder. Implement in bug 1648437 by converting the Kotlin test.
+            CounterMetricType counterMetric = new CounterMetricType(
+                disabled: false,
+                category: "telemetry",
+                lifetime: Lifetime.Application,
+                name: "labeled_counter_metric",
+                sendInPings: new string[] { "metrics" }
+            );
+
+            var labeledCounterMetric = new LabeledMetricType<CounterMetricType>(
+                disabled: false,
+                category: "telemetry",
+                lifetime: Lifetime.Application,
+                name: "labeled_counter_metric",
+                sendInPings: new string[] { "metrics" },
+                submetric: counterMetric
+            );
+
+            for (int i = 0; i <= 20; i++)
+            {
+                labeledCounterMetric[$"label_{i}"].Add(1);
+            }
+            // Go back and record in one of the real labels again
+            labeledCounterMetric["label_0"].Add(1);
+
+            Assert.Equal(2, labeledCounterMetric["label_0"].TestGetValue());
+            for (int i = 1; i <= 15; i++)
+            {
+                Assert.Equal(1, labeledCounterMetric[$"label_{i}"].TestGetValue());
+            }
+            Assert.Equal(5, labeledCounterMetric["__other__"].TestGetValue());
         }
 
         [Fact]
         public void TestOtherLabelWithoutPredefinedLabelsBeforeGleanInits()
         {
-            // TODO: Placeholder. Implement in bug 1648437 by converting the Kotlin test.
+            CounterMetricType counterMetric = new CounterMetricType(
+                disabled: false,
+                category: "telemetry",
+                lifetime: Lifetime.Application,
+                name: "labeled_counter_metric",
+                sendInPings: new string[] { "metrics" }
+            );
+
+            var labeledCounterMetric = new LabeledMetricType<CounterMetricType>(
+                disabled: false,
+                category: "telemetry",
+                lifetime: Lifetime.Application,
+                name: "labeled_counter_metric",
+                sendInPings: new string[] { "metrics" },
+                submetric: counterMetric
+            );
+
+            // Make sure Glean isn't initialized, and turn task queueing on
+            GleanInstance.TestDestroyGleanHandle();
+            Dispatchers.QueueInitialTasks = true;
+
+            for (int i = 0; i <= 20; i++)
+            {
+                labeledCounterMetric[$"label_{i}"].Add(1);
+            }
+            // Go back and record in one of the real labels again
+            labeledCounterMetric["label_0"].Add(1);
+
+            // Initialize glean
+            GleanInstance.Initialize(
+                applicationId: "org.mozilla.csharp.tests",
+                applicationVersion: "1.0-test",
+                uploadEnabled: true,
+                configuration: new Configuration(),
+                dataDir: TempDataDir
+                );
+
+            Assert.Equal(2, labeledCounterMetric["label_0"].TestGetValue());
+            for (int i = 1; i <= 15; i++)
+            {
+                Assert.Equal(1, labeledCounterMetric[$"label_{i}"].TestGetValue());
+            }
+            Assert.Equal(5, labeledCounterMetric["__other__"].TestGetValue());
         }
 
         [Fact]
         public void EnsureInvalidLabelsOnLabeledCounterGoToOther()
         {
-            // TODO: Placeholder. Implement in bug 1648437 by converting the Kotlin test.
+            CounterMetricType counterMetric = new CounterMetricType(
+                disabled: false,
+                category: "telemetry",
+                lifetime: Lifetime.Application,
+                name: "labeled_counter_metric",
+                sendInPings: new string[] { "metrics" }
+            );
+
+            var labeledCounterMetric = new LabeledMetricType<CounterMetricType>(
+                disabled: false,
+                category: "telemetry",
+                lifetime: Lifetime.Application,
+                name: "labeled_counter_metric",
+                sendInPings: new string[] { "metrics" },
+                submetric: counterMetric
+            );
+
+            labeledCounterMetric["notSnakeCase"].Add(1);
+            labeledCounterMetric[""].Add(1);
+            labeledCounterMetric["with/slash"].Add(1);
+            labeledCounterMetric["this_string_has_more_than_thirty_characters"].Add(1);
+
+            Assert.Equal(
+                4,
+                labeledCounterMetric.TestGetNumRecordedErrors(
+                    ErrorType.InvalidLabel
+                )
+            );
+            Assert.Equal(
+                4,
+                labeledCounterMetric["__other__"].TestGetValue()
+            );
         }
 
         [Fact]

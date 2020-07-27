@@ -59,6 +59,9 @@ namespace Mozilla.Glean.Private
                 case BooleanMetricType _:
                     metricTypeInstantiator = LibGleanFFI.glean_new_labeled_boolean_metric;
                     break;
+                case CounterMetricType _:
+                    metricTypeInstantiator = LibGleanFFI.glean_new_labeled_counter_metric;
+                    break;
                 case StringMetricType _:
                     metricTypeInstantiator = LibGleanFFI.glean_new_labeled_string_metric;
                     break;
@@ -102,13 +105,18 @@ namespace Mozilla.Glean.Private
                 // required in order to make the compiler not complain. Since the `where` clause for
                 // this class cannot list more than one class, we need all our supported subtypes to
                 // implement a common interface and use that interface as the T type constraint. This
-                // allows us to then explicitly cast bach to T, which is otherwise impossible.
+                // allows us to then explicitly cast back to T, which is otherwise impossible.
                 switch (submetric)
                 {
                     case BooleanMetricType _:
                         {
                             UInt64 handle = LibGleanFFI.glean_labeled_boolean_metric_get(this.handle, label);
                             return (T)(ILabeledSubmetricInterface)new BooleanMetricType(handle, disabled, sendInPings);
+                        }
+                    case CounterMetricType _:
+                        {
+                            UInt64 handle = LibGleanFFI.glean_labeled_counter_metric_get(this.handle, label);
+                            return (T)(ILabeledSubmetricInterface)new CounterMetricType(handle, disabled, sendInPings);
                         }
                     case StringMetricType _:
                         {
@@ -140,6 +148,10 @@ namespace Mozilla.Glean.Private
                 case BooleanMetricType _:
                     {
                         return LibGleanFFI.glean_labeled_boolean_test_get_num_recorded_errors(handle, (int)errorType, ping);
+                    }
+                case CounterMetricType _:
+                    {
+                        return LibGleanFFI.glean_labeled_counter_test_get_num_recorded_errors(handle, (int)errorType, ping);
                     }
                 case StringMetricType _:
                     {

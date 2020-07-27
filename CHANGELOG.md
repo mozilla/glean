@@ -4,6 +4,7 @@
 
 * C#
   * Add support for Labeled Strings and Labeled Booleans.
+  * Add support for the Counter metric type and Labeled Counter.
 
 # v31.6.0 (2020-07-24)
 
