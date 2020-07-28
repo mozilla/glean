@@ -69,9 +69,9 @@ All the default pings have their scheduling and submission handled by the SDK.
 
 The measurement window of a ping is the time frame in which metrics are being actively gathered for it.
 
-The measurement window start time is the moment the previous ping gets collected. Once the previous ping is collected, new metrics that are recorded will be part of the current ping.
+The measurement window start time is the moment the previous ping is submitted. In the absence of a previous ping, this time will be the time the application process started.
 
-The measurement window end time is the moment the current ping gets collected. Any new metric recorded will be part of the next ping, so this pings measurement window is over.
+The measurement window end time is the moment the current ping gets submitted. Any new metric recorded after submission will be part of the next ping, so this pings measurement window is over.
 
 
 ## This Week in Glean (TWiG)
