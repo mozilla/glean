@@ -50,8 +50,7 @@ impl CoreMetrics {
 #[derive(Debug)]
 pub struct UploadMetrics {
     pub ping_upload_failure: LabeledMetric<CounterMetric>,
-    pub discarded_exceeding_ping_size: MemoryDistributionMetric,
-    pub discarded_exceeding_pings: CounterMetric,
+    pub discarded_exceeding_pings_size: MemoryDistributionMetric,
 }
 
 impl UploadMetrics {
@@ -75,7 +74,7 @@ impl UploadMetrics {
                 ]),
             ),
 
-            discarded_exceeding_ping_size: MemoryDistributionMetric::new(
+            discarded_exceeding_pings_size: MemoryDistributionMetric::new(
                 CommonMetricData {
                     name: "discarded_exceeding_ping_size".into(),
                     category: "glean.upload".into(),
@@ -86,15 +85,6 @@ impl UploadMetrics {
                 },
                 MemoryUnit::Kilobyte,
             ),
-
-            discarded_exceeding_pings: CounterMetric::new(CommonMetricData {
-                name: "discarded_exceeding_pings".into(),
-                category: "glean.upload".into(),
-                send_in_pings: vec!["metrics".into()],
-                lifetime: Lifetime::Ping,
-                disabled: false,
-                dynamic_label: None,
-            }),
         }
     }
 }

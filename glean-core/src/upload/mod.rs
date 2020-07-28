@@ -237,9 +237,8 @@ impl PingUploadManager {
                 // Record the error.
                 // Currently the only possible error is PingBodyOverflow.
                 if let ErrorKind::PingBodyOverflow(s) = e.kind() {
-                    self.upload_metrics.discarded_exceeding_pings.add(glean, 1);
                     self.upload_metrics
-                        .discarded_exceeding_ping_size
+                        .discarded_exceeding_pings_size
                         .accumulate(glean, *s as u64 / 1024);
                 }
 
