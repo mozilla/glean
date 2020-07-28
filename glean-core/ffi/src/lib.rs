@@ -189,7 +189,10 @@ pub extern "C" fn glean_enable_logging() {
 #[cfg(all(not(target_os = "android"), not(target_os = "ios")))]
 static FD_LOGGER: OnceCell<fd_logger::FdLogger> = OnceCell::new();
 
-/// Initialize the logging system to send JSON messages to a pipe.
+/// Initialize the logging system to send JSON messages to a file descriptor
+/// (Unix) or file handle (Windows).
+///
+/// Not available on Android and iOS.
 ///
 /// `fd` is a writable file descriptor (on Unix) or file handle (on Windows).
 ///
@@ -198,7 +201,7 @@ static FD_LOGGER: OnceCell<fd_logger::FdLogger> = OnceCell::new();
 /// descriptor (Unix) or file handle (Windows) without any checking.
 #[cfg(all(not(target_os = "android"), not(target_os = "ios")))]
 #[no_mangle]
-pub unsafe extern "C" fn glean_enable_logging_to_pipe(fd: u64) {
+pub unsafe extern "C" fn glean_enable_logging_to_fd(fd: u64) {
     // Set up logging to a file descriptor/handle. For this usage, the
     // language binding should setup a pipe and pass in the descriptor to
     // the writing side of the pipe as the `fd` parameter. Log messages are

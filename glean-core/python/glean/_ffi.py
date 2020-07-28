@@ -47,7 +47,7 @@ def setup_logging():
     Must be called after the Glean core has been dlopen'd.
     """
     r, w = os.pipe()
-    lib.glean_enable_logging_to_pipe(w)
+    lib.glean_enable_logging_to_fd(w)
 
     reader = os.fdopen(r, encoding="utf-8")
 
