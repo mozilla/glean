@@ -135,7 +135,7 @@ TODO. To be implemented in [bug 1643568](https://bugzilla.mozilla.org/show_bug.c
 All metrics that your project collects must be defined in a `metrics.yaml` file.
 
 To learn more, see [adding new metrics](adding-new-metrics.md).
-See the [metric parameters](metric-parameters.md) documentation provides reference information about the contents of that file.
+See the [metric parameters](metric-parameters.md) documentation which provides reference information about the contents of that file.
 
 > **Important**: as stated [before](adding-glean-to-your-project.md#before-using-glean), any new data collection requires documentation and data-review.
 > This is also required for any new metric automatically collected by the Glean SDK.
@@ -322,7 +322,7 @@ The Glean SDK releases the Global Interpreter Lock (GIL) for most of its operati
 The Glean SDK installs an [`atexit` handler](https://docs.python.org/3/library/atexit.html) so that its worker thread can cleanly finish when your application exits.
 This handler will wait up to 30 seconds for any pending work to complete.
 
-In addition, by default, ping uploading is performed in a separate child process. This process will continue to upload any pending pings even after the main process shuts down. This is important for commandline tools where you want to return control to the shell as soon as possible and not be delayed by network connectivity.
+By default, ping uploading is performed in a separate child process. This process will continue to upload any pending pings even after the main process shuts down. This is important for commandline tools where you want to return control to the shell as soon as possible and not be delayed by network connectivity.
 
 #### Cases where subprocesses aren't possible
 
