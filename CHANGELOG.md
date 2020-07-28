@@ -2,6 +2,10 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v31.6.0...main)
 
+* General
+  * Limit ping request body size to 1MB. ([#1098]((https://github.com/mozilla/glean/pull/1098)))
+* iOS
+  * Implement ping tagging (i.e. the `X-Source-Tags` header) through custom URL ([#1100](https://github.com/mozilla/glean/pull/1100)).
 * C#
   * Add support for Labeled Strings and Labeled Booleans.
   * Add support for the Counter metric type and Labeled Counter.

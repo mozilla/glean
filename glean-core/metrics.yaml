@@ -383,7 +383,7 @@ glean.upload:
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1597761
     data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1597761#c4
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1597761#c10
     data_sensitivity:
       - technical
     notification_emails:
