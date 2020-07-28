@@ -67,7 +67,7 @@ All the default pings have their scheduling and submission handled by the SDK.
 
 ## Measurement window
 
-The measurement window of a ping is the timeframe in which metrics are being actively gathered for it.
+The measurement window of a ping is the time frame in which metrics are being actively gathered for it.
 
 The measurement window start time is the moment the previous ping gets collected. Once the previous ping is collected, new metrics that are recorded will be part of the current ping.
 
