@@ -6,6 +6,7 @@
 import OHHTTPStubs
 import XCTest
 
+// swiftlint:disable type_body_length
 class GleanTests: XCTestCase {
     var expectation: XCTestExpectation?
 
@@ -328,6 +329,32 @@ class GleanTests: XCTestCase {
         }
     }
 
+    func testSettingSourceTagsBeforeInitialization() {
+        // This test relies on Glean not being initialized
+        Glean.shared.testDestroyGleanHandle()
+
+        XCTAssert(Glean.shared.setSourceTags(["valid-tag", "tag-valid"]))
+
+        // Set the last time the "metrics" ping was sent to now. This is required for us to not
+        // send a metrics pings the first time we initialize Glean and to keep it from interfering
+        // with these tests.
+        let now = Date()
+        Glean.shared.metricsPingScheduler.updateSentDate(now)
+        // Restart glean
+        Glean.shared.resetGlean(clearStores: false)
+
+        let host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
+        stub(condition: isHost(host)) { data in
+            let request = data as NSURLRequest
+            XCTAssertEqual(request.value(forHTTPHeaderField: "X-Source-Tags"), "valid-tag,tag-valid")
+            return OHHTTPStubsResponse(
+                jsonObject: [],
+                statusCode: 200,
+                headers: ["Content-Type": "application/json"]
+            )
+        }
+    }
+
     func testFlippingUploadEnabledRespectsOrderOfEvents() {
         // This test relies on Glean not being initialized
         Glean.shared.testDestroyGleanHandle()
@@ -386,3 +413,5 @@ class GleanTests: XCTestCase {
         }
     }
 }
+
+// swiftlint:enable type_body_length
