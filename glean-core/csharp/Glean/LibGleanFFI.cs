@@ -215,6 +215,38 @@ namespace Mozilla.Glean.FFI
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
         internal static extern byte glean_boolean_test_has_value(UInt64 metric_id, string storage_name);
 
+
+        // Counter
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern UInt64 glean_new_counter_metric(
+            string category,
+            string name,
+            string[] send_in_pings,
+            Int32 send_in_pings_len,
+            Int32 lifetime,
+            bool disabled
+        );
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void glean_destroy_counter_metric(IntPtr handle);
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void glean_counter_add(UInt64 metric_id, Int32 amount);
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern Int32 glean_counter_test_get_value(UInt64 metric_id, string storage_name);
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern bool glean_counter_test_has_value(UInt64 metric_id, string storage_name);
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern Int32 glean_counter_test_get_num_recorded_errors(
+            UInt64 metric_id,
+            Int32 error_type,
+            String storage_name
+        );
+
         // Uuid
 
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
@@ -314,6 +346,29 @@ namespace Mozilla.Glean.FFI
              string storage_name
         );
 
+        // Labeled Counter
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern UInt64 glean_new_labeled_counter_metric(
+            string category,
+            string name,
+            string[] send_in_pings,
+            Int32 send_in_pings_len,
+            Int32 lifetime,
+            bool disabled,
+            string[] labels,
+            Int32 label_count
+        );
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern UInt64 glean_labeled_counter_metric_get(UInt64 handle, string label);
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern Int32 glean_labeled_counter_test_get_num_recorded_errors(
+             UInt64 metric_id,
+             Int32 error_type,
+             string storage_name
+        );
 
         // Labeled Boolean
 
@@ -337,7 +392,7 @@ namespace Mozilla.Glean.FFI
              UInt64 metric_id,
              Int32 error_type,
              string storage_name
-         );
+        );
 
         // Labeled string
 
