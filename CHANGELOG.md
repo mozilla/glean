@@ -2,6 +2,10 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v32.0.0...main)
 
+* General
+  * Update `glean_parser` to `v1.28.3`
+    * BUGFIX: Generate valid C# code when using Labeled metric types.
+    * BUGFIX: Support `HashSet` and `Dictionary` in the C# generated code.
 * C#
   * Add support for the String List metric type.
 
