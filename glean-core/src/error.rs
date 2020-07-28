@@ -62,7 +62,7 @@ pub enum ErrorKind {
     NotInitialized,
 
     /// Ping request body size overflowed
-    PingBodyOverflow(u64),
+    PingBodyOverflow(usize),
 }
 
 /// A specialized [`Error`] type for this crate's operations.

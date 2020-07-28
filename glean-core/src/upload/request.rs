@@ -164,7 +164,7 @@ impl Builder {
             .expect("body must be set before attempting to build PingRequest");
 
         if body.len() > self.body_max_size {
-            return Err(ErrorKind::PingBodyOverflow(body.len() as u64).into());
+            return Err(ErrorKind::PingBodyOverflow(body.len()).into());
         }
 
         Ok(PingRequest {
@@ -203,7 +203,7 @@ impl PingRequest {
     ///
     /// * `language_binding_name` - The name of the language used by the binding that instantiated this Glean instance.
     ///                             This is used to build the User-Agent header value.
-    /// * `body_max_size` - The maximum size the compressed ping body may have to be eligible for upload.
+    /// * `body_max_size` - The maximum size in bytes the compressed ping body may have to be eligible for upload.
     pub fn builder(language_binding_name: &str, body_max_size: usize) -> Builder {
         Builder::new(language_binding_name, body_max_size)
     }
@@ -276,11 +276,15 @@ mod test {
 
     #[test]
     fn errors_when_request_body_exceeds_max_size() {
-        let request = Builder::new(/* language_binding_name */ "Rust", 0)
-            .document_id("woop")
-            .path("/random/path/doesnt/matter")
-            .body("{}")
-            .build();
+        // Create a new builder with an arbitrarily small value,
+        // se we can test that the builder errors when body max size exceeds the expected.
+        let request = Builder::new(
+            /* language_binding_name */ "Rust", /* body_max_size */ 1,
+        )
+        .document_id("woop")
+        .path("/random/path/doesnt/matter")
+        .body("{}")
+        .build();
 
         assert!(request.is_err());
     }

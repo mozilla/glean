@@ -26,8 +26,8 @@ mod directory;
 mod request;
 mod result;
 
-// The maximum size a ping body may have to be eligible for upload.
-const PING_BODY_MAX_SIZE: usize = 1024 * 1024;
+// The maximum size in bytes a ping body may have to be eligible for upload.
+const PING_BODY_MAX_SIZE: usize = 1024 * 1024; // 1 MB
 
 #[derive(Debug)]
 struct RateLimiter {
@@ -210,7 +210,7 @@ impl PingUploadManager {
     /// Attempts to build a ping request from a ping file payload.
     ///
     /// Returns the `PingRequest` or `None` if unable to build,
-    /// in which case also deletes the ping file and records an error.
+    /// in which case it will delete the ping file and records an error.
     fn build_ping_request(
         &self,
         glean: &Glean,
@@ -240,7 +240,7 @@ impl PingUploadManager {
                     self.upload_metrics.discarded_exceeding_pings.add(glean, 1);
                     self.upload_metrics
                         .discarded_exceeding_ping_size
-                        .accumulate(glean, s / 1024);
+                        .accumulate(glean, *s as u64 / 1024);
                 }
 
                 None
@@ -349,7 +349,7 @@ impl PingUploadManager {
             .pending_pings
             .write()
             .expect("Can't write to pending pings cache.");
-        while let Some((document_id, path, body, headers)) = pending_pings.pop() {
+        for (document_id, path, body, headers) in pending_pings.drain(..) {
             self.enqueue_ping(glean, &document_id, &path, &body, headers);
         }
 
