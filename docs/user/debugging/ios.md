@@ -14,7 +14,7 @@ For debugging and validation purposes on iOS, Glean makes use of a custom URL sc
 
 ### Available commands and query format
 
-There are 3 available commands that you can use with the Glean SDK debug tools
+There are 4 available commands that you can use with the Glean SDK debug tools
 
 - `logPings`: This is either true or false and will cause pings that are submitted to also be echoed to the device's log
 - `debugViewTag`: This command will tag outgoing pings with the provided value, in order to identify them in the Glean Debug View. Tags need to be string with upper and lower case letters, numbers and dashes, with a max length of 20 characters. **Important**: in older versions of the Glean SDK, this was named `tagPings`.

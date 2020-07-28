@@ -19,7 +19,7 @@ class GleanDebugUtility {
     /// - parameters:
     ///     * url: A `URL` object containing the Glean debug commands as query parameters
     ///
-    /// There are 3 available commands that you can use with the Glean SDK debug tools
+    /// There are 4 available commands that you can use with the Glean SDK debug tools
     ///
     /// - `logPings`: If "true", will cause pings that are submitted successfully to also be echoed to the device's log.
     /// - `debugViewTag`:  This command expects a string to tag the pings with and redirects them to the Debug View.

@@ -122,12 +122,12 @@ public class Glean {
                 _ = self.setDebugViewTag(debugViewTag)
             }
 
-            if let sourceTags = self.sourceTags {
-                _ = self.setSourceTags(sourceTags)
-            }
-
             if self.logPings {
                 self.setLogPings(self.logPings)
+            }
+
+            if let sourceTags = self.sourceTags {
+                _ = self.setSourceTags(sourceTags)
             }
 
             // If any pings were registered before initializing, do so now
