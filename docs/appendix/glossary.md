@@ -62,7 +62,17 @@ Each ping has its own schedule to gather all its locally saved metrics and creat
 Upon successful collection, the payload is queued for upload, which may not happen immediately or at all (in case network connectivity is not available).
 
 Unless the user has defined their own custom pings, they don’t need to worry too much about submitting pings.
+
 All the default pings have their scheduling and submission handled by the SDK.
+
+## Measurement window
+
+The measurement window of a ping is the timeframe in which metrics are being actively gathered for it.
+
+The measurement window start time is the moment the previous ping gets collected. Once the previous ping is collected, new metrics that are recorded will be part of the current ping.
+
+The measurement window end time is the moment the current ping gets collected. Any new metric recorded will be part of the next ping, so this pings measurement window is over.
+
 
 ## This Week in Glean (TWiG)
 
