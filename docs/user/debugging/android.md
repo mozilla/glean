@@ -59,9 +59,9 @@ persist until the application is closed or manually reset.
 >   --es debugViewTag test-metrics-ping
 > ```
 
-### Glean Log messages
+### Glean SDK Log messages
 
-When running a Glean-powered app in the Android emulator or on a device connected to your computer via cable, there are several ways to read the log output.
+When running a Glean SDK-powered app in the Android emulator or on a device connected to your computer via cable, there are several ways to read the log output.
 
 #### Android Studio
 

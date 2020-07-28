@@ -10,7 +10,7 @@ These environment variables must be set on the device that is running the applic
 
 # Debugging iOS applications using the Glean SDK
 
-For debugging and validation purposes on iOS, Glean makes use of a custom URL scheme which is implemented _within the application_ that is consuming Glean.  Glean provides some convenience functions to facilitate this, but it's up to the consuming application to enable this functionality.  Applications that enable this Glean SDK feature will be able to launch the application from a URL with the Glean debug commands embedded in the URL itself.
+For debugging and validation purposes on iOS, the Glean SDK makes use of a custom URL scheme which is implemented _within the application_ that is consuming the Glean SDK.  The Glean SDK provides some convenience functions to facilitate this, but it's up to the consuming application to enable this functionality.  Applications that enable this Glean SDK feature will be able to launch the application from a URL with the Glean debug commands embedded in the URL itself.
 
 ### Available commands and query format
 
@@ -40,7 +40,7 @@ There are a few things to consider when creating the custom URL:
 - The `logPings` command doesn't trigger ping submission and you won't see any output until a ping has been submitted. You can use the `sendPings` command to force a ping to be sent, but it could be more desirable to trigger the pings submission on their normal schedule. For instance, the `baseline` and `events` pings can be triggered by moving the app out of the foreground and the `metrics` ping can be triggered normally if it is overdue for the current calendar day. See the [ping documentation](../pings/index.md) for more information on ping scheduling to learn when pings are sent.
 - Enabling debugging features through custom URLs overrides any debugging features set through environment variables.
 
-### Instrumenting the application for Glean debug functionality
+### Instrumenting the application for Glean SDK debug functionality
 
 In order to enable the debugging features in a Glean SDK consuming iOS application, it is necessary to add some information to the application's `Info.plist`, and add a line and possibly an override for a function in the `AppDelegate.swift`.
 

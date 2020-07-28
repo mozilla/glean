@@ -297,7 +297,7 @@ def test_verify_custom_ping_metrics():
 
 </div>
 
-<div data-lang="Python" class="tab">
+<div data-lang="C#" class="tab">
 
 TODO. To be implemented in [bug 1648446](https://bugzilla.mozilla.org/show_bug.cgi?id=1648446).
 
