@@ -9,6 +9,8 @@
 * C#
   * Add support for Labeled Strings and Labeled Booleans.
   * Add support for the Counter metric type and Labeled Counter.
+* Python
+  * **Breaking change:** `data_dir` must always be passed to `Glean.initialize`. Prior to this, a missing value would store Glean data in a temporary directory.
 
 # v31.6.0 (2020-07-24)
 

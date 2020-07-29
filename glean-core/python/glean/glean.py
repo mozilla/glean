@@ -55,7 +55,8 @@ class Glean:
     >>> Glean.initialize(
     ...     application_id="my-app",
     ...     application_version="0.0.0",
-    ...     upload_enabled=True
+    ...     upload_enabled=True,
+    ...     data_dir: Path.home() / ".glean"
     ... )
     """
 
@@ -101,7 +102,7 @@ class Glean:
         application_version: str,
         upload_enabled: bool,
         configuration: Optional[Configuration] = None,
-        data_dir: Optional[Path] = None,
+        data_dir: Path = None,
         application_build_id: Optional[str] = None,
     ) -> None:
         """
@@ -123,8 +124,7 @@ class Glean:
                 (except first_run_date) are cleared.
             configuration (glean.config.Configuration): (optional) An object with
                 global settings.
-            data_dir (pathlib.Path): (optional) The path to the Glean data
-                directory. If not provided, uses a temporary directory.
+            data_dir (pathlib.Path): The path to the Glean data directory.
             application_build_id (str): (optional) The build identifier generated
                 by the CI system (e.g. "1234/A").
         """
@@ -138,11 +138,9 @@ class Glean:
                 configuration = Configuration()
 
             if data_dir is None:
-                data_dir = Path(tempfile.TemporaryDirectory().name)
-                cls._destroy_data_dir = True
-            else:
-                cls._destroy_data_dir = False
+                raise TypeError("data_dir must be provided")
             cls._data_dir = data_dir
+            cls._destroy_data_dir = False
 
             cls._configuration = configuration
             cls._application_id = application_id
@@ -212,6 +210,33 @@ class Glean:
             # have a lifecycle.
 
         cls._init_finished = True
+
+    @classmethod
+    def _initialize_with_tempdir_for_testing(
+        cls,
+        application_id: str,
+        application_version: str,
+        upload_enabled: bool,
+        configuration: Optional[Configuration] = None,
+        application_build_id: Optional[str] = None,
+    ) -> None:
+        """
+        Initialize Glean to use a temporary data directory. Use for internal
+        unit testing only.
+
+        The temporary directory will be destroyed when Glean is initialized
+        again or at process shutdown.
+        """
+        actual_data_dir = Path(tempfile.TemporaryDirectory().name)
+        cls.initialize(
+            application_id,
+            application_version,
+            upload_enabled,
+            configuration=configuration,
+            data_dir=actual_data_dir,
+            application_build_id=application_build_id,
+        )
+        cls._destroy_data_dir = True
 
     @_util.classproperty
     def configuration(cls) -> Configuration:
