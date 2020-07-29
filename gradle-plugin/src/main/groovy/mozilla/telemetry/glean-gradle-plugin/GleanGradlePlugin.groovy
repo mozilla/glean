@@ -44,6 +44,9 @@ class GleanPlugin implements Plugin<Project> {
     /* This script runs a given Python module as a "main" module, like
      * `python -m module`. However, it first checks that the installed
      * package is at the desired version, and if not, upgrades it using `pip`.
+     *
+     * ** IMPORTANT**
+     * Keep this script in sync with the one in `glean-core/csharp/GleanTasks/GleanParser.cs`.
      */
     String runPythonScript = """
 import importlib
