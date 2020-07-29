@@ -50,13 +50,21 @@ def reset_glean(
     # False.
     Dispatcher._testing_mode = True
 
-    Glean._initialize_with_tempdir_for_testing(
-        application_id=application_id,
-        application_version=application_version,
-        upload_enabled=True,
-        configuration=configuration,
-        data_dir=data_dir,
-    )
+    if data_dir is None:
+        Glean._initialize_with_tempdir_for_testing(
+            application_id=application_id,
+            application_version=application_version,
+            upload_enabled=True,
+            configuration=configuration,
+        )
+    else:
+        Glean.initialize(
+            application_id=application_id,
+            application_version=application_version,
+            upload_enabled=True,
+            data_dir=data_dir,
+            configuration=configuration,
+        )
 
 
 class _RecordingUploader(base_uploader.BaseUploader):

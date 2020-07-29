@@ -55,7 +55,8 @@ class Glean:
     >>> Glean.initialize(
     ...     application_id="my-app",
     ...     application_version="0.0.0",
-    ...     upload_enabled=True
+    ...     upload_enabled=True,
+    ...     data_dir: Path.home() / ".glean"
     ... )
     """
 
@@ -139,6 +140,7 @@ class Glean:
             if data_dir is None:
                 raise TypeError("data_dir must be provided")
             cls._data_dir = data_dir
+            cls._destroy_data_dir = False
 
             cls._configuration = configuration
             cls._application_id = application_id
@@ -216,7 +218,6 @@ class Glean:
         application_version: str,
         upload_enabled: bool,
         configuration: Optional[Configuration] = None,
-        data_dir: Optional[Path] = None,
         application_build_id: Optional[str] = None,
     ) -> None:
         """
@@ -226,10 +227,7 @@ class Glean:
         The temporary directory will be destroyed when Glean is initialized
         again or at process shutdown.
         """
-        if data_dir is None:
-            actual_data_dir = Path(tempfile.TemporaryDirectory().name)
-        else:
-            actual_data_dir = data_dir
+        actual_data_dir = Path(tempfile.TemporaryDirectory().name)
         cls.initialize(
             application_id,
             application_version,
@@ -238,7 +236,7 @@ class Glean:
             data_dir=actual_data_dir,
             application_build_id=application_build_id,
         )
-        cls._destroy_data_dir = data_dir is None
+        cls._destroy_data_dir = True
 
     @_util.classproperty
     def configuration(cls) -> Configuration:

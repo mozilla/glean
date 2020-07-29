@@ -153,7 +153,7 @@ def test_initialize_must_not_crash_if_data_dir_is_messed_up(tmpdir):
     assert False is Glean.is_initialized()
 
     # Pass in the filename as the data_dir
-    Glean._initialize_with_tempdir_for_testing(
+    Glean.initialize(
         application_id=GLEAN_APP_ID,
         application_version=glean_version,
         upload_enabled=True,
@@ -542,7 +542,7 @@ def test_sending_deletion_ping_if_disabled_outside_of_run(tmpdir, ping_schema_ur
 
     Glean._reset()
 
-    Glean._initialize_with_tempdir_for_testing(
+    Glean.initialize(
         application_id=GLEAN_APP_ID,
         application_version=glean_version,
         upload_enabled=True,
@@ -552,7 +552,7 @@ def test_sending_deletion_ping_if_disabled_outside_of_run(tmpdir, ping_schema_ur
 
     Glean._reset()
 
-    Glean._initialize_with_tempdir_for_testing(
+    Glean.initialize(
         application_id=GLEAN_APP_ID,
         application_version=glean_version,
         upload_enabled=False,
@@ -583,7 +583,7 @@ def test_no_sending_deletion_ping_if_unchanged_outside_of_run(safe_httpserver, t
     Glean._reset()
     config = Configuration(server_endpoint=safe_httpserver.url)
 
-    Glean._initialize_with_tempdir_for_testing(
+    Glean.initialize(
         application_id=GLEAN_APP_ID,
         application_version=glean_version,
         upload_enabled=False,
@@ -595,7 +595,7 @@ def test_no_sending_deletion_ping_if_unchanged_outside_of_run(safe_httpserver, t
 
     Glean._reset()
 
-    Glean._initialize_with_tempdir_for_testing(
+    Glean.initialize(
         application_id=GLEAN_APP_ID,
         application_version=glean_version,
         upload_enabled=False,
@@ -634,7 +634,7 @@ def test_dont_allow_multiprocessing(monkeypatch, safe_httpserver):
 def test_clear_application_lifetime_metrics(tmpdir):
     Glean._reset()
 
-    Glean._initialize_with_tempdir_for_testing(
+    Glean.initialize(
         application_id=GLEAN_APP_ID,
         application_version=glean_version,
         upload_enabled=True,
@@ -663,7 +663,7 @@ def test_clear_application_lifetime_metrics(tmpdir):
 
     Glean._reset()
 
-    Glean._initialize_with_tempdir_for_testing(
+    Glean.initialize(
         application_id=GLEAN_APP_ID,
         application_version=glean_version,
         upload_enabled=True,
