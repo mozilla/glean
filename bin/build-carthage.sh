@@ -10,8 +10,8 @@ FRAMEWORK_NAME="${1:-Glean}"
 CONFIGURATION="${2:-Release}"
 
 set -o pipefail && \
-    carthage build --archive --platform iOS --cache-builds --verbose --configuration "${CONFIGURATION}" "${FRAMEWORK_NAME}" | \
+    carthage build --no-skip-current --platform iOS --cache-builds --verbose --configuration "${CONFIGURATION}" "${FRAMEWORK_NAME}" | \
     xcpretty
 
 # Add dependency information
-zip -u "${FRAMEWORK_NAME}.framework.zip" DEPENDENCIES.md
+zip -r "${FRAMEWORK_NAME}.framework.zip" "Carthage/Build/iOS/Static" DEPENDENCIES.md
