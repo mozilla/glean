@@ -30,7 +30,7 @@ class StringListMetricTypeTest {
 
     @Test
     fun `The API saves to its storage engine by first adding then setting`() {
-        // Define a 'stringMetric' string metric, which will be stored in "store1"
+        // Define a 'stringListMetric' string list metric, which will be stored in "store1"
         val stringListMetric = StringListMetricType(
             disabled = false,
             category = "telemetry",
@@ -65,7 +65,7 @@ class StringListMetricTypeTest {
 
     @Test
     fun `The API saves to its storage engine by first setting then adding`() {
-        // Define a 'stringMetric' string metric, which will be stored in "store1"
+        // Define a 'stringListMetric' string list metric, which will be stored in "store1"
         val stringListMetric = StringListMetricType(
                 disabled = false,
                 category = "telemetry",
@@ -85,7 +85,7 @@ class StringListMetricTypeTest {
         assertEquals("value2", snapshot[1])
         assertEquals("value3", snapshot[2])
 
-        // Use set() to see that the first list is replaced by the new list
+        // Use add() to see that the list is appended to
         stringListMetric.add("added1")
         // Check that data was properly recorded.
         val snapshot2 = stringListMetric.testGetValue()
@@ -136,7 +136,7 @@ class StringListMetricTypeTest {
 
     @Test
     fun `The API saves to secondary pings`() {
-        // Define a 'stringMetric' string metric, which will be stored in "store1" and "store2"
+        // Define a 'stringListMetric' string list metric, which will be stored in "store1" and "store2"
         val stringListMetric = StringListMetricType(
             disabled = false,
             category = "telemetry",
@@ -171,7 +171,7 @@ class StringListMetricTypeTest {
 
     @Test
     fun `Long string lists are truncated`() {
-        // Define a 'stringMetric' string metric, which will be stored in "store1" and "store2"
+        // Define a 'stringListMetric' string list metric, which will be stored in "store1"
         val stringListMetric = StringListMetricType(
             disabled = false,
             category = "telemetry",
