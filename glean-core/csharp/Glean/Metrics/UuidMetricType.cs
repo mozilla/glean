@@ -94,6 +94,11 @@ namespace Mozilla.Glean.Private
         /// <param name="value">This is a user defined boolean value.</param>
         internal void SetSync(Guid value)
         {
+            if (disabled)
+            {
+                return;
+            }
+
             LibGleanFFI.glean_uuid_set(this.handle, value.ToString());
         }
 
