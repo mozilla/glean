@@ -402,6 +402,20 @@ void glean_destroy_uuid_metric(uint64_t v);
  */
 void glean_enable_logging(void);
 
+/**
+ * Initialize the logging system to send JSON messages to a file descriptor
+ * (Unix) or file handle (Windows).
+ *
+ * Not available on Android and iOS.
+ *
+ * `fd` is a writable file descriptor (on Unix) or file handle (on Windows).
+ *
+ * # Safety
+ * Unsafe because the fd u64 passed in will be interpreted as either a file
+ * descriptor (Unix) or file handle (Windows) without any checking.
+ */
+void glean_enable_logging_to_fd(uint64_t fd);
+
 void glean_event_record(uint64_t metric_id,
                         uint64_t timestamp,
                         RawIntArray extra_keys,

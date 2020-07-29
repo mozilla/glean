@@ -9,6 +9,9 @@ use std::panic::UnwindSafe;
 
 use ffi_support::{define_string_destructor, ConcurrentHandleMap, FfiStr, IntoFfi};
 
+#[cfg(all(not(target_os = "android"), not(target_os = "ios")))]
+use once_cell::sync::OnceCell;
+
 pub use glean_core::metrics::MemoryUnit;
 pub use glean_core::metrics::TimeUnit;
 pub use glean_core::upload::ffi_upload_result::*;
@@ -37,6 +40,9 @@ mod timespan;
 mod timing_distribution;
 pub mod upload;
 mod uuid;
+
+#[cfg(all(not(target_os = "android"), not(target_os = "ios")))]
+mod fd_logger;
 
 use ffi_string_ext::FallibleToString;
 use from_raw::*;
@@ -178,6 +184,39 @@ pub extern "C" fn glean_enable_logging() {
             Err(_) => log::debug!("stdout was already initialized"),
         };
     }
+}
+
+#[cfg(all(not(target_os = "android"), not(target_os = "ios")))]
+static FD_LOGGER: OnceCell<fd_logger::FdLogger> = OnceCell::new();
+
+/// Initialize the logging system to send JSON messages to a file descriptor
+/// (Unix) or file handle (Windows).
+///
+/// Not available on Android and iOS.
+///
+/// `fd` is a writable file descriptor (on Unix) or file handle (on Windows).
+///
+/// # Safety
+/// Unsafe because the fd u64 passed in will be interpreted as either a file
+/// descriptor (Unix) or file handle (Windows) without any checking.
+#[cfg(all(not(target_os = "android"), not(target_os = "ios")))]
+#[no_mangle]
+pub unsafe extern "C" fn glean_enable_logging_to_fd(fd: u64) {
+    // Set up logging to a file descriptor/handle. For this usage, the
+    // language binding should setup a pipe and pass in the descriptor to
+    // the writing side of the pipe as the `fd` parameter. Log messages are
+    // written as JSON to the file descriptor.
+    if FD_LOGGER.set(fd_logger::FdLogger::new(fd)).is_ok() {
+        // Set the level so everything goes through to the language
+        // binding side where it will be filtered by the language
+        // binding's logging system.
+        if log::set_logger(FD_LOGGER.get().unwrap())
+            .map(|()| log::set_max_level(log::LevelFilter::Debug))
+            .is_ok()
+        {
+            return;
+        }
+    };
 }
 
 /// Configuration over FFI.
