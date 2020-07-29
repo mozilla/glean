@@ -374,3 +374,20 @@ glean.upload:
     expires: never
     no_lint:
       - COMMON_PREFIX
+
+  discarded_exceeding_pings_size:
+    type: memory_distribution
+    description: >
+      The size of pings that exceeded the maximum ping size allowed for upload.
+    memory_unit: kilobyte
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1597761
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1597761#c10
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+    expires: never
+    no_lint:
+      - COMMON_PREFIX
