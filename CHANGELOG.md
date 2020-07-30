@@ -8,6 +8,7 @@
     * BUGFIX: Support `HashSet` and `Dictionary` in the C# generated code.
 * C#
   * Add support for the String List metric type.
+  * Enable generating the C# APIs using the glean_parser.
 
 # v32.0.0 (2020-08-03)
 
