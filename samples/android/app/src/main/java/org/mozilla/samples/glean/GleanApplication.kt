@@ -12,7 +12,7 @@ import org.mozilla.samples.gleancore.GleanMetrics.Test
 import org.mozilla.samples.gleancore.GleanMetrics.Custom
 import org.mozilla.samples.gleancore.GleanMetrics.LegacyIds
 import org.mozilla.samples.gleancore.GleanMetrics.Pings
-import java.util.*
+import java.util.UUID
 
 private const val TAG = "Glean"
 
