@@ -22,6 +22,7 @@ import org.mozilla.samples.gleancore.MainActivity
 import androidx.test.uiautomator.UiDevice
 import mozilla.telemetry.glean.testing.GleanTestLocalServer
 import org.junit.Assert.assertNotEquals
+import org.junit.Assert.assertEquals
 
 @RunWith(AndroidJUnit4::class)
 class DeletionRequestPingTest {
@@ -60,6 +61,11 @@ class DeletionRequestPingTest {
         var clientInfo = deletionPing.getJSONObject("client_info")
         val clientId = clientInfo.getString("client_id")
         assertNotEquals(clientId, "c0ffeec0-ffee-c0ff-eec0-ffeec0ffeec0")
+
+        val metrics = deletionPing.getJSONObject("metrics")
+        val uuids = metrics.getJSONObject("uuid")
+        val legacyId = uuids.getString("legacy_ids.client_id")
+        assertEquals("01234567-89ab-cdef-0123-456789abcdef", legacyId)
 
         // Try re-enabling and waiting for next baseline ping
         onView(withId(R.id.uploadSwitch)).perform(click())

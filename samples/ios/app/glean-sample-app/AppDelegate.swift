@@ -19,6 +19,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         glean.registerPings(Pings.shared)
 
+        // Set a "fake" legacy client id for the purpose of testing the deletion-request ping payload
+        if let fakeLegacyId = UUID.init(uuidString: "01234567-89ab-cdef-0123-456789abcdef") {
+            GleanMetrics.LegacyIds.clientId.set(fakeLegacyId)
+        }
+
         let mockServerIndex = ProcessInfo.processInfo.arguments.firstIndex(of: "USE_MOCK_SERVER")
         if let idx = mockServerIndex {
             let portIdx = idx + 1
