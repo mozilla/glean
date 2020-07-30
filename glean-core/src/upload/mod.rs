@@ -787,12 +787,7 @@ mod test {
 
     #[test]
     fn fills_up_queue_successfully_from_disk() {
-        let (mut glean, _) = new_glean(None);
-
-        // Wait for processing of pending pings directory to finish.
-        while glean.get_upload_task() == PingUploadTask::Wait {
-            thread::sleep(Duration::from_millis(10));
-        }
+        let (mut glean, tmpdir) = new_glean(None);
 
         // Register a ping for testing
         let ping_type = PingType::new("test", true, /* send_if_empty */ true, vec![]);
@@ -804,25 +799,19 @@ mod test {
             glean.submit_ping(&ping_type, None).unwrap();
         }
 
-        // Wait for processing of pending pings directory to finish.
-        let mut upload_task = glean.get_upload_task();
-        while upload_task == PingUploadTask::Wait {
-            thread::sleep(Duration::from_millis(10));
-            upload_task = glean.get_upload_task();
-        }
+        // Create a new upload manager pointing to the same data_path as the glean instance.
+        let upload_manager = PingUploadManager::new(tmpdir.path(), "Rust", true);
 
         // Verify the requests were properly enqueued
         for _ in 0..n {
-            match upload_task {
+            match upload_manager.get_upload_task(&glean, false) {
                 PingUploadTask::Upload(_) => {}
                 _ => panic!("Expected upload manager to return the next request!"),
             }
-
-            upload_task = glean.get_upload_task();
         }
 
         // Verify that after all requests are returned, none are left
-        assert_eq!(glean.get_upload_task(), PingUploadTask::Done);
+        assert_eq!(upload_manager.get_upload_task(&glean, false), PingUploadTask::Done);
     }
 
     #[test]
