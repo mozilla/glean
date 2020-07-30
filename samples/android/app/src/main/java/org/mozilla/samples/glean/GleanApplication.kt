@@ -10,7 +10,9 @@ import mozilla.telemetry.glean.Glean
 import org.mozilla.samples.gleancore.GleanMetrics.Basic
 import org.mozilla.samples.gleancore.GleanMetrics.Test
 import org.mozilla.samples.gleancore.GleanMetrics.Custom
+import org.mozilla.samples.gleancore.GleanMetrics.LegacyIds
 import org.mozilla.samples.gleancore.GleanMetrics.Pings
+import java.util.*
 
 private const val TAG = "Glean"
 
@@ -21,6 +23,9 @@ class GleanApplication : Application() {
 
         // Register the sample application's custom pings.
         Glean.registerPings(Pings)
+
+        // Set a "fake" legacy client id for the purpose of testing the deletion-request ping payload
+        LegacyIds.clientId.set(UUID.fromString("01234567-89ab-cdef-0123-456789abcdef"))
 
         // Initialize the Glean library. Ideally, this is the first thing that
         // must be done right after enabling logging.
