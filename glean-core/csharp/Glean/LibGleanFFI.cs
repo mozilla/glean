@@ -330,7 +330,7 @@ namespace Mozilla.Glean.FFI
         internal static extern void glean_destroy_memory_distribution_metric(UInt64 handle);
 
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void glean_memory_distribution_accumulate(UInt64 metric_id, Int64 sample);
+        internal static extern void glean_memory_distribution_accumulate(UInt64 metric_id, UInt64 sample);
 
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void glean_memory_distribution_accumulate_samples(UInt64 metric_id, Int64[] samples, Int32 len);
