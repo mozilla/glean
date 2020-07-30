@@ -4,6 +4,7 @@ members = [
   "glean-core",
   "glean-core/ffi",
   "glean-core/preview",
+  "glean-core/experiments",
   "glean-core/benchmark",
 ]
 
