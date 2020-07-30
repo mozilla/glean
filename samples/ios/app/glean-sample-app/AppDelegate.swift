@@ -20,7 +20,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         glean.registerPings(Pings.shared)
 
         // Set a "fake" legacy client id for the purpose of testing the deletion-request ping payload
-        if let fakeLegacyId = UUID.init(uuidString: "01234567-89ab-cdef-0123-456789abcdef") {
+        if let fakeLegacyId = UUID(uuidString: "01234567-89ab-cdef-0123-456789abcdef") {
             GleanMetrics.LegacyIds.clientId.set(fakeLegacyId)
         }
 
