@@ -5,11 +5,6 @@ Users can invoke this special activity, at run-time, using the following [`adb`]
 
 `adb shell am start -n [applicationId]/mozilla.telemetry.glean.debug.GleanDebugActivity [extra keys]`
 
-> **Note:** In previous versions of Glean the activity was available with the name `mozilla.components.service.glean.debug.GleanDebugActivity`.
->
-> If you're debugging an old build, try running:
-> `adb shell am start -n [applicationId]/mozilla.components.service.glean.debug.GleanDebugActivity [extra keys]`
-
 In the above:
 
 - `[applicationId]` is the product's application id as defined in the manifest file and/or build script. For the Glean sample application, this is `org.mozilla.samples.gleancore` for a release build and `org.mozilla.samples.gleancore.debug` for a debug build.
@@ -47,17 +42,6 @@ If no metrics have been collected, no pings will be sent *unless* [`send_if_empt
 
 Options that are set using the `adb` flags are not immediately reset and will
 persist until the application is closed or manually reset.
-
-> **Note:** In previous versions of Glean the activity was available with the name `mozilla.components.service.glean.debug.GleanDebugActivity`.
->
-> If you're debugging an old build, try running:
->
-> ```shell
-> adb shell am start -n org.mozilla.samples.gleancore/mozilla.components.service.glean.debug.GleanDebugActivity \
->   --ez logPings true \
->   --es sendPing metrics \
->   --es debugViewTag test-metrics-ping
-> ```
 
 ### Glean SDK Log messages
 
