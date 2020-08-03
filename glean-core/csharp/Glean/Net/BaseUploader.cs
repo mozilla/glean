@@ -22,9 +22,6 @@ namespace Mozilla.Glean.Net
         // How many times to attempt waiting when told to by glean-core's upload API.
         private const int MAX_WAIT_ATTEMPTS = 3;
 
-        // Maximum number of recoverable errors allowed before aborting the ping uploader.
-        private const int MAX_RETRIES = 3;
-
         private readonly IPingUploader uploader;
 
         /// <summary>
@@ -100,9 +97,8 @@ namespace Mozilla.Glean.Net
             // FOR TESTING Implement the upload worker here and call this from Glean.cs
 
             int waitAttempts = 0;
-            int uploadFailures = 0;
 
-            while (uploadFailures < MAX_RETRIES)
+            while (true)
             {
                 FfiUploadTask incomingTask = new FfiUploadTask();
                 LibGleanFFI.glean_get_upload_task(ref incomingTask);
@@ -122,11 +118,6 @@ namespace Mozilla.Glean.Net
 
                             // Delegate the actual upload and get its return value.
                             UploadResult result = Upload(path, body, headers, config);
-
-                            if (result is RecoverableFailure)
-                            {
-                                uploadFailures += 1;
-                            }
 
                             // Copy the `FfiUploadTask` to unmanaged memory, because
                             // `glean_process_ping_upload` assumes it has to free the memory.

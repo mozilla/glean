@@ -18,9 +18,6 @@ public class HttpPingUploader {
         static let recoverableErrorStatusCode: UInt16 = 500
         // For this error, the ping data will be deleted and no retry happens
         static let unrecoverableErrorStatusCode: UInt16 = 400
-
-        // Maximum number of recoverable errors allowed before aborting the ping uploader
-        static let maxRetries = 3
     }
 
     private let logger = Logger(tag: Constants.logTag)
@@ -98,8 +95,7 @@ public class HttpPingUploader {
     /// It will report back the task status to Glean, which will take care of deleting pending ping files.
     /// It will continue upload as long as it can fetch new tasks.
     func process() {
-        var uploadFailures = 0
-        while uploadFailures < Constants.maxRetries {
+        while true {
             var incomingTask = FfiPingUploadTask()
             glean_get_upload_task(&incomingTask)
             let task = incomingTask.toPingUploadTask()
@@ -107,9 +103,6 @@ public class HttpPingUploader {
             switch task {
             case let .upload(request):
                 self.upload(path: request.path, data: request.body, headers: request.headers) { result in
-                    if case .recoverableFailure = result {
-                        uploadFailures += 1
-                    }
                     glean_process_ping_upload_response(&incomingTask, result.toFfi())
                 }
             case .wait:
