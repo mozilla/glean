@@ -38,11 +38,18 @@ run rm "${WORKSPACE_ROOT}/${FILE}.bak"
 # Update the version in glean-core/python/setup.py
 FILE=glean-core/python/setup.py
 run $SED -i.bak -E \
-    -e "s/\"glean_parser==[0-9.]+\"+/\"glean_parser==${NEW_VERSION}\"/" \
+    -e "s/\"glean_parser==[0-9.]+\"/\"glean_parser==${NEW_VERSION}\"/" \
     "${WORKSPACE_ROOT}/${FILE}"
 run rm "${WORKSPACE_ROOT}/${FILE}.bak"
 
-# # update the version in gradle-plugin/src/main/groovy/mozilla/telemetry/glean-gradle-plugin/GleanGradlePlugin.groovy
+# Update the version in glean-core/python/glean/__init__.py
+FILE=glean-core/python/glean/__init__.py
+run $SED -i.bak -E \
+    -e "s/^GLEAN_PARSER_VERSION = \"[0-9.]+\"/GLEAN_PARSER_VERSION = \"${NEW_VERSION}\"/" \
+    "${WORKSPACE_ROOT}/${FILE}"
+run rm "${WORKSPACE_ROOT}/${FILE}.bak"
+
+# update the version in gradle-plugin/src/main/groovy/mozilla/telemetry/glean-gradle-plugin/GleanGradlePlugin.groovy
 FILE=gradle-plugin/src/main/groovy/mozilla/telemetry/glean-gradle-plugin/GleanGradlePlugin.groovy
 run $SED -i.bak -E \
     -e "s/GLEAN_PARSER_VERSION = \"[0-9.]+\"/GLEAN_PARSER_VERSION = \"${NEW_VERSION}\"/" \
