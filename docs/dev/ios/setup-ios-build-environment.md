@@ -5,7 +5,7 @@
 1. Install Xcode 11.0
 2. Install [Carthage](https://github.com/Carthage/Carthage): `brew install carthage`
 3. Ensure you have Python 3 installed: `brew install python`
-4. Install linting and formatting tools: `brew install swiftlint swiftformat`
+4. Install linting and formatting tools: `brew install swiftlint`
 5. Run `bin/bootstrap.sh` to download dependencies.
 6. (Optional, only required for building on the CLI) Install [xcpretty](https://github.com/xcpretty/xcpretty): `gem install xcpretty`
 
