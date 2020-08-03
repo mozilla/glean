@@ -410,7 +410,7 @@ glean.upload:
     no_lint:
       - COMMON_PREFIX
 
-  deleted_pending_pings_after_quota_hit:
+  deleted_pings_after_quota_hit:
     type: counter
     description: >
       The number of pings deleted after the quota

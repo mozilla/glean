@@ -337,6 +337,10 @@ impl PingUploadManager {
         for (metadata, (document_id, path, body, headers)) in pending_pings {
             pending_pings_directory_size += metadata.len() as usize;
             if pending_pings_directory_size > quota {
+                log::warn!(
+                    "Pending pings directory has reached the size quota of {} bytes, outstanding pings will be deleted.",
+                    PENDING_PINGS_DIRECTORY_QUOTA
+                );
                 enqueueing = false;
             }
 
@@ -344,7 +348,7 @@ impl PingUploadManager {
                 self.enqueue_ping(glean, &document_id, &path, &body, headers);
             } else if self.directory_manager.delete_file(&document_id) {
                 self.upload_metrics
-                    .deleted_pending_pings_after_quota_hit
+                    .deleted_pings_after_quota_hit
                     .add(glean, 1);
             }
         }
