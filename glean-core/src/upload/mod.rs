@@ -11,7 +11,7 @@
 
 use std::collections::VecDeque;
 use std::path::PathBuf;
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
 use std::sync::{Arc, RwLock, RwLockWriteGuard};
 use std::thread;
 use std::time::{Duration, Instant};
@@ -25,6 +25,11 @@ pub use result::{ffi_upload_result, UploadResult};
 mod directory;
 mod request;
 mod result;
+
+/// The maximum recoverable failures allowed per period.
+///
+/// Limiting this is necessary to void infinite loops on requesting upload tasks.
+const MAX_RECOVERABLE_FAILURES_PER_PERIOD: u32 = 3;
 
 // The maximum size in bytes a ping body may have to be eligible for upload.
 const PING_BODY_MAX_SIZE: usize = 1024 * 1024; // 1 MB
@@ -112,7 +117,16 @@ pub enum PingUploadTask {
     /// A flag signaling that the pending pings directories are not done being processed,
     /// thus the requester should wait and come back later.
     Wait,
-    /// A flag signaling that the pending pings queue is empty and requester is done.
+    /// A flag signaling that requester doesn't need to request any more upload tasks at this moment.
+    ///
+    /// There are two possibilities for this scenario:
+    /// * Pending pings queue is empty, no more pings to request;
+    /// * Requester has reported more than MAX_RECOVERABLE_FAILURES_PER_PERIOD
+    ///   recoverable upload failures on the same period[1]
+    ///   and should stop requesting at this moment.
+    ///
+    /// [1]: A "period" starts when a requester gets a new `PingUploadTask::Upload(PingRequest)`
+    ///      response and finishes when they finally get a `PingUploadTask::Done` or `PingUploadTask::Wait` response.
     Done,
 }
 
@@ -127,6 +141,8 @@ pub struct PingUploadManager {
     processed_pending_pings: Arc<AtomicBool>,
     /// A vector to store the pending pings processed off-thread.
     pending_pings: Arc<RwLock<Vec<PingPayload>>>,
+    /// The number of upload failures for the current period.
+    recoverable_failure_count: AtomicU32,
     /// A ping counter to help rate limit the ping uploads.
     ///
     /// To keep resource usage in check,
@@ -187,9 +203,10 @@ impl PingUploadManager {
 
         Self {
             queue,
+            directory_manager,
             processed_pending_pings,
             pending_pings,
-            directory_manager,
+            recoverable_failure_count: AtomicU32::new(0),
             rate_limiter: None,
             language_binding_name: language_binding_name.into(),
             upload_metrics: UploadMetrics::new(),
@@ -200,11 +217,12 @@ impl PingUploadManager {
         self.processed_pending_pings.load(Ordering::SeqCst)
     }
 
-    /// Checks if a ping with a certain `document_id` is already enqueued.
-    fn is_enqueued(queue: &VecDeque<PingRequest>, document_id: &str) -> bool {
-        queue
-            .iter()
-            .any(|request| request.document_id == document_id)
+    fn recoverable_failure_count(&self) -> u32 {
+        self.recoverable_failure_count.load(Ordering::SeqCst)
+    }
+
+    fn reset_recoverable_failure_count(&self) {
+        self.recoverable_failure_count.store(0, Ordering::SeqCst);
     }
 
     /// Attempts to build a ping request from a ping file payload.
@@ -261,7 +279,10 @@ impl PingUploadManager {
             .expect("Can't write to pending pings queue.");
 
         // Checks if a ping with this `document_id` is already enqueued.
-        if Self::is_enqueued(&queue, &document_id) {
+        if queue
+            .iter()
+            .any(|request| request.document_id == document_id)
+        {
             log::trace!(
                 "Attempted to enqueue a duplicate ping {} at {}.",
                 document_id,
@@ -326,17 +347,7 @@ impl PingUploadManager {
         queue
     }
 
-    /// Gets the next `PingUploadTask`.
-    ///
-    /// ## Arguments
-    ///
-    /// * `glean` - The Glean object holding the database.
-    /// * `log_ping` - Whether to log the ping before returning.
-    ///
-    /// # Return value
-    ///
-    /// `PingUploadTask` - see [`PingUploadTask`](enum.PingUploadTask.html) for more information.
-    pub fn get_upload_task(&self, glean: &Glean, log_ping: bool) -> PingUploadTask {
+    fn get_upload_task_job(&self, glean: &Glean, log_ping: bool) -> PingUploadTask {
         if !self.has_processed_pings_dir() {
             log::info!(
                 "Tried getting an upload task, but processing is ongoing. Will come back later."
@@ -350,6 +361,14 @@ impl PingUploadManager {
             .expect("Can't write to pending pings cache.");
         for (document_id, path, body, headers) in pending_pings.drain(..) {
             self.enqueue_ping(glean, &document_id, &path, &body, headers);
+        }
+
+        if self.recoverable_failure_count() >= MAX_RECOVERABLE_FAILURES_PER_PERIOD {
+            log::warn!(
+                "Reached maximum recoverable failures for the current period. You are done."
+            );
+
+            return PingUploadTask::Done;
         }
 
         let mut queue = self
@@ -391,6 +410,25 @@ impl PingUploadManager {
                 PingUploadTask::Done
             }
         }
+    }
+
+    /// Gets the next `PingUploadTask`.
+    ///
+    /// ## Arguments
+    ///
+    /// * `glean` - The Glean object holding the database.
+    /// * `log_ping` - Whether to log the ping before returning.
+    ///
+    /// # Return value
+    ///
+    /// `PingUploadTask` - see [`PingUploadTask`](enum.PingUploadTask.html) for more information.
+    pub fn get_upload_task(&self, glean: &Glean, log_ping: bool) -> PingUploadTask {
+        let task = self.get_upload_task_job(glean, log_ping);
+        if task == PingUploadTask::Done || task == PingUploadTask::Wait {
+            self.reset_recoverable_failure_count()
+        }
+
+        task
     }
 
     /// Processes the response from an attempt to upload a ping.
@@ -466,6 +504,8 @@ impl PingUploadManager {
                     status
                 );
                 self.enqueue_ping_from_file(glean, &document_id);
+                self.recoverable_failure_count
+                    .fetch_add(1, Ordering::SeqCst);
             }
         };
     }
@@ -1053,5 +1093,47 @@ mod test {
             upload_manager.get_upload_task(&glean, false),
             PingUploadTask::Done
         );
+    }
+
+    #[test]
+    fn maximum_of_recoverable_errors_is_enforced_for_period() {
+        let (mut glean, _) = new_glean(None);
+
+        // Wait for processing of pending pings directory to finish.
+        while glean.get_upload_task() == PingUploadTask::Wait {
+            thread::sleep(Duration::from_millis(10));
+        }
+
+        // Register a ping for testing
+        let ping_type = PingType::new("test", true, /* send_if_empty */ true, vec![]);
+        glean.register_ping_type(&ping_type);
+
+        // Submit the ping multiple times
+        let n = 5;
+        for _ in 0..n {
+            glean.submit_ping(&ping_type, None).unwrap();
+        }
+
+        // Return the max recoverable error failures in a row
+        for _ in 0..MAX_RECOVERABLE_FAILURES_PER_PERIOD {
+            match glean.get_upload_task() {
+                PingUploadTask::Upload(req) => {
+                    glean.process_ping_upload_response(&req.document_id, RecoverableFailure)
+                }
+                _ => panic!("Expected upload manager to return the next request!"),
+            }
+        }
+
+        // Verify that after returning the max amount of recoverable failures,
+        // we are done even though we haven't gotten all the enqueued requests.
+        assert_eq!(glean.get_upload_task(), PingUploadTask::Done);
+
+        // Verify all requests are returned when we try again.
+        for _ in 0..n {
+            match glean.get_upload_task() {
+                PingUploadTask::Upload(_) => {}
+                _ => panic!("Expected upload manager to return the next request!"),
+            }
+        }
     }
 }
