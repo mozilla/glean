@@ -46,6 +46,7 @@
 - [Developing the Glean SDK](dev/index.md)
     - [Testing](dev/testing.md)
     - [Developing documentation](dev/docs.md)
+    - [Upgrading glean_parser](dev/upgrading-glean-parser.md)
     - [Android bindings](dev/android/index.md)
         - [Setup Build Environment](dev/android/setup-android-build-environment.md)
         - [Android SDK/NDK versions](dev/android/sdk-ndk-versions.md)
