@@ -332,21 +332,26 @@ impl PingUploadManager {
         // Enqueue pending pings until we reach quota,
         // after that delete outstanding pings.
         let pending_pings = cached_pings.pending_pings.drain(..);
-        let mut total: usize = 0;
+        let mut pending_pings_directory_size: usize = 0;
         let mut enqueueing = true;
         for (metadata, (document_id, path, body, headers)) in pending_pings {
-            total += metadata.len() as usize;
-            println!("{}", total);
-            if total > quota {
+            pending_pings_directory_size += metadata.len() as usize;
+            if pending_pings_directory_size > quota {
                 enqueueing = false;
             }
 
             if enqueueing {
                 self.enqueue_ping(glean, &document_id, &path, &body, headers);
-            } else {
-                self.directory_manager.delete_file(&document_id);
+            } else if self.directory_manager.delete_file(&document_id) {
+                self.upload_metrics
+                    .deleted_pending_pings_after_quota_hit
+                    .add(glean, 1);
             }
         }
+
+        self.upload_metrics
+            .pending_pings_directory_size
+            .accumulate(glean, pending_pings_directory_size as u64);
     }
 
     /// Adds rate limiting capability to this upload manager. The rate limiter

@@ -36,7 +36,7 @@ impl PingPayloadsByDirectory {
     }
 }
 
-/// G et the file name from a path as a &str.
+/// Get the file name from a path as a &str.
 ///
 /// # Panics
 ///
@@ -102,32 +102,42 @@ impl PingDirectoryManager {
 
     /// Attempts to delete a ping file.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `uuid` - The UUID of the ping file to be deleted
     ///
-    /// ## Panics
+    /// # Return value
+    ///
+    /// `bool` - `true` if file was deleted succesfully and `false` otherwise.
+    ///
+    /// # Panics
     ///
     /// Won't panic if unable to delete the file.
-    pub fn delete_file(&self, uuid: &str) {
+    pub fn delete_file(&self, uuid: &str) -> bool {
         let path = match self.get_file_path(uuid) {
             Some(path) => path,
             None => {
                 log::error!("Cannot find ping file to delete {}", uuid);
-                return;
+                return false;
             }
         };
+
         match fs::remove_file(&path) {
-            Err(e) => log::error!("Error deleting file {}. {}", path.display(), e),
+            Err(e) => {
+                log::error!("Error deleting file {}. {}", path.display(), e);
+                return false;
+            }
             _ => log::info!("File was deleted {}", path.display()),
         };
+
+        true
     }
 
     /// Reads a ping file and returns the data from it.
     ///
     /// If the file is not properly formatted, it will be deleted and `None` will be returned.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `document_id` - The UUID of the ping file to be processed
     pub fn process_file(&self, document_id: &str) -> Option<PingPayload> {
