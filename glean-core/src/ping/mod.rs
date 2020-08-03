@@ -9,6 +9,7 @@ use std::io::Write;
 use std::path::{Path, PathBuf};
 
 use log::info;
+use once_cell::sync::Lazy;
 use serde_json::{json, Value as JsonValue};
 
 use crate::common_metric_data::{CommonMetricData, Lifetime};
@@ -40,6 +41,21 @@ impl Default for PingMaker {
         Self::new()
     }
 }
+
+// The string fields that are required in a client_info section.
+// Must match the fields defined in the pipeline schema:
+//     https://github.com/mozilla-services/mozilla-pipeline-schemas/blob/5b34499d19658b1a0926a68f55d12e09ad022c60/templates/include/glean/glean.1.schema.json#L35
+// When these keys are missing from the database, they are filled in with the value "missing".
+static REQUIRED_CLIENT_INFO_FIELDS: Lazy<Vec<String>> = Lazy::new(|| {
+    vec![
+        "app_build".into(),
+        "app_display_version".into(),
+        "architecture".into(),
+        "first_run_date".into(),
+        "os".into(),
+        "os_version".into(),
+    ]
+});
 
 impl PingMaker {
     /// Create a new PingMaker.
@@ -149,6 +165,15 @@ impl PingMaker {
             }
         } else {
             log::warn!("Empty client info data.");
+        }
+
+        // Fill in any missing required client_info fields so the ping is always
+        // valid against the schema.
+        let obj = map.as_object_mut().unwrap();
+        for key in REQUIRED_CLIENT_INFO_FIELDS.iter() {
+            if !obj.contains_key(key) {
+                obj.insert(key.to_string(), "missing".into());
+            }
         }
 
         if !include_client_id {

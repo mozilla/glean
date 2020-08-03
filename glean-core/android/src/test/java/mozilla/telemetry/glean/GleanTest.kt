@@ -887,4 +887,39 @@ class GleanTest {
         val docType = request.path.split("/")[3]
         assertEquals("deletion-request", docType)
     }
+
+    @Test
+    fun `test filling in of missing client_info fields`() {
+        // Restart glean and don't clear the stores.
+        val server = getMockWebServer()
+        val context = getContextWithMockedInfo()
+        resetGlean(context, Glean.configuration.copy(
+            serverEndpoint = "http://" + server.hostName + ":" + server.port
+        ), false)
+
+        LibGleanFFI.INSTANCE.glean_clear_application_lifetime_metrics()
+
+        GleanInternalMetrics.androidSdkVersion.setSync("android.sdk.version")
+        GleanInternalMetrics.osVersion.setSync("osversion")
+
+        val pingName = "sample_ping_2"
+        val ping = PingType<NoReasonCodes>(
+            name = pingName,
+            includeClientId = true,
+            sendIfEmpty = true,
+            reasonCodes = listOf()
+        )
+        ping.submit()
+
+        triggerWorkManager(context)
+
+        val request = server.takeRequest(20L, TimeUnit.SECONDS)
+        val docType = request.path.split("/")[3]
+        assertEquals("The received ping must be a 'sample_ping_2' ping", "sample_ping_2", docType)
+
+        val pingJson = JSONObject(request.getPlainBody())
+        checkPingSchema(pingJson)
+
+        assertEquals("missing", pingJson.getJSONObject("client_info").getString("app_build"))
+    }
 }
