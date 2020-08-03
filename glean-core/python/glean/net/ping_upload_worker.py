@@ -17,7 +17,6 @@ from .. import _ffi
 from .._glean_ffi import ffi as ffi_support  # type: ignore
 from .._dispatcher import Dispatcher
 from .._process_dispatcher import ProcessDispatcher
-from .ping_uploader import RecoverableFailure
 
 
 log = logging.getLogger(__name__)
@@ -25,6 +24,7 @@ log = logging.getLogger(__name__)
 
 # How many times to attempt waiting when told to by glean-core's upload API.
 MAX_WAIT_ATTEMPTS = 3
+
 
 class PingUploadWorker:
     @classmethod
