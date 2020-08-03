@@ -476,18 +476,12 @@ jobs:
       - run:
           name: Install lint tools
           command: |
-            brew install swiftlint swiftformat
+            brew install swiftlint
       - run:
           name: Run swiftlint
           command: |
             swiftlint version
             swiftlint --strict
-      - run:
-          name: Run swiftformat
-          command: |
-            swiftformat --version
-            swiftformat glean-core/ios samples/ios --swiftversion 5 --verbose
-            git diff --exit-code HEAD -- glean-core/ios samples/ios
 
   iOS build and test:
     macos:
