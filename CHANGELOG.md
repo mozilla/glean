@@ -15,6 +15,7 @@
   * BUGFIX: Limit the number of retries for 5xx server errors on ping uploads. ([#1120](https://github.com/mozilla/glean/pull/1120))
     * This kinds of failures yield a "recoverable error", which means the ping gets re-enqueued. That can cause infinite loops on the ping upload worker. For python we were incorrectly only limiting the number of retries for I/O errors, another type of "recoverable error".
   * `kebab-case` ping names are now converted to `snake_case` so they are available on the object returned by `load_pings`.
+  * For performance reasons, the `glinter` is no longer run as part of `glean.load_metrics()`. We recommend running `glinter` as part of your project's continuous integration instead.
 
 # v32.0.0 (2020-08-03)
 
