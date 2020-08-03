@@ -37,7 +37,7 @@ if glean_parser.__version__ != GLEAN_PARSER_VERSION:
     warnings.warn(
         f"glean_sdk expected glean_parser v{GLEAN_PARSER_VERSION}, "
         f"found v{glean_parser.__version__}",
-        Warning
+        Warning,
     )
 
 
