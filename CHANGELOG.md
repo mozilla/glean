@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v31.6.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v32.0.0...main)
+
+# v32.0.0 (2020-08-03)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v31.6.0...v32.0.0)
 
 * General
   * Limit ping request body size to 1MB. ([#1098](https://github.com/mozilla/glean/pull/1098))
