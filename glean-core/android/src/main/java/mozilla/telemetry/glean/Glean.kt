@@ -208,6 +208,7 @@ open class GleanInternalAPI internal constructor () {
             // some initial core metrics in case we need to generate early pings.
             // The next times we start, we would have them around already.
             val isFirstRun = LibGleanFFI.INSTANCE.glean_is_first_run().toBoolean()
+
             if (isFirstRun) {
                 initializeCoreMetrics(applicationContext)
             }
@@ -222,11 +223,21 @@ open class GleanInternalAPI internal constructor () {
                 PingUploadWorker.enqueueWorker(applicationContext)
             }
 
+            // This is the last metric set in initializeCoreMetrics. We use its
+            // presence to determine if all of the core metrics are present, or there was a
+            // crash in the previous run that caused them to not all be set.
+            val hasAllCoreMetrics = isFirstRun || GleanInternalMetrics.appDisplayVersion.hasValue()
+
+            // TODO: We thus have two options: don't send startup pings, since we don't have enough
+            // information to do so, or forcibly set all the core metric values now (which will be
+            // wrong because they will reflect versions for the current run of the application, not
+            // the previous one, as designed). Missing or incorrect data...
+
             // Set up information and scheduling for Glean owned pings. Ideally, the "metrics"
             // ping startup check should be performed before any other ping, since it relies
             // on being dispatched to the API context before any other metric.
             metricsPingScheduler = MetricsPingScheduler(applicationContext)
-            metricsPingScheduler.schedule()
+            metricsPingScheduler.schedule(hasAllCoreMetrics)
 
             // Check if the "dirty flag" is set. That means the product was probably
             // force-closed. If that's the case, submit a 'baseline' ping with the

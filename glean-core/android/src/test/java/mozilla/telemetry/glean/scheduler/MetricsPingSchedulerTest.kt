@@ -240,7 +240,7 @@ class MetricsPingSchedulerTest {
             eq(Pings.metricsReasonCodes.overdue)
         )
 
-        mpsSpy.collectPingAndReschedule(Calendar.getInstance(), false, Pings.metricsReasonCodes.overdue)
+        mpsSpy.collectPingAndReschedule(true, Calendar.getInstance(), false, Pings.metricsReasonCodes.overdue)
 
         // Verify that we correctly called in the methods.
         verify(mpsSpy, times(1)).updateSentDate(anyString())
@@ -277,6 +277,7 @@ class MetricsPingSchedulerTest {
 
             // Manually call the function to trigger the collection.
             Glean.metricsPingScheduler.collectPingAndReschedule(
+                true,
                 Calendar.getInstance(),
                 false,
                 Pings.metricsReasonCodes.overdue
@@ -327,6 +328,7 @@ class MetricsPingSchedulerTest {
         mpsSpy.updateSentDate(overdueTestDate)
 
         verify(mpsSpy, never()).collectPingAndReschedule(
+            eq(true),
             any(),
             eq(true),
             eq(Pings.metricsReasonCodes.overdue)
@@ -338,7 +340,7 @@ class MetricsPingSchedulerTest {
         // Trigger the startup check. We need to wrap this in `blockDispatchersAPI` since
         // the immediate startup collection happens in the Dispatchers.API context. If we
         // don't, test will fail due to async weirdness.
-        mpsSpy.schedule()
+        mpsSpy.schedule(true)
 
         // And that we're storing the current date (this only reports the date, not the time).
         fakeNow.set(Calendar.HOUR_OF_DAY, 0)
@@ -346,6 +348,7 @@ class MetricsPingSchedulerTest {
 
         // Verify that we're immediately collecting.
         verify(mpsSpy, times(1)).collectPingAndReschedule(
+               true,
             fakeNow,
             true,
             Pings.metricsReasonCodes.overdue
@@ -372,7 +375,7 @@ class MetricsPingSchedulerTest {
         doReturn(fakeNow).`when`(mpsSpy).getCalendarInstance()
 
         // Trigger the startup check.
-        mpsSpy.schedule()
+        mpsSpy.schedule(true)
 
         // Verify that we're scheduling for the next day and not collecting immediately.
         verify(mpsSpy, times(1)).schedulePingCollection(
@@ -385,7 +388,7 @@ class MetricsPingSchedulerTest {
             sendTheNextCalendarDay = eq(false),
             reason = any()
         )
-        verify(mpsSpy, never()).collectPingAndReschedule(any(), eq(true), any())
+        verify(mpsSpy, never()).collectPingAndReschedule(eq(true), any(), eq(true), any())
     }
 
     @Test
@@ -411,7 +414,7 @@ class MetricsPingSchedulerTest {
         verify(mpsSpy, never()).schedulePingCollection(any(), anyBoolean(), any())
 
         // Trigger the startup check.
-        mpsSpy.schedule()
+        mpsSpy.schedule(true)
 
         // Verify that we're scheduling for today, but not collecting immediately.
         verify(mpsSpy, times(1)).schedulePingCollection(
@@ -424,7 +427,7 @@ class MetricsPingSchedulerTest {
             sendTheNextCalendarDay = eq(true),
             reason = any()
         )
-        verify(mpsSpy, never()).collectPingAndReschedule(any(), eq(true), reason = any())
+        verify(mpsSpy, never()).collectPingAndReschedule(eq(true), any(), eq(true), reason = any())
     }
 
     @Test
@@ -441,16 +444,16 @@ class MetricsPingSchedulerTest {
         // Restore the version number, so we don't get an "upgrade" reason ping
         mpsSpy.isDifferentVersion()
 
-        verify(mpsSpy, never()).collectPingAndReschedule(any(), anyBoolean(), any())
+        verify(mpsSpy, never()).collectPingAndReschedule(eq(true), any(), anyBoolean(), any())
 
         // Make sure to return the fake date when requested.
         doReturn(fakeNow).`when`(mpsSpy).getCalendarInstance()
 
         // Trigger the startup check.
-        mpsSpy.schedule()
+        mpsSpy.schedule(true)
 
         // Verify that we're immediately collecting.
-        verify(mpsSpy, never()).collectPingAndReschedule(eq(fakeNow), eq(true), any())
+        verify(mpsSpy, never()).collectPingAndReschedule(eq(true), eq(fakeNow), eq(true), any())
         verify(mpsSpy, times(1)).schedulePingCollection(
             fakeNow,
             sendTheNextCalendarDay = false,
@@ -469,10 +472,10 @@ class MetricsPingSchedulerTest {
         mpsSpy.sharedPreferences.edit()?.putString("last_version_of_app_used", "old version")?.apply()
 
         // Trigger the startup check.
-        mpsSpy.schedule()
+        mpsSpy.schedule(true)
 
         // Verify that we're immediately collecting.
-        verify(mpsSpy, times(1)).collectPingAndReschedule(any(), anyBoolean(), eq(Pings.metricsReasonCodes.upgrade))
+        verify(mpsSpy, times(1)).collectPingAndReschedule(eq(true), any(), anyBoolean(), eq(Pings.metricsReasonCodes.upgrade))
     }
 
     @Test
@@ -586,13 +589,13 @@ class MetricsPingSchedulerTest {
         // Restore the version number, so we don't get an "upgrade" reason ping
         mpsSpy.isDifferentVersion()
 
-        verify(mpsSpy, never()).collectPingAndReschedule(any(), anyBoolean(), any())
+        verify(mpsSpy, never()).collectPingAndReschedule(eq(true), any(), anyBoolean(), any())
 
         // Make sure to return the fake date when requested.
         doReturn(fakeNow).`when`(mpsSpy).getCalendarInstance()
 
         // Trigger the startup check.
-        mpsSpy.schedule()
+        mpsSpy.schedule(true)
 
         // And that we're storing the current date (this only reports the date, not the time).
         fakeNow.set(Calendar.HOUR_OF_DAY, 0)
@@ -603,7 +606,7 @@ class MetricsPingSchedulerTest {
         )
 
         // Verify that we're immediately collecting.
-        verify(mpsSpy, times(1)).collectPingAndReschedule(fakeNow, true, reason = Pings.metricsReasonCodes.overdue)
+        verify(mpsSpy, times(1)).collectPingAndReschedule(true, fakeNow, true, reason = Pings.metricsReasonCodes.overdue)
         verify(mpsSpy, never()).schedulePingCollection(eq(fakeNow), sendTheNextCalendarDay = eq(false), reason = any())
     }
 

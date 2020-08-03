@@ -192,7 +192,7 @@ internal class MetricsPingScheduler(
      * Performs startup checks to decide when to schedule the next metrics ping
      * collection.
      */
-    fun schedule() {
+    fun schedule(sendStartupPings: Boolean) {
         val now = getCalendarInstance()
 
         // If the version of the app is different from the last time we ran the app,
@@ -203,7 +203,7 @@ internal class MetricsPingScheduler(
 
             // Since `schedule` is only ever called from Glean.initialize, we need to ensure
             // that this gets executed now before the Application lifetime metrics get cleared.
-            collectPingAndReschedule(now, startupPing = true, reason = Pings.metricsReasonCodes.upgrade)
+            collectPingAndReschedule(sendStartupPings, now, startupPing = true, reason = Pings.metricsReasonCodes.upgrade)
 
             return
         }
@@ -238,7 +238,7 @@ internal class MetricsPingScheduler(
 
                 // Since `schedule` is only ever called from Glean.initialize, we need to ensure
                 // that this gets executed now before the Application lifetime metrics get cleared.
-                collectPingAndReschedule(now, startupPing = true, reason = Pings.metricsReasonCodes.overdue)
+                collectPingAndReschedule(sendStartupPings, now, startupPing = true, reason = Pings.metricsReasonCodes.overdue)
             }
             else -> {
                 // This covers (3).
@@ -258,7 +258,7 @@ internal class MetricsPingScheduler(
      * @param reason The reason the ping is being submitted.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    internal fun collectPingAndReschedule(now: Calendar, startupPing: Boolean, reason: Pings.metricsReasonCodes) {
+    internal fun collectPingAndReschedule(sendStartupPings: Boolean, now: Calendar, startupPing: Boolean, reason: Pings.metricsReasonCodes) {
         val reasonString = Pings.metrics.reasonCodes[reason.ordinal]
         Log.i(
             LOG_TAG,
@@ -279,7 +279,9 @@ internal class MetricsPingScheduler(
             //
             // * Do not change this line without checking what it implies for the above wall
             // of text. *
-            Glean.submitPingByNameSync("metrics", reasonString)
+            if (sendStartupPings) {
+                Glean.submitPingByNameSync("metrics", reasonString)
+            }
         } else {
             Pings.metrics.submit(reason)
         }
@@ -360,6 +362,6 @@ internal class MetricsPingTimer(
         // Perform the actual work.
         val now = scheduler.getCalendarInstance()
         Log.d(LOG_TAG, "MetricsPingTimerTask run(), now = ${now.time}")
-        scheduler.collectPingAndReschedule(now, false, reason)
+        scheduler.collectPingAndReschedule(true, now, false, reason)
     }
 }
