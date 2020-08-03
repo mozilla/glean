@@ -13,6 +13,8 @@
 * Python
   * **Breaking change:** `data_dir` must always be passed to `Glean.initialize`. Prior to this, a missing value would store Glean data in a temporary directory.
   * Logging messages from the Rust core are now sent through Python's standard library `logging` module. Therefore all logging in a Python application can be controlled through the `logging` module interface.
+* Android
+  * BUGFIX: Require activities executed via `GleanDebugView` to be exported.
 
 # v31.6.0 (2020-07-24)
 
