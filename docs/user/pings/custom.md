@@ -51,7 +51,7 @@ The Glean SDK build generates code from `pings.yaml` in a `Pings` object, which 
 
 <div data-lang="Kotlin" class="tab">
 
-In Kotlin, this object must be registered with Glean from your startup code (such as in your application's `onCreate` method or a function called from that method).
+In Kotlin, this object must be registered with the Glean SDK from your startup code (such as in your application's `onCreate` method or a function called from that method).
 
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.Pings
@@ -69,7 +69,7 @@ override fun onCreate() {
 
 <div data-lang="Swift" class="tab">
 
-In Swift, this object must be registered with Glean from your startup code
+In Swift, this object must be registered with the Glean SDK from your startup code
 (such as in your application's `UIApplicationDelegate` [`application(_:didFinishLaunchingWithOptions:)`](https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622921-application) method or a function called from that method).
 
 ```swift
@@ -99,7 +99,7 @@ from glean import load_pings
 pings = load_pings("pings.yaml")
 ```
 
-If your project is a distributable Python package, you need to include the `metrics.yaml` file using [one of the myriad ways to include data in a Python package](https://setuptools.readthedocs.io/en/latest/setuptools.html#including-data-files) and then use [`pkg_resources.resource_filename()`](https://setuptools.readthedocs.io/en/latest/pkg_resources.html#resource-extraction) to get the filename at runtime.
+If your project is a distributable Python package, you need to include the `pings.yaml` file using [one of the myriad ways to include data in a Python package](https://setuptools.readthedocs.io/en/latest/setuptools.html#including-data-files) and then use [`pkg_resources.resource_filename()`](https://setuptools.readthedocs.io/en/latest/pkg_resources.html#resource-extraction) to get the filename at runtime.
 
 ```Python
 from glean import load_pings
@@ -112,7 +112,7 @@ pings = load_pings(resource_filename(__name__, "pings.yaml"))
 
 <div data-lang="C#" class="tab">
 
-In C#, this object must be registered with Glean from your startup code (such as in your application's `Main` method or a function called from that method).
+In C#, this object must be registered with the Glean SDK from your startup code (such as in your application's `Main` method or a function called from that method).
 
 ```C#
 using static Mozilla.YourApplication.GleanMetrics.Pings;

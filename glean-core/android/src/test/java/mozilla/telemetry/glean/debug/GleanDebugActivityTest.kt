@@ -13,6 +13,7 @@ import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.config.Configuration
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import android.content.pm.ActivityInfo
@@ -75,18 +76,28 @@ class GleanDebugActivityTest {
         val launchIntent = Intent(Intent.ACTION_MAIN)
         launchIntent.setPackage(testPackageName)
         launchIntent.addCategory(Intent.CATEGORY_LAUNCHER)
+
+        // Add a test main launcher activity.
         val resolveInfo = ResolveInfo()
         resolveInfo.activityInfo = ActivityInfo()
         resolveInfo.activityInfo.packageName = testPackageName
         resolveInfo.activityInfo.name = "LauncherActivity"
-        val otherResolveInfo = ResolveInfo()
-        otherResolveInfo.activityInfo = ActivityInfo()
-        otherResolveInfo.activityInfo.packageName = testPackageName
-        otherResolveInfo.activityInfo.name = "OtherActivity"
         @Suppress("DEPRECATION")
         shadowOf(pm).addResolveInfoForIntent(launchIntent, resolveInfo)
-        @Suppress("DEPRECATION")
-        shadowOf(pm).addResolveInfoForIntent(launchIntent, otherResolveInfo)
+
+        // Add a second testing activity.
+        val otherActivityInfo = ActivityInfo()
+        otherActivityInfo.packageName = testPackageName
+        otherActivityInfo.name = "OtherActivity"
+        otherActivityInfo.exported = true
+        shadowOf(pm).addOrUpdateActivity(otherActivityInfo)
+
+        // Add another hidden testing activity.
+        val hiddenActivity = ActivityInfo()
+        hiddenActivity.packageName = testPackageName
+        hiddenActivity.name = "HiddenActivity"
+        hiddenActivity.exported = false
+        shadowOf(pm).addOrUpdateActivity(hiddenActivity)
     }
 
     @Test
@@ -287,6 +298,21 @@ class GleanDebugActivityTest {
             assertEquals("OtherActivity", startedIntent.component!!.className)
             // Make sure that the extra intent option was propagated to this intent.
             assertEquals("TestValue", startedIntent.getStringExtra("TestOptionFromCLI"))
+        }
+    }
+
+    @Test
+    fun `non-exported activity is not started`() {
+        // Build the intent that will call our debug activity, with no extra.
+        val intent = Intent(ApplicationProvider.getApplicationContext<Context>(),
+            GleanDebugActivity::class.java)
+        // Add at least an option, otherwise the activity will be removed.
+        intent.putExtra(GleanDebugActivity.NEXT_ACTIVITY_TO_RUN, "HiddenActivity")
+        // Start the activity through our intent.
+        val scenario = launch<GleanDebugActivity>(intent)
+        scenario.onActivity { activity ->
+            // We don't expect any activity to be launched.
+            assertNull(shadowOf(activity).peekNextStartedActivityForResult())
         }
     }
 }

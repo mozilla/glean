@@ -7,6 +7,7 @@ package mozilla.telemetry.glean.debug
 import android.app.Activity
 import android.content.ComponentName
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import mozilla.telemetry.glean.Glean
@@ -60,10 +61,18 @@ class GleanDebugActivity : Activity() {
     // exposed this way.  For example, it would be dangerous to change the
     // submission URL.
 
+    private fun isActivityExported(targetActivity: ComponentName): Boolean {
+        return try {
+            packageManager.getActivityInfo(targetActivity, PackageManager.GET_META_DATA).exported
+        } catch (e: PackageManager.NameNotFoundException) {
+            false
+        }
+    }
+
     /**
      * On creation of the debug activity, launch the requested command.
      */
-    @Suppress("ComplexMethod", "LongMethod")
+    @Suppress("ComplexMethod", "LongMethod", "ReturnCount")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -148,7 +157,13 @@ class GleanDebugActivity : Activity() {
 
         val nextComponent = nextActivityName?.let { name ->
             // Try to lookup the Activity that was asked by the caller.
-            ComponentName(packageName, name)
+            val component = ComponentName(packageName, name)
+            if (!isActivityExported(component)) {
+                Log.e(LOG_TAG, "Cannot run $packageName/$name: Activity not exported")
+                finish()
+                return
+            }
+            component
         } ?: launchIntent.component
 
         Log.i(LOG_TAG, "Running next: ${nextComponent!!.packageName}/${nextComponent.className}")

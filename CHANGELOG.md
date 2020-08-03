@@ -1,6 +1,24 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v31.6.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v32.0.0...main)
+
+# v32.0.0 (2020-08-03)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v31.6.0...v32.0.0)
+
+* General
+  * Limit ping request body size to 1MB. ([#1098](https://github.com/mozilla/glean/pull/1098))
+* iOS
+  * Implement ping tagging (i.e. the `X-Source-Tags` header) through custom URL ([#1100](https://github.com/mozilla/glean/pull/1100)).
+* C#
+  * Add support for Labeled Strings and Labeled Booleans.
+  * Add support for the Counter metric type and Labeled Counter.
+  * Add support for the `MemoryDistributionMetricType`.
+* Python
+  * **Breaking change:** `data_dir` must always be passed to `Glean.initialize`. Prior to this, a missing value would store Glean data in a temporary directory.
+  * Logging messages from the Rust core are now sent through Python's standard library `logging` module. Therefore all logging in a Python application can be controlled through the `logging` module interface.
+* Android
+  * BUGFIX: Require activities executed via `GleanDebugView` to be exported.
 
 # v31.6.0 (2020-07-24)
 

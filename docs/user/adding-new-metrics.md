@@ -6,8 +6,7 @@ When adding a new metric, the workflow is:
 * Add a new entry to [`metrics.yaml`](#The-metricsyaml-file).
 * Add code to your project to record into the metric by calling the Glean SDK.
 
-> **Important**: Any new data collection requires documentation and data-review.
-This is also required for any new metric automatically collected by the Glean SDK.
+> **Important**: Any new data collection requires documentation and [data-review](https://wiki.mozilla.org/Firefox/Data_Collection). This is also required for any new metric automatically collected by the Glean SDK.
 
 ## Choosing a metric type
 
@@ -17,7 +16,9 @@ The following is a set of questions to ask about the data being collected to hel
 
 If the value is true or false, use a [boolean metric](metrics/boolean.html).
 
-If the value is a string, use a [string metric](metrics/string.html). For example, to record the name of the default search engine. Beware: string metrics are exceedingly general, and you are probably best served by selecting the most specific metric for the job, since you'll get better error checking and richer analysis tools for free. For example, avoid storing a number in a string metric --- you probably want a [counter metric](metrics/counter.html) instead.
+If the value is a string, use a [string metric](metrics/string.html). For example, to record the name of the default search engine. 
+
+> **Beware:** string metrics are exceedingly general, and you are probably best served by selecting the most specific metric for the job, since you'll get better error checking and richer analysis tools for free. For example, avoid storing a number in a string metric --- you probably want a [counter metric](metrics/counter.html) instead.
 
 If you need to store multiple string values in a metric, use a [string list metric](metrics/string_list.html). For example, you may want to record the list of other Mozilla products installed on the device.
 
@@ -25,7 +26,7 @@ If you need to store multiple string values in a metric, use a [string list metr
 
 <!-- If you have a related set of metrics that you want to record strings for, and you don't know the things the strings relate to at build time, use a [labeled string metric](metrics/labeled_strings.html). -->
 
-For all of the simple metric types in this section that measure single values, it is especially important to consider how the lifetime of the value relates to the ping it is being sent in. Since these metrics don't perform any aggregation on the client side, when a ping containing the metric is submitted, it will contain only the "last known" value for the metric, potentially resulting in **data loss**.  There is further discussion of [metric lifetimes](#When-should-Glean-automatically-reset-the-measurement) below.
+For all of the metric types in this section that measure single values, it is especially important to consider how the lifetime of the value relates to the ping it is being sent in. Since these metrics don't perform any aggregation on the client side, when a ping containing the metric is submitted, it will contain only the "last known" value for the metric, potentially resulting in **data loss**.  There is further discussion of [metric lifetimes](#When-should-Glean-automatically-reset-the-measurement) below.
 
 ### Are you counting things?
 
@@ -37,7 +38,7 @@ If you need to know when the things being counted happened relative to other thi
 
 If you need to record an absolute time, use a [datetime metric](metrics/datetime.html). Datetimes are recorded in the user's local time, according to their device's real time clock, along with a timezone offset from UTC. Datetime metrics allow specifying the resolution they are collected at, and to stay [lean][lean-data], they should only be collected at the minimum resolution required to answer your question.
 
-If you need to record how long something takes you have a few options. 
+If you need to record how long something takes you have a few options.
 
 If you need to measure the total time spent doing a particular task, look to the [timespan metric](metrics/timespan.html). Timespan metrics allow specifying the resolution they are collected at, and to stay [lean][lean-data], they should only be collected at the minimum resolution required to answer your question.
 Note that this metric should only be used to measure time on a single thread. If multiple overlapping timespans are measured for the same metric, an invalid state error is recorded. 
@@ -50,7 +51,7 @@ If you need to know the time between multiple distinct actions that aren't a sim
 
 If you need to know the order of actions relative to other actions, such as, the user performed tasks A, B, and then C, and this is meaningfully different from the user performing tasks A, C and then B, (in other words, the order is meaningful beyond just the *fact* that a set of tasks were performed), use an [event metric](metrics/event.html).
 
-Importantly, events are the most expensive metric type to record, transmit, store and analyze, so they should be used sparingly, and only when none of the other metric types are sufficient for answering your question.
+> **Important:** events are the most expensive metric type to record, transmit, store and analyze, so they should be used sparingly, and only when none of the other metric types are sufficient for answering your question.
 
 ### For how long do you need to collect this data?
 
@@ -65,7 +66,7 @@ Removing a metric does not affect the availability of data already collected by 
 
 If the metric is still needed after its expiration date, it should go back for [another round of data review](https://wiki.mozilla.org/Firefox/Data_Collection) to have its expiration date extended.
 
-### When should Glean automatically clear the measurement?
+### When should the Glean SDK automatically clear the measurement?
 
 The `lifetime` parameter of a metric defines when its value will be cleared. There are three lifetime options available:
 
@@ -75,7 +76,7 @@ While lifetimes are important to understand for all metric types, they are parti
 
 #### A lifetime example
 
-Let's work through an example to see how these lifetimes play out in practice. Let's suppose we have a user preference, "turbo mode", which defaults to `false`, but the user can turn it to `true` at any time.  We want to know when this flag is `true` so we can measure its affect on other metrics in the same ping.  In the following diagram, we look at a time period that sends 4 pings across two separate runs of the application. We assume here, that like Glean's built-in [metrics ping](pings/metrics.html), the developer writing the metric isn't in control of when the ping is submitted. 
+Let's work through an example to see how these lifetimes play out in practice. Let's suppose we have a user preference, "turbo mode", which defaults to `false`, but the user can turn it to `true` at any time.  We want to know when this flag is `true` so we can measure its affect on other metrics in the same ping.  In the following diagram, we look at a time period that sends 4 pings across two separate runs of the application. We assume here, that like the Glean SDK's built-in [metrics ping](pings/metrics.html), the developer writing the metric isn't in control of when the ping is submitted. 
 
 In this diagram, the ping measurement windows are represented as rectangles, but the moment the ping is "submitted" is represented by its right edge. The user changes the "turbo mode" setting from `false` to `true` in the first run, and then toggles it again twice in the second run. 
   
@@ -105,12 +106,12 @@ This is especially useful when metrics need to be tightly related to one another
 
 #### Reuse names from other applications
 
-There's a lot of value using the same name for analogous metrics collected across different products. For example, BigQuery makes it simple to join columns with the same name across multiple tables. Therefore, we encourage you to investigate if a similar metric is already being collected by another product. If it is, there may be an opportunity for code reuse across these products, and if all the projects are using Glean, it's easy for libraries to send their own metrics. If sharing the code doesn't make sense, at a minimum we recommend using the same metric name for similar actions and concepts whenever possible.
+There's a lot of value using the same name for analogous metrics collected across different products. For example, BigQuery makes it simple to join columns with the same name across multiple tables. Therefore, we encourage you to investigate if a similar metric is already being collected by another product. If it is, there may be an opportunity for code reuse across these products, and if all the projects are using the Glean SDK, it's easy for libraries to send their own metrics. If sharing the code doesn't make sense, at a minimum we recommend using the same metric name for similar actions and concepts whenever possible.
 
 #### Make names unique within an application
 
 Metric identifiers (the combination of a metric's category and name) must be unique across all metrics that are sent by a single application.
-This includes not only the metrics defined in the app's `metrics.yaml`, but the `metrics.yaml` of any Glean-using library that the application uses, including Glean itself.
+This includes not only the metrics defined in the app's `metrics.yaml`, but the `metrics.yaml` of any Glean SDK-using library that the application uses, including the Glean SDK itself.
 Therefore, care should be taken to name things specifically enough so as to avoid namespace collisions.
 In practice, this generally involves thinking carefully about the `category` of the metric, more than the `name`.
 
@@ -126,13 +127,13 @@ For example, if defining a set of events related to search, put them in a catego
 
 ### What if none of these metric types is the right fit?
 
-The current set of metrics Glean supports is based on known common use cases, but new use cases are discovered all the time.
+The current set of metrics the Glean SDK supports is based on known common use cases, but new use cases are discovered all the time.
 
 Please reach out to us on [#glean:mozilla.org](https://chat.mozilla.org/#/room/#glean:mozilla.org). If you think you need a new metric type, we [have a process for that](metrics/index.html#adding-or-changing-metric-types).
 
 ### How do I make sure my metric is working?
 
-Glean has rich support for writing unit tests involving metrics. Writing a good unit test is a large topic, but in general, you should write unit tests for all new telemetry that does the following:
+The Glean SDK has rich support for writing unit tests involving metrics. Writing a good unit test is a large topic, but in general, you should write unit tests for all new telemetry that does the following:
 
 - Performs the operation being measured.
 

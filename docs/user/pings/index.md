@@ -80,8 +80,6 @@ See [Using the Experiments API](../experiments-api.md) on how to record experime
 
 The pings that the Glean SDK generates are submitted to the Mozilla servers at specific paths, in order to provide additional metadata without the need to unpack the ping payload.
 
-> **Note**: To keep resource usage in check, the Glean SDK allows only up to 10 ping submissions every 60 seconds. There are no exposed methods to change these rate limiting defaults yet, follow [Bug 1647630](https://bugzilla.mozilla.org/show_bug.cgi?id=1647630) for updates.
-
 A typical submission URL looks like
 
   `"<server-address>/submit/<application-id>/<doc-type>/<glean-schema-version>/<document-id>"`
@@ -93,6 +91,13 @@ where:
 - `<doc-type>`: the name of the ping; this can be one of the pings available out of the box with the Glean SDK, or a custom ping;
 - `<glean-schema-version>`: the version of the Glean ping schema;
 - `<document-id>`: a unique identifier for this ping.
+
+### Limitations
+
+To keep resource usage in check, the Glean SDK enforces some limitations on the pings it will upload and in the amount of uploads allowed per a given time interval.
+
+- **Rate limiting**: only up to 10 ping submissions every 60 seconds are allowed. There are no exposed methods to change these rate limiting defaults yet, follow [Bug 1647630](https://bugzilla.mozilla.org/show_bug.cgi?id=1647630) for updates.
+- **Request body size limiting**: the body of a ping request may have up to 1MB. Pings that exceed this size are discarded and don't get uploaded. Size and number of discarded pings are recorded on the internal Glean metric [`glean.upload.discarded_exceeding_pings_size`](../collected-metrics/metrics.md#metrics-1).
 
 ### Submitted headers
 A pre-defined set of headers is additionally sent along with the submitted ping:
@@ -137,7 +142,7 @@ The system may also call `onStop()` when the activity has finished running, and 
 
 ### Foreground
 
-For iOS, Glean attaches to the [`willEnterForegroundNotification`](https://developer.apple.com/documentation/uikit/uiapplication/1622944-willenterforegroundnotification).
+For iOS, the Glean SDK attaches to the [`willEnterForegroundNotification`](https://developer.apple.com/documentation/uikit/uiapplication/1622944-willenterforegroundnotification).
 This notification is posted by the OS shortly before an app leaves the background state on its way to becoming the active app.
 
 ### Background

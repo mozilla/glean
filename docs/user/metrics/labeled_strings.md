@@ -90,7 +90,23 @@ assert 0 == metrics.login.errors_by_stage.test_get_num_recorded_errors(
 
 <div data-lang="C#" class="tab">
 
-TODO. To be implemented in [bug 1648438](https://bugzilla.mozilla.org/show_bug.cgi?id=1648438).
+```C#
+using static Mozilla.YourApplication.GleanMetrics.Login;
+
+Login.errorsByStage["server_auth"].Set("Invalid password");
+```
+
+There are test APIs available too:
+
+```C#
+using static Mozilla.YourApplication.GleanMetrics.Login;
+
+// Was anything recorded?
+Assert.True(Login.errorsByStage["server_auth"].TestHasValue());
+
+// Were there any invalid labels?
+Assert.Equal(0, Login.errorsByStage.TestGetNumRecordedErrors(ErrorType.InvalidLabel));
+```
 
 </div>
 

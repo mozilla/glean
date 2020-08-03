@@ -19,12 +19,12 @@ These metrics are sent in every ping.
 
 The following metrics are added to the ping:
 
-| Name | Type | Description | Data reviews | Extras | Expiration | [Data Sensitivity](https://wiki.mozilla.org/Firefix/Data_Collection) |
-| --- | --- | --- | --- | --- | --- |
-| glean.error.invalid_label |[labeled_counter](https://mozilla.github.io/glean/book/user/metrics/labeled_counters.html) |Counts the number of times a metric was set with an invalid label. The labels are the `category.name` identifier of the metric. |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1499761#c5)||never |1 |
-| glean.error.invalid_overflow |[labeled_counter](https://mozilla.github.io/glean/book/user/metrics/labeled_counters.html) |Counts the number of times a metric was set a value that overflew. The labels are the `category.name` identifier of the metric. |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1591912#c3)||never |1 |
-| glean.error.invalid_state |[labeled_counter](https://mozilla.github.io/glean/book/user/metrics/labeled_counters.html) |Counts the number of times a timing metric was used incorrectly. The labels are the `category.name` identifier of the metric. |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1499761#c5)||never |1 |
-| glean.error.invalid_value |[labeled_counter](https://mozilla.github.io/glean/book/user/metrics/labeled_counters.html) |Counts the number of times a metric was set to an invalid value. The labels are the `category.name` identifier of the metric. |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1499761#c5)||never |1 |
+| Name | Type | Description | Data reviews | Extras | Expiration | [Data Sensitivity](https://wiki.mozilla.org/Firefox/Data_Collection) |
+| --- | --- | --- | --- | --- | --- | --- |
+| glean.error.invalid_label |[labeled_counter](https://mozilla.github.io/glean/book/user/metrics/labeled_counters.html) |Counts the number of times a metric was set with an invalid label. The labels are the `category.name` identifier of the metric.  |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1499761#c5)||never |1 |
+| glean.error.invalid_overflow |[labeled_counter](https://mozilla.github.io/glean/book/user/metrics/labeled_counters.html) |Counts the number of times a metric was set a value that overflowed. The labels are the `category.name` identifier of the metric.  |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1591912#c3)||never |1 |
+| glean.error.invalid_state |[labeled_counter](https://mozilla.github.io/glean/book/user/metrics/labeled_counters.html) |Counts the number of times a timing metric was used incorrectly. The labels are the `category.name` identifier of the metric.  |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1499761#c5)||never |1 |
+| glean.error.invalid_value |[labeled_counter](https://mozilla.github.io/glean/book/user/metrics/labeled_counters.html) |Counts the number of times a metric was set to an invalid value. The labels are the `category.name` identifier of the metric.  |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1499761#c5)||never |1 |
 
 ## baseline
 
@@ -64,14 +64,15 @@ This ping includes the [client id](https://mozilla.github.io/glean/book/user/pin
 
 The following metrics are added to the ping:
 
-| Name | Type | Description | Data reviews | Extras | Expiration | [Data Sensitivity](https://wiki.mozilla.org/Firefix/Data_Collection) |
-| --- | --- | --- | --- | --- | --- |
+| Name | Type | Description | Data reviews | Extras | Expiration | [Data Sensitivity](https://wiki.mozilla.org/Firefox/Data_Collection) |
+| --- | --- | --- | --- | --- | --- | --- |
 | glean.baseline.duration |[timespan](https://mozilla.github.io/glean/book/user/metrics/timespan.html) |The duration of the last foreground session.  |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3)||never |1, 2 |
 
 ## deletion-request
 
-This ping is submitted when a user opts out of sending technical and interaction data to Mozilla. This ping is intended to communicate to the Data Pipeline that the user wishes to have their reported Telemetry data deleted. As such it attempts to send itself at the moment the user opts out of data collection.
+This is a built-in ping that is assembled out of the box by the Glean SDK.
 
+See the Glean SDK documentation for the [`deletion-request` ping](https://mozilla.github.io/glean/book/user/pings/deletion-request.html).
 
 This ping is sent if empty.
 
@@ -125,10 +126,11 @@ This ping includes the [client id](https://mozilla.github.io/glean/book/user/pin
 
 The following metrics are added to the ping:
 
-| Name | Type | Description | Data reviews | Extras | Expiration | [Data Sensitivity](https://wiki.mozilla.org/Firefix/Data_Collection) |
-| --- | --- | --- | --- | --- | --- |
-| glean.error.preinit_tasks_overflow |[counter](https://mozilla.github.io/glean/book/user/metrics/counter.html) |The number of tasks queued in the pre-initialization buffer. Only sent if the buffer overflows. |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1609482#c3)||never |1 |
-| glean.upload.ping_upload_failure |[labeled_counter](https://mozilla.github.io/glean/book/user/metrics/labeled_counters.html) |Counts the number of ping upload failures, by type of failure. This includes failures for all ping types, though the counts appear in the next successfully sent `metrics` ping. |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1589124#c1)|<ul><li>status_code_4xx</li><li>status_code_5xx</li><li>status_code_unknown</li><li>unrecoverable</li><li>recoverable</li></ul>|never |1 |
+| Name | Type | Description | Data reviews | Extras | Expiration | [Data Sensitivity](https://wiki.mozilla.org/Firefox/Data_Collection) |
+| --- | --- | --- | --- | --- | --- | --- |
+| glean.error.preinit_tasks_overflow |[counter](https://mozilla.github.io/glean/book/user/metrics/counter.html) |The number of tasks queued in the pre-initialization buffer. Only sent if the buffer overflows.  |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1609482#c3)||never |1 |
+| glean.upload.discarded_exceeding_pings_size |[memory_distribution](https://mozilla.github.io/glean/book/user/metrics/memory_distribution.html) |The size of pings that exceeded the maximum ping size allowed for upload.  |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1597761#c10)||never |1 |
+| glean.upload.ping_upload_failure |[labeled_counter](https://mozilla.github.io/glean/book/user/metrics/labeled_counters.html) |Counts the number of ping upload failures, by type of failure. This includes failures for all ping types, though the counts appear in the next successfully sent `metrics` ping.  |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1589124#c1)|<ul><li>status_code_4xx</li><li>status_code_5xx</li><li>status_code_unknown</li><li>unrecoverable</li><li>recoverable</li></ul>|never |1 |
 
 
 Data categories are [defined here](https://wiki.mozilla.org/Firefox/Data_Collection).

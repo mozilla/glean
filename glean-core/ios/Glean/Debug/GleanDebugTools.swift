@@ -19,10 +19,14 @@ class GleanDebugUtility {
     /// - parameters:
     ///     * url: A `URL` object containing the Glean debug commands as query parameters
     ///
-    /// There are 3 available commands that you can use with the Glean SDK debug tools
+    /// There are 4 available commands that you can use with the Glean SDK debug tools
     ///
-    /// - `logPings`: If "true", will cause pings that are submitted successfully to also be echoed to the device's log
-    /// - `debugViewTag`:  This command expects a string to tag the pings with and redirects them to the Debug View
+    /// - `logPings`: If "true", will cause pings that are submitted successfully to also be echoed to the device's log.
+    /// - `debugViewTag`:  This command expects a string to tag the pings with and redirects them to the Debug View.
+    ///     The string must match the pattern `[a-zA-Z0-9-]{1,20}`.
+    /// - `sourceTags`: This command tags all outgoing pings to make them available for real-time validation.
+    ///     Tags are represented by a comma separated list. Each tag must match the pattern `[a-zA-Z0-9-]{1,20}`.
+    ///     Up to 5 tags are allowed.
     /// - `sendPing`: This command expects a string name of a ping to force immediate collection and submission of.
     ///
     /// The structure of the custom URL uses the following format:
@@ -53,11 +57,20 @@ class GleanDebugUtility {
         }
 
         if let parsedCommands = processCustomUrlQuery(urlQueryItems: params) {
-            if let tag = parsedCommands.pingTag {
-                if Glean.shared.setDebugViewTag(tag) {
-                    logger.debug("Pings tagged with: \(tag)")
+            if let debugTag = parsedCommands.debugViewTag {
+                if Glean.shared.setDebugViewTag(debugTag) {
+                    logger.debug("Pings tagged with debug tag: \(debugTag)")
                 } else {
-                    logger.error("Invalid ping tag name, aborting Glean debug tools")
+                    logger.error("Invalid ping debug tag name, aborting Glean debug tools")
+                    return
+                }
+            }
+
+            if let sourceTags = parsedCommands.sourceTags {
+                if Glean.shared.setSourceTags(sourceTags) {
+                    logger.debug("Pings tagged with source tags: \(sourceTags)")
+                } else {
+                    logger.error("Invalid ping source tags value, aborting Glean debug tools")
                     return
                 }
             }
@@ -76,11 +89,13 @@ class GleanDebugUtility {
 
     /// A simple struct to represent the commands parsed from the custom URL
     private struct ParsedQueryCommands {
-        let pingTag: String?
+        let debugViewTag: String?
+        let sourceTags: [String]?
         let logPings: Bool?
         let pingNameToSend: String?
     }
 
+    // swiftlint:disable cyclomatic_complexity
     /// Helper function to process parameters passed as a query to the custom URL processed by `handleCustomUrl`
     ///
     /// - parameters:
@@ -89,7 +104,8 @@ class GleanDebugUtility {
     /// - returns: A tuple containing the values of the parameters `pingTag`, `logPings`, `pingNamesToSend` or nil
     ///     when invalid or duplicated commands are detected.
     private static func processCustomUrlQuery(urlQueryItems: [URLQueryItem]) -> ParsedQueryCommands? {
-        var pingTagName: String?
+        var debugViewTag: String?
+        var sourceTags: [String]?
         var willLogPings: Bool?
         var pingToSend: String?
 
@@ -101,13 +117,21 @@ class GleanDebugUtility {
 
             switch param.name {
             case "debugViewTag":
-                if pingTagName != nil {
+                if debugViewTag != nil {
                     logger.error(
                         "Multiple `debugViewTag` commands not allowed, aborting Glean debug tools")
                     return nil
                 }
 
-                pingTagName = param.value
+                debugViewTag = param.value
+            case "sourceTags":
+                if sourceTags != nil {
+                    logger.error(
+                        "Multiple `sourceTags` commands not allowed, aborting Glean debug tools")
+                    return nil
+                }
+
+                sourceTags = param.value?.components(separatedBy: ",")
             case "logPings":
                 if willLogPings != nil {
                     logger.error("Multiple `logPings` commands not allowed, aborting Glean debug tools")
@@ -132,9 +156,12 @@ class GleanDebugUtility {
         }
 
         return ParsedQueryCommands(
-            pingTag: pingTagName,
+            debugViewTag: debugViewTag,
+            sourceTags: sourceTags,
             logPings: willLogPings,
             pingNameToSend: pingToSend
         )
     }
+
+    // swiftlint:enable cyclomatic_complexity
 }

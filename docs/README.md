@@ -6,7 +6,7 @@ The `Glean SDK` is a modern approach for a Telemetry library and is part of the 
 
 To contact us you can:
 - Find us in the [#glean channel on chat.mozilla.org](https://chat.mozilla.org/#/room/#glean:mozilla.org).
-- To report issues or request changes, file a bug in [Bugzilla in Data Platform & Tools :: Glean: SDK](https://bugzilla.mozilla.org/enter_bug.cgi?product=Data%20Platform%20and%20Tools&component=Glean%3A%20SDK).
+- To report issues or request changes, file a bug in [Bugzilla in Data Platform & Tools :: Glean: SDK](https://bugzilla.mozilla.org/enter_bug.cgi?product=Data+Platform+and+Tools&component=Glean%3A+SDK&priority=P3&status_whiteboard=%5Btelemetry%3Aglean-rs%3Am%3F%5D).
 - Send an email to *glean-team@mozilla.com*.
 - The Glean SDK team is: *:janerik*, *:dexter*, *:travis*, *:mdroettboom*, *:gfritzsche*, *:chutten*, *:brizental*.
 
@@ -14,7 +14,9 @@ The source code is available [on GitHub](https://github.com/mozilla/glean/).
 
 ## Using this book
 
-This book is divided into 4 main chapters:
+This book is specifically about the `Glean SDK` (the client side code for collecting telemetry). Documentation about the broader end-to-end [Glean project](https://docs.telemetry.mozilla.org/concepts/glean/glean.html).
+
+This book is divided into 5 main chapters:
 
 ### [Using the Glean SDK](user/index.html)
 
@@ -31,6 +33,10 @@ This chapter lists all metrics collected by the Glean SDK itself.
 
 This chapter describes how to develop the Glean SDK and its various implementations.
 This is relevant if you plan to contribute to the Glean SDK code base.
+
+### [API Reference Documentation](api/index.md)
+
+Reference documentation for the API in its various language bindings.
 
 ### [This Week in Glean](appendix/twig.md)
 

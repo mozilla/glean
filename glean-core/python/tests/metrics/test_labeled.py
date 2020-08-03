@@ -222,7 +222,7 @@ def test_other_label_without_predefined_labels_before_glean_init():
         labeled_counter_metric[f"label_{i}"].add(1)
     labeled_counter_metric["label_0"].add(1)
 
-    Glean.initialize(
+    Glean._initialize_with_tempdir_for_testing(
         application_id="glean-python-test",
         application_version=glean_version,
         upload_enabled=True,

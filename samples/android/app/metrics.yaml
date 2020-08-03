@@ -134,3 +134,18 @@ custom:
     notification_emails:
       - CHANGE-ME@test-only.com
     expires: 2100-01-01
+
+legacy_ids:
+  client_id:
+    type: uuid
+    description: |
+      Testing deletion request payload
+    send_in_pings:
+      - deletion-request
+    bugs:
+      - https://bugzilla.mozilla.org/1654811
+    data_reviews:
+      - N/A
+    notification_emails:
+      - CHANGE-ME@example.com
+    expires: 2100-01-01

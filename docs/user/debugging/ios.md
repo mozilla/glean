@@ -10,14 +10,15 @@ These environment variables must be set on the device that is running the applic
 
 # Debugging iOS applications using the Glean SDK
 
-For debugging and validation purposes on iOS, Glean makes use of a custom URL scheme which is implemented _within the application_ that is consuming Glean.  Glean provides some convenience functions to facilitate this, but it's up to the consuming application to enable this functionality.  Applications that enable this Glean SDK feature will be able to launch the application from a URL with the Glean debug commands embedded in the URL itself.
+For debugging and validation purposes on iOS, the Glean SDK makes use of a custom URL scheme which is implemented _within the application_ that is consuming the Glean SDK.  The Glean SDK provides some convenience functions to facilitate this, but it's up to the consuming application to enable this functionality.  Applications that enable this Glean SDK feature will be able to launch the application from a URL with the Glean debug commands embedded in the URL itself.
 
 ### Available commands and query format
 
-There are 3 available commands that you can use with the Glean SDK debug tools
+There are 4 available commands that you can use with the Glean SDK debug tools
 
 - `logPings`: This is either true or false and will cause pings that are submitted to also be echoed to the device's log
 - `debugViewTag`: This command will tag outgoing pings with the provided value, in order to identify them in the Glean Debug View. Tags need to be string with upper and lower case letters, numbers and dashes, with a max length of 20 characters. **Important**: in older versions of the Glean SDK, this was named `tagPings`.
+- `sourceTags`: This command tags outgoing pings with a maximum of 5 comma-separated tags. The tags must match the pattern `[a-zA-Z0-9-]{1,20}`. The `automation` tag is meant for tagging pings generated on automation: such pings will be specially handled on the pipeline (i.e. discarded from [non-live views](https://docs.telemetry.mozilla.org/cookbooks/bigquery/querying.html#table-layout-and-naming)). Tags starting with `glean` are reserved for future use.
 - `sendPing`: This command expects a string name of a ping to force immediate collection and submission of.
 
 The structure of the custom URL uses the following format:
@@ -37,8 +38,9 @@ There are a few things to consider when creating the custom URL:
 - Not all commands are required to be encoded in the URL, you can mix and match the commands that you need.
 - Multiple instances of commands are not allowed in the same URL and, if present, will cause the entire URL to be ignored.
 - The `logPings` command doesn't trigger ping submission and you won't see any output until a ping has been submitted. You can use the `sendPings` command to force a ping to be sent, but it could be more desirable to trigger the pings submission on their normal schedule. For instance, the `baseline` and `events` pings can be triggered by moving the app out of the foreground and the `metrics` ping can be triggered normally if it is overdue for the current calendar day. See the [ping documentation](../pings/index.md) for more information on ping scheduling to learn when pings are sent.
+- Enabling debugging features through custom URLs overrides any debugging features set through environment variables.
 
-### Instrumenting the application for Glean debug functionality
+### Instrumenting the application for Glean SDK debug functionality
 
 In order to enable the debugging features in a Glean SDK consuming iOS application, it is necessary to add some information to the application's `Info.plist`, and add a line and possibly an override for a function in the `AppDelegate.swift`.
 

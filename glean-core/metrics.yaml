@@ -91,7 +91,7 @@ glean.internal.metrics:
     lifetime: application
     send_in_pings:
       - glean_client_info
-    description: >
+    description: |
       The model of the device the application is running on.
       On Android, this is Build.MODEL, the user-visible marketing name,
       like "Pixel 2 XL".
@@ -257,7 +257,7 @@ glean.internal.metrics:
 glean.error:
   invalid_value:
     type: labeled_counter
-    description:
+    description: |
       Counts the number of times a metric was set to an invalid value.
       The labels are the `category.name` identifier of the metric.
     bugs:
@@ -276,7 +276,7 @@ glean.error:
 
   invalid_label:
     type: labeled_counter
-    description:
+    description: |
       Counts the number of times a metric was set with an invalid label.
       The labels are the `category.name` identifier of the metric.
     bugs:
@@ -295,7 +295,7 @@ glean.error:
 
   invalid_state:
     type: labeled_counter
-    description:
+    description: |
       Counts the number of times a timing metric was used incorrectly.
       The labels are the `category.name` identifier of the metric.
     bugs:
@@ -314,8 +314,8 @@ glean.error:
 
   invalid_overflow:
     type: labeled_counter
-    description:
-      Counts the number of times a metric was set a value that overflew.
+    description: |
+      Counts the number of times a metric was set a value that overflowed.
       The labels are the `category.name` identifier of the metric.
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1591912
@@ -333,7 +333,7 @@ glean.error:
 
   preinit_tasks_overflow:
     type: counter
-    description:
+    description: |
       The number of tasks queued in the pre-initialization buffer.
       Only sent if the buffer overflows.
     unit:
@@ -353,7 +353,7 @@ glean.error:
 glean.upload:
   ping_upload_failure:
     type: labeled_counter
-    description:
+    description: |
       Counts the number of ping upload failures, by type of failure.
       This includes failures for all ping types,
       though the counts appear in the next successfully sent `metrics` ping.
@@ -367,6 +367,23 @@ glean.upload:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1589124
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1589124#c1
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+    expires: never
+    no_lint:
+      - COMMON_PREFIX
+
+  discarded_exceeding_pings_size:
+    type: memory_distribution
+    description: >
+      The size of pings that exceeded the maximum ping size allowed for upload.
+    memory_unit: kilobyte
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1597761
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1597761#c10
     data_sensitivity:
       - technical
     notification_emails:

@@ -2,9 +2,9 @@
 
 ## Before using Glean
 
-Products using the Glean SDK to collect telemetry **must**:
+Products (applications or libraries) using the Glean SDK to collect telemetry **must**:
 
-- add documentation for any new metric collected with the library in its repository (see [an example](pings/index.md));
+- add documentation for any new metrics collected to its repository (see [an example](collected-metrics/metrics.md));
 - include the markdown-formatted documentation generated from the `metrics.yaml` and `pings.yaml` files in the project's documentation;
 - go through data review for the newly collected data by following [this process](https://wiki.mozilla.org/Firefox/Data_Collection);
 - provide a way for users to turn data collection off (e.g. providing settings to control
@@ -20,9 +20,9 @@ Products using the Glean SDK to collect telemetry **must**:
 
 #### Setting up the dependency
 
-Glean is published on [maven.mozilla.org](https://maven.mozilla.org/).
+The Glean SDK is published on [maven.mozilla.org](https://maven.mozilla.org/).
 To use it, you need to add the following to your project's top-level build file,
-in the `allprojects` block (see e.g. [Glean's own `build.gradle`](https://github.com/mozilla/glean/blob/main/build.gradle)):
+in the `allprojects` block (see e.g. [Glean SDK's own `build.gradle`](https://github.com/mozilla/glean/blob/main/build.gradle)):
 
 ```Groovy
 repositories {
@@ -32,7 +32,7 @@ repositories {
 }
 ```
 
-Each module that uses Glean needs to specify it in its build file, in the `dependencies` block.
+Each module that uses Glean SDK needs to specify it in its build file, in the `dependencies` block.
 Add this to your Gradle configuration:
 
 ```Groovy
@@ -57,12 +57,12 @@ implementation "org.mozilla.components:service-glean:33.0.0"
 
 #### Requirements
 
-* Python >= 3.6
+* Python >= 3.6.
 
 #### Setting up the dependency
 
-Glean can be consumed through [Carthage](https://github.com/Carthage/Carthage), a dependency manager for macOS and iOS.
-For consuming the latest version of Glean, add the following line to your `Cartfile`:
+The Glean SDK can be consumed through [Carthage](https://github.com/Carthage/Carthage), a dependency manager for macOS and iOS.
+For consuming the latest version of the Glean SDK, add the following line to your `Cartfile`:
 
 ```
 github "mozilla/glean" "{latest-version}"
@@ -108,17 +108,17 @@ For integration with the build system you can follow the [Carthage Quick Start s
 
 We recommend using a virtual environment for your work to isolate the dependencies for your project. There are many popular abstractions on top of virtual environments in the Python ecosystem which can help manage your project dependencies.
 
-The Python Glean bindings currently have [prebuilt wheels on PyPI for x86_64 Windows, Linux and macOS](https://pypi.org/project/glean-sdk/#files).
+The Glean SDK Python bindings currently have [prebuilt wheels on PyPI for Windows (i686 and x86_64), Linux (x86_64) and macOS (x86_64)](https://pypi.org/project/glean-sdk/#files).
 
-If you're running one of those platforms and have your virtual environment set up and activated, you can install Glean into it using:
+If you're running one of those platforms and have your virtual environment set up and activated, you can install the Glean SDK into it using:
 
 ```bash
 $ python -m pip install glean_sdk
 ```
 
-If you are not on one of these platforms, you will need to build the Glean Python bindings from source using [these instructions](../dev/python/setting-up-python-build-environment.html).
+If you are not on one of these platforms, you will need to build the Glean SDK Python bindings from source using [these instructions](../dev/python/setting-up-python-build-environment.html).
 
-The Python Glean bindings make extensive use of type annotations to catch type related errors at build time. We highly recommend adding [mypy](https://mypy-lang.org) to your continuous integration workflow to catch errors related to type mismatches early.
+The Glean SDK Python bindings make extensive use of type annotations to catch type related errors at build time. We highly recommend adding [mypy](https://mypy-lang.org) to your continuous integration workflow to catch errors related to type mismatches early.
 
 </div>
 
@@ -134,8 +134,8 @@ TODO. To be implemented in [bug 1643568](https://bugzilla.mozilla.org/show_bug.c
 
 All metrics that your project collects must be defined in a `metrics.yaml` file.
 
-The format of that file is documented [with `glean_parser`](https://mozilla.github.io/glean_parser/metrics-yaml.html).
 To learn more, see [adding new metrics](adding-new-metrics.md).
+See the [metric parameters](metric-parameters.md) documentation which provides reference information about the contents of that file.
 
 > **Important**: as stated [before](adding-glean-to-your-project.md#before-using-glean), any new data collection requires documentation and data-review.
 > This is also required for any new metric automatically collected by the Glean SDK.
@@ -271,9 +271,9 @@ metrics = load_metrics(resource_filename(__name__, "metrics.yaml"))
 metrics.your_category.your_metric.set("value")
 ```
 
-The documentation for your application or library's metrics and pings are written in `metrics.yaml` and `pings.yaml`. However, you should also provide human-readable markdown files based on this information, and this is a requirement for Mozilla projects using Glean. For other languages and platforms, this transformation is done automatically as part of the build. However, for Python the integration to automatically generate docs is an additional step.
+The documentation for your application or library's metrics and pings are written in `metrics.yaml` and `pings.yaml`. However, you should also provide human-readable markdown files based on this information, and this is a requirement for Mozilla projects using the Glean SDK. For other languages and platforms, this transformation is done automatically as part of the build. However, for Python the integration to automatically generate docs is an additional step.
 
-Glean provides a commandline tool for automatically generating markdown documentation from your `metrics.yaml` and `pings.yaml` files. To perform that translation, run `glean_parser`'s `translate` command:
+The Glean SDK provides a commandline tool for automatically generating markdown documentation from your `metrics.yaml` and `pings.yaml` files. To perform that translation, run `glean_parser`'s `translate` command:
 
 ```sh
 python3 -m glean_parser translate -f markdown -o docs metrics.yaml pings.yaml
@@ -306,23 +306,23 @@ Please refer to the [custom pings documentation](pings/custom.md).
 
 ### Parallelism
 
-All of Glean's target languages use a separate worker thread to do most of Glean's work, including any I/O. This thread is fully managed by Glean as an implementation detail. Therefore, users should be free to use the Glean API wherever it is most convenient, without worrying about the performance impact of updating metrics and sending pings.
+All of the Glean SDK's target languages use a separate worker thread to do most of its work, including any I/O. This thread is fully managed by the Glean SDK as an implementation detail. Therefore, users should feel free to use the Glean SDK wherever it is most convenient, without worrying about the performance impact of updating metrics and sending pings.
 
 {{#include ../tab_header.md}}
 
 <div data-lang="Python" class="tab">
-Since Glean performs disk and networking I/O, it tries to do as much of its work as possible on separate threads and processes.
+Since the Glean SDK performs disk and networking I/O, it tries to do as much of its work as possible on separate threads and processes.
 Since there are complex trade-offs and corner cases to support Python parallelism, it is hard to design a one-size-fits-all approach.
 
 #### Default behavior
 
-When using the Python bindings, most of Glean's work is done on a separate thread, managed by Glean itself.
-Glean releases the Global Interpreter Lock (GIL), therefore your application's threads should not be in contention with Glean's thread.
+When using the Python bindings, most of the Glean SDK's work is done on a separate thread, managed by the Glean SDK itself.
+The Glean SDK releases the Global Interpreter Lock (GIL) for most of its operations, therefore your application's threads should not be in contention with the Glean SDK's worker thread.
 
-Glean installs an [`atexit` handler](https://docs.python.org/3/library/atexit.html) so the Glean thread can cleanly finish when your application exits.
+The Glean SDK installs an [`atexit` handler](https://docs.python.org/3/library/atexit.html) so that its worker thread can cleanly finish when your application exits.
 This handler will wait up to 30 seconds for any pending work to complete.
 
-In addition, by default ping uploading is performed in a separate child process. This process will continue to upload any pending pings even after the main process shuts down. This is important for commandline tools where you want to return control to the shell as soon as possible and not be delayed by network connectivity.
+By default, ping uploading is performed in a separate child process. This process will continue to upload any pending pings even after the main process shuts down. This is important for commandline tools where you want to return control to the shell as soon as possible and not be delayed by network connectivity.
 
 #### Cases where subprocesses aren't possible
 
@@ -331,8 +331,8 @@ The default approach may not work with applications built using [`PyInstaller`](
 #### Using the `multiprocessing` module
 
 Additionally, the default approach does not work if your application uses the `multiprocessing` module for parallelism.
-Glean can not wait to finish its work in a `multiprocessing` subprocess, since `atexit` handlers are not supported in that context.  
-Therefore, if Glean detects that it is running in a `multiprocessing` subprocess, all of its work that would normally run on a worker thread will run on the main thread.
+The Glean SDK can not wait to finish its work in a `multiprocessing` subprocess, since `atexit` handlers are not supported in that context.  
+Therefore, if the Glean SDK detects that it is running in a `multiprocessing` subprocess, all of its work that would normally run on a worker thread will run on the main thread.
 In practice, this should not be a performance issue: since the work is already in a subprocess, it will not block the main process of your application.
 </div>
 

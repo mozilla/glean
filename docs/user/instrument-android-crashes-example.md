@@ -1,4 +1,4 @@
-# Instrumenting Android Crashes With The Glean SDK
+# Instrumenting Android crashes with the Glean SDK
 
 One of the things that might be useful to collect data on in an Android application is crashes.  This guide will walk through a
 basic strategy for instrumenting an Android application with crash telemetry using a custom ping.

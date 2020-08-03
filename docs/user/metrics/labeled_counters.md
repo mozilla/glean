@@ -105,7 +105,25 @@ assert 0 == metrics.stability.crash_count.test_get_num_recorded_errors(
 
 <div data-lang="C#" class="tab">
 
-TODO. To be implemented in [bug 1648437](https://bugzilla.mozilla.org/show_bug.cgi?id=1648437).
+```C#
+using static Mozilla.YourApplication.GleanMetrics.Stability;
+Stability.crashCount["uncaught_exception"].Add(); // Adds 1 to the "uncaught_exception" counter.
+Stability.crashCount["native_code_crash"].Add(3); // Adds 3 to the "native_code_crash" counter.
+```
+
+There are test APIs available too:
+
+```C#
+using static Mozilla.YourApplication.GleanMetrics.Stability;
+// Was anything recorded?
+Assert.True(Stability.crashCount["uncaught_exception"].TestHasValue());
+Assert.True(Stability.crashCount["native_code_crash"].TestHasValue());
+// Do the counters have the expected values?
+Assert.Equal(1, Stability.crashCount["uncaught_exception"].TestGetValue());
+Assert.Equal(3, Stability.crashCount["native_code_crash"].TestGetValue());
+// Were there any invalid labels?
+Assert.Equal(0, Stability.crashCount.TestGetNumRecordedErrors(ErrorType.InvalidLabel));
+```
 
 </div>
 

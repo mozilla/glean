@@ -139,7 +139,37 @@ assert 1 == metrics.memory.heap_allocated.test_get_num_recorded_errors(
 
 <div data-lang="C#" class="tab">
 
-TODO. To be implemented in [bug 1648439](https://bugzilla.mozilla.org/show_bug.cgi?id=1648439).
+```C#
+using static Mozilla.YourApplication.GleanMetrics.Memory;
+
+fun allocateMemory(ulong nbytes) {
+    // ...
+    Memory.heapAllocated.Accumulate(nbytes / 1024);
+}
+```
+
+There are test APIs available too.  For convenience, properties `Sum` and `Count` are exposed to facilitate validating that data was recorded correctly.
+
+Continuing the `heapAllocated` example above, at this point the metric should have a `Sum == 11` and a `Count == 2`:
+
+```C#
+using static Mozilla.YourApplication.GleanMetrics.Memory;
+
+// Was anything recorded?
+Assert.True(Memory.heapAllocated.TestHasValue());
+
+// Get snapshot
+var snapshot = Memory.heapAllocated.TestGetValue();
+
+// Does the sum have the expected value?
+Assert.Equal(11, snapshot.Sum);
+
+// Usually you don't know the exact memory values, but how many should have been recorded.
+Assert.Equal(2L, snapshot.Count);
+
+// Did this record a negative value?
+Assert.Equal(1, Memory.heapAllocated.TestGetNumRecordedErrors(ErrorType.InvalidValue));
+```
 
 </div>
 

@@ -41,7 +41,7 @@
         - [Testing custom pings](user/pings/testing-custom-pings.md)
     - [Android build configuration options](user/android-build-configuration-options.md)
     - [Focused Use Cases](user/focused-use-cases.md)
-        - [Instrumenting Android Crashes With Glean](user/instrument-android-crashes-example.md)
+        - [Instrumenting Android crashes with the Glean SDK](user/instrument-android-crashes-example.md)
 - [Metrics collected by the Glean SDK](user/collected-metrics/metrics.md)
 - [Developing the Glean SDK](dev/index.md)
     - [Testing](dev/testing.md)

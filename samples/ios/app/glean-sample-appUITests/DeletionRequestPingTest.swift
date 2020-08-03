@@ -53,6 +53,12 @@ class DeletionRequestPingTest: XCTestCase {
         let clientId = clientInfo["client_id"] as! String
         XCTAssertNotEqual(clientId, "c0ffeec0-ffee-c0ff-eec0-ffeec0ffeec0")
 
+        // Test deletion-request legacy id payload
+        let metrics = lastPingJson!["metrics"] as! [String: Any]
+        let uuids = metrics["uuid"] as! [String: Any]
+        let legacyId = uuids["legacy_ids.client_id"] as! String
+        XCTAssertEqual("01234567-89ab-cdef-0123-456789abcdef", legacyId)
+
         server.stop()
 
         // Try re-enabling and waiting for next baseline ping
