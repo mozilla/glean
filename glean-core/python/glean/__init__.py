@@ -11,7 +11,7 @@ import warnings
 from pkg_resources import get_distribution, DistributionNotFound
 
 
-import glean_parser
+import glean_parser  # type: ignore
 
 
 from .glean import Glean
