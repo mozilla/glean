@@ -6,7 +6,8 @@
 from pathlib import Path
 
 
-from glean import load_metrics
+from glean import load_metrics, load_pings
+from glean.metrics.ping import PingType
 from glean import _builtins
 
 
@@ -14,7 +15,9 @@ ROOT = Path(__file__).parent
 
 
 def test_builtin_pings():
-    assert set(dir(_builtins.pings)).issuperset(set(["metrics", "baseline", "events"]))
+    assert set(dir(_builtins.pings)).issuperset(
+        set(["metrics", "baseline", "events", "deletion_request"])
+    )
 
 
 def test_working_metric():
@@ -41,3 +44,9 @@ def test_glinter_no_error(capsys):
 
     captured = capsys.readouterr()
     assert "" == captured.err
+
+
+def test_kebab_case_pings():
+    pings = load_pings(ROOT / "data" / "pings.yaml")
+
+    assert isinstance(pings.kebab_case, PingType)
