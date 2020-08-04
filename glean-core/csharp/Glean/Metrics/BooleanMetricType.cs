@@ -76,6 +76,11 @@ namespace Mozilla.Glean.Private
         /// <param name="value">This is a user defined boolean value.</param>
         internal void SetSync(bool value)
         {
+            if (disabled)
+            {
+                return;
+            }
+
             LibGleanFFI.glean_boolean_set(this.handle, Convert.ToByte(value));
         }
 

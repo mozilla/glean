@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v32.0.0...main)
 
+* C#
+  * Add support for the String List metric type.
+
 # v32.0.0 (2020-08-03)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v31.6.0...v32.0.0)

@@ -117,8 +117,37 @@ assert 1 == metrics.search.engines.test_get_num_recorded_errors(
 
 <div data-lang="C#" class="tab">
 
-TODO. To be implemented in [bug 1648441](https://bugzilla.mozilla.org/show_bug.cgi?id=1648441).
+```C#
+using static Mozilla.YourApplication.GleanMetrics.Search;
 
+// Set a string array into the metric.
+Search.engines.Set(new string[] { "Google", "DuckDuckGo" });
+// Add another string into the metric.
+Search.engines.Add("Baidu");
+```
+
+There are test APIs available too:
+
+```C#
+using static Mozilla.YourApplication.GleanMetrics.Search;
+
+// Was anything recorded?
+Assert.True(Search.engines.TestHasValue());
+// Does the string list metric have the expected value?
+// IMPORTANT: It may have been truncated -- see "Limits" below
+var snapshot = Search.engines.TestGetValue();
+Assert.Equal(3, Search.engines.Length);
+Assert.Equal("Google", Search.engines[0]);
+Assert.Equal("DuckDuckGo", Search.engines[1]);
+Assert.Equal("Baidu", Search.engines[2]);
+// Was the string truncated, and an error reported?
+Assert.Equal(
+    1,
+    Search.engines.TestGetNumRecordedErrors(
+        ErrorType.InvalidValue
+    )
+);
+```
 </div>
 
 {{#include ../../tab_footer.md}}
