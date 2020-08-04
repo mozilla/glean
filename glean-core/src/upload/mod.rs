@@ -28,7 +28,7 @@ mod result;
 
 /// The maximum recoverable failures allowed per period.
 ///
-/// Limiting this is necessary to void infinite loops on requesting upload tasks.
+/// Limiting this is necessary to avoid infinite loops on requesting upload tasks.
 const MAX_RECOVERABLE_FAILURES_PER_PERIOD: u32 = 3;
 
 // The maximum size in bytes a ping body may have to be eligible for upload.

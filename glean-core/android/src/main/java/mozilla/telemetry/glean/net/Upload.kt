@@ -117,7 +117,16 @@ internal sealed class PingUploadTask {
     object Wait : PingUploadTask()
 
     /**
-     * A flag signaling that the pending pings queue is empty and requester is done.
+     * A flag signaling that requester doesn't need to request any more upload tasks at this moment.
+     *
+     * There are two possibilities for this scenario:
+     * * Pending pings queue is empty, no more pings to request;
+     * * Requester has reported more than MAX_RECOVERABLE_FAILURES_PER_PERIOD
+     *   recoverable upload failures on the same period[1]
+     *   and should stop requesting at this moment.
+     *
+     * [1]: A "period" starts when a requester gets a new `PingUploadTask::Upload(PingRequest)`
+     *      response and finishes when they finally get a `PingUploadTask::Done` or `PingUploadTask::Wait` response.
      */
     object Done : PingUploadTask()
 }

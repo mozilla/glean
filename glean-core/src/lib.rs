@@ -490,7 +490,7 @@ impl Glean {
     ///
     /// * `Wait` - which means the requester should ask again later;
     /// * `Upload(PingRequest)` - which means there is a ping to upload. This wraps the actual request object;
-    /// * `Done` - which means there are no more pings queued right now.
+    /// * `Done` - which means requester should stop asking for now.
     ///
     /// # Return value
     ///
