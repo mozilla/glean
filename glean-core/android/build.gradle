@@ -262,6 +262,8 @@ ext.glean_plugin.apply(project)
 
 // Store the path to the Glean Miniconda installation in a buildConfigField
 // so that unit tests can validate JSON schema.
+// Note that despite the name of this variable it isn't strictly for Miniconda
+// anymore, it's for any sort of Python environment.
 android {
     defaultConfig {
         buildConfigField(
@@ -269,7 +271,7 @@ android {
             "GLEAN_MINICONDA_DIR",
             // Carefully escape the string here so it will support `\` in
             // Windows paths correctly.
-            JsonOutput.toJson(project.ext.gleanCondaDir.path)
+            JsonOutput.toJson(project.ext.gleanPythonEnvDir.path)
         )
     }
 }
