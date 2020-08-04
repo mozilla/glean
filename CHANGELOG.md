@@ -3,12 +3,17 @@
 [Full changelog](https://github.com/mozilla/glean/compare/v32.0.0...main)
 
 * General
+  * Move logic to limit the number of retries on ping uploading "recoverable failures" to glean-core. ([#1120](https://github.com/mozilla/glean/pull/1120))
+    * The functionality to limit the number of retries in these cases was introduced to the Glean SDK in `v31.1.0`. The work done now was to move that logic to the glean-core in order to avoid code duplication throughout the language bindings.
   * Update `glean_parser` to `v1.28.3`
     * BUGFIX: Generate valid C# code when using Labeled metric types.
     * BUGFIX: Support `HashSet` and `Dictionary` in the C# generated code.
 * C#
   * Add support for the String List metric type.
   * Enable generating the C# APIs using the glean_parser.
+* Python
+  * BUGFIX: Limit the number of retries for 5xx server errors on ping uploads. ([#1120](https://github.com/mozilla/glean/pull/1120))
+    * This kinds of failures yield a "recoverable error", which means the ping gets re-enqueued. That can cause infinite loops on the ping upload worker. For python we were incorrectly only limiting the number of retries for I/O errors, another type of "recoverable error".
 
 # v32.0.0 (2020-08-03)
 
