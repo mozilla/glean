@@ -65,6 +65,13 @@ _ARGS = [
 ]
 
 
+def _normalize_name(name):
+    """
+    Convert kebab-case to snake_case.
+    """
+    return name.replace("-", "_")
+
+
 class UnsupportedMetricType:
     """
     A placeholder class for unsupported metric types.
@@ -169,7 +176,7 @@ def load_metrics(
             cursor = getattr(cursor, part)
         for name, metric in category.items():
             for actual_name, glean_metric in _get_metric_objects(name, metric):
-                setattr(cursor, actual_name, glean_metric)
+                setattr(cursor, _normalize_name(actual_name), glean_metric)
 
     return root
 
