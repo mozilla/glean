@@ -309,23 +309,41 @@ class GleanTests: XCTestCase {
 
         XCTAssert(Glean.shared.setDebugViewTag("valid-tag"))
 
+        // Restart glean
+        Glean.shared.resetGlean(clearStores: false)
+
         // Set the last time the "metrics" ping was sent to now. This is required for us to not
         // send a metrics pings the first time we initialize Glean and to keep it from interfering
         // with these tests.
         let now = Date()
         Glean.shared.metricsPingScheduler.updateSentDate(now)
-        // Restart glean
-        Glean.shared.resetGlean(clearStores: false)
 
         let host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
         stub(condition: isHost(host)) { data in
             let request = data as NSURLRequest
             XCTAssertEqual(request.value(forHTTPHeaderField: "X-Debug-ID"), "valid-tag")
+
+            // Fulfill test's expectation once we parsed the incoming data.
+            DispatchQueue.main.async {
+                // Let the response get processed before we mark the expectation fulfilled
+                self.expectation?.fulfill()
+            }
+
             return OHHTTPStubsResponse(
                 jsonObject: [],
                 statusCode: 200,
                 headers: ["Content-Type": "application/json"]
             )
+        }
+
+        expectation = expectation(description: "Completed upload")
+
+        // Resetting Glean doesn't trigger pings in tests so we must call the method
+        // directly to invoke a ping to be created
+        Glean.shared.submitPingByName(pingName: "baseline")
+
+        waitForExpectations(timeout: 5.0) { error in
+            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
         }
     }
 
@@ -335,23 +353,41 @@ class GleanTests: XCTestCase {
 
         XCTAssert(Glean.shared.setSourceTags(["valid-tag", "tag-valid"]))
 
+        // Restart glean
+        Glean.shared.resetGlean(clearStores: false)
+
         // Set the last time the "metrics" ping was sent to now. This is required for us to not
         // send a metrics pings the first time we initialize Glean and to keep it from interfering
         // with these tests.
         let now = Date()
         Glean.shared.metricsPingScheduler.updateSentDate(now)
-        // Restart glean
-        Glean.shared.resetGlean(clearStores: false)
 
         let host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
         stub(condition: isHost(host)) { data in
             let request = data as NSURLRequest
             XCTAssertEqual(request.value(forHTTPHeaderField: "X-Source-Tags"), "valid-tag,tag-valid")
+
+            // Fulfill test's expectation once we parsed the incoming data.
+            DispatchQueue.main.async {
+                // Let the response get processed before we mark the expectation fulfilled
+                self.expectation?.fulfill()
+            }
+
             return OHHTTPStubsResponse(
                 jsonObject: [],
                 statusCode: 200,
                 headers: ["Content-Type": "application/json"]
             )
+        }
+
+        expectation = expectation(description: "Completed upload")
+
+        // Resetting Glean doesn't trigger pings in tests so we must call the method
+        // directly to invoke a ping to be created
+        Glean.shared.submitPingByName(pingName: "baseline")
+
+        waitForExpectations(timeout: 5.0) { error in
+            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
         }
     }
 
