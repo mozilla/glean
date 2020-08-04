@@ -26,10 +26,10 @@ mod directory;
 mod request;
 mod result;
 
-/// The maximum recoverable failures allowed per period.
+/// The maximum recoverable failures allowed per uploading window.
 ///
 /// Limiting this is necessary to avoid infinite loops on requesting upload tasks.
-const MAX_RECOVERABLE_FAILURES_PER_PERIOD: u32 = 3;
+const MAX_RECOVERABLE_FAILURES_PER_UPLOADING_WINDOW: u32 = 3;
 
 // The maximum size in bytes a ping body may have to be eligible for upload.
 const PING_BODY_MAX_SIZE: usize = 1024 * 1024; // 1 MB
@@ -121,11 +121,11 @@ pub enum PingUploadTask {
     ///
     /// There are two possibilities for this scenario:
     /// * Pending pings queue is empty, no more pings to request;
-    /// * Requester has reported more than MAX_RECOVERABLE_FAILURES_PER_PERIOD
-    ///   recoverable upload failures on the same period[1]
+    /// * Requester has reported more than MAX_RECOVERABLE_FAILURES_PER_UPLOADING_WINDOW
+    ///   recoverable upload failures on the same uploading window[1]
     ///   and should stop requesting at this moment.
     ///
-    /// [1]: A "period" starts when a requester gets a new `PingUploadTask::Upload(PingRequest)`
+    /// [1]: An "uploading window" starts when a requester gets a new `PingUploadTask::Upload(PingRequest)`
     ///      response and finishes when they finally get a `PingUploadTask::Done` or `PingUploadTask::Wait` response.
     Done,
 }
@@ -141,7 +141,7 @@ pub struct PingUploadManager {
     processed_pending_pings: Arc<AtomicBool>,
     /// A vector to store the pending pings processed off-thread.
     pending_pings: Arc<RwLock<Vec<PingPayload>>>,
-    /// The number of upload failures for the current period.
+    /// The number of upload failures for the current uploading window.
     recoverable_failure_count: AtomicU32,
     /// A ping counter to help rate limit the ping uploads.
     ///
@@ -347,7 +347,7 @@ impl PingUploadManager {
         queue
     }
 
-    fn get_upload_task_job(&self, glean: &Glean, log_ping: bool) -> PingUploadTask {
+    fn get_upload_task_internal(&self, glean: &Glean, log_ping: bool) -> PingUploadTask {
         if !self.has_processed_pings_dir() {
             log::info!(
                 "Tried getting an upload task, but processing is ongoing. Will come back later."
@@ -363,9 +363,9 @@ impl PingUploadManager {
             self.enqueue_ping(glean, &document_id, &path, &body, headers);
         }
 
-        if self.recoverable_failure_count() >= MAX_RECOVERABLE_FAILURES_PER_PERIOD {
+        if self.recoverable_failure_count() >= MAX_RECOVERABLE_FAILURES_PER_UPLOADING_WINDOW {
             log::warn!(
-                "Reached maximum recoverable failures for the current period. You are done."
+                "Reached maximum recoverable failures for the current uploading window. You are done."
             );
 
             return PingUploadTask::Done;
@@ -423,7 +423,7 @@ impl PingUploadManager {
     ///
     /// `PingUploadTask` - see [`PingUploadTask`](enum.PingUploadTask.html) for more information.
     pub fn get_upload_task(&self, glean: &Glean, log_ping: bool) -> PingUploadTask {
-        let task = self.get_upload_task_job(glean, log_ping);
+        let task = self.get_upload_task_internal(glean, log_ping);
         if task == PingUploadTask::Done || task == PingUploadTask::Wait {
             self.reset_recoverable_failure_count()
         }
@@ -1096,7 +1096,7 @@ mod test {
     }
 
     #[test]
-    fn maximum_of_recoverable_errors_is_enforced_for_period() {
+    fn maximum_of_recoverable_errors_is_enforced_for_uploading_window() {
         let (mut glean, _) = new_glean(None);
 
         // Wait for processing of pending pings directory to finish.
@@ -1115,7 +1115,7 @@ mod test {
         }
 
         // Return the max recoverable error failures in a row
-        for _ in 0..MAX_RECOVERABLE_FAILURES_PER_PERIOD {
+        for _ in 0..MAX_RECOVERABLE_FAILURES_PER_UPLOADING_WINDOW {
             match glean.get_upload_task() {
                 PingUploadTask::Upload(req) => {
                     glean.process_ping_upload_response(&req.document_id, RecoverableFailure)

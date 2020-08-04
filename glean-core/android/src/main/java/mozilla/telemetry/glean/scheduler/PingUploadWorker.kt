@@ -95,9 +95,9 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
      */
     @Suppress("ReturnCount")
     override fun doWork(): Result {
-        // Create a slot of memory for the task: glean-core will write data into
-        // the allocated memory.
         do {
+            // Create a slot of memory for the task: glean-core will write data into
+            // the allocated memory.
             val incomingTask = FfiPingUploadTask.ByReference()
             LibGleanFFI.INSTANCE.glean_get_upload_task(incomingTask)
             when (val action = incomingTask.toPingUploadTask()) {
@@ -120,5 +120,7 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
                 PingUploadTask.Done -> return Result.success()
             }
         } while (true)
+        // Limits are enforced by glean-core to avoid an inifinite loop here.
+        // Whenever a limit is reached, this binding will receive `PingUploadTask.Done` and step out.
     }
 }

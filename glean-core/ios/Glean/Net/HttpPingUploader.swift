@@ -95,6 +95,8 @@ public class HttpPingUploader {
     /// It will report back the task status to Glean, which will take care of deleting pending ping files.
     /// It will continue upload as long as it can fetch new tasks.
     func process() {
+        // Limits are enforced by glean-core to avoid an inifinite loop here.
+        // Whenever a limit is reached, this binding will receive `.done` and step out.
         while true {
             var incomingTask = FfiPingUploadTask()
             glean_get_upload_task(&incomingTask)

@@ -98,6 +98,8 @@ namespace Mozilla.Glean.Net
 
             int waitAttempts = 0;
 
+            // Limits are enforced by glean-core to avoid an inifinite loop here.
+            // Whenever a limit is reached, this binding will receive `UploadTaskTag.Done` and step out.
             while (true)
             {
                 FfiUploadTask incomingTask = new FfiUploadTask();

@@ -121,11 +121,10 @@ internal sealed class PingUploadTask {
      *
      * There are two possibilities for this scenario:
      * * Pending pings queue is empty, no more pings to request;
-     * * Requester has reported more than MAX_RECOVERABLE_FAILURES_PER_PERIOD
-     *   recoverable upload failures on the same period[1]
+     * * Requester has reported more max recoverable upload failures on the same uploading_window[1]
      *   and should stop requesting at this moment.
      *
-     * [1]: A "period" starts when a requester gets a new `PingUploadTask::Upload(PingRequest)`
+     * [1]: An "uploading window" starts when a requester gets a new `PingUploadTask::Upload(PingRequest)`
      *      response and finishes when they finally get a `PingUploadTask::Done` or `PingUploadTask::Wait` response.
      */
     object Done : PingUploadTask()

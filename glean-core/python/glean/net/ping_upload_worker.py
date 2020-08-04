@@ -116,6 +116,8 @@ def _process(data_dir: Path, application_id: str, configuration) -> bool:
 
     wait_attempts = 0
 
+    # Limits are enforced by glean-core to avoid an inifinite loop here.
+    # Whenever a limit is reached, this binding will receive `UploadTaskTag.DONE` and step out.
     while True:
         incoming_task = ffi_support.new("FfiPingUploadTask *")
         _ffi.lib.glean_get_upload_task(incoming_task)
