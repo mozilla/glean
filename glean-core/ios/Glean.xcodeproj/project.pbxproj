@@ -808,6 +808,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = BF51C3BA224BF19F0014CBAF /* release.xcconfig */;
 			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Manual;
