@@ -62,3 +62,10 @@ run $SED -i.bak -E \
     -e "s/GleanParserVersion = \"[0-9.]+\"/GLEAN_PARSER_VERSION = \"${NEW_VERSION}\"/" \
     "${WORKSPACE_ROOT}/${FILE}"
 run rm "${WORKSPACE_ROOT}/${FILE}.bak"
+
+# update the version in glean-core/Cargo.toml
+FILE=glean-core/Cargo.toml
+run $SED -i.bak -E \
+    -e "s/glean-parser = \"[0-9.]+\"/glean-parser = \"${NEW_VERSION}\"/" \
+    "${WORKSPACE_ROOT}/${FILE}"
+run rm "${WORKSPACE_ROOT}/${FILE}.bak"
