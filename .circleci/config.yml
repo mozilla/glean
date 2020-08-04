@@ -907,6 +907,10 @@ jobs:
             apt update
             apt install -y gcc
       - run:
+          name: Install the Python environment
+          command: |
+            apt install -y python3 python3-venv python3-pip
+      - run:
           name: Build glean_ffi
           command: cargo build
       - run:

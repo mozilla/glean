@@ -34,7 +34,7 @@ class GleanMetricsYamlTransform extends ArtifactTransform {
 @SuppressWarnings("GrPackage")
 class GleanPlugin implements Plugin<Project> {
     // The version of glean_parser to install from PyPI.
-    private String GLEAN_PARSER_VERSION = "1.28.1"
+    private String GLEAN_PARSER_VERSION = "1.28.3"
     // The version of Miniconda is explicitly specified.
     // Miniconda3-4.5.12 is known to not work on Windows.
     private String MINICONDA_VERSION = "4.5.11"
@@ -44,6 +44,9 @@ class GleanPlugin implements Plugin<Project> {
     /* This script runs a given Python module as a "main" module, like
      * `python -m module`. However, it first checks that the installed
      * package is at the desired version, and if not, upgrades it using `pip`.
+     *
+     * ** IMPORTANT**
+     * Keep this script in sync with the one in `glean-core/csharp/GleanTasks/GleanParser.cs`.
      */
     String runPythonScript = """
 import importlib
