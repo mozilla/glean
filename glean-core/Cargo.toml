@@ -17,6 +17,9 @@ include = [
   "/Cargo.toml"
 ]
 
+[package.metadata.glean]
+glean-parser = "1.28.3"
+
 [badges]
 circle-ci = { repository = "mozilla/glean", branch = "main" }
 maintenance = { status = "actively-developed" }
