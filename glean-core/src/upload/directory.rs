@@ -108,7 +108,7 @@ impl PingDirectoryManager {
     ///
     /// # Return value
     ///
-    /// `bool` - `true` if file was deleted succesfully and `false` otherwise.
+    /// Returns `true` if the file was deleted succesfully and `false` otherwise.
     ///
     /// # Panics
     ///
@@ -195,20 +195,18 @@ impl PingDirectoryManager {
     ///
     /// # Return value
     ///
-    /// `Vec<(fs::Metadata, PingPayload)>` -
-    ///     a vector of tuples with the file metadata and payload of each ping file in the directory.PathBuf
+    ///     Returns a vector of tuples with the file metadata and payload of each ping file in the directory.
     fn process_dir(&self, dir: &PathBuf) -> Vec<(fs::Metadata, PingPayload)> {
         log::info!("Processing persisted pings.");
 
-        let entries: fs::ReadDir;
-        match dir.read_dir() {
-            Ok(r) => entries = r,
+        let entries = match dir.read_dir() {
+            Ok(entries) => entries,
             Err(_) => {
                 // This may error simply because the directory doesn't exist,
                 // which is expected if no pings were stored yet.
                 return Vec::new();
             }
-        }
+        };
 
         let mut pending_pings: Vec<_> = entries
             .filter_map(|entry| entry.ok())

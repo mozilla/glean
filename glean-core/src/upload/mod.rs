@@ -303,8 +303,8 @@ impl PingUploadManager {
     /// Enqueue pings that might have been cached.
     ///
     /// The size of the PENDING_PINGS_DIRECTORY directory will be calculated
-    /// (by accumulating each pings size in that directory)
-    /// and in case we extrapolate the quota, defined by the `quota` arg,
+    /// (by accumulating each ping's size in that directory)
+    /// and in case we exceed the quota, defined by the `quota` arg,
     /// outstanding pings get deleted and are not enqueued.
     ///
     /// The size of the DELETION_REQUEST_PINGS_DIRECTORY will not be calculated
@@ -313,7 +313,7 @@ impl PingUploadManager {
     /// we don't expect that directory to ever reach quota.
     /// Most importantly, we don't want to ever delete deletion-request pings.
     ///
-    /// Arguments
+    /// # Arguments
     ///
     /// * `glean` - The Glean object holding the database.
     /// * `quota` - The quota, in bytes, for the size of the pending pings directory.
