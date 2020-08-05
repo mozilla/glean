@@ -115,7 +115,32 @@ assert 0 == metrics.views.login_opened.test_get_num_recorded_errors(
 
 <div data-lang="C#" class="tab">
 
-TODO. To be implemented in [bug 1648422](https://bugzilla.mozilla.org/show_bug.cgi?id=1648422).
+Note that an `enum` has been generated for handling the `extra_keys`: it has the same name as the event metric, with `Keys` added.
+
+```C#
+using static Mozilla.YourApplication.GleanMetrics.Views;
+
+Views.loginOpened.Record(new Dictionary<clickKeys, string> {
+    { Views.loginOpenedKeys.sourceOfLogin, "toolbar" }
+});
+```
+
+There are test APIs available too, for example:
+
+```C#
+using static Mozilla.YourApplication.GleanMetrics.Views;
+
+// Was any event recorded?
+Assert.True(Views.loginOpened.TestHasValue());
+// Get a List of the recorded events.
+var snapshot = Views.loginOpened.TestGetValue();
+// Check that two events were recorded.
+Assert.Equal(2, snapshot.Length);
+var first = snapshot.First();
+Assert.Equal("login_opened", first.Name);
+// Check that no errors were recorded
+Assert.Equal(0, Views.loginOpened.TestGetNumRecordedErrors(ErrorType.InvalidValue));
+```
 
 </div>
 
