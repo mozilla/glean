@@ -201,7 +201,13 @@ open class GleanInternalAPI internal constructor () {
             // If any pings were registered before initializing, do so now.
             // We're not clearing this queue in case Glean is reset by tests.
             synchronized(this@GleanInternalAPI) {
-                pingTypeQueue.forEach { registerPingType(it) }
+                pingTypeQueue.forEach {
+                    // We're registering pings synchronously here,
+                    // as this whole `initialize` block already runs off the main thread.
+                    LibGleanFFI.INSTANCE.glean_register_ping_type(
+                        it.handle
+                    )
+                }
             }
 
             // If this is the first time ever the Glean SDK runs, make sure to set
@@ -789,10 +795,17 @@ open class GleanInternalAPI internal constructor () {
      */
     @Synchronized
     internal fun registerPingType(pingType: PingTypeBase) {
-        if (this.isInitialized()) {
-            LibGleanFFI.INSTANCE.glean_register_ping_type(
-                pingType.handle
-            )
+        // If this happens after Glean.initialize is called (and returns),
+        // we dispatch ping registration on the thread pool.
+        // Registering a ping should not block the application.
+        // Submission itself is also dispatched, so it will always come after the registration.
+        if (this.initFinished) {
+            @Suppress("EXPERIMENTAL_API_USAGE")
+            Dispatchers.API.launch {
+                LibGleanFFI.INSTANCE.glean_register_ping_type(
+                    pingType.handle
+                )
+            }
         }
 
         // We need to keep track of pings, so they get re-registered after a reset.
