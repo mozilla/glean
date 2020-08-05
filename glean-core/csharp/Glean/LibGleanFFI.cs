@@ -383,6 +383,45 @@ namespace Mozilla.Glean.FFI
              string storage_name
         );
 
+        // Event
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern UInt64 glean_new_event_metric(
+            string category,
+            string name,
+            string[] send_in_pings,
+            Int32 send_in_pings_len,
+            Int32 lifetime,
+            bool disabled,
+            string[] allowed_extra_keys,
+            Int32 allowed_extra_keys_len
+        );
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void glean_event_record(
+            UInt64 handle,
+            UInt64 timestamp,
+            Int32[] extra_keys,
+            string[] extra_values,
+            Int32 extra_len
+        );
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern byte glean_event_test_has_value(UInt64 metric_id, string storage_name);
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern StringAsReturnValue glean_event_test_get_value_as_json_string(
+            UInt64 handle,
+            string storage_Name
+        );
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern Int32 glean_event_test_get_num_recorded_errors(
+            UInt64 metric_id,
+            Int32 error_type,
+            string storage_name
+        );
+
         // Labeled Counter
 
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
