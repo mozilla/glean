@@ -173,6 +173,7 @@ def test_measure(monkeypatch):
     )
 
     with metric.measure():
+        # Move the "virtual timer" forward
         override_time = 1000
 
     snapshot = metric.test_get_value()
