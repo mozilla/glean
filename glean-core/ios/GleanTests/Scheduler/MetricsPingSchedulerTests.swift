@@ -110,6 +110,9 @@ class MetricsPingSchedulerTests: XCTestCase {
         let mps = MetricsPingScheduler()
         let now = Date()
 
+        // Here we reset Glean and set uploadEnabled to false to ensure that this does not generate a
+        // metrics ping. We are only interested in the updated date that is scheduled after the call
+        // to `collectPingAndReschedule`.
         Glean.shared.resetGlean(configuration: Configuration(), clearStores: true, uploadEnabled: false)
 
         UserDefaults.standard.set(nil, forKey: MetricsPingScheduler.Constants.lastMetricsPingSentDateTime)
