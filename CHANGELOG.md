@@ -8,6 +8,7 @@
   * Update `glean_parser` to `v1.28.3`
     * BUGFIX: Generate valid C# code when using Labeled metric types.
     * BUGFIX: Support `HashSet` and `Dictionary` in the C# generated code.
+  * Add a 10MB quota to the pending pings storage. ([#1100](https://github.com/mozilla/glean/pull/1110))
 * C#
   * Add support for the String List metric type.
   * Enable generating the C# APIs using the glean_parser.

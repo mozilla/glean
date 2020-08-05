@@ -35,7 +35,7 @@ const MAX_RECOVERABLE_FAILURES_PER_UPLOADING_WINDOW: u32 = 3;
 const PING_BODY_MAX_SIZE: usize = 1024 * 1024; // 1 MB
 
 // The maximum size in byte the pending pings directory may have on disk.
-const PENDING_PINGS_DIRECTORY_QUOTA: usize = 15 * 1024 * 1024; // 15 MB
+const PENDING_PINGS_DIRECTORY_QUOTA: usize = 10 * 1024 * 1024; // 10 MB
 
 #[derive(Debug)]
 struct RateLimiter {
@@ -208,8 +208,8 @@ impl PingUploadManager {
             queue,
             directory_manager,
             processed_pending_pings,
-            recoverable_failure_count: AtomicU32::new(0),
             cached_pings,
+            recoverable_failure_count: AtomicU32::new(0),
             rate_limiter: None,
             language_binding_name: language_binding_name.into(),
             upload_metrics: UploadMetrics::new(),
@@ -231,7 +231,7 @@ impl PingUploadManager {
     /// Attempts to build a ping request from a ping file payload.
     ///
     /// Returns the `PingRequest` or `None` if unable to build,
-    /// in which case it will delete the ping file and records an error.
+    /// in which case it will delete the ping file and record an error.
     fn build_ping_request(
         &self,
         glean: &Glean,
@@ -334,8 +334,8 @@ impl PingUploadManager {
         let pending_pings = cached_pings.pending_pings.drain(..);
         let mut pending_pings_directory_size: usize = 0;
         let mut enqueueing = true;
-        for (metadata, (document_id, path, body, headers)) in pending_pings {
-            pending_pings_directory_size += metadata.len() as usize;
+        for (file_size, (document_id, path, body, headers)) in pending_pings {
+            pending_pings_directory_size += file_size as usize;
             if pending_pings_directory_size > quota {
                 log::warn!(
                     "Pending pings directory has reached the size quota of {} bytes, outstanding pings will be deleted.",

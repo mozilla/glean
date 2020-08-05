@@ -22,8 +22,8 @@ pub type PingPayload = (String, String, String, Option<HeaderMap>);
 /// A struct to hold the result of scanning all pings directories.
 #[derive(Clone, Debug, Default)]
 pub struct PingPayloadsByDirectory {
-    pub pending_pings: Vec<(fs::Metadata, PingPayload)>,
-    pub deletion_request_pings: Vec<(fs::Metadata, PingPayload)>,
+    pub pending_pings: Vec<(u64, PingPayload)>,
+    pub deletion_request_pings: Vec<(u64, PingPayload)>,
 }
 
 impl PingPayloadsByDirectory {
@@ -195,8 +195,9 @@ impl PingDirectoryManager {
     ///
     /// # Return value
     ///
-    ///     Returns a vector of tuples with the file metadata and payload of each ping file in the directory.
-    fn process_dir(&self, dir: &PathBuf) -> Vec<(fs::Metadata, PingPayload)> {
+    /// Returns a vector of tuples with the file size
+    /// and payload of each ping file in the directory.
+    fn process_dir(&self, dir: &Path) -> Vec<(u64, PingPayload)> {
         log::info!("Processing persisted pings.");
 
         let entries = match dir.read_dir() {
@@ -244,6 +245,9 @@ impl PingDirectoryManager {
         });
 
         pending_pings
+            .into_iter()
+            .map(|(metadata, data)| (metadata.len(), data))
+            .collect()
     }
 
     /// Get the path for a ping file based on its document_id.
