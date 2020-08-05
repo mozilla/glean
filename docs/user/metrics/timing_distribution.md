@@ -227,7 +227,42 @@ assert 1 == metrics.pages.page_load.test_get_num_recorded_errors(
 
 <div data-lang="C#" class="tab">
 
-TODO. To be implemented in [bug 1648443](https://bugzilla.mozilla.org/show_bug.cgi?id=1648443).
+```C#
+using static Mozilla.YourApplication.GleanMetrics.Pages;
+
+var timerId;
+
+void onPageStart(Event e) {
+    timerId = Pages.pageLoad.Start();
+}
+
+void onPageLoaded(Event e) {
+    Pages.pageLoad.StopAndAccumulate(timerId);
+}
+```
+
+There are test APIs available too.  For convenience, properties `sum` and `count` are exposed to facilitate validating that data was recorded correctly.
+
+Continuing the `pageLoad` example above, at this point the metric should have a `sum == 11` and a `count == 2`:
+
+```C#
+using static Mozilla.YourApplication.GleanMetrics.Pages;
+
+// Was anything recorded?
+Assert.True(Pages.pageLoad.TestHasValue());
+
+// Get snapshot.
+var snapshot = Pages.pageLoad.TestGetValue();
+
+// Does the sum have the expected value?
+Assert.Equal(11, snapshot.Sum);
+
+// Usually you don't know the exact timing values, but how many should have been recorded.
+Assert.Equal(2L, snapshot.Values.Count);
+
+// Was an error recorded?
+Assert.Equal(1, Pages.pageLoad.TestGetNumRecordedErrors(ErrorType.InvalidValue));
+```
 
 </div>
 
