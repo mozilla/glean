@@ -28,6 +28,7 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import org.junit.Assert
+import org.mockito.ArgumentCaptor
 import org.robolectric.shadows.ShadowLog
 import java.io.ByteArrayInputStream
 import java.util.UUID
@@ -213,7 +214,6 @@ internal fun waitForEnqueuedWorker(
  * is fixed, the contents of this can be amended to trigger WorkManager directly.
  *
  * @param context the application [Context] to get the [WorkManager] instance for
- * @param workerTag the tag for the expected worker (default: `PingUploadWorker.PING_WORKER_TAG`)
  */
 internal fun triggerWorkManager(context: Context) {
     // Check that the work is scheduled
@@ -256,3 +256,39 @@ fun RecordedRequest.getPlainBody(): String {
         this.body.readUtf8()
     }
 }
+
+// The following Mockito fixups are copied over from support-test (Matchers.kt) from
+// Android-Components. We copied them over since A-C uses the Glean SDK, and we don't
+// want a dependency on A-C.
+
+/**
+ * Mockito matcher that matches <strong>anything</strong>, including nulls and varargs.
+ *
+ * (The version from Mockito doesn't work correctly with Kotlin code.)
+ */
+internal fun <T> any(): T {
+    Mockito.any<T>()
+    return uninitialized()
+}
+
+/**
+ * Mockito matcher that matches if the argument is the same as the provided value.
+ *
+ * (The version from Mockito doesn't work correctly with Kotlin code.)
+ */
+internal fun <T> eq(value: T): T {
+    return Mockito.eq(value) ?: value
+}
+
+/**
+ * Mockito matcher that captures the passed argument.
+ *
+ * (The version from Mockito doesn't work correctly with Kotlin code.)
+ */
+fun <T> capture(value: ArgumentCaptor<T>): T {
+    value.capture()
+    return uninitialized()
+}
+
+@Suppress("UNCHECKED_CAST")
+internal fun <T> uninitialized(): T = null as T

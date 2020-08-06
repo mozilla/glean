@@ -9,8 +9,7 @@ import android.os.SystemClock
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.work.testing.WorkManagerTestInitHelper
-import mozilla.components.support.test.any
-import mozilla.components.support.test.eq
+import mozilla.telemetry.glean.any
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.GleanMetrics.Pings
 import mozilla.telemetry.glean.checkPingSchema
@@ -18,6 +17,7 @@ import mozilla.telemetry.glean.private.Lifetime
 import mozilla.telemetry.glean.private.StringMetricType
 import mozilla.telemetry.glean.private.TimeUnit
 import mozilla.telemetry.glean.config.Configuration
+import mozilla.telemetry.glean.eq
 import mozilla.telemetry.glean.getContextWithMockedInfo
 import mozilla.telemetry.glean.getMockWebServer
 import mozilla.telemetry.glean.getPlainBody

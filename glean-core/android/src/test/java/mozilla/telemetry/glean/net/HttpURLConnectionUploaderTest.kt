@@ -5,7 +5,7 @@
 package mozilla.telemetry.glean.net
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import mozilla.components.support.test.argumentCaptor
+import mozilla.telemetry.glean.utils.argumentCaptor
 import mozilla.telemetry.glean.config.Configuration
 import mozilla.telemetry.glean.getPlainBody
 import okhttp3.mockwebserver.MockResponse
