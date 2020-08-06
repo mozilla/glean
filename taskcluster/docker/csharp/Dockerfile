@@ -2,7 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster
+# We use this specific version because our decision task also runs on this one.
+# We also use that same version in decisionlib.py
+FROM ubuntu:bionic-20180821
 
 LABEL maintainer="aplacitelli@mozilla.com"
 
@@ -38,6 +40,10 @@ ENV \
 # System.
 RUN apt-get update -qq \
     && apt-get install -qy --no-install-recommends \
+        # Required for the C# dependencies installation
+        apt-transport-https \
+        # Required for the C# dependencies installation
+        wget \
         # To fetch Glean.
         git \
         # To fetch tooltool et al.
@@ -73,6 +79,16 @@ RUN pip3 install --upgrade pip
 RUN pip3 install \
     'taskcluster>=4,<5' \
     pyyaml
+
+# Install the C# dependencies.
+RUN \
+    wget https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb \
+    dpkg -i packages-microsoft-prod.deb
+
+RUN apt-get update -qq \
+    && apt-get install -qy --no-install-recommends \
+    dotnet-sdk-3.1 \
+    && apt-get clean
 
 # Compile the UTF-8 english locale files (required by Python).
 RUN locale-gen en_US.UTF-8
