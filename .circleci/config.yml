@@ -727,6 +727,7 @@ jobs:
       - image: circleci/python:3.8.2
     steps:
       - checkout
+      - skip-if-doc-only
       - build-windows-x86_64-wheel
       - run:
           name: Install Wine
@@ -750,6 +751,7 @@ jobs:
       - image: circleci/python:3.8.2
     steps:
       - checkout
+      - skip-if-doc-only
       - build-windows-i686-wheel
       - run:
           name: Install Wine
