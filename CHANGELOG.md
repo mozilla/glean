@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v32.1.0...main)
 
+* Android
+  * Fix a startup crash on some Android 8 (SDK=25) devices, due to a [bug in the Java compiler](https://issuetracker.google.com/issues/110848122#comment17).
+
 # v32.1.0 (2020-08-17)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v32.0.0...v32.1.0)
