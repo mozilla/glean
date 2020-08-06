@@ -9,6 +9,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import mozilla.telemetry.glean.getContextWithMockedInfo
 import mozilla.telemetry.glean.getMockWebServer
 import mozilla.telemetry.glean.getWorkerStatus
+import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.resetGlean
 import java.io.File
 import mozilla.telemetry.glean.testing.GleanTestRule
