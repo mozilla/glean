@@ -128,6 +128,7 @@ The following metrics are added to the ping:
 
 | Name | Type | Description | Data reviews | Extras | Expiration | [Data Sensitivity](https://wiki.mozilla.org/Firefox/Data_Collection) |
 | --- | --- | --- | --- | --- | --- | --- |
+| glean.database.size |[memory_distribution](https://mozilla.github.io/glean/book/user/metrics/memory_distribution.html) |The size of the database file at startup.  |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1656589#c7)||never |1 |
 | glean.error.preinit_tasks_overflow |[counter](https://mozilla.github.io/glean/book/user/metrics/counter.html) |The number of tasks queued in the pre-initialization buffer. Only sent if the buffer overflows.  |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1609482#c3)||never |1 |
 | glean.upload.deleted_pings_after_quota_hit |[counter](https://mozilla.github.io/glean/book/user/metrics/counter.html) |The number of pings deleted after the quota for the size of the pending pings directory is hit. Since quota is only calculated for the pending pings directory, and deletion request ping live in a different directory, deletion request pings are never deleted.  |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1601550#c3)||never |1 |
 | glean.upload.discarded_exceeding_pings_size |[memory_distribution](https://mozilla.github.io/glean/book/user/metrics/memory_distribution.html) |The size of pings that exceeded the maximum ping size allowed for upload.  |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1597761#c10)||never |1 |

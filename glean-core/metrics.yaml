@@ -429,3 +429,19 @@ glean.upload:
     expires: never
     no_lint:
       - COMMON_PREFIX
+
+glean.database:
+  size:
+    type: memory_distribution
+    description: >
+      The size of the database file at startup.
+    memory_unit: byte
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1656589
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1656589#c7
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+    expires: never

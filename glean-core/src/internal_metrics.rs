@@ -111,3 +111,26 @@ impl UploadMetrics {
         }
     }
 }
+
+#[derive(Debug)]
+pub struct DatabaseMetrics {
+    pub size: MemoryDistributionMetric,
+}
+
+impl DatabaseMetrics {
+    pub fn new() -> DatabaseMetrics {
+        DatabaseMetrics {
+            size: MemoryDistributionMetric::new(
+                CommonMetricData {
+                    name: "size".into(),
+                    category: "glean.database".into(),
+                    send_in_pings: vec!["metrics".into()],
+                    lifetime: Lifetime::Ping,
+                    disabled: false,
+                    dynamic_label: None,
+                },
+                MemoryUnit::Byte,
+            ),
+        }
+    }
+}

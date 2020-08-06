@@ -805,3 +805,31 @@ fn test_empty_application_id() {
     // Check that this is indeed the first run.
     assert!(glean.is_first_run());
 }
+
+#[test]
+fn records_database_file_size() {
+    let _ = env_logger::builder().is_test(true).try_init();
+
+    // Note: We don't use `new_glean` because we need to re-use the database directory.
+
+    let dir = tempfile::tempdir().unwrap();
+    let tmpname = dir.path().display().to_string();
+
+    // Initialize Glean once to ensure we create the database.
+    let glean = Glean::with_options(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
+    let database_size = &glean.database_metrics.size;
+    let data = database_size.test_get_value(&glean, "metrics");
+    assert!(data.is_none());
+    drop(glean);
+
+    // Initialize Glean again to record file size.
+    let glean = Glean::with_options(&tmpname, GLOBAL_APPLICATION_ID, true).unwrap();
+
+    let database_size = &glean.database_metrics.size;
+    let data = database_size.test_get_value(&glean, "metrics");
+    assert!(data.is_some());
+    let data = data.unwrap();
+
+    // We should see the database containing some data.
+    assert!(data.sum > 0);
+}

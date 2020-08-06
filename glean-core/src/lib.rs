@@ -47,7 +47,7 @@ use crate::debug::DebugOptions;
 pub use crate::error::{Error, ErrorKind, Result};
 pub use crate::error_recording::{test_get_num_recorded_errors, ErrorType};
 use crate::event_database::EventDatabase;
-use crate::internal_metrics::CoreMetrics;
+use crate::internal_metrics::{CoreMetrics, DatabaseMetrics};
 use crate::internal_pings::InternalPings;
 use crate::metrics::{Metric, MetricType, PingType};
 use crate::ping::PingMaker;
@@ -170,6 +170,7 @@ pub struct Glean {
     data_store: Option<Database>,
     event_data_store: EventDatabase,
     core_metrics: CoreMetrics,
+    database_metrics: DatabaseMetrics,
     internal_pings: InternalPings,
     data_path: PathBuf,
     application_id: String,
@@ -211,6 +212,7 @@ impl Glean {
             data_store,
             event_data_store,
             core_metrics: CoreMetrics::new(),
+            database_metrics: DatabaseMetrics::new(),
             internal_pings: InternalPings::new(),
             upload_manager,
             data_path: PathBuf::from(&cfg.data_path),
@@ -290,7 +292,7 @@ impl Glean {
         self.data_store = None;
     }
 
-    /// Initialize the core metrics managed by Glean's Rust core.
+    /// Initializes the core metrics managed by Glean's Rust core.
     fn initialize_core_metrics(&mut self) {
         let need_new_client_id = match self
             .core_metrics
@@ -318,6 +320,20 @@ impl Glean {
         }
 
         self.set_application_lifetime_core_metrics();
+    }
+
+    /// Initializes the database metrics managed by Glean's Rust core.
+    fn initialize_database_metrics(&mut self) {
+        log::trace!("Initializing database metrics");
+
+        if let Some(size) = self
+            .data_store
+            .as_ref()
+            .and_then(|database| database.file_size())
+        {
+            log::trace!("Database file size: {}", size.get());
+            self.database_metrics.size.accumulate(self, size.get())
+        }
     }
 
     /// Signals that the environment is ready to submit pings.
@@ -383,6 +399,7 @@ impl Glean {
     fn on_upload_enabled(&mut self) {
         self.upload_enabled = true;
         self.initialize_core_metrics();
+        self.initialize_database_metrics();
     }
 
     /// Handles the changing of state from upload enabled to disabled.
