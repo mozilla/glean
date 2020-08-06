@@ -150,3 +150,57 @@ def test_time_unit_controls_truncation(monkeypatch):
 
         snapshot = metric.test_get_value()
         assert len(snapshot.values) < 318
+
+
+def test_measure(monkeypatch):
+    """
+    Test the TimingDistributionMetricType.measure context manager.
+    """
+    override_time = 0
+
+    def override_time_ns():
+        return override_time
+
+    monkeypatch.setattr(_util, "time_ns", override_time_ns)
+
+    metric = metrics.TimingDistributionMetricType(
+        disabled=False,
+        category="telemetry",
+        lifetime=Lifetime.APPLICATION,
+        name=f"timing_distribution",
+        send_in_pings=["baseline"],
+        time_unit=TimeUnit.NANOSECOND,
+    )
+
+    with metric.measure():
+        override_time = 1000
+
+    snapshot = metric.test_get_value()
+    assert snapshot.sum == 1000
+
+
+def test_measure_exception(monkeypatch):
+    """
+    Test the TimingDistributionMetricType.measure context manager.
+    """
+    override_time = 0
+
+    def override_time_ns():
+        return override_time
+
+    monkeypatch.setattr(_util, "time_ns", override_time_ns)
+
+    metric = metrics.TimingDistributionMetricType(
+        disabled=False,
+        category="telemetry",
+        lifetime=Lifetime.APPLICATION,
+        name=f"timing_distribution",
+        send_in_pings=["baseline"],
+        time_unit=TimeUnit.NANOSECOND,
+    )
+
+    with pytest.raises(ValueError):
+        with metric.measure():
+            raise ValueError()
+
+    assert not metric.test_has_value()

@@ -172,6 +172,13 @@ def on_login_cancel():
     # ...
 ```
 
+The Python bindings also have a context manager for measuring time:
+
+```Python
+with metrics.auth.login_time.measure():
+    # ... Do the login ...
+```
+
 The time reported in the telemetry ping will be timespan recorded during the lifetime of the ping.
 
 There are test APIs available too:

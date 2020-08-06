@@ -100,6 +100,37 @@ class TimespanMetricType:
         def cancel():
             _ffi.lib.glean_timespan_cancel(self._handle)
 
+    class _TimespanContextManager:
+        """
+        A context manager for recording timings. Used by the `measure` method.
+        """
+
+        def __init__(self, timespan: "TimespanMetricType"):
+            self._timespan = timespan
+
+        def __enter__(self) -> None:
+            self._timespan.start()
+
+        def __exit__(self, type, value, tb) -> None:
+            if tb is None:
+                self._timespan.stop()
+            else:
+                self._timespan.cancel()
+
+    def measure(self) -> "_TimespanContextManager":
+        """
+        Provides a context manager for measuring the time it takes to execute
+        snippets of code in a `with` statement.
+
+        If the contents of the `with` statement raise an exception, the timing
+        is not recorded.
+
+        Usage:
+            with metrics.perf.timer.measure():
+                # ... do something that takes time ...
+        """
+        return self._TimespanContextManager(self)
+
     def set_raw_nanos(self, elapsed_nanos: int) -> None:
         """
         Explicitly set the timespan value, in nanoseconds.
