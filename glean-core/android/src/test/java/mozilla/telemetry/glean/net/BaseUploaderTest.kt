@@ -4,9 +4,9 @@
 
 package mozilla.telemetry.glean.net
 
+import mozilla.telemetry.glean.any
 import mozilla.telemetry.glean.config.Configuration
-import mozilla.components.support.test.any
-import mozilla.components.support.test.eq
+import mozilla.telemetry.glean.eq
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.spy
