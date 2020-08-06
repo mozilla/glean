@@ -416,7 +416,7 @@ glean.upload:
       The number of pings deleted after the quota
       for the size of the pending pings directory is hit.
       Since quota is only calculated for the pending pings directory,
-      and deleteion request ping live in a different directory,
+      and deletion request ping live in a different directory,
       deletion request pings are never deleted.
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1601550
