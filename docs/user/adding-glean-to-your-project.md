@@ -1,14 +1,22 @@
 # Adding Glean to your project
 
-## Before using Glean
+## Glean integration checklist
+
+The Glean integration checklist can help to ensure your Glean SDK-using product is meeting all of the recommended guidelines.
 
 Products (applications or libraries) using the Glean SDK to collect telemetry **must**:
 
-- add documentation for any new metrics collected to its repository (see [an example](collected-metrics/metrics.md));
-- include the markdown-formatted documentation generated from the `metrics.yaml` and `pings.yaml` files in the project's documentation;
-- go through data review for the newly collected data by following [this process](https://wiki.mozilla.org/Firefox/Data_Collection);
-- provide a way for users to turn data collection off (e.g. providing settings to control
-  `Glean.setUploadEnabled()`).
+1. [Integrate the Glean SDK into the build system](#integrating-with-your-project). Since the Glean SDK does some code generation for your metrics at build time, this requires a few more steps than just adding a library.
+
+2. Include the markdown-formatted documentation generated from the `metrics.yaml` and `pings.yaml` files in the project's documentation.
+
+3. Go through [data review process](https://wiki.mozilla.org/Firefox/Data_Collection) for all newly collected data.
+
+4. Ensure that telemetry coming from automated testing or continuous integration is either not sent to the telemetry server or [tagged with the `automation` tag using the `sourceTag` feature](debugging/index.md#available-debugging-features).
+
+Additionally, applications (but not libraries) **must**:
+
+5. Provide a way for users to turn data collection off (e.g. providing settings to control `Glean.setUploadEnabled()`). The exact method used is application-specific.
 
 ## Usage
 
