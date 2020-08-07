@@ -112,7 +112,33 @@ assert (
 
 <div data-lang="C#" class="tab">
 
-TODO. To be implemented in [bug 1648412](https://bugzilla.mozilla.org/show_bug.cgi?id=1648412).
+```C#
+// Annotate Glean pings with experiments data.
+GleanInstance.SetExperimentActive(
+  experimentId: "blue-button-effective",
+  branch: "branch-with-blue-button",
+  extra: new Dictionary<string, string>() {
+    { "buttonLabel", "test"}
+  }
+);
+// After the experiment terminates, the annotation
+// can be removed.
+GleanInstance.SetExperimentInactive("blue-button-effective");
+```
+
+> **Important**: Experiment IDs and branches don't need to be pre-defined in the Glean SDK registry files.
+Please also note that the `extra` map is a non-nested arbitrary `string` to `string` dictionary. It also has limits on the size of the keys and values defined below.
+
+There are test APIs available too:
+
+```C#
+// Was the experiment annotated in Glean pings?
+Assert.True(GleanInstance.TestIsExperimentActive("blue-button-effective"));
+// Was the correct branch reported?
+Assert.Equal(
+  "branch-with-blue-button", GleanInstance.TestGetExperimentData("blue-button-effective").Branch
+);
+```
 
 </div>
 
