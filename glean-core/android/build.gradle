@@ -237,7 +237,7 @@ ext.configurePublish(
         /* jnaForTestConfiguration= */ configurations.jnaForTest
 )
 
-task docs(type: org.jetbrains.dokka.gradle.DokkaAndroidTask, overwrite: true) {
+tasks.register("docs", org.jetbrains.dokka.gradle.DokkaAndroidTask) {
     moduleName = "glean"
     outputDirectory = "$buildDir/../../../build/docs/javadoc"
     outputFormat = "html"
