@@ -1,6 +1,6 @@
 # Metrics
 
-> **Not sure which metric type to use?** These docs contain a [series of questions](../adding-new-metrics.html#Choosing-a-metric-type) that can help. Reference information about each metric type is linked below.
+> **Not sure which metric type to use?** These docs contain a [series of questions](../adding-new-metrics.html#choosing-a-metric-type) that can help. Reference information about each metric type is linked below.
 
 There are different metrics to choose from, depending on what you want to achieve:
 

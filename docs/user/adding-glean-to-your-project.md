@@ -145,7 +145,7 @@ All metrics that your project collects must be defined in a `metrics.yaml` file.
 To learn more, see [adding new metrics](adding-new-metrics.md).
 See the [metric parameters](metric-parameters.md) documentation which provides reference information about the contents of that file.
 
-> **Important**: as stated [before](adding-glean-to-your-project.md#before-using-glean), any new data collection requires documentation and data-review.
+> **Important**: as stated [before](adding-glean-to-your-project.md#glean-integration-checklist), any new data collection requires documentation and data-review.
 > This is also required for any new metric automatically collected by the Glean SDK.
 
 {{#include ../tab_header.md}}
@@ -356,7 +356,7 @@ This is using the Python 3 interpreter found in `PATH` under the hood. The `GLEA
 
 Please refer to the [custom pings documentation](pings/custom.md).
 
-> **Important**: as stated [before](adding-glean-to-your-project.md#before-using-glean), any new data collection requires documentation and data-review.
+> **Important**: as stated [before](adding-glean-to-your-project.md#glean-integration-checklist), any new data collection requires documentation and data-review.
 > This is also required for any new metric automatically collected by the Glean SDK.
 
 ### Parallelism

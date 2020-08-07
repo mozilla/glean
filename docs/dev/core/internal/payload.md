@@ -1,6 +1,6 @@
 # Payload format
 
-The main sections of a Glean ping are described in [Ping Sections](../../../user/pings/index.md#Ping-sections).
+The main sections of a Glean ping are described in [Ping Sections](../../../user/pings/index.md#ping-sections).
 This **Payload format** chapter describes details of the ping payload that are relevant for decoding Glean pings in the pipeline.
 This is less relevant for end users of the Glean SDK.
 
@@ -205,7 +205,7 @@ Also see [the JSON schema for events](https://github.com/mozilla-services/mozill
 To avoid losing events when the application is killed by the operating system, events are queued on disk as they are recorded.
 When the application starts up again, there is no good way to determine if the device has rebooted since the last run and therefore any timestamps recorded in the new run could not be guaranteed to be consistent with those recorded in the previous run.
 To get around this, on application startup, any queued events are immediately collected into pings and then cleared.
-These "startup-triggered pings" are likely to have a very short duration, as recorded in `ping_info.start_time` and `ping_info.end_time` (see [the `ping_info` section](../../../user/pings/index.md#The-ping_info-section)).
+These "startup-triggered pings" are likely to have a very short duration, as recorded in `ping_info.start_time` and `ping_info.end_time` (see [the `ping_info` section](../../../user/pings/index.md#the-ping_info-section)).
 The maximum timestamp of the events in these pings are quite likely to exceed the duration of the ping, but this is to be expected.
 
 ### Custom Distribution

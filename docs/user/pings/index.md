@@ -17,9 +17,9 @@ There is also a [high-level overview](ping-schedules-and-timings.html) of how th
 
 There are two standard metadata sections that are added to most pings, in addition to their core metrics and events content (which are described in [Adding new metrics](../adding-new-metrics.md)).
 
-- The [`ping_info` section](#The-ping_info-section) contains core metadata that is included in **every** ping.
+- The [`ping_info` section](#the-ping_info-section) contains core metadata that is included in **every** ping.
   
-- The [`client_info` section](#The-client_info-section) contains information that identifies the client.
+- The [`client_info` section](#the-client_info-section) contains information that identifies the client.
   It is included in most pings (including all built-in pings), but may be excluded from pings where we don't want to connect client information with the other metrics in the ping.
 
 ### The `ping_info` section
@@ -62,7 +62,7 @@ All the metrics surviving application restarts (e.g. `client_id`, ...) are remov
 
 ### The `experiments` object
 
-This object (included in the [`ping_info` section](#The-ping_info-section)) contains experiments keyed by the experiment `id`. Each listed experiment contains the `branch` the client is enrolled in and may contain a string to string map with additional data in the `extra` key. Both the `id` and `branch` are truncated to 30 characters.
+This object (included in the [`ping_info` section](#the-ping_info-section)) contains experiments keyed by the experiment `id`. Each listed experiment contains the `branch` the client is enrolled in and may contain a string to string map with additional data in the `extra` key. Both the `id` and `branch` are truncated to 30 characters.
 See [Using the Experiments API](../experiments-api.md) on how to record experiments data.
 
 ```json
