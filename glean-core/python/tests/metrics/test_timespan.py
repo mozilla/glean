@@ -3,6 +3,9 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
+import time
+
+
 import pytest
 
 
@@ -211,3 +214,38 @@ def test_set_raw_nanos_does_nothing_when_timer_is_running():
     timespan_metric.stop()
 
     assert 6 != timespan_metric.test_get_value()
+
+
+def test_measure():
+    timespan_metric = metrics.TimespanMetricType(
+        disabled=False,
+        category="telemetry",
+        lifetime=Lifetime.APPLICATION,
+        name="timespan_metric",
+        send_in_pings=["store1"],
+        time_unit=TimeUnit.NANOSECOND,
+    )
+
+    with timespan_metric.measure():
+        time.sleep(0.1)
+
+    assert timespan_metric.test_has_value()
+    assert 0 < timespan_metric.test_get_value()
+
+
+def test_measure_exception():
+    timespan_metric = metrics.TimespanMetricType(
+        disabled=False,
+        category="telemetry",
+        lifetime=Lifetime.APPLICATION,
+        name="timespan_metric",
+        send_in_pings=["store1"],
+        time_unit=TimeUnit.NANOSECOND,
+    )
+
+    with pytest.raises(ValueError):
+        with timespan_metric.measure():
+            time.sleep(0.1)
+            raise ValueError()
+
+    assert not timespan_metric.test_has_value()
