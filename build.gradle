@@ -11,7 +11,7 @@ buildscript {
     // changing them. Please note that, for using in Android-Components, the
     // versions below must match the ones in that repository.
     ext.versions = [
-        android_gradle_plugin: '3.5.3',
+        android_gradle_plugin: '4.0.1',
         android_maven_publish_plugin: '3.6.2',
         coroutines: '1.3.5',
         dokka: '0.9.17',
