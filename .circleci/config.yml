@@ -932,7 +932,7 @@ jobs:
       - run:
           name: Check internal documentation links
           command: |
-            link-checker
+            link-checker \
               build/docs/book \
               --disable-external true \
               --allow-hash-href true \
