@@ -166,7 +166,6 @@ namespace Mozilla.Glean.Private
         /// <summary>
         /// Returns the stored value for testing purposes only. This function will attempt to await the
         /// last task (if any) writing to the the metric's storage engine before returning a value.
-        /// @throws [NullPointerException] if no value is stored
         /// </summary>
         /// <param name="pingName">represents the name of the ping to retrieve the metric for.
         /// Defaults to the first value in `sendInPings`</param>
