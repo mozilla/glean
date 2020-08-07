@@ -234,6 +234,7 @@ impl PingDirectoryManager {
             })
             .collect();
 
+        // This will sort the pings by date in ascending order (oldest -> newest).
         pending_pings.sort_by(|(a, _), (b, _)| {
             // We might not be able to get the modified date for a given file,
             // in which case we just put it at the end.
@@ -297,7 +298,7 @@ mod test {
 
         let directory_manager = PingDirectoryManager::new(dir.path());
 
-        // Try and process the pings folder
+        // Try and process the pings directories
         let data = directory_manager.process_dirs();
 
         // Verify there is just the one request
@@ -329,7 +330,7 @@ mod test {
             .join("not-uuid-file-name.txt");
         File::create(&not_uuid_path).unwrap();
 
-        // Try and process the pings folder
+        // Try and process the pings directories
         let data = directory_manager.process_dirs();
 
         // Verify there is just the one request
@@ -364,7 +365,7 @@ mod test {
             .join(Uuid::new_v4().to_string());
         File::create(&wrong_contents_file_path).unwrap();
 
-        // Try and process the pings folder
+        // Try and process the pings directories
         let data = directory_manager.process_dirs();
 
         // Verify there is just the one request
@@ -393,7 +394,7 @@ mod test {
 
         let directory_manager = PingDirectoryManager::new(dir.path());
 
-        // Try and process the pings folder
+        // Try and process the pings directories
         let data = directory_manager.process_dirs();
 
         assert_eq!(data.pending_pings.len(), 0);
