@@ -524,16 +524,12 @@ def test_configuration_property(safe_httpserver):
 
     counter_metric.add()
 
-    # Explicitly testing setting this *after the fact*
-    Glean.configuration.ping_tag = "foo"
-
     _builtins.pings.baseline.submit()
 
     assert 1 == len(safe_httpserver.requests)
 
     request = safe_httpserver.requests[0]
     assert "baseline" in request.url
-    assert "foo" == request.headers["X-Debug-Id"]
 
 
 def test_sending_deletion_ping_if_disabled_outside_of_run(tmpdir, ping_schema_url):
