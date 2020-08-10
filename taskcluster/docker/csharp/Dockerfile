@@ -83,7 +83,7 @@ RUN pip3 install \
 # Install the C# dependencies.
 RUN \
     wget https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb \
-    dpkg -i packages-microsoft-prod.deb
+    && dpkg -i packages-microsoft-prod.deb
 
 RUN apt-get update -qq \
     && apt-get install -qy --no-install-recommends \
