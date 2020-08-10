@@ -104,7 +104,7 @@ RUN \
 RUN \
     curl -sfSL --retry 10 --retry-delay 10 \
          -o /usr/local/bin/tooltool.py \
-         https://raw.githubusercontent.com/mozilla/build-tooltool/36511dae0ead6848017e2d569b1f6f1b36984d40/tooltool.py && \
+         https://raw.githubusercontent.com/mozilla-releng/tooltool/868faf0a2c07a3a54c2e27ee063512b15e1359ef/client/tooltool.py && \
          chmod +x /usr/local/bin/tooltool.py
 
 

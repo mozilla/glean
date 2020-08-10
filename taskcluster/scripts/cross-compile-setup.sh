@@ -21,7 +21,7 @@ export TARGET_CFLAGS="-DNDEBUG"
 
 pushd /tmp || exit
 
-python3 tooltool.py \
+python3 /usr/local/bin/tooltool.py \
   --url=http://taskcluster/tooltool.mozilla-releng.net/ \
   --manifest="/builds/worker/checkouts/src/taskcluster/scripts/macos-cc-tools.manifest" \
   fetch
