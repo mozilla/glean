@@ -3,7 +3,7 @@
 When adding a new metric, the workflow is:
 
 * Consider the question you are trying to answer with this data, and choose the [metric type](metrics/index.md) and parameters to use.
-* Add a new entry to [`metrics.yaml`](#The-metricsyaml-file).
+* Add a new entry to [`metrics.yaml`](#adding-the-metric-to-the-metricsyaml-file).
 * Add code to your project to record into the metric by calling the Glean SDK.
 
 > **Important**: Any new data collection requires documentation and [data-review](https://wiki.mozilla.org/Firefox/Data_Collection). This is also required for any new metric automatically collected by the Glean SDK.
@@ -26,7 +26,7 @@ If you need to store multiple string values in a metric, use a [string list metr
 
 <!-- If you have a related set of metrics that you want to record strings for, and you don't know the things the strings relate to at build time, use a [labeled string metric](metrics/labeled_strings.html). -->
 
-For all of the metric types in this section that measure single values, it is especially important to consider how the lifetime of the value relates to the ping it is being sent in. Since these metrics don't perform any aggregation on the client side, when a ping containing the metric is submitted, it will contain only the "last known" value for the metric, potentially resulting in **data loss**.  There is further discussion of [metric lifetimes](#When-should-Glean-automatically-reset-the-measurement) below.
+For all of the metric types in this section that measure single values, it is especially important to consider how the lifetime of the value relates to the ping it is being sent in. Since these metrics don't perform any aggregation on the client side, when a ping containing the metric is submitted, it will contain only the "last known" value for the metric, potentially resulting in **data loss**.  There is further discussion of [metric lifetimes](#when-should-the-glean-sdk-automatically-clear-the-measurement) below.
 
 ### Are you counting things?
 

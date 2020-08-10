@@ -149,16 +149,16 @@ python-docs: build-python ## Build the Python documentation
 
 .PHONY: docs rust-docs kotlin-docs swift-docs
 
-linkcheck: docs ## Run linkchecker on the generated docs
-	# Requires https://wummel.github.io/linkchecker/
-	linkchecker \
-		--ignore-url javadoc \
-		--ignore-url swift \
-		--ignore-url python \
-		--ignore-url docs/glean_core \
-		--ignore-url ErrorKind \
-		--ignore-url std.struct.Error \
-		build/docs
+linkcheck: docs ## Run link-checker on the generated docs
+	# Requires https://www.npmjs.com/package/link-checker
+	link-checker \
+		build/docs/book \
+    --disable-external true \
+    --allow-hash-href true \
+    --url-ignore ".*/swift/.*" \
+    --url-ignore ".*/python/.*" \
+    --url-ignore ".*/javadoc/.*" \
+    --url-ignore ".*/docs/glean_.*"
 .PHONY: linkcheck
 
 spellcheck: ## Spellcheck the docs

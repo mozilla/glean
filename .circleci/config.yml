@@ -921,25 +921,25 @@ jobs:
 
   docs-linkcheck:
     docker:
-      - image: circleci/python
+      - image: circleci/node
     steps:
       - checkout
       - run:
           name: Install linkchecker
-          command: sudo apt install linkchecker
+          command: sudo npm install -g link-checker
       - attach_workspace:
           at: build/
       - run:
           name: Check internal documentation links
           command: |
-            linkchecker \
-              --ignore-url javadoc \
-              --ignore-url swift \
-              --ignore-url python \
-              --ignore-url docs/glean_core \
-              --ignore-url ErrorKind \
-              --ignore-url std.struct.Error \
-              build/docs
+            link-checker \
+              build/docs/book \
+              --disable-external true \
+              --allow-hash-href true \
+              --url-ignore ".*/swift/.*" \
+              --url-ignore ".*/python/.*" \
+              --url-ignore ".*/javadoc/.*" \
+              --url-ignore ".*/docs/glean_.*"
 
   docs-spellcheck:
     docker:

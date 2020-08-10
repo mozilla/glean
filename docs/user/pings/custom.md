@@ -17,11 +17,11 @@ Each ping has the following parameters:
 
 - `description` (required): A textual description describing the purpose of the ping. It may contain [markdown syntax](https://www.markdownguide.org/basic-syntax/).
 - `include_client_id` (required): A boolean indicating whether to include the
-  `client_id` in the [`client_info` section](index.md#The-client_info-section)).
+  `client_id` in the [`client_info` section](index.md#the-client_info-section)).
 - `send_if_empty` (optional, default: false): A boolean indicating if the ping is sent if it contains no metric data.
 - `reasons` (optional, default: `{}`): The reasons that this ping may be sent. The keys are the reason codes, and the values are a textual description of each reason. The ping payload will (optionally) contain one of these reasons in the `ping_info.reason` field.
 
-In addition to these parameters, pings also support the parameters related to data review and expiration defined in [common metric parameters](../adding-new-metrics.md#common-metric-parameters): `description`, `notification_emails`, `bugs`, and `data_reviews`.
+In addition to these parameters, pings also support the parameters related to data review and expiration defined in [common metric parameters](../metric-parameters.md): `description`, `notification_emails`, `bugs`, and `data_reviews`.
 
 For example, to define a custom ping called `search` specifically for search information:
 
