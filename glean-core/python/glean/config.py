@@ -31,7 +31,6 @@ class Configuration:
         server_endpoint: str = None,
         channel: Optional[str] = None,
         max_events: int = DEFAULT_MAX_EVENTS,
-        ping_tag: Optional[str] = None,
         ping_uploader: Optional[net.BaseUploader] = None,
         allow_multiprocessing: bool = True,
     ):
@@ -43,8 +42,6 @@ class Configuration:
                 if known.
             max_events (int): Optional.The number of events to store before
                 force-sending. Defaults to `DEFAULT_MAX_EVENTS`.
-            ping_tag (str): Optional. String tag to be applied to headers when
-                uploading pings for debug view.
             ping_uploader (glean.net.BaseUploader): Optional. The ping uploader
                 implementation. Defaults to `glean.net.HttpClientUploader`.
             allow_multiprocessing (bool): When True (default), use a subprocess
@@ -55,7 +52,6 @@ class Configuration:
         self._server_endpoint = server_endpoint
         self._channel = channel
         self._max_events = max_events
-        self._ping_tag = ping_tag
         if ping_uploader is None:
             ping_uploader = net.HttpClientUploader()
         self._ping_uploader = ping_uploader
@@ -89,15 +85,6 @@ class Configuration:
         return self._max_events
 
     # max_events can't be changed after Glean is initialized
-
-    @property
-    def ping_tag(self) -> Optional[str]:
-        """String tag to be applied to headers when uploading pings for debug view."""
-        return self._ping_tag
-
-    @ping_tag.setter
-    def ping_tag(self, value: str):
-        self._ping_tag = value
 
     @property
     def ping_uploader(self) -> net.BaseUploader:
