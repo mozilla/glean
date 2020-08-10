@@ -158,7 +158,23 @@ namespace Mozilla.Glean.FFI
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
         internal static extern byte glean_submit_ping_by_name(string ping_name, string reason);
 
-        // TODO: add the rest of the ffi.
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void glean_set_experiment_active(
+            string experiment_id,
+            string branch,
+            string[] extra_keys,
+            string[] extra_values,
+            Int32 extra_len
+        );
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void glean_set_experiment_inactive(string experiment_id);
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern byte glean_experiment_test_is_active(string experiment_id);
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern StringAsReturnValue glean_experiment_test_get_data(string experiment_id);
 
         // String
 

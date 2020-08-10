@@ -14,6 +14,7 @@
   * Enable generating the C# APIs using the glean_parser.
   * Add support for the `EventMetricType` in C#.
   * Add support for the `TimingDistributionMetricType` in C#.
+  * Implement the experiments API in C#.
 * Python
   * BUGFIX: Limit the number of retries for 5xx server errors on ping uploads. ([#1120](https://github.com/mozilla/glean/pull/1120))
     * This kinds of failures yield a "recoverable error", which means the ping gets re-enqueued. That can cause infinite loops on the ping upload worker. For python we were incorrectly only limiting the number of retries for I/O errors, another type of "recoverable error".
