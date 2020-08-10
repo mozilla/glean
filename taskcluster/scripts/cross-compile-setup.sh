@@ -1,6 +1,6 @@
 #!/bin/bash
 export PATH=$PATH:/tmp/clang/bin
-export CARGO_TARGET_X86_64_APPLE_DARWIN_CC=/tmp/clang/bin/clang
+export CARGO_TARGET_X86_64_APPLE_DARWIN_LINKER=/tmp/clang/bin/clang
 export CARGO_TARGET_X86_64_APPLE_DARWIN_TOOLCHAIN_PREFIX=/tmp/cctools/bin
 export CARGO_TARGET_X86_64_APPLE_DARWIN_AR=/tmp/cctools/bin/x86_64-darwin11-ar
 export CARGO_TARGET_X86_64_APPLE_DARWIN_RANLIB=/tmp/cctools/bin/x86_64-darwin11-ranlib

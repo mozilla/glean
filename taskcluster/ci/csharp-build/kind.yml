@@ -10,7 +10,7 @@ transforms:
   - taskgraph.transforms.task:transforms
 
 jobs:
-  csharppr:
+  pr:
     attributes:
       run-on-pr-type: normal-ci
     run-on-tasks-for: [github-pull-request, github-push]
