@@ -80,11 +80,6 @@ namespace Mozilla.Glean.Net
                 Log.Error(e, $"Error while parsing headers for ping {documentId}");
             }
 
-            if (config.pingTag != null)
-            {
-                headerList.Add(("X-Debug-ID", config.pingTag));
-            }
-
             return headerList.ToArray();
         }
 
