@@ -8,6 +8,8 @@ import UIKit
 typealias BrowserEngagement = GleanMetrics.BrowserEngagement
 
 class ViewController: UIViewController {
+    let telemetryPrefKey = "GleanUploadEnabled"
+
     @IBOutlet var dataInput: UITextField!
     @IBOutlet var recordButton: UIButton!
     @IBOutlet var sendButton: UIButton!
@@ -17,7 +19,19 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        enableSwitch.setOn(Glean.shared.getUploadEnabled(), animated: false)
+        // Set the state of the upload enabled toggle based on the value in UserDefaults
+        if let uploadEnabled = UserDefaults.standard.object(forKey: telemetryPrefKey) as? Bool {
+            // There was a value stored, so use it to set the toggle state
+            enableSwitch.setOn(uploadEnabled, animated: false)
+        } else {
+            // There wasn't a value stored, so set the default of `true` for the toggle, and
+            // store the preference in UserDefaults
+            enableSwitch.setOn(true, animated: false)
+            UserDefaults.standard.set(true, forKey: telemetryPrefKey)
+        }
+
+        // Set the correct text for the label
+        enabledLabel.text = "Glean is \(enableSwitch.isOn ? "enabled" : "disabled")"
 
         Test.isStarted.set(true)
 
@@ -59,12 +73,8 @@ class ViewController: UIViewController {
     }
 
     @IBAction func enableToggled(_: Any) {
-        if enableSwitch.isOn {
-            Glean.shared.setUploadEnabled(true)
-            enabledLabel.text = "Glean is enabled"
-        } else {
-            Glean.shared.setUploadEnabled(false)
-            enabledLabel.text = "Glean is disabled"
-        }
+        Glean.shared.setUploadEnabled(enableSwitch.isOn)
+        UserDefaults.standard.set(enableSwitch.isOn, forKey: telemetryPrefKey)
+        enabledLabel.text = "Glean is \(enableSwitch.isOn ? "enabled" : "disabled")"
     }
 }
