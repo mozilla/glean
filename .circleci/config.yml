@@ -633,12 +633,24 @@ jobs:
           path: raw_sample_xcodebuild.log
           destination: raw_sample_xcodebuild.log
       - run:
+          name: Configure device logging
+          command: |
+            xcrun simctl spawn booted log config --mode "level:debug" --subsystem org.mozilla.glean-sample-app
+      - run:
           name: Run sample app tests
           command: |
             bash bin/run-ios-sample-app-test.sh
       - store_artifacts:
           path: raw_sample_xcodetest.log
           destination: raw_sample_xcodetest.log
+      - run:
+          name: Collect device logs
+          command: |
+            xcrun simctl spawn booted log collect --output $(pwd)/ios-integration-test.logarchive
+            zip ~/project/device_logs.zip ~/project/ios-integration-test.logarchive
+      - store_artifacts:
+          path: device_logs.zip
+          destination: device_logs.zip
 
   Carthage release:
     macos:
