@@ -647,7 +647,7 @@ jobs:
           name: Collect device logs
           command: |
             xcrun simctl spawn booted log collect --output $(pwd)/ios-integration-test.logarchive
-            zip ~/project/device_logs.zip ~/project/ios-integration-test.logarchive
+            zip -r $(pwd)/device_logs.zip $(pwd)/ios-integration-test.logarchive
       - store_artifacts:
           path: device_logs.zip
           destination: device_logs.zip
