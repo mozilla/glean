@@ -526,6 +526,10 @@ jobs:
             - target
           key: v1-cargo-cache-{{arch}}-{{checksum "buildtype.txt"}}-{{checksum "Cargo.lock"}}
       - run:
+          name: Configure device logging
+          command: |
+            xcrun simctl spawn booted log config --mode "level:debug" --subsystem org.mozilla.glean-sample-app
+      - run:
           name: Run iOS tests
           command: |
             if git log -1 "$CIRCLE_SHA1" | grep -q '\[doc only\]'; then
@@ -542,6 +546,14 @@ jobs:
       - store_artifacts:
           path: raw_xcodetest.log
           destination: raw_xcodetest.log
+      - run:
+          name: Collect device logs
+          command: |
+            xcrun simctl spawn booted log collect --output $(pwd)/ios-tests.logarchive
+            zip -r $(pwd)/device_logs.zip $(pwd)/ios-tests.logarchive
+      - store_artifacts:
+          path: device_logs.zip
+          destination: device_logs.zip
       - persist_to_workspace:
           root: build/
           paths: docs/swift
