@@ -11,6 +11,8 @@ That is, the function from a value \\( x \\) to a bucket index is:
 
 This makes them suitable for measuring timings on a number of time scales without any configuration.
 
+> **Note** Check out how this bucketing algorithm would behave on our [Histogram Simulator](../../appendix/histograms.html)
+
 Timings always span the full length between `start` and `stopAndAccumulate`.
 If the Glean upload is disabled when calling `start`, the timer is still started.
 If the Glean upload is disabled at the time `stopAndAccumulate` is called, nothing is recorded.

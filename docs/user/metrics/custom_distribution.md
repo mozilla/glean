@@ -21,6 +21,8 @@ Custom distributions have the following required parameters:
     - `linear`: The buckets are evenly spaced
     - `exponential`: The buckets follow a natural logarithmic distribution
 
+> **Note** Check out how these bucketing algorithms would behave on the [Histogram Simulator](../../appendix/histograms.html)
+
 In addition, the metric should specify:
 
   - `unit`: (String) The unit of the values in the metric. For documentation purposes only -- does not affect data collection.

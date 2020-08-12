@@ -26,7 +26,6 @@
     background-color: #ccc;
 }
 
-
 /* The container that holds all of the tab contents */
 .tabcontents {
     display: flex;
@@ -46,4 +45,105 @@ footer#open-on-gh {
   text-align: center;
   border-top: 1px solid black;
   padding: 5px 0;
+}
+
+/* Histogram chart styles */
+
+#histogram-simulator {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#histogram-simulator h3 {
+    margin-top: 20px;
+}
+
+#histogram-simulator .input-group {
+    width: 100%;
+}
+
+#histogram-simulator .required {
+    color: red;
+}
+
+#histogram-simulator .input-group label {
+    display: block;
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 7px;
+}
+
+#histogram-simulator .input-group input,
+#histogram-simulator .input-group select,
+#custom-data-modal textarea {
+    display: block;
+    width: 100%;
+    padding: 5px;
+    margin-bottom: 10px;
+    border-radius: 3px;
+    border: 1px solid #e0e0e0;
+}
+
+#histogram-props {
+    padding-right: 50px;
+}
+
+#histogram-props,
+#data-options {
+    width: 50%;
+    box-sizing: border-box;
+}
+
+#data-options .input-group {
+    margin-bottom: 15px;
+}
+
+#data-options .input-group:first-of-type {
+    margin-top: 45px;
+}
+
+#data-options .input-group:last-of-type {
+    margin-bottom: 0;
+}
+
+#data-options .input-group label {
+    display: inline-block;
+}
+
+#data-options .input-group input {
+    display: inline;
+    width: auto;
+}
+
+#histogram-chart {
+    margin-top: 50px;
+    width: 100%;
+}
+
+#histogram-chart-legend {
+    font-size: 14px;
+    text-align: center;
+    width: 100%;
+    margin-left: 60px;
+}
+
+#custom-data-modal-overlay {
+    background-color: rgba(0, 0, 0, .5);
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    z-index: 999;
+    display: none;
+}
+
+#custom-data-modal {
+    width: 50%;
+    background-color: white;
+    border-radius: 5px;
+    position: relative;
+    top: 15%;
+    left: 25%;
+    padding: 50px;
 }

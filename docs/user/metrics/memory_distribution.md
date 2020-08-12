@@ -9,6 +9,8 @@ That is, the function from a value \\( x \\) to a bucket index is:
 
 This makes them suitable for measuring memory sizes on a number of different scales without any configuration.
 
+> **Note** Check out how this bucketing algorithm would behave on our [Histogram Simulator](../../appendix/histograms.html)
+
 ## Configuration
 
 If you wanted to create a memory distribution to measure the amount of heap memory allocated, first you need to add an entry for it to the `metrics.yaml` file:
