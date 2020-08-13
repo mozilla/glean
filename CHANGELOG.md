@@ -23,6 +23,8 @@
   * A `measure` context manager for conveniently measuring runtimes has been added to `TimespanMetricType` and `TimingDistributionMetricType`.
 * Android
   * Fix a startup crash on some Android 8 (SDK=25) devices, due to a [bug in the Java compiler](https://issuetracker.google.com/issues/110848122#comment17).
+* iOS
+  * Changed logging to use [`OSLog`](https://developer.apple.com/documentation/os/logging) rather than a mix of `NSLog` and `print`. ([#1133](https://github.com/mozilla/glean/pull/1133))
 
 # v32.0.0 (2020-08-03)
 
