@@ -21,7 +21,7 @@ Custom distributions have the following required parameters:
     - `linear`: The buckets are evenly spaced
     - `exponential`: The buckets follow a natural logarithmic distribution
 
-> **Note** Check out how these bucketing algorithms would behave on the [Histogram Simulator](../../appendix/histograms.html)
+> **Note** Check out how these bucketing algorithms would behave on the [Custom distribution simulator](#simulator)
 
 In addition, the metric should specify:
 
@@ -88,3 +88,60 @@ assertEquals(1, Graphics.checkerboardPeak.testGetNumRecordedErrors(ErrorType.Inv
 ## Reference
 
 * [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-custom-distribution-metric-type/index.html)
+
+## Simulator
+
+<div id="custom-data-modal-overlay">
+    <div id="custom-data-modal">
+        <p>Please, insert your custom data below as a JSON array.</p>
+        <textarea rows="30"></textarea>
+    </div>
+</div>
+
+<div id="simulator-container">
+    <div id="histogram-chart-container">
+        <div id="histogram-chart"></div>
+        <p id="histogram-chart-legend"><p>
+    </div>
+    <div id="data-options">
+        <h3>Data options</h3>
+        <div class="input-group">
+            <label for="normally-distributed">Generate normally distributed data</label>
+            <input name="data-options" value="normally-distributed" id="normally-distributed" type="radio" />
+        </div>
+        <div class="input-group">
+            <label for="log-normally-distributed">Generate log-normally distributed data</label>
+            <input name="data-options" value="log-normally-distributed" id="log-normally-distributed" type="radio" checked />
+        </div>
+        <div class="input-group">
+            <label for="uniformly-distributed">Generate uniformly distributed data</label>
+            <input name="data-options" value="uniformly-distributed" id="uniformly-distributed" type="radio" />
+        </div>
+        <div class="input-group" id="custom-data-input-group">
+            <label for="custom">Use custom data</label>
+            <input name="data-options" value="custom" id="custom" type="radio" />
+        </div>
+    </div>
+    <div id="histogram-props">
+        <h3>Properties</h3>
+        <div class="input-group">
+            <label for="kind">Histogram type (<code>histogram_type</code>)</label>
+            <select id="kind" name="kind">
+                <option value="exponential" selected>Exponential</option>
+                <option value="linear">Linear</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label for="lower-bound">Range mininum (<code>range_min</code>)</label>
+            <input name="lower-bound" id="lower-bound" type="number" value="1" />
+        </div>
+        <div class="input-group">
+            <label for="upper-bound">Range maximum (<code>range_max</code>)</label>
+            <input name="upper-bound" id="upper-bound" type="number" value="500" />
+        </div>
+        <div class="input-group">
+            <label for="bucket-count">Bucket count (<code>bucket_count</code>)</label>
+            <input name="bucket-count" id="bucket-count" type="number" value="20" />
+        </div>
+    </div>
+</div>

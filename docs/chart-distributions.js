@@ -4,152 +4,19 @@ Chart.defaults.global.legend = false
 
 const DATA_SAMPLE_COUNT = 20000
 
-// Get the searchParams up here, they will be used throughout the code
-const searchParams = (new URL(document.location)).searchParams
-
-const select = document.querySelector("#histogram-simulator select")
-setInputValueFromSearchParam(searchParams, select)
-// We need to keep track of the current histogram kind,
-// because that changes the way the chart is built
-let currentHistogramKind = select.value
-showCorrectFieldsBasedOnHistogramKind(currentHistogramKind)
-select.addEventListener("change", event => {
-    // When going from linear or exponential to functional histograms or vice versa,
-    // we clear the search params specific to the previous kind
-    const previous = currentHistogramKind
-    currentHistogramKind = event.target.value
-    if (((previous == "linear" || previous == "exponential") && currentHistogramKind == "functional")) {
-        searchParams.delete("lower-bound")
-        searchParams.delete("upper-bound")
-        searchParams.delete("bucket-count")
-    }
-    if ((previous == "functional" && (currentHistogramKind == "linear" || currentHistogramKind == "exponential"))) {
-        searchParams.delete("log-base")
-        searchParams.delete("buckets-per-magnitude")
-        searchParams.delete("maximum-value")
-    }
-    showCorrectFieldsBasedOnHistogramKind(currentHistogramKind)
-    setURLSearchParamFromInput(searchParams, event.target)
-    buildChart(currentHistogramKind)
-})
-
-const inputs = document.querySelectorAll("#histogram-simulator input")
-inputs.forEach(input => {
-    input.addEventListener("change", event => {
-        setURLSearchParamFromInput(searchParams, event.target)
-        buildChart(currentHistogramKind)
-    })
-
-    // Rebuild chart everytime the custom data text is changed
-    const customDataTextarea = document.querySelector("#custom-data-modal textarea")
-    customDataTextarea.addEventListener("change", () => buildChart(currentHistogramKind))
-
-    // Load the data from the URL into the form fields
-
-    switch (input.type) {
-        case "radio":
-            if (searchParams.get(input.name) == input.value) {
-                input.checked = true
-
-                // We won't save the custom data in the URL,
-                // if that is the value on load, we create dummy data
-                if (input.value == "custom") {
-                    fillUpCustomDataWithDummyData()
-                }
-            }
-            break
-        default:
-            setInputValueFromSearchParam(searchParams, input)
-            break
-    }
-})
-
-// Open custom data modal when custom data option is selected
-const customDataInput = document.getElementById("custom-data-input-group")
-customDataInput.addEventListener('click', () => {
-    customDataModalOverlay.style.display = "block"
-    fillUpCustomDataWithDummyData(currentHistogramKind)
-})
-
-// Close modal when we click the overlay
-const customDataModalOverlay = document.getElementById("custom-data-modal-overlay")
-customDataModalOverlay.addEventListener('click', () => {
-    customDataModalOverlay.style.display = "none"
-})
-// We need to stop propagation for click events on the actual modal,
-// so that clicking it doesn't close it
-const customDataModal = document.getElementById("custom-data-modal")
-customDataModal.addEventListener("click", event => event.stopPropagation())
-
-// Build the chart once we are done loading field values
-buildChart(currentHistogramKind)
-
 // !!!!!!!!!!!!!!!!!!!!!!
 // !!! Chart building !!!
 // !!!!!!!!!!!!!!!!!!!!!!
 
-function buildDataFromInputs (histogramKind) {
-    if (histogramKind == "functional") {
-        return buildDataFromInputsFunctional()
-    } else {
-        return buildDataFromInputsPreComputed(histogramKind)
-    }
-}
-
-function buildSampleData (lower, upper) {
-    const dataOption = document.querySelector("#data-options input:checked").value
-    const values =
-        dataOption == "normally-distributed" ? normalRandomValues((lower + upper) / 2, (upper - lower) / 8, DATA_SAMPLE_COUNT)
-        : dataOption == "log-normally-distributed" ? logNormalRandomValues(Math.sqrt(Math.max(lower, 1) * upper), Math.pow(upper / Math.max(lower, 1), 1 / 8), DATA_SAMPLE_COUNT)
-        : dataOption == "uniformly-distributed" ? uniformValues(lower, upper, DATA_SAMPLE_COUNT)
-        : parseCustomData()
-    return values
-}
-
-function buildDataFromInputsPreComputed (kind) {
-    // We need to do explicit type coersion here,
-    // otherwise Javascript will sometimes figure that 1 + 1 = "11"
-    const lowerBound = Number(document.getElementById("lower-bound").value)
-    const upperBound = Number(document.getElementById("upper-bound").value)
-    const bucketCount = Number(document.getElementById("bucket-count").value)
-
-    const buckets = kind == "exponential"
-        ? exponentialRange(lowerBound, upperBound, bucketCount)
-        : linearRange(lowerBound, upperBound, bucketCount)
-
-    const lowerBucket = buckets[0]
-    const upperBucket = buckets[buckets.length - 1]
-    const values = buildSampleData(lowerBucket, upperBucket)
-
-    return {
-        buckets,
-        data: accumulateValuesIntoBucketsPreComputed(buckets, values),
-    }
-}
-
-function buildDataFromInputsFunctional() {
-    const logBase = Number(document.getElementById("log-base").value)
-    const bucketsPerMagnitude = Number(document.getElementById("buckets-per-magnitude").value)
-    const maximumValue = Number(document.getElementById("maximum-value").value || Number.MAX_SAFE_INTEGER)
-
-    const lower = 0
-    const upper = maximumValue
-    const values = buildSampleData(lower, upper)
-
-    const acc = accumulateValuesIntoBucketsFunctional(logBase, bucketsPerMagnitude, maximumValue, values)
-    return {
-        buckets: Object.keys(acc),
-        data: Object.values(acc)
-    }
-}
-
-function buildChart (histogramKind) {
-    const { buckets, data } = buildDataFromInputs(histogramKind)
+function buildChart () {
+    const { buckets, data } = buildDataFromInputs()
     percentages = data.map(v => v * 100 / DATA_SAMPLE_COUNT)
 
-    // Update chart legend
-    const legend = document.getElementById("histogram-chart-legend")
-    legend.innerHTML = `Using these parameters, the widest bucket's width is <b>${getWidestBucketWidth(buckets)}</b>.`
+    if (getCurrentHistogramKind() != "functional") {
+        // Update chart legend
+        const legend = document.getElementById("histogram-chart-legend")
+        legend.innerHTML = `Using these parameters, the widest bucket's width is <b>${getWidestBucketWidth(buckets)}</b>.`
+    }
 
     // Clear chart for re-drawing,
     // here we need to re-create the whole canvas
@@ -216,29 +83,87 @@ function buildChart (histogramKind) {
     })
 }
 
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!! Chart data building !!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+function buildDataFromInputs () {
+    let histogramKind = getCurrentHistogramKind()
+    if (histogramKind == "functional") {
+        return buildDataFromInputsFunctional()
+    } else {
+        return buildDataFromInputsPreComputed(histogramKind)
+    }
+}
+
+function buildSampleData (lower, upper) {
+    if (!lower) lower = 1
+    if (!upper) upper = 100
+    const dataOption = document.querySelector("#data-options input:checked").value
+    const values =
+        dataOption == "normally-distributed" ? normalRandomValues((lower + upper) / 2, (upper - lower) / 8, DATA_SAMPLE_COUNT)
+        : dataOption == "log-normally-distributed" ? logNormalRandomValues(Math.sqrt(Math.max(lower, 1) * upper), Math.pow(upper / Math.max(lower, 1), 1 / 8), DATA_SAMPLE_COUNT)
+        : dataOption == "uniformly-distributed" ? uniformValues(lower, upper, DATA_SAMPLE_COUNT)
+        : parseCustomData()
+    return values
+}
+
+function buildDataFromInputsPreComputed (kind) {
+    // We need to do explicit type coersion here,
+    // otherwise Javascript will sometimes figure that 1 + 1 = "11"
+    const lowerBound = Number(document.getElementById("lower-bound").value)
+    const upperBound = Number(document.getElementById("upper-bound").value)
+    const bucketCount = Number(document.getElementById("bucket-count").value)
+
+    const buckets = kind == "exponential"
+        ? exponentialRange(lowerBound, upperBound, bucketCount)
+        : linearRange(lowerBound, upperBound, bucketCount)
+
+    const lowerBucket = buckets[0]
+    const upperBucket = buckets[buckets.length - 1]
+    const values = buildSampleData(lowerBucket, upperBucket)
+
+    return {
+        buckets,
+        data: accumulateValuesIntoBucketsPreComputed(buckets, values),
+    }
+}
+
+function buildDataFromInputsFunctional() {
+    const logBase = Number(document.getElementById("log-base").value)
+    const bucketsPerMagnitude = Number(document.getElementById("buckets-per-magnitude").value)
+    const maximumValue = Number(document.getElementById("maximum-value").value || Number.MAX_SAFE_INTEGER)
+
+    const values = buildSampleData()
+
+    const acc = accumulateValuesIntoBucketsFunctional(logBase, bucketsPerMagnitude, maximumValue, values)
+    return {
+        buckets: Object.keys(acc),
+        data: Object.values(acc)
+    }
+}
+
 // !!!!!!!!!!!!!!!!!
 // !!! Utilities !!!
 // !!!!!!!!!!!!!!!!!
 
-function showCorrectFieldsBasedOnHistogramKind(kind) {
-    const functionalHistogramFields = document.getElementById("functional-props")
-    const preComputedHistogramFields = document.getElementById("pre-computed-props")
-    if (kind == "functional") {
-        functionalHistogramFields.style.display = "block"
-        preComputedHistogramFields.style.display = "none"
-    } else {
-        functionalHistogramFields.style.display = "none"
-        preComputedHistogramFields.style.display = "block"
-    }
+function searchParams() {
+    return (new URL(document.location)).searchParams
 }
 
-function setURLSearchParamFromInput(searchParams, input) {
-    searchParams.set(input.name, input.value)
-    history.pushState(null, null, `?${searchParams.toString()}`)
+function getCurrentHistogramKind() {
+    const kind = document.getElementById("kind")
+    return kind.value
 }
 
-function setInputValueFromSearchParam(searchParams, input) {
-    let param = searchParams.get(input.name)
+function setURLSearchParam(name, value) {
+    let params = searchParams()
+    params.set(name, value)
+    history.pushState(null, null, `?${params.toString()}`)
+}
+
+function setInputValueFromSearchParam(input) {
+    let param = searchParams().get(input.name)
     if (param) input.value = param
 }
 
@@ -263,11 +188,10 @@ function parseCustomData () {
     }
 }
 
-function fillUpCustomDataWithDummyData (histogramKind) {
-    const { buckets } = buildDataFromInputs(histogramKind)
-    const lowerBucket = buckets[0]
-    const upperBucket = buckets[buckets.length - 1]
-    const dummyData = normalRandomValues((lowerBucket + upperBucket) / 2, (upperBucket - lowerBucket) / 8, DATA_SAMPLE_COUNT)
+function fillUpCustomDataWithDummyData () {
+    const lower = 1
+    const upper = 100
+    const dummyData = logNormalRandomValues(Math.sqrt(Math.max(lower, 1) * upper), Math.pow(upper / Math.max(lower, 1), 1 / 8), DATA_SAMPLE_COUNT)
     const prettyDummyData = JSON.stringify(dummyData, undefined, 4);
     const customDataTextarea = document.querySelector("#custom-data-modal textarea")
     customDataTextarea.value = prettyDummyData;
