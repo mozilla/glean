@@ -345,26 +345,36 @@ Assert.Equal(1, Pages.pageLoad.TestGetNumRecordedErrors(ErrorType.InvalidValue))
             <input name="data-options" value="custom" id="custom" type="radio" />
         </div>
     </div>
-    <div id="histogram-props" class="hide">
+    <div id="histogram-props">
         <h3>Properties</h3>
-        <div class="input-group">
+        <div class="input-group hide">
             <label for="kind">Histogram type</label>
             <select id="kind" name="kind" disabled>
                 <option value="functional" selected>Functional</option>
             </select>
         </div>
-        <div class="input-group">
+        <div class="input-group hide">
             <label for="log-base">Log base</label>
             <input id="log-base" name="log-base" type="number" value="2" disabled />
         </div>
-        <div class="input-group">
+        <div class="input-group hide">
             <label for="buckets-per-magnitude">Buckets per magnitude</label>
             <input id="buckets-per-magnitude" name="buckets-per-magnitude" type="number" value="8" disabled />
         </div>
-        <div class="input-group">
+        <div class="input-group hide">
             <label for="maximum-value">Maximum value</label>
             <input id="maximum-value" name="maximum-value" type="number" value="600000000000" disabled />
         </div>
+        <div class="input-group">
+            <label for="time-unit">Time unit (<code>time_unit</code>)</label>
+            <select id="time-unit" name="time-unit">
+                <option value="nanoseconds" selected>Nanoseconds</option>
+                <option value="microseconds">Microseconds</option>
+                <option value="milliseconds">Milliseconds</option>
+            </select>
+        </div>
     </div>
 </div>
+
+> **Note** The samples created by the automatically generated data options are always between 0-100.
 

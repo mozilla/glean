@@ -8,8 +8,8 @@ const DATA_SAMPLE_COUNT = 20000
 // !!! Chart building !!!
 // !!!!!!!!!!!!!!!!!!!!!!
 
-function buildChart () {
-    const { buckets, data } = buildDataFromInputs()
+function buildChart (transformValue) {
+    let { buckets, data } = buildDataFromInputs(transformValue)
     percentages = data.map(v => v * 100 / DATA_SAMPLE_COUNT)
 
     if (getCurrentHistogramKind() != "functional") {
@@ -87,12 +87,12 @@ function buildChart () {
 // !!! Chart data building !!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-function buildDataFromInputs () {
+function buildDataFromInputs (transformValue) {
     let histogramKind = getCurrentHistogramKind()
     if (histogramKind == "functional") {
-        return buildDataFromInputsFunctional()
+        return buildDataFromInputsFunctional(transformValue)
     } else {
-        return buildDataFromInputsPreComputed(histogramKind)
+        return buildDataFromInputsPreComputed(histogramKind, transformValue)
     }
 }
 
@@ -108,7 +108,7 @@ function buildSampleData (lower, upper) {
     return values
 }
 
-function buildDataFromInputsPreComputed (kind) {
+function buildDataFromInputsPreComputed (kind, transformValue) {
     // We need to do explicit type coersion here,
     // otherwise Javascript will sometimes figure that 1 + 1 = "11"
     const lowerBound = Number(document.getElementById("lower-bound").value)
@@ -121,7 +121,7 @@ function buildDataFromInputsPreComputed (kind) {
 
     const lowerBucket = buckets[0]
     const upperBucket = buckets[buckets.length - 1]
-    const values = buildSampleData(lowerBucket, upperBucket)
+    const values = buildSampleData(lowerBucket, upperBucket).map(v => transformValue(v))
 
     return {
         buckets,
@@ -129,12 +129,12 @@ function buildDataFromInputsPreComputed (kind) {
     }
 }
 
-function buildDataFromInputsFunctional() {
+function buildDataFromInputsFunctional(transformValue) {
     const logBase = Number(document.getElementById("log-base").value)
     const bucketsPerMagnitude = Number(document.getElementById("buckets-per-magnitude").value)
     const maximumValue = Number(document.getElementById("maximum-value").value || Number.MAX_SAFE_INTEGER)
 
-    const values = buildSampleData()
+    const values = buildSampleData().map(v => transformValue(v))
 
     const acc = accumulateValuesIntoBucketsFunctional(logBase, bucketsPerMagnitude, maximumValue, values)
     return {

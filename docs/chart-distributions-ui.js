@@ -1,3 +1,76 @@
+// Transformation function we may want to apply to each value before plotting
+//
+// The current use cases are memory distributions and timing distribution,
+// which may receive the values in a given unit, but transform them to a base one upon recording
+let TRANSFORMATION
+
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!! Memory distribution specific !!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+function memoryUnitToByte(unit) {
+    switch(unit) {
+        case "byte":
+            return value => value
+        case "kilobyte":
+            return value => value * 1024
+        case "megabyte":
+            return value => value * 1024 * 1024
+        case "gigabyte":
+            return value => value * 1024 * 1024 * 1024
+    }
+}
+const memoryUnitSelect = document.querySelector("#histogram-props select#memory-unit")
+if (memoryUnitSelect) {
+    setInputValueFromSearchParam(memoryUnitSelect)
+    TRANSFORMATION = memoryUnitToByte(memoryUnitSelect.value)
+    memoryUnitSelect.addEventListener("change", event => {
+        let memoryUnit = event.target.value
+        TRANSFORMATION = memoryUnitToByte(memoryUnit)
+    
+        let input = event.target
+        setURLSearchParam(input.name, input.value)
+        buildChart(TRANSFORMATION)
+    })
+}
+
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!! Timing distribution specific !!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+function timeUnitToNanos(unit) {
+    switch(unit) {
+        case "nanoseconds":
+            return value => value
+        case "microseconds":
+            return value => value * 1000
+        case "milliseconds":
+            return value => value * 1000 * 1000
+    }
+}
+
+const baseMax = 1000 * 1000 * 1000 * 60 * 10
+const timeUnitToMaxValue = {
+    "nanoseconds": baseMax,
+    "microseconds": timeUnitToNanos("microseconds")(baseMax),
+    "milliseconds": timeUnitToNanos("milliseconds")(baseMax),
+}
+const timeUnitSelect = document.querySelector("#histogram-props select#time-unit")
+const maxValueInput = document.getElementById("maximum-value")
+if (timeUnitSelect) {
+    setInputValueFromSearchParam(timeUnitSelect)
+    TRANSFORMATION = timeUnitToNanos(timeUnitSelect.value)
+    timeUnitSelect.addEventListener("change", event => {
+        let timeUnit = event.target.value
+        maxValueInput.value = timeUnitToMaxValue[timeUnit]
+        TRANSFORMATION = timeUnitToNanos(timeUnit)
+    
+        let input = event.target
+        setURLSearchParam(input.name, input.value)
+        buildChart(TRANSFORMATION)
+    })
+}
+
 // !!!!!!!!!!!!!!!!!!!!!!!!!
 // !!! Custom data modal !!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!
@@ -11,7 +84,7 @@ customDataInput && customDataInput.addEventListener('click', () => {
 
 // Rebuild chart everytime the custom data text is changed
 const customDataTextarea = document.querySelector("#custom-data-modal textarea")
-customDataTextarea && customDataTextarea.addEventListener("change", () => buildChart())
+customDataTextarea && customDataTextarea.addEventListener("change", () => buildChart(TRANSFORMATION))
 
 // Close modal when we click the overlay
 const customDataModalOverlay = document.getElementById("custom-data-modal-overlay")
@@ -35,7 +108,7 @@ options.forEach(option => {
 
         let input = event.target
         setURLSearchParam(input.name, input.value)
-        buildChart()
+        buildChart(TRANSFORMATION)
     })
 
     if (searchParams().get(option.name) == option.value) {
@@ -63,9 +136,12 @@ inputs.forEach(input => {
     input.addEventListener("change", event => {
         let input = event.target
         setURLSearchParam(input.name, input.value)
-        buildChart()
+        buildChart(TRANSFORMATION)
     })
 })
 
 // Build the chart once we are done loading field values
-buildChart()
+// If we are not in a memory distribution simulator,
+// the tranformation function will do nothing
+buildChart(TRANSFORMATION)
+
