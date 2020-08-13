@@ -82,6 +82,5 @@
 - [API Documentation](api/index.md)
 - [Appendix](appendix/index.md)
   - [Glossary](appendix/glossary.md)
-  - [Histogram simulator](appendix/histograms.md)
   - [Changelog](appendix/changelog.md)
   - [This Week in Glean](appendix/twig.md)
