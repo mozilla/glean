@@ -14,21 +14,38 @@ Tweak histogram settings for data fitting purposes.
         <div class="input-group">
             <label for="kind">Histogram kind <span class="required">*</span></label>
             <select name="kind" id="kind">
-                <option value="exponential" selectedT>Exponential</option>
+                <option value="exponential" selected>Exponential</option>
                 <option value="linear">Linear</option>
+                <option value="functional">Functional</option>
             </select>
         </div>
-        <div class="input-group">
-            <label for="lower-bound">Lower bound</label>
-            <input name="lower-bound" id="lower-bound" type="number" value="1" />
+        <div id="pre-computed-props">
+            <div class="input-group">
+                <label for="lower-bound">Lower bound</label>
+                <input name="lower-bound" id="lower-bound" type="number" value="1" />
+            </div>
+            <div class="input-group">
+                <label for="upper-bound">Upper bound <span class="required">*</span></label>
+                <input name="upper-bound" id="upper-bound" type="number" value="500" />
+            </div>
+            <div class="input-group">
+                <label for="bucket-count">Bucket count<span class="required">*</span> </label>
+                <input name="bucket-count" id="bucket-count" type="number" value="20" />
+            </div>
         </div>
-        <div class="input-group">
-            <label for="upper-bound">Upper bound <span class="required">*</span></label>
-            <input name="upper-bound" id="upper-bound" type="number" value="500" />
-        </div>
-        <div class="input-group">
-            <label for="bucket-count">Bucket count <span class="required">*</span> </label>
-            <input name="bucket-count" id="bucket-count" type="number" value="20" />
+        <div id="functional-props">
+            <div class="input-group">
+                <label for="log-base">Log base</label>
+                <input name="log-base" id="log-base" type="number" value="2" />
+            </div>
+            <div class="input-group">
+                <label for="buckets-per-magnitude">Buckets per magnitude</label>
+                <input name="buckets-per-magnitude" id="buckets-per-magnitude" type="number" value="16" />
+            </div>
+            <div class="input-group">
+                <label for="maximum-value">Maximum value</label>
+                <input name="maximum-value" id="maximum-value" type="number" />
+            </div>
         </div>
     </div>
     <div id="data-options">

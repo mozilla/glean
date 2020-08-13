@@ -54,6 +54,11 @@ footer#open-on-gh {
     flex-wrap: wrap;
 }
 
+#pre-computed-props,
+#functional-props{
+    display: none;
+}
+
 #histogram-simulator h3 {
     margin-top: 20px;
 }
@@ -125,6 +130,11 @@ footer#open-on-gh {
     text-align: center;
     width: 100%;
     margin-left: 60px;
+}
+
+#histogram-functional-props,
+#histogram-non-functional-props {
+    display: none;
 }
 
 #custom-data-modal-overlay {

@@ -4,14 +4,114 @@ Chart.defaults.global.legend = false
 
 const DATA_SAMPLE_COUNT = 20000
 
-function buildDataFromInputs () {
-    const kind = document.getElementById("kind").value
+// Get the searchParams up here, they will be used throughout the code
+const searchParams = (new URL(document.location)).searchParams
+
+const select = document.querySelector("#histogram-simulator select")
+setInputValueFromSearchParam(searchParams, select)
+// We need to keep track of the current histogram kind,
+// because that changes the way the chart is built
+let currentHistogramKind = select.value
+showCorrectFieldsBasedOnHistogramKind(currentHistogramKind)
+select.addEventListener("change", event => {
+    // When going from linear or exponential to functional histograms or vice versa,
+    // we clear the search params specific to the previous kind
+    const previous = currentHistogramKind
+    currentHistogramKind = event.target.value
+    if (((previous == "linear" || previous == "exponential") && currentHistogramKind == "functional")) {
+        searchParams.delete("lower-bound")
+        searchParams.delete("upper-bound")
+        searchParams.delete("bucket-count")
+    }
+    if ((previous == "functional" && (currentHistogramKind == "linear" || currentHistogramKind == "exponential"))) {
+        searchParams.delete("log-base")
+        searchParams.delete("buckets-per-magnitude")
+        searchParams.delete("maximum-value")
+    }
+    showCorrectFieldsBasedOnHistogramKind(currentHistogramKind)
+    setURLSearchParamFromInput(searchParams, event.target)
+    buildChart(currentHistogramKind)
+})
+
+const inputs = document.querySelectorAll("#histogram-simulator input")
+inputs.forEach(input => {
+    input.addEventListener("change", event => {
+        setURLSearchParamFromInput(searchParams, event.target)
+        buildChart(currentHistogramKind)
+    })
+
+    // Rebuild chart everytime the custom data text is changed
+    const customDataTextarea = document.querySelector("#custom-data-modal textarea")
+    customDataTextarea.addEventListener("change", () => buildChart(currentHistogramKind))
+
+    // Load the data from the URL into the form fields
+
+    switch (input.type) {
+        case "radio":
+            if (searchParams.get(input.name) == input.value) {
+                input.checked = true
+
+                // We won't save the custom data in the URL,
+                // if that is the value on load, we create dummy data
+                if (input.value == "custom") {
+                    fillUpCustomDataWithDummyData()
+                }
+            }
+            break
+        default:
+            setInputValueFromSearchParam(searchParams, input)
+            break
+    }
+})
+
+// Open custom data modal when custom data option is selected
+const customDataInput = document.getElementById("custom-data-input-group")
+customDataInput.addEventListener('click', () => {
+    customDataModalOverlay.style.display = "block"
+    fillUpCustomDataWithDummyData(currentHistogramKind)
+})
+
+// Close modal when we click the overlay
+const customDataModalOverlay = document.getElementById("custom-data-modal-overlay")
+customDataModalOverlay.addEventListener('click', () => {
+    customDataModalOverlay.style.display = "none"
+})
+// We need to stop propagation for click events on the actual modal,
+// so that clicking it doesn't close it
+const customDataModal = document.getElementById("custom-data-modal")
+customDataModal.addEventListener("click", event => event.stopPropagation())
+
+// Build the chart once we are done loading field values
+buildChart(currentHistogramKind)
+
+// !!!!!!!!!!!!!!!!!!!!!!
+// !!! Chart building !!!
+// !!!!!!!!!!!!!!!!!!!!!!
+
+function buildDataFromInputs (histogramKind) {
+    if (histogramKind == "functional") {
+        return buildDataFromInputsFunctional()
+    } else {
+        return buildDataFromInputsPreComputed(histogramKind)
+    }
+}
+
+function buildSampleData (lower, upper) {
+    const dataOption = document.querySelector("#data-options input:checked").value
+    const values =
+        dataOption == "normally-distributed" ? normalRandomValues((lower + upper) / 2, (upper - lower) / 8, DATA_SAMPLE_COUNT)
+        : dataOption == "log-normally-distributed" ? logNormalRandomValues(Math.sqrt(Math.max(lower, 1) * upper), Math.pow(upper / Math.max(lower, 1), 1 / 8), DATA_SAMPLE_COUNT)
+        : dataOption == "uniformly-distributed" ? uniformValues(lower, upper, DATA_SAMPLE_COUNT)
+        : parseCustomData()
+    return values
+}
+
+function buildDataFromInputsPreComputed (kind) {
     // We need to do explicit type coersion here,
     // otherwise Javascript will sometimes figure that 1 + 1 = "11"
     const lowerBound = Number(document.getElementById("lower-bound").value)
     const upperBound = Number(document.getElementById("upper-bound").value)
     const bucketCount = Number(document.getElementById("bucket-count").value)
-    const dataOption = document.querySelector("#data-options input:checked").value
 
     const buckets = kind == "exponential"
         ? exponentialRange(lowerBound, upperBound, bucketCount)
@@ -19,22 +119,33 @@ function buildDataFromInputs () {
 
     const lowerBucket = buckets[0]
     const upperBucket = buckets[buckets.length - 1]
-    const values =
-        dataOption == "normally-distributed" ? normalRandomValues((lowerBucket + upperBucket) / 2, (upperBucket - lowerBucket) / 8, DATA_SAMPLE_COUNT)
-        : dataOption == "log-normally-distributed" ? logNormalRandomValues(Math.sqrt(Math.max(lowerBucket, 1) * upperBucket), Math.pow(upperBucket / Math.max(lowerBucket, 1), 1 / 8), DATA_SAMPLE_COUNT)
-        : dataOption == "uniformly-distributed" ? uniformValues(lowerBucket, upperBucket, DATA_SAMPLE_COUNT)
-        : parseCustomData()
+    const values = buildSampleData(lowerBucket, upperBucket)
 
     return {
         buckets,
-        values,
+        data: accumulateValuesIntoBucketsPreComputed(buckets, values),
     }
 }
 
-function buildChart () {
-    const { buckets, values } = buildDataFromInputs()
-    const data = accumulateValuesIntoBuckets(buckets, values)
-    const percentages = data.map(v => v * 100 / DATA_SAMPLE_COUNT)
+function buildDataFromInputsFunctional() {
+    const logBase = Number(document.getElementById("log-base").value)
+    const bucketsPerMagnitude = Number(document.getElementById("buckets-per-magnitude").value)
+    const maximumValue = Number(document.getElementById("maximum-value").value || Number.MAX_SAFE_INTEGER)
+
+    const lower = 0
+    const upper = maximumValue
+    const values = buildSampleData(lower, upper)
+
+    const acc = accumulateValuesIntoBucketsFunctional(logBase, bucketsPerMagnitude, maximumValue, values)
+    return {
+        buckets: Object.keys(acc),
+        data: Object.values(acc)
+    }
+}
+
+function buildChart (histogramKind) {
+    const { buckets, data } = buildDataFromInputs(histogramKind)
+    percentages = data.map(v => v * 100 / DATA_SAMPLE_COUNT)
 
     // Update chart legend
     const legend = document.getElementById("histogram-chart-legend")
@@ -105,69 +216,31 @@ function buildChart () {
     })
 }
 
-window.addEventListener("load", () => {
-    const searchParams = (new URL(document.location)).searchParams
-    const inputs = [
-        ...document.querySelectorAll("#histogram-simulator input"),
-        document.querySelector("#histogram-simulator select")
-    ]
+// !!!!!!!!!!!!!!!!!
+// !!! Utilities !!!
+// !!!!!!!!!!!!!!!!!
 
-    inputs.forEach(input => {
-        input.addEventListener("change", event => {
-            let element = event.target
-            // Change URL params when the form field changes
-            searchParams.set(element.name, element.value)
-            history.pushState(null, null, `?${searchParams.toString()}`)
-            // Rebuild chart everytime input changes
-            buildChart()
-        })
+function showCorrectFieldsBasedOnHistogramKind(kind) {
+    const functionalHistogramFields = document.getElementById("functional-props")
+    const preComputedHistogramFields = document.getElementById("pre-computed-props")
+    if (kind == "functional") {
+        functionalHistogramFields.style.display = "block"
+        preComputedHistogramFields.style.display = "none"
+    } else {
+        functionalHistogramFields.style.display = "none"
+        preComputedHistogramFields.style.display = "block"
+    }
+}
 
-        // Rebuild chart everytime the custom data text is changed
-        const customDataTextarea = document.querySelector("#custom-data-modal textarea")
-        customDataTextarea.addEventListener("change", () => buildChart())
+function setURLSearchParamFromInput(searchParams, input) {
+    searchParams.set(input.name, input.value)
+    history.pushState(null, null, `?${searchParams.toString()}`)
+}
 
-        // Load the data from the URL into the form fields
-        switch (input.type) {
-            case "radio":
-                if (searchParams.get(input.name) == input.value) {
-                    input.checked = true
-
-                    // We won't save the custom data in the URL,
-                    // if that is the value on load, we create dummy data
-                    if (input.value == "custom") {
-                        fillUpCustomDataWithDummyData()
-                    }
-                }
-                break
-            default:
-                let param = searchParams.get(input.name)
-                if (param) input.value = param
-                break
-        }
-    })
-
-    // Open custom data modal when custom data option is selected
-    const customDataInput = document.getElementById("custom-data-input-group")
-    customDataInput && customDataInput.addEventListener('click', () => {
-        customDataModalOverlay.style.display = "block"
-        fillUpCustomDataWithDummyData()
-    })
-
-    // Close modal when we click the overlay
-    const customDataModalOverlay = document.getElementById("custom-data-modal-overlay")
-    customDataModalOverlay && customDataModalOverlay.addEventListener('click', () => {
-        customDataModalOverlay.style.display = "none"
-    })
-    // We need to stop propagation for click events on the actual modal,
-    // so that clicking it doesn't close it
-    const customDataModal = document.getElementById("custom-data-modal")
-    customDataModal && customDataModal.addEventListener("click", event => event.stopPropagation())
-
-    // Build the chart once we are done loading field values
-    inputs.length > 0 && buildChart()
-})
-
-// Utilities
+function setInputValueFromSearchParam(searchParams, input) {
+    let param = searchParams.get(input.name)
+    if (param) input.value = param
+}
 
 function getWidestBucketWidth (buckets) {
     let widest = 0;
@@ -190,8 +263,8 @@ function parseCustomData () {
     }
 }
 
-function fillUpCustomDataWithDummyData () {
-    const { buckets } = buildDataFromInputs()
+function fillUpCustomDataWithDummyData (histogramKind) {
+    const { buckets } = buildDataFromInputs(histogramKind)
     const lowerBucket = buckets[0]
     const upperBucket = buckets[buckets.length - 1]
     const dummyData = normalRandomValues((lowerBucket + upperBucket) / 2, (upperBucket - lowerBucket) / 8, DATA_SAMPLE_COUNT)
@@ -235,8 +308,8 @@ function linearRange (min, max, count) {
     return ranges
 }
 
-// Accumulate an array of values into buckets
-function accumulateValuesIntoBuckets (buckets, values) {
+// Accumulate an array of values into buckets for histograms with pre-computed buckets
+function accumulateValuesIntoBucketsPreComputed (buckets, values) {
     let result = new Array(buckets.length).fill(0)
     for (const value of values) {
         let placed = false
@@ -251,6 +324,58 @@ function accumulateValuesIntoBuckets (buckets, values) {
         // thus it fits in the last bucket
         if (!placed) {
             result[result.length - 1]++
+        }
+    }
+
+    return result
+}
+
+// Based on glean-core/src/histograms/functional.rs
+// Accumulate an array of values into buckets for histograms with dinamically created buckets
+function accumulateValuesIntoBucketsFunctional (logBase, bucketsPerMagnitude, maximumValue, values) {
+    const exponent = Math.pow(logBase, 1 / bucketsPerMagnitude)
+
+    const sampleToBucketIndex = sample => Math.floor(log(sample + 1, exponent))
+    const bucketIndexToBucketMinimum = index => Math.floor(Math.pow(exponent, index))
+    const sampleToBucketMinimum = sample => {
+        let bucketMinimum
+        if (sample == 0) {
+            bucketMinimum = 0
+        } else {
+            const bucketIndex = sampleToBucketIndex(sample)
+            bucketMinimum = bucketIndexToBucketMinimum(bucketIndex)
+        }
+        return bucketMinimum
+    }
+
+    let result = {}
+    let min, max
+    for (let value of values) {
+        // Cap on the maximum value
+        if (value > maximumValue) {
+            value = maximumValue
+        }
+
+        const bucketMinimum = String(sampleToBucketMinimum(value))
+        if (!(bucketMinimum in result)) {
+            result[bucketMinimum] = 0
+        }
+        result[bucketMinimum]++
+
+        // Keep track of the max and min values accumulated,
+        // we will need them later
+        if (!min || value < min) min = value
+        if (!max || value > max) max = value
+    }
+
+    // Fill in missing buckets,
+    // this is based on the snapshot() function
+    const minBucket = sampleToBucketIndex(min);
+    const maxBucket = sampleToBucketIndex(max) + 1;
+    for (let idx = minBucket; idx <= maxBucket; idx++) {
+        let bucketMinimum = String(bucketIndexToBucketMinimum(idx));
+        if (!(bucketMinimum in result)) {
+            result[bucketMinimum] = 0
         }
     }
 
@@ -279,11 +404,10 @@ function normalRandomValues (mu, sigma, count) {
             value = z1
         }
         value = value * sigma + mu
-        if (value < 0) continue // Discard the current value if it is negative
 
         values.push(value)
     }
-    return values
+    return values.map(value => value >= 0 ? value : 0)
 }
 
 // Copied over and adapted
@@ -316,7 +440,7 @@ function logNormalRandomValues (mu, sigma, count) {
 
 function uniformValues (min, max, count) {
     let values = []
-    for (var i = 0; i < count; i++) {
+    for (var i = 0; i <= count; i++) {
         values.push(Math.random() * (max - min) + min);
     }
 
@@ -336,16 +460,21 @@ function formatNumber(number) {
             : Math.floor(Math.log(mag) / Math.log(10))
     const interval = Math.pow(10, Math.floor(exponent / 3) * 3)
     const units = {
-      1000: "k",
-      1000000: "M",
-      1000000000: "B",
-      1000000000000: "T"
+        1000: "k",
+        1000000: "M",
+        1000000000: "B",
+        1000000000000: "T"
     }
 
     if (interval in units) {
-      return Math.round(number * 100 / interval) / 100 + units[interval]
+        return Math.round(number * 100 / interval) / 100 + units[interval]
     }
 
     return Math.round(number * 100) / 100
-  }
+}
+
+// Arbitrary base log function, Javascript doesn't have one
+function log(number, base) {
+    return Math.log(number) / Math.log(base);
+}
 

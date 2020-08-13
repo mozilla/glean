@@ -9,7 +9,7 @@ That is, the function from a value \\( x \\) to a bucket index is:
 
 This makes them suitable for measuring memory sizes on a number of different scales without any configuration.
 
-> **Note** Check out how this bucketing algorithm would behave on our [Histogram Simulator](../../appendix/histograms.html)
+> **Note** Check out how this bucketing algorithm would behave on our [Histogram Simulator](../../appendix/histograms.html?kind=functional&maximum-value=1099511627776&data-options=log-normally-distributed&buckets-per-magnitude=16)
 
 ## Configuration
 
