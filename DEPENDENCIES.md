@@ -1295,8 +1295,11 @@ limitations under the License.
 
 The following text applies to code linked from these dependencies:
 
+* [ahash 0.3.8]( https://github.com/tkaitchuck/ahash )
 * [bitflags 1.2.1]( https://github.com/bitflags/bitflags )
 * [cfg-if 0.1.10]( https://github.com/alexcrichton/cfg-if )
+* [const-random 0.1.8]( https://github.com/tkaitchuck/constrandom )
+* [const-random-macro 0.1.8]( https://github.com/tkaitchuck/constrandom )
 * [env_logger 0.7.1]( https://github.com/sebasmagri/env_logger/ )
 * [failure 0.1.6]( https://github.com/rust-lang-nursery/failure )
 * [ffi-support 0.4.0]( https://github.com/mozilla/application-services )
@@ -1310,6 +1313,7 @@ The following text applies to code linked from these dependencies:
 * [num-traits 0.2.11]( https://github.com/rust-num/num-traits )
 * [once_cell 1.3.1]( https://github.com/matklad/once_cell )
 * [percent-encoding 2.1.0]( https://github.com/servo/rust-url/ )
+* [proc-macro-hack 0.5.18]( https://github.com/dtolnay/proc-macro-hack )
 * [proc-macro2 1.0.9]( https://github.com/alexcrichton/proc-macro2 )
 * [quote 1.0.2]( https://github.com/dtolnay/quote )
 * [serde 1.0.104]( https://github.com/serde-rs/serde )
@@ -2698,6 +2702,70 @@ The following text applies to code linked from these dependencies:
 MIT License
 
 Copyright (c) 2017 Frommi
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+```
+## MIT License
+<span id="MIT"></span>
+
+The following text applies to code linked from these dependencies:
+
+* [dashmap 3.11.9]( https://github.com/xacrimon/dashmap )
+
+
+```
+MIT License
+
+Copyright (c) 2019 Acrimon
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+```
+## MIT License
+<span id="MIT"></span>
+
+The following text applies to code linked from these dependencies:
+
+* [oslog 0.0.3]( https://github.com/steven-joruk/oslog )
+
+
+```
+MIT License
+
+Copyright (c) 2020 Steven Joruk
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

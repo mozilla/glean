@@ -41,5 +41,8 @@ version = "32.0.0"
 [target.'cfg(target_os = "android")'.dependencies]
 android_logger = { version = "0.8.6", default-features = false }
 
+[target.'cfg(target_os = "ios")'.dependencies]
+oslog = { version = "0.0.3", default-features = false, features = ["logger"] }
+
 [target.'cfg(not(target_os = "android"))'.dependencies]
 env_logger = { version = "0.7.1", default-features = false, features = ["termcolor", "atty", "humantime"] }
