@@ -74,13 +74,13 @@ if (timeUnitSelect) {
 const customDataInput = document.getElementById("custom-data-input-group");
 customDataInput && customDataInput.addEventListener('click', () => {
     customDataModalOverlay.style.display = "block";
-    const customDataTextarea = document.querySelector("#custom-data-modal textarea")
-    fillUpTextareaWithDummyData(customDataTextarea);
+    const customDataTextarea = document.querySelector("#custom-data-modal textarea");
+    if (!customDataTextarea.value) fillUpTextareaWithDummyData(customDataTextarea);
 })
 
 // Rebuild chart everytime the custom data text is changed
 const customDataTextarea = document.querySelector("#custom-data-modal textarea");
-customDataTextarea && customDataTextarea.addEventListener("change", () => buildChart(TRANSFORMATION));
+customDataTextarea && customDataTextarea.addEventListener("change", () => buildChartFromInputs());
 
 // Close modal when we click the overlay
 const customDataModalOverlay = document.getElementById("custom-data-modal-overlay");
@@ -109,7 +109,8 @@ options.forEach(option => {
         // We won't save the custom data in the URL,
         // if that is the value on load, we create dummy data
         if (option.value == "custom") {
-            fillUpCustomDataWithDummyData();
+            const customDataTextarea = document.querySelector("#custom-data-modal textarea");
+            fillUpTextareaWithDummyData(customDataTextarea);
         }
     }
 });

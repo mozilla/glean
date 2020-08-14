@@ -92,9 +92,14 @@ function buildChart (kind, props, dataOption, customData, legend, chartSpace, tr
                         const lastIndex = percentages.length - 1
                         const percentage = percentages[index].toFixed(2)
                         const value = formatNumber(data[index])
-                        return index == 0 ? `${value} samples (${percentage}%) where sample value < ${buckets[0]} (underflow)`
-                            : index == lastIndex ? `${value} samples (${percentage}%) where sample value > ${buckets[lastIndex]} (overflow)`
-                            : `${value} samples (${percentage}%) where ${buckets[index - 1]} ≤ sample value < ${buckets[index]}`
+                        if (kind == "functional") {
+                            return index == lastIndex ? `${value} samples (${percentage}%) where sample value > ${buckets[lastIndex]} (overflow)`
+                                : `${value} samples (${percentage}%) where ${buckets[index]} ≤ sample value < ${buckets[index + 1]}`
+                        } else {
+                            return index == 0 ? `${value} samples (${percentage}%) where sample value < ${buckets[0]} (underflow)`
+                                : index == lastIndex ? `${value} samples (${percentage}%) where sample value > ${buckets[lastIndex]} (overflow)`
+                                : `${value} samples (${percentage}%) where ${buckets[index]} ≤ sample value < ${buckets[index + 1]}`
+                        }
                     },
                 }
             }
@@ -357,7 +362,7 @@ function accumulateValuesIntoBucketsPreComputed (buckets, values) {
 }
 
 /**
- * Accumulate an array of values into buckets for histograms with dinamically created buckets.abstract
+ * Accumulate an array of values into buckets for histograms with dinamically created buckets.
  *
  * For these types of histograms bucketing is performed by a function, rather than pre-computed buckets.
  * The bucket index of a given sample is determined with the following function:
@@ -530,7 +535,7 @@ function uniformValues (min, max, count) {
  *
  * @param {Number} number The number to format
  *
- * @return {Number} The formatted number
+ * @return {String} The formatted number
  */
 function formatNumber(number) {
     if (number == Infinity) return "Infinity";
