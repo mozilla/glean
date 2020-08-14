@@ -115,10 +115,11 @@ options.forEach(option => {
     }
 });
 
-const inputs = [
+const histogramKindSelector = document.querySelector("#histogram-props select#kind")
+const inputs = histogramKindSelector ? [
     ...document.querySelectorAll("#histogram-props input"),
     document.querySelector("#histogram-props select#kind")
-];
+] : [];
 
 inputs.forEach(input => {
     setInputValueFromSearchParam(input);

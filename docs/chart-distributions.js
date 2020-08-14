@@ -21,13 +21,18 @@ const DATA_SAMPLE_COUNT = 20000;
  * @param {HTMLElement} chartSpace The HTML element that should contain the chart
  * @param {function} transformation Option function to be applied to generated values
  */
-function buildChart (kind, props, dataOption, customData, legend, chartSpace, transformation) {
-    const { buckets, data } = buildData(kind, props, dataOption, customData, transformation);
+function buildChart (kind, props, dataOption, customData, chartLegend, chartSpace, transformation) {
+    const { buckets, data, mean } = buildData(kind, props, dataOption, customData, transformation);
     const percentages = data.map(v => v * 100 / DATA_SAMPLE_COUNT);
 
     if (kind != "functional") {
-        // Update chart legend
-        legend.innerHTML = `Using these parameters, the widest bucket's width is <b>${getWidestBucketWidth(buckets)}</b>.`;
+        chartLegend.innerHTML = `Using these parameters, the widest bucket's width is <b>${getWidestBucketWidth(buckets)}</b>.`;
+    } else {
+        chartLegend.innerHTML = `
+            Using these parameters, the maximum bucket is <b>${buckets[buckets.length - 1]}</b>.
+            <br /><br />
+            The mean of the recorded data is <b>${formatNumber(mean)}</b>.
+        `;
     }
 
     // Clear chart for re-drawing,
@@ -56,6 +61,7 @@ function buildChart (kind, props, dataOption, customData, legend, chartSpace, tr
             scales: {
                 yAxes: [{
                     ticks: {
+                        beginAtZero: true,
                         callback: value => `${value}%`
                     },
                     scaleLabel: {
@@ -68,6 +74,7 @@ function buildChart (kind, props, dataOption, customData, legend, chartSpace, tr
                         autoSkip: false,
                         minRotation: 50,
                         maxRotation: 50,
+                        beginAtZero: true,
                         callback: (value, index, values) => {
                             const interval = Math.floor(values.length / 25)
                             if (interval > 0 && index % interval != 0) {
@@ -166,7 +173,8 @@ function buildDataPreComputed (kind, props, dataOption, customData, transformati
 
     const lowerBucket = buckets[0];
     const upperBucket = buckets[buckets.length - 1];
-    const values = buildSampleData(dataOption, customData, lowerBucket, upperBucket).map(v => transformation(v));
+    const values = buildSampleData(dataOption, customData, lowerBucket, upperBucket)
+        .map(v => transformation && transformation(v));
 
     return {
         buckets,
@@ -187,11 +195,13 @@ function buildDataPreComputed (kind, props, dataOption, customData, transformati
  */
 function buildDataFunctional(props, dataOption, customData, transformation) {
     const { logBase, bucketsPerMagnitude, maximumValue } = props;
-    const values = buildSampleData(dataOption, customData).map(v => transformation(v));
+    const values = buildSampleData(dataOption, customData)
+        .map(v => transformation && transformation(v));
     const acc = accumulateValuesIntoBucketsFunctional(logBase, bucketsPerMagnitude, maximumValue, values);
     return {
         buckets: Object.keys(acc),
-        data: Object.values(acc)
+        data: Object.values(acc),
+        mean: values.reduce((sum, current) => sum + current) / values.length
     };
 }
 

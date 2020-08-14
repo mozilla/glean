@@ -208,6 +208,7 @@ Assert.Equal(1, Memory.heapAllocated.TestGetNumRecordedErrors(ErrorType.InvalidV
 <div id="simulator-container">
     <div id="histogram-chart-container">
         <div id="histogram-chart"></div>
+        <p id="histogram-chart-legend"><p>
     </div>
     <div id="data-options">
         <h3>Data options</h3>
@@ -260,4 +261,5 @@ Assert.Equal(1, Memory.heapAllocated.TestGetNumRecordedErrors(ErrorType.InvalidV
     </div>
 </div>
 
-> **Note** The samples created by the automatically generated data options are always between 0-100.
+> **Note** The data _provided_, is assumed to be in the configured memory unit. The data _recorded_, on the other hand, is always in **bytes**.
+> This means that, if the configured memory unit is not `byte`, the data will be transformed before being recorded. Notice this, by using the select field above to change the memory unit and see the mean of the data recorded changing.
