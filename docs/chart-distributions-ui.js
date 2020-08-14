@@ -8,7 +8,7 @@
 //
 // The current use cases are memory distributions and timing distribution,
 // which may receive the values in a given unit, but transform them to a base one upon recording
-let TRANSFORMATION
+let TRANSFORMATION;
 
 function memoryUnitToByte(unit) {
     switch(unit) {
