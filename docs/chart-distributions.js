@@ -22,8 +22,7 @@ const DATA_SAMPLE_COUNT = 20000;
  * @param {function} transformation Option function to be applied to generated values
  */
 function buildChart (kind, props, dataOption, customData, chartLegend, chartSpace, transformation) {
-    const { buckets, data, mean } = buildData(kind, props, dataOption, customData, transformation);
-    const percentages = data.map(v => v * 100 / DATA_SAMPLE_COUNT);
+    const { buckets, data, percentages, mean } = buildData(kind, props, dataOption, customData, transformation);
 
     if (kind != "functional") {
         chartLegend.innerHTML = `Using these parameters, the widest bucket's width is <b>${getWidestBucketWidth(buckets)}</b>.`;
@@ -176,9 +175,11 @@ function buildDataPreComputed (kind, props, dataOption, customData, transformati
     const values = buildSampleData(dataOption, customData, lowerBucket, upperBucket)
         .map(v => transformation && transformation(v));
 
+    const data = accumulateValuesIntoBucketsPreComputed(buckets, values)
     return {
+        data,
         buckets,
-        data: accumulateValuesIntoBucketsPreComputed(buckets, values),
+        percentages: data.map(v => v * 100 / values.length),
     };
 }
 
@@ -198,9 +199,11 @@ function buildDataFunctional(props, dataOption, customData, transformation) {
     const values = buildSampleData(dataOption, customData)
         .map(v => transformation && transformation(v));
     const acc = accumulateValuesIntoBucketsFunctional(logBase, bucketsPerMagnitude, maximumValue, values);
+    const data = Object.values(acc)
     return {
+        data,
         buckets: Object.keys(acc),
-        data: Object.values(acc),
+        percentages: data.map(v => v * 100 / values.length),
         mean: values.reduce((sum, current) => sum + current) / values.length
     };
 }
