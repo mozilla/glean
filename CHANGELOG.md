@@ -1,9 +1,8 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v32.0.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v32.1.0...main)
 
 * General
-  * The upload rate limiter has been changed from 10 pings per minute to 15 pings per minute.
   * Move logic to limit the number of retries on ping uploading "recoverable failures" to glean-core. ([#1120](https://github.com/mozilla/glean/pull/1120))
     * The functionality to limit the number of retries in these cases was introduced to the Glean SDK in `v31.1.0`. The work done now was to move that logic to the glean-core in order to avoid code duplication throughout the language bindings.
   * Update `glean_parser` to `v1.28.3`
@@ -26,6 +25,13 @@
   * Fix a startup crash on some Android 8 (SDK=25) devices, due to a [bug in the Java compiler](https://issuetracker.google.com/issues/110848122#comment17).
 * iOS
   * Changed logging to use [`OSLog`](https://developer.apple.com/documentation/os/logging) rather than a mix of `NSLog` and `print`. ([#1133](https://github.com/mozilla/glean/pull/1133))
+
+# v32.1.0 (2020-08-17)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v32.0.0...v32.1.0)
+
+* General
+  * The upload rate limiter has been changed from 10 pings per minute to 15 pings per minute.
 
 # v32.0.0 (2020-08-03)
 
