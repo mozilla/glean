@@ -80,12 +80,12 @@ def test_500_error_submit(safe_httpserver, monkeypatch):
     Glean._submit_ping_by_name("baseline")
     ProcessDispatcher._wait_for_last_process()
 
-    # This kind of recoverable error will be tried 10 times
-    assert 10 == len(safe_httpserver.requests)
+    # This kind of recoverable error will be tried 15 times
+    assert 15 == len(safe_httpserver.requests)
 
     metric = get_upload_failure_metric()
     assert not metric["status_code_4xx"].test_has_value()
-    assert 10 == metric["status_code_5xx"].test_get_value()
+    assert 15 == metric["status_code_5xx"].test_get_value()
 
 
 def test_500_error_submit_concurrent_writing(slow_httpserver, monkeypatch):
@@ -113,12 +113,12 @@ def test_500_error_submit_concurrent_writing(slow_httpserver, monkeypatch):
         counter.add()
         times += 1
 
-    # This kind of recoverable error will be tried 10 times
-    assert 10 == len(slow_httpserver.requests)
+    # This kind of recoverable error will be tried 15 times
+    assert 15 == len(slow_httpserver.requests)
 
     metric = get_upload_failure_metric()
     assert not metric["status_code_4xx"].test_has_value()
-    assert 10 == metric["status_code_5xx"].test_get_value()
+    assert 15 == metric["status_code_5xx"].test_get_value()
 
     assert times > 0
     assert times == counter.test_get_value()
