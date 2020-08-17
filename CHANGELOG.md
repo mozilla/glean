@@ -3,6 +3,7 @@
 [Full changelog](https://github.com/mozilla/glean/compare/v32.0.0...main)
 
 * General
+  * The upload rate limiter has been changed from 10 pings per minute to 15 pings per minute.
   * Move logic to limit the number of retries on ping uploading "recoverable failures" to glean-core. ([#1120](https://github.com/mozilla/glean/pull/1120))
     * The functionality to limit the number of retries in these cases was introduced to the Glean SDK in `v31.1.0`. The work done now was to move that logic to the glean-core in order to avoid code duplication throughout the language bindings.
   * Update `glean_parser` to `v1.28.3`
