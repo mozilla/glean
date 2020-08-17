@@ -1,0 +1,29 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+loader: taskgraph.loader.transform:loader
+
+transforms:
+  - taskgraph.transforms.job:transforms
+  - taskgraph.transforms.task:transforms
+
+job-defaults:
+  worker-type: b-linux
+  worker:
+    docker-image: {in-tree: linux}
+    max-run-time: 1800
+  run:
+    using: run-commands
+
+jobs:
+  beta-tests:
+    description: 'Rust (beta): Tests'
+    run:
+      pre-commands:
+        - ['.', './taskcluster/scripts/rustup-setup.sh', 'beta']
+        - ['rustup', 'component', 'add', 'clippy']
+      commands:
+        - ['cargo', 'test', '--all', '--verbose']
+        - ['cargo', 'clippy', '--version']
+        - ['cargo', 'clippy', '--all', '--all-targets', '--all-features', '--', '-D', 'warnings']
