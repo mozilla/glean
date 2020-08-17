@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v32.0.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v32.1.0...main)
+
+# v32.1.0 (2020-08-17)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v32.0.0...v32.1.0)
 
 # v32.0.0 (2020-08-03)
 
