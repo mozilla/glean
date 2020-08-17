@@ -6,6 +6,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v32.0.0...v32.1.0)
 
+* General
+  * The upload rate limiter has been changed from 10 pings per minute to 15 pings per minute.
+
 # v32.0.0 (2020-08-03)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v31.6.0...v32.0.0)
