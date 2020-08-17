@@ -202,7 +202,7 @@ impl Glean {
         let mut upload_manager =
             PingUploadManager::new(&cfg.data_path, &cfg.language_binding_name, false);
         upload_manager.set_rate_limiter(
-            /* seconds per interval */ 60, /* max tasks per interval */ 10,
+            /* seconds per interval */ 60, /* max tasks per interval */ 15,
         );
 
         Ok(Self {
