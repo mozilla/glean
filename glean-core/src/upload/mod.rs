@@ -31,6 +31,9 @@ mod result;
 /// Limiting this is necessary to avoid infinite loops on requesting upload tasks.
 const MAX_RECOVERABLE_FAILURES_PER_UPLOADING_WINDOW: u32 = 3;
 
+/// The maximum PingUploadTask::Wait allowed in a row.
+const MAX_WAIT_ATTEMPTS: u32 = 3;
+
 // The maximum size in bytes a ping body may have to be eligible for upload.
 const PING_BODY_MAX_SIZE: usize = 1024 * 1024; // 1 MB
 
@@ -127,8 +130,9 @@ pub enum PingUploadTask {
     Wait,
     /// A flag signaling that requester doesn't need to request any more upload tasks at this moment.
     ///
-    /// There are two possibilities for this scenario:
+    /// There are three possibilities for this scenario:
     /// * Pending pings queue is empty, no more pings to request;
+    /// * Requester has gotten more than three `PingUploadTask::Wait` responses in a row;
     /// * Requester has reported more than MAX_RECOVERABLE_FAILURES_PER_UPLOADING_WINDOW
     ///   recoverable upload failures on the same uploading window[1]
     ///   and should stop requesting at this moment.
@@ -151,6 +155,8 @@ pub struct PingUploadManager {
     cached_pings: Arc<RwLock<PingPayloadsByDirectory>>,
     /// The number of upload failures for the current uploading window.
     recoverable_failure_count: AtomicU32,
+    /// The number or times in a row a user has received a `PingUploadTask::Wait` response.
+    wait_attempt_count: AtomicU32,
     /// A ping counter to help rate limit the ping uploads.
     ///
     /// To keep resource usage in check,
@@ -215,13 +221,14 @@ impl PingUploadManager {
             processed_pending_pings,
             cached_pings,
             recoverable_failure_count: AtomicU32::new(0),
+            wait_attempt_count: AtomicU32::new(0),
             rate_limiter: None,
             language_binding_name: language_binding_name.into(),
             upload_metrics: UploadMetrics::new(),
         }
     }
 
-    fn has_processed_pings_dir(&self) -> bool {
+    fn processed_pending_pings(&self) -> bool {
         self.processed_pending_pings.load(Ordering::SeqCst)
     }
 
@@ -229,8 +236,8 @@ impl PingUploadManager {
         self.recoverable_failure_count.load(Ordering::SeqCst)
     }
 
-    fn reset_recoverable_failure_count(&self) {
-        self.recoverable_failure_count.store(0, Ordering::SeqCst);
+    fn wait_attempt_count(&self) -> u32 {
+        self.wait_attempt_count.load(Ordering::SeqCst)
     }
 
     /// Attempts to build a ping request from a ping file payload.
@@ -428,11 +435,24 @@ impl PingUploadManager {
     }
 
     fn get_upload_task_internal(&self, glean: &Glean, log_ping: bool) -> PingUploadTask {
-        if !self.has_processed_pings_dir() {
+        // Helper function to return to decide whether to return PingUploadTask::Wait or PingUploadTask::Done.
+        //
+        // We want to limit the amount of PingUploadTask::Wait returned in a row,
+        // in case we reach MAX_WAIT_ATTEMPTS we want to actually return PingUploadTask::Done
+        let wait_or_done = || {
+            self.wait_attempt_count.fetch_add(1, Ordering::SeqCst);
+            if self.wait_attempt_count() > MAX_WAIT_ATTEMPTS {
+                PingUploadTask::Done
+            } else {
+                PingUploadTask::Wait
+            }
+        };
+
+        if !self.processed_pending_pings() {
             log::info!(
                 "Tried getting an upload task, but processing is ongoing. Will come back later."
             );
-            return PingUploadTask::Wait;
+            return wait_or_done();
         }
 
         // This is a no-op in case there are no cached pings.
@@ -442,7 +462,6 @@ impl PingUploadManager {
             log::warn!(
                 "Reached maximum recoverable failures for the current uploading window. You are done."
             );
-
             return PingUploadTask::Done;
         }
 
@@ -460,7 +479,7 @@ impl PingUploadManager {
                         log::info!(
                             "Tried getting an upload task, but we are throttled at the moment."
                         );
-                        return PingUploadTask::Wait;
+                        return wait_or_done();
                     }
                 }
 
@@ -499,8 +518,15 @@ impl PingUploadManager {
     /// The next [`PingUploadTask`](enum.PingUploadTask.html).
     pub fn get_upload_task(&self, glean: &Glean, log_ping: bool) -> PingUploadTask {
         let task = self.get_upload_task_internal(glean, log_ping);
-        if task == PingUploadTask::Done || task == PingUploadTask::Wait {
-            self.reset_recoverable_failure_count()
+
+        if task != PingUploadTask::Wait && self.wait_attempt_count() > 0 {
+            self.wait_attempt_count.store(0, Ordering::SeqCst);
+        }
+
+        if (task == PingUploadTask::Wait || task == PingUploadTask::Done)
+            && self.recoverable_failure_count() > 0
+        {
+            self.recoverable_failure_count.store(0, Ordering::SeqCst);
         }
 
         task
@@ -1260,5 +1286,70 @@ mod test {
                 .test_get_value(&glean, "metrics")
                 .unwrap()
         )
+    }
+
+    #[test]
+    fn maximum_wait_attemps_in_enforced() {
+        let (glean, _) = new_glean(None);
+
+        // Create a new upload_manager
+        let dir = tempfile::tempdir().unwrap();
+        let mut upload_manager = PingUploadManager::new(dir.path(), "Testing", false);
+
+        // Wait for processing of pending pings directory to finish.
+        while upload_manager.get_upload_task(&glean, false) == PingUploadTask::Wait {
+            thread::sleep(Duration::from_millis(10));
+        }
+
+        // Add a rate limiter to the upload mangager with max of 1 ping 5secs.
+        //
+        // We arbitrarily set the maximum pings per interval to a very low number,
+        // when the rate limiter reaches it's limit get_upload_task returns a PingUploadTask::Wait,
+        // which will allow us to test the limitations around returning too many of those in a row.
+        let secs_per_interval = 5;
+        let max_pings_per_interval = 1;
+        upload_manager.set_rate_limiter(secs_per_interval, max_pings_per_interval);
+
+        // Enqueue two pings
+        upload_manager.enqueue_ping(&glean, &Uuid::new_v4().to_string(), PATH, "", None);
+        upload_manager.enqueue_ping(&glean, &Uuid::new_v4().to_string(), PATH, "", None);
+
+        // Get the first ping, it should be returned normally.
+        match upload_manager.get_upload_task(&glean, false) {
+            PingUploadTask::Upload(_) => {}
+            _ => panic!("Expected upload manager to return the next request!"),
+        }
+
+        // Try to get the next ping,
+        // we should be throttled and thus get a PingUploadTask::Wait.
+        // Check that we are indeed allowed to get this response as many times as expected.
+        for _ in 0..MAX_WAIT_ATTEMPTS {
+            assert_eq!(
+                upload_manager.get_upload_task(&glean, false),
+                PingUploadTask::Wait
+            );
+        }
+
+        // Check that after we get PingUploadTask::Wait the allowed number of times,
+        // we then get PingUploadTask::Done.
+        assert_eq!(
+            upload_manager.get_upload_task(&glean, false),
+            PingUploadTask::Done
+        );
+
+        // Wait for the rate limiter to allow upload tasks again.
+        thread::sleep(Duration::from_secs(secs_per_interval));
+
+        // Check that we are allowed again to get pings.
+        match upload_manager.get_upload_task(&glean, false) {
+            PingUploadTask::Upload(_) => {}
+            _ => panic!("Expected upload manager to return the next request!"),
+        }
+
+        // And once we are done we don't need to wait anymore.
+        assert_eq!(
+            upload_manager.get_upload_task(&glean, false),
+            PingUploadTask::Done
+        );
     }
 }
