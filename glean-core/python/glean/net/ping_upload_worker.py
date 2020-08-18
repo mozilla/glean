@@ -22,10 +22,6 @@ from .._process_dispatcher import ProcessDispatcher
 log = logging.getLogger(__name__)
 
 
-# How many times to attempt waiting when told to by glean-core's upload API.
-MAX_WAIT_ATTEMPTS = 3
-
-
 class PingUploadWorker:
     @classmethod
     def process(cls):
@@ -147,12 +143,7 @@ def _process(data_dir: Path, application_id: str, configuration) -> bool:
                 incoming_task, upload_result.to_ffi()
             )
         elif tag == UploadTaskTag.WAIT:
-            # Try not to be stuck waiting forever.
-            if wait_attempts < MAX_WAIT_ATTEMPTS:
-                wait_attempts += 1
-                time.sleep(1)
-            else:
-                return False
+            time.sleep(1)
         elif tag == UploadTaskTag.DONE:
             return True
 
