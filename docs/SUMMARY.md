@@ -47,6 +47,7 @@
 - [Metrics collected by the Glean SDK](user/collected-metrics/metrics.md)
 - [Developing the Glean SDK](dev/index.md)
     - [Testing](dev/testing.md)
+    - [Continuous Integration](dev/ci.md)
     - [Developing documentation](dev/docs.md)
     - [Upgrading glean_parser](dev/upgrading-glean-parser.md)
     - [Android bindings](dev/android/index.md)
