@@ -479,7 +479,7 @@ function normalRandomValues (mu, sigma, count) {
 
         values.push(value);
     }
-    return values.map(value => value >= 0 ? value : 0);
+    return values.map(value => value >= 0 ? Math.floor(value) : 0);
 }
 
 /**
@@ -518,7 +518,7 @@ function logNormalRandomValues (mu, sigma, count) {
 
         values.push(value);
     }
-    return values.map(value => value >= 0 ? value : 0);
+    return values.map(value => value >= 0 ? Math.floor(value) : 0);
 }
 
 /**
