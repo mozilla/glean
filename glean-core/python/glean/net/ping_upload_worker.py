@@ -110,8 +110,6 @@ def _process(data_dir: Path, application_id: str, configuration) -> bool:
             log.error("Couldn't initialize Glean in subprocess")
             sys.exit(1)
 
-    wait_attempts = 0
-
     # Limits are enforced by glean-core to avoid an inifinite loop here.
     # Whenever a limit is reached, this binding will receive `UploadTaskTag.DONE` and step out.
     while True:
