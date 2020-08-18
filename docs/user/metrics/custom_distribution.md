@@ -132,7 +132,7 @@ assertEquals(1, Graphics.checkerboardPeak.testGetNumRecordedErrors(ErrorType.Inv
             </select>
         </div>
         <div class="input-group">
-            <label for="lower-bound">Range mininum (<code>range_min</code>)</label>
+            <label for="lower-bound">Range minimum (<code>range_min</code>)</label>
             <input name="lower-bound" id="lower-bound" type="number" value="1" />
         </div>
         <div class="input-group">
