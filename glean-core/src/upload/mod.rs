@@ -328,49 +328,51 @@ impl PingUploadManager {
             .write()
             .expect("Can't write to pending pings cache.");
 
-        let mut pending_pings_directory_size: u64 = 0;
-        let mut deleting = false;
-        // The pending pings vector is sorted by date in ascending order (oldest -> newest).
-        // We need to calculate the size of the pending pings directory
-        // and delete the **oldest** pings in case quota is reached.
-        // Thus, we reverse the order of the pending pings vector,
-        // so that we iterate in descending order (newest -> oldest).
-        cached_pings.pending_pings.reverse();
-        cached_pings.pending_pings.retain(|(file_size, (document_id, _, _, _))| {
-            pending_pings_directory_size += file_size;
-            if pending_pings_directory_size > quota {
-                log::warn!(
-                    "Pending pings directory has reached the size quota of {} bytes, outstanding pings will be deleted.",
-                    PENDING_PINGS_DIRECTORY_QUOTA
-                );
-                deleting = true;
+        if cached_pings.len() > 0 {
+            let mut pending_pings_directory_size: u64 = 0;
+            let mut deleting = false;
+            // The pending pings vector is sorted by date in ascending order (oldest -> newest).
+            // We need to calculate the size of the pending pings directory
+            // and delete the **oldest** pings in case quota is reached.
+            // Thus, we reverse the order of the pending pings vector,
+            // so that we iterate in descending order (newest -> oldest).
+            cached_pings.pending_pings.reverse();
+            cached_pings.pending_pings.retain(|(file_size, (document_id, _, _, _))| {
+                pending_pings_directory_size += file_size;
+                if pending_pings_directory_size > quota {
+                    log::warn!(
+                        "Pending pings directory has reached the size quota of {} bytes, outstanding pings will be deleted.",
+                        PENDING_PINGS_DIRECTORY_QUOTA
+                    );
+                    deleting = true;
+                }
+
+                if deleting && self.directory_manager.delete_file(&document_id) {
+                    self.upload_metrics
+                        .deleted_pings_after_quota_hit
+                        .add(glean, 1);
+                    return false;
+                }
+
+                true
+            });
+            // After calculating the size of the pending pings directory,
+            // we record the calculated number and reverse the pings array back for enqueueing.
+            cached_pings.pending_pings.reverse();
+            self.upload_metrics
+                .pending_pings_directory_size
+                .accumulate(glean, pending_pings_directory_size as u64);
+
+            // Enqueue the remaining pending pings and
+            // enqueue all deletion-request pings.
+            let deletion_request_pings = cached_pings.deletion_request_pings.drain(..);
+            for (_, (document_id, path, body, headers)) in deletion_request_pings {
+                self.enqueue_ping(glean, &document_id, &path, &body, headers);
             }
-
-            if deleting && self.directory_manager.delete_file(&document_id) {
-                self.upload_metrics
-                    .deleted_pings_after_quota_hit
-                    .add(glean, 1);
-                return false;
+            let pending_pings = cached_pings.pending_pings.drain(..);
+            for (_, (document_id, path, body, headers)) in pending_pings {
+                self.enqueue_ping(glean, &document_id, &path, &body, headers);
             }
-
-            true
-        });
-        // After calculating the size of the pending pings directory,
-        // we record the calculated number and reverse the pings array back for enqueueing.
-        cached_pings.pending_pings.reverse();
-        self.upload_metrics
-            .pending_pings_directory_size
-            .accumulate(glean, pending_pings_directory_size as u64);
-
-        // Enqueue the remaining pending pings and
-        // enqueue all deletion-request pings.
-        let deletion_request_pings = cached_pings.deletion_request_pings.drain(..);
-        for (_, (document_id, path, body, headers)) in deletion_request_pings {
-            self.enqueue_ping(glean, &document_id, &path, &body, headers);
-        }
-        let pending_pings = cached_pings.pending_pings.drain(..);
-        for (_, (document_id, path, body, headers)) in pending_pings {
-            self.enqueue_ping(glean, &document_id, &path, &body, headers);
         }
     }
 
@@ -432,6 +434,8 @@ impl PingUploadManager {
             );
             return PingUploadTask::Wait;
         }
+
+        // This is a no-op in case there are no cached pings.
         self.enqueue_cached_pings(glean, PENDING_PINGS_DIRECTORY_QUOTA);
 
         if self.recoverable_failure_count() >= MAX_RECOVERABLE_FAILURES_PER_UPLOADING_WINDOW {

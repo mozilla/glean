@@ -34,6 +34,11 @@ impl PingPayloadsByDirectory {
         self.deletion_request_pings
             .extend(other.deletion_request_pings);
     }
+
+    // Get the sum of the number of deletion request and regular pending pings.
+    pub fn len(&self) -> usize {
+        self.pending_pings.len() + self.deletion_request_pings.len()
+    }
 }
 
 /// Gets the file name from a path as a &str.
