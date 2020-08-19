@@ -116,7 +116,7 @@ impl EventDatabase {
     ///
     /// # Returns
     ///
-    /// Wether at least one ping was generated.
+    /// Whether at least one ping was generated.
     pub fn flush_pending_events_on_startup(&self, glean: &Glean) -> bool {
         match self.load_events_from_disk() {
             Ok(_) => self.send_all_events(glean),

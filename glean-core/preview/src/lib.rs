@@ -194,7 +194,7 @@ pub fn register_ping_type(ping: &metrics::PingType) {
 ///
 /// # Returns
 ///
-/// Wether the ping was successfully assembled and queued.
+/// Whether the ping was successfully assembled and queued.
 pub fn submit_ping(ping: &metrics::PingType, reason: Option<&str>) -> bool {
     submit_ping_by_name(&ping.name, reason)
 }
@@ -205,7 +205,7 @@ pub fn submit_ping(ping: &metrics::PingType, reason: Option<&str>) -> bool {
 ///
 /// # Returns
 ///
-/// Wether the ping was succesfully assembled and queued.
+/// Whether the ping was succesfully assembled and queued.
 pub fn submit_ping_by_name(ping: &str, reason: Option<&str>) -> bool {
     with_glean(|glean| glean.submit_ping_by_name(ping, reason).unwrap_or(false))
 }

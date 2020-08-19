@@ -108,7 +108,7 @@ impl PingDirectoryManager {
     ///
     /// # Returns
     ///
-    /// Wether the file was successfully deleted.
+    /// Whether the file was successfully deleted.
     ///
     /// # Panics
     ///

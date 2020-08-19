@@ -328,7 +328,7 @@ impl Glean {
     ///
     /// # Returns
     ///
-    /// Wether at least one ping was generated.
+    /// Whether at least one ping was generated.
     pub fn on_ready_to_submit_pings(&self) -> bool {
         self.event_data_store.flush_pending_events_on_startup(&self)
     }
@@ -350,7 +350,7 @@ impl Glean {
     ///
     /// # Returns
     ///
-    /// Wether the flag was different from the current value,
+    /// Whether the flag was different from the current value,
     /// and actual work was done to clear or reinstate metrics.
     pub fn set_upload_enabled(&mut self, flag: bool) -> bool {
         log::info!("Upload enabled: {:?}", flag);
@@ -829,7 +829,7 @@ impl Glean {
     ///
     /// # Returns
     ///
-    /// Wether the experiment is active.
+    /// Whether the experiment is active.
     pub fn test_is_experiment_active(&self, experiment_id: String) -> bool {
         self.test_get_experiment_data_as_json(experiment_id)
             .is_some()
