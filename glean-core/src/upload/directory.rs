@@ -108,7 +108,7 @@ impl PingDirectoryManager {
     ///
     /// # Returns
     ///
-    /// Returns `true` if the file was deleted succesfully and `false` otherwise.
+    /// Wether the file was successfully deleted.
     ///
     /// # Panics
     ///
@@ -195,8 +195,7 @@ impl PingDirectoryManager {
     ///
     /// # Returns
     ///
-    /// Returns a vector of tuples with the file size
-    /// and payload of each ping file in the directory.
+    /// A vector of tuples with the file size and payload of each ping file in the directory.
     fn process_dir(&self, dir: &Path) -> Vec<(u64, PingPayload)> {
         log::info!("Processing persisted pings.");
 

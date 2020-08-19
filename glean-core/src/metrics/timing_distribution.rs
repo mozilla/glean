@@ -144,7 +144,7 @@ impl TimingDistributionMetric {
     ///
     /// # Returns
     ///
-    /// Returns a unique `TimerId` for the new timer.
+    /// A unique `TimerId` for the new timer.
     pub fn set_start(&mut self, start_time: u64) -> TimerId {
         self.timings.set_start(start_time)
     }

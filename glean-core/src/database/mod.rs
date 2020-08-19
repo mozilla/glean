@@ -109,8 +109,7 @@ impl Database {
     ///
     /// # Returns
     ///
-    /// Returns a String representing the location, in the database, data must
-    /// be written or read from.
+    /// A string representing the location in the database.
     fn get_storage_key(storage_name: &str, metric_key: Option<&str>) -> String {
         match metric_key {
             Some(k) => format!("{}#{}", storage_name, k),

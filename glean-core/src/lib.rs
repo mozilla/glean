@@ -325,7 +325,7 @@ impl Glean {
     ///
     /// # Returns
     ///
-    /// `true` if at least one ping was generated, `false` otherwise.
+    /// Wether at least one ping was generated.
     pub fn on_ready_to_submit_pings(&self) -> bool {
         self.event_data_store.flush_pending_events_on_startup(&self)
     }
@@ -347,7 +347,7 @@ impl Glean {
     ///
     /// # Returns
     ///
-    /// Returns true when the flag was different from the current value,
+    /// Wether the flag was different from the current value,
     /// and actual work was done to clear or reinstate metrics.
     pub fn set_upload_enabled(&mut self, flag: bool) -> bool {
         log::info!("Upload enabled: {:?}", flag);
@@ -494,7 +494,7 @@ impl Glean {
     ///
     /// # Returns
     ///
-    /// `PingUploadTask` - an enum representing the possible tasks.
+    /// A [`PingUploadTask`](upload/enum.PingUploadTask.html) representing the next task.
     pub fn get_upload_task(&self) -> PingUploadTask {
         self.upload_manager.get_upload_task(self, self.log_pings())
     }
@@ -519,8 +519,7 @@ impl Glean {
     ///
     /// # Returns
     ///
-    /// The snapshot in a string encoded as JSON.
-    /// If the snapshot is empty, it returns an empty string.
+    /// The snapshot in a string encoded as JSON. If the snapshot is empty, returns an empty string.
     pub fn snapshot(&mut self, store_name: &str, clear_store: bool) -> String {
         StorageManager
             .snapshot(&self.storage(), store_name, clear_store)
@@ -622,8 +621,7 @@ impl Glean {
     ///
     /// # Returns
     ///
-    /// Returns the `PingType` if a ping of the given name was registered before.
-    /// Returns `None` otherwise.
+    /// The `PingType` if a ping of the given name was registered before, `None` otherwise.
     pub fn get_ping_by_name(&self, ping_name: &str) -> Option<&PingType> {
         self.ping_registry.get(ping_name)
     }
@@ -826,7 +824,7 @@ impl Glean {
     ///
     /// # Returns
     ///
-    /// True if the experiment is active, false otherwise.
+    /// Wether the experiment is active.
     pub fn test_is_experiment_active(&self, experiment_id: String) -> bool {
         self.test_get_experiment_data_as_json(experiment_id)
             .is_some()
@@ -842,9 +840,9 @@ impl Glean {
     ///
     /// # Returns
     ///
-    /// If the requested experiment is active, a JSON string with the following format:
+    /// A JSON string with the following format:
     /// { 'branch': 'the-branch-name', 'extra': {'key': 'value', ...}}
-    /// Otherwise, None.
+    /// if the requested experiment is active, `None` otherwise.
     pub fn test_get_experiment_data_as_json(&self, experiment_id: String) -> Option<String> {
         let metric = metrics::ExperimentMetric::new(&self, experiment_id);
         metric.test_get_value_as_json_string(&self)

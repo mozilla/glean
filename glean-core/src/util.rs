@@ -94,7 +94,7 @@ pub(crate) fn truncate_string_at_boundary<S: Into<String>>(value: S, length: usi
 ///
 /// # Returns
 ///
-/// Returns a string, with at most `length` bytes.
+/// A string, with at most `length` bytes.
 pub(crate) fn truncate_string_at_boundary_with_error<S: Into<String>>(
     glean: &Glean,
     meta: &CommonMetricData,

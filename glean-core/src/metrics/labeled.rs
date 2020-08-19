@@ -115,7 +115,7 @@ where
 
     /// Create a static label.
     ///
-    /// ## Safety
+    /// # Safety
     ///
     /// Should only be called when static labels are available on this metric.
     ///
@@ -125,8 +125,8 @@ where
     ///
     /// # Returns
     ///
-    /// If the requested label is in the list of allowed labels, it is returned.
-    /// Otherwise the `OTHER_LABEL` is returned.
+    /// The requested label if it is in the list of allowed labels.
+    /// Otherwise `OTHER_LABEL` is returned.
     fn static_label<'a>(&self, label: &'a str) -> &'a str {
         debug_assert!(self.labels.is_some());
         let labels = self.labels.as_ref().unwrap();
@@ -198,8 +198,7 @@ pub fn strip_label(identifier: &str) -> &str {
 ///
 /// # Returns
 ///
-/// Returns the entire identifier for the metric, including the base identifier and the
-/// corrected label.
+/// The entire identifier for the metric, including the base identifier and the corrected label.
 /// The errors are logged.
 pub fn dynamic_label(
     glean: &Glean,

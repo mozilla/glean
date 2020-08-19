@@ -486,7 +486,7 @@ impl PingUploadManager {
     ///
     /// # Returns
     ///
-    /// `PingUploadTask` - see [`PingUploadTask`](enum.PingUploadTask.html) for more information.
+    /// The next [`PingUploadTask`](enum.PingUploadTask.html).
     pub fn get_upload_task(&self, glean: &Glean, log_ping: bool) -> PingUploadTask {
         let task = self.get_upload_task_internal(glean, log_ping);
         if task == PingUploadTask::Done || task == PingUploadTask::Wait {

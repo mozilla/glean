@@ -17,7 +17,7 @@ pub type RawInt64Array = *const i64;
 ///
 /// Returns an error if any of the strings contain invalid UTF-8 characters.
 ///
-/// ## Safety
+/// # Safety
 ///
 /// * We check the array pointer for validity (non-null).
 /// * FfiStr checks each individual char pointer for validity (non-null).
@@ -44,7 +44,7 @@ pub fn from_raw_string_array(arr: RawStringArray, len: i32) -> glean_core::Resul
 ///
 /// Returns an error if any of the strings contain invalid UTF-8 characters.
 ///
-/// ## Safety
+/// # Safety
 ///
 /// * We check the array pointer for validity (non-null).
 /// * FfiStr checks each individual char pointer for validity (non-null).
@@ -76,7 +76,7 @@ pub fn from_raw_int_array_and_string_array(
 ///
 /// Returns an error if any of the strings contain invalid UTF-8 characters.
 ///
-/// ## Safety
+/// # Safety
 ///
 /// * We check the array pointer for validity (non-null).
 /// * FfiStr checks each individual char pointer for validity (non-null).
@@ -114,7 +114,7 @@ pub fn from_raw_string_array_and_string_array(
 ///
 /// This will return an empty `Vec` if the input is empty.
 ///
-/// ## Safety
+/// # Safety
 ///
 /// * We check the array pointer for validity (non-null).
 pub fn from_raw_int64_array(values: RawInt64Array, len: i32) -> Vec<i64> {

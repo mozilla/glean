@@ -50,8 +50,8 @@ impl StorageManager {
     ///
     /// # Returns
     ///
-    /// Returns the stored data in a string encoded as JSON.
-    /// Returns `None` if no data for the store exists.
+    /// The stored data in a string encoded as JSON.
+    /// If no data for the store exists, `None` is returned.
     pub fn snapshot(
         &self,
         storage: &Database,
@@ -72,8 +72,8 @@ impl StorageManager {
     ///
     /// # Returns
     ///
-    /// Returns a JSON representation of the stored data.
-    /// Returns `None` if no data for the store exists.
+    /// A JSON representation of the stored data.
+    /// If no data for the store exists, `None` is returned.
     pub fn snapshot_as_json(
         &self,
         storage: &Database,
@@ -123,7 +123,7 @@ impl StorageManager {
     ///
     /// # Returns
     ///
-    /// Returns the decoded metric or `None` if no data is found.
+    /// The decoded metric or `None` if no data is found.
     pub fn snapshot_metric(
         &self,
         storage: &Database,
@@ -155,7 +155,7 @@ impl StorageManager {
     ///
     /// # Returns
     ///
-    /// Returns a JSON representation of the experiment data, in the following format:
+    /// A JSON representation of the experiment data, in the following format:
     ///
     /// ```json
     /// {
@@ -169,7 +169,7 @@ impl StorageManager {
     /// }
     /// ```
     ///
-    /// Returns `None` if no data for experiments exists.
+    /// If no data for the store exists, `None` is returned.
     pub fn snapshot_experiments_as_json(
         &self,
         storage: &Database,

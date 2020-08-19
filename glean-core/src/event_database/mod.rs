@@ -115,7 +115,7 @@ impl EventDatabase {
     ///
     /// # Returns
     ///
-    /// `true` if at least one ping was generated, `false` otherwise.
+    /// Wether at least one ping was generated.
     pub fn flush_pending_events_on_startup(&self, glean: &Glean) -> bool {
         match self.load_events_from_disk() {
             Ok(_) => self.send_all_events(glean),
@@ -251,7 +251,7 @@ impl EventDatabase {
     ///
     /// # Returns
     ///
-    /// The an array of events, JSON encoded, if any.
+    /// A array of events, JSON encoded, if any. Otherwise `None`.
     pub fn snapshot_as_json(&self, store_name: &str, clear_store: bool) -> Option<JsonValue> {
         let result = {
             let mut db = self.event_stores.write().unwrap(); // safe unwrap, only error case is poisoning

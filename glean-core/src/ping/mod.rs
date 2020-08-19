@@ -169,7 +169,7 @@ impl PingMaker {
     ///
     /// # Returns
     ///
-    /// Returns a JSON object representing the metadata that needs to be persisted with this ping.
+    /// A JSON object representing the metadata that needs to be persisted with this ping.
     ///
     /// The structure of the metadata json is:
     ///
@@ -223,7 +223,7 @@ impl PingMaker {
     ///
     /// # Returns
     ///
-    /// Returns a fully assembled JSON representation of the ping payload.
+    /// A fully assembled JSON representation of the ping payload.
     /// If there is no data stored for the ping, `None` is returned.
     pub fn collect(
         &self,
@@ -273,7 +273,7 @@ impl PingMaker {
     ///
     /// # Returns
     ///
-    /// Returns a fully assembled ping payload in a string encoded as JSON.
+    /// A fully assembled ping payload in a string encoded as JSON.
     /// If there is no data stored for the ping, `None` is returned.
     pub fn collect_string(
         &self,

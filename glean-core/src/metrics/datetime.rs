@@ -125,7 +125,7 @@ impl DatetimeMetric {
     ///
     /// # Returns
     ///
-    /// Returns the stored value or `None` if nothing stored.
+    /// The stored value or `None` if nothing stored.
     pub(crate) fn get_value(&self, glean: &Glean, storage_name: &str) -> Option<Datetime> {
         match StorageManager.snapshot_metric(
             glean.storage(),

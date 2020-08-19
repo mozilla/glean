@@ -86,9 +86,11 @@ pub fn iso8601_to_chrono(datetime: &iso8601::DateTime) -> chrono::DateTime<chron
 ///
 /// # Returns
 ///
-/// A vector of all queued pings. Each entry is a pair `(url, json_data, metadata)`, where
-/// `url` is the endpoint the ping will go to, `json_data` is the JSON
-/// payload and metadata is optional persisted data related to the ping.
+/// A vector of all queued pings.
+///
+/// Each entry is a pair `(url, json_data, metadata)`,
+/// where `url` is the endpoint the ping will go to, `json_data` is the JSON payload
+/// and metadata is optional persisted data related to the ping.
 pub fn get_queued_pings(data_path: &Path) -> Result<Vec<(String, JsonValue, Option<JsonValue>)>> {
     get_pings(&data_path.join("pending_pings"))
 }
@@ -101,8 +103,10 @@ pub fn get_queued_pings(data_path: &Path) -> Result<Vec<(String, JsonValue, Opti
 ///
 /// # Returns
 ///
-/// A vector of all queued `deletion-request` pings. Each entry is a pair `(url, json_body, metadata)`,
-/// where `url` is the endpoint the ping will go to, `json_body` is the JSON payload
+/// A vector of all queued pings.
+///
+/// Each entry is a pair `(url, json_data, metadata)`,
+/// where `url` is the endpoint the ping will go to, `json_data` is the JSON payload
 /// and metadata is optional persisted data related to the ping.
 pub fn get_deletion_pings(data_path: &Path) -> Result<Vec<(String, JsonValue, Option<JsonValue>)>> {
     get_pings(&data_path.join("deletion_request"))
