@@ -7,6 +7,7 @@
 package mozilla.telemetry.glean
 
 import android.content.Context
+import android.os.SystemClock
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import androidx.test.core.app.ApplicationProvider
@@ -22,15 +23,20 @@ import org.mockito.Mockito
 import mozilla.telemetry.glean.config.Configuration
 import mozilla.telemetry.glean.scheduler.PingUploadWorker
 import mozilla.telemetry.glean.private.PingTypeBase
+import mozilla.telemetry.glean.private.TimeUnit
 import mozilla.telemetry.glean.utils.decompressGZIP
+import mozilla.telemetry.glean.utils.getISOTimeString
+import mozilla.telemetry.glean.scheduler.MetricsPingScheduler
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import org.junit.Assert
 import org.mockito.ArgumentCaptor
+import org.mockito.Mockito.spy
 import org.robolectric.shadows.ShadowLog
 import java.io.ByteArrayInputStream
+import java.util.Calendar
 import java.util.UUID
 import java.util.concurrent.ExecutionException
 
@@ -255,6 +261,28 @@ fun RecordedRequest.getPlainBody(): String {
     } else {
         this.body.readUtf8()
     }
+}
+
+/**
+ * Ensure no overdue metrics ping is triggered on `Glean.initialize`.
+ *
+ * This sets a fake date and time and changes the metrics ping scheduler
+ * to assume that now was the last time a metrics ping was sent.
+ * This can be used when tests should receive other pings,
+ * but don't want to deal with a potential overdue metrics ping first
+ */
+internal fun delayMetricsPing(context: Context) {
+    // Set the current system time to a known datetime.
+    val fakeNow = Calendar.getInstance()
+    fakeNow.clear()
+    fakeNow.set(2015, 6, 11, 2, 0, 0)
+    SystemClock.setCurrentTimeMillis(fakeNow.timeInMillis)
+
+    // Set the last sent date to yesterday.
+    val mpsSpy =
+    spy(MetricsPingScheduler(context))
+
+    mpsSpy.updateSentDate(getISOTimeString(fakeNow, truncateTo = TimeUnit.Day))
 }
 
 // The following Mockito fixups are copied over from support-test (Matchers.kt) from
