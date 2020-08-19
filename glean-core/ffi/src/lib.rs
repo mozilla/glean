@@ -160,14 +160,14 @@ pub extern "C" fn glean_enable_logging() {
         #[cfg(not(debug_assertions))]
         let level = log::LevelFilter::Info;
 
-        let mut builder = env_logger::Builder::new();
-        builder.filter(None, level);
-        match builder.try_init() {
-            Ok(_) => log::debug!("stdout logging should be hooked up!"),
+        let logger = oslog::OsLogger::new("org.mozilla.glean", "glean_core").level_filter(level);
+
+        match logger.init() {
+            Ok(_) => log::debug!("os_log should be hooked up!"),
             // Please note that this is only expected to fail during unit tests,
             // where the logger might have already been initialized by a previous
             // test. So it's fine to print with the "logger".
-            Err(_) => log::debug!("stdout was already initialized"),
+            Err(_) => log::debug!("os_log was already initialized"),
         };
     }
 
