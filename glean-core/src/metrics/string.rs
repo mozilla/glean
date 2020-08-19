@@ -38,7 +38,7 @@ impl StringMetric {
 
     /// Set to the specified value.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `glean` - The Glean instance this metric belongs to.
     /// * `value` - The string to set the metric to.

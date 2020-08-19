@@ -102,12 +102,12 @@ impl Database {
     /// Such location is built using the storage name and the metric
     /// key/name (if available).
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `storage_name` - the name of the storage to store/fetch data from.
     /// * `metric_key` - the optional metric key/name.
     ///
-    /// ## Return value
+    /// # Returns
     ///
     /// Returns a String representing the location, in the database, data must
     /// be written or read from.
@@ -153,20 +153,20 @@ impl Database {
     /// * If the storage is unavailable, the transaction function is never invoked.
     /// * If the read data cannot be deserialized it will be silently skipped.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
-    /// * `lifetime`: The metric lifetime to iterate over.
-    /// * `storage_name`: The storage name to iterate over.
-    /// * `metric_key`: The metric key to iterate over. All metrics iterated over
+    /// * `lifetime` - The metric lifetime to iterate over.
+    /// * `storage_name` - The storage name to iterate over.
+    /// * `metric_key` - The metric key to iterate over. All metrics iterated over
     ///   will have this prefix. For example, if `metric_key` is of the form `{category}.`,
     ///   it will iterate over all metrics in the given category. If the `metric_key` is of the
     ///   form `{category}.{name}/`, the iterator will iterate over all specific metrics for
     ///   a given labeled metric. If not provided, the entire storage for the given lifetime
     ///   will be iterated over.
-    /// * `transaction_fn`: Called for each entry being iterated over. It is
+    /// * `transaction_fn` - Called for each entry being iterated over. It is
     ///   passed two arguments: `(metric_id: &[u8], metric: &Metric)`.
     ///
-    /// ## Panics
+    /// # Panics
     ///
     /// This function will **not** panic on database errors.
     pub fn iter_store_from<F>(
@@ -222,13 +222,13 @@ impl Database {
     ///
     /// If data cannot be read it is assumed that the storage does not have the metric.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
-    /// * `lifetime`: The lifetime of the metric.
-    /// * `storage_name`: The storage name to look in.
-    /// * `metric_identifier`: The metric identifier.
+    /// * `lifetime` - The lifetime of the metric.
+    /// * `storage_name` - The storage name to look in.
+    /// * `metric_identifier` - The metric identifier.
     ///
-    /// ## Panics
+    /// # Panics
     ///
     /// This function will **not** panic on database errors.
     pub fn has_metric(
@@ -261,7 +261,7 @@ impl Database {
     ///
     /// If the storage is unavailable, it will return an error.
     ///
-    /// ## Panics
+    /// # Panics
     ///
     /// * This function will **not** panic on database errors.
     pub fn write_with_store<F>(&self, store_name: Lifetime, mut transaction_fn: F) -> Result<()>
@@ -286,15 +286,15 @@ impl Database {
 
     /// Records a metric in the underlying storage system, for a single lifetime.
     ///
-    /// ## Return value
+    /// # Returns
     ///
     /// If the storage is unavailable or the write fails, no data will be stored and an error will be returned.
     ///
     /// Otherwise `Ok(())` is returned.
     ///
-    /// ## Panics
+    /// # Panics
     ///
-    /// * This function will **not** panic on database errors.
+    /// This function will **not** panic on database errors.
     fn record_per_lifetime(
         &self,
         lifetime: Lifetime,
@@ -345,15 +345,15 @@ impl Database {
     /// Records a metric in the underlying storage system, after applying the
     /// given transformation function, for a single lifetime.
     ///
-    /// ## Return value
+    /// # Returns
     ///
     /// If the storage is unavailable or the write fails, no data will be stored and an error will be returned.
     ///
     /// Otherwise `Ok(())` is returned.
     ///
-    /// ## Panics
+    /// # Panics
     ///
-    /// * This function will **not** panic on database errors.
+    /// This function will **not** panic on database errors.
     pub fn record_per_lifetime_with<F>(
         &self,
         lifetime: Lifetime,
@@ -411,7 +411,7 @@ impl Database {
 
     /// Clears a storage (only Ping Lifetime).
     ///
-    /// ## Return value
+    /// # Returns
     ///
     /// * If the storage is unavailable an error is returned.
     /// * If any individual delete fails, an error is returned, but other deletions might have
@@ -419,9 +419,9 @@ impl Database {
     ///
     /// Otherwise `Ok(())` is returned.
     ///
-    /// ## Panics
+    /// # Panics
     ///
-    /// * This function will **not** panic on database errors.
+    /// This function will **not** panic on database errors.
     pub fn clear_ping_lifetime_storage(&self, storage_name: &str) -> Result<()> {
         // Lifetime::Ping data will be saved to `ping_lifetime_data`
         // in case `delay_ping_lifetime_io` is set to true
@@ -461,22 +461,22 @@ impl Database {
 
     /// Removes a single metric from the storage.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `lifetime` - the lifetime of the storage in which to look for the metric.
     /// * `storage_name` - the name of the storage to store/fetch data from.
     /// * `metric_id` - the metric category + name.
     ///
-    /// ## Return value
+    /// # Returns
     ///
     /// * If the storage is unavailable an error is returned.
     /// * If the metric could not be deleted, an error is returned.
     ///
     /// Otherwise `Ok(())` is returned.
     ///
-    /// ## Panics
+    /// # Panics
     ///
-    /// * This function will **not** panic on database errors.
+    /// This function will **not** panic on database errors.
     pub fn remove_single_metric(
         &self,
         lifetime: Lifetime,
@@ -514,7 +514,7 @@ impl Database {
     ///
     /// Errors are logged.
     ///
-    /// ## Panics
+    /// # Panics
     ///
     /// * This function will **not** panic on database errors.
     pub fn clear_lifetime(&self, lifetime: Lifetime) {
@@ -532,7 +532,7 @@ impl Database {
     ///
     /// Errors are logged.
     ///
-    /// ## Panics
+    /// # Panics
     ///
     /// * This function will **not** panic on database errors.
     pub fn clear_all(&self) {
@@ -552,7 +552,7 @@ impl Database {
     ///
     /// Does nothing in case there is nothing to persist.
     ///
-    /// ## Panics
+    /// # Panics
     ///
     /// * This function will **not** panic on database errors.
     pub fn persist_ping_lifetime_data(&self) -> Result<()> {

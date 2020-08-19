@@ -199,7 +199,7 @@ pub struct PingRequest {
 impl PingRequest {
     /// Creates a new builder-style structure to help build a PingRequest.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `language_binding_name` - The name of the language used by the binding that instantiated this Glean instance.
     ///                             This is used to build the User-Agent header value.

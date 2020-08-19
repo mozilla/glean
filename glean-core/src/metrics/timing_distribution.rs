@@ -22,9 +22,9 @@ const BUCKETS_PER_MAGNITUDE: f64 = 8.0;
 // It is automatically adjusted based on the `time_unit` parameter
 // so that:
 //
-// - `nanosecond`: 10 minutes
-// - `microsecond`: ~6.94 days
-// - `millisecond`: ~19 years
+// - `nanosecond` - 10 minutes
+// - `microsecond` - ~6.94 days
+// - `millisecond` - ~19 years
 const MAX_SAMPLE_TIME: u64 = 1000 * 1000 * 1000 * 60 * 10;
 
 /// Identifier for a running timer.
@@ -138,11 +138,11 @@ impl TimingDistributionMetric {
     /// called with no corresponding [stop]): in that case the original
     /// start time will be preserved.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `start_time` - Timestamp in nanoseconds.
     ///
-    /// ## Return value
+    /// # Returns
     ///
     /// Returns a unique `TimerId` for the new timer.
     pub fn set_start(&mut self, start_time: u64) -> TimerId {
@@ -153,7 +153,7 @@ impl TimingDistributionMetric {
     /// Add a count to the corresponding bucket in the timing distribution.
     /// This will record an error if no `start` was called.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `id` - The `TimerId` to associate with this timing. This allows
     ///   for concurrent timing of events associated with different ids to the
@@ -209,7 +209,7 @@ impl TimingDistributionMetric {
     /// Abort a previous `set_start` call. No error is recorded if no `set_start`
     /// was called.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `id` - The `TimerId` to associate with this timing. This allows
     ///   for concurrent timing of events associated with different ids to the
@@ -231,7 +231,7 @@ impl TimingDistributionMetric {
     /// method was called on is using [TimeUnit.Second], then `samples` are assumed
     /// to be in that unit).
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `samples` - The vector holding the samples to be recorded by the metric.
     ///

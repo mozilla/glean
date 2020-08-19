@@ -107,7 +107,7 @@ impl TimespanMetric {
     /// timespan measurement. To be safe, `set_raw` should generally be followed by
     /// sending a custom ping containing the timespan.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `elapsed` - The elapsed time to record.
     /// * `overwrite` - Whether or not to overwrite existing data.

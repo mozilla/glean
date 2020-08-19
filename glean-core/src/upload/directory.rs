@@ -106,7 +106,7 @@ impl PingDirectoryManager {
     ///
     /// * `uuid` - The UUID of the ping file to be deleted
     ///
-    /// # Return value
+    /// # Returns
     ///
     /// Returns `true` if the file was deleted succesfully and `false` otherwise.
     ///
@@ -193,7 +193,7 @@ impl PingDirectoryManager {
     /// Any files that don't match the UUID regex will be deleted
     /// to prevent files from polluting the pings directory.
     ///
-    /// # Return value
+    /// # Returns
     ///
     /// Returns a vector of tuples with the file size
     /// and payload of each ping file in the directory.

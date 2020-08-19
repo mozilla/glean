@@ -34,7 +34,7 @@ impl BooleanMetric {
 
     /// Set to the specified boolean value.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `glean` - the Glean instance this metric belongs to.
     /// * `value` - the value to set.

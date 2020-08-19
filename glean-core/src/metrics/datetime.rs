@@ -49,7 +49,7 @@ impl DatetimeMetric {
     /// Public facing API for setting the metric to a date/time which
     /// includes the timezone offset.
     ///
-    /// ## Arguments:
+    /// # Arguments
     ///
     /// * `glean` - the Glean instance this metric belongs to.
     /// * `year` - the year to set the metric to.
@@ -101,7 +101,7 @@ impl DatetimeMetric {
     /// Public facing API for setting the metric to a date/time which
     /// includes the timezone offset.
     ///
-    /// ## Arguments:
+    /// # Arguments
     ///
     /// * `glean` - the Glean instance this metric belongs to.
     /// * `value` - Some date/time value, with offset, to set the metric to.
@@ -118,12 +118,12 @@ impl DatetimeMetric {
 
     /// Get the stored datetime value.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `glean` - the Glean instance this metric belongs to.
     /// * `storage_name` - the storage name to look into.
     ///
-    /// ## Return value
+    /// # Returns
     ///
     /// Returns the stored value or `None` if nothing stored.
     pub(crate) fn get_value(&self, glean: &Glean, storage_name: &str) -> Option<Datetime> {

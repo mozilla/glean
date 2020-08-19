@@ -49,11 +49,11 @@ impl TimeUnit {
 
     /// Convert a duration to the requested time unit.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `duration` - the duration to convert.
     ///
-    /// ## Return value
+    /// # Returns
     ///
     /// The integer representation of the converted duration.
     pub fn duration_convert(self, duration: Duration) -> u64 {
@@ -71,11 +71,11 @@ impl TimeUnit {
 
     /// Convert a duration in the given unit to nanoseconds.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `duration` - the duration to convert.
     ///
-    /// ## Return value
+    /// # Returns
     ///
     /// The integer representation of the nanosecond duration.
     pub fn as_nanos(self, duration: u64) -> u64 {

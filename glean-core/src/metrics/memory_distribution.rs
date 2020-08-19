@@ -59,7 +59,7 @@ impl MemoryDistributionMetric {
 
     /// Accumulates the provided sample in the metric.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `sample` - The sample to be recorded by the metric. The sample is assumed to be in the
     ///   configured memory unit of the metric.
@@ -109,7 +109,7 @@ impl MemoryDistributionMetric {
     /// method was called on is using [MemoryUnit.Kilobyte], then `samples` are assumed
     /// to be in that unit).
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `samples` - The vector holding the samples to be recorded by the metric.
     ///

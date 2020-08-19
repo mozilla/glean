@@ -376,7 +376,7 @@ impl PingUploadManager {
     /// (e.g. if we have reached the current limit and call this function, we start counting again
     /// and the caller is allowed to asks for tasks).
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `interval` - the amount of seconds in each rate limiting window.
     /// * `max_tasks` - the maximum amount of task requests allowed per interval.
@@ -479,12 +479,12 @@ impl PingUploadManager {
 
     /// Gets the next `PingUploadTask`.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `glean` - The Glean object holding the database.
     /// * `log_ping` - Whether to log the ping before returning.
     ///
-    /// # Return value
+    /// # Returns
     ///
     /// `PingUploadTask` - see [`PingUploadTask`](enum.PingUploadTask.html) for more information.
     pub fn get_upload_task(&self, glean: &Glean, log_ping: bool) -> PingUploadTask {

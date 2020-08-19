@@ -35,7 +35,7 @@ impl QuantityMetric {
 
     /// Set the value. Must be non-negative.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `glean` - The Glean instance this metric belongs to.
     /// * `value` - The value. Must be non-negative.

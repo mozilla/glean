@@ -163,11 +163,11 @@ impl PingMaker {
     ///
     /// Currently the only type of metadata we need to persist is the value of the `X-Debug-ID` header.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `glean` - the Glean instance to collect metadata from.
     ///
-    /// ## Return value
+    /// # Returns
     ///
     /// Returns a JSON object representing the metadata that needs to be persisted with this ping.
     ///
@@ -215,13 +215,13 @@ impl PingMaker {
 
     /// Collect a snapshot for the given ping from storage and attach required meta information.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `glean` - the Glean instance to collect data from.
     /// * `ping` - the ping to collect for.
     /// * `reason` - an optional reason code to include in the ping.
     ///
-    /// ## Return value
+    /// # Returns
     ///
     /// Returns a fully assembled JSON representation of the ping payload.
     /// If there is no data stored for the ping, `None` is returned.
@@ -265,13 +265,13 @@ impl PingMaker {
     /// Collect a snapshot for the given ping from storage and attach required meta information,
     /// returning it as a string containing JSON.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `glean` - the Glean instance to collect data from.
     /// * `ping` - the ping to collect for.
     /// * `reason` - an optional reason code to include in the ping.
     ///
-    /// ## Return value
+    /// # Returns
     ///
     /// Returns a fully assembled ping payload in a string encoded as JSON.
     /// If there is no data stored for the ping, `None` is returned.

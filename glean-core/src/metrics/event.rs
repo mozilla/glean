@@ -47,7 +47,7 @@ impl EventMetric {
 
     /// Record an event.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `glean` - The Glean instance this metric belongs to.
     /// * `timestamp` - A monotonically increasing timestamp, in milliseconds.

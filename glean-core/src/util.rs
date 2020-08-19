@@ -32,14 +32,14 @@ pub fn sanitize_application_id(application_id: &str) -> String {
 /// Generate an ISO8601 compliant date/time string for the given time, truncating
 /// it to the provided TimeUnit.
 ///
-/// ## Arguments:
+/// # Arguments
 ///
-/// * `datetime`: the `DateTime` object that holds the date, time and timezone information.
-/// * `truncate_to`: the desired resolution to use for the output string.
+/// * `datetime` - the `DateTime` object that holds the date, time and timezone information.
+/// * `truncate_to` - the desired resolution to use for the output string.
 ///
-/// ## Return value:
+/// # Returns
 ///
-/// Returns a string representing the provided date/time truncated to the requested time unit.
+/// A string representing the provided date/time truncated to the requested time unit.
 pub fn get_iso_time_string(datetime: DateTime<FixedOffset>, truncate_to: TimeUnit) -> String {
     datetime.format(truncate_to.format_pattern()).to_string()
 }
@@ -54,16 +54,16 @@ pub(crate) fn local_now_with_offset() -> DateTime<FixedOffset> {
 
 /// Truncates a string, ensuring that it doesn't end in the middle of a codepoint.
 ///
-/// ## Arguments:
+/// # Arguments
 ///
 /// * `value` - The `String` to truncate.
 /// * `length` - The length, in bytes, to truncate to.  The resulting string will
 ///   be at most this many bytes, but may be shorter to prevent ending in the middle
 ///   of a codepoint.
 ///
-/// ## Return value:
+/// # Returns
 ///
-/// Returns a string, with at most `length` bytes.
+/// A string, with at most `length` bytes.
 pub(crate) fn truncate_string_at_boundary<S: Into<String>>(value: S, length: usize) -> String {
     let s = value.into();
     if s.len() > length {
@@ -83,7 +83,7 @@ pub(crate) fn truncate_string_at_boundary<S: Into<String>>(value: S, length: usi
 /// If the string required truncation, records an error through the error
 /// reporting mechanism.
 ///
-/// ## Arguments:
+/// # Arguments
 ///
 /// * `glean` - The Glean instance the metric doing the truncation belongs to.
 /// * `meta` - The metadata for the metric. Used for recording the error.
@@ -92,7 +92,7 @@ pub(crate) fn truncate_string_at_boundary<S: Into<String>>(value: S, length: usi
 ///   be at most this many bytes, but may be shorter to prevent ending in the middle
 ///   of a codepoint.
 ///
-/// ## Return value:
+/// # Returns
 ///
 /// Returns a string, with at most `length` bytes.
 pub(crate) fn truncate_string_at_boundary_with_error<S: Into<String>>(

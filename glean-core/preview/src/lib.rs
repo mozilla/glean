@@ -192,7 +192,7 @@ pub fn register_ping_type(ping: &metrics::PingType) {
 ///
 /// See `glean_core::Glean.submit_ping`.
 ///
-/// ## Return value
+/// # Returns
 ///
 /// Returns true if a ping was assembled and queued, false otherwise.
 pub fn submit_ping(ping: &metrics::PingType, reason: Option<&str>) -> bool {
@@ -203,7 +203,7 @@ pub fn submit_ping(ping: &metrics::PingType, reason: Option<&str>) -> bool {
 ///
 /// See `glean_core::Glean.submit_ping_by_name`.
 ///
-/// ## Return value
+/// # Returns
 ///
 /// Returns true if a ping was assembled and queued, false otherwise.
 pub fn submit_ping_by_name(ping: &str, reason: Option<&str>) -> bool {

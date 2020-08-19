@@ -231,7 +231,7 @@ impl JweMetric {
 
     /// Set to the specified JWE value.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `glean` - the Glean instance this metric belongs to.
     /// * `value` - the [`compact representation`](https://tools.ietf.org/html/rfc7516#appendix-A.2.7) of a JWE value.
@@ -251,7 +251,7 @@ impl JweMetric {
 
     /// Build a JWE value from its elements and set to it.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `glean` - the Glean instance this metric belongs to.
     /// * `header` - the JWE Protected Header element.

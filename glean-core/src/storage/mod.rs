@@ -42,13 +42,13 @@ fn snapshot_labeled_metrics(
 impl StorageManager {
     /// Snapshot the given store and optionally clear it.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `storage` - the database to read from.
     /// * `store_name` - the store to snapshot.
     /// * `clear_store` - whether to clear the data after snapshotting.
     ///
-    /// ## Return value
+    /// # Returns
     ///
     /// Returns the stored data in a string encoded as JSON.
     /// Returns `None` if no data for the store exists.
@@ -64,13 +64,13 @@ impl StorageManager {
 
     /// Snapshot the given store and optionally clear it.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `storage` - the database to read from.
     /// * `store_name` - the store to snapshot.
     /// * `clear_store` - whether to clear the data after snapshotting.
     ///
-    /// ## Return value
+    /// # Returns
     ///
     /// Returns a JSON representation of the stored data.
     /// Returns `None` if no data for the store exists.
@@ -115,13 +115,13 @@ impl StorageManager {
     ///
     /// This look for a value in stores for all lifetimes.
     ///
-    /// ## Arguments:
+    /// # Arguments
     ///
     /// * `storage` - The database to get data from.
     /// * `store_name` - The store name to look into.
     /// * `metric_id` - The full metric identifier.
     ///
-    /// ## Return value:
+    /// # Returns
     ///
     /// Returns the decoded metric or `None` if no data is found.
     pub fn snapshot_metric(
@@ -148,12 +148,12 @@ impl StorageManager {
 
     ///  Snapshot the experiments.
     ///
-    /// ## Arguments:
+    /// # Arguments
     ///
     /// * `storage` - The database to get data from.
     /// * `store_name` - The store name to look into.
     ///
-    /// ## Return value
+    /// # Returns
     ///
     /// Returns a JSON representation of the experiment data, in the following format:
     ///

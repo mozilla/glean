@@ -19,7 +19,7 @@ macro_rules! define_infallible_handle_map_deleter {
 /// This allows to define most common functionality and simple operations for a metric type.
 /// More complex operations should be written as plain functions directly.
 ///
-/// ## Arguments
+/// # Arguments
 ///
 /// * `$metric_type` - metric type to use from glean_core, e.g. `CounterMetric`.
 /// * `$metric_map` - name to use for the global name, should be all uppercase, e.g. `COUNTER_METRICS`.

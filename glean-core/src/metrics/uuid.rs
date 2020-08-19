@@ -36,7 +36,7 @@ impl UuidMetric {
 
     /// Set to the specified value.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `glean` - The Glean instance this metric belongs to.
     /// * `value` - The UUID to set the metric to.
@@ -52,7 +52,7 @@ impl UuidMetric {
 
     /// Generate a new random UUID and set the metric to it.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `glean` - The Glean instance this metric belongs to.
     pub fn generate_and_set(&self, storage: &Glean) -> Uuid {
@@ -63,12 +63,12 @@ impl UuidMetric {
 
     /// Get the stored Uuid value.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `glean` - the Glean instance this metric belongs to.
     /// * `storage_name` - the storage name to look into.
     ///
-    /// ## Return value
+    /// # Returns
     ///
     /// Returns the stored value or `None` if nothing stored.
     pub(crate) fn get_value(&self, glean: &Glean, storage_name: &str) -> Option<Uuid> {

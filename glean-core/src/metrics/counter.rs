@@ -36,7 +36,7 @@ impl CounterMetric {
 
     /// Increase the counter by `amount`.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `glean` - The Glean instance this metric belongs to.
     /// * `amount` - The amount to increase by. Should be positive.

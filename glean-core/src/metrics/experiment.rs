@@ -71,7 +71,7 @@ impl MetricType for ExperimentMetric {
 impl ExperimentMetric {
     /// Create a new experiment metric.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `id` - the id of the experiment. Please note that this will be
     ///          truncated to `MAX_EXPERIMENTS_IDS_LEN`, if needed.
@@ -118,7 +118,7 @@ impl ExperimentMetric {
 
     /// Record an experiment as active.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `glean` - The Glean instance this metric belongs to.
     /// * `branch` -  the active branch of the experiment. Please note that this will be
@@ -195,7 +195,7 @@ impl ExperimentMetric {
 
     /// Record an experiment as inactive.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `glean` - The Glean instance this metric belongs to.
     pub fn set_inactive(&self, glean: &Glean) {

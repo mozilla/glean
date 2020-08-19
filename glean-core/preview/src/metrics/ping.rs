@@ -16,7 +16,7 @@ impl PingType {
     /// Create a new ping type for the given name, whether to include the client ID and whether to
     /// send this ping empty.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `name` - The name of the ping.
     /// * `include_client_id` - Whether to include the client ID in the assembled ping when.
@@ -40,7 +40,7 @@ impl PingType {
 
     /// Submit the ping.
     ///
-    /// ## Return value
+    /// # Returns
     ///
     /// Returns true if a ping was assembled and queued, false otherwise.
     pub fn submit(&self, reason: Option<&str>) -> bool {

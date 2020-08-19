@@ -66,7 +66,7 @@ impl CustomDistributionMetric {
     /// will take care of filtering and reporting errors for any provided negative
     /// sample.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// - `samples` - The vector holding the samples to be recorded by the metric.
     ///

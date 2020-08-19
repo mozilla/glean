@@ -41,7 +41,7 @@ impl StringListMetric {
 
     /// Add a new string to the list.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `glean` - The Glean instance this metric belongs to.
     /// * `value` - The string to add.
@@ -83,7 +83,7 @@ impl StringListMetric {
 
     /// Set to a specific list of strings.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `glean` - The Glean instance this metric belongs to.
     /// * `value` - The list of string to set the metric to.

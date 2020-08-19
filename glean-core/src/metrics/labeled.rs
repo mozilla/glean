@@ -119,11 +119,11 @@ where
     ///
     /// Should only be called when static labels are available on this metric.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `label` - The requested label
     ///
-    /// ## Return value
+    /// # Returns
     ///
     /// If the requested label is in the list of allowed labels, it is returned.
     /// Otherwise the `OTHER_LABEL` is returned.
@@ -192,11 +192,11 @@ pub fn strip_label(identifier: &str) -> &str {
 /// Checks the requested label against limitations, such as the label length and allowed
 /// characters.
 ///
-/// ## Arguments
+/// # Arguments
 ///
 /// * `label` - The requested label
 ///
-/// ## Return value
+/// # Returns
 ///
 /// Returns the entire identifier for the metric, including the base identifier and the
 /// corrected label.

@@ -84,7 +84,7 @@ impl EventDatabase {
     /// # Arguments
     ///
     /// * `data_path` - The directory to store events in. A new directory
-    ///   `events` will be created inside of this directory.
+    /// * `events` - will be created inside of this directory.
     pub fn new(data_path: &str) -> Result<Self> {
         let path = Path::new(data_path).join("events");
         create_dir_all(&path)?;
@@ -113,7 +113,7 @@ impl EventDatabase {
     ///
     /// * `glean` - The Glean instance.
     ///
-    /// # Return value
+    /// # Returns
     ///
     /// `true` if at least one ping was generated, `false` otherwise.
     pub fn flush_pending_events_on_startup(&self, glean: &Glean) -> bool {

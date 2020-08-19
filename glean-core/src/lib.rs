@@ -323,7 +323,7 @@ impl Glean {
     /// of the core metrics have been set and the ping types have been
     /// registered.
     ///
-    /// # Return value
+    /// # Returns
     ///
     /// `true` if at least one ping was generated, `false` otherwise.
     pub fn on_ready_to_submit_pings(&self) -> bool {
@@ -347,8 +347,8 @@ impl Glean {
     ///
     /// # Returns
     ///
-    /// * Returns true when the flag was different from the current value, and
-    ///   actual work was done to clear or reinstate metrics.
+    /// Returns true when the flag was different from the current value,
+    /// and actual work was done to clear or reinstate metrics.
     pub fn set_upload_enabled(&mut self, flag: bool) -> bool {
         log::info!("Upload enabled: {:?}", flag);
 
@@ -492,7 +492,7 @@ impl Glean {
     /// * `Upload(PingRequest)` - which means there is a ping to upload. This wraps the actual request object;
     /// * `Done` - which means requester should stop asking for now.
     ///
-    /// # Return value
+    /// # Returns
     ///
     /// `PingUploadTask` - an enum representing the possible tasks.
     pub fn get_upload_task(&self) -> PingUploadTask {
@@ -512,14 +512,14 @@ impl Glean {
 
     /// Take a snapshot for the given store and optionally clear it.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `store_name` - The store to snapshot.
     /// * `clear_store` - Whether to clear the store after snapshotting.
     ///
-    /// ## Return value
+    /// # Returns
     ///
-    /// Returns the snapshot in a string encoded as JSON.
+    /// The snapshot in a string encoded as JSON.
     /// If the snapshot is empty, it returns an empty string.
     pub fn snapshot(&mut self, store_name: &str, clear_store: bool) -> String {
         StorageManager
@@ -548,9 +548,10 @@ impl Glean {
     /// Returns true if a ping was assembled and queued, false otherwise.
     /// Returns an error if collecting or writing the ping to disk failed.
     ///
-    /// ## Arguments
-    /// * `ping`: The ping to submit
-    /// * `reason`: A reason code to include in the ping
+    /// # Arguments
+    ///
+    /// * `ping` - The ping to submit
+    /// * `reason` - A reason code to include in the ping
     pub fn submit_ping(&self, ping: &PingType, reason: Option<&str>) -> Result<bool> {
         if !self.is_upload_enabled() {
             log::error!("Glean disabled: not submitting any pings.");
@@ -603,9 +604,10 @@ impl Glean {
     /// Returns true if a ping was assembled and queued, false otherwise.
     /// Returns an error if collecting or writing the ping to disk failed.
     ///
-    /// ## Arguments
-    /// * `ping_name`: The name of the ping to submit
-    /// * `reason`: A reason code to include in the ping
+    /// # Arguments
+    ///
+    /// * `ping_name` - The name of the ping to submit
+    /// * `reason` - A reason code to include in the ping
     pub fn submit_ping_by_name(&self, ping_name: &str, reason: Option<&str>) -> Result<bool> {
         match self.get_ping_by_name(ping_name) {
             None => {
@@ -618,7 +620,7 @@ impl Glean {
 
     /// Get a [`PingType`](metrics/struct.PingType.html) by name.
     ///
-    /// ## Return value
+    /// # Returns
     ///
     /// Returns the `PingType` if a ping of the given name was registered before.
     /// Returns `None` otherwise.
@@ -644,7 +646,7 @@ impl Glean {
     /// Glean will then add an experiment annotation to the environment
     /// which is sent with pings. This information is not persisted between runs.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `experiment_id` - The id of the active experiment (maximum 30 bytes).
     /// * `branch` - The experiment branch (maximum 30 bytes).
@@ -661,7 +663,7 @@ impl Glean {
 
     /// Indicate that an experiment is no longer running.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `experiment_id` - The id of the active experiment to deactivate (maximum 30 bytes).
     pub fn set_experiment_inactive(&self, experiment_id: String) {
@@ -712,7 +714,7 @@ impl Glean {
     /// When the debug view tag is set, pings are sent with a `X-Debug-ID` header with the value of the tag
     /// and are sent to the ["Ping Debug Viewer"](https://mozilla.github.io/glean/book/dev/core/internal/debug-pings.html).
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `value` - A valid HTTP header value. Must match the regex: "[a-zA-Z0-9-]{1,20}".
     pub fn set_debug_view_tag(&mut self, value: &str) -> bool {
@@ -733,7 +735,7 @@ impl Glean {
     ///
     /// Ping tags will show in the destination datasets, after ingestion.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `value` - A vector of at most 5 valid HTTP header values. Individual tags must match the regex: "[a-zA-Z0-9-]{1,20}".
     pub fn set_source_tags(&mut self, value: Vec<String>) -> bool {
@@ -755,7 +757,7 @@ impl Glean {
     /// When the log pings debug option is `true`,
     /// we log the payload of all succesfully assembled pings.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `value` - The value of the log pings option
     pub fn set_log_pings(&mut self, value: bool) -> bool {
@@ -818,11 +820,11 @@ impl Glean {
     ///
     /// Check if an experiment is currently active.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `experiment_id` - The id of the experiment (maximum 30 bytes).
     ///
-    /// ## Return value
+    /// # Returns
     ///
     /// True if the experiment is active, false otherwise.
     pub fn test_is_experiment_active(&self, experiment_id: String) -> bool {
@@ -834,11 +836,11 @@ impl Glean {
     ///
     /// Get stored data for the requested experiment.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `experiment_id` - The id of the active experiment (maximum 30 bytes).
     ///
-    /// ## Return value
+    /// # Returns
     ///
     /// If the requested experiment is active, a JSON string with the following format:
     /// { 'branch': 'the-branch-name', 'extra': {'key': 'value', ...}}

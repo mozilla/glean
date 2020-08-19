@@ -95,14 +95,14 @@ fn get_error_metric_for_metric(meta: &CommonMetricData, error: ErrorType) -> Cou
 /// `<name>/<label>`.
 /// Errors do not adhere to the usual "maximum label" restriction.
 ///
-/// ## Arguments
+/// # Arguments
 ///
-/// * glean - The Glean instance containing the database
-/// * meta - The metric's meta data
-/// * error -  The error type to record
-/// * message - The message to log. This message is not sent with the ping.
+/// * `glean` - The Glean instance containing the database
+/// * `meta` - The metric's meta data
+/// * `error` -  The error type to record
+/// * `message` - The message to log. This message is not sent with the ping.
 ///             It does not need to include the metric id, as that is automatically prepended to the message.
-///  * num_errors - The number of errors of the same type to report.
+/// * `num_errors` - The number of errors of the same type to report.
 pub fn record_error<O: Into<Option<i32>>>(
     glean: &Glean,
     meta: &CommonMetricData,
@@ -122,15 +122,15 @@ pub fn record_error<O: Into<Option<i32>>>(
 ///
 /// *Notes: This is a **test-only** API, but we need to expose it to be used in integration tests.
 ///
-/// ## Arguments
+/// # Arguments
 ///
-/// * glean - The Glean object holding the database
-/// * meta - The metadata of the metric instance
-/// * error - The type of error
+/// * `glean` - The Glean object holding the database
+/// * `meta` - The metadata of the metric instance
+/// * `error` - The type of error
 ///
-/// ## Return value
+/// # Returns
 ///
-/// The number of errors reported
+/// The number of errors reported.
 pub fn test_get_num_recorded_errors(
     glean: &Glean,
     meta: &CommonMetricData,
