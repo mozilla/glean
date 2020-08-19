@@ -221,12 +221,21 @@ impl PingDirectoryManager {
                         return None;
                     }
                     if let Some(data) = self.process_file(file_name) {
-                        // This may panic in case the path does not exist
-                        // or the user does not have permissions to read the file.
-                        // Both are extremely unlike so we can panic! here if that happens.
-                        let metadata = fs::metadata(&path).unwrap_or_else(|_| {
-                            panic!("Unable to read metadata for file: {}", path.display())
-                        });
+                        let metadata = match fs::metadata(&path) {
+                            Ok(metadata) => metadata,
+                            Err(e) => {
+                                // There's a rare case where this races against a parallel deletion
+                                // of all pending ping files.
+                                // This could therefore fail, in which case we don't care about the
+                                // result and can ignore the ping, it's already been deleted.
+                                log::warn!(
+                                    "Unable to read metadata for file: {}, error: {:?}",
+                                    path.display(),
+                                    e
+                                );
+                                return None;
+                            }
+                        };
                         return Some((metadata, data));
                     }
                 };
