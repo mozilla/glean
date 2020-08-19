@@ -89,7 +89,7 @@ where
     E: Fn(String) -> Option<T>,
     V: Fn(&T) -> bool,
 {
-    /// Create a new debug option.
+    /// Creates a new debug option.
     ///
     /// Tries to get the initial value of the option from the environment.
     pub fn new(env: &str, extraction: E, validation: Option<V>) -> Self {

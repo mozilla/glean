@@ -70,7 +70,7 @@ impl Bucketing for Functional {
 }
 
 impl Histogram<Functional> {
-    /// Create a histogram with functional buckets.
+    /// Creates a histogram with functional buckets.
     pub fn functional(log_base: f64, buckets_per_magnitude: f64) -> Histogram<Functional> {
         Histogram {
             values: HashMap::new(),
@@ -80,7 +80,7 @@ impl Histogram<Functional> {
         }
     }
 
-    /// Get a snapshot of all contiguous values.
+    /// Gets a snapshot of all contiguous values.
     ///
     /// **Caution** This is a more specific implementation of `snapshot_values` on functional
     /// histograms. `snapshot_values` cannot be used with those, due to buckets not being

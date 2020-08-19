@@ -13,7 +13,7 @@ pub struct PingType {
 }
 
 impl PingType {
-    /// Create a new ping type.
+    /// Creates a new ping type.
     ///
     /// # Arguments
     ///
@@ -37,7 +37,7 @@ impl PingType {
         Self { name, ping_type }
     }
 
-    /// Submit the ping.
+    /// Submits the ping.
     ///
     /// # Returns
     ///

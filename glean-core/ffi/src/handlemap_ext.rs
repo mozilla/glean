@@ -30,7 +30,7 @@ where
     res
 }
 
-/// Warn if an error occurred and then release the allocated memory.
+/// Warns if an error occurred and then release the allocated memory.
 ///
 /// This is a helper for the case where we aren't exposing this back over the FFI.
 ///

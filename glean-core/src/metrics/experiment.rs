@@ -35,7 +35,7 @@ pub struct RecordedExperimentData {
 }
 
 impl RecordedExperimentData {
-    /// Get the recorded experiment data as a JSON value.
+    /// Gets the recorded experiment data as a JSON value.
     ///
     /// For JSON, we don't want to include {"extra": null} -- we just want to skip
     /// extra entirely. Unfortunately, we can't use a serde field annotation for this,
@@ -71,7 +71,7 @@ impl MetricType for ExperimentMetric {
 }
 
 impl ExperimentMetric {
-    /// Create a new experiment metric.
+    /// Creates a new experiment metric.
     ///
     /// # Arguments
     ///
@@ -118,7 +118,7 @@ impl ExperimentMetric {
         new_experiment
     }
 
-    /// Record an experiment as active.
+    /// Records an experiment as active.
     ///
     /// # Arguments
     ///
@@ -195,7 +195,7 @@ impl ExperimentMetric {
         glean.storage().record(glean, &self.meta, &value)
     }
 
-    /// Record an experiment as inactive.
+    /// Records an experiment as inactive.
     ///
     /// # Arguments
     ///
@@ -216,7 +216,7 @@ impl ExperimentMetric {
 
     /// **Test-only API (exported for FFI purposes).**
     ///
-    /// Get the currently stored experiment data as a JSON representation of
+    /// Gets the currently stored experiment data as a JSON representation of
     /// the RecordedExperimentData.
     ///
     /// This doesn't clear the stored value.

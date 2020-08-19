@@ -25,7 +25,7 @@ pub enum MemoryUnit {
 }
 
 impl MemoryUnit {
-    /// Convert a value in the given unit to bytes.
+    /// Converts a value in the given unit to bytes.
     ///
     /// # Arguments
     ///

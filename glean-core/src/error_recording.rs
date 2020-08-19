@@ -118,7 +118,7 @@ pub fn record_error<O: Into<Option<i32>>>(
     metric.add(glean, to_report);
 }
 
-/// Get the number of recorded errors for the given metric and error type.
+/// Gets the number of recorded errors for the given metric and error type.
 ///
 /// *Notes: This is a **test-only** API, but we need to expose it to be used in integration tests.
 ///

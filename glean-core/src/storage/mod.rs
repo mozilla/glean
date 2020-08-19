@@ -40,7 +40,7 @@ fn snapshot_labeled_metrics(
 }
 
 impl StorageManager {
-    /// Snapshot the given store and optionally clear it.
+    /// Snapshots the given store and optionally clear it.
     ///
     /// # Arguments
     ///
@@ -62,7 +62,7 @@ impl StorageManager {
             .map(|data| ::serde_json::to_string_pretty(&data).unwrap())
     }
 
-    /// Snapshot the given store and optionally clear it.
+    /// Snapshots the given store and optionally clear it.
     ///
     /// # Arguments
     ///
@@ -111,7 +111,7 @@ impl StorageManager {
         }
     }
 
-    /// Get the current value of a single metric identified by name.
+    /// Gets the current value of a single metric identified by name.
     ///
     /// This look for a value in stores for all lifetimes.
     ///
@@ -146,7 +146,7 @@ impl StorageManager {
         snapshot
     }
 
-    ///  Snapshot the experiments.
+    ///  Snapshots the experiments.
     ///
     /// # Arguments
     ///

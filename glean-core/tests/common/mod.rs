@@ -41,7 +41,7 @@ pub fn tempdir() -> (tempfile::TempDir, String) {
 
 pub const GLOBAL_APPLICATION_ID: &str = "org.mozilla.glean.test.app";
 
-// Create a new instance of Glean with a temporary directory.
+// Creates a new instance of Glean with a temporary directory.
 // We need to keep the `TempDir` alive, so that it's not deleted before we stop using it.
 pub fn new_glean(tempdir: Option<tempfile::TempDir>) -> (Glean, tempfile::TempDir) {
     let dir = match tempdir {
@@ -63,7 +63,7 @@ pub fn new_glean(tempdir: Option<tempfile::TempDir>) -> (Glean, tempfile::TempDi
     (glean, dir)
 }
 
-/// Convert an iso8601::DateTime to a chrono::DateTime<FixedOffset>
+/// Converts an iso8601::DateTime to a chrono::DateTime<FixedOffset>
 pub fn iso8601_to_chrono(datetime: &iso8601::DateTime) -> chrono::DateTime<chrono::FixedOffset> {
     if let YMD { year, month, day } = datetime.date {
         return chrono::FixedOffset::east(datetime.time.tz_offset_hours * 3600)
@@ -78,7 +78,7 @@ pub fn iso8601_to_chrono(datetime: &iso8601::DateTime) -> chrono::DateTime<chron
     panic!("Unsupported datetime format");
 }
 
-/// Get a vector of the currently queued pings.
+/// Gets a vector of the currently queued pings.
 ///
 /// # Arguments
 ///
@@ -95,7 +95,7 @@ pub fn get_queued_pings(data_path: &Path) -> Result<Vec<(String, JsonValue, Opti
     get_pings(&data_path.join("pending_pings"))
 }
 
-/// Get a vector of the currently queued `deletion-request` pings.
+/// Gets a vector of the currently queued `deletion-request` pings.
 ///
 /// # Arguments
 ///

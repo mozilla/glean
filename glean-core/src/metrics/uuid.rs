@@ -29,12 +29,12 @@ impl MetricType for UuidMetric {
 }
 
 impl UuidMetric {
-    /// Create a new UUID metric
+    /// Creates a new UUID metric
     pub fn new(meta: CommonMetricData) -> Self {
         Self { meta }
     }
 
-    /// Set to the specified value.
+    /// Sets to the specified value.
     ///
     /// # Arguments
     ///
@@ -50,7 +50,7 @@ impl UuidMetric {
         glean.storage().record(glean, &self.meta, &value)
     }
 
-    /// Generate a new random UUID and set the metric to it.
+    /// Generates a new random UUID and set the metric to it.
     ///
     /// # Arguments
     ///
@@ -61,7 +61,7 @@ impl UuidMetric {
         uuid
     }
 
-    /// Get the stored Uuid value.
+    /// Gets the stored Uuid value.
     ///
     /// # Arguments
     ///
@@ -84,7 +84,7 @@ impl UuidMetric {
 
     /// **Test-only API (exported for FFI purposes).**
     ///
-    /// Get the currently stored value as a string.
+    /// Gets the currently stored value as a string.
     ///
     /// This doesn't clear the stored value.
     pub fn test_get_value(&self, glean: &Glean, storage_name: &str) -> Option<String> {

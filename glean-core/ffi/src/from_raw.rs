@@ -13,7 +13,7 @@ pub type RawStringArray = *const *const c_char;
 pub type RawIntArray = *const i32;
 pub type RawInt64Array = *const i64;
 
-/// Create a vector of strings from a raw C-like string array.
+/// Creates a vector of strings from a raw C-like string array.
 ///
 /// Returns an error if any of the strings contain invalid UTF-8 characters.
 ///
@@ -40,7 +40,7 @@ pub fn from_raw_string_array(arr: RawStringArray, len: i32) -> glean_core::Resul
     }
 }
 
-/// Create a HashMap<i32, String> from a pair of C int and string arrays.
+/// Creates a HashMap<i32, String> from a pair of C int and string arrays.
 ///
 /// Returns an error if any of the strings contain invalid UTF-8 characters.
 ///
@@ -72,7 +72,7 @@ pub fn from_raw_int_array_and_string_array(
     }
 }
 
-/// Create a HashMap<String, String> from a pair of C string arrays.
+/// Creates a HashMap<String, String> from a pair of C string arrays.
 ///
 /// Returns an error if any of the strings contain invalid UTF-8 characters.
 ///
@@ -110,7 +110,7 @@ pub fn from_raw_string_array_and_string_array(
     }
 }
 
-/// Create a Vec<u32> from a raw C uint64 array.
+/// Creates a Vec<u32> from a raw C uint64 array.
 ///
 /// This will return an empty `Vec` if the input is empty.
 ///

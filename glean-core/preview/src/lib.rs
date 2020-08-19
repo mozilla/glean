@@ -102,7 +102,7 @@ where
     f(&mut lock)
 }
 
-/// Create and initialize a new Glean object.
+/// Creates and initializes a new Glean object.
 ///
 /// See `glean_core::Glean::new`.
 pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) -> Result<()> {
@@ -155,7 +155,7 @@ fn initialize_core_metrics(
     core_metrics.device_model.set(glean, "unknown".to_string());
 }
 
-/// Set whether upload is enabled or not.
+/// Sets whether upload is enabled or not.
 ///
 /// See `glean_core::Glean.set_upload_enabled`.
 pub fn set_upload_enabled(enabled: bool) -> bool {
@@ -174,7 +174,7 @@ pub fn set_upload_enabled(enabled: bool) -> bool {
     })
 }
 
-/// Determine whether upload is enabled.
+/// Determines whether upload is enabled.
 ///
 /// See `glean_core::Glean.is_upload_enabled`.
 pub fn is_upload_enabled() -> bool {
@@ -188,7 +188,7 @@ pub fn register_ping_type(ping: &metrics::PingType) {
     })
 }
 
-/// Collect and submit a ping for eventual uploading.
+/// Collects and submits a ping for eventual uploading.
 ///
 /// See `glean_core::Glean.submit_ping`.
 ///
@@ -199,7 +199,7 @@ pub fn submit_ping(ping: &metrics::PingType, reason: Option<&str>) -> bool {
     submit_ping_by_name(&ping.name, reason)
 }
 
-/// Collect and submit a ping for eventual uploading by name.
+/// Collects and submits a ping for eventual uploading by name.
 ///
 /// See `glean_core::Glean.submit_ping_by_name`.
 ///

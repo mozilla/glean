@@ -29,12 +29,12 @@ impl MetricType for CounterMetric {
 }
 
 impl CounterMetric {
-    /// Create a new counter metric.
+    /// Creates a new counter metric.
     pub fn new(meta: CommonMetricData) -> Self {
         Self { meta }
     }
 
-    /// Increase the counter by `amount`.
+    /// Increases the counter by `amount`.
     ///
     /// # Arguments
     ///
@@ -72,7 +72,7 @@ impl CounterMetric {
 
     /// **Test-only API (exported for FFI purposes).**
     ///
-    /// Get the currently stored value as an integer.
+    /// Gets the currently stored value as an integer.
     ///
     /// This doesn't clear the stored value.
     pub fn test_get_value(&self, glean: &Glean, storage_name: &str) -> Option<i32> {

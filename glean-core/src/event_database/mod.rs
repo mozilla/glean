@@ -79,7 +79,7 @@ pub struct EventDatabase {
 }
 
 impl EventDatabase {
-    /// Create a new event database.
+    /// Creates a new event database.
     ///
     /// # Arguments
     ///
@@ -96,7 +96,7 @@ impl EventDatabase {
         })
     }
 
-    /// Initialize events storage after Glean is fully initialized and ready to send pings.
+    /// Initializes events storage after Glean is fully initialized and ready to send pings.
     ///
     /// This must be called once on application startup, e.g. from
     /// [Glean.initialize], but after we are ready to send pings, since this
@@ -169,7 +169,7 @@ impl EventDatabase {
         ping_sent
     }
 
-    /// Record an event in the desired stores.
+    /// Records an event in the desired stores.
     ///
     /// # Arguments
     ///
@@ -243,7 +243,7 @@ impl EventDatabase {
         }
     }
 
-    /// Get a snapshot of the stored event data as a JsonValue.
+    /// Gets a snapshot of the stored event data as a JsonValue.
     ///
     /// # Arguments
     ///
@@ -296,7 +296,7 @@ impl EventDatabase {
         result
     }
 
-    /// Clear all stored events, both in memory and on-disk.
+    /// Clears all stored events, both in memory and on-disk.
     pub fn clear_all(&self) -> Result<()> {
         // safe unwrap, only error case is poisoning
         self.event_stores.write().unwrap().clear();
@@ -311,7 +311,7 @@ impl EventDatabase {
 
     /// **Test-only API (exported for FFI purposes).**
     ///
-    /// Return whether there are any events currently stored for the given even
+    /// Returns whether there are any events currently stored for the given even
     /// metric.
     ///
     /// This doesn't clear the stored value.
@@ -327,7 +327,7 @@ impl EventDatabase {
 
     /// **Test-only API (exported for FFI purposes).**
     ///
-    /// Get the vector of currently stored events for the given event metric in
+    /// Gets the vector of currently stored events for the given event metric in
     /// the given store.
     ///
     /// This doesn't clear the stored value.

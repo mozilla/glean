@@ -122,7 +122,7 @@ impl ByteBuffer {
         }
     }
 
-    /// Reclaim memory stored in this ByteBuffer.
+    /// Reclaims memory stored in this ByteBuffer.
     ///
     /// You typically should not call this manually, and instead expose a
     /// function that does so via [`define_bytebuffer_destructor!`].

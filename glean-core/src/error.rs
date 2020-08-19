@@ -78,7 +78,7 @@ pub struct Error {
 }
 
 impl Error {
-    /// Return a new UTF-8 error
+    /// Returns a new UTF-8 error
     ///
     /// This is exposed in order to expose conversion errors on the FFI layer.
     pub fn utf8_error() -> Error {

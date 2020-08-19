@@ -42,12 +42,12 @@ impl Default for PingMaker {
 }
 
 impl PingMaker {
-    /// Create a new PingMaker.
+    /// Creates a new PingMaker.
     pub fn new() -> Self {
         Self
     }
 
-    /// Get, and then increment, the sequence number for a given ping.
+    /// Gets, and then increments, the sequence number for a given ping.
     ///
     /// This is crate-internal exclusively for enabling the migration tests.
     pub(super) fn get_ping_seq(&self, glean: &Glean, storage_name: &str) -> usize {
@@ -76,7 +76,7 @@ impl PingMaker {
         current_seq as usize
     }
 
-    /// Get the formatted start and end times for this ping and update for the next ping.
+    /// Gets the formatted start and end times for this ping and update for the next ping.
     fn get_start_end_times(&self, glean: &Glean, storage_name: &str) -> (String, String) {
         let time_unit = TimeUnit::Minute;
 
@@ -213,7 +213,7 @@ impl PingMaker {
         }
     }
 
-    /// Collect a snapshot for the given ping from storage and attach required meta information.
+    /// Collects a snapshot for the given ping from storage and attach required meta information.
     ///
     /// # Arguments
     ///
@@ -262,7 +262,7 @@ impl PingMaker {
         Some(json)
     }
 
-    /// Collect a snapshot for the given ping from storage and attach required meta information.
+    /// Collects a snapshot for the given ping from storage and attach required meta information.
     ///
     /// # Arguments
     ///
@@ -284,7 +284,7 @@ impl PingMaker {
             .map(|ping| ::serde_json::to_string_pretty(&ping).unwrap())
     }
 
-    /// Get path to a directory for ping storage.
+    /// Gets the path to a directory for ping storage.
     ///
     /// The directory will be created inside the `data_path`.
     /// The `pings` directory (and its parents) is created if it does not exist.
@@ -301,7 +301,7 @@ impl PingMaker {
         Ok(pings_dir)
     }
 
-    /// Get path to a directory for temporary storage.
+    /// Gets path to a directory for temporary storage.
     ///
     /// The directory will be created inside the `data_path`.
     /// The `tmp` directory (and its parents) is created if it does not exist.
@@ -311,7 +311,7 @@ impl PingMaker {
         Ok(pings_dir)
     }
 
-    /// Store a ping to disk in the pings directory.
+    /// Stores a ping to disk in the pings directory.
     pub fn store_ping(
         &self,
         glean: &Glean,
@@ -354,7 +354,7 @@ impl PingMaker {
         Ok(())
     }
 
-    /// Clear any pending pings in the queue.
+    /// Clears any pending pings in the queue.
     pub fn clear_pending_pings(&self, data_path: &Path) -> Result<()> {
         let pings_dir = self.get_pings_dir(data_path, None)?;
 

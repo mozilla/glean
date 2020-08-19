@@ -123,7 +123,7 @@ impl MetricType for TimingDistributionMetric {
 }
 
 impl TimingDistributionMetric {
-    /// Create a new timing distribution metric.
+    /// Creates a new timing distribution metric.
     pub fn new(meta: CommonMetricData, time_unit: TimeUnit) -> Self {
         Self {
             meta,
@@ -132,7 +132,7 @@ impl TimingDistributionMetric {
         }
     }
 
-    /// Start tracking time for the provided metric.
+    /// Starts tracking time for the provided metric.
     ///
     /// This records an error if it’s already tracking time (i.e. start was already
     /// called with no corresponding [stop]): in that case the original
@@ -149,7 +149,7 @@ impl TimingDistributionMetric {
         self.timings.set_start(start_time)
     }
 
-    /// Stop tracking time for the provided metric and associated timer id.
+    /// Stops tracking time for the provided metric and associated timer id.
     ///
     /// Adds a count to the corresponding bucket in the timing distribution.
     /// This will record an error if no `start` was called.
@@ -207,7 +207,7 @@ impl TimingDistributionMetric {
             });
     }
 
-    /// Abort a previous `set_start` call. No error is recorded if no `set_start`
+    /// Aborts a previous `set_start` call. No error is recorded if no `set_start`
     /// was called.
     ///
     /// # Arguments
@@ -304,7 +304,7 @@ impl TimingDistributionMetric {
 
     /// **Test-only API (exported for FFI purposes).**
     ///
-    /// Get the currently stored value as an integer.
+    /// Gets the currently stored value as an integer.
     ///
     /// This doesn't clear the stored value.
     pub fn test_get_value(&self, glean: &Glean, storage_name: &str) -> Option<DistributionData> {
@@ -320,7 +320,7 @@ impl TimingDistributionMetric {
 
     /// **Test-only API (exported for FFI purposes).**
     ///
-    /// Get the currently-stored histogram as a JSON String of the serialized value.
+    /// Gets the currently-stored histogram as a JSON String of the serialized value.
     ///
     /// This doesn't clear the stored value.
     pub fn test_get_value_as_json_string(

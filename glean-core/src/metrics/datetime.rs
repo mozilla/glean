@@ -41,7 +41,7 @@ impl MetricType for DatetimeMetric {
 }
 
 impl DatetimeMetric {
-    /// Create a new datetime metric.
+    /// Creates a new datetime metric.
     pub fn new(meta: CommonMetricData, time_unit: TimeUnit) -> Self {
         Self { meta, time_unit }
     }
@@ -114,7 +114,7 @@ impl DatetimeMetric {
         glean.storage().record(glean, &self.meta, &value)
     }
 
-    /// Get the stored datetime value.
+    /// Gets the stored datetime value.
     ///
     /// # Arguments
     ///
@@ -137,7 +137,7 @@ impl DatetimeMetric {
 
     /// **Test-only API (exported for FFI purposes).**
     ///
-    /// Get the currently stored value as a String.
+    /// Gets the currently stored value as a String.
     ///
     /// The precision of this value is truncated to the `time_unit` precision.
     ///

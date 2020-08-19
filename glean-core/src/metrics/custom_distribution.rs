@@ -42,7 +42,7 @@ impl MetricType for CustomDistributionMetric {
 }
 
 impl CustomDistributionMetric {
-    /// Create a new memory distribution metric.
+    /// Creates a new memory distribution metric.
     pub fn new(
         meta: CommonMetricData,
         range_min: u64,
@@ -146,7 +146,7 @@ impl CustomDistributionMetric {
 
     /// **Test-only API (exported for FFI purposes).**
     ///
-    /// Get the currently stored histogram.
+    /// Gets the currently stored histogram.
     ///
     /// This doesn't clear the stored value.
     pub fn test_get_value(&self, glean: &Glean, storage_name: &str) -> Option<DistributionData> {
@@ -164,7 +164,7 @@ impl CustomDistributionMetric {
 
     /// **Test-only API (exported for FFI purposes).**
     ///
-    /// Get the currently stored histogram as a JSON String of the serialized value.
+    /// Gets the currently stored histogram as a JSON String of the serialized value.
     ///
     /// This doesn't clear the stored value.
     pub fn test_get_value_as_json_string(

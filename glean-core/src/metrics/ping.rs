@@ -22,7 +22,7 @@ pub struct PingType {
 }
 
 impl PingType {
-    /// Create a new ping type for the given name, whether to include the client ID and whether to
+    /// Creates a new ping type for the given name, whether to include the client ID and whether to
     /// send this ping empty.
     ///
     /// # Arguments
@@ -45,7 +45,7 @@ impl PingType {
         }
     }
 
-    /// Submit the ping for eventual uploading
+    /// Submits the ping for eventual uploading
     ///
     /// # Arguments
     ///

@@ -87,7 +87,7 @@ impl<T> LabeledMetric<T>
 where
     T: MetricType + Clone,
 {
-    /// Create a new labeled metric from the given metric instance and optional list of labels.
+    /// Creates a new labeled metric from the given metric instance and optional list of labels.
     ///
     /// See [`get`](#method.get) for information on how static or dynamic labels are handled.
     pub fn new(submetric: T, labels: Option<Vec<String>>) -> LabeledMetric<T> {
@@ -113,7 +113,7 @@ where
         t
     }
 
-    /// Create a static label.
+    /// Creates a static label.
     ///
     /// # Safety
     ///
@@ -137,7 +137,7 @@ where
         }
     }
 
-    /// Get a specific metric for a given label.
+    /// Gets a specific metric for a given label.
     ///
     /// If a set of acceptable labels were specified in the `metrics.yaml` file,
     /// and the given label is not in the set, it will be recorded under the special `OTHER_LABEL` label.
@@ -167,7 +167,7 @@ where
         }
     }
 
-    /// Get the template submetric.
+    /// Gets the template submetric.
     ///
     /// The template submetric is the actual metric that is cloned and modified
     /// to record for a specific label.
@@ -187,7 +187,7 @@ pub fn strip_label(identifier: &str) -> &str {
     identifier.splitn(2, '/').next().unwrap()
 }
 
-/// Validate a dynamic label, changing it to OTHER_LABEL if it's invalid.
+/// Validates a dynamic label, changing it to OTHER_LABEL if it's invalid.
 ///
 /// Checks the requested label against limitations, such as the label length and allowed
 /// characters.

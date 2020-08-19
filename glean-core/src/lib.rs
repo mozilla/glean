@@ -76,12 +76,12 @@ pub(crate) const DELETION_REQUEST_PINGS_DIRECTORY: &str = "deletion_request";
 /// Glean.
 static GLEAN: OnceCell<Mutex<Glean>> = OnceCell::new();
 
-/// Get a reference to the global Glean object.
+/// Gets a reference to the global Glean object.
 pub fn global_glean() -> Option<&'static Mutex<Glean>> {
     GLEAN.get()
 }
 
-/// Set or replace the global Glean object.
+/// Sets or replaces the global Glean object.
 pub fn setup_glean(glean: Glean) -> Result<()> {
     // The `OnceCell` type wrapping our Glean is thread-safe and can only be set once.
     // Therefore even if our check for it being empty succeeds, setting it could fail if a
@@ -182,7 +182,7 @@ pub struct Glean {
 }
 
 impl Glean {
-    /// Create and initialize a new Glean object for use in a subprocess.
+    /// Creates and initializes a new Glean object for use in a subprocess.
     ///
     /// Importantly, this will not send any pings at startup, since that
     /// sort of management should only happen in the main process.
@@ -223,7 +223,7 @@ impl Glean {
         })
     }
 
-    /// Create and initialize a new Glean object.
+    /// Creates and initializes a new Glean object.
     ///
     /// This will create the necessary directories and files in `data_path`.
     /// This will also initialize the core metrics.
@@ -283,7 +283,7 @@ impl Glean {
         Self::new(cfg)
     }
 
-    /// Destroy the database.
+    /// Destroys the database.
     ///
     /// After this Glean needs to be reinitialized.
     pub fn destroy_db(&mut self) {
@@ -333,7 +333,7 @@ impl Glean {
         self.event_data_store.flush_pending_events_on_startup(&self)
     }
 
-    /// Set whether upload is enabled or not.
+    /// Sets whether upload is enabled or not.
     ///
     /// When uploading is disabled, metrics aren't recorded at all and no
     /// data is uploaded.
@@ -367,7 +367,7 @@ impl Glean {
         }
     }
 
-    /// Determine whether upload is enabled.
+    /// Determines whether upload is enabled.
     ///
     /// When upload is disabled, no data will be recorded.
     pub fn is_upload_enabled(&self) -> bool {
@@ -462,27 +462,27 @@ impl Glean {
         }
     }
 
-    /// Get the application ID as specified on instantiation.
+    /// Gets the application ID as specified on instantiation.
     pub fn get_application_id(&self) -> &str {
         &self.application_id
     }
 
-    /// Get the data path of this instance.
+    /// Gets the data path of this instance.
     pub fn get_data_path(&self) -> &Path {
         &self.data_path
     }
 
-    /// Get a handle to the database.
+    /// Gets a handle to the database.
     pub fn storage(&self) -> &Database {
         &self.data_store.as_ref().expect("No database found")
     }
 
-    /// Get a handle to the event database.
+    /// Gets a handle to the event database.
     pub fn event_storage(&self) -> &EventDatabase {
         &self.event_data_store
     }
 
-    /// Get the maximum number of events to store before sending a ping.
+    /// Gets the maximum number of events to store before sending a ping.
     pub fn get_max_events(&self) -> usize {
         self.max_events
     }
@@ -513,7 +513,7 @@ impl Glean {
             .process_ping_upload_response(self, uuid, status);
     }
 
-    /// Take a snapshot for the given store and optionally clear it.
+    /// Takes a snapshot for the given store and optionally clear it.
     ///
     /// # Arguments
     ///
@@ -539,7 +539,7 @@ impl Glean {
         )
     }
 
-    /// Collect and submit a ping for eventual uploading.
+    /// Collects and submits a ping for eventual uploading.
     ///
     /// The ping content is assembled as soon as possible, but upload is not
     /// guaranteed to happen immediately, as that depends on the upload
@@ -595,7 +595,7 @@ impl Glean {
         }
     }
 
-    /// Collect and submit a ping by name for eventual uploading.
+    /// Collects and submits a ping by name for eventual uploading.
     ///
     /// The ping content is assembled as soon as possible, but upload is not
     /// guaranteed to happen immediately, as that depends on the upload
@@ -620,7 +620,7 @@ impl Glean {
         }
     }
 
-    /// Get a [`PingType`](metrics/struct.PingType.html) by name.
+    /// Gets a [`PingType`](metrics/struct.PingType.html) by name.
     ///
     /// # Returns
     ///
@@ -643,7 +643,8 @@ impl Glean {
         self.start_time
     }
 
-    /// Indicate that an experiment is running.
+    /// Indicates that an experiment is running.
+    ///
     /// Glean will then add an experiment annotation to the environment
     /// which is sent with pings. This information is not persisted between runs.
     ///
@@ -662,7 +663,7 @@ impl Glean {
         metric.set_active(&self, branch, extra);
     }
 
-    /// Indicate that an experiment is no longer running.
+    /// Indicates that an experiment is no longer running.
     ///
     /// # Arguments
     ///
@@ -672,7 +673,7 @@ impl Glean {
         metric.set_inactive(&self);
     }
 
-    /// Persist Lifetime::Ping data that might be in memory
+    /// Persists Lifetime::Ping data that might be in memory
     /// in case `delay_ping_lifetime_io` is set or was set
     /// at a previous time.
     ///
@@ -685,14 +686,14 @@ impl Glean {
         Ok(())
     }
 
-    /// Set internally-handled application lifetime metrics.
+    /// Sets internally-handled application lifetime metrics.
     fn set_application_lifetime_core_metrics(&self) {
         self.core_metrics.os.set(self, system::OS);
     }
 
     /// ** This is not meant to be used directly.**
     ///
-    /// Clear all the metrics that have `Lifetime::Application`.
+    /// Clears all the metrics that have `Lifetime::Application`.
     pub fn clear_application_lifetime_metrics(&self) {
         log::debug!("Clearing Lifetime::Application metrics");
         if let Some(data) = self.data_store.as_ref() {
@@ -708,7 +709,7 @@ impl Glean {
         self.is_first_run
     }
 
-    /// Set a debug view tag.
+    /// Sets a debug view tag.
     ///
     /// This will return `false` in case `value` is not a valid tag.
     ///
@@ -730,7 +731,7 @@ impl Glean {
         self.debug.debug_view_tag.get()
     }
 
-    /// Set source tags.
+    /// Sets source tags.
     ///
     /// This will return `false` in case `value` contains invalid tags.
     ///
@@ -751,7 +752,7 @@ impl Glean {
         self.debug.source_tags.get()
     }
 
-    /// Set the log pings debug option.
+    /// Sets the log pings debug option.
     ///
     /// This will return `false` in case we are unable to set the option.
     ///
@@ -786,7 +787,7 @@ impl Glean {
 
     /// ** This is not meant to be used directly.**
     ///
-    /// Set the value of a "dirty flag" in the permanent storage.
+    /// Sets the value of a "dirty flag" in the permanent storage.
     ///
     /// The "dirty flag" is meant to have the following behaviour, implemented
     /// by the consumers of the FFI layer:
@@ -805,7 +806,7 @@ impl Glean {
 
     /// ** This is not meant to be used directly.**
     ///
-    /// Check the stored value of the "dirty flag".
+    /// Checks the stored value of the "dirty flag".
     pub fn is_dirty_flag_set(&self) -> bool {
         let dirty_bit_metric = self.get_dirty_bit_metric();
         match StorageManager.snapshot_metric(
@@ -820,7 +821,7 @@ impl Glean {
 
     /// **Test-only API (exported for FFI purposes).**
     ///
-    /// Check if an experiment is currently active.
+    /// Checks if an experiment is currently active.
     ///
     /// # Arguments
     ///
@@ -836,7 +837,7 @@ impl Glean {
 
     /// **Test-only API (exported for FFI purposes).**
     ///
-    /// Get stored data for the requested experiment.
+    /// Gets stored data for the requested experiment.
     ///
     /// # Arguments
     ///
@@ -854,7 +855,8 @@ impl Glean {
 
     /// **Test-only API (exported for FFI purposes).**
     ///
-    /// Delete all stored metrics.
+    /// Deletes all stored metrics.
+    /// 
     /// Note that this also includes the ping sequence numbers, so it has
     /// the effect of resetting those to their initial values.
     pub fn test_clear_all_stores(&self) {

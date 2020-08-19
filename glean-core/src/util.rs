@@ -29,7 +29,7 @@ pub fn sanitize_application_id(application_id: &str) -> String {
         .collect()
 }
 
-/// Generate an ISO8601 compliant date/time string for the given time,
+/// Generates an ISO8601 compliant date/time string for the given time,
 /// truncating it to the provided TimeUnit.
 ///
 /// # Arguments

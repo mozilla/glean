@@ -34,12 +34,12 @@ impl MetricType for StringListMetric {
 }
 
 impl StringListMetric {
-    /// Create a new string list metric.
+    /// Creates a new string list metric.
     pub fn new(meta: CommonMetricData) -> Self {
         Self { meta }
     }
 
-    /// Add a new string to the list.
+    /// Adds a new string to the list.
     ///
     /// # Arguments
     ///
@@ -81,7 +81,7 @@ impl StringListMetric {
         }
     }
 
-    /// Set to a specific list of strings.
+    /// Sets to a specific list of strings.
     ///
     /// # Arguments
     ///
@@ -123,7 +123,7 @@ impl StringListMetric {
 
     /// **Test-only API (exported for FFI purposes).**
     ///
-    /// Get the currently-stored values.
+    /// Gets the currently-stored values.
     ///
     /// This doesn't clear the stored value.
     pub fn test_get_value(&self, glean: &Glean, storage_name: &str) -> Option<Vec<String>> {
@@ -139,7 +139,7 @@ impl StringListMetric {
 
     /// **Test-only API (exported for FFI purposes).**
     ///
-    /// Get the currently-stored values as a JSON String of the format
+    /// Gets the currently-stored values as a JSON String of the format
     /// ["string1", "string2", ...]
     ///
     /// This doesn't clear the stored value.

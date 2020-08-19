@@ -14,7 +14,7 @@ pub struct ClientInfoMetrics {
 }
 
 impl ClientInfoMetrics {
-    /// Create the client info with dummy values for all.
+    /// Creates the client info with dummy values for all.
     pub fn unknown() -> Self {
         ClientInfoMetrics {
             app_build: "unknown".to_string(),

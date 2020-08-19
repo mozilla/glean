@@ -73,11 +73,11 @@ impl RateLimiter {
         self.count = 0;
     }
 
-    /// The counter should reset if
-    ///
-    /// 1. It has never started;
-    /// 2. It has been started more than the interval time ago;
-    /// 3. Something goes wrong while trying to calculate the elapsed time since the last reset.
+    // The counter should reset if
+    //
+    // 1. It has never started;
+    // 2. It has been started more than the interval time ago;
+    // 3. Something goes wrong while trying to calculate the elapsed time since the last reset.
     fn should_reset(&self) -> bool {
         if self.started.is_none() {
             return true;
@@ -111,6 +111,8 @@ impl RateLimiter {
     }
 }
 
+/// An enum representing the possible upload tasks to be performed by an uploader.
+///
 /// When asking for the next ping request to upload,
 /// the requester may receive one out of three possible tasks.
 ///
@@ -163,7 +165,7 @@ pub struct PingUploadManager {
 }
 
 impl PingUploadManager {
-    /// Create a new PingUploadManager.
+    /// Creates a new PingUploadManager.
     ///
     /// Spawns a new thread and processes the pending pings directory,
     /// filling up the queue with whatever pings are in there.
@@ -303,7 +305,7 @@ impl PingUploadManager {
         }
     }
 
-    /// Enqueue pings that might have been cached.
+    /// Enqueues pings that might have been cached.
     ///
     /// The size of the PENDING_PINGS_DIRECTORY directory will be calculated
     /// (by accumulating each ping's size in that directory)
@@ -580,7 +582,7 @@ impl PingUploadManager {
     }
 }
 
-/// Split log message into chunks on Android.
+/// Splits log message into chunks on Android.
 #[cfg(target_os = "android")]
 pub fn chunked_log_info(path: &str, payload: &str) {
     // Since the logcat ring buffer size is configurable, but it's 'max payload' size is not,
@@ -640,7 +642,7 @@ pub fn chunked_log_info(path: &str, payload: &str) {
     }
 }
 
-/// Log payload in one go (all other OS).
+/// Logs payload in one go (all other OS).
 #[cfg(not(target_os = "android"))]
 pub fn chunked_log_info(_path: &str, payload: &str) {
     log::info!("{}", payload)

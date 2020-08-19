@@ -47,7 +47,7 @@ impl std::fmt::Debug for Database {
 }
 
 impl Database {
-    /// Initialize the data store.
+    /// Initializes the data store.
     ///
     /// This opens the underlying rkv store and creates
     /// the underlying directory structure.
@@ -217,7 +217,7 @@ impl Database {
         }
     }
 
-    /// Determine if the storage has the given metric.
+    /// Determines if the storage has the given metric.
     ///
     /// If data cannot be read it is assumed that the storage does not have the metric.
     ///
@@ -256,7 +256,7 @@ impl Database {
             .is_some()
     }
 
-    /// Write to the specified storage with the provided transaction function.
+    /// Writes to the specified storage with the provided transaction function.
     ///
     /// If the storage is unavailable, it will return an error.
     ///
@@ -547,7 +547,7 @@ impl Database {
         }
     }
 
-    /// Persist ping_lifetime_data to disk.
+    /// Persists ping_lifetime_data to disk.
     ///
     /// Does nothing in case there is nothing to persist.
     ///
