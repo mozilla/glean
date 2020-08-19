@@ -51,7 +51,9 @@ Releases can only be done by one of the Glean maintainers.
     ```
     git push upstream release-v25.0.0
     ```
-5. Wait for CI to finish on that branch and ensure it's green: <https://circleci.com/gh/mozilla/glean/tree/release-v25.0.0>
+5. Wait for CI to finish on that branch and ensure it's green:
+    * <https://circleci.com/gh/mozilla/glean/tree/release-v25.0.0>
+    * You can find the TaskCluster task on the corresponding commit. See [How to find TaskCluster tasks](ci.md#how-to-find-taskcluster-tasks) for details.
 6. Apply additional commits for bug fixes to this branch.
     * Adding large new features here is strictly prohibited. They need to go to the `main` branch and wait for the next release.
 
@@ -78,6 +80,7 @@ When CI has finished and is green for your specific release branch, you are read
      4. Under the description, paste the contents of the release notes from `CHANGELOG.md`.
 5. Wait for the CI build to complete for the tag.
     * You can check [on CircleCI for the running build](https://circleci.com/gh/mozilla/glean).
+    * You can find the TaskCluster task on the corresponding commit. See [How to find TaskCluster tasks](ci.md#how-to-find-taskcluster-tasks) for details.
 6. Release the Rust crates:
     ```
     cd glean-core
@@ -113,7 +116,9 @@ If the latest released version requires a bug fix, a hotfix branch is used.
     ```
 5. Fix the bug and commit the fix in one or more separate commits.
 6. Push your bug fixes and create a pull request against the hotfix branch: <https://github.com/mozilla/glean/compare/hotfix-v25.0.1...your-name:bugfix?expand=1>
-7. When that pull request lands, wait for CI to finish on that branch and ensure it's green: <https://circleci.com/gh/mozilla/glean/tree/hotfix-v25.0.1>
+7. When that pull request lands, wait for CI to finish on that branch and ensure it's green:
+    * <https://circleci.com/gh/mozilla/glean/tree/hotfix-v25.0.1>
+    * You can find the TaskCluster task on the corresponding commit. See [How to find TaskCluster tasks](ci.md#how-to-find-taskcluster-tasks) for details.
 
 ### Finish a hotfix branch
 
@@ -138,6 +143,7 @@ When CI has finished and is green for your hotfix branch, you are ready to cut a
     4. Under the description, paste the contents of the release notes from `CHANGELOG.md`.
 5. Wait for the CI build to complete for the tag.
     * You can check [on CircleCI for the running build](https://circleci.com/gh/mozilla/glean).
+    * You can find the TaskCluster task on the corresponding commit. See [How to find TaskCluster tasks](ci.md#how-to-find-taskcluster-tasks) for details.
 6. Release the Rust crates:
     ```
     cd glean-core
@@ -169,7 +175,9 @@ If you need to release a hotfix for a previously released version (that is: not 
     ```
 3. Fix the bug and commit the fix in one or more separate commits into your hotfix branch.
 4. Push your bug fixes and create a pull request against the support branch: <https://github.com/mozilla/glean/compare/support/v24.0...your-name:hotfix-v24.0.1?expand=1>
-5. When that pull request lands, wait for CI to finish on that branch and ensure it's green: <https://circleci.com/gh/mozilla/glean/tree/support/v24.0>
+5. When that pull request lands, wait for CI to finish on that branch and ensure it's green:
+    * <https://circleci.com/gh/mozilla/glean/tree/support/v24.0>
+    * You can find the TaskCluster task on the corresponding commit. See [How to find TaskCluster tasks](ci.md#how-to-find-taskcluster-tasks) for details.
 
 ### Finish a support branch
 
@@ -194,6 +202,7 @@ If you need to release a hotfix for a previously released version (that is: not 
     4. Under the description, paste the contents of the release notes from `CHANGELOG.md`.
 5. Wait for the CI build to complete for the tag.
     * You can check [on CircleCI for the running build](https://circleci.com/gh/mozilla/glean).
+    * You can find the TaskCluster task on the corresponding commit. See [How to find TaskCluster tasks](ci.md#how-to-find-taskcluster-tasks) for details.
 6. Release the Rust crates:
     ```
     cd glean-core

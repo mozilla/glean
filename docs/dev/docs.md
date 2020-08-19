@@ -50,7 +50,7 @@ The generated documentation is saved in `build/docs/javadoc`.
 
 <div data-lang="Swift" class="tab">
 
-Swift API documentation is generated using [jazzy](https://github.com/realm/jazzy). 
+Swift API documentation is generated using [jazzy](https://github.com/realm/jazzy).
 It can be installed using:
 
 1. Install the latest Ruby: `brew install ruby`
@@ -92,14 +92,14 @@ TODO. To be implemented in [bug 1648410](https://bugzilla.mozilla.org/show_bug.c
 
 ### Checking links
 
-Internal links within the documentation can be checked using the [`linkchecker`](http://wummel.github.io/linkchecker/) tool.
+Internal links within the documentation can be checked using the [`link-checker`](https://www.npmjs.com/package/link-checker) tool.
 External links are currently not checked, since this takes considerable time and frequently fails in CI due to networking restrictions or issues.
 
 Link checking requires building the narrative documentation as well as all of the API documentation for all languages.
 It is rare to build all of these locally (and in particular, the Swift API documentation can only be built on macOS), therefore it is reasonable to let CI catch broken link errors for you.
 
-However, if you do want to run the `linkchecker` locally, it can be installed
-using `pip` or your system's package manager. Then, run `linkchecker` with:
+If you do want to run the `link-checker` locally, it can be installed using `npm` or your system's package manager.
+Then, run `link-checker` with:
 
 ```sh
 make linkcheck
