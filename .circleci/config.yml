@@ -37,9 +37,10 @@ commands:
         default: "stable"
     steps:
       - run:
-          name: Turn on RUST_BACKTRACE for any job that installs rustc
+          name: Turn on RUST_BACKTRACE and RUST_LOG for any job that installs rustc
           command: |
               echo "export RUST_BACKTRACE=1" >> $BASH_ENV
+              echo "export RUST_LOG=glean_core=debug,glean_ffi=debug" >> $BASH_ENV
       - run:
           name: Setup Rust toolchain
           command: |
