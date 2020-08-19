@@ -14,7 +14,6 @@ import mozilla.telemetry.glean.resetGlean
 import java.io.File
 import mozilla.telemetry.glean.testing.GleanTestRule
 import mozilla.telemetry.glean.triggerWorkManager
-import mozilla.telemetry.glean.waitForEnqueuedWorker
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertFalse
@@ -134,7 +133,6 @@ class DeletionPingTest {
             serverEndpoint = "http://" + server.hostName + ":" + server.port
         ), clearStores = true, uploadEnabled = false)
         triggerWorkManager(context)
-        waitForEnqueuedWorker(context, PingUploadWorker.PING_WORKER_TAG)
 
         var request = server.takeRequest(20L, TimeUnit.SECONDS)
         var docType = request.path.split("/")[3]
