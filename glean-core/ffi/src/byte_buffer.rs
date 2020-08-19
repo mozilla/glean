@@ -108,8 +108,9 @@ impl ByteBuffer {
         Self { data, len }
     }
 
-    /// Convert this `ByteBuffer` into a Vec<u8>. This is the only way
-    /// to access the data from inside the buffer.
+    /// Convert this `ByteBuffer` into a Vec<u8>.
+    ///
+    /// This is the only way to access the data from inside the buffer.
     #[inline]
     pub fn into_vec(self) -> Vec<u8> {
         if self.data.is_null() {

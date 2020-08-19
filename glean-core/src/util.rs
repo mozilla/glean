@@ -9,8 +9,8 @@ use crate::metrics::TimeUnit;
 use crate::CommonMetricData;
 use crate::Glean;
 
-/// Sanitizes the application id, generating a pipeline-friendly string that replaces
-/// non alphanumeric characters with dashes.
+/// Generates a pipeline-friendly string
+/// that replaces non alphanumeric characters with dashes.
 pub fn sanitize_application_id(application_id: &str) -> String {
     let mut last_dash = false;
     application_id
@@ -29,8 +29,8 @@ pub fn sanitize_application_id(application_id: &str) -> String {
         .collect()
 }
 
-/// Generate an ISO8601 compliant date/time string for the given time, truncating
-/// it to the provided TimeUnit.
+/// Generate an ISO8601 compliant date/time string for the given time,
+/// truncating it to the provided TimeUnit.
 ///
 /// # Arguments
 ///

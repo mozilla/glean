@@ -89,8 +89,9 @@ where
     E: Fn(String) -> Option<T>,
     V: Fn(&T) -> bool,
 {
-    /// Create a new debug option,
-    /// tries to get the initial value of the option from the environment.
+    /// Create a new debug option.
+    ///
+    /// Tries to get the initial value of the option from the environment.
     pub fn new(env: &str, extraction: E, validation: Option<V>) -> Self {
         let mut option = Self {
             env: env.into(),
@@ -136,10 +137,13 @@ where
         }
     }
 
-    /// Tries to set a value for this debug option,
-    /// returns `true` if successfull.
+    /// Tries to set a value for this debug option.
     ///
     /// Validates the value in case a validation function is available.
+    ///
+    /// # Returns
+    ///
+    /// Wether the options was passed validation and was succesfully set.
     pub fn set(&mut self, value: T) -> bool {
         let validated = self.validate(&value);
         if validated {

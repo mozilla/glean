@@ -262,8 +262,7 @@ impl PingMaker {
         Some(json)
     }
 
-    /// Collect a snapshot for the given ping from storage and attach required meta information,
-    /// returning it as a string containing JSON.
+    /// Collect a snapshot for the given ping from storage and attach required meta information.
     ///
     /// # Arguments
     ///

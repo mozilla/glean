@@ -46,8 +46,7 @@ impl DatetimeMetric {
         Self { meta, time_unit }
     }
 
-    /// Public facing API for setting the metric to a date/time which
-    /// includes the timezone offset.
+    /// Sets the metric to a date/time including the timezone offset.
     ///
     /// # Arguments
     ///
@@ -98,8 +97,7 @@ impl DatetimeMetric {
         }
     }
 
-    /// Public facing API for setting the metric to a date/time which
-    /// includes the timezone offset.
+    /// Sets the metric to a date/time which including the timezone offset.
     ///
     /// # Arguments
     ///
@@ -140,8 +138,8 @@ impl DatetimeMetric {
     /// **Test-only API (exported for FFI purposes).**
     ///
     /// Get the currently stored value as a String.
-    /// The precision of this value is truncated to the `time_unit`
-    /// precision.
+    ///
+    /// The precision of this value is truncated to the `time_unit` precision.
     ///
     /// This doesn't clear the stored value.
     pub fn test_get_value_as_string(&self, glean: &Glean, storage_name: &str) -> Option<String> {

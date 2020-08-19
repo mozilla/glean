@@ -32,8 +32,7 @@ pub enum TimeUnit {
 }
 
 impl TimeUnit {
-    /// How to format the given TimeUnit, truncating
-    /// the time if needed.
+    /// Formats the given TimeUnit, truncating the time if needed.
     pub fn format_pattern(self) -> &'static str {
         use TimeUnit::*;
         match self {

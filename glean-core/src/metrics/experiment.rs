@@ -35,10 +35,12 @@ pub struct RecordedExperimentData {
 }
 
 impl RecordedExperimentData {
-    // For JSON, we don't want to include {"extra": null} -- we just want to skip
-    // extra entirely. Unfortunately, we can't use a serde field annotation for this,
-    // since that would break bincode serialization, which doesn't support skipping
-    // fields. Therefore, we use a custom serialization function just for JSON here.
+    /// Get the recorded experiment data as a JSON value.
+    ///
+    /// For JSON, we don't want to include {"extra": null} -- we just want to skip
+    /// extra entirely. Unfortunately, we can't use a serde field annotation for this,
+    /// since that would break bincode serialization, which doesn't support skipping
+    /// fields. Therefore, we use a custom serialization function just for JSON here.
     pub fn as_json(&self) -> JsonValue {
         let mut value = JsonMap::new();
         value.insert("branch".to_string(), json!(self.branch));

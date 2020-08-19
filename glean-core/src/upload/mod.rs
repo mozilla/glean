@@ -92,8 +92,11 @@ impl RateLimiter {
         false
     }
 
-    /// Tries to increment the internal counter
-    /// and returns the current state of the RateLimiter.
+    /// Tries to increment the internal counter.
+    ///
+    /// # Returns
+    ///
+    /// The current state of the RateLimiter.
     pub fn get_state(&mut self) -> RateLimiterState {
         if self.should_reset() {
             self.reset();
@@ -369,10 +372,11 @@ impl PingUploadManager {
         }
     }
 
-    /// Adds rate limiting capability to this upload manager. The rate limiter
-    /// will limit the amount of calls to `get_upload_task` per interval.
+    /// Adds rate limiting capability to this upload manager.
     ///
-    /// Setting will restart count and timer, in case there was a previous rate limiter set
+    /// The rate limiter will limit the amount of calls to `get_upload_task` per interval.
+    ///
+    /// Setting this will restart count and timer in case there was a previous rate limiter set
     /// (e.g. if we have reached the current limit and call this function, we start counting again
     /// and the caller is allowed to asks for tasks).
     ///

@@ -150,7 +150,8 @@ impl TimingDistributionMetric {
     }
 
     /// Stop tracking time for the provided metric and associated timer id.
-    /// Add a count to the corresponding bucket in the timing distribution.
+    ///
+    /// Adds a count to the corresponding bucket in the timing distribution.
     /// This will record an error if no `start` was called.
     ///
     /// # Arguments

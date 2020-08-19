@@ -146,8 +146,8 @@ impl Database {
         }
     }
 
-    /// Iterates with the provided transaction function over the requested data
-    /// from the given storage.
+    /// Iterates with the provided transaction function
+    /// over the requested data from the given storage.
     ///
     /// * If the storage is unavailable, the transaction function is never invoked.
     /// * If the read data cannot be deserialized it will be silently skipped.
@@ -325,8 +325,8 @@ impl Database {
         Ok(())
     }
 
-    /// Records the provided value, with the given lifetime, after
-    /// applying a transformation function.
+    /// Records the provided value, with the given lifetime,
+    /// after applying a transformation function.
     pub fn record_with<F>(&self, glean: &Glean, data: &CommonMetricData, mut transform: F)
     where
         F: FnMut(Option<Metric>) -> Metric,
@@ -341,8 +341,8 @@ impl Database {
         }
     }
 
-    /// Records a metric in the underlying storage system, after applying the
-    /// given transformation function, for a single lifetime.
+    /// Records a metric in the underlying storage system,
+    /// after applying the given transformation function, for a single lifetime.
     ///
     /// # Returns
     ///

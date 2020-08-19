@@ -96,8 +96,9 @@ impl EventDatabase {
         })
     }
 
-    /// Initialize events storage after Glean is fully initialized and ready to
-    /// send pings. This must be called once on application startup, e.g. from
+    /// Initialize events storage after Glean is fully initialized and ready to send pings.
+    ///
+    /// This must be called once on application startup, e.g. from
     /// [Glean.initialize], but after we are ready to send pings, since this
     /// could potentially collect and send pings.
     ///

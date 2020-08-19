@@ -183,6 +183,7 @@ pub struct Glean {
 
 impl Glean {
     /// Create and initialize a new Glean object for use in a subprocess.
+    ///
     /// Importantly, this will not send any pings at startup, since that
     /// sort of management should only happen in the main process.
     pub fn new_for_subprocess(cfg: &Configuration) -> Result<Self> {
@@ -283,6 +284,7 @@ impl Glean {
     }
 
     /// Destroy the database.
+    ///
     /// After this Glean needs to be reinitialized.
     pub fn destroy_db(&mut self) {
         self.data_store = None;
@@ -318,10 +320,11 @@ impl Glean {
         self.set_application_lifetime_core_metrics();
     }
 
-    /// Called when Glean is initialized to the point where it can correctly
-    /// assemble pings. Usually called from the language specific layer after all
-    /// of the core metrics have been set and the ping types have been
-    /// registered.
+    /// Lets Glean know that the environment is ready to submit pings.
+    ///
+    /// Should be called when Glean is initialized to the point where it can correctly assemble pings.
+    /// Usually from the language binding after all of the core metrics have been set
+    /// and the ping types have been registered.
     ///
     /// # Returns
     ///
@@ -700,7 +703,7 @@ impl Glean {
         self.set_application_lifetime_core_metrics();
     }
 
-    /// Return whether or not this is the first run on this profile.
+    /// Whether or not this is the first run on this profile.
     pub fn is_first_run(&self) -> bool {
         self.is_first_run
     }
@@ -784,6 +787,7 @@ impl Glean {
     /// ** This is not meant to be used directly.**
     ///
     /// Set the value of a "dirty flag" in the permanent storage.
+    ///
     /// The "dirty flag" is meant to have the following behaviour, implemented
     /// by the consumers of the FFI layer:
     ///
