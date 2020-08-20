@@ -542,18 +542,23 @@ impl Glean {
     /// Collects and submits a ping for eventual uploading.
     ///
     /// The ping content is assembled as soon as possible, but upload is not
-    /// guaranteed to happen immediately, as that depends on the upload
-    /// policies.
+    /// guaranteed to happen immediately, as that depends on the upload policies.
     ///
-    /// If the ping currently contains no content, it will not be sent.
-    ///
-    /// Returns true if a ping was assembled and queued, false otherwise.
-    /// Returns an error if collecting or writing the ping to disk failed.
+    /// If the ping currently contains no content, it will not be sent,
+    /// unless it is configured to be sent if empty.
     ///
     /// # Arguments
     ///
     /// * `ping` - The ping to submit
     /// * `reason` - A reason code to include in the ping
+    ///
+    /// # Returns
+    ///
+    /// Whether the ping was succesfully assembled and queued.
+    ///
+    /// # Errors
+    ///
+    /// If collecting or writing the ping to disk failed.
     pub fn submit_ping(&self, ping: &PingType, reason: Option<&str>) -> Result<bool> {
         if !self.is_upload_enabled() {
             log::error!("Glean disabled: not submitting any pings.");
@@ -598,18 +603,23 @@ impl Glean {
     /// Collects and submits a ping by name for eventual uploading.
     ///
     /// The ping content is assembled as soon as possible, but upload is not
-    /// guaranteed to happen immediately, as that depends on the upload
-    /// policies.
+    /// guaranteed to happen immediately, as that depends on the upload policies.
     ///
-    /// If the ping currently contains no content, it will not be sent.
-    ///
-    /// Returns true if a ping was assembled and queued, false otherwise.
-    /// Returns an error if collecting or writing the ping to disk failed.
+    /// If the ping currently contains no content, it will not be sent,
+    /// unless it is configured to be sent if empty.
     ///
     /// # Arguments
     ///
     /// * `ping_name` - The name of the ping to submit
     /// * `reason` - A reason code to include in the ping
+    ///
+    /// # Returns
+    ///
+    /// Whether the ping was succesfully assembled and queued.
+    ///
+    /// # Errors
+    ///
+    /// If collecting or writing the ping to disk failed.
     pub fn submit_ping_by_name(&self, ping_name: &str, reason: Option<&str>) -> Result<bool> {
         match self.get_ping_by_name(ping_name) {
             None => {
@@ -620,11 +630,13 @@ impl Glean {
         }
     }
 
-    /// Gets a [`PingType`](metrics/struct.PingType.html) by name.
+    /// Gets a [`PingType`] by name.
     ///
     /// # Returns
     ///
-    /// The `PingType` if a ping of the given name was registered before, `None` otherwise.
+    /// The [`PingType`] of a ping if the given name was registered before, `None` otherwise.
+    ///
+    /// [`PingType`]: metrics/struct.PingType.html
     pub fn get_ping_by_name(&self, ping_name: &str) -> Option<&PingType> {
         self.ping_registry.get(ping_name)
     }
@@ -856,7 +868,7 @@ impl Glean {
     /// **Test-only API (exported for FFI purposes).**
     ///
     /// Deletes all stored metrics.
-    /// 
+    ///
     /// Note that this also includes the ping sequence numbers, so it has
     /// the effect of resetting those to their initial values.
     pub fn test_clear_all_stores(&self) {
