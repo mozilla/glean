@@ -951,6 +951,25 @@ jobs:
   ###########################################################################
   # Docs
 
+  Docs internal metrics check:
+    docker:
+      - image: circleci/python:3.8.2
+    steps:
+      - checkout
+      - run:
+          name: Internal metrics docs consistency check
+          command: |
+            make metrics-docs
+            if ! git diff --exit-code HEAD -- docs/user/collected-metrics/metrics.md; then
+              echo "=================================================="
+              echo "GleanFfi.h is different from what's stored in git."
+              echo "Please regenerate the file using:"
+              echo "    make cbindgen"
+              echo "Commit the modified file and push."
+              echo "=================================================="
+              exit 1
+            fi
+
   docs-linkcheck:
     docker:
       - image: circleci/node
@@ -1034,6 +1053,7 @@ workflows:
       - License check
       - Lint Rust with clippy
       - Rust FFI header check
+      - Docs internal metrics check
       - Lint Android with ktlint and detekt
       - Lint Python
       - Check vendored schema
