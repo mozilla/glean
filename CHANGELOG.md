@@ -1,9 +1,14 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v32.1.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v32.1.1...main)
+
+# v32.1.1 (2020-08-24)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v32.1.0...v32.1.1)
 
 * Android
-  * Fix a startup crash on some Android 8 (SDK=25) devices, due to a [bug in the Java compiler](https://issuetracker.google.com/issues/110848122#comment17).
+  * Support installing glean_parser in offline mode ([#1065](https://github.com/mozilla/glean/pull/1065)).
+  * Fix a startup crash on some Android 8 (SDK=25) devices, due to a [bug in the Java compiler](https://issuetracker.google.com/issues/110848122#comment17) ([#1135](https://github.com/mozilla/glean/pull/1135)).
 
 # v32.1.0 (2020-08-17)
 
