@@ -143,7 +143,7 @@ where
     ///
     /// # Returns
     ///
-    /// Whether the options was passed validation and was succesfully set.
+    /// Whether the option passed validation and was succesfully set.
     pub fn set(&mut self, value: T) -> bool {
         let validated = self.validate(&value);
         if validated {

@@ -112,3 +112,10 @@ pub fn test_clear_all_stores(&self) {
 
 Prefer using [semantic line breaks](https://sembr.org/) when breaking lines in any doc or non-doc comment.
 
+## References
+
+This guidelines are largely based on the Rust API documentation guidelines.
+
+* [RFC 1574 - More API Documentation Conventions](https://github.com/rust-lang/rfcs/blob/master/text/1574-more-api-documentation-conventions.md)
+* [Rust API Guidelines](https://rust-lang.github.io/api-guidelines/documentation.html)
+
