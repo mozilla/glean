@@ -964,7 +964,7 @@ jobs:
               echo "=================================================="
               echo "GleanFfi.h is different from what's stored in git."
               echo "Please regenerate the file using:"
-              echo "    make cbindgen"
+              echo "    make metrics-docs"
               echo "Commit the modified file and push."
               echo "=================================================="
               exit 1
