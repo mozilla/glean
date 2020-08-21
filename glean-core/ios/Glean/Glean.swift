@@ -132,10 +132,9 @@ public class Glean {
 
             // If any pings were registered before initializing, do so now
             for ping in self.pingTypeQueue {
-                self.registerPingType(ping)
-            }
-            if !Dispatchers.shared.testingMode {
-                self.pingTypeQueue.removeAll()
+                // We're registering pings synchronously here,
+                // as this whole `initialize` block already runs off the main thread.
+                glean_register_ping_type(ping.handle)
             }
 
             // If this is the first time ever the Glean SDK runs, make sure to set
@@ -473,13 +472,22 @@ public class Glean {
 
     /// Register a `Ping` in the registry associated with this `Glean` object.
     func registerPingType(_ pingType: PingBase) {
-        // TODO: This might need to synchronized across multiple threads,
-        // `initialize()` will read and clear the ping type queue.
-        if !self.isInitialized() {
-            self.pingTypeQueue.append(pingType)
-        } else {
-            glean_register_ping_type(pingType.handle)
+        // If this happens after Glean.initialize is called (and returns),
+        // we dispatch ping registration on the thread pool.
+        // Registering a ping should not block the application.
+        // Submission itself is also dispatched, so it will always come after the registration.
+        if self.initFinished.value {
+            Dispatchers.shared.launchAPI {
+                glean_register_ping_type(pingType.handle)
+            }
         }
+
+        // We need to keep track of pings, so they get re-registered after a reset.
+        // This state is kept across Glean resets, which should only ever happen in test mode.
+        // Or by the instrumentation tests (`connectedAndroidTest`), which relaunches the application activity,
+        // but not the whole process, meaning globals, such as the ping types, still exist from the old run.
+        // It's a set and keeping them around forever should not have much of an impact.
+        self.pingTypeQueue.append(pingType)
     }
 
     /// Set a tag to be applied to headers when uploading pings for debug view.
