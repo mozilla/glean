@@ -137,7 +137,7 @@ pub trait MetricType {
 }
 
 impl Metric {
-    /// The ping section the metric fits into.
+    /// Gets the ping section the metric fits into.
     ///
     /// This determines the section of the ping to place the metric data in when
     /// assembling the ping payload.

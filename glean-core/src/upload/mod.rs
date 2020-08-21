@@ -73,11 +73,11 @@ impl RateLimiter {
         self.count = 0;
     }
 
-    /// The counter should reset if
-    ///
-    /// 1. It has never started;
-    /// 2. It has been started more than the interval time ago;
-    /// 3. Something goes wrong while trying to calculate the elapsed time since the last reset.
+    // The counter should reset if
+    //
+    // 1. It has never started;
+    // 2. It has been started more than the interval time ago;
+    // 3. Something goes wrong while trying to calculate the elapsed time since the last reset.
     fn should_reset(&self) -> bool {
         if self.started.is_none() {
             return true;
@@ -92,8 +92,11 @@ impl RateLimiter {
         false
     }
 
-    /// Tries to increment the internal counter
-    /// and returns the current state of the RateLimiter.
+    /// Tries to increment the internal counter.
+    ///
+    /// # Returns
+    ///
+    /// The current state of the RateLimiter.
     pub fn get_state(&mut self) -> RateLimiterState {
         if self.should_reset() {
             self.reset();
@@ -108,6 +111,8 @@ impl RateLimiter {
     }
 }
 
+/// An enum representing the possible upload tasks to be performed by an uploader.
+///
 /// When asking for the next ping request to upload,
 /// the requester may receive one out of three possible tasks.
 ///
@@ -160,7 +165,7 @@ pub struct PingUploadManager {
 }
 
 impl PingUploadManager {
-    /// Create a new PingUploadManager.
+    /// Creates a new PingUploadManager.
     ///
     /// Spawns a new thread and processes the pending pings directory,
     /// filling up the queue with whatever pings are in there.
@@ -300,7 +305,7 @@ impl PingUploadManager {
         }
     }
 
-    /// Enqueue pings that might have been cached.
+    /// Enqueues pings that might have been cached.
     ///
     /// The size of the PENDING_PINGS_DIRECTORY directory will be calculated
     /// (by accumulating each ping's size in that directory)
@@ -369,14 +374,15 @@ impl PingUploadManager {
         }
     }
 
-    /// Adds rate limiting capability to this upload manager. The rate limiter
-    /// will limit the amount of calls to `get_upload_task` per interval.
+    /// Adds rate limiting capability to this upload manager.
     ///
-    /// Setting will restart count and timer, in case there was a previous rate limiter set
+    /// The rate limiter will limit the amount of calls to `get_upload_task` per interval.
+    ///
+    /// Setting this will restart count and timer in case there was a previous rate limiter set
     /// (e.g. if we have reached the current limit and call this function, we start counting again
     /// and the caller is allowed to asks for tasks).
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `interval` - the amount of seconds in each rate limiting window.
     /// * `max_tasks` - the maximum amount of task requests allowed per interval.
@@ -479,14 +485,14 @@ impl PingUploadManager {
 
     /// Gets the next `PingUploadTask`.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `glean` - The Glean object holding the database.
     /// * `log_ping` - Whether to log the ping before returning.
     ///
-    /// # Return value
+    /// # Returns
     ///
-    /// `PingUploadTask` - see [`PingUploadTask`](enum.PingUploadTask.html) for more information.
+    /// The next [`PingUploadTask`](enum.PingUploadTask.html).
     pub fn get_upload_task(&self, glean: &Glean, log_ping: bool) -> PingUploadTask {
         let task = self.get_upload_task_internal(glean, log_ping);
         if task == PingUploadTask::Done || task == PingUploadTask::Wait {
@@ -576,7 +582,7 @@ impl PingUploadManager {
     }
 }
 
-/// Split log message into chunks on Android.
+/// Splits log message into chunks on Android.
 #[cfg(target_os = "android")]
 pub fn chunked_log_info(path: &str, payload: &str) {
     // Since the logcat ring buffer size is configurable, but it's 'max payload' size is not,
@@ -636,7 +642,7 @@ pub fn chunked_log_info(path: &str, payload: &str) {
     }
 }
 
-/// Log payload in one go (all other OS).
+/// Logs payload in one go (all other OS).
 #[cfg(not(target_os = "android"))]
 pub fn chunked_log_info(_path: &str, payload: &str) {
     log::info!("{}", payload)

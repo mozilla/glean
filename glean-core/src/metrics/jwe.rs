@@ -224,14 +224,14 @@ impl MetricType for JweMetric {
 }
 
 impl JweMetric {
-    /// Create a new JWE metric.
+    /// Creates a new JWE metric.
     pub fn new(meta: CommonMetricData) -> Self {
         Self { meta }
     }
 
-    /// Set to the specified JWE value.
+    /// Sets to the specified JWE value.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `glean` - the Glean instance this metric belongs to.
     /// * `value` - the [`compact representation`](https://tools.ietf.org/html/rfc7516#appendix-A.2.7) of a JWE value.
@@ -249,9 +249,9 @@ impl JweMetric {
         };
     }
 
-    /// Build a JWE value from its elements and set to it.
+    /// Builds a JWE value from its elements and set to it.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `glean` - the Glean instance this metric belongs to.
     /// * `header` - the JWE Protected Header element.
@@ -282,7 +282,7 @@ impl JweMetric {
 
     /// **Test-only API (exported for FFI purposes).**
     ///
-    /// Get the currently stored value as a string.
+    /// Gets the currently stored value as a string.
     ///
     /// This doesn't clear the stored value.
     pub fn test_get_value(&self, glean: &Glean, storage_name: &str) -> Option<String> {
@@ -298,7 +298,7 @@ impl JweMetric {
 
     /// **Test-only API (exported for FFI purposes).**
     ///
-    /// Get the currently stored JWE as a JSON String of the serialized value.
+    /// Gets the currently stored JWE as a JSON String of the serialized value.
     ///
     /// This doesn't clear the stored value.
     pub fn test_get_value_as_json_string(

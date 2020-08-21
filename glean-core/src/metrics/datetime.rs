@@ -41,15 +41,14 @@ impl MetricType for DatetimeMetric {
 }
 
 impl DatetimeMetric {
-    /// Create a new datetime metric.
+    /// Creates a new datetime metric.
     pub fn new(meta: CommonMetricData, time_unit: TimeUnit) -> Self {
         Self { meta, time_unit }
     }
 
-    /// Public facing API for setting the metric to a date/time which
-    /// includes the timezone offset.
+    /// Sets the metric to a date/time including the timezone offset.
     ///
-    /// ## Arguments:
+    /// # Arguments
     ///
     /// * `glean` - the Glean instance this metric belongs to.
     /// * `year` - the year to set the metric to.
@@ -98,10 +97,9 @@ impl DatetimeMetric {
         }
     }
 
-    /// Public facing API for setting the metric to a date/time which
-    /// includes the timezone offset.
+    /// Sets the metric to a date/time which including the timezone offset.
     ///
-    /// ## Arguments:
+    /// # Arguments
     ///
     /// * `glean` - the Glean instance this metric belongs to.
     /// * `value` - Some date/time value, with offset, to set the metric to.
@@ -116,16 +114,16 @@ impl DatetimeMetric {
         glean.storage().record(glean, &self.meta, &value)
     }
 
-    /// Get the stored datetime value.
+    /// Gets the stored datetime value.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `glean` - the Glean instance this metric belongs to.
     /// * `storage_name` - the storage name to look into.
     ///
-    /// ## Return value
+    /// # Returns
     ///
-    /// Returns the stored value or `None` if nothing stored.
+    /// The stored value or `None` if nothing stored.
     pub(crate) fn get_value(&self, glean: &Glean, storage_name: &str) -> Option<Datetime> {
         match StorageManager.snapshot_metric(
             glean.storage(),
@@ -139,9 +137,9 @@ impl DatetimeMetric {
 
     /// **Test-only API (exported for FFI purposes).**
     ///
-    /// Get the currently stored value as a String.
-    /// The precision of this value is truncated to the `time_unit`
-    /// precision.
+    /// Gets the currently stored value as a String.
+    ///
+    /// The precision of this value is truncated to the `time_unit` precision.
     ///
     /// This doesn't clear the stored value.
     pub fn test_get_value_as_string(&self, glean: &Glean, storage_name: &str) -> Option<String> {

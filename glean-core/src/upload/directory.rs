@@ -27,7 +27,7 @@ pub struct PingPayloadsByDirectory {
 }
 
 impl PingPayloadsByDirectory {
-    /// Extend the data of this instance of PingPayloadsByDirectory
+    /// Extends the data of this instance of PingPayloadsByDirectory
     /// with the data from another instance of PingPayloadsByDirectory.
     pub fn extend(&mut self, other: PingPayloadsByDirectory) {
         self.pending_pings.extend(other.pending_pings);
@@ -36,7 +36,7 @@ impl PingPayloadsByDirectory {
     }
 }
 
-/// Get the file name from a path as a &str.
+/// Gets the file name from a path as a &str.
 ///
 /// # Panics
 ///
@@ -57,7 +57,7 @@ fn get_file_name_as_str(path: &Path) -> Option<&str> {
     }
 }
 
-/// Process a ping's metadata.
+/// Processes a ping's metadata.
 ///
 /// The metadata is an optional third line in the ping file,
 /// currently it contains only additonal headers to be added to each ping request.
@@ -106,9 +106,9 @@ impl PingDirectoryManager {
     ///
     /// * `uuid` - The UUID of the ping file to be deleted
     ///
-    /// # Return value
+    /// # Returns
     ///
-    /// Returns `true` if the file was deleted succesfully and `false` otherwise.
+    /// Whether the file was successfully deleted.
     ///
     /// # Panics
     ///
@@ -178,7 +178,7 @@ impl PingDirectoryManager {
         None
     }
 
-    /// Process both ping directories.
+    /// Processes both ping directories.
     pub fn process_dirs(&self) -> PingPayloadsByDirectory {
         PingPayloadsByDirectory {
             pending_pings: self.process_dir(&self.pending_pings_dir),
@@ -186,17 +186,16 @@ impl PingDirectoryManager {
         }
     }
 
-    /// Process one of the pings directory and return a vector with the ping data
+    /// Processes one of the pings directory and return a vector with the ping data
     /// corresponding to each valid ping file in the directory.
     /// This vector will be ordered by file `modified_date`.
     ///
     /// Any files that don't match the UUID regex will be deleted
     /// to prevent files from polluting the pings directory.
     ///
-    /// # Return value
+    /// # Returns
     ///
-    /// Returns a vector of tuples with the file size
-    /// and payload of each ping file in the directory.
+    /// A vector of tuples with the file size and payload of each ping file in the directory.
     fn process_dir(&self, dir: &Path) -> Vec<(u64, PingPayload)> {
         log::info!("Processing persisted pings.");
 
@@ -260,7 +259,7 @@ impl PingDirectoryManager {
             .collect()
     }
 
-    /// Get the path for a ping file based on its document_id.
+    /// Gets the path for a ping file based on its document_id.
     ///
     /// Will look for files in each ping directory until something is found.
     /// If nothing is found, returns `None`.

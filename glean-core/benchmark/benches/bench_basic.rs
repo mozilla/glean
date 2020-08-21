@@ -1,10 +1,10 @@
 use benchmark::glean_core::{metrics::*, CommonMetricData, Configuration, Glean};
 use criterion::{criterion_group, criterion_main, Criterion};
 
-/// Set metrics and submit a custom ping.
+/// Sets metrics and submits a custom ping.
 ///
-/// Glean, the metrics and the custom ping are instantiated before benchmarking the set/submit
-/// functionality.
+/// Glean, the metrics and the custom ping are instantiated
+/// before benchmarking the set/submit functionality.
 pub fn criterion_benchmark(c: &mut Criterion) {
     let data_dir = tempfile::tempdir().unwrap();
     let tmpname = data_dir.path().display().to_string();

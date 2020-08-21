@@ -52,14 +52,14 @@ impl MetricType for MemoryDistributionMetric {
 }
 
 impl MemoryDistributionMetric {
-    /// Create a new memory distribution metric.
+    /// Creates a new memory distribution metric.
     pub fn new(meta: CommonMetricData, memory_unit: MemoryUnit) -> Self {
         Self { meta, memory_unit }
     }
 
     /// Accumulates the provided sample in the metric.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `sample` - The sample to be recorded by the metric. The sample is assumed to be in the
     ///   configured memory unit of the metric.
@@ -109,7 +109,7 @@ impl MemoryDistributionMetric {
     /// method was called on is using [MemoryUnit.Kilobyte], then `samples` are assumed
     /// to be in that unit).
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `samples` - The vector holding the samples to be recorded by the metric.
     ///
@@ -174,7 +174,7 @@ impl MemoryDistributionMetric {
 
     /// **Test-only API (exported for FFI purposes).**
     ///
-    /// Get the currently stored value as an integer.
+    /// Gets the currently stored value as an integer.
     ///
     /// This doesn't clear the stored value.
     pub fn test_get_value(&self, glean: &Glean, storage_name: &str) -> Option<DistributionData> {
@@ -190,7 +190,7 @@ impl MemoryDistributionMetric {
 
     /// **Test-only API (exported for FFI purposes).**
     ///
-    /// Get the currently-stored histogram as a JSON String of the serialized value.
+    /// Gets the currently-stored histogram as a JSON String of the serialized value.
     ///
     /// This doesn't clear the stored value.
     pub fn test_get_value_as_json_string(

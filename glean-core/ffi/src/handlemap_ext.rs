@@ -30,13 +30,13 @@ where
     res
 }
 
-/// Helper for the case where we aren't exposing this back over the FFI and
-/// we just want to warn if an error occurred and then release the allocated
-/// memory.
+/// Warns if an error occurred and then release the allocated memory.
+///
+/// This is a helper for the case where we aren't exposing this back over the FFI.
 ///
 /// Adopted from the `consume_and_log_if_error` method, but with a changed log message.
 ///
-/// We assume we're not inside a catch_unwind, and so we wrap inside one ourselves.
+/// We assume we're not inside a `catch_unwind`, and so we wrap inside one ourselves.
 pub fn log_if_error(error: ExternError) {
     if !error.get_code().is_success() {
         // in practice this should never panic, but you never know...

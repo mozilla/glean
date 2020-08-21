@@ -64,6 +64,7 @@
     - [Python bindings](dev/python/index.md)
         - [Setup Build Environment](dev/python/setting-up-python-build-environment.md)
     - [Rust Component](dev/core/index.md)
+        - [Documentation guidelines](dev/core/documentation-guidelines.md)
         - [Dependency Management](dev/core/dependency-management.md)
         - [Adding a new metric type](dev/core/new-metric-type.md)
             - [FFI](dev/core/new-metric-type/ffi.md)
