@@ -8,18 +8,18 @@ For offline builds, the Python environment, and packages of `glean_parser` and i
 
 To build a Glean-using application in offline mode, do the following:
 
-- Install Python 3.6 or later and ensure it's on the `PATH`. 
+- Install Python 3.6 or later and ensure it's on the `PATH`.
 
-  - On Linux, installing Python from your Linux distribution's package manager is usually sufficient. 
-  
+  - On Linux, installing Python from your Linux distribution's package manager is usually sufficient.
+
   - On macOS, installing Python from [`homebrew`](https://brew.sh/) is known to work, but other package managers may also work.
-  
+
   - On Windows, we recommend installing one of the official Python installers from [python.org](https://python.org).
-  
+
 - Determine the version of `glean_parser` required.
 
   - It can be really difficult to manually determine the version of `glean_parser` that is required for a given application, since it needs to be tracked through `android-components`, to `glean-core` and finally to `glean_parser`. The required version of `glean_parser` can be determined by running the following at the top-level of the Glean-using application:
-  
+
     ```sh
     $ ./gradlew | grep "Requires glean_parser"
     Requires glean_parser==1.28.1
@@ -34,7 +34,7 @@ To build a Glean-using application in offline mode, do the following:
     ```sh
     $ python3 -m pip download glean_parser==X.Y.Z
     ```
-  
+
 - Build the Glean-using project using `./gradlew`, but passing in the `--offline` flag.
 
 There are a couple of environment variables that control offline building:
