@@ -962,7 +962,7 @@ jobs:
             make metrics-docs
             if ! git diff --exit-code HEAD -- docs/user/collected-metrics/metrics.md; then
               echo "=================================================="
-              echo "GleanFfi.h is different from what's stored in git."
+              echo "metrics.md is different from what's stored in git."
               echo "Please regenerate the file using:"
               echo "    make metrics-docs"
               echo "Commit the modified file and push."
