@@ -60,9 +60,9 @@ These sections are:
 
 1. `# Arguments` - A list of the functions arguments and a short description of what they are. Note that there is no need to point out the type of the given argument on the doc comment since it is already outlined in the code.
 2. `# Returns` - A short summary of what this function returns. Note that there is no need to start this summary with "Returns..." since that is already the title of the section.
-3. `# Errors` - The possible paths that will or won't lead this function to return an error. It is at the discretion of the programmer to decide which cases are worth pointing out here. if any.
-4. `# Panics` - The possible paths that will or won't lead this function to `panic!`. It is at the discretion of the programmer to decide which cases are worth pointing out here. if any.
-4. `# Safety` - In case there are any safety concerns or guarantees, this is the section to point them out. It is at the discretion of the programmer to decide which cases are worth pointing out here, if any.
+3. `# Errors` - The possible paths that will or won't lead this function to return an error. It is at the discretion of the programmer to decide which cases are worth pointing out here.
+4. `# Panics` - The possible paths that will or won't lead this function to `panic!`. It is at the discretion of the programmer to decide which cases are worth pointing out here.
+4. `# Safety` - In case there are any safety concerns or guarantees, this is the section to point them out. It is at the discretion of the programmer to decide which cases are worth pointing out here.
 5. `# Examples` - If necessary, this section holds examples of usage of the function.
 
 These sections should only be added to a doc comment when necessary, e.g. we only add an `# Arguments` section when a function has arguments.
@@ -111,5 +111,4 @@ pub fn test_clear_all_stores(&self) {
 ### Semantic line breaks
 
 Prefer using [semantic line breaks](https://sembr.org/) when breaking lines in any doc or non-doc comment.
-
 

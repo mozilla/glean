@@ -37,8 +37,8 @@ pub struct RecordedExperimentData {
 impl RecordedExperimentData {
     /// Gets the recorded experiment data as a JSON value.
     ///
-    /// For JSON, we don't want to include {"extra": null} -- we just want to skip
-    /// extra entirely. Unfortunately, we can't use a serde field annotation for this,
+    /// For JSON, we don't want to include `{"extra": null}` -- we just want to skip
+    /// `extra` entirely. Unfortunately, we can't use a serde field annotation for this,
     /// since that would break bincode serialization, which doesn't support skipping
     /// fields. Therefore, we use a custom serialization function just for JSON here.
     pub fn as_json(&self) -> JsonValue {

@@ -320,10 +320,10 @@ impl Glean {
         self.set_application_lifetime_core_metrics();
     }
 
-    /// Lets Glean know that the environment is ready to submit pings.
+    /// Signals that the environment is ready to submit pings.
     ///
     /// Should be called when Glean is initialized to the point where it can correctly assemble pings.
-    /// Usually from the language binding after all of the core metrics have been set
+    /// Usually called from the language binding after all of the core metrics have been set
     /// and the ping types have been registered.
     ///
     /// # Returns
