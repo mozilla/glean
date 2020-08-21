@@ -29,7 +29,7 @@ public class Glean {
     // Set when `initialize()` returns.
     // This allows to detect calls that happen before `Glean.shared.initialize()` was called.
     // Note: The initialization might still be in progress, as it runs in a separate thread.
-    var initFinished: Bool = false
+    var initFinished = AtomicBoolean(false)
 
     private var debugViewTag: String?
     private var sourceTags: [String]?
@@ -188,7 +188,7 @@ public class Glean {
             self.observer = GleanLifecycleObserver()
         }
 
-        self.initFinished = true
+        self.initFinished.value = true
     }
 
     // swiftlint:enable function_body_length cyclomatic_complexity
@@ -228,7 +228,7 @@ public class Glean {
     /// - parameters:
     ///     * enabled: When true, enable metric collection.
     public func setUploadEnabled(_ enabled: Bool) {
-        if !self.initFinished {
+        if !self.initFinished.value {
             let msg = """
             Changing upload enabled before Glean is initialized is not supported.
             Pass the correct state into `Glean.initialize()`.
@@ -595,7 +595,7 @@ public class Glean {
         glean_destroy_glean()
         // Reset all state.
         Dispatchers.shared.setTaskQueueing(enabled: true)
-        self.initFinished = false
+        self.initFinished.value = false
         self.initialized = false
     }
 
