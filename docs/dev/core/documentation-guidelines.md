@@ -15,7 +15,10 @@ the rest of the text is free form and optional.
 
 Every public function / constant must have a dedicated [doc comment](https://doc.rust-lang.org/book/ch14-02-publishing-to-crates-io.html#making-useful-documentation-comments).
 
-Non public functions / constants don't need a doc comment and should get a [non-doc comment](https://doc.rust-lang.org/reference/comments.html#non-doc-comments) when necessary.
+Non public functions / constants are not required to, but may have doc comments. These comments should follow
+the same structure as public functions.
+
+> **Note** Private functions are not added to the generated documentation by default, but may be by using the [`--document-private-items`](https://doc.rust-lang.org/cargo/commands/cargo-doc.html) option.
 
 ### Structure
 
