@@ -396,4 +396,150 @@ class EventMetricTypeTest {
 
         assertEquals(1, click.testGetNumRecordedErrors(ErrorType.InvalidOverflow))
     }
+
+    @Test
+    fun `overdue events are submitted in registered custom pings`() {
+        val server = getMockWebServer()
+        val context = getContextWithMockedInfo()
+
+        resetGlean(
+            context,
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port
+            ),
+            clearStores = true
+        )
+
+        val pingName = "another-ping"
+        val event = EventMetricType<SomeExtraKeys>(
+            disabled = false,
+            category = "telemetry",
+            name = "test_event",
+            lifetime = Lifetime.Ping,
+            sendInPings = listOf(pingName),
+            allowedExtraKeys = listOf("someExtra")
+        )
+
+        // Let's record a single event. This will be queued up but not be sent.
+        event.record(extra = mapOf(SomeExtraKeys.SomeExtra to "alternative"))
+        assertEquals(1, event.testGetValue().size)
+
+        // Let's act as if the app was stopped
+        Glean.testDestroyGleanHandle()
+
+        // Now create and register a ping before Glean.initialize
+        @Suppress("UNUSED_VARIABLE")
+        val ping = PingType<NoReasonCodes>(
+            name = pingName,
+            includeClientId = true,
+            sendIfEmpty = false,
+            reasonCodes = listOf())
+
+        // Reset Glean
+        resetGlean(
+            context,
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port
+            ),
+            clearStores = false
+        )
+
+        // Trigger worker task to upload the pings in the background
+        triggerWorkManager(context)
+
+        var request = server.takeRequest(20L, TimeUnit.SECONDS)
+        var docType = request.path.split("/")[3]
+        assertEquals(pingName, docType)
+
+        var pingJsonData = request.getPlainBody()
+        var pingJson = JSONObject(pingJsonData)
+        checkPingSchema(pingJson)
+        assertNotNull(pingJson.opt("events"))
+
+        // This event comes from disk from the prior "run"
+        assertEquals(
+            1,
+            pingJson.getJSONArray("events").length()
+        )
+        assertEquals(
+            "alternative",
+            pingJson.getJSONArray("events").getJSONObject(0).getJSONObject("extra").getString("someExtra")
+        )
+    }
+
+    @Test
+    fun `overdue events are discarded if ping is not registered`() {
+        // This is similar to the above test,
+        // except that we register the custom ping AFTER initialize.
+        // Overdue events are thus discarded because the ping is unknown at initialization time.
+
+        val server = getMockWebServer()
+        val context = getContextWithMockedInfo()
+
+        resetGlean(
+            context,
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port
+            ),
+            clearStores = true
+        )
+
+        val pingName = "another-ping-2"
+        val event = EventMetricType<SomeExtraKeys>(
+            disabled = false,
+            category = "telemetry",
+            name = "test_event",
+            lifetime = Lifetime.Ping,
+            sendInPings = listOf(pingName),
+            allowedExtraKeys = listOf("someExtra")
+        )
+
+        // Let's record a single event. This will be queued up but not be sent.
+        event.record(extra = mapOf(SomeExtraKeys.SomeExtra to "alternative"))
+        assertEquals(1, event.testGetValue().size)
+
+        // Let's act as if the app was stopped
+        Glean.testDestroyGleanHandle()
+
+        // Reset Glean
+        resetGlean(
+            context,
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port
+            ),
+            clearStores = false
+        )
+
+        // Create and register a ping AFTER Glean.initialize
+        @Suppress("UNUSED_VARIABLE")
+        val ping = PingType<NoReasonCodes>(
+            name = pingName,
+            includeClientId = true,
+            sendIfEmpty = false,
+            reasonCodes = listOf())
+
+        // Trigger worker task to upload the pings in the background
+        triggerWorkManager(context)
+
+        // We can't properly test the absence of data,
+        // but we can try to receive one and that causes an exception if there is none.
+        try {
+            var request = server.takeRequest(20L, TimeUnit.SECONDS)
+            var docType = request.path.split("/")[3]
+            assertTrue("Didn't expect a ping, still got one with document type $docType", false)
+        } catch (e: IllegalStateException) {
+            assertTrue("No ping received.", true)
+        }
+
+        // Now try to manually submit the ping.
+        // No events should be left, thus we don't receive it.
+        ping.submit()
+        try {
+            var request = server.takeRequest(20L, TimeUnit.SECONDS)
+            var docType = request.path.split("/")[3]
+            assertTrue("Didn't expect a ping, still got one with document type $docType", false)
+        } catch (e: IllegalStateException) {
+            assertTrue("No ping received.", true)
+        }
+    }
 }
