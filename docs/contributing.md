@@ -69,7 +69,6 @@ Before submitting a PR:
 - For changes to Swift code
   - `make test-swift` (or running tests in Xcode) runs without emitting any warnings or errors.
   - `make swiftlint` runs without emitting any warnings or errors.
-  - `make swiftfmt` runs without emitting any warnings or producing changes.
 - Your patch should include new tests that cover your changes. It is your and your reviewer's responsibility to ensure your patch includes adequate tests.
 
 When submitting a PR:
