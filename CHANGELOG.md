@@ -21,6 +21,7 @@
   * `kebab-case` ping names are now converted to `snake_case` so they are available on the object returned by `load_pings`.
   * For performance reasons, the `glinter` is no longer run as part of `glean.load_metrics()`. We recommend running `glinter` as part of your project's continuous integration instead.
   * A `measure` context manager for conveniently measuring runtimes has been added to `TimespanMetricType` and `TimingDistributionMetricType`.
+  * Networking errors have changed from `ERROR` level to `DEBUG` level so they aren't displayed by default.
 * Android
   * Fix a startup crash on some Android 8 (SDK=25) devices, due to a [bug in the Java compiler](https://issuetracker.google.com/issues/110848122#comment17).
 * iOS

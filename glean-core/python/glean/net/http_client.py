@@ -66,13 +66,13 @@ class HttpClientUploader(base_uploader.BaseUploader):
             log.error(f"Could not upload telemetry due to malformed URL: '{url}' {e}")
             return ping_uploader.UnrecoverableFailure()
         except http.client.HTTPException as e:
-            log.error(f"http.client.HTTPException while uploading ping: '{url}' {e}")
+            log.debug(f"http.client.HTTPException while uploading ping: '{url}' {e}")
             return ping_uploader.RecoverableFailure()
         except socket.gaierror as e:
-            log.error(f"socket.gaierror while uploading ping: '{url}' {e}")
+            log.debug(f"socket.gaierror while uploading ping: '{url}' {e}")
             return ping_uploader.RecoverableFailure()
         except OSError as e:
-            log.error(f"OSError while uploading ping: '{url}' {e}")
+            log.debug(f"OSError while uploading ping: '{url}' {e}")
             return ping_uploader.RecoverableFailure()
         except Exception as e:
             log.error(f"Unknown Exception while uploading ping: '{url}' {e}")
