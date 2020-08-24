@@ -6,6 +6,7 @@
   * Handle ping registration off the main thread. This removes a potential blocking call ([#1132](https://github.com/mozilla/glean/pull/1132)).
 * iOS
   * Handle ping registration off the main thread. This removes a potential blocking call ([#1132](https://github.com/mozilla/glean/pull/1132)).
+  * Glean for iOS is now being built with Xcode 12.0.0 (Beta 5) ([#1170](https://github.com/mozilla/glean/pull/1170)).
 
 # v32.2.0 (2020-08-25)
 
