@@ -156,8 +156,6 @@ open class GleanInternalAPI internal constructor () {
         // Execute startup off the main thread.
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.executeTask {
-            registerPings(Pings)
-
             val cfg = FfiConfiguration(
                 dataDir = gleanDataDir.path,
                 packageName = applicationContext.packageName,
@@ -198,15 +196,21 @@ open class GleanInternalAPI internal constructor () {
             val isDirtyFlagSet = LibGleanFFI.INSTANCE.glean_is_dirty_flag_set().toBoolean()
             LibGleanFFI.INSTANCE.glean_set_dirty_flag(false.toByte())
 
+            // Register builtin pings.
+            // Unfortunately we need to manually list them here to guarantee they are registered synchronously
+            // before we need them.
+            // We don't need to handle the deletion-request ping. It's never touched from the language implementation.
+            LibGleanFFI.INSTANCE.glean_register_ping_type(Pings.baseline.handle)
+            LibGleanFFI.INSTANCE.glean_register_ping_type(Pings.metrics.handle)
+            LibGleanFFI.INSTANCE.glean_register_ping_type(Pings.events.handle)
+
             // If any pings were registered before initializing, do so now.
             // We're not clearing this queue in case Glean is reset by tests.
             synchronized(this@GleanInternalAPI) {
                 pingTypeQueue.forEach {
                     // We're registering pings synchronously here,
                     // as this whole `initialize` block already runs off the main thread.
-                    LibGleanFFI.INSTANCE.glean_register_ping_type(
-                        it.handle
-                    )
+                    LibGleanFFI.INSTANCE.glean_register_ping_type(it.handle)
                 }
             }
 
