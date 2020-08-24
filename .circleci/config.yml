@@ -392,7 +392,8 @@ jobs:
 
   Lint Android with ktlint and detekt:
     docker:
-      - image: circleci/android:api-28-ndk
+      # FIXME(bug 1659706): Use `circleci/android:api-28-ndk` again
+      - image: circleci/android@sha256:467c03465c664de6c915cfd94f4a8fc91cd16d87f704e8323704b2576330bf6e
     steps:
       - checkout
       - run: ./gradlew --no-daemon lint
@@ -401,7 +402,8 @@ jobs:
 
   Android tests:
     docker:
-      - image: circleci/android:api-28-ndk
+      # FIXME(bug 1659706): Use `circleci/android:api-28-ndk` again
+      - image: circleci/android@sha256:467c03465c664de6c915cfd94f4a8fc91cd16d87f704e8323704b2576330bf6e
     steps:
       - android-setup
       - skip-if-doc-only
@@ -447,7 +449,8 @@ jobs:
 
   Generate Kotlin documentation:
     docker:
-      - image: circleci/android:api-28-ndk
+      # FIXME(bug 1659706): Use `circleci/android:api-28-ndk` again
+      - image: circleci/android@sha256:467c03465c664de6c915cfd94f4a8fc91cd16d87f704e8323704b2576330bf6e
     steps:
       - android-setup
       - run:
@@ -473,18 +476,12 @@ jobs:
       - run:
           name: Install lint tools
           command: |
-            brew install swiftlint swiftformat
+            brew install swiftlint
       - run:
           name: Run swiftlint
           command: |
             swiftlint version
             swiftlint --strict
-      - run:
-          name: Run swiftformat
-          command: |
-            swiftformat --version
-            swiftformat glean-core/ios samples/ios --swiftversion 5 --verbose
-            git diff --exit-code HEAD -- glean-core/ios samples/ios
 
   iOS build and test:
     macos:

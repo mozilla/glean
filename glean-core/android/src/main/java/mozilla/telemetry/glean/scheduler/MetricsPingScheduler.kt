@@ -63,6 +63,26 @@ internal class MetricsPingScheduler(
     }
 
     /**
+     * Safely transforms a `Date` to a `String`.
+     *
+     * This is only useful for working around a crash bug on Android 8 devices.
+     *
+     * @return the `Date` as a `String` or `<buggy Android 8>` if running on a buggy OS.
+     */
+    internal fun safeDateToString(date: Date): String
+    {
+        // Work around a bug in Android 8 devices (SDK=25). See this platform issue
+        // https://issuetracker.google.com/issues/110848122 . Unfortunately there isn't much
+        // we could do, but since this is just a log message, we can simply add a placeholder
+        // value.
+        return try {
+            date.time.toString()
+        } catch (e: AssertionError) {
+            "<buggy Android 8>"
+        }
+    }
+
+    /**
      * Schedules the metrics ping collection at the due time.
      *
      * @param now the current datetime, a [Calendar] instance.
@@ -211,7 +231,7 @@ internal class MetricsPingScheduler(
         val lastSentDate = getLastCollectedDate()
 
         if (lastSentDate != null) {
-            Log.d(LOG_TAG, "The 'metrics' ping was last sent on $lastSentDate")
+            Log.d(LOG_TAG, "The 'metrics' ping was last sent on ${safeDateToString(lastSentDate)}")
         }
 
         // We expect to cover 3 cases here:
@@ -228,13 +248,16 @@ internal class MetricsPingScheduler(
             alreadySentToday -> {
                 // The metrics ping was already sent today. Schedule it for the next
                 // calendar day. This addresses (1).
-                Log.i(LOG_TAG, "The 'metrics' ping was already sent today, ${now.time}.")
+                Log.i(LOG_TAG, "The 'metrics' ping was already sent today, ${safeDateToString(now.time)}.")
                 schedulePingCollection(now, sendTheNextCalendarDay = true, reason = Pings.metricsReasonCodes.tomorrow)
             }
             isAfterDueTime(now) -> {
                 // The ping wasn't already sent today. Are we overdue or just waiting for
                 // the right time?  This covers (2)
-                Log.i(LOG_TAG, "The 'metrics' ping is scheduled for immediate collection, ${now.time}")
+                Log.i(
+                    LOG_TAG,
+                    "The 'metrics' ping is scheduled for immediate collection, ${safeDateToString(now.time)}"
+                )
 
                 // Since `schedule` is only ever called from Glean.initialize, we need to ensure
                 // that this gets executed now before the Application lifetime metrics get cleared.
@@ -242,7 +265,7 @@ internal class MetricsPingScheduler(
             }
             else -> {
                 // This covers (3).
-                Log.i(LOG_TAG, "The 'metrics' collection is scheduled for today, ${now.time}")
+                Log.i(LOG_TAG, "The 'metrics' collection is scheduled for today, ${safeDateToString(now.time)}")
 
                 schedulePingCollection(now, sendTheNextCalendarDay = false, reason = Pings.metricsReasonCodes.today)
             }
@@ -254,15 +277,17 @@ internal class MetricsPingScheduler(
      * next collection.
      *
      * @param now a [Calendar] instance representing the current time.
-     * @param startupUp When true, this is a startup ping that should be submitted synchronously.
+     * @param startupPing When true, this is a startup ping that should be submitted synchronously.
      * @param reason The reason the ping is being submitted.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     internal fun collectPingAndReschedule(now: Calendar, startupPing: Boolean, reason: Pings.metricsReasonCodes) {
         val reasonString = Pings.metrics.reasonCodes[reason.ordinal]
+
+        @Suppress("MaxLineLength")
         Log.i(
             LOG_TAG,
-            "Collecting the 'metrics' ping, now = ${now.time}, startup = $startupPing, reason = $reasonString"
+            "Collecting the 'metrics' ping, now = ${safeDateToString(now.time)}, startup = $startupPing, reason = $reasonString"
         )
         if (startupPing) {
             // **IMPORTANT**
@@ -359,7 +384,7 @@ internal class MetricsPingTimer(
     override fun run() {
         // Perform the actual work.
         val now = scheduler.getCalendarInstance()
-        Log.d(LOG_TAG, "MetricsPingTimerTask run(), now = ${now.time}")
+        Log.d(LOG_TAG, "MetricsPingTimerTask run(), now = ${scheduler.safeDateToString(now.time)}")
         scheduler.collectPingAndReschedule(now, false, reason)
     }
 }
