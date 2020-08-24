@@ -11,11 +11,9 @@ import androidx.lifecycle.LifecycleRegistry
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.Dispatchers as KotlinDispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withTimeout
 import mozilla.telemetry.glean.GleanMetrics.GleanError
 import mozilla.telemetry.glean.GleanMetrics.GleanInternalMetrics
 import mozilla.telemetry.glean.GleanMetrics.Pings
@@ -706,83 +704,6 @@ class GleanTest {
             assertEquals("HELLOOOOO!", appLifetimeStringMetrics.get("telemetry.app_lifetime"))
         } finally {
             server.shutdown()
-        }
-    }
-
-    @Test
-    fun `Initializing while registering pings isn't a race condition`() {
-        // See bug 1635865
-
-        Glean.testDestroyGleanHandle()
-
-        // We need a signal for when "initialization is done", and one doesn't
-        // really exist. For that, this sets a StringMetric on the pre-init task queue and
-        // then waits for the task queue to be empty.
-
-        Dispatchers.API.setTaskQueueing(true)
-        Dispatchers.API.setTestingMode(false)
-
-        val stringMetric = StringMetricType(
-                disabled = false,
-                category = "telemetry",
-                lifetime = Lifetime.Application,
-                name = "string_metric",
-                sendInPings = listOf("store1")
-        )
-        stringMetric.set("foo")
-
-        // Add a bunch of ping types to the pingTypeQueue. We need many in here so
-        // that registering pings during initialization is slow enough that we can
-        // get other pings to be registered at the same time from another thread.
-
-        // However, we don't want to add them to the queue and leave them there for
-        // other tests (that makes the whole testing suite slower), so we first take
-        // a copy of the current state, and restore it at the end of this test.
-
-        val pingTypeQueueInitialState = HashSet(Glean.pingTypeQueue)
-
-        for (i in 1..1000) {
-            val ping = PingType<NoReasonCodes>(
-                    name = "race-condition-ping$i",
-                    includeClientId = true,
-                    sendIfEmpty = false,
-                    reasonCodes = listOf()
-            )
-            Glean.registerPingType(ping)
-        }
-
-        // Initialize Glean.  This will do most of the Glean initialization in the main
-        // Glean coroutine in Dispatchers.API.
-        val config = Configuration()
-        Glean.initialize(context, true, config)
-
-        // From another coroutine, just register pings as fast as we can to simulate the
-        // ping registration race condition. Do this until any queued tasks in Glean are
-        // complete (which signals the end of initialization). After that, restore the
-        // pingTypeQueue state.
-        runBlocking {
-            GlobalScope.launch {
-                val ping = PingType<NoReasonCodes>(
-                        name = "race-condition-ping",
-                        includeClientId = true,
-                        sendIfEmpty = false,
-                        reasonCodes = listOf()
-                )
-
-                // This timeout will fail and thereby fail the unit test if the
-                // Glean.initialize coroutine crashes.
-                withTimeout(500) {
-                    while (Dispatchers.API.taskQueue.size > 0) {
-                        Glean.registerPingType(ping)
-                    }
-                }
-            }.join()
-        }
-
-        // Restore the initial state of the pingTypeQueue
-        Glean.pingTypeQueue.clear()
-        for (it in pingTypeQueueInitialState) {
-            Glean.pingTypeQueue.add(it)
         }
     }
 
