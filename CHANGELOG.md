@@ -1,6 +1,6 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v32.1.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v32.1.1...main)
 
 * General
   * Move logic to limit the number of retries on ping uploading "recoverable failures" to glean-core. ([#1120](https://github.com/mozilla/glean/pull/1120))
@@ -25,6 +25,14 @@
   * Fix a startup crash on some Android 8 (SDK=25) devices, due to a [bug in the Java compiler](https://issuetracker.google.com/issues/110848122#comment17).
 * iOS
   * Changed logging to use [`OSLog`](https://developer.apple.com/documentation/os/logging) rather than a mix of `NSLog` and `print`. ([#1133](https://github.com/mozilla/glean/pull/1133))
+
+# v32.1.1 (2020-08-24)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v32.1.0...v32.1.1)
+
+* Android
+  * Support installing glean_parser in offline mode ([#1065](https://github.com/mozilla/glean/pull/1065)).
+  * Fix a startup crash on some Android 8 (SDK=25) devices, due to a [bug in the Java compiler](https://issuetracker.google.com/issues/110848122#comment17) ([#1135](https://github.com/mozilla/glean/pull/1135)).
 
 # v32.1.0 (2020-08-17)
 
