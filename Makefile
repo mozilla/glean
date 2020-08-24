@@ -123,13 +123,10 @@ fmt: rustfmt
 rustfmt: ## Format all Rust code
 	cargo fmt --all
 
-swiftfmt: ## Format all Swift code
-	swiftformat glean-core/ios samples/ios --swiftversion 5 --verbose
-
 pythonfmt: python-setup ## Run black to format Python code
 	$(GLEAN_PYENV)/bin/python3 -m black glean-core/python/glean glean-core/python/tests
 
-.PHONY: fmt rustfmt swiftfmt
+.PHONY: fmt rustfmt
 
 # Docs
 
