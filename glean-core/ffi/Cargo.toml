@@ -39,7 +39,7 @@ path = ".."
 version = "32.2.0"
 
 [target.'cfg(target_os = "android")'.dependencies]
-android_logger = { version = "0.8.6", default-features = false }
+android_logger = { version = "0.9.0", default-features = false }
 
 [target.'cfg(target_os = "ios")'.dependencies]
 oslog = { version = "0.0.3", default-features = false, features = ["logger"] }
