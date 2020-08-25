@@ -2,6 +2,11 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v32.2.0...main)
 
+* Android
+  * Handle ping registration off the main thread. This removes a potential blocking call ([#1132](https://github.com/mozilla/glean/pull/1132)).
+* iOS
+  * Handle ping registration off the main thread. This removes a potential blocking call ([#1132](https://github.com/mozilla/glean/pull/1132)).
+
 # v32.2.0 (2020-08-25)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v32.1.1...v32.2.0)
