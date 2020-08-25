@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v32.1.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v32.2.0...main)
+
+# v32.2.0 (2020-08-25)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v32.1.1...v32.2.0)
 
 * General
   * Move logic to limit the number of retries on ping uploading "recoverable failures" to glean-core. ([#1120](https://github.com/mozilla/glean/pull/1120))
