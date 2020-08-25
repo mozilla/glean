@@ -435,10 +435,10 @@ impl PingUploadManager {
     }
 
     fn get_upload_task_internal(&self, glean: &Glean, log_ping: bool) -> PingUploadTask {
-        // Helper function to return to decide whether to return PingUploadTask::Wait or PingUploadTask::Done.
+        // Helper to decide whether to return PingUploadTask::Wait or PingUploadTask::Done.
         //
         // We want to limit the amount of PingUploadTask::Wait returned in a row,
-        // in case we reach MAX_WAIT_ATTEMPTS we want to actually return PingUploadTask::Done
+        // in case we reach MAX_WAIT_ATTEMPTS we want to actually return PingUploadTask::Done.
         let wait_or_done = || {
             self.wait_attempt_count.fetch_add(1, Ordering::SeqCst);
             if self.wait_attempt_count() > MAX_WAIT_ATTEMPTS {
@@ -1289,17 +1289,12 @@ mod test {
     }
 
     #[test]
-    fn maximum_wait_attemps_in_enforced() {
+    fn maximum_wait_attemps_is_enforced() {
         let (glean, _) = new_glean(None);
 
         // Create a new upload_manager
         let dir = tempfile::tempdir().unwrap();
-        let mut upload_manager = PingUploadManager::new(dir.path(), "Testing", false);
-
-        // Wait for processing of pending pings directory to finish.
-        while upload_manager.get_upload_task(&glean, false) == PingUploadTask::Wait {
-            thread::sleep(Duration::from_millis(10));
-        }
+        let mut upload_manager = PingUploadManager::new(dir.path(), "Testing", true);
 
         // Add a rate limiter to the upload mangager with max of 1 ping 5secs.
         //
