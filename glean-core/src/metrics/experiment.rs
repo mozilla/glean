@@ -35,10 +35,12 @@ pub struct RecordedExperimentData {
 }
 
 impl RecordedExperimentData {
-    // For JSON, we don't want to include {"extra": null} -- we just want to skip
-    // extra entirely. Unfortunately, we can't use a serde field annotation for this,
-    // since that would break bincode serialization, which doesn't support skipping
-    // fields. Therefore, we use a custom serialization function just for JSON here.
+    /// Gets the recorded experiment data as a JSON value.
+    ///
+    /// For JSON, we don't want to include `{"extra": null}` -- we just want to skip
+    /// `extra` entirely. Unfortunately, we can't use a serde field annotation for this,
+    /// since that would break bincode serialization, which doesn't support skipping
+    /// fields. Therefore, we use a custom serialization function just for JSON here.
     pub fn as_json(&self) -> JsonValue {
         let mut value = JsonMap::new();
         value.insert("branch".to_string(), json!(self.branch));
@@ -69,9 +71,9 @@ impl MetricType for ExperimentMetric {
 }
 
 impl ExperimentMetric {
-    /// Create a new experiment metric.
+    /// Creates a new experiment metric.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `id` - the id of the experiment. Please note that this will be
     ///          truncated to `MAX_EXPERIMENTS_IDS_LEN`, if needed.
@@ -116,9 +118,9 @@ impl ExperimentMetric {
         new_experiment
     }
 
-    /// Record an experiment as active.
+    /// Records an experiment as active.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `glean` - The Glean instance this metric belongs to.
     /// * `branch` -  the active branch of the experiment. Please note that this will be
@@ -193,9 +195,9 @@ impl ExperimentMetric {
         glean.storage().record(glean, &self.meta, &value)
     }
 
-    /// Record an experiment as inactive.
+    /// Records an experiment as inactive.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `glean` - The Glean instance this metric belongs to.
     pub fn set_inactive(&self, glean: &Glean) {
@@ -214,7 +216,7 @@ impl ExperimentMetric {
 
     /// **Test-only API (exported for FFI purposes).**
     ///
-    /// Get the currently stored experiment data as a JSON representation of
+    /// Gets the currently stored experiment data as a JSON representation of
     /// the RecordedExperimentData.
     ///
     /// This doesn't clear the stored value.

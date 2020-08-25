@@ -37,9 +37,10 @@ commands:
         default: "stable"
     steps:
       - run:
-          name: Turn on RUST_BACKTRACE for any job that installs rustc
+          name: Turn on RUST_BACKTRACE and RUST_LOG for any job that installs rustc
           command: |
               echo "export RUST_BACKTRACE=1" >> $BASH_ENV
+              echo "export RUST_LOG=glean_core=debug,glean_ffi=debug" >> $BASH_ENV
       - run:
           name: Setup Rust toolchain
           command: |
@@ -91,12 +92,6 @@ commands:
           name: Install missing Android SDK
           command: |
               sdkmanager 'build-tools;28.0.3'
-      # The Debian container in use is shipping libtinfo.so.6, but the Clang deployed in the NDK requires v5.
-      # We hack around that by symlinking the new to the old version, they seem to be mostly compatible.
-      - run:
-          name: "HACK: Fix up missing libtinfo.so.5"
-          command: |
-              sudo ln -s /lib/x86_64-linux-gnu/libtinfo.so.6 /lib/x86_64-linux-gnu/libtinfo.so.5
 
   test-python:
     steps:
@@ -234,9 +229,9 @@ jobs:
       - run:
           name: Install cargo-deny
           command: |
-            DENY_VERSION=0.6.6
+            DENY_VERSION=0.7.3
             DENY="cargo-deny-${DENY_VERSION}-x86_64-unknown-linux-musl"
-            DENY_SHA256=41e2e71b7b07cd68e1275d694b1646c0c2873e40f4f809f29d88467b6a1e3c21
+            DENY_SHA256=5456fed7c90f8658c085fac6a602f495fbb6107b62c9f8f54e90cad4ea33a61b
             curl -sfSL --retry 5 -O "https://github.com/EmbarkStudios/cargo-deny/releases/download/${DENY_VERSION}/${DENY}.tar.gz"
             echo "${DENY_SHA256} *${DENY}.tar.gz" | shasum -a 256 -c -
             tar -xvf "${DENY}.tar.gz"
@@ -327,7 +322,11 @@ jobs:
       - run:
           name: FFI header consistency check
           command: |
-            wget https://github.com/eqrion/cbindgen/releases/download/v0.14.0/cbindgen
+            CBINDGEN_VERSION=v0.14.3
+            CBINDGEN=cbindgen
+            CBINDGEN_SHA256=d1975ef0c0abbca2f53d62dc1a3fd5136a192b6108479866e602b9238d908b44
+            curl -sfSL --retry 5 -O "https://github.com/eqrion/cbindgen/releases/download/${CBINDGEN_VERSION}/${CBINDGEN}"
+            echo "${CBINDGEN_SHA256} *${CBINDGEN}" | shasum -a 256 -c -
             mv cbindgen /usr/local/cargo/bin/cbindgen
             chmod +x /usr/local/cargo/bin/cbindgen
             make cbindgen
@@ -535,6 +534,10 @@ jobs:
             - target
           key: v1-cargo-cache-{{arch}}-{{checksum "buildtype.txt"}}-{{checksum "Cargo.lock"}}
       - run:
+          name: Configure device logging
+          command: |
+            xcrun simctl spawn booted log config --mode "level:debug" --subsystem org.mozilla.glean-sample-app
+      - run:
           name: Run iOS tests
           command: |
             if git log -1 "$CIRCLE_SHA1" | grep -q '\[doc only\]'; then
@@ -551,6 +554,14 @@ jobs:
       - store_artifacts:
           path: raw_xcodetest.log
           destination: raw_xcodetest.log
+      - run:
+          name: Collect device logs
+          command: |
+            xcrun simctl spawn booted log collect --output $(pwd)/ios-tests.logarchive
+            zip -r $(pwd)/device_logs.zip $(pwd)/ios-tests.logarchive
+      - store_artifacts:
+          path: device_logs.zip
+          destination: device_logs.zip
       - persist_to_workspace:
           root: build/
           paths: docs/swift
@@ -642,12 +653,24 @@ jobs:
           path: raw_sample_xcodebuild.log
           destination: raw_sample_xcodebuild.log
       - run:
+          name: Configure device logging
+          command: |
+            xcrun simctl spawn booted log config --mode "level:debug" --subsystem org.mozilla.glean-sample-app
+      - run:
           name: Run sample app tests
           command: |
             bash bin/run-ios-sample-app-test.sh
       - store_artifacts:
           path: raw_sample_xcodetest.log
           destination: raw_sample_xcodetest.log
+      - run:
+          name: Collect device logs
+          command: |
+            xcrun simctl spawn booted log collect --output $(pwd)/ios-integration-test.logarchive
+            zip -r $(pwd)/device_logs.zip $(pwd)/ios-integration-test.logarchive
+      - store_artifacts:
+          path: device_logs.zip
+          destination: device_logs.zip
 
   Carthage release:
     macos:
@@ -730,6 +753,7 @@ jobs:
       - image: circleci/python:3.8.2
     steps:
       - checkout
+      - skip-if-doc-only
       - build-windows-x86_64-wheel
       - run:
           name: Install Wine
@@ -753,6 +777,7 @@ jobs:
       - image: circleci/python:3.8.2
     steps:
       - checkout
+      - skip-if-doc-only
       - build-windows-i686-wheel
       - run:
           name: Install Wine
@@ -910,6 +935,10 @@ jobs:
             apt update
             apt install -y gcc
       - run:
+          name: Install the Python environment
+          command: |
+            apt install -y python3 python3-venv python3-pip
+      - run:
           name: Build glean_ffi
           command: cargo build
       - run:
@@ -922,27 +951,46 @@ jobs:
   ###########################################################################
   # Docs
 
+  Docs internal metrics check:
+    docker:
+      - image: circleci/python:3.8.2
+    steps:
+      - checkout
+      - run:
+          name: Internal metrics docs consistency check
+          command: |
+            make metrics-docs
+            if ! git diff --exit-code HEAD -- docs/user/collected-metrics/metrics.md; then
+              echo "=================================================="
+              echo "metrics.md is different from what's stored in git."
+              echo "Please regenerate the file using:"
+              echo "    make metrics-docs"
+              echo "Commit the modified file and push."
+              echo "=================================================="
+              exit 1
+            fi
+
   docs-linkcheck:
     docker:
-      - image: circleci/python
+      - image: circleci/node
     steps:
       - checkout
       - run:
           name: Install linkchecker
-          command: sudo apt install linkchecker
+          command: sudo npm install -g link-checker
       - attach_workspace:
           at: build/
       - run:
           name: Check internal documentation links
           command: |
-            linkchecker \
-              --ignore-url javadoc \
-              --ignore-url swift \
-              --ignore-url python \
-              --ignore-url docs/glean_core \
-              --ignore-url ErrorKind \
-              --ignore-url std.struct.Error \
-              build/docs
+            link-checker \
+              build/docs/book \
+              --disable-external true \
+              --allow-hash-href true \
+              --url-ignore ".*/swift/.*" \
+              --url-ignore ".*/python/.*" \
+              --url-ignore ".*/javadoc/.*" \
+              --url-ignore ".*/docs/glean_.*"
 
   docs-spellcheck:
     docker:
@@ -1005,6 +1053,7 @@ workflows:
       - License check
       - Lint Rust with clippy
       - Rust FFI header check
+      - Docs internal metrics check
       - Lint Android with ktlint and detekt
       - Lint Python
       - Check vendored schema

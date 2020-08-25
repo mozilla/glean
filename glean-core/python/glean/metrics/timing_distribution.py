@@ -142,6 +142,37 @@ class TimingDistributionMetricType:
 
             _ffi.lib.glean_timing_distribution_cancel(self._handle, corrected_timer_id)
 
+    class _TimingDistributionContextManager:
+        """
+        A context manager for recording timings. Used by the `measure` method.
+        """
+
+        def __init__(self, timing_distribution: "TimingDistributionMetricType"):
+            self._timing_distribution = timing_distribution
+
+        def __enter__(self) -> None:
+            self._timer_id = self._timing_distribution.start()
+
+        def __exit__(self, type, value, tb) -> None:
+            if tb is None:
+                self._timing_distribution.stop_and_accumulate(self._timer_id)
+            else:
+                self._timing_distribution.cancel(self._timer_id)
+
+    def measure(self) -> "_TimingDistributionContextManager":
+        """
+        Provides a context manager for measuring the time it takes to execute
+        snippets of code in a `with` statement.
+
+        If the contents of the `with` statement raise an exception, the timing
+        is not recorded.
+
+        Usage:
+            with metrics.perf.timer.measure():
+                # ... do something that takes time ...
+        """
+        return self._TimingDistributionContextManager(self)
+
     def test_has_value(self, ping_name: Optional[str] = None) -> bool:
         """
         Tests whether a value is stored for the metric for testing purposes

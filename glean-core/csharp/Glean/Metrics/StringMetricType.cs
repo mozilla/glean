@@ -73,6 +73,11 @@ namespace Mozilla.Glean.Private
         /// the maximum length, it will be truncated</param>
         internal void SetSync(string value)
         {
+            if (disabled)
+            {
+                return;
+            }
+
             LibGleanFFI.glean_string_set(this.handle, value);
         }
 

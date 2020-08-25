@@ -73,36 +73,4 @@ and click on the arrow in the left margin next to the test.
 
 ## Testing in CI
 
-We run multiple tests on CI for every Pull Request and every commit to the `main` branch.
-These include:
-
-* Full Android tests
-* Full iOS tests
-* Rust tests
-* Rust, Kotlin and Swift source code formatting
-* Rust, Kotlin and Swift source code linting
-* Generating documentation from Rust, Kotlin, Swift and the book
-* Checking link validity of documentation
-* Deploying generated documentation
-
-These checks are required to pass before a Pull Request is merged.
-
-### Documentation-only changes
-
-Documentation is deployed from CI, we therefore need it to run on documentation changes.
-However, some of the long-running code tests can be skipped.
-For that add the following literal string to the last commit message to be pushed:
-
-```
-[doc only]
-```
-
-### Skipping CI completely
-
-It is possible to completely skip running CI on a given push by including the following literal string in the commit message:
-
-```
-[ci skip]
-```
-
-This should only be used for metadata files, such as those in `.github`, `LICENSE` or `CODE_OF_CONDUCT.md`.
+See [Continuous Integration](ci.md) for details.

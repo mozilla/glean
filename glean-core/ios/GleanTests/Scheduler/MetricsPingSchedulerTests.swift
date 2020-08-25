@@ -110,8 +110,14 @@ class MetricsPingSchedulerTests: XCTestCase {
         let mps = MetricsPingScheduler()
         let now = Date()
 
+        // Here we reset Glean and set uploadEnabled to false to ensure that this does not generate a
+        // metrics ping. We are only interested in the updated date that is scheduled after the call
+        // to `collectPingAndReschedule`.
+        Glean.shared.resetGlean(configuration: Configuration(), clearStores: true, uploadEnabled: false)
+
         UserDefaults.standard.set(nil, forKey: MetricsPingScheduler.Constants.lastMetricsPingSentDateTime)
         mps.collectPingAndReschedule(now, reason: GleanMetrics.Pings.MetricsReasonCodes.overdue)
+
         XCTAssertEqual(
             now.toISO8601String(precision: .second),
             mps.getLastCollectedDate()?.toISO8601String(precision: .second),
@@ -302,6 +308,9 @@ class MetricsPingSchedulerTests: XCTestCase {
     func testTimerInvocation() {
         // Set up the expectation
         expectation = expectation(description: "Timer fired")
+
+        // Reset Glean clearing the stores so that the metrics ping will be empty
+        Glean.shared.resetGlean(clearStores: true)
 
         // Build the mock MPS passing in the expectation to be fulfilled later
         let mps = FakeMPS(expectation: expectation)

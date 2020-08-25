@@ -3,8 +3,8 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 using Mozilla.Glean.FFI;
+using Mozilla.Glean.Utils;
 using System;
-using System.Diagnostics;
 
 namespace Mozilla.Glean.Private
 {
@@ -16,10 +16,6 @@ namespace Mozilla.Glean.Private
     /// </summary>
     public sealed class TimespanMetricType
     {
-        // The number of nanoseconds within a second, used to convert ticks
-        // to nanoseconds.
-        private const long NanosecondsInSeconds = 1000000000;
-
         private bool disabled;
         private string[] sendInPings;
         private UInt64 handle;
@@ -61,13 +57,6 @@ namespace Mozilla.Glean.Private
             this.handle = handle;
         }
 
-        private ulong GetNanosecondsFromTicks(long ticks)
-        {
-            // The computation below is a bit tricky: make sure all the divisions happen in double, then
-            // cast it back to ulong to avoid overflows.
-            return (ulong)(ticks / (1.0 * Stopwatch.Frequency) * NanosecondsInSeconds);
-        }
-
         /// <summary>
         /// Start tracking time for the provided metric.
         /// This records an error if it’s already tracking time (i.e. `Start` was already
@@ -81,14 +70,7 @@ namespace Mozilla.Glean.Private
                 return;
             }
 
-            // The `Stopwatch` class tries to do almost the same thing we're doing! Unfortunately
-            // we only want to use its ability to provide us a monotonic timer. At least on recent
-            // Windows this is guaranteed to be monotonic due to the usage of the Windows Performance
-            // timers under the hood. See
-            // https://docs.microsoft.com/en-us/windows/win32/sysinfo/acquiring-high-resolution-time-stamps
-            // Note that this function will return "ticks", not nanoseconds, so we need to convert that.
-            long ticks = Stopwatch.GetTimestamp();
-            ulong startTime = GetNanosecondsFromTicks(ticks);
+            ulong startTime = HighPrecisionTimestamp.GetTimestamp(TimeUnit.Nanosecond);
 
             Dispatchers.LaunchAPI(() => {
                 LibGleanFFI.glean_timespan_set_start(handle, startTime);
@@ -109,9 +91,7 @@ namespace Mozilla.Glean.Private
                 return;
             }
 
-            // See `Start` for the remarks about this.
-            long ticks = Stopwatch.GetTimestamp();
-            ulong stopTime = GetNanosecondsFromTicks(ticks);
+            ulong stopTime = HighPrecisionTimestamp.GetTimestamp(TimeUnit.Nanosecond);
 
             Dispatchers.LaunchAPI(() => {
                 LibGleanFFI.glean_timespan_set_stop(handle, stopTime);

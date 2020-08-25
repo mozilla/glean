@@ -5,14 +5,15 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Mozilla.Glean.FFI;
 using Mozilla.Glean.Net;
 using Mozilla.Glean.Private;
 using Serilog;
-using static Mozilla.Glean.GleanMetrics.GleanInternalMetricsOuter;
-using static Mozilla.Glean.GleanPings.GleanInternalPingsOuter;
+using static Mozilla.Glean.GleanMetrics.GleanInternalMetricsDefinition;
+using static Mozilla.Glean.GleanMetrics.PingsDefinition;
 using static Mozilla.Glean.Utils.GleanLogger;
 
 namespace Mozilla.Glean
@@ -124,7 +125,7 @@ namespace Mozilla.Glean
 
             Dispatchers.ExecuteTask(() =>
             {
-                RegisterPings(GleanInternalPings);
+                RegisterPings(Pings);
 
                 IntPtr maxEventsPtr = IntPtr.Zero;
                 if (configuration.maxEvents != null)
@@ -325,6 +326,87 @@ namespace Mozilla.Glean
         }
 
         /// <summary>
+        /// Indicate that an experiment is running. Glean will then add an
+        /// experiment annotation to the environment which is sent with pings. This
+        /// information is not persisted between runs.
+        /// </summary>
+        /// <param name="experimentId">The id of the active experiment (maximum 100 bytes)</param>
+        /// <param name="branch">The experiment branch (maximum 100 bytes)</param>
+        /// <param name="extra">Optional metadata to output with the ping</param>
+        public void SetExperimentActive(string experimentId, string branch, Dictionary<string, string> extra = null)
+        {
+            // The Map is sent over FFI as a pair of arrays, one containing the
+            // keys, and the other containing the values.
+            string[] keys = null;
+            string[] values = null;
+
+            Int32 numKeys = 0;
+            if (extra != null)
+            {
+                // While the `ToArray` functions below could throw `ArgumentNullException`, this would
+                // only happen if `extra` (and `extra.Keys|Values`) is null. Which is not the case, since
+                // we're specifically checking this.
+                // Note that the order of `extra.Keys` and `extra.Values` is unspecified, but guaranteed
+                // to be the same. See
+                // https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2.values?view=netstandard-2.0#remarks
+                keys = extra.Keys.ToArray();
+                values = extra.Values.ToArray();
+                numKeys = extra.Count();
+            }
+
+            // We dispatch this asynchronously so that, if called before the Glean SDK is
+            // initialized, it doesn't get ignored and will be replayed after init.
+            Dispatchers.LaunchAPI(() => {
+                LibGleanFFI.glean_set_experiment_active(
+                    experimentId,
+                    branch,
+                    keys,
+                    values,
+                    numKeys
+                );
+            });
+        }
+
+        /// <summary>
+        /// Indicate that an experiment is no longer running.
+        /// </summary>
+        /// <param name="experimentId">The id of the experiment to deactivate.</param>
+        public void SetExperimentInactive(string experimentId)
+        {
+            // We dispatch this asynchronously so that, if called before the Glean SDK is
+            // initialized, it doesn't get ignored and will be replayed after init.
+            Dispatchers.LaunchAPI(() => {
+                LibGleanFFI.glean_set_experiment_inactive(experimentId);
+            });
+        }
+
+        /// <summary>
+        /// Tests whether an experiment is active, for testing purposes only.
+        /// </summary>
+        /// <param name="experimentId">The id of the experiment to look for.</param>
+        /// <returns>true if the experiment is active and reported in pings, otherwise false</returns>
+        public bool TestIsExperimentActive(string experimentId)
+        {
+            Dispatchers.AssertInTestingMode();
+
+            return LibGleanFFI.glean_experiment_test_is_active(experimentId) != 0;
+        }
+
+        /// <summary>
+        /// Returns the stored data for the requested active experiment, for testing purposes only.
+        /// </summary>
+        /// <param name="experimentId">The id of the experiment to look for.</param>
+        /// <exception cref="System.NullReferenceException">Thrown when there is no data for the experiment.</exception>
+        /// <returns>The `RecordedExperimentData` for the experiment</returns>
+        public RecordedExperimentData TestGetExperimentData(string experimentId)
+        {
+            Dispatchers.AssertInTestingMode();
+
+            string rawData = LibGleanFFI.glean_experiment_test_get_data(experimentId).AsString();
+            return RecordedExperimentData.FromJsonString(rawData);
+        }
+
+        /// <summary>
         /// TEST ONLY FUNCTION.
         /// Resets the Glean state and triggers init again.
         /// </summary>
@@ -438,8 +520,8 @@ namespace Mozilla.Glean
         /// </summary>
         internal void HandleBackgroundEvent()
         {
-            GleanInternalPings.baseline.Submit(BaselineReasonCodes.background);
-            GleanInternalPings.events.Submit(EventsReasonCodes.background);
+            Pings.baseline.Submit(baselineReasonCodes.background);
+            Pings.events.Submit(eventsReasonCodes.background);
         }
 
         /// <summary>

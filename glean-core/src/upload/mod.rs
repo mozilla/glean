@@ -11,14 +11,14 @@
 
 use std::collections::VecDeque;
 use std::path::PathBuf;
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
 use std::sync::{Arc, RwLock, RwLockWriteGuard};
 use std::thread;
 use std::time::{Duration, Instant};
 
 use crate::error::ErrorKind;
 use crate::{internal_metrics::UploadMetrics, Glean};
-use directory::{PingDirectoryManager, PingPayload};
+use directory::{PingDirectoryManager, PingPayloadsByDirectory};
 pub use request::{HeaderMap, PingRequest};
 pub use result::{ffi_upload_result, UploadResult};
 
@@ -26,8 +26,16 @@ mod directory;
 mod request;
 mod result;
 
+/// The maximum recoverable failures allowed per uploading window.
+///
+/// Limiting this is necessary to avoid infinite loops on requesting upload tasks.
+const MAX_RECOVERABLE_FAILURES_PER_UPLOADING_WINDOW: u32 = 3;
+
 // The maximum size in bytes a ping body may have to be eligible for upload.
 const PING_BODY_MAX_SIZE: usize = 1024 * 1024; // 1 MB
+
+// The maximum size in byte the pending pings directory may have on disk.
+const PENDING_PINGS_DIRECTORY_QUOTA: u64 = 10 * 1024 * 1024; // 10 MB
 
 #[derive(Debug)]
 struct RateLimiter {
@@ -65,11 +73,11 @@ impl RateLimiter {
         self.count = 0;
     }
 
-    /// The counter should reset if
-    ///
-    /// 1. It has never started;
-    /// 2. It has been started more than the interval time ago;
-    /// 3. Something goes wrong while trying to calculate the elapsed time since the last reset.
+    // The counter should reset if
+    //
+    // 1. It has never started;
+    // 2. It has been started more than the interval time ago;
+    // 3. Something goes wrong while trying to calculate the elapsed time since the last reset.
     fn should_reset(&self) -> bool {
         if self.started.is_none() {
             return true;
@@ -84,8 +92,11 @@ impl RateLimiter {
         false
     }
 
-    /// Tries to increment the internal counter
-    /// and returns the current state of the RateLimiter.
+    /// Tries to increment the internal counter.
+    ///
+    /// # Returns
+    ///
+    /// The current state of the RateLimiter.
     pub fn get_state(&mut self) -> RateLimiterState {
         if self.should_reset() {
             self.reset();
@@ -100,6 +111,8 @@ impl RateLimiter {
     }
 }
 
+/// An enum representing the possible upload tasks to be performed by an uploader.
+///
 /// When asking for the next ping request to upload,
 /// the requester may receive one out of three possible tasks.
 ///
@@ -112,7 +125,16 @@ pub enum PingUploadTask {
     /// A flag signaling that the pending pings directories are not done being processed,
     /// thus the requester should wait and come back later.
     Wait,
-    /// A flag signaling that the pending pings queue is empty and requester is done.
+    /// A flag signaling that requester doesn't need to request any more upload tasks at this moment.
+    ///
+    /// There are two possibilities for this scenario:
+    /// * Pending pings queue is empty, no more pings to request;
+    /// * Requester has reported more than MAX_RECOVERABLE_FAILURES_PER_UPLOADING_WINDOW
+    ///   recoverable upload failures on the same uploading window[1]
+    ///   and should stop requesting at this moment.
+    ///
+    /// [1]: An "uploading window" starts when a requester gets a new `PingUploadTask::Upload(PingRequest)`
+    ///      response and finishes when they finally get a `PingUploadTask::Done` or `PingUploadTask::Wait` response.
     Done,
 }
 
@@ -126,7 +148,9 @@ pub struct PingUploadManager {
     /// A flag signaling if we are done processing the pending pings directories.
     processed_pending_pings: Arc<AtomicBool>,
     /// A vector to store the pending pings processed off-thread.
-    pending_pings: Arc<RwLock<Vec<PingPayload>>>,
+    cached_pings: Arc<RwLock<PingPayloadsByDirectory>>,
+    /// The number of upload failures for the current uploading window.
+    recoverable_failure_count: AtomicU32,
     /// A ping counter to help rate limit the ping uploads.
     ///
     /// To keep resource usage in check,
@@ -141,7 +165,7 @@ pub struct PingUploadManager {
 }
 
 impl PingUploadManager {
-    /// Create a new PingUploadManager.
+    /// Creates a new PingUploadManager.
     ///
     /// Spawns a new thread and processes the pending pings directory,
     /// filling up the queue with whatever pings are in there.
@@ -163,18 +187,18 @@ impl PingUploadManager {
         let directory_manager = PingDirectoryManager::new(data_path);
 
         let processed_pending_pings = Arc::new(AtomicBool::new(false));
-        let pending_pings = Arc::new(RwLock::new(Vec::new()));
+        let cached_pings = Arc::new(RwLock::new(PingPayloadsByDirectory::default()));
 
         let local_manager = directory_manager.clone();
-        let local_pending_pings = pending_pings.clone();
+        let local_cached_pings = cached_pings.clone();
         let local_flag = processed_pending_pings.clone();
         let ping_scanning_thread = thread::Builder::new()
             .name("glean.ping_directory_manager.process_dir".to_string())
             .spawn(move || {
-                let mut local_pending_pings = local_pending_pings
+                let mut local_cached_pings = local_cached_pings
                     .write()
                     .expect("Can't write to pending pings cache.");
-                local_pending_pings.extend(local_manager.process_dir());
+                local_cached_pings.extend(local_manager.process_dirs());
                 local_flag.store(true, Ordering::SeqCst);
             })
             .expect("Unable to spawn thread to process pings directories.");
@@ -187,9 +211,10 @@ impl PingUploadManager {
 
         Self {
             queue,
-            processed_pending_pings,
-            pending_pings,
             directory_manager,
+            processed_pending_pings,
+            cached_pings,
+            recoverable_failure_count: AtomicU32::new(0),
             rate_limiter: None,
             language_binding_name: language_binding_name.into(),
             upload_metrics: UploadMetrics::new(),
@@ -200,17 +225,18 @@ impl PingUploadManager {
         self.processed_pending_pings.load(Ordering::SeqCst)
     }
 
-    /// Checks if a ping with a certain `document_id` is already enqueued.
-    fn is_enqueued(queue: &VecDeque<PingRequest>, document_id: &str) -> bool {
-        queue
-            .iter()
-            .any(|request| request.document_id == document_id)
+    fn recoverable_failure_count(&self) -> u32 {
+        self.recoverable_failure_count.load(Ordering::SeqCst)
+    }
+
+    fn reset_recoverable_failure_count(&self) {
+        self.recoverable_failure_count.store(0, Ordering::SeqCst);
     }
 
     /// Attempts to build a ping request from a ping file payload.
     ///
     /// Returns the `PingRequest` or `None` if unable to build,
-    /// in which case it will delete the ping file and records an error.
+    /// in which case it will delete the ping file and record an error.
     fn build_ping_request(
         &self,
         glean: &Glean,
@@ -261,7 +287,10 @@ impl PingUploadManager {
             .expect("Can't write to pending pings queue.");
 
         // Checks if a ping with this `document_id` is already enqueued.
-        if Self::is_enqueued(&queue, &document_id) {
+        if queue
+            .iter()
+            .any(|request| request.document_id == document_id)
+        {
             log::trace!(
                 "Attempted to enqueue a duplicate ping {} at {}.",
                 document_id,
@@ -276,14 +305,84 @@ impl PingUploadManager {
         }
     }
 
-    /// Adds rate limiting capability to this upload manager. The rate limiter
-    /// will limit the amount of calls to `get_upload_task` per interval.
+    /// Enqueues pings that might have been cached.
     ///
-    /// Setting will restart count and timer, in case there was a previous rate limiter set
+    /// The size of the PENDING_PINGS_DIRECTORY directory will be calculated
+    /// (by accumulating each ping's size in that directory)
+    /// and in case we exceed the quota, defined by the `quota` arg,
+    /// outstanding pings get deleted and are not enqueued.
+    ///
+    /// The size of the DELETION_REQUEST_PINGS_DIRECTORY will not be calculated
+    /// and no deletion-request pings will be deleted. Deletion request pings
+    /// are not very common and usually don't contain any data,
+    /// we don't expect that directory to ever reach quota.
+    /// Most importantly, we don't want to ever delete deletion-request pings.
+    ///
+    /// # Arguments
+    ///
+    /// * `glean` - The Glean object holding the database.
+    /// * `quota` - The quota, in bytes, for the size of the pending pings directory.
+    fn enqueue_cached_pings(&self, glean: &Glean, quota: u64) {
+        let mut cached_pings = self
+            .cached_pings
+            .write()
+            .expect("Can't write to pending pings cache.");
+
+        let mut pending_pings_directory_size: u64 = 0;
+        let mut deleting = false;
+        // The pending pings vector is sorted by date in ascending order (oldest -> newest).
+        // We need to calculate the size of the pending pings directory
+        // and delete the **oldest** pings in case quota is reached.
+        // Thus, we reverse the order of the pending pings vector,
+        // so that we iterate in descending order (newest -> oldest).
+        cached_pings.pending_pings.reverse();
+        cached_pings.pending_pings.retain(|(file_size, (document_id, _, _, _))| {
+            pending_pings_directory_size += file_size;
+            if pending_pings_directory_size > quota {
+                log::warn!(
+                    "Pending pings directory has reached the size quota of {} bytes, outstanding pings will be deleted.",
+                    PENDING_PINGS_DIRECTORY_QUOTA
+                );
+                deleting = true;
+            }
+
+            if deleting && self.directory_manager.delete_file(&document_id) {
+                self.upload_metrics
+                    .deleted_pings_after_quota_hit
+                    .add(glean, 1);
+                return false;
+            }
+
+            true
+        });
+        // After calculating the size of the pending pings directory,
+        // we record the calculated number and reverse the pings array back for enqueueing.
+        cached_pings.pending_pings.reverse();
+        self.upload_metrics
+            .pending_pings_directory_size
+            .accumulate(glean, pending_pings_directory_size as u64);
+
+        // Enqueue the remaining pending pings and
+        // enqueue all deletion-request pings.
+        let deletion_request_pings = cached_pings.deletion_request_pings.drain(..);
+        for (_, (document_id, path, body, headers)) in deletion_request_pings {
+            self.enqueue_ping(glean, &document_id, &path, &body, headers);
+        }
+        let pending_pings = cached_pings.pending_pings.drain(..);
+        for (_, (document_id, path, body, headers)) in pending_pings {
+            self.enqueue_ping(glean, &document_id, &path, &body, headers);
+        }
+    }
+
+    /// Adds rate limiting capability to this upload manager.
+    ///
+    /// The rate limiter will limit the amount of calls to `get_upload_task` per interval.
+    ///
+    /// Setting this will restart count and timer in case there was a previous rate limiter set
     /// (e.g. if we have reached the current limit and call this function, we start counting again
     /// and the caller is allowed to asks for tasks).
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `interval` - the amount of seconds in each rate limiting window.
     /// * `max_tasks` - the maximum amount of task requests allowed per interval.
@@ -326,30 +425,21 @@ impl PingUploadManager {
         queue
     }
 
-    /// Gets the next `PingUploadTask`.
-    ///
-    /// ## Arguments
-    ///
-    /// * `glean` - The Glean object holding the database.
-    /// * `log_ping` - Whether to log the ping before returning.
-    ///
-    /// # Return value
-    ///
-    /// `PingUploadTask` - see [`PingUploadTask`](enum.PingUploadTask.html) for more information.
-    pub fn get_upload_task(&self, glean: &Glean, log_ping: bool) -> PingUploadTask {
+    fn get_upload_task_internal(&self, glean: &Glean, log_ping: bool) -> PingUploadTask {
         if !self.has_processed_pings_dir() {
             log::info!(
                 "Tried getting an upload task, but processing is ongoing. Will come back later."
             );
             return PingUploadTask::Wait;
         }
+        self.enqueue_cached_pings(glean, PENDING_PINGS_DIRECTORY_QUOTA);
 
-        let mut pending_pings = self
-            .pending_pings
-            .write()
-            .expect("Can't write to pending pings cache.");
-        for (document_id, path, body, headers) in pending_pings.drain(..) {
-            self.enqueue_ping(glean, &document_id, &path, &body, headers);
+        if self.recoverable_failure_count() >= MAX_RECOVERABLE_FAILURES_PER_UPLOADING_WINDOW {
+            log::warn!(
+                "Reached maximum recoverable failures for the current uploading window. You are done."
+            );
+
+            return PingUploadTask::Done;
         }
 
         let mut queue = self
@@ -391,6 +481,25 @@ impl PingUploadManager {
                 PingUploadTask::Done
             }
         }
+    }
+
+    /// Gets the next `PingUploadTask`.
+    ///
+    /// # Arguments
+    ///
+    /// * `glean` - The Glean object holding the database.
+    /// * `log_ping` - Whether to log the ping before returning.
+    ///
+    /// # Returns
+    ///
+    /// The next [`PingUploadTask`](enum.PingUploadTask.html).
+    pub fn get_upload_task(&self, glean: &Glean, log_ping: bool) -> PingUploadTask {
+        let task = self.get_upload_task_internal(glean, log_ping);
+        if task == PingUploadTask::Done || task == PingUploadTask::Wait {
+            self.reset_recoverable_failure_count()
+        }
+
+        task
     }
 
     /// Processes the response from an attempt to upload a ping.
@@ -466,12 +575,14 @@ impl PingUploadManager {
                     status
                 );
                 self.enqueue_ping_from_file(glean, &document_id);
+                self.recoverable_failure_count
+                    .fetch_add(1, Ordering::SeqCst);
             }
         };
     }
 }
 
-/// Split log message into chunks on Android.
+/// Splits log message into chunks on Android.
 #[cfg(target_os = "android")]
 pub fn chunked_log_info(path: &str, payload: &str) {
     // Since the logcat ring buffer size is configurable, but it's 'max payload' size is not,
@@ -531,7 +642,7 @@ pub fn chunked_log_info(path: &str, payload: &str) {
     }
 }
 
-/// Log payload in one go (all other OS).
+/// Logs payload in one go (all other OS).
 #[cfg(not(target_os = "android"))]
 pub fn chunked_log_info(_path: &str, payload: &str) {
     log::info!("{}", payload)
@@ -747,12 +858,7 @@ mod test {
 
     #[test]
     fn fills_up_queue_successfully_from_disk() {
-        let (mut glean, _) = new_glean(None);
-
-        // Wait for processing of pending pings directory to finish.
-        while glean.get_upload_task() == PingUploadTask::Wait {
-            thread::sleep(Duration::from_millis(10));
-        }
+        let (mut glean, tmpdir) = new_glean(None);
 
         // Register a ping for testing
         let ping_type = PingType::new("test", true, /* send_if_empty */ true, vec![]);
@@ -764,25 +870,22 @@ mod test {
             glean.submit_ping(&ping_type, None).unwrap();
         }
 
-        // Wait for processing of pending pings directory to finish.
-        let mut upload_task = glean.get_upload_task();
-        while upload_task == PingUploadTask::Wait {
-            thread::sleep(Duration::from_millis(10));
-            upload_task = glean.get_upload_task();
-        }
+        // Create a new upload manager pointing to the same data_path as the glean instance.
+        let upload_manager = PingUploadManager::new(tmpdir.path(), "Rust", true);
 
         // Verify the requests were properly enqueued
         for _ in 0..n {
-            match upload_task {
+            match upload_manager.get_upload_task(&glean, false) {
                 PingUploadTask::Upload(_) => {}
                 _ => panic!("Expected upload manager to return the next request!"),
             }
-
-            upload_task = glean.get_upload_task();
         }
 
         // Verify that after all requests are returned, none are left
-        assert_eq!(glean.get_upload_task(), PingUploadTask::Done);
+        assert_eq!(
+            upload_manager.get_upload_task(&glean, false),
+            PingUploadTask::Done
+        );
     }
 
     #[test]
@@ -1053,5 +1156,105 @@ mod test {
             upload_manager.get_upload_task(&glean, false),
             PingUploadTask::Done
         );
+    }
+
+    #[test]
+    fn maximum_of_recoverable_errors_is_enforced_for_uploading_window() {
+        let (mut glean, _) = new_glean(None);
+
+        // Wait for processing of pending pings directory to finish.
+        while glean.get_upload_task() == PingUploadTask::Wait {
+            thread::sleep(Duration::from_millis(10));
+        }
+
+        // Register a ping for testing
+        let ping_type = PingType::new("test", true, /* send_if_empty */ true, vec![]);
+        glean.register_ping_type(&ping_type);
+
+        // Submit the ping multiple times
+        let n = 5;
+        for _ in 0..n {
+            glean.submit_ping(&ping_type, None).unwrap();
+        }
+
+        // Return the max recoverable error failures in a row
+        for _ in 0..MAX_RECOVERABLE_FAILURES_PER_UPLOADING_WINDOW {
+            match glean.get_upload_task() {
+                PingUploadTask::Upload(req) => {
+                    glean.process_ping_upload_response(&req.document_id, RecoverableFailure)
+                }
+                _ => panic!("Expected upload manager to return the next request!"),
+            }
+        }
+
+        // Verify that after returning the max amount of recoverable failures,
+        // we are done even though we haven't gotten all the enqueued requests.
+        assert_eq!(glean.get_upload_task(), PingUploadTask::Done);
+
+        // Verify all requests are returned when we try again.
+        for _ in 0..n {
+            match glean.get_upload_task() {
+                PingUploadTask::Upload(_) => {}
+                _ => panic!("Expected upload manager to return the next request!"),
+            }
+        }
+    }
+
+    #[test]
+    fn quota_is_enforced_when_enqueueing_cached_pings() {
+        let (mut glean, tmpdir) = new_glean(None);
+
+        // Register a ping for testing
+        let ping_type = PingType::new("test", true, /* send_if_empty */ true, vec![]);
+        glean.register_ping_type(&ping_type);
+
+        // Submit the ping multiple times
+        let n = 10;
+        for _ in 0..n {
+            glean.submit_ping(&ping_type, None).unwrap();
+        }
+
+        let directory_manager = PingDirectoryManager::new(tmpdir.path());
+        let pending_pings = directory_manager.process_dirs().pending_pings;
+        // The pending pings array is sorted by date in ascending order,
+        // the newest element is the last one.
+        let (_, newest_ping) = &pending_pings.last().unwrap();
+        let (newest_ping_id, _, _, _) = &newest_ping;
+
+        // Create a new upload manager pointing to the same data_path as the glean instance.
+        let upload_manager = PingUploadManager::new(tmpdir.path(), "Rust", true);
+
+        // Enqueue cached pings and set the quota to just a little over the size on an empty ping file.
+        // This way we can check that one ping is kept and all others are deleted.
+        //
+        // From manual testing I figured out an empty ping file is 324bytes,
+        // I am setting this a little over just so that minor changes to the ping structure
+        // don't immediatelly break this.
+        upload_manager.enqueue_cached_pings(&glean, 500);
+
+        // Get a task once
+        // One ping should have been enqueued.
+        // Make sure it is the newest ping.
+        match upload_manager.get_upload_task(&glean, false) {
+            PingUploadTask::Upload(request) => assert_eq!(&request.document_id, newest_ping_id),
+            _ => panic!("Expected upload manager to return the next request!"),
+        }
+
+        // Verify that no other requests were returned,
+        // they should all have been deleted because pending pings quota was hit.
+        assert_eq!(
+            upload_manager.get_upload_task(&glean, false),
+            PingUploadTask::Done
+        );
+
+        // Verify that the correct number of deleted pings was recorded
+        assert_eq!(
+            n - 1,
+            upload_manager
+                .upload_metrics
+                .deleted_pings_after_quota_hit
+                .test_get_value(&glean, "metrics")
+                .unwrap()
+        )
     }
 }

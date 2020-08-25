@@ -68,22 +68,18 @@ namespace Mozilla.Glean.Tests.Net
         {
             const string testDocumentId = "c0ffeec0-ffee-c0ff-eec0-ffeec0ffeec0";
 
-            // Empty headers string, no debug.
+            // Empty headers string.
             (string, string)[] headers = BaseUploader.GetHeadersFromJSONString(testDocumentId, "", new Configuration());
             Assert.Empty(headers);
 
-            // Empty headers, debug view on.
-            headers = BaseUploader.GetHeadersFromJSONString(testDocumentId, "", new Configuration(pingTag: "test"));
-            Assert.Equal(new[] { ("X-Debug-ID", "test") }, headers);
+            // Corrupted headers.
+            headers = BaseUploader.GetHeadersFromJSONString(testDocumentId, "[not-json", new Configuration());
+            Assert.Empty(headers);
 
-            // Corrupted headers, debug view on.
-            headers = BaseUploader.GetHeadersFromJSONString(testDocumentId, "[not-json", new Configuration(pingTag: "test"));
-            Assert.Equal(new[] { ("X-Debug-ID", "test") }, headers);
-
-            // Good headers, debug view on.
+            // Good headers.
             string testHeaders = "{\"X-Test-Glean\": \"nothing-to-see-here\"}";
-            headers = BaseUploader.GetHeadersFromJSONString(testDocumentId, testHeaders, new Configuration(pingTag: "test"));
-            Assert.Equal(new[] { ("X-Test-Glean", "nothing-to-see-here"), ("X-Debug-ID", "test") }, headers);
+            headers = BaseUploader.GetHeadersFromJSONString(testDocumentId, testHeaders, new Configuration());
+            Assert.Equal(new[] { ("X-Test-Glean", "nothing-to-see-here") }, headers);
         }
     }
 }

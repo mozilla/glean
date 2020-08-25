@@ -158,7 +158,23 @@ namespace Mozilla.Glean.FFI
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
         internal static extern byte glean_submit_ping_by_name(string ping_name, string reason);
 
-        // TODO: add the rest of the ffi.
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void glean_set_experiment_active(
+            string experiment_id,
+            string branch,
+            string[] extra_keys,
+            string[] extra_values,
+            Int32 extra_len
+        );
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void glean_set_experiment_inactive(string experiment_id);
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern byte glean_experiment_test_is_active(string experiment_id);
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern StringAsReturnValue glean_experiment_test_get_data(string experiment_id);
 
         // String
 
@@ -313,6 +329,54 @@ namespace Mozilla.Glean.FFI
             String storage_name
         );
 
+        // TimingDistribution
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern UInt64 glean_new_timing_distribution_metric(
+            string category,
+            string name,
+            string[] send_in_pings,
+            Int32 send_in_pings_len,
+            Int32 lifetime,
+            bool disabled,
+            Int32 time_unit
+        );
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void glean_destroy_timing_distribution_metric(UInt64 handle);
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern UInt64 glean_timing_distribution_set_start(UInt64 metric_id, UInt64 start_time);
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void glean_timing_distribution_set_stop_and_accumulate(
+            UInt64 metric_id,
+            UInt64 timer_id,
+            UInt64 stop_time
+        );
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void glean_timing_distribution_cancel(UInt64 metric_id, UInt64 timer_id);
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void glean_timing_distribution_accumulate_samples(UInt64 metric_id, Int64[] samples, Int32 len);
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern byte glean_timing_distribution_test_has_value(UInt64 metric_id, string storage_name);
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern StringAsReturnValue glean_timing_distribution_test_get_value_as_json_string(
+            UInt64 metric_id,
+            string storage_name
+        );
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern Int32 glean_timing_distribution_test_get_num_recorded_errors(
+            UInt64 metric_id,
+            Int32 error_type,
+            string storage_name
+        );
+
         // MemoryDistribution
 
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
@@ -381,6 +445,45 @@ namespace Mozilla.Glean.FFI
              UInt64 metric_id,
              Int32 error_type,
              string storage_name
+        );
+
+        // Event
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern UInt64 glean_new_event_metric(
+            string category,
+            string name,
+            string[] send_in_pings,
+            Int32 send_in_pings_len,
+            Int32 lifetime,
+            bool disabled,
+            string[] allowed_extra_keys,
+            Int32 allowed_extra_keys_len
+        );
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void glean_event_record(
+            UInt64 handle,
+            UInt64 timestamp,
+            Int32[] extra_keys,
+            string[] extra_values,
+            Int32 extra_len
+        );
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern byte glean_event_test_has_value(UInt64 metric_id, string storage_name);
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern StringAsReturnValue glean_event_test_get_value_as_json_string(
+            UInt64 handle,
+            string storage_Name
+        );
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern Int32 glean_event_test_get_num_recorded_errors(
+            UInt64 metric_id,
+            Int32 error_type,
+            string storage_name
         );
 
         // Labeled Counter
@@ -494,6 +597,40 @@ namespace Mozilla.Glean.FFI
 
         [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
         internal static extern Int32 glean_jwe_test_get_num_recorded_errors(
+             UInt64 metric_id,
+             Int32 error_type,
+             string storage_name
+        );
+
+        // StringList
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern UInt64 glean_new_string_list_metric(
+            string category,
+            string name,
+            string[] send_in_pings,
+            Int32 send_in_pings_len,
+            Int32 lifetime,
+            bool disabled
+        );
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void glean_destroy_string_list_metric(UInt64 handle);
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void glean_string_list_add(UInt64 metric_id, string value);
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void glean_string_list_set(UInt64 metric_id, string[] value, Int32 values_len);
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern byte glean_string_list_test_has_value(UInt64 metric_id, string storage_name);
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern StringAsReturnValue glean_string_list_test_get_value_as_json_string(UInt64 metric_id, string storage_name);
+
+        [DllImport(SharedGleanLibrary, ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern Int32 glean_string_list_test_get_num_recorded_errors(
              UInt64 metric_id,
              Int32 error_type,
              string storage_name

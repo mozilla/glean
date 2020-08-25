@@ -1,14 +1,22 @@
 # Adding Glean to your project
 
-## Before using Glean
+## Glean integration checklist
+
+The Glean integration checklist can help to ensure your Glean SDK-using product is meeting all of the recommended guidelines.
 
 Products (applications or libraries) using the Glean SDK to collect telemetry **must**:
 
-- add documentation for any new metrics collected to its repository (see [an example](collected-metrics/metrics.md));
-- include the markdown-formatted documentation generated from the `metrics.yaml` and `pings.yaml` files in the project's documentation;
-- go through data review for the newly collected data by following [this process](https://wiki.mozilla.org/Firefox/Data_Collection);
-- provide a way for users to turn data collection off (e.g. providing settings to control
-  `Glean.setUploadEnabled()`).
+1. [Integrate the Glean SDK into the build system](#integrating-with-your-project). Since the Glean SDK does some code generation for your metrics at build time, this requires a few more steps than just adding a library.
+
+2. Include the markdown-formatted documentation generated from the `metrics.yaml` and `pings.yaml` files in the project's documentation.
+
+3. Go through [data review process](https://wiki.mozilla.org/Firefox/Data_Collection) for all newly collected data.
+
+4. Ensure that telemetry coming from automated testing or continuous integration is either not sent to the telemetry server or [tagged with the `automation` tag using the `sourceTag` feature](debugging/index.md#available-debugging-features).
+
+Additionally, applications (but not libraries) **must**:
+
+5. Provide a way for users to turn data collection off (e.g. providing settings to control `Glean.setUploadEnabled()`). The exact method used is application-specific.
 
 ## Usage
 
@@ -137,7 +145,7 @@ All metrics that your project collects must be defined in a `metrics.yaml` file.
 To learn more, see [adding new metrics](adding-new-metrics.md).
 See the [metric parameters](metric-parameters.md) documentation which provides reference information about the contents of that file.
 
-> **Important**: as stated [before](adding-glean-to-your-project.md#before-using-glean), any new data collection requires documentation and data-review.
+> **Important**: as stated [before](adding-glean-to-your-project.md#glean-integration-checklist), any new data collection requires documentation and data-review.
 > This is also required for any new metric automatically collected by the Glean SDK.
 
 {{#include ../tab_header.md}}
@@ -273,6 +281,10 @@ metrics = load_metrics(resource_filename(__name__, "metrics.yaml"))
 metrics.your_category.your_metric.set("value")
 ```
 
+### Automation steps
+
+#### Documentation
+
 The documentation for your application or library's metrics and pings are written in `metrics.yaml` and `pings.yaml`. However, you should also provide human-readable markdown files based on this information, and this is a requirement for Mozilla projects using the Glean SDK. For other languages and platforms, this transformation is done automatically as part of the build. However, for Python the integration to automatically generate docs is an additional step.
 
 The Glean SDK provides a commandline tool for automatically generating markdown documentation from your `metrics.yaml` and `pings.yaml` files. To perform that translation, run `glean_parser`'s `translate` command:
@@ -289,11 +301,52 @@ python3 -m glean_parser translate --help
 
 We recommend integrating this step into your project's documentation build. The details of that integration is left to you, since it depends on the documentation tool being used and how your project is set up.
 
+#### Metrics linting
+
+Glean includes a "linter" for `metrics.yaml` and `pings.yaml` files called the `glinter` that catches a number of common mistakes in these files.
+
+As part of your continuous integration, you should run the following on your `metrics.yaml` and `pings.yaml` files:
+
+```sh
+python3 -m glean_parser glinter metrics.yaml pings.yaml
+```
+
 </div>
 
 <div data-lang="C#" class="tab">
 
-TODO. To be implemented in [bug 1643568](https://bugzilla.mozilla.org/show_bug.cgi?id=1643568).
+A new build target needs to be added to the project `csproj` file in order to generate the metrics and pings APIs from the registry files (e.g. `metrics.yaml`, `pings.yaml`).
+
+```xml
+<Project>
+  <!-- ... other directives ... -->
+
+  <Target Name="GleanIntegration" BeforeTargets="CoreCompile">
+    <ItemGroup>
+      <!--
+        Note that the two files are not required: Glean will work just fine
+        with just the 'metrics.yaml'. A 'pings.yaml' is only required if custom
+        pings are defined.
+        Please also note that more than one metrics file can be added.
+      -->
+      <GleanRegistryFiles Include="metrics.yaml" />
+      <GleanRegistryFiles Include="pings.yaml" />
+    </ItemGroup>
+    <!-- This is what actually runs the parser. -->
+    <GleanParser RegistryFiles="@(GleanRegistryFiles)" OutputPath="$(IntermediateOutputPath)Glean" Namespace="csharp.GleanMetrics" />
+
+    <!--
+      And this adds the generated files to the project, so that they can be found by
+      the compiler and Intellisense.
+    -->
+    <ItemGroup>
+      <Compile Include="$(IntermediateOutputPath)Glean\**\*.cs" />
+    </ItemGroup>
+  </Target>
+</Project>
+```
+
+This is using the Python 3 interpreter found in `PATH` under the hood. The `GLEAN_PYTHON` environment variable can be used to provide the location of the Python 3 interpreter.
 
 </div>
 
@@ -303,7 +356,7 @@ TODO. To be implemented in [bug 1643568](https://bugzilla.mozilla.org/show_bug.c
 
 Please refer to the [custom pings documentation](pings/custom.md).
 
-> **Important**: as stated [before](adding-glean-to-your-project.md#before-using-glean), any new data collection requires documentation and data-review.
+> **Important**: as stated [before](adding-glean-to-your-project.md#glean-integration-checklist), any new data collection requires documentation and data-review.
 > This is also required for any new metric automatically collected by the Glean SDK.
 
 ### Parallelism

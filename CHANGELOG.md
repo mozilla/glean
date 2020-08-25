@@ -1,6 +1,33 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v32.1.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v32.2.0...main)
+
+# v32.2.0 (2020-08-25)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v32.1.1...v32.2.0)
+
+* General
+  * Move logic to limit the number of retries on ping uploading "recoverable failures" to glean-core. ([#1120](https://github.com/mozilla/glean/pull/1120))
+    * The functionality to limit the number of retries in these cases was introduced to the Glean SDK in `v31.1.0`. The work done now was to move that logic to the glean-core in order to avoid code duplication throughout the language bindings.
+  * Update `glean_parser` to `v1.28.3`
+    * BUGFIX: Generate valid C# code when using Labeled metric types.
+    * BUGFIX: Support `HashSet` and `Dictionary` in the C# generated code.
+  * Add a 10MB quota to the pending pings storage. ([#1100](https://github.com/mozilla/glean/pull/1110))
+* C#
+  * Add support for the String List metric type ([#1108](https://github.com/mozilla/glean/pull/1108)).
+  * Enable generating the C# APIs using the glean_parser ([#1092](https://github.com/mozilla/glean/pull/1092)).
+  * Add support for the `EventMetricType` in C# ([#1129](https://github.com/mozilla/glean/pull/1129)).
+  * Add support for the `TimingDistributionMetricType` in C# ([#1131](https://github.com/mozilla/glean/pull/1131)).
+  * Implement the experiments API in C# ([#1145](https://github.com/mozilla/glean/pull/1145)).
+* Python
+  * BUGFIX: Limit the number of retries for 5xx server errors on ping uploads ([#1120](https://github.com/mozilla/glean/pull/1120)).
+    * This kinds of failures yield a "recoverable error", which means the ping gets re-enqueued. That can cause infinite loops on the ping upload worker. For python we were incorrectly only limiting the number of retries for I/O errors, another type of "recoverable error".
+  * `kebab-case` ping names are now converted to `snake_case` so they are available on the object returned by `load_pings` ([#1122](https://github.com/mozilla/glean/pull/1122)).
+  * For performance reasons, the `glinter` is no longer run as part of `glean.load_metrics()`. We recommend running `glinter` as part of your project's continuous integration instead ([#1124](https://github.com/mozilla/glean/pull/1124)).
+  * A `measure` context manager for conveniently measuring runtimes has been added to `TimespanMetricType` and `TimingDistributionMetricType` ([#1126](https://github.com/mozilla/glean/pull/1126)).
+  * Networking errors have changed from `ERROR` level to `DEBUG` level so they aren't displayed by default ([#1166](https://github.com/mozilla/glean/pull/1166)).
+* iOS
+  * Changed logging to use [`OSLog`](https://developer.apple.com/documentation/os/logging) rather than a mix of `NSLog` and `print`. ([#1133](https://github.com/mozilla/glean/pull/1133))
 
 # v32.1.1 (2020-08-24)
 

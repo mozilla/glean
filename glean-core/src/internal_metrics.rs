@@ -51,6 +51,8 @@ impl CoreMetrics {
 pub struct UploadMetrics {
     pub ping_upload_failure: LabeledMetric<CounterMetric>,
     pub discarded_exceeding_pings_size: MemoryDistributionMetric,
+    pub pending_pings_directory_size: MemoryDistributionMetric,
+    pub deleted_pings_after_quota_hit: CounterMetric,
 }
 
 impl UploadMetrics {
@@ -85,6 +87,27 @@ impl UploadMetrics {
                 },
                 MemoryUnit::Kilobyte,
             ),
+
+            pending_pings_directory_size: MemoryDistributionMetric::new(
+                CommonMetricData {
+                    name: "pending_pings_directory_size".into(),
+                    category: "glean.upload".into(),
+                    send_in_pings: vec!["metrics".into()],
+                    lifetime: Lifetime::Ping,
+                    disabled: false,
+                    dynamic_label: None,
+                },
+                MemoryUnit::Kilobyte,
+            ),
+
+            deleted_pings_after_quota_hit: CounterMetric::new(CommonMetricData {
+                name: "deleted_pings_after_quota_hit".into(),
+                category: "glean.upload".into(),
+                send_in_pings: vec!["metrics".into()],
+                lifetime: Lifetime::Ping,
+                disabled: false,
+                dynamic_label: None,
+            }),
         }
     }
 }

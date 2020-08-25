@@ -13,7 +13,7 @@ export RUSTC_WRAPPER='sccache'
 export SCCACHE_IDLE_TIMEOUT='1200'
 export SCCACHE_CACHE_SIZE='40G'
 export SCCACHE_ERROR_LOG='/builds/worker/sccache.log'
-export RUST_LOG='sccache=info'
+export RUST_LOG='sccache=info,glean_core=debug,glean_ffi=debug'
 
 # Rust
 set -eux; \
@@ -27,7 +27,16 @@ set -eux; \
     rm rustup-init
 export PATH=$HOME/.cargo/bin:$PATH
 
+TOOLCHAIN="${1:-stable}"
 
-rustup toolchain install stable
-rustup default stable
-rustup target add x86_64-linux-android i686-linux-android armv7-linux-androideabi aarch64-linux-android
+# No argument -> default stable install
+if [ "${TOOLCHAIN}" = "stable" ]; then
+    echo "Installing Rust stable & Android targets"
+    rustup toolchain install stable
+    rustup default stable
+    rustup target add x86_64-linux-android i686-linux-android armv7-linux-androideabi aarch64-linux-android
+else
+    echo "Installing Rust ${TOOLCHAIN}"
+    rustup toolchain add "${TOOLCHAIN}" --profile minimal
+    rustup default "${TOOLCHAIN}"
+fi

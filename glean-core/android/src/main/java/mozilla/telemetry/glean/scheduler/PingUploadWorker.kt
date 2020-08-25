@@ -19,7 +19,6 @@ import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.net.FfiPingUploadTask
 import mozilla.telemetry.glean.utils.testFlushWorkManagerJob
 import mozilla.telemetry.glean.net.PingUploadTask
-import mozilla.telemetry.glean.rust.Constants
 
 /**
  * Build the constraints around which the worker can be run, such as whether network
@@ -52,8 +51,6 @@ internal inline fun <reified W : Worker> buildWorkRequest(tag: String): OneTimeW
 class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(context, params) {
     companion object {
         internal const val PING_WORKER_TAG = "mozac_service_glean_ping_upload_worker"
-
-        internal const val MAX_RETRIES = 3
 
         /**
          * Function to aid in properly enqueuing the worker in [WorkManager]
@@ -98,11 +95,6 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
      */
     @Suppress("ReturnCount")
     override fun doWork(): Result {
-        // We counte the number of failures,
-        // if we get more than three failures in upload we will stop this worker.
-        //
-        // This is a hack before a more robust mechanism is implemented in Rust.
-        var uploadFailures = 0
         do {
             // Create a slot of memory for the task: glean-core will write data into
             // the allocated memory.
@@ -121,17 +113,14 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
                         Glean.configuration
                     ).toFfi()
 
-                    if (result == Constants.UPLOAD_RESULT_RECOVERABLE) {
-                        uploadFailures++
-                    }
-
                     // Process the upload response
                     LibGleanFFI.INSTANCE.glean_process_ping_upload_response(incomingTask, result)
                 }
                 PingUploadTask.Wait -> return Result.retry()
                 PingUploadTask.Done -> return Result.success()
             }
-        } while (uploadFailures < MAX_RETRIES)
-        return Result.failure()
+        } while (true)
+        // Limits are enforced by glean-core to avoid an inifinite loop here.
+        // Whenever a limit is reached, this binding will receive `PingUploadTask.Done` and step out.
     }
 }

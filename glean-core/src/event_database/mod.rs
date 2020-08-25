@@ -79,12 +79,12 @@ pub struct EventDatabase {
 }
 
 impl EventDatabase {
-    /// Create a new event database.
+    /// Creates a new event database.
     ///
     /// # Arguments
     ///
     /// * `data_path` - The directory to store events in. A new directory
-    ///   `events` will be created inside of this directory.
+    /// * `events` - will be created inside of this directory.
     pub fn new(data_path: &str) -> Result<Self> {
         let path = Path::new(data_path).join("events");
         create_dir_all(&path)?;
@@ -96,8 +96,9 @@ impl EventDatabase {
         })
     }
 
-    /// Initialize events storage after Glean is fully initialized and ready to
-    /// send pings. This must be called once on application startup, e.g. from
+    /// Initializes events storage after Glean is fully initialized and ready to send pings.
+    ///
+    /// This must be called once on application startup, e.g. from
     /// [Glean.initialize], but after we are ready to send pings, since this
     /// could potentially collect and send pings.
     ///
@@ -113,9 +114,9 @@ impl EventDatabase {
     ///
     /// * `glean` - The Glean instance.
     ///
-    /// # Return value
+    /// # Returns
     ///
-    /// `true` if at least one ping was generated, `false` otherwise.
+    /// Whether at least one ping was generated.
     pub fn flush_pending_events_on_startup(&self, glean: &Glean) -> bool {
         match self.load_events_from_disk() {
             Ok(_) => self.send_all_events(glean),
@@ -168,7 +169,7 @@ impl EventDatabase {
         ping_sent
     }
 
-    /// Record an event in the desired stores.
+    /// Records an event in the desired stores.
     ///
     /// # Arguments
     ///
@@ -242,7 +243,7 @@ impl EventDatabase {
         }
     }
 
-    /// Get a snapshot of the stored event data as a JsonValue.
+    /// Gets a snapshot of the stored event data as a JsonValue.
     ///
     /// # Arguments
     ///
@@ -251,7 +252,7 @@ impl EventDatabase {
     ///
     /// # Returns
     ///
-    /// The an array of events, JSON encoded, if any.
+    /// A array of events, JSON encoded, if any. Otherwise `None`.
     pub fn snapshot_as_json(&self, store_name: &str, clear_store: bool) -> Option<JsonValue> {
         let result = {
             let mut db = self.event_stores.write().unwrap(); // safe unwrap, only error case is poisoning
@@ -295,7 +296,7 @@ impl EventDatabase {
         result
     }
 
-    /// Clear all stored events, both in memory and on-disk.
+    /// Clears all stored events, both in memory and on-disk.
     pub fn clear_all(&self) -> Result<()> {
         // safe unwrap, only error case is poisoning
         self.event_stores.write().unwrap().clear();
@@ -310,7 +311,7 @@ impl EventDatabase {
 
     /// **Test-only API (exported for FFI purposes).**
     ///
-    /// Return whether there are any events currently stored for the given even
+    /// Returns whether there are any events currently stored for the given even
     /// metric.
     ///
     /// This doesn't clear the stored value.
@@ -326,7 +327,7 @@ impl EventDatabase {
 
     /// **Test-only API (exported for FFI purposes).**
     ///
-    /// Get the vector of currently stored events for the given event metric in
+    /// Gets the vector of currently stored events for the given event metric in
     /// the given store.
     ///
     /// This doesn't clear the stored value.

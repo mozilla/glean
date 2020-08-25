@@ -10,9 +10,7 @@ of metric types.
 
 
 import enum
-import io
 from pathlib import Path
-import sys
 from typing import Any, Generator, List, Tuple, Union
 
 
@@ -63,6 +61,13 @@ _ARGS = [
     "send_in_pings",
     "time_unit",
 ]
+
+
+def _normalize_name(name):
+    """
+    Convert kebab-case to snake_case.
+    """
+    return name.replace("-", "_")
 
 
 class UnsupportedMetricType:
@@ -144,11 +149,6 @@ def load_metrics(
 
     filepath = [Path(x) for x in filepath]
 
-    # Just print glinter warnings to stderr
-    glinter_warnings = io.StringIO()
-    if glean_parser.lint.glinter(filepath, config, file=glinter_warnings):
-        sys.stderr.write(glinter_warnings.getvalue())
-
     result = parse_objects(filepath, config)
 
     errors = list(result)
@@ -169,7 +169,7 @@ def load_metrics(
             cursor = getattr(cursor, part)
         for name, metric in category.items():
             for actual_name, glean_metric in _get_metric_objects(name, metric):
-                setattr(cursor, actual_name, glean_metric)
+                setattr(cursor, _normalize_name(actual_name), glean_metric)
 
     return root
 

@@ -123,13 +123,10 @@ fmt: rustfmt
 rustfmt: ## Format all Rust code
 	cargo fmt --all
 
-swiftfmt: ## Format all Swift code
-	swiftformat glean-core/ios samples/ios --swiftversion 5 --verbose
-
 pythonfmt: python-setup ## Run black to format Python code
 	$(GLEAN_PYENV)/bin/python3 -m black glean-core/python/glean glean-core/python/tests
 
-.PHONY: fmt rustfmt swiftfmt
+.PHONY: fmt rustfmt
 
 # Docs
 
@@ -149,16 +146,23 @@ python-docs: build-python ## Build the Python documentation
 
 .PHONY: docs rust-docs kotlin-docs swift-docs
 
-linkcheck: docs ## Run linkchecker on the generated docs
-	# Requires https://wummel.github.io/linkchecker/
-	linkchecker \
-		--ignore-url javadoc \
-		--ignore-url swift \
-		--ignore-url python \
-		--ignore-url docs/glean_core \
-		--ignore-url ErrorKind \
-		--ignore-url std.struct.Error \
-		build/docs
+metrics-docs: python-setup ## Build the internal metrics documentation
+	$(GLEAN_PYENV)/bin/pip install glean_parser
+	$(GLEAN_PYENV)/bin/glean_parser translate --allow-reserved \
+		 -f markdown \
+		 -o ./docs/user/collected-metrics \
+		 glean-core/metrics.yaml glean-core/pings.yaml glean-core/android/metrics.yaml
+
+linkcheck: docs ## Run link-checker on the generated docs
+	# Requires https://www.npmjs.com/package/link-checker
+	link-checker \
+		build/docs/book \
+    --disable-external true \
+    --allow-hash-href true \
+    --url-ignore ".*/swift/.*" \
+    --url-ignore ".*/python/.*" \
+    --url-ignore ".*/javadoc/.*" \
+    --url-ignore ".*/docs/glean_.*"
 .PHONY: linkcheck
 
 spellcheck: ## Spellcheck the docs

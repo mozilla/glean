@@ -1,3 +1,7 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
 use std::ffi::OsString;
 use std::fmt::{self, Display};
 use std::io;
@@ -74,7 +78,7 @@ pub struct Error {
 }
 
 impl Error {
-    /// Return a new UTF-8 error
+    /// Returns a new UTF-8 error
     ///
     /// This is exposed in order to expose conversion errors on the FFI layer.
     pub fn utf8_error() -> Error {

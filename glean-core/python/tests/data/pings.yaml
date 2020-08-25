@@ -1,0 +1,18 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+---
+$schema: moz://mozilla.org/schemas/glean/pings/1-0-0
+
+kebab-case:
+  description: |
+    Make sure we can load a kebab-case named ping from Python
+  include_client_id: true
+  send_if_empty: true
+  bugs:
+    - https://example.com
+  data_reviews:
+    - https://example.comd
+  notification_emails:
+    - glean-team@mozilla.com

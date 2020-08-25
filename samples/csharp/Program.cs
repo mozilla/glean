@@ -6,6 +6,8 @@ using Mozilla.Glean;
 using System;
 using System.IO;
 using static Mozilla.Glean.Glean;
+using static csharp.GleanMetrics.CsharpTestDefinition;
+using static csharp.GleanMetrics.PingsDefinition;
 
 namespace csharp
 {
@@ -24,28 +26,9 @@ namespace csharp
                 dataDir: gleanDataDir
                 );
 
-            // Create a sample ping and metric. Note that, once we'll have C# code
-            // generation in place (bug 1647214), we would be able to remove the
-            // manual definitions below and move them to the appropriate registry files.
-            Mozilla.Glean.Private.PingType<Mozilla.Glean.Private.NoReasonCodes> samplePing =
-                new Mozilla.Glean.Private.PingType<Mozilla.Glean.Private.NoReasonCodes>(
-                    includeClientId: true,
-                    sendIfEmpty: false,
-                    name: "sample",
-                    reasonCodes: null
-                    );
+            CsharpTest.mystring.Set("test-string");
 
-            Mozilla.Glean.Private.StringMetricType sampleString = new Mozilla.Glean.Private.StringMetricType(
-                category: "csharp.test",
-                disabled: false,
-                lifetime: Mozilla.Glean.Private.Lifetime.Application,
-                name: "mystring",
-                sendInPings: new string[] { "sample" }
-            );
-
-            sampleString.Set("test-string");
-
-            samplePing.Submit();
+            Pings.sample.Submit();
 
             Console.WriteLine("Press any key to exit the sample...");
             Console.ReadKey();

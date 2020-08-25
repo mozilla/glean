@@ -11,6 +11,8 @@ That is, the function from a value \\( x \\) to a bucket index is:
 
 This makes them suitable for measuring timings on a number of time scales without any configuration.
 
+> **Note** Check out how this bucketing algorithm would behave on the [Simulator](#simulator)
+
 Timings always span the full length between `start` and `stopAndAccumulate`.
 If the Glean upload is disabled when calling `start`, the timer is still started.
 If the Glean upload is disabled at the time `stopAndAccumulate` is called, nothing is recorded.
@@ -200,6 +202,13 @@ class PageHandler:
         metrics.pages.page_load.stop_and_accumulate(self.timer_id)
 ```
 
+The Python bindings also have a context manager for measuring time:
+
+```Python
+with metrics.pages.page_load.measure():
+    # Load a page ...
+```
+
 There are test APIs available too.  For convenience, properties `sum` and `count` are exposed to facilitate validating that data was recorded correctly.
 
 Continuing the `page_load` example above, at this point the metric should have a `sum == 11` and a `count == 2`:
@@ -227,7 +236,42 @@ assert 1 == metrics.pages.page_load.test_get_num_recorded_errors(
 
 <div data-lang="C#" class="tab">
 
-TODO. To be implemented in [bug 1648443](https://bugzilla.mozilla.org/show_bug.cgi?id=1648443).
+```C#
+using static Mozilla.YourApplication.GleanMetrics.Pages;
+
+var timerId;
+
+void onPageStart(Event e) {
+    timerId = Pages.pageLoad.Start();
+}
+
+void onPageLoaded(Event e) {
+    Pages.pageLoad.StopAndAccumulate(timerId);
+}
+```
+
+There are test APIs available too.  For convenience, properties `sum` and `count` are exposed to facilitate validating that data was recorded correctly.
+
+Continuing the `pageLoad` example above, at this point the metric should have a `sum == 11` and a `count == 2`:
+
+```C#
+using static Mozilla.YourApplication.GleanMetrics.Pages;
+
+// Was anything recorded?
+Assert.True(Pages.pageLoad.TestHasValue());
+
+// Get snapshot.
+var snapshot = Pages.pageLoad.TestGetValue();
+
+// Does the sum have the expected value?
+Assert.Equal(11, snapshot.Sum);
+
+// Usually you don't know the exact timing values, but how many should have been recorded.
+Assert.Equal(2L, snapshot.Values.Count);
+
+// Was an error recorded?
+Assert.Equal(1, Pages.pageLoad.TestGetNumRecordedErrors(ErrorType.InvalidValue));
+```
 
 </div>
 
@@ -268,3 +312,71 @@ TODO. To be implemented in [bug 1648443](https://bugzilla.mozilla.org/show_bug.c
 * [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-timing-distribution-metric-type/index.html)
 * [Swift API docs](../../../swift/Classes/TimingDistributionMetricType.html)
 * [Python API docs](../../../python/glean/metrics/timing_distribution.html)
+
+## Simulator
+
+<div id="custom-data-modal-overlay">
+    <div id="custom-data-modal">
+        <p>Please, insert your custom data below as a JSON array.</p>
+        <textarea rows="30"></textarea>
+    </div>
+</div>
+
+<div id="simulator-container">
+    <div id="histogram-chart-container">
+        <div id="histogram-chart"></div>
+        <p id="histogram-chart-legend"><p>
+    </div>
+    <div id="data-options">
+        <h3>Data options</h3>
+        <div class="input-group">
+            <label for="normally-distributed">Generate normally distributed data</label>
+            <input name="data-options" value="normally-distributed" id="normally-distributed" type="radio" />
+        </div>
+        <div class="input-group">
+            <label for="log-normally-distributed">Generate log-normally distributed data</label>
+            <input name="data-options" value="log-normally-distributed" id="log-normally-distributed" type="radio" checked />
+        </div>
+        <div class="input-group">
+            <label for="uniformly-distributed">Generate uniformly distributed data</label>
+            <input name="data-options" value="uniformly-distributed" id="uniformly-distributed" type="radio" />
+        </div>
+        <div class="input-group" id="custom-data-input-group">
+            <label for="custom">Use custom data</label>
+            <input name="data-options" value="custom" id="custom" type="radio" />
+        </div>
+    </div>
+    <div id="histogram-props">
+        <h3>Properties</h3>
+        <div class="input-group hide">
+            <label for="kind">Histogram type</label>
+            <select id="kind" name="kind" disabled>
+                <option value="functional" selected>Functional</option>
+            </select>
+        </div>
+        <div class="input-group hide">
+            <label for="log-base">Log base</label>
+            <input id="log-base" name="log-base" type="number" value="2" disabled />
+        </div>
+        <div class="input-group hide">
+            <label for="buckets-per-magnitude">Buckets per magnitude</label>
+            <input id="buckets-per-magnitude" name="buckets-per-magnitude" type="number" value="8" disabled />
+        </div>
+        <div class="input-group hide">
+            <label for="maximum-value">Maximum value</label>
+            <input id="maximum-value" name="maximum-value" type="number" value="600000000000" disabled />
+        </div>
+        <div class="input-group">
+            <label for="time-unit">Time unit (<code>time_unit</code>)</label>
+            <select id="time-unit" name="time-unit">
+                <option value="nanoseconds" selected>Nanoseconds</option>
+                <option value="microseconds">Microseconds</option>
+                <option value="milliseconds">Milliseconds</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+> **Note** The data _provided_, is assumed to be in the configured time unit. The data _recorded_, on the other hand, is always in **nanoseconds**.
+> This means that, if the configured time unit is not `nanoseconds`, the data will be transformed before being recorded. Notice this, by using the select field above to change the time unit and see the mean of the data recorded changing.
+

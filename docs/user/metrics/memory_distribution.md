@@ -9,6 +9,8 @@ That is, the function from a value \\( x \\) to a bucket index is:
 
 This makes them suitable for measuring memory sizes on a number of different scales without any configuration.
 
+> **Note** Check out how this bucketing algorithm would behave on the [Simulator](#simulator)
+
 ## Configuration
 
 If you wanted to create a memory distribution to measure the amount of heap memory allocated, first you need to add an entry for it to the `metrics.yaml` file:
@@ -193,3 +195,71 @@ Assert.Equal(1, Memory.heapAllocated.TestGetNumRecordedErrors(ErrorType.InvalidV
 * [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-memory-distribution-metric-type/index.html)
 * [Swift API docs](../../../swift/Classes/MemoryDistributionMetricType.html)
 * [Python API docs](../../../python/glean/metrics/timing_distribution.html)
+
+## Simulator
+
+<div id="custom-data-modal-overlay">
+    <div id="custom-data-modal">
+        <p>Please, insert your custom data below as a JSON array.</p>
+        <textarea rows="30"></textarea>
+    </div>
+</div>
+
+<div id="simulator-container">
+    <div id="histogram-chart-container">
+        <div id="histogram-chart"></div>
+        <p id="histogram-chart-legend"><p>
+    </div>
+    <div id="data-options">
+        <h3>Data options</h3>
+        <div class="input-group">
+            <label for="normally-distributed">Generate normally distributed data</label>
+            <input name="data-options" value="normally-distributed" id="normally-distributed" type="radio" />
+        </div>
+        <div class="input-group">
+            <label for="log-normally-distributed">Generate log-normally distributed data</label>
+            <input name="data-options" value="log-normally-distributed" id="log-normally-distributed" type="radio" checked />
+        </div>
+        <div class="input-group">
+            <label for="uniformly-distributed">Generate uniformly distributed data</label>
+            <input name="data-options" value="uniformly-distributed" id="uniformly-distributed" type="radio" />
+        </div>
+        <div class="input-group" id="custom-data-input-group">
+            <label for="custom">Use custom data</label>
+            <input name="data-options" value="custom" id="custom" type="radio" />
+        </div>
+    </div>
+    <div id="histogram-props">
+        <h3>Properties</h3>
+        <div class="input-group hide">
+            <label for="kind">Histogram type</label>
+            <select id="kind" name="kind" disabled>
+                <option value="functional" selected>Functional</option>
+            </select>
+        </div>
+        <div class="input-group hide">
+            <label for="log-base">Log base</label>
+            <input id="log-base" name="log-base" type="number" value="2" disabled />
+        </div>
+        <div class="input-group hide">
+            <label for="buckets-per-magnitude">Buckets per magnitude</label>
+            <input id="buckets-per-magnitude" name="buckets-per-magnitude" type="number" value="16" disabled />
+        </div>
+        <div class="input-group hide">
+            <label for="maximum-value">Maximum value</label>
+            <input id="maximum-value" name="maximum-value" type="number" value="1099511627776" disabled />
+        </div>
+        <div class="input-group">
+            <label for="memory-unit">Memory unit (<code>memory_unit</code>)</label>
+            <select id="memory-unit" name="memory-unit">
+                <option value="byte" selected>Byte</option>
+                <option value="kilobyte">Kilobyte</option>
+                <option value="megabyte">Megabyte</option>
+                <option value="gigabyte">Gigabyte</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+> **Note** The data _provided_, is assumed to be in the configured memory unit. The data _recorded_, on the other hand, is always in **bytes**.
+> This means that, if the configured memory unit is not `byte`, the data will be transformed before being recorded. Notice this, by using the select field above to change the memory unit and see the mean of the data recorded changing.

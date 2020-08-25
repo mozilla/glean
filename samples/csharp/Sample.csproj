@@ -29,4 +29,43 @@
 
   </ItemGroup>
 
+  <!--
+    Define the code generating task. We can't load it directly from the AssemblyFile, otherwise
+    msbuild will lock the file and fail next builds. To work around this, we generate a task
+    definition ourselves and load the real task code inside it.
+    External consumers will not need to do that, they will simply reference the AssemblyName or
+    AssemblyFile in the UsingTask directive.
+    
+    Note that we are using the `RoslynCodeTaskFactory` for compiling inline code fragments instead
+    of `CodeTaskFactory`. That's because the former is deprecated and not available outside of the
+    Windows .NET framework. See https://github.com/dotnet/msbuild/issues/2890 .
+  -->
+  <UsingTask TaskName="GleanParser" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <RegistryFiles ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+      <OutputPath ParameterType="System.String" Required="true" />
+      <Namespace ParameterType="System.String" Required="true" />
+      <AllowReserved ParameterType="System.Boolean" Required="false" />
+    </ParameterGroup>
+    <Task>
+      <Code Type="Class" Source="../../glean-core/csharp/Glean/GleanParser.cs" Language="cs" />
+    </Task>
+  </UsingTask>
+
+  <Target Name="GleanIntegration" BeforeTargets="CoreCompile">
+    <ItemGroup>
+      <GleanRegistryFiles Include="metrics.yaml" />
+      <GleanRegistryFiles Include="pings.yaml" />
+    </ItemGroup>
+    <!-- This is what actually runs the parser. -->
+    <GleanParser RegistryFiles="@(GleanRegistryFiles)" OutputPath="$(IntermediateOutputPath)Glean" Namespace="csharp.GleanMetrics" />
+
+    <!--
+      And this adds the generated files to the project, so that they can be found by
+      the compiler and Intellisense.
+    -->
+    <ItemGroup>
+      <Compile Include="$(IntermediateOutputPath)Glean/**/*.cs" />
+    </ItemGroup>
+  </Target>
 </Project>

@@ -391,3 +391,41 @@ glean.upload:
     expires: never
     no_lint:
       - COMMON_PREFIX
+
+  pending_pings_directory_size:
+    type: memory_distribution
+    description: >
+      The size of the pending pings directory upon initialization of Glean.
+      This does not include the size of the deletion request pings directory.
+    memory_unit: kilobyte
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1601550
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1601550#c3
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+    expires: never
+    no_lint:
+      - COMMON_PREFIX
+
+  deleted_pings_after_quota_hit:
+    type: counter
+    description: >
+      The number of pings deleted after the quota
+      for the size of the pending pings directory is hit.
+      Since quota is only calculated for the pending pings directory,
+      and deletion request ping live in a different directory,
+      deletion request pings are never deleted.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1601550
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1601550#c3
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+    expires: never
+    no_lint:
+      - COMMON_PREFIX

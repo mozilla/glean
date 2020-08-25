@@ -35,9 +35,15 @@ Carthage
 /glean-core/csharp/*/bin/
 /glean-core/csharp/*/obj/
 /glean-core/csharp/.vs/
+# The 'build' dir is generally disallowed,
+# but we need to allow it here to enable our
+# csharp custom task.
+!/glean-core/csharp/Glean/build/
+/glean-core/csharp/Glean/.venv/
 /samples/csharp/bin/
 /samples/csharp/obj/
 /samples/csharp/.vs/
+/samples/csharp/.venv/
 
 # local stuff
 data/

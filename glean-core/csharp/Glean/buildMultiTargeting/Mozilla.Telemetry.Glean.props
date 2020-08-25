@@ -1,0 +1,7 @@
+<!-- 
+  This file is automatically imported by NuGet into a user's project
+  when it targets multiple frameworks.
+-->
+<Project>
+  <Import Project="..\build\Mozilla.Telemetry.Glean.props" />
+</Project>

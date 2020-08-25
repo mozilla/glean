@@ -41,12 +41,24 @@ the details of which are reproduced below.
     <url>https://github.com/cryptocorrosion/cryptocorrosion</url>
   </license>
   <license>
+    <name>Apache License 2.0: ahash</name>
+    <url>https://github.com/tkaitchuck/ahash</url>
+  </license>
+  <license>
     <name>Apache License 2.0: bitflags</name>
     <url>https://github.com/bitflags/bitflags</url>
   </license>
   <license>
     <name>Apache License 2.0: cfg-if</name>
     <url>https://github.com/alexcrichton/cfg-if</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: const-random</name>
+    <url>https://github.com/tkaitchuck/constrandom</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: const-random-macro</name>
+    <url>https://github.com/tkaitchuck/constrandom</url>
   </license>
   <license>
     <name>Apache License 2.0: env_logger</name>
@@ -99,6 +111,10 @@ the details of which are reproduced below.
   <license>
     <name>Apache License 2.0: percent-encoding</name>
     <url>https://github.com/servo/rust-url/</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: proc-macro-hack</name>
+    <url>https://github.com/dtolnay/proc-macro-hack</url>
   </license>
   <license>
     <name>Apache License 2.0: proc-macro2</name>
@@ -215,6 +231,14 @@ the details of which are reproduced below.
   <license>
     <name>MIT License: miniz_oxide</name>
     <url>https://github.com/Frommi/miniz_oxide/tree/master/miniz_oxide</url>
+  </license>
+  <license>
+    <name>MIT License: dashmap</name>
+    <url>https://github.com/xacrimon/dashmap</url>
+  </license>
+  <license>
+    <name>MIT License: oslog</name>
+    <url>https://github.com/steven-joruk/oslog</url>
   </license>
   <license>
     <name>MIT License: bincode</name>

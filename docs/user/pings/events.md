@@ -8,7 +8,7 @@ If the application crashes, an `events` ping is generated next time the applicat
 
 The `events` ping is collected under the following circumstances:
 
-1. Normally, it is collected when the application goes into the [background](index.md#defining-background-state), if there are any recorded events to send.
+1. Normally, it is collected when the application goes into the [background](index.md#defining-foreground-and-background-state), if there are any recorded events to send.
 
 2. When the queue of events exceeds `Glean.configuration.maxEvents` (default 500).
 

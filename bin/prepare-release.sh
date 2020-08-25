@@ -140,6 +140,14 @@ run $SED -i.bak -E \
     "${WORKSPACE_ROOT}/${FILE}"
 run rm "${WORKSPACE_ROOT}/${FILE}.bak"
 
+### GLEAN C# BINDINGS ###
+
+FILE=glean-core/csharp/Glean/Glean.csproj
+run $SED -i.bak -E \
+    -e "s/<Version>[0-9A-Z.-]+<\/Version>/<Version>${NEW_VERSION}<\/Version>/" \
+    "${WORKSPACE_ROOT}/${FILE}"
+run rm "${WORKSPACE_ROOT}/${FILE}.bak"
+
 ### CHANGELOG ###
 
 FILE=CHANGELOG.md

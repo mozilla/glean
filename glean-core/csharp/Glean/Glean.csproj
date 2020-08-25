@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk" DefaultTargets="Build" InitialTargets="ValidateContentFiles">
+﻿<Project Sdk="Microsoft.NET.Sdk" DefaultTargets="Build" InitialTargets="ValidateContentFiles">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -10,7 +10,7 @@
       While we're still testing, mark this as a pre-release package.
       See https://docs.microsoft.com/en-us/nuget/concepts/package-versioning#pre-release-versions
     -->
-    <Version>0.0.2-alpha</Version>
+    <Version>32.2.0</Version>
     <RootNamespace>Mozilla.Glean</RootNamespace>
     <PackageId>Mozilla.Telemetry.Glean</PackageId>
     <PackageProjectUrl>https://github.com/mozilla/glean/</PackageProjectUrl>
@@ -144,5 +144,65 @@
   -->
   <Target Name="ValidateContentFiles" Condition="$(IsPublicPackage) == true">
     <Error Condition="!Exists(%(Content.FullPath))" Text="Missing Glean FFI file [%(Content.FullPath)]" />
+  </Target>
+
+  <ItemGroup>
+    <Content Include="build\*" PackagePath="build\" />
+    <Content Include="buildMultiTargeting\*" PackagePath="buildMultiTargeting\" />
+
+    <!--
+      Mark the following packages as 'local only': they will be used when building this project
+      but they will not become transitive dependencies. These dependencies are required for
+      `GleanParser.cs`.
+    -->
+    <PackageReference Include="Microsoft.Build.Framework" Version="16.6.0">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+
+    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="16.6.0" PrivateAssets="All">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <!--
+    Define the code generating task. We can't load it directly from the AssemblyFile, otherwise
+    msbuild will lock the file and fail next builds. To work around this, we generate a task
+    definition ourselves and load the real task code inside it.
+    External consumers will not need to do that, they will simply reference the AssemblyName or
+    AssemblyFile in the UsingTask directive.
+    
+    Note that we are using the `RoslynCodeTaskFactory` for compiling inline code fragments instead
+    of `CodeTaskFactory`. That's because the former is deprecated and not available outside of the
+    Windows .NET framework. See https://github.com/dotnet/msbuild/issues/2890 .
+  -->
+  <UsingTask TaskName="GleanParser" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <RegistryFiles ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+      <OutputPath ParameterType="System.String" Required="true" />
+      <Namespace ParameterType="System.String" Required="true" />
+      <AllowReserved ParameterType="System.Boolean" Required="false" />
+    </ParameterGroup>
+    <Task>
+      <Code Type="Class" Source="GleanParser.cs" Language="cs" />
+    </Task>
+  </UsingTask>
+
+  <!-- Run the task to generate the Glean SDK APIs -->
+  <Target Name="GleanIntegration" BeforeTargets="CoreCompile">
+    <!-- Declare the locations of the Glean registry files. -->
+    <ItemGroup>
+      <GleanRegistryFiles Include="..\..\metrics.yaml"/>
+      <GleanRegistryFiles Include="..\..\pings.yaml"/>
+    </ItemGroup>
+
+    <!-- This is what actually runs the parser. -->
+    <GleanParser RegistryFiles="@(GleanRegistryFiles)" OutputPath="$(IntermediateOutputPath)Glean" AllowReserved="true" Namespace="Mozilla.Glean.GleanMetrics" />
+    <!--
+      And this adds the generated files to the project, so that they can be found by
+      the compiler and Intellisense.
+    -->
+    <ItemGroup>
+      <Compile Include="$(IntermediateOutputPath)Glean\**\*.cs" />
+    </ItemGroup>
   </Target>
 </Project>

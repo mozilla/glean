@@ -152,7 +152,7 @@ impl Builder {
         self
     }
 
-    /// Consume the builder and create a PingRequest.
+    /// Consumes the builder and create a PingRequest.
     ///
     /// # Panics
     ///
@@ -199,7 +199,7 @@ pub struct PingRequest {
 impl PingRequest {
     /// Creates a new builder-style structure to help build a PingRequest.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `language_binding_name` - The name of the language used by the binding that instantiated this Glean instance.
     ///                             This is used to build the User-Agent header value.
@@ -218,7 +218,7 @@ impl PingRequest {
             .unwrap_or(false)
     }
 
-    /// Decompress and pretty-format the ping payload
+    /// Decompresses and pretty-format the ping payload
     ///
     /// Should be used for logging when required.
     /// This decompresses the payload in memory.

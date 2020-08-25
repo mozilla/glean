@@ -50,8 +50,6 @@ class BaseUploader(ping_uploader.PingUploader):
         Returns:
             result (UploadResult): the status code of the upload response.
         """
-        if config.ping_tag is not None:
-            headers.append(("X-Debug-ID", config.ping_tag))
 
         return self.upload(
             url=config.server_endpoint + path, data=data, headers=headers,
