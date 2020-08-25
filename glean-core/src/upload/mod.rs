@@ -702,10 +702,7 @@ mod test {
 
         // Try and get the next request.
         // Verify request was not returned
-        assert_eq!(
-            glean.get_upload_task(),
-            PingUploadTask::Done
-        );
+        assert_eq!(glean.get_upload_task(), PingUploadTask::Done);
     }
 
     #[test]
@@ -762,7 +759,8 @@ mod test {
 
         // Create a new upload manager so that we have access to its functions directly,
         // make it synchronous so we don't have to manually wait for the scanning to finish.
-        let mut upload_manager = PingUploadManager::new(dir.path(), "Testing", /* sync */ true);
+        let mut upload_manager =
+            PingUploadManager::new(dir.path(), "Testing", /* sync */ true);
 
         // Add a rate limiter to the upload mangager with max of 10 pings every 3 seconds.
         let secs_per_interval = 3;
@@ -1264,7 +1262,8 @@ mod test {
 
         // Create a new upload manager so that we have access to its functions directly,
         // make it synchronous so we don't have to manually wait for the scanning to finish.
-        let mut upload_manager = PingUploadManager::new(dir.path(), "Testing", /* sync */ true);
+        let mut upload_manager =
+            PingUploadManager::new(dir.path(), "Testing", /* sync */ true);
 
         // Add a rate limiter to the upload mangager with max of 1 ping 5secs.
         //
