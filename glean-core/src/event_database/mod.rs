@@ -481,8 +481,8 @@ mod test {
         db.record(&glean, &test_meta, 2, None);
         {
             let event_stores = db.event_stores.read().unwrap();
-            assert_eq!(&event_data, &event_stores.get(test_storage.clone()).unwrap()[0]);
-            assert_eq!(event_stores.get(test_storage.clone()).unwrap().len(), 1);
+            assert_eq!(&event_data, &event_stores.get(test_storage).unwrap()[0]);
+            assert_eq!(event_stores.get(test_storage).unwrap().len(), 1);
         }
 
         glean.set_upload_enabled(false);
@@ -491,7 +491,7 @@ mod test {
         db.record(&glean, &test_meta, 2, None);
         {
             let event_stores = db.event_stores.read().unwrap();
-            assert_eq!(event_stores.get(test_storage.clone()).unwrap().len(), 1);
+            assert_eq!(event_stores.get(test_storage).unwrap().len(), 1);
         }
     }
 }
