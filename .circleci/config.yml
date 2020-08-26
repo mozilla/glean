@@ -643,7 +643,7 @@ jobs:
           command: |
             # We need release mode to correctly ship bitcode for dependencies
             pushd samples/ios/app
-            carthage bootstrap --platform iOS --cache-builds --configuration Release --verbose
+            ./bootstrap.sh Release
             popd
       - run:
           name: Build sample app
