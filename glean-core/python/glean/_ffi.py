@@ -76,7 +76,10 @@ setup_logging()
 
 
 def make_config(
-    data_dir: Path, package_name: str, upload_enabled: bool, max_events: int,
+    data_dir: Path,
+    package_name: str,
+    upload_enabled: bool,
+    max_events: int,
 ) -> Any:
     """
     Make an `FfiConfiguration` object.

@@ -336,7 +336,9 @@ def test_ping_collection_must_happen_after_currently_scheduled_metrics_recording
     json_content = json.loads(serialized_ping)
 
     assert 0 == validate_ping.validate_ping(
-        io.StringIO(serialized_ping), sys.stdout, schema_url=ping_schema_url,
+        io.StringIO(serialized_ping),
+        sys.stdout,
+        schema_url=ping_schema_url,
     )
 
     assert {"category.string_metric": test_value} == json_content["metrics"]["string"]
@@ -568,7 +570,9 @@ def test_sending_deletion_ping_if_disabled_outside_of_run(tmpdir, ping_schema_ur
     json_content = json.loads(serialized_ping)
 
     assert 0 == validate_ping.validate_ping(
-        io.StringIO(serialized_ping), sys.stdout, schema_url=ping_schema_url,
+        io.StringIO(serialized_ping),
+        sys.stdout,
+        schema_url=ping_schema_url,
     )
 
     assert not json_content["client_info"]["client_id"].startswith("c0ffee")
@@ -732,7 +736,9 @@ def test_presubmit_makes_a_valid_ping(tmpdir, ping_schema_url, monkeypatch):
     assert ping_name == url_path.split("/")[3]
 
     assert 0 == validate_ping.validate_ping(
-        io.StringIO(serialized_ping), sys.stdout, schema_url=ping_schema_url,
+        io.StringIO(serialized_ping),
+        sys.stdout,
+        schema_url=ping_schema_url,
     )
 
 
@@ -741,7 +747,9 @@ def test_app_display_version_unknown():
 
     Glean._reset()
     Glean._initialize_with_tempdir_for_testing(
-        application_id=GLEAN_APP_ID, application_version=None, upload_enabled=True,
+        application_id=GLEAN_APP_ID,
+        application_version=None,
+        upload_enabled=True,
     )
 
     assert (
