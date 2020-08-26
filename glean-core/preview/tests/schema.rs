@@ -6,7 +6,7 @@ use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::PathBuf;
 
-use jsonschema_valid::{self, schemas::Draft6};
+use jsonschema_valid::{self, schemas::Draft};
 use serde_json::Value;
 
 use glean::{metrics::PingType, ClientInfoMetrics, Configuration};
@@ -81,7 +81,7 @@ fn validate_against_schema() {
 
     // Now validate against the vendored schema
     let data = serde_json::from_str(&body).unwrap();
-    let cfg = jsonschema_valid::Config::from_schema(&schema, Some(&Draft6)).unwrap();
+    let cfg = jsonschema_valid::Config::from_schema(&schema, Some(Draft::Draft6)).unwrap();
     let validation = cfg.validate(&data);
     match validation {
         Ok(()) => {}

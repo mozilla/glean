@@ -33,10 +33,6 @@ the details of which are reproduced below.
     <url>http://github.com/tailhook/quick-error</url>
   </license>
   <license>
-    <name>Apache License 2.0: c2-chacha</name>
-    <url>https://github.com/cryptocorrosion/cryptocorrosion</url>
-  </license>
-  <license>
     <name>Apache License 2.0: ppv-lite86</name>
     <url>https://github.com/cryptocorrosion/cryptocorrosion</url>
   </license>
@@ -93,16 +89,16 @@ the details of which are reproduced below.
     <url>https://github.com/rust-lang/libc</url>
   </license>
   <license>
-    <name>Apache License 2.0: log</name>
-    <url>https://github.com/rust-lang/log</url>
-  </license>
-  <license>
     <name>Apache License 2.0: num-integer</name>
     <url>https://github.com/rust-num/num-integer</url>
   </license>
   <license>
     <name>Apache License 2.0: num-traits</name>
     <url>https://github.com/rust-num/num-traits</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: num_cpus</name>
+    <url>https://github.com/seanmonstar/num_cpus</url>
   </license>
   <license>
     <name>Apache License 2.0: once_cell</name>
@@ -137,16 +133,12 @@ the details of which are reproduced below.
     <url>https://github.com/serde-rs/json</url>
   </license>
   <license>
-    <name>Apache License 2.0: smallvec</name>
-    <url>https://github.com/servo/rust-smallvec</url>
-  </license>
-  <license>
     <name>Apache License 2.0: syn</name>
     <url>https://github.com/dtolnay/syn</url>
   </license>
   <license>
     <name>Apache License 2.0: time</name>
-    <url>https://github.com/rust-lang/time</url>
+    <url>https://github.com/time-rs/time</url>
   </license>
   <license>
     <name>Apache License 2.0: unicode-bidi</name>
@@ -185,12 +177,24 @@ the details of which are reproduced below.
     <url>https://github.com/rust-random/rand</url>
   </license>
   <license>
+    <name>Apache License 2.0: adler</name>
+    <url>https://github.com/jonas-schievink/adler.git</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: log</name>
+    <url>https://github.com/rust-lang/log</url>
+  </license>
+  <license>
     <name>Apache License 2.0: failure_derive</name>
-    <url>https://github.com/withoutboats/failure_derive</url>
+    <url>https://github.com/rust-lang-nursery/failure</url>
   </license>
   <license>
     <name>Apache License 2.0: lmdb-rkv-sys</name>
     <url>https://github.com/mozilla/lmdb-rs.git</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: tinyvec</name>
+    <url>https://github.com/Lokathor/tinyvec</url>
   </license>
   <license>
     <name>Apache License 2.0: winapi-x86_64-pc-windows-gnu</name>
@@ -241,10 +245,6 @@ the details of which are reproduced below.
     <url>https://github.com/steven-joruk/oslog</url>
   </license>
   <license>
-    <name>MIT License: bincode</name>
-    <url>https://github.com/servo/bincode</url>
-  </license>
-  <license>
     <name>MIT License: byteorder</name>
     <url>https://github.com/BurntSushi/byteorder</url>
   </license>
@@ -255,6 +255,10 @@ the details of which are reproduced below.
   <license>
     <name>MIT License: winapi-util</name>
     <url>https://github.com/BurntSushi/winapi-util</url>
+  </license>
+  <license>
+    <name>MIT License: bincode</name>
+    <url>https://github.com/servo/bincode</url>
   </license>
   <license>
     <name>Mozilla Public License 2.0: benchmark</name>
@@ -271,10 +275,6 @@ the details of which are reproduced below.
   <license>
     <name>Mozilla Public License 2.0: glean-preview</name>
     <url>https://github.com/mozilla/glean</url>
-  </license>
-  <license>
-    <name>zlib License: adler32</name>
-    <url>https://github.com/remram44/adler32-rs</url>
   </license>
 </licenses>
 

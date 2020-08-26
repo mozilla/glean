@@ -309,7 +309,7 @@ jobs:
     resource_class: "medium+"
     steps:
       - test-rust:
-          rust-version: "1.41.0"
+          rust-version: "1.43.0"
 
   Rust FFI header check:
     docker:
