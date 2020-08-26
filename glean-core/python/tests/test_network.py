@@ -145,7 +145,7 @@ def test_ping_upload_worker_single_process(safe_httpserver):
     pings_dir = Glean._data_dir / "pending_pings"
     pings_dir.mkdir()
 
-    for i in range(10):
+    for _ in range(10):
         with (pings_dir / str(uuid.uuid4())).open("wb") as fd:
             fd.write(b"/data/path/\n")
             fd.write(b"{}\n")

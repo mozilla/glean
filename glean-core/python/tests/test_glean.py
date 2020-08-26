@@ -180,7 +180,7 @@ def test_queued_recorded_metrics_correctly_during_init():
         send_in_pings=["store1"],
     )
 
-    for i in range(2):
+    for _ in range(2):
         counter_metric.add()
 
     Glean._initialize_with_tempdir_for_testing(
@@ -422,7 +422,7 @@ def test_tempdir_is_cleared_multiprocess(safe_httpserver):
     pings_dir = Glean._data_dir / "pending_pings"
     pings_dir.mkdir()
 
-    for i in range(10):
+    for _ in range(10):
         with (pings_dir / str(uuid.uuid4())).open("wb") as fd:
             fd.write(b"/data/path/\n")
             fd.write(b"{}\n")
@@ -495,7 +495,7 @@ def test_disabling_upload_sends_deletion_request(safe_httpserver):
 def test_overflowing_the_task_queue_records_telemetry():
     Dispatcher.set_task_queueing(True)
 
-    for i in range(110):
+    for _ in range(110):
         Dispatcher.launch(lambda: None)
 
     assert 100 == len(Dispatcher._preinit_task_queue)
@@ -614,7 +614,7 @@ def test_dont_allow_multiprocessing(monkeypatch, safe_httpserver):
 
     # Monkey-patch the multiprocessing API to be broken so we can assert it isn't used
     def broken_process(*args, **kwargs):
-        assert False, "shouldn't be called"
+        assert False, "shouldn't be called"  # noqa
 
     monkeypatch.setattr(subprocess, "Popen", broken_process)
 
