@@ -32,7 +32,7 @@ mod result;
 const MAX_RECOVERABLE_FAILURES_PER_UPLOADING_WINDOW: u32 = 3;
 
 /// The maximum PingUploadTask::Wait allowed in a row.
-const MAX_WAIT_ATTEMPTS: u32 = 3;
+const MAX_WAIT_ATTEMPTS: u32 = 300;
 
 // The maximum size in bytes a ping body may have to be eligible for upload.
 const PING_BODY_MAX_SIZE: usize = 1024 * 1024; // 1 MB
