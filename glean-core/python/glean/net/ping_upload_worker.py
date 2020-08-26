@@ -104,7 +104,10 @@ def _process(data_dir: Path, application_id: str, configuration) -> bool:
         # initialization in a subprocess, so we use
         # `glean_initialize_for_subprocess` rather than `glean_initialize` here.
         cfg = _ffi.make_config(
-            data_dir, application_id, True, configuration.max_events,
+            data_dir,
+            application_id,
+            True,
+            configuration.max_events,
         )
         if _ffi.lib.glean_initialize_for_subprocess(cfg) == 0:
             log.error("Couldn't initialize Glean in subprocess")

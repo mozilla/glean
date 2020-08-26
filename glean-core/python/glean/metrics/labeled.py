@@ -119,7 +119,9 @@ class LabeledMetricBase:
             ping_name = self._send_in_pings[0]
 
         return self._test_get_num_recorded_errors_ffi(
-            self._handle, error_type.value, _ffi.ffi_encode_string(ping_name),
+            self._handle,
+            error_type.value,
+            _ffi.ffi_encode_string(ping_name),
         )
 
 
