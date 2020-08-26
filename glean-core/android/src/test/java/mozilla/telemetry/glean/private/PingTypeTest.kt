@@ -16,6 +16,7 @@ import mozilla.telemetry.glean.resetGlean
 import mozilla.telemetry.glean.scheduler.PingUploadWorker
 import mozilla.telemetry.glean.testing.GleanTestRule
 import mozilla.telemetry.glean.triggerWorkManager
+import mozilla.telemetry.glean.delayMetricsPing
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -38,6 +39,7 @@ class PingTypeTest {
         val server = getMockWebServer()
 
         val context = getContextWithMockedInfo()
+        delayMetricsPing(context)
         resetGlean(context, Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port
         ))
@@ -78,6 +80,7 @@ class PingTypeTest {
         val server = getMockWebServer()
 
         val context = getContextWithMockedInfo()
+        delayMetricsPing(context)
         resetGlean(context, Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port
         ))
@@ -118,6 +121,7 @@ class PingTypeTest {
         val server = getMockWebServer()
 
         val context = getContextWithMockedInfo()
+        delayMetricsPing(context)
         resetGlean(context, Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port
         ))
@@ -158,6 +162,7 @@ class PingTypeTest {
         val server = getMockWebServer()
 
         val context = getContextWithMockedInfo()
+        delayMetricsPing(context)
         resetGlean(context, Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port
         ))
@@ -206,6 +211,7 @@ class PingTypeTest {
         )
 
         val context = getContextWithMockedInfo()
+        delayMetricsPing(context)
         resetGlean(context, Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port
         ))

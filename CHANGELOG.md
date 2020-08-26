@@ -2,6 +2,8 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v32.2.0...main)
 
+* General
+  * Track the size of the database file at startup ([#1141](https://github.com/mozilla/glean/pull/1141)).
 * Android
   * Handle ping registration off the main thread. This removes a potential blocking call ([#1132](https://github.com/mozilla/glean/pull/1132)).
 * iOS

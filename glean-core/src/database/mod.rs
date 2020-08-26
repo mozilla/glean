@@ -5,6 +5,8 @@
 use std::collections::btree_map::Entry;
 use std::collections::BTreeMap;
 use std::fs;
+use std::num::NonZeroU64;
+use std::path::Path;
 use std::str;
 use std::sync::RwLock;
 
@@ -32,6 +34,9 @@ pub struct Database {
     /// we will save metrics with 'ping' lifetime data in a map temporarily
     /// so as to persist them to disk using rkv in bulk on demand.
     ping_lifetime_data: Option<RwLock<BTreeMap<String, Metric>>>,
+
+    // Initial file size when opening the database.
+    file_size: Option<NonZeroU64>,
 }
 
 impl std::fmt::Debug for Database {
@@ -46,6 +51,24 @@ impl std::fmt::Debug for Database {
     }
 }
 
+/// Get the file size of a file in the given path and file.
+///
+/// # Arguments
+///
+/// - `path` - The path
+///
+/// # Returns
+///
+/// Returns the non-zero file size in bytes,
+/// or `None` on error or if the size is `0`.
+fn file_size(path: &Path) -> Option<NonZeroU64> {
+    log::trace!("Getting file size for path: {}", path.display());
+    fs::metadata(path)
+        .ok()
+        .map(|stat| stat.len())
+        .and_then(NonZeroU64::new)
+}
+
 impl Database {
     /// Initializes the data store.
     ///
@@ -55,7 +78,12 @@ impl Database {
     /// It also loads any Lifetime::Ping data that might be
     /// persisted, in case `delay_ping_lifetime_io` is set.
     pub fn new(data_path: &str, delay_ping_lifetime_io: bool) -> Result<Self> {
-        let rkv = Self::open_rkv(data_path)?;
+        let path = Path::new(data_path).join("db");
+        log::debug!("Database path: {:?}", path.display());
+
+        let file_size = file_size(&path.join("data.mdb"));
+
+        let rkv = Self::open_rkv(&path)?;
         let user_store = rkv.open_single(Lifetime::User.as_str(), StoreOptions::create())?;
         let ping_store = rkv.open_single(Lifetime::Ping.as_str(), StoreOptions::create())?;
         let application_store =
@@ -72,11 +100,17 @@ impl Database {
             ping_store,
             application_store,
             ping_lifetime_data,
+            file_size,
         };
 
         db.load_ping_lifetime_data();
 
         Ok(db)
+    }
+
+    /// Get the initial database file size.
+    pub fn file_size(&self) -> Option<NonZeroU64> {
+        self.file_size
     }
 
     fn get_store(&self, lifetime: Lifetime) -> &SingleStore {
@@ -88,9 +122,7 @@ impl Database {
     }
 
     /// Creates the storage directories and inits rkv.
-    fn open_rkv(path: &str) -> Result<Rkv> {
-        let path = std::path::Path::new(path).join("db");
-        log::debug!("Database path: {:?}", path.display());
+    fn open_rkv(path: &Path) -> Result<Rkv> {
         fs::create_dir_all(&path)?;
 
         let rkv = Rkv::new(&path)?;
