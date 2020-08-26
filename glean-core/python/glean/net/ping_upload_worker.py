@@ -22,10 +22,6 @@ from .._process_dispatcher import ProcessDispatcher
 log = logging.getLogger(__name__)
 
 
-# How many times to attempt waiting when told to by glean-core's upload API.
-MAX_WAIT_ATTEMPTS = 3
-
-
 class PingUploadWorker:
     @classmethod
     def process(cls):
@@ -114,8 +110,6 @@ def _process(data_dir: Path, application_id: str, configuration) -> bool:
             log.error("Couldn't initialize Glean in subprocess")
             sys.exit(1)
 
-    wait_attempts = 0
-
     # Limits are enforced by glean-core to avoid an inifinite loop here.
     # Whenever a limit is reached, this binding will receive `UploadTaskTag.DONE` and step out.
     while True:
@@ -147,12 +141,7 @@ def _process(data_dir: Path, application_id: str, configuration) -> bool:
                 incoming_task, upload_result.to_ffi()
             )
         elif tag == UploadTaskTag.WAIT:
-            # Try not to be stuck waiting forever.
-            if wait_attempts < MAX_WAIT_ATTEMPTS:
-                wait_attempts += 1
-                time.sleep(1)
-            else:
-                return False
+            time.sleep(1)
         elif tag == UploadTaskTag.DONE:
             return True
 

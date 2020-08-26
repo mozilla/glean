@@ -19,9 +19,6 @@ namespace Mozilla.Glean.Net
     /// </summary>
     internal class BaseUploader
     {
-        // How many times to attempt waiting when told to by glean-core's upload API.
-        private const int MAX_WAIT_ATTEMPTS = 3;
-
         private readonly IPingUploader uploader;
 
         /// <summary>
@@ -129,17 +126,8 @@ namespace Mozilla.Glean.Net
                         }
                         break;
                     case UploadTaskTag.Wait:
-                        {
-                            if (waitAttempts < MAX_WAIT_ATTEMPTS)
-                            {
-                                waitAttempts += 1;
-                            }
-                            else
-                            {
-                                Thread.Sleep(100);
-                                return;
-                            }
-                        } break;
+                        Thread.Sleep(100);
+                        break;
                     case UploadTaskTag.Done:
                         // Nothing to do here, break out of the loop.
                         return;

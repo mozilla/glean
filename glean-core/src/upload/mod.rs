@@ -31,6 +31,9 @@ mod result;
 /// Limiting this is necessary to avoid infinite loops on requesting upload tasks.
 const MAX_RECOVERABLE_FAILURES_PER_UPLOADING_WINDOW: u32 = 3;
 
+/// The maximum PingUploadTask::Wait allowed in a row.
+const MAX_WAIT_ATTEMPTS: u32 = 3;
+
 // The maximum size in bytes a ping body may have to be eligible for upload.
 const PING_BODY_MAX_SIZE: usize = 1024 * 1024; // 1 MB
 
@@ -127,8 +130,9 @@ pub enum PingUploadTask {
     Wait,
     /// A flag signaling that requester doesn't need to request any more upload tasks at this moment.
     ///
-    /// There are two possibilities for this scenario:
+    /// There are three possibilities for this scenario:
     /// * Pending pings queue is empty, no more pings to request;
+    /// * Requester has gotten more than MAX_WAIT_ATTEMPTS (3, by default) `PingUploadTask::Wait` responses in a row;
     /// * Requester has reported more than MAX_RECOVERABLE_FAILURES_PER_UPLOADING_WINDOW
     ///   recoverable upload failures on the same uploading window[1]
     ///   and should stop requesting at this moment.
@@ -151,6 +155,8 @@ pub struct PingUploadManager {
     cached_pings: Arc<RwLock<PingPayloadsByDirectory>>,
     /// The number of upload failures for the current uploading window.
     recoverable_failure_count: AtomicU32,
+    /// The number or times in a row a user has received a `PingUploadTask::Wait` response.
+    wait_attempt_count: AtomicU32,
     /// A ping counter to help rate limit the ping uploads.
     ///
     /// To keep resource usage in check,
@@ -215,13 +221,14 @@ impl PingUploadManager {
             processed_pending_pings,
             cached_pings,
             recoverable_failure_count: AtomicU32::new(0),
+            wait_attempt_count: AtomicU32::new(0),
             rate_limiter: None,
             language_binding_name: language_binding_name.into(),
             upload_metrics: UploadMetrics::new(),
         }
     }
 
-    fn has_processed_pings_dir(&self) -> bool {
+    fn processed_pending_pings(&self) -> bool {
         self.processed_pending_pings.load(Ordering::SeqCst)
     }
 
@@ -229,8 +236,8 @@ impl PingUploadManager {
         self.recoverable_failure_count.load(Ordering::SeqCst)
     }
 
-    fn reset_recoverable_failure_count(&self) {
-        self.recoverable_failure_count.store(0, Ordering::SeqCst);
+    fn wait_attempt_count(&self) -> u32 {
+        self.wait_attempt_count.load(Ordering::SeqCst)
     }
 
     /// Attempts to build a ping request from a ping file payload.
@@ -328,49 +335,51 @@ impl PingUploadManager {
             .write()
             .expect("Can't write to pending pings cache.");
 
-        let mut pending_pings_directory_size: u64 = 0;
-        let mut deleting = false;
-        // The pending pings vector is sorted by date in ascending order (oldest -> newest).
-        // We need to calculate the size of the pending pings directory
-        // and delete the **oldest** pings in case quota is reached.
-        // Thus, we reverse the order of the pending pings vector,
-        // so that we iterate in descending order (newest -> oldest).
-        cached_pings.pending_pings.reverse();
-        cached_pings.pending_pings.retain(|(file_size, (document_id, _, _, _))| {
-            pending_pings_directory_size += file_size;
-            if pending_pings_directory_size > quota {
-                log::warn!(
-                    "Pending pings directory has reached the size quota of {} bytes, outstanding pings will be deleted.",
-                    PENDING_PINGS_DIRECTORY_QUOTA
-                );
-                deleting = true;
+        if cached_pings.len() > 0 {
+            let mut pending_pings_directory_size: u64 = 0;
+            let mut deleting = false;
+            // The pending pings vector is sorted by date in ascending order (oldest -> newest).
+            // We need to calculate the size of the pending pings directory
+            // and delete the **oldest** pings in case quota is reached.
+            // Thus, we reverse the order of the pending pings vector,
+            // so that we iterate in descending order (newest -> oldest).
+            cached_pings.pending_pings.reverse();
+            cached_pings.pending_pings.retain(|(file_size, (document_id, _, _, _))| {
+                pending_pings_directory_size += file_size;
+                if pending_pings_directory_size > quota {
+                    log::warn!(
+                        "Pending pings directory has reached the size quota of {} bytes, outstanding pings will be deleted.",
+                        PENDING_PINGS_DIRECTORY_QUOTA
+                    );
+                    deleting = true;
+                }
+
+                if deleting && self.directory_manager.delete_file(&document_id) {
+                    self.upload_metrics
+                        .deleted_pings_after_quota_hit
+                        .add(glean, 1);
+                    return false;
+                }
+
+                true
+            });
+            // After calculating the size of the pending pings directory,
+            // we record the calculated number and reverse the pings array back for enqueueing.
+            cached_pings.pending_pings.reverse();
+            self.upload_metrics
+                .pending_pings_directory_size
+                .accumulate(glean, pending_pings_directory_size as u64);
+
+            // Enqueue the remaining pending pings and
+            // enqueue all deletion-request pings.
+            let deletion_request_pings = cached_pings.deletion_request_pings.drain(..);
+            for (_, (document_id, path, body, headers)) in deletion_request_pings {
+                self.enqueue_ping(glean, &document_id, &path, &body, headers);
             }
-
-            if deleting && self.directory_manager.delete_file(&document_id) {
-                self.upload_metrics
-                    .deleted_pings_after_quota_hit
-                    .add(glean, 1);
-                return false;
+            let pending_pings = cached_pings.pending_pings.drain(..);
+            for (_, (document_id, path, body, headers)) in pending_pings {
+                self.enqueue_ping(glean, &document_id, &path, &body, headers);
             }
-
-            true
-        });
-        // After calculating the size of the pending pings directory,
-        // we record the calculated number and reverse the pings array back for enqueueing.
-        cached_pings.pending_pings.reverse();
-        self.upload_metrics
-            .pending_pings_directory_size
-            .accumulate(glean, pending_pings_directory_size as u64);
-
-        // Enqueue the remaining pending pings and
-        // enqueue all deletion-request pings.
-        let deletion_request_pings = cached_pings.deletion_request_pings.drain(..);
-        for (_, (document_id, path, body, headers)) in deletion_request_pings {
-            self.enqueue_ping(glean, &document_id, &path, &body, headers);
-        }
-        let pending_pings = cached_pings.pending_pings.drain(..);
-        for (_, (document_id, path, body, headers)) in pending_pings {
-            self.enqueue_ping(glean, &document_id, &path, &body, headers);
         }
     }
 
@@ -426,19 +435,33 @@ impl PingUploadManager {
     }
 
     fn get_upload_task_internal(&self, glean: &Glean, log_ping: bool) -> PingUploadTask {
-        if !self.has_processed_pings_dir() {
+        // Helper to decide whether to return PingUploadTask::Wait or PingUploadTask::Done.
+        //
+        // We want to limit the amount of PingUploadTask::Wait returned in a row,
+        // in case we reach MAX_WAIT_ATTEMPTS we want to actually return PingUploadTask::Done.
+        let wait_or_done = || {
+            self.wait_attempt_count.fetch_add(1, Ordering::SeqCst);
+            if self.wait_attempt_count() > MAX_WAIT_ATTEMPTS {
+                PingUploadTask::Done
+            } else {
+                PingUploadTask::Wait
+            }
+        };
+
+        if !self.processed_pending_pings() {
             log::info!(
                 "Tried getting an upload task, but processing is ongoing. Will come back later."
             );
-            return PingUploadTask::Wait;
+            return wait_or_done();
         }
+
+        // This is a no-op in case there are no cached pings.
         self.enqueue_cached_pings(glean, PENDING_PINGS_DIRECTORY_QUOTA);
 
         if self.recoverable_failure_count() >= MAX_RECOVERABLE_FAILURES_PER_UPLOADING_WINDOW {
             log::warn!(
                 "Reached maximum recoverable failures for the current uploading window. You are done."
             );
-
             return PingUploadTask::Done;
         }
 
@@ -456,7 +479,7 @@ impl PingUploadManager {
                         log::info!(
                             "Tried getting an upload task, but we are throttled at the moment."
                         );
-                        return PingUploadTask::Wait;
+                        return wait_or_done();
                     }
                 }
 
@@ -495,8 +518,15 @@ impl PingUploadManager {
     /// The next [`PingUploadTask`](enum.PingUploadTask.html).
     pub fn get_upload_task(&self, glean: &Glean, log_ping: bool) -> PingUploadTask {
         let task = self.get_upload_task_internal(glean, log_ping);
-        if task == PingUploadTask::Done || task == PingUploadTask::Wait {
-            self.reset_recoverable_failure_count()
+
+        if task != PingUploadTask::Wait && self.wait_attempt_count() > 0 {
+            self.wait_attempt_count.store(0, Ordering::SeqCst);
+        }
+
+        if (task == PingUploadTask::Wait || task == PingUploadTask::Done)
+            && self.recoverable_failure_count() > 0
+        {
+            self.recoverable_failure_count.store(0, Ordering::SeqCst);
         }
 
         task
@@ -666,35 +696,22 @@ mod test {
     fn doesnt_error_when_there_are_no_pending_pings() {
         let (glean, _) = new_glean(None);
 
-        // Create a new upload_manager
-        let dir = tempfile::tempdir().unwrap();
-        let upload_manager = PingUploadManager::new(dir.path(), "Testing", false);
-
-        // Wait for processing of pending pings directory to finish.
-        while upload_manager.get_upload_task(&glean, false) == PingUploadTask::Wait {
+        while glean.get_upload_task() == PingUploadTask::Wait {
             thread::sleep(Duration::from_millis(10));
         }
 
         // Try and get the next request.
         // Verify request was not returned
-        assert_eq!(
-            upload_manager.get_upload_task(&glean, false),
-            PingUploadTask::Done
-        );
+        assert_eq!(glean.get_upload_task(), PingUploadTask::Done);
     }
 
     #[test]
     fn returns_ping_request_when_there_is_one() {
-        let (glean, _) = new_glean(None);
+        let (glean, dir) = new_glean(None);
 
-        // Create a new upload_manager
-        let dir = tempfile::tempdir().unwrap();
-        let upload_manager = PingUploadManager::new(dir.path(), "Testing", false);
-
-        // Wait for processing of pending pings directory to finish.
-        while upload_manager.get_upload_task(&glean, false) == PingUploadTask::Wait {
-            thread::sleep(Duration::from_millis(10));
-        }
+        // Create a new upload manager so that we have access to its functions directly,
+        // make it synchronous so we don't have to manually wait for the scanning to finish.
+        let upload_manager = PingUploadManager::new(dir.path(), "Testing", /* sync */ true);
 
         // Enqueue a ping
         upload_manager.enqueue_ping(&glean, &Uuid::new_v4().to_string(), PATH, "", None);
@@ -709,16 +726,11 @@ mod test {
 
     #[test]
     fn returns_as_many_ping_requests_as_there_are() {
-        let (glean, _) = new_glean(None);
+        let (glean, dir) = new_glean(None);
 
-        // Create a new upload_manager
-        let dir = tempfile::tempdir().unwrap();
-        let upload_manager = PingUploadManager::new(dir.path(), "Testing", false);
-
-        // Wait for processing of pending pings directory to finish.
-        while upload_manager.get_upload_task(&glean, false) == PingUploadTask::Wait {
-            thread::sleep(Duration::from_millis(10));
-        }
+        // Create a new upload manager so that we have access to its functions directly,
+        // make it synchronous so we don't have to manually wait for the scanning to finish.
+        let upload_manager = PingUploadManager::new(dir.path(), "Testing", /* sync */ true);
 
         // Enqueue a ping multiple times
         let n = 10;
@@ -743,23 +755,19 @@ mod test {
 
     #[test]
     fn limits_the_number_of_pings_when_there_is_rate_limiting() {
-        let (glean, _) = new_glean(None);
+        let (glean, dir) = new_glean(None);
 
-        // Create a new upload_manager
-        let dir = tempfile::tempdir().unwrap();
-        let mut upload_manager = PingUploadManager::new(dir.path(), "Testing", false);
+        // Create a new upload manager so that we have access to its functions directly,
+        // make it synchronous so we don't have to manually wait for the scanning to finish.
+        let mut upload_manager =
+            PingUploadManager::new(dir.path(), "Testing", /* sync */ true);
 
         // Add a rate limiter to the upload mangager with max of 10 pings every 3 seconds.
         let secs_per_interval = 3;
         let max_pings_per_interval = 10;
         upload_manager.set_rate_limiter(secs_per_interval, 10);
 
-        // Wait for processing of pending pings directory to finish.
-        while upload_manager.get_upload_task(&glean, false) == PingUploadTask::Wait {
-            thread::sleep(Duration::from_millis(10));
-        }
-
-        // Enqueue a ping multiple times
+        // Enqueue the max number of pings allowed per uploading window
         for _ in 0..max_pings_per_interval {
             upload_manager.enqueue_ping(&glean, &Uuid::new_v4().to_string(), PATH, "", None);
         }
@@ -772,8 +780,7 @@ mod test {
             }
         }
 
-        // Enqueue just one more ping.
-        // We should still be within the default rate limit time.
+        // Enqueue just one more ping
         upload_manager.enqueue_ping(&glean, &Uuid::new_v4().to_string(), PATH, "", None);
 
         // Verify that we are indeed told to wait because we are at capacity
@@ -782,6 +789,7 @@ mod test {
             upload_manager.get_upload_task(&glean, false)
         );
 
+        // Wait for the uploading window to reset
         thread::sleep(Duration::from_secs(secs_per_interval));
 
         match upload_manager.get_upload_task(&glean, false) {
@@ -792,16 +800,11 @@ mod test {
 
     #[test]
     fn clearing_the_queue_works_correctly() {
-        let (glean, _) = new_glean(None);
+        let (glean, dir) = new_glean(None);
 
-        // Create a new upload_manager
-        let dir = tempfile::tempdir().unwrap();
-        let upload_manager = PingUploadManager::new(dir.path(), "Testing", false);
-
-        // Wait for processing of pending pings directory to finish.
-        while upload_manager.get_upload_task(&glean, false) == PingUploadTask::Wait {
-            thread::sleep(Duration::from_millis(10));
-        }
+        // Create a new upload manager so that we have access to its functions directly,
+        // make it synchronous so we don't have to manually wait for the scanning to finish.
+        let upload_manager = PingUploadManager::new(dir.path(), "Testing", /* sync */ true);
 
         // Enqueue a ping multiple times
         for _ in 0..10 {
@@ -858,7 +861,7 @@ mod test {
 
     #[test]
     fn fills_up_queue_successfully_from_disk() {
-        let (mut glean, tmpdir) = new_glean(None);
+        let (mut glean, dir) = new_glean(None);
 
         // Register a ping for testing
         let ping_type = PingType::new("test", true, /* send_if_empty */ true, vec![]);
@@ -871,7 +874,7 @@ mod test {
         }
 
         // Create a new upload manager pointing to the same data_path as the glean instance.
-        let upload_manager = PingUploadManager::new(tmpdir.path(), "Rust", true);
+        let upload_manager = PingUploadManager::new(dir.path(), "Rust", true);
 
         // Verify the requests were properly enqueued
         for _ in 0..n {
@@ -1032,11 +1035,11 @@ mod test {
 
     #[test]
     fn new_pings_are_added_while_upload_in_progress() {
-        let (glean, _) = new_glean(None);
+        let (glean, dir) = new_glean(None);
 
-        // Create a new upload_manager
-        let dir = tempfile::tempdir().unwrap();
-        let upload_manager = PingUploadManager::new(dir.path(), "Testing", false);
+        // Create a new upload manager so that we have access to its functions directly,
+        // make it synchronous so we don't have to manually wait for the scanning to finish.
+        let upload_manager = PingUploadManager::new(dir.path(), "Testing", /* sync */ true);
 
         // Wait for processing of pending pings directory to finish.
         while upload_manager.get_upload_task(&glean, false) == PingUploadTask::Wait {
@@ -1127,16 +1130,11 @@ mod test {
 
     #[test]
     fn duplicates_are_not_enqueued() {
-        let (glean, _) = new_glean(None);
+        let (glean, dir) = new_glean(None);
 
-        // Create a new upload_manager
-        let dir = tempfile::tempdir().unwrap();
-        let upload_manager = PingUploadManager::new(dir.path(), "Testing", false);
-
-        // Wait for processing of pending pings directory to finish.
-        while upload_manager.get_upload_task(&glean, false) == PingUploadTask::Wait {
-            thread::sleep(Duration::from_millis(10));
-        }
+        // Create a new upload manager so that we have access to its functions directly,
+        // make it synchronous so we don't have to manually wait for the scanning to finish.
+        let upload_manager = PingUploadManager::new(dir.path(), "Testing", /* sync */ true);
 
         let doc_id = Uuid::new_v4().to_string();
         let path = format!("/submit/app_id/test-ping/1/{}", doc_id);
@@ -1202,7 +1200,7 @@ mod test {
 
     #[test]
     fn quota_is_enforced_when_enqueueing_cached_pings() {
-        let (mut glean, tmpdir) = new_glean(None);
+        let (mut glean, dir) = new_glean(None);
 
         // Register a ping for testing
         let ping_type = PingType::new("test", true, /* send_if_empty */ true, vec![]);
@@ -1214,7 +1212,7 @@ mod test {
             glean.submit_ping(&ping_type, None).unwrap();
         }
 
-        let directory_manager = PingDirectoryManager::new(tmpdir.path());
+        let directory_manager = PingDirectoryManager::new(dir.path());
         let pending_pings = directory_manager.process_dirs().pending_pings;
         // The pending pings array is sorted by date in ascending order,
         // the newest element is the last one.
@@ -1222,7 +1220,7 @@ mod test {
         let (newest_ping_id, _, _, _) = &newest_ping;
 
         // Create a new upload manager pointing to the same data_path as the glean instance.
-        let upload_manager = PingUploadManager::new(tmpdir.path(), "Rust", true);
+        let upload_manager = PingUploadManager::new(dir.path(), "Rust", true);
 
         // Enqueue cached pings and set the quota to just a little over the size on an empty ping file.
         // This way we can check that one ping is kept and all others are deleted.
@@ -1256,5 +1254,66 @@ mod test {
                 .test_get_value(&glean, "metrics")
                 .unwrap()
         )
+    }
+
+    #[test]
+    fn maximum_wait_attemps_is_enforced() {
+        let (glean, dir) = new_glean(None);
+
+        // Create a new upload manager so that we have access to its functions directly,
+        // make it synchronous so we don't have to manually wait for the scanning to finish.
+        let mut upload_manager =
+            PingUploadManager::new(dir.path(), "Testing", /* sync */ true);
+
+        // Add a rate limiter to the upload mangager with max of 1 ping 5secs.
+        //
+        // We arbitrarily set the maximum pings per interval to a very low number,
+        // when the rate limiter reaches it's limit get_upload_task returns a PingUploadTask::Wait,
+        // which will allow us to test the limitations around returning too many of those in a row.
+        let secs_per_interval = 5;
+        let max_pings_per_interval = 1;
+        upload_manager.set_rate_limiter(secs_per_interval, max_pings_per_interval);
+
+        // Enqueue two pings
+        upload_manager.enqueue_ping(&glean, &Uuid::new_v4().to_string(), PATH, "", None);
+        upload_manager.enqueue_ping(&glean, &Uuid::new_v4().to_string(), PATH, "", None);
+
+        // Get the first ping, it should be returned normally.
+        match upload_manager.get_upload_task(&glean, false) {
+            PingUploadTask::Upload(_) => {}
+            _ => panic!("Expected upload manager to return the next request!"),
+        }
+
+        // Try to get the next ping,
+        // we should be throttled and thus get a PingUploadTask::Wait.
+        // Check that we are indeed allowed to get this response as many times as expected.
+        for _ in 0..MAX_WAIT_ATTEMPTS {
+            assert_eq!(
+                upload_manager.get_upload_task(&glean, false),
+                PingUploadTask::Wait
+            );
+        }
+
+        // Check that after we get PingUploadTask::Wait the allowed number of times,
+        // we then get PingUploadTask::Done.
+        assert_eq!(
+            upload_manager.get_upload_task(&glean, false),
+            PingUploadTask::Done
+        );
+
+        // Wait for the rate limiter to allow upload tasks again.
+        thread::sleep(Duration::from_secs(secs_per_interval));
+
+        // Check that we are allowed again to get pings.
+        match upload_manager.get_upload_task(&glean, false) {
+            PingUploadTask::Upload(_) => {}
+            _ => panic!("Expected upload manager to return the next request!"),
+        }
+
+        // And once we are done we don't need to wait anymore.
+        assert_eq!(
+            upload_manager.get_upload_task(&glean, false),
+            PingUploadTask::Done
+        );
     }
 }
