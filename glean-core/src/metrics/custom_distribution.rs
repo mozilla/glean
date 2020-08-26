@@ -75,6 +75,10 @@ impl CustomDistributionMetric {
     /// Discards any negative value in `samples` and report an `ErrorType::InvalidValue`
     /// for each of them.
     pub fn accumulate_samples_signed(&self, glean: &Glean, samples: Vec<i64>) {
+        if !self.should_record(glean) {
+            return;
+        }
+
         let mut num_negative_samples = 0;
 
         // Generic accumulation function to handle the different histogram types and count negative
