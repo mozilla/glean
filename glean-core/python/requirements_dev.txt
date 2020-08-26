@@ -9,7 +9,7 @@ pdoc3==0.7.2
 pip
 pytest-localserver==0.5.0
 pytest-runner==4.4
-pytest==4.3.0
+pytest==6.0.1
 toml==0.10.0
 twine==3.2.0
 wheel==0.31.1
