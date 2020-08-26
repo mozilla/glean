@@ -197,7 +197,11 @@ impl Glean {
 
         // Creating the data store creates the necessary path as well.
         // If that fails we bail out and don't initialize further.
-        let data_store = Some(Database::new(&cfg.data_path, cfg.delay_ping_lifetime_io, *&cfg.upload_enabled)?);
+        let data_store = Some(Database::new(
+            &cfg.data_path,
+            cfg.delay_ping_lifetime_io,
+            *&cfg.upload_enabled,
+        )?);
         let event_data_store = EventDatabase::new(&cfg.data_path, *&cfg.upload_enabled)?;
 
         // Create an upload manager with rate limiting of 10 pings every 60 seconds.
@@ -476,7 +480,6 @@ impl Glean {
             self.upload_enabled = true;
             // In order for `set` to fully work we also need to enable the metrics storage.
             self.storage().enable();
-
 
             // Store a "dummy" KNOWN_CLIENT_ID in the client_id metric. This will
             // make it easier to detect if pings were unintentionally sent after

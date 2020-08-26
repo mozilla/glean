@@ -8,8 +8,8 @@ use std::fs;
 use std::num::NonZeroU64;
 use std::path::Path;
 use std::str;
-use std::sync::RwLock;
 use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::RwLock;
 
 use rkv::{Rkv, SingleStore, StoreOptions};
 
@@ -641,9 +641,10 @@ impl Database {
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::tests::new_glean;
+    use crate::CommonMetricData;
     use std::collections::HashMap;
     use tempfile::tempdir;
-    use crate::tests::new_glean;
 
     #[test]
     fn test_panicks_if_fails_dir_creation() {

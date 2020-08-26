@@ -10,8 +10,8 @@ use std::io::BufReader;
 use std::io::Write;
 use std::iter::FromIterator;
 use std::path::{Path, PathBuf};
-use std::sync::RwLock;
 use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::RwLock;
 
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value as JsonValue};
