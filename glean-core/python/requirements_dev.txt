@@ -4,7 +4,7 @@ cffi==1.13.1
 coverage==4.5.2
 flake8==3.7.8
 jsonschema==3.2.0
-mypy==0.740
+mypy==0.782
 pdoc3==0.7.2
 pip
 pytest-localserver==0.5.0
