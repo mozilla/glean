@@ -167,7 +167,7 @@ def test_measure(monkeypatch):
         disabled=False,
         category="telemetry",
         lifetime=Lifetime.APPLICATION,
-        name=f"timing_distribution",
+        name="timing_distribution",
         send_in_pings=["baseline"],
         time_unit=TimeUnit.NANOSECOND,
     )
@@ -195,7 +195,7 @@ def test_measure_exception(monkeypatch):
         disabled=False,
         category="telemetry",
         lifetime=Lifetime.APPLICATION,
-        name=f"timing_distribution",
+        name="timing_distribution",
         send_in_pings=["baseline"],
         time_unit=TimeUnit.NANOSECOND,
     )
