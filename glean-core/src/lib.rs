@@ -272,7 +272,7 @@ impl Glean {
         data_path: &str,
         application_id: &str,
         upload_enabled: bool,
-    ) -> Result<Self> {
+    ) -> Self {
         let cfg = Configuration {
             data_path: data_path.into(),
             application_id: application_id.into(),
@@ -282,7 +282,13 @@ impl Glean {
             delay_ping_lifetime_io: false,
         };
 
-        Self::new(cfg)
+        let mut glean = Self::new(cfg).unwrap();
+
+        // Disable all upload manager policies for testing
+        // and make the upload manager scan the pings directories synchronously.
+        glean.upload_manager = PingUploadManager::no_policy(data_path, true);
+
+        glean
     }
 
     /// Destroys the database.
