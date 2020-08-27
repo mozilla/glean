@@ -668,6 +668,7 @@ jobs:
           command: |
             xcrun simctl spawn booted log collect --output $(pwd)/ios-integration-test.logarchive
             zip -r $(pwd)/device_logs.zip $(pwd)/ios-integration-test.logarchive
+          when: always
       - store_artifacts:
           path: device_logs.zip
           destination: device_logs.zip
