@@ -11,7 +11,7 @@ of metric types.
 
 import enum
 from pathlib import Path
-from typing import Any, Generator, List, Tuple, Union
+from typing import Any, Generator, List, Optional, Tuple, Union
 
 
 from glean_parser.parser import parse_objects  # type: ignore
@@ -127,7 +127,8 @@ def _get_metric_objects(
 
 
 def load_metrics(
-    filepath: Union[Union[str, Path], List[Union[str, Path]]], config: dict = {}
+    filepath: Union[Union[str, Path], List[Union[str, Path]]],
+    config: Optional[dict] = None,
 ) -> Any:
     """
     Load metrics from a `metrics.yaml` file.
@@ -144,6 +145,9 @@ def load_metrics(
         >>> metrics = load_metrics("metrics.yaml")
         >>> metrics.category.name.set("value")
     """
+    if config is None:
+        config = {}
+
     if not isinstance(filepath, list):
         filepath = [filepath]
 
@@ -175,7 +179,8 @@ def load_metrics(
 
 
 def load_pings(
-    filepath: Union[Union[str, Path], List[Union[str, Path]]], config: dict = {}
+    filepath: Union[Union[str, Path], List[Union[str, Path]]],
+    config: Optional[dict] = None,
 ) -> Any:
     """
     Load pings from a `pings.yaml` file.
