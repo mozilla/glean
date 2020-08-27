@@ -464,7 +464,7 @@ jobs:
 
   Check Swift formatting:
     macos:
-      xcode: "11.5.0"
+      xcode: "12.0.0"
     steps:
       - checkout
       - run:
@@ -484,7 +484,7 @@ jobs:
 
   iOS build and test:
     macos:
-      xcode: "11.5.0"
+      xcode: "12.0.0"
     steps:
       - checkout
       - run:
@@ -515,7 +515,7 @@ jobs:
             rustup target add aarch64-apple-ios x86_64-apple-ios
             bin/bootstrap.sh
             # See https://circleci.com/docs/2.0/testing-ios/#pre-starting-the-simulator
-            xcrun instruments -w "iPhone 11 (13" || true
+            xcrun instruments -w "iPhone 11 (14" || true
             # Store build type for use in cache key
             if [ -z "${CIRCLE_TAG}" ]; then
               echo "release" > buildtype.txt
@@ -608,7 +608,7 @@ jobs:
 
   iOS integration test:
     macos:
-      xcode: "11.5.0"
+      xcode: "12.0.0"
     steps:
       - checkout
       - skip-if-doc-only
@@ -618,8 +618,10 @@ jobs:
           name: Setup build environment
           command: |
             rustup target add aarch64-apple-ios x86_64-apple-ios
+            # List available devices -- allows us to see what's there
+            xcrun instruments -w list || true
             # See https://circleci.com/docs/2.0/testing-ios/#pre-starting-the-simulator
-            xcrun instruments -w "iPhone 11 (13" || true
+            xcrun instruments -w "iPhone 11 (14" || true
       - attach_workspace:
           at: .
       - run:
@@ -643,7 +645,7 @@ jobs:
           command: |
             # We need release mode to correctly ship bitcode for dependencies
             pushd samples/ios/app
-            carthage bootstrap --platform iOS --cache-builds --configuration Release --verbose
+            ./bootstrap.sh Release
             popd
       - run:
           name: Build sample app
@@ -668,13 +670,14 @@ jobs:
           command: |
             xcrun simctl spawn booted log collect --output $(pwd)/ios-integration-test.logarchive
             zip -r $(pwd)/device_logs.zip $(pwd)/ios-integration-test.logarchive
+          when: always
       - store_artifacts:
           path: device_logs.zip
           destination: device_logs.zip
 
   Carthage release:
     macos:
-      xcode: "11.5.0"
+      xcode: "12.0.0"
     steps:
       - checkout
       - attach_workspace:
@@ -850,7 +853,7 @@ jobs:
 
   pypi-macos-release:
     macos:
-      xcode: "11.5.0"
+      xcode: "12.0.0"
     steps:
       - install-rustup
       - setup-rust-toolchain
