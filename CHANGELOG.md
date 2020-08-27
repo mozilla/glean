@@ -4,6 +4,8 @@
 
 * General
   * Track the size of the database file at startup ([#1141](https://github.com/mozilla/glean/pull/1141)).
+* iOS
+  * Disabled code coverage in release builds ([#1195](https://github.com/mozilla/glean/issues/1195)).
 
 # v32.3.0 (2020-08-27)
 
