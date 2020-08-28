@@ -6,7 +6,7 @@ flake8==3.8.3
 flake8-bugbear==20.1.4
 jsonschema==3.2.0
 mypy==0.782
-pdoc3==0.8.4
+pdoc3==0.9.1
 pip
 pytest-localserver==0.5.0
 pytest-runner==5.2
