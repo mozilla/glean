@@ -200,9 +200,9 @@ impl Glean {
         let data_store = Some(Database::new(
             &cfg.data_path,
             cfg.delay_ping_lifetime_io,
-            *&cfg.upload_enabled,
+            cfg.upload_enabled,
         )?);
-        let event_data_store = EventDatabase::new(&cfg.data_path, *&cfg.upload_enabled)?;
+        let event_data_store = EventDatabase::new(&cfg.data_path, cfg.upload_enabled)?;
 
         // Create an upload manager with rate limiting of 10 pings every 60 seconds.
         let mut upload_manager =
