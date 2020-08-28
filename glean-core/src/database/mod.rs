@@ -9,6 +9,7 @@ use std::num::NonZeroU64;
 use std::path::Path;
 use std::str;
 use std::sync::RwLock;
+use std::sync::atomic::{AtomicBool, Ordering};
 
 use rkv::{Rkv, SingleStore, StoreOptions};
 
@@ -35,8 +36,13 @@ pub struct Database {
     /// so as to persist them to disk using rkv in bulk on demand.
     ping_lifetime_data: Option<RwLock<BTreeMap<String, Metric>>>,
 
-    // Initial file size when opening the database.
+    /// Initial file size when opening the database.
     file_size: Option<NonZeroU64>,
+
+    /// Whether or not this database should record.
+    ///
+    /// When this is `false` all recording functions are a no-op.
+    should_record: AtomicBool,
 }
 
 impl std::fmt::Debug for Database {
@@ -77,7 +83,7 @@ impl Database {
     ///
     /// It also loads any Lifetime::Ping data that might be
     /// persisted, in case `delay_ping_lifetime_io` is set.
-    pub fn new(data_path: &str, delay_ping_lifetime_io: bool) -> Result<Self> {
+    pub fn new(data_path: &str, delay_ping_lifetime_io: bool, enabled: bool) -> Result<Self> {
         let path = Path::new(data_path).join("db");
         log::debug!("Database path: {:?}", path.display());
 
@@ -101,11 +107,26 @@ impl Database {
             application_store,
             ping_lifetime_data,
             file_size,
+            should_record: AtomicBool::new(enabled),
         };
 
         db.load_ping_lifetime_data();
 
         Ok(db)
+    }
+
+    /// Makes recording functions a no-op.
+    pub fn disable(&self) {
+        self.should_record.store(false, Ordering::SeqCst);
+    }
+
+    /// Enables recording.
+    pub fn enable(&self) {
+        self.should_record.store(true, Ordering::SeqCst);
+    }
+
+    fn should_record(&self) -> bool {
+        self.should_record.load(Ordering::SeqCst)
     }
 
     /// Get the initial database file size.
@@ -306,6 +327,10 @@ impl Database {
 
     /// Records a metric in the underlying storage system.
     pub fn record(&self, glean: &Glean, data: &CommonMetricData, value: &Metric) {
+        if !self.should_record() {
+            return;
+        }
+
         let name = data.identifier(glean);
 
         for ping_name in data.storage_names() {
@@ -363,6 +388,10 @@ impl Database {
     where
         F: FnMut(Option<Metric>) -> Metric,
     {
+        if !self.should_record() {
+            return;
+        }
+
         let name = data.identifier(glean);
         for ping_name in data.storage_names() {
             if let Err(e) =
@@ -614,10 +643,11 @@ mod test {
     use super::*;
     use std::collections::HashMap;
     use tempfile::tempdir;
+    use crate::tests::new_glean;
 
     #[test]
     fn test_panicks_if_fails_dir_creation() {
-        assert!(Database::new("/!#\"'@#°ç", false).is_err());
+        assert!(Database::new("/!#\"'@#°ç", false, true).is_err());
     }
 
     #[test]
@@ -625,7 +655,7 @@ mod test {
         let dir = tempdir().unwrap();
         let str_dir = dir.path().display().to_string();
 
-        Database::new(&str_dir, false).unwrap();
+        Database::new(&str_dir, false, true).unwrap();
 
         assert!(dir.path().exists());
     }
@@ -635,7 +665,7 @@ mod test {
         // Init the database in a temporary directory.
         let dir = tempdir().unwrap();
         let str_dir = dir.path().display().to_string();
-        let db = Database::new(&str_dir, false).unwrap();
+        let db = Database::new(&str_dir, false, true).unwrap();
 
         assert!(db.ping_lifetime_data.is_none());
 
@@ -672,7 +702,7 @@ mod test {
         // Init the database in a temporary directory.
         let dir = tempdir().unwrap();
         let str_dir = dir.path().display().to_string();
-        let db = Database::new(&str_dir, false).unwrap();
+        let db = Database::new(&str_dir, false, true).unwrap();
 
         // Attempt to record a known value.
         let test_value = "test-value";
@@ -710,7 +740,7 @@ mod test {
         // Init the database in a temporary directory.
         let dir = tempdir().unwrap();
         let str_dir = dir.path().display().to_string();
-        let db = Database::new(&str_dir, false).unwrap();
+        let db = Database::new(&str_dir, false, true).unwrap();
 
         // Attempt to record a known value.
         let test_value = "test-value";
@@ -745,7 +775,7 @@ mod test {
         // Init the database in a temporary directory.
         let dir = tempdir().unwrap();
         let str_dir = dir.path().display().to_string();
-        let db = Database::new(&str_dir, false).unwrap();
+        let db = Database::new(&str_dir, false, true).unwrap();
 
         // Attempt to record a known value for every single lifetime.
         let test_storage = "test-storage";
@@ -821,7 +851,7 @@ mod test {
         // Init the database in a temporary directory.
         let dir = tempdir().unwrap();
         let str_dir = dir.path().display().to_string();
-        let db = Database::new(&str_dir, false).unwrap();
+        let db = Database::new(&str_dir, false, true).unwrap();
 
         let test_storage = "test-storage-single-lifetime";
         let metric_id_pattern = "telemetry_test.single_metric";
@@ -878,7 +908,7 @@ mod test {
         // Init the database in a temporary directory.
         let dir = tempdir().unwrap();
         let str_dir = dir.path().display().to_string();
-        let db = Database::new(&str_dir, true).unwrap();
+        let db = Database::new(&str_dir, true, true).unwrap();
         let test_storage = "test-storage";
 
         assert!(db.ping_lifetime_data.is_some());
@@ -995,7 +1025,7 @@ mod test {
         let test_metric_id = "telemetry_test.test_name";
 
         {
-            let db = Database::new(&str_dir, true).unwrap();
+            let db = Database::new(&str_dir, true, true).unwrap();
 
             // Attempt to record a known value.
             db.record_per_lifetime(
@@ -1034,7 +1064,7 @@ mod test {
         // Now create a new instace of the db and check if data was
         // correctly loaded from rkv to memory.
         {
-            let db = Database::new(&str_dir, true).unwrap();
+            let db = Database::new(&str_dir, true, true).unwrap();
 
             // Verify that test_value is in memory.
             let data = match &db.ping_lifetime_data {
@@ -1057,5 +1087,96 @@ mod test {
                 .unwrap_or(None)
                 .is_some());
         }
+    }
+
+    #[test]
+    fn doesnt_record_when_should_record_is_false() {
+        let (glean, dir) = new_glean(None);
+
+        // Init the database in a temporary directory.
+        let str_dir = dir.path().display().to_string();
+
+        let test_storage = "test-storage";
+        let test_data = CommonMetricData::new("category", "name", test_storage);
+        let test_metric_id = test_data.identifier(&glean);
+
+        // Attempt to record metric with the record and record_with functions,
+        // this should work since db was started enabled.
+        let db = Database::new(&str_dir, true, true).unwrap();
+        db.record(&glean, &test_data, &Metric::String("record".to_owned()));
+        db.iter_store_from(
+            Lifetime::Ping,
+            test_storage,
+            None,
+            &mut |metric_id: &[u8], metric: &Metric| {
+                assert_eq!(
+                    String::from_utf8_lossy(metric_id).into_owned(),
+                    test_metric_id
+                );
+                match metric {
+                    Metric::String(v) => assert_eq!("record", *v),
+                    _ => panic!("Unexpected data found"),
+                }
+            },
+        );
+
+        db.record_with(&glean, &test_data, |_| {
+            Metric::String("record_with".to_owned())
+        });
+        db.iter_store_from(
+            Lifetime::Ping,
+            test_storage,
+            None,
+            &mut |metric_id: &[u8], metric: &Metric| {
+                assert_eq!(
+                    String::from_utf8_lossy(metric_id).into_owned(),
+                    test_metric_id
+                );
+                match metric {
+                    Metric::String(v) => assert_eq!("record_with", *v),
+                    _ => panic!("Unexpected data found"),
+                }
+            },
+        );
+
+        // Disable the database
+        db.disable();
+
+        // Attempt to record metric with the record and record_with functions,
+        // this should work since the database is now **disabled**.
+        db.record(&glean, &test_data, &Metric::String("record_nop".to_owned()));
+        db.iter_store_from(
+            Lifetime::Ping,
+            test_storage,
+            None,
+            &mut |metric_id: &[u8], metric: &Metric| {
+                assert_eq!(
+                    String::from_utf8_lossy(metric_id).into_owned(),
+                    test_metric_id
+                );
+                match metric {
+                    Metric::String(v) => assert_eq!("record_with", *v),
+                    _ => panic!("Unexpected data found"),
+                }
+            },
+        );
+        db.record_with(&glean, &test_data, |_| {
+            Metric::String("record_with_nop".to_owned())
+        });
+        db.iter_store_from(
+            Lifetime::Ping,
+            test_storage,
+            None,
+            &mut |metric_id: &[u8], metric: &Metric| {
+                assert_eq!(
+                    String::from_utf8_lossy(metric_id).into_owned(),
+                    test_metric_id
+                );
+                match metric {
+                    Metric::String(v) => assert_eq!("record_with", *v),
+                    _ => panic!("Unexpected data found"),
+                }
+            },
+        );
     }
 }

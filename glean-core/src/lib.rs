@@ -197,8 +197,8 @@ impl Glean {
 
         // Creating the data store creates the necessary path as well.
         // If that fails we bail out and don't initialize further.
-        let data_store = Some(Database::new(&cfg.data_path, cfg.delay_ping_lifetime_io)?);
-        let event_data_store = EventDatabase::new(&cfg.data_path)?;
+        let data_store = Some(Database::new(&cfg.data_path, cfg.delay_ping_lifetime_io, *&cfg.upload_enabled)?);
+        let event_data_store = EventDatabase::new(&cfg.data_path, *&cfg.upload_enabled)?;
 
         // Create an upload manager with rate limiting of 10 pings every 60 seconds.
         let mut upload_manager =
@@ -398,6 +398,11 @@ impl Glean {
     /// recreated.
     fn on_upload_enabled(&mut self) {
         self.upload_enabled = true;
+
+        // Re-enable databases for recording.
+        self.storage().enable();
+        self.event_storage().enable();
+
         self.initialize_core_metrics();
         self.initialize_database_metrics();
     }
@@ -415,7 +420,14 @@ impl Glean {
         if let Err(err) = self.internal_pings.deletion_request.submit(self, None) {
             log::error!("Failed to submit deletion-request ping on optout: {}", err);
         }
+
+        // Clear any outstanding metrics.
         self.clear_metrics();
+
+        // Disable databases, no recording should happen if upload is disabled.
+        self.event_storage().disable();
+        self.storage().disable();
+
         self.upload_enabled = false;
     }
 
@@ -462,6 +474,9 @@ impl Glean {
             // from disk, so the PingUploader can't wake up and start sending
             // pings.
             self.upload_enabled = true;
+            // In order for `set` to fully work we also need to enable the metrics storage.
+            self.storage().enable();
+
 
             // Store a "dummy" KNOWN_CLIENT_ID in the client_id metric. This will
             // make it easier to detect if pings were unintentionally sent after
@@ -476,6 +491,7 @@ impl Glean {
             }
 
             self.upload_enabled = false;
+            self.storage().disable();
         }
     }
 

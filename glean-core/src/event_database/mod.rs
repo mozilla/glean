@@ -11,6 +11,7 @@ use std::io::Write;
 use std::iter::FromIterator;
 use std::path::{Path, PathBuf};
 use std::sync::RwLock;
+use std::sync::atomic::{AtomicBool, Ordering};
 
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value as JsonValue};
@@ -76,6 +77,8 @@ pub struct EventDatabase {
     event_stores: RwLock<HashMap<String, Vec<RecordedEvent>>>,
     /// A lock to be held when doing operations on the filesystem
     file_lock: RwLock<()>,
+    /// Whether or not to record data.
+    should_record: AtomicBool,
 }
 
 impl EventDatabase {
@@ -85,7 +88,8 @@ impl EventDatabase {
     ///
     /// * `data_path` - The directory to store events in. A new directory
     /// * `events` - will be created inside of this directory.
-    pub fn new(data_path: &str) -> Result<Self> {
+    /// * `enabled` - whether or not to record data.
+    pub fn new(data_path: &str, enabled: bool) -> Result<Self> {
         let path = Path::new(data_path).join("events");
         create_dir_all(&path)?;
 
@@ -93,7 +97,22 @@ impl EventDatabase {
             path,
             event_stores: RwLock::new(HashMap::new()),
             file_lock: RwLock::new(()),
+            should_record: AtomicBool::new(enabled),
         })
+    }
+
+    /// Makes recording functions a no-op.
+    pub fn disable(&self) {
+        self.should_record.store(false, Ordering::SeqCst);
+    }
+
+    /// Enables recording.
+    pub fn enable(&self) {
+        self.should_record.store(true, Ordering::SeqCst);
+    }
+
+    fn should_record(&self) -> bool {
+        self.should_record.load(Ordering::SeqCst)
     }
 
     /// Initializes events storage after Glean is fully initialized and ready to send pings.
@@ -187,6 +206,10 @@ impl EventDatabase {
         timestamp: u64,
         extra: Option<HashMap<String, String>>,
     ) {
+        if !self.should_record() {
+            return;
+        }
+
         // Create RecordedEvent object, and its JSON form for serialization
         // on disk.
         let event = RecordedEvent {
@@ -357,13 +380,14 @@ impl EventDatabase {
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::tests::new_glean;
 
     #[test]
     fn handle_truncated_events_on_disk() {
         let t = tempfile::tempdir().unwrap();
 
         {
-            let db = EventDatabase::new(&t.path().display().to_string()).unwrap();
+            let db = EventDatabase::new(&t.path().display().to_string(), true).unwrap();
             db.write_event_to_disk("events", "{\"timestamp\": 500");
             db.write_event_to_disk("events", "{\"timestamp\"");
             db.write_event_to_disk(
@@ -373,7 +397,7 @@ mod test {
         }
 
         {
-            let db = EventDatabase::new(&t.path().display().to_string()).unwrap();
+            let db = EventDatabase::new(&t.path().display().to_string(), true).unwrap();
             db.load_events_from_disk().unwrap();
             let events = &db.event_stores.read().unwrap()["events"];
             assert_eq!(1, events.len());
@@ -450,5 +474,41 @@ mod test {
             serde_json::from_str(&event_empty_json).unwrap()
         );
         assert_eq!(event_data, serde_json::from_str(&event_data_json).unwrap());
+    }
+
+    #[test]
+    fn doesnt_record_when_should_record_is_false() {
+        let (glean, dir) = new_glean(None);
+        let db = EventDatabase::new(dir.path().to_str().unwrap(), true).unwrap();
+
+        let test_storage = "test-storage";
+        let test_category = "category";
+        let test_name = "name";
+        let test_timestamp = 2;
+        let test_meta = CommonMetricData::new(test_category, test_name, test_storage);
+        let event_data = RecordedEvent {
+            timestamp: test_timestamp,
+            category: test_category.to_string(),
+            name: test_name.to_string(),
+            extra: None,
+        };
+
+        // Database is not yet disabled,
+        // so let's check that everything is getting recorded as expected.
+        db.record(&glean, &test_meta, 2, None);
+        {
+            let event_stores = db.event_stores.read().unwrap();
+            assert_eq!(&event_data, &event_stores.get(test_storage).unwrap()[0]);
+            assert_eq!(event_stores.get(test_storage).unwrap().len(), 1);
+        }
+
+        db.disable();
+
+        // Now that the database is disabled, let's check nothing is recorded.
+        db.record(&glean, &test_meta, 2, None);
+        {
+            let event_stores = db.event_stores.read().unwrap();
+            assert_eq!(event_stores.get(test_storage).unwrap().len(), 1);
+        }
     }
 }
