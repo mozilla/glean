@@ -47,3 +47,38 @@ We try to balance this responsibility against the many benefits of using existin
 
 Updating to new versions of existing dependencies is a normal part of software development
 and is not accompanied by any particular ceremony.
+
+### Dependency updates
+
+We use [Dependabot] to automatically open pull requests when dependencies release a new version.
+All CI tasks run on those pull requests to ensure updates don't break anything.
+
+As `glean-core` is now also vendored into mozilla-central, including all of its Rust dependencies, we need to be a bit careful about these updates.
+Landing upgrades of the Glean SDK itself in mozilla-central is a separate process.
+See [Updating the Glean SDK][updating-sdk] in the Firefox Source Docs.
+Following are some guidelines to ensure compatibility with mozilla-central:
+
+* Patch releases of dependencies should be fine in most cases.
+* Minor releases should be compatible. Best to check the changelog of the updated dependency to make sure. These updates should only land in `Cargo.lock`. No updates in `Cargo.toml` are necessary
+* Major releases will always need a check against mozilla-central. See [Updating the Glean SDK][updating-sdk].
+
+In case of uncertainty defer a decision to :janerik or :chutten.
+
+#### Manual dependency updates
+
+You can manually check for outdated dependencies using [cargo-outdated].
+Individual crate updates for version compatible with the requirement in `Cargo.toml` can be done using:
+
+```
+cargo update -p $cratename
+```
+
+To update all transitive dependencies to the latest semver-compatible version use:
+
+```
+cargo update
+```
+
+[Dependabot]: https://dependabot.com/
+[updating-sdk]: https://firefox-source-docs.mozilla.org/toolkit/components/glean/updating_sdk.html
+[cargo-outdated]: https://crates.io/crates/cargo-outdated
