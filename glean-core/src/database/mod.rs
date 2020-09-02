@@ -295,7 +295,7 @@ impl Database {
     /// # Panics
     ///
     /// * This function will **not** panic on database errors.
-    pub fn write_with_store<F>(&self, store_name: Lifetime, mut transaction_fn: F) -> Result<()>
+    fn write_with_store<F>(&self, store_name: Lifetime, mut transaction_fn: F) -> Result<()>
     where
         F: FnMut(rkv::Writer, &SingleStore) -> Result<()>,
     {
@@ -306,6 +306,11 @@ impl Database {
 
     /// Records a metric in the underlying storage system.
     pub fn record(&self, glean: &Glean, data: &CommonMetricData, value: &Metric) {
+        // If upload is disabled we don't want to record.
+        if !glean.is_upload_enabled() {
+            return;
+        }
+
         let name = data.identifier(glean);
 
         for ping_name in data.storage_names() {
@@ -363,6 +368,11 @@ impl Database {
     where
         F: FnMut(Option<Metric>) -> Metric,
     {
+        // If upload is disabled we don't want to record.
+        if !glean.is_upload_enabled() {
+            return;
+        }
+
         let name = data.identifier(glean);
         for ping_name in data.storage_names() {
             if let Err(e) =
@@ -385,7 +395,7 @@ impl Database {
     /// # Panics
     ///
     /// This function will **not** panic on database errors.
-    pub fn record_per_lifetime_with<F>(
+    fn record_per_lifetime_with<F>(
         &self,
         lifetime: Lifetime,
         storage_name: &str,
@@ -612,6 +622,8 @@ impl Database {
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::tests::new_glean;
+    use crate::CommonMetricData;
     use std::collections::HashMap;
     use tempfile::tempdir;
 
@@ -1057,5 +1069,96 @@ mod test {
                 .unwrap_or(None)
                 .is_some());
         }
+    }
+
+    #[test]
+    fn doesnt_record_when_upload_is_disabled() {
+        let (mut glean, dir) = new_glean(None);
+
+        // Init the database in a temporary directory.
+        let str_dir = dir.path().display().to_string();
+
+        let test_storage = "test-storage";
+        let test_data = CommonMetricData::new("category", "name", test_storage);
+        let test_metric_id = test_data.identifier(&glean);
+
+        // Attempt to record metric with the record and record_with functions,
+        // this should work since upload is enabled.
+        let db = Database::new(&str_dir, true).unwrap();
+        db.record(&glean, &test_data, &Metric::String("record".to_owned()));
+        db.iter_store_from(
+            Lifetime::Ping,
+            test_storage,
+            None,
+            &mut |metric_id: &[u8], metric: &Metric| {
+                assert_eq!(
+                    String::from_utf8_lossy(metric_id).into_owned(),
+                    test_metric_id
+                );
+                match metric {
+                    Metric::String(v) => assert_eq!("record", *v),
+                    _ => panic!("Unexpected data found"),
+                }
+            },
+        );
+
+        db.record_with(&glean, &test_data, |_| {
+            Metric::String("record_with".to_owned())
+        });
+        db.iter_store_from(
+            Lifetime::Ping,
+            test_storage,
+            None,
+            &mut |metric_id: &[u8], metric: &Metric| {
+                assert_eq!(
+                    String::from_utf8_lossy(metric_id).into_owned(),
+                    test_metric_id
+                );
+                match metric {
+                    Metric::String(v) => assert_eq!("record_with", *v),
+                    _ => panic!("Unexpected data found"),
+                }
+            },
+        );
+
+        // Disable upload
+        glean.set_upload_enabled(false);
+
+        // Attempt to record metric with the record and record_with functions,
+        // this should work since upload is now **disabled**.
+        db.record(&glean, &test_data, &Metric::String("record_nop".to_owned()));
+        db.iter_store_from(
+            Lifetime::Ping,
+            test_storage,
+            None,
+            &mut |metric_id: &[u8], metric: &Metric| {
+                assert_eq!(
+                    String::from_utf8_lossy(metric_id).into_owned(),
+                    test_metric_id
+                );
+                match metric {
+                    Metric::String(v) => assert_eq!("record_with", *v),
+                    _ => panic!("Unexpected data found"),
+                }
+            },
+        );
+        db.record_with(&glean, &test_data, |_| {
+            Metric::String("record_with_nop".to_owned())
+        });
+        db.iter_store_from(
+            Lifetime::Ping,
+            test_storage,
+            None,
+            &mut |metric_id: &[u8], metric: &Metric| {
+                assert_eq!(
+                    String::from_utf8_lossy(metric_id).into_owned(),
+                    test_metric_id
+                );
+                match metric {
+                    Metric::String(v) => assert_eq!("record_with", *v),
+                    _ => panic!("Unexpected data found"),
+                }
+            },
+        );
     }
 }
