@@ -10,6 +10,20 @@
 | Glean.py          | Python              | Windows/Mac/Linux | all                 | Autodetected at runtime |
 | FOG[^2]           | Rust/C++/JavaScript | as Firefox supports | Desktop application | OS info build-time autodetected, app info passed in |
 
+## Features matrix
+
+| Feature/Bindings        | Kotlin   | Swift  | Python  | C# | Rust |
+| ----------------------- | -------- | ------ | ------- | -- | ---- |
+| Core metric types       | ✓        | ✓      | ✓      | ✓  | X    |
+| Metrics Testing API     | ✓        | ✓      | ✓      | ✓  | X    |
+| `baseline` ping         | ✓        | ✓      | X      | X  | X    |
+| `metrics`               | ✓        | ✓      | X      | X  | X    |
+| `events`                | ✓        | ✓      | ✓      | ✓  | X    |
+| `deletion-request` ping | ✓        | ✓      | ✓      | ✓  | ✓   |
+| Custom pings            | ✓        | ✓      | ✓      | ✓  | X    |
+| Custom pings testing API| ✓        | ✓      | ✓      | X  | X    |
+| Debug Ping View support | ✓        | ✓      | ✓      | ✓  | ✓   |
+
 ---
 
 [^1]: [glean-preview](https://crates.io/crates/glean-preview) is an experimental crate for prototyping integration into Firefox. It it not recommended for general use. See Project FOG.
