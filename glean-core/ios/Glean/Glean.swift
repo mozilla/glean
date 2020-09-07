@@ -375,7 +375,7 @@ public class Glean {
     public func testGetExperimentData(experimentId: String) -> RecordedExperimentData? {
         Dispatchers.shared.assertInTestingMode()
         let jsonString = String(
-            freeingRustString: glean_experiment_test_get_data(experimentId)
+            freeingGleanString: glean_experiment_test_get_data(experimentId)
         )
 
         if let jsonData: Data = jsonString.data(using: .utf8, allowLossyConversion: false) {

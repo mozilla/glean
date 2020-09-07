@@ -197,7 +197,7 @@ public class EventMetricType<ExtraKeysEnum: ExtraKeys> {
         }
 
         let res = String(
-            freeingRustString: glean_event_test_get_value_as_json_string(self.handle, pingName)
+            freeingGleanString: glean_event_test_get_value_as_json_string(self.handle, pingName)
         )
 
         do {

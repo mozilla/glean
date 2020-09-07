@@ -116,7 +116,7 @@ public class JweMetricType {
 
         var data: JweData?
 
-        let jsonString = String(freeingRustString: glean_jwe_test_get_value_as_json_string(self.handle, pingName))
+        let jsonString = String(freeingGleanString: glean_jwe_test_get_value_as_json_string(self.handle, pingName))
         if let jsonData: Data = jsonString.data(using: .utf8, allowLossyConversion: false) {
             if let json = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] {
                 data = JweData(
@@ -154,7 +154,7 @@ public class JweMetricType {
             throw "Missing value"
         }
 
-        return String(freeingRustString: glean_jwe_test_get_value(self.handle, pingName))
+        return String(freeingGleanString: glean_jwe_test_get_value(self.handle, pingName))
     }
 
     /// Returns the number of errors recorded for the given metric.
