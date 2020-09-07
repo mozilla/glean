@@ -65,22 +65,8 @@ namespace Mozilla.Glean.Private
             }
 
             Dispatchers.LaunchAPI(() => {
-                SetSync(value);
+                LibGleanFFI.glean_quantity_set(this.handle, value);
             });
-        }
-
-        /// <summary>
-        /// Internal only, synchronous API for setting a quantity value.
-        /// </summary>
-        /// <param name="value">The value to set. Must be non-negative.</param>
-        internal void SetSync(Int32 value)
-        {
-            if (disabled)
-            {
-                return;
-            }
-
-            LibGleanFFI.glean_quantity_set(this.handle, value);
         }
 
 
