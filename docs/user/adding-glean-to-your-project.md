@@ -60,6 +60,7 @@ For example, if version *33.0.0* is used, then the include directive becomes:
 implementation "org.mozilla.components:service-glean:33.0.0"
 ```
 
+> **Size impact on the application APK**: the Glean SDK APK ships binary libraries for all the supported platforms. Each library file measures about 600KB. If the final APK size of the consuming project is a concern, please enable [ABI splits](https://developer.android.com/studio/build/configure-apk-splits#configure-abi-split).
 
 </div>
 
