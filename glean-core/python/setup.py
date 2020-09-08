@@ -34,18 +34,18 @@ if sys.version_info < (3, 6):
 from pathlib import Path  # noqa
 
 # Path to the directory containing this file
-ROOT = Path(__file__).parent.absolute()
+PYTHON_ROOT = Path(__file__).parent.absolute()
 
 # Relative path to this directory from cwd.
-FROM_TOP = ROOT.relative_to(Path.cwd())
+FROM_TOP = PYTHON_ROOT.relative_to(Path.cwd())
 
 # Path to the root of the git checkout
-GIT_ROOT = ROOT.parents[1]
+SRC_ROOT = PYTHON_ROOT.parents[1]
 
-with (GIT_ROOT / "README.md").open() as readme_file:
+with (SRC_ROOT / "README.md").open() as readme_file:
     readme = readme_file.read()
 
-with (GIT_ROOT / "CHANGELOG.md").open() as history_file:
+with (SRC_ROOT / "CHANGELOG.md").open() as history_file:
     history = history_file.read()
 
 # glean version. Automatically updated by the bin/prepare_release.sh script
@@ -63,11 +63,11 @@ setup_requirements = ["cffi>=1.0.0"]
 buildvariant = os.environ.get("GLEAN_BUILD_VARIANT", "debug")
 
 if mingw_arch == "i686":
-    shared_object_build_dir = GIT_ROOT / "target" / "i686-pc-windows-gnu"
+    shared_object_build_dir = SRC_ROOT / "target" / "i686-pc-windows-gnu"
 elif mingw_arch == "x86_64":
-    shared_object_build_dir = GIT_ROOT / "target" / "x86_64-pc-windows-gnu"
+    shared_object_build_dir = SRC_ROOT / "target" / "x86_64-pc-windows-gnu"
 else:
-    shared_object_build_dir = GIT_ROOT / "target"
+    shared_object_build_dir = SRC_ROOT / "target"
 
 
 if platform == "linux":
@@ -130,14 +130,18 @@ class build(_build):
         if buildvariant != "debug":
             command.append(f"--{buildvariant}")
 
-        subprocess.run(command, cwd=GIT_ROOT)
+        subprocess.run(command, cwd=SRC_ROOT)
         shutil.copyfile(
             shared_object_build_dir / buildvariant / shared_object,
-            ROOT / "glean" / shared_object,
+            PYTHON_ROOT / "glean" / shared_object,
         )
 
-        shutil.copyfile(ROOT.parent / "metrics.yaml", ROOT / "glean" / "metrics.yaml")
-        shutil.copyfile(ROOT.parent / "pings.yaml", ROOT / "glean" / "pings.yaml")
+        shutil.copyfile(
+            PYTHON_ROOT.parent / "metrics.yaml", PYTHON_ROOT / "glean" / "metrics.yaml"
+        )
+        shutil.copyfile(
+            PYTHON_ROOT.parent / "pings.yaml", PYTHON_ROOT / "glean" / "pings.yaml"
+        )
 
         return _build.run(self)
 
@@ -176,7 +180,7 @@ setup(
         "glean.testing": FROM_TOP / "glean" / "testing",
     },
     setup_requires=setup_requirements,
-    cffi_modules=[str(ROOT / "ffi_build.py:ffibuilder")],
+    cffi_modules=[str(PYTHON_ROOT / "ffi_build.py:ffibuilder")],
     url="https://github.com/mozilla/glean",
     zip_safe=False,
     package_data={"glean": [shared_object, "metrics.yaml", "pings.yaml"]},
