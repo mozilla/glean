@@ -445,7 +445,7 @@ public class Glean {
         }
 
         if !self.internalGetUploadEnabled() {
-            self.logger.error("Glean disabled: not submitting any pings")
+            self.logger.info("Glean disabled: not submitting any pings")
             return
         }
 
