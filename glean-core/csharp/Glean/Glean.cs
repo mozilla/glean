@@ -591,7 +591,7 @@ namespace Mozilla.Glean
 
             if (!GetUploadEnabled())
             {
-                Log.Error("Glean disabled: not submitting any pings.");
+                Log.Information("Glean disabled: not submitting any pings.");
                 return;
             }
 
