@@ -48,8 +48,8 @@ build-swift: ## Build all Swift code
 build-apk: build-kotlin ## Build an apk of the Glean sample app
 	./gradlew glean-sample-app:build
 
-build-python: python-setup build-rust ## Build the Python bindings
-	$(GLEAN_PYENV)/bin/python3 glean-core/python/setup.py install
+build-python: python-setup ## Build the Python bindings
+	$(GLEAN_PYENV)/bin/python3 glean-core/python/setup.py build install
 
 build-csharp: ## Build the C# bindings
 	dotnet build glean-core/csharp/csharp.sln

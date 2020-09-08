@@ -4,8 +4,10 @@
 
 """The setup script."""
 
+from distutils.command.build import build as _build
 import os
 import shutil
+import subprocess
 import sys
 
 from setuptools import setup, Distribution, find_packages
@@ -30,21 +32,24 @@ if sys.version_info < (3, 6):
     sys.exit(1)
 
 from pathlib import Path  # noqa
-import toml  # noqa
 
+# Path to the directory containing this file
 ROOT = Path(__file__).parent.absolute()
 
-os.chdir(str(ROOT))
+# Relative path to this directory from cwd.
+FROM_TOP = ROOT.relative_to(Path.cwd())
 
-with (ROOT.parent.parent / "README.md").open() as readme_file:
+# Path to the root of the git checkout
+GIT_ROOT = ROOT.parents[1]
+
+with (GIT_ROOT / "README.md").open() as readme_file:
     readme = readme_file.read()
 
-with (ROOT.parent.parent / "CHANGELOG.md").open() as history_file:
+with (GIT_ROOT / "CHANGELOG.md").open() as history_file:
     history = history_file.read()
 
-with (ROOT.parent / "Cargo.toml").open() as cargo:
-    parsed_toml = toml.load(cargo)
-    version = parsed_toml["package"]["version"]
+# glean version. Automatically updated by the bin/prepare_release.sh script
+version = "32.2.0"
 
 requirements = [
     "cffi>=1",
@@ -58,11 +63,11 @@ setup_requirements = ["cffi>=1.0.0"]
 buildvariant = os.environ.get("GLEAN_BUILD_VARIANT", "debug")
 
 if mingw_arch == "i686":
-    shared_object_build_dir = "../../target/i686-pc-windows-gnu"
+    shared_object_build_dir = GIT_ROOT / "target" / "i686-pc-windows-gnu"
 elif mingw_arch == "x86_64":
-    shared_object_build_dir = "../../target/x86_64-pc-windows-gnu"
+    shared_object_build_dir = GIT_ROOT / "target" / "x86_64-pc-windows-gnu"
 else:
-    shared_object_build_dir = "../../target"
+    shared_object_build_dir = GIT_ROOT / "target"
 
 
 if platform == "linux":
@@ -75,19 +80,6 @@ elif platform.startswith("win"):
     shared_object = "glean_ffi.dll"
 else:
     raise ValueError(f"The platform {sys.platform} is not supported.")
-
-shared_object_path = f"{shared_object_build_dir}/{buildvariant}/{shared_object}"
-
-shutil.copyfile("../metrics.yaml", "glean/metrics.yaml")
-shutil.copyfile("../pings.yaml", "glean/pings.yaml")
-# When running inside of `requirements-builder`, the Rust shared object may not
-# yet exist, so ignore the exception when trying to copy it. Under normal
-# circumstances, this will still show up as an error when running the `build`
-# command as a missing `package_data` file.
-try:
-    shutil.copyfile(shared_object_path, "glean/" + shared_object)
-except FileNotFoundError:
-    pass
 
 
 class BinaryDistribution(Distribution):
@@ -126,6 +118,30 @@ class InstallPlatlib(install):
             self.install_lib = self.install_platlib
 
 
+class build(_build):
+    def run(self):
+        try:
+            subprocess.run(["cargo"])
+        except subprocess.CalledProcessError:
+            print("glean_sdk requires 'cargo' to build its Rust extension.")
+            sys.exit(1)
+
+        command = ["cargo", "build", "--all"]
+        if buildvariant != "debug":
+            command.append(f"--{buildvariant}")
+
+        subprocess.run(command, cwd=GIT_ROOT)
+        shutil.copyfile(
+            shared_object_build_dir / buildvariant / shared_object,
+            ROOT / "glean" / shared_object,
+        )
+
+        shutil.copyfile(ROOT.parent / "metrics.yaml", ROOT / "glean" / "metrics.yaml")
+        shutil.copyfile(ROOT.parent / "pings.yaml", ROOT / "glean" / "pings.yaml")
+
+        return _build.run(self)
+
+
 setup(
     author="The Glean Team",
     author_email="glean-team@mozilla.com",
@@ -145,12 +161,25 @@ setup(
     keywords="glean",
     name="glean-sdk",
     version=version,
-    packages=find_packages(include=["glean", "glean.*"]),
+    packages=[
+        "glean",
+        "glean._subprocess",
+        "glean.metrics",
+        "glean.net",
+        "glean.testing",
+    ],
+    package_dir={
+        "glean": FROM_TOP / "glean",
+        "glean._subprocess": FROM_TOP / "glean" / "_subprocess",
+        "glean.metrics": FROM_TOP / "glean" / "metrics",
+        "glean.net": FROM_TOP / "glean" / "net",
+        "glean.testing": FROM_TOP / "glean" / "testing",
+    },
     setup_requires=setup_requirements,
-    cffi_modules=["ffi_build.py:ffibuilder"],
+    cffi_modules=[str(ROOT / "ffi_build.py:ffibuilder")],
     url="https://github.com/mozilla/glean",
     zip_safe=False,
     package_data={"glean": [shared_object, "metrics.yaml", "pings.yaml"]},
     distclass=BinaryDistribution,
-    cmdclass={"install": InstallPlatlib, "bdist_wheel": bdist_wheel},
+    cmdclass={"install": InstallPlatlib, "bdist_wheel": bdist_wheel, "build": build},
 )
