@@ -6,6 +6,8 @@
   * Track the size of the database file at startup ([#1141](https://github.com/mozilla/glean/pull/1141)).
 * iOS
   * Disabled code coverage in release builds ([#1195](https://github.com/mozilla/glean/issues/1195)).
+* Python
+  * Glean now ships a source package to pip install on platforms where wheels aren't provided.
 
 # v32.3.1 (2020-09-09)
 

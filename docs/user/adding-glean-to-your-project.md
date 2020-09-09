@@ -120,14 +120,15 @@ For integration with the build system you can follow the [Carthage Quick Start s
 We recommend using a virtual environment for your work to isolate the dependencies for your project. There are many popular abstractions on top of virtual environments in the Python ecosystem which can help manage your project dependencies.
 
 The Glean SDK Python bindings currently have [prebuilt wheels on PyPI for Windows (i686 and x86_64), Linux (x86_64) and macOS (x86_64)](https://pypi.org/project/glean-sdk/#files).
+For other platforms, the `glean_sdk` package will be built from source on your machine. 
+This requires that Cargo and Rust are already installed. 
+The easiest way to do this is through [rustup](https://rustup.rs/).
 
-If you're running one of those platforms and have your virtual environment set up and activated, you can install the Glean SDK into it using:
+Once you have your virtual environment set up and activated, you can install the Glean SDK into it using:
 
 ```bash
 $ python -m pip install glean_sdk
 ```
-
-If you are not on one of these platforms, you will need to build the Glean SDK Python bindings from source using [these instructions](../dev/python/setting-up-python-build-environment.html).
 
 The Glean SDK Python bindings make extensive use of type annotations to catch type related errors at build time. We highly recommend adding [mypy](https://mypy-lang.org) to your continuous integration workflow to catch errors related to type mismatches early.
 
