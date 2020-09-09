@@ -1,6 +1,13 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v32.3.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v32.3.1...main)
+
+# v32.3.1 (2020-09-09)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v32.3.0...v32.3.1)
+
+* Python
+    * Fixed the release process to generate all wheels ([#1193](https://github.com/mozilla/glean/pull/1193)).
 
 # v32.3.0 (2020-08-27)
 

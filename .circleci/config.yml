@@ -868,10 +868,10 @@ jobs:
           name: Build macOS wheel
           command: |
             cd glean-core/python
-            .venv3.7/bin/python3 setup.py bdist_wheel
+            .venv3.8/bin/python3 setup.py bdist_wheel
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
-            .venv3.7/bin/python3 -m twine upload dist/*
+            .venv3.8/bin/python3 -m twine upload dist/*
           environment:
             GLEAN_BUILD_VARIANT: release
       - install-ghr-darwin
