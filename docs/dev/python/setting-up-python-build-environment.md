@@ -75,12 +75,11 @@ By default, the `Makefile` installs the latest version available of each of Glea
 
 ### Manual method
 
-First, rebuild the Rust core if any Rust changes were made:
+Building the Python bindings also builds the Rust shared object for the Glean SDK core.
 
 ```bash
-  $ cargo build  # If there were Rust changes
   $ cd glean-core/python
-  $ python setup.py install
+  $ python setup.py build install
 ```
 
 ### Makefile method
