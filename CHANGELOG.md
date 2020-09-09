@@ -1,11 +1,18 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v32.3.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v32.3.1...main)
 
 * General
   * Track the size of the database file at startup ([#1141](https://github.com/mozilla/glean/pull/1141)).
 * iOS
   * Disabled code coverage in release builds ([#1195](https://github.com/mozilla/glean/issues/1195)).
+
+# v32.3.1 (2020-09-09)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v32.3.0...v32.3.1)
+
+* Python
+    * Fixed the release process to generate all wheels ([#1193](https://github.com/mozilla/glean/pull/1193)).
 
 # v32.3.0 (2020-08-27)
 
