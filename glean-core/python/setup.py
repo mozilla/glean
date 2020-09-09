@@ -123,10 +123,13 @@ class build(_build):
         try:
             subprocess.run(["cargo"])
         except subprocess.CalledProcessError:
-            print("glean_sdk requires 'cargo' to build its Rust extension.")
+            print("Install Rust and Cargo through Rustup: https://rustup.rs/.")
+            print(
+                "Need help installing the glean_sdk? https://github.com/mozilla/glean/#contact"
+            )
             sys.exit(1)
 
-        command = ["cargo", "build", "--all"]
+        command = ["cargo", "build", "--package", "glean-ffi"]
         if buildvariant != "debug":
             command.append(f"--{buildvariant}")
 
