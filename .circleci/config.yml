@@ -262,7 +262,7 @@ jobs:
 
   Lint YAML with yamllint:
     docker:
-      - image: circleci/python:3.8.2
+      - image: circleci/python:3.8.5
     steps:
       - checkout
       - run: sudo pip install yamllint
@@ -693,7 +693,7 @@ jobs:
 
   Lint Python:
     docker:
-      - image: circleci/python:3.8.2
+      - image: circleci/python:3.8.5
     steps:
       - checkout
       - run:
@@ -702,7 +702,7 @@ jobs:
 
   Python 3_6 tests:
     docker:
-      - image: circleci/python:3.6.9
+      - image: circleci/python:3.6.12
     steps:
       - checkout
       - skip-if-doc-only
@@ -710,7 +710,7 @@ jobs:
 
   Python 3_6 tests minimum dependencies:
     docker:
-      - image: circleci/python:3.6.9
+      - image: circleci/python:3.6.12
     steps:
       - checkout
       - skip-if-doc-only
@@ -721,7 +721,7 @@ jobs:
 
   Python 3_7 tests:
     docker:
-      - image: circleci/python:3.7.6
+      - image: circleci/python:3.7.9
     steps:
       - checkout
       - skip-if-doc-only
@@ -732,7 +732,7 @@ jobs:
 
   Python 3_8 tests:
     docker:
-      - image: circleci/python:3.8.2
+      - image: circleci/python:3.8.5
     steps:
       - checkout
       - test-python
@@ -742,7 +742,7 @@ jobs:
 
   Python 3_8 tests minimum dependencies:
     docker:
-      - image: circleci/python:3.8.2
+      - image: circleci/python:3.8.5
     steps:
       - checkout
       - skip-if-doc-only
@@ -751,9 +751,19 @@ jobs:
               echo "export GLEAN_PYDEPS=min" >> $BASH_ENV
       - test-python
 
+  Python 3_9 tests:
+    docker:
+      - image: circleci/python:3.9.0rc1
+    steps:
+      - checkout
+      - test-python
+      - persist_to_workspace:
+          root: glean-core/python/
+          paths: .venv3.9
+
   Python Windows x86_64 tests:
     docker:
-      - image: circleci/python:3.8.2
+      - image: circleci/python:3.8.5
     steps:
       - checkout
       - skip-if-doc-only
@@ -777,7 +787,7 @@ jobs:
 
   Python Windows i686 tests:
     docker:
-      - image: circleci/python:3.8.2
+      - image: circleci/python:3.8.5
     steps:
       - checkout
       - skip-if-doc-only
@@ -803,7 +813,7 @@ jobs:
 
   Generate Python documentation:
     docker:
-      - image: circleci/python:3.8.2
+      - image: circleci/python:3.8.5
     steps:
       - checkout
       - attach_workspace:
@@ -883,7 +893,7 @@ jobs:
 
   pypi-windows-x86_64-release:
     docker:
-      - image: circleci/python:3.8.2
+      - image: circleci/python:3.8.5
     steps:
       - checkout
       - build-windows-x86_64-wheel
@@ -903,7 +913,7 @@ jobs:
 
   pypi-windows-i686-release:
     docker:
-      - image: circleci/python:3.8.2
+      - image: circleci/python:3.8.5
     steps:
       - checkout
       - build-windows-i686-wheel
@@ -956,7 +966,7 @@ jobs:
 
   Docs internal metrics check:
     docker:
-      - image: circleci/python:3.8.2
+      - image: circleci/python:3.8.5
     steps:
       - checkout
       - run:
@@ -1086,6 +1096,7 @@ workflows:
       - Python 3_7 tests
       - Python 3_8 tests
       - Python 3_8 tests minimum dependencies
+      - Python 3_9 tests
       - Python Windows x86_64 tests
       - Python Windows i686 tests
 
