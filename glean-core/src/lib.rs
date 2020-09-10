@@ -201,8 +201,7 @@ impl Glean {
         let event_data_store = EventDatabase::new(&cfg.data_path)?;
 
         // Create an upload manager with rate limiting of 10 pings every 60 seconds.
-        let mut upload_manager =
-            PingUploadManager::new(&cfg.data_path, &cfg.language_binding_name, false);
+        let mut upload_manager = PingUploadManager::new(&cfg.data_path, &cfg.language_binding_name);
         upload_manager.set_rate_limiter(
             /* seconds per interval */ 60, /* max tasks per interval */ 15,
         );
@@ -263,6 +262,12 @@ impl Glean {
             }
         }
 
+        // We only scan the pendings pings directories **after** dealing with the upload state.
+        // If upload is disabled, we delete all pending pings files
+        // and we need to do that **before** scanning the pending pings folder
+        // to ensure we don't enqueue pings before their files are deleted.
+        let _scanning_thread = glean.upload_manager.scan_pending_pings_directories();
+
         Ok(glean)
     }
 
@@ -285,8 +290,7 @@ impl Glean {
         let mut glean = Self::new(cfg).unwrap();
 
         // Disable all upload manager policies for testing
-        // and make the upload manager scan the pings directories synchronously.
-        glean.upload_manager = PingUploadManager::no_policy(data_path, true);
+        glean.upload_manager = PingUploadManager::no_policy(data_path);
 
         glean
     }
