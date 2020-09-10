@@ -1,7 +1,12 @@
 # Events
 
-Events allow recording of e.g. individual occurrences of user actions, say every time a view was open and from where. Each time you record an event, it records a
-timestamp, the event's name and a set of custom values.
+Events allow recording of e.g. individual occurrences of user actions, say every time a view was open and from where. 
+
+Each event contains the following data:
+
+- A timestamp, in milliseconds. The first event in any ping always has a value of `0`, and subsequent event timestamps are relative to it.
+- The name of the event.
+- A set of key-value pairs, where the keys are predefined in the `extra_keys` metric parameter, and the values are strings.
 
 ## Configuration
 
