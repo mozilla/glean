@@ -4,6 +4,7 @@
 
 * General
   * Track the size of the database file at startup ([#1141](https://github.com/mozilla/glean/pull/1141)).
+  * Submitting a ping with upload disabled no longer shows an error message ([#1201](https://github.com/mozilla/glean/pull/1201)).
   * BUGFIX: scan the pending pings directories **after** dealing with upload status on initialization. This is important, because in case upload is disabled we delete any outstanding non-deletion ping file, and if we scan the pending pings folder before doing that we may end up sending pings that should have been discarded. ([#1205](https://github.com/mozilla/glean/pull/1205))
 * iOS
   * Disabled code coverage in release builds ([#1195](https://github.com/mozilla/glean/issues/1195)).
