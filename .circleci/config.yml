@@ -830,6 +830,7 @@ jobs:
           name: Build Python extension
           command: |
             make python-setup
+            cd glean-core/python
             .venv3.8/bin/python3 setup.py sdist
             .venv3.8/bin/python3 -m twine upload dist/*
 
