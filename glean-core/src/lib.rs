@@ -187,7 +187,7 @@ impl Glean {
     ///
     /// Importantly, this will not send any pings at startup, since that
     /// sort of management should only happen in the main process.
-    pub fn new_for_subprocess(cfg: &Configuration) -> Result<Self> {
+    pub fn new_for_subprocess(cfg: &Configuration, scan_directories: bool) -> Result<Self> {
         log::info!("Creating new Glean v{}", GLEAN_VERSION);
 
         let application_id = sanitize_application_id(&cfg.application_id);
@@ -201,11 +201,16 @@ impl Glean {
         let event_data_store = EventDatabase::new(&cfg.data_path)?;
 
         // Create an upload manager with rate limiting of 10 pings every 60 seconds.
-        let mut upload_manager =
-            PingUploadManager::new(&cfg.data_path, &cfg.language_binding_name, false);
+        let mut upload_manager = PingUploadManager::new(&cfg.data_path, &cfg.language_binding_name);
         upload_manager.set_rate_limiter(
             /* seconds per interval */ 60, /* max tasks per interval */ 15,
         );
+
+        // We only scan the pending ping sdirectories when calling this from a subprocess,
+        // when calling this from ::new we need to scan the directories after dealing with the upload state.
+        if scan_directories {
+            let _scanning_thread = upload_manager.scan_pending_pings_directories();
+        }
 
         Ok(Self {
             upload_enabled: cfg.upload_enabled,
@@ -230,7 +235,7 @@ impl Glean {
     /// This will create the necessary directories and files in `data_path`.
     /// This will also initialize the core metrics.
     pub fn new(cfg: Configuration) -> Result<Self> {
-        let mut glean = Self::new_for_subprocess(&cfg)?;
+        let mut glean = Self::new_for_subprocess(&cfg, false)?;
 
         // The upload enabled flag may have changed since the last run, for
         // example by the changing of a config file.
@@ -263,6 +268,12 @@ impl Glean {
             }
         }
 
+        // We only scan the pendings pings directories **after** dealing with the upload state.
+        // If upload is disabled, we delete all pending pings files
+        // and we need to do that **before** scanning the pending pings folder
+        // to ensure we don't enqueue pings before their files are deleted.
+        let _scanning_thread = glean.upload_manager.scan_pending_pings_directories();
+
         Ok(glean)
     }
 
@@ -285,8 +296,7 @@ impl Glean {
         let mut glean = Self::new(cfg).unwrap();
 
         // Disable all upload manager policies for testing
-        // and make the upload manager scan the pings directories synchronously.
-        glean.upload_manager = PingUploadManager::no_policy(data_path, true);
+        glean.upload_manager = PingUploadManager::no_policy(data_path);
 
         glean
     }
