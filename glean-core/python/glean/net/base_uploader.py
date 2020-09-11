@@ -52,7 +52,9 @@ class BaseUploader(ping_uploader.PingUploader):
         """
 
         return self.upload(
-            url=config.server_endpoint + path, data=data, headers=headers,
+            url=config.server_endpoint + path,
+            data=data,
+            headers=headers,
         )
 
 

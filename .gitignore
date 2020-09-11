@@ -28,6 +28,10 @@ Carthage
 .DS_Store
 *.dSYM
 
+# Python stuff
+*.egg-info
+dist/
+
 # C# stuff
 *.suo
 *.user

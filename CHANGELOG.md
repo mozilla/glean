@@ -1,6 +1,19 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v32.3.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v32.3.2...main)
+
+# v32.3.2 (2020-09-11)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v32.3.1...v32.3.2)
+
+* General
+  * Track the size of the database file at startup ([#1141](https://github.com/mozilla/glean/pull/1141)).
+  * Submitting a ping with upload disabled no longer shows an error message ([#1201](https://github.com/mozilla/glean/pull/1201)).
+  * BUGFIX: scan the pending pings directories **after** dealing with upload status on initialization. This is important, because in case upload is disabled we delete any outstanding non-deletion ping file, and if we scan the pending pings folder before doing that we may end up sending pings that should have been discarded. ([#1205](https://github.com/mozilla/glean/pull/1205))
+* iOS
+  * Disabled code coverage in release builds ([#1195](https://github.com/mozilla/glean/issues/1195)).
+* Python
+  * Glean now ships a source package to pip install on platforms where wheels aren't provided.
 
 # v32.3.1 (2020-09-09)
 
@@ -36,6 +49,7 @@
   * Add support for the `EventMetricType` in C# ([#1129](https://github.com/mozilla/glean/pull/1129)).
   * Add support for the `TimingDistributionMetricType` in C# ([#1131](https://github.com/mozilla/glean/pull/1131)).
   * Implement the experiments API in C# ([#1145](https://github.com/mozilla/glean/pull/1145)).
+  * This is the last release with C# language bindings changes. Reach out to the Glean SDK team if you want to use the C# bindings in a new product and require additional features.
 * Python
   * BUGFIX: Limit the number of retries for 5xx server errors on ping uploads ([#1120](https://github.com/mozilla/glean/pull/1120)).
     * This kinds of failures yield a "recoverable error", which means the ping gets re-enqueued. That can cause infinite loops on the ping upload worker. For python we were incorrectly only limiting the number of retries for I/O errors, another type of "recoverable error".

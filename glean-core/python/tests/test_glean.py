@@ -180,7 +180,7 @@ def test_queued_recorded_metrics_correctly_during_init():
         send_in_pings=["store1"],
     )
 
-    for i in range(2):
+    for _ in range(2):
         counter_metric.add()
 
     Glean._initialize_with_tempdir_for_testing(
@@ -336,7 +336,9 @@ def test_ping_collection_must_happen_after_currently_scheduled_metrics_recording
     json_content = json.loads(serialized_ping)
 
     assert 0 == validate_ping.validate_ping(
-        io.StringIO(serialized_ping), sys.stdout, schema_url=ping_schema_url,
+        io.StringIO(serialized_ping),
+        sys.stdout,
+        schema_url=ping_schema_url,
     )
 
     assert {"category.string_metric": test_value} == json_content["metrics"]["string"]
@@ -420,7 +422,7 @@ def test_tempdir_is_cleared_multiprocess(safe_httpserver):
     pings_dir = Glean._data_dir / "pending_pings"
     pings_dir.mkdir()
 
-    for i in range(10):
+    for _ in range(10):
         with (pings_dir / str(uuid.uuid4())).open("wb") as fd:
             fd.write(b"/data/path/\n")
             fd.write(b"{}\n")
@@ -493,7 +495,7 @@ def test_disabling_upload_sends_deletion_request(safe_httpserver):
 def test_overflowing_the_task_queue_records_telemetry():
     Dispatcher.set_task_queueing(True)
 
-    for i in range(110):
+    for _ in range(110):
         Dispatcher.launch(lambda: None)
 
     assert 100 == len(Dispatcher._preinit_task_queue)
@@ -568,7 +570,9 @@ def test_sending_deletion_ping_if_disabled_outside_of_run(tmpdir, ping_schema_ur
     json_content = json.loads(serialized_ping)
 
     assert 0 == validate_ping.validate_ping(
-        io.StringIO(serialized_ping), sys.stdout, schema_url=ping_schema_url,
+        io.StringIO(serialized_ping),
+        sys.stdout,
+        schema_url=ping_schema_url,
     )
 
     assert not json_content["client_info"]["client_id"].startswith("c0ffee")
@@ -610,7 +614,7 @@ def test_dont_allow_multiprocessing(monkeypatch, safe_httpserver):
 
     # Monkey-patch the multiprocessing API to be broken so we can assert it isn't used
     def broken_process(*args, **kwargs):
-        assert False, "shouldn't be called"
+        assert False, "shouldn't be called"  # noqa
 
     monkeypatch.setattr(subprocess, "Popen", broken_process)
 
@@ -732,7 +736,9 @@ def test_presubmit_makes_a_valid_ping(tmpdir, ping_schema_url, monkeypatch):
     assert ping_name == url_path.split("/")[3]
 
     assert 0 == validate_ping.validate_ping(
-        io.StringIO(serialized_ping), sys.stdout, schema_url=ping_schema_url,
+        io.StringIO(serialized_ping),
+        sys.stdout,
+        schema_url=ping_schema_url,
     )
 
 
@@ -741,7 +747,9 @@ def test_app_display_version_unknown():
 
     Glean._reset()
     Glean._initialize_with_tempdir_for_testing(
-        application_id=GLEAN_APP_ID, application_version=None, upload_enabled=True,
+        application_id=GLEAN_APP_ID,
+        application_version=None,
+        upload_enabled=True,
     )
 
     assert (

@@ -635,7 +635,7 @@ open class GleanInternalAPI internal constructor () {
         }
 
         if (!internalGetUploadEnabled()) {
-            Log.e(LOG_TAG, "Glean disabled: not submitting any pings.")
+            Log.i(LOG_TAG, "Glean disabled: not submitting any pings.")
             return
         }
 

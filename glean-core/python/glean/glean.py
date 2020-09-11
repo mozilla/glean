@@ -164,7 +164,10 @@ class Glean:
             # initializers that Kotlin and Swift have.
 
             cfg = _ffi.make_config(
-                cls._data_dir, application_id, upload_enabled, configuration.max_events,
+                cls._data_dir,
+                application_id,
+                upload_enabled,
+                configuration.max_events,
             )
 
             cls._initialized = _ffi.lib.glean_initialize(cfg) != 0
@@ -545,11 +548,12 @@ class Glean:
             return
 
         if not cls._get_upload_enabled():
-            log.error("Glean disabled: not submitting any pings.")
+            log.info("Glean disabled: not submitting any pings.")
             return
 
         sent_ping = _ffi.lib.glean_submit_ping_by_name(
-            _ffi.ffi_encode_string(ping_name), _ffi.ffi_encode_string_or_none(reason),
+            _ffi.ffi_encode_string(ping_name),
+            _ffi.ffi_encode_string_or_none(reason),
         )
 
         if sent_ping:

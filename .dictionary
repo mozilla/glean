@@ -1,6 +1,7 @@
-personal_ws-1.1 en 189 utf-8
+personal_ws-1.1 en 190 utf-8
 AAR
 AARs
+ABI
 APIs
 APK
 BUGFIX
@@ -16,6 +17,7 @@ DNS
 DOM
 Datetime
 Datetimes
+Dependabot
 Fenix
 GeckoView
 GitFlow

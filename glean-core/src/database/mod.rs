@@ -5,6 +5,8 @@
 use std::collections::btree_map::Entry;
 use std::collections::BTreeMap;
 use std::fs;
+use std::num::NonZeroU64;
+use std::path::Path;
 use std::str;
 use std::sync::RwLock;
 
@@ -32,6 +34,9 @@ pub struct Database {
     /// we will save metrics with 'ping' lifetime data in a map temporarily
     /// so as to persist them to disk using rkv in bulk on demand.
     ping_lifetime_data: Option<RwLock<BTreeMap<String, Metric>>>,
+
+    // Initial file size when opening the database.
+    file_size: Option<NonZeroU64>,
 }
 
 impl std::fmt::Debug for Database {
@@ -46,6 +51,24 @@ impl std::fmt::Debug for Database {
     }
 }
 
+/// Get the file size of a file in the given path and file.
+///
+/// # Arguments
+///
+/// - `path` - The path
+///
+/// # Returns
+///
+/// Returns the non-zero file size in bytes,
+/// or `None` on error or if the size is `0`.
+fn file_size(path: &Path) -> Option<NonZeroU64> {
+    log::trace!("Getting file size for path: {}", path.display());
+    fs::metadata(path)
+        .ok()
+        .map(|stat| stat.len())
+        .and_then(NonZeroU64::new)
+}
+
 impl Database {
     /// Initializes the data store.
     ///
@@ -55,7 +78,12 @@ impl Database {
     /// It also loads any Lifetime::Ping data that might be
     /// persisted, in case `delay_ping_lifetime_io` is set.
     pub fn new(data_path: &str, delay_ping_lifetime_io: bool) -> Result<Self> {
-        let rkv = Self::open_rkv(data_path)?;
+        let path = Path::new(data_path).join("db");
+        log::debug!("Database path: {:?}", path.display());
+
+        let file_size = file_size(&path.join("data.mdb"));
+
+        let rkv = Self::open_rkv(&path)?;
         let user_store = rkv.open_single(Lifetime::User.as_str(), StoreOptions::create())?;
         let ping_store = rkv.open_single(Lifetime::Ping.as_str(), StoreOptions::create())?;
         let application_store =
@@ -72,11 +100,17 @@ impl Database {
             ping_store,
             application_store,
             ping_lifetime_data,
+            file_size,
         };
 
         db.load_ping_lifetime_data();
 
         Ok(db)
+    }
+
+    /// Get the initial database file size.
+    pub fn file_size(&self) -> Option<NonZeroU64> {
+        self.file_size
     }
 
     fn get_store(&self, lifetime: Lifetime) -> &SingleStore {
@@ -88,9 +122,7 @@ impl Database {
     }
 
     /// Creates the storage directories and inits rkv.
-    fn open_rkv(path: &str) -> Result<Rkv> {
-        let path = std::path::Path::new(path).join("db");
-        log::debug!("Database path: {:?}", path.display());
+    fn open_rkv(path: &Path) -> Result<Rkv> {
         fs::create_dir_all(&path)?;
 
         let rkv = Rkv::new(&path)?;
@@ -263,7 +295,7 @@ impl Database {
     /// # Panics
     ///
     /// * This function will **not** panic on database errors.
-    pub fn write_with_store<F>(&self, store_name: Lifetime, mut transaction_fn: F) -> Result<()>
+    fn write_with_store<F>(&self, store_name: Lifetime, mut transaction_fn: F) -> Result<()>
     where
         F: FnMut(rkv::Writer, &SingleStore) -> Result<()>,
     {
@@ -274,6 +306,11 @@ impl Database {
 
     /// Records a metric in the underlying storage system.
     pub fn record(&self, glean: &Glean, data: &CommonMetricData, value: &Metric) {
+        // If upload is disabled we don't want to record.
+        if !glean.is_upload_enabled() {
+            return;
+        }
+
         let name = data.identifier(glean);
 
         for ping_name in data.storage_names() {
@@ -331,6 +368,11 @@ impl Database {
     where
         F: FnMut(Option<Metric>) -> Metric,
     {
+        // If upload is disabled we don't want to record.
+        if !glean.is_upload_enabled() {
+            return;
+        }
+
         let name = data.identifier(glean);
         for ping_name in data.storage_names() {
             if let Err(e) =
@@ -353,7 +395,7 @@ impl Database {
     /// # Panics
     ///
     /// This function will **not** panic on database errors.
-    pub fn record_per_lifetime_with<F>(
+    fn record_per_lifetime_with<F>(
         &self,
         lifetime: Lifetime,
         storage_name: &str,
@@ -580,6 +622,8 @@ impl Database {
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::tests::new_glean;
+    use crate::CommonMetricData;
     use std::collections::HashMap;
     use tempfile::tempdir;
 
@@ -1025,5 +1069,96 @@ mod test {
                 .unwrap_or(None)
                 .is_some());
         }
+    }
+
+    #[test]
+    fn doesnt_record_when_upload_is_disabled() {
+        let (mut glean, dir) = new_glean(None);
+
+        // Init the database in a temporary directory.
+        let str_dir = dir.path().display().to_string();
+
+        let test_storage = "test-storage";
+        let test_data = CommonMetricData::new("category", "name", test_storage);
+        let test_metric_id = test_data.identifier(&glean);
+
+        // Attempt to record metric with the record and record_with functions,
+        // this should work since upload is enabled.
+        let db = Database::new(&str_dir, true).unwrap();
+        db.record(&glean, &test_data, &Metric::String("record".to_owned()));
+        db.iter_store_from(
+            Lifetime::Ping,
+            test_storage,
+            None,
+            &mut |metric_id: &[u8], metric: &Metric| {
+                assert_eq!(
+                    String::from_utf8_lossy(metric_id).into_owned(),
+                    test_metric_id
+                );
+                match metric {
+                    Metric::String(v) => assert_eq!("record", *v),
+                    _ => panic!("Unexpected data found"),
+                }
+            },
+        );
+
+        db.record_with(&glean, &test_data, |_| {
+            Metric::String("record_with".to_owned())
+        });
+        db.iter_store_from(
+            Lifetime::Ping,
+            test_storage,
+            None,
+            &mut |metric_id: &[u8], metric: &Metric| {
+                assert_eq!(
+                    String::from_utf8_lossy(metric_id).into_owned(),
+                    test_metric_id
+                );
+                match metric {
+                    Metric::String(v) => assert_eq!("record_with", *v),
+                    _ => panic!("Unexpected data found"),
+                }
+            },
+        );
+
+        // Disable upload
+        glean.set_upload_enabled(false);
+
+        // Attempt to record metric with the record and record_with functions,
+        // this should work since upload is now **disabled**.
+        db.record(&glean, &test_data, &Metric::String("record_nop".to_owned()));
+        db.iter_store_from(
+            Lifetime::Ping,
+            test_storage,
+            None,
+            &mut |metric_id: &[u8], metric: &Metric| {
+                assert_eq!(
+                    String::from_utf8_lossy(metric_id).into_owned(),
+                    test_metric_id
+                );
+                match metric {
+                    Metric::String(v) => assert_eq!("record_with", *v),
+                    _ => panic!("Unexpected data found"),
+                }
+            },
+        );
+        db.record_with(&glean, &test_data, |_| {
+            Metric::String("record_with_nop".to_owned())
+        });
+        db.iter_store_from(
+            Lifetime::Ping,
+            test_storage,
+            None,
+            &mut |metric_id: &[u8], metric: &Metric| {
+                assert_eq!(
+                    String::from_utf8_lossy(metric_id).into_owned(),
+                    test_metric_id
+                );
+                match metric {
+                    Metric::String(v) => assert_eq!("record_with", *v),
+                    _ => panic!("Unexpected data found"),
+                }
+            },
+        );
     }
 }

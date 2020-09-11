@@ -26,7 +26,7 @@ def test_launch_correctly_adds_tasks_to_queue_if_queue_tasks_is_true():
     def update():
         thread_canary[0] += 1
 
-    for i in range(3):
+    for _ in range(3):
         update()
 
     assert 3 == len(Dispatcher._preinit_task_queue)
@@ -41,7 +41,7 @@ def test_launch_correctly_adds_tasks_to_queue_if_queue_tasks_is_true():
 def test_maximum_tasks():
     Dispatcher.set_task_queueing(True)
 
-    for i in range(Dispatcher.MAX_QUEUE_SIZE + 10):
+    for _ in range(Dispatcher.MAX_QUEUE_SIZE + 10):
         Dispatcher.task(lambda: 0)()
 
     assert len(Dispatcher._preinit_task_queue) == Dispatcher.MAX_QUEUE_SIZE
@@ -50,7 +50,7 @@ def test_maximum_tasks():
 def test_maximum_queue():
     Dispatcher.set_task_queueing(True)
 
-    for i in range(Dispatcher.MAX_QUEUE_SIZE + 10):
+    for _ in range(Dispatcher.MAX_QUEUE_SIZE + 10):
         Dispatcher.launch(lambda: 0)
 
     assert len(Dispatcher._preinit_task_queue) == Dispatcher.MAX_QUEUE_SIZE
@@ -85,7 +85,7 @@ def test_queue_tasks_are_flushed_off_the_main_thread():
     Dispatcher._queue_initial_tasks = True
 
     def task_runner():
-        for i in range(3):
+        for _ in range(3):
             Dispatcher.launch(test_task)
 
         assert 3 == len(Dispatcher._preinit_task_queue)
@@ -151,7 +151,7 @@ def test_dispatched_tasks_throwing_exceptions_are_correctly_handled():
     def working_task():
         thread_canary[0] += 1
 
-    for i in range(3):
+    for _ in range(3):
         Dispatcher.launch(working_task)
 
     Dispatcher._task_worker._queue.join()

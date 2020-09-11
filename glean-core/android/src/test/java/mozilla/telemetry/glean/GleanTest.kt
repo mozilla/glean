@@ -69,6 +69,7 @@ class GleanTest {
     // New from glean-core.
     @Test
     fun `send a ping`() {
+        delayMetricsPing(context)
         val server = getMockWebServer()
         resetGlean(context, Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port
@@ -89,6 +90,7 @@ class GleanTest {
 
     @Test
     fun `X-Debug-ID header is correctly added when debug view tag is set`() {
+        delayMetricsPing(context)
         val server = getMockWebServer()
         resetGlean(context, Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port
@@ -181,6 +183,7 @@ class GleanTest {
         )
 
         val context = getContextWithMockedInfo()
+        delayMetricsPing(context)
         resetGlean(context, Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port
         ))
@@ -258,6 +261,7 @@ class GleanTest {
         // Restart glean and don't clear the stores.
         val server = getMockWebServer()
         val context = getContextWithMockedInfo()
+        delayMetricsPing(context)
         resetGlean(context, Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port
         ), false)
@@ -432,6 +436,7 @@ class GleanTest {
         val server = getMockWebServer()
 
         val context = getContextWithMockedInfo()
+        delayMetricsPing(context)
         resetGlean(context, Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port
         ))
@@ -574,6 +579,7 @@ class GleanTest {
 
     @Test
     fun `overflowing the task queue records telemetry`() {
+        delayMetricsPing(context)
         val server = getMockWebServer()
         Dispatchers.API.setTestingMode(true)
         Dispatchers.API.setTaskQueueing(true)
@@ -683,6 +689,7 @@ class GleanTest {
         // Restart glean and don't clear the stores.
         val server = getMockWebServer()
         val context = getContextWithMockedInfo()
+        delayMetricsPing(context)
         resetGlean(context, Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port
         ), false)
@@ -759,6 +766,9 @@ class GleanTest {
         // This test relies on Glean not being initialized, we do that ourselves.
         Glean.testDestroyGleanHandle()
 
+        val context = getContextWithMockedInfo()
+        delayMetricsPing(context)
+
         // This test relies on testing mode to be disabled, since we need to prove the
         // real-world async behaviour of this.
         // We don't need to care about clearing it,
@@ -783,7 +793,6 @@ class GleanTest {
         )
 
         val server = getMockWebServer()
-        val context = getContextWithMockedInfo()
         val config = Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port
         )

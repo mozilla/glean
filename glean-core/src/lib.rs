@@ -47,7 +47,7 @@ use crate::debug::DebugOptions;
 pub use crate::error::{Error, ErrorKind, Result};
 pub use crate::error_recording::{test_get_num_recorded_errors, ErrorType};
 use crate::event_database::EventDatabase;
-use crate::internal_metrics::CoreMetrics;
+use crate::internal_metrics::{CoreMetrics, DatabaseMetrics};
 use crate::internal_pings::InternalPings;
 use crate::metrics::{Metric, MetricType, PingType};
 use crate::ping::PingMaker;
@@ -170,6 +170,7 @@ pub struct Glean {
     data_store: Option<Database>,
     event_data_store: EventDatabase,
     core_metrics: CoreMetrics,
+    database_metrics: DatabaseMetrics,
     internal_pings: InternalPings,
     data_path: PathBuf,
     application_id: String,
@@ -186,7 +187,7 @@ impl Glean {
     ///
     /// Importantly, this will not send any pings at startup, since that
     /// sort of management should only happen in the main process.
-    pub fn new_for_subprocess(cfg: &Configuration) -> Result<Self> {
+    pub fn new_for_subprocess(cfg: &Configuration, scan_directories: bool) -> Result<Self> {
         log::info!("Creating new Glean v{}", GLEAN_VERSION);
 
         let application_id = sanitize_application_id(&cfg.application_id);
@@ -200,17 +201,23 @@ impl Glean {
         let event_data_store = EventDatabase::new(&cfg.data_path)?;
 
         // Create an upload manager with rate limiting of 10 pings every 60 seconds.
-        let mut upload_manager =
-            PingUploadManager::new(&cfg.data_path, &cfg.language_binding_name, false);
+        let mut upload_manager = PingUploadManager::new(&cfg.data_path, &cfg.language_binding_name);
         upload_manager.set_rate_limiter(
             /* seconds per interval */ 60, /* max tasks per interval */ 15,
         );
+
+        // We only scan the pending ping sdirectories when calling this from a subprocess,
+        // when calling this from ::new we need to scan the directories after dealing with the upload state.
+        if scan_directories {
+            let _scanning_thread = upload_manager.scan_pending_pings_directories();
+        }
 
         Ok(Self {
             upload_enabled: cfg.upload_enabled,
             data_store,
             event_data_store,
             core_metrics: CoreMetrics::new(),
+            database_metrics: DatabaseMetrics::new(),
             internal_pings: InternalPings::new(),
             upload_manager,
             data_path: PathBuf::from(&cfg.data_path),
@@ -228,7 +235,7 @@ impl Glean {
     /// This will create the necessary directories and files in `data_path`.
     /// This will also initialize the core metrics.
     pub fn new(cfg: Configuration) -> Result<Self> {
-        let mut glean = Self::new_for_subprocess(&cfg)?;
+        let mut glean = Self::new_for_subprocess(&cfg, false)?;
 
         // The upload enabled flag may have changed since the last run, for
         // example by the changing of a config file.
@@ -261,6 +268,12 @@ impl Glean {
             }
         }
 
+        // We only scan the pendings pings directories **after** dealing with the upload state.
+        // If upload is disabled, we delete all pending pings files
+        // and we need to do that **before** scanning the pending pings folder
+        // to ensure we don't enqueue pings before their files are deleted.
+        let _scanning_thread = glean.upload_manager.scan_pending_pings_directories();
+
         Ok(glean)
     }
 
@@ -270,7 +283,7 @@ impl Glean {
         data_path: &str,
         application_id: &str,
         upload_enabled: bool,
-    ) -> Result<Self> {
+    ) -> Self {
         let cfg = Configuration {
             data_path: data_path.into(),
             application_id: application_id.into(),
@@ -280,7 +293,12 @@ impl Glean {
             delay_ping_lifetime_io: false,
         };
 
-        Self::new(cfg)
+        let mut glean = Self::new(cfg).unwrap();
+
+        // Disable all upload manager policies for testing
+        glean.upload_manager = PingUploadManager::no_policy(data_path);
+
+        glean
     }
 
     /// Destroys the database.
@@ -290,7 +308,7 @@ impl Glean {
         self.data_store = None;
     }
 
-    /// Initialize the core metrics managed by Glean's Rust core.
+    /// Initializes the core metrics managed by Glean's Rust core.
     fn initialize_core_metrics(&mut self) {
         let need_new_client_id = match self
             .core_metrics
@@ -318,6 +336,20 @@ impl Glean {
         }
 
         self.set_application_lifetime_core_metrics();
+    }
+
+    /// Initializes the database metrics managed by Glean's Rust core.
+    fn initialize_database_metrics(&mut self) {
+        log::trace!("Initializing database metrics");
+
+        if let Some(size) = self
+            .data_store
+            .as_ref()
+            .and_then(|database| database.file_size())
+        {
+            log::trace!("Database file size: {}", size.get());
+            self.database_metrics.size.accumulate(self, size.get())
+        }
     }
 
     /// Signals that the environment is ready to submit pings.
@@ -383,6 +415,7 @@ impl Glean {
     fn on_upload_enabled(&mut self) {
         self.upload_enabled = true;
         self.initialize_core_metrics();
+        self.initialize_database_metrics();
     }
 
     /// Handles the changing of state from upload enabled to disabled.
@@ -561,7 +594,7 @@ impl Glean {
     /// If collecting or writing the ping to disk failed.
     pub fn submit_ping(&self, ping: &PingType, reason: Option<&str>) -> Result<bool> {
         if !self.is_upload_enabled() {
-            log::error!("Glean disabled: not submitting any pings.");
+            log::info!("Glean disabled: not submitting any pings.");
             return Ok(false);
         }
 

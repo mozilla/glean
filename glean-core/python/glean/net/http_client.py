@@ -59,7 +59,10 @@ class HttpClientUploader(base_uploader.BaseUploader):
 
         try:
             conn.request(
-                "POST", parsed_url.path, body=data, headers=dict(headers),
+                "POST",
+                parsed_url.path,
+                body=data,
+                headers=dict(headers),
             )
             response = conn.getresponse()
         except http.client.InvalidURL as e:

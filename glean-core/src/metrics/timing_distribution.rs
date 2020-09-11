@@ -242,6 +242,10 @@ impl TimingDistributionMetric {
     /// for each of them. Reports an `ErrorType::InvalidOverflow` error for samples that
     /// are longer than `MAX_SAMPLE_TIME`.
     pub fn accumulate_samples_signed(&mut self, glean: &Glean, samples: Vec<i64>) {
+        if !self.should_record(glean) {
+            return;
+        }
+
         let mut num_negative_samples = 0;
         let mut num_too_long_samples = 0;
         let max_sample_time = self.time_unit.as_nanos(MAX_SAMPLE_TIME);
@@ -273,6 +277,7 @@ impl TimingDistributionMetric {
                     hist.accumulate(sample);
                 }
             }
+
             Metric::TimingDistribution(hist)
         });
 

@@ -20,6 +20,7 @@ import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.getContextWithMockedInfo
 import mozilla.telemetry.glean.getMockWebServer
 import mozilla.telemetry.glean.resetGlean
+import mozilla.telemetry.glean.delayMetricsPing
 import java.lang.NullPointerException
 import java.util.concurrent.TimeUnit
 import mozilla.telemetry.glean.testing.ErrorType
@@ -292,6 +293,7 @@ class EventMetricTypeTest {
         val server = getMockWebServer()
 
         val context = getContextWithMockedInfo()
+        delayMetricsPing(context)
         resetGlean(
             context,
             Glean.configuration.copy(
@@ -401,6 +403,7 @@ class EventMetricTypeTest {
     fun `overdue events are submitted in registered custom pings`() {
         val server = getMockWebServer()
         val context = getContextWithMockedInfo()
+        delayMetricsPing(context)
 
         resetGlean(
             context,
@@ -475,6 +478,7 @@ class EventMetricTypeTest {
 
         val server = getMockWebServer()
         val context = getContextWithMockedInfo()
+        delayMetricsPing(context)
 
         resetGlean(
             context,

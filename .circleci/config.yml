@@ -309,7 +309,7 @@ jobs:
     resource_class: "medium+"
     steps:
       - test-rust:
-          rust-version: "1.41.0"
+          rust-version: "1.43.0"
 
   Rust FFI header check:
     docker:
@@ -815,6 +815,24 @@ jobs:
           root: build/
           paths: docs/python
 
+  pypi-source-release:
+    docker:
+      - image: circleci/python:3.8.2
+    steps:
+      - install-rustup
+      - setup-rust-toolchain
+      - checkout
+      - run:
+          name: Setup default Python version
+          command: |
+            echo "export PATH=/opt/python/cp38-cp38/bin:$PATH" >> $BASH_ENV
+      - run:
+          name: Build Python extension
+          command: |
+            make python-setup
+            .venv3.8/bin/python3 setup.py sdist
+            .venv3.8/bin/python3 -m twine upload dist/*
+
   pypi-linux-release:
     docker:
       # The official docker image for building manylinux1 wheels
@@ -1134,6 +1152,10 @@ workflows:
   release:
     jobs:
       - Python 3_8 tests:
+          filters: *release-filters
+      - pypi-source-release:
+          requires:
+            - Python 3_8 tests
           filters: *release-filters
       - pypi-linux-release:
           requires:

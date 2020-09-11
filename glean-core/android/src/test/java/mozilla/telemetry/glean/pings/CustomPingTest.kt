@@ -15,6 +15,7 @@ import mozilla.telemetry.glean.resetGlean
 import mozilla.telemetry.glean.testing.GleanTestRule
 import mozilla.telemetry.glean.triggerWorkManager
 import mozilla.telemetry.glean.utils.tryGetLong
+import mozilla.telemetry.glean.delayMetricsPing
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -43,6 +44,7 @@ class CustomPingTest {
 
         val server = getMockWebServer()
 
+        delayMetricsPing(context)
         resetGlean(context, Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port
         ), clearStores = true, uploadEnabled = true)
@@ -67,6 +69,7 @@ class CustomPingTest {
     fun `multiple pings in one go`() {
         val server = getMockWebServer()
 
+        delayMetricsPing(context)
         resetGlean(context, Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port
         ), clearStores = true, uploadEnabled = true)

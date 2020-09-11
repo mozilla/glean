@@ -187,6 +187,11 @@ impl EventDatabase {
         timestamp: u64,
         extra: Option<HashMap<String, String>>,
     ) {
+        // If upload is disabled we don't want to record.
+        if !glean.is_upload_enabled() {
+            return;
+        }
+
         // Create RecordedEvent object, and its JSON form for serialization
         // on disk.
         let event = RecordedEvent {
@@ -357,6 +362,8 @@ impl EventDatabase {
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::tests::new_glean;
+    use crate::CommonMetricData;
 
     #[test]
     fn handle_truncated_events_on_disk() {
@@ -450,5 +457,41 @@ mod test {
             serde_json::from_str(&event_empty_json).unwrap()
         );
         assert_eq!(event_data, serde_json::from_str(&event_data_json).unwrap());
+    }
+
+    #[test]
+    fn doesnt_record_when_upload_is_disabled() {
+        let (mut glean, dir) = new_glean(None);
+        let db = EventDatabase::new(dir.path().to_str().unwrap()).unwrap();
+
+        let test_storage = "test-storage";
+        let test_category = "category";
+        let test_name = "name";
+        let test_timestamp = 2;
+        let test_meta = CommonMetricData::new(test_category, test_name, test_storage);
+        let event_data = RecordedEvent {
+            timestamp: test_timestamp,
+            category: test_category.to_string(),
+            name: test_name.to_string(),
+            extra: None,
+        };
+
+        // Upload is not yet disabled,
+        // so let's check that everything is getting recorded as expected.
+        db.record(&glean, &test_meta, 2, None);
+        {
+            let event_stores = db.event_stores.read().unwrap();
+            assert_eq!(&event_data, &event_stores.get(test_storage).unwrap()[0]);
+            assert_eq!(event_stores.get(test_storage).unwrap().len(), 1);
+        }
+
+        glean.set_upload_enabled(false);
+
+        // Now that upload is disabled, let's check nothing is recorded.
+        db.record(&glean, &test_meta, 2, None);
+        {
+            let event_stores = db.event_stores.read().unwrap();
+            assert_eq!(event_stores.get(test_storage).unwrap().len(), 1);
+        }
     }
 }

@@ -460,7 +460,7 @@ pub unsafe extern "C" fn glean_initialize_for_subprocess(cfg: *const FfiConfigur
         // 2. We're not holding on to it beyond this function
         //    and we copy out all data when needed.
         let glean_cfg = glean_core::Configuration::try_from(&*cfg)?;
-        let glean = Glean::new_for_subprocess(&glean_cfg)?;
+        let glean = Glean::new_for_subprocess(&glean_cfg, true)?;
         glean_core::setup_glean(glean)?;
         log::info!("Glean initialized for subprocess");
         Ok(true)

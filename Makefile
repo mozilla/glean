@@ -25,11 +25,11 @@ python-setup: $(GLEAN_PYENV)/bin/python3 ## Setup a Python virtual environment
 $(GLEAN_PYENV)/bin/python3:
 	python3 -m venv $(GLEAN_PYENV)
 	$(GLEAN_PYENV)/bin/pip install --upgrade pip
-	$(GLEAN_PYENV)/bin/pip install -r glean-core/python/requirements_dev.txt
+	$(GLEAN_PYENV)/bin/pip install --use-feature=2020-resolver -r glean-core/python/requirements_dev.txt
 	bash -c "if [ \"$(GLEAN_PYDEPS)\" == \"min\" ]; then \
 		$(GLEAN_PYENV)/bin/pip install requirements-builder; \
 		$(GLEAN_PYENV)/bin/requirements-builder --level=min glean-core/python/setup.py > min_requirements.txt; \
-		$(GLEAN_PYENV)/bin/pip install -r min_requirements.txt; \
+		$(GLEAN_PYENV)/bin/pip install --use-feature=2020-resolver -r min_requirements.txt; \
 	fi"
 
 # All builds
@@ -48,8 +48,8 @@ build-swift: ## Build all Swift code
 build-apk: build-kotlin ## Build an apk of the Glean sample app
 	./gradlew glean-sample-app:build
 
-build-python: python-setup build-rust ## Build the Python bindings
-	$(GLEAN_PYENV)/bin/python3 glean-core/python/setup.py install
+build-python: python-setup ## Build the Python bindings
+	$(GLEAN_PYENV)/bin/python3 glean-core/python/setup.py build install
 
 build-csharp: ## Build the C# bindings
 	dotnet build glean-core/csharp/csharp.sln

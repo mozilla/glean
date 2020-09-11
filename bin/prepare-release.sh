@@ -120,6 +120,14 @@ run $SED -i.bak -E \
     "${WORKSPACE_ROOT}/${FILE}"
 run rm "${WORKSPACE_ROOT}/${FILE}.bak"
 
+# Update the glean-python version
+
+FILE=glean-core/python/setup.py
+run $SED -i.bak -E \
+    -e "s/^version = \"[0-9a-z.-]+\"/version = \"${NEW_VERSION}\"/" \
+    "${WORKSPACE_ROOT}/${FILE}"
+run rm "${WORKSPACE_ROOT}/${FILE}.bak"
+
 ### Update Cargo.lock
 
 cargo update -p glean-core -p glean-ffi
