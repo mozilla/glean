@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v32.3.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v32.3.2...main)
+
+# v32.3.2 (2020-09-11)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v32.3.1...v32.3.2)
 
 * General
   * Track the size of the database file at startup ([#1141](https://github.com/mozilla/glean/pull/1141)).
