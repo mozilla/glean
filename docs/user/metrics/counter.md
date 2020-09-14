@@ -142,7 +142,7 @@ using static Mozilla.YourApplication.GleanMetrics.Controls;
 Assert.True(Controls.refreshPressed.TestHasValue());
 // Does the counter have the expected value?
 Assert.Equal(6, Controls.refreshPressed.TestGetValue());
-// Did the counter record an negative value?
+// Did the counter record a negative value?
 Assert.Equal(
     1, Controls.refreshPressed.TestGetNumRecordedErrors(ErrorType.InvalidValue)
 );

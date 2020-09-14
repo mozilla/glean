@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v32.3.2...main)
 
+* General
+  * Allow using quantity metric type outside of Gecko ([#1198](https://github.com/mozilla/glean/pull/1198))
+
 # v32.3.2 (2020-09-11)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v32.3.1...v32.3.2)
