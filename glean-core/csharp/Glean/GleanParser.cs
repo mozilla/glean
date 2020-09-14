@@ -18,7 +18,7 @@ namespace GleanTasks
         private const string DefaultVirtualEnvDir = ".venv";
 
         // The glean_parser pypi package version 
-        private const string GleanParserVersion = "1.28.3";
+        private const string GleanParserVersion = "1.28.4";
 
         // This script runs a given Python module as a "main" module, like
         // `python -m module`. However, it first checks that the installed
