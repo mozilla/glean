@@ -1,4 +1,4 @@
-personal_ws-1.1 en 190 utf-8
+personal_ws-1.1 en 194 utf-8
 AAR
 AARs
 ABI
@@ -18,6 +18,7 @@ DOM
 Datetime
 Datetimes
 Dependabot
+FOG
 Fenix
 GeckoView
 GitFlow
@@ -78,6 +79,7 @@ autodetected
 backend
 backport
 barcode
+bool
 boolean
 booleans
 brizental
@@ -94,6 +96,7 @@ codepoints
 commandline
 conda
 config
+configs
 coroutine
 csh
 dataset
