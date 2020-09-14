@@ -25,7 +25,7 @@
 
 set -e
 
-GLEAN_PARSER_VERSION=1.28.4
+GLEAN_PARSER_VERSION=1.28.5
 
 # CMDNAME is used in the usage text below.
 # shellcheck disable=SC2034
