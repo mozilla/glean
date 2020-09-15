@@ -85,7 +85,7 @@ elif [[ "$mode" == "list" ]]; then
                 # FIXME: Find more correct way to get line number
                 # (ideally from aspell). Now it can make some false positives,
                 # because it is just a grep
-                grep --with-filename --line-number --color=always "$error" "$fname"
+                grep --with-filename --line-number -o --color=always "$error" "$fname"
             done
             retval=1
         fi
