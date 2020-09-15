@@ -1,8 +1,8 @@
 # Error reporting
 
-The Glean SDK records the number of errors that occur when metrics are passed invalid data or are otherwise used incorrectly. 
-This information is reported back in special labeled counter metrics in the `glean.error` category. 
-Error metrics are included in the same pings as the metric that caused the error. 
+The Glean SDK records the number of errors that occur when metrics are passed invalid data or are otherwise used incorrectly.
+This information is reported back in special labeled counter metrics in the `glean.error` category.
+Error metrics are included in the same pings as the metric that caused the error.
 Additionally, error metrics are always sent in the [`metrics` ping](pings/metrics.md) ping.
 
 The following categories of errors are recorded:
@@ -21,7 +21,7 @@ MyMetrics.stringMetric.set("this_string_is_longer_than_the_limit_for_string_metr
 The following error metric counter would be incremented:
 
 ```Kotlin
-Glean.error.invalidValue["my_metrics.string_metric"].add(1)
+Glean.error.invalidOverflow["my_metrics.string_metric"].add(1)
 ```
 
 Resulting in the following keys in the ping:
@@ -30,7 +30,7 @@ Resulting in the following keys in the ping:
 {
   "metrics": {
     "labeled_counter": {
-      "glean.error.invalid_value": {
+      "glean.error.invalid_overflow": {
         "my_metrics.string_metric": 1
       }
     }
