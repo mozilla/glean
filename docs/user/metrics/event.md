@@ -1,6 +1,6 @@
 # Events
 
-Events allow recording of e.g. individual occurrences of user actions, say every time a view was open and from where. 
+Events allow recording of e.g. individual occurrences of user actions, say every time a view was open and from where.
 
 Each event contains the following data:
 
@@ -167,7 +167,7 @@ Assert.Equal(0, Views.loginOpened.TestGetNumRecordedErrors(ErrorType.InvalidValu
 
 ## Recorded errors
 
-* `invalid_overflow`: if any of the values in the `extras` object are greater than 50 bytes in length.  (Prior to Glean TODO, this recorded an `invalid_value`).
+* `invalid_overflow`: if any of the values in the `extras` object are greater than 50 bytes in length.  (Prior to Glean 31.5.0, this recorded an `invalid_value`).
  
 ## Reference
 
