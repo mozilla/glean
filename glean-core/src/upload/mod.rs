@@ -10,6 +10,7 @@
 //!   and either delete the corresponding ping from disk or re-enqueue it for sending.
 
 use std::collections::VecDeque;
+use std::convert::TryInto;
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
 use std::sync::{Arc, RwLock, RwLockWriteGuard};
@@ -346,6 +347,10 @@ impl PingUploadManager {
             let mut deleting = false;
 
             let total = cached_pings.pending_pings.len() as u64;
+            self.upload_metrics
+                .pending_pings
+                .add(glean, total.try_into().unwrap_or(0));
+
             if total > self.policy.max_pending_pings_count() {
                 log::warn!(
                     "More than {} pending pings in the directory, will delete {} old pings.",
@@ -1223,7 +1228,15 @@ mod test {
                 .deleted_pings_after_quota_hit
                 .test_get_value(&glean, "metrics")
                 .unwrap()
-        )
+        );
+        assert_eq!(
+            n as i32,
+            upload_manager
+                .upload_metrics
+                .pending_pings
+                .test_get_value(&glean, "metrics")
+                .unwrap()
+        );
     }
 
     #[test]
@@ -1287,7 +1300,15 @@ mod test {
                 .deleted_pings_after_quota_hit
                 .test_get_value(&glean, "metrics")
                 .unwrap()
-        )
+        );
+        assert_eq!(
+            n as i32,
+            upload_manager
+                .upload_metrics
+                .pending_pings
+                .test_get_value(&glean, "metrics")
+                .unwrap()
+        );
     }
 
     #[test]
@@ -1353,7 +1374,15 @@ mod test {
                 .deleted_pings_after_quota_hit
                 .test_get_value(&glean, "metrics")
                 .unwrap()
-        )
+        );
+        assert_eq!(
+            n as i32,
+            upload_manager
+                .upload_metrics
+                .pending_pings
+                .test_get_value(&glean, "metrics")
+                .unwrap()
+        );
     }
 
     #[test]
@@ -1419,7 +1448,15 @@ mod test {
                 .deleted_pings_after_quota_hit
                 .test_get_value(&glean, "metrics")
                 .unwrap()
-        )
+        );
+        assert_eq!(
+            n as i32,
+            upload_manager
+                .upload_metrics
+                .pending_pings
+                .test_get_value(&glean, "metrics")
+                .unwrap()
+        );
     }
 
     #[test]
