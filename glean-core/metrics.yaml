@@ -414,7 +414,7 @@ glean.upload:
     type: counter
     description: >
       The number of pings deleted after the quota
-      for the size of the pending pings directory is hit.
+      for the size of the pending pings directory or number of files is hit.
       Since quota is only calculated for the pending pings directory,
       and deletion request ping live in a different directory,
       deletion request pings are never deleted.
@@ -426,6 +426,24 @@ glean.upload:
       - technical
     notification_emails:
       - glean-team@mozilla.com
+    expires: never
+    no_lint:
+      - COMMON_PREFIX
+
+  pending_pings:
+    type: counter
+    description: >
+      The total number of pending pings at startup.
+      This does not include deletion-request pings.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1665041
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1665041#c23
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+      - jrediger@mozilla.com
     expires: never
     no_lint:
       - COMMON_PREFIX

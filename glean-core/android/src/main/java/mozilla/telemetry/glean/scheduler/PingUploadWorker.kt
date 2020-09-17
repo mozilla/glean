@@ -5,6 +5,7 @@
 package mozilla.telemetry.glean.scheduler
 
 import android.content.Context
+import android.os.SystemClock
 import androidx.annotation.VisibleForTesting
 import androidx.work.Constraints
 import androidx.work.ExistingWorkPolicy
@@ -51,6 +52,7 @@ internal inline fun <reified W : Worker> buildWorkRequest(tag: String): OneTimeW
 class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(context, params) {
     companion object {
         internal const val PING_WORKER_TAG = "mozac_service_glean_ping_upload_worker"
+        internal const val THROTTLED_BACKOFF_MS = 60_000L
 
         /**
          * Function to aid in properly enqueuing the worker in [WorkManager]
@@ -116,7 +118,7 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
                     // Process the upload response
                     LibGleanFFI.INSTANCE.glean_process_ping_upload_response(incomingTask, result)
                 }
-                PingUploadTask.Wait -> return Result.retry()
+                PingUploadTask.Wait -> SystemClock.sleep(THROTTLED_BACKOFF_MS)
                 PingUploadTask.Done -> return Result.success()
             }
         } while (true)
