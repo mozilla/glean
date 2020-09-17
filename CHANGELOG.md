@@ -10,6 +10,9 @@
     * Expiry dates that are more than 730 days (~2 years) in the future will produce a linter warning, `EXPIRATION_DATE_TOO_FAR`.
     * Allow using the Quantity metric type outside of Gecko.
     * New parser configs `custom_is_expired` and `custom_validate_expires` added. These are both functions that take the expires value of the metric and return a bool. (See `Metric.is_expired` and `Metric.validate_expires`). These will allow FOG to provide custom validation for its version-based `expires` values.
+  * Add a limit of 250 pending ping files. ([#1217](https://github.com/mozilla/glean/pull/1217)).
+* Android
+  * Don't retry the ping uploader when waiting, sleep instead. This avoids a never-ending increase of the backoff time ([#1217](https://github.com/mozilla/glean/pull/1217)).
 
 # v32.3.2 (2020-09-11)
 
