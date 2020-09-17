@@ -840,8 +840,8 @@ jobs:
           name: Build Python extension
           command: |
             make python-setup
-            .venv3.8/bin/python3 setup.py sdist
-            .venv3.8/bin/python3 -m twine upload dist/*
+            glean-core/python/.venv3.8/bin/python3 setup.py sdist
+            glean-core/python/.venv3.8/bin/python3 -m twine upload dist/*
 
   pypi-linux-release:
     docker:
