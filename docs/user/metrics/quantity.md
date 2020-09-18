@@ -1,22 +1,21 @@
 # Quantity
 
-Used to record a single non-negative integer value.
+Used to record a single non-negative integer value or 0.
 For example, the width of the display in pixels.
 
-> **Note**: Quantities are currently only allowed for GeckoView metrics (the `gecko_datapoint` parameter is present) and thus have only a Kotlin API.
+> **IMPORTANT** If you need to _count_ something (e.g. number of tabs open or number of times a button is pressed) prefer using the [Counter](./counter.md) metric type, which has a specific API for counting things and also takes care of resetting the count at the correct time.
 
 ## Configuration
 
 Say you're adding a new quantity for the width of the display in pixels. First you need to add an entry for the quantity to the `metrics.yaml` file:
 
 ```YAML
-gfx:
-  display_width:
+display:
+  width:
     type: quantity
     description: >
       The width of the display, in pixels.
     unit: pixels
-    gecko_datapoint: DISPLAY_W_PIXELS
     ...
 ```
 
@@ -24,30 +23,130 @@ Note that quantities have a required `unit` parameter, which is a free-form stri
 
 ## API
 
-```Kotlin
-import org.mozilla.yourApplication.GleanMetrics.Gfx
+{{#include ../../tab_header.md}}
 
-Gfx.displayWidth.set(width)
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Display
+
+Display.width.set(width)
 ```
 
 There are test APIs available too:
 
 ```Kotlin
-import org.mozilla.yourApplication.GleanMetrics.Gfx
+import org.mozilla.yourApplication.GleanMetrics.Display
 
 // Was anything recorded?
-assertTrue(Gfx.displayWidth.testHasValue())
+assertTrue(Display.width.testHasValue())
 // Does the quantity have the expected value?
-assertEquals(6, Gfx.displayWidth.testGetValue())
+assertEquals(6, Display.width.testGetValue())
 // Did it record an error due to a negative value?
-assertEquals(1, Gfx.displayWidth.testGetNumRecordedErrors(ErrorType.InvalidValue))
+assertEquals(1, Display.width.testGetNumRecordedErrors(ErrorType.InvalidValue))
 ```
+
+</div>
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Display;
+
+Display.INSTANCE.width.set(width);
+```
+
+There are test APIs available too:
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Display;
+
+// Was anything recorded?
+assertTrue(Display.INSTANCE.width.testHasValue());
+// Does the quantity have the expected value?
+assertEquals(6, Display.INSTANCE.width.testGetValue());
+// Did the quantity record a negative value?
+assertEquals(
+    1, Display.INSTANCE.width.testGetNumRecordedErrors(ErrorType.InvalidValue)
+);
+```
+
+</div>
+
+<div data-lang="Swift" class="tab">
+
+```Swift
+Display.width.set(width)
+```
+
+There are test APIs available too:
+
+```Swift
+@testable import Glean
+
+// Was anything recorded?
+XCTAssert(Display.width.testHasValue())
+// Does the quantity have the expected value?
+XCTAssertEqual(6, try Display.width.testGetValue())
+// Did the quantity record a negative value?
+XCTAssertEqual(1, Display.width.testGetNumRecordedErrors(.invalidValue))
+```
+
+</div>
+
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+metrics.display.width.set(width)
+```
+
+There are test APIs available too:
+
+```Python
+# Was anything recorded?
+assert metrics.display.width.test_has_value()
+# Does the quantity have the expected value?
+assert 6 == metrics.display.width.test_get_value()
+# Did the quantity record an negative value?
+from glean.testing import ErrorType
+assert 1 == metrics.display.width.test_get_num_recorded_errors(
+    ErrorType.INVALID_VALUE
+)
+```
+
+</div>
+
+<div data-lang="C#" class="tab">
+
+```C#
+using static Mozilla.YourApplication.GleanMetrics.Display;
+
+Display.width.Set(width);
+```
+
+There are test APIs available too:
+
+```C#
+using static Mozilla.YourApplication.GleanMetrics.Display;
+
+// Was anything recorded?
+Assert.True(Display.width.TestHasValue());
+// Does the counter have the expected value?
+Assert.Equal(6, Display.width.TestGetValue());
+// Did the counter record an negative value?
+Assert.Equal(
+    1, Display.width.TestGetNumRecordedErrors(ErrorType.InvalidValue)
+);
+```
+
+</div>
+
+{{#include ../../tab_footer.md}}
 
 ## Limits
 
-* Quantities must be non-negative integers.
-
-* Quantities are only available for metrics that come from Gecko.
+* Quantities must be non-negative integers or 0.
 
 ## Examples
 

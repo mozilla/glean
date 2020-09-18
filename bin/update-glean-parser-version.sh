@@ -69,3 +69,10 @@ run $SED -i.bak -E \
     -e "s/glean-parser = \"[0-9.]+\"/glean-parser = \"${NEW_VERSION}\"/" \
     "${WORKSPACE_ROOT}/${FILE}"
 run rm "${WORKSPACE_ROOT}/${FILE}.bak"
+
+# update the version in the Makefile
+FILE=Makefile
+run $SED -i.bak -E \
+    -e "s/glean_parser==[0-9.]+/glean_parser==${NEW_VERSION}/" \
+    "${WORKSPACE_ROOT}/${FILE}"
+run rm "${WORKSPACE_ROOT}/${FILE}.bak"

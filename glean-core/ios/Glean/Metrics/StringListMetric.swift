@@ -112,7 +112,7 @@ public class StringListMetricType {
         }
 
         let cstr = glean_string_list_test_get_value_as_json_string(self.handle, pingName)!
-        let json = String(freeingRustString: cstr)
+        let json = String(freeingGleanString: cstr)
         let data = json.data(using: .utf8)!
         if let content = try JSONSerialization.jsonObject(with: data, options: []) as? [String] {
             return content

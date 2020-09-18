@@ -1,7 +1,12 @@
 # Events
 
-Events allow recording of e.g. individual occurrences of user actions, say every time a view was open and from where. Each time you record an event, it records a
-timestamp, the event's name and a set of custom values.
+Events allow recording of e.g. individual occurrences of user actions, say every time a view was open and from where.
+
+Each event contains the following data:
+
+- A timestamp, in milliseconds. The first event in any ping always has a value of `0`, and subsequent event timestamps are relative to it.
+- The name of the event.
+- A set of key-value pairs, where the keys are predefined in the `extra_keys` metric parameter, and the values are strings.
 
 ## Configuration
 
@@ -162,7 +167,7 @@ Assert.Equal(0, Views.loginOpened.TestGetNumRecordedErrors(ErrorType.InvalidValu
 
 ## Recorded errors
 
-* `invalid_overflow`: if any of the values in the `extras` object are greater than 50 bytes in length.  (Prior to Glean TODO, this recorded an `invalid_value`).
+* `invalid_overflow`: if any of the values in the `extras` object are greater than 50 bytes in length.  (Prior to Glean 31.5.0, this recorded an `invalid_value`).
  
 ## Reference
 

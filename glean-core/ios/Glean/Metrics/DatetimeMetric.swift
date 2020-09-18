@@ -121,7 +121,7 @@ public class DatetimeMetricType {
         }
 
         return String(
-            freeingRustString: glean_datetime_test_get_value_as_string(
+            freeingGleanString: glean_datetime_test_get_value_as_string(
                 self.handle,
                 pingName
             )

@@ -128,7 +128,7 @@ class QuantityMetricTypeTest {
     }
 
     @Test
-    fun `negative values are not counted`() {
+    fun `negative values are not recorded`() {
         // Define a 'quantityMetric' quantity metric, which will be stored in "store1"
         val quantityMetric = QuantityMetricType(
             disabled = false,
@@ -139,7 +139,7 @@ class QuantityMetricTypeTest {
         )
 
         quantityMetric.set(-10L)
-        // Check that count was NOT incremented.
+        // Check that quantity was NOT recorded
         assertFalse(quantityMetric.testHasValue("store1"))
 
         // Make sure that the errors have been recorded
