@@ -98,7 +98,7 @@ public class StringMetricType {
             throw "Missing value"
         }
 
-        return String(freeingRustString: glean_string_test_get_value(self.handle, pingName))
+        return String(freeingGleanString: glean_string_test_get_value(self.handle, pingName))
     }
 
     /// Returns the number of errors recorded for the given metric.

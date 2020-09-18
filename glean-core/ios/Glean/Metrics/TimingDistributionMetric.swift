@@ -174,7 +174,7 @@ public class TimingDistributionMetricType {
         }
 
         let json = String(
-            freeingRustString: glean_timing_distribution_test_get_value_as_json_string(
+            freeingGleanString: glean_timing_distribution_test_get_value_as_json_string(
                 self.handle,
                 pingName
             )

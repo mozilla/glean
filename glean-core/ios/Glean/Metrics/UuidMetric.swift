@@ -97,7 +97,7 @@ public class UuidMetricType {
             throw "Missing value"
         }
 
-        let uuid = String(freeingRustString: glean_uuid_test_get_value(self.handle, pingName))
+        let uuid = String(freeingGleanString: glean_uuid_test_get_value(self.handle, pingName))
 
         return UUID(uuidString: uuid)!
     }

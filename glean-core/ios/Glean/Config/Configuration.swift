@@ -28,11 +28,4 @@ public struct Configuration {
         self.maxEvents = maxEvents
         self.channel = channel
     }
-
-    /// Returns the current Glean version as a `String`
-    ///
-    /// - returns: The `String` representation of the version
-    static func getGleanVersion() -> String {
-        return "\(GleanVersionNumber)"
-    }
 }
