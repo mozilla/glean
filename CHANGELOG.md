@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v32.3.2...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v32.4.0...main)
+
+# v32.4.0 (2020-09-18)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v32.3.2...v32.4.0)
 
 * General
   * Allow using quantity metric type outside of Gecko ([#1198](https://github.com/mozilla/glean/pull/1198))
