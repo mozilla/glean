@@ -2,6 +2,10 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v32.4.0...main)
 
+* Android
+  * **Breaking change:** Updated to the Android Gradle Plugin v4.0.1 and Gradle 6.5.1. Projects using older versions of these components will need to update in order to use newer versions of the Glean SDK.
+
+
 # v32.4.0 (2020-09-18)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v32.3.2...v32.4.0)
