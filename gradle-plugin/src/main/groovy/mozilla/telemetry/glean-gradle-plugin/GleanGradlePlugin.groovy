@@ -109,7 +109,7 @@ except:
     /*
      * Get the list of metrics.yaml and pings.yaml files we should use.
      */
-    def getYamlFiles(Project project) {
+    static def getYamlFiles(Project project) {
         if (project.ext.has("gleanYamlFiles")) {
             return project.ext.gleanYamlFiles
         } else {
@@ -131,7 +131,7 @@ except:
             // depending on the variant type: the generated API definitions don't need to be
             // different due to that.
             TaskProvider buildConfigProvider = variant.getGenerateBuildConfigProvider()
-            def originalPackageName = buildConfigProvider.get().getBuildConfigPackageName()
+            def originalPackageName = buildConfigProvider.get().getBuildConfigPackageName().get()
 
             def fullNamespace = "${originalPackageName}.GleanMetrics"
             def generateKotlinAPI = project.task("${TASK_NAME_PREFIX}SourceFor${variant.name.capitalize()}", type: Exec) {
@@ -458,7 +458,7 @@ except:
     void apply(Project project) {
         isOffline = project.gradle.startParameter.offline
 
-        project.ext.glean_version = "32.4.0"
+        project.ext.glean_version = "33.0.0"
 
         // Print the required glean_parser version to the console. This is
         // offline builds, and is mentioned in the documentation for offline
