@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.0.0...main)
 
+* Android
+  * Update the Kotlin Gradle Plugin to version 1.4.10.
+
 # v33.0.0 (2020-09-22)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v32.4.0...v33.0.0)
