@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
 * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-/* This file is based on the tests in the Glean android-components implentation.
+/* This file is based on the tests in the Glean android-components implementation.
  *
  * Care should be taken to not reorder elements in this file so it will be easier
  * to track changes in Glean android-components.
@@ -450,12 +450,12 @@ class EventMetricTypeTest {
         // Trigger worker task to upload the pings in the background
         triggerWorkManager(context)
 
-        var request = server.takeRequest(20L, TimeUnit.SECONDS)
-        var docType = request.path.split("/")[3]
+        val request = server.takeRequest(20L, TimeUnit.SECONDS)
+        val docType = request.path.split("/")[3]
         assertEquals(pingName, docType)
 
-        var pingJsonData = request.getPlainBody()
-        var pingJson = JSONObject(pingJsonData)
+        val pingJsonData = request.getPlainBody()
+        val pingJson = JSONObject(pingJsonData)
         checkPingSchema(pingJson)
         assertNotNull(pingJson.opt("events"))
 
@@ -528,10 +528,10 @@ class EventMetricTypeTest {
         // We can't properly test the absence of data,
         // but we can try to receive one and that causes an exception if there is none.
         try {
-            var request = server.takeRequest(20L, TimeUnit.SECONDS)
-            var docType = request.path.split("/")[3]
+            val request = server.takeRequest(20L, TimeUnit.SECONDS)
+            val docType = request.path.split("/")[3]
             assertTrue("Didn't expect a ping, still got one with document type $docType", false)
-        } catch (e: IllegalStateException) {
+        } catch (e: NullPointerException) {
             assertTrue("No ping received.", true)
         }
 
@@ -539,10 +539,10 @@ class EventMetricTypeTest {
         // No events should be left, thus we don't receive it.
         ping.submit()
         try {
-            var request = server.takeRequest(20L, TimeUnit.SECONDS)
-            var docType = request.path.split("/")[3]
+            val request = server.takeRequest(20L, TimeUnit.SECONDS)
+            val docType = request.path.split("/")[3]
             assertTrue("Didn't expect a ping, still got one with document type $docType", false)
-        } catch (e: IllegalStateException) {
+        } catch (e: NullPointerException) {
             assertTrue("No ping received.", true)
         }
     }
