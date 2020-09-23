@@ -7,6 +7,12 @@ Modern Gradle supports [composite builds](https://docs.gradle.org/current/usergu
 1. publish library snapshot to the local Maven repository
 1. consume library snapshot in application
 
+> **Note**: this substitution-based approach will not work for testing updates to the Glean Gradle Plugin.
+> For that to work, the library and the plugin need to be published to a local maven and manually imported
+> in the consuming projects.
+> Please refer to [Using locally-published Glean in Fenix](./locally-published-components-in-fenix.md) for
+> how to do that.
+
 ## Preparation
 
 Clone the Glean SDK and android-components repositories:
