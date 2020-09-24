@@ -1,6 +1,6 @@
 # Using locally-published Glean in Fenix
 
-> Note: This is a bit tedious, and you might like to try the substitution-based > approach documented in
+> Note: This is a bit tedious, and you might like to try the substitution-based approach documented in
 > [Working on unreleased Glean code in android-components](./development-with-android-components.md).
 > That approach is still fairly new, and the local-publishing approach in this document is necessary if it fails.
 

@@ -13,6 +13,7 @@ CODEOWNERS
 Cartfile
 CircleCI
 Ciufo
+deterministically
 DNS
 DOM
 Datetime

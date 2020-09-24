@@ -1,6 +1,16 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v33.0.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v33.0.1...main)
+
+# v33.0.1 (2020-09-24)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v33.0.0...v33.0.1)
+
+* General
+  * Update `glean_parser` to 1.28.6
+    * BUGFIX: Ensure Kotlin arguments are deterministically ordered
+* Android
+  * Update the Kotlin Gradle Plugin to version 1.4.10.
 
 # v33.0.0 (2020-09-22)
 
