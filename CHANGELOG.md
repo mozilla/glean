@@ -2,6 +2,10 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v32.4.0...main)
 
+* General
+  * Update `glean_parser` to 1.28.6
+    * BUGFIX: Ensure Kotlin arguments are deterministically ordered
+
 # v32.4.0 (2020-09-18)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v32.3.2...v32.4.0)
