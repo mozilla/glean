@@ -8,7 +8,7 @@ FROM ubuntu:bionic-20180821
 
 MAINTAINER Jan-Erik Rediger "janerik@mozilla.com"
 
-RUN echo "trigger rebuild"
+RUN echo "trigger rebuild."
 
 # Add worker user
 
