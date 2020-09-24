@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.0.0...main)
 
+* General
+  * Update `glean_parser` to 1.28.6
+    * BUGFIX: Ensure Kotlin arguments are deterministically ordered
 * Android
   * Update the Kotlin Gradle Plugin to version 1.4.10.
 
