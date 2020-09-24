@@ -224,6 +224,9 @@ afterEvaluate {
 
         tasks["generate${productFlavor}${buildType}Assets"].dependsOn(tasks["cargoBuild"])
 
+        // Don't merge the jni lib folders until after the Rust libraries have been built
+        tasks["merge${productFlavor}${buildType}JniLibFolders"].dependsOn(tasks["cargoBuild"])
+
         // For unit tests.
         tasks["process${productFlavor}${buildType}UnitTestJavaRes"].dependsOn(tasks["cargoBuild"])
     }
