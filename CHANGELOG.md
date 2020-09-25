@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.0.1...main)
 
+* Android
+  * Fixed the building of `.aar` releases on Android so they include the Rust shared objects.
+
 # v33.0.1 (2020-09-24)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.0.0...v33.0.1)
