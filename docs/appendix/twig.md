@@ -33,3 +33,4 @@ They could be release notes, documentation, hopes, dreams, or whatever: so long 
 * 2020-07-24: [Automated end-to-end tests for Glean](https://blog.mozilla.org/data/2020/07/24/this-week-in-glean-automated-end-to-end-tests-for-glean/)
 * 2020-08-06: [Experimental integration Glean with Unity applications](https://blog.mozilla.org/data/2020/08/06/experimental-integration-glean-with-unity-applications/)
 * 2020-09-01: [Leveraging Rust to build cross-platform mobile libraries](https://blog.mozilla.org/data/2020/09/01/twig-leveraging-rust/)
+* 2020-09-25: [glean-core to Wasm experiment](https://blog.mozilla.org/data/2020/09/25/this-week-in-glean-glean-core-to-wasm-experiment/)
