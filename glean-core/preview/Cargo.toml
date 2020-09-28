@@ -23,7 +23,7 @@ maintenance = { status = "actively-developed" }
 
 [dependencies.glean-core]
 path = ".."
-version = "33.0.3"
+version = "33.0.4"
 
 [dependencies]
 once_cell = "1.2.0"

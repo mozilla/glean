@@ -1,6 +1,20 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v33.0.3...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v33.0.4...main)
+
+# v33.0.4 (2020-09-28)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v33.0.3...v33.0.4)
+
+Note: Previous 33.0.z releases were broken. This release now includes all changes from 33.0.0 to 33.0.3.
+
+* General
+  * Update `glean_parser` to 1.28.6
+    * BUGFIX: Ensure Kotlin arguments are deterministically ordered
+* Android
+  * **Breaking change:** Updated to the Android Gradle Plugin v4.0.1 and Gradle 6.5.1. Projects using older versions of these components will need to update in order to use newer versions of the Glean SDK.
+  * Update the Kotlin Gradle Plugin to version 1.4.10.
+  * Fixed the building of `.aar` releases on Android so they include the Rust shared objects.
 
 # v33.0.3 (2020-09-25)
 
