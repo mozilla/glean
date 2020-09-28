@@ -1,6 +1,13 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v33.0.2...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v33.0.3...main)
+
+# v33.0.3 (2020-09-25)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v33.0.2...v33.0.3)
+
+* General
+  * v33.0.2 was tagged incorrectly. This release is just to correct that mistake.
 
 # v33.0.2 (2020-09-25)
 
