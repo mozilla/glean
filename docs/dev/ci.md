@@ -78,7 +78,7 @@ On release the full TaskCluster suite takes up to 30 minutes to run.
 4. Find the "Decision task" and click "Details"
 5. From the list of tasks pick the one you want to look at and follow the "View task in Taskcluster" link.
 
-## Special keywords
+## Special behavior
 
 ### Documentation-only changes
 
@@ -102,6 +102,23 @@ To skip tasks on TaskCluster add the following to the title of your pull request
 ```
 
 This should only be used for metadata files, such as those in `.github`, `LICENSE` or `CODE_OF_CONDUCT.md`.
+
+### Release-like Android builds
+
+Release builds are done on [TaskCluster].
+As it builds for multiple platforms this task is quite long and does not run on pull requests by default.
+
+It is possible trigger the task on pull requests.
+Add the following literal string to the pull request **title**:
+
+```
+[ci full]
+```
+
+If added after initially opening the pull request, you need to close, then re-open the pull request to trigger a new build.
+
+The `Decision Task` will spawn `module-build-glean` and `module-build-glean-gradle-plugin` tasks.
+When they finish you will find the generated files under `Artifacts` on TaskCluster.
 
 [CircleCI]: https://circleci.com
 [TaskCluster]: https://taskcluster.net/
