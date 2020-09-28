@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v33.0.3...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v33.0.4...main)
+
+# v33.0.4 (2020-09-28)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v33.0.3...v33.0.4)
 
 Note: Previous 33.0.z releases were broken. This release now includes all changes from 33.0.0 to 33.0.3.
 
