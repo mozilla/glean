@@ -160,11 +160,11 @@ function buildSampleData (dataOption, customData, lower, upper) {
  * @param {Object} props The properties related to the given histogram, keys differ based in the kind
  * @param {String} dataOption The chosen way to build data, possible values are "normally-distributed", "log-normally-distributed", "uniformly-distributed" or "custom"
  * @param {String} customData In case `dataOption` is "custom", this should contain a String containing a JSON array of numbers
- * @param {function} transformation Option function to be applied to generated values
+ * @param {function} transformation Optional function to be applied to generated values
  *
  * @returns {Object} An object containing the bucket and values of a histogram
  */
-function buildDataPreComputed (kind, props, dataOption, customData, transformation) {
+function buildDataPreComputed (kind, props, dataOption, customData, transformation = v => v) {
     const { lowerBound, upperBound, bucketCount } = props;
     const buckets = kind == "exponential"
         ? exponentialRange(lowerBound, upperBound, bucketCount)
@@ -173,7 +173,7 @@ function buildDataPreComputed (kind, props, dataOption, customData, transformati
     const lowerBucket = buckets[0];
     const upperBucket = buckets[buckets.length - 1];
     const values = buildSampleData(dataOption, customData, lowerBucket, upperBucket)
-        .map(v => transformation && transformation(v));
+        .map(v => transformation(v));
 
     const data = accumulateValuesIntoBucketsPreComputed(buckets, values)
     return {
@@ -190,14 +190,14 @@ function buildDataPreComputed (kind, props, dataOption, customData, transformati
  * @param {Object} props The properties related to the given histogram, keys differ based in the kind
  * @param {String} dataOption The chosen way to build data, possible values are "normally-distributed", "log-normally-distributed", "uniformly-distributed" or "custom"
  * @param {String} customData In case `dataOption` is "custom", this should contain a String containing a JSON array of numbers
- * @param {function} transformation Option function to be applied to generated values
+ * @param {function} transformation Optional function to be applied to generated values
  *
  * @returns {Object} An object containing the bucket and values of a histogram
  */
-function buildDataFunctional(props, dataOption, customData, transformation) {
+function buildDataFunctional(props, dataOption, customData, transformation = v => v) {
     const { logBase, bucketsPerMagnitude, maximumValue } = props;
     const values = buildSampleData(dataOption, customData)
-        .map(v => transformation && transformation(v));
+        .map(v => transformation(v));
     const acc = accumulateValuesIntoBucketsFunctional(logBase, bucketsPerMagnitude, maximumValue, values);
     const data = Object.values(acc)
     return {
