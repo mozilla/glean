@@ -29,7 +29,7 @@ and how to do send your own custom pings.
 
 This chapter lists all metrics collected by the Glean SDK itself.
 
-### [Developing the Glean SDK](dev/index.md)
+### [Developing the Glean SDK](dev/testing.md)
 
 This chapter describes how to develop the Glean SDK and its various implementations.
 This is relevant if you plan to contribute to the Glean SDK code base.
