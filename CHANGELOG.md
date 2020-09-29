@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.0.4...main)
 
+* General
+  * BUGFIX: Transform ping directory size from bytes to kilobytes before accumulating to `glean.upload.pending_pings_directory_size` ([#1236](https://github.com/mozilla/glean/pull/1236)).
+
 # v33.0.4 (2020-09-28)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.0.3...v33.0.4)
