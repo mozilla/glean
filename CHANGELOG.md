@@ -2,9 +2,6 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.0.4...main)
 
-* General
-  * BUGFIX: Transform ping directory size from bytes to kilobytes before accumulating to `glean.upload.pending_pings_directory_size` ([#1236](https://github.com/mozilla/glean/pull/1236)).
-
 # v33.0.4 (2020-09-28)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.0.3...v33.0.4)
@@ -50,6 +47,14 @@ Note: Previous 33.0.z releases were broken. This release now includes all change
 * Android
   * **Breaking change:** Updated to the Android Gradle Plugin v4.0.1 and Gradle 6.5.1. Projects using older versions of these components will need to update in order to use newer versions of the Glean SDK.
 
+# v32.4.1 (2020-10-01)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v32.4.0...v32.4.1)
+
+* General
+  * Update `glean_parser` to 1.28.6
+    * BUGFIX: Ensure Kotlin arguments are deterministically ordered
+  * BUGFIX: Transform ping directory size from bytes to kilobytes before accumulating to `glean.upload.pending_pings_directory_size` ([#1236](https://github.com/mozilla/glean/pull/1236)).
 
 # v32.4.0 (2020-09-18)
 
