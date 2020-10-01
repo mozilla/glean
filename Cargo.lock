@@ -194,11 +194,11 @@ dependencies = [
 
 [[package]]
 name = "crossbeam-channel"
-version = "0.4.3"
+version = "0.4.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "cfg-if 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)",
  "crossbeam-utils 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "maybe-uninit 2.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -728,7 +728,7 @@ name = "rayon-core"
 version = "1.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "crossbeam-channel 0.4.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "crossbeam-channel 0.4.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "crossbeam-deque 0.7.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "crossbeam-utils 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "lazy_static 1.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1109,7 +1109,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum crc32fast 1.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "ba125de2af0df55319f41944744ad91c71113bf74a4646efff39afe1f6842db1"
 "checksum criterion 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)" = "70daa7ceec6cf143990669a04c7df13391d55fb27bd4079d252fca774ba244d8"
 "checksum criterion-plot 0.4.3 (registry+https://github.com/rust-lang/crates.io-index)" = "e022feadec601fba1649cfa83586381a4ad31c6bf3a9ab7d408118b05dd9889d"
-"checksum crossbeam-channel 0.4.3 (registry+https://github.com/rust-lang/crates.io-index)" = "09ee0cc8804d5393478d743b035099520087a5186f3b93fa58cec08fa62407b6"
+"checksum crossbeam-channel 0.4.4 (registry+https://github.com/rust-lang/crates.io-index)" = "b153fe7cbef478c567df0f972e02e6d736db11affe43dfc9c56a9374d1adfb87"
 "checksum crossbeam-deque 0.7.3 (registry+https://github.com/rust-lang/crates.io-index)" = "9f02af974daeee82218205558e51ec8768b48cf524bd01d550abe5573a608285"
 "checksum crossbeam-epoch 0.8.2 (registry+https://github.com/rust-lang/crates.io-index)" = "058ed274caafc1f60c4997b5fc07bf7dc7cca454af7c6e81edffe5f33f70dace"
 "checksum crossbeam-utils 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)" = "c3c7c73a2d1e9fc0886a08b93e98eb643461230d5f1925e4036204d5f2e261a8"
