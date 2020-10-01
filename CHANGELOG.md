@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v32.4.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v32.4.1...main)
+
+# v32.4.1 (2020-10-01)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v32.4.0...v32.4.1)
 
 * General
   * Update `glean_parser` to 1.28.6
