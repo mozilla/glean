@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.0.4...main)
 
+* Android
+  * Update the JNA dependency from 5.2.0 to 5.6.0
+
 # v33.0.4 (2020-09-28)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.0.3...v33.0.4)
