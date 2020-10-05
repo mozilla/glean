@@ -108,6 +108,7 @@ yamllint: ## Run yamllint to lint YAML files
 
 shellcheck: ## Run shellcheck against important shell scripts
 	shellcheck glean-core/ios/sdk_generator.sh
+	shellcheck bin/check-artifact.sh
 
 pythonlint: python-setup ## Run flake8 and black to lint Python code
 	$(GLEAN_PYENV)/bin/python3 -m flake8 glean-core/python/glean glean-core/python/tests
