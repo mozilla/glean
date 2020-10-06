@@ -22,3 +22,19 @@ Within the `glean_data` directory are the following contents:
 
 - `tmp`: Pings are written here and then moved to the `pending_pings` directory when finished to make sure that partially-written pings to not get queued for sending.  
   (The standard system temporary directory is not used for this because it is not guaranteed to be on the same volume as the `glean_data` directory on Android).
+
+# File format
+
+For persistence assembled ping payloads are stored as files on disk in the above directories.
+At initialization the Glean SDK reads any pending ping files and queues them for eventual upload.
+The files are not meant to be read by any outside consumers.
+Its format may change.
+The Glean SDK will be able to read previous formats if necessary.
+
+The current format has the following newline-delimited lines:
+
+```
+<ping submission path>\n
+<json-encoded ping payload>\n
+<json-encoded metadata>\n
+```
