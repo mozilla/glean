@@ -753,7 +753,7 @@ jobs:
 
   Python 3_9 tests:
     docker:
-      - image: circleci/python:3.9.0rc1
+      - image: circleci/python:3.9.0
     steps:
       - checkout
       - test-python
