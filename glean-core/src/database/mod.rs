@@ -10,13 +10,42 @@ use std::path::Path;
 use std::str;
 use std::sync::RwLock;
 
-use rkv::{Rkv, SingleStore, StoreOptions};
+use rkv::StoreOptions;
+
+// Select the LMDB-powered storage backend when the feature is not activated.
+#[cfg(not(feature = "rkv-safe-mode"))]
+mod backend {
+    use std::path::Path;
+
+    pub type Rkv = rkv::Rkv<rkv::backend::LmdbEnvironment>;
+    pub type SingleStore = rkv::SingleStore<rkv::backend::LmdbDatabase>;
+    pub type Writer<'t> = rkv::Writer<rkv::backend::LmdbRwTransaction<'t>>;
+
+    pub fn rkv_new(path: &Path) -> Result<Rkv, rkv::StoreError> {
+        Rkv::new::<rkv::backend::Lmdb>(path)
+    }
+}
+
+// Select the "safe mode" storage backend when the feature is activated.
+#[cfg(feature = "rkv-safe-mode")]
+mod backend {
+    use std::path::Path;
+
+    pub type Rkv = rkv::Rkv<rkv::backend::SafeModeEnvironment>;
+    pub type SingleStore = rkv::SingleStore<rkv::backend::SafeModeDatabase>;
+    pub type Writer<'t> = rkv::Writer<rkv::backend::SafeModeRwTransaction<'t>>;
+
+    pub fn rkv_new(path: &Path) -> Result<Rkv, rkv::StoreError> {
+        Rkv::new::<rkv::backend::SafeMode>(path)
+    }
+}
 
 use crate::metrics::Metric;
 use crate::CommonMetricData;
 use crate::Glean;
 use crate::Lifetime;
 use crate::Result;
+use backend::*;
 
 pub struct Database {
     /// Handle to the database environment.
@@ -81,7 +110,13 @@ impl Database {
         let path = Path::new(data_path).join("db");
         log::debug!("Database path: {:?}", path.display());
 
+        // FIXME(bug 1670634): This is probably more knowledge
+        // than we should have about the database internals.
+        // We could instead iterate over the directory and sum up the file sizes.
+        #[cfg(not(feature = "rkv-safe-mode"))]
         let file_size = file_size(&path.join("data.mdb"));
+        #[cfg(feature = "rkv-safe-mode")]
+        let file_size = file_size(&path.join("data.safe.bin"));
 
         let rkv = Self::open_rkv(&path)?;
         let user_store = rkv.open_single(Lifetime::User.as_str(), StoreOptions::create())?;
@@ -125,7 +160,7 @@ impl Database {
     fn open_rkv(path: &Path) -> Result<Rkv> {
         fs::create_dir_all(&path)?;
 
-        let rkv = Rkv::new(&path)?;
+        let rkv = rkv_new(&path)?;
         log::info!("Database initialized");
         Ok(rkv)
     }
@@ -168,7 +203,7 @@ impl Database {
                     Ok(metric_id) => metric_id.to_string(),
                     _ => continue,
                 };
-                let metric: Metric = match value.expect("Value missing in iteration") {
+                let metric: Metric = match value {
                     rkv::Value::Blob(blob) => unwrap_or!(bincode::deserialize(blob), continue),
                     _ => continue,
                 };
@@ -241,7 +276,7 @@ impl Database {
             }
 
             let metric_id = &metric_id[len..];
-            let metric: Metric = match value.expect("Value missing in iteration") {
+            let metric: Metric = match value {
                 rkv::Value::Blob(blob) => unwrap_or!(bincode::deserialize(blob), continue),
                 _ => continue,
             };
@@ -297,7 +332,7 @@ impl Database {
     /// * This function will **not** panic on database errors.
     fn write_with_store<F>(&self, store_name: Lifetime, mut transaction_fn: F) -> Result<()>
     where
-        F: FnMut(rkv::Writer, &SingleStore) -> Result<()>,
+        F: FnMut(Writer, &SingleStore) -> Result<()>,
     {
         let writer = self.rkv.write().unwrap();
         let store = self.get_store(store_name);
