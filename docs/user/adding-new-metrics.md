@@ -104,6 +104,8 @@ This is especially useful when metrics need to be tightly related to one another
 
 ### What should this new metric be called?
 
+Metric names have a maximum length of 30 characters.
+
 #### Reuse names from other applications
 
 There's a lot of value using the same name for analogous metrics collected across different products. For example, BigQuery makes it simple to join columns with the same name across multiple tables. Therefore, we encourage you to investigate if a similar metric is already being collected by another product. If it is, there may be an opportunity for code reuse across these products, and if all the projects are using the Glean SDK, it's easy for libraries to send their own metrics. If sharing the code doesn't make sense, at a minimum we recommend using the same metric name for similar actions and concepts whenever possible.
@@ -173,12 +175,11 @@ toolbar:
 
   double_click:
     ...
-
-category2.subcategory:  # Categories can contain subcategories using `.`
-  metric:
-    ...
-
 ```
+
+Categories can have `.` characters to provide extra structure, for example `category.subcategory`, as long as the total length doesn't exceed 40 characters.
+
+Metric names have a maximum length of 30 characters.
 
 The details of the metric parameters are described in [metric parameters](metric-parameters.md).
 
