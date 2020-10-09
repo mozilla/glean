@@ -51,17 +51,16 @@ The Glean SDK build generates code from `pings.yaml` in a `Pings` object, which 
 
 <div data-lang="Kotlin" class="tab">
 
-In Kotlin, this object must be registered with the Glean SDK from your startup code (such as in your application's `onCreate` method or a function called from that method).
+In Kotlin, this object must be registered with the Glean SDK from your startup code before calling `Glean.initialize`
+(such as in your application's `onCreate` method or a function called from that method).
 
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.Pings
 
-...
-
 override fun onCreate() {
-    ...
     Glean.registerPings(Pings)
-    ...
+
+    Glean.initialize(applicationContext, uploadEnabled = true)
 }
 ```
 
@@ -69,7 +68,7 @@ override fun onCreate() {
 
 <div data-lang="Swift" class="tab">
 
-In Swift, this object must be registered with the Glean SDK from your startup code
+In Swift, this object must be registered with the Glean SDK from your startup code before calling `Glean.shared.initialize`
 (such as in your application's `UIApplicationDelegate` [`application(_:didFinishLaunchingWithOptions:)`](https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622921-application) method or a function called from that method).
 
 ```swift
@@ -77,11 +76,11 @@ import Glean
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-    // ...
-    Glean.shared.registerPings(GleanMetrics.Pings)
-    // ...
-}
+    func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        Glean.shared.registerPings(GleanMetrics.Pings)
+
+        Glean.shared.initialize(uploadEnabled = true)
+    }
 }
 ```
 
@@ -91,12 +90,18 @@ func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplicati
 
 For Python, the `pings.yaml` file must be available and loaded at runtime.
 
-If your project is a script (i.e. just Python files in a directory), you can load the `pings.yaml` using:
+If your project is a script (i.e. just Python files in a directory), you can load the `pings.yaml` before calling `Glean.initialize` using:
 
-```
+```python
 from glean import load_pings
 
 pings = load_pings("pings.yaml")
+
+Glean.initialize(
+    application_id="my-app-id",
+    application_version="0.1.0",
+    upload_enabled=True,
+)
 ```
 
 If your project is a distributable Python package, you need to include the `pings.yaml` file using [one of the myriad ways to include data in a Python package](https://setuptools.readthedocs.io/en/latest/setuptools.html#including-data-files) and then use [`pkg_resources.resource_filename()`](https://setuptools.readthedocs.io/en/latest/pkg_resources.html#resource-extraction) to get the filename at runtime.

@@ -1,4 +1,4 @@
-personal_ws-1.1 en 195 utf-8
+personal_ws-1.1 en 197 utf-8
 AAR
 AARs
 ABI
@@ -13,7 +13,6 @@ CODEOWNERS
 Cartfile
 CircleCI
 Ciufo
-deterministically
 DNS
 DOM
 Datetime
@@ -68,6 +67,7 @@ UTF
 UUID
 UUIDs
 Underflowing
+Wasm
 WebRender
 Xcode
 YAML
@@ -104,6 +104,7 @@ csh
 dataset
 datetime
 destructor
+deterministically
 dev
 dexter
 distributable
@@ -191,7 +192,6 @@ und
 unhandled
 uploader
 vendored
-Wasm
 webpages
 xcpretty
 yaml
