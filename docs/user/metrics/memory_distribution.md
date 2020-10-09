@@ -29,6 +29,8 @@ memory:
 
 Now you can use the memory distribution from the application's code.
 
+> **Note** The data _provided_ to the `accumulate` method, is in the configured memory unit. The data _recorded_, on the other hand, is always in **bytes**.
+
 For example, to measure the distribution of heap allocations:
 
 {{#include ../../tab_header.md}}
