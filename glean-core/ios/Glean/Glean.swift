@@ -158,7 +158,7 @@ public class Glean {
             // 1. Pings were submitted through Glean and it is ready to upload those pings;
             // 2. Upload is disabled, to upload a possible deletion-request ping.
             if pingSubmitted || !uploadEnabled {
-                HttpPingUploader(configuration: configuration).process()
+                HttpPingUploader.launch(configuration: configuration)
             }
 
             // Check for overdue metrics pings
@@ -270,9 +270,7 @@ public class Glean {
 
             if originalEnabled && !enabled {
                 // If uploading is disabled, we need to send the deletion-request ping
-                Dispatchers.shared.launchConcurrent {
-                    HttpPingUploader(configuration: self.configuration!).process()
-                }
+                HttpPingUploader.launch(configuration: self.configuration!)
             }
         }
     }
@@ -456,7 +454,7 @@ public class Glean {
 
         if submittedPing != 0 {
             if let config = self.configuration {
-                HttpPingUploader(configuration: config).process()
+                HttpPingUploader.launch(configuration: config)
             }
         }
     }
