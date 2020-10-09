@@ -33,6 +33,15 @@ public class HttpPingUploader {
         self.config = configuration
     }
 
+    /// Launch a new ping uploader on the background thread.
+    ///
+    /// This function doesn't block.
+    static func launch(configuration: Configuration) {
+        Dispatchers.shared.launchConcurrent {
+            HttpPingUploader(configuration: configuration).process()
+        }
+    }
+
     /// Synchronously upload a ping to Mozilla servers.
     ///
     /// - parameters:
