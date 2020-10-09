@@ -65,4 +65,7 @@ if (project.name == 'glean-gradle-plugin') {
     task assembleRelease {
       dependsOn assemble
     }
+
+    // Empty task to have the same one as the main build
+    task checkMavenArtifacts
 }
