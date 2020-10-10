@@ -22,7 +22,7 @@ Every ping has the following keys at the top-level:
 - The [`client_info` section](#the-client_info-section) contains information that identifies the client.
   It is included in most pings (including all built-in pings), but may be excluded from pings where we don't want to connect client information with the other metrics in the ping.
 
-- The `metrics` section contains the submitted values for all metric types (except for events).
+- The `metrics` section contains the submitted values for all metric types except for [events](../metrics/event.md).
   It has keys for each of the metric types, under which is data for each metric.
 
 - The `events` section contains the events recorded in the ping.
