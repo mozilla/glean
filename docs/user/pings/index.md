@@ -45,7 +45,7 @@ All the metrics surviving application restarts (e.g. `seq`, ...) are removed onc
 
 #### The `experiments` object
 
-This object (included in the [`ping_info` section](#the-ping_info-section)) contains experiments keyed by the experiment `id`. Each listed experiment contains the `branch` the client is enrolled in and may contain a string to string map with additional data in the `extra` key. Both the `id` and `branch` are truncated to 30 characters.
+This object (included in the [`ping_info` section](#the-ping_info-section)) contains experiment annotations keyed by the experiment `id`. Each annotation contains the experiment `branch` the client is enrolled in and may contain a string to string map with additional data in the `extra` key. Both the `id` and `branch` are truncated to 30 characters.
 See [Using the Experiments API](../experiments-api.md) on how to record experiments data.
 
 ```json
