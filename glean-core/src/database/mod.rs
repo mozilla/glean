@@ -17,8 +17,11 @@ use rkv::StoreOptions;
 mod backend {
     use std::path::Path;
 
+    /// cbindgen:ignore
     pub type Rkv = rkv::Rkv<rkv::backend::LmdbEnvironment>;
+    /// cbindgen:ignore
     pub type SingleStore = rkv::SingleStore<rkv::backend::LmdbDatabase>;
+    /// cbindgen:ignore
     pub type Writer<'t> = rkv::Writer<rkv::backend::LmdbRwTransaction<'t>>;
 
     pub fn rkv_new(path: &Path) -> Result<Rkv, rkv::StoreError> {
@@ -31,8 +34,11 @@ mod backend {
 mod backend {
     use std::path::Path;
 
+    /// cbindgen:ignore
     pub type Rkv = rkv::Rkv<rkv::backend::SafeModeEnvironment>;
+    /// cbindgen:ignore
     pub type SingleStore = rkv::SingleStore<rkv::backend::SafeModeDatabase>;
+    /// cbindgen:ignore
     pub type Writer<'t> = rkv::Writer<rkv::backend::SafeModeRwTransaction<'t>>;
 
     pub fn rkv_new(path: &Path) -> Result<Rkv, rkv::StoreError> {
