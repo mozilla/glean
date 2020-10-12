@@ -9,7 +9,7 @@ use std::result;
 
 use ffi_support::{handle_map::HandleError, ExternError};
 
-use rkv::error::StoreError;
+use rkv::StoreError;
 
 /// A specialized [`Result`] type for this crate's operations.
 ///
