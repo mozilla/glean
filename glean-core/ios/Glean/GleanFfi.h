@@ -17,13 +17,6 @@
 #include <stdlib.h>
 
 /**
- * A HTTP response code.
- *
- * The actual response code is encoded in the lower bits.
- */
-#define UPLOAD_RESULT_HTTP_STATUS 32768
-
-/**
  * A recoverable error.
  */
 #define UPLOAD_RESULT_RECOVERABLE 1
@@ -32,6 +25,13 @@
  * An unrecoverable error.
  */
 #define UPLOAD_RESULT_UNRECOVERABLE 2
+
+/**
+ * A HTTP response code.
+ *
+ * The actual response code is encoded in the lower bits.
+ */
+#define UPLOAD_RESULT_HTTP_STATUS 32768
 
 /**
  * The supported metrics' lifetimes.
@@ -161,9 +161,20 @@ typedef int32_t TimeUnit;
  */
 typedef const char *FfiStr;
 
-typedef const int64_t *RawInt64Array;
-
-typedef const int32_t *RawIntArray;
+/**
+ * Configuration over FFI.
+ *
+ * **CAUTION**: This must match _exactly_ the definition on the Kotlin side.
+ * If this side is changed, the Kotlin side need to be changed, too.
+ */
+typedef struct {
+  FfiStr data_dir;
+  FfiStr package_name;
+  FfiStr language_binding_name;
+  uint8_t upload_enabled;
+  const int32_t *max_events;
+  uint8_t delay_ping_lifetime_io;
+} FfiConfiguration;
 
 typedef const char *const *RawStringArray;
 
@@ -291,110 +302,14 @@ typedef union {
   FfiPingUploadTask_Upload_Body upload;
 } FfiPingUploadTask;
 
-/**
- * Configuration over FFI.
- *
- * **CAUTION**: This must match _exactly_ the definition on the Kotlin side.
- * If this side is changed, the Kotlin side need to be changed, too.
- */
-typedef struct {
-  FfiStr data_dir;
-  FfiStr package_name;
-  FfiStr language_binding_name;
-  uint8_t upload_enabled;
-  const int32_t *max_events;
-  uint8_t delay_ping_lifetime_io;
-} FfiConfiguration;
+typedef const int64_t *RawInt64Array;
+
+typedef const int32_t *RawIntArray;
 
 /**
  * Identifier for a running timer.
  */
 typedef uint64_t TimerId;
-
-void glean_boolean_set(uint64_t metric_id, uint8_t value);
-
-uint8_t glean_boolean_test_get_value(uint64_t metric_id, FfiStr storage_name);
-
-uint8_t glean_boolean_test_has_value(uint64_t metric_id, FfiStr storage_name);
-
-void glean_clear_application_lifetime_metrics(void);
-
-void glean_counter_add(uint64_t metric_id, int32_t amount);
-
-int32_t glean_counter_test_get_num_recorded_errors(uint64_t metric_id,
-                                                   int32_t error_type,
-                                                   FfiStr storage_name);
-
-int32_t glean_counter_test_get_value(uint64_t metric_id, FfiStr storage_name);
-
-uint8_t glean_counter_test_has_value(uint64_t metric_id, FfiStr storage_name);
-
-void glean_custom_distribution_accumulate_samples(uint64_t metric_id,
-                                                  RawInt64Array raw_samples,
-                                                  int32_t num_samples);
-
-int32_t glean_custom_distribution_test_get_num_recorded_errors(uint64_t metric_id,
-                                                               int32_t error_type,
-                                                               FfiStr storage_name);
-
-char *glean_custom_distribution_test_get_value_as_json_string(uint64_t metric_id,
-                                                              FfiStr storage_name);
-
-uint8_t glean_custom_distribution_test_has_value(uint64_t metric_id, FfiStr storage_name);
-
-void glean_datetime_set(uint64_t metric_id,
-                        int32_t year,
-                        uint32_t month,
-                        uint32_t day,
-                        uint32_t hour,
-                        uint32_t minute,
-                        uint32_t second,
-                        int64_t nano,
-                        int32_t offset_seconds);
-
-int32_t glean_datetime_test_get_num_recorded_errors(uint64_t metric_id,
-                                                    int32_t error_type,
-                                                    FfiStr storage_name);
-
-char *glean_datetime_test_get_value_as_string(uint64_t metric_id, FfiStr storage_name);
-
-uint8_t glean_datetime_test_has_value(uint64_t metric_id, FfiStr storage_name);
-
-void glean_destroy_boolean_metric(uint64_t v);
-
-void glean_destroy_counter_metric(uint64_t v);
-
-void glean_destroy_custom_distribution_metric(uint64_t v);
-
-void glean_destroy_datetime_metric(uint64_t v);
-
-void glean_destroy_event_metric(uint64_t v);
-
-void glean_destroy_glean(void);
-
-void glean_destroy_jwe_metric(uint64_t v);
-
-void glean_destroy_labeled_boolean_metric(uint64_t v);
-
-void glean_destroy_labeled_counter_metric(uint64_t v);
-
-void glean_destroy_labeled_string_metric(uint64_t v);
-
-void glean_destroy_memory_distribution_metric(uint64_t v);
-
-void glean_destroy_ping_type(uint64_t v);
-
-void glean_destroy_quantity_metric(uint64_t v);
-
-void glean_destroy_string_list_metric(uint64_t v);
-
-void glean_destroy_string_metric(uint64_t v);
-
-void glean_destroy_timespan_metric(uint64_t v);
-
-void glean_destroy_timing_distribution_metric(uint64_t v);
-
-void glean_destroy_uuid_metric(uint64_t v);
 
 /**
  * Initialize the logging system based on the target platform. This ensures
@@ -416,26 +331,6 @@ void glean_enable_logging(void);
  */
 void glean_enable_logging_to_fd(uint64_t fd);
 
-void glean_event_record(uint64_t metric_id,
-                        uint64_t timestamp,
-                        RawIntArray extra_keys,
-                        RawStringArray extra_values,
-                        int32_t extra_len);
-
-int32_t glean_event_test_get_num_recorded_errors(uint64_t metric_id,
-                                                 int32_t error_type,
-                                                 FfiStr storage_name);
-
-char *glean_event_test_get_value_as_json_string(uint64_t metric_id, FfiStr storage_name);
-
-uint8_t glean_event_test_has_value(uint64_t metric_id, FfiStr storage_name);
-
-char *glean_experiment_test_get_data(FfiStr experiment_id);
-
-uint8_t glean_experiment_test_is_active(FfiStr experiment_id);
-
-void glean_get_upload_task(FfiPingUploadTask *result);
-
 /**
  * # Safety
  *
@@ -443,226 +338,41 @@ void glean_get_upload_task(FfiPingUploadTask *result);
  */
 uint8_t glean_initialize(const FfiConfiguration *cfg);
 
-/**
- * # Safety
- *
- * A valid and non-null configuration object is required for this function.
- */
-uint8_t glean_initialize_for_subprocess(const FfiConfiguration *cfg);
-
-uint8_t glean_is_dirty_flag_set(void);
-
-uint8_t glean_is_first_run(void);
+uint8_t glean_on_ready_to_submit_pings(void);
 
 uint8_t glean_is_upload_enabled(void);
 
-void glean_jwe_set(uint64_t metric_id,
-                   FfiStr header,
-                   FfiStr key,
-                   FfiStr init_vector,
-                   FfiStr cipher_text,
-                   FfiStr auth_tag);
+void glean_set_upload_enabled(uint8_t flag);
 
-void glean_jwe_set_with_compact_representation(uint64_t metric_id, FfiStr value);
-
-int32_t glean_jwe_test_get_num_recorded_errors(uint64_t metric_id,
-                                               int32_t error_type,
-                                               FfiStr storage_name);
-
-char *glean_jwe_test_get_value(uint64_t metric_id, FfiStr storage_name);
-
-char *glean_jwe_test_get_value_as_json_string(uint64_t metric_id, FfiStr storage_name);
-
-uint8_t glean_jwe_test_has_value(uint64_t metric_id, FfiStr storage_name);
-
-/**
- * Create a new instance of the sub-metric of this labeled metric.
- */
-uint64_t glean_labeled_boolean_metric_get(uint64_t handle, FfiStr label);
-
-int32_t glean_labeled_boolean_test_get_num_recorded_errors(uint64_t metric_id,
-                                                           int32_t error_type,
-                                                           FfiStr storage_name);
-
-/**
- * Create a new instance of the sub-metric of this labeled metric.
- */
-uint64_t glean_labeled_counter_metric_get(uint64_t handle, FfiStr label);
-
-int32_t glean_labeled_counter_test_get_num_recorded_errors(uint64_t metric_id,
-                                                           int32_t error_type,
-                                                           FfiStr storage_name);
-
-/**
- * Create a new instance of the sub-metric of this labeled metric.
- */
-uint64_t glean_labeled_string_metric_get(uint64_t handle, FfiStr label);
-
-int32_t glean_labeled_string_test_get_num_recorded_errors(uint64_t metric_id,
-                                                          int32_t error_type,
-                                                          FfiStr storage_name);
-
-void glean_memory_distribution_accumulate(uint64_t metric_id, uint64_t sample);
-
-void glean_memory_distribution_accumulate_samples(uint64_t metric_id,
-                                                  RawInt64Array raw_samples,
-                                                  int32_t num_samples);
-
-int32_t glean_memory_distribution_test_get_num_recorded_errors(uint64_t metric_id,
-                                                               int32_t error_type,
-                                                               FfiStr storage_name);
-
-char *glean_memory_distribution_test_get_value_as_json_string(uint64_t metric_id,
-                                                              FfiStr storage_name);
-
-uint8_t glean_memory_distribution_test_has_value(uint64_t metric_id, FfiStr storage_name);
-
-uint64_t glean_new_boolean_metric(FfiStr category,
-                                  FfiStr name,
-                                  RawStringArray send_in_pings,
-                                  int32_t send_in_pings_len,
-                                  Lifetime lifetime,
-                                  uint8_t disabled);
-
-uint64_t glean_new_counter_metric(FfiStr category,
-                                  FfiStr name,
-                                  RawStringArray send_in_pings,
-                                  int32_t send_in_pings_len,
-                                  Lifetime lifetime,
-                                  uint8_t disabled);
-
-uint64_t glean_new_custom_distribution_metric(FfiStr category,
-                                              FfiStr name,
-                                              RawStringArray send_in_pings,
-                                              int32_t send_in_pings_len,
-                                              Lifetime lifetime,
-                                              uint8_t disabled,
-                                              uint64_t range_min,
-                                              uint64_t range_max,
-                                              uint64_t bucket_count,
-                                              int32_t histogram_type);
-
-uint64_t glean_new_datetime_metric(FfiStr category,
-                                   FfiStr name,
-                                   RawStringArray send_in_pings,
-                                   int32_t send_in_pings_len,
-                                   Lifetime lifetime,
-                                   uint8_t disabled,
-                                   TimeUnit time_unit);
-
-uint64_t glean_new_event_metric(FfiStr category,
-                                FfiStr name,
-                                RawStringArray send_in_pings,
-                                int32_t send_in_pings_len,
-                                int32_t lifetime,
-                                uint8_t disabled,
-                                RawStringArray extra_keys,
-                                int32_t extra_keys_len);
-
-uint64_t glean_new_jwe_metric(FfiStr category,
-                              FfiStr name,
-                              RawStringArray send_in_pings,
-                              int32_t send_in_pings_len,
-                              Lifetime lifetime,
-                              uint8_t disabled);
-
-/**
- * Create a new labeled metric.
- */
-uint64_t glean_new_labeled_boolean_metric(FfiStr category,
-                                          FfiStr name,
-                                          RawStringArray send_in_pings,
-                                          int32_t send_in_pings_len,
-                                          int32_t lifetime,
-                                          uint8_t disabled,
-                                          RawStringArray labels,
-                                          int32_t label_count);
-
-/**
- * Create a new labeled metric.
- */
-uint64_t glean_new_labeled_counter_metric(FfiStr category,
-                                          FfiStr name,
-                                          RawStringArray send_in_pings,
-                                          int32_t send_in_pings_len,
-                                          int32_t lifetime,
-                                          uint8_t disabled,
-                                          RawStringArray labels,
-                                          int32_t label_count);
-
-/**
- * Create a new labeled metric.
- */
-uint64_t glean_new_labeled_string_metric(FfiStr category,
-                                         FfiStr name,
-                                         RawStringArray send_in_pings,
-                                         int32_t send_in_pings_len,
-                                         int32_t lifetime,
-                                         uint8_t disabled,
-                                         RawStringArray labels,
-                                         int32_t label_count);
-
-uint64_t glean_new_memory_distribution_metric(FfiStr category,
-                                              FfiStr name,
-                                              RawStringArray send_in_pings,
-                                              int32_t send_in_pings_len,
-                                              Lifetime lifetime,
-                                              uint8_t disabled,
-                                              MemoryUnit memory_unit);
-
-uint64_t glean_new_ping_type(FfiStr ping_name,
-                             uint8_t include_client_id,
-                             uint8_t send_if_empty,
-                             RawStringArray reason_codes,
-                             int32_t reason_codes_len);
-
-uint64_t glean_new_quantity_metric(FfiStr category,
-                                   FfiStr name,
-                                   RawStringArray send_in_pings,
-                                   int32_t send_in_pings_len,
-                                   Lifetime lifetime,
-                                   uint8_t disabled);
-
-uint64_t glean_new_string_list_metric(FfiStr category,
-                                      FfiStr name,
-                                      RawStringArray send_in_pings,
-                                      int32_t send_in_pings_len,
-                                      Lifetime lifetime,
-                                      uint8_t disabled);
-
-uint64_t glean_new_string_metric(FfiStr category,
-                                 FfiStr name,
-                                 RawStringArray send_in_pings,
-                                 int32_t send_in_pings_len,
-                                 Lifetime lifetime,
-                                 uint8_t disabled);
-
-uint64_t glean_new_timespan_metric(FfiStr category,
-                                   FfiStr name,
-                                   RawStringArray send_in_pings,
-                                   int32_t send_in_pings_len,
-                                   Lifetime lifetime,
-                                   uint8_t disabled,
-                                   int32_t time_unit);
-
-uint64_t glean_new_timing_distribution_metric(FfiStr category,
-                                              FfiStr name,
-                                              RawStringArray send_in_pings,
-                                              int32_t send_in_pings_len,
-                                              Lifetime lifetime,
-                                              uint8_t disabled,
-                                              TimeUnit time_unit);
-
-uint64_t glean_new_uuid_metric(FfiStr category,
-                               FfiStr name,
-                               RawStringArray send_in_pings,
-                               int32_t send_in_pings_len,
-                               Lifetime lifetime,
-                               uint8_t disabled);
-
-uint8_t glean_on_ready_to_submit_pings(void);
+uint8_t glean_submit_ping_by_name(FfiStr ping_name, FfiStr reason);
 
 char *glean_ping_collect(uint64_t ping_type_handle, FfiStr reason);
+
+void glean_set_experiment_active(FfiStr experiment_id,
+                                 FfiStr branch,
+                                 RawStringArray extra_keys,
+                                 RawStringArray extra_values,
+                                 int32_t extra_len);
+
+void glean_set_experiment_inactive(FfiStr experiment_id);
+
+uint8_t glean_experiment_test_is_active(FfiStr experiment_id);
+
+char *glean_experiment_test_get_data(FfiStr experiment_id);
+
+void glean_clear_application_lifetime_metrics(void);
+
+void glean_set_dirty_flag(uint8_t flag);
+
+uint8_t glean_is_dirty_flag_set(void);
+
+void glean_test_clear_all_stores(void);
+
+void glean_destroy_glean(void);
+
+uint8_t glean_is_first_run(void);
+
+void glean_get_upload_task(FfiPingUploadTask *result);
 
 /**
  * Process and free a `FfiPingUploadTask`.
@@ -678,35 +388,18 @@ char *glean_ping_collect(uint64_t ping_type_handle, FfiStr reason);
  */
 void glean_process_ping_upload_response(FfiPingUploadTask *task, uint32_t status);
 
-void glean_quantity_set(uint64_t metric_id, int64_t value);
-
-int32_t glean_quantity_test_get_num_recorded_errors(uint64_t metric_id,
-                                                    int32_t error_type,
-                                                    FfiStr storage_name);
-
-int64_t glean_quantity_test_get_value(uint64_t metric_id, FfiStr storage_name);
-
-uint8_t glean_quantity_test_has_value(uint64_t metric_id, FfiStr storage_name);
-
-void glean_register_ping_type(uint64_t ping_type_handle);
+/**
+ * # Safety
+ *
+ * A valid and non-null configuration object is required for this function.
+ */
+uint8_t glean_initialize_for_subprocess(const FfiConfiguration *cfg);
 
 uint8_t glean_set_debug_view_tag(FfiStr tag);
-
-void glean_set_dirty_flag(uint8_t flag);
-
-void glean_set_experiment_active(FfiStr experiment_id,
-                                 FfiStr branch,
-                                 RawStringArray extra_keys,
-                                 RawStringArray extra_values,
-                                 int32_t extra_len);
-
-void glean_set_experiment_inactive(FfiStr experiment_id);
 
 void glean_set_log_pings(uint8_t value);
 
 uint8_t glean_set_source_tags(RawStringArray raw_tags, int32_t tags_count);
-
-void glean_set_upload_enabled(uint8_t flag);
 
 /**
  * Public destructor for strings managed by the other side of the FFI.
@@ -721,55 +414,351 @@ void glean_set_upload_enabled(uint8_t flag);
  */
 void glean_str_free(char *s);
 
-void glean_string_list_add(uint64_t metric_id, FfiStr value);
+void glean_destroy_boolean_metric(uint64_t v);
 
-void glean_string_list_set(uint64_t metric_id, RawStringArray values, int32_t values_len);
+uint64_t glean_new_boolean_metric(FfiStr category,
+                                  FfiStr name,
+                                  RawStringArray send_in_pings,
+                                  int32_t send_in_pings_len,
+                                  Lifetime lifetime,
+                                  uint8_t disabled);
 
-int32_t glean_string_list_test_get_num_recorded_errors(uint64_t metric_id,
-                                                       int32_t error_type,
-                                                       FfiStr storage_name);
+void glean_boolean_set(uint64_t metric_id, uint8_t value);
 
-char *glean_string_list_test_get_value_as_json_string(uint64_t metric_id, FfiStr storage_name);
+uint8_t glean_boolean_test_has_value(uint64_t metric_id, FfiStr storage_name);
 
-uint8_t glean_string_list_test_has_value(uint64_t metric_id, FfiStr storage_name);
+uint8_t glean_boolean_test_get_value(uint64_t metric_id, FfiStr storage_name);
 
-void glean_string_set(uint64_t metric_id, FfiStr value);
+void glean_destroy_counter_metric(uint64_t v);
+
+uint64_t glean_new_counter_metric(FfiStr category,
+                                  FfiStr name,
+                                  RawStringArray send_in_pings,
+                                  int32_t send_in_pings_len,
+                                  Lifetime lifetime,
+                                  uint8_t disabled);
+
+int32_t glean_counter_test_get_num_recorded_errors(uint64_t metric_id,
+                                                   int32_t error_type,
+                                                   FfiStr storage_name);
+
+void glean_counter_add(uint64_t metric_id, int32_t amount);
+
+uint8_t glean_counter_test_has_value(uint64_t metric_id, FfiStr storage_name);
+
+int32_t glean_counter_test_get_value(uint64_t metric_id, FfiStr storage_name);
+
+void glean_destroy_custom_distribution_metric(uint64_t v);
+
+uint64_t glean_new_custom_distribution_metric(FfiStr category,
+                                              FfiStr name,
+                                              RawStringArray send_in_pings,
+                                              int32_t send_in_pings_len,
+                                              Lifetime lifetime,
+                                              uint8_t disabled,
+                                              uint64_t range_min,
+                                              uint64_t range_max,
+                                              uint64_t bucket_count,
+                                              int32_t histogram_type);
+
+int32_t glean_custom_distribution_test_get_num_recorded_errors(uint64_t metric_id,
+                                                               int32_t error_type,
+                                                               FfiStr storage_name);
+
+void glean_custom_distribution_accumulate_samples(uint64_t metric_id,
+                                                  RawInt64Array raw_samples,
+                                                  int32_t num_samples);
+
+uint8_t glean_custom_distribution_test_has_value(uint64_t metric_id, FfiStr storage_name);
+
+char *glean_custom_distribution_test_get_value_as_json_string(uint64_t metric_id,
+                                                              FfiStr storage_name);
+
+void glean_destroy_datetime_metric(uint64_t v);
+
+uint64_t glean_new_datetime_metric(FfiStr category,
+                                   FfiStr name,
+                                   RawStringArray send_in_pings,
+                                   int32_t send_in_pings_len,
+                                   Lifetime lifetime,
+                                   uint8_t disabled,
+                                   TimeUnit time_unit);
+
+int32_t glean_datetime_test_get_num_recorded_errors(uint64_t metric_id,
+                                                    int32_t error_type,
+                                                    FfiStr storage_name);
+
+void glean_datetime_set(uint64_t metric_id,
+                        int32_t year,
+                        uint32_t month,
+                        uint32_t day,
+                        uint32_t hour,
+                        uint32_t minute,
+                        uint32_t second,
+                        int64_t nano,
+                        int32_t offset_seconds);
+
+uint8_t glean_datetime_test_has_value(uint64_t metric_id, FfiStr storage_name);
+
+char *glean_datetime_test_get_value_as_string(uint64_t metric_id, FfiStr storage_name);
+
+void glean_destroy_event_metric(uint64_t v);
+
+int32_t glean_event_test_get_num_recorded_errors(uint64_t metric_id,
+                                                 int32_t error_type,
+                                                 FfiStr storage_name);
+
+uint64_t glean_new_event_metric(FfiStr category,
+                                FfiStr name,
+                                RawStringArray send_in_pings,
+                                int32_t send_in_pings_len,
+                                int32_t lifetime,
+                                uint8_t disabled,
+                                RawStringArray extra_keys,
+                                int32_t extra_keys_len);
+
+void glean_event_record(uint64_t metric_id,
+                        uint64_t timestamp,
+                        RawIntArray extra_keys,
+                        RawStringArray extra_values,
+                        int32_t extra_len);
+
+uint8_t glean_event_test_has_value(uint64_t metric_id, FfiStr storage_name);
+
+char *glean_event_test_get_value_as_json_string(uint64_t metric_id, FfiStr storage_name);
+
+void glean_destroy_jwe_metric(uint64_t v);
+
+uint64_t glean_new_jwe_metric(FfiStr category,
+                              FfiStr name,
+                              RawStringArray send_in_pings,
+                              int32_t send_in_pings_len,
+                              Lifetime lifetime,
+                              uint8_t disabled);
+
+int32_t glean_jwe_test_get_num_recorded_errors(uint64_t metric_id,
+                                               int32_t error_type,
+                                               FfiStr storage_name);
+
+void glean_jwe_set_with_compact_representation(uint64_t metric_id, FfiStr value);
+
+void glean_jwe_set(uint64_t metric_id,
+                   FfiStr header,
+                   FfiStr key,
+                   FfiStr init_vector,
+                   FfiStr cipher_text,
+                   FfiStr auth_tag);
+
+uint8_t glean_jwe_test_has_value(uint64_t metric_id, FfiStr storage_name);
+
+char *glean_jwe_test_get_value(uint64_t metric_id, FfiStr storage_name);
+
+char *glean_jwe_test_get_value_as_json_string(uint64_t metric_id, FfiStr storage_name);
+
+void glean_destroy_labeled_counter_metric(uint64_t v);
+
+/**
+ * Create a new labeled metric.
+ */
+uint64_t glean_new_labeled_counter_metric(FfiStr category,
+                                          FfiStr name,
+                                          RawStringArray send_in_pings,
+                                          int32_t send_in_pings_len,
+                                          int32_t lifetime,
+                                          uint8_t disabled,
+                                          RawStringArray labels,
+                                          int32_t label_count);
+
+/**
+ * Create a new instance of the sub-metric of this labeled metric.
+ */
+uint64_t glean_labeled_counter_metric_get(uint64_t handle, FfiStr label);
+
+int32_t glean_labeled_counter_test_get_num_recorded_errors(uint64_t metric_id,
+                                                           int32_t error_type,
+                                                           FfiStr storage_name);
+
+void glean_destroy_labeled_boolean_metric(uint64_t v);
+
+/**
+ * Create a new labeled metric.
+ */
+uint64_t glean_new_labeled_boolean_metric(FfiStr category,
+                                          FfiStr name,
+                                          RawStringArray send_in_pings,
+                                          int32_t send_in_pings_len,
+                                          int32_t lifetime,
+                                          uint8_t disabled,
+                                          RawStringArray labels,
+                                          int32_t label_count);
+
+/**
+ * Create a new instance of the sub-metric of this labeled metric.
+ */
+uint64_t glean_labeled_boolean_metric_get(uint64_t handle, FfiStr label);
+
+int32_t glean_labeled_boolean_test_get_num_recorded_errors(uint64_t metric_id,
+                                                           int32_t error_type,
+                                                           FfiStr storage_name);
+
+void glean_destroy_labeled_string_metric(uint64_t v);
+
+/**
+ * Create a new labeled metric.
+ */
+uint64_t glean_new_labeled_string_metric(FfiStr category,
+                                         FfiStr name,
+                                         RawStringArray send_in_pings,
+                                         int32_t send_in_pings_len,
+                                         int32_t lifetime,
+                                         uint8_t disabled,
+                                         RawStringArray labels,
+                                         int32_t label_count);
+
+/**
+ * Create a new instance of the sub-metric of this labeled metric.
+ */
+uint64_t glean_labeled_string_metric_get(uint64_t handle, FfiStr label);
+
+int32_t glean_labeled_string_test_get_num_recorded_errors(uint64_t metric_id,
+                                                          int32_t error_type,
+                                                          FfiStr storage_name);
+
+void glean_destroy_memory_distribution_metric(uint64_t v);
+
+uint64_t glean_new_memory_distribution_metric(FfiStr category,
+                                              FfiStr name,
+                                              RawStringArray send_in_pings,
+                                              int32_t send_in_pings_len,
+                                              Lifetime lifetime,
+                                              uint8_t disabled,
+                                              MemoryUnit memory_unit);
+
+int32_t glean_memory_distribution_test_get_num_recorded_errors(uint64_t metric_id,
+                                                               int32_t error_type,
+                                                               FfiStr storage_name);
+
+void glean_memory_distribution_accumulate(uint64_t metric_id, uint64_t sample);
+
+void glean_memory_distribution_accumulate_samples(uint64_t metric_id,
+                                                  RawInt64Array raw_samples,
+                                                  int32_t num_samples);
+
+uint8_t glean_memory_distribution_test_has_value(uint64_t metric_id, FfiStr storage_name);
+
+char *glean_memory_distribution_test_get_value_as_json_string(uint64_t metric_id,
+                                                              FfiStr storage_name);
+
+void glean_destroy_ping_type(uint64_t v);
+
+uint64_t glean_new_ping_type(FfiStr ping_name,
+                             uint8_t include_client_id,
+                             uint8_t send_if_empty,
+                             RawStringArray reason_codes,
+                             int32_t reason_codes_len);
+
+uint8_t glean_test_has_ping_type(FfiStr ping_name);
+
+void glean_register_ping_type(uint64_t ping_type_handle);
+
+void glean_destroy_quantity_metric(uint64_t v);
+
+uint64_t glean_new_quantity_metric(FfiStr category,
+                                   FfiStr name,
+                                   RawStringArray send_in_pings,
+                                   int32_t send_in_pings_len,
+                                   Lifetime lifetime,
+                                   uint8_t disabled);
+
+int32_t glean_quantity_test_get_num_recorded_errors(uint64_t metric_id,
+                                                    int32_t error_type,
+                                                    FfiStr storage_name);
+
+void glean_quantity_set(uint64_t metric_id, int64_t value);
+
+uint8_t glean_quantity_test_has_value(uint64_t metric_id, FfiStr storage_name);
+
+int64_t glean_quantity_test_get_value(uint64_t metric_id, FfiStr storage_name);
+
+void glean_destroy_string_metric(uint64_t v);
+
+uint64_t glean_new_string_metric(FfiStr category,
+                                 FfiStr name,
+                                 RawStringArray send_in_pings,
+                                 int32_t send_in_pings_len,
+                                 Lifetime lifetime,
+                                 uint8_t disabled);
 
 int32_t glean_string_test_get_num_recorded_errors(uint64_t metric_id,
                                                   int32_t error_type,
                                                   FfiStr storage_name);
 
-char *glean_string_test_get_value(uint64_t metric_id, FfiStr storage_name);
+void glean_string_set(uint64_t metric_id, FfiStr value);
 
 uint8_t glean_string_test_has_value(uint64_t metric_id, FfiStr storage_name);
 
-uint8_t glean_submit_ping_by_name(FfiStr ping_name, FfiStr reason);
+char *glean_string_test_get_value(uint64_t metric_id, FfiStr storage_name);
 
-void glean_test_clear_all_stores(void);
+void glean_destroy_string_list_metric(uint64_t v);
 
-uint8_t glean_test_has_ping_type(FfiStr ping_name);
+uint64_t glean_new_string_list_metric(FfiStr category,
+                                      FfiStr name,
+                                      RawStringArray send_in_pings,
+                                      int32_t send_in_pings_len,
+                                      Lifetime lifetime,
+                                      uint8_t disabled);
 
-void glean_timespan_cancel(uint64_t metric_id);
+int32_t glean_string_list_test_get_num_recorded_errors(uint64_t metric_id,
+                                                       int32_t error_type,
+                                                       FfiStr storage_name);
 
-void glean_timespan_set_raw_nanos(uint64_t metric_id, uint64_t elapsed_nanos);
+void glean_string_list_add(uint64_t metric_id, FfiStr value);
 
-void glean_timespan_set_start(uint64_t metric_id, uint64_t start_time);
+void glean_string_list_set(uint64_t metric_id, RawStringArray values, int32_t values_len);
 
-void glean_timespan_set_stop(uint64_t metric_id, uint64_t stop_time);
+uint8_t glean_string_list_test_has_value(uint64_t metric_id, FfiStr storage_name);
+
+char *glean_string_list_test_get_value_as_json_string(uint64_t metric_id, FfiStr storage_name);
+
+void glean_destroy_timespan_metric(uint64_t v);
+
+uint64_t glean_new_timespan_metric(FfiStr category,
+                                   FfiStr name,
+                                   RawStringArray send_in_pings,
+                                   int32_t send_in_pings_len,
+                                   Lifetime lifetime,
+                                   uint8_t disabled,
+                                   int32_t time_unit);
 
 int32_t glean_timespan_test_get_num_recorded_errors(uint64_t metric_id,
                                                     int32_t error_type,
                                                     FfiStr storage_name);
 
-uint64_t glean_timespan_test_get_value(uint64_t metric_id, FfiStr storage_name);
+void glean_timespan_set_start(uint64_t metric_id, uint64_t start_time);
+
+void glean_timespan_set_stop(uint64_t metric_id, uint64_t stop_time);
+
+void glean_timespan_cancel(uint64_t metric_id);
+
+void glean_timespan_set_raw_nanos(uint64_t metric_id, uint64_t elapsed_nanos);
 
 uint8_t glean_timespan_test_has_value(uint64_t metric_id, FfiStr storage_name);
 
-void glean_timing_distribution_accumulate_samples(uint64_t metric_id,
-                                                  RawInt64Array raw_samples,
-                                                  int32_t num_samples);
+uint64_t glean_timespan_test_get_value(uint64_t metric_id, FfiStr storage_name);
 
-void glean_timing_distribution_cancel(uint64_t metric_id, TimerId timer_id);
+void glean_destroy_timing_distribution_metric(uint64_t v);
+
+uint64_t glean_new_timing_distribution_metric(FfiStr category,
+                                              FfiStr name,
+                                              RawStringArray send_in_pings,
+                                              int32_t send_in_pings_len,
+                                              Lifetime lifetime,
+                                              uint8_t disabled,
+                                              TimeUnit time_unit);
+
+int32_t glean_timing_distribution_test_get_num_recorded_errors(uint64_t metric_id,
+                                                               int32_t error_type,
+                                                               FfiStr storage_name);
 
 TimerId glean_timing_distribution_set_start(uint64_t metric_id, uint64_t start_time);
 
@@ -777,17 +766,28 @@ void glean_timing_distribution_set_stop_and_accumulate(uint64_t metric_id,
                                                        TimerId timer_id,
                                                        uint64_t stop_time);
 
-int32_t glean_timing_distribution_test_get_num_recorded_errors(uint64_t metric_id,
-                                                               int32_t error_type,
-                                                               FfiStr storage_name);
+void glean_timing_distribution_cancel(uint64_t metric_id, TimerId timer_id);
+
+void glean_timing_distribution_accumulate_samples(uint64_t metric_id,
+                                                  RawInt64Array raw_samples,
+                                                  int32_t num_samples);
+
+uint8_t glean_timing_distribution_test_has_value(uint64_t metric_id, FfiStr storage_name);
 
 char *glean_timing_distribution_test_get_value_as_json_string(uint64_t metric_id,
                                                               FfiStr storage_name);
 
-uint8_t glean_timing_distribution_test_has_value(uint64_t metric_id, FfiStr storage_name);
+void glean_destroy_uuid_metric(uint64_t v);
+
+uint64_t glean_new_uuid_metric(FfiStr category,
+                               FfiStr name,
+                               RawStringArray send_in_pings,
+                               int32_t send_in_pings_len,
+                               Lifetime lifetime,
+                               uint8_t disabled);
 
 void glean_uuid_set(uint64_t metric_id, FfiStr value);
 
-char *glean_uuid_test_get_value(uint64_t metric_id, FfiStr storage_name);
-
 uint8_t glean_uuid_test_has_value(uint64_t metric_id, FfiStr storage_name);
+
+char *glean_uuid_test_get_value(uint64_t metric_id, FfiStr storage_name);
