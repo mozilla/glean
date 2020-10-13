@@ -3,6 +3,7 @@
 [Full changelog](https://github.com/mozilla/glean/compare/v33.0.4...main)
 
 * General
+  * Standardize throttle backoff time throughout all bindings. ([#1240](https://github.com/mozilla/glean/pull/1240))
   * Update `glean_parser` to 1.29.0
     * Generated code now includes a comment next to each metric containing the name of the metric in its original `snake_case` form.
 * Android

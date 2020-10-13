@@ -230,6 +230,9 @@ class Glean:
         The temporary directory will be destroyed when Glean is initialized
         again or at process shutdown.
         """
+        # Lower throttle backoff time for testing
+        PingUploadWorker._throttle_backoff_time = 1
+
         actual_data_dir = Path(tempfile.TemporaryDirectory().name)
         cls.initialize(
             application_id,

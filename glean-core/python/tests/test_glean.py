@@ -37,7 +37,6 @@ from glean.metrics import (
 from glean.net import PingUploadWorker
 from glean.testing import _RecordingUploader
 
-
 GLEAN_APP_ID = "glean-python-test"
 
 
