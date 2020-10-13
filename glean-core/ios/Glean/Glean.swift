@@ -293,7 +293,7 @@ public class Glean {
     /// Caution: the result is only correct if Glean is already initialized.
     func internalGetUploadEnabled() -> Bool {
         if isInitialized() {
-            return glean_is_upload_enabled() != 0
+            return glean_is_upload_enabled().toBool()
         } else {
             return false
         }
@@ -594,7 +594,7 @@ public class Glean {
     ///
     /// Returns true if a ping by this name is in the ping registry.
     public func testHasPingType(_ pingName: String) -> Bool {
-        return glean_test_has_ping_type(pingName) != 0
+        return glean_test_has_ping_type(pingName).toBool()
     }
 
     /// Test-only method to destroy the owned glean-core handle.

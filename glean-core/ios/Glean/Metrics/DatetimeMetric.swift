@@ -97,7 +97,7 @@ public class DatetimeMetricType {
         Dispatchers.shared.assertInTestingMode()
 
         let pingName = pingName ?? self.sendInPings[0]
-        return glean_datetime_test_has_value(self.handle, pingName) != 0
+        return glean_datetime_test_has_value(self.handle, pingName).toBool()
     }
 
     /// Returns the string representation of the stored value for testing purposes only. This function

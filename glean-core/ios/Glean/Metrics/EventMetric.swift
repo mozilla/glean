@@ -150,7 +150,7 @@ public class EventMetricType<ExtraKeysEnum: ExtraKeys> {
         Dispatchers.shared.assertInTestingMode()
 
         let pingName = pingName ?? self.sendInPings[0]
-        return glean_event_test_has_value(self.handle, pingName) != 0
+        return glean_event_test_has_value(self.handle, pingName).toBool()
     }
 
     /// Deserializes an event in JSON into a RecordedEventData object.
