@@ -238,8 +238,11 @@ glean.internal.metrics:
       - glean-team@mozilla.com
     expires: never
 
-  ping_reason:
+  reason:
     type: string
+    lifetime: ping
+    send_in_pings:
+      - glean_internal_info
     description: |
       The optional reason the ping was submitted.
       The specific values for reason are specific to each ping, and are
