@@ -238,6 +238,78 @@ glean.internal.metrics:
       - glean-team@mozilla.com
     expires: never
 
+  seq:
+    type: string
+    lifetime: ping
+    send_in_pings:
+      - glean_internal_info
+    description: |
+      A running counter of the number of times pings of this type have been sent
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1556964
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+    expires: never
+
+  experiments:
+    type: string  # It's not, but we don't have a way to specify its type
+    lifetime: ping
+    send_in_pings:
+      - glean_internal_info
+    description: |
+      Optional. A dictionary of active experiments.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1552471
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+    expires: never
+
+  start_time:
+    type: datetime
+    lifetime: ping
+    send_in_pings:
+      - glean_internal_info
+    description: |
+      The time of the start of collection of the data in the ping,
+      in local time and with minute precision, including timezone information.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1556966
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+    expires: never
+
+  end_time:
+    type: datetime
+    lifetime: ping
+    send_in_pings:
+      - glean_internal_info
+    description: |
+      The time of the end of collection of the data in the ping,
+      in local time and with minute precision, including timezone information.
+      This is also the time this ping was generated
+      and is likely well before ping transmission time.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1556966
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+    expires: never
+
   reason:
     type: string
     lifetime: ping
