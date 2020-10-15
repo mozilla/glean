@@ -240,7 +240,7 @@ glean.internal.metrics:
 
   seq:
     type: string
-    lifetime: ping
+    lifetime: user
     send_in_pings:
       - glean_internal_info
     description: |
@@ -257,7 +257,7 @@ glean.internal.metrics:
 
   experiments:
     type: string  # It's not, but we don't have a way to specify its type
-    lifetime: ping
+    lifetime: application
     send_in_pings:
       - glean_internal_info
     description: |
@@ -274,7 +274,7 @@ glean.internal.metrics:
 
   start_time:
     type: datetime
-    lifetime: ping
+    lifetime: user
     send_in_pings:
       - glean_internal_info
     description: |
