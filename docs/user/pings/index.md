@@ -27,7 +27,7 @@ Every ping has the following keys at the top-level:
 
 - The `events` section contains the events recorded in the ping.
 
-See the [payload documentation](../../dev/core/internal/payload.md) documentation for more details for each metric type in the `metrics` and `events` section.
+See the [payload documentation](../../dev/core/internal/payload.md) for more details for each metric type in the `metrics` and `events` section.
 
 ### The `ping_info` section
 The following fields are included in the `ping_info` section, for every ping.
