@@ -38,11 +38,11 @@ use crate::Glean;
 
 pub use self::boolean::BooleanMetric;
 pub use self::counter::CounterMetric;
+pub use self::custom_distribution::CustomDistributionMetric;
 pub use self::datetime::DatetimeMetric;
 pub use self::event::EventMetric;
 pub(crate) use self::experiment::ExperimentMetric;
 pub use crate::histogram::HistogramType;
-pub use self::custom_distribution::CustomDistributionMetric;
 // Note: only expose RecordedExperimentData to tests in
 // the next line, so that glean-core\src\lib.rs won't fail to build.
 #[cfg(test)]

@@ -26,6 +26,10 @@ impl MetricType for BooleanMetric {
     }
 }
 
+// IMPORTANT:
+//
+// When changing this implementation, make sure all the operations are
+// also declared in the related trait in `../traits/`.
 impl BooleanMetric {
     /// Creates a new boolean metric.
     pub fn new(meta: CommonMetricData) -> Self {
