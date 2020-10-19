@@ -29,7 +29,7 @@ version = "33.0.4"
 once_cell = "1.2.0"
 
 [dev-dependencies]
-env_logger = { version = "0.7.1", default-features = false, features = ["termcolor", "atty", "humantime"] }
+env_logger = { version = "0.8.1", default-features = false, features = ["termcolor", "atty", "humantime"] }
 tempfile = "3.1.0"
 log = "0.4.8"
 jsonschema-valid = "0.4.0"
