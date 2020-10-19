@@ -42,9 +42,9 @@ pub use self::datetime::DatetimeMetric;
 pub use self::event::EventMetric;
 pub(crate) use self::experiment::ExperimentMetric;
 pub use crate::histogram::HistogramType;
+pub use self::custom_distribution::CustomDistributionMetric;
 // Note: only expose RecordedExperimentData to tests in
 // the next line, so that glean-core\src\lib.rs won't fail to build.
-pub use self::custom_distribution::CustomDistributionMetric;
 #[cfg(test)]
 pub(crate) use self::experiment::RecordedExperimentData;
 pub use self::jwe::JweMetric;
