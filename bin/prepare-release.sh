@@ -102,11 +102,11 @@ run $SED -i.bak -E \
     "${WORKSPACE_ROOT}/${FILE}"
 run rm "${WORKSPACE_ROOT}/${FILE}.bak"
 
-### GLEAN-PREVIEW ###
+### GLEAN RLB ###
 
 # Update the version of the glean-core dependency
 
-FILE=glean-core/preview/Cargo.toml
+FILE=glean-core/rlb/Cargo.toml
 # sed explanation:
 # /glean-core/ - match to the line of '[dependencies.glean-core]'
 # !bLBL        - if not matched, jump to label LBL, otherwise continue
