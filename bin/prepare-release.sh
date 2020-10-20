@@ -107,16 +107,8 @@ run rm "${WORKSPACE_ROOT}/${FILE}.bak"
 # Update the version of the glean-core dependency
 
 FILE=glean-core/rlb/Cargo.toml
-# sed explanation:
-# /glean-core/ - match to the line of '[dependencies.glean-core]'
-# !bLBL        - if not matched, jump to label LBL, otherwise continue
-# n;n          - skip two lines ahead
-# s/ver../ver/ - replace old version
-# : LBL        - define label (followed by no command)
 run $SED -i.bak -E \
-    -e "/glean-core/!bLBL" \
-    -e ";n;n;s/version = \"[0-9a-z.-]+\"/version = \"${NEW_VERSION}\"/" \
-    -e ": LBL" \
+    -e "s/^version = \"[0-9a-z.-]+\"/version = \"${NEW_VERSION}\"/" \
     "${WORKSPACE_ROOT}/${FILE}"
 run rm "${WORKSPACE_ROOT}/${FILE}.bak"
 
