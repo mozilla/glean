@@ -51,6 +51,10 @@ impl MetricType for MemoryDistributionMetric {
     }
 }
 
+// IMPORTANT:
+//
+// When changing this implementation, make sure all the operations are
+// also declared in the related trait in `../traits/`.
 impl MemoryDistributionMetric {
     /// Creates a new memory distribution metric.
     pub fn new(meta: CommonMetricData, memory_unit: MemoryUnit) -> Self {

@@ -21,6 +21,10 @@ pub struct PingType {
     pub reason_codes: Vec<String>,
 }
 
+// IMPORTANT:
+//
+// When changing this implementation, make sure all the operations are
+// also declared in the related trait in `../traits/`.
 impl PingType {
     /// Creates a new ping type for the given name, whether to include the client ID and whether to
     /// send this ping empty.

@@ -36,6 +36,10 @@ impl MetricType for EventMetric {
     }
 }
 
+// IMPORTANT:
+//
+// When changing this implementation, make sure all the operations are
+// also declared in the related trait in `../traits/`.
 impl EventMetric {
     /// Creates a new event metric.
     pub fn new(meta: CommonMetricData, allowed_extra_keys: Vec<String>) -> Self {

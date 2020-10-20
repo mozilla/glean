@@ -61,6 +61,10 @@ struct Jwe {
     auth_tag: String,
 }
 
+// IMPORTANT:
+//
+// When changing this implementation, make sure all the operations are
+// also declared in the related trait in `../traits/`.
 impl Jwe {
     /// Create a new JWE struct.
     fn new<S: Into<String>>(

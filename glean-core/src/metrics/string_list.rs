@@ -33,6 +33,10 @@ impl MetricType for StringListMetric {
     }
 }
 
+// IMPORTANT:
+//
+// When changing this implementation, make sure all the operations are
+// also declared in the related trait in `../traits/`.
 impl StringListMetric {
     /// Creates a new string list metric.
     pub fn new(meta: CommonMetricData) -> Self {
