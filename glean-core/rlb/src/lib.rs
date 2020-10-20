@@ -17,7 +17,7 @@
 //! Initialize Glean, register a ping and then send it.
 //!
 //! ```rust,no_run
-//! # use glean_preview::{Configuration, ClientInfoMetrics, Error, metrics::*};
+//! # use glean::{Configuration, ClientInfoMetrics, Error, metrics::*};
 //! # fn main() -> Result<(), Error> {
 //! let cfg = Configuration {
 //!     data_path: "/tmp/data".into(),
@@ -27,11 +27,11 @@
 //!     delay_ping_lifetime_io: false,
 //!     channel: None,
 //! };
-//! glean_preview::initialize(cfg, ClientInfoMetrics::unknown())?;
+//! glean::initialize(cfg, ClientInfoMetrics::unknown())?;
 //!
 //! let prototype_ping = PingType::new("prototype", true, true, vec!());
 //!
-//! glean_preview::register_ping_type(&prototype_ping);
+//! glean::register_ping_type(&prototype_ping);
 //!
 //! prototype_ping.submit(None);
 //! # Ok(())
