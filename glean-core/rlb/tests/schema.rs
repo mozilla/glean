@@ -9,7 +9,7 @@ use std::path::PathBuf;
 use jsonschema_valid::{self, schemas::Draft};
 use serde_json::Value;
 
-use glean::{metrics::PingType, ClientInfoMetrics, Configuration};
+use glean::{private::PingType, ClientInfoMetrics, Configuration};
 
 const SCHEMA_JSON: &str = include_str!("../../../glean.1.schema.json");
 

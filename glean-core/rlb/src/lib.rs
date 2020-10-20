@@ -17,7 +17,7 @@
 //! Initialize Glean, register a ping and then send it.
 //!
 //! ```rust,no_run
-//! # use glean::{Configuration, ClientInfoMetrics, Error, metrics::*};
+//! # use glean::{Configuration, ClientInfoMetrics, Error, private::*};
 //! # fn main() -> Result<(), Error> {
 //! let cfg = Configuration {
 //!     data_path: "/tmp/data".into(),
@@ -47,7 +47,7 @@ pub use glean_core::{global_glean, setup_glean, CommonMetricData, Error, Glean, 
 
 mod configuration;
 mod core_metrics;
-pub mod metrics;
+pub mod private;
 mod system;
 
 const LANGUAGE_BINDING_NAME: &str = "Rust";
@@ -182,7 +182,7 @@ pub fn is_upload_enabled() -> bool {
 }
 
 /// Register a new [`PingType`](metrics/struct.PingType.html).
-pub fn register_ping_type(ping: &metrics::PingType) {
+pub fn register_ping_type(ping: &private::PingType) {
     with_glean_mut(|glean| {
         glean.register_ping_type(&ping.ping_type);
     })
@@ -195,7 +195,7 @@ pub fn register_ping_type(ping: &metrics::PingType) {
 /// # Returns
 ///
 /// Whether the ping was successfully assembled and queued.
-pub fn submit_ping(ping: &metrics::PingType, reason: Option<&str>) -> bool {
+pub fn submit_ping(ping: &private::PingType, reason: Option<&str>) -> bool {
     submit_ping_by_name(&ping.name, reason)
 }
 
