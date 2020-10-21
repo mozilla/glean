@@ -9,6 +9,7 @@
   * Expose the description of the metric types in glean_core using traits.
 * Rust
   * Add the `BooleanMetric` type.
+  * Add the `dispatcher` module (copied over from [mozilla-central](https://hg.mozilla.org/mozilla-central/rev/fbe0ea62f4bb50bfc5879a56667945697b2c90e7)).
 * Android
   * Update the JNA dependency from 5.2.0 to 5.6.0
 
