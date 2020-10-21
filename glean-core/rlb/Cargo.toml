@@ -11,7 +11,6 @@ keywords = ["telemetry", "glean"]
 include = [
   "/README.md",
   "/LICENSE",
-  "/CHANGELOG.md",
   "/src",
   "/tests",
   "/Cargo.toml",
