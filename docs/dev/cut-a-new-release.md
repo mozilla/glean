@@ -87,6 +87,8 @@ When CI has finished and is green for your specific release branch, you are read
     cargo publish --verbose
     cd ffi
     cargo publish --verbose
+    cd .. && cd rlb
+    cargo publish --verbose
     ```
 7. Send a pull request to merge back the specific release branch to the development branch: <https://github.com/mozilla/glean/compare/main...release-v25.0.0?expand=1>
     * This is important so that no changes are lost.

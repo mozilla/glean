@@ -7,8 +7,7 @@ use std::env;
 use once_cell::sync::Lazy;
 use tempfile::Builder;
 
-use glean_preview as glean;
-use glean_preview::{metrics::PingType, ClientInfoMetrics, Configuration, Error};
+use glean::{metrics::PingType, ClientInfoMetrics, Configuration, Error};
 
 #[allow(non_upper_case_globals)]
 pub static PrototypePing: Lazy<PingType> =
