@@ -7,6 +7,8 @@
   * Update `glean_parser` to 1.29.0
     * Generated code now includes a comment next to each metric containing the name of the metric in its original `snake_case` form.
   * Expose the description of the metric types in glean_core using traits.
+* Rust
+  * Add the `BooleanMetric` type.
 * Android
   * Update the JNA dependency from 5.2.0 to 5.6.0
 
