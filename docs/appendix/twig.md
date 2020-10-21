@@ -35,3 +35,4 @@ They could be release notes, documentation, hopes, dreams, or whatever: so long 
 * 2020-09-01: [Leveraging Rust to build cross-platform mobile libraries](https://blog.mozilla.org/data/2020/09/01/twig-leveraging-rust/)
 * 2020-09-25: [glean-core to Wasm experiment](https://blog.mozilla.org/data/2020/09/25/this-week-in-glean-glean-core-to-wasm-experiment/)
 * 2020-10-06: [FOG Progress report](https://blog.mozilla.org/data/2020/10/06/this-week-in-glean-fog-progress-report/)
+* 2020-10-21: [Cross-Platform Language Binding Generation with Rust and “uniffi”](https://blog.mozilla.org/data/2020/10/21/this-week-in-glean-cross-platform-language-binding-generation-with-rust-and-uniffi/)
