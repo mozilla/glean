@@ -7,7 +7,24 @@ use std::env;
 use once_cell::sync::Lazy;
 use tempfile::Builder;
 
-use glean::{metrics::PingType, ClientInfoMetrics, Configuration, Error};
+use glean::{private::PingType, ClientInfoMetrics, Configuration, Error};
+
+pub mod glean_metrics {
+    use glean::{private::BooleanMetric, CommonMetricData, Lifetime};
+
+    #[allow(non_upper_case_globals)]
+    pub static sample_boolean: once_cell::sync::Lazy<BooleanMetric> =
+        once_cell::sync::Lazy::new(|| {
+            BooleanMetric::new(CommonMetricData {
+                name: "sample_boolean".into(),
+                category: "test.metrics".into(),
+                send_in_pings: vec!["prototype".into()],
+                disabled: false,
+                lifetime: Lifetime::Ping,
+                ..Default::default()
+            })
+        });
+}
 
 #[allow(non_upper_case_globals)]
 pub static PrototypePing: Lazy<PingType> =
@@ -41,6 +58,8 @@ fn main() -> Result<(), Error> {
 
     glean::initialize(cfg, client_info)?;
     glean::register_ping_type(&PrototypePing);
+
+    glean_metrics::sample_boolean.set(true);
 
     if glean::submit_ping_by_name("prototype", None) {
         log::info!("Successfully collected a prototype ping");
