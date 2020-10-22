@@ -44,13 +44,12 @@ pub fn launch(task: impl FnOnce() + Send + 'static) {
 
 /// Block until all tasks prior to this call are processed.
 pub fn block_on_queue() {
-    let (tx, rx) = crossbeam_channel::bounded(0);
-    launch(move || {
-        tx.send(())
-            .expect("(worker) Can't send message on single-use channel")
-    });
-    rx.recv()
-        .expect("Failed to receive message on single-use channel");
+    GLOBAL_DISPATCHER
+        .write()
+        .unwrap()
+        .as_mut()
+        .map(|dispatcher| dispatcher.block_on_queue())
+        .unwrap()
 }
 
 /// Starts processing queued tasks in the global dispatch queue.
@@ -73,4 +72,48 @@ pub fn flush_init() -> Result<(), DispatchError> {
 /// It will not block on the worker thread.
 pub fn try_shutdown() -> Result<(), DispatchError> {
     guard().shutdown()
+}
+
+#[cfg(test)]
+mod test {
+    use std::sync::{Arc, Mutex};
+
+    use super::*;
+
+    // We can only test this once, as it is a global resource which we can't reset.
+    #[test]
+    fn global_fills_up_in_order_and_works() {
+        let _ = env_logger::builder().is_test(true).try_init();
+
+        let result = Arc::new(Mutex::new(vec![]));
+
+        for i in 1..=GLOBAL_DISPATCHER_LIMIT {
+            let result = Arc::clone(&result);
+            launch(move || {
+                result.lock().unwrap().push(i);
+            });
+        }
+
+        {
+            let result = Arc::clone(&result);
+            launch(move || {
+                result.lock().unwrap().push(150);
+            });
+        }
+
+        flush_init().unwrap();
+
+        {
+            let result = Arc::clone(&result);
+            launch(move || {
+                result.lock().unwrap().push(200);
+            });
+        }
+
+        block_on_queue();
+
+        let mut expected = (1..=GLOBAL_DISPATCHER_LIMIT).collect::<Vec<_>>();
+        expected.push(200);
+        assert_eq!(&*result.lock().unwrap(), &expected);
+    }
 }
