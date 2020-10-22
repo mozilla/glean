@@ -40,7 +40,7 @@ flate2 = "1.0.12"
 env_logger = { version = "0.8.1", default-features = false, features = ["termcolor", "atty", "humantime"] }
 tempfile = "3.1.0"
 iso8601 = "0.4"
-ctor = "0.1.12"
+ctor = "0.1.16"
 
 [features]
 # Enable the "safe-mode" Rust storage backend instead of the default LMDB one.
