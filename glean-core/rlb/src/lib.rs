@@ -47,6 +47,7 @@ pub use glean_core::{global_glean, setup_glean, CommonMetricData, Error, Glean, 
 
 mod configuration;
 mod core_metrics;
+mod dispatcher;
 pub mod private;
 mod system;
 
