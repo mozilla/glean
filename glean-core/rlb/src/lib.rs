@@ -49,13 +49,14 @@ pub use glean_core::{global_glean, setup_glean, CommonMetricData, Error, Glean, 
 mod configuration;
 mod core_metrics;
 mod dispatcher;
+mod glean_metrics;
 pub mod private;
 mod system;
 
 const LANGUAGE_BINDING_NAME: &str = "Rust";
 
 /// State to keep track for the Rust Language bindings.
-/// 
+///
 /// This is useful for setting Glean SDK-owned metrics when
 /// the state of the upload is toggled.
 #[derive(Debug)]
@@ -122,6 +123,11 @@ where
 /// * `client_info` - the `ClientInfoMetrics` values used to set Glean
 ///   core metrics.
 pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) {
+    if was_initialize_called() {
+        log::error!("Glean should not be initialized multiple times");
+        return;
+    }
+
     std::thread::spawn(move || {
         let core_cfg = glean_core::Configuration {
             upload_enabled: cfg.upload_enabled,
@@ -136,23 +142,23 @@ pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) {
             Ok(glean) => glean,
             // glean-core already takes care of logging errors: other bindings
             // simply do early returns, as we're doing.
-            Err(_) => return
+            Err(_) => return,
         };
-        
+
         // glean-core already takes care of logging errors: other bindings
         // simply do early returns, as we're doing.
         if glean_core::setup_glean(glean).is_err() {
             return;
         }
-        
+
         log::info!("Glean initialized");
-    
+
         // Now make this the global object available to others.
         setup_state(RustBindingsState {
             channel: cfg.channel,
             client_info,
         });
-        
+
         let upload_enabled = cfg.upload_enabled;
 
         with_glean_mut(|glean| {
@@ -165,26 +171,26 @@ pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) {
             // TODO Bug 1672956 will decide where to set this flag again.
             let dirty_flag = glean.is_dirty_flag_set();
             glean.set_dirty_flag(false);
-/*
 
             // Register builtin pings.
-            // Unfortunately we need to manually list them here to guarantee they are registered synchronously
-            // before we need them.
-            // We don't need to handle the deletion-request ping. It's never touched from the language implementation.
-            LibGleanFFI.INSTANCE.glean_register_ping_type(Pings.baseline.handle)
-            LibGleanFFI.INSTANCE.glean_register_ping_type(Pings.metrics.handle)
-            LibGleanFFI.INSTANCE.glean_register_ping_type(Pings.events.handle)
-
-            // If any pings were registered before initializing, do so now.
-            // We're not clearing this queue in case Glean is reset by tests.
-            synchronized(this@GleanInternalAPI) {
-                pingTypeQueue.forEach {
-                    // We're registering pings synchronously here,
-                    // as this whole `initialize` block already runs off the main thread.
-                    LibGleanFFI.INSTANCE.glean_register_ping_type(it.handle)
-                }
-            }
-*/
+            // Unfortunately we need to manually list them here to guarantee
+            // they are registered synchronously before we need them.
+            // We don't need to handle the deletion-request ping. It's never touched
+            // from the language implementation.
+            glean.register_ping_type(&glean_metrics::pings::baseline.ping_type);
+            glean.register_ping_type(&glean_metrics::pings::metrics.ping_type);
+            glean.register_ping_type(&glean_metrics::pings::events.ping_type);
+            /*
+                        // If any pings were registered before initializing, do so now.
+                        // We're not clearing this queue in case Glean is reset by tests.
+                        synchronized(this@GleanInternalAPI) {
+                            pingTypeQueue.forEach {
+                                // We're registering pings synchronously here,
+                                // as this whole `initialize` block already runs off the main thread.
+                                LibGleanFFI.INSTANCE.glean_register_ping_type(it.handle)
+                            }
+                        }
+            */
             // If this is the first time ever the Glean SDK runs, make sure to set
             // some initial core metrics in case we need to generate early pings.
             // The next times we start, we would have them around already.
