@@ -39,6 +39,7 @@
 //! ```
 
 use once_cell::sync::OnceCell;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Mutex;
 
 pub use configuration::Configuration;
@@ -54,6 +55,9 @@ mod system;
 const LANGUAGE_BINDING_NAME: &str = "Rust";
 
 /// State to keep track for the Rust Language bindings.
+/// 
+/// This is useful for setting Glean SDK-owned metrics when
+/// the state of the upload is toggled.
 #[derive(Debug)]
 struct RustBindingsState {
     /// The channel the application is being distributed on.
@@ -62,6 +66,11 @@ struct RustBindingsState {
     /// Client info metrics set by the application.
     client_info: ClientInfoMetrics,
 }
+
+/// Set when `glean::initialize()` returns.
+/// This allows to detect calls that happen before `glean::initialize()` was called.
+/// Note: The initialization might still be in progress, as it runs in a separate thread.
+static INITIALIZE_CALLED: AtomicBool = AtomicBool::new(false);
 
 /// A global singleton storing additional state for Glean.
 ///
@@ -144,6 +153,19 @@ pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) {
             initialize_core_metrics(&glean, &state.client_info, state.channel.clone());
         });
     });
+
+    // Mark the initialization as called: this needs to happen outside of the
+    // dispatched block!
+    INITIALIZE_CALLED.store(true, Ordering::SeqCst);
+}
+
+/// Checks if `glean::initialize` was ever called.
+///
+/// # Returns
+///
+/// `true` if it was, `false` otherwise.
+fn was_initialize_called() -> bool {
+    INITIALIZE_CALLED.load(Ordering::SeqCst)
 }
 
 fn initialize_core_metrics(
@@ -175,20 +197,40 @@ fn initialize_core_metrics(
 /// Sets whether upload is enabled or not.
 ///
 /// See `glean_core::Glean.set_upload_enabled`.
-pub fn set_upload_enabled(enabled: bool) -> bool {
-    with_glean_mut(|glean| {
-        let state = global_state().lock().unwrap();
-        let old_enabled = glean.is_upload_enabled();
-        glean.set_upload_enabled(enabled);
+pub fn set_upload_enabled(enabled: bool) {
+    if !was_initialize_called() {
+        let msg =
+            "Changing upload enabled before Glean is initialized is not supported.\n \
+            Pass the correct state into `Glean.initialize()`.\n \
+            See documentation at https://mozilla.github.io/glean/book/user/general-api.html#initializing-the-glean-sdk";
+        log::error!("{}", msg);
+        return;
+    }
 
-        if !old_enabled && enabled {
-            // If uploading is being re-enabled, we have to restore the
-            // application-lifetime metrics.
-            initialize_core_metrics(&glean, &state.client_info, state.channel.clone());
-        }
+    // Changing upload enabled always happens asynchronous.
+    // That way it follows what a user expect when calling it inbetween other calls:
+    // it executes in the right order.
+    //
+    // Because the dispatch queue is halted until Glean is fully initialized
+    // we can safely enqueue here and it will execute after initialization.
+    dispatcher::launch(move || {
+        with_glean_mut(|glean| {
+            let state = global_state().lock().unwrap();
+            let old_enabled = glean.is_upload_enabled();
+            glean.set_upload_enabled(enabled);
 
-        enabled
-    })
+            // TODO: Cancel upload and any outstanding metrics ping scheduler
+            // task. Will happen on bug 1672951.
+
+            if !old_enabled && enabled {
+                // If uploading is being re-enabled, we have to restore the
+                // application-lifetime metrics.
+                initialize_core_metrics(&glean, &state.client_info, state.channel.clone());
+            }
+
+            // TODO: trigger upload for the deletion-ping. Will happen in bug 1672952.
+        });
+    });
 }
 
 /// Register a new [`PingType`](metrics/struct.PingType.html).
