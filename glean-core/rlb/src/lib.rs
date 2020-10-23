@@ -53,9 +53,9 @@ mod system;
 
 const LANGUAGE_BINDING_NAME: &str = "Rust";
 
-/// Application state to keep track of.
+/// State to keep track for the Rust Language bindings.
 #[derive(Debug)]
-struct AppState {
+struct RustBindingsState {
     /// The channel the application is being distributed on.
     channel: Option<String>,
 
@@ -66,17 +66,17 @@ struct AppState {
 /// A global singleton storing additional state for Glean.
 ///
 /// Requires a Mutex, because in tests we can actual reset this.
-static STATE: OnceCell<Mutex<AppState>> = OnceCell::new();
+static STATE: OnceCell<Mutex<RustBindingsState>> = OnceCell::new();
 
 /// Get a reference to the global state object.
 ///
 /// Panics if no global state object was set.
-fn global_state() -> &'static Mutex<AppState> {
+fn global_state() -> &'static Mutex<RustBindingsState> {
     STATE.get().unwrap()
 }
 
 /// Set or replace the global Glean object.
-fn setup_state(state: AppState) {
+fn setup_state(state: RustBindingsState) {
     if STATE.get().is_none() {
         STATE.set(Mutex::new(state)).unwrap();
     } else {
@@ -106,28 +106,44 @@ where
 /// Creates and initializes a new Glean object.
 ///
 /// See `glean_core::Glean::new`.
-pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) -> Result<()> {
-    let core_cfg = glean_core::Configuration {
-        upload_enabled: cfg.upload_enabled,
-        data_path: cfg.data_path.clone(),
-        application_id: cfg.application_id.clone(),
-        language_binding_name: LANGUAGE_BINDING_NAME.into(),
-        max_events: cfg.max_events,
-        delay_ping_lifetime_io: cfg.delay_ping_lifetime_io,
-    };
-    let glean = Glean::new(core_cfg)?;
+pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) {
+    std::thread::spawn(move || {
+        let core_cfg = glean_core::Configuration {
+            upload_enabled: cfg.upload_enabled,
+            data_path: cfg.data_path.clone(),
+            application_id: cfg.application_id.clone(),
+            language_binding_name: LANGUAGE_BINDING_NAME.into(),
+            max_events: cfg.max_events,
+            delay_ping_lifetime_io: cfg.delay_ping_lifetime_io,
+        };
 
-    // First initialize core metrics
-    initialize_core_metrics(&glean, &client_info, cfg.channel.clone());
-
-    // Now make this the global object available to others.
-    setup_state(AppState {
-        channel: cfg.channel,
-        client_info,
+        let glean = match Glean::new(core_cfg) {
+            Ok(glean) => glean,
+            // glean-core already takes care of logging errors: other bindings
+            // simply do early returns, as we're doing.
+            Err(_) => return
+        };
+        
+        // glean-core already takes care of logging errors: other bindings
+        // simply do early returns, as we're doing.
+        if glean_core::setup_glean(glean).is_err() {
+            return;
+        }
+        
+        log::info!("Glean initialized");
+    
+        // Now make this the global object available to others.
+        setup_state(RustBindingsState {
+            channel: cfg.channel,
+            client_info,
+        });
+        
+        with_glean_mut(|glean| {
+            let state = global_state().lock().unwrap();
+            // First initialize core metrics
+            initialize_core_metrics(&glean, &state.client_info, state.channel.clone());
+        });
     });
-    glean_core::setup_glean(glean)?;
-
-    Ok(())
 }
 
 fn initialize_core_metrics(
@@ -173,13 +189,6 @@ pub fn set_upload_enabled(enabled: bool) -> bool {
 
         enabled
     })
-}
-
-/// Determines whether upload is enabled.
-///
-/// See `glean_core::Glean.is_upload_enabled`.
-pub fn is_upload_enabled() -> bool {
-    with_glean(|glean| glean.is_upload_enabled())
 }
 
 /// Register a new [`PingType`](metrics/struct.PingType.html).
