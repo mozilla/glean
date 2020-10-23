@@ -630,7 +630,7 @@ impl PingUploadManager {
             }
 
             RecoverableFailure | HttpStatus(_) => {
-                log::error!(
+                log::info!(
                     "Recoverable upload failure while attempting to send ping {}, will retry. Error was {:?}",
                     document_id,
                     status
