@@ -114,7 +114,13 @@ where
 
 /// Creates and initializes a new Glean object.
 ///
-/// See `glean_core::Glean::new`.
+/// See `glean_core::Glean::new` for more information.
+///
+/// # Arguments
+///
+/// * `cfg` - the `Configuration` options to initialize with.
+/// * `client_info` - the `ClientInfoMetrics` values used to set Glean
+///   core metrics.
 pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) {
     std::thread::spawn(move || {
         let core_cfg = glean_core::Configuration {
@@ -147,10 +153,80 @@ pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) {
             client_info,
         });
         
+        let upload_enabled = cfg.upload_enabled;
+
         with_glean_mut(|glean| {
             let state = global_state().lock().unwrap();
-            // First initialize core metrics
-            initialize_core_metrics(&glean, &state.client_info, state.channel.clone());
+
+            // Get the current value of the dirty flag so we know whether to
+            // send a dirty startup baseline ping below.  Immediately set it to
+            // `false` so that dirty startup pings won't be sent if Glean
+            // initialization does not complete successfully.
+            // TODO Bug 1672956 will decide where to set this flag again.
+            let dirty_flag = glean.is_dirty_flag_set();
+            glean.set_dirty_flag(false);
+/*
+
+            // Register builtin pings.
+            // Unfortunately we need to manually list them here to guarantee they are registered synchronously
+            // before we need them.
+            // We don't need to handle the deletion-request ping. It's never touched from the language implementation.
+            LibGleanFFI.INSTANCE.glean_register_ping_type(Pings.baseline.handle)
+            LibGleanFFI.INSTANCE.glean_register_ping_type(Pings.metrics.handle)
+            LibGleanFFI.INSTANCE.glean_register_ping_type(Pings.events.handle)
+
+            // If any pings were registered before initializing, do so now.
+            // We're not clearing this queue in case Glean is reset by tests.
+            synchronized(this@GleanInternalAPI) {
+                pingTypeQueue.forEach {
+                    // We're registering pings synchronously here,
+                    // as this whole `initialize` block already runs off the main thread.
+                    LibGleanFFI.INSTANCE.glean_register_ping_type(it.handle)
+                }
+            }
+*/
+            // If this is the first time ever the Glean SDK runs, make sure to set
+            // some initial core metrics in case we need to generate early pings.
+            // The next times we start, we would have them around already.
+            let is_first_run = glean.is_first_run();
+            if is_first_run {
+                initialize_core_metrics(&glean, &state.client_info, state.channel.clone());
+            }
+
+            // Deal with any pending events so we can start recording new ones
+            let pings_submitted = glean.on_ready_to_submit_pings();
+
+            // We need to kick off upload in these cases:
+            // 1. Pings were submitted through Glean and it is ready to upload those pings;
+            // 2. Upload is disabled, to upload a possible deletion-request ping.
+            if pings_submitted || !upload_enabled {
+                // TODO: bug 1672958.
+            }
+
+            // Set up information and scheduling for Glean owned pings. Ideally, the "metrics"
+            // ping startup check should be performed before any other ping, since it relies
+            // on being dispatched to the API context before any other metric.
+            // TODO: start the metrics ping scheduler, will happen in bug 1672951.
+
+            // Check if the "dirty flag" is set. That means the product was probably
+            // force-closed. If that's the case, submit a 'baseline' ping with the
+            // reason "dirty_startup". We only do that from the second run.
+            if !is_first_run && dirty_flag {
+                // TODO: submitPingByNameSync("baseline", "dirty_startup")
+            }
+
+            // From the second time we run, after all startup pings are generated,
+            // make sure to clear `lifetime: application` metrics and set them again.
+            // Any new value will be sent in newly generated pings after startup.
+            if !is_first_run {
+                glean.clear_application_lifetime_metrics();
+                initialize_core_metrics(&glean, &state.client_info, state.channel.clone());
+            }
+
+            // Signal Dispatcher that init is complete
+            if let Err(err) = dispatcher::flush_init() {
+                log::error!("Unable to flush the preinit queue: {}", err);
+            }
         });
     });
 
