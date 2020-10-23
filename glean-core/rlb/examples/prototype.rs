@@ -56,7 +56,7 @@ fn main() -> Result<(), Error> {
         app_display_version: env!("CARGO_PKG_VERSION").to_string(),
     };
 
-    glean::initialize(cfg, client_info)?;
+    glean::initialize(cfg, client_info);
     glean::register_ping_type(&PrototypePing);
 
     glean_metrics::sample_boolean.set(true);

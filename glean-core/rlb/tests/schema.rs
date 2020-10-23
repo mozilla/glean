@@ -39,7 +39,7 @@ fn new_glean() -> tempfile::TempDir {
         app_display_version: env!("CARGO_PKG_VERSION").to_string(),
     };
 
-    glean::initialize(cfg, client_info).unwrap();
+    glean::initialize(cfg, client_info);
 
     dir
 }
