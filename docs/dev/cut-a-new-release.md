@@ -94,6 +94,7 @@ When CI has finished and is green for your specific release branch, you are read
     * This is important so that no changes are lost.
     * This might have merge conflicts with the `main` branch, which you need to fix before it is merged.
 8. Once the above pull request lands, delete the specific release branch.
+9. Update `glean-ffi` in the iOS megazord. See the [application-services documentation for that](https://github.com/mozilla/application-services/blob/main/megazords/ios/README.md#glean-component).
 
 ## Hotfix release for latest version
 
@@ -157,6 +158,7 @@ When CI has finished and is green for your hotfix branch, you are ready to cut a
     * This is important so that no changes are lost.
     * This might have merge conflicts with the `main` branch, which you need to fix before it is merged.
 8. Once the above pull request lands, delete the hotfix branch.
+9. Update `glean-ffi` in the iOS megazord. See the [application-services documentation for that](https://github.com/mozilla/application-services/blob/main/megazords/ios/README.md#glean-component).
 
 ## Hotfix release for previous version
 
