@@ -43,17 +43,16 @@ fn disabling_upload_disables_metrics_recording() {
     env_logger::try_init().ok();
 
     let _t = new_glean();
+    crate::dispatcher::block_on_queue();
 
-    let metric = BooleanMetric::new(
-        CommonMetricData {
-            name: "bool_metric".into(),
-            category: "test".into(),
-            send_in_pings: vec!["store1".into()],
-            lifetime: Lifetime::Application,
-            disabled: false,
-            dynamic_label: None,
-        }
-    );
+    let metric = BooleanMetric::new(CommonMetricData {
+        name: "bool_metric".into(),
+        category: "test".into(),
+        send_in_pings: vec!["store1".into()],
+        lifetime: Lifetime::Application,
+        disabled: false,
+        dynamic_label: None,
+    });
 
     crate::set_upload_enabled(false);
 

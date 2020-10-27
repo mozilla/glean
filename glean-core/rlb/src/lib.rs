@@ -18,7 +18,6 @@
 //!
 //! ```rust,no_run
 //! # use glean::{Configuration, ClientInfoMetrics, Error, private::*};
-//! # fn main() -> Result<(), Error> {
 //! let cfg = Configuration {
 //!     data_path: "/tmp/data".into(),
 //!     application_id: "org.mozilla.glean_core.example".into(),
@@ -27,15 +26,13 @@
 //!     delay_ping_lifetime_io: false,
 //!     channel: None,
 //! };
-//! glean::initialize(cfg, ClientInfoMetrics::unknown())?;
+//! glean::initialize(cfg, ClientInfoMetrics::unknown());
 //!
 //! let prototype_ping = PingType::new("prototype", true, true, vec!());
 //!
 //! glean::register_ping_type(&prototype_ping);
 //!
 //! prototype_ping.submit(None);
-//! # Ok(())
-//! # }
 //! ```
 
 use once_cell::sync::OnceCell;
@@ -48,7 +45,7 @@ pub use glean_core::{global_glean, setup_glean, CommonMetricData, Error, Glean, 
 
 mod configuration;
 mod core_metrics;
-mod dispatcher;
+pub mod dispatcher;
 mod glean_metrics;
 pub mod private;
 mod system;
@@ -228,12 +225,12 @@ pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) {
                 glean.clear_application_lifetime_metrics();
                 initialize_core_metrics(&glean, &state.client_info, state.channel.clone());
             }
-
-            // Signal Dispatcher that init is complete
-            if let Err(err) = dispatcher::flush_init() {
-                log::error!("Unable to flush the preinit queue: {}", err);
-            }
         });
+
+        // Signal Dispatcher that init is complete
+        if let Err(err) = dispatcher::flush_init() {
+            log::error!("Unable to flush the preinit queue: {}", err);
+        }
     });
 
     // Mark the initialization as called: this needs to happen outside of the
@@ -317,8 +314,11 @@ pub fn set_upload_enabled(enabled: bool) {
 
 /// Register a new [`PingType`](metrics/struct.PingType.html).
 pub fn register_ping_type(ping: &private::PingType) {
-    with_glean_mut(|glean| {
-        glean.register_ping_type(&ping.ping_type);
+    let ping = ping.clone();
+    dispatcher::launch(move || {
+        with_glean_mut(|glean| {
+            glean.register_ping_type(&ping.ping_type);
+        })
     })
 }
 
@@ -329,7 +329,7 @@ pub fn register_ping_type(ping: &private::PingType) {
 /// # Returns
 ///
 /// Whether the ping was successfully assembled and queued.
-pub fn submit_ping(ping: &private::PingType, reason: Option<&str>) -> bool {
+pub fn submit_ping(ping: &private::PingType, reason: Option<&str>) {
     submit_ping_by_name(&ping.name, reason)
 }
 
@@ -340,8 +340,12 @@ pub fn submit_ping(ping: &private::PingType, reason: Option<&str>) -> bool {
 /// # Returns
 ///
 /// Whether the ping was succesfully assembled and queued.
-pub fn submit_ping_by_name(ping: &str, reason: Option<&str>) -> bool {
-    with_glean(|glean| glean.submit_ping_by_name(ping, reason).unwrap_or(false))
+pub fn submit_ping_by_name(ping: &str, reason: Option<&str>) {
+    let ping = ping.to_string();
+    let reason = reason.map(|s| s.to_string());
+    dispatcher::launch(move || {
+        with_glean(|glean| glean.submit_ping_by_name(&ping, reason.as_deref()).ok());
+    })
 }
 
 #[cfg(test)]

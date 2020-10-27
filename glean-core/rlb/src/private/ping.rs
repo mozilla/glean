@@ -42,7 +42,7 @@ impl PingType {
     /// # Returns
     ///
     /// Whether the ping was succesfully assembled and queued.
-    pub fn submit(&self, reason: Option<&str>) -> bool {
+    pub fn submit(&self, reason: Option<&str>) {
         crate::submit_ping(self, reason)
     }
 }

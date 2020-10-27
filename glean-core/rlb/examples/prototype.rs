@@ -61,11 +61,7 @@ fn main() -> Result<(), Error> {
 
     glean_metrics::sample_boolean.set(true);
 
-    if glean::submit_ping_by_name("prototype", None) {
-        log::info!("Successfully collected a prototype ping");
-    } else {
-        log::info!("Prototype ping failed");
-    }
+    glean::submit_ping_by_name("prototype", None);
 
     Ok(())
 }

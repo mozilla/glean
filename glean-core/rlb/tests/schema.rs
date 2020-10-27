@@ -54,6 +54,7 @@ fn validate_against_schema() {
     let ping_type = PingType::new("test", true, /* send_if_empty */ true, vec![]);
     glean::register_ping_type(&ping_type);
     ping_type.submit(None);
+    glean::dispatcher::block_on_queue();
 
     // Read the ping from disk.
     // We know where it should be placed.
