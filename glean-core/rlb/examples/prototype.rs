@@ -56,16 +56,12 @@ fn main() -> Result<(), Error> {
         app_display_version: env!("CARGO_PKG_VERSION").to_string(),
     };
 
-    glean::initialize(cfg, client_info)?;
+    glean::initialize(cfg, client_info);
     glean::register_ping_type(&PrototypePing);
 
     glean_metrics::sample_boolean.set(true);
 
-    if glean::submit_ping_by_name("prototype", None) {
-        log::info!("Successfully collected a prototype ping");
-    } else {
-        log::info!("Prototype ping failed");
-    }
+    glean::submit_ping_by_name("prototype", None);
 
     Ok(())
 }

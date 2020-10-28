@@ -44,12 +44,16 @@ pub fn launch(task: impl FnOnce() + Send + 'static) {
 
 /// Block until all tasks prior to this call are processed.
 pub fn block_on_queue() {
-    GLOBAL_DISPATCHER
-        .write()
-        .unwrap()
-        .as_mut()
-        .map(|dispatcher| dispatcher.block_on_queue())
-        .unwrap()
+    let guard = {
+        GLOBAL_DISPATCHER
+            .write()
+            .unwrap()
+            .as_ref()
+            .map(|dispatcher| dispatcher.guard())
+            .unwrap()
+    };
+
+    guard.block_on_queue();
 }
 
 /// Starts processing queued tasks in the global dispatch queue.
@@ -57,12 +61,15 @@ pub fn block_on_queue() {
 /// This function blocks until queued tasks prior to this call are finished.
 /// Once the initial queue is empty the dispatcher will wait for new tasks to be launched.
 pub fn flush_init() -> Result<(), DispatchError> {
-    GLOBAL_DISPATCHER
-        .write()
-        .unwrap()
-        .as_mut()
-        .map(|dispatcher| dispatcher.flush_init())
-        .unwrap()
+    let mut guard = {
+        GLOBAL_DISPATCHER
+            .write()
+            .unwrap()
+            .as_ref()
+            .map(|dispatcher| dispatcher.guard())
+            .unwrap()
+    };
+    guard.flush_init()
 }
 
 /// Shuts down the dispatch queue.
@@ -80,8 +87,8 @@ mod test {
 
     use super::*;
 
-    // We can only test this once, as it is a global resource which we can't reset.
     #[test]
+    #[ignore] // We can't reset the queue at the moment, so filling it up breaks other tests.
     fn global_fills_up_in_order_and_works() {
         let _ = env_logger::builder().is_test(true).try_init();
 

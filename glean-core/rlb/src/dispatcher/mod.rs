@@ -57,18 +57,23 @@ enum Command {
 /// The error returned from operations on the dispatcher
 #[derive(Error, Debug, PartialEq)]
 pub enum DispatchError {
+    /// The worker panicked while running a task
     #[error("The worker panicked while running a task")]
     WorkerPanic,
 
+    /// Maximum queue size reached
     #[error("Maximum queue size reached")]
     QueueFull,
 
+    /// Pre-init buffer was already flushed
     #[error("Pre-init buffer was already flushed")]
     AlreadyFlushed,
 
+    /// Failed to send command to worker thread
     #[error("Failed to send command to worker thread")]
     SendError,
 
+    /// Failed to receive from channel
     #[error("Failed to receive from channel")]
     RecvError(#[from] crossbeam_channel::RecvError),
 }
@@ -91,9 +96,17 @@ impl<T> From<SendError<T>> for DispatchError {
 /// A clonable guard for a dispatch queue.
 #[derive(Clone)]
 struct DispatchGuard {
+    /// Whether to queue on the preinit buffer or on the unbounded queue
     queue_preinit: Arc<AtomicBool>,
-    preinit: Sender<Command>,
-    queue: Sender<Command>,
+
+    /// Used to unblock the worker thread initially.
+    block_sender: Sender<()>,
+
+    /// Sender for the preinit queue.
+    preinit_sender: Sender<Command>,
+
+    /// Sender for the unbounded queue.
+    sender: Sender<Command>,
 }
 
 impl DispatchGuard {
@@ -108,15 +121,50 @@ impl DispatchGuard {
 
     fn send(&self, task: Command) -> Result<(), DispatchError> {
         if self.queue_preinit.load(Ordering::SeqCst) {
-            match self.preinit.try_send(task) {
+            match self.preinit_sender.try_send(task) {
                 Ok(()) => Ok(()),
                 Err(TrySendError::Full(_)) => Err(DispatchError::QueueFull),
                 Err(TrySendError::Disconnected(_)) => Err(DispatchError::SendError),
             }
         } else {
-            self.queue.send(task)?;
+            self.sender.send(task)?;
             Ok(())
         }
+    }
+
+    fn block_on_queue(&self) {
+        let (tx, rx) = crossbeam_channel::bounded(0);
+        self.launch(move || {
+            tx.send(())
+                .expect("(worker) Can't send message on single-use channel")
+        })
+        .expect("Failed to launch the blocking task");
+        rx.recv()
+            .expect("Failed to receive message on single-use channel");
+    }
+
+    fn flush_init(&mut self) -> Result<(), DispatchError> {
+        // We immediately stop queueing in the pre-init buffer.
+        let old_val = self.queue_preinit.swap(false, Ordering::SeqCst);
+        if !old_val {
+            return Err(DispatchError::AlreadyFlushed);
+        }
+
+        // Unblock the worker thread exactly once.
+        self.block_sender.send(())?;
+
+        // Single-use channel to communicate with the worker thread.
+        let (swap_sender, swap_receiver) = bounded(0);
+
+        // Send final command and block until it is sent.
+        self.preinit_sender
+            .send(Command::Swap(swap_sender))
+            .map_err(|_| DispatchError::SendError)?;
+
+        // Now wait for the worker thread to do the swap and inform us.
+        // This blocks until all tasks in the preinit buffer have been processed.
+        swap_receiver.recv()?;
+        Ok(())
     }
 }
 
@@ -128,17 +176,8 @@ impl DispatchGuard {
 /// Processing will start after flushing once, processing already enqueued tasks first, then
 /// waiting for further tasks to be enqueued.
 pub struct Dispatcher {
-    /// Whether to queue on the preinit buffer or on the unbounded queue
-    queue_preinit: Arc<AtomicBool>,
-
-    /// Used to unblock the worker thread initially.
-    block_sender: Sender<()>,
-
-    /// Sender for the preinit queue.
-    preinit_sender: Sender<Command>,
-
-    /// Sender for the unbounded queue.
-    sender: Sender<Command>,
+    /// Guard used for communication with the worker thread.
+    guard: DispatchGuard,
 
     /// Handle to the worker thread, allows to wait for it to finish.
     worker: Option<JoinHandle<()>>,
@@ -204,33 +243,25 @@ impl Dispatcher {
             }
         });
 
-        Dispatcher {
+        let guard = DispatchGuard {
             queue_preinit,
             block_sender,
             preinit_sender,
             sender,
+        };
+
+        Dispatcher {
+            guard,
             worker: Some(worker),
         }
     }
 
     fn guard(&self) -> DispatchGuard {
-        DispatchGuard {
-            queue_preinit: Arc::clone(&self.queue_preinit),
-            preinit: self.preinit_sender.clone(),
-            queue: self.sender.clone(),
-        }
+        self.guard.clone()
     }
 
     fn block_on_queue(&self) {
-        let (tx, rx) = crossbeam_channel::bounded(0);
-        self.guard()
-            .launch(move || {
-                tx.send(())
-                    .expect("(worker) Can't send message on single-use channel")
-            })
-            .expect("Failed to launch the blocking task");
-        rx.recv()
-            .expect("Failed to receive message on single-use channel");
+        self.guard().block_on_queue()
     }
 
     /// Waits for the worker thread to finish and finishes the dispatch queue.
@@ -250,27 +281,7 @@ impl Dispatcher {
     ///
     /// Returns an error if called multiple times.
     pub fn flush_init(&mut self) -> Result<(), DispatchError> {
-        // We immediately stop queueing in the pre-init buffer.
-        let old_val = self.queue_preinit.swap(false, Ordering::SeqCst);
-        if !old_val {
-            return Err(DispatchError::AlreadyFlushed);
-        }
-
-        // Unblock the worker thread exactly once.
-        self.block_sender.send(())?;
-
-        // Single-use channel to communicate with the worker thread.
-        let (swap_sender, swap_receiver) = bounded(0);
-
-        // Send final command and block until it is sent.
-        self.preinit_sender
-            .send(Command::Swap(swap_sender))
-            .map_err(|_| DispatchError::SendError)?;
-
-        // Now wait for the worker thread to do the swap and inform us.
-        // This blocks until all tasks in the preinit buffer have been processed.
-        swap_receiver.recv()?;
-        Ok(())
+        self.guard().flush_init()
     }
 }
 
