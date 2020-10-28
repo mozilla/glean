@@ -177,17 +177,10 @@ pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) {
             glean.register_ping_type(&glean_metrics::pings::baseline.ping_type);
             glean.register_ping_type(&glean_metrics::pings::metrics.ping_type);
             glean.register_ping_type(&glean_metrics::pings::events.ping_type);
-            /*
-                        // If any pings were registered before initializing, do so now.
-                        // We're not clearing this queue in case Glean is reset by tests.
-                        synchronized(this@GleanInternalAPI) {
-                            pingTypeQueue.forEach {
-                                // We're registering pings synchronously here,
-                                // as this whole `initialize` block already runs off the main thread.
-                                LibGleanFFI.INSTANCE.glean_register_ping_type(it.handle)
-                            }
-                        }
-            */
+
+            // TODO: perform registration of pings that were attempted to be
+            // registered before init. See bug 1673850.
+
             // If this is the first time ever the Glean SDK runs, make sure to set
             // some initial core metrics in case we need to generate early pings.
             // The next times we start, we would have them around already.
@@ -215,7 +208,7 @@ pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) {
             // force-closed. If that's the case, submit a 'baseline' ping with the
             // reason "dirty_startup". We only do that from the second run.
             if !is_first_run && dirty_flag {
-                // TODO: submitPingByNameSync("baseline", "dirty_startup")
+                // TODO: bug 1672958 - submit_ping_by_name_sync("baseline", "dirty_startup");
             }
 
             // From the second time we run, after all startup pings are generated,
@@ -325,10 +318,6 @@ pub fn register_ping_type(ping: &private::PingType) {
 /// Collects and submits a ping for eventual uploading.
 ///
 /// See `glean_core::Glean.submit_ping`.
-///
-/// # Returns
-///
-/// Whether the ping was successfully assembled and queued.
 pub fn submit_ping(ping: &private::PingType, reason: Option<&str>) {
     submit_ping_by_name(&ping.name, reason)
 }
@@ -336,10 +325,6 @@ pub fn submit_ping(ping: &private::PingType, reason: Option<&str>) {
 /// Collects and submits a ping for eventual uploading by name.
 ///
 /// See `glean_core::Glean.submit_ping_by_name`.
-///
-/// # Returns
-///
-/// Whether the ping was succesfully assembled and queued.
 pub fn submit_ping_by_name(ping: &str, reason: Option<&str>) {
     let ping = ping.to_string();
     let reason = reason.map(|s| s.to_string());
