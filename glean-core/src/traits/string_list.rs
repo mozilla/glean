@@ -36,7 +36,12 @@ pub trait StringList {
     /// Gets the currently-stored values.
     ///
     /// This doesn't clear the stored value.
-    fn test_get_value(&self, storage_name: &str) -> Option<Vec<String>>;
+    ///
+    /// # Arguments
+    ///
+    /// * `ping_name` - represents the optional name of the ping to retrieve the
+    ///   metric for. Defaults to the first value in `send_in_pings`.
+    fn test_get_value<'a, S: Into<Option<&'a str>>>(&self, ping_name: S) -> Option<Vec<String>>;
 
     /// **Exported for test purposes.**
     ///
@@ -44,5 +49,13 @@ pub trait StringList {
     /// ["string1", "string2", ...]
     ///
     /// This doesn't clear the stored value.
-    fn test_get_value_as_json_string(&self, storage_name: &str) -> Option<String>;
+    ///
+    /// # Arguments
+    ///
+    /// * `ping_name` - represents the optional name of the ping to retrieve the
+    ///   metric for. Defaults to the first value in `send_in_pings`.
+    fn test_get_value_as_json_string<'a, S: Into<Option<&'a str>>>(
+        &self,
+        ping_name: S,
+    ) -> Option<String>;
 }

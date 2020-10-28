@@ -23,5 +23,13 @@ pub trait String {
     /// Gets the currently stored value as a string.
     ///
     /// This doesn't clear the stored value.
-    fn test_get_value(&self, storage_name: &str) -> Option<std::string::String>;
+    ///
+    /// # Arguments
+    ///
+    /// * `ping_name` - represents the optional name of the ping to retrieve the
+    ///   metric for. Defaults to the first value in `send_in_pings`.
+    fn test_get_value<'a, S: Into<Option<&'a str>>>(
+        &self,
+        ping_name: S,
+    ) -> Option<std::string::String>;
 }
