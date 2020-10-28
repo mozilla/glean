@@ -5,6 +5,8 @@
 use inherent::inherent;
 use std::sync::Arc;
 
+use glean_core::metrics::MetricType;
+
 use crate::dispatcher;
 
 // We need to wrap the glean-core type: otherwise if we try to implement
@@ -44,9 +46,19 @@ impl glean_core::traits::Boolean for BooleanMetric {
     /// Gets the currently stored value as a boolean.
     ///
     /// This doesn't clear the stored value.
-    fn test_get_value(&self, storage_name: &str) -> Option<bool> {
+    ///
+    /// # Arguments
+    ///
+    /// * `ping_name` - represents the optional name of the ping to retrieve the
+    ///   metric for. Defaults to the first value in `send_in_pings`.
+    fn test_get_value<'a, S: Into<Option<&'a str>>>(&self, ping_name: S) -> Option<bool> {
         dispatcher::block_on_queue();
 
-        crate::with_glean(|glean| self.0.test_get_value(glean, storage_name))
+        let queried_ping_name = match ping_name.into() {
+            Some(name) => name,
+            None => self.0.meta().send_in_pings.first().unwrap(),
+        };
+
+        crate::with_glean(|glean| self.0.test_get_value(glean, queried_ping_name))
     }
 }
