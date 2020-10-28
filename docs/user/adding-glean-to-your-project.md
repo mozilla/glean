@@ -113,6 +113,27 @@ For integration with the build system you can follow the [Carthage Quick Start s
    ```
    $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Glean.framework
    ```
+
+#### Combined usage with application-services
+
+If your application uses both the Glean SDK and [application-services](https://github.com/mozilla/application-services)
+you can use a combined release to reduce the memory usage and startup time impact.
+
+In your `Cartfile` require only `application-services`, e.g.:
+
+```
+github "mozilla/application-services" ~> "{latest-version}"
+```
+
+> **Important:** the `{latest-version}` placeholder should be replaced with the version number of the latest application-services release.
+> You can find the version number on the [release page](https://github.com/mozilla/application-services/releases/latest).
+
+Then check out and build the new dependency:
+
+```
+carthage update --platform iOS
+```
+
 </div>
 
 <div data-lang="Python" class="tab">
@@ -120,8 +141,8 @@ For integration with the build system you can follow the [Carthage Quick Start s
 We recommend using a virtual environment for your work to isolate the dependencies for your project. There are many popular abstractions on top of virtual environments in the Python ecosystem which can help manage your project dependencies.
 
 The Glean SDK Python bindings currently have [prebuilt wheels on PyPI for Windows (i686 and x86_64), Linux (x86_64) and macOS (x86_64)](https://pypi.org/project/glean-sdk/#files).
-For other platforms, the `glean_sdk` package will be built from source on your machine. 
-This requires that Cargo and Rust are already installed. 
+For other platforms, the `glean_sdk` package will be built from source on your machine.
+This requires that Cargo and Rust are already installed.
 The easiest way to do this is through [rustup](https://rustup.rs/).
 
 Once you have your virtual environment set up and activated, you can install the Glean SDK into it using:
@@ -228,6 +249,12 @@ Follow these steps to automatically run the parser at build time:
    ```
    bash $PWD/sdk_generator.sh
    ```
+
+   > **Note:** If you are using the combined release of application-services and the Glean SDK you need to set the namespace to `MozillaAppServices`, e.g.:
+   >
+   > ```
+   > bash $PWD/sdk_generator.sh --glean-namespace MozillaAppServices
+   > ```
 
 3. Add the path to your `metrics.yaml` and (optionally) `pings.yaml` under "Input files":
 
