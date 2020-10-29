@@ -13,6 +13,7 @@ import com.sun.jna.StringArray
 import java.lang.reflect.Proxy
 import mozilla.telemetry.glean.config.FfiConfiguration
 import mozilla.telemetry.glean.net.FfiPingUploadTask
+import mozilla.telemetry.glean.BuildConfig
 
 // Turn a boolean into its Byte (u8) representation
 internal fun Boolean.toByte(): Byte = if (this) 1 else 0
@@ -65,11 +66,30 @@ internal fun Pointer.getRustString(): String {
 @Suppress("TooManyFunctions")
 internal interface LibGleanFFI : Library {
     companion object {
-        private val JNA_LIBRARY_NAME = "glean_ffi"
-
         internal var INSTANCE: LibGleanFFI = try {
-            val lib = Native.load(JNA_LIBRARY_NAME, LibGleanFFI::class.java) as LibGleanFFI
-            lib.glean_enable_logging()
+            var libName = BuildConfig.JNA_LIBRARY_NAME
+            val isMegazorded = (libName == "megazord")
+            // If we're part of the application-services megazord, we may need to dynamically
+            // look up the library name in system properties, to work with custom megazords.
+            // Ref https://github.com/mozilla/application-services/blob/main/docs/design/megazords.md
+            if (isMegazorded) {
+                val mzLibName = System.getProperty("mozilla.appservices.megazord.library")
+                if (mzLibName != null) {
+                    val mzLibVersion = System.getProperty("mozilla.appservices.megazord.version")!!
+                    if (mzLibVersion != BuildConfig.LIBRARY_VERSION) {
+                        throw AssertionError(
+                            "Expected megazord $mzLibName version ${BuildConfig.LIBRARY_VERSION}, " +
+                            "but found $mzLibVersion"
+                        )
+                    }
+                    libName = mzLibName
+                }
+            }
+            val lib = Native.load(libName, LibGleanFFI::class.java) as LibGleanFFI
+            // If we're part of the application-services megazord, it will initialize logging for us.
+            if (! isMegazorded) {
+                lib.glean_enable_logging()
+            }
             lib
         } catch (e: UnsatisfiedLinkError) {
             Proxy.newProxyInstance(

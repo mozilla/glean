@@ -40,6 +40,7 @@ android {
         // TODO: 1551691 Get the version from git tag...? Also, we need to select a
         // version that won't conflict with legacy glean-ac versions.
         buildConfigField("String", "LIBRARY_VERSION", "\"0.1\"")
+        buildConfigField("String", "JNA_LIBRARY_NAME", "\"glean_ffi\"")
         // Carefully escape the string here so it will support `\` in
         // Windows paths correctly.
         buildConfigField("String", "GLEAN_PING_SCHEMA_PATH", JsonOutput.toJson(GLEAN_PING_SCHEMA_PATH.path))
