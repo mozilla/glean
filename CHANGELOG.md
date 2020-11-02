@@ -4,6 +4,7 @@
 
 * Android
   * Update the JNA dependency from 5.2.0 to 5.6.0
+  * The `glean-gradle-plugin` now makes sure that only a single Miniconda installation will happen at the same time to avoid a race condition when multiple components within the same project are using Glean.
 
 # v33.0.4 (2020-09-28)
 
