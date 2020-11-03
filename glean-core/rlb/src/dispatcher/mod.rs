@@ -414,12 +414,12 @@ mod test {
         dispatcher.guard().shutdown().unwrap();
         {
             let result = Arc::clone(&result);
-            dispatcher
-                .guard()
-                .launch(move || {
-                    result.lock().unwrap().push(0);
-                })
-                .unwrap();
+            // This might fail because the shutdown is quick enough,
+            // or it might succeed and still send the task.
+            // In any case that task should not be executed.
+            let _ = dispatcher.guard().launch(move || {
+                result.lock().unwrap().push(0);
+            });
         }
 
         dispatcher.join().unwrap();
