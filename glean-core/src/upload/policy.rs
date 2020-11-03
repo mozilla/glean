@@ -7,7 +7,6 @@
 const MAX_RECOVERABLE_FAILURES: u32 = 3;
 const MAX_WAIT_ATTEMPTS: u32 = 3;
 const MAX_PING_BODY_SIZE: usize = 1024 * 1024; // 1 MB
-const MAX_PENDING_PINGS_DIRECTORY_SIZE: u64 = 10 * 1024 * 1024; // 10MB
 
 // The average number of baseline pings per client (on Fenix) is at 15 pings a day.
 // The P99 value is ~110.
@@ -31,8 +30,6 @@ pub struct Policy {
     max_wait_attempts: Option<u32>,
     /// The maximum size in bytes a ping body may have to be eligible for upload.
     max_ping_body_size: Option<usize>,
-    /// The maximum size in byte the pending pings directory may have on disk.
-    max_pending_pings_directory_size: Option<u64>,
     /// The maximum number of pending pings on disk.
     max_pending_pings_count: Option<u64>,
 }
@@ -43,7 +40,6 @@ impl Default for Policy {
             max_recoverable_failures: Some(MAX_RECOVERABLE_FAILURES),
             max_wait_attempts: Some(MAX_WAIT_ATTEMPTS),
             max_ping_body_size: Some(MAX_PING_BODY_SIZE),
-            max_pending_pings_directory_size: Some(MAX_PENDING_PINGS_DIRECTORY_SIZE),
             max_pending_pings_count: Some(MAX_PENDING_PINGS_COUNT),
         }
     }
@@ -86,23 +82,11 @@ impl Policy {
         self.max_ping_body_size = v;
     }
 
-    pub fn max_pending_pings_directory_size(&self) -> u64 {
-        match &self.max_pending_pings_directory_size {
-            Some(v) => *v,
-            None => u64::MAX,
-        }
-    }
-
     pub fn max_pending_pings_count(&self) -> u64 {
         match &self.max_pending_pings_count {
             Some(v) => *v,
             None => u64::MAX,
         }
-    }
-
-    #[cfg(test)]
-    pub fn set_max_pending_pings_directory_size(&mut self, v: Option<u64>) {
-        self.max_pending_pings_directory_size = v;
     }
 
     #[cfg(test)]

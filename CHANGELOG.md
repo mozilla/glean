@@ -1,5 +1,9 @@
 # Unreleased changes
 
+* General
+  * Remove 10MB quota for pending pings directory size. ([#1299](https://github.com/mozilla/glean/pull/1299))
+    * This quota became obsolete after we added another quota of 250 ping files on the same directory (see: [v32.4.0](https://github.com/mozilla/glean/compare/v32.3.2...v32.4.0)). The latter is always reached before the 10MB quota.
+
 [Full changelog](https://github.com/mozilla/glean/compare/v33.0.4...main)
 
 * General
