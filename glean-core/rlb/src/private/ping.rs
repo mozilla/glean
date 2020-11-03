@@ -2,10 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-/// Stores information about a ping.
-///
-/// This is required so that given metric data queued on disk we can send
-/// pings with the correct settings, e.g. whether it has a client_id.
+/// A Glean ping.
 #[derive(Clone, Debug)]
 pub struct PingType {
     pub(crate) name: String,
@@ -15,7 +12,7 @@ pub struct PingType {
 impl PingType {
     /// Creates a new ping type.
     ///
-    /// # Arguments
+    /// ## Arguments
     ///
     /// * `name` - The name of the ping.
     /// * `include_client_id` - Whether to include the client ID in the assembled ping when.
@@ -34,10 +31,30 @@ impl PingType {
             send_if_empty,
             reason_codes,
         );
-        Self { name, ping_type }
+
+        let me = Self { name, ping_type };
+        crate::register_ping_type(&me);
+        me
     }
 
-    /// Submits the ping.
+    /// Collect and submit the ping for eventual upload.
+    ///
+    /// This will collect all stored data to be included in the ping.
+    /// Data with lifetime `ping` will then be reset.
+    ///
+    /// If the ping is configured with `send_if_empty = false`
+    /// and the ping currently contains no content,
+    /// it will not be queued for upload.
+    /// If the ping is configured with `send_if_empty = true`
+    /// it will be queued for upload even if otherwise empty.
+    ///
+    /// Pings always contain the `ping_info` and `client_info` sections.
+    /// See [ping sections](https://mozilla.github.io/glean/book/user/pings/index.html#ping-sections)
+    /// for details.
+    ///
+    /// ## Parameters
+    /// * `reason` - The reason the ping is being submitted.
+    ///              Must be one of the configured `reason_codes`.
     pub fn submit(&self, reason: Option<&str>) {
         crate::submit_ping(self, reason)
     }
