@@ -32,6 +32,8 @@ fn new_glean() -> tempfile::TempDir {
         max_events: None,
         delay_ping_lifetime_io: false,
         channel: None,
+        server_endpoint: Some("invalid-test-host".into()),
+        uploader: None,
     };
 
     let client_info = ClientInfoMetrics {

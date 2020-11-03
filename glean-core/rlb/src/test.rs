@@ -20,7 +20,50 @@ const GLOBAL_APPLICATION_ID: &str = "org.mozilla.rlb.test";
 
 // Create a new instance of Glean with a temporary directory.
 // We need to keep the `TempDir` alive, so that it's not deleted before we stop using it.
-fn new_glean() -> tempfile::TempDir {
+fn new_glean(configuration: Option<Configuration>) -> tempfile::TempDir {
+    let dir = tempfile::tempdir().unwrap();
+    let tmpname = dir.path().display().to_string();
+
+    let cfg = match configuration {
+        Some(c) => c,
+        None => Configuration {
+            data_path: tmpname,
+            application_id: GLOBAL_APPLICATION_ID.into(),
+            upload_enabled: true,
+            max_events: None,
+            delay_ping_lifetime_io: false,
+            channel: Some("testing".into()),
+            server_endpoint: Some("invalid-test-host".into()),
+            uploader: None
+        }
+    };
+
+    initialize(cfg, ClientInfoMetrics::unknown());
+    dir
+}
+
+#[test]
+fn send_a_ping() {
+    let _lock = GLOBAL_LOCK.lock().unwrap();
+    env_logger::try_init().ok();
+
+    let (s, r) = crossbeam_channel::bounded::<String>(1);
+
+    // Define a fake uploader that reports back the submission URL
+    // using a crossbeam channel.
+    #[derive(Debug)]
+    pub struct FakeUploader {
+        sender: crossbeam_channel::Sender<String>
+    };
+    impl net::PingUploader for FakeUploader {
+        fn upload(&self, url: String, _body: Vec<u8>, _headers: Vec<(String, String)>) -> net::UploadResult 
+        {
+            self.sender.send(url).unwrap();
+            net::UploadResult::HttpStatus(200)
+        }
+    }
+
+    // Createa  custom configuration to use a fake uploader.
     let dir = tempfile::tempdir().unwrap();
     let tmpname = dir.path().display().to_string();
 
@@ -31,10 +74,21 @@ fn new_glean() -> tempfile::TempDir {
         max_events: None,
         delay_ping_lifetime_io: false,
         channel: Some("testing".into()),
+        server_endpoint: Some("invalid-test-host".into()),
+        uploader: Some(Box::new(FakeUploader{sender: s}))
     };
 
-    initialize(cfg, ClientInfoMetrics::unknown());
-    dir
+    let _t = new_glean(Some(cfg));
+    crate::dispatcher::block_on_queue();
+
+    // Define a new ping and submit it.
+    const PING_NAME: &str = "test-ping";
+    let custom_ping = private::PingType::new(PING_NAME, true, true, vec![]);
+    custom_ping.submit(None);
+    
+    // Wait for the ping to arrive.
+    let url = r.recv().unwrap();
+    assert_eq!(url.contains(PING_NAME), true);
 }
 
 #[test]
@@ -42,7 +96,7 @@ fn disabling_upload_disables_metrics_recording() {
     let _lock = GLOBAL_LOCK.lock().unwrap();
     env_logger::try_init().ok();
 
-    let _t = new_glean();
+    let _t = new_glean(None);
     crate::dispatcher::block_on_queue();
 
     let metric = BooleanMetric::new(CommonMetricData {
@@ -102,6 +156,8 @@ fn initialize_must_not_crash_if_data_dir_is_messed_up() {
         max_events: None,
         delay_ping_lifetime_io: false,
         channel: Some("testing".into()),
+        server_endpoint: Some("invalid-test-host".into()),
+        uploader: None
     };
 
     initialize(cfg, ClientInfoMetrics::unknown());
@@ -121,17 +177,27 @@ fn initializing_twice_is_a_noop() {
     let dir = tempfile::tempdir().unwrap();
     let tmpname = dir.path().display().to_string();
 
-    let cfg = Configuration {
+    initialize(Configuration {
+        data_path: tmpname.clone().into(),
+        application_id: GLOBAL_APPLICATION_ID.into(),
+        upload_enabled: true,
+        max_events: None,
+        delay_ping_lifetime_io: false,
+        channel: Some("testing".into()),
+        server_endpoint: Some("invalid-test-host".into()),
+        uploader: None
+    }, ClientInfoMetrics::unknown());
+
+    initialize(Configuration {
         data_path: tmpname,
         application_id: GLOBAL_APPLICATION_ID.into(),
         upload_enabled: true,
         max_events: None,
         delay_ping_lifetime_io: false,
         channel: Some("testing".into()),
-    };
-
-    initialize(cfg.clone(), ClientInfoMetrics::unknown());
-    initialize(cfg, ClientInfoMetrics::unknown());
+        server_endpoint: Some("invalid-test-host".into()),
+        uploader: None
+    }, ClientInfoMetrics::unknown());
 }
 
 #[test]
