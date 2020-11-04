@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v33.0.4...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v33.1.0...main)
+
+# v33.1.0 (2020-11-04)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v33.0.4...v33.1.0)
 
 * General
   * Standardize throttle backoff time throughout all bindings. ([#1240](https://github.com/mozilla/glean/pull/1240))
