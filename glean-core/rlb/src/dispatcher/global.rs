@@ -81,6 +81,18 @@ pub fn try_shutdown() -> Result<(), DispatchError> {
     guard().shutdown()
 }
 
+/// TEST ONLY FUNCTION.
+/// Resets the Glean state and triggers init again.
+pub(crate) fn reset_dispatcher() {
+    // We don't care about shutdown errors, since they will
+    // definitely happen if this
+    let _ = try_shutdown();
+
+    // Now that the dispatcher is shut down, replace it.
+    let mut lock = GLOBAL_DISPATCHER.write().unwrap();
+    *lock = Some(Dispatcher::new(GLOBAL_DISPATCHER_LIMIT));
+}
+
 #[cfg(test)]
 mod test {
     use std::sync::{Arc, Mutex};
