@@ -13,6 +13,7 @@ public class HttpPingUploader {
         // Since ping file names are UUIDs, this matches UUIDs for filtering purposes
         static let logTag = "glean/HttpPingUploader"
         static let connectionTimeout = 10000
+        static let throttleBackoffMs: UInt32 = 60_000
 
         // For this error, the ping will be retried later
         static let recoverableErrorStatusCode: UInt16 = 500
@@ -31,6 +32,15 @@ public class HttpPingUploader {
     ///     * configuration: The Glean configuration to use.
     public init(configuration: Configuration) {
         self.config = configuration
+    }
+
+    /// Launch a new ping uploader on the background thread.
+    ///
+    /// This function doesn't block.
+    static func launch(configuration: Configuration) {
+        Dispatchers.shared.launchConcurrent {
+            HttpPingUploader(configuration: configuration).process()
+        }
     }
 
     /// Synchronously upload a ping to Mozilla servers.
@@ -108,6 +118,7 @@ public class HttpPingUploader {
                     glean_process_ping_upload_response(&incomingTask, result.toFfi())
                 }
             case .wait:
+                sleep(Constants.throttleBackoffMs)
                 continue
             case .done:
                 return

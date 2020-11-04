@@ -49,11 +49,11 @@ with (SRC_ROOT / "CHANGELOG.md").open() as history_file:
     history = history_file.read()
 
 # glean version. Automatically updated by the bin/prepare_release.sh script
-version = "33.0.4"
+version = "33.1.0"
 
 requirements = [
     "cffi>=1",
-    "glean_parser==1.28.6",
+    "glean_parser==1.29.0",
     "iso8601>=0.1.10; python_version<='3.6'",
 ]
 

@@ -1,6 +1,12 @@
 # Adding new metrics
 
-When adding a new metric, the workflow is:
+## Table of Contents
+
+<!-- toc -->
+
+## Process overview
+
+When adding a new metric, the process is:
 
 * Consider the question you are trying to answer with this data, and choose the [metric type](metrics/index.md) and parameters to use.
 * Add a new entry to [`metrics.yaml`](#adding-the-metric-to-the-metricsyaml-file).
@@ -53,7 +59,7 @@ If you need to know the order of actions relative to other actions, such as, the
 
 > **Important:** events are the most expensive metric type to record, transmit, store and analyze, so they should be used sparingly, and only when none of the other metric types are sufficient for answering your question.
 
-### For how long do you need to collect this data?
+## For how long do you need to collect this data?
 
 Think carefully about how long the metric will be needed, and set the `expires` parameter to disable the metric at the earliest possible time. 
 This is an important component of Mozilla's [lean data practices][lean-data].
@@ -66,7 +72,7 @@ Removing a metric does not affect the availability of data already collected by 
 
 If the metric is still needed after its expiration date, it should go back for [another round of data review](https://wiki.mozilla.org/Firefox/Data_Collection) to have its expiration date extended.
 
-### When should the Glean SDK automatically clear the measurement?
+## When should the Glean SDK automatically clear the measurement?
 
 The `lifetime` parameter of a metric defines when its value will be cleared. There are three lifetime options available:
 
@@ -74,7 +80,7 @@ The `lifetime` parameter of a metric defines when its value will be cleared. The
 
 While lifetimes are important to understand for all metric types, they are particularly important for the metric types that record single values and don't aggregate on the client (`boolean`, `string`, `labeled_string`, `string_list`, `datetime` and `uuid`), since these metrics will send the "last known" value and missing the earlier values could be a form of unintended data loss.
 
-#### A lifetime example
+### A lifetime example
 
 Let's work through an example to see how these lifetimes play out in practice. Let's suppose we have a user preference, "turbo mode", which defaults to `false`, but the user can turn it to `true` at any time.  We want to know when this flag is `true` so we can measure its affect on other metrics in the same ping.  In the following diagram, we look at a time period that sends 4 pings across two separate runs of the application. We assume here, that like the Glean SDK's built-in [metrics ping](pings/metrics.html), the developer writing the metric isn't in control of when the ping is submitted. 
 
@@ -96,19 +102,21 @@ In this diagram, the ping measurement windows are represented as rectangles, but
 
 Note that for all of the metric configurations, the toggle of the preference off and on during Ping 4 is completely missed.  If you need to create a ping containing one, and only one, value for this metric, consider using a [custom ping](pings/custom.html) to create a ping whose lifetime matches the lifetime of the value.
 
-#### What if none of these lifetimes are appropriate?
+### What if none of these lifetimes are appropriate?
 
 If the timing at which the metric is sent in the ping needs to closely match the timing of the metrics value, the best option is to use a [custom ping](pings/custom.html) to manually control when pings are sent.
 
 This is especially useful when metrics need to be tightly related to one another, for example when you need to measure the distribution of frame paint times when a particular rendering backend is in use.  If these metrics were in different pings, with different measurement windows, it is much harder to do that kind of reasoning with much certainty.
 
-### What should this new metric be called?
+## What should this new metric be called?
 
-#### Reuse names from other applications
+Metric names have a maximum length of 30 characters.
+
+### Reuse names from other applications
 
 There's a lot of value using the same name for analogous metrics collected across different products. For example, BigQuery makes it simple to join columns with the same name across multiple tables. Therefore, we encourage you to investigate if a similar metric is already being collected by another product. If it is, there may be an opportunity for code reuse across these products, and if all the projects are using the Glean SDK, it's easy for libraries to send their own metrics. If sharing the code doesn't make sense, at a minimum we recommend using the same metric name for similar actions and concepts whenever possible.
 
-#### Make names unique within an application
+### Make names unique within an application
 
 Metric identifiers (the combination of a metric's category and name) must be unique across all metrics that are sent by a single application.
 This includes not only the metrics defined in the app's `metrics.yaml`, but the `metrics.yaml` of any Glean SDK-using library that the application uses, including the Glean SDK itself.
@@ -118,20 +126,20 @@ In practice, this generally involves thinking carefully about the `category` of 
 > **Note:** Duplicate metric identifiers are not currently detected at build time. See [bug 1578383](https://bugzilla.mozilla.org/show_bug.cgi?id=1578383) for progress on that.
 However, the [probe_scraper](https://github.com/mozilla/probe-scraper) process, which runs nightly, will detect duplicate metrics and e-mail the `notification_emails` associated with the given metrics.
 
-#### Be as specific as possible
+### Be as specific as possible
 
 More broadly, you should choose the names of metrics to be as specific as possible.
 It is not necessary to put the type of the metric in the category or name, since this information is retained in other ways through the entire end-to-end system.
 
 For example, if defining a set of events related to search, put them in a category called `search`, rather than just `events` or `search_events`. The `events` word here would be redundant.
 
-### What if none of these metric types is the right fit?
+## What if none of these metric types is the right fit?
 
 The current set of metrics the Glean SDK supports is based on known common use cases, but new use cases are discovered all the time.
 
 Please reach out to us on [#glean:mozilla.org](https://chat.mozilla.org/#/room/#glean:mozilla.org). If you think you need a new metric type, we [have a process for that](metrics/index.html#adding-or-changing-metric-types).
 
-### How do I make sure my metric is working?
+## How do I make sure my metric is working?
 
 The Glean SDK has rich support for writing unit tests involving metrics. Writing a good unit test is a large topic, but in general, you should write unit tests for all new telemetry that does the following:
 
@@ -173,12 +181,11 @@ toolbar:
 
   double_click:
     ...
-
-category2.subcategory:  # Categories can contain subcategories using `.`
-  metric:
-    ...
-
 ```
+
+Categories can have `.` characters to provide extra structure, for example `category.subcategory`, as long as the total length doesn't exceed 40 characters.
+
+Metric names have a maximum length of 30 characters.
 
 The details of the metric parameters are described in [metric parameters](metric-parameters.md).
 

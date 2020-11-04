@@ -91,7 +91,7 @@ public class JweMetricType {
         Dispatchers.shared.assertInTestingMode()
 
         let pingName = pingName ?? self.sendInPings[0]
-        return glean_jwe_test_has_value(self.handle, pingName) != 0
+        return glean_jwe_test_has_value(self.handle, pingName).toBool()
     }
 
     // swiftlint:disable force_cast

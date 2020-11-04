@@ -1,25 +1,11 @@
 version: 2
 updates:
-  # glean-core
+  # glean
   - package-ecosystem: "cargo"
-    directory: "/glean-core"
+    directory: "/"
     schedule:
       interval: "daily"
-    ignore:
-      # Pinned to old version due to breaking changes
-      - dependency-name: "rkv"
-
-  # glean-ffi
-  - package-ecosystem: "cargo"
-    directory: "/glean-core/ffi"
-    schedule:
-      interval: "daily"
-
-  # glean benchmark
-  - package-ecosystem: "cargo"
-    directory: "/glean-core/benchmark"
-    schedule:
-      interval: "daily"
+    versioning-strategy: lockfile-only
 
   # glean-python
   - package-ecosystem: "pip"

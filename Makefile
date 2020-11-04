@@ -108,6 +108,7 @@ yamllint: ## Run yamllint to lint YAML files
 
 shellcheck: ## Run shellcheck against important shell scripts
 	shellcheck glean-core/ios/sdk_generator.sh
+	shellcheck bin/check-artifact.sh
 
 pythonlint: python-setup ## Run flake8 and black to lint Python code
 	$(GLEAN_PYENV)/bin/python3 -m flake8 glean-core/python/glean glean-core/python/tests
@@ -147,7 +148,7 @@ python-docs: build-python ## Build the Python documentation
 .PHONY: docs rust-docs kotlin-docs swift-docs
 
 metrics-docs: python-setup ## Build the internal metrics documentation
-	$(GLEAN_PYENV)/bin/pip install glean_parser==1.28.6
+	$(GLEAN_PYENV)/bin/pip install glean_parser==1.29.0
 	$(GLEAN_PYENV)/bin/glean_parser translate --allow-reserved \
 		 -f markdown \
 		 -o ./docs/user/collected-metrics \

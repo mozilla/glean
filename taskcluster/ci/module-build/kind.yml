@@ -34,5 +34,6 @@ job-defaults:
     gradlew:
       - ':{module_name}:assembleRelease'
       - ':{module_name}:publish'
+      - ':{module_name}:checkMavenArtifacts'
     using: gradlew
     use-caches: true

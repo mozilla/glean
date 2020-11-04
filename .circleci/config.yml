@@ -322,9 +322,9 @@ jobs:
       - run:
           name: FFI header consistency check
           command: |
-            CBINDGEN_VERSION=v0.14.3
+            CBINDGEN_VERSION=v0.15.0
             CBINDGEN=cbindgen
-            CBINDGEN_SHA256=d1975ef0c0abbca2f53d62dc1a3fd5136a192b6108479866e602b9238d908b44
+            CBINDGEN_SHA256=46ad9fef860f18a6b5f307d2acae58833f347857a6ce42d8baf40d0e34805b4d
             curl -sfSL --retry 5 -O "https://github.com/eqrion/cbindgen/releases/download/${CBINDGEN_VERSION}/${CBINDGEN}"
             echo "${CBINDGEN_SHA256} *${CBINDGEN}" | shasum -a 256 -c -
             mv cbindgen /usr/local/cargo/bin/cbindgen
@@ -367,9 +367,9 @@ jobs:
       - run:
           name: Install mdbook-dtmo
           command: |
-              MDBOOK_VERSION=0.7.1
+              MDBOOK_VERSION=0.8.0
               MDBOOK="mdbook-dtmo-${MDBOOK_VERSION}-x86_64-unknown-linux-gnu.tar.gz"
-              MDBOOK_SHA256=fcc079b3d18024af1669bea1419e5395378bea036882c83214a740fab7c0bb43
+              MDBOOK_SHA256=030c87375795740cca0487132bed0338cb23bacf366f617936086d540f842488
               curl -sfSL --retry 5 -O "https://github.com/badboy/mdbook-dtmo/releases/download/${MDBOOK_VERSION}/${MDBOOK}"
               echo "${MDBOOK_SHA256} *${MDBOOK}" | shasum -a 256 -c -
               tar -xvf "${MDBOOK}"
@@ -468,13 +468,9 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Update brew
-          command: |
-            # we want the latest versions of the tools
-            brew update
-      - run:
           name: Install lint tools
           command: |
+            export HOMEBREW_NO_AUTO_UPDATE=1
             brew install swiftlint
       - run:
           name: Run swiftlint
@@ -753,7 +749,7 @@ jobs:
 
   Python 3_9 tests:
     docker:
-      - image: circleci/python:3.9.0rc1
+      - image: circleci/python:3.9.0
     steps:
       - checkout
       - test-python

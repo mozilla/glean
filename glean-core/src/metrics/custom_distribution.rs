@@ -41,6 +41,10 @@ impl MetricType for CustomDistributionMetric {
     }
 }
 
+// IMPORTANT:
+//
+// When changing this implementation, make sure all the operations are
+// also declared in the related trait in `../traits/`.
 impl CustomDistributionMetric {
     /// Creates a new memory distribution metric.
     pub fn new(

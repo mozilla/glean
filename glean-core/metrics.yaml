@@ -2,9 +2,13 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# This file defines the metrics that are recorded by the Glean SDK. They are
-# automatically converted to Kotlin code at build time using the `glean_parser`
-# PyPI package.
+# This file defines the metrics that are recorded by the Glean SDK.
+# APIs to use these pings are automatically generated at build time using
+# the `glean_parser` PyPI package.
+
+# Metrics in this file may make use of SDK reserved ping names. See
+# https://mozilla.github.io/glean/book/dev/core/internal/reserved-ping-names.html
+# for additional information.
 
 ---
 $schema: moz://mozilla.org/schemas/glean/metrics/1-0-0
@@ -238,8 +242,83 @@ glean.internal.metrics:
       - glean-team@mozilla.com
     expires: never
 
-  ping_reason:
+  seq:
     type: string
+    lifetime: user
+    send_in_pings:
+      - glean_internal_info
+    description: |
+      A running counter of the number of times pings of this type have been sent
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1556964
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+    expires: never
+
+  experiments:
+    type: string  # It's not, but we don't have a way to specify its type
+    lifetime: application
+    send_in_pings:
+      - glean_internal_info
+    description: |
+      Optional. A dictionary of active experiments.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1552471
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+    expires: never
+
+  start_time:
+    type: datetime
+    lifetime: user
+    send_in_pings:
+      - glean_internal_info
+    description: |
+      The time of the start of collection of the data in the ping,
+      in local time and with minute precision, including timezone information.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1556966
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+    expires: never
+
+  end_time:
+    type: datetime
+    lifetime: ping
+    send_in_pings:
+      - glean_internal_info
+    description: |
+      The time of the end of collection of the data in the ping,
+      in local time and with minute precision, including timezone information.
+      This is also the time this ping was generated
+      and is likely well before ping transmission time.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1556966
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+    expires: never
+
+  reason:
+    type: string
+    lifetime: ping
+    send_in_pings:
+      - glean_internal_info
     description: |
       The optional reason the ping was submitted.
       The specific values for reason are specific to each ping, and are

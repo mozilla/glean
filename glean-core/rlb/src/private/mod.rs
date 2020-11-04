@@ -4,6 +4,8 @@
 
 //! The different metric types supported by the Glean SDK to handle data.
 
+mod boolean;
 mod ping;
 
+pub use boolean::BooleanMetric;
 pub use ping::PingType;

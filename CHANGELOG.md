@@ -1,6 +1,22 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v33.0.4...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v33.1.0...main)
+
+# v33.1.0 (2020-11-04)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v33.0.4...v33.1.0)
+
+* General
+  * Standardize throttle backoff time throughout all bindings. ([#1240](https://github.com/mozilla/glean/pull/1240))
+  * Update `glean_parser` to 1.29.0
+    * Generated code now includes a comment next to each metric containing the name of the metric in its original `snake_case` form.
+  * Expose the description of the metric types in glean_core using traits.
+* Rust
+  * Add the `BooleanMetric` type.
+  * Add the `dispatcher` module (copied over from [mozilla-central](https://hg.mozilla.org/mozilla-central/rev/fbe0ea62f4bb50bfc5879a56667945697b2c90e7)).
+* Android
+  * Update the JNA dependency from 5.2.0 to 5.6.0
+  * The `glean-gradle-plugin` now makes sure that only a single Miniconda installation will happen at the same time to avoid a race condition when multiple components within the same project are using Glean.
 
 # v33.0.4 (2020-09-28)
 
@@ -47,6 +63,14 @@ Note: Previous 33.0.z releases were broken. This release now includes all change
 * Android
   * **Breaking change:** Updated to the Android Gradle Plugin v4.0.1 and Gradle 6.5.1. Projects using older versions of these components will need to update in order to use newer versions of the Glean SDK.
 
+# v32.4.1 (2020-10-01)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v32.4.0...v32.4.1)
+
+* General
+  * Update `glean_parser` to 1.28.6
+    * BUGFIX: Ensure Kotlin arguments are deterministically ordered
+  * BUGFIX: Transform ping directory size from bytes to kilobytes before accumulating to `glean.upload.pending_pings_directory_size` ([#1236](https://github.com/mozilla/glean/pull/1236)).
 
 # v32.4.0 (2020-09-18)
 

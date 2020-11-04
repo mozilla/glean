@@ -161,7 +161,7 @@ func withArrayOfCStrings<R>(
     _ body: ([UnsafePointer<CChar>?]?) -> R
 ) -> R {
     if let args = args {
-        var cStrings = args.map { UnsafePointer(strdup($0)) }
+        let cStrings = args.map { UnsafePointer(strdup($0)) }
         defer {
             cStrings.forEach { free(UnsafeMutableRawPointer(mutating: $0)) }
         }

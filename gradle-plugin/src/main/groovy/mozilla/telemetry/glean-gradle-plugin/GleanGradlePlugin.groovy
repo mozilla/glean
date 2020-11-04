@@ -12,6 +12,8 @@ import org.gradle.api.internal.artifacts.ArtifactAttributes
 import org.gradle.api.tasks.Exec
 import org.gradle.api.tasks.TaskProvider
 
+import java.util.concurrent.Semaphore
+
 // The suppression "GrPackage" is needed below since Android Studio wants this file to have
 // a package name, but adding one causes the build to fail with:
 //    "'.../GleanGradlePlugin.groovy' should not contain a package statement"
@@ -34,12 +36,14 @@ class GleanMetricsYamlTransform extends ArtifactTransform {
 @SuppressWarnings("GrPackage")
 class GleanPlugin implements Plugin<Project> {
     // The version of glean_parser to install from PyPI.
-    private String GLEAN_PARSER_VERSION = "1.28.6"
+    private String GLEAN_PARSER_VERSION = "1.29.0"
     // The version of Miniconda is explicitly specified.
     // Miniconda3-4.5.12 is known to not work on Windows.
     private String MINICONDA_VERSION = "4.5.11"
 
     private String TASK_NAME_PREFIX = "gleanGenerateMetrics"
+
+    private Semaphore bootstrapMinicondaSemaphore = new Semaphore(1)
 
     /* This script runs a given Python module as a "main" module, like
      * `python -m module`. However, it first checks that the installed
@@ -171,6 +175,7 @@ except:
                 args "glean_parser"
                 args GLEAN_PARSER_VERSION
                 args "translate"
+                args "--allow-missing-files"
                 args "-f"
                 args "kotlin"
                 args "-o"
@@ -243,6 +248,7 @@ except:
                 args "glean_parser"
                 args GLEAN_PARSER_VERSION
                 args "translate"
+                args "--allow-missing-files"
                 args "-f"
                 args "markdown"
                 args "-o"
@@ -411,6 +417,15 @@ except:
             project.tasks.whenTaskAdded { task ->
                 if (task.name.startsWith('Bootstrap_CONDA')) {
                     task.dependsOn(createBuildDir)
+
+                    // The Bootstrap_CONDA* tasks all install miniconda to the
+                    // same place, so they can't run at the same time. This
+                    // holds a semaphore while running the task to make sure
+                    // only one of these classes of tasks runs at the same time. 
+                    // Solution proposed in this Gradle bug:
+                    // https://github.com/gradle/gradle/issues/7047#issuecomment-430139316
+                    task.doFirst { bootstrapMinicondaSemaphore.acquire() }
+                    task.doLast { bootstrapMinicondaSemaphore.release() }
                 }
             }
             project.preBuild.dependsOn(createBuildDir)
@@ -458,7 +473,7 @@ except:
     void apply(Project project) {
         isOffline = project.gradle.startParameter.offline
 
-        project.ext.glean_version = "33.0.4"
+        project.ext.glean_version = "33.1.0"
 
         // Print the required glean_parser version to the console. This is
         // offline builds, and is mentioned in the documentation for offline

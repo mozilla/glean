@@ -2,9 +2,13 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# This file defines the metrics that are recorded by the Glean SDK. They are
-# automatically converted to Kotlin code at build time using the `glean_parser`
-# PyPI package.
+# This file defines the metrics that are recorded by the Glean SDK.
+# APIs to use these metrics are automatically generated at build time using
+# the `glean_parser` PyPI package.
+
+# Metrics in this file may make use of SDK reserved ping names. See
+# https://mozilla.github.io/glean/book/dev/core/internal/reserved-ping-names.html
+# for additional information.
 
 ---
 $schema: moz://mozilla.org/schemas/glean/metrics/1-0-0

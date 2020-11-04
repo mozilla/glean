@@ -77,19 +77,16 @@ Continuing the `pageLoad` example above, at this point the metric should have a 
 import org.mozilla.yourApplication.GleanMetrics.Pages
 
 // Was anything recorded?
-assertTrue(pages.pageLoad.testHasValue())
+assertTrue(Pages.pageLoad.testHasValue())
 
 // Get snapshot.
-val snapshot = pages.pageLoad.testGetValue()
-
-// Does the sum have the expected value?
-assertEquals(11, snapshot.sum)
+val snapshot = Pages.pageLoad.testGetValue()
 
 // Usually you don't know the exact timing values, but how many should have been recorded.
-assertEquals(2L, snapshot.count)
+assertEquals(1L, snapshot.count)
 
-// Was an error recorded?
-assertEquals(1, pages.pageLoad.testGetNumRecordedErrors(ErrorType.InvalidValue))
+// Assert that no errors were recorded.
+assertEquals(0, Pages.pageLoad.testGetNumRecordedErrors(ErrorType.InvalidValue))
 ```
 
 </div>
@@ -124,15 +121,12 @@ assertTrue(pages.INSTANCE.pageLoad.testHasValue());
 // Get snapshot.
 DistributionData snapshot = pages.INSTANCE.pageLoad.testGetValue();
 
-// Does the sum have the expected value?
-assertEquals(11, snapshot.getSum);
-
 // Usually you don't know the exact timing values, but how many should have been recorded.
-assertEquals(2L, snapshot.getCount);
+assertEquals(1L, snapshot.getCount);
 
-// Was an error recorded?
+// Assert that no errors were recorded.
 assertEquals(
-    1,
+    0,
     pages.INSTANCE.pageLoad.testGetNumRecordedErrors(
         ErrorType.InvalidValue
     )
@@ -171,14 +165,11 @@ XCTAssert(pages.pageLoad.testHasValue())
 // Get snapshot.
 let snapshot = try! pages.pageLoad.testGetValue()
 
-// Does the sum have the expected value?
-XCTAssertEqual(11, snapshot.sum)
-
 // Usually you don't know the exact timing values, but how many should have been recorded.
-XCTAssertEqual(2, snapshot.count)
+XCTAssertEqual(1, snapshot.count)
 
-// Was an error recorded?
-XCTAssertEqual(1, pages.pageLoad.testGetNumRecordedErrors(.invalidValue))
+// Assert that no errors were recorded.
+XCTAssertEqual(0, pages.pageLoad.testGetNumRecordedErrors(.invalidValue))
 ```
 
 </div>
@@ -220,14 +211,11 @@ assert metrics.pages.page_load.test_has_value()
 # Get snapshot.
 snapshot = metrics.pages.page_load.test_get_value()
 
-# Does the sum have the expected value?
-assert 11 == snapshot.sum
-
 # Usually you don't know the exact timing values, but how many should have been recorded.
-assert 2 == snapshot.count
+assert 1 == snapshot.count
 
-# Was an error recorded?
-assert 1 == metrics.pages.page_load.test_get_num_recorded_errors(
+# Assert that no errors were recorded.
+assert 0 == metrics.pages.page_load.test_get_num_recorded_errors(
     ErrorType.INVALID_VALUE
 )
 ```
@@ -263,14 +251,11 @@ Assert.True(Pages.pageLoad.TestHasValue());
 // Get snapshot.
 var snapshot = Pages.pageLoad.TestGetValue();
 
-// Does the sum have the expected value?
-Assert.Equal(11, snapshot.Sum);
-
 // Usually you don't know the exact timing values, but how many should have been recorded.
-Assert.Equal(2L, snapshot.Values.Count);
+Assert.Equal(1, snapshot.Values.Count);
 
-// Was an error recorded?
-Assert.Equal(1, Pages.pageLoad.TestGetNumRecordedErrors(ErrorType.InvalidValue));
+// Assert that no errors were recorded. 
+Assert.Equal(0, Pages.pageLoad.TestGetNumRecordedErrors(ErrorType.InvalidValue));
 ```
 
 </div>

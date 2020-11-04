@@ -158,7 +158,7 @@ public class Glean {
             // 1. Pings were submitted through Glean and it is ready to upload those pings;
             // 2. Upload is disabled, to upload a possible deletion-request ping.
             if pingSubmitted || !uploadEnabled {
-                HttpPingUploader(configuration: configuration).process()
+                HttpPingUploader.launch(configuration: configuration)
             }
 
             // Check for overdue metrics pings
@@ -270,9 +270,7 @@ public class Glean {
 
             if originalEnabled && !enabled {
                 // If uploading is disabled, we need to send the deletion-request ping
-                Dispatchers.shared.launchConcurrent {
-                    HttpPingUploader(configuration: self.configuration!).process()
-                }
+                HttpPingUploader.launch(configuration: self.configuration!)
             }
         }
     }
@@ -295,7 +293,7 @@ public class Glean {
     /// Caution: the result is only correct if Glean is already initialized.
     func internalGetUploadEnabled() -> Bool {
         if isInitialized() {
-            return glean_is_upload_enabled() != 0
+            return glean_is_upload_enabled().toBool()
         } else {
             return false
         }
@@ -456,7 +454,7 @@ public class Glean {
 
         if submittedPing != 0 {
             if let config = self.configuration {
-                HttpPingUploader(configuration: config).process()
+                HttpPingUploader.launch(configuration: config)
             }
         }
     }
@@ -596,7 +594,7 @@ public class Glean {
     ///
     /// Returns true if a ping by this name is in the ping registry.
     public func testHasPingType(_ pingName: String) -> Bool {
-        return glean_test_has_ping_type(pingName) != 0
+        return glean_test_has_ping_type(pingName).toBool()
     }
 
     /// Test-only method to destroy the owned glean-core handle.

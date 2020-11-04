@@ -38,6 +38,7 @@ pub mod metrics;
 pub mod ping;
 pub mod storage;
 mod system;
+pub mod traits;
 pub mod upload;
 mod util;
 

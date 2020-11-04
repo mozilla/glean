@@ -31,6 +31,8 @@ The following steps are required for applications using the Glean SDK, but not l
 > does this as part of its initialization, it is _required_ to always call the `initialize`
 > function. Otherwise, Glean won't be able to clean up collected data, disable queuing of pre-init
 > tasks, or perform other required operations.
+>
+> This does not apply to special builds where telemetry is disabled at build time. In that case, it is acceptable to not call `initialize` at all.
 
 {{#include ../tab_header.md}}
 

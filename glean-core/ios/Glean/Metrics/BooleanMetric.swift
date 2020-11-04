@@ -70,7 +70,7 @@ public class BooleanMetricType {
         Dispatchers.shared.assertInTestingMode()
 
         let pingName = pingName ?? self.sendInPings[0]
-        return glean_boolean_test_has_value(self.handle, pingName) != 0
+        return glean_boolean_test_has_value(self.handle, pingName).toBool()
     }
 
     /// Returns the stored value for testing purposes only. This function will attempt to await the

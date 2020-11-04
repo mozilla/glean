@@ -399,7 +399,7 @@ impl PingUploadManager {
             cached_pings.pending_pings.reverse();
             self.upload_metrics
                 .pending_pings_directory_size
-                .accumulate(glean, pending_pings_directory_size as u64);
+                .accumulate(glean, pending_pings_directory_size as u64 / 1024);
 
             // Enqueue the remaining pending pings and
             // enqueue all deletion-request pings.
@@ -630,7 +630,7 @@ impl PingUploadManager {
             }
 
             RecoverableFailure | HttpStatus(_) => {
-                log::error!(
+                log::info!(
                     "Recoverable upload failure while attempting to send ping {}, will retry. Error was {:?}",
                     document_id,
                     status

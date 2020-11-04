@@ -123,6 +123,27 @@ Assert.True(Flags.a11yEnabled.TestGetValue());
 
 </div>
 
+<div data-lang="Rust" class="tab">
+
+```rust
+use glean_metrics;
+
+flags::a11y_enabled.set(system.is_accessibility_enabled());
+```
+
+There are test APIs available too:
+
+```rust
+use glean_metrics;
+
+// Was anything recorded?
+assert!(flags::a11y_enabled.test_get_value(None).is_some());
+// Does it have the expected value?
+assert!(flags::a11y_enabled.test_get_value(None).unwrap());
+```
+
+</div>
+
 {{#include ../../tab_footer.md}}
 
 ## Limits
