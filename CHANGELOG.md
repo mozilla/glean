@@ -2,6 +2,12 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.1.0...main)
 
+# v33.1.1 (2020-11-04)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v33.1.0...v33.1.1)
+
+* No changes.  v33.1.0 was tagged incorrectly.
+
 # v33.1.0 (2020-11-04)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.0.4...v33.1.0)
