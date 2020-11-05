@@ -104,6 +104,30 @@ fn file_size(path: &Path) -> Option<NonZeroU64> {
         .and_then(NonZeroU64::new)
 }
 
+/// Determine the size of all the files in the given file directory.
+///
+///  # Arguments
+///
+///  -`path` - The path to the directory
+///
+///  # Returns
+///
+/// Returns the non-zero combined size of all files,
+/// or `None` on error or if the size is `0`.
+fn database_size(dir: &Path) -> Option<NonZeroU64> {
+    let mut total_size = 0;
+    if let Ok(entries) = fs::read_dir(dir) {
+        for entry in entries {
+            if let Ok(entry) = entry {
+                let path = entry.path();
+                // the getter is returning the u64 value from NonZeroU64
+                total_size += file_size(&path)?.get();
+            }
+        }
+    }
+    NonZeroU64::new(total_size)
+}
+
 impl Database {
     /// Initializes the data store.
     ///
@@ -115,14 +139,7 @@ impl Database {
     pub fn new(data_path: &str, delay_ping_lifetime_io: bool) -> Result<Self> {
         let path = Path::new(data_path).join("db");
         log::debug!("Database path: {:?}", path.display());
-
-        // FIXME(bug 1670634): This is probably more knowledge
-        // than we should have about the database internals.
-        // We could instead iterate over the directory and sum up the file sizes.
-        #[cfg(not(feature = "rkv-safe-mode"))]
-        let file_size = file_size(&path.join("data.mdb"));
-        #[cfg(feature = "rkv-safe-mode")]
-        let file_size = file_size(&path.join("data.safe.bin"));
+        let file_size = database_size(&path);
 
         let rkv = Self::open_rkv(&path)?;
         let user_store = rkv.open_single(Lifetime::User.as_str(), StoreOptions::create())?;
