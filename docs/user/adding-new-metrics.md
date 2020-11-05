@@ -22,7 +22,7 @@ The following is a set of questions to ask about the data being collected to hel
 
 If the value is true or false, use a [boolean metric](metrics/boolean.html).
 
-If the value is a string, use a [string metric](metrics/string.html). For example, to record the name of the default search engine. 
+If the value is a string, use a [string metric](metrics/string.html). For example, to record the name of the default search engine.
 
 > **Beware:** string metrics are exceedingly general, and you are probably best served by selecting the most specific metric for the job, since you'll get better error checking and richer analysis tools for free. For example, avoid storing a number in a string metric --- you probably want a [counter metric](metrics/counter.html) instead.
 
@@ -47,7 +47,7 @@ If you need to record an absolute time, use a [datetime metric](metrics/datetime
 If you need to record how long something takes you have a few options.
 
 If you need to measure the total time spent doing a particular task, look to the [timespan metric](metrics/timespan.html). Timespan metrics allow specifying the resolution they are collected at, and to stay [lean][lean-data], they should only be collected at the minimum resolution required to answer your question.
-Note that this metric should only be used to measure time on a single thread. If multiple overlapping timespans are measured for the same metric, an invalid state error is recorded. 
+Note that this metric should only be used to measure time on a single thread. If multiple overlapping timespans are measured for the same metric, an invalid state error is recorded.
 
 If you need to measure the relative occurrences of many timings, use a [timing distribution](metrics/timing_distribution.html). It builds a histogram of timing measurements, and is safe to record multiple concurrent timespans on different threads.
 
@@ -61,7 +61,7 @@ If you need to know the order of actions relative to other actions, such as, the
 
 ## For how long do you need to collect this data?
 
-Think carefully about how long the metric will be needed, and set the `expires` parameter to disable the metric at the earliest possible time. 
+Think carefully about how long the metric will be needed, and set the `expires` parameter to disable the metric at the earliest possible time.
 This is an important component of Mozilla's [lean data practices][lean-data].
 
 When the metric passes its expiration date (determined at build time), it will automatically stop collecting data.
@@ -71,6 +71,8 @@ At that time, the metric should be removed, which involves removing it from the 
 Removing a metric does not affect the availability of data already collected by the pipeline.
 
 If the metric is still needed after its expiration date, it should go back for [another round of data review](https://wiki.mozilla.org/Firefox/Data_Collection) to have its expiration date extended.
+
+> **Important:** Ensure that telemetry alerts are received and are reviewed in a timely manner. Expired metrics don't record any data, extending or removing a metric should be done in time. Consider adding both a group email address and an individual who is responsible for this metric to the `notification_emails` list.
 
 ## When should the Glean SDK automatically clear the measurement?
 
@@ -82,9 +84,9 @@ While lifetimes are important to understand for all metric types, they are parti
 
 ### A lifetime example
 
-Let's work through an example to see how these lifetimes play out in practice. Let's suppose we have a user preference, "turbo mode", which defaults to `false`, but the user can turn it to `true` at any time.  We want to know when this flag is `true` so we can measure its affect on other metrics in the same ping.  In the following diagram, we look at a time period that sends 4 pings across two separate runs of the application. We assume here, that like the Glean SDK's built-in [metrics ping](pings/metrics.html), the developer writing the metric isn't in control of when the ping is submitted. 
+Let's work through an example to see how these lifetimes play out in practice. Let's suppose we have a user preference, "turbo mode", which defaults to `false`, but the user can turn it to `true` at any time.  We want to know when this flag is `true` so we can measure its affect on other metrics in the same ping.  In the following diagram, we look at a time period that sends 4 pings across two separate runs of the application. We assume here, that like the Glean SDK's built-in [metrics ping](pings/metrics.html), the developer writing the metric isn't in control of when the ping is submitted.
 
-In this diagram, the ping measurement windows are represented as rectangles, but the moment the ping is "submitted" is represented by its right edge. The user changes the "turbo mode" setting from `false` to `true` in the first run, and then toggles it again twice in the second run. 
+In this diagram, the ping measurement windows are represented as rectangles, but the moment the ping is "submitted" is represented by its right edge. The user changes the "turbo mode" setting from `false` to `true` in the first run, and then toggles it again twice in the second run.
   
 ![Metric lifetime timeline](metric-lifetime-timeline.svg)
 
