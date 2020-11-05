@@ -841,9 +841,17 @@ jobs:
 
   pypi-linux-release:
     docker:
-      # The official docker image for building manylinux1 wheels
-      - image: quay.io/pypa/manylinux1_x86_64
+      # The official docker image for building manylinux2010 wheels
+      - image: quay.io/pypa/manylinux2010_x86_64
     steps:
+      # The curl in the manylinux2010 docker image doesn't support `--proto`.
+      - run:
+          name: Installing rustup
+          command: curl -sSf https://sh.rustup.rs | sh -s -- -y
+      - run:
+          name: Setup custom environment variables
+          command: |
+              echo "export PATH=$HOME/.cargo/bin:$PATH" >> $BASH_ENV
       - install-rustup
       - setup-rust-toolchain
       - checkout

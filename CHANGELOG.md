@@ -8,6 +8,9 @@
 
 * No changes.  v33.1.1 was tagged incorrectly.
 
+* Python
+  * Python Linux wheels no longer work on Linux distributions released before 2010.  (They now use the manylinux2010 ABI, rather than the manylinux1 ABI.)
+
 # v33.1.1 (2020-11-04)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.1.0...v33.1.1)
