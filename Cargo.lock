@@ -388,6 +388,7 @@ version = "33.1.2"
 dependencies = [
  "crossbeam-channel",
  "env_logger",
+ "flate2",
  "glean-core",
  "inherent",
  "jsonschema-valid",

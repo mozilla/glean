@@ -29,6 +29,7 @@
 * Rust
   * Add the `BooleanMetric` type.
   * Add the `dispatcher` module (copied over from [mozilla-central](https://hg.mozilla.org/mozilla-central/rev/fbe0ea62f4bb50bfc5879a56667945697b2c90e7)).
+  * Allow consumers to specify a custom uploader.
 * Android
   * Update the JNA dependency from 5.2.0 to 5.6.0
   * The `glean-gradle-plugin` now makes sure that only a single Miniconda installation will happen at the same time to avoid a race condition when multiple components within the same project are using Glean.
