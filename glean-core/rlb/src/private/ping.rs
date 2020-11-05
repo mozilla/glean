@@ -12,7 +12,7 @@ pub struct PingType {
 impl PingType {
     /// Creates a new ping type.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `name` - The name of the ping.
     /// * `include_client_id` - Whether to include the client ID in the assembled ping when.
@@ -52,7 +52,8 @@ impl PingType {
     /// See [ping sections](https://mozilla.github.io/glean/book/user/pings/index.html#ping-sections)
     /// for details.
     ///
-    /// ## Parameters
+    /// # Arguments
+    ///
     /// * `reason` - The reason the ping is being submitted.
     ///              Must be one of the configured `reason_codes`.
     pub fn submit(&self, reason: Option<&str>) {

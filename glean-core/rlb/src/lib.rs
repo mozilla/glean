@@ -435,7 +435,7 @@ pub(crate) fn submit_ping_by_name_sync(ping: &str, reason: Option<&str>) {
         glean.submit_ping_by_name(&ping, reason.as_deref()).ok()
     });
 
-    if submitted_ping.unwrap() {
+    if let Some(true) = submitted_ping {
         let uploader = get_upload_manager().lock().unwrap();
         uploader.trigger_upload();
     }
@@ -443,6 +443,7 @@ pub(crate) fn submit_ping_by_name_sync(ping: &str, reason: Option<&str>) {
 
 /// TEST ONLY FUNCTION.
 /// Resets the Glean state and triggers init again.
+#[cfg(test)]
 #[allow(dead_code)]
 pub(crate) fn reset_glean(cfg: Configuration, client_info: ClientInfoMetrics, clear_stores: bool) {
     // Destroy the existing glean instance from glean-core.

@@ -4,7 +4,7 @@
 
 use crate::net::{PingUploader, UploadResult};
 
-/// A description of a component used to upload pings.
+/// A simple mechanism to upload pings over HTTPS.
 #[derive(Debug)]
 pub struct HttpUploader;
 

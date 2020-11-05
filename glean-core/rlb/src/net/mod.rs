@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-//! A module responsible for the Glean upload logic.
+//! Handling the Glean upload logic.
 //!
 //! This doesn't perform the actual upload but rather handles
 //! retries, upload limitations and error tracking.
@@ -22,9 +22,8 @@ pub use http_uploader::*;
 
 mod http_uploader;
 
-/// The number of milliseconds to make the uploader thread, when told to,
-/// by glean-core.
-const THROTTLE_BACKOFF_TIME_MS: u64 = 60_000;
+/// The duration the uploader thread should sleep, when told to by glean-core.
+const THROTTLE_BACKOFF_TIME: Duration = Duration::from_secs(60);
 
 /// A description of a component used to upload pings.
 pub trait PingUploader: std::fmt::Debug + Send + Sync {
@@ -97,7 +96,7 @@ impl UploadManager {
                         with_glean(|glean| glean.process_ping_upload_response(&doc_id, result));
                     }
                     PingUploadTask::Wait => {
-                        thread::sleep(Duration::from_millis(THROTTLE_BACKOFF_TIME_MS));
+                        thread::sleep(THROTTLE_BACKOFF_TIME);
                     }
                     PingUploadTask::Done => {
                         // Nothing to do here, break out of the loop and clear the

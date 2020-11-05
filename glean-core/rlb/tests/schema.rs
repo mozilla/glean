@@ -54,7 +54,7 @@ fn validate_against_schema() {
 
     let (s, r) = crossbeam_channel::bounded::<Vec<u8>>(1);
 
-    // Define a fake uploader that reports back the submission URL
+    // Define a fake uploader that reports back the submitted payload
     // using a crossbeam channel.
     #[derive(Debug)]
     pub struct ValidatingUploader {

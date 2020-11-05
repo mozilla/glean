@@ -67,7 +67,7 @@ fn send_a_ping() {
         }
     }
 
-    // Createa  custom configuration to use a fake uploader.
+    // Create a custom configuration to use a fake uploader.
     let dir = tempfile::tempdir().unwrap();
     let tmpname = dir.path().display().to_string();
 
@@ -165,10 +165,13 @@ fn initialize_must_not_crash_if_data_dir_is_messed_up() {
     };
 
     reset_glean(cfg, ClientInfoMetrics::unknown(), false);
+    // TODO(bug 1675215): ensure initialize runs through dispatcher.
     // Glean init is async and, for this test, it bails out early due to
-    // an error: we can do nothing but wait. Tests in other bindings use
-    // the dispatcher's test mode, which runs tasks sequentially on the main
-    // thread, so no sleep is required. Bug 1675215 might fix this, as well.
+    // an caused by not being able to create the data dir: we can do nothing
+    // but wait. Tests in other bindings use the dispatcher's test mode, which
+    // runs tasks sequentially on the main thread, so no sleep is required,
+    // because we're guaranteed that, once we reach this point, the full
+    // init potentially ran.
     std::thread::sleep(std::time::Duration::from_secs(3));
 }
 
@@ -201,11 +204,7 @@ fn initializing_twice_is_a_noop() {
         true,
     );
 
-    // Glean init is async and we need to wait for it to complete. There
-    // is nothing we can do but wait. Tests in other bindings use
-    // the dispatcher's test mode, which runs tasks sequentially on the main
-    // thread, so no sleep is required. Bug 1675215 might fix this, as well.
-    std::thread::sleep(std::time::Duration::from_secs(3));
+    dispatcher::block_on_queue();
 
     reset_glean(
         Configuration {
@@ -222,6 +221,7 @@ fn initializing_twice_is_a_noop() {
         false,
     );
 
+    // TODO(bug 1675215): ensure initialize runs through dispatcher.
     // Glean init is async and, for this test, it bails out early due to
     // being initialized: we can do nothing but wait. Tests in other bindings use
     // the dispatcher's test mode, which runs tasks sequentially on the main
