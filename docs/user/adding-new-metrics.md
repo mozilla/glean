@@ -195,6 +195,13 @@ The `metrics.yaml` file is used to generate code in the target language (e.g. Ko
 
 The [reference documentation for each metric type](metrics/index.html) goes into detail about using each metric type from your code.
 
+Note that all Glean metrics are write-only. Outside of unit tests, it is impossible to retrieve a value from the Glean SDK's database.
+While this may seem limiting, this is required to:
+- enforce the semantics of certain metric types (e.g. that Counters can only be incremented).
+- ensure the lifetime of the metric (when it is cleared or reset) is correctly handled.
+
+### Capitalization
+
 One thing to note is that we try to adhere to the coding conventions of each language wherever possible, to the metric name in the `metrics.yaml` (which is in `snake_case`) may be changed to some other case convention, such as `camelCase`, when used from code.
 
 {{#include ../tab_header.md}}
