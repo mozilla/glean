@@ -1,6 +1,16 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v33.1.2...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v33.2.0...main)
+
+# v33.2.0 (2020-11-10)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v33.1.2...v33.2.0)
+
+* Python
+  * Fix building of Linux wheels ([#1303](https://github.com/mozilla/glean/pull/1303))
+      * Python Linux wheels no longer work on Linux distributions released before 2010. (They now use the manylinux2010 ABI, rather than the manylinux1 ABI.)
+* Rust
+  * Introduce the RLB `net` module ([#1292](https://github.com/mozilla/glean/pull/1292))
 
 # v33.1.2 (2020-11-04)
 
@@ -26,6 +36,7 @@
 * Rust
   * Add the `BooleanMetric` type.
   * Add the `dispatcher` module (copied over from [mozilla-central](https://hg.mozilla.org/mozilla-central/rev/fbe0ea62f4bb50bfc5879a56667945697b2c90e7)).
+  * Allow consumers to specify a custom uploader.
 * Android
   * Update the JNA dependency from 5.2.0 to 5.6.0
   * The `glean-gradle-plugin` now makes sure that only a single Miniconda installation will happen at the same time to avoid a race condition when multiple components within the same project are using Glean.
