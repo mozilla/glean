@@ -2,14 +2,17 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.1.2...main)
 
+* Python
+  * Fix building of Linux wheels ([#1303](https://github.com/mozilla/glean/pull/1303))
+      * Python Linux wheels no longer work on Linux distributions released before 2010. (They now use the manylinux2010 ABI, rather than the manylinux1 ABI.)
+* Rust
+  * Introduce the RLB `net` module ([#1292](https://github.com/mozilla/glean/pull/1292))
+
 # v33.1.2 (2020-11-04)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.1.1...v33.1.2)
 
 * No changes.  v33.1.1 was tagged incorrectly.
-
-* Python
-  * Python Linux wheels no longer work on Linux distributions released before 2010.  (They now use the manylinux2010 ABI, rather than the manylinux1 ABI.)
 
 # v33.1.1 (2020-11-04)
 
