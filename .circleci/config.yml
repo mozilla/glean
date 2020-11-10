@@ -844,6 +844,10 @@ jobs:
       # The official docker image for building manylinux2010 wheels
       - image: quay.io/pypa/manylinux2010_x86_64
     steps:
+      # manylinux2010 doesn't have ssh installed.
+      - run:
+          name: Install missing tools
+          command: yum install -y openssh-clients
       # The curl in the manylinux2010 docker image doesn't support `--proto`.
       - run:
           name: Installing rustup
@@ -852,7 +856,6 @@ jobs:
           name: Setup custom environment variables
           command: |
               echo "export PATH=$HOME/.cargo/bin:$PATH" >> $BASH_ENV
-      - install-rustup
       - setup-rust-toolchain
       - checkout
       - run:
