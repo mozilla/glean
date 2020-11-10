@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v33.1.2...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v33.2.0...main)
+
+# v33.2.0 (2020-11-10)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v33.1.2...v33.2.0)
 
 * Python
   * Fix building of Linux wheels ([#1303](https://github.com/mozilla/glean/pull/1303))
