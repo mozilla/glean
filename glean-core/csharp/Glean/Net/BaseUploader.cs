@@ -19,7 +19,7 @@ namespace Mozilla.Glean.Net
     /// </summary>
     internal class BaseUploader
     {
-        internal const int THROTTLED_BACKOFF_MS = 60_000;
+        internal const int THROTTLED_BACKOFF_S = 1;
         private readonly IPingUploader uploader;
 
         /// <summary>
@@ -125,7 +125,7 @@ namespace Mozilla.Glean.Net
                         }
                         break;
                     case UploadTaskTag.Wait:
-                        Thread.Sleep(THROTTLED_BACKOFF_MS);
+                        Thread.Sleep(THROTTLED_BACKOFF_S * 1000);
                         break;
                     case UploadTaskTag.Done:
                         // Nothing to do here, break out of the loop.

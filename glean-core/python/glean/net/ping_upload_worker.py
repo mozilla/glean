@@ -23,7 +23,8 @@ log = logging.getLogger(__name__)
 
 
 class PingUploadWorker:
-    _throttle_backoff_time = 60_000
+    # In seconds
+    _throttle_backoff_time = 1.0
 
     @classmethod
     def process(cls):
