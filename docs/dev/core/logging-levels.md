@@ -5,7 +5,7 @@ to display log messages.
 
 ## Logging Levels
 
-### [trace](https://docs.rs/log/0.4.11/log/macro.info.html)
+### [trace](https://docs.rs/log/0.4.11/log/macro.trace.html)
 
 - Used for logging very granular information about the flow of glean-core internals. This logging level is meant for helping with bug diagnostics and may be very noisy.
     - **Example**: `log::trace!("{} pings left in the queue (only deletion-request expected)", queue.len());`
@@ -22,14 +22,14 @@ to display log messages.
 
 ### [warn](https://docs.rs/log/0.4.11/log/macro.warn.html)
 
-- Used for logging internal glean-core errors. These errors do not require further action of a Glean consumer, but may be informative to diagnose bugs.
+- Used for logging internal glean-core warnings. These could be internal errors or warnings, that do not require further action by a Glean user, but may be informative to diagnose bugs.
     - **Example**: `log::warn!("IO error writing event to store '{}': {}", store_name, err);`
-
-> **Note** We prefer to put such errors on the `warn` level also because otherwise they are sent to error monitoring tools, such as Sentry, and may pollute our end users dashboards.
 
 ### [error](https://docs.rs/log/0.4.11/log/macro.error.html)
 
 - Used for logging messages that indicate wrongful usage of the Glean API.
     - **Example**: `log::error!("Unexpected 'uuid' value coming from platform code '{}'", value);`
-- Used for logging messages that may be of interest to a consumer of the Glean SDK.
+- Used for logging messages that may be of interest to a user of the Glean SDK.
     - **Example**: `log::error!("Failed to submit deletion-request ping on optout: {}", err);`
+
+> **Note** Errors should be used sparingly. They are often surfaced in runtime error monitoring software, such as Sentry, so really should only be used when an action by a Glean user must be taken.
