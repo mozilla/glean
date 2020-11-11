@@ -118,9 +118,23 @@ fn disabling_upload_disables_metrics_recording() {
 }
 
 #[test]
-#[ignore] // TODO: To be done in bug 1672982.
 fn test_experiments_recording() {
-    todo!()
+    set_experiment_active("experiment_test".to_string(), "branch_a".to_string(), None);
+    let mut extra = HashMap::new();
+    extra.insert("test_key".to_string(), "value".to_string());
+    set_experiment_active(
+        "experiment_api".to_string(),
+        "branch_b".to_string(),
+        Some(extra),
+    );
+    assert!(test_is_experiment_active("experiment_test".to_string()));
+    assert!(test_is_experiment_active("experiment_api".to_string()));
+    set_experiment_inactive("experiment_test".to_string());
+    assert!(!test_is_experiment_active("experiment_test".to_string()));
+    assert!(test_is_experiment_active("experiment_api".to_string()));
+    let stored_data = test_get_experiment_data("experiment_api".to_string());
+    assert_eq!("branch_b", stored_data.branch);
+    assert_eq!("value", stored_data.extra.unwrap()["test_key"]);
 }
 
 #[test]
