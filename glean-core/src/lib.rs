@@ -95,7 +95,7 @@ pub fn setup_glean(glean: Glean) -> Result<()> {
     // initialized.
     if GLEAN.get().is_none() {
         if GLEAN.set(Mutex::new(glean)).is_err() {
-            log::error!(
+            log::warn!(
                 "Global Glean object is initialized already. This probably happened concurrently."
             )
         }
@@ -453,7 +453,7 @@ impl Glean {
         // Clear any pending pings.
         let ping_maker = PingMaker::new();
         if let Err(err) = ping_maker.clear_pending_pings(self.get_data_path()) {
-            log::error!("Error clearing pending pings: {}", err);
+            log::warn!("Error clearing pending pings: {}", err);
         }
 
         // Delete all stored metrics.
@@ -463,7 +463,7 @@ impl Glean {
             data.clear_all()
         }
         if let Err(err) = self.event_data_store.clear_all() {
-            log::error!("Error clearing pending events: {}", err);
+            log::warn!("Error clearing pending events: {}", err);
         }
 
         // This does not clear the experiments store (which isn't managed by the
@@ -678,7 +678,7 @@ impl Glean {
     /// Register a new [`PingType`](metrics/struct.PingType.html).
     pub fn register_ping_type(&mut self, ping: &PingType) {
         if self.ping_registry.contains_key(&ping.name) {
-            log::debug!("Duplicate ping named '{}'", ping.name)
+            log::error!("Duplicate ping named '{}'", ping.name)
         }
 
         self.ping_registry.insert(ping.name.clone(), ping.clone());
@@ -741,7 +741,7 @@ impl Glean {
     ///
     /// Clears all the metrics that have `Lifetime::Application`.
     pub fn clear_application_lifetime_metrics(&self) {
-        log::debug!("Clearing Lifetime::Application metrics");
+        log::trace!("Clearing Lifetime::Application metrics");
         if let Some(data) = self.data_store.as_ref() {
             data.clear_lifetime(Lifetime::Application);
         }
