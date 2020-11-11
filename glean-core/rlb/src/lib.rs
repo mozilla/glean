@@ -478,7 +478,7 @@ pub fn set_experiment_inactive(experiment_id: String) {
 #[allow(dead_code)]
 pub(crate) fn test_is_experiment_active(experiment_id: String) -> bool {
     dispatcher::block_on_queue();
-    with_glean(|glean| return glean.test_is_experiment_active(experiment_id.to_owned()))
+    with_glean(|glean| glean.test_is_experiment_active(experiment_id.to_owned()))
 }
 
 // **Included only for testing purposes.**
@@ -495,8 +495,8 @@ pub(crate) fn test_get_experiment_data(experiment_id: String) -> RecordedExperim
     with_glean(|glean| {
         let json_data = glean
             .test_get_experiment_data_as_json(experiment_id.to_owned())
-            .expect(&format!("No experiment found for id: {}", experiment_id).to_string());
-        return serde_json::from_str::<RecordedExperimentData>(&json_data).unwrap();
+            .unwrap_or_else(|| panic!("No experiment found for id: {}", experiment_id));
+        serde_json::from_str::<RecordedExperimentData>(&json_data).unwrap()
     })
 }
 
