@@ -119,6 +119,11 @@ fn disabling_upload_disables_metrics_recording() {
 
 #[test]
 fn test_experiments_recording() {
+    let _lock = GLOBAL_LOCK.lock().unwrap();
+    env_logger::try_init().ok();
+
+    let _t = new_glean(None);
+    crate::dispatcher::block_on_queue();
     set_experiment_active("experiment_test".to_string(), "branch_a".to_string(), None);
     let mut extra = HashMap::new();
     extra.insert("test_key".to_string(), "value".to_string());
