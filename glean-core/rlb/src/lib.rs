@@ -46,6 +46,7 @@ pub use configuration::Configuration;
 use configuration::DEFAULT_GLEAN_ENDPOINT;
 pub use core_metrics::ClientInfoMetrics;
 pub use glean_core::{global_glean, setup_glean, CommonMetricData, Error, Glean, Lifetime, Result};
+use private::RecordedExperimentData;
 
 mod configuration;
 mod core_metrics;
@@ -474,21 +475,15 @@ pub fn set_experiment_inactive(experiment_id: String) {
 
 /// TEST ONLY FUNCTION.
 /// Checks if an experiment is currently active.
-#[cfg(test)]
 #[allow(dead_code)]
 pub(crate) fn test_is_experiment_active(experiment_id: String) -> bool {
     dispatcher::block_on_queue();
     with_glean(|glean| glean.test_is_experiment_active(experiment_id.to_owned()))
 }
 
-// **Included only for testing purposes.**
-#[cfg(test)]
-use private::RecordedExperimentData;
-
 /// TEST ONLY FUNCTION.
 /// Returns the `RecordedExperimentData` for the given `experiment_id` or panics if
 /// the id isn't found.
-#[cfg(test)]
 #[allow(dead_code)]
 pub(crate) fn test_get_experiment_data(experiment_id: String) -> RecordedExperimentData {
     dispatcher::block_on_queue();
@@ -502,7 +497,6 @@ pub(crate) fn test_get_experiment_data(experiment_id: String) -> RecordedExperim
 
 /// TEST ONLY FUNCTION.
 /// Resets the Glean state and triggers init again.
-#[cfg(test)]
 #[allow(dead_code)]
 pub(crate) fn reset_glean(cfg: Configuration, client_info: ClientInfoMetrics, clear_stores: bool) {
     // Destroy the existing glean instance from glean-core.
