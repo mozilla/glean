@@ -447,7 +447,7 @@ pub(crate) fn submit_ping_by_name_sync(ping: &str, reason: Option<&str>) {
 /// experiment annotation to the environment which is sent with pings. This
 /// infomration is not persisted between runs.
 ///
-/// See `glean_core::Glean.set_experiment_active`
+/// See [`glean_core::Glean::set_experiment_active`].
 pub fn set_experiment_active(
     experiment_id: String,
     branch: String,
@@ -466,7 +466,7 @@ pub fn set_experiment_active(
 
 /// Indicate that an experiment is no longer running.
 ///
-/// See `glean_core::Glean.set_experiment_inactive`
+/// See [`glean_core::Glean::set_experiment_inactive`].
 pub fn set_experiment_inactive(experiment_id: String) {
     dispatcher::launch(move || {
         with_glean(|glean| glean.set_experiment_inactive(experiment_id.to_owned()))
