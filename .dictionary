@@ -82,6 +82,7 @@ backend
 backoff
 backport
 barcode
+bincode
 bool
 boolean
 booleans
