@@ -129,4 +129,42 @@ mod test {
         expected.push(200);
         assert_eq!(&*result.lock().unwrap(), &expected);
     }
+
+    #[test]
+    #[ignore] // We can't reset the queue at the moment, so flushing it breaks other tests.
+    fn global_nested_calls() {
+        let _ = env_logger::builder().is_test(true).try_init();
+
+        let result = Arc::new(Mutex::new(vec![]));
+
+        {
+            let result = Arc::clone(&result);
+            launch(move || {
+                result.lock().unwrap().push(1);
+            });
+        }
+
+        flush_init().unwrap();
+
+        {
+            let result = Arc::clone(&result);
+            launch(move || {
+                result.lock().unwrap().push(21);
+
+                {
+                    let result = Arc::clone(&result);
+                    launch(move || {
+                        result.lock().unwrap().push(3);
+                    });
+                }
+
+                result.lock().unwrap().push(22);
+            });
+        }
+
+        block_on_queue();
+
+        let expected = vec![1, 21, 22, 3];
+        assert_eq!(&*result.lock().unwrap(), &expected);
+    }
 }

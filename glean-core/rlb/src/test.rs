@@ -118,15 +118,93 @@ fn disabling_upload_disables_metrics_recording() {
 }
 
 #[test]
-#[ignore] // TODO: To be done in bug 1672982.
 fn test_experiments_recording() {
-    todo!()
+    // setup glean for the test
+    let _lock = GLOBAL_LOCK.lock().unwrap();
+    env_logger::try_init().ok();
+    let _t = new_glean(None);
+
+    set_experiment_active("experiment_test".to_string(), "branch_a".to_string(), None);
+    let mut extra = HashMap::new();
+    extra.insert("test_key".to_string(), "value".to_string());
+    set_experiment_active(
+        "experiment_api".to_string(),
+        "branch_b".to_string(),
+        Some(extra),
+    );
+    assert!(test_is_experiment_active("experiment_test".to_string()));
+    assert!(test_is_experiment_active("experiment_api".to_string()));
+    set_experiment_inactive("experiment_test".to_string());
+    assert!(!test_is_experiment_active("experiment_test".to_string()));
+    assert!(test_is_experiment_active("experiment_api".to_string()));
+    let stored_data = test_get_experiment_data("experiment_api".to_string());
+    assert_eq!("branch_b", stored_data.branch);
+    assert_eq!("value", stored_data.extra.unwrap()["test_key"]);
 }
 
 #[test]
-#[ignore] // TODO: To be done in bug 1672982.
 fn test_experiments_recording_before_glean_inits() {
-    todo!()
+    let _lock = GLOBAL_LOCK.lock().unwrap();
+    env_logger::try_init().ok();
+
+    // Destroy the existing glean instance from glean-core so that we
+    // can test the pre-init queueing of the experiment api commands.
+    // This is doing the exact same thing that `reset_glean` is doing
+    // but without calling `initialize`.
+    if was_initialize_called() {
+        // We need to check if the Glean object (from glean-core) is
+        // initialized, otherwise this will crash on the first test
+        // due to bug 1675215 (this check can be removed once that
+        // bug is fixed).
+        if global_glean().is_some() {
+            with_glean_mut(|glean| {
+                glean.test_clear_all_stores();
+                glean.destroy_db();
+            });
+        }
+        // Allow us to go through initialization again.
+        INITIALIZE_CALLED.store(false, Ordering::SeqCst);
+        // Reset the dispatcher.
+        dispatcher::reset_dispatcher();
+    }
+
+    set_experiment_active(
+        "experiment_set_preinit".to_string(),
+        "branch_a".to_string(),
+        None,
+    );
+    set_experiment_active(
+        "experiment_preinit_disabled".to_string(),
+        "branch_a".to_string(),
+        None,
+    );
+    set_experiment_inactive("experiment_preinit_disabled".to_string());
+
+    let dir = tempfile::tempdir().unwrap();
+    let tmpname = dir.path().display().to_string();
+
+    reset_glean(
+        Configuration {
+            data_path: tmpname,
+            application_id: GLOBAL_APPLICATION_ID.into(),
+            upload_enabled: true,
+            max_events: None,
+            delay_ping_lifetime_io: false,
+            channel: Some("testing".into()),
+            server_endpoint: Some("invalid-test-host".into()),
+            uploader: None,
+        },
+        ClientInfoMetrics::unknown(),
+        false,
+    );
+    crate::dispatcher::block_on_queue();
+
+    assert!(test_is_experiment_active(
+        "experiment_set_preinit".to_string()
+    ));
+    assert!(!test_is_experiment_active(
+        "experiment_preinit_disabled".to_string()
+    ));
 }
 
 #[test]

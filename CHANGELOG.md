@@ -1,6 +1,15 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v33.2.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v33.3.0...main)
+
+# v33.3.0 (2020-11-12)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v33.2.0...v33.3.0)
+
+* General
+  * Do not require default-features on `rkv` and downgrade `bincode` ([#1317](https://github.com/mozilla/glean/pull/1317))
+* Rust
+  * Implement the experiments API ([#1314](https://github.com/mozilla/glean/pull/1314))
 
 # v33.2.0 (2020-11-10)
 

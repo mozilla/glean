@@ -5,6 +5,10 @@ These dependencies are available under a variety of free and open source license
 the details of which are reproduced below.
 -->
   <license>
+    <name>Apache License 2.0: miniz_oxide</name>
+    <url>https://github.com/Frommi/miniz_oxide/tree/master/miniz_oxide</url>
+  </license>
+  <license>
     <name>Apache License 2.0: lmdb-rkv</name>
     <url>https://github.com/mozilla/lmdb-rs.git</url>
   </license>
@@ -83,6 +87,10 @@ the details of which are reproduced below.
   <license>
     <name>Apache License 2.0: flate2</name>
     <url>https://github.com/rust-lang/flate2-rs</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: form_urlencoded</name>
+    <url>https://github.com/servo/rust-url</url>
   </license>
   <license>
     <name>Apache License 2.0: id-arena</name>
@@ -205,6 +213,10 @@ the details of which are reproduced below.
     <url>https://github.com/rust-random/getrandom</url>
   </license>
   <license>
+    <name>Apache License 2.0: getrandom</name>
+    <url>https://github.com/rust-random/getrandom</url>
+  </license>
+  <license>
     <name>Apache License 2.0: rand</name>
     <url>https://github.com/rust-random/rand</url>
   </license>
@@ -273,16 +285,16 @@ the details of which are reproduced below.
     <url>https://github.com/mystor/synstructure</url>
   </license>
   <license>
-    <name>MIT License: miniz_oxide</name>
-    <url>https://github.com/Frommi/miniz_oxide/tree/master/miniz_oxide</url>
-  </license>
-  <license>
     <name>MIT License: dashmap</name>
     <url>https://github.com/xacrimon/dashmap</url>
   </license>
   <license>
     <name>MIT License: oslog</name>
     <url>https://github.com/steven-joruk/oslog</url>
+  </license>
+  <license>
+    <name>MIT License: bincode</name>
+    <url>https://github.com/servo/bincode</url>
   </license>
   <license>
     <name>MIT License: byteorder</name>
@@ -297,16 +309,8 @@ the details of which are reproduced below.
     <url>https://github.com/BurntSushi/winapi-util</url>
   </license>
   <license>
-    <name>MIT License: bincode</name>
-    <url>https://github.com/servo/bincode</url>
-  </license>
-  <license>
     <name>Mozilla Public License 2.0: benchmark</name>
     <url>https://crates.io/crates/benchmark</url>
-  </license>
-  <license>
-    <name>Mozilla Public License 2.0: glean</name>
-    <url>https://github.com/mozilla/glean</url>
   </license>
   <license>
     <name>Mozilla Public License 2.0: glean-core</name>
@@ -314,6 +318,10 @@ the details of which are reproduced below.
   </license>
   <license>
     <name>Mozilla Public License 2.0: glean-ffi</name>
+    <url>https://github.com/mozilla/glean</url>
+  </license>
+  <license>
+    <name>Mozilla Public License 2.0: glean</name>
     <url>https://github.com/mozilla/glean</url>
   </license>
 </licenses>
