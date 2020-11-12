@@ -38,6 +38,7 @@
 //! ```
 
 use once_cell::sync::OnceCell;
+use std::collections::HashMap;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Mutex;
 
@@ -45,6 +46,7 @@ pub use configuration::Configuration;
 use configuration::DEFAULT_GLEAN_ENDPOINT;
 pub use core_metrics::ClientInfoMetrics;
 pub use glean_core::{global_glean, setup_glean, CommonMetricData, Error, Glean, Lifetime, Result};
+use private::RecordedExperimentData;
 
 mod configuration;
 mod core_metrics;
@@ -439,6 +441,58 @@ pub(crate) fn submit_ping_by_name_sync(ping: &str, reason: Option<&str>) {
         let uploader = get_upload_manager().lock().unwrap();
         uploader.trigger_upload();
     }
+}
+
+/// Indicate that an experiment is running.  Glean will then add an
+/// experiment annotation to the environment which is sent with pings. This
+/// infomration is not persisted between runs.
+///
+/// See [`glean_core::Glean::set_experiment_active`].
+pub fn set_experiment_active(
+    experiment_id: String,
+    branch: String,
+    extra: Option<HashMap<String, String>>,
+) {
+    dispatcher::launch(move || {
+        with_glean(|glean| {
+            glean.set_experiment_active(
+                experiment_id.to_owned(),
+                branch.to_owned(),
+                extra.to_owned(),
+            )
+        });
+    })
+}
+
+/// Indicate that an experiment is no longer running.
+///
+/// See [`glean_core::Glean::set_experiment_inactive`].
+pub fn set_experiment_inactive(experiment_id: String) {
+    dispatcher::launch(move || {
+        with_glean(|glean| glean.set_experiment_inactive(experiment_id.to_owned()))
+    })
+}
+
+/// TEST ONLY FUNCTION.
+/// Checks if an experiment is currently active.
+#[allow(dead_code)]
+pub(crate) fn test_is_experiment_active(experiment_id: String) -> bool {
+    dispatcher::block_on_queue();
+    with_glean(|glean| glean.test_is_experiment_active(experiment_id.to_owned()))
+}
+
+/// TEST ONLY FUNCTION.
+/// Returns the `RecordedExperimentData` for the given `experiment_id` or panics if
+/// the id isn't found.
+#[allow(dead_code)]
+pub(crate) fn test_get_experiment_data(experiment_id: String) -> RecordedExperimentData {
+    dispatcher::block_on_queue();
+    with_glean(|glean| {
+        let json_data = glean
+            .test_get_experiment_data_as_json(experiment_id.to_owned())
+            .unwrap_or_else(|| panic!("No experiment found for id: {}", experiment_id));
+        serde_json::from_str::<RecordedExperimentData>(&json_data).unwrap()
+    })
 }
 
 /// TEST ONLY FUNCTION.
