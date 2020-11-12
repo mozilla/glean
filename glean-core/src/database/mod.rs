@@ -86,45 +86,35 @@ impl std::fmt::Debug for Database {
     }
 }
 
-/// Get the file size of a file in the given path and file.
-///
-/// # Arguments
-///
-/// - `path` - The path
-///
-/// # Returns
-///
-/// Returns the non-zero file size in bytes,
-/// or `None` on error or if the size is `0`.
-fn file_size(path: &Path) -> Option<NonZeroU64> {
-    log::trace!("Getting file size for path: {}", path.display());
-    fs::metadata(path)
-        .ok()
-        .map(|stat| stat.len())
-        .and_then(NonZeroU64::new)
-}
-
-/// Determine the size of all the files in the given file directory.
+/// Calculate the  database size from all the files in the directory.
 ///
 ///  # Arguments
 ///
-///  -`path` - The path to the directory
+///  *`path` - The path to the directory
 ///
 ///  # Returns
 ///
-/// Returns the non-zero combined size of all files,
+/// Returns the non-zero combined size of all files in a directory,
 /// or `None` on error or if the size is `0`.
 fn database_size(dir: &Path) -> Option<NonZeroU64> {
     let mut total_size = 0;
     if let Ok(entries) = fs::read_dir(dir) {
         for entry in entries {
             if let Ok(entry) = entry {
-                let path = entry.path();
-                // the getter is returning the u64 value from NonZeroU64
-                total_size += file_size(&path)?.get();
+                if let Ok(file_type) = entry.file_type() {
+                    if file_type.is_file() {
+                        let path = entry.path();
+                        if let Ok(metadata) = fs::metadata(path) {
+                            total_size += metadata.len();
+                        } else {
+                            continue;
+                        }
+                    }
+                }
             }
         }
     }
+
     NonZeroU64::new(total_size)
 }
 
