@@ -150,6 +150,37 @@ Assert.Equal(
 
 </div>
 
+<div data-lang="Rust" class="tab">
+
+```rust
+use glean_metrics;
+
+controls::refresh_pressed.add(1); // Adds 1 to the counter.
+controls::refresh_pressed.add(5); // Adds 5 to the counter.
+```
+
+There are test APIs available too:
+
+```rust
+use glean::ErrorType;
+
+use glean_metrics;
+
+// Was anything recorded?
+assert!(controls::refresh_pressed.test_get_value(None).is_some());
+// Does the counter have the expected value?
+assert_eq!(6, controls::refresh_pressed.test_get_value(None).unwrap());
+// Did the counter record an negative value?
+assert_eq!(
+  1,
+  controls::refresh_pressed.test_get_num_recorded_errors(
+    ErrorType::InvalidValue
+  )
+);
+```
+
+</div>
+
 {{#include ../../tab_footer.md}}
 
 ## Limits
