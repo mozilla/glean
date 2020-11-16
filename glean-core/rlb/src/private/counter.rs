@@ -59,10 +59,9 @@ impl glean_core::traits::Counter for CounterMetric {
     fn test_get_value<'a, S: Into<Option<&'a str>>>(&self, ping_name: S) -> Option<i32> {
         dispatcher::block_on_queue();
 
-        let queried_ping_name = match ping_name.into() {
-            Some(name) => name,
-            None => self.0.meta().send_in_pings.first().unwrap(),
-        };
+        let queried_ping_name = ping_name
+            .into()
+            .unwrap_or_else(|| &self.0.meta().send_in_pings[0]);
 
         crate::with_glean(|glean| self.0.test_get_value(glean, queried_ping_name))
     }

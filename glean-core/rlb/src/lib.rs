@@ -495,7 +495,6 @@ pub(crate) fn test_get_experiment_data(experiment_id: String) -> RecordedExperim
     })
 }
 
-/// TEST ONLY FUNCTION.
 /// Destroy the global Glean state.
 #[cfg(test)]
 pub(crate) fn destroy_glean(clear_stores: bool) {
@@ -520,7 +519,6 @@ pub(crate) fn destroy_glean(clear_stores: bool) {
     }
 }
 
-/// TEST ONLY FUNCTION.
 /// Resets the Glean state and triggers init again.
 #[cfg(test)]
 #[allow(dead_code)]

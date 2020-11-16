@@ -279,7 +279,7 @@ fn queued_recorded_metrics_correctly_record_during_init() {
     // Ensure that no value has been stored yet since the tasks have only been queued
     // and not executed yet
 
-    // Calling resetGlean here will cause Glean to be initialized and should cause the queued
+    // Calling `new_glean` here will cause Glean to be initialized and should cause the queued
     // tasks recording metrics to execute
     let _ = new_glean(None, false);
 
