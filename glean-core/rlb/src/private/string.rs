@@ -10,7 +10,7 @@ use glean_core::ErrorType;
 
 use crate::dispatcher;
 
-// We need to wrap the glean-core type: otherwise if we try to implement
+// We need to wrap the glean-core type, otherwise if we try to implement
 // the trait for the metric in `glean_core::metrics` we hit error[E0117]:
 // only traits defined in the current crate can be implemented for arbitrary
 // types.
