@@ -3,7 +3,8 @@
 [Full changelog](https://github.com/mozilla/glean/compare/v33.3.0...main)
 
 * Rust
-  * Introduce the Counter metric type in the RLB
+  * Introduce the Counter metric type in the RLB.
+  * Introduce the String metric type in the RLB.
 
 # v33.3.0 (2020-11-12)
 
