@@ -30,7 +30,7 @@ mod backend {
 
     /// No migration necessary when staying with LMDB.
     pub fn migrate(_path: &Path, _dst_env: &Rkv) {
-        // intentionally left empty
+        // Intentionally left empty.
     }
 }
 
@@ -55,7 +55,7 @@ mod backend {
         if let Err(err) = fs::remove_file(path) {
             match err.kind() {
                 std::io::ErrorKind::NotFound => {
-                    // silently drop this error, the file was already non-existing
+                    // Silently drop this error, the file was already non-existing.
                 }
                 _ => log::warn!("{}", msg),
             }
