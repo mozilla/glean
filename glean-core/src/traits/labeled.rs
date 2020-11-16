@@ -3,6 +3,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use crate::metrics::MetricType;
+use crate::ErrorType;
 
 /// A description for the `LabeledMetric` type.
 ///
@@ -30,4 +31,23 @@ where
     /// The template submetric is the actual metric that is cloned and modified
     /// to record for a specific label.
     fn get_submetric(&self) -> &T;
+
+    /// **Exported for test purposes.**
+    ///
+    /// Gets the number of recorded errors for the given metric and error type.
+    ///
+    /// # Arguments
+    ///
+    /// * `error` - The type of error
+    /// * `ping_name` - represents the optional name of the ping to retrieve the
+    ///   metric for. Defaults to the first value in `send_in_pings`.
+    ///
+    /// # Returns
+    ///
+    /// The number of errors reported.
+    fn test_get_num_recorded_errors<'a, S: Into<Option<&'a str>>>(
+        &self,
+        error: ErrorType,
+        ping_name: S,
+    ) -> i32;
 }
