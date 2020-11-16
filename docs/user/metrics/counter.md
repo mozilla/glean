@@ -42,7 +42,7 @@ import org.mozilla.yourApplication.GleanMetrics.Controls
 assertTrue(Controls.refreshPressed.testHasValue())
 // Does the counter have the expected value?
 assertEquals(6, Controls.refreshPressed.testGetValue())
-// Did the counter record an negative value?
+// Did the counter record a negative value?
 assertEquals(
     1, Controls.refreshPressed.testGetNumRecordedErrors(ErrorType.InvalidValue)
 )
@@ -68,7 +68,7 @@ import org.mozilla.yourApplication.GleanMetrics.Controls;
 assertTrue(Controls.INSTANCE.refreshPressed.testHasValue());
 // Does the counter have the expected value?
 assertEquals(6, Controls.INSTANCE.refreshPressed.testGetValue());
-// Did the counter record an negative value?
+// Did the counter record a negative value?
 assertEquals(
     1, Controls.INSTANCE.refreshPressed.testGetNumRecordedErrors(ErrorType.InvalidValue)
 );
@@ -115,7 +115,7 @@ There are test APIs available too:
 assert metrics.controls.refresh_pressed.test_has_value()
 # Does the counter have the expected value?
 assert 6 == metrics.controls.refresh_pressed.test_get_value()
-# Did the counter record an negative value?
+# Did the counter record a negative value?
 from glean.testing import ErrorType
 assert 1 == metrics.controls.refresh_pressed.test_get_num_recorded_errors(
     ErrorType.INVALID_VALUE
