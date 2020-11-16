@@ -529,7 +529,7 @@ class EventMetricTypeTest {
         // but we can try to receive one and that causes an exception if there is none.
         try {
             val request = server.takeRequest(20L, TimeUnit.SECONDS)
-            val docType = request.path.split("/")[3]
+            val docType = request!!.path.split("/")[3]
             assertTrue("Didn't expect a ping, still got one with document type $docType", false)
         } catch (e: NullPointerException) {
             assertTrue("No ping received.", true)
@@ -540,7 +540,7 @@ class EventMetricTypeTest {
         ping.submit()
         try {
             val request = server.takeRequest(20L, TimeUnit.SECONDS)
-            val docType = request.path.split("/")[3]
+            val docType = request!!.path.split("/")[3]
             assertTrue("Didn't expect a ping, still got one with document type $docType", false)
         } catch (e: NullPointerException) {
             assertTrue("No ping received.", true)
