@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.3.0...main)
 
+* Rust
+  * Introduce the Counter metric type in the RLB
+
 # v33.3.0 (2020-11-12)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.2.0...v33.3.0)
