@@ -56,6 +56,9 @@ pub mod net;
 pub mod private;
 mod system;
 
+#[cfg(test)]
+mod common_test;
+
 const LANGUAGE_BINDING_NAME: &str = "Rust";
 
 /// State to keep track for the Rust Language bindings.

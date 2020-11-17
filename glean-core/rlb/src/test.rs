@@ -3,49 +3,14 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use crate::private::{BooleanMetric, CounterMetric};
-use once_cell::sync::Lazy;
 use std::path::PathBuf;
-use std::sync::Mutex;
 
 use super::*;
-
-// Because glean_preview is a global-singleton, we need to run the tests one-by-one to avoid different tests stomping over each other.
-// This is only an issue because we're resetting Glean, this cannot happen in normal use of the
-// RLB.
-//
-// We use a global lock to force synchronization of all tests, even if run multi-threaded.
-// This allows us to run without `--test-threads 1`.`
-static GLOBAL_LOCK: Lazy<Mutex<()>> = Lazy::new(|| Mutex::new(()));
-const GLOBAL_APPLICATION_ID: &str = "org.mozilla.rlb.test";
-
-// Create a new instance of Glean with a temporary directory.
-// We need to keep the `TempDir` alive, so that it's not deleted before we stop using it.
-fn new_glean(configuration: Option<Configuration>, clear_stores: bool) -> tempfile::TempDir {
-    let dir = tempfile::tempdir().unwrap();
-    let tmpname = dir.path().display().to_string();
-
-    let cfg = match configuration {
-        Some(c) => c,
-        None => Configuration {
-            data_path: tmpname,
-            application_id: GLOBAL_APPLICATION_ID.into(),
-            upload_enabled: true,
-            max_events: None,
-            delay_ping_lifetime_io: false,
-            channel: Some("testing".into()),
-            server_endpoint: Some("invalid-test-host".into()),
-            uploader: None,
-        },
-    };
-
-    crate::reset_glean(cfg, ClientInfoMetrics::unknown(), clear_stores);
-    dir
-}
+use crate::common_test::{lock_test, new_glean, GLOBAL_APPLICATION_ID};
 
 #[test]
 fn send_a_ping() {
-    let _lock = GLOBAL_LOCK.lock().unwrap();
-    env_logger::try_init().ok();
+    let _lock = lock_test();
 
     let (s, r) = crossbeam_channel::bounded::<String>(1);
 
@@ -97,8 +62,7 @@ fn send_a_ping() {
 
 #[test]
 fn disabling_upload_disables_metrics_recording() {
-    let _lock = GLOBAL_LOCK.lock().unwrap();
-    env_logger::try_init().ok();
+    let _lock = lock_test();
 
     let _t = new_glean(None, true);
     crate::dispatcher::block_on_queue();
@@ -119,9 +83,7 @@ fn disabling_upload_disables_metrics_recording() {
 
 #[test]
 fn test_experiments_recording() {
-    // setup glean for the test
-    let _lock = GLOBAL_LOCK.lock().unwrap();
-    env_logger::try_init().ok();
+    let _lock = lock_test();
 
     let _t = new_glean(None, true);
 
@@ -145,8 +107,7 @@ fn test_experiments_recording() {
 
 #[test]
 fn test_experiments_recording_before_glean_inits() {
-    let _lock = GLOBAL_LOCK.lock().unwrap();
-    env_logger::try_init().ok();
+    let _lock = lock_test();
 
     // Destroy the existing glean instance from glean-core so that we
     // can test the pre-init queueing of the experiment api commands.
@@ -222,8 +183,7 @@ fn test_sending_of_startup_baseline_ping() {
 
 #[test]
 fn initialize_must_not_crash_if_data_dir_is_messed_up() {
-    let _lock = GLOBAL_LOCK.lock().unwrap();
-    env_logger::try_init().ok();
+    let _lock = lock_test();
 
     let dir = tempfile::tempdir().unwrap();
     let tmpdirname = dir.path().display().to_string();
@@ -256,8 +216,7 @@ fn initialize_must_not_crash_if_data_dir_is_messed_up() {
 
 #[test]
 fn queued_recorded_metrics_correctly_record_during_init() {
-    let _lock = GLOBAL_LOCK.lock().unwrap();
-    env_logger::try_init().ok();
+    let _lock = lock_test();
 
     destroy_glean(true);
 
@@ -290,8 +249,7 @@ fn queued_recorded_metrics_correctly_record_during_init() {
 
 #[test]
 fn initializing_twice_is_a_noop() {
-    let _lock = GLOBAL_LOCK.lock().unwrap();
-    env_logger::try_init().ok();
+    let _lock = lock_test();
 
     let dir = tempfile::tempdir().unwrap();
     let tmpname = dir.path().display().to_string();
