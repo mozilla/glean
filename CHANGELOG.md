@@ -7,6 +7,10 @@
 * Rust
   * Introduce the Counter metric type in the RLB.
   * Introduce the String metric type in the RLB.
+* Python
+  * BUGFIX: Fix too-long sleep time in uploader due to unit mismatch ([#1325](https://github.com/mozilla/glean/pull/1325)).
+* Swift
+  * BUGFIX: Fix too-long sleep time in uploader due to unit mismatch ([#1325](https://github.com/mozilla/glean/pull/1325)).
 
 # v33.3.0 (2020-11-12)
 
