@@ -231,7 +231,7 @@ class Glean:
         again or at process shutdown.
         """
         # Lower throttle backoff time for testing
-        PingUploadWorker._throttle_backoff_time = 1
+        PingUploadWorker._throttle_backoff_time_s = 1
 
         actual_data_dir = Path(tempfile.TemporaryDirectory().name)
         cls.initialize(
