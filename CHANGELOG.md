@@ -2,9 +2,15 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.3.0...main)
 
+* General
+  * When Rkv's safe mode is enabled (`features = ["rkv-safe-mode"]` on the `glean-core` crate) LMDB data is migrated at first start ([#1322](https://github.com/mozilla/glean/pull/1322)).
 * Rust
   * Introduce the Counter metric type in the RLB.
   * Introduce the String metric type in the RLB.
+* Python
+  * BUGFIX: Fix too-long sleep time in uploader due to unit mismatch ([#1325](https://github.com/mozilla/glean/pull/1325)).
+* Swift
+  * BUGFIX: Fix too-long sleep time in uploader due to unit mismatch ([#1325](https://github.com/mozilla/glean/pull/1325)).
 
 # v33.3.0 (2020-11-12)
 
@@ -14,9 +20,6 @@
   * Do not require default-features on rkv and downgrade bincode ([#1317](https://github.com/mozilla/glean/pull/1317))
 * Rust
   * Implement the experiments API ([#1314](https://github.com/mozilla/glean/pull/1314))
-
-* General
-  * When Rkv's safe mode is enabled (`features = ["rkv-safe-mode"]` on the `glean-core` crate) LMDB data is migrated at first start ([#1322](https://github.com/mozilla/glean/pull/1322)).
 
 # v33.2.0 (2020-11-10)
 
