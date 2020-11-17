@@ -27,6 +27,11 @@ impl BooleanMetric {
     pub fn new(meta: glean_core::CommonMetricData) -> Self {
         Self(Arc::new(glean_core::metrics::BooleanMetric::new(meta)))
     }
+
+    /// The internal constructor used by `LabeledMetric`.
+    pub(crate) fn new_from_meta(metric: Arc<glean_core::metrics::BooleanMetric>) -> Self {
+        Self(metric)
+    }
 }
 
 #[inherent(pub)]
