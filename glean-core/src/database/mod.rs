@@ -177,22 +177,36 @@ impl std::fmt::Debug for Database {
     }
 }
 
-/// Get the file size of a file in the given path and file.
+/// Calculate the  database size from all the files in the directory.
 ///
-/// # Arguments
+///  # Arguments
 ///
-/// - `path` - The path
+///  *`path` - The path to the directory
 ///
-/// # Returns
+///  # Returns
 ///
-/// Returns the non-zero file size in bytes,
+/// Returns the non-zero combined size of all files in a directory,
 /// or `None` on error or if the size is `0`.
-fn file_size(path: &Path) -> Option<NonZeroU64> {
-    log::trace!("Getting file size for path: {}", path.display());
-    fs::metadata(path)
-        .ok()
-        .map(|stat| stat.len())
-        .and_then(NonZeroU64::new)
+fn database_size(dir: &Path) -> Option<NonZeroU64> {
+    let mut total_size = 0;
+    if let Ok(entries) = fs::read_dir(dir) {
+        for entry in entries {
+            if let Ok(entry) = entry {
+                if let Ok(file_type) = entry.file_type() {
+                    if file_type.is_file() {
+                        let path = entry.path();
+                        if let Ok(metadata) = fs::metadata(path) {
+                            total_size += metadata.len();
+                        } else {
+                            continue;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    NonZeroU64::new(total_size)
 }
 
 impl Database {
@@ -206,14 +220,7 @@ impl Database {
     pub fn new(data_path: &str, delay_ping_lifetime_io: bool) -> Result<Self> {
         let path = Path::new(data_path).join("db");
         log::debug!("Database path: {:?}", path.display());
-
-        // FIXME(bug 1670634): This is probably more knowledge
-        // than we should have about the database internals.
-        // We could instead iterate over the directory and sum up the file sizes.
-        #[cfg(not(feature = "rkv-safe-mode"))]
-        let file_size = file_size(&path.join("data.mdb"));
-        #[cfg(feature = "rkv-safe-mode")]
-        let file_size = file_size(&path.join("data.safe.bin"));
+        let file_size = database_size(&path);
 
         let rkv = Self::open_rkv(&path)?;
         let user_store = rkv.open_single(Lifetime::User.as_str(), StoreOptions::create())?;
