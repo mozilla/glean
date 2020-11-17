@@ -8,6 +8,8 @@ use std::sync::Arc;
 use glean_core::metrics::MetricType;
 use glean_core::ErrorType;
 
+use crate::dispatcher;
+
 /// Sealed traits protect against downstream implementations.
 ///
 /// We wrap it in a private module that is inaccessible outside of this module.
@@ -32,7 +34,6 @@ mod private {
         /// Create a new `glean_core` metric from the metadata.
         fn new_inner(meta: crate::CommonMetricData) -> Self::InnerCoreType;
     }
-
 
     // `LabeledMetric<BooleanMetric>` is possible.
     //
@@ -79,8 +80,6 @@ mod private {
         }
     }
 }
-
-
 
 /// Marker trait for metrics that can be nested inside a labeled metric.
 ///
@@ -159,6 +158,8 @@ where
         error: ErrorType,
         ping_name: S,
     ) -> i32 {
+        dispatcher::block_on_queue();
+
         crate::with_glean_mut(|glean| {
             glean_core::test_get_num_recorded_errors(
                 &glean,
@@ -173,6 +174,7 @@ where
 
 #[cfg(test)]
 mod test {
+    use super::ErrorType;
     use crate::common_test::{lock_test, new_glean};
     use crate::destroy_glean;
     use crate::private::{BooleanMetric, CounterMetric, LabeledMetric, StringMetric};
@@ -356,5 +358,32 @@ mod test {
         metric.get("label2").set(true);
         assert!(!metric.get("label1").test_get_value("test1").unwrap());
         assert!(metric.get("label2").test_get_value("test1").unwrap());
+    }
+
+    #[test]
+    fn test_invalid_labels_record_errors() {
+        let _lock = lock_test();
+
+        let _ = new_glean(None, true);
+
+        let metric: LabeledMetric<BooleanMetric> = LabeledMetric::new(
+            CommonMetricData {
+                name: "labeled_boolean".into(),
+                category: "labeled".into(),
+                send_in_pings: vec!["test1".into()],
+                disabled: false,
+                ..Default::default()
+            },
+            None,
+        );
+
+        let invalid_label = "!#I'm invalid#--_";
+        metric.get(invalid_label).set(true);
+        // TODO: Uncomment after bug 1677807 is fixed.
+        // assert!(metric.get(invalid_label).test_get_value(None).is_none());
+        assert_eq!(
+            1,
+            metric.test_get_num_recorded_errors(ErrorType::InvalidLabel, None)
+        );
     }
 }
