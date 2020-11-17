@@ -15,6 +15,9 @@
 * Rust
   * Implement the experiments API ([#1314](https://github.com/mozilla/glean/pull/1314))
 
+* General
+  * When Rkv's safe mode is enabled (`features = ["rkv-safe-mode"]` on the `glean-core` crate) LMDB data is migrated at first start ([#1322](https://github.com/mozilla/glean/pull/1322)).
+
 # v33.2.0 (2020-11-10)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.1.2...v33.2.0)

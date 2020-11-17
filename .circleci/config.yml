@@ -61,6 +61,11 @@ commands:
       - run:
           name: Test
           command: cargo test --all --verbose
+      - run:
+          name: Test Glean with rkv safe-mode
+          command: |
+            cd glean-core
+            cargo test -p glean-core --features rkv-safe-mode
 
   install-rustup:
     steps:
