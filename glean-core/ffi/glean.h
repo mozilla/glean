@@ -786,6 +786,10 @@ uint64_t glean_new_uuid_metric(FfiStr category,
                                Lifetime lifetime,
                                uint8_t disabled);
 
+int32_t glean_uuid_test_get_num_recorded_errors(uint64_t metric_id,
+                                                int32_t error_type,
+                                                FfiStr storage_name);
+
 void glean_uuid_set(uint64_t metric_id, FfiStr value);
 
 uint8_t glean_uuid_test_has_value(uint64_t metric_id, FfiStr storage_name);

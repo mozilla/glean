@@ -171,7 +171,7 @@ assert_eq!(u, user::client_id.test_get_value(None).unwrap());
 
 ## Recorded errors
 
-* None.
+* `invalid_value`: if the value is set to a string that is not a UUID (only applies for dynamically-typed languages, such as Python).
 
 ## Reference
 
