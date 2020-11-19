@@ -26,26 +26,26 @@ mod private {
     /// `Labeled<T>` trait.
     pub trait ToLabeled {
         /// The `glean_core` metric type representing the labeled metric.
-        type InnerCoreType: glean_core::metrics::MetricType + Clone;
+        type InnerCoreMetric: glean_core::metrics::MetricType + Clone;
 
         /// Create a new metric object implementing this trait from the inner type.
-        fn from_inner(metric: Self::InnerCoreType) -> Self;
+        fn from_inner(metric: Self::InnerCoreMetric) -> Self;
 
         /// Create a new `glean_core` metric from the metadata.
-        fn new_inner(meta: crate::CommonMetricData) -> Self::InnerCoreType;
+        fn new_inner(meta: crate::CommonMetricData) -> Self::InnerCoreMetric;
     }
 
     // `LabeledMetric<BooleanMetric>` is possible.
     //
     // See [Labeled Booleans](https://mozilla.github.io/glean/book/user/metrics/labeled_booleans.html).
     impl ToLabeled for BooleanMetric {
-        type InnerCoreType = glean_core::metrics::BooleanMetric;
+        type InnerCoreMetric = glean_core::metrics::BooleanMetric;
 
-        fn from_inner(metric: Self::InnerCoreType) -> Self {
+        fn from_inner(metric: Self::InnerCoreMetric) -> Self {
             BooleanMetric::new_from_meta(Arc::new(metric))
         }
 
-        fn new_inner(meta: CommonMetricData) -> Self::InnerCoreType {
+        fn new_inner(meta: CommonMetricData) -> Self::InnerCoreMetric {
             glean_core::metrics::BooleanMetric::new(meta)
         }
     }
@@ -54,13 +54,13 @@ mod private {
     //
     // See [Labeled Strings](https://mozilla.github.io/glean/book/user/metrics/labeled_strings.html).
     impl ToLabeled for StringMetric {
-        type InnerCoreType = glean_core::metrics::StringMetric;
+        type InnerCoreMetric = glean_core::metrics::StringMetric;
 
-        fn from_inner(metric: Self::InnerCoreType) -> Self {
+        fn from_inner(metric: Self::InnerCoreMetric) -> Self {
             StringMetric::new_from_meta(Arc::new(metric))
         }
 
-        fn new_inner(meta: CommonMetricData) -> Self::InnerCoreType {
+        fn new_inner(meta: CommonMetricData) -> Self::InnerCoreMetric {
             glean_core::metrics::StringMetric::new(meta)
         }
     }
@@ -69,13 +69,13 @@ mod private {
     //
     // See [Labeled Counters](https://mozilla.github.io/glean/book/user/metrics/labeled_counters.html).
     impl ToLabeled for CounterMetric {
-        type InnerCoreType = glean_core::metrics::CounterMetric;
+        type InnerCoreMetric = glean_core::metrics::CounterMetric;
 
-        fn from_inner(metric: Self::InnerCoreType) -> Self {
+        fn from_inner(metric: Self::InnerCoreMetric) -> Self {
             CounterMetric::new_from_meta(Arc::new(metric))
         }
 
-        fn new_inner(meta: CommonMetricData) -> Self::InnerCoreType {
+        fn new_inner(meta: CommonMetricData) -> Self::InnerCoreMetric {
             glean_core::metrics::CounterMetric::new(meta)
         }
     }
@@ -104,7 +104,7 @@ impl<T> AllowLabeled for T where T: private::ToLabeled {}
 /// for that type.
 #[derive(Clone)]
 pub struct LabeledMetric<T: AllowLabeled>(
-    pub(crate) Arc<glean_core::metrics::LabeledMetric<T::InnerCoreType>>,
+    pub(crate) Arc<glean_core::metrics::LabeledMetric<T::InnerCoreMetric>>,
 );
 
 impl<T> LabeledMetric<T>
