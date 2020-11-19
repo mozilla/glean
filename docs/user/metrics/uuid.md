@@ -134,6 +134,31 @@ Assert.Equal(uuid, User.clientId.TestGetValue());
 
 </div>
 
+<div data-lang="Rust" class="tab">
+
+```rust
+use glean_metrics;
+use uuid::Uuid;
+
+user::client_id.generate_and_set(); // Generate a new UUID and record it
+user::client_id.set(Uuid::new_v4()); // Set a UUID explicitly
+```
+
+There are test APIs available too:
+
+```rust
+use glean_metrics;
+
+let u = Uuid::new_v4();
+user::client_id.set(u);
+// Was anything recorded?
+assert!(user::client_id.test_get_value(None).is_some());
+// Does it have the expected value?
+assert_eq!(u, user::client_id.test_get_value(None).unwrap());
+```
+
+</div>
+
 {{#include ../../tab_footer.md}}
 
 ## Limits

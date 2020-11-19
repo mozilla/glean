@@ -91,14 +91,7 @@ impl UuidMetric {
     /// Gets the currently stored value as a string.
     ///
     /// This doesn't clear the stored value.
-    pub fn test_get_value(&self, glean: &Glean, storage_name: &str) -> Option<String> {
-        match StorageManager.snapshot_metric(
-            glean.storage(),
-            storage_name,
-            &self.meta.identifier(glean),
-        ) {
-            Some(Metric::Uuid(s)) => Some(s),
-            _ => None,
-        }
+    pub fn test_get_value(&self, glean: &Glean, storage_name: &str) -> Option<Uuid> {
+        self.get_value(glean, storage_name)
     }
 }

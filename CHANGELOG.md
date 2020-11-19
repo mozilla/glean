@@ -11,6 +11,7 @@
 * Rust
   * Introduce the Counter metric type in the RLB.
   * Introduce the String metric type in the RLB.
+  * Introduce the UUID metric type in the RLB.
   * BUGFIX: Track the size of the database directory at startup ([#1304](https://github.com/mozilla/glean/pull/1304)).
 * Python
   * BUGFIX: Fix too-long sleep time in uploader due to unit mismatch ([#1325](https://github.com/mozilla/glean/pull/1325)).

@@ -9,7 +9,9 @@ mod counter;
 mod ping;
 mod recorded_experiment_data;
 mod string;
+mod uuid;
 
+pub use self::uuid::UuidMetric;
 pub use boolean::BooleanMetric;
 pub use counter::CounterMetric;
 pub use ping::PingType;
