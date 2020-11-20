@@ -130,6 +130,39 @@ Assert.Equal(0, Accessibility.features.TestGetNumRecordedErrors(ErrorType.Invali
 
 </div>
 
+<div data-lang="Rust" class="tab">
+
+```rust
+use glean_metrics;
+
+accessibility::features.get("screen_reader").set(is_screen_reader_enabled());
+accessibility::features.get("high_contrast").set(is_high_contrast_enabled());
+```
+
+There are test APIs available too:
+
+```rust
+use glean::ErrorType;
+
+use glean_metrics;
+
+// Was anything recorded?
+assert!(accessibility::features.get("screen_reader").test_get_value(None).is_some());
+assert!(accessibility::features.get("high_contrast").test_get_value(None).is_some());
+// Do the booleans have the expected values?
+assert!(accessibility::features.get("screen_reader").test_get_value(None).unwrap());
+assert!(!accessibility::features.get("high_contrast").test_get_value(None).unwrap());
+// Did we record any invalid labels?
+assert_eq!(
+  1,
+  accessibility::features.test_get_num_recorded_errors(
+    ErrorType::InvalidLabel
+  )
+);
+```
+
+</div>
+
 {{#include ../../tab_footer.md}}
 
 ## Limits
