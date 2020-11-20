@@ -163,3 +163,4 @@ assert!(flags::a11y_enabled.test_get_value(None).unwrap());
 * [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-boolean-metric-type/index.html)
 * [Swift API docs](../../../swift/Classes/BooleanMetricType.html)
 * [Python API docs](../../../python/glean/metrics/boolean.html)
+* [Rust API docs](../../../docs/glean/private/boolean/struct.BooleanMetric.html)

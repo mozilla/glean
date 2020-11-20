@@ -200,3 +200,4 @@ assert_eq!(
 * [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-counter-metric-type/index.html)
 * [Swift API docs](../../../swift/Classes/CounterMetricType.html)
 * [Python API docs](../../../python/glean/metrics/counter.html)
+* [Rust API docs](../../../docs/glean/private/counter/struct.CounterMetric.html)
