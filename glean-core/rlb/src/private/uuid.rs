@@ -83,7 +83,6 @@ impl glean_core::traits::Uuid for UuidMetric {
     /// # Returns
     ///
     /// The number of errors reported.
-    #[allow(dead_code)] // Remove after mozilla/glean#1328
     fn test_get_num_recorded_errors<'a, S: Into<Option<&'a str>>>(
         &self,
         error: ErrorType,
