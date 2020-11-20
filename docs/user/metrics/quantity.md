@@ -182,3 +182,6 @@ assert_eq!(width, display::width.test_get_value(None).unwrap());
 ## Reference
 
 * [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-quantity-metric-type/index.html)
+* [Swift API docs](../../../swift/Classes/QuantityMetricType.html)
+* [Python API docs](../../../python/glean/metrics/quantity.html)
+* [Rust API docs](../../../docs/glean/private/quantity/struct.QuantityMetric.html)
