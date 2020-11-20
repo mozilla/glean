@@ -5,6 +5,7 @@
 * Rust
   * Introduce the UUID metric type in the RLB.
   * Introduce the Labeled metric type in the RLB [#1327](https://github.com/mozilla/glean/pull/1327).
+  * Introduce the Quantity metric type in the RLB.
   * Introduce the `shutdown` API.
   * Add Glean debugging APIs. 
 * Python

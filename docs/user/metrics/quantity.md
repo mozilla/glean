@@ -144,6 +144,27 @@ Assert.Equal(
 
 </div>
 
+<div data-lang="Rust" class="tab">
+
+```rust
+use glean_metrics;
+
+display::width.set(width);
+```
+
+There are test APIs available too:
+
+```rust
+use glean_metrics;
+
+// Was anything recorded?
+assert!(display::width.test_get_value(None).is_some());
+// Does it have the expected value?
+assert_eq!(width, display::width.test_get_value(None).unwrap());
+```
+
+</div>
+
 {{#include ../../tab_footer.md}}
 
 ## Limits
