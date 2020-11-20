@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.4.0...main)
 
+* Rust
+  * Introduce the UUID metric type in the RLB.
+
 # v33.4.0 (2020-11-17)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.3.0...v33.4.0)
@@ -11,7 +14,6 @@
 * Rust
   * Introduce the Counter metric type in the RLB.
   * Introduce the String metric type in the RLB.
-  * Introduce the UUID metric type in the RLB.
   * BUGFIX: Track the size of the database directory at startup ([#1304](https://github.com/mozilla/glean/pull/1304)).
 * Python
   * BUGFIX: Fix too-long sleep time in uploader due to unit mismatch ([#1325](https://github.com/mozilla/glean/pull/1325)).
