@@ -145,7 +145,7 @@ fn test_experiments_recording_before_glean_inits() {
     let dir = tempfile::tempdir().unwrap();
     let tmpname = dir.path().display().to_string();
 
-    reset_glean(
+    test_reset_glean(
         Configuration {
             data_path: tmpname,
             application_id: GLOBAL_APPLICATION_ID.into(),
@@ -203,7 +203,7 @@ fn initialize_must_not_crash_if_data_dir_is_messed_up() {
         uploader: None,
     };
 
-    reset_glean(cfg, ClientInfoMetrics::unknown(), false);
+    test_reset_glean(cfg, ClientInfoMetrics::unknown(), false);
     // TODO(bug 1675215): ensure initialize runs through dispatcher.
     // Glean init is async and, for this test, it bails out early due to
     // an caused by not being able to create the data dir: we can do nothing
@@ -254,7 +254,7 @@ fn initializing_twice_is_a_noop() {
     let dir = tempfile::tempdir().unwrap();
     let tmpname = dir.path().display().to_string();
 
-    reset_glean(
+    test_reset_glean(
         Configuration {
             data_path: tmpname.clone(),
             application_id: GLOBAL_APPLICATION_ID.into(),
@@ -271,7 +271,7 @@ fn initializing_twice_is_a_noop() {
 
     dispatcher::block_on_queue();
 
-    reset_glean(
+    test_reset_glean(
         Configuration {
             data_path: tmpname,
             application_id: GLOBAL_APPLICATION_ID.into(),
