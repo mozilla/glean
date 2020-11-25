@@ -25,6 +25,8 @@
 //!     max_events: None,
 //!     delay_ping_lifetime_io: false,
 //!     channel: None,
+//!     server_endpoint: None,
+//!     uploader: None,
 //! };
 //! glean::initialize(cfg, ClientInfoMetrics::unknown());
 //!
@@ -36,19 +38,26 @@
 //! ```
 
 use once_cell::sync::OnceCell;
+use std::collections::HashMap;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Mutex;
 
 pub use configuration::Configuration;
+use configuration::DEFAULT_GLEAN_ENDPOINT;
 pub use core_metrics::ClientInfoMetrics;
 pub use glean_core::{global_glean, setup_glean, CommonMetricData, Error, Glean, Lifetime, Result};
+use private::RecordedExperimentData;
 
 mod configuration;
 mod core_metrics;
-pub mod dispatcher;
+mod dispatcher;
 mod glean_metrics;
+pub mod net;
 pub mod private;
 mod system;
+
+#[cfg(test)]
+mod common_test;
 
 const LANGUAGE_BINDING_NAME: &str = "Rust";
 
@@ -82,19 +91,61 @@ fn global_state() -> &'static Mutex<RustBindingsState> {
     STATE.get().unwrap()
 }
 
-/// Set or replace the global Glean object.
+/// Set or replace the global bindings State object.
 fn setup_state(state: RustBindingsState) {
+    // The `OnceCell` type wrapping our state is thread-safe and can only be set once.
+    // Therefore even if our check for it being empty succeeds, setting it could fail if a
+    // concurrent thread is quicker in setting it.
+    // However this will not cause a bigger problem, as the second `set` operation will just fail.
+    // We can log it and move on.
+    //
+    // For all wrappers this is not a problem, as the State object is intialized exactly once on
+    // calling `initialize` on the global singleton and further operations check that it has been
+    // initialized.
     if STATE.get().is_none() {
-        STATE.set(Mutex::new(state)).unwrap();
+        if STATE.set(Mutex::new(state)).is_err() {
+            log::error!(
+                "Global Glean state object is initialized already. This probably happened concurrently."
+            );
+        }
     } else {
+        // We allow overriding the global State object to support test mode.
+        // In test mode the State object is fully destroyed and recreated.
+        // This all happens behind a mutex and is therefore also thread-safe.
         let mut lock = STATE.get().unwrap().lock().unwrap();
         *lock = state;
     }
 }
 
+/// An instance of the upload manager.
+///
+/// Requires a Mutex, because in tests we can actual reset this.
+static UPLOAD_MANAGER: OnceCell<Mutex<net::UploadManager>> = OnceCell::new();
+
+/// Get a reference to the global upload manager.
+///
+/// Panics if no global state object was set.
+fn get_upload_manager() -> &'static Mutex<net::UploadManager> {
+    UPLOAD_MANAGER.get().unwrap()
+}
+
+/// Set or replace the global upload object.
+fn setup_upload_manager(upload_manager: net::UploadManager) {
+    if UPLOAD_MANAGER.get().is_none() {
+        if UPLOAD_MANAGER.set(Mutex::new(upload_manager)).is_err() {
+            log::error!(
+                "Global upload state object is initialized already. This probably happened concurrently."
+            );
+        }
+    } else {
+        let mut lock = UPLOAD_MANAGER.get().unwrap().lock().unwrap();
+        *lock = upload_manager;
+    }
+}
+
 fn with_glean<F, R>(f: F) -> R
 where
-    F: Fn(&Glean) -> R,
+    F: FnOnce(&Glean) -> R,
 {
     let glean = global_glean().expect("Global Glean object not initialized");
     let lock = glean.lock().unwrap();
@@ -103,7 +154,7 @@ where
 
 fn with_glean_mut<F, R>(f: F) -> R
 where
-    F: Fn(&mut Glean) -> R,
+    F: FnOnce(&mut Glean) -> R,
 {
     let glean = global_glean().expect("Global Glean object not initialized");
     let mut lock = glean.lock().unwrap();
@@ -137,9 +188,10 @@ pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) {
 
         let glean = match Glean::new(core_cfg) {
             Ok(glean) => glean,
-            // glean-core already takes care of logging errors: other bindings
-            // simply do early returns, as we're doing.
-            Err(_) => return,
+            Err(err) => {
+                log::error!("Failed to initialize Glean: {}", err);
+                return;
+            }
         };
 
         // glean-core already takes care of logging errors: other bindings
@@ -155,6 +207,14 @@ pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) {
             channel: cfg.channel,
             client_info,
         });
+
+        // Initialize the ping uploader.
+        setup_upload_manager(net::UploadManager::new(
+            cfg.server_endpoint
+                .unwrap_or_else(|| DEFAULT_GLEAN_ENDPOINT.to_string()),
+            cfg.uploader
+                .unwrap_or_else(|| Box::new(net::HttpUploader) as Box<dyn net::PingUploader>),
+        ));
 
         let upload_enabled = cfg.upload_enabled;
 
@@ -196,7 +256,8 @@ pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) {
             // 1. Pings were submitted through Glean and it is ready to upload those pings;
             // 2. Upload is disabled, to upload a possible deletion-request ping.
             if pings_submitted || !upload_enabled {
-                // TODO: bug 1672958.
+                let uploader = get_upload_manager().lock().unwrap();
+                uploader.trigger_upload();
             }
 
             // Set up information and scheduling for Glean owned pings. Ideally, the "metrics"
@@ -208,7 +269,7 @@ pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) {
             // force-closed. If that's the case, submit a 'baseline' ping with the
             // reason "dirty_startup". We only do that from the second run.
             if !is_first_run && dirty_flag {
-                // TODO: bug 1672958 - submit_ping_by_name_sync("baseline", "dirty_startup");
+                // TODO: bug 1672956 - submit_ping_by_name_sync("baseline", "dirty_startup");
             }
 
             // From the second time we run, after all startup pings are generated,
@@ -300,19 +361,30 @@ pub fn set_upload_enabled(enabled: bool) {
                 initialize_core_metrics(&glean, &state.client_info, state.channel.clone());
             }
 
-            // TODO: trigger upload for the deletion-ping. Will happen in bug 1672952.
+            if old_enabled && !enabled {
+                // If uploading is disabled, we need to send the deletion-request ping:
+                // note that glean-core takes care of generating it.
+                let uploader = get_upload_manager().lock().unwrap();
+                uploader.trigger_upload();
+            }
         });
     });
 }
 
 /// Register a new [`PingType`](metrics/struct.PingType.html).
 pub fn register_ping_type(ping: &private::PingType) {
-    let ping = ping.clone();
-    dispatcher::launch(move || {
-        with_glean_mut(|glean| {
-            glean.register_ping_type(&ping.ping_type);
+    // If this happens after Glean.initialize is called (and returns),
+    // we dispatch ping registration on the thread pool.
+    // Registering a ping should not block the application.
+    // Submission itself is also dispatched, so it will always come after the registration.
+    if was_initialize_called() {
+        let ping = ping.clone();
+        dispatcher::launch(move || {
+            with_glean_mut(|glean| {
+                glean.register_ping_type(&ping.ping_type);
+            })
         })
-    })
+    }
 }
 
 /// Collects and submits a ping for eventual uploading.
@@ -329,8 +401,134 @@ pub fn submit_ping_by_name(ping: &str, reason: Option<&str>) {
     let ping = ping.to_string();
     let reason = reason.map(|s| s.to_string());
     dispatcher::launch(move || {
-        with_glean(|glean| glean.submit_ping_by_name(&ping, reason.as_deref()).ok());
+        submit_ping_by_name_sync(&ping, reason.as_deref());
     })
+}
+
+/// Collect and submit a ping (by its name) for eventual upload, synchronously.
+///
+/// The ping will be looked up in the known instances of `private::PingType`. If the
+/// ping isn't known, an error is logged and the ping isn't queued for uploading.
+///
+/// The ping content is assembled as soon as possible, but upload is not
+/// guaranteed to happen immediately, as that depends on the upload
+/// policies.
+///
+/// If the ping currently contains no content, it will not be assembled and
+/// queued for sending, unless explicitly specified otherwise in the registry
+/// file.
+///
+/// ## Arguments
+///
+/// * `ping_name` - the name of the ping to submit.
+/// * `reason` - the reason the ping is being submitted.
+pub(crate) fn submit_ping_by_name_sync(ping: &str, reason: Option<&str>) {
+    if !was_initialize_called() {
+        log::error!("Glean must be initialized before submitting pings.");
+        return;
+    }
+
+    let submitted_ping = with_glean(|glean| {
+        if !glean.is_upload_enabled() {
+            log::info!("Glean disabled: not submitting any pings.");
+            // This won't actually return from `submit_ping_by_name`, but
+            // returning `false` here skips spinning up the uploader below,
+            // which is basically the same.
+            return Some(false);
+        }
+
+        glean.submit_ping_by_name(&ping, reason.as_deref()).ok()
+    });
+
+    if let Some(true) = submitted_ping {
+        let uploader = get_upload_manager().lock().unwrap();
+        uploader.trigger_upload();
+    }
+}
+
+/// Indicate that an experiment is running.  Glean will then add an
+/// experiment annotation to the environment which is sent with pings. This
+/// infomration is not persisted between runs.
+///
+/// See [`glean_core::Glean::set_experiment_active`].
+pub fn set_experiment_active(
+    experiment_id: String,
+    branch: String,
+    extra: Option<HashMap<String, String>>,
+) {
+    dispatcher::launch(move || {
+        with_glean(|glean| {
+            glean.set_experiment_active(
+                experiment_id.to_owned(),
+                branch.to_owned(),
+                extra.to_owned(),
+            )
+        });
+    })
+}
+
+/// Indicate that an experiment is no longer running.
+///
+/// See [`glean_core::Glean::set_experiment_inactive`].
+pub fn set_experiment_inactive(experiment_id: String) {
+    dispatcher::launch(move || {
+        with_glean(|glean| glean.set_experiment_inactive(experiment_id.to_owned()))
+    })
+}
+
+/// TEST ONLY FUNCTION.
+/// Checks if an experiment is currently active.
+#[allow(dead_code)]
+pub(crate) fn test_is_experiment_active(experiment_id: String) -> bool {
+    dispatcher::block_on_queue();
+    with_glean(|glean| glean.test_is_experiment_active(experiment_id.to_owned()))
+}
+
+/// TEST ONLY FUNCTION.
+/// Returns the `RecordedExperimentData` for the given `experiment_id` or panics if
+/// the id isn't found.
+#[allow(dead_code)]
+pub(crate) fn test_get_experiment_data(experiment_id: String) -> RecordedExperimentData {
+    dispatcher::block_on_queue();
+    with_glean(|glean| {
+        let json_data = glean
+            .test_get_experiment_data_as_json(experiment_id.to_owned())
+            .unwrap_or_else(|| panic!("No experiment found for id: {}", experiment_id));
+        serde_json::from_str::<RecordedExperimentData>(&json_data).unwrap()
+    })
+}
+
+/// Destroy the global Glean state.
+pub(crate) fn destroy_glean(clear_stores: bool) {
+    // Destroy the existing glean instance from glean-core.
+    if was_initialize_called() {
+        // We need to check if the Glean object (from glean-core) is
+        // initialized, otherwise this will crash on the first test
+        // due to bug 1675215 (this check can be removed once that
+        // bug is fixed).
+        if global_glean().is_some() {
+            with_glean_mut(|glean| {
+                if clear_stores {
+                    glean.test_clear_all_stores()
+                }
+                glean.destroy_db()
+            });
+        }
+        // Allow us to go through initialization again.
+        INITIALIZE_CALLED.store(false, Ordering::SeqCst);
+        // Reset the dispatcher.
+        dispatcher::reset_dispatcher();
+    }
+}
+
+/// TEST ONLY FUNCTION.
+/// Resets the Glean state and triggers init again.
+pub fn test_reset_glean(cfg: Configuration, client_info: ClientInfoMetrics, clear_stores: bool) {
+    destroy_glean(clear_stores);
+
+    // Always log pings for tests
+    //Glean.setLogPings(true)
+    initialize(cfg, client_info);
 }
 
 #[cfg(test)]

@@ -48,6 +48,8 @@ assertEquals(1, Display.width.testGetNumRecordedErrors(ErrorType.InvalidValue))
 
 </div>
 
+<div data-lang="Java" class="tab">
+
 ```Java
 import org.mozilla.yourApplication.GleanMetrics.Display;
 

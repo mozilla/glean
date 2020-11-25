@@ -137,9 +137,9 @@ There are test APIs available too:
 use glean_metrics;
 
 // Was anything recorded?
-assert!(flags::a11y_enabled.test_get_value().is_some());
+assert!(flags::a11y_enabled.test_get_value(None).is_some());
 // Does it have the expected value?
-assert!(flags::a11y_enabled.test_get_value().unwrap());
+assert!(flags::a11y_enabled.test_get_value(None).unwrap());
 ```
 
 </div>
@@ -163,3 +163,4 @@ assert!(flags::a11y_enabled.test_get_value().unwrap());
 * [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-boolean-metric-type/index.html)
 * [Swift API docs](../../../swift/Classes/BooleanMetricType.html)
 * [Python API docs](../../../python/glean/metrics/boolean.html)
+* [Rust API docs](../../../docs/glean/private/boolean/struct.BooleanMetric.html)

@@ -127,6 +127,38 @@ Assert.Equal(0, Stability.crashCount.TestGetNumRecordedErrors(ErrorType.InvalidL
 
 </div>
 
+<div data-lang="Rust" class="tab">
+
+```rust
+use glean_metrics;
+
+stability::crash_count.get("uncaught_exception").add(1); // Adds 1 to the "uncaught_exception" counter.
+stability::crash_count.get("native_code_crash").add(3); // Adds 3 to the "native_code_crash" counter.
+```
+
+There are test APIs available too:
+
+```rust
+use glean::ErrorType;
+
+use glean_metrics;
+// Was anything recorded?
+assert!(stability::crash_count.get("uncaught_exception").test_get_value().is_some());
+assert!(stability::crash_count.get("native_code_crash").test_get_value().is_some());
+// Do the counters have the expected values?
+assert_eq!(1, stability::crash_count.get("uncaught_exception").test_get_value().unwrap());
+assert_eq!(3, stability::crash_count.get("native_code_crash").test_get_value().unwrap());
+// Were there any invalid labels?
+assert_eq!(
+  0,
+  stability::crash_count.test_get_num_recorded_errors(
+    ErrorType::InvalidLabel
+  )
+);
+```
+
+</div>
+
 {{#include ../../tab_footer.md}}
 
 ## Limits

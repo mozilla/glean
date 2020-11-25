@@ -2,10 +2,15 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+use crate::net::PingUploader;
+
+/// The default server pings are sent to.
+pub(crate) const DEFAULT_GLEAN_ENDPOINT: &str = "https://incoming.telemetry.mozilla.org";
+
 /// The Glean configuration.
 ///
 /// Optional values will be filled in with default values.
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct Configuration {
     /// Whether upload should be enabled.
     pub upload_enabled: bool,
@@ -19,4 +24,8 @@ pub struct Configuration {
     pub delay_ping_lifetime_io: bool,
     /// The release channel the application is on, if known.
     pub channel: Option<String>,
+    /// The server pings are sent to.
+    pub server_endpoint: Option<String>,
+    /// The instance of the uploader used to send pings.
+    pub uploader: Option<Box<dyn PingUploader + 'static>>,
 }

@@ -5,6 +5,10 @@ These dependencies are available under a variety of free and open source license
 the details of which are reproduced below.
 -->
   <license>
+    <name>Apache License 2.0: miniz_oxide</name>
+    <url>https://github.com/Frommi/miniz_oxide/tree/master/miniz_oxide</url>
+  </license>
+  <license>
     <name>Apache License 2.0: lmdb-rkv</name>
     <url>https://github.com/mozilla/lmdb-rs.git</url>
   </license>
@@ -49,12 +53,24 @@ the details of which are reproduced below.
     <url>https://github.com/alexcrichton/cfg-if</url>
   </license>
   <license>
+    <name>Apache License 2.0: cfg-if</name>
+    <url>https://github.com/alexcrichton/cfg-if</url>
+  </license>
+  <license>
     <name>Apache License 2.0: const-random</name>
     <url>https://github.com/tkaitchuck/constrandom</url>
   </license>
   <license>
     <name>Apache License 2.0: const-random-macro</name>
     <url>https://github.com/tkaitchuck/constrandom</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: crossbeam-channel</name>
+    <url>https://github.com/crossbeam-rs/crossbeam</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: crossbeam-utils</name>
+    <url>https://github.com/crossbeam-rs/crossbeam</url>
   </license>
   <license>
     <name>Apache License 2.0: env_logger</name>
@@ -70,11 +86,23 @@ the details of which are reproduced below.
   </license>
   <license>
     <name>Apache License 2.0: flate2</name>
-    <url>https://github.com/alexcrichton/flate2-rs</url>
+    <url>https://github.com/rust-lang/flate2-rs</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: form_urlencoded</name>
+    <url>https://github.com/servo/rust-url</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: id-arena</name>
+    <url>https://github.com/fitzgen/id-arena</url>
   </license>
   <license>
     <name>Apache License 2.0: idna</name>
     <url>https://github.com/servo/rust-url/</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: inherent</name>
+    <url>https://github.com/dtolnay/inherent</url>
   </license>
   <license>
     <name>Apache License 2.0: itoa</name>
@@ -87,6 +115,10 @@ the details of which are reproduced below.
   <license>
     <name>Apache License 2.0: libc</name>
     <url>https://github.com/rust-lang/libc</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: maybe-uninit</name>
+    <url>https://github.com/est31/maybe-uninit</url>
   </license>
   <license>
     <name>Apache License 2.0: num-integer</name>
@@ -103,6 +135,14 @@ the details of which are reproduced below.
   <license>
     <name>Apache License 2.0: once_cell</name>
     <url>https://github.com/matklad/once_cell</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: paste</name>
+    <url>https://github.com/dtolnay/paste</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: paste-impl</name>
+    <url>https://github.com/dtolnay/paste</url>
   </license>
   <license>
     <name>Apache License 2.0: percent-encoding</name>
@@ -137,6 +177,14 @@ the details of which are reproduced below.
     <url>https://github.com/dtolnay/syn</url>
   </license>
   <license>
+    <name>Apache License 2.0: thiserror</name>
+    <url>https://github.com/dtolnay/thiserror</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: thiserror-impl</name>
+    <url>https://github.com/dtolnay/thiserror</url>
+  </license>
+  <license>
     <name>Apache License 2.0: time</name>
     <url>https://github.com/time-rs/time</url>
   </license>
@@ -159,6 +207,10 @@ the details of which are reproduced below.
   <license>
     <name>Apache License 2.0: uuid</name>
     <url>https://github.com/uuid-rs/uuid</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: getrandom</name>
+    <url>https://github.com/rust-random/getrandom</url>
   </license>
   <license>
     <name>Apache License 2.0: getrandom</name>
@@ -233,16 +285,16 @@ the details of which are reproduced below.
     <url>https://github.com/mystor/synstructure</url>
   </license>
   <license>
-    <name>MIT License: miniz_oxide</name>
-    <url>https://github.com/Frommi/miniz_oxide/tree/master/miniz_oxide</url>
-  </license>
-  <license>
     <name>MIT License: dashmap</name>
     <url>https://github.com/xacrimon/dashmap</url>
   </license>
   <license>
     <name>MIT License: oslog</name>
     <url>https://github.com/steven-joruk/oslog</url>
+  </license>
+  <license>
+    <name>MIT License: bincode</name>
+    <url>https://github.com/servo/bincode</url>
   </license>
   <license>
     <name>MIT License: byteorder</name>
@@ -257,12 +309,12 @@ the details of which are reproduced below.
     <url>https://github.com/BurntSushi/winapi-util</url>
   </license>
   <license>
-    <name>MIT License: bincode</name>
-    <url>https://github.com/servo/bincode</url>
-  </license>
-  <license>
     <name>Mozilla Public License 2.0: benchmark</name>
     <url>https://crates.io/crates/benchmark</url>
+  </license>
+  <license>
+    <name>Mozilla Public License 2.0: glean</name>
+    <url>https://github.com/mozilla/glean</url>
   </license>
   <license>
     <name>Mozilla Public License 2.0: glean-core</name>
@@ -270,10 +322,6 @@ the details of which are reproduced below.
   </license>
   <license>
     <name>Mozilla Public License 2.0: glean-ffi</name>
-    <url>https://github.com/mozilla/glean</url>
-  </license>
-  <license>
-    <name>Mozilla Public License 2.0: glean-preview</name>
     <url>https://github.com/mozilla/glean</url>
   </license>
 </licenses>

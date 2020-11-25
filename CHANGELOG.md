@@ -1,6 +1,62 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v33.0.4...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v33.4.0...main)
+
+* Rust
+  * Introduce the UUID metric type in the RLB.
+  * Introduce the Labeled metric type in the RLB [#1327](https://github.com/mozilla/glean/pull/1327).
+* Python
+  * BUGFIX: Setting a UUID metric to a value that is not in the expected UUID format will now record an error with the Glean error reporting system.
+
+# v33.4.0 (2020-11-17)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v33.3.0...v33.4.0)
+
+* General
+  * When Rkv's safe mode is enabled (`features = ["rkv-safe-mode"]` on the `glean-core` crate) LMDB data is migrated at first start ([#1322](https://github.com/mozilla/glean/pull/1322)).
+* Rust
+  * Introduce the Counter metric type in the RLB.
+  * Introduce the String metric type in the RLB.
+  * BUGFIX: Track the size of the database directory at startup ([#1304](https://github.com/mozilla/glean/pull/1304)).
+* Python
+  * BUGFIX: Fix too-long sleep time in uploader due to unit mismatch ([#1325](https://github.com/mozilla/glean/pull/1325)).
+* Swift
+  * BUGFIX: Fix too-long sleep time in uploader due to unit mismatch ([#1325](https://github.com/mozilla/glean/pull/1325)).
+
+# v33.3.0 (2020-11-12)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v33.2.0...v33.3.0)
+
+* General
+  * Do not require default-features on rkv and downgrade bincode ([#1317](https://github.com/mozilla/glean/pull/1317))
+* Rust
+  * Implement the experiments API ([#1314](https://github.com/mozilla/glean/pull/1314))
+
+# v33.2.0 (2020-11-10)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v33.1.2...v33.2.0)
+
+* Python
+  * Fix building of Linux wheels ([#1303](https://github.com/mozilla/glean/pull/1303))
+      * Python Linux wheels no longer work on Linux distributions released before 2010. (They now use the manylinux2010 ABI, rather than the manylinux1 ABI.)
+* Rust
+  * Introduce the RLB `net` module ([#1292](https://github.com/mozilla/glean/pull/1292))
+
+# v33.1.2 (2020-11-04)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v33.1.1...v33.1.2)
+
+* No changes.  v33.1.1 was tagged incorrectly.
+
+# v33.1.1 (2020-11-04)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v33.1.0...v33.1.1)
+
+* No changes.  v33.1.0 was tagged incorrectly.
+
+# v33.1.0 (2020-11-04)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v33.0.4...v33.1.0)
 
 * General
   * Standardize throttle backoff time throughout all bindings. ([#1240](https://github.com/mozilla/glean/pull/1240))
@@ -10,8 +66,10 @@
 * Rust
   * Add the `BooleanMetric` type.
   * Add the `dispatcher` module (copied over from [mozilla-central](https://hg.mozilla.org/mozilla-central/rev/fbe0ea62f4bb50bfc5879a56667945697b2c90e7)).
+  * Allow consumers to specify a custom uploader.
 * Android
   * Update the JNA dependency from 5.2.0 to 5.6.0
+  * The `glean-gradle-plugin` now makes sure that only a single Miniconda installation will happen at the same time to avoid a race condition when multiple components within the same project are using Glean.
 
 # v33.0.4 (2020-09-28)
 

@@ -115,7 +115,10 @@ impl DispatchGuard {
         self.send(task)
     }
 
-    pub fn shutdown(&self) -> Result<(), DispatchError> {
+    pub fn shutdown(&mut self) -> Result<(), DispatchError> {
+        // Need to flush in order for the thread to actually process anything,
+        // including the shutdown command.
+        self.flush_init().ok();
         self.send(Command::Shutdown)
     }
 
@@ -414,12 +417,12 @@ mod test {
         dispatcher.guard().shutdown().unwrap();
         {
             let result = Arc::clone(&result);
-            dispatcher
-                .guard()
-                .launch(move || {
-                    result.lock().unwrap().push(0);
-                })
-                .unwrap();
+            // This might fail because the shutdown is quick enough,
+            // or it might succeed and still send the task.
+            // In any case that task should not be executed.
+            let _ = dispatcher.guard().launch(move || {
+                result.lock().unwrap().push(0);
+            });
         }
 
         dispatcher.join().unwrap();

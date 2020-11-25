@@ -1,6 +1,6 @@
 [package]
 name = "glean"
-version = "33.0.4"
+version = "33.4.0"
 authors = ["Jan-Erik Rediger <jrediger@mozilla.com>", "The Glean Team <glean-team@mozilla.com>"]
 description = "Glean SDK Rust language bindings"
 repository = "https://github.com/mozilla/glean"
@@ -22,7 +22,7 @@ maintenance = { status = "actively-developed" }
 
 [dependencies.glean-core]
 path = ".."
-version = "33.0.4"
+version = "33.4.0"
 
 [dependencies]
 crossbeam-channel = "0.4.3"
@@ -30,9 +30,12 @@ inherent = "0.1.4"
 log = "0.4.8"
 once_cell = "1.2.0"
 thiserror = "1.0.4"
+serde_json = "1.0.44"
+serde = { version = "1.0.104", features = ["derive"] }
+uuid = { version = "0.8.1", features = ["v4"] }
 
 [dev-dependencies]
 env_logger = { version = "0.7.1", default-features = false, features = ["termcolor", "atty", "humantime"] }
 tempfile = "3.1.0"
 jsonschema-valid = "0.4.0"
-serde_json = "1.0.44"
+flate2 = "1.0.19"

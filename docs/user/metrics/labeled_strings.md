@@ -110,6 +110,35 @@ Assert.Equal(0, Login.errorsByStage.TestGetNumRecordedErrors(ErrorType.InvalidLa
 
 </div>
 
+<div data-lang="Rust" class="tab">
+
+```rust
+use glean_metrics;
+
+login::errors_by_stage.get("server_auth").set("Invalid password");
+```
+
+There are test APIs available too:
+
+```rust
+use glean::ErrorType;
+
+use glean_metrics;
+
+// Was anything recorded?
+assert!(login::errors_by_stage.get("server_auth").test_get_value().is_sone());
+
+// Were there any invalid labels?
+assert_eq!(
+  0,
+  login::errors_by_stage.test_get_num_recorded_errors(
+    ErrorType::InvalidLabel
+  )
+);
+```
+
+</div>
+
 {{#include ../../tab_footer.md}}
 
 ## Limits

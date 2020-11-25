@@ -8,6 +8,7 @@ import pytest
 
 from glean import metrics
 from glean.metrics import Lifetime
+from glean import testing
 
 
 def test_the_api_saves_to_its_storage_engine():
@@ -100,3 +101,19 @@ def test_invalid_uuid_must_not_crash():
 
     # Check that no value was stored.
     assert not uuid_metric.test_has_value()
+
+
+def test_invalid_uuid_string():
+    uuid_metric = metrics.UuidMetricType(
+        disabled=False,
+        category="telemetry",
+        lifetime=Lifetime.PING,
+        name="uuid_metric",
+        send_in_pings=["store1"],
+    )
+
+    uuid_metric.set("NOT-A-UUID!!!")
+    assert not uuid_metric.test_has_value()
+    assert (
+        uuid_metric.test_get_num_recorded_errors(testing.ErrorType.INVALID_VALUE) == 1
+    )

@@ -23,22 +23,31 @@ pub trait Event {
 
     /// **Exported for test purposes.**
     ///
-    /// Tests whether there are currently stored events for this event metric.
-    ///
-    /// This doesn't clear the stored value.
-    fn test_has_value(&self, store_name: &str) -> bool;
-
-    /// **Exported for test purposes.**
-    ///
     /// Get the vector of currently stored events for this event metric.
     ///
     /// This doesn't clear the stored value.
-    fn test_get_value(&self, store_name: &str) -> Option<Vec<RecordedEvent>>;
+    ///
+    /// # Arguments
+    ///
+    /// * `ping_name` - represents the optional name of the ping to retrieve the
+    ///   metric for. Defaults to the first value in `send_in_pings`.
+    fn test_get_value<'a, S: Into<Option<&'a str>>>(
+        &self,
+        ping_name: S,
+    ) -> Option<Vec<RecordedEvent>>;
 
     /// **Exported for test purposes.**
     ///
     /// Gets the currently stored events for this event metric as a JSON-encoded string.
     ///
     /// This doesn't clear the stored value.
-    fn test_get_value_as_json_string(&self, store_name: &str) -> String;
+    ///
+    /// # Arguments
+    ///
+    /// * `ping_name` - represents the optional name of the ping to retrieve the
+    ///   metric for. Defaults to the first value in `send_in_pings`.
+    fn test_get_value_as_json_string<'a, S: Into<Option<&'a str>>>(
+        &self,
+        ping_name: S,
+    ) -> Option<String>;
 }

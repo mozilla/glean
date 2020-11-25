@@ -5,6 +5,7 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    versioning-strategy: lockfile-only
 
   # glean-python
   - package-ecosystem: "pip"

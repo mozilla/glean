@@ -25,7 +25,7 @@ Some of the debugging features described above may be enabled using environment 
 
 - `logPings`: May be set by the `GLEAN_LOG_PINGS` environment variable. The accepted values are `true` or `false`. Any other value will be ignored.
 - `debugViewTag`: May be set by the `GLEAN_DEBUG_VIEW_TAG` environment variable. Any valid HTTP header value is expected here (e.g. any value that matches the regex `[a-zA-Z0-9-]{1,20}`). Invalid values will be ignored.
-- `sourceTags`: May be set by the `GLEAN_SOURCE_TAGS` environment variable. A comma-separated list of valid HTTP header values is expected here (e.g. any value that matches the regex `[a-zA-Z0-9-]{1,20}`). Invalid values will be ignored.
+- `sourceTags`: May be set by the `GLEAN_SOURCE_TAGS` environment variable. A comma-separated list of valid HTTP header values is expected here (e.g. any value that matches the regex `[a-zA-Z0-9-]{1,20}`). Invalid values will be ignored. The special value of `automation` is meant for tagging pings generated on automation: such pings will be specially handled on the pipeline (i.e. discarded from [non-live views](https://docs.telemetry.mozilla.org/cookbooks/bigquery/querying.html#table-layout-and-naming)).
 
 These variables must be set at runtime, not at compile time. They will be checked upon Glean initialization.
 
