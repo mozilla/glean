@@ -79,6 +79,9 @@ struct RustBindingsState {
 /// Note: The initialization might still be in progress, as it runs in a separate thread.
 static INITIALIZE_CALLED: AtomicBool = AtomicBool::new(false);
 
+/// Keep track of the debug view tag before Glean is initialized.
+static PRE_INIT_DEBUG_VIEW_TAG: OnceCell<Mutex<String>> = OnceCell::new();
+
 /// A global singleton storing additional state for Glean.
 ///
 /// Requires a Mutex, because in tests we can actual reset this.
@@ -220,6 +223,17 @@ pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) {
 
         with_glean_mut(|glean| {
             let state = global_state().lock().unwrap();
+
+            // The debug view tag might have been set before initialize,
+            // get the cached value and set it.
+            if PRE_INIT_DEBUG_VIEW_TAG.get().is_some() {
+                // The following unwrap is safe, since we are checking that we have
+                // something right above.
+                let lock = PRE_INIT_DEBUG_VIEW_TAG.get().unwrap().try_lock();
+                if let Ok(ref debug_tag) = lock {
+                    glean.set_debug_view_tag(debug_tag);
+                }
+            }
 
             // Get the current value of the dirty flag so we know whether to
             // send a dirty startup baseline ping below.  Immediately set it to
@@ -428,7 +442,7 @@ pub fn submit_ping_by_name(ping: &str, reason: Option<&str>) {
 /// queued for sending, unless explicitly specified otherwise in the registry
 /// file.
 ///
-/// ## Arguments
+/// # Arguments
 ///
 /// * `ping_name` - the name of the ping to submit.
 /// * `reason` - the reason the ping is being submitted.
@@ -539,6 +553,43 @@ pub fn test_reset_glean(cfg: Configuration, client_info: ClientInfoMetrics, clea
     // Always log pings for tests
     //Glean.setLogPings(true)
     initialize(cfg, client_info);
+}
+
+/// Sets a debug view tag.
+///
+/// When the debug view tag is set, pings are sent with a `X-Debug-ID` header with the
+/// value of the tag and are sent to the ["Ping Debug Viewer"](https://mozilla.github.io/glean/book/dev/core/internal/debug-pings.html).
+///
+/// # Arguments
+///
+/// * `tag` - A valid HTTP header value. Must match the regex: "[a-zA-Z0-9-]{1,20}".
+///
+/// # Returns
+///
+/// This will return `false` in case `tag` is not a valid tag and `true` otherwise
+/// or if the tag is set before Glean is initialized.
+pub fn set_debug_view_tag(tag: &str) -> bool {
+    if was_initialize_called() {
+        with_glean_mut(|glean| glean.set_debug_view_tag(tag))
+    } else {
+        // Glean has not been initialized yet. Cache the provided tag value.
+        if PRE_INIT_DEBUG_VIEW_TAG.get().is_none() {
+            if PRE_INIT_DEBUG_VIEW_TAG
+                .set(Mutex::new(tag.to_string()))
+                .is_err()
+            {
+                log::error!(
+                    "Unable to set the debug view tag: already set. This probably happened concurrently."
+                );
+            }
+        } else {
+            let mut lock = PRE_INIT_DEBUG_VIEW_TAG.get().unwrap().lock().unwrap();
+            *lock = tag.to_string();
+        }
+        // When setting the debug view tag before initialization,
+        // we don't validate the tag, thus this function always returns true.
+        true
+    }
 }
 
 #[cfg(test)]
