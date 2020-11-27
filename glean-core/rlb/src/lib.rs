@@ -414,11 +414,14 @@ pub fn register_ping_type(ping: &private::PingType) {
 /// Collects and submits a ping for eventual uploading.
 ///
 /// See `glean_core::Glean.submit_ping`.
-pub fn submit_ping(ping: &private::PingType, reason: Option<&str>) {
+pub(crate) fn submit_ping(ping: &private::PingType, reason: Option<&str>) {
     submit_ping_by_name(&ping.name, reason)
 }
 
 /// Collects and submits a ping for eventual uploading by name.
+/// 
+/// Note that this needs to be public in order for RLB consumers to
+/// use Glean debugging facilities.
 ///
 /// See `glean_core::Glean.submit_ping_by_name`.
 pub fn submit_ping_by_name(ping: &str, reason: Option<&str>) {
