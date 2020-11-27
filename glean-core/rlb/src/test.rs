@@ -408,8 +408,71 @@ fn setting_debug_view_tag_before_initialization_should_not_crash() {
     // Wait for the ping to arrive.
     let headers = r.recv().unwrap();
     assert_eq!(
-        headers.iter().find(|&kv| kv.0 == "X-Debug-ID").unwrap().1,
-        "valid-tag"
+        "valid-tag",
+        headers.iter().find(|&kv| kv.0 == "X-Debug-ID").unwrap().1
+    );
+}
+
+#[test]
+fn setting_source_tags_before_initialization_should_not_crash() {
+    let _lock = lock_test();
+
+    destroy_glean(true);
+    assert!(!was_initialize_called());
+
+    // Define a fake uploader that reports back the submission headers
+    // using a crossbeam channel.
+    let (s, r) = crossbeam_channel::bounded::<Vec<(String, String)>>(1);
+
+    #[derive(Debug)]
+    pub struct FakeUploader {
+        sender: crossbeam_channel::Sender<Vec<(String, String)>>,
+    };
+    impl net::PingUploader for FakeUploader {
+        fn upload(
+            &self,
+            _url: String,
+            _body: Vec<u8>,
+            headers: Vec<(String, String)>,
+        ) -> net::UploadResult {
+            self.sender.send(headers).unwrap();
+            net::UploadResult::HttpStatus(200)
+        }
+    }
+
+    // Attempt to set source tags before Glean is initialized.
+    set_source_tags(vec!["valid-tag1".to_string(), "valid-tag2".to_string()]);
+
+    // Create a custom configuration to use a fake uploader.
+    let dir = tempfile::tempdir().unwrap();
+    let tmpname = dir.path().display().to_string();
+
+    let cfg = Configuration {
+        data_path: tmpname,
+        application_id: GLOBAL_APPLICATION_ID.into(),
+        upload_enabled: true,
+        max_events: None,
+        delay_ping_lifetime_io: false,
+        channel: Some("testing".into()),
+        server_endpoint: Some("invalid-test-host".into()),
+        uploader: Some(Box::new(FakeUploader { sender: s })),
+    };
+
+    let _t = new_glean(Some(cfg), true);
+    crate::dispatcher::block_on_queue();
+
+    // Submit a baseline ping.
+    submit_ping_by_name("baseline", Some("background"));
+
+    // Wait for the ping to arrive.
+    let headers = r.recv().unwrap();
+    assert_eq!(
+        "valid-tag1,valid-tag2",
+        headers
+            .iter()
+            .find(|&kv| kv.0 == "X-Source-Tags")
+            .unwrap()
+            .1
     );
 }
 

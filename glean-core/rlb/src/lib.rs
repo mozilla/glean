@@ -82,6 +82,7 @@ static INITIALIZE_CALLED: AtomicBool = AtomicBool::new(false);
 /// Keep track of the debug features before Glean is initialized.
 static PRE_INIT_DEBUG_VIEW_TAG: OnceCell<Mutex<String>> = OnceCell::new();
 static PRE_INIT_LOG_PINGS: AtomicBool = AtomicBool::new(false);
+static PRE_INIT_SOURCE_TAGS: OnceCell<Mutex<Vec<String>>> = OnceCell::new();
 
 /// A global singleton storing additional state for Glean.
 ///
@@ -240,6 +241,16 @@ pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) {
             let log_pigs = PRE_INIT_LOG_PINGS.load(Ordering::SeqCst);
             if log_pigs {
                 glean.set_log_pings(log_pigs);
+            }
+            // The source tags might have been set before initialize,
+            // get the cached value and set them.
+            if PRE_INIT_SOURCE_TAGS.get().is_some() {
+                // The following unwrap is safe, since we are checking that we have
+                // something right above.
+                let lock = PRE_INIT_SOURCE_TAGS.get().unwrap().try_lock();
+                if let Ok(ref source_tags) = lock {
+                    glean.set_source_tags(source_tags.to_vec());
+                }
             }
 
             // Get the current value of the dirty flag so we know whether to
@@ -426,7 +437,7 @@ pub(crate) fn submit_ping(ping: &private::PingType, reason: Option<&str>) {
 }
 
 /// Collects and submits a ping for eventual uploading by name.
-/// 
+///
 /// Note that this needs to be public in order for RLB consumers to
 /// use Glean debugging facilities.
 ///
@@ -617,6 +628,40 @@ pub fn set_log_pings(value: bool) {
         with_glean_mut(|glean| glean.set_log_pings(value));
     } else {
         PRE_INIT_LOG_PINGS.store(value, Ordering::SeqCst);
+    }
+}
+
+/// Sets source tags.
+///
+/// Ping tags will show in the destination datasets, after ingestion.
+///
+/// # Arguments
+///
+/// * `value` - A vector of at most 5 valid HTTP header values. Individual
+///   tags must match the regex: "[a-zA-Z0-9-]{1,20}".
+///
+/// # Returns
+///
+/// This will return `false` in case `value` contains invalid tags and `true`
+/// otherwise or if the tag is set before Glean is initialized.
+pub fn set_source_tags(value: Vec<String>) -> bool {
+    if was_initialize_called() {
+        with_glean_mut(|glean| glean.set_source_tags(value))
+    } else {
+        // Glean has not been initialized yet. Cache the provided source tags.
+        if PRE_INIT_SOURCE_TAGS.get().is_none() {
+            if PRE_INIT_SOURCE_TAGS.set(Mutex::new(value)).is_err() {
+                log::error!(
+                    "Unable to set the source tags: already set. This probably happened concurrently."
+                );
+            }
+        } else {
+            let mut lock = PRE_INIT_SOURCE_TAGS.get().unwrap().lock().unwrap();
+            *lock = value;
+        }
+        // When setting the source tags before initialization,
+        // we don't validate the tags, thus this function always returns true.
+        true
     }
 }
 
