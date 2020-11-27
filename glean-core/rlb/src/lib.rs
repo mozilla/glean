@@ -79,8 +79,9 @@ struct RustBindingsState {
 /// Note: The initialization might still be in progress, as it runs in a separate thread.
 static INITIALIZE_CALLED: AtomicBool = AtomicBool::new(false);
 
-/// Keep track of the debug view tag before Glean is initialized.
+/// Keep track of the debug features before Glean is initialized.
 static PRE_INIT_DEBUG_VIEW_TAG: OnceCell<Mutex<String>> = OnceCell::new();
+static PRE_INIT_LOG_PINGS: AtomicBool = AtomicBool::new(false);
 
 /// A global singleton storing additional state for Glean.
 ///
@@ -233,6 +234,12 @@ pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) {
                 if let Ok(ref debug_tag) = lock {
                     glean.set_debug_view_tag(debug_tag);
                 }
+            }
+            // The log pings debug option might have been set before initialize,
+            // get the cached value and set it.
+            let log_pigs = PRE_INIT_LOG_PINGS.load(Ordering::SeqCst);
+            if log_pigs {
+                glean.set_log_pings(log_pigs);
             }
 
             // Get the current value of the dirty flag so we know whether to
@@ -592,6 +599,24 @@ pub fn set_debug_view_tag(tag: &str) -> bool {
         // When setting the debug view tag before initialization,
         // we don't validate the tag, thus this function always returns true.
         true
+    }
+}
+
+/// Sets the log pings debug option.
+///
+/// This will return `false` in case we are unable to set the option.
+///
+/// When the log pings debug option is `true`,
+/// we log the payload of all succesfully assembled pings.
+///
+/// # Arguments
+///
+/// * `value` - The value of the log pings option
+pub fn set_log_pings(value: bool) {
+    if was_initialize_called() {
+        with_glean_mut(|glean| glean.set_log_pings(value));
+    } else {
+        PRE_INIT_LOG_PINGS.store(value, Ordering::SeqCst);
     }
 }
 
