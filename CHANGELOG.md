@@ -6,6 +6,7 @@
   * Introduce the UUID metric type in the RLB.
   * Introduce the Labeled metric type in the RLB [#1327](https://github.com/mozilla/glean/pull/1327).
   * Introduce the `shutdown` API.
+  * Add Glean debugging APIs. 
 * Python
   * BUGFIX: Setting a UUID metric to a value that is not in the expected UUID format will now record an error with the Glean error reporting system.
 
