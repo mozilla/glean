@@ -292,6 +292,16 @@ pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) {
     INITIALIZE_CALLED.store(true, Ordering::SeqCst);
 }
 
+/// Shuts down Glean.
+///
+/// This currently only attempts to shut down the
+/// internal dispatcher.
+pub fn shutdown() {
+    if let Err(e) = dispatcher::try_shutdown() {
+        log::error!("Can't shutdown dispatcher thread: {:?}", e);
+    }
+}
+
 /// Checks if `glean::initialize` was ever called.
 ///
 /// # Returns
