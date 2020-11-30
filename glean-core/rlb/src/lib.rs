@@ -228,10 +228,8 @@ pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) {
 
             // The debug view tag might have been set before initialize,
             // get the cached value and set it.
-            if PRE_INIT_DEBUG_VIEW_TAG.get().is_some() {
-                // The following unwrap is safe, since we are checking that we have
-                // something right above.
-                let lock = PRE_INIT_DEBUG_VIEW_TAG.get().unwrap().try_lock();
+            if let Some(tag) = PRE_INIT_DEBUG_VIEW_TAG.get() {
+                let lock = tag.try_lock();
                 if let Ok(ref debug_tag) = lock {
                     glean.set_debug_view_tag(debug_tag);
                 }
@@ -244,10 +242,8 @@ pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) {
             }
             // The source tags might have been set before initialize,
             // get the cached value and set them.
-            if PRE_INIT_SOURCE_TAGS.get().is_some() {
-                // The following unwrap is safe, since we are checking that we have
-                // something right above.
-                let lock = PRE_INIT_SOURCE_TAGS.get().unwrap().try_lock();
+            if let Some(tags) = PRE_INIT_SOURCE_TAGS.get() {
+                let lock = tags.try_lock();
                 if let Ok(ref source_tags) = lock {
                     glean.set_source_tags(source_tags.to_vec());
                 }
@@ -587,26 +583,16 @@ pub fn test_reset_glean(cfg: Configuration, client_info: ClientInfoMetrics, clea
 ///
 /// # Returns
 ///
-/// This will return `false` in case `tag` is not a valid tag and `true` otherwise
-/// or if the tag is set before Glean is initialized.
+/// This will return `false` in case `tag` is not a valid tag and `true` otherwise.
+/// If called before Glean is initialized it will always return `true`.
 pub fn set_debug_view_tag(tag: &str) -> bool {
     if was_initialize_called() {
         with_glean_mut(|glean| glean.set_debug_view_tag(tag))
     } else {
         // Glean has not been initialized yet. Cache the provided tag value.
-        if PRE_INIT_DEBUG_VIEW_TAG.get().is_none() {
-            if PRE_INIT_DEBUG_VIEW_TAG
-                .set(Mutex::new(tag.to_string()))
-                .is_err()
-            {
-                log::error!(
-                    "Unable to set the debug view tag: already set. This probably happened concurrently."
-                );
-            }
-        } else {
-            let mut lock = PRE_INIT_DEBUG_VIEW_TAG.get().unwrap().lock().unwrap();
-            *lock = tag.to_string();
-        }
+        let m = PRE_INIT_DEBUG_VIEW_TAG.get_or_init(Default::default);
+        let mut lock = m.lock().unwrap();
+        *lock = tag.to_string();
         // When setting the debug view tag before initialization,
         // we don't validate the tag, thus this function always returns true.
         true
@@ -614,8 +600,6 @@ pub fn set_debug_view_tag(tag: &str) -> bool {
 }
 
 /// Sets the log pings debug option.
-///
-/// This will return `false` in case we are unable to set the option.
 ///
 /// When the log pings debug option is `true`,
 /// we log the payload of all succesfully assembled pings.
@@ -633,32 +617,26 @@ pub fn set_log_pings(value: bool) {
 
 /// Sets source tags.
 ///
-/// Ping tags will show in the destination datasets, after ingestion.
+/// Overrides any existing source tags.
+/// Source tags will show in the destination datasets, after ingestion.
 ///
 /// # Arguments
 ///
-/// * `value` - A vector of at most 5 valid HTTP header values. Individual
+/// * `tags` - A vector of at most 5 valid HTTP header values. Individual
 ///   tags must match the regex: "[a-zA-Z0-9-]{1,20}".
 ///
 /// # Returns
 ///
 /// This will return `false` in case `value` contains invalid tags and `true`
 /// otherwise or if the tag is set before Glean is initialized.
-pub fn set_source_tags(value: Vec<String>) -> bool {
+pub fn set_source_tags(tags: Vec<String>) -> bool {
     if was_initialize_called() {
-        with_glean_mut(|glean| glean.set_source_tags(value))
+        with_glean_mut(|glean| glean.set_source_tags(tags))
     } else {
         // Glean has not been initialized yet. Cache the provided source tags.
-        if PRE_INIT_SOURCE_TAGS.get().is_none() {
-            if PRE_INIT_SOURCE_TAGS.set(Mutex::new(value)).is_err() {
-                log::error!(
-                    "Unable to set the source tags: already set. This probably happened concurrently."
-                );
-            }
-        } else {
-            let mut lock = PRE_INIT_SOURCE_TAGS.get().unwrap().lock().unwrap();
-            *lock = value;
-        }
+        let m = PRE_INIT_SOURCE_TAGS.get_or_init(Default::default);
+        let mut lock = m.lock().unwrap();
+        *lock = tags;
         // When setting the source tags before initialization,
         // we don't validate the tags, thus this function always returns true.
         true
