@@ -173,7 +173,7 @@ commands:
           command: |
             echo "export WINEDEBUG=-all" >> $BASH_ENV
             wget https://bootstrap.pypa.io/get-pip.py
-            $WINPYTHON get-pip.py
+            $WINPYTHON get-pip.py pip==20.2
             echo "import site" >> winpython/python38._pth
             echo "import sys; sys.path.insert(0, '')" >> winpython/sitecustomize.py
             $WINPYTHON -m pip install -r glean-core/python/requirements_dev.txt --no-warn-script-location
