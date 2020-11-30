@@ -109,7 +109,7 @@ impl MemoryDistributionMetric {
     ///
     /// Please note that this assumes that the provided samples are already in the
     /// "unit" declared by the instance of the implementing metric type (e.g. if the
-    /// implementing class is a [MemoryDistributionMetricType] and the instance this
+    /// implementing class is a [MemoryDistributionMetric] and the instance this
     /// method was called on is using [MemoryUnit.Kilobyte], then `samples` are assumed
     /// to be in that unit).
     ///

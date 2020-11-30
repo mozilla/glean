@@ -27,9 +27,6 @@
 /// is because in the future, we may allow it's use for passing data into Rust code.
 /// ByteBuffer assuming ownership of the data would make this a problem.
 ///
-/// Note that calling `destroy` manually is not typically needed or recommended,
-/// and instead you should use [`define_bytebuffer_destructor!`].
-///
 /// ## Layout/fields
 ///
 /// This struct's field are not `pub` (mostly so that we can soundly implement `Send`, but also so
@@ -56,10 +53,6 @@
 /// The bytes array is allocated on the heap and must be freed on it as well. Critically, if there
 /// are multiple rust packages using being used in the same application, it *must be freed on the
 /// same heap that allocated it*, or you will corrupt both heaps.
-///
-/// Typically, this object is managed on the other side of the FFI (on the "FFI consumer"), which
-/// means you must expose a function to release the resources of `data` which can be done easily
-/// using the [`define_bytebuffer_destructor!`] macro provided by this crate.
 #[repr(C)]
 pub struct ByteBuffer {
     len: i32,
@@ -122,9 +115,6 @@ impl ByteBuffer {
     }
 
     /// Reclaim memory stored in this ByteBuffer.
-    ///
-    /// You typically should not call this manually, and instead expose a
-    /// function that does so via [`define_bytebuffer_destructor!`].
     ///
     /// ## Caveats
     ///
