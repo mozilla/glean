@@ -197,9 +197,6 @@ typedef const char *const *RawStringArray;
  * is because in the future, we may allow it's use for passing data into Rust code.
  * ByteBuffer assuming ownership of the data would make this a problem.
  *
- * Note that calling `destroy` manually is not typically needed or recommended,
- * and instead you should use [`define_bytebuffer_destructor!`].
- *
  * ## Layout/fields
  *
  * This struct's field are not `pub` (mostly so that we can soundly implement `Send`, but also so
@@ -226,10 +223,6 @@ typedef const char *const *RawStringArray;
  * The bytes array is allocated on the heap and must be freed on it as well. Critically, if there
  * are multiple rust packages using being used in the same application, it *must be freed on the
  * same heap that allocated it*, or you will corrupt both heaps.
- *
- * Typically, this object is managed on the other side of the FFI (on the "FFI consumer"), which
- * means you must expose a function to release the resources of `data` which can be done easily
- * using the [`define_bytebuffer_destructor!`] macro provided by this crate.
  */
 typedef struct {
   int32_t len;
