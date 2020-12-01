@@ -89,10 +89,6 @@ class ProcessDispatcher:
             cls._last_process = None
 
     @classmethod
-    def _is_last_process_running(cls) -> bool:
-        return cls._last_process is not None and cls._last_process.poll() is None
-
-    @classmethod
     def dispatch(cls, func, args) -> Union[_SyncWorkWrapper, subprocess.Popen]:
         from . import Glean
 
@@ -100,7 +96,7 @@ class ProcessDispatcher:
             # We only want one of these processes running at a time, so if
             # there's already one running, just bail out. It will pick up any
             # newly-written pings as it processes the directory.
-            if cls._is_last_process_running():
+            if cls._last_process is not None and cls._last_process.poll() is None:
                 return cls._last_process
 
             # This sends the data over as a commandline argument, which has a
