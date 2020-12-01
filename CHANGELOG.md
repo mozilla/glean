@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v33.4.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v33.5.0...main)
+
+# v33.5.0 (2020-12-01)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v33.4.0...v33.5.0)
 
 * Rust
   * Introduce the UUID metric type in the RLB.
