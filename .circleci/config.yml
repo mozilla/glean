@@ -176,6 +176,11 @@ commands:
             $WINPYTHON get-pip.py
             echo "import site" >> winpython/python38._pth
             echo "import sys; sys.path.insert(0, '')" >> winpython/sitecustomize.py
+            # The Windows-Python-installed-inside-Wine thing can't actually build wheels,
+            # so just install all of the wheels that were created as part of creating the
+            # environment on the host system before attempting to install everything in
+            # requirements_dev.txt
+            find ~/.cache/pip -name "*.whl" -exec $WINPYTHON -m pip install {} \;
             $WINPYTHON -m pip install -r glean-core/python/requirements_dev.txt --no-warn-script-location
             $WINPYTHON -m pip install glean-core/python/dist/*.whl --no-warn-script-location
 
