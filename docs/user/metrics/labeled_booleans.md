@@ -183,9 +183,9 @@ assert_eq!(
 
 ## Recorded Errors
 
-* `invalid_label`: If the label contains invalid characters.
+* `invalid_label`: If the label contains invalid characters. Data is still recorded to the special label `__other__`.
 
-* `invalid_label`: If the label exceeds the maximum number of allowed characters.
+* `invalid_label`: If the label exceeds the maximum number of allowed characters. Data is still recorded to the special label `__other__`.
 
 ## Reference
 
