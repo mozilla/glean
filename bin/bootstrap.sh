@@ -6,7 +6,7 @@
 
 # Xcode 12 -- Carthage workaround
 # See https://github.com/Carthage/Carthage/issues/3019
-if xcodebuild -version | grep -q "Xcode 12.0"; then
+if xcodebuild -version | grep -q "Xcode 12."; then
   xcconfig="${PWD}/tmp.xcconfig"
   true > "$xcconfig"
   echo 'EXCLUDED_ARCHS__EFFECTIVE_PLATFORM_SUFFIX_simulator__NATIVE_ARCH_64_BIT_x86_64=arm64 arm64e armv7 armv7s armv6 armv8' >> "$xcconfig"

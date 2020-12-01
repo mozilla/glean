@@ -3479,8 +3479,8 @@ THE SOFTWARE.
 The following text applies to code linked from these dependencies:
 
 * [benchmark 0.1.0]( https://crates.io/crates/benchmark )
-* [glean-core 33.3.0]( https://github.com/mozilla/glean )
-* [glean-ffi 33.3.0]( https://github.com/mozilla/glean )
+* [glean-core 33.5.0]( https://github.com/mozilla/glean )
+* [glean-ffi 33.5.0]( https://github.com/mozilla/glean )
 
 
 ```
@@ -3864,7 +3864,7 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
 
 The following text applies to code linked from these dependencies:
 
-* [glean 33.3.0]( https://github.com/mozilla/glean )
+* [glean 33.5.0]( https://github.com/mozilla/glean )
 
 
 ```

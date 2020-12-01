@@ -2,50 +2,15 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use crate::private::BooleanMetric;
-use once_cell::sync::Lazy;
+use crate::private::{BooleanMetric, CounterMetric};
 use std::path::PathBuf;
-use std::sync::Mutex;
 
 use super::*;
-
-// Because glean_preview is a global-singleton, we need to run the tests one-by-one to avoid different tests stomping over each other.
-// This is only an issue because we're resetting Glean, this cannot happen in normal use of the
-// RLB.
-//
-// We use a global lock to force synchronization of all tests, even if run multi-threaded.
-// This allows us to run without `--test-threads 1`.`
-static GLOBAL_LOCK: Lazy<Mutex<()>> = Lazy::new(|| Mutex::new(()));
-const GLOBAL_APPLICATION_ID: &str = "org.mozilla.rlb.test";
-
-// Create a new instance of Glean with a temporary directory.
-// We need to keep the `TempDir` alive, so that it's not deleted before we stop using it.
-fn new_glean(configuration: Option<Configuration>) -> tempfile::TempDir {
-    let dir = tempfile::tempdir().unwrap();
-    let tmpname = dir.path().display().to_string();
-
-    let cfg = match configuration {
-        Some(c) => c,
-        None => Configuration {
-            data_path: tmpname,
-            application_id: GLOBAL_APPLICATION_ID.into(),
-            upload_enabled: true,
-            max_events: None,
-            delay_ping_lifetime_io: false,
-            channel: Some("testing".into()),
-            server_endpoint: Some("invalid-test-host".into()),
-            uploader: None,
-        },
-    };
-
-    crate::reset_glean(cfg, ClientInfoMetrics::unknown(), true);
-    dir
-}
+use crate::common_test::{lock_test, new_glean, GLOBAL_APPLICATION_ID};
 
 #[test]
 fn send_a_ping() {
-    let _lock = GLOBAL_LOCK.lock().unwrap();
-    env_logger::try_init().ok();
+    let _lock = lock_test();
 
     let (s, r) = crossbeam_channel::bounded::<String>(1);
 
@@ -82,7 +47,7 @@ fn send_a_ping() {
         uploader: Some(Box::new(FakeUploader { sender: s })),
     };
 
-    let _t = new_glean(Some(cfg));
+    let _t = new_glean(Some(cfg), true);
     crate::dispatcher::block_on_queue();
 
     // Define a new ping and submit it.
@@ -97,10 +62,9 @@ fn send_a_ping() {
 
 #[test]
 fn disabling_upload_disables_metrics_recording() {
-    let _lock = GLOBAL_LOCK.lock().unwrap();
-    env_logger::try_init().ok();
+    let _lock = lock_test();
 
-    let _t = new_glean(None);
+    let _t = new_glean(None, true);
     crate::dispatcher::block_on_queue();
 
     let metric = BooleanMetric::new(CommonMetricData {
@@ -119,10 +83,9 @@ fn disabling_upload_disables_metrics_recording() {
 
 #[test]
 fn test_experiments_recording() {
-    // setup glean for the test
-    let _lock = GLOBAL_LOCK.lock().unwrap();
-    env_logger::try_init().ok();
-    let _t = new_glean(None);
+    let _lock = lock_test();
+
+    let _t = new_glean(None, true);
 
     set_experiment_active("experiment_test".to_string(), "branch_a".to_string(), None);
     let mut extra = HashMap::new();
@@ -144,8 +107,7 @@ fn test_experiments_recording() {
 
 #[test]
 fn test_experiments_recording_before_glean_inits() {
-    let _lock = GLOBAL_LOCK.lock().unwrap();
-    env_logger::try_init().ok();
+    let _lock = lock_test();
 
     // Destroy the existing glean instance from glean-core so that we
     // can test the pre-init queueing of the experiment api commands.
@@ -183,7 +145,7 @@ fn test_experiments_recording_before_glean_inits() {
     let dir = tempfile::tempdir().unwrap();
     let tmpname = dir.path().display().to_string();
 
-    reset_glean(
+    test_reset_glean(
         Configuration {
             data_path: tmpname,
             application_id: GLOBAL_APPLICATION_ID.into(),
@@ -221,8 +183,7 @@ fn test_sending_of_startup_baseline_ping() {
 
 #[test]
 fn initialize_must_not_crash_if_data_dir_is_messed_up() {
-    let _lock = GLOBAL_LOCK.lock().unwrap();
-    env_logger::try_init().ok();
+    let _lock = lock_test();
 
     let dir = tempfile::tempdir().unwrap();
     let tmpdirname = dir.path().display().to_string();
@@ -242,7 +203,7 @@ fn initialize_must_not_crash_if_data_dir_is_messed_up() {
         uploader: None,
     };
 
-    reset_glean(cfg, ClientInfoMetrics::unknown(), false);
+    test_reset_glean(cfg, ClientInfoMetrics::unknown(), false);
     // TODO(bug 1675215): ensure initialize runs through dispatcher.
     // Glean init is async and, for this test, it bails out early due to
     // an caused by not being able to create the data dir: we can do nothing
@@ -254,20 +215,46 @@ fn initialize_must_not_crash_if_data_dir_is_messed_up() {
 }
 
 #[test]
-#[ignore] // TODO: To be done in bug 1673667.
 fn queued_recorded_metrics_correctly_record_during_init() {
-    todo!()
+    let _lock = lock_test();
+
+    destroy_glean(true);
+
+    let metric = CounterMetric::new(CommonMetricData {
+        name: "counter_metric".into(),
+        category: "test".into(),
+        send_in_pings: vec!["store1".into()],
+        lifetime: Lifetime::Application,
+        disabled: false,
+        dynamic_label: None,
+    });
+
+    // This will queue 3 tasks that will add to the metric value once Glean is initialized
+    for _ in 0..3 {
+        metric.add(1);
+    }
+
+    // TODO: To be fixed in bug 1677150.
+    // Ensure that no value has been stored yet since the tasks have only been queued
+    // and not executed yet
+
+    // Calling `new_glean` here will cause Glean to be initialized and should cause the queued
+    // tasks recording metrics to execute
+    let _t = new_glean(None, false);
+
+    // Verify that the callback was executed by testing for the correct value
+    assert!(metric.test_get_value(None).is_some(), "Value must exist");
+    assert_eq!(3, metric.test_get_value(None).unwrap(), "Value must match");
 }
 
 #[test]
 fn initializing_twice_is_a_noop() {
-    let _lock = GLOBAL_LOCK.lock().unwrap();
-    env_logger::try_init().ok();
+    let _lock = lock_test();
 
     let dir = tempfile::tempdir().unwrap();
     let tmpname = dir.path().display().to_string();
 
-    reset_glean(
+    test_reset_glean(
         Configuration {
             data_path: tmpname.clone(),
             application_id: GLOBAL_APPLICATION_ID.into(),
@@ -284,7 +271,7 @@ fn initializing_twice_is_a_noop() {
 
     dispatcher::block_on_queue();
 
-    reset_glean(
+    test_reset_glean(
         Configuration {
             data_path: tmpname,
             application_id: GLOBAL_APPLICATION_ID.into(),
@@ -365,6 +352,128 @@ fn test_sending_of_startup_baseline_ping_with_application_lifetime_metric() {
 #[ignore] // TODO: To be done in bug 1673672.
 fn test_dirty_flag_is_reset_to_false() {
     todo!()
+}
+
+#[test]
+fn setting_debug_view_tag_before_initialization_should_not_crash() {
+    let _lock = lock_test();
+
+    destroy_glean(true);
+    assert!(!was_initialize_called());
+
+    // Define a fake uploader that reports back the submission headers
+    // using a crossbeam channel.
+    let (s, r) = crossbeam_channel::bounded::<Vec<(String, String)>>(1);
+
+    #[derive(Debug)]
+    pub struct FakeUploader {
+        sender: crossbeam_channel::Sender<Vec<(String, String)>>,
+    };
+    impl net::PingUploader for FakeUploader {
+        fn upload(
+            &self,
+            _url: String,
+            _body: Vec<u8>,
+            headers: Vec<(String, String)>,
+        ) -> net::UploadResult {
+            self.sender.send(headers).unwrap();
+            net::UploadResult::HttpStatus(200)
+        }
+    }
+
+    // Attempt to set a debug view tag before Glean is initialized.
+    set_debug_view_tag("valid-tag");
+
+    // Create a custom configuration to use a fake uploader.
+    let dir = tempfile::tempdir().unwrap();
+    let tmpname = dir.path().display().to_string();
+
+    let cfg = Configuration {
+        data_path: tmpname,
+        application_id: GLOBAL_APPLICATION_ID.into(),
+        upload_enabled: true,
+        max_events: None,
+        delay_ping_lifetime_io: false,
+        channel: Some("testing".into()),
+        server_endpoint: Some("invalid-test-host".into()),
+        uploader: Some(Box::new(FakeUploader { sender: s })),
+    };
+
+    let _t = new_glean(Some(cfg), true);
+    crate::dispatcher::block_on_queue();
+
+    // Submit a baseline ping.
+    submit_ping_by_name("baseline", Some("background"));
+
+    // Wait for the ping to arrive.
+    let headers = r.recv().unwrap();
+    assert_eq!(
+        "valid-tag",
+        headers.iter().find(|&kv| kv.0 == "X-Debug-ID").unwrap().1
+    );
+}
+
+#[test]
+fn setting_source_tags_before_initialization_should_not_crash() {
+    let _lock = lock_test();
+
+    destroy_glean(true);
+    assert!(!was_initialize_called());
+
+    // Define a fake uploader that reports back the submission headers
+    // using a crossbeam channel.
+    let (s, r) = crossbeam_channel::bounded::<Vec<(String, String)>>(1);
+
+    #[derive(Debug)]
+    pub struct FakeUploader {
+        sender: crossbeam_channel::Sender<Vec<(String, String)>>,
+    };
+    impl net::PingUploader for FakeUploader {
+        fn upload(
+            &self,
+            _url: String,
+            _body: Vec<u8>,
+            headers: Vec<(String, String)>,
+        ) -> net::UploadResult {
+            self.sender.send(headers).unwrap();
+            net::UploadResult::HttpStatus(200)
+        }
+    }
+
+    // Attempt to set source tags before Glean is initialized.
+    set_source_tags(vec!["valid-tag1".to_string(), "valid-tag2".to_string()]);
+
+    // Create a custom configuration to use a fake uploader.
+    let dir = tempfile::tempdir().unwrap();
+    let tmpname = dir.path().display().to_string();
+
+    let cfg = Configuration {
+        data_path: tmpname,
+        application_id: GLOBAL_APPLICATION_ID.into(),
+        upload_enabled: true,
+        max_events: None,
+        delay_ping_lifetime_io: false,
+        channel: Some("testing".into()),
+        server_endpoint: Some("invalid-test-host".into()),
+        uploader: Some(Box::new(FakeUploader { sender: s })),
+    };
+
+    let _t = new_glean(Some(cfg), true);
+    crate::dispatcher::block_on_queue();
+
+    // Submit a baseline ping.
+    submit_ping_by_name("baseline", Some("background"));
+
+    // Wait for the ping to arrive.
+    let headers = r.recv().unwrap();
+    assert_eq!(
+        "valid-tag1,valid-tag2",
+        headers
+            .iter()
+            .find(|&kv| kv.0 == "X-Source-Tags")
+            .unwrap()
+            .1
+    );
 }
 
 #[test]

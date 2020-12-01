@@ -42,7 +42,7 @@ import org.mozilla.yourApplication.GleanMetrics.Controls
 assertTrue(Controls.refreshPressed.testHasValue())
 // Does the counter have the expected value?
 assertEquals(6, Controls.refreshPressed.testGetValue())
-// Did the counter record an negative value?
+// Did the counter record a negative value?
 assertEquals(
     1, Controls.refreshPressed.testGetNumRecordedErrors(ErrorType.InvalidValue)
 )
@@ -68,7 +68,7 @@ import org.mozilla.yourApplication.GleanMetrics.Controls;
 assertTrue(Controls.INSTANCE.refreshPressed.testHasValue());
 // Does the counter have the expected value?
 assertEquals(6, Controls.INSTANCE.refreshPressed.testGetValue());
-// Did the counter record an negative value?
+// Did the counter record a negative value?
 assertEquals(
     1, Controls.INSTANCE.refreshPressed.testGetNumRecordedErrors(ErrorType.InvalidValue)
 );
@@ -115,7 +115,7 @@ There are test APIs available too:
 assert metrics.controls.refresh_pressed.test_has_value()
 # Does the counter have the expected value?
 assert 6 == metrics.controls.refresh_pressed.test_get_value()
-# Did the counter record an negative value?
+# Did the counter record a negative value?
 from glean.testing import ErrorType
 assert 1 == metrics.controls.refresh_pressed.test_get_num_recorded_errors(
     ErrorType.INVALID_VALUE
@@ -150,6 +150,37 @@ Assert.Equal(
 
 </div>
 
+<div data-lang="Rust" class="tab">
+
+```rust
+use glean_metrics;
+
+controls::refresh_pressed.add(1); // Adds 1 to the counter.
+controls::refresh_pressed.add(5); // Adds 5 to the counter.
+```
+
+There are test APIs available too:
+
+```rust
+use glean::ErrorType;
+
+use glean_metrics;
+
+// Was anything recorded?
+assert!(controls::refresh_pressed.test_get_value(None).is_some());
+// Does the counter have the expected value?
+assert_eq!(6, controls::refresh_pressed.test_get_value(None).unwrap());
+// Did the counter record an negative value?
+assert_eq!(
+  1,
+  controls::refresh_pressed.test_get_num_recorded_errors(
+    ErrorType::InvalidValue
+  )
+);
+```
+
+</div>
+
 {{#include ../../tab_footer.md}}
 
 ## Limits
@@ -169,3 +200,4 @@ Assert.Equal(
 * [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-counter-metric-type/index.html)
 * [Swift API docs](../../../swift/Classes/CounterMetricType.html)
 * [Python API docs](../../../python/glean/metrics/counter.html)
+* [Rust API docs](../../../docs/glean/private/counter/struct.CounterMetric.html)

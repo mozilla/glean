@@ -145,7 +145,7 @@ impl Default for ByteBuffer {
     #[inline]
     fn default() -> Self {
         Self {
-            len: 0 as i32,
+            len: 0,
             data: std::ptr::null_mut(),
         }
     }
