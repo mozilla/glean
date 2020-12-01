@@ -32,7 +32,7 @@ pub trait MemoryDistribution {
     /// Please note that this assumes that the provided samples are already in
     /// the "unit" declared by the instance of the implementing metric type
     /// (e.g. if the implementing class is a [MemoryDistribution] and the
-    /// instance this method was called on is using [MemoryUnit.Kilobyte], then
+    /// instance this method was called on is using [MemoryUnit::Kilobyte], then
     /// `samples` are assumed to be in that unit).
     ///
     /// # Arguments
