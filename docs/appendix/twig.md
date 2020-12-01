@@ -37,3 +37,4 @@ They could be release notes, documentation, hopes, dreams, or whatever: so long 
 * 2020-10-06: [FOG Progress report](https://blog.mozilla.org/data/2020/10/06/this-week-in-glean-fog-progress-report/)
 * 2020-10-21: [Cross-Platform Language Binding Generation with Rust and “uniffi”](https://blog.mozilla.org/data/2020/10/21/this-week-in-glean-cross-platform-language-binding-generation-with-rust-and-uniffi/)
 * 2020-11-02: [Glean.js](https://blog.mozilla.org/data/2020/11/02/this-week-in-glean-glean-js/)
+* 2020-12-01: [Glean is Frictionless Data Collection](https://blog.mozilla.org/data/2020/12/01/this-week-in-glean-glean-is-frictionless-data-collection/)
