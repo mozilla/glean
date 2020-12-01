@@ -154,7 +154,7 @@ def _process(
                 incoming_task, upload_result.to_ffi()
             )
         elif tag == UploadTaskTag.WAIT:
-            time.sleep(throttle_backoff_time_s)
+            time.sleep(1)
         elif tag == UploadTaskTag.DONE:
             return True
 
