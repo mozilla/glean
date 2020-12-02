@@ -4,6 +4,7 @@
 
 * Rust
   * Upgrade rkv to 0.16.0 (no functional changes) ([#1355](https://github.com/mozilla/glean/pull/1355)).
+  * Introduce the Event metric type in the RLB ([#1361](https://github.com/mozilla/glean/pull/1361)).
 * Python
   * Python Linux wheels no longer work on Linux distributions released before 2014 (they now use the manylinux2014 ABI)
 

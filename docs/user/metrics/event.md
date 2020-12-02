@@ -149,6 +149,37 @@ Assert.Equal(0, Views.loginOpened.TestGetNumRecordedErrors(ErrorType.InvalidValu
 
 </div>
 
+<div data-lang="Rust" class="tab">
+
+Note that an `enum` has been generated for handling the `extra_keys`: it has the same name as the event metric, with `Keys` added.
+
+```rust
+use metrics::views;
+
+let mut extra = HashMap::new();
+extra.insert(views::LoginOpenedKeys::SourceOfLogin, "toolbar".into());
+views::login_opened.record(extra);
+```
+
+There are test APIs available too, for example:
+
+```C#
+use metrics::views;
+
+// Was any event recorded?
+assert!(views::login_opened.test_get_value(None).is_some());
+// Get a List of the recorded events.
+var snapshot = views::login_opened.test_get_value(None).unwrap();
+// Check that two events were recorded.
+assert_eq!(2, snapshot.len());
+let first = &snapshot[0];
+assert_eq!("login_opened", first.name);
+// Check that no errors were recorded
+assert_eq!(0, views::login_opened.test_get_num_recorded_errors(ErrorType::InvalidValue, None));
+```
+
+</div>
+
 {{#include ../../tab_footer.md}}
 
 ## Limits
