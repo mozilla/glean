@@ -2,6 +2,8 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.6.0...main)
 
+* Rust
+  * Upgrade rkv to 0.16.0 (no functional changes) ([#1355](https://github.com/mozilla/glean/pull/1355)).
 * Python
   * Python Linux wheels no longer work on Linux distributions released before 2014 (they now use the manylinux2014 ABI)
 
