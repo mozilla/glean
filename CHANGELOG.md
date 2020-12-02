@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v33.5.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v33.6.0...main)
+
+# v33.6.0 (2020-12-02)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v33.5.0...v33.6.0)
 
 * Rust
   * BUGFIX: Negative timespans for the timespan metric now correctly record an `InvalidValue` error ([#1347](https://github.com/mozilla/glean/pull/1347)).
