@@ -52,7 +52,7 @@ assertEquals(2, snapshot.size)
 val first = snapshot.single()
 assertEquals("login_opened", first.name)
 // Check that no errors were recorded
-assertEquals(0, Views.loginOpened.testGetNumRecordedErrors(ErrorType.InvalidValue))
+assertEquals(0, Views.loginOpened.testGetNumRecordedErrors(ErrorType.InvalidOverflow))
 ```
 
 </div>
@@ -79,7 +79,7 @@ XCTAssertEqual(2, snapshot.size)
 val first = snapshot[0]
 XCTAssertEqual("login_opened", first.name)
 // Check that no errors were recorded
-XCTAssertEqual(0, Views.loginOpened.testGetNumRecordedErrors(.invalidValue))
+XCTAssertEqual(0, Views.loginOpened.testGetNumRecordedErrors(.invalidOverflow))
 ```
 
 </div>
@@ -112,7 +112,7 @@ first = snapshot[0]
 assert "login_opened" == first.name
 # Check that no errors were recorded
 assert 0 == metrics.views.login_opened.test_get_num_recorded_errors(
-    ErrorType.INVALID_VALUE
+    ErrorType.INVALID_OVERFLOW
 )
 ```
 
@@ -144,7 +144,7 @@ Assert.Equal(2, snapshot.Length);
 var first = snapshot.First();
 Assert.Equal("login_opened", first.Name);
 // Check that no errors were recorded
-Assert.Equal(0, Views.loginOpened.TestGetNumRecordedErrors(ErrorType.InvalidValue));
+Assert.Equal(0, Views.loginOpened.TestGetNumRecordedErrors(ErrorType.InvalidOverflow));
 ```
 
 </div>
@@ -175,7 +175,7 @@ assert_eq!(2, snapshot.len());
 let first = &snapshot[0];
 assert_eq!("login_opened", first.name);
 // Check that no errors were recorded
-assert_eq!(0, views::login_opened.test_get_num_recorded_errors(ErrorType::InvalidValue, None));
+assert_eq!(0, views::login_opened.test_get_num_recorded_errors(ErrorType::InvalidOverflow, None));
 ```
 
 </div>
