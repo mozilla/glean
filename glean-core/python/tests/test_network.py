@@ -150,7 +150,7 @@ def test_ping_upload_worker_single_process(safe_httpserver):
             fd.write(b"/data/path/\n")
             fd.write(b"{}\n")
 
-    # Fire off the the first PingUploaderWorker process to handle the existing
+    # Fire off the first PingUploaderWorker process to handle the existing
     # pings. Then, in parallel, write more pings and fire off "new"
     # PingUploadWorker processes (some of which will be no-ops and just keeping
     # the existing worker running).
