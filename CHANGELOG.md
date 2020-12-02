@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.5.0...main)
 
+* Python
+  * BUGFIX: Network slowness or errors will no longer block the main dispatcher thread, leaving work undone on shutdown.
+
 # v33.5.0 (2020-12-01)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.4.0...v33.5.0)
