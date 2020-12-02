@@ -237,6 +237,41 @@ Assert.Equals(1, Auth.loginTime.TestGetNumRecordedErrors(ErrorType.InvalidValue)
 
 </div>
 
+<div data-lang="Rust" class="tab">
+
+```rust
+fn show_login() {
+    metrics::auth::login_time.start();
+    // ...
+}
+
+fn login() {
+    metrics::auth::login_time.stop();
+    // ...
+}
+
+fn login_cancel() {
+    metrics::auth::login_time.cancel();
+    // ...
+}
+```
+
+The time reported in the telemetry ping will be timespan recorded during the lifetime of the ping.
+
+There are test APIs available too:
+
+```rust
+use metrics::auth::login_time;
+
+// Was anything recorded?
+assert!(login_time.test_get_value().is_some());
+assert!(login_time.test_get_value().unwrap() > 0);
+// Was the timing recorded incorrectly?
+assert_eq!(1, login_time.test_get_num_recorded_errors(ErrorType::InvalidValue));
+```
+
+</div>
+
 {{#include ../../tab_footer.md}}
 
 ## Raw API
@@ -288,6 +323,12 @@ TODO. To be implemented in [bug 1648442](https://bugzilla.mozilla.org/show_bug.c
 
 </div>
 
+<div data-lang="Rust" class="tab">
+
+The raw API is not supported in Rust. See [bug 1680225](https://bugzilla.mozilla.org/show_bug.cgi?id=1680225).
+
+</div>
+
 {{#include ../../tab_footer.md}}
 
 ## Limits
@@ -301,6 +342,8 @@ TODO. To be implemented in [bug 1648442](https://bugzilla.mozilla.org/show_bug.c
     The time measurement does not include time spent in sleep.
 
   * On Python 3.7 and later, [`time.monotonic_ns()`](https://docs.python.org/3/library/time.html#time.monotonic_ns) is used.  On earlier versions of Python, [`time.monotonics()`](https://docs.python.org/3/library/time.html#time.monotonic) is used, which is not guaranteed to have nanosecond resolution.
+
+  * On other platforms it uses [`time::precise_time_ns`](https://docs.rs/time/0.1.40/time/fn.precise_time_ns.html), which uses a high-resolution performance counter in nanoseconds provided by the underlying platform.
 
 ## Examples
 
