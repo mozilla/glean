@@ -313,15 +313,15 @@ the details of which are reproduced below.
     <url>https://crates.io/crates/benchmark</url>
   </license>
   <license>
+    <name>Mozilla Public License 2.0: glean</name>
+    <url>https://github.com/mozilla/glean</url>
+  </license>
+  <license>
     <name>Mozilla Public License 2.0: glean-core</name>
     <url>https://github.com/mozilla/glean</url>
   </license>
   <license>
     <name>Mozilla Public License 2.0: glean-ffi</name>
-    <url>https://github.com/mozilla/glean</url>
-  </license>
-  <license>
-    <name>Mozilla Public License 2.0: glean</name>
     <url>https://github.com/mozilla/glean</url>
   </license>
 </licenses>
