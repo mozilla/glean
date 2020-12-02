@@ -3,7 +3,8 @@
 [Full changelog](https://github.com/mozilla/glean/compare/v33.5.0...main)
 
 * Python
-  * BUGFIX: Network slowness or errors will no longer block the main dispatcher thread, leaving work undone on shutdown.
+  * BUGFIX: Network slowness or errors will no longer block the main dispatcher thread, leaving work undone on shutdown ([#1350](https://github.com/mozilla/glean/pull/1350)).
+  * BUGFIX: Lower sleep time on upload waits to avoid being stuck when the main process ends ([#1349](https://github.com/mozilla/glean/pull/1349)).
 
 # v33.5.0 (2020-12-01)
 
@@ -14,7 +15,7 @@
   * Introduce the Labeled metric type in the RLB [#1327](https://github.com/mozilla/glean/pull/1327).
   * Introduce the Quantity metric type in the RLB.
   * Introduce the `shutdown` API.
-  * Add Glean debugging APIs. 
+  * Add Glean debugging APIs.
 * Python
   * BUGFIX: Setting a UUID metric to a value that is not in the expected UUID format will now record an error with the Glean error reporting system.
 
