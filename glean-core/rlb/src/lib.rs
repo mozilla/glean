@@ -2,6 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+#![deny(broken_intra_doc_links)]
 #![deny(missing_docs)]
 
 //! Glean is a modern approach for recording and sending Telemetry data.
@@ -46,7 +47,8 @@ pub use configuration::Configuration;
 use configuration::DEFAULT_GLEAN_ENDPOINT;
 pub use core_metrics::ClientInfoMetrics;
 pub use glean_core::{
-    global_glean, setup_glean, CommonMetricData, Error, ErrorType, Glean, Lifetime, Result,
+    global_glean, metrics::TimeUnit, setup_glean, CommonMetricData, Error, ErrorType, Glean,
+    Lifetime, Result,
 };
 use private::RecordedExperimentData;
 

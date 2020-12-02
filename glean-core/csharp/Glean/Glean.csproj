@@ -10,7 +10,7 @@
       While we're still testing, mark this as a pre-release package.
       See https://docs.microsoft.com/en-us/nuget/concepts/package-versioning#pre-release-versions
     -->
-    <Version>33.5.0</Version>
+    <Version>33.6.0</Version>
     <RootNamespace>Mozilla.Glean</RootNamespace>
     <PackageId>Mozilla.Telemetry.Glean</PackageId>
     <PackageProjectUrl>https://github.com/mozilla/glean/</PackageProjectUrl>

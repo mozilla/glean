@@ -1,6 +1,17 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v33.5.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v33.6.0...main)
+
+# v33.6.0 (2020-12-02)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v33.5.0...v33.6.0)
+
+* Rust
+  * BUGFIX: Negative timespans for the timespan metric now correctly record an `InvalidValue` error ([#1347](https://github.com/mozilla/glean/pull/1347)).
+  * Introduce the Timespan metric type in the RLB [#1347](https://github.com/mozilla/glean/pull/1347).
+* Python
+  * BUGFIX: Network slowness or errors will no longer block the main dispatcher thread, leaving work undone on shutdown ([#1350](https://github.com/mozilla/glean/pull/1350)).
+  * BUGFIX: Lower sleep time on upload waits to avoid being stuck when the main process ends ([#1349](https://github.com/mozilla/glean/pull/1349)).
 
 # v33.5.0 (2020-12-01)
 
@@ -11,7 +22,7 @@
   * Introduce the Labeled metric type in the RLB [#1327](https://github.com/mozilla/glean/pull/1327).
   * Introduce the Quantity metric type in the RLB.
   * Introduce the `shutdown` API.
-  * Add Glean debugging APIs. 
+  * Add Glean debugging APIs.
 * Python
   * BUGFIX: Setting a UUID metric to a value that is not in the expected UUID format will now record an error with the Glean error reporting system.
 

@@ -146,6 +146,8 @@ assert_eq!(
 
 * Labels must conform to the [label formatting regular expression](index.md#label-format).
 
+* Labels support lowercase alphanumeric characters; they additionally allow for dots (`.`), underscores (`_`) and/or hyphens (`-`).
+
 * Each label must have a maximum of 60 bytes, when encoded as UTF-8.
 
 * If the labels are specified in the `metrics.yaml`, using any label not listed in that file will be replaced with the special value `__other__`.
@@ -158,9 +160,9 @@ assert_eq!(
 
 ## Recorded Errors
 
-* `invalid_label`: If the label contains invalid characters.
+* `invalid_label`: If the label contains invalid characters. Data is still recorded to the special label `__other__`.
 
-* `invalid_label`: If the label exceeds the maximum number of allowed characters.
+* `invalid_label`: If the label exceeds the maximum number of allowed characters. Data is still recorded to the special label `__other__`.
 
 ## Reference
 

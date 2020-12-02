@@ -11,6 +11,7 @@ mod ping;
 mod quantity;
 mod recorded_experiment_data;
 mod string;
+mod timespan;
 mod uuid;
 
 pub use self::uuid::UuidMetric;
@@ -21,3 +22,4 @@ pub use ping::PingType;
 pub use quantity::QuantityMetric;
 pub use recorded_experiment_data::RecordedExperimentData;
 pub use string::StringMetric;
+pub use timespan::TimespanMetric;
