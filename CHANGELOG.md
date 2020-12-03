@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.6.0...main)
 
+* Python
+  * Python Linux wheels no longer work on Linux distributions released before 2014 (they now use the manylinux2014 ABI)
+
 # v33.6.0 (2020-12-02)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.5.0...v33.6.0)
