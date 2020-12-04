@@ -274,7 +274,7 @@ impl Dispatcher {
 
     /// Waits for the worker thread to finish and finishes the dispatch queue.
     ///
-    /// You need to call `try_shutdown` to initiate a shutdown of the queue.
+    /// You need to call `shutdown` to initiate a shutdown of the queue.
     fn join(mut self) -> Result<(), DispatchError> {
         if let Some(worker) = self.worker.take() {
             worker.join().map_err(|_| DispatchError::WorkerPanic)?;

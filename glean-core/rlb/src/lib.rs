@@ -332,7 +332,7 @@ pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) {
 /// This currently only attempts to shut down the
 /// internal dispatcher.
 pub fn shutdown() {
-    if let Err(e) = dispatcher::try_shutdown() {
+    if let Err(e) = dispatcher::shutdown() {
         log::error!("Can't shutdown dispatcher thread: {:?}", e);
     }
 }
