@@ -189,8 +189,9 @@ fi
 run git add --update "${WORKSPACE_ROOT}"
 run git commit --message "Bumped version to ${NEW_VERSION}"
 
-remote=$(git remote | grep upstream)
-if [ -z "$remote" ]; then
+if git remote | grep -q upstream; then
+    remote=upstream
+else
     remote=origin
 fi
 branch=$(git rev-parse --abbrev-ref HEAD)
