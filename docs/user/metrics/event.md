@@ -163,7 +163,7 @@ views::login_opened.record(extra);
 
 There are test APIs available too, for example:
 
-```C#
+```rust
 use metrics::views;
 
 // Was any event recorded?
