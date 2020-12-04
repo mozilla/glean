@@ -234,7 +234,6 @@ pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) {
             // 1. Pings were submitted through Glean and it is ready to upload those pings;
             // 2. Upload is disabled, to upload a possible deletion-request ping.
             if pings_submitted || !upload_enabled {
-                let state = global_state().lock().unwrap();
                 state.upload_manager.trigger_upload();
             }
 
