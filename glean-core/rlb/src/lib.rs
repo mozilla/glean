@@ -342,7 +342,6 @@ pub fn set_upload_enabled(enabled: bool) {
             if old_enabled && !enabled {
                 // If uploading is disabled, we need to send the deletion-request ping:
                 // note that glean-core takes care of generating it.
-                let state = global_state().lock().unwrap();
                 state.upload_manager.trigger_upload();
             }
         });
