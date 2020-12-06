@@ -70,16 +70,15 @@ else:
     shared_object_build_dir = SRC_ROOT / "target"
 
 
-if platform == "linux":
-    shared_object = "libglean_ffi.so"
-elif platform == "darwin":
+if platform == "darwin":
     shared_object = "libglean_ffi.dylib"
 elif platform.startswith("win"):
     # `platform` can be both "windows" (if running within MinGW) or "win32"
     # if running in a standard Python environment. Account for both.
     shared_object = "glean_ffi.dll"
 else:
-    raise ValueError(f"The platform {sys.platform} is not supported.")
+    # Anything else must be an ELF platform - Linux, *BSD, Solaris/illumos
+    shared_object = "libglean_ffi.so"
 
 
 class BinaryDistribution(Distribution):
@@ -109,6 +108,9 @@ class bdist_wheel(wheel.bdist_wheel.bdist_wheel):
                 return ("py3", "none", "win_amd64")
             else:
                 raise ValueError("Unsupported Windows platform")
+        else:
+            # Keep local wheel build on BSD/etc. working
+            return super().get_tag()
 
 
 class InstallPlatlib(install):

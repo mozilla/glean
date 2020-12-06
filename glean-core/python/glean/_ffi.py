@@ -22,13 +22,12 @@ def get_shared_object_filename() -> str:  # pragma: no cover
     """
     Get the extension used for shared objects on the current platform.
     """
-    if sys.platform == "linux":
-        return "libglean_ffi.so"
-    elif sys.platform == "darwin":
+    if sys.platform == "darwin":
         return "libglean_ffi.dylib"
     elif sys.platform.startswith("win"):
         return "glean_ffi.dll"
-    raise ValueError(f"The platform {sys.platform} is not supported.")
+    else:
+        return "libglean_ffi.so"
 
 
 _global_weakkeydict: Any = weakref.WeakKeyDictionary()
