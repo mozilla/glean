@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v33.6.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v33.7.0...main)
+
+# v33.7.0 (2020-12-07)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v33.6.0...v33.7.0)
 
 * Rust
   * Upgrade rkv to 0.16.0 (no functional changes) ([#1355](https://github.com/mozilla/glean/pull/1355)).

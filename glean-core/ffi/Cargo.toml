@@ -1,6 +1,6 @@
 [package]
 name = "glean-ffi"
-version = "33.6.0"
+version = "33.7.0"
 authors = ["Jan-Erik Rediger <jrediger@mozilla.com>", "The Glean Team <glean-team@mozilla.com>"]
 description = "FFI layer for Glean, a modern Telemetry library"
 repository = "https://github.com/mozilla/glean"
@@ -36,7 +36,7 @@ once_cell = "1.2.0"
 
 [dependencies.glean-core]
 path = ".."
-version = "33.6.0"
+version = "33.7.0"
 
 [target.'cfg(target_os = "android")'.dependencies]
 android_logger = { version = "0.9.0", default-features = false }
