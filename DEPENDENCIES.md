@@ -417,7 +417,7 @@ The following text applies to code linked from these dependencies:
 
 The following text applies to code linked from these dependencies:
 
-* [rkv 0.15.0]( https://github.com/mozilla/rkv )
+* [rkv 0.16.0]( https://github.com/mozilla/rkv )
 
 
 ```
@@ -1496,7 +1496,7 @@ The following text applies to code linked from these dependencies:
 * [form_urlencoded 1.0.0]( https://github.com/servo/rust-url )
 * [id-arena 2.2.1]( https://github.com/fitzgen/id-arena )
 * [idna 0.2.0]( https://github.com/servo/rust-url/ )
-* [inherent 0.1.4]( https://github.com/dtolnay/inherent )
+* [inherent 0.1.5]( https://github.com/dtolnay/inherent )
 * [itoa 0.4.6]( https://github.com/dtolnay/itoa )
 * [lazy_static 1.4.0]( https://github.com/rust-lang-nursery/lazy-static.rs )
 * [libc 0.2.80]( https://github.com/rust-lang/libc )
@@ -1513,7 +1513,7 @@ The following text applies to code linked from these dependencies:
 * [quote 1.0.7]( https://github.com/dtolnay/quote )
 * [serde 1.0.117]( https://github.com/serde-rs/serde )
 * [serde_derive 1.0.117]( https://github.com/serde-rs/serde )
-* [serde_json 1.0.59]( https://github.com/serde-rs/json )
+* [serde_json 1.0.60]( https://github.com/serde-rs/json )
 * [syn 1.0.48]( https://github.com/dtolnay/syn )
 * [thiserror 1.0.22]( https://github.com/dtolnay/thiserror )
 * [thiserror-impl 1.0.22]( https://github.com/dtolnay/thiserror )
@@ -2696,7 +2696,7 @@ limitations under the License.
 
 The following text applies to code linked from these dependencies:
 
-* [android_logger 0.9.0]( https://github.com/Nercury/android_logger-rs )
+* [android_logger 0.9.1]( https://github.com/Nercury/android_logger-rs )
 
 
 ```
@@ -3479,9 +3479,9 @@ THE SOFTWARE.
 The following text applies to code linked from these dependencies:
 
 * [benchmark 0.1.0]( https://crates.io/crates/benchmark )
-* [glean 33.6.0]( https://github.com/mozilla/glean )
-* [glean-core 33.6.0]( https://github.com/mozilla/glean )
-* [glean-ffi 33.6.0]( https://github.com/mozilla/glean )
+* [glean 33.7.0]( https://github.com/mozilla/glean )
+* [glean-core 33.7.0]( https://github.com/mozilla/glean )
+* [glean-ffi 33.7.0]( https://github.com/mozilla/glean )
 
 
 ```

@@ -1,12 +1,17 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v33.6.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v33.7.0...main)
+
+# v33.7.0 (2020-12-07)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v33.6.0...v33.7.0)
 
 * Rust
   * Upgrade rkv to 0.16.0 (no functional changes) ([#1355](https://github.com/mozilla/glean/pull/1355)).
   * Introduce the Event metric type in the RLB ([#1361](https://github.com/mozilla/glean/pull/1361)).
 * Python
-  * Python Linux wheels no longer work on Linux distributions released before 2014 (they now use the manylinux2014 ABI)
+  * Python Linux wheels no longer work on Linux distributions released before 2014 (they now use the manylinux2014 ABI) ([#1353](https://github.com/mozilla/glean/pull/1353)).
+  * Unbreak Python on non-Linux ELF platforms (BSD, Solaris/illumos) ([#1363](https://github.com/mozilla/glean/pull/1363)).
 
 # v33.6.0 (2020-12-02)
 
