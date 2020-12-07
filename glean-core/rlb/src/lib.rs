@@ -77,6 +77,9 @@ struct RustBindingsState {
 
     /// Client info metrics set by the application.
     client_info: ClientInfoMetrics,
+
+    /// An instance of the upload manager
+    upload_manager: net::UploadManager,
 }
 
 /// Set when `glean::initialize()` returns.
@@ -124,32 +127,6 @@ fn setup_state(state: RustBindingsState) {
         // This all happens behind a mutex and is therefore also thread-safe.
         let mut lock = STATE.get().unwrap().lock().unwrap();
         *lock = state;
-    }
-}
-
-/// An instance of the upload manager.
-///
-/// Requires a Mutex, because in tests we can actual reset this.
-static UPLOAD_MANAGER: OnceCell<Mutex<net::UploadManager>> = OnceCell::new();
-
-/// Get a reference to the global upload manager.
-///
-/// Panics if no global state object was set.
-fn get_upload_manager() -> &'static Mutex<net::UploadManager> {
-    UPLOAD_MANAGER.get().unwrap()
-}
-
-/// Set or replace the global upload object.
-fn setup_upload_manager(upload_manager: net::UploadManager) {
-    if UPLOAD_MANAGER.get().is_none() {
-        if UPLOAD_MANAGER.set(Mutex::new(upload_manager)).is_err() {
-            log::error!(
-                "Global upload state object is initialized already. This probably happened concurrently."
-            );
-        }
-    } else {
-        let mut lock = UPLOAD_MANAGER.get().unwrap().lock().unwrap();
-        *lock = upload_manager;
     }
 }
 
@@ -214,19 +191,20 @@ pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) {
 
             log::info!("Glean initialized");
 
-            // Now make this the global object available to others.
-            setup_state(RustBindingsState {
-                channel: cfg.channel,
-                client_info,
-            });
-
             // Initialize the ping uploader.
-            setup_upload_manager(net::UploadManager::new(
+            let upload_manager = net::UploadManager::new(
                 cfg.server_endpoint
                     .unwrap_or_else(|| DEFAULT_GLEAN_ENDPOINT.to_string()),
                 cfg.uploader
                     .unwrap_or_else(|| Box::new(net::HttpUploader) as Box<dyn net::PingUploader>),
-            ));
+            );
+
+            // Now make this the global object available to others.
+            setup_state(RustBindingsState {
+                channel: cfg.channel,
+                client_info,
+                upload_manager,
+            });
 
             let upload_enabled = cfg.upload_enabled;
 
@@ -291,8 +269,7 @@ pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) {
                 // 1. Pings were submitted through Glean and it is ready to upload those pings;
                 // 2. Upload is disabled, to upload a possible deletion-request ping.
                 if pings_submitted || !upload_enabled {
-                    let uploader = get_upload_manager().lock().unwrap();
-                    uploader.trigger_upload();
+                    state.upload_manager.trigger_upload();
                 }
 
                 // Set up information and scheduling for Glean owned pings. Ideally, the "metrics"
@@ -410,8 +387,7 @@ pub fn set_upload_enabled(enabled: bool) {
             if old_enabled && !enabled {
                 // If uploading is disabled, we need to send the deletion-request ping:
                 // note that glean-core takes care of generating it.
-                let uploader = get_upload_manager().lock().unwrap();
-                uploader.trigger_upload();
+                state.upload_manager.trigger_upload();
             }
         });
     });
@@ -490,8 +466,8 @@ pub(crate) fn submit_ping_by_name_sync(ping: &str, reason: Option<&str>) {
     });
 
     if let Some(true) = submitted_ping {
-        let uploader = get_upload_manager().lock().unwrap();
-        uploader.trigger_upload();
+        let state = global_state().lock().unwrap();
+        state.upload_manager.trigger_upload();
     }
 }
 
