@@ -23,9 +23,9 @@ checksum = "85965b6739a430150bdd138e2374a98af0c3ee0d030b3bb7fc3bddff58d0102e"
 
 [[package]]
 name = "android_logger"
-version = "0.9.0"
+version = "0.9.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5027a747b8132dc36dc894415a300aab31d6489ee788e9ba07bc99558b1278ca"
+checksum = "7e93c367fbabdddb4126bf56402ccb62a676c6817941490961a421d10ae46c2f"
 dependencies = [
  "android_log-sys",
  "env_logger",
@@ -434,7 +434,7 @@ dependencies = [
 
 [[package]]
 name = "glean"
-version = "33.6.0"
+version = "33.7.0"
 dependencies = [
  "crossbeam-channel 0.4.4",
  "env_logger",
@@ -454,7 +454,7 @@ dependencies = [
 
 [[package]]
 name = "glean-core"
-version = "33.6.0"
+version = "33.7.0"
 dependencies = [
  "bincode",
  "chrono",
@@ -474,7 +474,7 @@ dependencies = [
 
 [[package]]
 name = "glean-ffi"
-version = "33.6.0"
+version = "33.7.0"
 dependencies = [
  "android_logger",
  "env_logger",
@@ -531,9 +531,9 @@ dependencies = [
 
 [[package]]
 name = "inherent"
-version = "0.1.4"
+version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c2db418475edf9eb55fec92b7527be6d9a7b880bff6651cb0c0345af57f1cadf"
+checksum = "f3a1325a022293a53274277a7c5c3c5bc73405cb443bb96cc2ce20ff4121e995"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -957,9 +957,9 @@ dependencies = [
 
 [[package]]
 name = "rkv"
-version = "0.15.0"
+version = "0.16.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e97d1b6321740ce36d77d67d22ff84ac8a996cf69dbd0727b8bcae52f1c98aaa"
+checksum = "e7a845aee216ee2be8a02ea265d70563d1ed7bd852c04f709a8f11979079b2ac"
 dependencies = [
  "arrayref",
  "bincode",
@@ -1055,9 +1055,9 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.59"
+version = "1.0.60"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dcac07dbffa1c65e7f816ab9eba78eb142c6d44410f4eeba1e26e4f5dfa56b95"
+checksum = "1500e84d27fe482ed1dc791a56eddc2f230046a040fa908c08bda1d9fb615779"
 dependencies = [
  "itoa",
  "ryu",

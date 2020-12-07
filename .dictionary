@@ -1,4 +1,4 @@
-personal_ws-1.1 en 203 utf-8
+personal_ws-1.1 en 207 utf-8
 AAR
 AARs
 ABI
@@ -59,6 +59,7 @@ Redash
 Rkv's
 SDK
 SDK's
+Solaris
 TLDs
 TODO
 TWiG
@@ -69,6 +70,7 @@ URIs
 UTF
 UUID
 UUIDs
+Unbreak
 Underflowing
 Wasm
 WebRender
@@ -131,6 +133,7 @@ gzip
 gzipped
 hotfix
 html
+illumos
 init
 integrations
 io
