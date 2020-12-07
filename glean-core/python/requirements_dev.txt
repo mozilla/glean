@@ -1,4 +1,4 @@
-auditwheel==3.2.0
+auditwheel==3.3.0
 black==20.8b1
 cffi==1.14.4
 coverage==5.3
@@ -13,4 +13,4 @@ pytest-runner==5.2
 pytest==6.1.2
 setuptools-git==1.2
 twine==3.2.0
-wheel==0.34.2
+wheel==0.36.1
