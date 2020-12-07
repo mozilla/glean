@@ -41,7 +41,7 @@ pub fn log_if_error(error: ExternError) {
     if !error.get_code().is_success() {
         // in practice this should never panic, but you never know...
         ffi_support::abort_on_panic::call_with_output(|| {
-            log::warn!(
+            log::error!(
                 "Glean failed ({:?}): {}",
                 error.get_code(),
                 error.get_message().as_str()

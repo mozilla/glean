@@ -181,7 +181,7 @@ pub extern "C" fn glean_enable_logging() {
             // Please note that this is only expected to fail during unit tests,
             // where the logger might have already been initialized by a previous
             // test. So it's fine to print with the "logger".
-            Err(_) => log::warn!("stdout was already initialized"),
+            Err(_) => log::warn!("stdout logging was already initialized"),
         };
     }
 }

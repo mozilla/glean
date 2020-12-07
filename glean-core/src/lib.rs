@@ -678,7 +678,7 @@ impl Glean {
     /// Register a new [`PingType`](metrics/struct.PingType.html).
     pub fn register_ping_type(&mut self, ping: &PingType) {
         if self.ping_registry.contains_key(&ping.name) {
-            log::error!("Duplicate ping named '{}'", ping.name)
+            log::debug!("Duplicate ping named '{}'", ping.name)
         }
 
         self.ping_registry.insert(ping.name.clone(), ping.clone());
