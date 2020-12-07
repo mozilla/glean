@@ -52,7 +52,7 @@ assertEquals(2, snapshot.size)
 val first = snapshot.single()
 assertEquals("login_opened", first.name)
 // Check that no errors were recorded
-assertEquals(0, Views.loginOpened.testGetNumRecordedErrors(ErrorType.InvalidValue))
+assertEquals(0, Views.loginOpened.testGetNumRecordedErrors(ErrorType.InvalidOverflow))
 ```
 
 </div>
@@ -79,7 +79,7 @@ XCTAssertEqual(2, snapshot.size)
 val first = snapshot[0]
 XCTAssertEqual("login_opened", first.name)
 // Check that no errors were recorded
-XCTAssertEqual(0, Views.loginOpened.testGetNumRecordedErrors(.invalidValue))
+XCTAssertEqual(0, Views.loginOpened.testGetNumRecordedErrors(.invalidOverflow))
 ```
 
 </div>
@@ -112,7 +112,7 @@ first = snapshot[0]
 assert "login_opened" == first.name
 # Check that no errors were recorded
 assert 0 == metrics.views.login_opened.test_get_num_recorded_errors(
-    ErrorType.INVALID_VALUE
+    ErrorType.INVALID_OVERFLOW
 )
 ```
 
@@ -144,7 +144,38 @@ Assert.Equal(2, snapshot.Length);
 var first = snapshot.First();
 Assert.Equal("login_opened", first.Name);
 // Check that no errors were recorded
-Assert.Equal(0, Views.loginOpened.TestGetNumRecordedErrors(ErrorType.InvalidValue));
+Assert.Equal(0, Views.loginOpened.TestGetNumRecordedErrors(ErrorType.InvalidOverflow));
+```
+
+</div>
+
+<div data-lang="Rust" class="tab">
+
+Note that an `enum` has been generated for handling the `extra_keys`: it has the same name as the event metric, with `Keys` added.
+
+```rust
+use metrics::views;
+
+let mut extra = HashMap::new();
+extra.insert(views::LoginOpenedKeys::SourceOfLogin, "toolbar".into());
+views::login_opened.record(extra);
+```
+
+There are test APIs available too, for example:
+
+```rust
+use metrics::views;
+
+// Was any event recorded?
+assert!(views::login_opened.test_get_value(None).is_some());
+// Get a List of the recorded events.
+var snapshot = views::login_opened.test_get_value(None).unwrap();
+// Check that two events were recorded.
+assert_eq!(2, snapshot.len());
+let first = &snapshot[0];
+assert_eq!("login_opened", first.name);
+// Check that no errors were recorded
+assert_eq!(0, views::login_opened.test_get_num_recorded_errors(ErrorType::InvalidOverflow, None));
 ```
 
 </div>
@@ -171,5 +202,7 @@ Assert.Equal(0, Views.loginOpened.TestGetNumRecordedErrors(ErrorType.InvalidValu
  
 ## Reference
 
-* [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-event-metric-type/index.html).
+* [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-event-metric-type/index.html)
 * [Swift API docs](../../../swift/Classes/EventMetricType.html)
+* [Python API docs](../../../python/glean/metrics/event.html)
+* [Rust API docs](../../../docs/glean/private/event/struct.EventMetric.html)

@@ -6,6 +6,7 @@
 
 mod boolean;
 mod counter;
+mod event;
 mod labeled;
 mod ping;
 mod quantity;
@@ -17,6 +18,7 @@ mod uuid;
 pub use self::uuid::UuidMetric;
 pub use boolean::BooleanMetric;
 pub use counter::CounterMetric;
+pub use event::EventMetric;
 pub use labeled::{AllowLabeled, LabeledMetric};
 pub use ping::PingType;
 pub use quantity::QuantityMetric;
