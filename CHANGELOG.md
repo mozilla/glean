@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.7.0...main)
 
+* Python
+  * All log messages from the Glean SDK are now on the `glean` logger, obtainable through `logging.getLogger("glean")`.  (Prior to this, each module had its own logger, for example `glean.net.ping_upload_worker`).
+
 # v33.7.0 (2020-12-07)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.6.0...v33.7.0)

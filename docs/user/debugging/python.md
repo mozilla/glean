@@ -16,15 +16,21 @@ such as `pings.custom_ping.submit()`, will send it.
 If the `GLEAN_LOG_PINGS` environment variable is set to `true`, pings are
 logged to the console on `DEBUG` level whenever they are submitted.
 
-Make sure that when you configure logging in your application, you set the
-level for the `glean` logger to `DEBUG` or higher. Otherwise pings won't be
+Make sure that when you configure logging in your application, you set the level
+for the Python logging library to `DEBUG` or higher. Otherwise pings won't be
 logged even if `GLEAN_LOG_PINGS` is set to `true`.
 
-You can set the logging level for Glean to `DEBUG` as follows:
+You can set the logging level for the Python logging to `DEBUG` as follows:
 
 ```python
 import logging
 
+logging.basicConfig(level=logging.DEBUG)
+```
+
+All log messages from the Glean SDK are on the `glean` logger, so if you need to control it independently, you can set a level for just the Glean SDK (but note that the global Python logging level also needs to be set as above):
+
+```python
 logging.getLogger("glean").setLevel(logging.DEBUG)
 ```
 

@@ -30,7 +30,7 @@ from typing import Optional, Union
 from ._subprocess import _process_dispatcher_helper
 
 
-log = logging.getLogger(__name__)
+log = logging.getLogger("glean")
 
 
 class _SyncWorkWrapper:

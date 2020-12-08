@@ -19,7 +19,7 @@ from .._dispatcher import Dispatcher
 from .._process_dispatcher import ProcessDispatcher
 
 
-log = logging.getLogger(__name__)
+log = logging.getLogger("glean")
 
 
 class PingUploadWorker:
