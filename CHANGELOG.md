@@ -4,6 +4,8 @@
 
 * Rust
   * Shut down Glean in tests before resetting to make sure they don't mistakenly init Glean twice in parallel.
+* Python
+  * All log messages from the Glean SDK are now on the `glean` logger, obtainable through `logging.getLogger("glean")`.  (Prior to this, each module had its own logger, for example `glean.net.ping_upload_worker`).
 
 # v33.7.0 (2020-12-07)
 

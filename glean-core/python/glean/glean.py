@@ -33,7 +33,7 @@ if TYPE_CHECKING:
     from .metrics import PingType, RecordedExperimentData
 
 
-log = logging.getLogger(__name__)
+log = logging.getLogger("glean")
 
 
 def _rmtree(path) -> bool:

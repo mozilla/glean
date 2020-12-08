@@ -19,7 +19,7 @@ from . import base_uploader
 from . import ping_uploader
 
 
-log = logging.getLogger(__name__)
+log = logging.getLogger("glean")
 
 
 class HttpClientUploader(base_uploader.BaseUploader):
