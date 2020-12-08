@@ -150,12 +150,12 @@ where
 
 /// Creates and initializes a new Glean object.
 ///
-/// See `glean_core::Glean::new` for more information.
+/// See [`glean_core::Glean::new`] for more information.
 ///
 /// # Arguments
 ///
-/// * `cfg` - the `Configuration` options to initialize with.
-/// * `client_info` - the `ClientInfoMetrics` values used to set Glean
+/// * `cfg` - the [`Configuration`] options to initialize with.
+/// * `client_info` - the [`ClientInfoMetrics`] values used to set Glean
 ///   core metrics.
 pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) {
     if was_initialize_called() {
@@ -315,7 +315,7 @@ pub fn shutdown() {
     }
 }
 
-/// Checks if `glean::initialize` was ever called.
+/// Checks if [`initialize`] was ever called.
 ///
 /// # Returns
 ///
@@ -352,7 +352,7 @@ fn initialize_core_metrics(
 
 /// Sets whether upload is enabled or not.
 ///
-/// See `glean_core::Glean.set_upload_enabled`.
+/// See [`glean_core::Glean::set_upload_enabled`].
 pub fn set_upload_enabled(enabled: bool) {
     if !was_initialize_called() {
         let msg =
@@ -393,7 +393,7 @@ pub fn set_upload_enabled(enabled: bool) {
     });
 }
 
-/// Register a new [`PingType`](metrics/struct.PingType.html).
+/// Register a new [`PingType`](private::PingType).
 pub fn register_ping_type(ping: &private::PingType) {
     // If this happens after Glean.initialize is called (and returns),
     // we dispatch ping registration on the thread pool.
@@ -411,7 +411,7 @@ pub fn register_ping_type(ping: &private::PingType) {
 
 /// Collects and submits a ping for eventual uploading.
 ///
-/// See `glean_core::Glean.submit_ping`.
+/// See [`glean_core::Glean.submit_ping`].
 pub(crate) fn submit_ping(ping: &private::PingType, reason: Option<&str>) {
     submit_ping_by_name(&ping.name, reason)
 }
@@ -421,7 +421,7 @@ pub(crate) fn submit_ping(ping: &private::PingType, reason: Option<&str>) {
 /// Note that this needs to be public in order for RLB consumers to
 /// use Glean debugging facilities.
 ///
-/// See `glean_core::Glean.submit_ping_by_name`.
+/// See [`glean_core::Glean.submit_ping_by_name`].
 pub fn submit_ping_by_name(ping: &str, reason: Option<&str>) {
     let ping = ping.to_string();
     let reason = reason.map(|s| s.to_string());
@@ -432,7 +432,7 @@ pub fn submit_ping_by_name(ping: &str, reason: Option<&str>) {
 
 /// Collect and submit a ping (by its name) for eventual upload, synchronously.
 ///
-/// The ping will be looked up in the known instances of `private::PingType`. If the
+/// The ping will be looked up in the known instances of [`private::PingType`]. If the
 /// ping isn't known, an error is logged and the ping isn't queued for uploading.
 ///
 /// The ping content is assembled as soon as possible, but upload is not
@@ -510,7 +510,7 @@ pub(crate) fn test_is_experiment_active(experiment_id: String) -> bool {
 }
 
 /// TEST ONLY FUNCTION.
-/// Returns the `RecordedExperimentData` for the given `experiment_id` or panics if
+/// Returns the [`RecordedExperimentData`] for the given `experiment_id` or panics if
 /// the id isn't found.
 #[allow(dead_code)]
 pub(crate) fn test_get_experiment_data(experiment_id: String) -> RecordedExperimentData {
