@@ -275,7 +275,7 @@ impl PingUploadManager {
         match request.build() {
             Ok(request) => Some(request),
             Err(e) => {
-                log::error!("Error trying to build ping request: {}", e);
+                log::warn!("Error trying to build ping request: {}", e);
                 self.directory_manager.delete_file(&document_id);
 
                 // Record the error.
@@ -309,7 +309,7 @@ impl PingUploadManager {
             .iter()
             .any(|request| request.document_id == document_id)
         {
-            log::trace!(
+            log::warn!(
                 "Attempted to enqueue a duplicate ping {} at {}.",
                 document_id,
                 path
@@ -625,7 +625,7 @@ impl PingUploadManager {
             }
 
             UnrecoverableFailure | HttpStatus(400..=499) => {
-                log::error!(
+                log::warn!(
                     "Unrecoverable upload failure while attempting to send ping {}. Error was {:?}",
                     document_id,
                     status
@@ -634,7 +634,7 @@ impl PingUploadManager {
             }
 
             RecoverableFailure | HttpStatus(_) => {
-                log::info!(
+                log::warn!(
                     "Recoverable upload failure while attempting to send ping {}, will retry. Error was {:?}",
                     document_id,
                     status
