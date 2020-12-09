@@ -310,6 +310,11 @@ pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) {
 /// This currently only attempts to shut down the
 /// internal dispatcher.
 pub fn shutdown() {
+    if !was_initialize_called() {
+        log::warn!("Shutdown called before Glean is initialized");
+        return;
+    }
+
     if let Err(e) = dispatcher::shutdown() {
         log::error!("Can't shutdown dispatcher thread: {:?}", e);
     }
