@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.7.0...main)
 
+* Rust
+  * Shut down Glean in tests before resetting to make sure they don't mistakenly init Glean twice in parallel.
+
 # v33.7.0 (2020-12-07)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.6.0...v33.7.0)
