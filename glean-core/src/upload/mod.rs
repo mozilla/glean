@@ -5,9 +5,12 @@
 //! Manages the pending pings queue and directory.
 //!
 //! * Keeps track of pending pings, loading any unsent ping from disk on startup;
-//! * Exposes `get_upload_task` API for the platform layer to request next upload task;
-//! * Exposes `process_ping_upload_response` API to check the HTTP response from the ping upload
-//!   and either delete the corresponding ping from disk or re-enqueue it for sending.
+//! * Exposes [`get_upload_task`](PingUploadManager::get_upload_task) API for
+//!   the platform layer to request next upload task;
+//! * Exposes
+//!   [`process_ping_upload_response`](PingUploadManager::process_ping_upload_response)
+//!   API to check the HTTP response from the ping upload and either delete the
+//!   corresponding ping from disk or re-enqueue it for sending.
 
 use std::collections::VecDeque;
 use std::convert::TryInto;

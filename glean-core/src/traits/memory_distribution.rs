@@ -4,7 +4,8 @@
 
 use crate::metrics::DistributionData;
 
-/// A description for the `MemoryDistributionMetric` type.
+/// A description for the
+/// [`MemoryDistributionMetric`](crate::metrics::MemoryDistributionMetric) type.
 ///
 /// When changing this trait, make sure all the operations are
 /// implemented in the related type in `../metrics/`.
@@ -31,7 +32,7 @@ pub trait MemoryDistribution {
     ///
     /// Please note that this assumes that the provided samples are already in
     /// the "unit" declared by the instance of the implementing metric type
-    /// (e.g. if the implementing class is a [MemoryDistribution] and the
+    /// (e.g. if the implementing class is a [`MemoryDistribution`] and the
     /// instance this method was called on is using kilobyte, then `samples` are
     /// assumed to be in that unit).
     ///
@@ -41,10 +42,12 @@ pub trait MemoryDistribution {
     ///
     /// ## Notes
     ///
-    /// Discards any negative value in `samples` and report an `ErrorType::InvalidValue`
-    /// for each of them.
-    /// Values bigger than 1 Terabyte (2<sup>40</sup> bytes) are truncated
-    /// and an `ErrorType::InvalidValue` error is recorded.
+    /// Discards any negative value in `samples` and report an
+    /// [`ErrorType::InvalidValue`](crate::ErrorType::InvalidValue) for each of
+    /// them.
+    /// Values bigger than 1 Terabyte (2<sup>40</sup> bytes) are truncated and
+    /// an [`ErrorType::InvalidValue`](crate::ErrorType::InvalidValue) error is
+    /// recorded.
     fn accumulate_samples_signed(&self, samples: Vec<i64>);
 
     /// **Exported for test purposes.**

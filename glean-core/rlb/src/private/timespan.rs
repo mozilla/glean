@@ -38,8 +38,9 @@ impl glean_core::traits::Timespan for TimespanMetric {
     ///
     /// This uses an internal monotonic timer.
     ///
-    /// This records an error if it's already tracking time (i.e. start was already
-    /// called with no corresponding `stop`): in that case the original
+    /// This records an error if it's already tracking time (i.e.
+    /// [`start`](TimespanMetric::start) was already called with no
+    /// corresponding [`stop`](TimespanMetric::stop)): in that case the original
     /// start time will be preserved.
     fn start(&self) {
         let start_time = time::precise_time_ns();
@@ -57,7 +58,7 @@ impl glean_core::traits::Timespan for TimespanMetric {
 
     /// Stops tracking time for the provided metric. Sets the metric to the elapsed time.
     ///
-    /// This will record an error if no `start` was called.
+    /// This will record an error if no [`start`](TimespanMetric::start) was called.
     fn stop(&self) {
         let stop_time = time::precise_time_ns();
 
@@ -72,7 +73,8 @@ impl glean_core::traits::Timespan for TimespanMetric {
         });
     }
 
-    /// Aborts a previous `start` call. No error is recorded if no `start` was called.
+    /// Aborts a previous [`start`](TimespanMetric::start) call. No error is
+    /// recorded if no [`start`](TimespanMetric::start) was called.
     fn cancel(&self) {
         let metric = Arc::clone(&self.0);
         dispatcher::launch(move || {
