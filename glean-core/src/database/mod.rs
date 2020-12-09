@@ -98,6 +98,7 @@ mod backend {
                 // Source environment is corrupted.
                 // We start fresh with the new database.
                 Err(MigrateError::StoreError(StoreError::FileInvalid)) => true,
+                Err(MigrateError::StoreError(StoreError::DatabaseCorrupted)) => true,
                 // Path not accessible.
                 // Somehow our directory vanished between us creating it and reading from it.
                 // Nothing we can do really.
