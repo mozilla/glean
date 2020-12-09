@@ -87,10 +87,10 @@ pub trait Event {
     ///
     /// # Arguments
     ///
-    /// * `extra` - A [`HashMap`] of (key, value) pairs. The key is an index into
-    ///   the metric's `allowed_extra_keys` vector where the key's string is
-    ///   looked up. If any key index is out of range, an error is reported and
-    ///   no event is recorded.
+    /// * `extra` - A [`HashMap`] of (key, value) pairs. The key is one of the allowed extra keys as
+    ///             set in the metric defintion.
+    ///             If a wrong key is used or a value is larger than allowed, an error is reported
+    ///             and no event is recorded.
     fn record<M: Into<Option<HashMap<Self::Extra, String>>>>(&self, extra: M);
 
     /// **Exported for test purposes.**
