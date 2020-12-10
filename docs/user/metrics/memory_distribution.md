@@ -198,11 +198,11 @@ assert!(memory::heap_allocated.test_get_value(None).is_some());
 
 // Is the sum as expected?
 let data = memory::heap_allocated.test_get_value(None).unwrap();
-assert!(11, data.sum)
+assert_eq!(11, data.sum)
 // The actual buckets and counts live in `data.values`.
 
 // Were there any errors?
-assert!(1, memory::heap_allocated.test_get_num_recorded_errors(InvalidValue));
+assert_eq!(1, memory::heap_allocated.test_get_num_recorded_errors(InvalidValue));
 
 ```
 
