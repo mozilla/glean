@@ -128,8 +128,13 @@ impl EventDatabase {
     }
 
     fn load_events_from_disk(&self) -> Result<()> {
-        let _lock = self.file_lock.read().unwrap(); // safe unwrap, only error case is poisoning
+        // NOTE: The order of locks here is important.
+        // In other code parts we might acquire the `file_lock` when we already have acquired
+        // a lock on `event_stores`.
+        // This is a potential lock-order-inversion.
         let mut db = self.event_stores.write().unwrap(); // safe unwrap, only error case is poisoning
+        let _lock = self.file_lock.read().unwrap(); // safe unwrap, only error case is poisoning
+
         for entry in fs::read_dir(&self.path)? {
             let entry = entry?;
             if entry.file_type()?.is_file() {

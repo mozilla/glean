@@ -1,12 +1,13 @@
 # Unreleased changes
 
-* Rust
-  * Introduce the Memory Distribution metric type in the RLB. [#1376](https://github.com/mozilla/glean/pull/1376)
-
 [Full changelog](https://github.com/mozilla/glean/compare/v33.7.0...main)
 
 * Rust
-  * Shut down Glean in tests before resetting to make sure they don't mistakenly init Glean twice in parallel.
+  * Introduce the Memory Distribution metric type in the RLB. [#1376](https://github.com/mozilla/glean/pull/1376)
+  * Shut down Glean in tests before resetting to make sure they don't mistakenly init Glean twice in parallel ([#1375](https://github.com/mozilla/glean/pull/1375)).
+  * BUGFIX: Fixing 2 `lock-order-inversion` bugs found by TSan ([#1378](https://github.com/mozilla/glean/pull/1378)).
+    * TSan runs on mozilla-central tests, which found two (potential) bugs where 2 different locks were acquired in opposite order in different code paths,
+      which could lead to deadlocks in multi-threaded code. As RLB uses multiple threads (e.g. for init and the dispatcher) by default, this can easily become an actual issue.
 * Python
   * All log messages from the Glean SDK are now on the `glean` logger, obtainable through `logging.getLogger("glean")`.  (Prior to this, each module had its own logger, for example `glean.net.ping_upload_worker`).
 
