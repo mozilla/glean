@@ -417,7 +417,7 @@ The following text applies to code linked from these dependencies:
 
 The following text applies to code linked from these dependencies:
 
-* [rkv 0.16.0]( https://github.com/mozilla/rkv )
+* [rkv 0.16.1]( https://github.com/mozilla/rkv )
 
 
 ```
@@ -3479,9 +3479,9 @@ THE SOFTWARE.
 The following text applies to code linked from these dependencies:
 
 * [benchmark 0.1.0]( https://crates.io/crates/benchmark )
-* [glean 33.7.0]( https://github.com/mozilla/glean )
-* [glean-core 33.7.0]( https://github.com/mozilla/glean )
-* [glean-ffi 33.7.0]( https://github.com/mozilla/glean )
+* [glean 33.8.0]( https://github.com/mozilla/glean )
+* [glean-core 33.8.0]( https://github.com/mozilla/glean )
+* [glean-ffi 33.8.0]( https://github.com/mozilla/glean )
 
 
 ```
