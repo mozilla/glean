@@ -6,6 +6,7 @@
 
 mod boolean;
 mod counter;
+mod datetime;
 mod event;
 mod labeled;
 mod memory_distribution;
@@ -20,6 +21,7 @@ mod uuid;
 pub use self::uuid::UuidMetric;
 pub use boolean::BooleanMetric;
 pub use counter::CounterMetric;
+pub use datetime::{Datetime, DatetimeMetric};
 pub use event::EventMetric;
 pub use labeled::{AllowLabeled, LabeledMetric};
 pub use memory_distribution::MemoryDistributionMetric;
