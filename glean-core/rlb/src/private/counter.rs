@@ -32,30 +32,11 @@ impl CounterMetric {
 
 #[inherent(pub)]
 impl glean_core::traits::Counter for CounterMetric {
-    /// Increases the counter by `amount`.
-    ///
-    /// # Arguments
-    ///
-    /// * `amount` - The amount to increase by. Should be positive.
-    ///
-    /// ## Notes
-    ///
-    /// Logs an error if the `amount` is 0 or negative.
     fn add(&self, amount: i32) {
         let metric = Arc::clone(&self.0);
         dispatcher::launch(move || crate::with_glean(|glean| metric.add(glean, amount)));
     }
 
-    /// **Exported for test purposes.**
-    ///
-    /// Gets the currently stored value as an integer.
-    ///
-    /// This doesn't clear the stored value.
-    ///
-    /// # Arguments
-    ///
-    /// * `ping_name` - represents the optional name of the ping to retrieve the
-    ///   metric for. Defaults to the first value in `send_in_pings`.
     fn test_get_value<'a, S: Into<Option<&'a str>>>(&self, ping_name: S) -> Option<i32> {
         dispatcher::block_on_queue();
 
@@ -66,19 +47,6 @@ impl glean_core::traits::Counter for CounterMetric {
         crate::with_glean(|glean| self.0.test_get_value(glean, queried_ping_name))
     }
 
-    /// **Exported for test purposes.**
-    ///
-    /// Gets the number of recorded errors for the given metric and error type.
-    ///
-    /// # Arguments
-    ///
-    /// * `error` - The type of error
-    /// * `ping_name` - represents the optional name of the ping to retrieve the
-    ///   metric for. Defaults to the first value in `send_in_pings`.
-    ///
-    /// # Returns
-    ///
-    /// The number of errors reported.
     fn test_get_num_recorded_errors<'a, S: Into<Option<&'a str>>>(
         &self,
         error: ErrorType,
