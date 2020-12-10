@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.8.0...main)
 
+* Rust
+  * Introduce the String List metric type in the RLB. [#1380](https://github.com/mozilla/glean/pull/1380)
+
 # v33.8.0 (2020-12-10)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.7.0...v33.8.0)

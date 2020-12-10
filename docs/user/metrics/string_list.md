@@ -150,6 +150,40 @@ Assert.Equal(
 ```
 </div>
 
+<div data-lang="Rust" class="tab">
+
+```Rust
+use glean_metrics;
+
+// Add them one at a time
+engines.iter().map(|x|
+  search::engines.add(x)
+);
+
+// Set them in one go
+search::engines.set(engines)
+```
+
+There are test APIs available too:
+
+```Rust
+use glean::ErrorType;
+use glean_metrics;
+
+// Was anything recorded?
+assert!(search::engines.test_get_value(None).is_some());
+// Does it have the expected value?
+// IMPORTANT: It may have been truncated -- see "Limits" below
+assert!(vec!["Google", "DuckDuckGo"], search::engines.tets_get_value());
+// Were any of the values too long, and thus an error was recorded?
+assertEquals(
+    1, 
+    search::engines.test_get_num_recorded_errors(ErrorType::InvalidValue)
+);
+```
+
+</div>
+
 {{#include ../../tab_footer.md}}
 
 ## Limits
@@ -172,3 +206,4 @@ Assert.Equal(
 
 * [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-string-list-metric-type/index.html)
 * [Python API docs](../../../python/glean/metrics/string_list.html)
+* [Rust API docs](../../../docs/glean/private/struct.StringListMetric.html)
