@@ -41,7 +41,7 @@ from typing import Callable, Dict, List, Tuple
 # main thread.
 
 
-log = logging.getLogger(__name__)
+log = logging.getLogger("glean")
 
 
 def _is_multiprocessing_subprocess():

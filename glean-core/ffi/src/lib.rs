@@ -148,7 +148,7 @@ pub extern "C" fn glean_enable_logging() {
                     .with_min_level(log::Level::Debug)
                     .with_tag("libglean_ffi"),
             );
-            log::debug!("Android logging should be hooked up!")
+            log::trace!("Android logging should be hooked up!")
         });
     }
 
@@ -165,11 +165,11 @@ pub extern "C" fn glean_enable_logging() {
         let logger = oslog::OsLogger::new("org.mozilla.glean", "glean_core").level_filter(level);
 
         match logger.init() {
-            Ok(_) => log::debug!("os_log should be hooked up!"),
+            Ok(_) => log::trace!("os_log should be hooked up!"),
             // Please note that this is only expected to fail during unit tests,
             // where the logger might have already been initialized by a previous
             // test. So it's fine to print with the "logger".
-            Err(_) => log::debug!("os_log was already initialized"),
+            Err(_) => log::warn!("os_log was already initialized"),
         };
     }
 
@@ -179,11 +179,11 @@ pub extern "C" fn glean_enable_logging() {
     #[cfg(all(not(target_os = "android"), not(target_os = "ios")))]
     {
         match env_logger::try_init() {
-            Ok(_) => log::debug!("stdout logging should be hooked up!"),
+            Ok(_) => log::trace!("stdout logging should be hooked up!"),
             // Please note that this is only expected to fail during unit tests,
             // where the logger might have already been initialized by a previous
             // test. So it's fine to print with the "logger".
-            Err(_) => log::debug!("stdout was already initialized"),
+            Err(_) => log::warn!("stdout logging was already initialized"),
         };
     }
 }

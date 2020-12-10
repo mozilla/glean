@@ -50,8 +50,7 @@ def setup_logging():
 
     reader = os.fdopen(r, encoding="utf-8")
 
-    name = "glean.rust_core"
-    log = logging.getLogger(name)
+    log = logging.getLogger("glean")
     level_map = {
         "CRITICAL": logging.CRITICAL,
         "ERROR": logging.ERROR,

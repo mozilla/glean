@@ -7,7 +7,6 @@ A base class for ping uploaders.
 """
 
 
-import logging
 from typing import List, Tuple, TYPE_CHECKING
 
 
@@ -16,9 +15,6 @@ from . import ping_uploader
 
 if TYPE_CHECKING:
     from glean.config import Configuration
-
-
-log = logging.getLogger(__name__)
 
 
 class BaseUploader(ping_uploader.PingUploader):

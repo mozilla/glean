@@ -15,6 +15,22 @@ from setuptools.command.install import install
 import wheel.bdist_wheel
 
 
+# Workaround for the system-installed setuptools on macOS. That version wants
+# to write bytecode files to locations that violate the sandbox, with this
+# message:
+#
+#   The package setup script has attempted to modify files on your system
+#   that are not within the EasyInstall build area, and has been aborted.
+#
+#   This package cannot be safely installed by EasyInstall, and may not
+#   support alternate installation locations even if you run its setup
+#   script by hand.  Please inform the package's author and the EasyInstall
+#   maintainers to find out if a fix or workaround is available.
+#
+# See https://bugzilla.mozilla.org/1679370
+sys.dont_write_bytecode = True
+
+
 platform = sys.platform
 
 if os.environ.get("GLEAN_PYTHON_MINGW_I686_BUILD"):
@@ -49,7 +65,7 @@ with (SRC_ROOT / "CHANGELOG.md").open() as history_file:
     history = history_file.read()
 
 # glean version. Automatically updated by the bin/prepare_release.sh script
-version = "33.7.0"
+version = "33.8.0"
 
 requirements = [
     "cffi>=1",
