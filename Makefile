@@ -182,6 +182,19 @@ cbindgen: ## Regenerate the FFI header file
 	cp glean-core/ffi/glean.h glean-core/ios/Glean/GleanFfi.h
 .PHONY: cbindgen
 
+bindgen:  ## Regenerate ffi-sys code
+	bindgen \
+		--dynamic-loading GleanSys \
+		--output glean-core/ffi-sys/src/bindings.rs \
+		--no-layout-tests \
+		--no-prepend-enum-name \
+		--default-enum-style=rust \
+		--blacklist-type Lifetime \
+		--blacklist-type MemoryUnit \
+		--blacklist-type TimeUnit \
+		--blacklist-type FfiPingUploadTask_Tag \
+		glean-core/ffi/glean.h
+
 rust-coverage: export CARGO_INCREMENTAL=0
 rust-coverage: export RUSTFLAGS=-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Zno-landing-pads
 rust-coverage: export RUSTUP_TOOLCHAIN=nightly

@@ -1,0 +1,19 @@
+[package]
+name = "glean-ffi-sys"
+version = "0.1.0"
+authors = ["Jan-Erik Rediger <jrediger@mozilla.com>"]
+edition = "2018"
+
+[dependencies]
+once_cell = "1.5.2"
+ffi-support = "0.4.2"
+libc = "0.2.81"
+lazy_static = "1.4.0"
+libloading = "0.6"
+
+[dev-dependencies]
+cfg-if = "1"
+
+[dependencies.glean-core]
+path = ".."
+version = "34.1.0"
