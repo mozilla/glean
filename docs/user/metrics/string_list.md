@@ -156,7 +156,7 @@ Assert.Equal(
 use glean_metrics;
 
 // Add them one at a time
-engines.iter().map(|x|
+engines.iter().for_each(|x|
   search::engines.add(x)
 );
 
@@ -174,10 +174,13 @@ use glean_metrics;
 assert!(search::engines.test_get_value(None).is_some());
 // Does it have the expected value?
 // IMPORTANT: It may have been truncated -- see "Limits" below
-assert!(vec!["Google", "DuckDuckGo"], search::engines.tets_get_value());
+assert_eq!(
+    vec!["Google".to_string(), "DuckDuckGo".to_string()], 
+    search::engines.test_get_value(None)
+);
 // Were any of the values too long, and thus an error was recorded?
-assertEquals(
-    1, 
+assert_eq!(
+    0, 
     search::engines.test_get_num_recorded_errors(ErrorType::InvalidValue)
 );
 ```

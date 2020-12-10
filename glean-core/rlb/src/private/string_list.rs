@@ -66,3 +66,43 @@ impl glean_core::traits::StringList for StringListMetric {
         })
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use crate::common_test::{lock_test, new_glean};
+    use crate::{CommonMetricData, ErrorType};
+
+    #[test]
+    fn string_list_metric_docs() {
+        let _lock = lock_test();
+        let _t = new_glean(None, true);
+
+        let engine_metric: StringListMetric = StringListMetric::new(CommonMetricData {
+            name: "event".into(),
+            category: "test".into(),
+            send_in_pings: vec!["test1".into()],
+            ..Default::default()
+        });
+
+        let engines: Vec<String> = vec!["Google".to_string(), "DuckDuckGo".to_string()];
+
+        // Add them one at a time
+        engines.iter().for_each(|x| engine_metric.add(x));
+
+        // Set them in one go
+        engine_metric.set(engines);
+
+        assert!(engine_metric.test_get_value(None).is_some());
+
+        assert_eq!(
+            vec!["Google".to_string(), "DuckDuckGo".to_string()],
+            engine_metric.test_get_value(None).unwrap()
+        );
+
+        assert_eq!(
+            0,
+            engine_metric.test_get_num_recorded_errors(ErrorType::InvalidValue, None)
+        );
+    }
+}
