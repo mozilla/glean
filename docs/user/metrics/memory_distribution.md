@@ -177,6 +177,37 @@ Assert.Equal(1, Memory.heapAllocated.TestGetNumRecordedErrors(ErrorType.InvalidV
 
 </div>
 
+<div data-lang="Rust" class="tab">
+
+```rust
+use glean_metrics;
+
+fn allocate_memory(bytes: u64) {
+    memory::heap_allocated.accumulate(bytes / 1024);
+}
+```
+
+There are test APIs available too:
+
+```rust
+use glean::{DistributionData, ErrorType};
+use glean_metrics;
+
+// Was anything recorded?
+assert!(memory::heap_allocated.test_get_value(None).is_some());
+
+// Is the sum as expected?
+let data = memory::heap_allocated.test_get_value(None).unwrap();
+assert!(11, data.sum)
+// The actual buckets and counts live in `data.values`.
+
+// Were there any errors?
+assert!(1, memory::heap_allocated.test_get_num_recorded_errors(InvalidValue));
+
+```
+
+</div>
+
 {{#include ../../tab_footer.md}}
 
 ## Limits
@@ -197,6 +228,7 @@ Assert.Equal(1, Memory.heapAllocated.TestGetNumRecordedErrors(ErrorType.InvalidV
 * [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-memory-distribution-metric-type/index.html)
 * [Swift API docs](../../../swift/Classes/MemoryDistributionMetricType.html)
 * [Python API docs](../../../python/glean/metrics/timing_distribution.html)
+* [Rust API docs](../../../docs/glean/private/struct.MemoryDistributionMetric.html)
 
 ## Simulator
 

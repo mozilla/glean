@@ -1,5 +1,8 @@
 # Unreleased changes
 
+* Rust
+  * Introduce the Memory Distribution metric type in the RLB. [#1376](https://github.com/mozilla/glean/pull/1376)
+
 [Full changelog](https://github.com/mozilla/glean/compare/v33.7.0...main)
 
 * Rust
