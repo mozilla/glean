@@ -52,7 +52,6 @@ internal inline fun <reified W : Worker> buildWorkRequest(tag: String): OneTimeW
 class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(context, params) {
     companion object {
         internal const val PING_WORKER_TAG = "mozac_service_glean_ping_upload_worker"
-        internal const val THROTTLED_BACKOFF_MS = 60_000L
 
         /**
          * Function to aid in properly enqueuing the worker in [WorkManager]
@@ -118,7 +117,7 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
                     // Process the upload response
                     LibGleanFFI.INSTANCE.glean_process_ping_upload_response(incomingTask, result)
                 }
-                PingUploadTask.Wait -> SystemClock.sleep(THROTTLED_BACKOFF_MS)
+                is PingUploadTask.Wait -> SystemClock.sleep(action.time)
                 PingUploadTask.Done -> return Result.success()
             }
         } while (true)

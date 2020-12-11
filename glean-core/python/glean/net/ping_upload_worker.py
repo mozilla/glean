@@ -23,8 +23,6 @@ log = logging.getLogger("glean")
 
 
 class PingUploadWorker:
-    _throttle_backoff_time_s = 60
-
     @classmethod
     def process(cls):
         """
@@ -154,7 +152,7 @@ def _process(
                 incoming_task, upload_result.to_ffi()
             )
         elif tag == UploadTaskTag.WAIT:
-            time.sleep(1)
+            time.sleep(incoming_task.wait._0 / 1000)
         elif tag == UploadTaskTag.DONE:
             return True
 
