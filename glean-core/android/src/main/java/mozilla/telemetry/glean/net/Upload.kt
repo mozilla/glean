@@ -45,9 +45,9 @@ internal class UploadBody(
 
 internal open class FfiPingUploadTask(
     // NOTE: We need to provide defaults here, so that JNA can create this object.
-        @JvmField var tag: Byte = UploadTaskTag.Done.ordinal.toByte(),
-        @JvmField var upload: UploadBody = UploadBody(),
-        @JvmField var time: Long = 60_000
+    @JvmField var tag: Byte = UploadTaskTag.Done.ordinal.toByte(),
+    @JvmField var upload: UploadBody = UploadBody(),
+    @JvmField var time: Long = 60_000
 ) : Union() {
     class ByReference : FfiPingUploadTask(), Structure.ByReference
 
@@ -118,7 +118,7 @@ internal sealed class PingUploadTask {
      * A flag signaling that the pending pings directories are not done being processed,
      * thus the requester should wait and come back later.
      */
-    data class Wait(val time:Long) : PingUploadTask()
+    data class Wait(val time: Long) : PingUploadTask()
 
     /**
      * A flag signaling that requester doesn't need to request any more upload tasks at this moment.

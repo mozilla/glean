@@ -837,10 +837,9 @@ mod test {
             PingUploadTask::Wait(time) => {
                 // Wait for the uploading window to reset
                 thread::sleep(Duration::from_millis(time));
-            },
-            _ => panic!("Expected upload manager to return a wait task!")
+            }
+            _ => panic!("Expected upload manager to return a wait task!"),
         };
-
 
         let task = upload_manager.get_upload_task(&glean, false);
         assert!(task.is_upload());
@@ -1548,8 +1547,8 @@ mod test {
         match upload_manager.get_upload_task(&glean, false) {
             PingUploadTask::Wait(time) => {
                 assert_eq!(time, WAIT_TIME_FOR_PING_PROCESSING);
-            },
-            _ => panic!("Expected upload manager to return a wait task!")
+            }
+            _ => panic!("Expected upload manager to return a wait task!"),
         };
     }
 }
