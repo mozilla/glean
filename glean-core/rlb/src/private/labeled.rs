@@ -124,35 +124,11 @@ impl<T> glean_core::traits::Labeled<T> for LabeledMetric<T>
 where
     T: AllowLabeled + Clone,
 {
-    /// Gets a specific metric for a given label.
-    ///
-    /// If a set of acceptable labels were specified in the `metrics.yaml` file,
-    /// and the given label is not in the set, it will be recorded under the special `OTHER_LABEL` label.
-    ///
-    /// If a set of acceptable labels was not specified in the `metrics.yaml` file,
-    /// only the first 16 unique labels will be used.
-    /// After that, any additional labels will be recorded under the special `OTHER_LABEL` label.
-    ///
-    /// Labels must be `snake_case` and less than 30 characters.
-    /// If an invalid label is used, the metric will be recorded in the special `OTHER_LABEL` label.
     fn get(&self, label: &str) -> T {
         let inner = self.0.get(label);
         T::from_inner(inner)
     }
 
-    /// **Exported for test purposes.**
-    ///
-    /// Gets the number of recorded errors for the given metric and error type.
-    ///
-    /// # Arguments
-    ///
-    /// * `error` - The type of error
-    /// * `ping_name` - represents the optional name of the ping to retrieve the
-    ///   metric for. Defaults to the first value in `send_in_pings`.
-    ///
-    /// # Returns
-    ///
-    /// The number of errors reported.
     fn test_get_num_recorded_errors<'a, S: Into<Option<&'a str>>>(
         &self,
         error: ErrorType,
