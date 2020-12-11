@@ -48,7 +48,6 @@ class PingUploadWorker:
                 Glean._data_dir,
                 Glean._application_id,
                 Glean._configuration,
-                cls._throttle_backoff_time_s,
             ),
         )
 
@@ -100,9 +99,7 @@ def _parse_ping_headers(
     return headers
 
 
-def _process(
-    data_dir: Path, application_id: str, configuration, throttle_backoff_time_s: int
-) -> bool:
+def _process(data_dir: Path, application_id: str, configuration) -> bool:
 
     # Import here to avoid cyclical import
     from ..glean import Glean
