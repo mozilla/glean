@@ -779,10 +779,8 @@ mod test {
 
         // Try and get the next request.
         // Verify request was returned
-        match upload_manager.get_upload_task(&glean, false) {
-            PingUploadTask::Upload(_) => {}
-            _ => panic!("Expected upload manager to return the next request!"),
-        }
+        let task = upload_manager.get_upload_task(&glean, false);
+        assert!(task.is_upload());
     }
 
     #[test]
@@ -799,10 +797,8 @@ mod test {
 
         // Verify a request is returned for each submitted ping
         for _ in 0..n {
-            match upload_manager.get_upload_task(&glean, false) {
-                PingUploadTask::Upload(_) => {}
-                _ => panic!("Expected upload manager to return the next request!"),
-            }
+            let task = upload_manager.get_upload_task(&glean, false);
+            assert!(task.is_upload());
         }
 
         // Verify that after all requests are returned, none are left
@@ -819,9 +815,8 @@ mod test {
         let mut upload_manager = PingUploadManager::no_policy(dir.path());
 
         // Add a rate limiter to the upload mangager with max of 10 pings every 3 seconds.
-        let secs_per_interval = 3;
         let max_pings_per_interval = 10;
-        upload_manager.set_rate_limiter(secs_per_interval, 10);
+        upload_manager.set_rate_limiter(3, 10);
 
         // Enqueue the max number of pings allowed per uploading window
         for _ in 0..max_pings_per_interval {
@@ -830,26 +825,25 @@ mod test {
 
         // Verify a request is returned for each submitted ping
         for _ in 0..max_pings_per_interval {
-            match upload_manager.get_upload_task(&glean, false) {
-                PingUploadTask::Upload(_) => {}
-                _ => panic!("Expected upload manager to return the next request!"),
-            }
+            let task = upload_manager.get_upload_task(&glean, false);
+            assert!(task.is_upload());
         }
 
         // Enqueue just one more ping
         upload_manager.enqueue_ping(&glean, &Uuid::new_v4().to_string(), PATH, "", None);
 
         // Verify that we are indeed told to wait because we are at capacity
-        let task = upload_manager.get_upload_task(&glean, false);
-        assert!(task.is_wait());
-
-        // Wait for the uploading window to reset
-        thread::sleep(Duration::from_secs(secs_per_interval));
-
         match upload_manager.get_upload_task(&glean, false) {
-            PingUploadTask::Upload(_) => {}
-            _ => panic!("Expected upload manager to return the next request!"),
-        }
+            PingUploadTask::Wait(time) => {
+                // Wait for the uploading window to reset
+                thread::sleep(Duration::from_millis(time));
+            },
+            _ => panic!("Expected upload manager to return a wait task!")
+        };
+
+
+        let task = upload_manager.get_upload_task(&glean, false);
+        assert!(task.is_upload());
     }
 
     #[test]
@@ -925,10 +919,8 @@ mod test {
 
         // Verify the requests were properly enqueued
         for _ in 0..n {
-            match upload_manager.get_upload_task(&glean, false) {
-                PingUploadTask::Upload(_) => {}
-                _ => panic!("Expected upload manager to return the next request!"),
-            }
+            let task = upload_manager.get_upload_task(&glean, false);
+            assert!(task.is_upload());
         }
 
         // Verify that after all requests are returned, none are left
@@ -1143,10 +1135,8 @@ mod test {
         upload_manager.enqueue_ping(&glean, &doc_id, &path, "", None);
 
         // Get a task once
-        match upload_manager.get_upload_task(&glean, false) {
-            PingUploadTask::Upload(_) => {}
-            _ => panic!("Expected upload manager to return the next request!"),
-        }
+        let task = upload_manager.get_upload_task(&glean, false);
+        assert!(task.is_upload());
 
         // There should be no more queued tasks
         assert_eq!(
@@ -1198,10 +1188,8 @@ mod test {
 
         // Verify all requests are returned when we try again.
         for _ in 0..n {
-            match upload_manager.get_upload_task(&glean, false) {
-                PingUploadTask::Upload(_) => {}
-                _ => panic!("Expected upload manager to return the next request!"),
-            }
+            let task = upload_manager.get_upload_task(&glean, false);
+            assert!(task.is_upload());
         }
     }
 
@@ -1543,15 +1531,25 @@ mod test {
         thread::sleep(Duration::from_secs(secs_per_interval));
 
         // Check that we are allowed again to get pings.
-        match upload_manager.get_upload_task(&glean, false) {
-            PingUploadTask::Upload(_) => {}
-            _ => panic!("Expected upload manager to return the next request!"),
-        }
+        let task = upload_manager.get_upload_task(&glean, false);
+        assert!(task.is_upload());
 
         // And once we are done we don't need to wait anymore.
         assert_eq!(
             upload_manager.get_upload_task(&glean, false),
             PingUploadTask::Done
         );
+    }
+
+    #[test]
+    fn wait_task_contains_expected_wait_time_when_pending_pings_dir_not_processed_yet() {
+        let (glean, dir) = new_glean(None);
+        let upload_manager = PingUploadManager::new(dir.path(), "test");
+        match upload_manager.get_upload_task(&glean, false) {
+            PingUploadTask::Wait(time) => {
+                assert_eq!(time, WAIT_TIME_FOR_PING_PROCESSING);
+            },
+            _ => panic!("Expected upload manager to return a wait task!")
+        };
     }
 }
