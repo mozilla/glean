@@ -188,6 +188,7 @@ impl TimespanMetric {
             glean.storage(),
             storage_name,
             &self.meta.identifier(glean),
+            self.meta.lifetime,
         ) {
             Some(Metric::Timespan(time, time_unit)) => Some(time_unit.duration_convert(time)),
             _ => None,
