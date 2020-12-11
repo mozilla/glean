@@ -32,6 +32,8 @@ mod policy;
 mod request;
 mod result;
 
+const WAIT_TIME_FOR_PING_PROCESSING: u64 = 500; // in milliseconds
+
 #[derive(Debug)]
 struct RateLimiter {
     /// The instant the current interval has started.
@@ -50,7 +52,10 @@ enum RateLimiterState {
     /// The RateLimiter has not reached the maximum count and is still incrementing.
     Incrementing,
     /// The RateLimiter has reached the maximum count for the  current interval.
-    Throttled,
+    ///
+    /// This variant contains the remaining time (in milliseconds)
+    /// until the rate limiter is not throttled anymore.
+    Throttled(u64),
 }
 
 impl RateLimiter {
@@ -68,6 +73,10 @@ impl RateLimiter {
         self.count = 0;
     }
 
+    fn elapsed(&self) -> Duration {
+        self.started.unwrap().elapsed()
+    }
+
     // The counter should reset if
     //
     // 1. It has never started;
@@ -79,8 +88,7 @@ impl RateLimiter {
         }
 
         // Safe unwrap, we already stated that `self.started` is not `None` above.
-        let elapsed = self.started.unwrap().elapsed();
-        if elapsed > self.interval {
+        if self.elapsed() > self.interval {
             return true;
         }
 
@@ -98,7 +106,12 @@ impl RateLimiter {
         }
 
         if self.count == self.max_count {
-            return RateLimiterState::Throttled;
+            let remaining = self.interval.as_millis() - self.elapsed().as_millis();
+            return RateLimiterState::Throttled(
+                remaining
+                    .try_into()
+                    .unwrap_or(self.interval.as_secs() * 1000),
+            );
         }
 
         self.count += 1;
@@ -141,18 +154,18 @@ pub enum PingUploadTask {
 impl PingUploadTask {
     /// Whether the current task is an upload task.
     pub fn is_upload(&self) -> bool {
-        match self {
-            PingUploadTask::Upload(_) => true,
-            _ => false
+        if let PingUploadTask::Upload(_) = self {
+            return true;
         }
+        false
     }
 
     /// Whether the current task is wait task.
     pub fn is_wait(&self) -> bool {
-        match self {
-            PingUploadTask::Wait(_) => true,
-            _ => false
+        if let PingUploadTask::Wait(_) = self {
+            return true;
         }
+        false
     }
 }
 
@@ -508,7 +521,7 @@ impl PingUploadManager {
             log::info!(
                 "Tried getting an upload task, but processing is ongoing. Will come back later."
             );
-            return wait_or_done(60 * 1000);
+            return wait_or_done(WAIT_TIME_FOR_PING_PROCESSING);
         }
 
         // This is a no-op in case there are no cached pings.
@@ -531,11 +544,11 @@ impl PingUploadManager {
                     let mut rate_limiter = rate_limiter
                         .write()
                         .expect("Can't write to the rate limiter.");
-                    if rate_limiter.get_state() == RateLimiterState::Throttled {
+                    if let RateLimiterState::Throttled(remaining) = rate_limiter.get_state() {
                         log::info!(
                             "Tried getting an upload task, but we are throttled at the moment."
                         );
-                        return wait_or_done(60 * 1000);
+                        return wait_or_done(remaining);
                     }
                 }
 
