@@ -12,7 +12,7 @@ X-Debug-ID: <tag>
 
 See [Debugging products using the Glean SDK](../../../user/debugging/index.md) for detailed information how to use this mechanism in applications.
 
-[debug-ping-viewer]: https://glean-debug-view-dev-237806.firebaseapp.com/
+[debug-ping-viewer]: https://debug-ping-preview.firebaseapp.com/
 
 ---
 
