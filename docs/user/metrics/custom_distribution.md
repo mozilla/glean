@@ -48,6 +48,10 @@ graphics:
 
 Now you can use the custom distribution from the application's code.
 
+{{#include ../../tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
+
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.Graphics
 
@@ -74,6 +78,37 @@ assertEquals(2L, snapshot.count())
 /// Did the metric receive a negative value?
 assertEquals(1, Graphics.checkerboardPeak.testGetNumRecordedErrors(ErrorType.InvalidValue))
 ```
+
+</div>
+
+<div data-lang="Rust" class="tab">
+
+```rust
+use glean_metrics;
+
+graphics::checkerboard_peak.accumulate_samples_signed(vec![23]);
+```
+
+There are test APIs available too.
+
+```rust
+use glean::ErrorType;
+use glean_metrics;
+
+// Was anything recorded?
+assert!(graphics::checkerboard_peak.test_get_value(None).is_some());
+// Does it have the expected value?
+assert_eq!(23, graphics::checkerboard_peak.test_get_value(None).unwrap().sum);
+
+// Were any of the values negative and thus caused an error to be recorded?
+assert_eq!(
+    0,
+    graphics::checkerboard_peak.test_get_num_recorded_errors(ErrorType::InvalidValue));
+```
+
+</div>
+
+{{#include ../../tab_footer.md}}
 
 ## Limits
 
