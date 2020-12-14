@@ -163,6 +163,7 @@ impl DatetimeMetric {
             glean.storage(),
             storage_name,
             &self.meta.identifier(glean),
+            self.meta.lifetime,
         ) {
             Some(Metric::Datetime(d, tu)) => {
                 // The string version of the test function truncates using string
