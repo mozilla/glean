@@ -290,9 +290,15 @@ typedef struct {
   char *headers;
 } FfiPingUploadTask_Upload_Body;
 
+typedef struct {
+  FfiPingUploadTask_Tag tag;
+  uint64_t _0;
+} FfiPingUploadTask_Wait_Body;
+
 typedef union {
   FfiPingUploadTask_Tag tag;
   FfiPingUploadTask_Upload_Body upload;
+  FfiPingUploadTask_Wait_Body wait;
 } FfiPingUploadTask;
 
 typedef const int64_t *RawInt64Array;

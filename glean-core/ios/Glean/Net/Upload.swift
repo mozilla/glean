@@ -20,6 +20,7 @@ import Foundation
 ///
 /// typedef struct {
 ///  Task_Tag tag;
+///  uint64_t _0;
 /// } Task_Wait;
 ///
 /// typedef union {
@@ -69,7 +70,7 @@ enum PingUploadTask {
     case upload(PingRequest)
 
     /// Wait, then ask for the next task.
-    case wait
+    case wait(UInt64)
 
     /// Work is finished.
     case done
@@ -95,7 +96,7 @@ extension FfiPingUploadTask {
         case FfiPingUploadTask_Upload.rawValue:
             return .upload(self.upload.toPingRequest())
         case FfiPingUploadTask_Wait.rawValue:
-            return .wait
+            return .wait(self.wait._0)
         case FfiPingUploadTask_Done.rawValue:
             return .done
         default:

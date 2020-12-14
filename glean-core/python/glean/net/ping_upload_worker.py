@@ -23,8 +23,6 @@ log = logging.getLogger("glean")
 
 
 class PingUploadWorker:
-    _throttle_backoff_time_s = 60
-
     @classmethod
     def process(cls):
         """
@@ -50,7 +48,6 @@ class PingUploadWorker:
                 Glean._data_dir,
                 Glean._application_id,
                 Glean._configuration,
-                cls._throttle_backoff_time_s,
             ),
         )
 
@@ -102,9 +99,7 @@ def _parse_ping_headers(
     return headers
 
 
-def _process(
-    data_dir: Path, application_id: str, configuration, throttle_backoff_time_s: int
-) -> bool:
+def _process(data_dir: Path, application_id: str, configuration) -> bool:
 
     # Import here to avoid cyclical import
     from ..glean import Glean
@@ -154,7 +149,7 @@ def _process(
                 incoming_task, upload_result.to_ffi()
             )
         elif tag == UploadTaskTag.WAIT:
-            time.sleep(1)
+            time.sleep(incoming_task.wait._0 / 1000)
         elif tag == UploadTaskTag.DONE:
             return True
 
