@@ -154,18 +154,12 @@ pub enum PingUploadTask {
 impl PingUploadTask {
     /// Whether the current task is an upload task.
     pub fn is_upload(&self) -> bool {
-        if let PingUploadTask::Upload(_) = self {
-            return true;
-        }
-        false
+        matches!(self, PingUploadTask::Upload(_))
     }
 
     /// Whether the current task is wait task.
     pub fn is_wait(&self) -> bool {
-        if let PingUploadTask::Wait(_) = self {
-            return true;
-        }
-        false
+        matches!(self, PingUploadTask::Wait(_))
     }
 }
 
