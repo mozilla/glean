@@ -32,7 +32,7 @@ mod policy;
 mod request;
 mod result;
 
-const WAIT_TIME_FOR_PING_PROCESSING: u64 = 500; // in milliseconds
+const WAIT_TIME_FOR_PING_PROCESSING: u64 = 1000; // in milliseconds
 
 #[derive(Debug)]
 struct RateLimiter {
@@ -106,6 +106,8 @@ impl RateLimiter {
         }
 
         if self.count == self.max_count {
+            // Note that `remining` can't be a negative number because we just called `reset`,
+            // which will check if it is and reset if so.
             let remaining = self.interval.as_millis() - self.elapsed().as_millis();
             return RateLimiterState::Throttled(
                 remaining

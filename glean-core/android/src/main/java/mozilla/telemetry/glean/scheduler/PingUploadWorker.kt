@@ -118,7 +118,7 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
                     LibGleanFFI.INSTANCE.glean_process_ping_upload_response(incomingTask, result)
                 }
                 is PingUploadTask.Wait -> SystemClock.sleep(action.time)
-                PingUploadTask.Done -> return Result.success()
+                is PingUploadTask.Done -> return Result.success()
             }
         } while (true)
         // Limits are enforced by glean-core to avoid an inifinite loop here.
