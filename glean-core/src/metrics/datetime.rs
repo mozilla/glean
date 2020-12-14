@@ -136,7 +136,8 @@ impl DatetimeMetric {
         match StorageManager.snapshot_metric(
             glean.storage(),
             storage_name,
-            &self.meta().identifier(glean),
+            &self.meta.identifier(glean),
+            self.meta.lifetime,
         ) {
             Some(Metric::Datetime(dt, _)) => Some(dt),
             _ => None,
@@ -155,6 +156,7 @@ impl DatetimeMetric {
             glean.storage(),
             storage_name,
             &self.meta.identifier(glean),
+            self.meta.lifetime,
         ) {
             Some(Metric::Datetime(d, tu)) => Some(get_iso_time_string(d, tu)),
             _ => None,

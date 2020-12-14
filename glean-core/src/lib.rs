@@ -863,6 +863,7 @@ impl Glean {
             self.storage(),
             INTERNAL_STORAGE,
             &dirty_bit_metric.meta().identifier(self),
+            dirty_bit_metric.meta().lifetime,
         ) {
             Some(Metric::Boolean(b)) => b,
             _ => false,
