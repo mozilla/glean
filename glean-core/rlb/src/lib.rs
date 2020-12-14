@@ -92,6 +92,9 @@ static PRE_INIT_DEBUG_VIEW_TAG: OnceCell<Mutex<String>> = OnceCell::new();
 static PRE_INIT_LOG_PINGS: AtomicBool = AtomicBool::new(false);
 static PRE_INIT_SOURCE_TAGS: OnceCell<Mutex<Vec<String>>> = OnceCell::new();
 
+/// Keep track of pings registered before Glean is initialized.
+static PRE_INIT_PING_REGISTRATION: OnceCell<Mutex<Vec<private::PingType>>> = OnceCell::new();
+
 /// A global singleton storing additional state for Glean.
 ///
 /// Requires a Mutex, because in tests we can actual reset this.
@@ -251,8 +254,16 @@ pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) {
                 glean.register_ping_type(&glean_metrics::pings::metrics.ping_type);
                 glean.register_ping_type(&glean_metrics::pings::events.ping_type);
 
-                // TODO: perform registration of pings that were attempted to be
-                // registered before init. See bug 1673850.
+                // Perform registration of pings that were attempted to be
+                // registered before init.
+                if let Some(tags) = PRE_INIT_PING_REGISTRATION.get() {
+                    let lock = tags.try_lock();
+                    if let Ok(pings) = lock {
+                        for ping in &*pings {
+                            glean.register_ping_type(&ping.ping_type);
+                        }
+                    }
+                }
 
                 // If this is the first time ever the Glean SDK runs, make sure to set
                 // some initial core metrics in case we need to generate early pings.
@@ -422,6 +433,14 @@ pub fn register_ping_type(ping: &private::PingType) {
                 glean.register_ping_type(&ping.ping_type);
             })
         })
+    } else {
+        // We need to keep track of pings, so they get re-registered after a reset or
+        // if ping registration is attempted before Glean initializes.
+        // This state is kept across Glean resets, which should only ever happen in test mode.
+        // It's a set and keeping them around forever should not have much of an impact.
+        let m = PRE_INIT_PING_REGISTRATION.get_or_init(Default::default);
+        let mut lock = m.lock().unwrap();
+        lock.push(ping.clone());
     }
 }
 
