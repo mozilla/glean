@@ -45,7 +45,7 @@ impl glean_core::traits::Uuid for UuidMetric {
     }
 
     fn test_get_value<'a, S: Into<Option<&'a str>>>(&self, ping_name: S) -> Option<uuid::Uuid> {
-        dispatcher::block_on_queue();
+        crate::block_on_dispatcher();
 
         let queried_ping_name = ping_name
             .into()
@@ -59,7 +59,7 @@ impl glean_core::traits::Uuid for UuidMetric {
         error: ErrorType,
         ping_name: S,
     ) -> i32 {
-        dispatcher::block_on_queue();
+        crate::block_on_dispatcher();
 
         crate::with_glean_mut(|glean| {
             glean_core::test_get_num_recorded_errors(&glean, self.0.meta(), error, ping_name.into())

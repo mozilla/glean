@@ -48,7 +48,7 @@ fn send_a_ping() {
     };
 
     let _t = new_glean(Some(cfg), true);
-    crate::dispatcher::block_on_queue();
+    crate::block_on_dispatcher();
 
     // Define a new ping and submit it.
     const PING_NAME: &str = "test-ping";
@@ -65,7 +65,7 @@ fn disabling_upload_disables_metrics_recording() {
     let _lock = lock_test();
 
     let _t = new_glean(None, true);
-    crate::dispatcher::block_on_queue();
+    crate::block_on_dispatcher();
 
     let metric = BooleanMetric::new(CommonMetricData {
         name: "bool_metric".into(),
@@ -159,7 +159,7 @@ fn test_experiments_recording_before_glean_inits() {
         ClientInfoMetrics::unknown(),
         false,
     );
-    crate::dispatcher::block_on_queue();
+    crate::block_on_dispatcher();
 
     assert!(test_is_experiment_active(
         "experiment_set_preinit".to_string()
@@ -269,7 +269,7 @@ fn initializing_twice_is_a_noop() {
         true,
     );
 
-    dispatcher::block_on_queue();
+    crate::block_on_dispatcher();
 
     test_reset_glean(
         Configuration {
@@ -400,7 +400,7 @@ fn setting_debug_view_tag_before_initialization_should_not_crash() {
     };
 
     let _t = new_glean(Some(cfg), true);
-    crate::dispatcher::block_on_queue();
+    crate::block_on_dispatcher();
 
     // Submit a baseline ping.
     submit_ping_by_name("baseline", Some("background"));
@@ -459,7 +459,7 @@ fn setting_source_tags_before_initialization_should_not_crash() {
     };
 
     let _t = new_glean(Some(cfg), true);
-    crate::dispatcher::block_on_queue();
+    crate::block_on_dispatcher();
 
     // Submit a baseline ping.
     submit_ping_by_name("baseline", Some("background"));
@@ -480,4 +480,38 @@ fn setting_source_tags_before_initialization_should_not_crash() {
 #[ignore] // TODO: To be done in bug 1673672.
 fn flipping_upload_enabled_respects_order_of_events() {
     todo!()
+}
+
+#[test]
+fn blocking_before_init_panics() {
+    let _lock = lock_test();
+
+    // We need to ensure Glean is uninitialized.
+    destroy_glean(true);
+    assert!(!was_initialize_called());
+
+    let metric = BooleanMetric::new(CommonMetricData {
+        name: "bool_metric".into(),
+        category: "test".into(),
+        send_in_pings: vec!["store1".into()],
+        lifetime: Lifetime::Application,
+        disabled: false,
+        dynamic_label: None,
+    });
+
+    // It would be nice to just use `#[should_panic]` on this test method,
+    // but then we poison the `lock_test` lock and thus breaks other tests.
+    // Instead we catch the panic here.
+    let result = std::panic::catch_unwind(|| {
+        // Try to get a value. This should panic.
+        let _ = metric.test_get_value("store1");
+    });
+    let err = result.unwrap_err();
+
+    assert!(err.is::<&str>());
+    let err = err.downcast_ref::<&str>().unwrap();
+    assert!(
+        err.contains("initialize was never called"),
+        "Got the wrong panic message"
+    );
 }
