@@ -49,6 +49,7 @@ use crate::debug::DebugOptions;
 pub use crate::error::{Error, ErrorKind, Result};
 pub use crate::error_recording::{test_get_num_recorded_errors, ErrorType};
 use crate::event_database::EventDatabase;
+pub use crate::histogram::HistogramType;
 use crate::internal_metrics::{CoreMetrics, DatabaseMetrics};
 use crate::internal_pings::InternalPings;
 use crate::metrics::{Metric, MetricType, PingType};
