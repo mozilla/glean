@@ -2,7 +2,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+use crate::private::PingType;
 use crate::private::{BooleanMetric, CounterMetric};
+use once_cell::sync::Lazy;
 use std::path::PathBuf;
 
 use super::*;
@@ -483,35 +485,61 @@ fn flipping_upload_enabled_respects_order_of_events() {
 }
 
 #[test]
-fn blocking_before_init_panics() {
+fn registering_pings_before_init_must_work() {
     let _lock = lock_test();
 
-    // We need to ensure Glean is uninitialized.
     destroy_glean(true);
     assert!(!was_initialize_called());
 
-    let metric = BooleanMetric::new(CommonMetricData {
-        name: "bool_metric".into(),
-        category: "test".into(),
-        send_in_pings: vec!["store1".into()],
-        lifetime: Lifetime::Application,
-        disabled: false,
-        dynamic_label: None,
-    });
+    // Define a fake uploader that reports back the submission headers
+    // using a crossbeam channel.
+    let (s, r) = crossbeam_channel::bounded::<String>(1);
 
-    // It would be nice to just use `#[should_panic]` on this test method,
-    // but then we poison the `lock_test` lock and thus breaks other tests.
-    // Instead we catch the panic here.
-    let result = std::panic::catch_unwind(|| {
-        // Try to get a value. This should panic.
-        let _ = metric.test_get_value("store1");
-    });
-    let err = result.unwrap_err();
+    #[derive(Debug)]
+    pub struct FakeUploader {
+        sender: crossbeam_channel::Sender<String>,
+    };
+    impl net::PingUploader for FakeUploader {
+        fn upload(
+            &self,
+            url: String,
+            _body: Vec<u8>,
+            _headers: Vec<(String, String)>,
+        ) -> net::UploadResult {
+            self.sender.send(url).unwrap();
+            net::UploadResult::HttpStatus(200)
+        }
+    }
 
-    assert!(err.is::<&str>());
-    let err = err.downcast_ref::<&str>().unwrap();
-    assert!(
-        err.contains("initialize was never called"),
-        "Got the wrong panic message"
-    );
+    // Create a custom ping and attempt its registration.
+    #[allow(non_upper_case_globals)]
+    pub static SamplePing: Lazy<PingType> =
+        Lazy::new(|| PingType::new("pre-register", true, true, vec![]));
+
+    register_ping_type(&SamplePing);
+
+    // Create a custom configuration to use a fake uploader.
+    let dir = tempfile::tempdir().unwrap();
+    let tmpname = dir.path().display().to_string();
+
+    let cfg = Configuration {
+        data_path: tmpname,
+        application_id: GLOBAL_APPLICATION_ID.into(),
+        upload_enabled: true,
+        max_events: None,
+        delay_ping_lifetime_io: false,
+        channel: Some("testing".into()),
+        server_endpoint: Some("invalid-test-host".into()),
+        uploader: Some(Box::new(FakeUploader { sender: s })),
+    };
+
+    let _t = new_glean(Some(cfg), true);
+    crate::block_on_dispatcher();
+
+    // Submit a baseline ping.
+    SamplePing.submit(None);
+
+    // Wait for the ping to arrive.
+    let url = r.recv().unwrap();
+    assert!(url.contains("pre-register"));
 }
