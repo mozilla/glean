@@ -49,7 +49,7 @@ pub use core_metrics::ClientInfoMetrics;
 pub use glean_core::{
     global_glean,
     metrics::{DistributionData, MemoryUnit, RecordedEvent, TimeUnit},
-    setup_glean, CommonMetricData, Error, ErrorType, Glean, Lifetime, Result,
+    setup_glean, CommonMetricData, Error, ErrorType, Glean, HistogramType, Lifetime, Result,
 };
 use private::RecordedExperimentData;
 
@@ -320,6 +320,17 @@ pub fn shutdown() {
     }
 }
 
+/// Block on the dispatcher emptying.
+///
+/// This will panic if called before Glean is initialized.
+fn block_on_dispatcher() {
+    assert!(
+        was_initialize_called(),
+        "initialize was never called. Can't block on the dispatcher queue."
+    );
+    dispatcher::block_on_queue()
+}
+
 /// Checks if [`initialize`] was ever called.
 ///
 /// # Returns
@@ -510,7 +521,7 @@ pub fn set_experiment_inactive(experiment_id: String) {
 /// Checks if an experiment is currently active.
 #[allow(dead_code)]
 pub(crate) fn test_is_experiment_active(experiment_id: String) -> bool {
-    dispatcher::block_on_queue();
+    block_on_dispatcher();
     with_glean(|glean| glean.test_is_experiment_active(experiment_id.to_owned()))
 }
 
@@ -519,7 +530,7 @@ pub(crate) fn test_is_experiment_active(experiment_id: String) -> bool {
 /// the id isn't found.
 #[allow(dead_code)]
 pub(crate) fn test_get_experiment_data(experiment_id: String) -> RecordedExperimentData {
-    dispatcher::block_on_queue();
+    block_on_dispatcher();
     with_glean(|glean| {
         let json_data = glean
             .test_get_experiment_data_as_json(experiment_id.to_owned())

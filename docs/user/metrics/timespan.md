@@ -357,6 +357,7 @@ The raw API is not supported in Rust. See [bug 1680225](https://bugzilla.mozilla
     * If starting a timer while a previous timer is running.
     * If stopping a timer while it is not running.
     * If trying to set a raw timespan while a timer is running.
+    * If trying to record a timespan again while a previous value is still stored.
 
 ## Reference
 

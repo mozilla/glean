@@ -237,6 +237,14 @@ the details of which are reproduced below.
     <url>https://github.com/rust-lang/log</url>
   </license>
   <license>
+    <name>Apache License 2.0: android_log-sys</name>
+    <url>https://github.com/nercury/android_log-sys-rs</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: android_logger</name>
+    <url>https://github.com/Nercury/android_logger-rs</url>
+  </license>
+  <license>
     <name>Apache License 2.0: failure_derive</name>
     <url>https://github.com/rust-lang-nursery/failure</url>
   </license>
@@ -251,14 +259,6 @@ the details of which are reproduced below.
   <license>
     <name>Apache License 2.0: winapi-x86_64-pc-windows-gnu</name>
     <url>https://github.com/retep998/winapi-rs</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: android_log-sys</name>
-    <url>https://github.com/nercury/android_log-sys-rs</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: android_logger</name>
-    <url>https://github.com/Nercury/android_logger-rs</url>
   </license>
   <license>
     <name>Apache License 2.0: chrono</name>

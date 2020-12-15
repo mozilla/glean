@@ -254,8 +254,44 @@ var snapshot = Pages.pageLoad.TestGetValue();
 // Usually you don't know the exact timing values, but how many should have been recorded.
 Assert.Equal(1, snapshot.Values.Count);
 
-// Assert that no errors were recorded. 
+// Assert that no errors were recorded.
 Assert.Equal(0, Pages.pageLoad.TestGetNumRecordedErrors(ErrorType.InvalidValue));
+```
+
+</div>
+
+<div data-lang="Rust" class="tab">
+
+```rust
+use glean_metrics;
+
+fn on_page_start() {
+    self.timer_id = Pages.page_load.start();
+}
+
+fn on_page_loaded() {
+    pages::page_load.stop_and_accumulate(self.timer_id);
+}
+```
+
+There are test APIs available too.
+
+```rust
+use glean::ErrorType;
+use glean_metrics;
+
+// Was anything recorded?
+assert!(pages::page_load.test_get_value(None).is_some());
+
+// Assert no errors were recorded.
+let errors = [
+    ErrorType::InvalidValue,
+    ErrorType::InvalidState,
+    ErrorType::InvalidOverflow
+];
+for error in errors {
+    assert_eq!(0, pages::page_load.test_get_num_recorded_errors(error));
+}
 ```
 
 </div>
@@ -273,6 +309,11 @@ Assert.Equal(0, Pages.pageLoad.TestGetNumRecordedErrors(ErrorType.InvalidValue))
     The time measurement does not include time spent in sleep.
 
   * On Python 3.7 and later, [`time.monotonic_ns()`](https://docs.python.org/3/library/time.html#time.monotonic_ns) is used.  On earlier versions of Python, [`time.monotonics()`](https://docs.python.org/3/library/time.html#time.monotonic) is used, which is not guaranteed to have nanosecond resolution.
+
+  * In Rust,
+    [`time::precise_time_ns()`](https://docs.rs/time/0.1.42/time/fn.precise_time_ns.html)
+    is used.
+
 
 * The maximum timing value that will be recorded depends on the `time_unit` parameter:
 

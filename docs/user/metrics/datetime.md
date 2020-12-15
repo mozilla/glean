@@ -8,7 +8,7 @@ To record a single elapsed time, see [Timespan](timespan.md). To measure the dis
 
 ## Configuration
 
-Datetimes have a required `time_unit` parameter to specify the smallest unit of resolution that the timespan will record. The allowed values for `time_unit` are:
+Datetimes have a required `time_unit` parameter to specify the smallest unit of resolution that the metric will record. The allowed values for `time_unit` are:
 
    - `nanosecond`
    - `microsecond`
@@ -58,7 +58,7 @@ assertTrue(Install.firstRun.testHasValue())
 // "-05:00" suffix.
 assertEquals("2019-03-25-05:00", Install.firstRun.testGetValueAsString())
 // Was the value invalid?
-assertEquals(1, Install.firstRun.testGetNumRecordedErrors(ErrorType.InvalidValue))
+assertEquals(0, Install.firstRun.testGetNumRecordedErrors(ErrorType.InvalidValue))
 ```
 
 </div>
@@ -84,7 +84,7 @@ assertTrue(Install.INSTANCE.firstRun.testHasValue());
 // "-05:00" suffix.
 assertEquals("2019-03-25-05:00", Install.INSTANCE.firstRun.testGetValueAsString());
 // Was the value invalid?
-assertEquals(1, Install.INSTANCE.firstRun.testGetNumRecordedErrors(ErrorType.InvalidValue));
+assertEquals(0, Install.INSTANCE.firstRun.testGetNumRecordedErrors(ErrorType.InvalidValue));
 ```
 
 </div>
@@ -111,7 +111,7 @@ XCTAssert(Install.firstRun.testHasValue())
 // Does the datetime have the expected value?
 XCTAssertEqual(6, try Install.firstRun.testGetValue())
 // Was the value invalid?
-XCTAssertEqual(1, Install.firstRun.getNumRecordedErrors(.invalidValue))
+XCTAssertEqual(0, Install.firstRun.getNumRecordedErrors(.invalidValue))
 ```
 
 </div>
@@ -141,7 +141,7 @@ assert metrics.install.first_run.test_has_value()
 # "-05:00" suffix.
 assert "2019-03-25-05:00" == metrics.install.first_run.test_get_value_as_str()
 # Was the value invalid?
-assert 1 == metrics.install.test_get_num_recorded_errors(
+assert 0 == metrics.install.test_get_num_recorded_errors(
     ErrorType.INVALID_VALUE
 )
 ```
@@ -171,7 +171,39 @@ Assert.True(Install.firstRun.TestHasValue());
 // "-05:00" suffix.
 Assert.Equal("2019-03-25-05:00", Install.firstRun.TestGetValueAsString());
 // Was the value invalid?
-Assert.Equal(1, Install.firstRun.TestGetNumRecordedErrors(ErrorType.InvalidValue));
+Assert.Equal(0, Install.firstRun.TestGetNumRecordedErrors(ErrorType.InvalidValue));
+```
+
+</div>
+
+<div data-lang="Rust" class="tab">
+
+```Rust
+use glean::ErrorType;
+use glean_metrics;
+
+use chrono::{FixedOffset, TimeZone};
+
+// Records "now"
+install::first_run.set(None);
+// Records a custom datetime
+let custom_date = FixedOffset::east(0).ymd(2019, 3, 25).and_hms(0, 0, 0);
+install::first_run.set(Some(custom_date));
+```
+
+There are test APIs available too.
+
+```Rust
+// Was anything recorded?
+assert!(metrics.install.first_run.test_get_value(None).is_some());
+
+// Was it the expected value?
+let expected_date = FixedOffset::east(0).ymd(2019, 3, 25).and_hms(0, 0, 0);
+assert_eq!(expected_date, metrics.install.first_run.test_get_value(None));
+// Was the value invalid?
+assert_eq!(0, install::first_run.test_get_num_recorded_errors(
+    ErrorType::InvalidValue
+));
 ```
 
 </div>
@@ -195,3 +227,4 @@ Assert.Equal(1, Install.firstRun.TestGetNumRecordedErrors(ErrorType.InvalidValue
 * [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-datetime-metric-type/index.html)
 * [Swift API docs](../../../swift/Classes/DatetimeMetricType.html)
 * [Python API docs](../../../python/glean/metrics/datetime.html)
+* [Rust API docs](../../../docs/glean/private/struct.DatetimeMetric.html)

@@ -13,7 +13,6 @@ public class HttpPingUploader {
         // Since ping file names are UUIDs, this matches UUIDs for filtering purposes
         static let logTag = "glean/HttpPingUploader"
         static let connectionTimeout = 10000
-        static let throttleBackoffS: UInt32 = 60
 
         // For this error, the ping will be retried later
         static let recoverableErrorStatusCode: UInt16 = 500
@@ -117,8 +116,8 @@ public class HttpPingUploader {
                 self.upload(path: request.path, data: request.body, headers: request.headers) { result in
                     glean_process_ping_upload_response(&incomingTask, result.toFfi())
                 }
-            case .wait:
-                sleep(Constants.throttleBackoffS)
+            case .wait(let time):
+                sleep(UInt32(time) / 1000)
                 continue
             case .done:
                 return
