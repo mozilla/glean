@@ -4,7 +4,6 @@
 
 use crate::private::PingType;
 use crate::private::{BooleanMetric, CounterMetric};
-use once_cell::sync::Lazy;
 use std::path::PathBuf;
 
 use super::*;
@@ -512,11 +511,7 @@ fn registering_pings_before_init_must_work() {
     }
 
     // Create a custom ping and attempt its registration.
-    #[allow(non_upper_case_globals)]
-    pub static SamplePing: Lazy<PingType> =
-        Lazy::new(|| PingType::new("pre-register", true, true, vec![]));
-
-    register_ping_type(&SamplePing);
+    let sample_ping = PingType::new("pre-register", true, true, vec![]);
 
     // Create a custom configuration to use a fake uploader.
     let dir = tempfile::tempdir().unwrap();
@@ -537,7 +532,7 @@ fn registering_pings_before_init_must_work() {
     crate::block_on_dispatcher();
 
     // Submit a baseline ping.
-    SamplePing.submit(None);
+    sample_ping.submit(None);
 
     // Wait for the ping to arrive.
     let url = r.recv().unwrap();

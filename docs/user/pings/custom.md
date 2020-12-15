@@ -225,7 +225,7 @@ Pings.search.Submit(
 ```Rust
 use glean::Pings;
 
-Pings::search.submit(Pings::searchReasonCodes::performed);
+pings::search.submit(pings::SearchReasonCodes::Performed);
 ```
 
 </div>
