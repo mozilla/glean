@@ -5,7 +5,7 @@
 * Rust
   * Introduce the String List metric type in the RLB. [#1380](https://github.com/mozilla/glean/pull/1380).
   * Introduce the `Datetime` metric type in the RLB [#1384](https://github.com/mozilla/glean/pull/1384).
-  * Introduce the `CustomDistribution` metric type in the RLB.
+  * Introduce the `CustomDistribution` and `TimingDistribution` metric type in the RLB [#1394](https://github.com/mozilla/glean/pull/1394).
 
 # v33.8.0 (2020-12-10)
 

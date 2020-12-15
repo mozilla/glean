@@ -17,6 +17,7 @@ mod recorded_experiment_data;
 mod string;
 mod string_list;
 mod timespan;
+mod timing_distribution;
 mod uuid;
 
 pub use self::uuid::UuidMetric;
@@ -33,3 +34,4 @@ pub use recorded_experiment_data::RecordedExperimentData;
 pub use string::StringMetric;
 pub use string_list::StringListMetric;
 pub use timespan::TimespanMetric;
+pub use timing_distribution::TimingDistributionMetric;
