@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v33.8.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v33.9.0...main)
+
+# v33.9.0 (2020-12-15)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v33.8.0...v33.9.0)
 
 * Rust
   * Introduce the String List metric type in the RLB. [#1380](https://github.com/mozilla/glean/pull/1380).
