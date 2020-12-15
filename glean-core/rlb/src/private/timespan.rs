@@ -73,7 +73,7 @@ impl glean_core::traits::Timespan for TimespanMetric {
     }
 
     fn test_get_value<'a, S: Into<Option<&'a str>>>(&self, ping_name: S) -> Option<u64> {
-        dispatcher::block_on_queue();
+        crate::block_on_dispatcher();
 
         crate::with_glean(|glean| {
             // Note: The order of operations is important here to avoid potential deadlocks because
@@ -99,7 +99,7 @@ impl glean_core::traits::Timespan for TimespanMetric {
         error: ErrorType,
         ping_name: S,
     ) -> i32 {
-        dispatcher::block_on_queue();
+        crate::block_on_dispatcher();
 
         let metric = self
             .0

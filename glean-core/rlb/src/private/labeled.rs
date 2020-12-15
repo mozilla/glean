@@ -8,8 +8,6 @@ use std::sync::Arc;
 use glean_core::metrics::MetricType;
 use glean_core::ErrorType;
 
-use crate::dispatcher;
-
 /// Sealed traits protect against downstream implementations.
 ///
 /// We wrap it in a private module that is inaccessible outside of this module.
@@ -134,7 +132,7 @@ where
         error: ErrorType,
         ping_name: S,
     ) -> i32 {
-        dispatcher::block_on_queue();
+        crate::block_on_dispatcher();
 
         crate::with_glean_mut(|glean| {
             glean_core::test_get_num_recorded_errors(

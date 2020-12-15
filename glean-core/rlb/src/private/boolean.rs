@@ -37,7 +37,7 @@ impl glean_core::traits::Boolean for BooleanMetric {
     }
 
     fn test_get_value<'a, S: Into<Option<&'a str>>>(&self, ping_name: S) -> Option<bool> {
-        dispatcher::block_on_queue();
+        crate::block_on_dispatcher();
 
         let queried_ping_name = match ping_name.into() {
             Some(name) => name,
