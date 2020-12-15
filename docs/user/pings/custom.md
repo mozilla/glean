@@ -220,6 +220,16 @@ Pings.search.Submit(
 
 </div>
 
+<div data-lang="Rust" class="tab">
+
+```Rust
+use glean::Pings;
+
+Pings::search.submit(Pings::searchReasonCodes::performed);
+```
+
+</div>
+
 {{#include ../../tab_footer.md}}
 
 If none of the metrics for the ping contain data the ping is not sent (unless `send_if_empty` is set to true in the definition file)
