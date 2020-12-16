@@ -48,7 +48,21 @@ mod backend {
     pub type Writer<'t> = rkv::Writer<rkv::backend::SafeModeRwTransaction<'t>>;
 
     pub fn rkv_new(path: &Path) -> Result<Rkv, rkv::StoreError> {
-        Rkv::new::<rkv::backend::SafeMode>(path)
+        match Rkv::new::<rkv::backend::SafeMode>(path) {
+            // An invalid file can mean:
+            // 1. An empty file.
+            // 2. A corrupted file.
+            //
+            // In both instances there's not much we can do.
+            // Drop the data by removing the file, and start over.
+            Err(rkv::StoreError::FileInvalid) => {
+                let safebin = path.join("data.safe.bin");
+                fs::remove_file(safebin).map_err(|_| rkv::StoreError::FileInvalid)?;
+                // Now try again, we only handle that error once.
+                Rkv::new::<rkv::backend::SafeMode>(path)
+            }
+            other => other,
+        }
     }
 
     fn delete_and_log(path: &Path, msg: &str) {
