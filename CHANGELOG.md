@@ -2,6 +2,10 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.9.0...main)
 
+* Rust
+  * BUGFIX: Don't panic on shutdown and avoid running tasks if uninitialized ([#1398](https://github.com/mozilla/glean/pull/1398)).
+  * BUGFIX: Don't fail on empty database files ([#1398](https://github.com/mozilla/glean/pull/1398)).
+
 # v33.9.0 (2020-12-15)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.8.0...v33.9.0)
