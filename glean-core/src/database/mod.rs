@@ -1308,10 +1308,70 @@ mod test {
         );
     }
 
+    /// LDMB ignores an empty database file just fine.
+    #[cfg(not(feature = "rkv-safe-mode"))]
+    #[test]
+    fn empty_data_file() {
+        let dir = tempdir().unwrap();
+        let str_dir = dir.path().display().to_string();
+
+        // Create database directory structure.
+        let database_dir = dir.path().join("db");
+        fs::create_dir_all(&database_dir).expect("create database dir");
+
+        // Create empty database file.
+        let datamdb = database_dir.join("data.mdb");
+        let f = fs::File::create(datamdb).expect("create database file");
+        drop(f);
+
+        Database::new(&str_dir, false).unwrap();
+
+        assert!(dir.path().exists());
+    }
+
     #[cfg(feature = "rkv-safe-mode")]
-    mod safe_mode_migration {
+    mod safe_mode {
+        use std::fs::File;
+
         use super::*;
         use rkv::Value;
+
+        #[test]
+        fn empty_data_file() {
+            let dir = tempdir().unwrap();
+            let str_dir = dir.path().display().to_string();
+
+            // Create database directory structure.
+            let database_dir = dir.path().join("db");
+            fs::create_dir_all(&database_dir).expect("create database dir");
+
+            // Create empty database file.
+            let safebin = database_dir.join("data.safe.bin");
+            let f = File::create(safebin).expect("create database file");
+            drop(f);
+
+            Database::new(&str_dir, false).unwrap();
+
+            assert!(dir.path().exists());
+        }
+
+        #[test]
+        fn corrupted_data_file() {
+            let dir = tempdir().unwrap();
+            let str_dir = dir.path().display().to_string();
+
+            // Create database directory structure.
+            let database_dir = dir.path().join("db");
+            fs::create_dir_all(&database_dir).expect("create database dir");
+
+            // Create empty database file.
+            let safebin = database_dir.join("data.safe.bin");
+            fs::write(safebin, "<broken>").expect("write to database file");
+
+            Database::new(&str_dir, false).unwrap();
+
+            assert!(dir.path().exists());
+        }
 
         #[test]
         fn migration_works_on_startup() {
