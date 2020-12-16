@@ -14,30 +14,25 @@ use glean::Configuration;
 
 /// Some user metrics.
 mod metrics {
-    pub mod fog {
-        use glean::private::*;
-        use glean::{Lifetime, TimeUnit};
-        use glean_core::CommonMetricData;
-        use once_cell::sync::Lazy;
+    use glean::private::*;
+    use glean::{Lifetime, TimeUnit};
+    use glean_core::CommonMetricData;
+    use once_cell::sync::Lazy;
 
-        #[allow(non_upper_case_globals)]
-        /// generated from fog.initialization
-        ///
-        /// Time the FOG initialization takes.
-        pub static initialization: Lazy<TimespanMetric> = Lazy::new(|| {
-            TimespanMetric::new(
-                CommonMetricData {
-                    name: "initialization".into(),
-                    category: "fog".into(),
-                    send_in_pings: vec!["fog-validation".into()],
-                    lifetime: Lifetime::Ping,
-                    disabled: false,
-                    ..Default::default()
-                },
-                TimeUnit::Nanosecond,
-            )
-        });
-    }
+    #[allow(non_upper_case_globals)]
+    pub static initialization: Lazy<TimespanMetric> = Lazy::new(|| {
+        TimespanMetric::new(
+            CommonMetricData {
+                name: "initialization".into(),
+                category: "sample".into(),
+                send_in_pings: vec!["validation".into()],
+                lifetime: Lifetime::Ping,
+                disabled: false,
+                ..Default::default()
+            },
+            TimeUnit::Nanosecond,
+        )
+    });
 }
 
 mod pings {
@@ -45,18 +40,18 @@ mod pings {
     use once_cell::sync::Lazy;
 
     #[allow(non_upper_case_globals)]
-    pub static fog_validation: Lazy<PingType> =
-        Lazy::new(|| glean::private::PingType::new("fog-validation", true, true, vec![]));
+    pub static validation: Lazy<PingType> =
+        Lazy::new(|| glean::private::PingType::new("validation", true, true, vec![]));
 }
 
 /// Test scenario: Glean initialization fails.
 ///
-/// FOG tries to initializate Glean, but that somehow fails.
+/// The app tries to initializate Glean, but that somehow fails.
 #[test]
-fn fog_init_fails() {
+fn init_fails() {
     common::enable_test_logging();
 
-    metrics::fog::initialization.start();
+    metrics::initialization.start();
 
     // Create a custom configuration to use a validating uploader.
     let dir = tempfile::tempdir().unwrap();
@@ -74,14 +69,13 @@ fn fog_init_fails() {
     };
     common::initialize(cfg);
 
-    metrics::fog::initialization.stop();
+    metrics::initialization.stop();
 
-    pings::fog_validation.submit(None);
+    pings::validation.submit(None);
 
     // We don't test for data here, as that would block on the dispatcher.
 
     // Shut it down immediately; this might not be enough time to initialize.
 
-    // eventually this is called by `FOG::Shutdown()`.
     glean::shutdown();
 }
