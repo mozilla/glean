@@ -312,6 +312,10 @@ pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) {
 pub fn shutdown() {
     if global_glean().is_none() {
         log::warn!("Shutdown called before Glean is initialized");
+        if let Err(e) = dispatcher::kill() {
+            log::error!("Can't kill dispatcher thread: {:?}", e);
+        }
+
         return;
     }
 

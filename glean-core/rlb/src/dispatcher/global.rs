@@ -59,6 +59,15 @@ pub fn flush_init() -> Result<(), DispatchError> {
     guard().flush_init()
 }
 
+/// Kill the blocked dispatcher without processing the queue.
+///
+/// This will immediately shutdown the worker thread
+/// and no other tasks will be processed.
+/// This only has an effect when the queue is still blocked.
+pub fn kill() -> Result<(), DispatchError> {
+    guard().kill()
+}
+
 /// Shuts down the dispatch queue.
 ///
 /// This will initiate a shutdown of the worker thread
