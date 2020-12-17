@@ -43,7 +43,7 @@ fi
 NEW_VERSION="$1"
 DATE=$(date +%Y-%m-%d)
 
-if ! echo "$NEW_VERSION" | grep --quiet --extended-regexp '^[0-9]+\.[0-9]+\.[0-9]+(-[a-z0-9.-]+)?'; then
+if ! echo "$NEW_VERSION" | grep --quiet --extended-regexp '^[0-9]+\.[0-9]+\.[0-9]+(-[a-z0-9.-]+)?$'; then
     echo "error: Specified version '${NEW_VERSION}' doesn't match the Semantic Versioning pattern."
     echo "error: Use MAJOR.MINOR.PATCH versioning."
     echo "error: See https://semver.org/"
