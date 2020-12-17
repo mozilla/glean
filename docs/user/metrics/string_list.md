@@ -187,6 +187,53 @@ assert_eq!(
 
 </div>
 
+<div data-lang="C++" class="tab">
+
+> **Note**: C++ APIs are only available in Firefox Desktop.
+
+```c++
+#include "mozilla/glean/GleanMetrics.h"
+
+mozilla::glean::search::engines.Add("wikipedia"_ns);
+mozilla::glean::search::engines.Add("duck duck go"_ns);
+```
+
+There are test APIs available too:
+
+```c++
+#include "mozilla/glean/GleanMetrics.h"
+
+// Does it have the expected values?
+nsTArray<nsCString> list = mozilla::glean::search::engines.TestGetValue();
+ASSERT_TRUE(list.Contains("wikipedia"_ns));
+ASSERT_TRUE(list.Constains("duck duck go"_ns));
+// Did it run across any errors?
+// TODO: https://bugzilla.mozilla.org/show_bug.cgi?id=1683171
+```
+
+</div>
+
+<div data-lang="JS" class="tab">
+
+> **Note**: JS APIs are only available in Firefox Desktop.
+
+```js
+Glean.search.engines.add("wikipedia");
+Glean.search.engines.add("duck duck go");
+```
+
+There are test APIs available too:
+
+```js
+const engines = Glean.search.engines.testGetValue();
+Assert.ok(engines.includes("wikipedia"));
+Assert.ok(engines.includes("duck duck go"));
+// Did it run across any errors?
+// TODO: https://bugzilla.mozilla.org/show_bug.cgi?id=1683171
+```
+
+</div>
+
 {{#include ../../tab_footer.md}}
 
 ## Limits

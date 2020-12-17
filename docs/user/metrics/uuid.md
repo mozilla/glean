@@ -159,6 +159,56 @@ assert_eq!(u, user::client_id.test_get_value(None).unwrap());
 
 </div>
 
+<div data-lang="C++" class="tab">
+
+> **Note**: C++ APIs are only available in Firefox Desktop.
+
+```c++
+#include "mozilla/glean/GleanMetrics.h"
+
+// Generate a new UUID and record it.
+mozilla::glean::user::client_id.GenerateAndSet();
+// Set a specific value.
+nsCString kUuid("decafdec-afde-cafd-ecaf-decafdecafde");
+mozilla::glean::user::client_id.Set(kUuid);
+```
+
+There are test APIs available too:
+
+```c++
+#include "mozilla/glean/GleanMetrics.h"
+
+// Does it have an expected values?
+ASSERT_STREQ(kUuid.get(), mozilla::glean::user::client_id.TestGetValue().value().get());
+// Did it run across any errors?
+// TODO: https://bugzilla.mozilla.org/show_bug.cgi?id=1683171
+```
+
+</div>
+
+<div data-lang="JS" class="tab">
+
+> **Note**: JS APIs are currently only available in Firefox Desktop.
+> General JavaScript support is coming soon via [the Glean.js project](https://github.com/mozilla/glean.js/).
+
+```js
+// Generate a new UUID and record it.
+Glean.user.clientId.generateAndSet();
+// Set a specific value.
+const uuid = "decafdec-afde-cafd-ecaf-decafdecafde";
+Glean.user.clientId.set(uuid);
+```
+
+There are test APIs available too:
+
+```js
+Assert.equal(Glean.user.clientId.testGetValue(), uuid);
+// Did it run across any errors?
+// TODO: https://bugzilla.mozilla.org/show_bug.cgi?id=1683171
+```
+
+</div>
+
 {{#include ../../tab_footer.md}}
 
 ## Limits

@@ -169,6 +169,51 @@ Assert.Equal(
 
 </div>
 
+<div data-lang="C++" class="tab">
+
+> **Note**: C++ APIs are only available in Firefox Desktop.
+
+```c++
+#include "mozilla/glean/GleanMetrics.h"
+
+mozilla::glean::search_default::name.Set("wikipedia"_ns);
+```
+
+There are test APIs available too:
+
+```c++
+#include "mozilla/glean/GleanMetrics.h"
+
+// Does it have the expected value?
+ASSERT_STREQ(
+  "wikipedia",
+  mozilla::glean::search_default::name.TestGetValue().value().get()
+);
+// Did it run across any errors?
+// TODO: https://bugzilla.mozilla.org/show_bug.cgi?id=1683171
+```
+
+</div>
+
+<div data-lang="JS" class="tab">
+
+> **Note**: JS APIs are currently only available in Firefox Desktop.
+> General JavaScript support is coming soon via [the Glean.js project](https://github.com/mozilla/glean.js/).
+
+```js
+Glean.searchDefault.name.set("wikipedia");
+```
+
+There are test APIs available too:
+
+```js
+Assert.equal("wikipedia", Glean.searchDefault.name.testGetValue());
+// Did it run across any errors?
+// TODO: https://bugzilla.mozilla.org/show_bug.cgi?id=1683171
+```
+
+</div>
+
 {{#include ../../tab_footer.md}}
 
 ## Limits

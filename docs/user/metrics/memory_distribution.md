@@ -208,6 +208,50 @@ assert_eq!(1, memory::heap_allocated.test_get_num_recorded_errors(InvalidValue))
 
 </div>
 
+<div data-lang="C++" class="tab">
+
+> **Note**: C++ APIs are only available in Firefox Desktop.
+
+```c++
+#include "mozilla/glean/GleanMetrics.h"
+
+mozilla::glean::memory::heap_allocated.Accumulate(bytes / 1024);
+```
+
+There are test APIs available too:
+
+```c++
+#include "mozilla/glean/GleanMetrics.h"
+
+// Does it have the expected value?
+ASSERT_EQ(11 * 1024, mozilla::glean::memory::heap_allocated.TestGetValue().value().sum);
+// Did it run across any errors?
+// TODO: https://bugzilla.mozilla.org/show_bug.cgi?id=1683171
+```
+
+</div>
+
+<div data-lang="JS" class="tab">
+
+> **Note**: JS APIs are only available in Firefox Desktop.
+
+```js
+Glean.memory.heapAllocated.accumulate(bytes / 1024);
+```
+
+There are test APIs available too:
+
+```js
+const data = Glean.memory.heapAllocated.testGetValue();
+Assert.equal(11 * 1024, data.sum);
+// Does it have the right number of samples?
+Assert.equal(1, Object.entries(data.values).reduce(([bucket, count], sum) => count + sum, 0));
+// Did it run across any errors?
+// TODO: https://bugzilla.mozilla.org/show_bug.cgi?id=1683171
+```
+
+</div>
+
 {{#include ../../tab_footer.md}}
 
 ## Limits
