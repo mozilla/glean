@@ -5,6 +5,7 @@
 * Rust
   * BUGFIX: Don't panic on shutdown and avoid running tasks if uninitialized ([#1398](https://github.com/mozilla/glean/pull/1398)).
   * BUGFIX: Don't fail on empty database files ([#1398](https://github.com/mozilla/glean/pull/1398)).
+  * BUGFIX: Support ping registration before Glean initializes [#1393](https://github.com/mozilla/glean/pull/1393).
 
 # v33.9.0 (2020-12-15)
 
@@ -14,7 +15,6 @@
   * Introduce the String List metric type in the RLB. [#1380](https://github.com/mozilla/glean/pull/1380).
   * Introduce the `Datetime` metric type in the RLB [#1384](https://github.com/mozilla/glean/pull/1384).
   * Introduce the `CustomDistribution` and `TimingDistribution` metric type in the RLB [#1394](https://github.com/mozilla/glean/pull/1394).
-  * Support ping registration before Glean initializes [#1393](https://github.com/mozilla/glean/pull/1393).
 
 # v33.8.0 (2020-12-10)
 
