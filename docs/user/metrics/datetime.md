@@ -208,6 +208,52 @@ assert_eq!(0, install::first_run.test_get_num_recorded_errors(
 
 </div>
 
+<div data-lang="C++" class="tab">
+
+> **Note**: C++ APIs are only available in Firefox Desktop.
+
+```c++
+#include "mozilla/glean/GleanMetrics.h"
+
+PRExplodedTime date = {0, 35, 10, 12, 6, 10, 2020, 0, 0, {5 * 60 * 60, 0}};
+mozilla::glean::install::first_run.Set(&date);
+```
+
+There are test APIs available too:
+
+```c++
+#include "mozilla/glean/GleanMetrics.h"
+
+// Does it have the expected value?
+ASSERT_STREQ(
+  mozilla::glean::install::first_run.TestGetValue().value(),
+  "2020-11-06T12:10:35+05:00"_ns
+);
+// Did it run across any errors?
+// TODO: https://bugzilla.mozilla.org/show_bug.cgi?id=1683171
+```
+
+</div>
+
+<div data-lang="JS" class="tab">
+
+> **Note**: JS APIs are only available in Firefox Desktop.
+
+```js
+const value = new Date("2020-06-11T12:00:00");
+Glean.install.firstRun.set(value.getTime() * 1000);
+```
+
+There are test APIs available too:
+
+```js
+Assert.ok(Glean.install.firstRun.testGetValue().startsWith("2020-06-11T12:00:00"));
+// Did it run across any errors?
+// TODO: https://bugzilla.mozilla.org/show_bug.cgi?id=1683171
+```
+
+</div>
+
 {{#include ../../tab_footer.md}}
 
 ## Limits

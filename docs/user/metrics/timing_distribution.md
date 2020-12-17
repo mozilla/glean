@@ -266,7 +266,7 @@ Assert.Equal(0, Pages.pageLoad.TestGetNumRecordedErrors(ErrorType.InvalidValue))
 use glean_metrics;
 
 fn on_page_start() {
-    self.timer_id = Pages.page_load.start();
+    self.timer_id = pages::page_load.start();
 }
 
 fn on_page_loaded() {
@@ -292,6 +292,52 @@ let errors = [
 for error in errors {
     assert_eq!(0, pages::page_load.test_get_num_recorded_errors(error));
 }
+```
+
+</div>
+
+<div data-lang="C++" class="tab">
+
+> **Note**: C++ APIs are only available in Firefox Desktop.
+
+```c++
+#include "mozilla/glean/GleanMetrics.h"
+
+auto timerId = mozilla::glean::pages::page_load.Start();
+PR_Sleep(PR_MillisecondsToInterval(10));
+mozilla::glean::pages::page_load.StopAndAccumulate(timerId);
+```
+
+There are test APIs available too:
+
+```c++
+#include "mozilla/glean/GleanMetrics.h"
+
+// Does it have an expected values?
+const data = mozilla::glean::pages::page_load.TestGetValue().value();
+ASSERT_TRUE(data.sum > 0);
+// Did it run across any errors?
+// TODO: https://bugzilla.mozilla.org/show_bug.cgi?id=1683171
+```
+
+</div>
+
+<div data-lang="JS" class="tab">
+
+> **Note**: JS APIs are only available in Firefox Desktop.
+
+```js
+const timerId = Glean.pages.pageLoad.start();
+await sleep(10);
+Glean.pages.pageLoad.stopAndAccumulate(timerId);
+```
+
+There are test APIs available too:
+
+```js
+Assert.ok(Glean.pages.pageLoad.testGetValue().sum > 0);
+// Did it run across any errors?
+// TODO: https://bugzilla.mozilla.org/show_bug.cgi?id=1683171
 ```
 
 </div>
