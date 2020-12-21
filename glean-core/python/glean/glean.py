@@ -121,7 +121,7 @@ class Glean:
                 meaningful.
             upload_enabled (bool): Controls whether telemetry is enabled. If
                 disabled, all persisted metrics, events and queued pings
-                (except first_run_date) are cleared.
+                (except first_run_date and first_run_hour) are cleared.
             configuration (glean.config.Configuration): (optional) An object with
                 global settings.
             data_dir (pathlib.Path): The path to the Glean data directory.

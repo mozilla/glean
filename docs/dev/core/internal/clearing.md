@@ -4,13 +4,13 @@ When disabling upload (`Glean.setUploadEnabled(false)`), metrics are also cleare
 of accidentally sending them.
 There are a couple of exceptions to this:
 
-- `first_run_date` is retained so it isn't reset if metrics are later re-enabled.
+- `first_run_date` and `first_run_hour` are retained so they aren't reset if metrics are later re-enabled.
 
 - `client_id` is set to the special value `"c0ffeec0-ffee-c0ff-eec0-ffeec0ffeec0"`. This should make it possible to detect the error case when metrics are sent from a client that has been disabled.
 
 When re-enabling metrics:
 
-- `first_run_date` is left as-is. (It should remain a correct date of first run of the application, unaffected by disabling/enabling the Glean SDK).
+- `first_run_date` and `first_run_hour` are left as-is. (They should remain a correct time of first run of the application, unaffected by disabling/enabling the Glean SDK).
 
 - The `client_id` is set to a newly-generated random UUID. It has no connection to the `client_id` used prior to disabling the Glean SDK.
 

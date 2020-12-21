@@ -76,7 +76,7 @@ public class Glean {
     /// - parameters:
     ///     * uploadEnabled: A `Bool` that enables or disables telemetry.
     ///       If disabled, all persisted metrics, events and queued pings (except
-    ///       first_run_date) are cleared.
+    ///       first_run_date and first_run_hour) are cleared.
     ///     * configuration: A Glean `Configuration` object with global settings.
     public func initialize(uploadEnabled: Bool,
                            configuration: Configuration = Configuration()) {
