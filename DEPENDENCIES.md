@@ -1487,7 +1487,7 @@ The following text applies to code linked from these dependencies:
 * [cfg-if 1.0.0]( https://github.com/alexcrichton/cfg-if )
 * [const-random 0.1.11]( https://github.com/tkaitchuck/constrandom )
 * [const-random-macro 0.1.11]( https://github.com/tkaitchuck/constrandom )
-* [crossbeam-channel 0.4.4]( https://github.com/crossbeam-rs/crossbeam )
+* [crossbeam-channel 0.5.0]( https://github.com/crossbeam-rs/crossbeam )
 * [crossbeam-utils 0.7.2]( https://github.com/crossbeam-rs/crossbeam )
 * [env_logger 0.7.1]( https://github.com/sebasmagri/env_logger/ )
 * [failure 0.1.8]( https://github.com/rust-lang-nursery/failure )
