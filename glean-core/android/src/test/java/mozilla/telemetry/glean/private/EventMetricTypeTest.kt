@@ -21,6 +21,7 @@ import mozilla.telemetry.glean.getContextWithMockedInfo
 import mozilla.telemetry.glean.getMockWebServer
 import mozilla.telemetry.glean.resetGlean
 import mozilla.telemetry.glean.delayMetricsPing
+import mozilla.telemetry.glean.waitForPingContent
 import java.lang.NullPointerException
 import java.util.concurrent.TimeUnit
 import mozilla.telemetry.glean.testing.ErrorType
@@ -30,6 +31,7 @@ import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Rule
@@ -330,9 +332,7 @@ class EventMetricTypeTest {
         // Trigger worker task to upload the pings in the background
         triggerWorkManager(context)
 
-        var request = server.takeRequest(20L, TimeUnit.SECONDS)
-        var pingJsonData = request.getPlainBody()
-        var pingJson = JSONObject(pingJsonData)
+        var pingJson = waitForPingContent("events", null, server)!!
         checkPingSchema(pingJson)
         assertNotNull(pingJson.opt("events"))
 
@@ -355,9 +355,7 @@ class EventMetricTypeTest {
         // Trigger worker task to upload the pings in the background
         triggerWorkManager(context)
 
-        request = server.takeRequest(20L, TimeUnit.SECONDS)
-        pingJsonData = request.getPlainBody()
-        pingJson = JSONObject(pingJsonData)
+        pingJson = waitForPingContent("events", null, server)!!
         checkPingSchema(pingJson)
         assertNotNull(pingJson.opt("events"))
 
@@ -527,23 +525,11 @@ class EventMetricTypeTest {
 
         // We can't properly test the absence of data,
         // but we can try to receive one and that causes an exception if there is none.
-        try {
-            val request = server.takeRequest(20L, TimeUnit.SECONDS)
-            val docType = request.path.split("/")[3]
-            assertTrue("Didn't expect a ping, still got one with document type $docType", false)
-        } catch (e: NullPointerException) {
-            assertTrue("No ping received.", true)
-        }
+        assertNull(waitForPingContent(pingName, null, server))
 
         // Now try to manually submit the ping.
         // No events should be left, thus we don't receive it.
         ping.submit()
-        try {
-            val request = server.takeRequest(20L, TimeUnit.SECONDS)
-            val docType = request.path.split("/")[3]
-            assertTrue("Didn't expect a ping, still got one with document type $docType", false)
-        } catch (e: NullPointerException) {
-            assertTrue("No ping received.", true)
-        }
+        assertNull(waitForPingContent(pingName, null, server))
     }
 }

@@ -261,6 +261,16 @@ class MetricsPingSchedulerTest {
             serverEndpoint = "http://" + server.hostName + ":" + server.port
         ))
 
+        // Catch the automatics metrics ping
+
+        // Trigger worker task to upload the pings in the background
+        triggerWorkManager(context)
+
+        // Fetch the ping from the server and decode its JSON body.
+        var request = server.takeRequest(20L, AndroidTimeUnit.SECONDS)
+        var docType = request.path.split("/")[3]
+        assertEquals("The received ping must be a 'metrics' ping", "metrics", docType)
+
         try {
             // Setup a testing metric and set it to some value.
             val testMetric = StringMetricType(
@@ -286,8 +296,8 @@ class MetricsPingSchedulerTest {
             triggerWorkManager(context)
 
             // Fetch the ping from the server and decode its JSON body.
-            val request = server.takeRequest(20L, AndroidTimeUnit.SECONDS)
-            val docType = request.path.split("/")[3]
+            request = server.takeRequest(20L, AndroidTimeUnit.SECONDS)
+            docType = request.path.split("/")[3]
             assertEquals("The received ping must be a 'metrics' ping", "metrics", docType)
 
             val metricsJsonData = request.getPlainBody()
