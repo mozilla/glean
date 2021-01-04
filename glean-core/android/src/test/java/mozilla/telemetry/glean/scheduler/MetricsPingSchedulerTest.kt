@@ -261,7 +261,7 @@ class MetricsPingSchedulerTest {
             serverEndpoint = "http://" + server.hostName + ":" + server.port
         ))
 
-        // Catch the automatics metrics ping
+        // Catch the automatic metrics ping
 
         // Trigger worker task to upload the pings in the background
         triggerWorkManager(context)
