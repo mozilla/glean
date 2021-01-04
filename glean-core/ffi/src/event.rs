@@ -28,7 +28,7 @@ pub extern "C" fn glean_new_event_metric(
     name: FfiStr,
     send_in_pings: RawStringArray,
     send_in_pings_len: i32,
-    lifetime: i32,
+    lifetime: Lifetime,
     disabled: u8,
     extra_keys: RawStringArray,
     extra_keys_len: i32,

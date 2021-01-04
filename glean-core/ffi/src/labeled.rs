@@ -2,8 +2,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use std::convert::TryFrom;
-
 use glean_core::{metrics::*, CommonMetricData, Lifetime};
 
 use crate::boolean::BOOLEAN_METRICS;
@@ -40,7 +38,7 @@ macro_rules! impl_labeled_metric {
             name: FfiStr,
             send_in_pings: RawStringArray,
             send_in_pings_len: i32,
-            lifetime: i32,
+            lifetime: Lifetime,
             disabled: u8,
             labels: RawStringArray,
             label_count: i32,
@@ -55,7 +53,6 @@ macro_rules! impl_labeled_metric {
                 } else {
                     Some(labels)
                 };
-                let lifetime = Lifetime::try_from(lifetime)?;
 
                 Ok(LabeledMetric::new(
                     <$metric>::new(CommonMetricData {

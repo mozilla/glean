@@ -12,6 +12,8 @@ header = """/* This Source Code Form is subject to the terms of the Mozilla Publ
 """
 
 language = "C"
+no_includes = true
+sys_includes = ["stdint.h"]
 
 [parse.expand]
 crates = ["glean-ffi"]
