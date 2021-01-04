@@ -335,9 +335,7 @@ fun waitForPingContent(
 ): JSONObject?
 {
     var parsedPayload: JSONObject? = null
-    var attempts = 0
-    do {
-        attempts += 1
+    for (attempts in 1..maxAttempts) {
         val request = server.takeRequest(20L, java.util.concurrent.TimeUnit.SECONDS) ?: break
         val docType = request.path.split("/")[3]
         if (pingName == docType) {
@@ -352,7 +350,7 @@ fun waitForPingContent(
                 break
             }
         }
-    } while (attempts < maxAttempts)
+    }
 
     return parsedPayload
 }
