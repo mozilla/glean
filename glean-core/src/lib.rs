@@ -446,9 +446,9 @@ impl Glean {
         // so that it can't be accessed until this function is done.
         let _lock = self.upload_manager.clear_ping_queue();
 
-        // There is only two metrics that we want to survive after clearing all
-        // metrics: first_run_date and first_run_hour. Here, we store its value
-        // so we can restore it after clearing the metrics.
+        // There are only two metrics that we want to survive after clearing all
+        // metrics: first_run_date and first_run_hour. Here, we store their values
+        // so we can restore them after clearing the metrics.
         let existing_first_run_date = self
             .core_metrics
             .first_run_date
