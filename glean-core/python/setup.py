@@ -6,6 +6,7 @@
 
 from distutils.command.build import build as _build
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -136,10 +137,30 @@ class InstallPlatlib(install):
             self.install_lib = self.install_platlib
 
 
+def get_rustc_config():
+    """
+    Get the rustc configuration values from `rustc --print cfg`, parsed into a
+    dictionary.
+    """
+    regex = re.compile(r"(?P<key>[^=]+)(=\"(?P<value>\S+?)\")?")
+
+    output = subprocess.check_output(["rustc", "--print", "cfg"]).decode("utf-8")
+
+    data = {}
+    for line in output.splitlines():
+        match = regex.match(line)
+        if match:
+            d = match.groupdict()
+            data[d["key"]] = d["value"]
+
+    return data
+
+
 class build(_build):
     def run(self):
         try:
-            subprocess.run(["cargo"])
+            # Use `check_output` to suppress output
+            subprocess.check_output(["cargo"])
         except subprocess.CalledProcessError:
             print("Install Rust and Cargo through Rustup: https://rustup.rs/.")
             print(
@@ -147,11 +168,21 @@ class build(_build):
             )
             sys.exit(1)
 
+        env = os.environ.copy()
+        config = get_rustc_config()
+
+        # For `musl`-based targets (e.g. Alpine Linux), we need to set a flag
+        # to produce a shared object Python extension.
+        if config.get("target_env") == "musl":
+            env["RUSTFLAGS"] = (
+                env.get("RUSTFLAGS", "") + " -C target-feature=-crt-static"
+            )
+
         command = ["cargo", "build", "--package", "glean-ffi"]
         if buildvariant != "debug":
             command.append(f"--{buildvariant}")
 
-        subprocess.run(command, cwd=SRC_ROOT)
+        subprocess.run(command, cwd=SRC_ROOT, env=env)
         shutil.copyfile(
             shared_object_build_dir / buildvariant / shared_object,
             PYTHON_ROOT / "glean" / shared_object,
