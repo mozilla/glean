@@ -27,24 +27,21 @@ function onClickTab(event) {
  * :param language: The language to switch to.
  */
 function switchTab(container, language) {
-    let tab_contents_container = container.children[1];
-    for (i = 0; i < tab_contents_container.children.length; ++i) {
-        let tab = tab_contents_container.children[i];
-        if (tab.dataset.lang === language) {
-            tab.style.display = "block";
-        } else {
-            tab.style.display = "none";
-        }
+    const previouslyActiveTab = container.querySelector(".tabcontents.active");
+    previouslyActiveTab && previouslyActiveTab.classList.remove(".tabcontents active");
+    let tab = container.querySelector(`.tabcontents [data-value="${language}"]`);
+    if (!tab) {
+        tab = container.querySelector(".tabcontents .tab");
     }
+    tab.classList.add("active");
 
-    let tab_container = container.children[0];
-    for (i = 0; i < tab_container.children.length; ++i) {
-        let button = tab_container.children[i];
-        button.className = button.className.replace(" active", "");
-        if (button.dataset.lang === language) {
-            button.className += " active";
-        }
+    const previouslyActiveButton = container.querySelector(".tabbar.active");
+    previouslyActiveButton && previouslyActiveButton.classList.remove(".tabbar active");
+    let button = container.querySelector(`.tabbar [data-value="${language}"]`);
+    if (!button) {
+        button = container.querySelector(".tabbar button");
     }
+    button.classList.add("active");
 }
 
 /**
