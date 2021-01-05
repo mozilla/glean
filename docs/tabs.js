@@ -31,9 +31,9 @@ function switchTab(container, language) {
     for (i = 0; i < tab_contents_container.children.length; ++i) {
         let tab = tab_contents_container.children[i];
         if (tab.dataset.lang === language) {
-            tab.style.visibility = "visible";
+            tab.style.display = "block";
         } else {
-            tab.style.visibility = "hidden";
+            tab.style.display = "none";
         }
     }
 
@@ -83,15 +83,6 @@ function openTabs() {
             button.onclick = onClickTab;
             button.innerText = tabcontent.dataset.lang;
             tabs.appendChild(button);
-        }
-
-        // Set up the spacing and layout based on the number of active tabs
-        let numTabs = tabcontents.children.length;
-        tabcontents.style.width = `${numTabs * 100}%`;
-        for (let j = 0; j < numTabs; ++j) {
-            let tab = tabcontents.children[j];
-            tab.style.transform = `translateX(-${j * 100}%)`;
-            tab.style.width = `calc(${100 / numTabs}% - 26px)`;
         }
     }
 
