@@ -81,11 +81,15 @@ class GleanTest {
 
         // Make sure the number of request received thus far is only 1,
         // we are only expecting one baseline ping.
-        assertEquals(server.requestCount, 1)
+        assertEquals(server.requestCount, 2)
 
-        val request = server.takeRequest(20L, TimeUnit.SECONDS)
-        val docType = request.path.split("/")[3]
+        var request = server.takeRequest(20L, TimeUnit.SECONDS)
+        var docType = request.path.split("/")[3]
         assertEquals("baseline", docType)
+
+        request = server.takeRequest(20L, TimeUnit.SECONDS)
+        docType = request.path.split("/")[3]
+        assertEquals("metrics", docType)
     }
 
     @Test
@@ -222,21 +226,7 @@ class GleanTest {
                     //   - seq: 0, reason: foreground, duration: null
                     //   - seq: 1, reason: background, duration: non-null
                     //   - seq: 2, reason: foreground, duration: null
-                    if (seq == 0 || seq == 2) {
-                        // We may get error metrics in foreground pings,
-                        // so 'metrics' may exist.
-                        if (json.has("metrics")) {
-                            val baselineMetricsObject = json.getJSONObject("metrics")
-                            // Since we are only expecting error metrics,
-                            // let's check that this is all we got.
-                            assertEquals(1, baselineMetricsObject.length())
-                            val baselineLabeledCounters = baselineMetricsObject.getJSONObject("labeled_counter")
-                            baselineLabeledCounters.keys().forEach {
-                                assert(it.startsWith("glean.error"))
-                            }
-                        }
-                        assertEquals("foreground", json.getJSONObject("ping_info").getString("reason"))
-                    } else if (seq == 1) {
+                    if (seq == 1) {
                         val baselineMetricsObject = json.getJSONObject("metrics")
                         assertEquals("background", json.getJSONObject("ping_info").getString("reason"))
                         val baselineTimespanMetrics = baselineMetricsObject.getJSONObject("timespan")
@@ -270,26 +260,17 @@ class GleanTest {
             // Trigger worker task to upload the pings in the background
             triggerWorkManager(context)
 
-            val request = server.takeRequest(20L, TimeUnit.SECONDS)
-            val docType = request.path.split("/")[3]
+            var request = server.takeRequest(20L, TimeUnit.SECONDS)
+            var docType = request.path.split("/")[3]
             assertEquals("The received ping must be a 'baseline' ping", "baseline", docType)
 
             val baselineJson = JSONObject(request.getPlainBody())
             assertEquals("dirty_startup", baselineJson.getJSONObject("ping_info")["reason"])
             checkPingSchema(baselineJson)
 
-            // We may get error metrics in dirty startup pings,
-            // so 'metrics' may exist.
-            if (baselineJson.has("metrics")) {
-                val baselineMetricsObject = baselineJson.getJSONObject("metrics")
-                // Since we are only expecting error metrics,
-                // let's check that this is all we got.
-                assertEquals(1, baselineMetricsObject.length())
-                val baselineLabeledCounters = baselineMetricsObject.getJSONObject("labeled_counter")
-                baselineLabeledCounters.keys().forEach {
-                    assert(it.startsWith("glean.error"))
-                }
-            }
+            request = server.takeRequest(20L, TimeUnit.SECONDS)
+            docType = request.path.split("/")[3]
+            assertEquals("The received ping must be a 'metrics' ping", "metrics", docType)
         } finally {
             server.shutdown()
         }
