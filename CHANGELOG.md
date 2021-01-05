@@ -4,6 +4,8 @@
 
 * Rust
   * BUGFIX: Don't require mutable references in RLB traits ([#1417](https://github.com/mozilla/glean/pull/1417)).
+* Python
+  * Building the Python package from source now works on musl-based Linux distributions, such as Alpine Linux.
 
 # v33.9.1 (2020-12-17)
 
