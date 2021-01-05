@@ -27,17 +27,17 @@ function onClickTab(event) {
  * :param language: The language to switch to.
  */
 function switchTab(container, language) {
-    const previouslyActiveTab = container.querySelector(".tabcontents.active");
-    previouslyActiveTab && previouslyActiveTab.classList.remove(".tabcontents active");
-    let tab = container.querySelector(`.tabcontents [data-value="${language}"]`);
+    const previouslyActiveTab = container.querySelector(".tabcontents .active");
+    previouslyActiveTab && previouslyActiveTab.classList.remove("active");
+    let tab = container.querySelector(`.tabcontents [data-lang="${language}"]`);
     if (!tab) {
         tab = container.querySelector(".tabcontents .tab");
     }
     tab.classList.add("active");
 
-    const previouslyActiveButton = container.querySelector(".tabbar.active");
-    previouslyActiveButton && previouslyActiveButton.classList.remove(".tabbar active");
-    let button = container.querySelector(`.tabbar [data-value="${language}"]`);
+    const previouslyActiveButton = container.querySelector(".tabbar .active");
+    previouslyActiveButton && previouslyActiveButton.classList.remove("active");
+    let button = container.querySelector(`.tabbar [data-lang="${language}"]`);
     if (!button) {
         button = container.querySelector(".tabbar button");
     }
