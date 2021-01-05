@@ -115,7 +115,7 @@ fn validate_against_schema() {
         Ok(()) => {}
         Err(e) => {
             let errors = e.map(|e| format!("{}", e)).collect::<Vec<_>>();
-            unreachable!("Data: {:#?}\nErrors: {:#?}", data, errors);
+            panic!("Data: {:#?}\nErrors: {:#?}", data, errors);
         }
     }
 }
