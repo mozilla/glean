@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.9.1...main)
 
+* Rust
+  * BUGFIX: Don't require mutable references in RLB traits ([#1417](https://github.com/mozilla/glean/pull/1417)).
+
 # v33.9.1 (2020-12-17)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.9.0...v33.9.1)
