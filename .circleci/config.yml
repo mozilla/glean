@@ -767,6 +767,20 @@ jobs:
           root: glean-core/python/
           paths: .venv3.9
 
+  Python 3_9 on Alpine tests:
+    docker:
+      - image: python:3.9-alpine
+    shell: /bin/sh -leo pipefail
+    environment:
+      - BASH_ENV: /etc/profile
+    steps:
+      - run:
+          name: Install dependencies
+          command: |
+            apk add curl git gcc musl-dev libffi-dev openssh-client make openssl-dev
+      - checkout
+      - test-python
+
   Python Windows x86_64 tests:
     docker:
       - image: circleci/python:3.8.5
@@ -1125,6 +1139,7 @@ workflows:
       - Python 3_8 tests
       - Python 3_8 tests minimum dependencies
       - Python 3_9 tests
+      - Python 3_9 on Alpine tests
       - Python Windows x86_64 tests
       - Python Windows i686 tests
 

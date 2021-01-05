@@ -26,7 +26,7 @@ $(GLEAN_PYENV)/bin/python3:
 	python3 -m venv $(GLEAN_PYENV)
 	$(GLEAN_PYENV)/bin/pip install --upgrade pip
 	$(GLEAN_PYENV)/bin/pip install --use-feature=2020-resolver -r glean-core/python/requirements_dev.txt
-	bash -c "if [ \"$(GLEAN_PYDEPS)\" == \"min\" ]; then \
+	sh -c "if [ \"$(GLEAN_PYDEPS)\" == \"min\" ]; then \
 		$(GLEAN_PYENV)/bin/pip install requirements-builder; \
 		$(GLEAN_PYENV)/bin/requirements-builder --level=min glean-core/python/setup.py > min_requirements.txt; \
 		$(GLEAN_PYENV)/bin/pip install --use-feature=2020-resolver -r min_requirements.txt; \
