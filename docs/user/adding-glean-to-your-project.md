@@ -140,8 +140,8 @@ carthage update --platform iOS
 
 We recommend using a virtual environment for your work to isolate the dependencies for your project. There are many popular abstractions on top of virtual environments in the Python ecosystem which can help manage your project dependencies.
 
-The Glean SDK Python bindings currently have [prebuilt wheels on PyPI for Windows (i686 and x86_64), Linux (x86_64) and macOS (x86_64)](https://pypi.org/project/glean-sdk/#files).
-For other platforms, the `glean_sdk` package will be built from source on your machine.
+The Glean SDK Python bindings currently have [prebuilt wheels on PyPI for Windows (i686 and x86_64), Linux/glibc (x86_64) and macOS (x86_64)](https://pypi.org/project/glean-sdk/#files).
+For other platforms, including *BSD or Linux distributions that don't use glibc, such as Alpine Linux, the `glean_sdk` package will be built from source on your machine.
 This requires that Cargo and Rust are already installed.
 The easiest way to do this is through [rustup](https://rustup.rs/).
 

@@ -6,6 +6,8 @@
   * A new metric `glean.validation.first_run_hour`, analogous to the existing `first_run_date` but with hour resolution, has been added. Only clients running the app for the first time after this change will report this metric. [#1403](https://github.com/mozilla/glean/pull/1403)
 * Rust
   * BUGFIX: Don't require mutable references in RLB traits ([#1417](https://github.com/mozilla/glean/pull/1417)).
+* Python
+  * Building the Python package from source now works on musl-based Linux distributions, such as Alpine Linux.
 
 # v33.9.1 (2020-12-17)
 
