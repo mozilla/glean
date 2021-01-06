@@ -1,6 +1,12 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v33.10.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v33.10.1...main)
+
+# v33.10.1 (2021-01-06)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v33.10.0...v33.10.1)
+
+No functional changes. v33.10.0 failed to generated iOS artifacts due to broken tests ([#1421](https://github.com/mozilla/glean/pull/1421)).
 
 # v33.10.0 (2021-01-06)
 
