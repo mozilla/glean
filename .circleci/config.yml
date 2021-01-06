@@ -396,6 +396,33 @@ jobs:
             - docs/docs
             - docs/index.html
 
+  Publish Rust crates:
+    docker:
+      - image: circleci/rust:latest
+    steps:
+      - checkout
+      - run:
+          name: Publish Cargo Package
+          command: |
+            # Login to crates.io so the following commands work
+            cargo login -- "$CRATES_IO_TOKEN"
+
+            # Publish all crates from CI.
+            # The token is set in CircleCI settings.
+            # Need some sleep inbetween to ensure crates.io is updated.
+
+            pushd glean-core
+            cargo publish --verbose
+
+            sleep 30
+            pushd ffi
+            cargo publish --verbose
+            popd
+
+            sleep 30
+            pushd rlb
+            cargo publish --verbose
+
   ###########################################################################
   # Android / Kotlin / Java
 
@@ -1214,4 +1241,6 @@ workflows:
       - Carthage release:
           requires:
             - iOS build and test
+          filters: *release-filters
+      - Publish Rust crates:
           filters: *release-filters

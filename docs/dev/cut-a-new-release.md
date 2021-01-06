@@ -81,20 +81,11 @@ When CI has finished and is green for your specific release branch, you are read
 5. Wait for the CI build to complete for the tag.
     * You can check [on CircleCI for the running build](https://circleci.com/gh/mozilla/glean).
     * You can find the TaskCluster task on the corresponding commit. See [How to find TaskCluster tasks](ci.md#how-to-find-taskcluster-tasks) for details.
-6. Release the Rust crates:
-    ```
-    cd glean-core
-    cargo publish --verbose
-    cd ffi
-    cargo publish --verbose
-    cd .. && cd rlb
-    cargo publish --verbose
-    ```
-7. Send a pull request to merge back the specific release branch to the development branch: <https://github.com/mozilla/glean/compare/main...release-v25.0.0?expand=1>
+6. Send a pull request to merge back the specific release branch to the development branch: <https://github.com/mozilla/glean/compare/main...release-v25.0.0?expand=1>
     * This is important so that no changes are lost.
     * This might have merge conflicts with the `main` branch, which you need to fix before it is merged.
-8. Once the above pull request lands, delete the specific release branch.
-9. Update `glean-ffi` in the iOS megazord. See the [application-services documentation for that](https://github.com/mozilla/application-services/blob/main/megazords/ios/README.md#glean-component).
+7. Once the above pull request lands, delete the specific release branch.
+8. Update `glean-ffi` in the iOS megazord. See the [application-services documentation for that](https://github.com/mozilla/application-services/blob/main/megazords/ios/README.md#glean-component).
 
 ## Hotfix release for latest version
 
@@ -147,18 +138,11 @@ When CI has finished and is green for your hotfix branch, you are ready to cut a
 5. Wait for the CI build to complete for the tag.
     * You can check [on CircleCI for the running build](https://circleci.com/gh/mozilla/glean).
     * You can find the TaskCluster task on the corresponding commit. See [How to find TaskCluster tasks](ci.md#how-to-find-taskcluster-tasks) for details.
-6. Release the Rust crates:
-    ```
-    cd glean-core
-    cargo publish --verbose
-    cd ffi
-    cargo publish --verbose
-    ```
-7. Send a pull request to merge back the hotfix branch to the development branch: <https://github.com/mozilla/glean/compare/main...hotfix-v25.0.1?expand=1>
+6. Send a pull request to merge back the hotfix branch to the development branch: <https://github.com/mozilla/glean/compare/main...hotfix-v25.0.1?expand=1>
     * This is important so that no changes are lost.
     * This might have merge conflicts with the `main` branch, which you need to fix before it is merged.
-8. Once the above pull request lands, delete the hotfix branch.
-9. Update `glean-ffi` in the iOS megazord. See the [application-services documentation for that](https://github.com/mozilla/application-services/blob/main/megazords/ios/README.md#glean-component).
+7. Once the above pull request lands, delete the hotfix branch.
+8. Update `glean-ffi` in the iOS megazord. See the [application-services documentation for that](https://github.com/mozilla/application-services/blob/main/megazords/ios/README.md#glean-component).
 
 ## Hotfix release for previous version
 
@@ -207,17 +191,10 @@ If you need to release a hotfix for a previously released version (that is: not 
 5. Wait for the CI build to complete for the tag.
     * You can check [on CircleCI for the running build](https://circleci.com/gh/mozilla/glean).
     * You can find the TaskCluster task on the corresponding commit. See [How to find TaskCluster tasks](ci.md#how-to-find-taskcluster-tasks) for details.
-6. Release the Rust crates:
-    ```
-    cd glean-core
-    cargo publish --verbose
-    cd ffi
-    cargo publish --verbose
-    ```
-7. Send a pull request to merge back any bug fixes to the development branch: <https://github.com/mozilla/glean/compare/main...support/v24.0?expand=1>
+6. Send a pull request to merge back any bug fixes to the development branch: <https://github.com/mozilla/glean/compare/main...support/v24.0?expand=1>
     * This is important so that no changes are lost.
     * This might have merge conflicts with the `main` branch, which you need to fix before it is merged.
-8. Once the above pull request lands, delete the support branch.
+7. Once the above pull request lands, delete the support branch.
 
 ## Upgrading android-components to a new version of Glean
 
