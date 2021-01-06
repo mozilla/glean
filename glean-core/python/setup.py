@@ -4,6 +4,10 @@
 
 """The setup script."""
 
+# setuptools must be imported first
+from setuptools import setup, Distribution, find_packages
+from setuptools.command.install import install
+
 from distutils.command.build import build as _build
 import os
 import re
@@ -11,8 +15,6 @@ import shutil
 import subprocess
 import sys
 
-from setuptools import setup, Distribution, find_packages
-from setuptools.command.install import install
 import wheel.bdist_wheel
 
 
