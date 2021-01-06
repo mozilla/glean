@@ -16,7 +16,16 @@ function onClickTab(event) {
     let target = event.currentTarget;
     let language = target.dataset.lang;
 
+    const initialTargetOffset = target.offsetTop;
+    const initialScrollPosition = window.scrollY;
     switchAllTabs(language);
+
+    // Keep initial perceived scroll position after resizing
+    // that may happen due to activation of multiple tabs in the same page.
+    const finalTargetOffset = target.offsetTop;
+    window.scrollTo({
+        top: initialScrollPosition + (finalTargetOffset - initialTargetOffset)
+    });
 }
 
 /**
@@ -30,18 +39,12 @@ function switchTab(container, language) {
     const previouslyActiveTab = container.querySelector(".tabcontents .active");
     previouslyActiveTab && previouslyActiveTab.classList.remove("active");
     let tab = container.querySelector(`.tabcontents [data-lang="${language}"]`);
-    if (!tab) {
-        tab = container.querySelector(".tabcontents .tab");
-    }
-    tab.classList.add("active");
+    tab && tab.classList.add("active");
 
     const previouslyActiveButton = container.querySelector(".tabbar .active");
     previouslyActiveButton && previouslyActiveButton.classList.remove("active");
     let button = container.querySelector(`.tabbar [data-lang="${language}"]`);
-    if (!button) {
-        button = container.querySelector(".tabbar button");
-    }
-    button.classList.add("active");
+    button && button.classList.add("active");
 }
 
 /**
@@ -50,7 +53,7 @@ function switchTab(container, language) {
  * :param language: The language to switch to.
  */
 function switchAllTabs(language) {
-    let containers = document.getElementsByClassName("tabs");
+    const containers = document.getElementsByClassName("tabs");
     for (let i = 0; i < containers.length; ++i) {
         switchTab(containers[i], language);
     }
