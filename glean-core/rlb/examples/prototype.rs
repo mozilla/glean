@@ -7,7 +7,7 @@ use std::env;
 use once_cell::sync::Lazy;
 use tempfile::Builder;
 
-use glean::{private::PingType, ClientInfoMetrics, Configuration, Error};
+use glean::{private::PingType, ClientInfoMetrics, Configuration};
 
 pub mod glean_metrics {
     use glean::{private::BooleanMetric, CommonMetricData, Lifetime};
@@ -30,7 +30,7 @@ pub mod glean_metrics {
 pub static PrototypePing: Lazy<PingType> =
     Lazy::new(|| PingType::new("prototype", true, true, vec![]));
 
-fn main() -> Result<(), Error> {
+fn main() {
     env_logger::init();
 
     let mut args = env::args().skip(1);
@@ -64,6 +64,4 @@ fn main() -> Result<(), Error> {
     glean_metrics::sample_boolean.set(true);
 
     glean::submit_ping_by_name("prototype", None);
-
-    Ok(())
 }

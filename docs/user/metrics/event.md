@@ -180,6 +180,56 @@ assert_eq!(0, views::login_opened.test_get_num_recorded_errors(ErrorType::Invali
 
 </div>
 
+<div data-lang="C++" class="tab">
+
+> **Note**: C++ APIs are only available in Firefox Desktop.
+
+```c++
+#include "mozilla/glean/GleanMetrics.h"
+
+using mozilla::glean::views::LoginOpenedKeys;
+nsTArray<Tuple<LoginOpenedKeys, nsCString>> extra;
+nsCString source = "toolbar"_ns;
+extra.AppendElement(MakeTuple(LoginOpenedKeys::SourceOfLogin, source));
+
+mozilla::glean::views::login_opened.Record(std::move(extra))
+```
+
+There are test APIs available too:
+
+```c++
+#include "mozilla/glean/GleanMetrics.h"
+
+// Does it have a value?
+ASSERT_TRUE(mozilla::glean::views::login_opened.TestGetValue().isSome());
+// Does it have the expected value?
+// TODO: https://bugzilla.mozilla.org/show_bug.cgi?id=1678567
+// Did it run across any errors?
+// TODO: https://bugzilla.mozilla.org/show_bug.cgi?id=1683171
+```
+
+</div>
+
+<div data-lang="JS" class="tab">
+
+> **Note**: JS APIs are only available in Firefox Desktop.
+
+```js
+let extra = { sourceOfLogin: "toolbar" };
+Glean.views.loginOpened.record(extra);
+```
+
+There are test APIs available too:
+
+```js
+// Does it have the expected value?
+// TODO: https://bugzilla.mozilla.org/show_bug.cgi?id=1678567
+// Did it run across any errors?
+// TODO: https://bugzilla.mozilla.org/show_bug.cgi?id=1683171
+```
+
+</div>
+
 {{#include ../../tab_footer.md}}
 
 ## Limits

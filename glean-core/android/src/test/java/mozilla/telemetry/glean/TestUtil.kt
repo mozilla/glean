@@ -319,3 +319,38 @@ fun <T> capture(value: ArgumentCaptor<T>): T {
 
 @Suppress("UNCHECKED_CAST")
 internal fun <T> uninitialized(): T = null as T
+
+/**
+ * Waits for ping with the given name to be received
+ * in the test ping server.
+ *
+ * @param pingName the name of the ping to wait for
+ * @param maxAttempts the maximum number of attempts
+ */
+fun waitForPingContent(
+    pingName: String,
+    pingReason: String?,
+    server: MockWebServer,
+    maxAttempts: Int = 3
+): JSONObject?
+{
+    var parsedPayload: JSONObject? = null
+    for (attempts in 1..maxAttempts) {
+        val request = server.takeRequest(20L, java.util.concurrent.TimeUnit.SECONDS) ?: break
+        val docType = request.path.split("/")[3]
+        if (pingName == docType) {
+            parsedPayload = JSONObject(request.getPlainBody())
+            if (pingReason == null) {
+                break
+            }
+
+            // If we requested a specific ping reason, look for it.
+            val reason = parsedPayload.getJSONObject("ping_info").getString("reason")
+            if (reason == pingReason) {
+                break
+            }
+        }
+    }
+
+    return parsedPayload
+}

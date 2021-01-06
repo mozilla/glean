@@ -67,6 +67,7 @@ The following metrics are added to the ping:
 | Name | Type | Description | Data reviews | Extras | Expiration | [Data Sensitivity](https://wiki.mozilla.org/Firefox/Data_Collection) |
 | --- | --- | --- | --- | --- | --- | --- |
 | glean.baseline.duration |[timespan](https://mozilla.github.io/glean/book/user/metrics/timespan.html) |The duration of the last foreground session.  |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3)||never |1, 2 |
+| glean.validation.first_run_hour |[datetime](https://mozilla.github.io/glean/book/user/metrics/datetime.html) |The hour of the first run of the application.  |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1680783#c5)||never |1 |
 
 ## deletion-request
 
@@ -135,6 +136,7 @@ The following metrics are added to the ping:
 | glean.upload.pending_pings |[counter](https://mozilla.github.io/glean/book/user/metrics/counter.html) |The total number of pending pings at startup. This does not include deletion-request pings.  |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1665041#c23)||never |1 |
 | glean.upload.pending_pings_directory_size |[memory_distribution](https://mozilla.github.io/glean/book/user/metrics/memory_distribution.html) |The size of the pending pings directory upon initialization of Glean. This does not include the size of the deletion request pings directory.  |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1601550#c3)||never |1 |
 | glean.upload.ping_upload_failure |[labeled_counter](https://mozilla.github.io/glean/book/user/metrics/labeled_counters.html) |Counts the number of ping upload failures, by type of failure. This includes failures for all ping types, though the counts appear in the next successfully sent `metrics` ping.  |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1589124#c1)|<ul><li>status_code_4xx</li><li>status_code_5xx</li><li>status_code_unknown</li><li>unrecoverable</li><li>recoverable</li></ul>|never |1 |
+| glean.validation.first_run_hour |[datetime](https://mozilla.github.io/glean/book/user/metrics/datetime.html) |The hour of the first run of the application.  |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1680783#c5)||never |1 |
 
 
 Data categories are [defined here](https://wiki.mozilla.org/Firefox/Data_Collection).

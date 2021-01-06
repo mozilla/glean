@@ -1,6 +1,6 @@
 [package]
 name = "glean"
-version = "33.9.1"
+version = "33.10.0"
 authors = ["Jan-Erik Rediger <jrediger@mozilla.com>", "The Glean Team <glean-team@mozilla.com>"]
 description = "Glean SDK Rust language bindings"
 repository = "https://github.com/mozilla/glean"
@@ -22,10 +22,10 @@ maintenance = { status = "actively-developed" }
 
 [dependencies.glean-core]
 path = ".."
-version = "33.9.1"
+version = "33.10.0"
 
 [dependencies]
-crossbeam-channel = "0.4.3"
+crossbeam-channel = "0.5"
 inherent = "0.1.4"
 log = "0.4.8"
 once_cell = "1.2.0"

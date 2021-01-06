@@ -68,7 +68,7 @@ class SampleApplication : Application() {
 ```
 
 Once initialized, if `uploadEnabled` is true, the Glean SDK will automatically start collecting [baseline metrics](pings/metrics.md) and sending its [pings](pings/index.md), according to their respective schedules.  
-If `uploadEnabled` is false, any persisted metrics, events and pings (other than `first_run_date`) are cleared, and subsequent calls to record metrics will be no-ops.
+If `uploadEnabled` is false, any persisted metrics, events and pings (other than `first_run_date` and `first_run_hour`) are cleared, and subsequent calls to record metrics will be no-ops.
 
 The Glean SDK should be initialized as soon as possible, and importantly, before any other libraries in the application start using Glean.
 Library code should never call `Glean.initialize`, since it should be called exactly once per application.
@@ -129,7 +129,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 ```
 
 Once initialized, if `uploadEnabled` is true, the Glean SDK will automatically start collecting [baseline metrics](pings/metrics.md) and sending its [pings](pings/index.md), according to their respective schedules.  
-If `uploadEnabled` is false, any persisted metrics, events and pings (other than `first_run_date`) are cleared, and subsequent calls to record metrics will be no-ops.
+If `uploadEnabled` is false, any persisted metrics, events and pings (other than `first_run_date` and `first_run_hour`) are cleared, and subsequent calls to record metrics will be no-ops.
 
 The Glean SDK should be initialized as soon as possible, and importantly, before any other libraries in the application start using Glean.
 Library code should never call `Glean.shared.initialize`, since it should be called exactly once per application.
@@ -162,7 +162,7 @@ Glean.initialize(
 ```
 
 Once initialized, if `upload_enabled` is true, the Glean SDK will automatically start collecting [baseline metrics](pings/metrics.md).
-If `upload_enabled` is false, any persisted metrics, events and pings (other than `first_run_date`) are cleared, and subsequent calls to record metrics will be no-ops.
+If `upload_enabled` is false, any persisted metrics, events and pings (other than `first_run_date` and `first_run_hour`) are cleared, and subsequent calls to record metrics will be no-ops.
 
 Additional configuration is available on the `glean.Configuration` object, which can be passed into `Glean.initialize()`.
 
@@ -253,5 +253,5 @@ Set the initial state using `uploadEnabled` on `GleanInstance.initialize()`.
 
 The application should provide some form of user interface to call this method.
 
-When going from enabled to disabled, all pending events, metrics and pings are cleared, except for [`first_run_date`](pings/index.html#the-client_info-section).
+When going from enabled to disabled, all pending events, metrics and pings are cleared, except for [`first_run_date` and `first_run_hour`](pings/index.html#the-client_info-section).
 When re-enabling, core Glean metrics will be recomputed at that time.

@@ -39,3 +39,4 @@ They could be release notes, documentation, hopes, dreams, or whatever: so long 
 * 2020-11-02: [Glean.js](https://blog.mozilla.org/data/2020/11/02/this-week-in-glean-glean-js/)
 * 2020-11-19: [Fantastic Facts and Where To Find Them](https://blog.mozilla.org/data/2020/11/19/this-week-in-glean-fantastic-facts-and-where-to-find-them/)
 * 2020-12-01: [Glean is Frictionless Data Collection](https://blog.mozilla.org/data/2020/12/01/this-week-in-glean-glean-is-frictionless-data-collection/)
+* 2020-12-18: [Glean in 2021](https://fnordig.de/2020/12/18/glean-in-2021/)

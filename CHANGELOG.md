@@ -1,6 +1,17 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v33.9.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v33.10.0...main)
+
+# v33.10.0 (2021-01-06)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v33.9.1...v33.10.0)
+
+* General
+  * A new metric `glean.validation.first_run_hour`, analogous to the existing `first_run_date` but with hour resolution, has been added. Only clients running the app for the first time after this change will report this metric ([#1403](https://github.com/mozilla/glean/pull/1403)).
+* Rust
+  * BUGFIX: Don't require mutable references in RLB traits ([#1417](https://github.com/mozilla/glean/pull/1417)).
+* Python
+  * Building the Python package from source now works on musl-based Linux distributions, such as Alpine Linux ([#1416](https://github.com/mozilla/glean/pull/1416)).
 
 # v33.9.1 (2020-12-17)
 
@@ -9,23 +20,23 @@
 * Rust
   * BUGFIX: Don't panic on shutdown and avoid running tasks if uninitialized ([#1398](https://github.com/mozilla/glean/pull/1398)).
   * BUGFIX: Don't fail on empty database files ([#1398](https://github.com/mozilla/glean/pull/1398)).
-  * BUGFIX: Support ping registration before Glean initializes [#1393](https://github.com/mozilla/glean/pull/1393).
+  * BUGFIX: Support ping registration before Glean initializes ([#1393](https://github.com/mozilla/glean/pull/1393)).
 
 # v33.9.0 (2020-12-15)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.8.0...v33.9.0)
 
 * Rust
-  * Introduce the String List metric type in the RLB. [#1380](https://github.com/mozilla/glean/pull/1380).
-  * Introduce the `Datetime` metric type in the RLB [#1384](https://github.com/mozilla/glean/pull/1384).
-  * Introduce the `CustomDistribution` and `TimingDistribution` metric type in the RLB [#1394](https://github.com/mozilla/glean/pull/1394).
+  * Introduce the String List metric type in the RLB. ([#1380](https://github.com/mozilla/glean/pull/1380)).
+  * Introduce the `Datetime` metric type in the RLB ([#1384](https://github.com/mozilla/glean/pull/1384)).
+  * Introduce the `CustomDistribution` and `TimingDistribution` metric type in the RLB ([#1394](https://github.com/mozilla/glean/pull/1394)).
 
 # v33.8.0 (2020-12-10)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.7.0...v33.8.0)
 
 * Rust
-  * Introduce the Memory Distribution metric type in the RLB. [#1376](https://github.com/mozilla/glean/pull/1376)
+  * Introduce the Memory Distribution metric type in the RLB. ([#1376](https://github.com/mozilla/glean/pull/1376)).
   * Shut down Glean in tests before resetting to make sure they don't mistakenly init Glean twice in parallel ([#1375](https://github.com/mozilla/glean/pull/1375)).
   * BUGFIX: Fixing 2 `lock-order-inversion` bugs found by TSan ([#1378](https://github.com/mozilla/glean/pull/1378)).
     * TSan runs on mozilla-central tests, which found two (potential) bugs where 2 different locks were acquired in opposite order in different code paths,
@@ -50,7 +61,7 @@
 
 * Rust
   * BUGFIX: Negative timespans for the timespan metric now correctly record an `InvalidValue` error ([#1347](https://github.com/mozilla/glean/pull/1347)).
-  * Introduce the Timespan metric type in the RLB [#1347](https://github.com/mozilla/glean/pull/1347).
+  * Introduce the Timespan metric type in the RLB ([#1347](https://github.com/mozilla/glean/pull/1347)).
 * Python
   * BUGFIX: Network slowness or errors will no longer block the main dispatcher thread, leaving work undone on shutdown ([#1350](https://github.com/mozilla/glean/pull/1350)).
   * BUGFIX: Lower sleep time on upload waits to avoid being stuck when the main process ends ([#1349](https://github.com/mozilla/glean/pull/1349)).
@@ -61,7 +72,7 @@
 
 * Rust
   * Introduce the UUID metric type in the RLB.
-  * Introduce the Labeled metric type in the RLB [#1327](https://github.com/mozilla/glean/pull/1327).
+  * Introduce the Labeled metric type in the RLB ([#1327](https://github.com/mozilla/glean/pull/1327)).
   * Introduce the Quantity metric type in the RLB.
   * Introduce the `shutdown` API.
   * Add Glean debugging APIs.
