@@ -113,8 +113,8 @@ class GleanTests: XCTestCase {
             let metrics = json?["metrics"] as? [String: Any]
             if metrics != nil {
                 // Since we are only expecting error metrics,
-                // let's check that this is all we got.
-                XCTAssertEqual(metrics?.count, 1, "metrics has more keys than expected: \(JSONStringify(metrics!))")
+                // let's check that this is all we got (plus the `validation.first_run_hour`).
+                XCTAssertEqual(metrics?.count, 2, "metrics has more keys than expected: \(JSONStringify(metrics!))")
                 let labeledCounters = metrics?["labeled_counter"] as? [String: Any]
                 labeledCounters!.forEach { key, _ in
                     XCTAssertTrue(key.starts(with: "glean.error"))
@@ -161,8 +161,8 @@ class GleanTests: XCTestCase {
             let metrics = json?["metrics"] as? [String: Any]
             if metrics != nil {
                 // Since we are only expecting error metrics,
-                // let's check that this is all we got.
-                XCTAssertEqual(metrics?.count, 1, "metrics has more keys than expected: \(JSONStringify(metrics!))")
+                // let's check that this is all we got (plus the `validation.first_run_hour`).
+                XCTAssertEqual(metrics?.count, 2, "metrics has more keys than expected: \(JSONStringify(metrics!))")
                 let labeledCounters = metrics?["labeled_counter"] as? [String: Any]
                 labeledCounters!.forEach { key, _ in
                     XCTAssertTrue(key.starts(with: "glean.error"))
