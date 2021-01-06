@@ -5,6 +5,10 @@ These dependencies are available under a variety of free and open source license
 the details of which are reproduced below.
 -->
   <license>
+    <name>Apache License 2.0: const_fn</name>
+    <url>https://github.com/taiki-e/const_fn</url>
+  </license>
+  <license>
     <name>Apache License 2.0: miniz_oxide</name>
     <url>https://github.com/Frommi/miniz_oxide/tree/master/miniz_oxide</url>
   </license>
@@ -115,10 +119,6 @@ the details of which are reproduced below.
   <license>
     <name>Apache License 2.0: libc</name>
     <url>https://github.com/rust-lang/libc</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: maybe-uninit</name>
-    <url>https://github.com/est31/maybe-uninit</url>
   </license>
   <license>
     <name>Apache License 2.0: num-integer</name>
