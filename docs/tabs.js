@@ -16,7 +16,16 @@ function onClickTab(event) {
     let target = event.currentTarget;
     let language = target.dataset.lang;
 
+    const initialTargetOffset = target.offsetTop;
+    const initialScrollPosition = window.scrollY;
     switchAllTabs(language);
+
+    // Keep initial perceived scroll position after resizing
+    // that may happen due to activation of multiple tabs in the same page.
+    const finalTargetOffset = target.offsetTop;
+    window.scrollTo({
+        top: initialScrollPosition + (finalTargetOffset - initialTargetOffset)
+    });
 }
 
 /**
@@ -27,24 +36,15 @@ function onClickTab(event) {
  * :param language: The language to switch to.
  */
 function switchTab(container, language) {
-    let tab_contents_container = container.children[1];
-    for (i = 0; i < tab_contents_container.children.length; ++i) {
-        let tab = tab_contents_container.children[i];
-        if (tab.dataset.lang === language) {
-            tab.style.visibility = "visible";
-        } else {
-            tab.style.visibility = "hidden";
-        }
-    }
+    const previouslyActiveTab = container.querySelector(".tabcontents .active");
+    previouslyActiveTab && previouslyActiveTab.classList.remove("active");
+    let tab = container.querySelector(`.tabcontents [data-lang="${language}"]`);
+    tab && tab.classList.add("active");
 
-    let tab_container = container.children[0];
-    for (i = 0; i < tab_container.children.length; ++i) {
-        let button = tab_container.children[i];
-        button.className = button.className.replace(" active", "");
-        if (button.dataset.lang === language) {
-            button.className += " active";
-        }
-    }
+    const previouslyActiveButton = container.querySelector(".tabbar .active");
+    previouslyActiveButton && previouslyActiveButton.classList.remove("active");
+    let button = container.querySelector(`.tabbar [data-lang="${language}"]`);
+    button && button.classList.add("active");
 }
 
 /**
@@ -53,7 +53,7 @@ function switchTab(container, language) {
  * :param language: The language to switch to.
  */
 function switchAllTabs(language) {
-    let containers = document.getElementsByClassName("tabs");
+    const containers = document.getElementsByClassName("tabs");
     for (let i = 0; i < containers.length; ++i) {
         switchTab(containers[i], language);
     }
@@ -83,15 +83,6 @@ function openTabs() {
             button.onclick = onClickTab;
             button.innerText = tabcontent.dataset.lang;
             tabs.appendChild(button);
-        }
-
-        // Set up the spacing and layout based on the number of active tabs
-        let numTabs = tabcontents.children.length;
-        tabcontents.style.width = `${numTabs * 100}%`;
-        for (let j = 0; j < numTabs; ++j) {
-            let tab = tabcontents.children[j];
-            tab.style.transform = `translateX(-${j * 100}%)`;
-            tab.style.width = `calc(${100 / numTabs}% - 26px)`;
         }
     }
 
