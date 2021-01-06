@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v33.9.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v33.10.0...main)
+
+# v33.10.0 (2021-01-06)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v33.9.1...v33.10.0)
 
 * General
   * A new metric `glean.validation.first_run_hour`, analogous to the existing `first_run_date` but with hour resolution, has been added. Only clients running the app for the first time after this change will report this metric ([#1403](https://github.com/mozilla/glean/pull/1403)).

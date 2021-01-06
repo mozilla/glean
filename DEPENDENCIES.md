@@ -16,6 +16,7 @@ the details of which are reproduced below.
 
 The following text applies to code linked from these dependencies:
 
+* [const_fn 0.4.3]( https://github.com/taiki-e/const_fn )
 * [miniz_oxide 0.4.3]( https://github.com/Frommi/miniz_oxide/tree/master/miniz_oxide )
 
 
@@ -1487,8 +1488,8 @@ The following text applies to code linked from these dependencies:
 * [cfg-if 1.0.0]( https://github.com/alexcrichton/cfg-if )
 * [const-random 0.1.11]( https://github.com/tkaitchuck/constrandom )
 * [const-random-macro 0.1.11]( https://github.com/tkaitchuck/constrandom )
-* [crossbeam-channel 0.4.4]( https://github.com/crossbeam-rs/crossbeam )
-* [crossbeam-utils 0.7.2]( https://github.com/crossbeam-rs/crossbeam )
+* [crossbeam-channel 0.5.0]( https://github.com/crossbeam-rs/crossbeam )
+* [crossbeam-utils 0.8.0]( https://github.com/crossbeam-rs/crossbeam )
 * [env_logger 0.7.1]( https://github.com/sebasmagri/env_logger/ )
 * [failure 0.1.8]( https://github.com/rust-lang-nursery/failure )
 * [ffi-support 0.4.2]( https://github.com/mozilla/application-services )
@@ -1500,7 +1501,6 @@ The following text applies to code linked from these dependencies:
 * [itoa 0.4.6]( https://github.com/dtolnay/itoa )
 * [lazy_static 1.4.0]( https://github.com/rust-lang-nursery/lazy-static.rs )
 * [libc 0.2.80]( https://github.com/rust-lang/libc )
-* [maybe-uninit 2.0.0]( https://github.com/est31/maybe-uninit )
 * [num-integer 0.1.44]( https://github.com/rust-num/num-integer )
 * [num-traits 0.2.14]( https://github.com/rust-num/num-traits )
 * [num_cpus 1.13.0]( https://github.com/seanmonstar/num_cpus )
@@ -1510,13 +1510,13 @@ The following text applies to code linked from these dependencies:
 * [percent-encoding 2.1.0]( https://github.com/servo/rust-url/ )
 * [proc-macro-hack 0.5.19]( https://github.com/dtolnay/proc-macro-hack )
 * [proc-macro2 1.0.24]( https://github.com/alexcrichton/proc-macro2 )
-* [quote 1.0.7]( https://github.com/dtolnay/quote )
+* [quote 1.0.8]( https://github.com/dtolnay/quote )
 * [serde 1.0.118]( https://github.com/serde-rs/serde )
 * [serde_derive 1.0.118]( https://github.com/serde-rs/serde )
-* [serde_json 1.0.60]( https://github.com/serde-rs/json )
-* [syn 1.0.48]( https://github.com/dtolnay/syn )
-* [thiserror 1.0.22]( https://github.com/dtolnay/thiserror )
-* [thiserror-impl 1.0.22]( https://github.com/dtolnay/thiserror )
+* [serde_json 1.0.61]( https://github.com/serde-rs/json )
+* [syn 1.0.56]( https://github.com/dtolnay/syn )
+* [thiserror 1.0.23]( https://github.com/dtolnay/thiserror )
+* [thiserror-impl 1.0.23]( https://github.com/dtolnay/thiserror )
 * [time 0.1.44]( https://github.com/time-rs/time )
 * [unicode-bidi 0.3.4]( https://github.com/servo/unicode-bidi )
 * [unicode-normalization 0.1.13]( https://github.com/unicode-rs/unicode-normalization )
@@ -3479,9 +3479,9 @@ THE SOFTWARE.
 The following text applies to code linked from these dependencies:
 
 * [benchmark 0.1.0]( https://crates.io/crates/benchmark )
-* [glean 33.9.1]( https://github.com/mozilla/glean )
-* [glean-core 33.9.1]( https://github.com/mozilla/glean )
-* [glean-ffi 33.9.1]( https://github.com/mozilla/glean )
+* [glean 33.10.0]( https://github.com/mozilla/glean )
+* [glean-core 33.10.0]( https://github.com/mozilla/glean )
+* [glean-ffi 33.10.0]( https://github.com/mozilla/glean )
 
 
 ```
