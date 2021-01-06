@@ -33,10 +33,15 @@
 
 /* The container for each individual language */
 .tab {
-    visibility: hidden;
+    display: none;
+    width: 100%;
     border: 1px solid #ccc;
     border-top: none;
     padding: 6px 12px;
+}
+
+.tab.active {
+    display: block;
 }
 
 /* The footer with the "Open on GitHub" link */
