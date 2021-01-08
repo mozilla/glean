@@ -209,10 +209,13 @@ class GleanTest {
             // Simulate going to foreground.
             lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
 
+            // Submit a metrics ping so we can check the foreground_count
+            Glean.submitPingByName("metrics")
+
             // Trigger worker task to upload the pings in the background
             triggerWorkManager(context)
 
-            for (i in 0..3) {
+            for (i in 0..5) {
                 val request = server.takeRequest(20L, TimeUnit.SECONDS)
                 val docType = request.path.split("/")[3]
                 val json = JSONObject(request.getPlainBody())
@@ -232,6 +235,16 @@ class GleanTest {
                         val baselineTimespanMetrics = baselineMetricsObject.getJSONObject("timespan")
                         assertEquals(1, baselineTimespanMetrics.length())
                         assertNotNull(baselineTimespanMetrics.get("glean.baseline.duration"))
+                    }
+                } else if (docType == "metrics") {
+                    val seq = json.getJSONObject("ping_info").getInt("seq")
+                    if (seq == 1) {
+                        assertEquals(
+                            2,
+                            json.getJSONObject("metrics")
+                                .getJSONObject("counter")
+                                .getLong("glean.validation.foreground_count")
+                        )
                     }
                 } else {
                     assertTrue("Unknown docType $docType", false)
