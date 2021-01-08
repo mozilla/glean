@@ -192,9 +192,6 @@ class GleanTest {
             serverEndpoint = "http://" + server.hostName + ":" + server.port
         ))
 
-        // Send an "empty" metrics ping to reset the foreground_count
-        Glean.submitPingByName("metrics")
-
         // Fake calling the lifecycle observer.
         val lifecycleOwner = mock(LifecycleOwner::class.java)
         val lifecycleRegistry = LifecycleRegistry(lifecycleOwner)
