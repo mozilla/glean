@@ -137,6 +137,7 @@ The following metrics are added to the ping:
 | glean.upload.pending_pings_directory_size |[memory_distribution](https://mozilla.github.io/glean/book/user/metrics/memory_distribution.html) |The size of the pending pings directory upon initialization of Glean. This does not include the size of the deletion request pings directory.  |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1601550#c3)||never |1 |
 | glean.upload.ping_upload_failure |[labeled_counter](https://mozilla.github.io/glean/book/user/metrics/labeled_counters.html) |Counts the number of ping upload failures, by type of failure. This includes failures for all ping types, though the counts appear in the next successfully sent `metrics` ping.  |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1589124#c1)|<ul><li>status_code_4xx</li><li>status_code_5xx</li><li>status_code_unknown</li><li>unrecoverable</li><li>recoverable</li></ul>|never |1 |
 | glean.validation.first_run_hour |[datetime](https://mozilla.github.io/glean/book/user/metrics/datetime.html) |The hour of the first run of the application.  |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1680783#c5)||never |1 |
+| glean.validation.foreground_count |[counter](https://mozilla.github.io/glean/book/user/metrics/counter.html) |On mobile, the number of times the application went to foreground.  |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1683707#c2)||never |1 |
 
 
 Data categories are [defined here](https://wiki.mozilla.org/Firefox/Data_Collection).

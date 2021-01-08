@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.10.1...main)
 
+* Android
+  * A new metric `glean.validation.foreground_count` was added to the metrics ping.
+
 # v33.10.1 (2021-01-06)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.10.0...v33.10.1)
