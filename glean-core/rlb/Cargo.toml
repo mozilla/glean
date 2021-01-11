@@ -16,6 +16,9 @@ include = [
   "/Cargo.toml",
 ]
 
+[features]
+glean-dynamic = ["glean-ffi-sys", "libloading"]
+
 [badges]
 circle-ci = { repository = "mozilla/glean", branch = "main" }
 maintenance = { status = "actively-developed" }
@@ -23,6 +26,11 @@ maintenance = { status = "actively-developed" }
 [dependencies.glean-core]
 path = ".."
 version = "34.1.0"
+
+[dependencies.glean-ffi-sys]
+path = "../ffi-sys"
+version = "0.1.0"
+optional = true
 
 [dependencies]
 crossbeam-channel = "0.5"
@@ -35,6 +43,7 @@ serde = { version = "1.0.104", features = ["derive"] }
 uuid = { version = "0.8.1", features = ["v4"] }
 chrono = { version = "0.4.10", features = ["serde"] }
 time = "0.1.40"
+libloading = { version = "0.6.6", optional = true }
 
 [dev-dependencies]
 env_logger = { version = "0.7.1", default-features = false, features = ["termcolor", "atty", "humantime"] }

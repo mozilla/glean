@@ -61,6 +61,9 @@ pub mod net;
 pub mod private;
 mod system;
 
+#[cfg(feature = "glean-dynamic")]
+mod sys;
+
 #[cfg(test)]
 mod common_test;
 
@@ -758,6 +761,18 @@ pub fn set_source_tags(tags: Vec<String>) -> bool {
         // we don't validate the tags, thus this function always returns true.
         true
     }
+}
+
+/// Load the dynamic library and dispatch all metric recordings to that library using the Glean
+/// FFI.
+#[cfg(feature = "glean-dynamic")]
+pub fn setup_dynamic_glean(libname: &str) -> ::std::result::Result<(), ::libloading::Error> {
+    log::info!("Setting up dynamic Glean.");
+    sys::setup_glean(libname)?;
+
+    log::info!("Glean is all setup to run dynamically.");
+
+    Ok(())
 }
 
 #[cfg(test)]

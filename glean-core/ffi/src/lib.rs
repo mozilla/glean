@@ -379,8 +379,11 @@ pub extern "C" fn glean_flush_rlb_dispatcher() {
     #[allow(non_upper_case_globals)]
     {
         weak!(fn rlb_flush_dispatcher() -> ());
+        log::info!("Checking for RLB symbol.");
 
         if let Some(f) = rlb_flush_dispatcher.get() {
+            log::info!("RLB symbol `rlb_flush_dispatcher` found. Trying to flush the RLB dispatcher.");
+
             // SAFETY:
             //
             // We did a dynamic lookup for this symbol.
