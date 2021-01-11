@@ -4,6 +4,13 @@
 
 //! The different metric types supported by the Glean SDK to handle data.
 
+#[cfg(feature = "glean-dynamic")]
+mod types {
+    #[path = "../dynamic/macros.rs"]
+    #[macro_use]
+    mod macros;
+}
+
 mod boolean;
 mod counter;
 mod custom_distribution;
