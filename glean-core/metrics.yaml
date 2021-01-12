@@ -429,6 +429,22 @@ glean.error:
     no_lint:
       - COMMON_PREFIX
 
+  io:
+    type: counter
+    description: >
+      The number of times we encountered an IO error
+      when writing a pending ping to disk.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1686233
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1686233#c2
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+      - jrediger@mozilla.com
+    expires: never
+
 glean.upload:
   ping_upload_failure:
     type: labeled_counter
