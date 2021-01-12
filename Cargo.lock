@@ -299,9 +299,9 @@ dependencies = [
 
 [[package]]
 name = "ctor"
-version = "0.1.17"
+version = "0.1.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "373c88d9506e2e9230f6107701b7d8425f4cb3f6df108ec3042a26e936666da5"
+checksum = "10bcb9d7dcbf7002aaffbb53eac22906b64cdcc127971dcc387d8eb7c95d5560"
 dependencies = [
  "quote",
  "syn",
@@ -1040,9 +1040,9 @@ dependencies = [
 
 [[package]]
 name = "syn"
-version = "1.0.56"
+version = "1.0.58"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a9802ddde94170d186eeee5005b798d9c159fa970403f1be19976d0cfb939b72"
+checksum = "cc60a3d73ea6594cd712d830cc1f0390fd71542d8c8cd24e70cc54cdfd5e05d5"
 dependencies = [
  "proc-macro2",
  "quote",
