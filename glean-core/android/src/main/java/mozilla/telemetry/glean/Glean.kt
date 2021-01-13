@@ -254,6 +254,8 @@ open class GleanInternalAPI internal constructor () {
                 initializeCoreMetrics(applicationContext)
             }
 
+            // Signal the RLB dispatcher to unblock, if any exists.
+            LibGleanFFI.INSTANCE.glean_flush_rlb_dispatcher()
             // Signal Dispatcher that init is complete
             Dispatchers.API.flushQueuedInitialTasks()
 

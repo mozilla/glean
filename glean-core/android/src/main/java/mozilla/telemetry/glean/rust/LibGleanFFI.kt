@@ -89,6 +89,8 @@ internal interface LibGleanFFI : Library {
 
     fun glean_initialize(cfg: FfiConfiguration): Byte
 
+    fun glean_flush_rlb_dispatcher()
+
     fun glean_clear_application_lifetime_metrics()
 
     fun glean_set_dirty_flag(flag: Byte)

@@ -187,6 +187,8 @@ public class Glean {
                 self.initializeCoreMetrics()
             }
 
+            // Signal the RLB dispatcher to unblock, if any exists.
+            glean_flush_rlb_dispatcher()
             // Signal Dispatcher that init is complete
             Dispatchers.shared.flushQueuedInitialTasks()
 

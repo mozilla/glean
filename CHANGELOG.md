@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.10.3...main)
 
+* General
+  * Other bindings detect when RLB is used and try to flush the RLB dispatcher to unblock the Rust API ([#1442](https://github.com/mozilla/glean/pull/1442)).
+    * This is detected automatically, no changes needed for consuming code.
 * RLB
   * When the pre-init task queue overruns, this is now recorded in the metric `glean.error.preinit_tasks_overflow`.
 

@@ -347,6 +347,37 @@ pub fn shutdown() {
     }
 }
 
+/// Unblock the global dispatcher to start processing queued tasks.
+///
+/// This should _only_ be called if it is guaranteed that `initialize` will never be called.
+///
+/// **Note**: Exported as a FFI function to be used by other language bindings (e.g. Kotlin/Swift)
+/// to unblock the RLB-internal dispatcher.
+/// This allows the usage of both the RLB and other language bindings (e.g. Kotlin/Swift)
+/// within the same application.
+#[no_mangle]
+#[inline(never)]
+pub extern "C" fn rlb_flush_dispatcher() {
+    log::trace!("FLushing RLB dispatcher through the FFI");
+
+    let was_initialized = was_initialize_called();
+
+    // Panic in debug mode
+    debug_assert!(!was_initialized);
+
+    // In release do a check and bail out
+    if was_initialized {
+        log::error!(
+            "Tried to flush the dispatcher from outside, but Glean was initialized in the RLB."
+        );
+        return;
+    }
+
+    if let Err(err) = dispatcher::flush_init() {
+        log::error!("Unable to flush the preinit queue: {}", err);
+    }
+}
+
 /// Block on the dispatcher emptying.
 ///
 /// This will panic if called before Glean is initialized.
