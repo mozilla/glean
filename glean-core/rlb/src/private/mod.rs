@@ -7,6 +7,7 @@
 #[cfg(not(feature = "glean-dynamic"))]
 mod types {
     pub mod counter;
+    pub mod string;
 }
 
 #[cfg(feature = "glean-dynamic")]
@@ -17,6 +18,9 @@ mod types {
 
     #[path = "../dynamic/counter.rs"]
     pub mod counter;
+
+    #[path = "../dynamic/string.rs"]
+    pub mod string;
 }
 
 mod boolean;
@@ -28,7 +32,6 @@ mod memory_distribution;
 mod ping;
 mod quantity;
 mod recorded_experiment_data;
-mod string;
 mod string_list;
 mod timespan;
 mod timing_distribution;
@@ -44,8 +47,8 @@ pub use memory_distribution::MemoryDistributionMetric;
 pub use ping::PingType;
 pub use quantity::QuantityMetric;
 pub use recorded_experiment_data::RecordedExperimentData;
-pub use string::StringMetric;
 pub use string_list::StringListMetric;
 pub use timespan::TimespanMetric;
 pub use timing_distribution::TimingDistributionMetric;
 pub use types::counter::CounterMetric;
+pub use types::string::StringMetric;
