@@ -8,6 +8,7 @@
   * A new metric `glean.validation.foreground_count` was added to the metrics ping ([#1418](https://github.com/mozilla/glean/pull/1418)).
 * Rust
   * BUGFIX: Fix lock order inversion in RLB Timing Distribution ([#1431](https://github.com/mozilla/glean/pull/1431)).
+  * Use RLB types instead of glean-core ones for RLB core metrics. ([#1432](https://github.com/mozilla/glean/pull/1432)).
 
 # v33.10.1 (2021-01-06)
 
