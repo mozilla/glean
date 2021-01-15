@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v33.10.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v33.10.2...main)
+
+# v33.10.2 (2021-01-15)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v33.10.1...v33.10.2)
 
 * General:
   * A new metric `glean.error.io` has been added, counting the times an IO error happens when writing a pending ping to disk ([#1428](https://github.com/mozilla/glean/pull/1428))

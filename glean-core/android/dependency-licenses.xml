@@ -41,10 +41,6 @@ the details of which are reproduced below.
     <url>http://github.com/tailhook/quick-error</url>
   </license>
   <license>
-    <name>Apache License 2.0: ppv-lite86</name>
-    <url>https://github.com/cryptocorrosion/cryptocorrosion</url>
-  </license>
-  <license>
     <name>Apache License 2.0: ahash</name>
     <url>https://github.com/tkaitchuck/ahash</url>
   </license>
@@ -119,6 +115,10 @@ the details of which are reproduced below.
   <license>
     <name>Apache License 2.0: libc</name>
     <url>https://github.com/rust-lang/libc</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: log</name>
+    <url>https://github.com/rust-lang/log</url>
   </license>
   <license>
     <name>Apache License 2.0: num-integer</name>
@@ -205,36 +205,24 @@ the details of which are reproduced below.
     <url>https://github.com/servo/rust-url</url>
   </license>
   <license>
-    <name>Apache License 2.0: uuid</name>
-    <url>https://github.com/uuid-rs/uuid</url>
-  </license>
-  <license>
     <name>Apache License 2.0: getrandom</name>
     <url>https://github.com/rust-random/getrandom</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: getrandom</name>
-    <url>https://github.com/rust-random/getrandom</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: rand</name>
-    <url>https://github.com/rust-random/rand</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: rand_chacha</name>
-    <url>https://github.com/rust-random/rand</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: rand_core</name>
-    <url>https://github.com/rust-random/rand</url>
   </license>
   <license>
     <name>Apache License 2.0: adler</name>
     <url>https://github.com/jonas-schievink/adler.git</url>
   </license>
   <license>
-    <name>Apache License 2.0: log</name>
-    <url>https://github.com/rust-lang/log</url>
+    <name>Apache License 2.0: uuid</name>
+    <url>https://github.com/uuid-rs/uuid</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: android_log-sys</name>
+    <url>https://github.com/nercury/android_log-sys-rs</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: android_logger</name>
+    <url>https://github.com/Nercury/android_logger-rs</url>
   </license>
   <license>
     <name>Apache License 2.0: failure_derive</name>
@@ -251,14 +239,6 @@ the details of which are reproduced below.
   <license>
     <name>Apache License 2.0: winapi-x86_64-pc-windows-gnu</name>
     <url>https://github.com/retep998/winapi-rs</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: android_log-sys</name>
-    <url>https://github.com/nercury/android_log-sys-rs</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: android_logger</name>
-    <url>https://github.com/Nercury/android_logger-rs</url>
   </license>
   <license>
     <name>Apache License 2.0: chrono</name>
