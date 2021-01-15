@@ -358,13 +358,20 @@ jobs:
       - skip-if-doc-only
       - setup-rust-toolchain:
           rust-version: stable
-      - run: cargo build --release
-      # Just a basic smoke test for now to make sure it compiles and runs
-      # without returning an error
-      - run: |
-          cd glean-core/ffi/examples
-          make
-          ./glean_app
+      - run:
+          name: FFI example
+          command: |
+            # Just a basic smoke test for now to make sure it compiles and runs
+            # without returning an error
+            cd glean-core/ffi/examples
+            make
+            ./glean_app
+      - run:
+          name: Multi-bindings sample
+          command: |
+            cd samples/multi-bindings
+            make debug
+            make run
 
   Generate Rust documentation:
     docker:

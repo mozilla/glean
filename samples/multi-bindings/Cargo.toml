@@ -1,0 +1,27 @@
+[package]
+name = "megazord"
+version = "0.1.0"
+authors = ["Jan-Erik Rediger <jrediger@mozilla.com>"]
+edition = "2018"
+license = "MPL-2.0"
+publish = false
+
+[lib]
+name = "megazord"
+crate-type = ["cdylib"]
+
+[dependencies]
+glean = { path = "../../glean-core/rlb" }
+glean-ffi = { path = "../../glean-core/ffi" }
+once_cell = "1.5.2"
+log = "0.4.13"
+
+[profile.dev]
+opt-level = "s"
+debug = true
+lto = "thin"
+
+[profile.release]
+opt-level = "s"
+debug = true
+lto = "thin"
