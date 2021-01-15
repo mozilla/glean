@@ -1,6 +1,18 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v33.10.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v33.10.2...main)
+
+# v33.10.2 (2021-01-15)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v33.10.1...v33.10.2)
+
+* General:
+  * A new metric `glean.error.io` has been added, counting the times an IO error happens when writing a pending ping to disk ([#1428](https://github.com/mozilla/glean/pull/1428))
+* Android
+  * A new metric `glean.validation.foreground_count` was added to the metrics ping ([#1418](https://github.com/mozilla/glean/pull/1418)).
+* Rust
+  * BUGFIX: Fix lock order inversion in RLB Timing Distribution ([#1431](https://github.com/mozilla/glean/pull/1431)).
+  * Use RLB types instead of glean-core ones for RLB core metrics. ([#1432](https://github.com/mozilla/glean/pull/1432)).
 
 # v33.10.1 (2021-01-06)
 

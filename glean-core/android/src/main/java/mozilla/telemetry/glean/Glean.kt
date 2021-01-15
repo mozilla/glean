@@ -27,6 +27,7 @@ import mozilla.telemetry.glean.rust.getAndConsumeRustString
 import mozilla.telemetry.glean.rust.toBoolean
 import mozilla.telemetry.glean.rust.toByte
 import mozilla.telemetry.glean.GleanMetrics.GleanInternalMetrics
+import mozilla.telemetry.glean.GleanMetrics.GleanValidation
 import mozilla.telemetry.glean.GleanMetrics.Pings
 import mozilla.telemetry.glean.net.BaseUploader
 import mozilla.telemetry.glean.private.PingTypeBase
@@ -560,6 +561,7 @@ open class GleanInternalAPI internal constructor () {
      */
     internal fun handleForegroundEvent() {
         Pings.baseline.submit(Pings.baselineReasonCodes.foreground)
+        GleanValidation.foregroundCount.add(1)
     }
 
     /**
