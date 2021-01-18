@@ -209,7 +209,12 @@ impl DispatchGuard {
         // Now wait for the worker thread to do the swap and inform us.
         // This blocks until all tasks in the preinit buffer have been processed.
         swap_receiver.recv()?;
-        Ok(self.overflow_count.load(Ordering::SeqCst) + global::GLOBAL_DISPATCHER_LIMIT)
+        let overflow_count = self.overflow_count.load(Ordering::SeqCst);
+        if overflow_count > 0 {
+            Ok(overflow_count + global::GLOBAL_DISPATCHER_LIMIT)
+        } else {
+            Ok(0)
+        }
     }
 }
 

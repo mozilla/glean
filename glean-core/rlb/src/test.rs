@@ -398,12 +398,6 @@ fn core_metrics_should_be_cleared_and_restored_when_disabling_and_enabling_uploa
 }
 
 #[test]
-#[ignore] // TODO: To be done in bug 1686736.
-fn overflowing_the_task_queue_records_telemetry() {
-    todo!()
-}
-
-#[test]
 fn sending_deletion_ping_if_disabled_outside_of_run() {
     let _lock = lock_test();
 

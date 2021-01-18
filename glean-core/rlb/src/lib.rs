@@ -310,8 +310,15 @@ pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) {
             });
 
             // Signal Dispatcher that init is complete
-            if let Err(err) = dispatcher::flush_init() {
-                log::error!("Unable to flush the preinit queue: {}", err);
+            match dispatcher::flush_init() {
+                Ok(task_count) if task_count > 0 => {
+                    with_glean(|glean| {
+                        glean_metrics::error::preinit_tasks_overflow
+                            .add_sync(&glean, task_count as i32);
+                    });
+                }
+                Ok(_) => {}
+                Err(err) => log::error!("Unable to flush the preinit queue: {}", err),
             }
         })
         .expect("Failed to spawn Glean's init thread");
