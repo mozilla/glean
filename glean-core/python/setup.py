@@ -68,7 +68,7 @@ with (SRC_ROOT / "CHANGELOG.md").open() as history_file:
     history = history_file.read()
 
 # glean version. Automatically updated by the bin/prepare_release.sh script
-version = "33.10.2"
+version = "33.10.3"
 
 requirements = [
     "cffi>=1",
