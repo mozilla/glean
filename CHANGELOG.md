@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.10.2...main)
 
+* Rust
+  * Upgrade rkv to 0.17 ([#1434](https://github.com/mozilla/glean/pull/1434))
+
 # v33.10.2 (2021-01-15)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.10.1...v33.10.2)
