@@ -60,12 +60,12 @@ commands:
           rust-version: <<parameters.rust-version>>
       - run:
           name: Test
-          command: cargo test --all --verbose
+          command: cargo test --all --verbose -- --nocapture
       - run:
           name: Test Glean with rkv safe-mode
           command: |
             cd glean-core
-            cargo test -p glean-core --features rkv-safe-mode
+            cargo test -p glean-core --features rkv-safe-mode -- --nocapture
 
   install-rustup:
     steps:
