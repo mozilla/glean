@@ -250,6 +250,11 @@ pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) {
                 // they are registered synchronously before we need them.
                 // We don't need to handle the deletion-request ping. It's never touched
                 // from the language implementation.
+                //
+                // Note: this will actually double-register them.
+                // On instantiation they will launch a task to register themselves.
+                // That task could fail to run if the dispatcher queue is full.
+                // We still register them here synchronously.
                 glean.register_ping_type(&glean_metrics::pings::baseline.ping_type);
                 glean.register_ping_type(&glean_metrics::pings::metrics.ping_type);
                 glean.register_ping_type(&glean_metrics::pings::events.ping_type);

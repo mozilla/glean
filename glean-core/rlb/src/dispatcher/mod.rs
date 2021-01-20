@@ -145,11 +145,20 @@ impl DispatchGuard {
 
     fn block_on_queue(&self) {
         let (tx, rx) = crossbeam_channel::bounded(0);
-        self.launch(move || {
+
+        // We explicitly don't use `self.launch` here.
+        // We always put this task on the unbounded queue.
+        // The pre-init queue might be full before its flushed, in which case this would panic.
+        // Blocking on the queue can only work if it is eventually flushed anyway.
+
+        let task = Command::Task(Box::new(move || {
             tx.send(())
-                .expect("(worker) Can't send message on single-use channel")
-        })
-        .expect("Failed to launch the blocking task");
+                .expect("(worker) Can't send message on single-use channel");
+        }));
+        self.sender
+            .send(task)
+            .expect("Failed to launch the blocking task");
+
         rx.recv()
             .expect("Failed to receive message on single-use channel");
     }
