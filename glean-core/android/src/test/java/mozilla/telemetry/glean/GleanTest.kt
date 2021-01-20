@@ -35,6 +35,7 @@ import mozilla.telemetry.glean.utils.getLanguageFromLocale
 import mozilla.telemetry.glean.utils.getLocaleTag
 import org.json.JSONObject
 import org.junit.After
+import org.junit.Ignore
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertSame
@@ -741,6 +742,7 @@ class GleanTest {
         assertEquals(request.getHeader("X-Debug-ID"), "valid-tag")
     }
 
+    @Ignore("Bug 1685273: Frequent intermittent failures")
     @Test
     fun `flipping upload enabled respects order of events`() {
         // NOTES(janerik):
