@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.10.3...main)
 
+* RLB
+  * When the pre-init task queue overruns, this is now recorded in the metric `glean.error.preinit_tasks_overflow`.
+
 # v33.10.3 (2021-01-18)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v33.10.2...v33.10.3)

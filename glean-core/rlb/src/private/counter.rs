@@ -2,6 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+use glean_core::Glean;
 use inherent::inherent;
 use std::sync::Arc;
 
@@ -27,6 +28,11 @@ impl CounterMetric {
     /// The public constructor used by automatically generated metrics.
     pub fn new(meta: glean_core::CommonMetricData) -> Self {
         Self(Arc::new(glean_core::metrics::CounterMetric::new(meta)))
+    }
+
+    /// Internal only, synchronous API for incremeting a counter
+    pub(crate) fn add_sync(&self, glean: &Glean, amount: i32) {
+        self.0.add(glean, amount);
     }
 }
 
