@@ -1001,36 +1001,6 @@ jobs:
             ./ghr -replace ${CIRCLE_TAG} glean-core/python/dist
 
   ###########################################################################
-  # C#
-
-  CSharp tests:
-    docker:
-      - image: mcr.microsoft.com/dotnet/core/sdk:3.1-buster
-    steps:
-      - checkout
-      - skip-if-doc-only
-      - install-rustup
-      - setup-rust-toolchain
-      - run:
-          name: Install the dependencies
-          command: |
-            apt update
-            apt install -y gcc
-      - run:
-          name: Install the Python environment
-          command: |
-            apt install -y python3 python3-venv python3-pip
-      - run:
-          name: Build glean_ffi
-          command: cargo build
-      - run:
-          name: Build the C# bindings
-          command: dotnet build glean-core/csharp/csharp.sln
-      - run:
-          name: Test C#
-          command: dotnet test glean-core/csharp/csharp.sln --blame
-
-  ###########################################################################
   # Docs
 
   Docs internal metrics check:
@@ -1142,7 +1112,6 @@ workflows:
 
   ci:
     jobs:
-      - CSharp tests
       - Rust tests - stable
       # FIXME: Disabled due to failing to often, bug 1574424
       # - Rust tests - beta
