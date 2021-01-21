@@ -46,9 +46,13 @@ int main(void)
   // they will also be consumed here by `glean_process_ping_upload_response`.
   FfiPingUploadTask task;
   glean_set_log_pings(1);
-  glean_get_upload_task(&task);
 
-  while (task.tag != FfiPingUploadTask_Done) {
+  for (;;) {
+      glean_get_upload_task(&task);
+      if (task.tag == FfiPingUploadTask_Done) {
+          break;
+      }
+
       printf("tag: %d\n", task.tag);
 
       if (task.tag == FfiPingUploadTask_Upload) {
