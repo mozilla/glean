@@ -46,3 +46,6 @@ oslog = { version = "0.0.3", default-features = false, features = ["logger"] }
 
 [target.'cfg(not(target_os = "android"))'.dependencies]
 env_logger = { version = "0.7.1", default-features = false, features = ["termcolor", "atty", "humantime"] }
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2.82"

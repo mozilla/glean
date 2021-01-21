@@ -361,6 +361,16 @@ char *glean_experiment_test_get_data(FfiStr experiment_id);
 
 void glean_clear_application_lifetime_metrics(void);
 
+/**
+ * Try to unblock the RLB dispatcher to start processing queued tasks.
+ *
+ * **Note**: glean-core does not have its own dispatcher at the moment.
+ * This tries to detect the RLB and, if loaded, instructs the RLB dispatcher to flush.
+ * This allows the usage of both the RLB and other language bindings (e.g. Kotlin/Swift)
+ * within the same application.
+ */
+void glean_flush_rlb_dispatcher(void);
+
 void glean_set_dirty_flag(uint8_t flag);
 
 uint8_t glean_is_dirty_flag_set(void);
