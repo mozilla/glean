@@ -80,8 +80,8 @@ metrics:
 events:
   description: |
     The events ping's purpose is to transport all of the event metric
-    information. The `events` ping is automatically sent when the application is
-    moved to the background.
+    information. The `events` ping is automatically sent when the application
+    becomes inactive.
   include_client_id: true
   bugs:
     - https://bugzilla.mozilla.org/1512938
@@ -94,8 +94,8 @@ events:
       The ping was submitted at startup. The events ping is always sent if there
       are any pending events at startup, because event timestamps can not be
       mixed across runs of the application.
-    background: |
-      The ping was submitted before going to background.
+    inactive: |
+      The ping was submitted before becoming inactive.
     max_capacity: |
       The maximum number of events was reached (default 500 events).
 

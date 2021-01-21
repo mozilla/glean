@@ -43,7 +43,16 @@ impl InternalPings {
                     "upgrade".to_string(),
                 ],
             ),
-            events: PingType::new("events", true, false, vec![]),
+            events: PingType::new(
+                "events",
+                true,
+                false,
+                vec![
+                    "startup".to_string(),
+                    "inactive".to_string(),
+                    "max_capacity".to_string(),
+                ],
+            ),
             deletion_request: PingType::new("deletion-request", true, true, vec![]),
         }
     }
