@@ -132,7 +132,7 @@ These docs refer to application 'foreground' and 'background' state in several p
 
 <div data-lang="Kotlin" class="tab">
 
-#### Foreground
+### Foreground
 
 For Android, this specifically means the activity becomes visible to the user, it has entered the `Started` state, and the system invokes the [`onStart()`](https://developer.android.com/reference/android/app/Activity.html#onStart()) callback.
 
