@@ -15,7 +15,7 @@ use crate::{dispatcher, new_metric};
 /// at build time, allowing developers to record values that were previously
 /// registered in the metrics.yaml file.
 #[derive(Clone)]
-pub struct StringMetric(u64);
+pub struct StringMetric(pub(crate) u64);
 
 impl StringMetric {
     /// The public constructor used by automatically generated metrics.

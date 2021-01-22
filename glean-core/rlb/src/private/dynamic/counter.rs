@@ -9,7 +9,7 @@ use crate::{dispatcher, new_metric};
 
 /// Counter metric wrapper around the FFI implementation
 #[derive(Clone)]
-pub struct CounterMetric(u64);
+pub struct CounterMetric(pub(crate) u64);
 
 impl CounterMetric {
     /// The public constructor used by automatically generated metrics.

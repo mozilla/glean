@@ -7,6 +7,7 @@
 #[cfg(not(feature = "glean-dynamic"))]
 mod types {
     pub mod counter;
+    pub mod labeled;
     pub mod string;
 }
 
@@ -21,13 +22,15 @@ mod types {
 
     #[path = "../dynamic/string.rs"]
     pub mod string;
+
+    #[path = "../dynamic/labeled.rs"]
+    pub mod labeled;
 }
 
 mod boolean;
 mod custom_distribution;
 mod datetime;
 mod event;
-mod labeled;
 mod memory_distribution;
 mod ping;
 mod quantity;
@@ -42,7 +45,6 @@ pub use boolean::BooleanMetric;
 pub use custom_distribution::CustomDistributionMetric;
 pub use datetime::{Datetime, DatetimeMetric};
 pub use event::EventMetric;
-pub use labeled::{AllowLabeled, LabeledMetric};
 pub use memory_distribution::MemoryDistributionMetric;
 pub use ping::PingType;
 pub use quantity::QuantityMetric;
@@ -51,4 +53,5 @@ pub use string_list::StringListMetric;
 pub use timespan::TimespanMetric;
 pub use timing_distribution::TimingDistributionMetric;
 pub use types::counter::CounterMetric;
+pub use types::labeled::{AllowLabeled, LabeledMetric};
 pub use types::string::StringMetric;
