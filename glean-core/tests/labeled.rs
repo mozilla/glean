@@ -393,3 +393,37 @@ fn seen_labels_get_reloaded_from_disk() {
         );
     }
 }
+
+#[test]
+fn caching_metrics_with_dynamic_labels() {
+    let (glean, _t) = new_glean(None);
+    let labeled = LabeledMetric::new(
+        CounterMetric::new(CommonMetricData {
+            name: "cached_labels".into(),
+            category: "telemetry".into(),
+            send_in_pings: vec!["store1".into()],
+            disabled: false,
+            lifetime: Lifetime::Ping,
+            ..Default::default()
+        }),
+        None,
+    );
+
+    // Create multiple metric instances and cache them for later use.
+    let metrics = (1..=20)
+        .map(|i| {
+            let label = format!("label{}", i);
+            labeled.get(&label)
+        })
+        .collect::<Vec<_>>();
+
+    // Only now use them.
+    for metric in metrics {
+        metric.add(&glean, 1);
+    }
+
+    // The maximum number of labels we store is 16.
+    // So we should have put 4 metrics in the __other__ bucket.
+    let other = labeled.get("__other__");
+    assert_eq!(Some(4), other.test_get_value(&glean, "store1"));
+}
