@@ -872,6 +872,7 @@ fn records_database_file_size() {
     assert!(data.sum > 0);
 }
 
+#[cfg(not(target_os = "windows"))]
 #[test]
 fn records_io_errors() {
     use std::fs;
