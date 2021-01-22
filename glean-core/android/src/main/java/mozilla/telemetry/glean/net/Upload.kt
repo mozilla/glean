@@ -47,7 +47,7 @@ internal open class FfiPingUploadTask(
     // NOTE: We need to provide defaults here, so that JNA can create this object.
     @JvmField var tag: Byte = UploadTaskTag.Done.ordinal.toByte(),
     @JvmField var upload: UploadBody = UploadBody(),
-    @JvmField var time: Long = 60_000
+    @JvmField var wait: Long = 60_000
 ) : Union() {
     class ByReference : FfiPingUploadTask(), Structure.ByReference
 
@@ -59,8 +59,8 @@ internal open class FfiPingUploadTask(
     fun toPingUploadTask(): PingUploadTask {
         return when (this.tag.toInt()) {
             UploadTaskTag.Wait.ordinal -> {
-                this.readField("_0")
-                PingUploadTask.Wait(this.time)
+                this.readField("wait")
+                PingUploadTask.Wait(this.wait)
             }
             UploadTaskTag.Upload.ordinal -> {
                 this.readField("upload")

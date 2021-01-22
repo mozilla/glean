@@ -96,7 +96,7 @@ extension FfiPingUploadTask {
         case FfiPingUploadTask_Upload.rawValue:
             return .upload(self.upload.toPingRequest())
         case FfiPingUploadTask_Wait.rawValue:
-            return .wait(self.wait._0)
+            return .wait(self.wait)
         case FfiPingUploadTask_Done.rawValue:
             return .done
         default:
