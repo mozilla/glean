@@ -4,15 +4,22 @@
 
 //! The different metric types supported by the Glean SDK to handle data.
 
+#[cfg(not(feature = "glean-dynamic"))]
+mod types {
+    pub mod counter;
+}
+
 #[cfg(feature = "glean-dynamic")]
 mod types {
     #[path = "../dynamic/macros.rs"]
     #[macro_use]
     mod macros;
+
+    #[path = "../dynamic/counter.rs"]
+    pub mod counter;
 }
 
 mod boolean;
-mod counter;
 mod custom_distribution;
 mod datetime;
 mod event;
@@ -29,7 +36,6 @@ mod uuid;
 
 pub use self::uuid::UuidMetric;
 pub use boolean::BooleanMetric;
-pub use counter::CounterMetric;
 pub use custom_distribution::CustomDistributionMetric;
 pub use datetime::{Datetime, DatetimeMetric};
 pub use event::EventMetric;
@@ -42,3 +48,4 @@ pub use string::StringMetric;
 pub use string_list::StringListMetric;
 pub use timespan::TimespanMetric;
 pub use timing_distribution::TimingDistributionMetric;
+pub use types::counter::CounterMetric;

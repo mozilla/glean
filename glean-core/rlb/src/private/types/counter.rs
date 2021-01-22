@@ -2,12 +2,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use glean_core::Glean;
 use inherent::inherent;
 use std::sync::Arc;
 
 use glean_core::metrics::MetricType;
-use glean_core::ErrorType;
+use glean_core::{ErrorType, Glean};
 
 // We need to wrap the glean-core type: otherwise if we try to implement
 // the trait for the metric in `glean_core::metrics` we hit error[E0117]:
