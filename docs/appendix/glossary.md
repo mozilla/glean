@@ -49,7 +49,7 @@ Glean itself provides [some metrics out of the box](../user/collected-metrics/me
 
 ## Ping
 
-A ping is an entity used to bundle related metrics.
+A ping is a bundle of related metrics, gathered in a payload to be transmitted.
 The Glean SDK provides default pings and allows for custom ping, see [Glean Pings](../user/pings/index.md).
 
 ## Submission
