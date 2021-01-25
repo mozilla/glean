@@ -297,7 +297,17 @@ pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) {
                 // force-closed. If that's the case, submit a 'baseline' ping with the
                 // reason "dirty_startup". We only do that from the second run.
                 if !is_first_run && dirty_flag {
-                    // TODO: bug 1672956 - submit_ping_by_name_sync("baseline", "dirty_startup");
+                    // The `submit_ping_by_name_sync` function cannot be used, otherwise
+                    // startup will cause a dead-lock, since that function requests a
+                    // write lock on the `glean` object.
+                    // Note that unwrapping below is safe: the function always return a
+                    // valid `Result<bool>`.
+                    if glean
+                        .submit_ping_by_name("baseline", Some("dirty_startup"))
+                        .unwrap()
+                    {
+                        state.upload_manager.trigger_upload();
+                    }
                 }
 
                 // From the second time we run, after all startup pings are generated,
