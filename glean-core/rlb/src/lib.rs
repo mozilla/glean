@@ -49,7 +49,8 @@ pub use core_metrics::ClientInfoMetrics;
 pub use glean_core::{
     global_glean,
     metrics::{DistributionData, MemoryUnit, RecordedEvent, TimeUnit},
-    setup_glean, CommonMetricData, Error, ErrorType, Glean, HistogramType, Lifetime, Result,
+    setup_glean, traits, CommonMetricData, Error, ErrorType, Glean, HistogramType, Lifetime,
+    Result,
 };
 use private::RecordedExperimentData;
 
