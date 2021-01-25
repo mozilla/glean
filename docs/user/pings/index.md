@@ -1,6 +1,7 @@
 # Glean Pings
 
-Every Glean ping is in JSON format and contains one or more of the [common sections](#ping-sections) with shared information data.
+A ping is a bundle of related metrics, gathered in a payload to be transmitted.
+The ping payload will be encoded in JSON format and contains one or more of the [common sections](#ping-sections) with shared information data.
 
 If data collection is enabled, the Glean SDK provides a set of built-in pings that are assembled out of the box without any developer intervention.  The following is a list of these built-in pings:
 
