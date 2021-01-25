@@ -18,6 +18,7 @@ import com.sun.jna.StringArray
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import mozilla.telemetry.glean.GleanMetrics.GleanBaseline
 import mozilla.telemetry.glean.config.Configuration
 import mozilla.telemetry.glean.config.FfiConfiguration
 import mozilla.telemetry.glean.utils.getLocaleTag
@@ -562,16 +563,42 @@ open class GleanInternalAPI internal constructor () {
      * Handle the foreground event and send the appropriate pings.
      */
     internal fun handleForegroundEvent() {
-        Pings.baseline.submit(Pings.baselineReasonCodes.foreground)
         GleanValidation.foregroundCount.add(1)
+
+        // Note that this is sending the length of the last foreground session
+        // because it belongs to the baseline ping and that ping is sent every
+        // time the app goes to background.
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        Dispatchers.API.launch {
+            LibGleanFFI.INSTANCE.glean_handle_client_active()
+
+            // The above call may generate pings, so we need to trigger
+            // the uploader. It's fine to trigger it if no ping was generated:
+            // it will bail out.
+            PingUploadWorker.enqueueWorker(applicationContext)
+        }
+
+        // Start the timespan for the new activity period.
+        GleanBaseline.duration.start()
     }
 
     /**
      * Handle the background event and send the appropriate pings.
      */
     internal fun handleBackgroundEvent() {
-        Pings.baseline.submit(Pings.baselineReasonCodes.background)
-        Pings.events.submit(Pings.eventsReasonCodes.background)
+        // We're going to background, so store how much time we spent
+        // on foreground.
+        GleanBaseline.duration.stop()
+
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        Dispatchers.API.launch {
+            LibGleanFFI.INSTANCE.glean_handle_client_inactive()
+
+            // The above call may generate pings, so we need to trigger
+            // the uploader. It's fine to trigger it if no ping was generated:
+            // it will bail out.
+            PingUploadWorker.enqueueWorker(applicationContext)
+        }
     }
 
     /**

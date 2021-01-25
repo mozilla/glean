@@ -97,6 +97,10 @@ internal interface LibGleanFFI : Library {
 
     fun glean_is_dirty_flag_set(): Byte
 
+    fun glean_handle_client_active()
+
+    fun glean_handle_client_inactive()
+
     fun glean_test_clear_all_stores()
 
     fun glean_is_first_run(): Byte
