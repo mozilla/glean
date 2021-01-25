@@ -574,6 +574,52 @@ pub fn set_experiment_inactive(experiment_id: String) {
     })
 }
 
+/// Performs the collection/cleanup operations required by becoming active.
+///
+/// This functions generates a baseline ping with reason `active`
+/// and then sets the dirty bit.
+pub fn handle_client_active() {
+    dispatcher::launch(move || {
+        with_glean_mut(|glean| {
+            glean.handle_client_active();
+
+            // The above call may generate pings, so we need to trigger
+            // the uploader. It's fine to trigger it if no ping was generated:
+            // it will bail out.
+            let state = global_state().lock().unwrap();
+            state.upload_manager.trigger_upload();
+        })
+    });
+
+    // This needs to be called after the `handle_client_active` api: it starts
+    // measuring the new activity duration, after any ping is sent by the previous
+    // call.
+    core_metrics::internal_metrics::baseline_duration.start();
+}
+
+/// Performs the collection/cleanup operations required by becoming inactive.
+///
+/// This functions generates a baseline and an events ping with reason
+/// `inactive` and then clears the dirty bit.
+pub fn handle_client_inactive() {
+    // This needs to be called before the `handle_client_inactive` api: it stops
+    // measuring the duration of the previous activity time, before any ping is sent
+    // by the next call.
+    core_metrics::internal_metrics::baseline_duration.stop();
+
+    dispatcher::launch(move || {
+        with_glean_mut(|glean| {
+            glean.handle_client_inactive();
+
+            // The above call may generate pings, so we need to trigger
+            // the uploader. It's fine to trigger it if no ping was generated:
+            // it will bail out.
+            let state = global_state().lock().unwrap();
+            state.upload_manager.trigger_upload();
+        })
+    })
+}
+
 /// TEST ONLY FUNCTION.
 /// Checks if an experiment is currently active.
 #[allow(dead_code)]

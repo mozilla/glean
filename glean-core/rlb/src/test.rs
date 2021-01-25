@@ -3,7 +3,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use crate::private::PingType;
-use crate::private::{BooleanMetric, CounterMetric};
+use crate::private::{BooleanMetric, CounterMetric, EventMetric};
 use std::path::PathBuf;
 
 use super::*;
@@ -171,9 +171,83 @@ fn test_experiments_recording_before_glean_inits() {
 }
 
 #[test]
-#[ignore] // TODO: To be done in bug 1673645.
 fn test_sending_of_foreground_background_pings() {
-    todo!()
+    let _lock = lock_test();
+
+    let click: EventMetric<traits::NoExtraKeys> = private::EventMetric::new(CommonMetricData {
+        name: "click".into(),
+        category: "ui".into(),
+        send_in_pings: vec!["events".into()],
+        lifetime: Lifetime::Ping,
+        disabled: false,
+        ..Default::default()
+    });
+
+    // Define a fake uploader that reports back the submission headers
+    // using a crossbeam channel.
+    let (s, r) = crossbeam_channel::bounded::<String>(3);
+
+    #[derive(Debug)]
+    pub struct FakeUploader {
+        sender: crossbeam_channel::Sender<String>,
+    }
+    impl net::PingUploader for FakeUploader {
+        fn upload(
+            &self,
+            url: String,
+            _body: Vec<u8>,
+            _headers: Vec<(String, String)>,
+        ) -> net::UploadResult {
+            self.sender.send(url).unwrap();
+            net::UploadResult::HttpStatus(200)
+        }
+    }
+
+    // Create a custom configuration to use a fake uploader.
+    let dir = tempfile::tempdir().unwrap();
+    let tmpname = dir.path().display().to_string();
+
+    let cfg = Configuration {
+        data_path: tmpname,
+        application_id: GLOBAL_APPLICATION_ID.into(),
+        upload_enabled: true,
+        max_events: None,
+        delay_ping_lifetime_io: false,
+        channel: Some("testing".into()),
+        server_endpoint: Some("invalid-test-host".into()),
+        uploader: Some(Box::new(FakeUploader { sender: s })),
+    };
+
+    let _t = new_glean(Some(cfg), true);
+    crate::block_on_dispatcher();
+
+    // Simulate becoming active.
+    handle_client_active();
+    click.record(None);
+
+    // We expect a baseline ping to be generated here (reason: 'active').
+    let url = r.recv().unwrap();
+    assert!(url.contains("baseline"));
+
+    // Simulate becoming inactive
+    handle_client_inactive();
+
+    // Wait for the pings to arrive.
+    let mut expected_pings = vec!["baseline", "events"];
+    for _ in 0..2 {
+        let url = r.recv().unwrap();
+        // If the url contains the expected reason, remove it from the list.
+        expected_pings.retain(|&name| url.contains(name));
+    }
+    // We received all the expected pings.
+    assert_eq!(0, expected_pings.len());
+
+    // Simulate becoming active again.
+    handle_client_active();
+
+    // We expect a baseline ping to be generated here (reason: 'active').
+    let url = r.recv().unwrap();
+    assert!(url.contains("baseline"));
 }
 
 #[test]
