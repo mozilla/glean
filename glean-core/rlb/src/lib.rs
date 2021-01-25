@@ -46,11 +46,10 @@ use std::sync::Mutex;
 pub use configuration::Configuration;
 use configuration::DEFAULT_GLEAN_ENDPOINT;
 pub use core_metrics::ClientInfoMetrics;
+use glean_core::global_glean;
 pub use glean_core::{
-    global_glean,
     metrics::{DistributionData, MemoryUnit, RecordedEvent, TimeUnit},
-    setup_glean, traits, CommonMetricData, Error, ErrorType, Glean, HistogramType, Lifetime,
-    Result,
+    traits, CommonMetricData, Error, ErrorType, Glean, HistogramType, Lifetime, Result,
 };
 use private::RecordedExperimentData;
 
