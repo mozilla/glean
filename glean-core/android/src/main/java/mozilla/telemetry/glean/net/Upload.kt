@@ -27,7 +27,7 @@ enum class UploadTaskTag {
 @Structure.FieldOrder("tag", "documentId", "path", "body", "headers")
 internal class UploadBody(
     // NOTE: We need to provide defaults here, so that JNA can create this object.
-    @JvmField val tag: Byte = UploadTaskTag.Done.ordinal.toByte(),
+    @JvmField val tag: Byte = UploadTaskTag.Upload.ordinal.toByte(),
     @JvmField val documentId: Pointer? = null,
     @JvmField val path: Pointer? = null,
     @JvmField var body: RustBuffer = RustBuffer(),
@@ -43,11 +43,17 @@ internal class UploadBody(
     }
 }
 
+@Structure.FieldOrder("tag", "time")
+internal class WaitBody(
+    @JvmField var tag: Byte = UploadTaskTag.Wait.ordinal.toByte(),
+    @JvmField var time: Long = 60_000
+) : Structure()
+
 internal open class FfiPingUploadTask(
     // NOTE: We need to provide defaults here, so that JNA can create this object.
     @JvmField var tag: Byte = UploadTaskTag.Done.ordinal.toByte(),
     @JvmField var upload: UploadBody = UploadBody(),
-    @JvmField var wait: Long = 60_000
+    @JvmField var wait: WaitBody = WaitBody()
 ) : Union() {
     class ByReference : FfiPingUploadTask(), Structure.ByReference
 
@@ -60,7 +66,7 @@ internal open class FfiPingUploadTask(
         return when (this.tag.toInt()) {
             UploadTaskTag.Wait.ordinal -> {
                 this.readField("wait")
-                PingUploadTask.Wait(this.wait)
+                PingUploadTask.Wait(this.wait.time)
             }
             UploadTaskTag.Upload.ordinal -> {
                 this.readField("upload")

@@ -7,6 +7,8 @@
     * This is detected automatically, no changes needed for consuming code.
 * RLB
   * When the pre-init task queue overruns, this is now recorded in the metric `glean.error.preinit_tasks_overflow`.
+* Android
+  * BUGFIX: Don't crash the ping uploader when throttled due to reading too large wait time values ([#1454](https://github.com/mozilla/glean/pull/1454)).
 
 # v33.10.3 (2021-01-18)
 
