@@ -48,7 +48,7 @@ use configuration::DEFAULT_GLEAN_ENDPOINT;
 pub use core_metrics::ClientInfoMetrics;
 use glean_core::global_glean;
 pub use glean_core::{
-    metrics::{DistributionData, MemoryUnit, RecordedEvent, TimeUnit},
+    metrics::{DistributionData, MemoryUnit, RecordedEvent, TimeUnit, TimerId},
     traits, CommonMetricData, Error, ErrorType, Glean, HistogramType, Lifetime, Result,
 };
 use private::RecordedExperimentData;
