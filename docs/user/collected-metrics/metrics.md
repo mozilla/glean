@@ -49,7 +49,8 @@ This ping includes the [client id](https://mozilla.github.io/glean/book/user/pin
 **Reasons this ping may be sent:**
 
 - `active`: The ping was submitted when the application became active again, which
-      includes when the application starts.
+      includes when the application starts. In earlier versions, this was called
+      `foreground`.
 
       *Note*: this ping will not contain the `glean.baseline.duration` metric.
 
@@ -59,7 +60,8 @@ This ping includes the [client id](https://mozilla.github.io/glean/book/user/pin
 
       *Note*: this ping will not contain the `glean.baseline.duration` metric.
 
-- `inactive`: The ping was submitted before becoming inactive.
+- `inactive`: The ping was submitted when becoming inactive. In earlier versions, this
+      was called `background`.
 
 
 The following metrics are added to the ping:

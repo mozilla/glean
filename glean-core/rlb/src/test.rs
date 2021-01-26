@@ -171,7 +171,7 @@ fn test_experiments_recording_before_glean_inits() {
 }
 
 #[test]
-fn test_sending_of_foreground_background_pings() {
+fn sending_of_foreground_background_pings() {
     let _lock = lock_test();
 
     let click: EventMetric<traits::NoExtraKeys> = private::EventMetric::new(CommonMetricData {
@@ -223,11 +223,13 @@ fn test_sending_of_foreground_background_pings() {
 
     // Simulate becoming active.
     handle_client_active();
-    click.record(None);
 
     // We expect a baseline ping to be generated here (reason: 'active').
     let url = r.recv().unwrap();
     assert!(url.contains("baseline"));
+
+    // Recording an event so that an "events" ping will contain data.
+    click.record(None);
 
     // Simulate becoming inactive
     handle_client_inactive();
@@ -237,7 +239,7 @@ fn test_sending_of_foreground_background_pings() {
     for _ in 0..2 {
         let url = r.recv().unwrap();
         // If the url contains the expected reason, remove it from the list.
-        expected_pings.retain(|&name| url.contains(name));
+        expected_pings.retain(|&name| !url.contains(name));
     }
     // We received all the expected pings.
     assert_eq!(0, expected_pings.len());
@@ -251,7 +253,7 @@ fn test_sending_of_foreground_background_pings() {
 }
 
 #[test]
-fn test_sending_of_startup_baseline_ping() {
+fn sending_of_startup_baseline_ping() {
     let _lock = lock_test();
 
     // Create an instance of Glean, wait for init and then flip the dirty

@@ -563,8 +563,6 @@ open class GleanInternalAPI internal constructor () {
      * Handle the foreground event and send the appropriate pings.
      */
     internal fun handleForegroundEvent() {
-        GleanValidation.foregroundCount.add(1)
-
         // Note that this is sending the length of the last foreground session
         // because it belongs to the baseline ping and that ping is sent every
         // time the app goes to background.
@@ -580,6 +578,7 @@ open class GleanInternalAPI internal constructor () {
 
         // Start the timespan for the new activity period.
         GleanBaseline.duration.start()
+        GleanValidation.foregroundCount.add(1)
     }
 
     /**

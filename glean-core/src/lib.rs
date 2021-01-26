@@ -888,7 +888,7 @@ impl Glean {
     /// and then sets the dirty bit.
     pub fn handle_client_active(&mut self) {
         if let Err(err) = self.internal_pings.baseline.submit(self, Some("active")) {
-            log::error!("Failed to submit baseline ping on active: {}", err);
+            log::warn!("Failed to submit baseline ping on active: {}", err);
         }
 
         self.set_dirty_flag(true);
@@ -900,11 +900,11 @@ impl Glean {
     /// `inactive` and then clears the dirty bit.
     pub fn handle_client_inactive(&mut self) {
         if let Err(err) = self.internal_pings.baseline.submit(self, Some("inactive")) {
-            log::error!("Failed to submit baseline ping on inactive: {}", err);
+            log::warn!("Failed to submit baseline ping on inactive: {}", err);
         }
 
         if let Err(err) = self.internal_pings.events.submit(self, Some("inactive")) {
-            log::error!("Failed to submit events ping on inactive: {}", err);
+            log::warn!("Failed to submit events ping on inactive: {}", err);
         }
 
         self.set_dirty_flag(false);

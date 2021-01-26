@@ -34,10 +34,12 @@ baseline:
 
       *Note*: this ping will not contain the `glean.baseline.duration` metric.
     inactive: |
-      The ping was submitted before becoming inactive.
+      The ping was submitted when becoming inactive. In earlier versions, this
+      was called `background`.
     active: |
       The ping was submitted when the application became active again, which
-      includes when the application starts.
+      includes when the application starts. In earlier versions, this was called
+      `foreground`.
 
       *Note*: this ping will not contain the `glean.baseline.duration` metric.
 
@@ -95,7 +97,8 @@ events:
       are any pending events at startup, because event timestamps can not be
       mixed across runs of the application.
     inactive: |
-      The ping was submitted before becoming inactive.
+      The ping was submitted when becoming inactive. In earlier versions, this
+      was called `background`.
     max_capacity: |
       The maximum number of events was reached (default 500 events).
 

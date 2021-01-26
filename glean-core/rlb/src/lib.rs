@@ -300,8 +300,8 @@ pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) {
                     // The `submit_ping_by_name_sync` function cannot be used, otherwise
                     // startup will cause a dead-lock, since that function requests a
                     // write lock on the `glean` object.
-                    // Note that unwrapping below is safe: the function always return a
-                    // valid `Result<bool>`.
+                    // Note that unwrapping below is safe: the function will return an
+                    // `Ok` value for a known ping.
                     if glean
                         .submit_ping_by_name("baseline", Some("dirty_startup"))
                         .unwrap()
@@ -588,6 +588,8 @@ pub fn set_experiment_inactive(experiment_id: String) {
 ///
 /// This functions generates a baseline ping with reason `active`
 /// and then sets the dirty bit.
+/// This should be called whenever the consuming product becomes active (e.g.
+/// getting to foreground).
 pub fn handle_client_active() {
     dispatcher::launch(move || {
         with_glean_mut(|glean| {
@@ -601,9 +603,10 @@ pub fn handle_client_active() {
         })
     });
 
-    // This needs to be called after the `handle_client_active` api: it starts
-    // measuring the new activity duration, after any ping is sent by the previous
-    // call.
+    // The previous block of code may send a ping containing the `duration` metric,
+    // in `glean.handle_client_active`. We intentionally start recording a new
+    // `duration` after that happens, so that the measurement gets reported when
+    // calling `handle_client_inactive`.
     core_metrics::internal_metrics::baseline_duration.start();
 }
 
@@ -611,6 +614,8 @@ pub fn handle_client_active() {
 ///
 /// This functions generates a baseline and an events ping with reason
 /// `inactive` and then clears the dirty bit.
+/// This should be called whenever the consuming product becomes inactive (e.g.
+/// getting to background).
 pub fn handle_client_inactive() {
     // This needs to be called before the `handle_client_inactive` api: it stops
     // measuring the duration of the previous activity time, before any ping is sent
