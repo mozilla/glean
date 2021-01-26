@@ -703,7 +703,7 @@ fn timing_distribution_truncation() {
             assert!(key < max_sample_time * unit.as_nanos(1))
         }
 
-        let keys = HashSet::<u64>::from_iter(hist.values().keys().cloned());
+        let keys: HashSet<u64> = hist.values().keys().cloned().collect();
         assert_eq!(keys, *expected_keys);
 
         let snapshot = hist.snapshot();
