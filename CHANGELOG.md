@@ -2,6 +2,13 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v29.1.1...master)
 
+**This is an iOS release only, built with Xcode 11.7**
+
+Otherwise functional changes.
+
+* iOS
+  * Build with Xcode 11.7 ([#1457](https://github.com/mozilla/glean/pull/1457))
+
 # v29.1.1 (2020-05-22)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v29.1.0...v29.1.1)
