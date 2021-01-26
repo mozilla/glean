@@ -5,10 +5,15 @@
 * General
   * Other bindings detect when RLB is used and try to flush the RLB dispatcher to unblock the Rust API ([#1442](https://github.com/mozilla/glean/pull/1442)).
     * This is detected automatically, no changes needed for consuming code.
+  * Add support for the client activity API. This API is either automatically used or exposed by the language bindings.
+  * Rename the reason `background` to `inactive` for both the `baseline` and `events` ping. Rename the reason `foreground` to `active` for the `baseline` ping.
 * RLB
   * When the pre-init task queue overruns, this is now recorded in the metric `glean.error.preinit_tasks_overflow`.
+  * Expose the client activity API.
+  * Send the `baseline` ping with reason `dirty_startup`, if needed, at startup.
 * Android
   * BUGFIX: Don't crash the ping uploader when throttled due to reading too large wait time values ([#1454](https://github.com/mozilla/glean/pull/1454)).
+  * Use the client activity API.
 
 # v33.10.3 (2021-01-18)
 
