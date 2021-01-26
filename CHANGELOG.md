@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v29.1.1...master)
+[Full changelog](https://github.com/mozilla/glean/compare/v29.1.2...master)
+
+# v29.1.2 (2021-01-26)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v29.1.1...v29.1.2)
 
 **This is an iOS release only, built with Xcode 11.7**
 
