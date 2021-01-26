@@ -529,6 +529,17 @@ Note: Previous 33.0.z releases were broken. This release now includes all change
 * iOS:
   * Refactor the ping uploader to use the new upload mechanism.
 
+# v29.1.2 (2021-01-26)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v29.1.1...v29.1.2)
+
+**This is an iOS release only, built with Xcode 11.7**
+
+Otherwise no functional changes.
+
+* iOS
+  * Build with Xcode 11.7 ([#1457](https://github.com/mozilla/glean/pull/1457))
+
 # v29.1.1 (2020-05-22)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v29.1.0...v29.1.1)
