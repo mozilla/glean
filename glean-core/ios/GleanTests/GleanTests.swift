@@ -106,7 +106,7 @@ class GleanTests: XCTestCase {
         stubServerReceive { _, json in
             // Check for the "dirty_startup" flag
             let pingInfo = json?["ping_info"] as? [String: Any]
-            XCTAssertEqual("foreground", pingInfo?["reason"] as? String)
+            XCTAssertEqual("active", pingInfo?["reason"] as? String)
 
             // We may get error metrics in foreground pings,
             // so 'metrics' may exist.
