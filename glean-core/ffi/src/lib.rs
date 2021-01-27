@@ -410,6 +410,16 @@ pub extern "C" fn glean_is_dirty_flag_set() -> u8 {
 }
 
 #[no_mangle]
+pub extern "C" fn glean_handle_client_active() {
+    with_glean_value_mut(|glean| glean.handle_client_active());
+}
+
+#[no_mangle]
+pub extern "C" fn glean_handle_client_inactive() {
+    with_glean_value_mut(|glean| glean.handle_client_inactive());
+}
+
+#[no_mangle]
 pub extern "C" fn glean_test_clear_all_stores() {
     with_glean_value(|glean| glean.test_clear_all_stores())
 }

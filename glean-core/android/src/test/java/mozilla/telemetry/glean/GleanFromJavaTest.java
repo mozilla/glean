@@ -74,6 +74,6 @@ public class GleanFromJavaTest {
         // submit() can be called without parameters.
         Pings.INSTANCE.baseline().submit();
         // submit() can be called with a `reason`.
-        Pings.INSTANCE.baseline().submit(Pings.baselineReasonCodes.background);
+        Pings.INSTANCE.baseline().submit(Pings.baselineReasonCodes.inactive);
     }
 }

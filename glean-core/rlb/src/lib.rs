@@ -297,7 +297,17 @@ pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) {
                 // force-closed. If that's the case, submit a 'baseline' ping with the
                 // reason "dirty_startup". We only do that from the second run.
                 if !is_first_run && dirty_flag {
-                    // TODO: bug 1672956 - submit_ping_by_name_sync("baseline", "dirty_startup");
+                    // The `submit_ping_by_name_sync` function cannot be used, otherwise
+                    // startup will cause a dead-lock, since that function requests a
+                    // write lock on the `glean` object.
+                    // Note that unwrapping below is safe: the function will return an
+                    // `Ok` value for a known ping.
+                    if glean
+                        .submit_ping_by_name("baseline", Some("dirty_startup"))
+                        .unwrap()
+                    {
+                        state.upload_manager.trigger_upload();
+                    }
                 }
 
                 // From the second time we run, after all startup pings are generated,
@@ -571,6 +581,57 @@ pub fn set_experiment_active(
 pub fn set_experiment_inactive(experiment_id: String) {
     dispatcher::launch(move || {
         with_glean(|glean| glean.set_experiment_inactive(experiment_id.to_owned()))
+    })
+}
+
+/// Performs the collection/cleanup operations required by becoming active.
+///
+/// This functions generates a baseline ping with reason `active`
+/// and then sets the dirty bit.
+/// This should be called whenever the consuming product becomes active (e.g.
+/// getting to foreground).
+pub fn handle_client_active() {
+    dispatcher::launch(move || {
+        with_glean_mut(|glean| {
+            glean.handle_client_active();
+
+            // The above call may generate pings, so we need to trigger
+            // the uploader. It's fine to trigger it if no ping was generated:
+            // it will bail out.
+            let state = global_state().lock().unwrap();
+            state.upload_manager.trigger_upload();
+        })
+    });
+
+    // The previous block of code may send a ping containing the `duration` metric,
+    // in `glean.handle_client_active`. We intentionally start recording a new
+    // `duration` after that happens, so that the measurement gets reported when
+    // calling `handle_client_inactive`.
+    core_metrics::internal_metrics::baseline_duration.start();
+}
+
+/// Performs the collection/cleanup operations required by becoming inactive.
+///
+/// This functions generates a baseline and an events ping with reason
+/// `inactive` and then clears the dirty bit.
+/// This should be called whenever the consuming product becomes inactive (e.g.
+/// getting to background).
+pub fn handle_client_inactive() {
+    // This needs to be called before the `handle_client_inactive` api: it stops
+    // measuring the duration of the previous activity time, before any ping is sent
+    // by the next call.
+    core_metrics::internal_metrics::baseline_duration.stop();
+
+    dispatcher::launch(move || {
+        with_glean_mut(|glean| {
+            glean.handle_client_inactive();
+
+            // The above call may generate pings, so we need to trigger
+            // the uploader. It's fine to trigger it if no ping was generated:
+            // it will bail out.
+            let state = global_state().lock().unwrap();
+            state.upload_manager.trigger_upload();
+        })
     })
 }
 

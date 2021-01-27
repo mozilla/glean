@@ -373,6 +373,10 @@ void glean_set_dirty_flag(uint8_t flag);
 
 uint8_t glean_is_dirty_flag_set(void);
 
+void glean_handle_client_active(void);
+
+void glean_handle_client_inactive(void);
+
 void glean_test_clear_all_stores(void);
 
 void glean_destroy_glean(void);
