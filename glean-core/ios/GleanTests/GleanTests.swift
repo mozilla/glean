@@ -480,6 +480,21 @@ class GleanTests: XCTestCase {
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
         }
     }
+
+    func testForegroundCounter() {
+        // Glean is started by the test framework.
+        // That already triggers the first foreground event.
+
+        // Put it in the background
+        Glean.shared.handleBackgroundEvent()
+
+        // Bring it back
+        Glean.shared.handleForegroundEvent()
+
+        let foregroundCounter = GleanMetrics.GleanValidation.foregroundCount
+        XCTAssert(foregroundCounter.testHasValue())
+        XCTAssertEqual(2, try foregroundCounter.testGetValue())
+    }
 }
 
 // swiftlint:enable type_body_length

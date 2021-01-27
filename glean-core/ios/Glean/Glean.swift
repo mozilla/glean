@@ -6,6 +6,7 @@ import Foundation
 
 private typealias GleanBaseline = GleanMetrics.GleanBaseline
 private typealias GleanInternalMetrics = GleanMetrics.GleanInternalMetrics
+private typealias GleanValidation = GleanMetrics.GleanValidation
 private typealias Pings = GleanMetrics.Pings
 
 /// Public exported type identifying individual timers for `TimingDistributionMetricType`
@@ -406,6 +407,7 @@ public class Glean {
 
         // Start the timespan for the new activity period.
         GleanBaseline.duration.start()
+        GleanValidation.foregroundCount.add(1)
     }
 
     /// Handle background event and submit appropriate pings
