@@ -6,7 +6,8 @@
 import OHHTTPStubs
 import XCTest
 
-// swiftlint:disable type_body_length
+// swiftlint:disable type_body_length force_cast
+// REASON: Used in a test
 class GleanTests: XCTestCase {
     var expectation: XCTestExpectation?
 
@@ -149,23 +150,37 @@ class GleanTests: XCTestCase {
         glean_set_dirty_flag(true.toByte())
 
         // Set up the test stub based on the default telemetry endpoint
-        stubServerReceive { _, json in
+        stubServerReceive { pingType, json in
+            XCTAssertEqual("baseline", pingType)
             XCTAssert(json != nil)
 
             // Check for the "dirty_startup" flag
-            let pingInfo = json?["ping_info"] as? [String: Any]
-            XCTAssertEqual("dirty_startup", pingInfo?["reason"] as? String)
+            let pingInfo = json!["ping_info"] as! [String: Any]
+            let reason = pingInfo["reason"] as! String
+            if reason == "active" {
+                // Skip initial "active" ping.
+                // Glean is initialized ahead of this test and thus we might get one.
+                return
+            }
 
-            // We may get error metrics in dirty startup pings,
-            // so 'metrics' may exist.
-            let metrics = json?["metrics"] as? [String: Any]
+            XCTAssertEqual("dirty_startup", reason, "Expected a dirty_startup, got \(reason)")
+
+            // 'metrics' will exist and include exactly one valid metric.
+            // No errors should be reported.
+            let metrics = json!["metrics"] as? [String: Any]
             if metrics != nil {
-                // Since we are only expecting error metrics,
-                // let's check that this is all we got (plus the `validation.first_run_hour`).
-                XCTAssertEqual(metrics?.count, 2, "metrics has more keys than expected: \(JSONStringify(metrics!))")
-                let labeledCounters = metrics?["labeled_counter"] as? [String: Any]
-                labeledCounters!.forEach { key, _ in
-                    XCTAssertTrue(key.starts(with: "glean.error"))
+                let datetimes = metrics!["datetime"] as! [String: Any]
+                XCTAssertTrue(datetimes.keys.contains("glean.validation.first_run_hour"),
+                              "Datetime should have first_run_hour: \(datetimes)")
+
+                if metrics!.count > 1 {
+                    // Since we are only expecting error metrics,
+                    // let's check that this is all we got (plus the `validation.first_run_hour`).
+                    XCTAssertEqual(metrics?.count, 2, "metrics has more keys than expected: \(JSONStringify(metrics!))")
+                    let labeledCounters = metrics?["labeled_counter"] as? [String: Any]
+                    labeledCounters!.forEach { key, _ in
+                        XCTAssertTrue(key.starts(with: "glean.error"))
+                    }
                 }
             }
 
@@ -192,6 +207,11 @@ class GleanTests: XCTestCase {
 
     func testSendingDeletionPingIfDisabledOutsideOfRun() {
         stubServerReceive { pingType, _ in
+            if pingType == "baseline" {
+                // Ignore initial "active" baseline ping
+                return
+            }
+
             XCTAssertEqual("deletion-request", pingType)
 
             DispatchQueue.main.async {
@@ -260,8 +280,15 @@ class GleanTests: XCTestCase {
             XCTAssert(json != nil)
 
             // Check for the "dirty_startup" flag
-            let pingInfo = json?["ping_info"] as? [String: Any]
-            XCTAssertEqual("dirty_startup", pingInfo?["reason"] as? String)
+            let pingInfo = json!["ping_info"] as! [String: Any]
+            let reason = pingInfo["reason"] as! String
+            if reason == "active" {
+                // Skip initial "active" ping.
+                // Glean is initialized ahead of this test and thus we might get one.
+                return
+            }
+
+            XCTAssertEqual("dirty_startup", reason)
 
             // Ensure there is only the expected locale string metric
             let metrics = json?["metrics"] as? [String: Any]
@@ -403,6 +430,11 @@ class GleanTests: XCTestCase {
 
         // We expect only a single ping later
         stubServerReceive { pingType, _ in
+            if pingType == "baseline" {
+                // Ignore initial "active" baseline ping
+                return
+            }
+
             XCTAssertEqual("deletion-request", pingType)
 
             // Fulfill test's expectation once we parsed the incoming data.
