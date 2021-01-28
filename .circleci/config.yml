@@ -683,9 +683,8 @@ jobs:
       - run:
           name: Bootstrap dependencies
           command: |
-            # We need release mode to correctly ship bitcode for dependencies
             pushd samples/ios/app
-            ./bootstrap.sh Release
+            ./bootstrap.sh
             popd
       - run:
           name: Build sample app
