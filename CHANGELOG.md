@@ -14,6 +14,9 @@
 * Android
   * BUGFIX: Don't crash the ping uploader when throttled due to reading too large wait time values ([#1454](https://github.com/mozilla/glean/pull/1454)).
   * Use the client activity API.
+* iOS
+  * Use the client activity API ([#1465](https://github.com/mozilla/glean/pull/1465)).
+    Note: this now introduces a baseline ping with reason `active` on startup.
 
 # v33.10.3 (2021-01-18)
 
