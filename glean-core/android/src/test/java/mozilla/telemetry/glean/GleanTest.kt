@@ -227,9 +227,9 @@ class GleanTest {
                     val seq = json.getJSONObject("ping_info").getInt("seq")
 
                     // There are three baseline pings:
-                    //   - seq: 0, reason: foreground, duration: null
-                    //   - seq: 1, reason: background, duration: non-null
-                    //   - seq: 2, reason: foreground, duration: null
+                    //   - seq: 0, reason: active, duration: null
+                    //   - seq: 1, reason: inactive, duration: non-null
+                    //   - seq: 2, reason: active, duration: null
                     if (seq == 1) {
                         val baselineMetricsObject = json.getJSONObject("metrics")
                         assertEquals("inactive", json.getJSONObject("ping_info").getString("reason"))
