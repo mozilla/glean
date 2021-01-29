@@ -277,10 +277,6 @@ the details of which are reproduced below.
     <url>https://github.com/BurntSushi/winapi-util</url>
   </license>
   <license>
-    <name>Mozilla Public License 2.0: benchmark</name>
-    <url>https://crates.io/crates/benchmark</url>
-  </license>
-  <license>
     <name>Mozilla Public License 2.0: glean</name>
     <url>https://github.com/mozilla/glean</url>
   </license>
