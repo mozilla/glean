@@ -1287,7 +1287,7 @@ The following text applies to code linked from these dependencies:
 * [inherent 0.1.6]( https://github.com/dtolnay/inherent )
 * [itoa 0.4.6]( https://github.com/dtolnay/itoa )
 * [lazy_static 1.4.0]( https://github.com/rust-lang-nursery/lazy-static.rs )
-* [libc 0.2.80]( https://github.com/rust-lang/libc )
+* [libc 0.2.83]( https://github.com/rust-lang/libc )
 * [log 0.4.13]( https://github.com/rust-lang/log )
 * [num-integer 0.1.44]( https://github.com/rust-num/num-integer )
 * [num-traits 0.2.14]( https://github.com/rust-num/num-traits )
@@ -1299,8 +1299,8 @@ The following text applies to code linked from these dependencies:
 * [proc-macro-hack 0.5.19]( https://github.com/dtolnay/proc-macro-hack )
 * [proc-macro2 1.0.24]( https://github.com/alexcrichton/proc-macro2 )
 * [quote 1.0.8]( https://github.com/dtolnay/quote )
-* [serde 1.0.119]( https://github.com/serde-rs/serde )
-* [serde_derive 1.0.119]( https://github.com/serde-rs/serde )
+* [serde 1.0.121]( https://github.com/serde-rs/serde )
+* [serde_derive 1.0.121]( https://github.com/serde-rs/serde )
 * [serde_json 1.0.61]( https://github.com/serde-rs/json )
 * [syn 1.0.58]( https://github.com/dtolnay/syn )
 * [thiserror 1.0.23]( https://github.com/dtolnay/thiserror )
@@ -3243,9 +3243,9 @@ THE SOFTWARE.
 The following text applies to code linked from these dependencies:
 
 * [benchmark 0.1.0]( https://crates.io/crates/benchmark )
-* [glean 33.10.3]( https://github.com/mozilla/glean )
-* [glean-core 33.10.3]( https://github.com/mozilla/glean )
-* [glean-ffi 33.10.3]( https://github.com/mozilla/glean )
+* [glean 34.0.0]( https://github.com/mozilla/glean )
+* [glean-core 34.0.0]( https://github.com/mozilla/glean )
+* [glean-ffi 34.0.0]( https://github.com/mozilla/glean )
 
 
 ```
