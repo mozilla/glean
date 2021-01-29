@@ -12,6 +12,14 @@ These functions expose a way to inspect and validate recorded metric values with
 
 <div data-lang="Kotlin" class="tab">
 
+Using the Glean SDK's unit testing API requires adding [Robolectric 4.0 or later](http://robolectric.org/) as a testing dependency. In Gradle, this can be done by declaring a `testImplementation` dependency:
+
+```groovy
+dependencies {
+    testImplementation "org.robolectric:robolectric:4.3.1" 
+}
+```
+
 In order to prevent issues with async calls when unit testing the Glean SDK,
 it is important to put the Glean SDK into testing mode by applying the JUnit `GleanTestRule` to your test class.
 When the Glean SDK is in testing mode, it enables uploading and clears the recorded metrics at the beginning of each test run.
