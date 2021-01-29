@@ -1,6 +1,29 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v33.10.3...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v34.0.0...main)
+
+# v34.0.0 (2021-01-29)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v33.10.3...v34.0.0)
+
+* General
+  * Other bindings detect when RLB is used and try to flush the RLB dispatcher to unblock the Rust API ([#1442](https://github.com/mozilla/glean/pull/1442)).
+    * This is detected automatically, no changes needed for consuming code.
+  * Add support for the client activity API ([#1455](https://github.com/mozilla/glean/pull/1455)). This API is either automatically used or exposed by the language bindings.
+  * Rename the reason `background` to `inactive` for both the `baseline` and `events` ping. Rename the reason `foreground` to `active` for the `baseline` ping.
+* RLB
+  * When the pre-init task queue overruns, this is now recorded in the metric `glean.error.preinit_tasks_overflow` ([#1438](https://github.com/mozilla/glean/pull/1438)).
+  * Expose the client activity API ([#1455](https://github.com/mozilla/glean/pull/1455)).
+  * Send the `baseline` ping with reason `dirty_startup`, if needed, at startup.
+  * Expose all required types directly ([#1452](https://github.com/mozilla/glean/pull/1452)).
+    * Rust consumers will not need to depend on `glean-core` anymore.
+* Android
+  * BUGFIX: Don't crash the ping uploader when throttled due to reading too large wait time values ([#1454](https://github.com/mozilla/glean/pull/1454)).
+  * Use the client activity API ([#1455](https://github.com/mozilla/glean/pull/1455)).
+  * Update `AndroidX` dependencies ([#1441](https://github.com/mozilla/glean/pull/1441)).
+* iOS
+  * Use the client activity API ([#1465](https://github.com/mozilla/glean/pull/1465)).
+    Note: this now introduces a baseline ping with reason `active` on startup.
 
 # v33.10.3 (2021-01-18)
 
@@ -522,6 +545,17 @@ Note: Previous 33.0.z releases were broken. This release now includes all change
   * Refactor the ping uploader to use the new upload mechanism.
 * iOS:
   * Refactor the ping uploader to use the new upload mechanism.
+
+# v29.1.2 (2021-01-26)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v29.1.1...v29.1.2)
+
+**This is an iOS release only, built with Xcode 11.7**
+
+Otherwise no functional changes.
+
+* iOS
+  * Build with Xcode 11.7 ([#1457](https://github.com/mozilla/glean/pull/1457))
 
 # v29.1.1 (2020-05-22)
 

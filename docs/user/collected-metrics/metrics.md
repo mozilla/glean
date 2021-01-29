@@ -48,18 +48,20 @@ This ping includes the [client id](https://mozilla.github.io/glean/book/user/pin
 
 **Reasons this ping may be sent:**
 
-- `background`: The ping was submitted before going to background.
+- `active`: The ping was submitted when the application became active again, which
+      includes when the application starts. In earlier versions, this was called
+      `foreground`.
+
+      *Note*: this ping will not contain the `glean.baseline.duration` metric.
 
 - `dirty_startup`: The ping was submitted at startup, because the application process was
-      killed before the Glean SDK had the chance to generate this ping, when
-      going to background, in the last session.
+      killed before the Glean SDK had the chance to generate this ping, before
+      becoming inactive, in the last session.
 
       *Note*: this ping will not contain the `glean.baseline.duration` metric.
 
-- `foreground`: The ping was submitted when the application went to foreground, which
-      includes when the application starts.
-
-      *Note*: this ping will not contain the `glean.baseline.duration` metric.
+- `inactive`: The ping was submitted when becoming inactive. In earlier versions, this
+      was called `background`.
 
 
 The following metrics are added to the ping:

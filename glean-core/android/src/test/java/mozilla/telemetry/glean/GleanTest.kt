@@ -35,6 +35,7 @@ import mozilla.telemetry.glean.utils.getLanguageFromLocale
 import mozilla.telemetry.glean.utils.getLocaleTag
 import org.json.JSONObject
 import org.junit.After
+import org.junit.Ignore
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertSame
@@ -226,12 +227,12 @@ class GleanTest {
                     val seq = json.getJSONObject("ping_info").getInt("seq")
 
                     // There are three baseline pings:
-                    //   - seq: 0, reason: foreground, duration: null
-                    //   - seq: 1, reason: background, duration: non-null
-                    //   - seq: 2, reason: foreground, duration: null
+                    //   - seq: 0, reason: active, duration: null
+                    //   - seq: 1, reason: inactive, duration: non-null
+                    //   - seq: 2, reason: active, duration: null
                     if (seq == 1) {
                         val baselineMetricsObject = json.getJSONObject("metrics")
-                        assertEquals("background", json.getJSONObject("ping_info").getString("reason"))
+                        assertEquals("inactive", json.getJSONObject("ping_info").getString("reason"))
                         val baselineTimespanMetrics = baselineMetricsObject.getJSONObject("timespan")
                         assertEquals(1, baselineTimespanMetrics.length())
                         assertNotNull(baselineTimespanMetrics.get("glean.baseline.duration"))
@@ -741,6 +742,7 @@ class GleanTest {
         assertEquals(request.getHeader("X-Debug-ID"), "valid-tag")
     }
 
+    @Ignore("Bug 1685273: Frequent intermittent failures")
     @Test
     fun `flipping upload enabled respects order of events`() {
         // NOTES(janerik):

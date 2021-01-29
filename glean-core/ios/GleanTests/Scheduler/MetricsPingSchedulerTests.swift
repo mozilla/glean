@@ -6,6 +6,7 @@
 import OHHTTPStubs
 import XCTest
 
+// swiftlint:disable function_body_length
 class MetricsPingSchedulerTests: XCTestCase {
     var expectation: XCTestExpectation?
 
@@ -187,13 +188,18 @@ class MetricsPingSchedulerTests: XCTestCase {
         let yesterday = Calendar.current.date(byAdding: Calendar.Component.day, value: -1, to: now)
         Glean.shared.metricsPingScheduler.updateSentDate(yesterday!)
 
-        stubServerReceive { _, json in
+        stubServerReceive { pingType, json in
+            if pingType != "metrics" {
+                // Skip initial "active" baseline ping
+                return
+            }
             XCTAssert(json != nil)
             let metrics = json?["metrics"] as? [String: Any]
             let strings = metrics?["string"] as? [String: Any]
 
             // Ensure there is only the expected metric
-            XCTAssertEqual(1, strings?.count, "Must contain only the expected metric")
+            XCTAssertEqual(1, strings?.count,
+                           "Must contain only the expected metric, content: \(JSONStringify(metrics!))")
 
             // Check the received metric's value against the expected value
             let receivedValue = strings?["telemetry.expected_metric"] as? String
@@ -254,6 +260,11 @@ class MetricsPingSchedulerTests: XCTestCase {
 
         // Set up the interception of the ping for inspection
         stubServerReceive { pingType, json in
+            if pingType == "baseline" {
+                // Ignore initial "active" baseline ping
+                return
+            }
+
             XCTAssertEqual(pingType, "metrics", "Must be a metrics ping")
 
             let metrics = json?["metrics"] as? [String: Any]

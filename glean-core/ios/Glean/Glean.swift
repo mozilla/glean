@@ -187,6 +187,8 @@ public class Glean {
                 self.initializeCoreMetrics()
             }
 
+            // Signal the RLB dispatcher to unblock, if any exists.
+            glean_flush_rlb_dispatcher()
             // Signal Dispatcher that init is complete
             Dispatchers.shared.flushQueuedInitialTasks()
 
@@ -394,13 +396,31 @@ public class Glean {
 
     /// Handle foreground event and submit appropriate pings
     func handleForegroundEvent() {
-        Pings.shared.baseline.submit(reason: .foreground)
+        Dispatchers.shared.launchAPI {
+            glean_handle_client_active()
+            // The above call may generate pings, so we need to trigger
+            // the uploader. It's fine to trigger it if no ping was generated:
+            // it will bail out.
+            HttpPingUploader.launch(configuration: self.configuration!)
+        }
+
+        // Start the timespan for the new activity period.
+        GleanBaseline.duration.start()
     }
 
     /// Handle background event and submit appropriate pings
     func handleBackgroundEvent() {
-        Pings.shared.baseline.submit(reason: .background)
-        Pings.shared.events.submit(reason: .background)
+        // We're going to background, so store how much time we spent
+        // on foreground.
+        GleanBaseline.duration.stop()
+
+        Dispatchers.shared.launchAPI {
+            glean_handle_client_inactive()
+            // The above call may generate pings, so we need to trigger
+            // the uploader. It's fine to trigger it if no ping was generated:
+            // it will bail out.
+            HttpPingUploader.launch(configuration: self.configuration!)
+        }
     }
 
     /// Collect and submit a ping by name for eventual uploading

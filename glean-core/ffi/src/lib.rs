@@ -46,6 +46,10 @@ mod uuid;
 #[cfg(all(not(target_os = "android"), not(target_os = "ios")))]
 mod fd_logger;
 
+#[cfg(unix)]
+#[macro_use]
+mod weak;
+
 use ffi_string_ext::FallibleToString;
 use from_raw::*;
 use handlemap_ext::HandleMapExtension;
@@ -366,6 +370,35 @@ pub extern "C" fn glean_clear_application_lifetime_metrics() {
     with_glean_value(|glean| glean.clear_application_lifetime_metrics());
 }
 
+/// Try to unblock the RLB dispatcher to start processing queued tasks.
+///
+/// **Note**: glean-core does not have its own dispatcher at the moment.
+/// This tries to detect the RLB and, if loaded, instructs the RLB dispatcher to flush.
+/// This allows the usage of both the RLB and other language bindings (e.g. Kotlin/Swift)
+/// within the same application.
+#[no_mangle]
+pub extern "C" fn glean_flush_rlb_dispatcher() {
+    #[cfg(unix)]
+    #[allow(non_upper_case_globals)]
+    {
+        weak!(fn rlb_flush_dispatcher() -> ());
+
+        if let Some(f) = rlb_flush_dispatcher.get() {
+            // SAFETY:
+            //
+            // We did a dynamic lookup for this symbol.
+            // This is only called if we found it.
+            // We don't pass any data and don't read any return value, thus no data we directly
+            // depend on will be corruptable.
+            unsafe {
+                f();
+            }
+        } else {
+            log::info!("No RLB symbol found. Not trying to flush the RLB dispatcher.");
+        }
+    }
+}
+
 #[no_mangle]
 pub extern "C" fn glean_set_dirty_flag(flag: u8) {
     with_glean_value_mut(|glean| glean.set_dirty_flag(flag != 0));
@@ -374,6 +407,16 @@ pub extern "C" fn glean_set_dirty_flag(flag: u8) {
 #[no_mangle]
 pub extern "C" fn glean_is_dirty_flag_set() -> u8 {
     with_glean_value(|glean| glean.is_dirty_flag_set())
+}
+
+#[no_mangle]
+pub extern "C" fn glean_handle_client_active() {
+    with_glean_value_mut(|glean| glean.handle_client_active());
+}
+
+#[no_mangle]
+pub extern "C" fn glean_handle_client_inactive() {
+    with_glean_value_mut(|glean| glean.handle_client_inactive());
 }
 
 #[no_mangle]

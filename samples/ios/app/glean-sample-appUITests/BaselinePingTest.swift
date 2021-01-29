@@ -35,16 +35,32 @@ class BaselinePingTest: XCTestCase {
         }
     }
 
+    // We launch the app, put it into background, then bring it to foreground again.
+    //
+    // There are three baseline pings:
+    //   - seq: 0, reason: active, duration: null
+    //   - seq: 1, reason: inactive, duration: non-null
+    //   - seq: 2, reason: active, duration: null
     func testValidateBaselinePing() {
         let server = setupServer(expectPingType: "baseline")
-        expectation = expectation(description: "Completed upload")
+        expectation = expectation(description: "Completed upload (initial active)")
 
         app.launchArguments = ["USE_MOCK_SERVER", "\(try! server.port())"]
         app.launch()
 
+        waitForExpectations(timeout: 5.0) { error in
+            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
+        }
+
+        var pingInfo = lastPingJson!["ping_info"] as! [String: Any]
+        var reason = pingInfo["reason"] as! String
+        XCTAssertEqual("active", reason)
+
         // Wait for 1 second: this should guarantee we have some valid duration in the
         // ping.
         sleep(1)
+
+        expectation = expectation(description: "Completed upload (inactive)")
 
         // Trigger baseline ping by putting app into the background
         XCUIDevice.shared.press(XCUIDevice.Button.home)
@@ -52,6 +68,10 @@ class BaselinePingTest: XCTestCase {
         waitForExpectations(timeout: 5.0) { error in
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
         }
+
+        pingInfo = lastPingJson!["ping_info"] as! [String: Any]
+        reason = pingInfo["reason"] as! String
+        XCTAssertEqual("inactive", reason)
 
         let metrics = lastPingJson!["metrics"] as! [String: Any]
 
@@ -71,6 +91,19 @@ class BaselinePingTest: XCTestCase {
         for (id, _) in errors ?? [:] {
             XCTAssertFalse(id.starts(with: "glean.error."))
         }
+
+        expectation = expectation(description: "Completed upload (active)")
+
+        // Bring the app back to the foreground
+        app.activate()
+
+        waitForExpectations(timeout: 5.0) { error in
+            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
+        }
+
+        pingInfo = lastPingJson!["ping_info"] as! [String: Any]
+        reason = pingInfo["reason"] as! String
+        XCTAssertEqual("active", reason)
 
         server.stop()
     }

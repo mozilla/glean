@@ -60,12 +60,12 @@ commands:
           rust-version: <<parameters.rust-version>>
       - run:
           name: Test
-          command: cargo test --all --verbose
+          command: cargo test --all --verbose -- --nocapture
       - run:
           name: Test Glean with rkv safe-mode
           command: |
             cd glean-core
-            cargo test -p glean-core --features rkv-safe-mode
+            cargo test -p glean-core --features rkv-safe-mode -- --nocapture
 
   install-rustup:
     steps:
@@ -332,9 +332,9 @@ jobs:
       - run:
           name: FFI header consistency check
           command: |
-            CBINDGEN_VERSION=v0.15.0
+            CBINDGEN_VERSION=v0.16.0
             CBINDGEN=cbindgen
-            CBINDGEN_SHA256=46ad9fef860f18a6b5f307d2acae58833f347857a6ce42d8baf40d0e34805b4d
+            CBINDGEN_SHA256=a2f6ae99ba02f0ec8db63b830a60037a347d81b71970db18b4cb80c9fa0df7e8
             curl -sfSL --retry 5 -O "https://github.com/eqrion/cbindgen/releases/download/${CBINDGEN_VERSION}/${CBINDGEN}"
             echo "${CBINDGEN_SHA256} *${CBINDGEN}" | shasum -a 256 -c -
             mv cbindgen /usr/local/cargo/bin/cbindgen
@@ -358,13 +358,20 @@ jobs:
       - skip-if-doc-only
       - setup-rust-toolchain:
           rust-version: stable
-      - run: cargo build --release
-      # Just a basic smoke test for now to make sure it compiles and runs
-      # without returning an error
-      - run: |
-          cd glean-core/ffi/examples
-          make
-          ./glean_app
+      - run:
+          name: FFI example
+          command: |
+            # Just a basic smoke test for now to make sure it compiles and runs
+            # without returning an error
+            cd glean-core/ffi/examples
+            make
+            ./glean_app
+      - run:
+          name: Multi-bindings sample
+          command: |
+            cd samples/multi-bindings
+            make debug
+            make run
 
   Generate Rust documentation:
     docker:
@@ -501,7 +508,7 @@ jobs:
 
   Check Swift formatting:
     macos:
-      xcode: "12.0.0"
+      xcode: "12.3.0"
     steps:
       - checkout
       - run:
@@ -517,7 +524,7 @@ jobs:
 
   iOS build and test:
     macos:
-      xcode: "12.0.0"
+      xcode: "12.3.0"
     steps:
       - checkout
       - run:
@@ -641,7 +648,7 @@ jobs:
 
   iOS integration test:
     macos:
-      xcode: "12.0.0"
+      xcode: "12.3.0"
     steps:
       - checkout
       - skip-if-doc-only
@@ -676,9 +683,8 @@ jobs:
       - run:
           name: Bootstrap dependencies
           command: |
-            # We need release mode to correctly ship bitcode for dependencies
             pushd samples/ios/app
-            ./bootstrap.sh Release
+            ./bootstrap.sh
             popd
       - run:
           name: Build sample app
@@ -710,7 +716,7 @@ jobs:
 
   Carthage release:
     macos:
-      xcode: "12.0.0"
+      xcode: "12.3.0"
     steps:
       - checkout
       - attach_workspace:
@@ -932,7 +938,7 @@ jobs:
 
   pypi-macos-release:
     macos:
-      xcode: "12.0.0"
+      xcode: "12.3.0"
     steps:
       - install-rustup
       - setup-rust-toolchain
@@ -999,36 +1005,6 @@ jobs:
           command: |
             # Upload to GitHub
             ./ghr -replace ${CIRCLE_TAG} glean-core/python/dist
-
-  ###########################################################################
-  # C#
-
-  CSharp tests:
-    docker:
-      - image: mcr.microsoft.com/dotnet/core/sdk:3.1-buster
-    steps:
-      - checkout
-      - skip-if-doc-only
-      - install-rustup
-      - setup-rust-toolchain
-      - run:
-          name: Install the dependencies
-          command: |
-            apt update
-            apt install -y gcc
-      - run:
-          name: Install the Python environment
-          command: |
-            apt install -y python3 python3-venv python3-pip
-      - run:
-          name: Build glean_ffi
-          command: cargo build
-      - run:
-          name: Build the C# bindings
-          command: dotnet build glean-core/csharp/csharp.sln
-      - run:
-          name: Test C#
-          command: dotnet test glean-core/csharp/csharp.sln --blame
 
   ###########################################################################
   # Docs
@@ -1142,10 +1118,7 @@ workflows:
 
   ci:
     jobs:
-      - CSharp tests
       - Rust tests - stable
-      # FIXME: Disabled due to failing to often, bug 1574424
-      # - Rust tests - beta
       - Rust tests - minimum version
       - C tests
       - Android tests

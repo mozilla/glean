@@ -7,6 +7,10 @@ members = [
   "glean-core/benchmark",
 ]
 
+exclude = [
+  "samples/multi-bindings"
+]
+
 [profile.release]
 opt-level = "s"
 debug = false

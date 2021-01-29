@@ -207,6 +207,9 @@ class Glean:
                 _ffi.lib.glean_clear_application_lifetime_metrics()
                 cls._initialize_core_metrics()
 
+            # Signal the RLB dispatcher to unblock, if any exists.
+            _ffi.lib.glean_flush_rlb_dispatcher()
+            # Signal Dispatcher that init is complete
             Dispatcher.flush_queued_initial_tasks()
 
             # Glean Android sets up the lifecycle observer here. We don't really

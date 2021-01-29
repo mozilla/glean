@@ -381,7 +381,7 @@ dependencies = [
 
 [[package]]
 name = "glean"
-version = "33.10.3"
+version = "34.0.0"
 dependencies = [
  "chrono",
  "crossbeam-channel",
@@ -402,7 +402,7 @@ dependencies = [
 
 [[package]]
 name = "glean-core"
-version = "33.10.3"
+version = "34.0.0"
 dependencies = [
  "bincode",
  "chrono",
@@ -422,12 +422,13 @@ dependencies = [
 
 [[package]]
 name = "glean-ffi"
-version = "33.10.3"
+version = "34.0.0"
 dependencies = [
  "android_logger",
  "env_logger",
  "ffi-support",
  "glean-core",
+ "libc",
  "log",
  "once_cell",
  "oslog",
@@ -575,9 +576,9 @@ checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 
 [[package]]
 name = "libc"
-version = "0.2.80"
+version = "0.2.83"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4d58d1b70b004888f764dfbf6a26a3b0342a1632d33968e4a179d8011c760614"
+checksum = "7eb0c4e9c72ee9d69b767adebc5f4788462a3b45624acd919475c92597bcaf4f"
 
 [[package]]
 name = "lmdb-rkv"
@@ -969,9 +970,9 @@ checksum = "388a1df253eca08550bef6c72392cfe7c30914bf41df5269b68cbd6ff8f570a3"
 
 [[package]]
 name = "serde"
-version = "1.0.119"
+version = "1.0.121"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9bdd36f49e35b61d49efd8aa7fc068fd295961fd2286d0b2ee9a4c7a14e99cc3"
+checksum = "6159e3c76cab06f6bc466244d43b35e77e9500cd685da87620addadc2a4c40b1"
 dependencies = [
  "serde_derive",
 ]
@@ -988,9 +989,9 @@ dependencies = [
 
 [[package]]
 name = "serde_derive"
-version = "1.0.119"
+version = "1.0.121"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "552954ce79a059ddd5fd68c271592374bd15cab2274970380c000118aeffe1cd"
+checksum = "f3fcab8778dc651bc65cfab2e4eb64996f3c912b74002fb379c94517e1f27c46"
 dependencies = [
  "proc-macro2",
  "quote",

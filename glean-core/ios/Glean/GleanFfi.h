@@ -167,7 +167,7 @@ typedef const char *FfiStr;
  * **CAUTION**: This must match _exactly_ the definition on the Kotlin side.
  * If this side is changed, the Kotlin side need to be changed, too.
  */
-typedef struct {
+typedef struct FfiConfiguration {
   FfiStr data_dir;
   FfiStr package_name;
   FfiStr language_binding_name;
@@ -224,7 +224,7 @@ typedef const char *const *RawStringArray;
  * are multiple rust packages using being used in the same application, it *must be freed on the
  * same heap that allocated it*, or you will corrupt both heaps.
  */
-typedef struct {
+typedef struct ByteBuffer {
   int32_t len;
   uint8_t *data;
 } ByteBuffer;
@@ -282,23 +282,21 @@ enum FfiPingUploadTask_Tag {
 };
 typedef uint8_t FfiPingUploadTask_Tag;
 
-typedef struct {
+typedef struct FfiPingUploadTask_Upload_Body {
   FfiPingUploadTask_Tag tag;
   char *document_id;
   char *path;
-  ByteBuffer body;
+  struct ByteBuffer body;
   char *headers;
 } FfiPingUploadTask_Upload_Body;
 
-typedef struct {
-  FfiPingUploadTask_Tag tag;
-  uint64_t _0;
-} FfiPingUploadTask_Wait_Body;
-
-typedef union {
+typedef union FfiPingUploadTask {
   FfiPingUploadTask_Tag tag;
   FfiPingUploadTask_Upload_Body upload;
-  FfiPingUploadTask_Wait_Body wait;
+  struct {
+    FfiPingUploadTask_Tag wait_tag;
+    uint64_t wait;
+  };
 } FfiPingUploadTask;
 
 typedef const int64_t *RawInt64Array;
@@ -335,7 +333,7 @@ void glean_enable_logging_to_fd(uint64_t fd);
  *
  * A valid and non-null configuration object is required for this function.
  */
-uint8_t glean_initialize(const FfiConfiguration *cfg);
+uint8_t glean_initialize(const struct FfiConfiguration *cfg);
 
 uint8_t glean_on_ready_to_submit_pings(void);
 
@@ -361,9 +359,23 @@ char *glean_experiment_test_get_data(FfiStr experiment_id);
 
 void glean_clear_application_lifetime_metrics(void);
 
+/**
+ * Try to unblock the RLB dispatcher to start processing queued tasks.
+ *
+ * **Note**: glean-core does not have its own dispatcher at the moment.
+ * This tries to detect the RLB and, if loaded, instructs the RLB dispatcher to flush.
+ * This allows the usage of both the RLB and other language bindings (e.g. Kotlin/Swift)
+ * within the same application.
+ */
+void glean_flush_rlb_dispatcher(void);
+
 void glean_set_dirty_flag(uint8_t flag);
 
 uint8_t glean_is_dirty_flag_set(void);
+
+void glean_handle_client_active(void);
+
+void glean_handle_client_inactive(void);
 
 void glean_test_clear_all_stores(void);
 
@@ -371,7 +383,7 @@ void glean_destroy_glean(void);
 
 uint8_t glean_is_first_run(void);
 
-void glean_get_upload_task(FfiPingUploadTask *result);
+void glean_get_upload_task(union FfiPingUploadTask *result);
 
 /**
  * Process and free a `FfiPingUploadTask`.
@@ -385,14 +397,14 @@ void glean_get_upload_task(FfiPingUploadTask *result);
  *
  * A valid and non-null upload task object is required for this function.
  */
-void glean_process_ping_upload_response(FfiPingUploadTask *task, uint32_t status);
+void glean_process_ping_upload_response(union FfiPingUploadTask *task, uint32_t status);
 
 /**
  * # Safety
  *
  * A valid and non-null configuration object is required for this function.
  */
-uint8_t glean_initialize_for_subprocess(const FfiConfiguration *cfg);
+uint8_t glean_initialize_for_subprocess(const struct FfiConfiguration *cfg);
 
 uint8_t glean_set_debug_view_tag(FfiStr tag);
 

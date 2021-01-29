@@ -20,8 +20,9 @@ class GleanLifecycleObserver {
             object: nil
         )
 
-        // On init we start the duration, as we won't get the enter-foreground notification.
-        GleanBaseline.duration.start()
+        // We handle init the same as an foreground event,
+        // as we won't get the enter-foreground notification.
+        Glean.shared.handleForegroundEvent()
     }
 
     @objc func appWillEnterForeground(notification _: NSNotification) {
@@ -29,26 +30,9 @@ class GleanLifecycleObserver {
         // because it belongs to the baseline ping and that ping is sent every
         // time the app goes to background.
         Glean.shared.handleForegroundEvent()
-        GleanBaseline.duration.start()
-
-        // Set the "dirty flag" to `true`.
-        Dispatchers.shared.launchAPI {
-            glean_set_dirty_flag(true.toByte())
-        }
     }
 
     @objc func appDidEnterBackground(notification _: NSNotification) {
-        // We're going to background, so store how much time we spent
-        // on foreground.
-        GleanBaseline.duration.stop()
         Glean.shared.handleBackgroundEvent()
-
-        // Clear the "dirty flag" as the last thing when going to background.
-        // If the application is not being force-closed, we should still be
-        // alive and allowed to change this. If we're being force-closed and
-        // don't get to this point, next time Glean runs it will be detected.
-        Dispatchers.shared.launchAPI {
-            glean_set_dirty_flag(false.toByte())
-        }
     }
 }

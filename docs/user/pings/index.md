@@ -1,6 +1,7 @@
 # Glean Pings
 
-Every Glean ping is in JSON format and contains one or more of the [common sections](#ping-sections) with shared information data.
+A ping is a bundle of related metrics, gathered in a payload to be transmitted.
+The ping payload will be encoded in JSON format and contains one or more of the [common sections](#ping-sections) with shared information data.
 
 If data collection is enabled, the Glean SDK provides a set of built-in pings that are assembled out of the box without any developer intervention.  The following is a list of these built-in pings:
 
@@ -131,7 +132,7 @@ These docs refer to application 'foreground' and 'background' state in several p
 
 <div data-lang="Kotlin" class="tab">
 
-#### Foreground
+### Foreground
 
 For Android, this specifically means the activity becomes visible to the user, it has entered the `Started` state, and the system invokes the [`onStart()`](https://developer.android.com/reference/android/app/Activity.html#onStart()) callback.
 

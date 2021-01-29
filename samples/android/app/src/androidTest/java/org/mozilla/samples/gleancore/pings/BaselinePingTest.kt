@@ -8,7 +8,7 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.rule.ActivityTestRule
+import androidx.test.ext.junit.rules.ActivityScenarioRule
 
 import org.junit.Rule
 import org.junit.Test
@@ -18,13 +18,14 @@ import androidx.test.uiautomator.UiDevice
 import mozilla.telemetry.glean.testing.GleanTestLocalServer
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Assert.assertNotNull
 
 @RunWith(AndroidJUnit4::class)
 class BaselinePingTest {
     private val server = createMockWebServer()
 
     @get:Rule
-    val activityRule: ActivityTestRule<MainActivity> = ActivityTestRule(MainActivity::class.java)
+    val activityRule: ActivityScenarioRule<MainActivity> = ActivityScenarioRule(MainActivity::class.java)
 
     @get:Rule
     val gleanRule = GleanTestLocalServer(context, server.port)
@@ -39,6 +40,9 @@ class BaselinePingTest {
         val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
         device.waitForIdle()
 
+        var baselinePing = waitForPingContent("baseline", "active", server)
+        assertNotNull(baselinePing)
+
         // Wait for 1 second: this should guarantee we have some valid duration in the
         // ping.
         Thread.sleep(1000)
@@ -47,7 +51,7 @@ class BaselinePingTest {
         device.pressHome()
 
         // Validate the received data.
-        val baselinePing = waitForPingContent("baseline", "background", server)!!
+        baselinePing = waitForPingContent("baseline", "inactive", server)!!
 
         val metrics = baselinePing.getJSONObject("metrics")
 
