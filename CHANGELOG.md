@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v33.10.3...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v34.0.0...main)
+
+# v34.0.0 (2021-01-29)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v33.10.3...v34.0.0)
 
 * General
   * Other bindings detect when RLB is used and try to flush the RLB dispatcher to unblock the Rust API ([#1442](https://github.com/mozilla/glean/pull/1442)).
