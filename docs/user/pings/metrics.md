@@ -12,6 +12,16 @@ Additionally, it is undesirable to mix metric recording from different versions 
 
 > **Note:** As the `metrics` ping was specifically designed for mobile operating systems, it is not sent when using the Glean Python bindings.
 
+## Contents
+
+The metrics ping includes the following fields:
+
+| Field name | Type | Description |
+|---|---|---|
+| `glean.validation.pings_submitted` | Labeled counter | A count of the pings submitted, by ping type. The counts include the number of pings sent since the last metrics ping (including the last metrics ping itself). |
+
+The `metrics` ping also includes the common [ping sections](index.md#ping-sections) found in all pings.
+
 ## Scheduling
 The desired behavior is to collect the ping at the first available opportunity after 04:00 local time on a new calendar day, but given constraints of the platform, it can only be submitted while the application is running. 
 This breaks down into three scenarios:
