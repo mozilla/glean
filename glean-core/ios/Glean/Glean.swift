@@ -129,6 +129,14 @@ public class Glean {
                 _ = self.setSourceTags(sourceTags)
             }
 
+            // Get the current value of the dirty flag so we know whether to
+            // send a dirty startup baseline ping below.  Immediately set it to
+            // `false` so that dirty startup pings won't be sent if Glean
+            // initialization does not complete successfully.
+            // It is set to `true` again when registering the lifecycle observer.
+            let isDirtyFlagSet = glean_is_dirty_flag_set().toBool()
+            glean_set_dirty_flag(false.toByte())
+
             // Register builtin pings.
             // Unfortunately we need to manually list them here to guarantee they are registered synchronously
             // before we need them.
@@ -168,13 +176,11 @@ public class Glean {
             // Check if the "dirty flag" is set. That means the product was probably
             // force-closed. If that's the case, submit a 'baseline' ping with the
             // reason "dirty_startup". We only do that from the second run.
-            if !isFirstRun {
-                if glean_is_dirty_flag_set().toBool() {
-                    self.submitPingByNameSync(
-                        pingName: "baseline",
-                        reason: "dirty_startup"
-                    )
-                }
+            if !isFirstRun && isDirtyFlagSet {
+                self.submitPingByNameSync(
+                    pingName: "baseline",
+                    reason: "dirty_startup"
+                )
             }
 
             // From the second time we run, after all startup pings are generated,
