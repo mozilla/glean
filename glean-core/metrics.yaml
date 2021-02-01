@@ -603,8 +603,10 @@ glean.validation:
 
       This metric appears on both the metrics and baseline pings.
 
-      - On the metrics ping, the counts include the number of pings sent since the last metrics ping (including the last metrics ping)
-      - On the baseline ping, the counts include the number of pings send since the last baseline ping (including the last baseline ping)
+      - On the metrics ping, the counts include the number of pings sent since
+        the last metrics ping (including the last metrics ping)
+      - On the baseline ping, the counts include the number of pings send since
+        the last baseline ping (including the last baseline ping)
     send_in_pings:
       - metrics
       - baseline
