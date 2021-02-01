@@ -596,3 +596,25 @@ glean.validation:
       - glean-team@mozilla.com
     expires:
       never
+  pings_submitted:
+    type: labeled_counter
+    description: >
+      A count of the pings submitted, by ping type.
+
+      This metric appears on both the metrics and baseline pings.
+
+      - On the metrics ping, the counts include the number of pings sent since the last metrics ping (including the last metrics ping)
+      - On the baseline ping, the counts include the number of pings send since the last baseline ping (including the last baseline ping)
+    send_in_pings:
+      - metrics
+      - baseline
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1586764
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+    expires:
+      never
