@@ -4,7 +4,6 @@ members = [
   "glean-core",
   "glean-core/ffi",
   "glean-core/rlb",
-  "glean-core/benchmark",
 ]
 
 exclude = [
