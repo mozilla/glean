@@ -70,6 +70,7 @@ The following metrics are added to the ping:
 | --- | --- | --- | --- | --- | --- | --- |
 | glean.baseline.duration |[timespan](https://mozilla.github.io/glean/book/user/metrics/timespan.html) |The duration of the last foreground session.  |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3)||never |1, 2 |
 | glean.validation.first_run_hour |[datetime](https://mozilla.github.io/glean/book/user/metrics/datetime.html) |The hour of the first run of the application.  |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1680783#c5)||never |1 |
+| glean.validation.pings_submitted |[labeled_counter](https://mozilla.github.io/glean/book/user/metrics/labeled_counters.html) |A count of the pings submitted, by ping type. This metric appears on both the metrics and baseline pings. - On the metrics ping, the counts include the number of pings sent since   the last metrics ping (including the last metrics ping) - On the baseline ping, the counts include the number of pings send since   the last baseline ping (including the last baseline ping)  |[1](TBD)||never |1 |
 
 ## deletion-request
 
@@ -141,6 +142,7 @@ The following metrics are added to the ping:
 | glean.upload.ping_upload_failure |[labeled_counter](https://mozilla.github.io/glean/book/user/metrics/labeled_counters.html) |Counts the number of ping upload failures, by type of failure. This includes failures for all ping types, though the counts appear in the next successfully sent `metrics` ping.  |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1589124#c1)|<ul><li>status_code_4xx</li><li>status_code_5xx</li><li>status_code_unknown</li><li>unrecoverable</li><li>recoverable</li></ul>|never |1 |
 | glean.validation.first_run_hour |[datetime](https://mozilla.github.io/glean/book/user/metrics/datetime.html) |The hour of the first run of the application.  |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1680783#c5)||never |1 |
 | glean.validation.foreground_count |[counter](https://mozilla.github.io/glean/book/user/metrics/counter.html) |On mobile, the number of times the application went to foreground.  |[1](https://bugzilla.mozilla.org/show_bug.cgi?id=1683707#c2)||never |1 |
+| glean.validation.pings_submitted |[labeled_counter](https://mozilla.github.io/glean/book/user/metrics/labeled_counters.html) |A count of the pings submitted, by ping type. This metric appears on both the metrics and baseline pings. - On the metrics ping, the counts include the number of pings sent since   the last metrics ping (including the last metrics ping) - On the baseline ping, the counts include the number of pings send since   the last baseline ping (including the last baseline ping)  |[1](TBD)||never |1 |
 
 
 Data categories are [defined here](https://wiki.mozilla.org/Firefox/Data_Collection).
