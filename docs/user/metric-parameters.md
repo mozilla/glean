@@ -21,7 +21,7 @@
 - `data_reviews`: **Required.** A list of URIs to any data collection reviews _responses_ relevant to the metric.
   
 - `expires`: **Required.** When the metric is set to expire. After a metric expires, an application will no longer collect or send data related to it. May be one of the following values:
-  - `<build date>`: An ISO date `yyyy-mm-dd` in UTC on which the metric expires. For example, `2019-03-13`. This date is checked at build time. Except in special cases, this form should be used so that the metric automatically "sunsets" after a period of time. 
+  - `<build date>`: An ISO date `yyyy-mm-dd` in UTC on which the metric expires. For example, `2019-03-13`. This date is checked at build time. Except in special cases, this form should be used so that the metric automatically "sunsets" after a period of time.
     Emails will be sent to the `notification_emails` addresses when the metric is about to expire.
     Generally, when a metric is no longer needed, it should simply be removed. This does not affect the availability of data already collected by the pipeline.
   - `never`: This metric never expires.
