@@ -5,6 +5,8 @@
 * iOS
   * The metric `glean.validation.foreground_count` is now sent in the metrics ping ([#1472](https://github.com/mozilla/glean/pull/1472)).
   * BUGFIX: baseline pings with reason `dirty_startup` are no longer sent if Glean did not full initialize in the previous run ([#1476](https://github.com/mozilla/glean/pull/1476)).
+* Python
+  * Expose the client activity API ([#1481](https://github.com/mozilla/glean/pull/1481)).
 
 # v34.0.0 (2021-01-29)
 

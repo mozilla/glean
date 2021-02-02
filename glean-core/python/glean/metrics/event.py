@@ -215,7 +215,9 @@ class EventMetricType:
             ping_name = self._send_in_pings[0]
 
         return _ffi.lib.glean_event_test_get_num_recorded_errors(
-            self._handle, error_type.value, _ffi.ffi_encode_string(ping_name),
+            self._handle,
+            error_type.value,
+            _ffi.ffi_encode_string(ping_name),
         )
 
 

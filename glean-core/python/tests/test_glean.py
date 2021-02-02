@@ -4,6 +4,7 @@
 
 
 import io
+import os
 import json
 from pathlib import Path
 import re
@@ -812,3 +813,67 @@ def test_data_dir_is_required():
             upload_enabled=True,
             configuration=Glean._configuration,
         )
+
+
+def wait_for_ping(info_path, max_wait=10) -> (str, str):
+    while not info_path.exists():
+        time.sleep(0.1)
+        max_wait -= 1
+        if max_wait == 0:
+            break
+
+    if not info_path.exists():
+        raise RuntimeError("No ping received.")
+
+    with info_path.open("r") as fd:
+        url_path = fd.readline()
+        serialized_ping = fd.readline()
+        payload = json.loads(serialized_ping)
+
+    os.remove(info_path)
+    return (url_path, payload)
+
+
+def test_client_activity_api(tmpdir, monkeypatch):
+    Glean._reset()
+
+    info_path = Path(str(tmpdir)) / "info.txt"
+
+    # This test relies on testing mode to be disabled, since we need to prove the
+    # real-world async behaviour of this.
+
+    configuration = Glean._configuration
+    configuration.ping_uploader = _RecordingUploader(info_path)
+    Glean._initialize_with_tempdir_for_testing(
+        application_id=GLEAN_APP_ID,
+        application_version=glean_version,
+        upload_enabled=True,
+        configuration=Glean._configuration,
+    )
+
+    # Wait until the work is complete
+    Dispatcher._task_worker._queue.join()
+
+    # Making it active
+    Glean.handle_client_active()
+
+    url_path, payload = wait_for_ping(info_path)
+    assert "baseline" == url_path.split("/")[3]
+    assert payload["ping_info"]["reason"] == "active"
+    assert "timespan" not in payload["metrics"]
+
+    # Making it inactive
+    Glean.handle_client_inactive()
+
+    url_path, payload = wait_for_ping(info_path)
+    assert "baseline" == url_path.split("/")[3]
+    assert payload["ping_info"]["reason"] == "inactive"
+    assert "glean.baseline.duration" in payload["metrics"]["timespan"]
+
+    # Once more active
+    Glean.handle_client_active()
+
+    url_path, payload = wait_for_ping(info_path)
+    assert "baseline" == url_path.split("/")[3]
+    assert payload["ping_info"]["reason"] == "active"
+    assert "timespan" not in payload["metrics"]
