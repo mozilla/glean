@@ -107,6 +107,8 @@ fn empty_pings_with_flag_are_sent() {
 fn test_pings_submitted_metric() {
     let (mut glean, _temp) = new_glean(None);
 
+    // Reconstructed here so we can test it without reaching into the library
+    // internals.
     let pings_submitted = LabeledMetric::new(
         CounterMetric::new(CommonMetricData {
             name: "pings_submitted".into(),
@@ -136,6 +138,7 @@ fn test_pings_submitted_metric() {
 
     assert!(metrics_ping.submit(&glean, None).unwrap());
 
+    // Check recording in the metrics ping
     assert_eq!(
         Some(1),
         pings_submitted
@@ -148,6 +151,8 @@ fn test_pings_submitted_metric() {
             .get("baseline")
             .test_get_value(&glean, "metrics")
     );
+
+    // Check recording in the baseline ping
     assert_eq!(
         Some(1),
         pings_submitted
@@ -161,8 +166,14 @@ fn test_pings_submitted_metric() {
             .test_get_value(&glean, "baseline")
     );
 
+    // Trigger 2 baseline pings.
+    // This should record a count of 2 baseline pings in the metrics ping, but
+    // it resets each time on the baseline ping, so we should only ever get 1
+    // baseline ping recorded in the baseline ping itsef.
+    assert!(baseline_ping.submit(&glean, None).unwrap());
     assert!(baseline_ping.submit(&glean, None).unwrap());
 
+    // Check recording in the metrics ping
     assert_eq!(
         Some(1),
         pings_submitted
@@ -170,11 +181,13 @@ fn test_pings_submitted_metric() {
             .test_get_value(&glean, "metrics")
     );
     assert_eq!(
-        Some(1),
+        Some(2),
         pings_submitted
             .get("baseline")
             .test_get_value(&glean, "metrics")
     );
+
+    // Check recording in the baseline ping
     assert_eq!(
         None,
         pings_submitted

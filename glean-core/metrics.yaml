@@ -601,7 +601,7 @@ glean.validation:
     description: >
       A count of the pings submitted, by ping type.
 
-      This metric appears on both the metrics and baseline pings.
+      This metric appears in both the metrics and baseline pings.
 
       - On the metrics ping, the counts include the number of pings sent since
         the last metrics ping (including the last metrics ping)
