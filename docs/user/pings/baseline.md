@@ -21,7 +21,7 @@ The baseline ping includes the following fields:
 
 | Field name | Type | Description |
 |---|---|---|
-| `duration` | Timespan | The duration, in seconds, of the last foreground session. Only available if `reason: background`. [^1] |
+| `duration` | Timespan | The duration, in seconds, of the last foreground session. Only available if `reason: inactive`. [^1] |
 
 [^1]: See also the [ping schedules and timing overview](ping-schedules-and-timings.html) for how the `duration` metric relates to other sources of timing in the `baseline` ping.
 
