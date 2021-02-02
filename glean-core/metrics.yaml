@@ -613,7 +613,7 @@ glean.validation:
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1586764
     data_reviews:
-      - TBD
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1586764#c3
     data_sensitivity:
       - technical
     notification_emails:
