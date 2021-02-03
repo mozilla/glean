@@ -17,16 +17,9 @@ See also the [ping schedules and timing overview](ping-schedules-and-timings.htm
 
 ## Contents
 
-The baseline ping includes the following fields:
-
-| Field name | Type | Description |
-|---|---|---|
-| `duration` | Timespan | The duration, in seconds, of the last foreground session. Only available if `reason: inactive`. [^1] |
-| `glean.validation.pings_submitted` | Labeled counter | A count of the pings submitted, by ping type. The counts include the number of pings sent since the last metrics ping (including the last metrics ping itself). |
-
-[^1]: See also the [ping schedules and timing overview](ping-schedules-and-timings.html) for how the `duration` metric relates to other sources of timing in the `baseline` ping.
-
 The `baseline` ping also includes the common [ping sections](index.md#ping-sections) found in all pings.
+
+It also includes a number of [metrics defined in the Glean SDK itself](../collected-metrics/metrics.html#baseline).
 
 ### Querying ping contents
 
