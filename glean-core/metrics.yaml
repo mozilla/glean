@@ -587,6 +587,7 @@ glean.validation:
       On mobile, the number of times the application went to foreground.
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1683707
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1685712
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1683707#c2
     data_sensitivity:

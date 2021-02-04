@@ -473,6 +473,55 @@ class Glean:
         return RecordedExperimentData(**json_tree)  # type: ignore
 
     @classmethod
+    def handle_client_active(cls):
+        """
+        Performs the collection/cleanup operations required by becoming active.
+
+        This functions generates a baseline ping with reason `active`
+        and then sets the dirty bit.
+        This should be called whenever the consuming product becomes active (e.g.
+        getting to foreground).
+        """
+        from ._builtins import metrics
+
+        _ffi.lib.glean_handle_client_active()
+
+        # The above call may generate pings, so we need to trigger
+        # the uploader. It's fine to trigger it if no ping was generated:
+        # it will bail out.
+        PingUploadWorker.process()
+
+        # The previous block of code may send a ping containing the `duration` metric,
+        # in `_ffi.lib.handle_client_active`. We intentionally start recording a new
+        # `duration` after that happens, so that the measurement gets reported when
+        # calling `handle_client_inactive`.
+        metrics.glean.baseline.duration.start()
+
+    @classmethod
+    def handle_client_inactive(cls):
+        """
+        Performs the collection/cleanup operations required by becoming inactive.
+
+        This functions generates a baseline and an events ping with reason
+        `inactive` and then clears the dirty bit.
+        This should be called whenever the consuming product becomes inactive (e.g.
+        getting to background).
+        """
+        from ._builtins import metrics
+
+        # This needs to be called before the `handle_client_inactive` api: it stops
+        # measuring the duration of the previous activity time, before any ping is sent
+        # by the next call.
+        metrics.glean.baseline.duration.stop()
+
+        _ffi.lib.glean_handle_client_inactive()
+
+        # The above call may generate pings, so we need to trigger
+        # the uploader. It's fine to trigger it if no ping was generated:
+        # it will bail out.
+        PingUploadWorker.process()
+
+    @classmethod
     def _initialize_core_metrics(cls) -> None:
         """
         Set a few metrics that will be sent as part of every ping.
