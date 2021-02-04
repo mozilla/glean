@@ -156,10 +156,10 @@ class GleanDebugActivityTest {
         )
 
         triggerWorkManager(context)
-        val request = server.takeRequest(10L, TimeUnit.SECONDS)
+        val request = server.takeRequest(10L, TimeUnit.SECONDS)!!
 
         assertTrue(
-            request.requestUrl.encodedPath().startsWith("/submit/mozilla-telemetry-glean-test/metrics")
+            request.requestUrl!!.encodedPath.startsWith("/submit/mozilla-telemetry-glean-test/metrics")
         )
 
         server.shutdown()
@@ -200,11 +200,11 @@ class GleanDebugActivityTest {
             "http://" + server.hostName + ":" + server.port, Glean.configuration.serverEndpoint)
 
         triggerWorkManager(context)
-        val request = server.takeRequest(10L, TimeUnit.SECONDS)
+        val request = server.takeRequest(10L, TimeUnit.SECONDS)!!
 
         assertTrue(
             "Request path must be correct",
-            request.requestUrl.encodedPath().startsWith("/submit/mozilla-telemetry-glean-test/metrics")
+            request.requestUrl!!.encodedPath.startsWith("/submit/mozilla-telemetry-glean-test/metrics")
         )
 
         // resetGlean doesn't actually reset the debug view tag,
