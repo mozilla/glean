@@ -3,15 +3,12 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		BF1BF3FF23337E6F0036F4CC /* Glean.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF1BF3FE23337E6F0036F4CC /* Glean.framework */; };
 		BF7CC0A82473F68C003B166D /* Metrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF7CC0A72473F68C003B166D /* Metrics.swift */; };
 		BF89665A2371C82E0097B7F2 /* pings.yaml in Resources */ = {isa = PBXBuildFile; fileRef = BF8966592371C82E0097B7F2 /* pings.yaml */; };
-		BF8C3866246D749400274ACE /* Gzip.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF8C3865246D749400274ACE /* Gzip.framework */; };
-		BF90C913236B43A10045BD0E /* Swifter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF90C911236B42F00045BD0E /* Swifter.framework */; };
 		BFD3AB2E224D475E00AD9255 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFD3AB2D224D475E00AD9255 /* AppDelegate.swift */; };
 		BFD3AB30224D475E00AD9255 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFD3AB2F224D475E00AD9255 /* ViewController.swift */; };
 		BFD3AB33224D475E00AD9255 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BFD3AB31224D475E00AD9255 /* Main.storyboard */; };
@@ -21,7 +18,15 @@
 		BFD3AB4E224D475E00AD9255 /* BaselinePingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFD3AB4D224D475E00AD9255 /* BaselinePingTest.swift */; };
 		BFDA7AD02371CE4900575C7B /* ViewControllerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFDA7ACF2371CE4900575C7B /* ViewControllerTest.swift */; };
 		BFDA7AD22371D2BA00575C7B /* MockServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFDA7AD12371D2BA00575C7B /* MockServer.swift */; };
+		BFEA24B625CC39B200110728 /* Glean.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BFEA24B525CC39B200110728 /* Glean.xcframework */; };
+		BFEA24B725CC39B200110728 /* Glean.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BFEA24B525CC39B200110728 /* Glean.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		BFEA24D025CC3A4F00110728 /* Gzip.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BFEA24BB25CC39BF00110728 /* Gzip.xcframework */; };
+		BFEA24D325CC3A5200110728 /* Swifter.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BFEA24C025CC39CB00110728 /* Swifter.xcframework */; };
 		BFED6B2C238C1638006E2BC4 /* DeletionRequestPingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFED6B2B238C1638006E2BC4 /* DeletionRequestPingTest.swift */; };
+		CDDD7A9D25D1635F00837394 /* Gzip.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BFEA24BB25CC39BF00110728 /* Gzip.xcframework */; };
+		CDDD7A9E25D1635F00837394 /* Gzip.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BFEA24BB25CC39BF00110728 /* Gzip.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CDDD7AA125D1636C00837394 /* Swifter.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BFEA24C025CC39CB00110728 /* Swifter.xcframework */; };
+		CDDD7AA225D1636C00837394 /* Swifter.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BFEA24C025CC39CB00110728 /* Swifter.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -41,13 +46,26 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		BFEA24B825CC39B200110728 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				CDDD7AA225D1636C00837394 /* Swifter.xcframework in Embed Frameworks */,
+				BFEA24B725CC39B200110728 /* Glean.xcframework in Embed Frameworks */,
+				CDDD7A9E25D1635F00837394 /* Gzip.xcframework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
-		BF1BF3FE23337E6F0036F4CC /* Glean.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Glean.framework; path = Carthage/Build/iOS/Glean.framework; sourceTree = "<group>"; };
 		BF6F41C4234346A000E222A8 /* metrics.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = metrics.yaml; sourceTree = "<group>"; };
 		BF7CC0A72473F68C003B166D /* Metrics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Metrics.swift; sourceTree = "<group>"; };
 		BF8966592371C82E0097B7F2 /* pings.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = pings.yaml; sourceTree = "<group>"; };
-		BF8C3865246D749400274ACE /* Gzip.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Gzip.framework; path = Carthage/Build/iOS/Gzip.framework; sourceTree = "<group>"; };
-		BF90C911236B42F00045BD0E /* Swifter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Swifter.framework; path = Carthage/Build/iOS/Swifter.framework; sourceTree = "<group>"; };
 		BFD3AB2A224D475E00AD9255 /* glean-sample-app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "glean-sample-app.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BFD3AB2D224D475E00AD9255 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		BFD3AB2F224D475E00AD9255 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -67,6 +85,9 @@
 		BFDA7ACF2371CE4900575C7B /* ViewControllerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerTest.swift; sourceTree = "<group>"; };
 		BFDA7AD12371D2BA00575C7B /* MockServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockServer.swift; sourceTree = "<group>"; };
 		BFE1E7D523435A600067A12A /* sdk_generator.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = sdk_generator.sh; sourceTree = "<group>"; };
+		BFEA24B525CC39B200110728 /* Glean.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Glean.xcframework; path = Carthage/Build/Glean.xcframework; sourceTree = "<group>"; };
+		BFEA24BB25CC39BF00110728 /* Gzip.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Gzip.xcframework; path = Carthage/Build/Gzip.xcframework; sourceTree = "<group>"; };
+		BFEA24C025CC39CB00110728 /* Swifter.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Swifter.xcframework; path = Carthage/Build/Swifter.xcframework; sourceTree = "<group>"; };
 		BFED6B2B238C1638006E2BC4 /* DeletionRequestPingTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeletionRequestPingTest.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -75,7 +96,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BF1BF3FF23337E6F0036F4CC /* Glean.framework in Frameworks */,
+				CDDD7AA125D1636C00837394 /* Swifter.xcframework in Frameworks */,
+				BFEA24B625CC39B200110728 /* Glean.xcframework in Frameworks */,
+				CDDD7A9D25D1635F00837394 /* Gzip.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -90,8 +113,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BF8C3866246D749400274ACE /* Gzip.framework in Frameworks */,
-				BF90C913236B43A10045BD0E /* Swifter.framework in Frameworks */,
+				BFEA24D325CC3A5200110728 /* Swifter.xcframework in Frameworks */,
+				BFEA24D025CC3A4F00110728 /* Gzip.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -171,9 +194,9 @@
 		BFD3AB68224D4F9500AD9255 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				BF8C3865246D749400274ACE /* Gzip.framework */,
-				BF90C911236B42F00045BD0E /* Swifter.framework */,
-				BF1BF3FE23337E6F0036F4CC /* Glean.framework */,
+				BFEA24C025CC39CB00110728 /* Swifter.xcframework */,
+				BFEA24BB25CC39BF00110728 /* Gzip.xcframework */,
+				BFEA24B525CC39B200110728 /* Glean.xcframework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -185,11 +208,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = BFD3AB52224D475E00AD9255 /* Build configuration list for PBXNativeTarget "glean-sample-app" */;
 			buildPhases = (
-				BFD3AB63224D4D5100AD9255 /* Copy Carthage frameworks */,
 				BF6F41C6234346AA00E222A8 /* ShellScript */,
 				BFD3AB26224D475E00AD9255 /* Sources */,
 				BFD3AB27224D475E00AD9255 /* Frameworks */,
 				BFD3AB28224D475E00AD9255 /* Resources */,
+				BFEA24B825CC39B200110728 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -222,7 +245,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = BFD3AB58224D475E00AD9255 /* Build configuration list for PBXNativeTarget "glean-sample-appUITests" */;
 			buildPhases = (
-				BF90C914236B43A60045BD0E /* Copy Carthage frameworks */,
 				BFD3AB45224D475E00AD9255 /* Sources */,
 				BFD3AB46224D475E00AD9255 /* Frameworks */,
 				BFD3AB47224D475E00AD9255 /* Resources */,
@@ -330,50 +352,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "bash $PWD/sdk_generator.sh\n";
-		};
-		BF90C914236B43A60045BD0E /* Copy Carthage frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/Carthage/Build/iOS/Swifter.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/Gzip.framework",
-			);
-			name = "Copy Carthage frameworks";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Swifter.framework",
-				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Gzip.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "/usr/local/bin/carthage copy-frameworks\n";
-		};
-		BFD3AB63224D4D5100AD9255 /* Copy Carthage frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/Carthage/Build/iOS/Glean.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/Gzip.framework",
-			);
-			name = "Copy Carthage frameworks";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Glean.framework",
-				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Gzip.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "/usr/local/bin/carthage bootstrap --platform iOS --no-use-binaries --cache-builds\n/usr/local/bin/carthage copy-frameworks\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -566,10 +544,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = G9EAK7RA89;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
+				FRAMEWORK_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "glean-sample-app/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -590,10 +565,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = G9EAK7RA89;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
+				FRAMEWORK_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "glean-sample-app/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -658,10 +630,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = G9EAK7RA89;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
+				FRAMEWORK_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "glean-sample-appUITests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -685,10 +654,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = G9EAK7RA89;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
+				FRAMEWORK_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "glean-sample-appUITests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
