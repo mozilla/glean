@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -36,6 +36,7 @@
 		BF10008023548B0500064051 /* MemoryDistributionMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF10007F23548B0500064051 /* MemoryDistributionMetric.swift */; };
 		BF10008223548C4400064051 /* MemoryDistributionMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF10008123548C4400064051 /* MemoryDistributionMetricTests.swift */; };
 		BF197BB5243DF29200132839 /* Upload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF197BB4243DF29200132839 /* Upload.swift */; };
+		BF234D1F25CC4A580015D957 /* Gzip.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6E200525CAD66100C7EF2B /* Gzip.xcframework */; };
 		BF2E57052334B77D00364D92 /* EventMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF2E57042334B77D00364D92 /* EventMetric.swift */; };
 		BF2E57072334BD7600364D92 /* EventMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF2E57062334BD7600364D92 /* EventMetricTests.swift */; };
 		BF30FDC22332312300840607 /* Sysctl.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF30FDC12332312300840607 /* Sysctl.swift */; };
@@ -49,7 +50,6 @@
 		BF43A8CD232A615200545310 /* CounterMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF43A8CC232A615200545310 /* CounterMetricTests.swift */; };
 		BF6C53B2232F870C00E3B43A /* Ping.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF6C53B1232F870C00E3B43A /* Ping.swift */; };
 		BF6C53B4232F872B00E3B43A /* PingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF6C53B3232F872B00E3B43A /* PingTests.swift */; };
-		BF6F2DA8224BF8F100394062 /* libglean_ffi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BF6F2DA7224BF8F100394062 /* libglean_ffi.a */; };
 		BF7CC0A62473F61C003B166D /* Metrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF7CC0A52473F61C003B166D /* Metrics.swift */; };
 		BF80AA5B2399301300A8B172 /* HttpPingUploaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF80AA5A2399301200A8B172 /* HttpPingUploaderTests.swift */; };
 		BF80AA5F2399305200A8B172 /* DeletionRequestPingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF80AA5E2399305200A8B172 /* DeletionRequestPingTests.swift */; };
@@ -68,6 +68,8 @@
 		BFFE183C2350A9CC0068D97B /* DistributionData.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFFE183B2350A9CC0068D97B /* DistributionData.swift */; };
 		BFFE33A92328F4EF005348FE /* GleanFfi.h in Headers */ = {isa = PBXBuildFile; fileRef = BFFE33A82328F4EF005348FE /* GleanFfi.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		BFFE33AB232927C3005348FE /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFFE33AA232927C3005348FE /* Utils.swift */; };
+		CD6E200A25CAD68900C7EF2B /* OHHTTPStubs.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6E200925CAD68900C7EF2B /* OHHTTPStubs.xcframework */; };
+		CD75918125CAE020003F2CFB /* libglean_ffi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD75918025CAE020003F2CFB /* libglean_ffi.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -108,14 +110,12 @@
 		BF10007F23548B0500064051 /* MemoryDistributionMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryDistributionMetric.swift; sourceTree = "<group>"; };
 		BF10008123548C4400064051 /* MemoryDistributionMetricTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryDistributionMetricTests.swift; sourceTree = "<group>"; };
 		BF197BB4243DF29200132839 /* Upload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Upload.swift; sourceTree = "<group>"; };
-		BF1BF3F72333787E0036F4CC /* OHHTTPStubs.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OHHTTPStubs.framework; path = ../../Carthage/Build/iOS/OHHTTPStubs.framework; sourceTree = "<group>"; };
 		BF2E57042334B77D00364D92 /* EventMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventMetric.swift; sourceTree = "<group>"; };
 		BF2E57062334BD7600364D92 /* EventMetricTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventMetricTests.swift; sourceTree = "<group>"; };
 		BF30FDC12332312300840607 /* Sysctl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sysctl.swift; sourceTree = "<group>"; };
 		BF30FDC3233260B500840607 /* TimespanMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimespanMetric.swift; sourceTree = "<group>"; };
 		BF30FDC5233260C400840607 /* TimespanMetricTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimespanMetricTests.swift; sourceTree = "<group>"; };
 		BF30FDC72332640400840607 /* TimeUnit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeUnit.swift; sourceTree = "<group>"; };
-		BF3A3055246E936E00E4A18E /* Gzip.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Gzip.framework; path = ../../Carthage/Build/iOS/Gzip.framework; sourceTree = "<group>"; };
 		BF3DE3912243A2F20018E23F /* Glean.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Glean.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF3DE3942243A2F20018E23F /* Glean.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Glean.h; sourceTree = "<group>"; };
 		BF3DE3952243A2F20018E23F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -150,6 +150,9 @@
 		BFFE183B2350A9CC0068D97B /* DistributionData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DistributionData.swift; sourceTree = "<group>"; };
 		BFFE33A82328F4EF005348FE /* GleanFfi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GleanFfi.h; sourceTree = "<group>"; };
 		BFFE33AA232927C3005348FE /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
+		CD6E200525CAD66100C7EF2B /* Gzip.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Gzip.xcframework; path = ../../Carthage/Build/Gzip.xcframework; sourceTree = "<group>"; };
+		CD6E200925CAD68900C7EF2B /* OHHTTPStubs.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = OHHTTPStubs.xcframework; path = ../../Carthage/Build/OHHTTPStubs.xcframework; sourceTree = "<group>"; };
+		CD75918025CAE020003F2CFB /* libglean_ffi.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libglean_ffi.a; path = ../../target/universal/debug/libglean_ffi.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -157,7 +160,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BF6F2DA8224BF8F100394062 /* libglean_ffi.a in Frameworks */,
+				CD75918125CAE020003F2CFB /* libglean_ffi.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -165,6 +168,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BF234D1F25CC4A580015D957 /* Gzip.xcframework in Frameworks */,
+				CD6E200A25CAD68900C7EF2B /* OHHTTPStubs.xcframework in Frameworks */,
 				BF3DE39B2243A2F20018E23F /* Glean.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -367,8 +372,9 @@
 		BF6F2DA6224BF8F000394062 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				BF3A3055246E936E00E4A18E /* Gzip.framework */,
-				BF1BF3F72333787E0036F4CC /* OHHTTPStubs.framework */,
+				CD75918025CAE020003F2CFB /* libglean_ffi.a */,
+				CD6E200925CAD68900C7EF2B /* OHHTTPStubs.xcframework */,
+				CD6E200525CAD66100C7EF2B /* Gzip.xcframework */,
 				BF6F2DA7224BF8F100394062 /* libglean_ffi.a */,
 			);
 			name = Frameworks;
@@ -430,7 +436,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = BF3DE3A82243A2F20018E23F /* Build configuration list for PBXNativeTarget "GleanTests" */;
 			buildPhases = (
-				1F0A7DB72328222C00B310DD /* Copy Carthage Dependencies */,
 				BF3DE3962243A2F20018E23F /* Sources */,
 				BF3DE3972243A2F20018E23F /* Frameworks */,
 				AC1DB400237EF0D6005A0F8A /* Headers */,
@@ -502,28 +507,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		1F0A7DB72328222C00B310DD /* Copy Carthage Dependencies */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				../../Carthage/Build/iOS/OHHTTPStubs.framework,
-				../../Carthage/Build/iOS/Gzip.framework,
-			);
-			name = "Copy Carthage Dependencies";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/OHHTTPStubs.framework",
-				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Gzip.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "/usr/local/bin/carthage copy-frameworks\n";
-		};
 		BF6F2DA5224BF2E000394062 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -783,10 +766,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					../../Carthage/Build/iOS,
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Glean/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -794,6 +774,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = org.mozilla.Glean;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -818,10 +799,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					../../Carthage/Build/iOS,
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Glean/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -829,6 +807,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = org.mozilla.Glean;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -847,10 +826,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 99QSBDSJN4;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					../../Carthage/Build/iOS,
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = GleanTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -871,10 +847,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 99QSBDSJN4;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					../../Carthage/Build/iOS,
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = GleanTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
