@@ -627,6 +627,15 @@ impl Glean {
                 Ok(false)
             }
             Some(content) => {
+                // This metric is recorded *after* the ping is collected (since
+                // that is the only way to know *if* it will be submitted). The
+                // implication of this is that the count for a metrics ping will
+                // be included in the *next* metrics ping.
+                self.core_metrics
+                    .pings_submitted
+                    .get(&ping.name)
+                    .add(&self, 1);
+
                 if let Err(e) = ping_maker.store_ping(
                     self,
                     &doc_id,

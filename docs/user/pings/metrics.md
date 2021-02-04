@@ -37,11 +37,12 @@ More [scheduling examples](#scheduling-examples) are included below.
 See also the [ping schedules and timing overview](ping-schedules-and-timings.html).
 
 ## Contents
+
 The `metrics` ping contains all of the metrics defined in `metrics.yaml` (except events) that don't specify a ping or where `default` is specified in their [`send in pings`](https://mozilla.github.io/glean_parser/metrics-yaml.html#send-in-pings) property.
 
 Additionally, error metrics in the `glean.error` category are included in the `metrics` ping.
 
-The `metrics` ping shall also include the common [`ping_info`](index.md#the-ping_info-section) and ['client_info'](index.md#the-client_info-section) sections.
+The `metrics` ping shall also include the common [`ping_info`](index.md#the-ping_info-section) and ['client_info'](index.md#the-client_info-section) sections.  It also includes a number of [metrics defined in the Glean SDK itself](../collected-metrics/metrics.html#metrics-1).
 
 ### Querying ping contents
 
