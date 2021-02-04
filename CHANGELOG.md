@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v34.0.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v34.1.0...main)
+
+# v34.1.0 (2021-02-04)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v34.0.0...v34.1.0)
 
 * iOS
   * The metric `glean.validation.foreground_count` is now sent in the metrics ping ([#1472](https://github.com/mozilla/glean/pull/1472)).
