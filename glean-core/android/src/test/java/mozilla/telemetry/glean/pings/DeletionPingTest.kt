@@ -65,8 +65,8 @@ class DeletionPingTest {
         ), clearStores = true, uploadEnabled = false)
         triggerWorkManager(context)
 
-        val request = server.takeRequest(2L, TimeUnit.SECONDS)
-        val docType = request.path.split("/")[3]
+        val request = server.takeRequest(2L, TimeUnit.SECONDS)!!
+        val docType = request.path!!.split("/")[3]
         assertEquals("deletion-request", docType)
     }
 
@@ -86,8 +86,8 @@ class DeletionPingTest {
         Glean.setUploadEnabled(false)
         triggerWorkManager(context)
 
-        val request = server.takeRequest(2L, TimeUnit.SECONDS)
-        val docType = request.path.split("/")[3]
+        val request = server.takeRequest(2L, TimeUnit.SECONDS)!!
+        val docType = request.path!!.split("/")[3]
         assertEquals("deletion-request", docType)
 
         // File is deleted afterwards.
@@ -134,8 +134,8 @@ class DeletionPingTest {
         ), clearStores = true, uploadEnabled = false)
         triggerWorkManager(context)
 
-        var request = server.takeRequest(20L, TimeUnit.SECONDS)
-        var docType = request.path.split("/")[3]
+        var request = server.takeRequest(20L, TimeUnit.SECONDS)!!
+        var docType = request.path!!.split("/")[3]
         assertEquals("Should have received a deletion-request ping", "deletion-request", docType)
 
         // deletion-request ping is gone
@@ -143,8 +143,7 @@ class DeletionPingTest {
 
         // Wait a bit to ensure no further ping is received.
         // Unfortunately this requires us to wait for the timeout.
-        request = server.takeRequest(2L, TimeUnit.SECONDS)
-        assertNull("Should not receive any further pings", request)
+        assertNull("Should not receive any further pings", server.takeRequest(2L, TimeUnit.SECONDS))
 
         // 'baseline' ping is removed from disk.
         assertEquals(0, pendingPingDir.listFiles()?.size)

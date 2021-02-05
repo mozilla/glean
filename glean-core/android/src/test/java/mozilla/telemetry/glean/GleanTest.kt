@@ -84,12 +84,12 @@ class GleanTest {
         // we are only expecting one baseline ping.
         assertEquals(server.requestCount, 2)
 
-        var request = server.takeRequest(20L, TimeUnit.SECONDS)
-        var docType = request.path.split("/")[3]
+        var request = server.takeRequest(20L, TimeUnit.SECONDS)!!
+        var docType = request.path!!.split("/")[3]
         assertEquals("baseline", docType)
 
-        request = server.takeRequest(20L, TimeUnit.SECONDS)
-        docType = request.path.split("/")[3]
+        request = server.takeRequest(20L, TimeUnit.SECONDS)!!
+        docType = request.path!!.split("/")[3]
         assertEquals("metrics", docType)
     }
 
@@ -108,7 +108,7 @@ class GleanTest {
         triggerWorkManager(context)
 
         val request = server.takeRequest(20L, TimeUnit.SECONDS)
-        assertEquals(request.getHeader("X-Debug-ID"), "this-ping-is-tagged")
+        assertEquals(request!!.getHeader("X-Debug-ID"), "this-ping-is-tagged")
     }
 
     // Tests from glean-ac (706af1f).
@@ -217,8 +217,9 @@ class GleanTest {
             triggerWorkManager(context)
 
             for (i in 0..5) {
-                val request = server.takeRequest(20L, TimeUnit.SECONDS)
-                val docType = request.path.split("/")[3]
+                val request = server.takeRequest(20L, TimeUnit.SECONDS)!!
+                val docType = request.path!!.split("/")[3]
+
                 val json = JSONObject(request.getPlainBody())
                 checkPingSchema(json)
                 if (docType == "events") {
@@ -274,16 +275,16 @@ class GleanTest {
             // Trigger worker task to upload the pings in the background
             triggerWorkManager(context)
 
-            var request = server.takeRequest(20L, TimeUnit.SECONDS)
-            var docType = request.path.split("/")[3]
+            var request = server.takeRequest(20L, TimeUnit.SECONDS)!!
+            var docType = request.path!!.split("/")[3]
             assertEquals("The received ping must be a 'baseline' ping", "baseline", docType)
 
             val baselineJson = JSONObject(request.getPlainBody())
             assertEquals("dirty_startup", baselineJson.getJSONObject("ping_info")["reason"])
             checkPingSchema(baselineJson)
 
-            request = server.takeRequest(20L, TimeUnit.SECONDS)
-            docType = request.path.split("/")[3]
+            request = server.takeRequest(20L, TimeUnit.SECONDS)!!
+            docType = request.path!!.split("/")[3]
             assertEquals("The received ping must be a 'metrics' ping", "metrics", docType)
         } finally {
             server.shutdown()
@@ -470,8 +471,8 @@ class GleanTest {
         triggerWorkManager(context)
 
         // Validate the received data.
-        val request = server.takeRequest(20L, TimeUnit.SECONDS)
-        val docType = request.path.split("/")[3]
+        val request = server.takeRequest(20L, TimeUnit.SECONDS)!!
+        val docType = request.path!!.split("/")[3]
         assertEquals(pingName, docType)
 
         val pingJson = JSONObject(request.getPlainBody())
@@ -603,7 +604,7 @@ class GleanTest {
         // Now trigger it to upload
         triggerWorkManager(context)
 
-        val request = server.takeRequest(20L, TimeUnit.SECONDS)
+        val request = server.takeRequest(20L, TimeUnit.SECONDS)!!
         val jsonContent = JSONObject(request.getPlainBody())
         assertEquals(
             110,
@@ -639,8 +640,8 @@ class GleanTest {
         // Now trigger it to upload
         triggerWorkManager(context)
 
-        val request = server.takeRequest(20L, TimeUnit.SECONDS)
-        val docType = request.path.split("/")[3]
+        val request = server.takeRequest(20L, TimeUnit.SECONDS)!!
+        val docType = request.path!!.split("/")[3]
         assertEquals("deletion-request", docType)
     }
 
@@ -693,8 +694,8 @@ class GleanTest {
             // Trigger worker task to upload the pings in the background
             triggerWorkManager(context)
 
-            val request = server.takeRequest(20L, TimeUnit.SECONDS)
-            val docType = request.path.split("/")[3]
+            val request = server.takeRequest(20L, TimeUnit.SECONDS)!!
+            val docType = request.path!!.split("/")[3]
             assertEquals("The received ping must be a 'baseline' ping", "baseline", docType)
 
             val baselineJson = JSONObject(request.getPlainBody())
@@ -738,7 +739,7 @@ class GleanTest {
         // Trigger it to upload
         triggerWorkManager(context)
 
-        val request = server.takeRequest(20L, TimeUnit.SECONDS)
+        val request = server.takeRequest(20L, TimeUnit.SECONDS)!!
         assertEquals(request.getHeader("X-Debug-ID"), "valid-tag")
     }
 
@@ -809,8 +810,8 @@ class GleanTest {
         triggerWorkManager(context)
 
         // Validate the received data.
-        val request = server.takeRequest(20L, TimeUnit.SECONDS)
-        val docType = request.path.split("/")[3]
+        val request = server.takeRequest(20L, TimeUnit.SECONDS)!!
+        val docType = request.path!!.split("/")[3]
         assertEquals("deletion-request", docType)
     }
 }

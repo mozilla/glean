@@ -131,6 +131,8 @@ afterEvaluate {
 
     tasks.withType(Test) {
       jacoco.includeNoLocationClasses = true
+      // See https://github.com/gradle/gradle/issues/5184#issuecomment-457865951
+      jacoco.excludes = ['jdk.internal.*']
 
       finalizedBy jacocoTestReport
     }
