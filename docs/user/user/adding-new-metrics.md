@@ -38,6 +38,9 @@ For all of the metric types in this section that measure single values, it is es
 
 If you want to know how many times something happened, use a [counter metric](metrics/counter.html).  If you are counting a group of related things, or you don't know what all of the things to count are at build time, use a [labeled counter metric](metrics/labeled_counters.html).
 
+If you need to know how many times something happened relative to the number of times something else happened,
+use a [rate metric](metrics/rate.html).
+
 If you need to know when the things being counted happened relative to other things, consider using an [event](metrics/event.html).
 
 ### Are you measuring time?
