@@ -120,7 +120,7 @@ data class CustomDistributionMetricType(
         Dispatchers.API.assertInTestingMode()
 
         if (!testHasValue(pingName)) {
-            throw NullPointerException()
+            throw NullPointerException("Metric has no value")
         }
 
         val ptr = LibGleanFFI.INSTANCE.glean_custom_distribution_test_get_value_as_json_string(

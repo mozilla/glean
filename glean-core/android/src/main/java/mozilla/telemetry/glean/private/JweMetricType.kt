@@ -135,7 +135,7 @@ class JweMetricType internal constructor(
         Dispatchers.API.assertInTestingMode()
 
         if (!testHasValue(pingName)) {
-            throw NullPointerException()
+            throw NullPointerException("Metric has no value")
         }
 
         val ptr = LibGleanFFI.INSTANCE.glean_jwe_test_get_value_as_json_string(this.handle, pingName)!!
@@ -167,7 +167,7 @@ class JweMetricType internal constructor(
         Dispatchers.API.assertInTestingMode()
 
         if (!testHasValue(pingName)) {
-            throw NullPointerException()
+            throw NullPointerException("Metric has no value")
         }
         val ptr = LibGleanFFI.INSTANCE.glean_jwe_test_get_value(this.handle, pingName)!!
         return ptr.getAndConsumeRustString()

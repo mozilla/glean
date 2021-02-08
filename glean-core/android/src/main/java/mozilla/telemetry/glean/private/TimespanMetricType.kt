@@ -178,7 +178,7 @@ class TimespanMetricType internal constructor(
         Dispatchers.API.assertInTestingMode()
 
         if (!testHasValue(pingName)) {
-            throw NullPointerException()
+            throw NullPointerException("Metric has no value")
         }
         return LibGleanFFI.INSTANCE.glean_timespan_test_get_value(this.handle, pingName)
     }
