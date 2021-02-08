@@ -28,7 +28,7 @@ auth:
     type: timespan
     description: >
       Measures the time spent logging in.
-    time_unit: milliseconds
+    time_unit: millisecond
     ...
 ```
 
