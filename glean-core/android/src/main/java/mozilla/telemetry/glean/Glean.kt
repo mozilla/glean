@@ -478,7 +478,7 @@ open class GleanInternalAPI internal constructor () {
 
         val ptr = LibGleanFFI.INSTANCE.glean_experiment_test_get_data(
             experimentId
-        ) ?: throw NullPointerException("experiment data is not set")
+        ) ?: throw NullPointerException("Experiment data is not set")
 
         var branchId: String
         var extraMap: Map<String, String>?
