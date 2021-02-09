@@ -159,7 +159,7 @@ class DatetimeMetricType internal constructor(
         Dispatchers.API.assertInTestingMode()
 
         if (!testHasValue(pingName)) {
-            throw NullPointerException()
+            throw NullPointerException("Metric has no value")
         }
         val ptr = LibGleanFFI
             .INSTANCE

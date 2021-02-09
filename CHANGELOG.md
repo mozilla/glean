@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v34.1.0...main)
 
+* Kotlin
+  * The `testGetValue` APIs now include a message on the `NullPointerException` thrown when the value is missing.
+
 # v34.1.0 (2021-02-04)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v34.0.0...v34.1.0)

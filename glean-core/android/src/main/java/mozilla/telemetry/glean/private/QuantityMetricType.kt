@@ -98,7 +98,7 @@ class QuantityMetricType internal constructor(
         Dispatchers.API.assertInTestingMode()
 
         if (!testHasValue(pingName)) {
-            throw NullPointerException()
+            throw NullPointerException("Metric has no value")
         }
         return LibGleanFFI.INSTANCE.glean_quantity_test_get_value(this.handle, pingName)
     }

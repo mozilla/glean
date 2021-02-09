@@ -478,7 +478,7 @@ open class GleanInternalAPI internal constructor () {
 
         val ptr = LibGleanFFI.INSTANCE.glean_experiment_test_get_data(
             experimentId
-        )!!
+        ) ?: throw NullPointerException("Experiment data is not set")
 
         var branchId: String
         var extraMap: Map<String, String>?
@@ -491,7 +491,7 @@ open class GleanInternalAPI internal constructor () {
             branchId = jsonRes.getString("branch")
             extraMap = getMapFromJSONObject(jsonRes)
         } catch (e: org.json.JSONException) {
-            throw NullPointerException()
+            throw NullPointerException("Could not parse experiment data as JSON")
         }
 
         return RecordedExperimentData(branchId, extraMap)

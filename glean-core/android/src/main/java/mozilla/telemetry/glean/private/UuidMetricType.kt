@@ -132,7 +132,7 @@ class UuidMetricType(
         Dispatchers.API.assertInTestingMode()
 
         if (!testHasValue(pingName)) {
-            throw NullPointerException()
+            throw NullPointerException("Metric has no value")
         }
         val ptr = LibGleanFFI.INSTANCE.glean_uuid_test_get_value(this.handle, pingName)!!
         return UUID.fromString(ptr.getAndConsumeRustString())

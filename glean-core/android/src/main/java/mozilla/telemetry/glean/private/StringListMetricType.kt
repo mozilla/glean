@@ -147,7 +147,7 @@ class StringListMetricType(
         Dispatchers.API.assertInTestingMode()
 
         if (!testHasValue(pingName)) {
-            throw NullPointerException()
+            throw NullPointerException("Metric has no value")
         }
 
         val jsonRes: JSONArray
@@ -157,7 +157,7 @@ class StringListMetricType(
         try {
             jsonRes = JSONArray(ptr.getAndConsumeRustString())
         } catch (e: org.json.JSONException) {
-            throw NullPointerException()
+            throw NullPointerException("Could not parse metric as JSON")
         }
         return jsonRes.toList()
     }
