@@ -118,7 +118,10 @@ class GleanTests: XCTestCase {
                 XCTAssertEqual(metrics?.count, 2, "metrics has more keys than expected: \(JSONStringify(metrics!))")
                 let labeledCounters = metrics?["labeled_counter"] as? [String: Any]
                 labeledCounters!.forEach { key, _ in
-                    XCTAssertTrue(key.starts(with: "glean.error"))
+                    XCTAssertTrue(
+                        key.starts(with: "glean.error") || key.starts(with: "glean.validation"),
+                        "Should only see glean.* counters, saw \(key)"
+                    )
                 }
             }
 
@@ -179,7 +182,10 @@ class GleanTests: XCTestCase {
                     XCTAssertEqual(metrics?.count, 2, "metrics has more keys than expected: \(JSONStringify(metrics!))")
                     let labeledCounters = metrics?["labeled_counter"] as? [String: Any]
                     labeledCounters!.forEach { key, _ in
-                        XCTAssertTrue(key.starts(with: "glean.error"))
+                        XCTAssertTrue(
+                            key.starts(with: "glean.error") || key.starts(with: "glean.validation"),
+                            "Should only see glean.* counters, saw \(key)"
+                        )
                     }
                 }
             }
