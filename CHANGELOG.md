@@ -4,7 +4,8 @@
 
 * Kotlin
   * The `testGetValue` APIs now include a message on the `NullPointerException` thrown when the value is missing.
-
+* RLB
+  * **Breaking change:** `Configuration.data_path` is now a `std::path::PathBuf`([#1493](https://github.com/mozilla/glean/pull/1493)). 
 # v34.1.0 (2021-02-04)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v34.0.0...v34.1.0)
