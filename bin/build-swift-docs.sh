@@ -9,13 +9,11 @@ set -eo pipefail
 # Build Swift with one command
 # Requires jazzy from https://github.com/realm/jazzy
 
+WORKSPACE_ROOT="$( cd "$(dirname "$0")/.." ; pwd -P )"
+cd "$WORKSPACE_ROOT"
+
 jazzy --version
 jazzy \
-    --clean \
-    --output build/docs/swift \
-    --sdk iphone \
-    --module Glean \
-    --xcodebuild-arguments -workspace,./glean-core/ios/Glean.xcodeproj/project.xcworkspace,-scheme,Glean,-destination,"generic/platform=iOS" \
-    --author_url https://mozilla.github.com/glean \
-    --github_url https://github.com/mozilla/glean \
-    --readme README.iOS.md
+  --clean \
+  --config "$WORKSPACE_ROOT/.circleci/jazzy.yml" \
+  --output "$WORKSPACE_ROOT/build/docs/swift"
