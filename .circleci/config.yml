@@ -656,10 +656,8 @@ jobs:
             xcrun instruments -w list || true
             # See https://circleci.com/docs/2.0/testing-ios/#pre-starting-the-simulator
             xcrun instruments -w "iPhone 11 (14" || true
-      - attach_workspace:
-          at: .
       - run:
-          name: Use binary build of Glean
+          name: Use current commit of Glean
           command: |
             GLEAN_PATH="$(pwd)"
             CARTFILE_PATH="${GLEAN_PATH}/samples/ios/app/Cartfile"
@@ -1118,8 +1116,6 @@ workflows:
             branches:
               only: main
       - iOS integration test:
-          requires:
-            - iOS build and test
           filters:
             branches:
               only: main
@@ -1170,7 +1166,7 @@ workflows:
               ignore: main
       - iOS integration test:
           requires:
-            - iOS build and test
+            - hold
           filters:
             branches:
               ignore: main
