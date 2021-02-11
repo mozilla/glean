@@ -6,6 +6,7 @@
 
 #[cfg(not(feature = "glean-dynamic"))]
 mod types {
+    pub mod timespan;
     pub mod counter;
     pub mod labeled;
     pub mod string;
@@ -16,6 +17,9 @@ mod types {
     #[path = "../dynamic/macros.rs"]
     #[macro_use]
     mod macros;
+
+    #[path = "../dynamic/timespan.rs"]
+    pub mod timespan;
 
     #[path = "../dynamic/counter.rs"]
     pub mod counter;
@@ -36,7 +40,6 @@ mod ping;
 mod quantity;
 mod recorded_experiment_data;
 mod string_list;
-mod timespan;
 mod timing_distribution;
 mod uuid;
 
@@ -50,8 +53,8 @@ pub use ping::PingType;
 pub use quantity::QuantityMetric;
 pub use recorded_experiment_data::RecordedExperimentData;
 pub use string_list::StringListMetric;
-pub use timespan::TimespanMetric;
 pub use timing_distribution::TimingDistributionMetric;
 pub use types::counter::CounterMetric;
 pub use types::labeled::{AllowLabeled, LabeledMetric};
 pub use types::string::StringMetric;
+pub use types::timespan::TimespanMetric;
