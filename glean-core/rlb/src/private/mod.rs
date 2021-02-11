@@ -10,6 +10,7 @@ mod types {
     pub mod counter;
     pub mod labeled;
     pub mod string;
+    pub mod uuid;
 }
 
 #[cfg(feature = "glean-dynamic")]
@@ -27,6 +28,9 @@ mod types {
     #[path = "../dynamic/string.rs"]
     pub mod string;
 
+    #[path = "../dynamic/uuid.rs"]
+    pub mod uuid;
+
     #[path = "../dynamic/labeled.rs"]
     pub mod labeled;
 }
@@ -41,9 +45,7 @@ mod quantity;
 mod recorded_experiment_data;
 mod string_list;
 mod timing_distribution;
-mod uuid;
 
-pub use self::uuid::UuidMetric;
 pub use boolean::BooleanMetric;
 pub use custom_distribution::CustomDistributionMetric;
 pub use datetime::{Datetime, DatetimeMetric};
@@ -58,3 +60,4 @@ pub use types::counter::CounterMetric;
 pub use types::labeled::{AllowLabeled, LabeledMetric};
 pub use types::string::StringMetric;
 pub use types::timespan::TimespanMetric;
+pub use types::uuid::UuidMetric;
