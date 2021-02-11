@@ -3,11 +3,15 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use std::sync::Mutex;
+use std::sync::atomic::{AtomicBool, Ordering};
 
 use glean_ffi_sys::GleanSys;
 use once_cell::sync::OnceCell;
 
+use crate::dispatcher;
+
 static GLEAN_SYS: OnceCell<Mutex<GleanSys>> = OnceCell::new();
+pub static NEEDS_FLUSH: AtomicBool = AtomicBool::new(false);
 
 pub fn setup_glean(libname: &str) -> Result<(), ::libloading::Error> {
     let glean = unsafe { GleanSys::new(libname) };
@@ -19,6 +23,12 @@ pub fn setup_glean(libname: &str) -> Result<(), ::libloading::Error> {
                 )
             } else {
                 log::info!("glean-sys setup done. dynamic Glean usable now");
+
+                if NEEDS_FLUSH.swap(false, Ordering::SeqCst) {
+                    if let Err(err) = dispatcher::flush_init() {
+                        log::error!("Unable to flush the preinit queue: {}", err);
+                    }
+                }
             }
             Ok(())
         }

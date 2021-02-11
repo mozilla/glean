@@ -388,6 +388,14 @@ pub fn shutdown() {
 pub extern "C" fn rlb_flush_dispatcher() {
     log::trace!("FLushing RLB dispatcher through the FFI");
 
+    #[cfg(feature = "glean-dynamic")]
+    {
+        if sys::global_glean_sys().is_none() {
+            sys::NEEDS_FLUSH.store(true, Ordering::SeqCst);
+            return;
+        }
+    }
+
     let was_initialized = was_initialize_called();
 
     // Panic in debug mode
