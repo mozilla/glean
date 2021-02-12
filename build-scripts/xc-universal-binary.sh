@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
 # This should be invoked from inside xcode, not manually
-if [ "$#" -ne 2 ]
+if [ "$#" -ne 3 ]
 then
     echo "Usage (note: only call inside xcode!):"
     echo "Args: $*"
-    echo "path/to/build-scripts/xc-universal-binary.sh <FFI_TARGET> <GLEAN_ROOT_PATH>"
+    echo "path/to/build-scripts/xc-universal-binary.sh <FFI_TARGET> <GLEAN_ROOT_PATH> <buildvariant>"
     exit 1
 fi
 
@@ -13,28 +13,13 @@ fi
 FFI_TARGET=$1
 # path to app services root
 GLEAN_ROOT=$2
+# buildvariant from our xcconfigs
+BUILDVARIANT=$3
 
-if [ -d "$HOME/.cargo/bin" ]; then
-  export PATH="$HOME/.cargo/bin:$PATH"
+RELFLAG=
+if [[ "$BUILDVARIANT" != "debug" ]]; then
+    RELFLAG=--release
 fi
-
-if ! command -v cargo-lipo 2>/dev/null >/dev/null;
-then
-    echo "$(basename $0) failed."
-    echo "Requires cargo-lipo to build universal library."
-    echo "Install it with:"
-    echo
-    echo "   cargo install cargo-lipo"
-    exit 1
-fi
-
-# Ease testing of this script by assuming something about the environment.
-if [ -z "$ACTION" ]; then
-  export ACTION=build
-fi
-
-# Always build both architectures on x86_64.
-export ARCHS="arm64 x86_64"
 
 set -euvx
 
@@ -46,9 +31,31 @@ if [[ -n "${DEVELOPER_SDK_DIR:-}" ]]; then
   export LIBRARY_PATH="${DEVELOPER_SDK_DIR}/MacOSX.sdk/usr/lib:${LIBRARY_PATH:-}"
 fi
 
-# Force correct target for dependencies compiled with `cc`.
-# Required for M1 MacBooks (Arm target).
-# Without this some dependencies might be compiled for the wrong target.
-export CFLAGS_x86_64_apple_ios="-target x86_64-apple-ios"
+IS_SIMULATOR=0
+if [ "${LLVM_TARGET_TRIPLE_SUFFIX-}" = "-simulator" ]; then
+  IS_SIMULATOR=1
+fi
 
-cargo lipo --xcode-integ --manifest-path "$GLEAN_ROOT/Cargo.toml" --package "$FFI_TARGET"
+for arch in $ARCHS; do
+  case "$arch" in
+    x86_64)
+      if [ $IS_SIMULATOR -eq 0 ]; then
+        echo "Building for x86_64, but not a simulator build. What's going on?" >&2
+        exit 2
+      fi
+
+      # Intel iOS simulator
+      export CFLAGS_x86_64_apple_ios="-target x86_64-apple-ios"
+      $HOME/.cargo/bin/cargo build -p $FFI_TARGET --lib $RELFLAG --target x86_64-apple-ios
+      ;;
+
+    arm64)
+      if [ $IS_SIMULATOR -eq 0 ]; then
+        # Hardware iOS targets
+        $HOME/.cargo/bin/cargo build -p $FFI_TARGET --lib $RELFLAG --target aarch64-apple-ios
+      else
+        # M1 iOS simulator -- currently in Nightly only and requires to build `libstd`
+        $HOME/.cargo/bin/cargo +nightly build -Z build-std -p $FFI_TARGET --lib $RELFLAG --target aarch64-apple-ios-sim
+      fi
+  esac
+done

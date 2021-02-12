@@ -555,7 +555,6 @@ jobs:
           name: Setup build environment
           command: |
             rustup target add aarch64-apple-ios x86_64-apple-ios
-            cargo install cargo-lipo
 
             # Bootstrap dependencies
             bin/bootstrap.sh
@@ -643,12 +642,19 @@ jobs:
           name: Setup build environment
           command: |
             rustup target add aarch64-apple-ios x86_64-apple-ios
-            cargo install cargo-lipo
 
             # List available devices -- allows us to see what's there
             xcrun instruments -w list || true
             # See https://circleci.com/docs/2.0/testing-ios/#pre-starting-the-simulator
             xcrun instruments -w "iPhone 11 (14" || true
+      - run:
+          name: Install Rust Nightly toolchain
+          command: |
+            # Need a nightly toolchain and the source code for targetting the arm64 iOS simulator
+            # We don't need that build on CI, but its hard to exclude it from the build
+            # while still allowing it in developer builds.
+            rustup toolchain add nightly --profile minimal
+            rustup component add rust-src --toolchain nightly
       - run:
           name: Use current commit of Glean
           command: |
