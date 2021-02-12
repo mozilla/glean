@@ -122,6 +122,16 @@ impl DatetimeMetric {
         glean.storage().record(glean, &self.meta, &value)
     }
 
+    /// Sets the metric to the current date/time with the timezone offset.
+    /// See [`self.set`] for details.
+    ///
+    /// # Arguments
+    ///
+    /// * `glean` - the Glean instance this metric belongs to.
+    pub fn set_now(&self, glean: &Glean) {
+        self.set(glean, None);
+    }
+
     /// Gets the stored datetime value.
     ///
     /// # Arguments
