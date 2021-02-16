@@ -47,6 +47,7 @@ impl Timings {
     }
 
     /// Start a new timer and set it to the `start_time`.
+    /// Multiple timers can run simultaneously.
     ///
     /// Returns a new [`TimerId`] identifying the timer.
     fn set_start(&mut self, start_time: u64) -> TimerId {
