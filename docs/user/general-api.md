@@ -44,6 +44,7 @@ The following steps are required for applications using the Glean SDK, but not l
 An excellent place to initialize Glean is within the `onCreate` method of the class that extends Android's `Application` class.
 
 ```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.GleanBuildInfo
 import org.mozilla.yourApplication.GleanMetrics.Pings
 
 class SampleApplication : Application() {
@@ -61,13 +62,14 @@ class SampleApplication : Application() {
             applicationContext,
             // Here, `settings()` is a method to get user preferences, specific to
             // your application and not part of the Glean SDK API.
-            uploadEnabled = settings().isTelemetryEnabled
+            uploadEnabled = settings().isTelemetryEnabled,
+            buildInfo = GleanBuildInfo.buildInfo
         )
     }
 }
 ```
 
-Once initialized, if `uploadEnabled` is true, the Glean SDK will automatically start collecting [baseline metrics](pings/metrics.md) and sending its [pings](pings/index.md), according to their respective schedules.  
+Once initialized, if `uploadEnabled` is true, the Glean SDK will automatically start collecting [baseline metrics](pings/metrics.md) and sending its [pings](pings/index.md), according to their respective schedules.
 If `uploadEnabled` is false, any persisted metrics, events and pings (other than `first_run_date` and `first_run_hour`) are cleared, and subsequent calls to record metrics will be no-ops.
 
 The Glean SDK should be initialized as soon as possible, and importantly, before any other libraries in the application start using Glean.
@@ -76,7 +78,12 @@ Library code should never call `Glean.initialize`, since it should be called exa
 > **Note**: if the application has the concept of release channels and knows which channel it is on at run-time, then it can provide the Glean SDK with this information by setting it as part of the `Configuration` object parameter of the `Glean.initialize` method. For example:
 
 ```Kotlin
-Glean.initialize(applicationContext, Configuration(channel = "beta"))
+Glean.initialize(
+    applicationContext,
+    uploadEnabled = setting().isTelemetryEnabled,
+    configuration = Configuration(channel = "beta"),
+    buildInfo = GleanBuildInfo.buildInfo
+)
 ```
 
 > **Note**: When the Glean SDK is consumed through Android Components, it is required to configure an HTTP client to be used for upload.
@@ -95,7 +102,12 @@ import mozilla.components.service.glean.net.ConceptFetchHttpUploader
 
 val httpClient = ConceptFetchHttpUploader(lazy { HttpURLConnectionClient() as Client })
 val config = Configuration(httpClient = httpClient)
-Glean.initialize(context, uploadEnabled = true, configuration = config)
+Glean.initialize(
+    context,
+    uploadEnabled = true,
+    configuration = config,
+    buildInfo = GleanBuildInfo.buildInfo
+)
 ```
 
 </div>
@@ -128,7 +140,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 }
 ```
 
-Once initialized, if `uploadEnabled` is true, the Glean SDK will automatically start collecting [baseline metrics](pings/metrics.md) and sending its [pings](pings/index.md), according to their respective schedules.  
+Once initialized, if `uploadEnabled` is true, the Glean SDK will automatically start collecting [baseline metrics](pings/metrics.md) and sending its [pings](pings/index.md), according to their respective schedules.
 If `uploadEnabled` is false, any persisted metrics, events and pings (other than `first_run_date` and `first_run_hour`) are cleared, and subsequent calls to record metrics will be no-ops.
 
 The Glean SDK should be initialized as soon as possible, and importantly, before any other libraries in the application start using Glean.

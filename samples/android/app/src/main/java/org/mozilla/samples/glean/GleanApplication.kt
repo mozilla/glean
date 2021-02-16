@@ -8,6 +8,7 @@ import android.app.Application
 import android.util.Log
 import mozilla.telemetry.glean.Glean
 import org.mozilla.samples.gleancore.GleanMetrics.Basic
+import org.mozilla.samples.gleancore.GleanMetrics.GleanBuildInfo
 import org.mozilla.samples.gleancore.GleanMetrics.Test
 import org.mozilla.samples.gleancore.GleanMetrics.Custom
 import org.mozilla.samples.gleancore.GleanMetrics.LegacyIds
@@ -29,7 +30,11 @@ class GleanApplication : Application() {
 
         // Initialize the Glean library. Ideally, this is the first thing that
         // must be done right after enabling logging.
-        Glean.initialize(applicationContext = applicationContext, uploadEnabled = true)
+        Glean.initialize(
+            applicationContext = applicationContext,
+            uploadEnabled = true,
+            buildInfo = GleanBuildInfo.buildInfo
+        )
 
         Test.timespan.start()
 

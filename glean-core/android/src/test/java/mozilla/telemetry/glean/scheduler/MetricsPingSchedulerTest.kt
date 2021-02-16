@@ -11,6 +11,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.work.testing.WorkManagerTestInitHelper
 import mozilla.telemetry.glean.any
 import mozilla.telemetry.glean.Glean
+import mozilla.telemetry.glean.GleanMetrics.GleanBuildInfo
 import mozilla.telemetry.glean.GleanMetrics.Pings
 import mozilla.telemetry.glean.checkPingSchema
 import mozilla.telemetry.glean.private.Lifetime
@@ -504,6 +505,7 @@ class MetricsPingSchedulerTest {
             // Initialize Glean for the first time.
             // This should pick up the old version ("version.0").
             // No metric is stored, so no metrics ping will be sent.
+            @Suppress("DEPRECATION")
             Glean.initialize(
                 oldContext,
                 true,
@@ -533,6 +535,7 @@ class MetricsPingSchedulerTest {
 
             // Initialize Glean again with the new version.
             // This should trigger a metrics ping after an upgrade (differing version).
+            @Suppress("DEPRECATION")
             Glean.initialize(
                 newContext,
                 true,
@@ -733,7 +736,8 @@ class MetricsPingSchedulerTest {
                 true,
                 Configuration(
                     serverEndpoint = "http://" + server.hostName + ":" + server.port
-                )
+                ),
+                GleanBuildInfo.buildInfo
             )
 
             // Trigger worker task to upload the pings in the background.

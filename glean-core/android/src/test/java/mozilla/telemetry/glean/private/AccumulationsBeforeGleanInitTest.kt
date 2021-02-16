@@ -9,6 +9,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.work.testing.WorkManagerTestInitHelper
 import mozilla.telemetry.glean.Glean
+import mozilla.telemetry.glean.GleanMetrics.GleanBuildInfo
 import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.config.Configuration
 import org.junit.After
@@ -39,7 +40,7 @@ class AccumulationsBeforeGleanInitTest {
 
     private fun forceInitGlean() {
         Glean.enableTestingMode()
-        Glean.initialize(context, true, Configuration())
+        Glean.initialize(context, true, Configuration(), GleanBuildInfo.buildInfo)
     }
 
     @Test
