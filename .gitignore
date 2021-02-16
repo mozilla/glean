@@ -1,4 +1,4 @@
-docs/book
+docs/*/book
 docs/appendix/changelog.md
 target
 .cargo
