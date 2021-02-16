@@ -1,4 +1,4 @@
-# Glean SDK
+# Developing the Glean SDK
 
 ![Glean logo](glean.jpeg)
 
@@ -14,29 +14,22 @@ The source code is available [on GitHub](https://github.com/mozilla/glean/).
 
 ## Using this book
 
-This book is specifically about **using** the `Glean SDK`.
+This book is specifically about **contributing to and developing** the `Glean SDK`.
 
-For documentation on **contributing to and developing** the `Glean SDK`, refer to [the Glean SDK development book](https://mozilla.github.io/glean/).
+For documentation on **using** the `Glean SDK`, refer to [the Glean Book](https://mozilla.github.io/glean/).
 
 For documentation about the broader end-to-end Glean project, refer to the [Mozilla Data Documentation](https://docs.telemetry.mozilla.org/concepts/glean/glean.html).
 
-This book is divided into 3 main chapters:
+This book is divided into 2 main parts:
 
-### [Using the Glean SDK](user/index.html)
+### [Developing the Glean SDK](testing.md)
 
-If you want to use the Glean SDK to report data then this is the section you should read.
-It explains the first steps from integrating Glean into your project,
-contains details about all available metric types
-and how to do send your own custom pings.
+This chapter describes how to develop the Glean SDK and its various implementations.
+This is relevant if you plan to contribute to the Glean SDK code base.
 
-### [Metrics collected by the Glean SDK](user/collected-metrics/metrics.md)
+### [API Reference Documentation](api/index.md)
 
-This chapter lists all metrics collected by the Glean SDK itself.
-
-### [This Week in Glean](appendix/twig.md)
-
-“This Week in Glean” is a series of blog posts that the Glean Team at Mozilla is using to try to communicate better about our work.
-They could be release notes, documentation, hopes, dreams, or whatever: so long as it is inspired by Glean.
+Reference documentation for the API in its various language bindings.
 
 ## License
 

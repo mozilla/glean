@@ -1,4 +1,4 @@
-# Developing the Glean SDK
+[Developing the Glean SDK](README.md)
 
 - [Testing](testing.md)
 - [Continuous Integration](ci.md)
