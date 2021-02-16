@@ -20,6 +20,8 @@ import mozilla.telemetry.glean.GleanMetrics.GleanInternalMetrics;
 import mozilla.telemetry.glean.GleanMetrics.Pings;
 import mozilla.telemetry.glean.config.Configuration;
 
+import static org.junit.Assert.assertEquals;
+
 @RunWith(RobolectricTestRunner.class)
 public class GleanFromJavaTest {
     // The only purpose of these tests is to make sure the Glean API is
@@ -75,5 +77,22 @@ public class GleanFromJavaTest {
         Pings.INSTANCE.baseline().submit();
         // submit() can be called with a `reason`.
         Pings.INSTANCE.baseline().submit(Pings.baselineReasonCodes.inactive);
+    }
+
+    @Test
+    public void testPassingExplicitBuildInfo() {
+        Configuration config =
+            new Configuration(Configuration.DEFAULT_TELEMETRY_ENDPOINT, "test-channel");
+        BuildInfo buildInfo =
+            new BuildInfo("foo", "c0ffee");
+        Glean.INSTANCE.initialize(appContext, true, config, buildInfo);
+
+        // The testing API doesn't seem to be available from these Java tests, so the best
+        // we do right now is ensure the syntax above works.
+        //   "To use the testing API, apply the GleanTestRule to set up a disposable Glean instance. e.g. GleanTestRule(ApplicationProvider.getApplicationContext())"
+        // See bug 1692506
+
+        // assertEquals("c0ffee", GleanInternalMetrics.INSTANCE.appBuild().testGetValue());
+        // assertEquals("foo", GleanInternalMetrics.INSTANCE.appDisplayVersion().testGetValue());
     }
 }

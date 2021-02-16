@@ -14,6 +14,7 @@ import kotlinx.coroutines.Dispatchers as KotlinDispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.runBlocking
+import mozilla.telemetry.glean.GleanMetrics.GleanBuildInfo
 import mozilla.telemetry.glean.GleanMetrics.GleanError
 import mozilla.telemetry.glean.GleanMetrics.GleanInternalMetrics
 import mozilla.telemetry.glean.GleanMetrics.Pings
@@ -346,7 +347,11 @@ class GleanTest {
     fun `Initializing twice is a no-op`() {
         val beforeConfig = Glean.configuration
 
-        Glean.initialize(context, true)
+        Glean.initialize(
+            context,
+            true,
+            buildInfo = GleanBuildInfo.buildInfo
+        )
 
         val afterConfig = Glean.configuration
 
@@ -569,7 +574,11 @@ class GleanTest {
     @Test(expected = IllegalThreadStateException::class)
     fun `Glean initialize must be called on the main thread`() {
         runBlocking(KotlinDispatchers.IO) {
-            Glean.initialize(context, true)
+            Glean.initialize(
+                context,
+                true,
+                buildInfo = GleanBuildInfo.buildInfo
+            )
         }
     }
 
@@ -593,7 +602,7 @@ class GleanTest {
         // Now trigger execution to ensure the tasks fired
         Glean.initialize(context, true, Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port
-        ))
+        ), GleanBuildInfo.buildInfo)
 
         assertEquals(110, GleanError.preinitTasksOverflow.testGetValue())
 
@@ -732,7 +741,7 @@ class GleanTest {
         )
 
         Glean.setDebugViewTag("valid-tag")
-        Glean.initialize(context, true, config)
+        Glean.initialize(context, true, config, GleanBuildInfo.buildInfo)
 
         // Send a ping
         Glean.handleBackgroundEvent()
@@ -793,7 +802,7 @@ class GleanTest {
         val config = Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port
         )
-        Glean.initialize(context, true, config)
+        Glean.initialize(context, true, config, GleanBuildInfo.buildInfo)
 
         // Glean might still be initializing. Disable upload.
         Glean.setUploadEnabled(false)
@@ -813,5 +822,16 @@ class GleanTest {
         val request = server.takeRequest(20L, TimeUnit.SECONDS)!!
         val docType = request.path!!.split("/")[3]
         assertEquals("deletion-request", docType)
+    }
+
+    @Test
+    fun `test passing in explicit BuildInfo`() {
+        Glean.testDestroyGleanHandle()
+        Glean.initialize(
+            context, true, buildInfo = BuildInfo(versionName = "foo", versionCode = "c0ffee")
+        )
+
+        assertEquals("c0ffee", GleanInternalMetrics.appBuild.testGetValue())
+        assertEquals("foo", GleanInternalMetrics.appDisplayVersion.testGetValue())
     }
 }

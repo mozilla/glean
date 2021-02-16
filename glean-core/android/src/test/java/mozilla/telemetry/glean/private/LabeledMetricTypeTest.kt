@@ -10,6 +10,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.collectAndCheckPingSchema
+import mozilla.telemetry.glean.GleanMetrics.GleanBuildInfo
 import mozilla.telemetry.glean.GleanMetrics.Pings
 import mozilla.telemetry.glean.testing.ErrorType
 import mozilla.telemetry.glean.testing.GleanTestRule
@@ -226,7 +227,7 @@ class LabeledMetricTypeTest {
         labeledCounterMetric["label_0"].add(1)
 
         // Initialize glean
-        Glean.initialize(context, true)
+        Glean.initialize(context, true, buildInfo = GleanBuildInfo.buildInfo)
 
         assertEquals(2, labeledCounterMetric["label_0"].testGetValue())
         for (i in 1..15) {
