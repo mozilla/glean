@@ -55,10 +55,8 @@ class TimingDistributionMetricType:
 
     def start(self) -> Optional[int]:
         """
-        Start tracking time. This records an error if it’s already tracking
-        time (i.e. start was already called with no corresponding
-        `stop_and_ccumulate`): in that case the original start time will be
-        preserved.
+        Start tracking time for the provided metric.
+        Multiple timers can run simultaneously.
 
         Returns:
             timer_id: The object to associate with this timing.

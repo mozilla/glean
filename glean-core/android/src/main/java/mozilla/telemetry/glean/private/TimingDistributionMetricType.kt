@@ -55,10 +55,8 @@ class TimingDistributionMetricType internal constructor(
     }
 
     /**
-     * Start tracking time for the provided metric. This records an error if
-     * it’s already tracking time (i.e. start was already called with no
-     * corresponding [stopAndAccumulate]): in that case the original start time will
-     * be preserved.
+     * Start tracking time for the provided metric.
+     * Multiple timers can run simultaneously.
      *
      * @return The [GleanTimerId] object to associate with this timing.
      */
