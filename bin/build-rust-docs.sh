@@ -38,6 +38,9 @@ cp -a docs/user/book/. build/docs/book
 mkdir -p build/docs/dev
 cp -a docs/dev/book/. build/docs/dev
 
+mkdir -p build/docs/shared
+cp -a docs/shared/. build/docs/shared
+
 mkdir -p build/docs/docs
 cp -a target/doc/. build/docs/docs
 printf '<meta http-equiv=refresh content=0;url=%s/index.html>\n' "$CRATE_NAME" > build/docs/docs/index.html
