@@ -533,7 +533,7 @@ jobs:
             brew upgrade carthage
       - run:
           name: Set Ruby Version
-          command: echo 'chruby ruby-2.6.6' >> ~/.bash_profile
+          command: echo 'chruby ruby-2.7.2' >> ~/.bash_profile
       - run:
           name: Show Ruby environment
           command: |
@@ -543,16 +543,16 @@ jobs:
       - setup-rust-toolchain
       - restore_cache:
           name: Restore rubygems cache
-          key: swift-docs-gems-v7
+          key: swift-docs-gems-v8
       - run:
-          name: Install jazzy and xcpretty
-          command: gem install jazzy xcpretty
+          name: Install jazzy
+          command: gem install jazzy
       - save_cache:
           name: Save rubygems cache
           # NEEDS TO CHANGE WHEN JAZZY OR RUBY IS UPDATED
-          key: swift-docs-gems-v7
+          key: swift-docs-gems-v8
           paths:
-            - ~/.gem/ruby/2.6.6
+            - ~/.gem/ruby/2.7.2
       - run:
           name: Setup build environment
           command: |
