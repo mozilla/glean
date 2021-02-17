@@ -566,13 +566,13 @@ jobs:
             xcrun instruments -w "iPhone 11 (14" || true
             # Store build type for use in cache key
             if [ -z "${CIRCLE_TAG}" ]; then
-              echo "release" > buildtype.txt
-            else
               echo "debug" > buildtype.txt
+            else
+              echo "release" > buildtype.txt
             fi
       - restore_cache:
           keys:
-            - v1-cargo-cache-{{arch}}-{{checksum "buildtype.txt"}}-{{checksum "Cargo.lock"}}
+            - v2-cargo-cache-{{arch}}-{{checksum "buildtype.txt"}}-{{checksum "Cargo.lock"}}
       - run:
           name: Run iOS build
           command: bash bin/run-ios-build.sh
@@ -580,7 +580,7 @@ jobs:
           paths:
             - /Users/distiller/.cargo/registry
             - target
-          key: v1-cargo-cache-{{arch}}-{{checksum "buildtype.txt"}}-{{checksum "Cargo.lock"}}
+          key: v2-cargo-cache-{{arch}}-{{checksum "buildtype.txt"}}-{{checksum "Cargo.lock"}}
       - run:
           name: Configure device logging
           command: |
