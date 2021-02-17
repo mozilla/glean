@@ -666,7 +666,7 @@ jobs:
             cat "${CARTFILE_PATH}"
             echo "================="
             echo "New Cartfile:"
-            sed -i.bak "/mozilla\/glean/s#.*#github \"mozilla/glean\" \"${CIRCLE_SHA1}\"#" "$CARTFILE_PATH"
+            sed -i.bak "/mozilla\/glean/s#.*#git \"${GLEAN_PATH}\" \"${CIRCLE_SHA1}\"#" "$CARTFILE_PATH"
             cat "${CARTFILE_PATH}"
       - run:
           name: Bootstrap dependencies
