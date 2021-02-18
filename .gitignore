@@ -1,5 +1,5 @@
 docs/*/book
-docs/appendix/changelog.md
+docs/user/appendix/changelog.md
 target
 .cargo
 
