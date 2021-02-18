@@ -12,9 +12,16 @@ set -xe
 CRATE_NAME=glean_core
 
 # Add the changelog file
-cp -a CHANGELOG.md docs/appendix/changelog.md
+cp -a CHANGELOG.md docs/user/appendix/changelog.md
 
-output=$(mdbook build docs/ 2>&1)
+# Build the Glean client user book
+output=$(mdbook build docs/user/ 2>&1)
+if echo "$output" | grep -q "\[ERROR\]" ; then
+    exit 1
+fi
+
+# Build the Glean SDK development book
+output=$(mdbook build docs/dev/ 2>&1)
 if echo "$output" | grep -q "\[ERROR\]" ; then
     exit 1
 fi
@@ -26,7 +33,13 @@ mkdir -p build/docs
 echo '<meta http-equiv=refresh content=0;url=book/index.html>' > build/docs/index.html
 
 mkdir -p build/docs/book
-cp -a docs/book/. build/docs/book
+cp -a docs/user/book/. build/docs/book
+
+mkdir -p build/docs/dev
+cp -a docs/dev/book/. build/docs/dev
+
+mkdir -p build/docs/shared
+cp -a docs/shared/. build/docs/shared
 
 mkdir -p build/docs/docs
 cp -a target/doc/. build/docs/docs

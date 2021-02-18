@@ -31,7 +31,7 @@ The built narrative documentation is saved in `build/docs/book`, and the Rust AP
 
 ### Building API documentation
 
-{{#include ../tab_header.md}}
+{{#include ../shared/tab_header.md}}
 
 <div data-lang="Kotlin" class="tab">
 
@@ -88,7 +88,7 @@ TODO. To be implemented in [bug 1648410](https://bugzilla.mozilla.org/show_bug.c
 
 </div>
 
-{{#include ../tab_footer.md}}
+{{#include ../shared/tab_footer.md}}
 
 ### Checking links
 
