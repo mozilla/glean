@@ -5,7 +5,9 @@
 package mozilla.telemetry.glean.private
 
 import com.sun.jna.StringArray
+import androidx.annotation.VisibleForTesting
 import mozilla.telemetry.glean.Glean
+import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.toByte
 
@@ -47,6 +49,7 @@ class PingType<ReasonCodesEnum : Enum<ReasonCodesEnum>> (
     sendIfEmpty: Boolean,
     val reasonCodes: List<String>
 ) : PingTypeBase(name) {
+    private var testCallback: ((ReasonCodesEnum?) -> Unit)? = null
 
     init {
         val ffiReasonList = StringArray(reasonCodes.toTypedArray(), "utf-8")
@@ -62,6 +65,24 @@ class PingType<ReasonCodesEnum : Enum<ReasonCodesEnum>> (
     }
 
     /**
+     * **Test-only API**
+     *
+     * Attach a callback to be called right before a new ping is submitted.
+     * The provided function is called exactly once before submitting a ping.
+     *
+     * Note: The callback will be called on any call to submit.
+     * A ping might not be sent afterwards, e.g. if the ping is otherwise empty (and
+     * `send_if_empty` is `false`).
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    @Synchronized
+    fun testBeforeNextSubmit(cb: (ReasonCodesEnum?) -> Unit) {
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        Dispatchers.API.assertInTestingMode()
+        this.testCallback = cb
+    }
+
+    /**
      * Collect and submit the ping for eventual upload.
      *
      * While the collection of metrics into pings happens synchronously, the
@@ -74,6 +95,13 @@ class PingType<ReasonCodesEnum : Enum<ReasonCodesEnum>> (
      */
     @JvmOverloads
     fun submit(reason: ReasonCodesEnum? = null) {
+        this.testCallback?.let {
+            @Suppress("EXPERIMENTAL_API_USAGE")
+            Dispatchers.API.assertInTestingMode()
+            it(reason)
+        }
+        this.testCallback = null
+
         val reasonString = reason?.let { this.reasonCodes[it.ordinal] }
         Glean.submitPing(this, reasonString)
     }
