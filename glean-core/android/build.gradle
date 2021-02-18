@@ -252,7 +252,7 @@ tasks.register("docs", org.jetbrains.dokka.gradle.DokkaAndroidTask) {
 
 // Generate markdown docs for the collected metrics.
 ext.gleanGenerateMarkdownDocs = true
-ext.gleanDocsDirectory = "$rootDir/docs/user/collected-metrics"
+ext.gleanDocsDirectory = "$rootDir/docs/user/user/collected-metrics"
 ext.gleanYamlFiles = [
     "$rootDir/glean-core/metrics.yaml",
     "$rootDir/glean-core/pings.yaml",
