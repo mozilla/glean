@@ -533,7 +533,7 @@ jobs:
             brew upgrade carthage
       - run:
           name: Set Ruby Version
-          command: echo 'chruby ruby-2.6.6' >> ~/.bash_profile
+          command: echo 'chruby ruby-2.7.2' >> ~/.bash_profile
       - run:
           name: Show Ruby environment
           command: |
@@ -543,16 +543,16 @@ jobs:
       - setup-rust-toolchain
       - restore_cache:
           name: Restore rubygems cache
-          key: swift-docs-gems-v7
+          key: swift-docs-gems-v8
       - run:
-          name: Install jazzy and xcpretty
-          command: gem install jazzy xcpretty
+          name: Install jazzy
+          command: gem install jazzy
       - save_cache:
           name: Save rubygems cache
           # NEEDS TO CHANGE WHEN JAZZY OR RUBY IS UPDATED
-          key: swift-docs-gems-v7
+          key: swift-docs-gems-v8
           paths:
-            - ~/.gem/ruby/2.6.6
+            - ~/.gem/ruby/2.7.2
       - run:
           name: Setup build environment
           command: |
@@ -566,13 +566,13 @@ jobs:
             xcrun instruments -w "iPhone 11 (14" || true
             # Store build type for use in cache key
             if [ -z "${CIRCLE_TAG}" ]; then
-              echo "release" > buildtype.txt
-            else
               echo "debug" > buildtype.txt
+            else
+              echo "release" > buildtype.txt
             fi
       - restore_cache:
           keys:
-            - v1-cargo-cache-{{arch}}-{{checksum "buildtype.txt"}}-{{checksum "Cargo.lock"}}
+            - v2-cargo-cache-{{arch}}-{{checksum "buildtype.txt"}}-{{checksum "Cargo.lock"}}
       - run:
           name: Run iOS build
           command: bash bin/run-ios-build.sh
@@ -580,7 +580,7 @@ jobs:
           paths:
             - /Users/distiller/.cargo/registry
             - target
-          key: v1-cargo-cache-{{arch}}-{{checksum "buildtype.txt"}}-{{checksum "Cargo.lock"}}
+          key: v2-cargo-cache-{{arch}}-{{checksum "buildtype.txt"}}-{{checksum "Cargo.lock"}}
       - run:
           name: Configure device logging
           command: |
@@ -619,16 +619,11 @@ jobs:
           no_output_timeout: 20m
           command: |
             if [ -z "${CIRCLE_TAG}" ]; then
-              # XCode tests build in Debug configuration, save us a full
-              # Rust rebuild in Release mode by forcing Debug mode on
-              # non-release builds.
-              bash bin/build-carthage.sh Glean Debug
+              # No need to build the framework archive unless we build for a tagged release.
+              circleci-agent step halt
             else
               bash bin/build-carthage.sh Glean
             fi
-      - store_artifacts:
-          path: Glean.framework.zip
-          destination: dist/Glean.framework.zip
       - persist_to_workspace:
           root: .
           paths:
