@@ -28,24 +28,65 @@ network:
     ...
 ```
 
+### External Denominators
+
+If several rates share the same denominator
+(from our example above, maybe there are multiple rates per total connections made)
+then the denominator should be defined as a `counter` and shared between
+`rates` using the `denominator_metric` property:
+
+```YAML
+network:
+  http_connections:
+    type: counter
+    description: >
+      Total number of http connections made.
+    ...
+
+  http_connection_error:
+    type: rate
+    description: >
+      How many HTTP connections error out out of the total connections made.
+    denominator_metric: network.http_connections
+    ...
+```
+
 ## API
 
-{{#include ../../tab_header.md}}
+{{#include ../../../shared/tab_header.md}}
 
 <div data-lang="Rust" class="tab">
 
 Since a rate is two numbers, you add to each one individually:
 
-```
+```rust
 use glean_metrics;
 
-if connection_had_error:
+if connection_had_error {
     network::http_connection_error.add_to_numerator(1);
+}
 
 network::http_connection_error.add_to_denominator(1);
 ```
 
-There are test APIs available too:
+If the rate uses an external denominator,
+adding to the denominator must be done through the denominator's
+`counter` API:
+
+```rust
+use glean_metrics;
+
+if connection_had_error {
+    network::http_connection_error.add_to_numerator(1);
+}
+
+// network::http_connection_error has no `add_to_denominator` method.
+network::http_connections.add(1);
+```
+
+There are test APIs available too.
+Whether the rate has an external denominator or not,
+you can use this API to get the current value:
 
 ```rust
 use glean::ErrorType;
@@ -67,7 +108,7 @@ assert_eq!(
 
 </div>
 
-{{#include ../../tab_footer.md}}
+{{#include ../../../shared/tab_footer.md}}
 
 ## Limits
 
