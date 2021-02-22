@@ -1287,7 +1287,7 @@ The following text applies to code linked from these dependencies:
 * [inherent 0.1.6]( https://github.com/dtolnay/inherent )
 * [itoa 0.4.6]( https://github.com/dtolnay/itoa )
 * [lazy_static 1.4.0]( https://github.com/rust-lang-nursery/lazy-static.rs )
-* [libc 0.2.83]( https://github.com/rust-lang/libc )
+* [libc 0.2.86]( https://github.com/rust-lang/libc )
 * [log 0.4.13]( https://github.com/rust-lang/log )
 * [num-integer 0.1.44]( https://github.com/rust-num/num-integer )
 * [num-traits 0.2.14]( https://github.com/rust-num/num-traits )
@@ -1301,10 +1301,10 @@ The following text applies to code linked from these dependencies:
 * [quote 1.0.8]( https://github.com/dtolnay/quote )
 * [serde 1.0.121]( https://github.com/serde-rs/serde )
 * [serde_derive 1.0.121]( https://github.com/serde-rs/serde )
-* [serde_json 1.0.61]( https://github.com/serde-rs/json )
+* [serde_json 1.0.62]( https://github.com/serde-rs/json )
 * [syn 1.0.58]( https://github.com/dtolnay/syn )
-* [thiserror 1.0.23]( https://github.com/dtolnay/thiserror )
-* [thiserror-impl 1.0.23]( https://github.com/dtolnay/thiserror )
+* [thiserror 1.0.24]( https://github.com/dtolnay/thiserror )
+* [thiserror-impl 1.0.24]( https://github.com/dtolnay/thiserror )
 * [time 0.1.44]( https://github.com/time-rs/time )
 * [unicode-bidi 0.3.4]( https://github.com/servo/unicode-bidi )
 * [unicode-normalization 0.1.13]( https://github.com/unicode-rs/unicode-normalization )
@@ -3242,9 +3242,9 @@ THE SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
-* [glean 34.1.0]( https://github.com/mozilla/glean )
-* [glean-core 34.1.0]( https://github.com/mozilla/glean )
-* [glean-ffi 34.1.0]( https://github.com/mozilla/glean )
+* [glean 35.0.0]( https://github.com/mozilla/glean )
+* [glean-core 35.0.0]( https://github.com/mozilla/glean )
+* [glean-ffi 35.0.0]( https://github.com/mozilla/glean )
 
 
 ```
