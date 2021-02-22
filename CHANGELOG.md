@@ -7,6 +7,8 @@
     * The new API exists for all language bindings (Kotlin, Swift, Rust, Python).
 * Python
   * Update minimal required version of `cffi` dependency to 1.13.0 ([#1520](https://github.com/mozilla/glean/pull/1520)).
+* RLB
+  * Added `rate` metric type.
 
 # v35.0.0 (2021-02-22)
 
@@ -17,8 +19,8 @@
   * The `testGetValue` APIs now include a message on the `NullPointerException` thrown when the value is missing.
   * **Breaking change:** `LEGACY_TAG_PINGS` is removed from `GleanDebugActivity` ([#1510](https://github.com/mozilla/glean/pull/1510))
 * RLB
-  * **Breaking change:** `Configuration.data_path` is now a `std::path::PathBuf`([#1493](https://github.com/mozilla/glean/pull/1493)).
-  
+  * **Breaking change:** `Configuration.data_path` is now a `std::path::PathBuf`([#1493](https://github.com/mozilla/glean/pull/1493)). 
+
 # v34.1.0 (2021-02-04)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v34.0.0...v34.1.0)
