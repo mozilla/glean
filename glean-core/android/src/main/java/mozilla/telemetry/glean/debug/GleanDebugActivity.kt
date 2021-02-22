@@ -40,7 +40,6 @@ class GleanDebugActivity : Activity() {
          * The value must match the pattern `[a-zA-Z0-9-]{1,20}`.
          */
         const val TAG_DEBUG_VIEW_EXTRA_KEY = "debugViewTag"
-        const val LEGACY_TAG_PINGS = "tagPings"
 
         /**
          * Tags all outgoing pings as debug pings to make them available for real-time validation.
@@ -94,7 +93,7 @@ class GleanDebugActivity : Activity() {
         // Make sure that at least one of the supported commands was used.
         val supportedCommands = listOf(
             SEND_PING_EXTRA_KEY, LOG_PINGS_EXTRA_KEY, NEXT_ACTIVITY_TO_RUN,
-            TAG_DEBUG_VIEW_EXTRA_KEY, SOURCE_TAGS_KEY, LEGACY_TAG_PINGS
+            TAG_DEBUG_VIEW_EXTRA_KEY, SOURCE_TAGS_KEY
         )
 
         var nextActivityName: String? = null
@@ -114,13 +113,6 @@ class GleanDebugActivity : Activity() {
             // Set the debug view tag, if the tag is invalid it won't be set
             debugViewTag?.let {
                 Glean.setDebugViewTag(debugViewTag)
-            } ?: run {
-                // If the 'debugViewTag' was not used, try to look for the legacy
-                // way of setting debug view tags. We should leave this block of
-                // code around at most until December 2020.
-                intent.getStringExtra(LEGACY_TAG_PINGS)?.let { legacyTag ->
-                    Glean.setDebugViewTag(legacyTag)
-                }
             }
 
             val logPings: Boolean? = intent.getBooleanExtra(LOG_PINGS_EXTRA_KEY, false)

@@ -215,39 +215,6 @@ class GleanDebugActivityTest {
     }
 
     @Test
-    fun `pings are correctly tagged using legacy tagPings`() {
-        val pingTag = "legacy-debug-ID"
-
-        // Use the test client in the Glean configuration
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        resetGlean(context, Glean.configuration.copy(
-            httpClient = TestPingTagClient(debugHeaderValue = pingTag)
-        ))
-
-        // Create a custom ping for testing. Since we're testing headers,
-        // it's fine for this to be empty.
-        val customPing = PingType<NoReasonCodes>(
-            name = "custom",
-            includeClientId = false,
-            sendIfEmpty = true,
-            reasonCodes = listOf()
-        )
-
-        // Set the extra values and start the intent.
-        val intent = Intent(ApplicationProvider.getApplicationContext<Context>(),
-            GleanDebugActivity::class.java)
-        intent.putExtra(GleanDebugActivity.SEND_PING_EXTRA_KEY, "metrics")
-        intent.putExtra(GleanDebugActivity.LEGACY_TAG_PINGS, pingTag)
-        launch<GleanDebugActivity>(intent)
-
-        customPing.submit()
-
-        // This will trigger the call to `fetch()` in the TestPingTagClient which is where the
-        // test assertions will occur
-        triggerWorkManager(context)
-    }
-
-    @Test
     fun `pings are correctly tagged using sourceTags`() {
         val testTags = setOf("tag1", "tag2")
 
