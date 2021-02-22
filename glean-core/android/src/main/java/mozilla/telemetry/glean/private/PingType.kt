@@ -96,8 +96,6 @@ class PingType<ReasonCodesEnum : Enum<ReasonCodesEnum>> (
     @JvmOverloads
     fun submit(reason: ReasonCodesEnum? = null) {
         this.testCallback?.let {
-            @Suppress("EXPERIMENTAL_API_USAGE")
-            Dispatchers.API.assertInTestingMode()
             it(reason)
         }
         this.testCallback = null
