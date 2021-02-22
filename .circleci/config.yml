@@ -402,6 +402,7 @@ jobs:
             - docs/book
             - docs/dev
             - docs/docs
+            - docs/shared
             - docs/index.html
 
   Publish Rust crates:
