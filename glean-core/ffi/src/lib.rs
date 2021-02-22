@@ -216,13 +216,10 @@ pub unsafe extern "C" fn glean_enable_logging_to_fd(fd: u64) {
         // Set the level so everything goes through to the language
         // binding side where it will be filtered by the language
         // binding's logging system.
-        if log::set_logger(FD_LOGGER.get().unwrap())
-            .map(|()| log::set_max_level(log::LevelFilter::Debug))
-            .is_ok()
-        {
-            return;
+        if log::set_logger(FD_LOGGER.get().unwrap()).is_ok() {
+            log::set_max_level(log::LevelFilter::Debug);
         }
-    };
+    }
 }
 
 /// Configuration over FFI.

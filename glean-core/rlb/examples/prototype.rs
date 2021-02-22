@@ -3,6 +3,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use std::env;
+use std::path::PathBuf;
 
 use once_cell::sync::Lazy;
 use tempfile::Builder;
@@ -36,10 +37,10 @@ fn main() {
     let mut args = env::args().skip(1);
 
     let data_path = if let Some(path) = args.next() {
-        path
+        PathBuf::from(path)
     } else {
         let root = Builder::new().prefix("simple-db").tempdir().unwrap();
-        root.path().display().to_string()
+        root.path().to_path_buf()
     };
 
     let cfg = Configuration {

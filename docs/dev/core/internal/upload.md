@@ -94,7 +94,7 @@ Glean core will take care of file management, cleanup, rescheduling and rate lim
 
 ## Available APIs
 
-{{#include ../../../tab_header.md}}
+{{#include ../../../shared/tab_header.md}}
 
 <div data-lang="Rust" class="tab">
 
@@ -135,4 +135,4 @@ See the documentation for additional information about the types:
 
 </div>
 
-{{#include ../../../tab_footer.md}}
+{{#include ../../../shared/tab_footer.md}}

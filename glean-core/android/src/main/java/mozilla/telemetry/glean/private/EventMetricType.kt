@@ -201,6 +201,7 @@ class EventMetricType<ExtraKeysEnum : Enum<ExtraKeysEnum>> internal constructor(
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     @JvmOverloads
+    @Suppress("ThrowsCount")
     fun testGetValue(pingName: String = sendInPings.first()): List<RecordedEventData> {
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.assertInTestingMode()
@@ -208,15 +209,15 @@ class EventMetricType<ExtraKeysEnum : Enum<ExtraKeysEnum>> internal constructor(
         val ptr = LibGleanFFI.INSTANCE.glean_event_test_get_value_as_json_string(
             this.handle,
             pingName
-        )!!
+        ) ?: throw NullPointerException("Could not get metric data")
 
         val jsonRes = try {
             JSONArray(ptr.getAndConsumeRustString())
         } catch (e: org.json.JSONException) {
-            throw NullPointerException()
+            throw NullPointerException("Could not parse metric data as JSON")
         }
         if (jsonRes.length() == 0) {
-            throw NullPointerException()
+            throw NullPointerException("Metric data not found")
         }
 
         val result: MutableList<RecordedEventData> = mutableListOf()

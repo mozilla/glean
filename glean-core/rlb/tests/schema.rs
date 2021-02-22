@@ -22,7 +22,7 @@ const GLOBAL_APPLICATION_ID: &str = "org.mozilla.glean.test.app";
 // We need to keep the `TempDir` alive, so that it's not deleted before we stop using it.
 fn new_glean(configuration: Option<Configuration>) -> tempfile::TempDir {
     let dir = tempfile::tempdir().unwrap();
-    let tmpname = dir.path().display().to_string();
+    let tmpname = dir.path().to_path_buf();
 
     let cfg = match configuration {
         Some(c) => c,
@@ -74,7 +74,7 @@ fn validate_against_schema() {
 
     // Create a custom configuration to use a validating uploader.
     let dir = tempfile::tempdir().unwrap();
-    let tmpname = dir.path().display().to_string();
+    let tmpname = dir.path().to_path_buf();
 
     let cfg = Configuration {
         data_path: tmpname,

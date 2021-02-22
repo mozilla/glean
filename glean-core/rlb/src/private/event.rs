@@ -8,7 +8,7 @@ use std::{collections::HashMap, marker::PhantomData, sync::Arc};
 use glean_core::metrics::MetricType;
 use glean_core::traits;
 
-use crate::{dispatcher, ErrorType, RecordedEvent};
+use crate::{ErrorType, RecordedEvent};
 
 pub use glean_core::traits::NoExtraKeys;
 
@@ -56,7 +56,7 @@ impl<K: traits::ExtraKeys> traits::Event for EventMetric<K> {
             .into()
             .map(|h| h.into_iter().map(|(k, v)| (k.index(), v)).collect());
         let metric = Arc::clone(&self.inner);
-        dispatcher::launch(move || crate::with_glean(|glean| metric.record(glean, now, extra)));
+        crate::launch_with_glean(move |glean| metric.record(glean, now, extra));
     }
 
     fn test_get_value<'a, S: Into<Option<&'a str>>>(

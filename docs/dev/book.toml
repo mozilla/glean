@@ -1,0 +1,21 @@
+[book]
+title = "Glean - Cross-platform Telemetry library"
+authors = ["Glean Team"]
+src = "."
+
+[build]
+build-dir = "book"
+create-missing = false
+
+[output.html]
+additional-css = ["../shared/glean.css", "../shared/mermaid.css"]
+additional-js = ["../shared/tabs.js", "../shared/mermaid.min.js", "../shared/mermaid-init.js"]
+git-repository-url = "https://github.com/mozilla/glean"
+git-branch = "main"
+mathjax-support = true
+
+[preprocessor.open-on-gh]
+command = "mdbook-open-on-gh"
+
+[preprocessor.mermaid]
+command = "mdbook-mermaid"

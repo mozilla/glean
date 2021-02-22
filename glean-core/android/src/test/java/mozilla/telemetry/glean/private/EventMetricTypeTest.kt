@@ -267,11 +267,11 @@ class EventMetricTypeTest {
 
         triggerWorkManager(context)
 
-        val request = server.takeRequest(1L, TimeUnit.SECONDS)
+        val request = server.takeRequest(1L, TimeUnit.SECONDS)!!
         assertEquals("POST", request.method)
         val applicationId = "mozilla-telemetry-glean-test"
         assert(
-            request.path.startsWith("/submit/$applicationId/events/")
+            request.path!!.startsWith("/submit/$applicationId/events/")
         )
         val pingJsonData = request.getPlainBody()
         val pingJson = JSONObject(pingJsonData)
@@ -448,8 +448,8 @@ class EventMetricTypeTest {
         // Trigger worker task to upload the pings in the background
         triggerWorkManager(context)
 
-        val request = server.takeRequest(20L, TimeUnit.SECONDS)
-        val docType = request.path.split("/")[3]
+        val request = server.takeRequest(20L, TimeUnit.SECONDS)!!
+        val docType = request.path!!.split("/")[3]
         assertEquals(pingName, docType)
 
         val pingJsonData = request.getPlainBody()

@@ -75,8 +75,8 @@ class CustomPingTest {
         customPing.submit()
         triggerWorkManager(context)
 
-        val request = server.takeRequest(2L, TimeUnit.SECONDS)
-        val docType = request.path.split("/")[3]
+        val request = server.takeRequest(2L, TimeUnit.SECONDS)!!
+        val docType = request.path!!.split("/")[3]
         assertEquals("custom-ping", docType)
     }
 
@@ -104,8 +104,8 @@ class CustomPingTest {
         triggerWorkManager(context)
 
         // Receive the first ping.
-        var request = server.takeRequest(2L, TimeUnit.SECONDS)
-        var docType = request.path.split("/")[3]
+        var request = server.takeRequest(2L, TimeUnit.SECONDS)!!
+        var docType = request.path!!.split("/")[3]
         assertEquals("custom-ping", docType)
 
         // Not much data in these pings,
@@ -116,8 +116,8 @@ class CustomPingTest {
         assertEquals(0L, pingInfo.tryGetLong("seq"))
 
         // Receive the second ping.
-        request = server.takeRequest(2L, TimeUnit.SECONDS)
-        docType = request.path.split("/")[3]
+        request = server.takeRequest(2L, TimeUnit.SECONDS)!!
+        docType = request.path!!.split("/")[3]
         assertEquals("custom-ping", docType)
 
         pingJson = JSONObject(request.getPlainBody())
@@ -170,8 +170,8 @@ class CustomPingTest {
         triggerWorkManager(context)
 
         // Receive the custom events ping.
-        var request = server.takeRequest(2L, TimeUnit.SECONDS)
-        var docType = request.path.split("/")[3]
+        var request = server.takeRequest(2L, TimeUnit.SECONDS)!!
+        var docType = request.path!!.split("/")[3]
         assertEquals(pingName, docType)
 
         val pingJson = JSONObject(request.getPlainBody())

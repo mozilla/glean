@@ -10,6 +10,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import java.lang.NullPointerException
 import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.Glean
+import mozilla.telemetry.glean.GleanMetrics.GleanBuildInfo
 import mozilla.telemetry.glean.GleanTimerId
 import mozilla.telemetry.glean.testing.ErrorType
 import mozilla.telemetry.glean.testing.GleanTestRule
@@ -193,7 +194,7 @@ class TimingDistributionMetricTypeTest {
         )
 
         val timerId = metric.start()
-        Glean.initialize(context, true)
+        Glean.initialize(context, true, buildInfo = GleanBuildInfo.buildInfo)
         metric.stopAndAccumulate(timerId)
 
         metric.testGetValue().sum >= 0
@@ -216,7 +217,7 @@ class TimingDistributionMetricTypeTest {
 
         val timerId = metric.start()
         metric.stopAndAccumulate(timerId)
-        Glean.initialize(context, true)
+        Glean.initialize(context, true, buildInfo = GleanBuildInfo.buildInfo)
 
         metric.testGetValue().sum >= 0
     }

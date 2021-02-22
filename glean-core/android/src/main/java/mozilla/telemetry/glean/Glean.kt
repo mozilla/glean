@@ -45,6 +45,8 @@ import org.json.JSONObject
  */
 data class GleanTimerId internal constructor(internal val id: Long)
 
+data class BuildInfo(val versionCode: String, val versionName: String)
+
 /**
  * The main Glean API.
  *
@@ -102,6 +104,44 @@ open class GleanInternalAPI internal constructor () {
     // case pings are to be immediately submitted by the WorkManager.
     internal var isSendingToTestEndpoint: Boolean = false
 
+    // Store the build information provided by the application.
+    internal var buildInfo: BuildInfo? = null
+
+    /**
+     * Initialize the Glean SDK.
+     *
+     * This should only be initialized once by the application, and not by
+     * libraries using the Glean SDK. A message is logged to error and no
+     * changes are made to the state if initialize is called a more than
+     * once.
+     *
+     * A LifecycleObserver will be added to send pings when the application goes
+     * into foreground and background.
+     *
+     * This method must be called from the main thread.
+     *
+     * This form of `initialize` is deprecated. Use the form that requires a
+     * `buildInfo` parameter instead.
+     *
+     * @param applicationContext [Context] to access application features, such
+     * as shared preferences
+     * @param uploadEnabled A [Boolean] that determines whether telemetry is enabled.
+     *     If disabled, all persisted metrics, events and queued pings (except
+     *     first_run_date and first_run_hour) are cleared.
+     * @param configuration A Glean [Configuration] object with global settings.
+     */
+    @JvmOverloads
+    @Synchronized
+    @MainThread
+    @Deprecated("The buildInfo parameter will be required in the future. See bug 1691953")
+    fun initialize(
+        applicationContext: Context,
+        uploadEnabled: Boolean,
+        configuration: Configuration = Configuration()
+    ) {
+        return initializeInternal(applicationContext, uploadEnabled, configuration, null)
+    }
+
     /**
      * Initialize the Glean SDK.
      *
@@ -121,16 +161,33 @@ open class GleanInternalAPI internal constructor () {
      *     If disabled, all persisted metrics, events and queued pings (except
      *     first_run_date and first_run_hour) are cleared.
      * @param configuration A Glean [Configuration] object with global settings.
+     * @param buildInfo A Glean [BuildInfo] object with build-time metadata. This
+     *     object is generated at build time by glean_parser at the import path
+     *     ${YOUR_PACKAGE_ROOT}.GleanMetrics.GleanBuildInfo.buildInfo
      */
-    @Suppress("ReturnCount", "LongMethod", "ComplexMethod")
     @JvmOverloads
     @Synchronized
     @MainThread
     fun initialize(
         applicationContext: Context,
         uploadEnabled: Boolean,
-        configuration: Configuration = Configuration()
+        configuration: Configuration = Configuration(),
+        buildInfo: BuildInfo
     ) {
+        return initializeInternal(applicationContext, uploadEnabled, configuration, buildInfo)
+    }
+
+    @Suppress("ReturnCount", "LongMethod", "ComplexMethod")
+    @Synchronized
+    @MainThread
+    internal fun initializeInternal(
+        applicationContext: Context,
+        uploadEnabled: Boolean,
+        configuration: Configuration = Configuration(),
+        buildInfo: BuildInfo? = null
+    ) {
+        this.buildInfo = buildInfo
+
         // Glean initialization must be called on the main thread, or lifecycle
         // registration may fail. This is also enforced at build time by the
         // @MainThread decorator, but this run time check is also performed to
@@ -478,7 +535,7 @@ open class GleanInternalAPI internal constructor () {
 
         val ptr = LibGleanFFI.INSTANCE.glean_experiment_test_get_data(
             experimentId
-        )!!
+        ) ?: throw NullPointerException("Experiment data is not set")
 
         var branchId: String
         var extraMap: Map<String, String>?
@@ -491,7 +548,7 @@ open class GleanInternalAPI internal constructor () {
             branchId = jsonRes.getString("branch")
             extraMap = getMapFromJSONObject(jsonRes)
         } catch (e: org.json.JSONException) {
-            throw NullPointerException()
+            throw NullPointerException("Could not parse experiment data as JSON")
         }
 
         return RecordedExperimentData(branchId, extraMap)
@@ -518,30 +575,35 @@ open class GleanInternalAPI internal constructor () {
             GleanInternalMetrics.appChannel.setSync(it)
         }
 
-        val packageInfo: PackageInfo
+        buildInfo?.let {
+            GleanInternalMetrics.appBuild.setSync(it.versionCode)
+            GleanInternalMetrics.appDisplayVersion.setSync(it.versionName)
+        } ?: run {
+            val packageInfo: PackageInfo
 
-        try {
-            packageInfo = applicationContext.packageManager.getPackageInfo(
+            try {
+                packageInfo = applicationContext.packageManager.getPackageInfo(
                     applicationContext.packageName, 0
-            )
-        } catch (e: PackageManager.NameNotFoundException) {
-            Log.e(
-                LOG_TAG,
-                "Could not get own package info, unable to report build id and display version"
-            )
+                )
+            } catch (e: PackageManager.NameNotFoundException) {
+                Log.e(
+                    LOG_TAG,
+                    "Could not get own package info, unable to report build id and display version"
+                )
 
-            GleanInternalMetrics.appBuild.setSync("inaccessible")
-            GleanInternalMetrics.appDisplayVersion.setSync("inaccessible")
+                GleanInternalMetrics.appBuild.setSync("inaccessible")
+                GleanInternalMetrics.appDisplayVersion.setSync("inaccessible")
 
-            return
+                return
+            }
+
+            @Suppress("DEPRECATION")
+            GleanInternalMetrics.appBuild.setSync(packageInfo.versionCode.toString())
+
+            GleanInternalMetrics.appDisplayVersion.setSync(
+                packageInfo.versionName?.let { it } ?: "Unknown"
+            )
         }
-
-        @Suppress("DEPRECATION")
-        GleanInternalMetrics.appBuild.setSync(packageInfo.versionCode.toString())
-
-        GleanInternalMetrics.appDisplayVersion.setSync(
-            packageInfo.versionName?.let { it } ?: "Unknown"
-        )
     }
 
     /**
@@ -779,7 +841,7 @@ open class GleanInternalAPI internal constructor () {
         Glean.testDestroyGleanHandle()
         // Always log pings for tests
         Glean.setLogPings(true)
-        Glean.initialize(context, uploadEnabled, config)
+        Glean.initializeInternal(context, uploadEnabled, config, null)
     }
 
     /**

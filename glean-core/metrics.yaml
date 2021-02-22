@@ -431,7 +431,7 @@ glean.error:
 
   io:
     type: counter
-    description: >
+    description: |
       The number of times we encountered an IO error
       when writing a pending ping to disk.
     bugs:
@@ -472,7 +472,7 @@ glean.upload:
 
   discarded_exceeding_pings_size:
     type: memory_distribution
-    description: >
+    description: |
       The size of pings that exceeded the maximum ping size allowed for upload.
     memory_unit: kilobyte
     bugs:
@@ -489,7 +489,7 @@ glean.upload:
 
   pending_pings_directory_size:
     type: memory_distribution
-    description: >
+    description: |
       The size of the pending pings directory upon initialization of Glean.
       This does not include the size of the deletion request pings directory.
     memory_unit: kilobyte
@@ -507,7 +507,7 @@ glean.upload:
 
   deleted_pings_after_quota_hit:
     type: counter
-    description: >
+    description: |
       The number of pings deleted after the quota
       for the size of the pending pings directory or number of files is hit.
       Since quota is only calculated for the pending pings directory,
@@ -527,7 +527,7 @@ glean.upload:
 
   pending_pings:
     type: counter
-    description: >
+    description: |
       The total number of pending pings at startup.
       This does not include deletion-request pings.
     bugs:
@@ -546,7 +546,7 @@ glean.upload:
 glean.database:
   size:
     type: memory_distribution
-    description: >
+    description: |
       The size of the database file at startup.
     memory_unit: byte
     bugs:
@@ -583,13 +583,37 @@ glean.validation:
       never
   foreground_count:
     type: counter
-    description: >
+    description: |
       On mobile, the number of times the application went to foreground.
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1683707
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1685712
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1683707#c2
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+    expires:
+      never
+  pings_submitted:
+    type: labeled_counter
+    description: |
+      A count of the pings submitted, by ping type.
+
+      This metric appears in both the metrics and baseline pings.
+
+      - On the metrics ping, the counts include the number of pings sent since
+        the last metrics ping (including the last metrics ping)
+      - On the baseline ping, the counts include the number of pings send since
+        the last baseline ping (including the last baseline ping)
+    send_in_pings:
+      - metrics
+      - baseline
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1586764
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1586764#c3
     data_sensitivity:
       - technical
     notification_emails:

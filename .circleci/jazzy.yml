@@ -1,0 +1,13 @@
+---
+sdk: iphone
+module: Glean
+author_url: https://mozilla.github.com/glean
+github_url: https://github.com/mozilla/glean
+readme: README.iOS.md
+xcodebuild_arguments:
+    - "-workspace"
+    - "./glean-core/ios/Glean.xcodeproj/project.xcworkspace"
+    - "-scheme"
+    - "Glean"
+    - "-destination"
+    - "platform=iOS Simulator,name=iPhone 11"

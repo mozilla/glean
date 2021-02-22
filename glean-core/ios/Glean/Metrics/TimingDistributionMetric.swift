@@ -45,10 +45,8 @@ public class TimingDistributionMetricType {
         }
     }
 
-    /// Start tracking time for the provided metric and `GleanTimerId`.
-    /// This records an error if it’s already tracking time (i.e. start was already
-    /// called with no corresponding `stopAndAccumulate(_:)`): in that case the original
-    /// start time will be preserved.
+    /// Start tracking time for the provided metric.
+    /// Multiple timers can run simultaneously.
     ///
     /// - returns The `GleanTimerId` object to associate with this timing.
     public func start() -> GleanTimerId? {

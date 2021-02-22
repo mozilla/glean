@@ -11,6 +11,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.work.testing.WorkManagerTestInitHelper
 import mozilla.telemetry.glean.any
 import mozilla.telemetry.glean.Glean
+import mozilla.telemetry.glean.GleanMetrics.GleanBuildInfo
 import mozilla.telemetry.glean.GleanMetrics.Pings
 import mozilla.telemetry.glean.checkPingSchema
 import mozilla.telemetry.glean.private.Lifetime
@@ -267,8 +268,8 @@ class MetricsPingSchedulerTest {
         triggerWorkManager(context)
 
         // Fetch the ping from the server and decode its JSON body.
-        var request = server.takeRequest(20L, AndroidTimeUnit.SECONDS)
-        var docType = request.path.split("/")[3]
+        var request = server.takeRequest(20L, AndroidTimeUnit.SECONDS)!!
+        var docType = request.path!!.split("/")[3]
         assertEquals("The received ping must be a 'metrics' ping", "metrics", docType)
 
         try {
@@ -296,8 +297,8 @@ class MetricsPingSchedulerTest {
             triggerWorkManager(context)
 
             // Fetch the ping from the server and decode its JSON body.
-            request = server.takeRequest(20L, AndroidTimeUnit.SECONDS)
-            docType = request.path.split("/")[3]
+            request = server.takeRequest(20L, AndroidTimeUnit.SECONDS)!!
+            docType = request.path!!.split("/")[3]
             assertEquals("The received ping must be a 'metrics' ping", "metrics", docType)
 
             val metricsJsonData = request.getPlainBody()
@@ -504,6 +505,7 @@ class MetricsPingSchedulerTest {
             // Initialize Glean for the first time.
             // This should pick up the old version ("version.0").
             // No metric is stored, so no metrics ping will be sent.
+            @Suppress("DEPRECATION")
             Glean.initialize(
                 oldContext,
                 true,
@@ -533,6 +535,7 @@ class MetricsPingSchedulerTest {
 
             // Initialize Glean again with the new version.
             // This should trigger a metrics ping after an upgrade (differing version).
+            @Suppress("DEPRECATION")
             Glean.initialize(
                 newContext,
                 true,
@@ -547,8 +550,8 @@ class MetricsPingSchedulerTest {
             triggerWorkManager(context)
 
             // Wait for the metrics ping to be received.
-            val request = server.takeRequest(20L, AndroidTimeUnit.SECONDS)
-            val docType = request.path.split("/")[3]
+            val request = server.takeRequest(20L, AndroidTimeUnit.SECONDS)!!
+            val docType = request.path!!.split("/")[3]
             assertEquals("The received ping must be a 'metrics' ping", "metrics", docType)
 
             val metricsJsonData = request.getPlainBody()
@@ -733,15 +736,16 @@ class MetricsPingSchedulerTest {
                 true,
                 Configuration(
                     serverEndpoint = "http://" + server.hostName + ":" + server.port
-                )
+                ),
+                GleanBuildInfo.buildInfo
             )
 
             // Trigger worker task to upload the pings in the background.
             triggerWorkManager(context)
 
             // Wait for the metrics ping to be received.
-            val request = server.takeRequest(20L, AndroidTimeUnit.SECONDS)
-            val docType = request.path.split("/")[3]
+            val request = server.takeRequest(20L, AndroidTimeUnit.SECONDS)!!
+            val docType = request.path!!.split("/")[3]
             assertEquals("The received ping must be a 'metrics' ping", "metrics", docType)
 
             val metricsJsonData = request.getPlainBody()
@@ -819,8 +823,8 @@ class MetricsPingSchedulerTest {
             triggerWorkManager(context)
 
             // Wait for the metrics ping to be received.
-            val request = server.takeRequest(20L, AndroidTimeUnit.SECONDS)
-            val docType = request.path.split("/")[3]
+            val request = server.takeRequest(20L, AndroidTimeUnit.SECONDS)!!
+            val docType = request.path!!.split("/")[3]
             assertEquals("The received ping must be a 'metrics' ping", "metrics", docType)
 
             val metricsJsonData = request.getPlainBody()

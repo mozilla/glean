@@ -125,7 +125,7 @@ class MemoryDistributionMetricType internal constructor(
         Dispatchers.API.assertInTestingMode()
 
         if (!testHasValue(pingName)) {
-            throw NullPointerException()
+            throw NullPointerException("Metric has no value")
         }
 
         val ptr = LibGleanFFI.INSTANCE.glean_memory_distribution_test_get_value_as_json_string(
