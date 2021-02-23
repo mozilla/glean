@@ -1,6 +1,6 @@
 # Glean SDK
 
-![Glean logo](docs/glean.jpeg)
+![Glean logo](docs/user/glean.jpeg)
 
 [![glean-core on crates.io](http://meritbadge.herokuapp.com/glean-core)](https://crates.io/crates/glean-core)
 [![License: MPL-2.0](https://img.shields.io/crates/l/glean-core)](https://github.com/mozilla/glean/blob/main/LICENSE)
