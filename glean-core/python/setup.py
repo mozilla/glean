@@ -72,7 +72,7 @@ version = "35.0.0"
 
 requirements = [
     "cffi>=1.13.0",
-    "glean_parser==2.2.0",
+    "glean_parser==2.5.0",
     "iso8601>=0.1.10; python_version<='3.6'",
 ]
 
