@@ -126,4 +126,4 @@ assert_eq!(
 
 ## Reference
 
-* [Rust API docs](../../../docs/glean/private/counter/struct.RateMetric.html)
+* [Rust API docs](../../../docs/glean/private/rate/struct.RateMetric.html)
