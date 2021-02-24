@@ -5,6 +5,7 @@
 * General
   * Introduce a new API `Ping#test_before_next_submit` to run a callback right before a custom ping is submitted ([#1507](https://github.com/mozilla/glean/pull/1507)).
     * The new API exists for all language bindings (Kotlin, Swift, Rust, Python).
+  * Updated `glean_parser` version to 2.5.0
 * Python
   * Update minimal required version of `cffi` dependency to 1.13.0 ([#1520](https://github.com/mozilla/glean/pull/1520)).
 * RLB
