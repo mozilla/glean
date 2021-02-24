@@ -60,7 +60,7 @@ network:
 Since a rate is two numbers, you add to each one individually:
 
 ```rust
-use glean_metrics;
+use glean_metrics::*;
 
 if connection_had_error {
     network::http_connection_error.add_to_numerator(1);
@@ -126,4 +126,4 @@ assert_eq!(
 
 ## Reference
 
-* [Rust API docs](../../../docs/glean/private/counter/struct.RustMetric.html)
+* [Rust API docs](../../../docs/glean/private/counter/struct.RateMetric.html)

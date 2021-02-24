@@ -8,7 +8,7 @@
 * Python
   * Update minimal required version of `cffi` dependency to 1.13.0 ([#1520](https://github.com/mozilla/glean/pull/1520)).
 * RLB
-  * Added `rate` metric type.
+  * Added `rate` metric type ([#1516](https://github.com/mozilla/glean/pull/1516)).
 
 # v35.0.0 (2021-02-22)
 
