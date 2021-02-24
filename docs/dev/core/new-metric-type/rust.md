@@ -78,7 +78,7 @@ These will be the dev-facing API docs for Rust consumers.
 ## Rust Language Binding (RLB) Type
 
 The Rust Language Binding supplies the implementation of the trait
-(mostly by delegating to the the glean-core implementation)
+(mostly by delegating to the glean-core implementation)
 and adds a layer of ordering and safety using the dispatcher.
 You can find the RLB metric implementations in
 `glean-core/rlb/src/private`.
