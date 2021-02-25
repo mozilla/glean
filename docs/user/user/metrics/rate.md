@@ -49,6 +49,13 @@ network:
       How many HTTP connections error out out of the total connections made.
     denominator_metric: network.http_connections
     ...
+
+  http_connection_slow:
+    type: rate
+    description: >
+      How many HTTP connections were slow, out of the total connections made.
+    denominator_metric: network.http_connections
+    ...
 ```
 
 ## API
@@ -78,6 +85,9 @@ use glean_metrics;
 
 if connection_had_error {
     network::http_connection_error.add_to_numerator(1);
+}
+if connection_was_slow {
+    network::http_connection_slow.add_to_numerator(1);
 }
 
 // network::http_connection_error has no `add_to_denominator` method.

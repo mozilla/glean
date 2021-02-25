@@ -54,7 +54,7 @@ you must always take the metric lock and Glean in the same order.
 
 ## Tests
 
-Add at least a "smoke test" (a simple confirmation of the API's behaviour)
+Add at least a "smoke test" (a simple confirmation of the API's behavior)
 to the RLB implementation.
 
 ## Documentation
