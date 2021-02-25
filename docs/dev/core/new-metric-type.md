@@ -152,6 +152,10 @@ Documentation for the new metric type must be added to the
 * Reference that file in `docs/user/SUMMARY.md` so it will be included in the build.
 * Follow the [Documentation Contribution Guide](../docs.html).
 
+You must also update the
+[payload documentation](internal/payload.md)
+with how the metric looks in the payload.
+
 ## Tests
 
 Tests are written in the Language Bindings and tend to just cover basic functionality:
