@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v35.0.0...main)
 
+* Python
+  * Update minimal required version of `cffi` dependency to 1.13.0 ([#1520](https://github.com/mozilla/glean/pull/1520)).
+
 # v35.0.0 (2021-02-22)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v34.1.0...v35.0.0)
