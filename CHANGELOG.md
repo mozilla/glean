@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v35.0.0...main)
 
+* General
+  * Introduce a new API `Ping#test_before_next_submit` to run a callback right before a custom ping is submitted ([#1507](https://github.com/mozilla/glean/pull/1507)).
+    * The new API exists for all language bindings (Kotlin, Swift, Rust, Python).
 * Python
   * Update minimal required version of `cffi` dependency to 1.13.0 ([#1520](https://github.com/mozilla/glean/pull/1520)).
 
@@ -14,7 +17,7 @@
   * The `testGetValue` APIs now include a message on the `NullPointerException` thrown when the value is missing.
   * **Breaking change:** `LEGACY_TAG_PINGS` is removed from `GleanDebugActivity` ([#1510](https://github.com/mozilla/glean/pull/1510))
 * RLB
-  * **Breaking change:** `Configuration.data_path` is now a `std::path::PathBuf`([#1493](https://github.com/mozilla/glean/pull/1493)). 
+  * **Breaking change:** `Configuration.data_path` is now a `std::path::PathBuf`([#1493](https://github.com/mozilla/glean/pull/1493)).
   
 # v34.1.0 (2021-02-04)
 

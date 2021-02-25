@@ -3,10 +3,11 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-from typing import List, Optional
+from typing import Callable, List, Optional
 
 
 from ..glean import Glean
+from .._dispatcher import Dispatcher
 from .. import _ffi
 
 
@@ -33,6 +34,7 @@ class PingType:
             _ffi.ffi_encode_vec_string(reason_codes),
             len(reason_codes),
         )
+        self._test_callback = None  # type: Optional[Callable[[Optional[str]], None]]
         Glean.register_ping_type(self)
 
     def __del__(self):
@@ -45,6 +47,20 @@ class PingType:
         Get the name of the ping.
         """
         return self._name
+
+    def test_before_next_submit(self, cb: Callable[[Optional[str]], None]):
+        """
+        **Test-only API**
+
+        Attach a callback to be called right before a new ping is submitted.
+        The provided function is called exactly once before submitting a ping.
+
+        Note: The callback will be called on any call to submit.
+        A ping might not be sent afterwards, e.g. if the ping is otherwise empty (and
+        `send_if_empty` is `False`).
+        """
+        assert Dispatcher._testing_mode is True
+        self._test_callback = cb
 
     def submit(self, reason: Optional[int] = None) -> None:
         """
@@ -60,4 +76,9 @@ class PingType:
             reason_string = self._reason_codes[reason]
         else:
             reason_string = None
+
+        if self._test_callback is not None:
+            self._test_callback(reason_string)
+            self._test_callback = None
+
         Glean._submit_ping(self, reason_string)

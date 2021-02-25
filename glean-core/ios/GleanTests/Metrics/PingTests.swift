@@ -57,7 +57,15 @@ class PingTests: XCTestCase {
         counter.add()
         XCTAssert(counter.testHasValue())
 
+        var callbackWasCalled = false
+        customPing.testBeforeNextSubmit { reason in
+            XCTAssertNil(reason, "Unexpected reason for custom ping submitted")
+            XCTAssertEqual(1, try counter.testGetValue(), "Unexpected value for counter in custom ping")
+            callbackWasCalled = true
+        }
+
         customPing.submit()
+        XCTAssert(callbackWasCalled, "Expected callback to be called by now.")
 
         waitForExpectations(timeout: 5.0) { error in
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")

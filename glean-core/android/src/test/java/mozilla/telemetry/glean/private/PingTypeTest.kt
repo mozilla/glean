@@ -62,7 +62,16 @@ class PingTypeTest {
         counter.add()
         assertTrue(counter.testHasValue())
 
+        var callbackWasCalled = false
+        customPing.testBeforeNextSubmit { reason ->
+            assertNull(reason)
+            assertEquals(1, counter.testGetValue())
+            callbackWasCalled = true
+        }
+
         customPing.submit()
+        assertTrue(callbackWasCalled)
+
         // Trigger worker task to upload the pings in the background
         triggerWorkManager(context)
 
