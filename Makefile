@@ -154,17 +154,23 @@ metrics-docs: python-setup ## Build the internal metrics documentation
 		 -o ./docs/user/user/collected-metrics \
 		 glean-core/metrics.yaml glean-core/pings.yaml glean-core/android/metrics.yaml
 
-linkcheck: docs ## Run link-checker on the generated docs
+linkcheck: docs linkcheck-raw  ## Run link-checker on the generated docs
+
+linkcheck-raw:
 	# Requires https://www.npmjs.com/package/link-checker
 	link-checker \
-		build/docs/book \
+		build/docs \
     --disable-external true \
     --allow-hash-href true \
+    --file-ignore "swift/.*" \
+    --file-ignore "python/.*" \
+    --file-ignore "javadoc/.*" \
+    --file-ignore "docs/.*" \
     --url-ignore ".*/swift/.*" \
     --url-ignore ".*/python/.*" \
     --url-ignore ".*/javadoc/.*" \
     --url-ignore ".*/docs/glean_.*"
-.PHONY: linkcheck
+.PHONY: linkcheck linkcheck-raw
 
 spellcheck: ## Spellcheck the docs
 	# Requires http://aspell.net/

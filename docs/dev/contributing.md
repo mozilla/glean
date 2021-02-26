@@ -34,7 +34,7 @@ make test-rust
 ```
 
 If you plan to work on the Android component bindings, you should also review
-the instructions for [setting up an Android build environment](dev/android/setup-android-build-environment.md).
+the instructions for [setting up an Android build environment](android/setup-android-build-environment.md).
 
 To run all Kotlin tests:
 
@@ -92,4 +92,4 @@ Reviewers can also ask for additional approval from other reviewers.
 
 ## Release
 
-See the [Release process](dev/cut-a-new-release.md) on how to release a new version of the Glean SDK.
+See the [Release process](cut-a-new-release.md) on how to release a new version of the Glean SDK.
