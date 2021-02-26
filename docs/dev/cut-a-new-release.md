@@ -3,7 +3,7 @@
 The Glean SDK consists of multiple libraries for different platforms and targets.
 The main supported libraries are released as one.
 Development happens on the main repository <https://github.com/mozilla/glean>.
-See [Contributing](../contributing.md) for how to contribute changes to the Glean SDK.
+See [Contributing](contributing.md) for how to contribute changes to the Glean SDK.
 
 The development & release process roughly follows the [GitFlow model](https://nvie.com/posts/a-successful-git-branching-model/).
 
