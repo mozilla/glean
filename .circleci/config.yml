@@ -1029,14 +1029,7 @@ jobs:
       - run:
           name: Check internal documentation links
           command: |
-            link-checker \
-              build/docs/book \
-              --disable-external true \
-              --allow-hash-href true \
-              --url-ignore ".*/swift/.*" \
-              --url-ignore ".*/python/.*" \
-              --url-ignore ".*/javadoc/.*" \
-              --url-ignore ".*/docs/glean_.*"
+            make linkcheck-raw
 
   docs-spellcheck:
     docker:
