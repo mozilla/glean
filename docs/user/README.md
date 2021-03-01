@@ -1,44 +1,45 @@
-# Glean SDK
+# Introduction
 
-![Glean logo](glean.jpeg)
+Glean is a modern approach for a Telemetry library and is part of the [Glean project](https://docs.telemetry.mozilla.org/concepts/glean/glean.html).
 
-The `Glean SDK` is a modern approach for a Telemetry library and is part of the [Glean project](https://docs.telemetry.mozilla.org/concepts/glean/glean.html).
+## Contact
 
-To contact us you can:
+To contact the Glean team you can:
+
 - Find us in the [#glean channel on chat.mozilla.org](https://chat.mozilla.org/#/room/#glean:mozilla.org).
-- To report issues or request changes, file a bug in [Bugzilla in Data Platform & Tools :: Glean: SDK](https://bugzilla.mozilla.org/enter_bug.cgi?product=Data+Platform+and+Tools&component=Glean%3A+SDK&priority=P3&status_whiteboard=%5Btelemetry%3Aglean-rs%3Am%3F%5D).
 - Send an email to *glean-team@mozilla.com*.
 - The Glean SDK team is: *:janerik*, *:dexter*, *:travis*, *:mdroettboom*, *:gfritzsche*, *:chutten*, *:brizental*.
 
-The source code is available [on GitHub](https://github.com/mozilla/glean/).
+![Glean logo](glean.jpeg)
 
-## Using this book
+## Sections
 
-This book is specifically about **using** the `Glean SDK`.
+### [Using Glean](./user/index.html)
 
-For documentation on **contributing to and developing** the `Glean SDK`, refer to [the Glean SDK development book](../dev/).
+If you want to start using Glean to report data then this is the section you should read. It explains the first steps of integrating Glean into your project, choosing the right metric type for you, debugging products that use Glean and even Glean's internal error reporting mechanism.
 
-For documentation about the broader end-to-end Glean project, refer to the [Mozilla Data Documentation](https://docs.telemetry.mozilla.org/concepts/glean/glean.html).
+### [Metric Types](./user/metrics/index.html)
 
-This book is divided into 3 main chapters:
+This sections lists all the metric types provided by Glean, with examples on how to define them and record data using them. Before diving into Glean's metric types details, don't forget to read the [Choosing a metric type](https://mozilla.github.io/glean/book/user/adding-new-metrics.html#choosing-a-metric-type).
 
-### [Using the Glean SDK](user/index.html)
+### [Pings](./user/pings/index.html)
 
-If you want to use the Glean SDK to report data then this is the section you should read.
-It explains the first steps from integrating Glean into your project,
-contains details about all available metric types
-and how to do send your own custom pings.
+This section goes through what is a ping and how to define custom pings. A Glean client may provide off-the-shelf pings, such as the [`metrics`](https://mozilla.github.io/glean/book/user/pings/metrics.html) or [`baseline`](https://mozilla.github.io/glean/book/user/pings/baseline.html) pings. In this section you also will find the descriptions and the schedules of each of these pings.
 
-### [Metrics collected by the Glean SDK](user/collected-metrics/metrics.md)
+### Appendix
 
-This chapter lists all metrics collected by the Glean SDK itself.
+#### [Glossary](./appendix/glossary.html)
 
-### [This Week in Glean](appendix/twig.md)
+In this book we use a lot of Glean specific terminology. In the glossary we go through many of the terms used throughout this book and describe exactly what we mean when we use them.
 
-“This Week in Glean” is a series of blog posts that the Glean Team at Mozilla is using to try to communicate better about our work.
-They could be release notes, documentation, hopes, dreams, or whatever: so long as it is inspired by Glean.
+#### [Changelog](./appendix/changelog.html)
+
+This section contains detailed notes about changes in Glean, per release.
+
+#### [This Week in Glean](./appendix/twig.html)
+
+“This Week in Glean” is a series of blog posts that the Glean Team at Mozilla is using to try to communicate better about our work. They could be release notes, documentation, hopes, dreams, or whatever: so long as it is inspired by Glean.
 
 ## License
 
-The Glean SDK Source Code is subject to the terms of the Mozilla Public License v2.0.
-You can obtain a copy of the MPL at <https://mozilla.org/MPL/2.0/>.
+Glean.js and the Glean SDK Source Code is subject to the terms of the Mozilla Public License v2.0. You can obtain a copy of the MPL at <https://mozilla.org/MPL/2.0/>.
