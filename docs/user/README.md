@@ -12,6 +12,28 @@ To contact the Glean team you can:
 
 ![Glean logo](glean.jpeg)
 
+There are two implementations of Glean, with support for 5 different programming languages in total. Both implementations strive to contain the same features with similar, but idiomatic APIs.
+
+Unless clearly stated otherwise, regard the text in this book as valid for both clients and all the supported programming languages and environments.
+
+### [The Glean SDK](https://github.com/mozilla/glean)
+
+The Glean SDK is an implementation of Glean in Rust, with language bindings for **Kotlin**, **Python**, **Rust** and **Swift**.
+
+For development documentation on the `Glean SDK`, refer to [the Glean SDK development book](https://mozilla.github.io/glean/).
+
+To report issues or request changes on the Glean SDK, file a bug in [Bugzilla in Data Platform & Tools :: Glean: SDK](https://bugzilla.mozilla.org/enter_bug.cgi?product=Data+Platform+and+Tools&component=Glean%3A+SDK&priority=P3&status_whiteboard=%5Btelemetry%3Aglean-rs%3Am%3F%5D).
+
+### [Glean.js](https://github.com/mozilla/glean.js)
+
+Glean.js is an implementation of Glean in **Javascript**. Currently, it only has support for usage in web extensions.
+
+For development documentation on `Glean.js`, refer to [the Glean.js development documentation](https://github.com/mozilla/glean.js/tree/main/docs).
+
+To report issues or request changes on the Glean SDK, file a bug in [Bugzilla in Data Platform & Tools :: Glean.js](https://bugzilla.mozilla.org/enter_bug.cgi?product=Data+Platform+and+Tools&component=Glean.js&priority=P4&status_whiteboard=%5Btelemetry%3Aglean-js%3Am%3F%5D).
+
+> **Note** Glean.js is still on the MVP stage and does not provide all the features the Glean SDK does. Feature parity will be worked on after initial validation. Do not hesitate to file bugs using the link above if you want to use Glean.js and is missing some key Glean feature.
+
 ## Sections
 
 ### [Using Glean](./user/index.html)
