@@ -767,17 +767,6 @@ jobs:
           root: glean-core/python/
           paths: .venv3.8
 
-  Python 3_8 tests minimum dependencies:
-    docker:
-      - image: circleci/python:3.8.5
-    steps:
-      - checkout
-      - skip-if-doc-only
-      - run:
-          command: |
-              echo "export GLEAN_PYDEPS=min" >> $BASH_ENV
-      - test-python
-
   Python 3_9 tests:
     docker:
       - image: circleci/python:3.9.0
@@ -787,6 +776,17 @@ jobs:
       - persist_to_workspace:
           root: glean-core/python/
           paths: .venv3.9
+
+  Python 3_9 tests minimum dependencies:
+    docker:
+      - image: circleci/python:3.9.0
+    steps:
+      - checkout
+      - skip-if-doc-only
+      - run:
+          command: |
+              echo "export GLEAN_PYDEPS=min" >> $BASH_ENV
+      - test-python
 
   Python 3_9 on Alpine tests:
     docker:
@@ -1116,8 +1116,8 @@ workflows:
       - Python 3_6 tests minimum dependencies
       - Python 3_7 tests
       - Python 3_8 tests
-      - Python 3_8 tests minimum dependencies
       - Python 3_9 tests
+      - Python 3_9 tests minimum dependencies
       - Python 3_9 on Alpine tests
       - Python Windows x86_64 tests
       - Python Windows i686 tests
