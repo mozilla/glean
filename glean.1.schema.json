@@ -276,7 +276,20 @@
         "labeled_rate": {
           "additionalProperties": {
             "additionalProperties": {
-              "type": "integer"
+              "additionalProperties": false,
+              "properties": {
+                "denominator": {
+                  "type": "integer"
+                },
+                "numerator": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "numerator",
+                "denominator"
+              ],
+              "type": "object"
             },
             "propertyNames": {
               "comment": "This must be at least the length of 'category.name' metric names to support error reporting",
@@ -541,7 +554,20 @@
         },
         "rate": {
           "additionalProperties": {
-            "type": "integer"
+            "additionalProperties": false,
+            "properties": {
+              "denominator": {
+                "type": "integer"
+              },
+              "numerator": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "numerator",
+              "denominator"
+            ],
+            "type": "object"
           },
           "propertyNames": {
             "maxLength": 61,

@@ -8,7 +8,8 @@ use flate2::read::GzDecoder;
 use jsonschema_valid::{self, schemas::Draft};
 use serde_json::Value;
 
-use glean::{ClientInfoMetrics, Configuration};
+use glean::private::{DenominatorMetric, NumeratorMetric, RateMetric};
+use glean::{ClientInfoMetrics, CommonMetricData, Configuration};
 
 const SCHEMA_JSON: &str = include_str!("../../../glean.1.schema.json");
 
@@ -88,8 +89,62 @@ fn validate_against_schema() {
     };
     let _ = new_glean(Some(cfg));
 
-    // Define a new ping and submit it.
     const PING_NAME: &str = "test-ping";
+
+    // Test each of the metric types, just for basic smoke testing against the
+    // schema
+
+    // TODO: 1695762 Test all of the metric types against the schema from Rust
+
+    let rate_metric: RateMetric = RateMetric::new(CommonMetricData {
+        name: "rate".into(),
+        category: "test".into(),
+        send_in_pings: vec![PING_NAME.into()],
+        ..Default::default()
+    });
+    rate_metric.add_to_numerator(1);
+    rate_metric.add_to_denominator(1);
+
+    let numerator_metric1: NumeratorMetric = NumeratorMetric::new(CommonMetricData {
+        name: "num1".into(),
+        category: "test".into(),
+        send_in_pings: vec![PING_NAME.into()],
+        ..Default::default()
+    });
+    let numerator_metric2: NumeratorMetric = NumeratorMetric::new(CommonMetricData {
+        name: "num2".into(),
+        category: "test".into(),
+        send_in_pings: vec![PING_NAME.into()],
+        ..Default::default()
+    });
+    let denominator_metric: DenominatorMetric = DenominatorMetric::new(
+        CommonMetricData {
+            name: "den".into(),
+            category: "test".into(),
+            send_in_pings: vec![PING_NAME.into()],
+            ..Default::default()
+        },
+        vec![
+            CommonMetricData {
+                name: "num1".into(),
+                category: "test".into(),
+                send_in_pings: vec![PING_NAME.into()],
+                ..Default::default()
+            },
+            CommonMetricData {
+                name: "num2".into(),
+                category: "test".into(),
+                send_in_pings: vec![PING_NAME.into()],
+                ..Default::default()
+            },
+        ],
+    );
+
+    numerator_metric1.add_to_numerator(1);
+    numerator_metric2.add_to_numerator(2);
+    denominator_metric.add(3);
+
+    // Define a new ping and submit it.
     let custom_ping = glean::private::PingType::new(PING_NAME, true, true, vec![]);
     custom_ping.submit(None);
 
