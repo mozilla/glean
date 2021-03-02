@@ -17,7 +17,7 @@ The source code is available [on GitHub](https://github.com/mozilla/glean/).
 
 This book is meant for developers of the `Glean SDK`.
 
-For user documentation on the Glean SDK, refer to [the Glean Book](../book).
+For user documentation on the Glean SDK, refer to [the Glean Book](../book/index.html).
 
 For documentation about the broader end-to-end Glean project, refer to the [Mozilla Data Documentation](https://docs.telemetry.mozilla.org/concepts/glean/glean.html).
 
