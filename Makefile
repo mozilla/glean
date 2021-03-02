@@ -92,42 +92,38 @@ bench-rust: ## Run Rust benchmarks
 
 # Linting
 
-lint: clippy
-
-clippy: ## Run cargo-clippy to lint Rust code
+lint-rust: ## Run cargo-clippy to lint Rust code
 	cargo clippy --all --all-targets --all-features -- -D warnings
 
-ktlint: ## Run ktlint to lint Kotlin code
+lint-kotlin: ## Run ktlint to lint Kotlin code
 	./gradlew ktlint detekt
 
-swiftlint: ## Run swiftlint to lint Swift code
+lint-swift: ## Run swiftlint to lint Swift code
 	swiftlint --strict
 
-yamllint: ## Run yamllint to lint YAML files
+lint-yaml: ## Run yamllint to lint YAML files
 	yamllint glean-core .circleci
 
 shellcheck: ## Run shellcheck against important shell scripts
 	shellcheck glean-core/ios/sdk_generator.sh
 	shellcheck bin/check-artifact.sh
 
-pythonlint: python-setup ## Run flake8 and black to lint Python code
+lint-python: python-setup ## Run flake8 and black to lint Python code
 	$(GLEAN_PYENV)/bin/python3 -m flake8 glean-core/python/glean glean-core/python/tests
 	$(GLEAN_PYENV)/bin/python3 -m black --check --exclude \(.venv\*\)\|\(.eggs\) glean-core/python
 	$(GLEAN_PYENV)/bin/python3 -m mypy glean-core/python/glean
 
-.PHONY: lint clippy ktlint swiftlint yamllint
+.PHONY: lint-rust lint-kotlin lint-swift lint-yaml
 
 # Formatting
 
-fmt: rustfmt
-
-rustfmt: ## Format all Rust code
+fmt-rust: ## Format all Rust code
 	cargo fmt --all
 
-pythonfmt: python-setup ## Run black to format Python code
+fmt-python: python-setup ## Run black to format Python code
 	$(GLEAN_PYENV)/bin/python3 -m black glean-core/python/glean glean-core/python/tests
 
-.PHONY: fmt rustfmt
+.PHONY: fmt-rust fmt-python
 
 # Docs
 
