@@ -7,6 +7,8 @@ Unless incremented by a positive value, a counter will not be reported in pings.
 
 > **IMPORTANT:** When using a counter metric, it is important to let the Glean metric do the counting. Using your own variable for counting and setting the counter yourself could be problematic because it will be difficult to reset the value at the exact moment that the value is sent in a ping. Instead, just use `counter.add` to increment the value and let Glean handle resetting the counter.
 
+If you find that you need to control the actual value sent in the ping, you may be measuring something, not just counting something, and a [Quantity metric](quantity.html) may be a better choice.
+
 ## Configuration
 
 Say you're adding a new counter for how often the refresh button is pressed. First you need to add an entry for the counter to the `metrics.yaml` file:
