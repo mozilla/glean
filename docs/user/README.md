@@ -30,13 +30,12 @@ for usage in web extensions.
 For development documentation on `Glean.js`,
 refer to [the Glean.js development documentation](https://github.com/mozilla/glean.js/tree/main/docs).
 
-To report issues or request changes on the Glean SDK,
-file a bug in [Bugzilla in Data Platform & Tools :: Glean.js](https://bugzilla.mozilla.org/enter_bug.cgi?product=Data+Platform+and+Tools&component=Glean.js&priority=P4&status_whiteboard=%5Btelemetry%3Aglean-js%3Am%3F%5D).
+To report issues or request changes on Glean.js,
+file a bug in [Bugzilla in Data Platform & Tools :: Glean.js][gleanjs-bugs].
 
 > **Note** Glean.js is still in development and does not provide all the features the Glean SDK does.
-> Feature parity will be worked on after initial validation. Do not hesitate to [file a bug](https://bugzilla.mozilla.org/enter_bug.cgi?product=Data+Platform+and+Tools&component=Glean.js&priority=P4&status_whiteboard=%5Btelemetry%3Aglean-js%3Am%3F%5D)
+> Feature parity will be worked on after initial validation. Do not hesitate to [file a bug][gleanjs-bugs]
 > if you want to use Glean.js and is missing some key Glean feature.
-
 ## Sections
 
 ### [Using Glean](./user/index.html)
@@ -88,3 +87,5 @@ To contact the Glean team you can:
 
 Glean.js and the Glean SDK Source Code is subject to the terms of the Mozilla Public License v2.0.
 You can obtain a copy of the MPL at <https://mozilla.org/MPL/2.0/>.
+
+[gleanjs-bugs]: https://bugzilla.mozilla.org/enter_bug.cgi?product=Data+Platform+and+Tools&component=Glean.js&priority=P4&status_whiteboard=%5Btelemetry%3Aglean-js%3Am%3F%5D
