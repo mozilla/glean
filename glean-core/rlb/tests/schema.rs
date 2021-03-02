@@ -97,8 +97,8 @@ fn validate_against_schema() {
     // TODO: 1695762 Test all of the metric types against the schema from Rust
 
     let rate_metric: RateMetric = RateMetric::new(CommonMetricData {
-        name: "rate".into(),
         category: "test".into(),
+        name: "rate".into(),
         send_in_pings: vec![PING_NAME.into()],
         ..Default::default()
     });
@@ -106,34 +106,34 @@ fn validate_against_schema() {
     rate_metric.add_to_denominator(1);
 
     let numerator_metric1: NumeratorMetric = NumeratorMetric::new(CommonMetricData {
-        name: "num1".into(),
         category: "test".into(),
+        name: "num1".into(),
         send_in_pings: vec![PING_NAME.into()],
         ..Default::default()
     });
     let numerator_metric2: NumeratorMetric = NumeratorMetric::new(CommonMetricData {
-        name: "num2".into(),
         category: "test".into(),
+        name: "num2".into(),
         send_in_pings: vec![PING_NAME.into()],
         ..Default::default()
     });
     let denominator_metric: DenominatorMetric = DenominatorMetric::new(
         CommonMetricData {
-            name: "den".into(),
             category: "test".into(),
+            name: "den".into(),
             send_in_pings: vec![PING_NAME.into()],
             ..Default::default()
         },
         vec![
             CommonMetricData {
-                name: "num1".into(),
                 category: "test".into(),
+                name: "num1".into(),
                 send_in_pings: vec![PING_NAME.into()],
                 ..Default::default()
             },
             CommonMetricData {
-                name: "num2".into(),
                 category: "test".into(),
+                name: "num2".into(),
                 send_in_pings: vec![PING_NAME.into()],
                 ..Default::default()
             },
