@@ -189,6 +189,7 @@ serializer
 setuptools
 stateful
 struct
+subcommand
 subprocess
 subprocesses
 swiftlint
