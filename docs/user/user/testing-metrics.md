@@ -286,7 +286,7 @@ GLEAN_TEST_COVERAGE=$(realpath glean_coverage.txt) make test
 
 ### Post-processing the results
 
-A post-processing step is required to convert the raw output in the file specified by `GLEAN_TEST_COVERAGE` into usable output for coverage reporting tools.
+A post-processing step is required to convert the raw output in the file specified by `GLEAN_TEST_COVERAGE` into usable output for coverage reporting tools. Currently, the only coverage reporting tool supported is [codecov.io](https://codecov.io).
 
 This post-processor is available in the `coverage` subcommand in the [`glean_parser`](https://github.com/mozilla/glean_parser) tool.
 
