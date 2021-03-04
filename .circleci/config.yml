@@ -136,7 +136,7 @@ commands:
             cd glean-core/python
             .venv3.8/bin/python3 setup.py bdist_wheel
           environment:
-            GLEAN_PYTHON_MINGW_X86_64_BUILD: 1
+            GLEAN_BUILD_TARGET: x86_64-pc-windows-gnu
             GLEAN_BUILD_VARIANT: release
 
   build-windows-i686-wheel:
@@ -155,7 +155,7 @@ commands:
             cd glean-core/python
              .venv3.8/bin/python3 setup.py bdist_wheel
           environment:
-            GLEAN_PYTHON_MINGW_I686_BUILD: 1
+            GLEAN_BUILD_TARGET: i686-pc-windows-gnu
             GLEAN_BUILD_VARIANT: release
 
   install-python-windows-deps:

@@ -134,12 +134,10 @@ def get_rustc_info():
     return data
 
 
-if os.environ.get("GLEAN_PYTHON_MINGW_I686_BUILD"):
-    target = "i686-pc-windows-gnu"
-elif os.environ.get("GLEAN_PYTHON_MINGW_X86_64_BUILD"):
-    target = "x86_64-pc-windows-gnu"
-else:
+target = os.environ.get("GLEAN_BUILD_TARGET")
+if not target:
     target = get_rustc_info()["host"]
+
 
 if "-darwin" in target:
     shared_object = "libglean_ffi.dylib"
