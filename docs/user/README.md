@@ -40,7 +40,7 @@ file a bug in [Bugzilla in Data Platform & Tools :: Glean.js][gleanjs-bugs].
 
 ### [Using Glean](./user/index.html)
 
-In this chapter we describe how to use Glean in your own libraries and applications.
+In this section we describe how to use Glean in your own libraries and applications.
 It explains the first steps of integrating Glean into your project, choosing the right metric type for you,
 debugging products that use Glean and Glean's built-in error reporting mechanism.
 If you want to start using Glean to report data, this is the section you should read.
