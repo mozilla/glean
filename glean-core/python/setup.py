@@ -117,19 +117,22 @@ class BinaryDistribution(Distribution):
 class bdist_wheel(wheel.bdist_wheel.bdist_wheel):
     def get_tag(self):
         if platform == "linux":
-            return ("cp36", "abi3", "linux_x86_64")
+            plat_name = "linux_x86_64"
         elif platform == "darwin":
-            return ("cp36", "abi3", "macosx_10_7_x86_64")
+            plat_name = "macosx_10_7_x86_64"
         elif platform == "windows":
             if mingw_arch == "i686":
-                return ("py3", "none", "win32")
+                plat_name = "win32"
             elif mingw_arch == "x86_64":
-                return ("py3", "none", "win_amd64")
+                plat_name = "win_amd64"
             else:
                 raise ValueError("Unsupported Windows platform")
         else:
             # Keep local wheel build on BSD/etc. working
-            return super().get_tag()
+            _, __, plat_name = super().get_tag()
+
+        return ("cp36", "abi3", plat_name)
+
 
 
 class InstallPlatlib(install):
