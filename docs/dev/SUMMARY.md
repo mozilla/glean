@@ -26,6 +26,7 @@
         - [Swift](core/new-metric-type/swift.md)
         - [Python](core/new-metric-type/python.md)
         - [Rust](core/new-metric-type/rust.md)
+        - [Platform](core/new-metric-type/platform.md)
 - [FFI Layer](ffi/index.md)
     - [When/How FFI](ffi/when-to-use-what-in-the-ffi.md)
 - [Internal implementation details](core/internal/index.md)
