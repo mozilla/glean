@@ -27,6 +27,7 @@ use uuid::Uuid;
 mod macros;
 
 mod common_metric_data;
+mod coverage;
 mod database;
 mod debug;
 mod error;
