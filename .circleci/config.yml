@@ -131,10 +131,6 @@ commands:
           command:
             make python-setup
       - run:
-          name: Build Windows glean_ffi.dll
-          command:
-            cargo build --target x86_64-pc-windows-gnu --release
-      - run:
           name: Build Windows wheel
           command: |
             cd glean-core/python
@@ -153,10 +149,6 @@ commands:
           name: Install Python development tools for host
           command:
             make python-setup
-      - run:
-          name: Build Windows glean_ffi.dll
-          command:
-            RUSTFLAGS="-C panic=abort" cargo build --target i686-pc-windows-gnu --release
       - run:
           name: Build Windows wheel
           command: |

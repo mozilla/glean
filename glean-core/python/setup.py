@@ -182,8 +182,12 @@ class build(_build):
             env["RUSTFLAGS"] = (
                 env.get("RUSTFLAGS", "") + " -C target-feature=-crt-static"
             )
+        if mingw_arch == "i686":
+            env["RUSTFLAGS"] = env.get("RUSTFLAGS", "") + " -C panic=abort"
 
         command = ["cargo", "build", "--package", "glean-ffi"]
+        if mingw_arch:
+            command.extend(("--target", f"{mingw_arch}-pc-windows-gnu"))
         if buildvariant != "debug":
             command.append(f"--{buildvariant}")
 
