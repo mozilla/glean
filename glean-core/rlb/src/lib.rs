@@ -760,5 +760,10 @@ pub fn set_source_tags(tags: Vec<String>) -> bool {
     }
 }
 
+/// Returns a timestamp corresponding to "now" with millisecond precision.
+pub fn get_timestamp_ms() -> u64 {
+    glean_core::get_timestamp_ms()
+}
+
 #[cfg(test)]
 mod test;

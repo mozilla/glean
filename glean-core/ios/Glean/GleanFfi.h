@@ -412,6 +412,8 @@ void glean_set_log_pings(uint8_t value);
 
 uint8_t glean_set_source_tags(RawStringArray raw_tags, int32_t tags_count);
 
+uint64_t glean_get_timestamp_ms(void);
+
 /**
  * Public destructor for strings managed by the other side of the FFI.
  *

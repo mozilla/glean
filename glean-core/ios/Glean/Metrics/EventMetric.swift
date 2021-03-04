@@ -101,7 +101,7 @@ public class EventMetricType<ExtraKeysEnum: ExtraKeys> {
 
         // We capture the event time now, since we don't know when the async code below
         // might get executed.
-        let timestamp = timestampNanos()
+        let timestamp = glean_get_timestamp_ms()
 
         Dispatchers.shared.launchAPI {
             // The map is sent over FFI as a pair of arrays, one containing the
