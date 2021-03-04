@@ -928,6 +928,8 @@ jobs:
           command: |
             make test-python
           environment:
+            # setup.py would set it automatically, but we're building separately.
+            MACOSX_DEPLOYMENT_TARGET: 10.7
             GLEAN_BUILD_VARIANT: release
       - run:
           name: Build macOS wheel

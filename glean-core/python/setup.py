@@ -78,6 +78,12 @@ class BinaryDistribution(Distribution):
         return True
 
 
+def macos_compat(target):
+    if target.startswith("aarch64-"):
+        return "11.0"
+    return "10.7"
+
+
 # The logic for specifying wheel tags in setuptools/wheel is very complex, hard
 # to override, and is really meant for extensions that are compiled against
 # libpython.so, not this case where we have a fairly portable Rust-compiled
@@ -90,10 +96,8 @@ class bdist_wheel(wheel.bdist_wheel.bdist_wheel):
         if "-linux" in target:
             plat_name = f"linux_{cpu}"
         elif "-darwin" in target:
-            if cpu == "aarch64":
-                plat_name = "macosx_11_0_arm64"
-            else:
-                plat_name = f"macosx_10_7_{cpu}"
+            compat = macos_compat(target).replace(".", "_")
+            plat_name = f"macosx_{compat}_{cpu}"
         elif "-windows" in target:
             if cpu == "i686":
                 plat_name = "win32"
@@ -174,6 +178,9 @@ class build(_build):
         command = ["cargo", "build", "--package", "glean-ffi", "--target", target]
         if buildvariant != "debug":
             command.append(f"--{buildvariant}")
+
+        if "-darwin" in target:
+            env["MACOSX_DEPLOYMENT_TARGET"] = macos_compat(target)
 
         subprocess.run(command, cwd=SRC_ROOT, env=env)
         shutil.copyfile(
