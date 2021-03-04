@@ -7,7 +7,7 @@
     * The new API exists for all language bindings (Kotlin, Swift, Rust, Python).
   * Updated `glean_parser` version to 2.5.0
   * Change the `fmt-` and `lint-` make commands for consistency ([#1526](https://github.com/mozilla/glean/pull/1526))
-  * The Glean SDK can now produce testing coverage reports for your metrics.
+  * The Glean SDK can now produce testing coverage reports for your metrics ([#1482](https://github.com/mozilla/glean/pull/1482/files)).
 * Python
   * Update minimal required version of `cffi` dependency to 1.13.0 ([#1520](https://github.com/mozilla/glean/pull/1520)).
 * RLB
