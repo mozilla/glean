@@ -179,17 +179,6 @@
           },
           "type": "object"
         },
-        "enumeration": {
-          "additionalProperties": {
-            "type": "string"
-          },
-          "propertyNames": {
-            "maxLength": 61,
-            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
-            "type": "string"
-          },
-          "type": "object"
-        },
         "jwe": {
           "additionalProperties": {
             "type": "string"
@@ -224,64 +213,6 @@
           "additionalProperties": {
             "additionalProperties": {
               "type": "integer"
-            },
-            "propertyNames": {
-              "comment": "This must be at least the length of 'category.name' metric names to support error reporting",
-              "maxLength": 61,
-              "type": "string"
-            },
-            "type": "object"
-          },
-          "propertyNames": {
-            "maxLength": 61,
-            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
-            "type": "string"
-          },
-          "type": "object"
-        },
-        "labeled_datetime": {
-          "additionalProperties": {
-            "additionalProperties": {
-              "format": "datetime",
-              "type": "string"
-            },
-            "propertyNames": {
-              "comment": "This must be at least the length of 'category.name' metric names to support error reporting",
-              "maxLength": 61,
-              "type": "string"
-            },
-            "type": "object"
-          },
-          "propertyNames": {
-            "maxLength": 61,
-            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
-            "type": "string"
-          },
-          "type": "object"
-        },
-        "labeled_enumeration": {
-          "additionalProperties": {
-            "additionalProperties": {
-              "type": "string"
-            },
-            "propertyNames": {
-              "comment": "This must be at least the length of 'category.name' metric names to support error reporting",
-              "maxLength": 61,
-              "type": "string"
-            },
-            "type": "object"
-          },
-          "propertyNames": {
-            "maxLength": 61,
-            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
-            "type": "string"
-          },
-          "type": "object"
-        },
-        "labeled_number": {
-          "additionalProperties": {
-            "additionalProperties": {
-              "type": "number"
             },
             "propertyNames": {
               "comment": "This must be at least the length of 'category.name' metric names to support error reporting",
@@ -350,184 +281,6 @@
           },
           "type": "object"
         },
-        "labeled_string_list": {
-          "additionalProperties": {
-            "additionalProperties": {
-              "items": {
-                "type": "string"
-              },
-              "type": "array"
-            },
-            "propertyNames": {
-              "comment": "This must be at least the length of 'category.name' metric names to support error reporting",
-              "maxLength": 61,
-              "type": "string"
-            },
-            "type": "object"
-          },
-          "propertyNames": {
-            "maxLength": 61,
-            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
-            "type": "string"
-          },
-          "type": "object"
-        },
-        "labeled_timing_distribution": {
-          "additionalProperties": {
-            "additionalProperties": {
-              "properties": {
-                "bucket_count": {
-                  "type": "integer"
-                },
-                "histogram_type": {
-                  "enum": [
-                    "linear",
-                    "exponential"
-                  ],
-                  "type": "string"
-                },
-                "overflow": {
-                  "type": "integer"
-                },
-                "range": {
-                  "items": {
-                    "type": "number"
-                  },
-                  "maxItems": 2,
-                  "minItems": 2,
-                  "type": "array"
-                },
-                "sum": {
-                  "type": "integer"
-                },
-                "time_unit": {
-                  "enum": [
-                    "nanosecond",
-                    "microsecond",
-                    "millisecond",
-                    "second",
-                    "minute",
-                    "hour",
-                    "day"
-                  ],
-                  "type": "string"
-                },
-                "underflow": {
-                  "type": "integer"
-                },
-                "values": {
-                  "additionalProperties": {
-                    "type": "integer"
-                  },
-                  "propertyNames": {
-                    "pattern": "^[0-9]+$"
-                  },
-                  "type": "object"
-                }
-              },
-              "required": [
-                "values"
-              ],
-              "type": "object"
-            },
-            "propertyNames": {
-              "comment": "This must be at least the length of 'category.name' metric names to support error reporting",
-              "maxLength": 61,
-              "type": "string"
-            },
-            "type": "object"
-          },
-          "propertyNames": {
-            "maxLength": 61,
-            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
-            "type": "string"
-          },
-          "type": "object"
-        },
-        "labeled_usage": {
-          "additionalProperties": {
-            "additionalProperties": {
-              "type": "boolean"
-            },
-            "propertyNames": {
-              "comment": "This must be at least the length of 'category.name' metric names to support error reporting",
-              "maxLength": 61,
-              "type": "string"
-            },
-            "type": "object"
-          },
-          "propertyNames": {
-            "maxLength": 61,
-            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
-            "type": "string"
-          },
-          "type": "object"
-        },
-        "labeled_use_counter": {
-          "additionalProperties": {
-            "additionalProperties": {
-              "properties": {
-                "denominator": {
-                  "properties": {
-                    "name": {
-                      "maxLength": 30,
-                      "pattern": "^[a-z_][a-z0-9_]*$",
-                      "type": "string"
-                    },
-                    "value": {
-                      "type": "integer"
-                    }
-                  },
-                  "type": "object"
-                },
-                "values": {
-                  "additionalProperties": {
-                    "type": "integer"
-                  },
-                  "propertyNames": {
-                    "maxLength": 30,
-                    "pattern": "^[a-z_][a-z0-9_]*$",
-                    "type": "string"
-                  },
-                  "type": "object"
-                }
-              },
-              "type": "object"
-            },
-            "propertyNames": {
-              "comment": "This must be at least the length of 'category.name' metric names to support error reporting",
-              "maxLength": 61,
-              "type": "string"
-            },
-            "type": "object"
-          },
-          "propertyNames": {
-            "maxLength": 61,
-            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
-            "type": "string"
-          },
-          "type": "object"
-        },
-        "labeled_uuid": {
-          "additionalProperties": {
-            "additionalProperties": {
-              "pattern": "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$",
-              "type": "string"
-            },
-            "propertyNames": {
-              "comment": "This must be at least the length of 'category.name' metric names to support error reporting",
-              "maxLength": 61,
-              "type": "string"
-            },
-            "type": "object"
-          },
-          "propertyNames": {
-            "maxLength": 61,
-            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
-            "type": "string"
-          },
-          "type": "object"
-        },
         "memory_distribution": {
           "additionalProperties": {
             "properties": {
@@ -548,17 +301,6 @@
               "values"
             ],
             "type": "object"
-          },
-          "propertyNames": {
-            "maxLength": 61,
-            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
-            "type": "string"
-          },
-          "type": "object"
-        },
-        "number": {
-          "additionalProperties": {
-            "type": "number"
           },
           "propertyNames": {
             "maxLength": 61,
@@ -716,54 +458,6 @@
             "required": [
               "values"
             ],
-            "type": "object"
-          },
-          "propertyNames": {
-            "maxLength": 61,
-            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
-            "type": "string"
-          },
-          "type": "object"
-        },
-        "usage": {
-          "additionalProperties": {
-            "type": "boolean"
-          },
-          "propertyNames": {
-            "maxLength": 61,
-            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
-            "type": "string"
-          },
-          "type": "object"
-        },
-        "use_counter": {
-          "additionalProperties": {
-            "properties": {
-              "denominator": {
-                "properties": {
-                  "name": {
-                    "maxLength": 30,
-                    "pattern": "^[a-z_][a-z0-9_]*$",
-                    "type": "string"
-                  },
-                  "value": {
-                    "type": "integer"
-                  }
-                },
-                "type": "object"
-              },
-              "values": {
-                "additionalProperties": {
-                  "type": "integer"
-                },
-                "propertyNames": {
-                  "maxLength": 30,
-                  "pattern": "^[a-z_][a-z0-9_]*$",
-                  "type": "string"
-                },
-                "type": "object"
-              }
-            },
             "type": "object"
           },
           "propertyNames": {
