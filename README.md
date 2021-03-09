@@ -15,7 +15,7 @@ All documentation is available online:
 
 ## Overview
 
-Refer to the documentation for [using and developing the Glean SDK][book].
+Refer to the documentation for [using and developing the Glean SDK][devbook].
 
 For an overview of Glean beyond just the SDK, see the [section in the Firefox data docs](https://docs.telemetry.mozilla.org/concepts/glean/glean.html).
 
@@ -52,5 +52,6 @@ It's licensed under MPL.
 
 [newbugzilla]: https://bugzilla.mozilla.org/enter_bug.cgi?product=Data+Platform+and+Tools&component=Glean%3A+SDK&priority=P3&status_whiteboard=%5Btelemetry%3Aglean-rs%3Am%3F%5D
 [book]: https://mozilla.github.io/glean/
+[devbook]: https://mozilla.github.io/glean/dev/
 [rustdoc]: https://mozilla.github.io/glean/docs/index.html
 [ktdoc]: https://mozilla.github.io/glean/javadoc/glean/index.html
