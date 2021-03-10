@@ -93,12 +93,14 @@ def macos_compat(target):
 class bdist_wheel(wheel.bdist_wheel.bdist_wheel):
     def get_tag(self):
         cpu, _, __ = target.partition("-")
+        impl, abi_tag = "cp36", "abi3"
         if "-linux" in target:
             plat_name = f"linux_{cpu}"
         elif "-darwin" in target:
             compat = macos_compat(target).replace(".", "_")
             plat_name = f"macosx_{compat}_{cpu}"
         elif "-windows" in target:
+            impl, abi_tag = "py3", "none"
             if cpu == "i686":
                 plat_name = "win32"
             elif cpu == "x86_64":
@@ -109,7 +111,7 @@ class bdist_wheel(wheel.bdist_wheel.bdist_wheel):
             # Keep local wheel build on BSD/etc. working
             _, __, plat_name = super().get_tag()
 
-        return ("cp36", "abi3", plat_name)
+        return (impl, abi_tag, plat_name)
 
 
 class InstallPlatlib(install):
