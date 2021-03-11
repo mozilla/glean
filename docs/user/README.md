@@ -17,7 +17,7 @@ The Glean SDK is an implementation of Glean in Rust, with language bindings for 
 **Python**, **Rust** and **Swift**.
 
 For development documentation on the `Glean SDK`,
-refer to [the Glean SDK development book](https://mozilla.github.io/glean/).
+refer to [the Glean SDK development book](../dev/index.html).
 
 To report issues or request changes on the Glean SDK,
 file a bug in [Bugzilla in Data Platform & Tools :: Glean: SDK](https://bugzilla.mozilla.org/enter_bug.cgi?product=Data+Platform+and+Tools&component=Glean%3A+SDK&priority=P3&status_whiteboard=%5Btelemetry%3Aglean-rs%3Am%3F%5D).
