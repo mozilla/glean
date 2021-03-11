@@ -14,6 +14,7 @@
   * Added `rate` metric type ([#1516](https://github.com/mozilla/glean/pull/1516)).
   * Set `internal_metrics::os_version` for MacOS, Windows and Linux ([#1538](https://github.com/mozilla/glean/pull/1538))
   * Expose a function `get_timestamp_ms` to get a timestamp from a monotonic clock on all supported operating systems, to be used for event timestamps.
+  * Expose a function to record events with an externally provided timestamp.
 * iOS
   * **Breaking Change**: Event timestamps are now correctly recorded in milliseconds.
     * Since the first release event timestamps were erroneously recorded with nanosecond precision.
