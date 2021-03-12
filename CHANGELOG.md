@@ -54,6 +54,7 @@
   * Send the `baseline` ping with reason `dirty_startup`, if needed, at startup.
   * Expose all required types directly ([#1452](https://github.com/mozilla/glean/pull/1452)).
     * Rust consumers will not need to depend on `glean-core` anymore.
+  * Set `internal_metrics::os_version` for MacOS, Windows and Linux ([#1538](https://github.com/mozilla/glean/pull/1538))
 * Android
   * BUGFIX: Don't crash the ping uploader when throttled due to reading too large wait time values ([#1454](https://github.com/mozilla/glean/pull/1454)).
   * Use the client activity API ([#1455](https://github.com/mozilla/glean/pull/1455)).
