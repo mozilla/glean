@@ -37,7 +37,7 @@ $(GLEAN_PYENV)/bin/python3:
 build: build-rust
 
 build-rust: ## Build all Rust code
-	cargo build --all $(GLEAN_BUILD_PROFILE)
+	cargo build --all $(GLEAN_BUILD_PROFILE) $(addprefix --target ,$(GLEAN_BUILD_TARGET))
 
 build-kotlin: ## Build all Kotlin code
 	./gradlew build -x test
@@ -61,10 +61,10 @@ build-csharp: ## Build the C# bindings
 test: test-rust
 
 test-rust: ## Run Rust tests for glean-core and glean-ffi
-	cargo test --all
+	cargo test --all $(addprefix --target ,$(GLEAN_BUILD_TARGET))
 
 test-rust-with-logs: ## Run all Rust tests with debug logging and single-threaded
-	RUST_LOG=glean_core=debug cargo test --all -- --nocapture --test-threads=1
+	RUST_LOG=glean_core=debug cargo test --all -- --nocapture --test-threads=1 $(addprefix --target ,$(GLEAN_BUILD_TARGET))
 
 test-kotlin: ## Run all Kotlin tests
 	./gradlew :glean:testDebugUnitTest
@@ -86,7 +86,7 @@ test-csharp: ## Run all C# tests
 # Benchmarks
 
 bench-rust: ## Run Rust benchmarks
-	cargo bench -p benchmark
+	cargo bench -p benchmark $(addprefix --target ,$(GLEAN_BUILD_TARGET))
 
 .PHONY: bench-rust
 
@@ -190,8 +190,8 @@ rust-coverage: export RUSTUP_TOOLCHAIN=nightly
 rust-coverage: ## Generate code coverage information for Rust code
 	# Expects a Rust nightly toolchain to be available.
 	# Expects grcov and genhtml to be available in $PATH.
-	cargo build --verbose
-	cargo test --verbose
+	cargo build --verbose $(addprefix --target ,$(GLEAN_BUILD_TARGET))
+	cargo test --verbose $(addprefix --target ,$(GLEAN_BUILD_TARGET))
 	zip -0 ccov.zip `find . \( -name "glean*.gc*" \) -print`
 	grcov ccov.zip -s . -t lcov --llvm --branch --ignore-not-existing --ignore "/*" --ignore "glean-core/ffi/*" -o lcov.info
 	genhtml -o report/ --show-details --highlight --ignore-errors source --legend lcov.info

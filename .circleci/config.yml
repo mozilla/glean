@@ -138,16 +138,12 @@ commands:
           command:
             make python-setup
       - run:
-          name: Build Windows glean_ffi.dll
-          command:
-            cargo build --target x86_64-pc-windows-gnu --release
-      - run:
           name: Build Windows wheel
           command: |
             cd glean-core/python
             .venv3.8/bin/python3 setup.py bdist_wheel
           environment:
-            GLEAN_PYTHON_MINGW_X86_64_BUILD: 1
+            GLEAN_BUILD_TARGET: x86_64-pc-windows-gnu
             GLEAN_BUILD_VARIANT: release
 
   build-windows-i686-wheel:
@@ -161,16 +157,12 @@ commands:
           command:
             make python-setup
       - run:
-          name: Build Windows glean_ffi.dll
-          command:
-            RUSTFLAGS="-C panic=abort" cargo build --target i686-pc-windows-gnu --release
-      - run:
           name: Build Windows wheel
           command: |
             cd glean-core/python
              .venv3.8/bin/python3 setup.py bdist_wheel
           environment:
-            GLEAN_PYTHON_MINGW_I686_BUILD: 1
+            GLEAN_BUILD_TARGET: i686-pc-windows-gnu
             GLEAN_BUILD_VARIANT: release
 
   install-python-windows-deps:
@@ -943,6 +935,8 @@ jobs:
           command: |
             make test-python
           environment:
+            # setup.py would set it automatically, but we're building separately.
+            MACOSX_DEPLOYMENT_TARGET: 10.7
             GLEAN_BUILD_VARIANT: release
       - run:
           name: Build macOS wheel
@@ -953,6 +947,37 @@ jobs:
             # variables are configured in CircleCI's environment variables.
             .venv3.9/bin/python3 -m twine upload dist/*
           environment:
+            GLEAN_BUILD_VARIANT: release
+      - install-ghr-darwin
+      - run:
+          name: Publish to Github
+          command: |
+            # Upload to GitHub
+            ./ghr -replace ${CIRCLE_TAG} glean-core/python/dist
+
+  pypi-macos-arm64-release:
+    macos:
+      xcode: "12.3.0"
+    steps:
+      - install-rustup
+      - setup-rust-toolchain
+      - checkout
+      - run:
+          name: Install Python development tools for host
+          command:
+            make python-setup
+      - run:
+          name: Build macOS wheel
+          command: |
+            rustup target add aarch64-apple-darwin
+            cd glean-core/python
+            .venv3.9/bin/python3 setup.py bdist_wheel
+            # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
+            # variables are configured in CircleCI's environment variables.
+            .venv3.9/bin/python3 -m twine upload dist/*
+          environment:
+            SDKROOT: /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk
+            GLEAN_BUILD_TARGET: aarch64-apple-darwin
             GLEAN_BUILD_VARIANT: release
       - install-ghr-darwin
       - run:
@@ -1184,6 +1209,10 @@ workflows:
             - Python 3_8 tests
           filters: *release-filters
       - pypi-macos-release:
+          requires:
+            - Python 3_8 tests
+          filters: *release-filters
+      - pypi-macos-arm64-release:
           requires:
             - Python 3_8 tests
           filters: *release-filters

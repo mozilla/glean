@@ -34,18 +34,6 @@ import wheel.bdist_wheel
 sys.dont_write_bytecode = True
 
 
-platform = sys.platform
-
-if os.environ.get("GLEAN_PYTHON_MINGW_I686_BUILD"):
-    mingw_arch = "i686"
-elif os.environ.get("GLEAN_PYTHON_MINGW_X86_64_BUILD"):
-    mingw_arch = "x86_64"
-else:
-    mingw_arch = None
-
-if mingw_arch is not None:
-    platform = "windows"
-
 if sys.version_info < (3, 6):
     print("glean requires at least Python 3.6", file=sys.stderr)
     sys.exit(1)
@@ -81,24 +69,6 @@ setup_requirements = ["cffi>=1.13.0"]
 # The environment variable `GLEAN_BUILD_VARIANT` can be set to `debug` or `release`
 buildvariant = os.environ.get("GLEAN_BUILD_VARIANT", "debug")
 
-if mingw_arch == "i686":
-    shared_object_build_dir = SRC_ROOT / "target" / "i686-pc-windows-gnu"
-elif mingw_arch == "x86_64":
-    shared_object_build_dir = SRC_ROOT / "target" / "x86_64-pc-windows-gnu"
-else:
-    shared_object_build_dir = SRC_ROOT / "target"
-
-
-if platform == "darwin":
-    shared_object = "libglean_ffi.dylib"
-elif platform.startswith("win"):
-    # `platform` can be both "windows" (if running within MinGW) or "win32"
-    # if running in a standard Python environment. Account for both.
-    shared_object = "glean_ffi.dll"
-else:
-    # Anything else must be an ELF platform - Linux, *BSD, Solaris/illumos
-    shared_object = "libglean_ffi.so"
-
 
 class BinaryDistribution(Distribution):
     def is_pure(self):
@@ -106,6 +76,12 @@ class BinaryDistribution(Distribution):
 
     def has_ext_modules(self):
         return True
+
+
+def macos_compat(target):
+    if target.startswith("aarch64-"):
+        return "11.0"
+    return "10.7"
 
 
 # The logic for specifying wheel tags in setuptools/wheel is very complex, hard
@@ -116,20 +92,26 @@ class BinaryDistribution(Distribution):
 # simple that only handles the cases we need.
 class bdist_wheel(wheel.bdist_wheel.bdist_wheel):
     def get_tag(self):
-        if platform == "linux":
-            return ("cp36", "abi3", "linux_x86_64")
-        elif platform == "darwin":
-            return ("cp36", "abi3", "macosx_10_7_x86_64")
-        elif platform == "windows":
-            if mingw_arch == "i686":
-                return ("py3", "none", "win32")
-            elif mingw_arch == "x86_64":
-                return ("py3", "none", "win_amd64")
+        cpu, _, __ = target.partition("-")
+        impl, abi_tag = "cp36", "abi3"
+        if "-linux" in target:
+            plat_name = f"linux_{cpu}"
+        elif "-darwin" in target:
+            compat = macos_compat(target).replace(".", "_")
+            plat_name = f"macosx_{compat}_{cpu}"
+        elif "-windows" in target:
+            impl, abi_tag = "py3", "none"
+            if cpu == "i686":
+                plat_name = "win32"
+            elif cpu == "x86_64":
+                plat_name = "win_amd64"
             else:
                 raise ValueError("Unsupported Windows platform")
         else:
             # Keep local wheel build on BSD/etc. working
-            return super().get_tag()
+            _, __, plat_name = super().get_tag()
+
+        return (impl, abi_tag, plat_name)
 
 
 class InstallPlatlib(install):
@@ -139,23 +121,37 @@ class InstallPlatlib(install):
             self.install_lib = self.install_platlib
 
 
-def get_rustc_config():
+def get_rustc_info():
     """
-    Get the rustc configuration values from `rustc --print cfg`, parsed into a
+    Get the rustc info from `rustc --version --verbose`, parsed into a
     dictionary.
     """
-    regex = re.compile(r"(?P<key>[^=]+)(=\"(?P<value>\S+?)\")?")
+    regex = re.compile(r"(?P<key>[^:]+)(: *(?P<value>\S+))")
 
-    output = subprocess.check_output(["rustc", "--print", "cfg"]).decode("utf-8")
+    output = subprocess.check_output(["rustc", "--version", "--verbose"])
 
     data = {}
-    for line in output.splitlines():
+    for line in output.decode("utf-8").splitlines():
         match = regex.match(line)
         if match:
             d = match.groupdict()
             data[d["key"]] = d["value"]
 
     return data
+
+
+target = os.environ.get("GLEAN_BUILD_TARGET")
+if not target:
+    target = get_rustc_info()["host"]
+
+
+if "-darwin" in target:
+    shared_object = "libglean_ffi.dylib"
+elif "-windows" in target:
+    shared_object = "glean_ffi.dll"
+else:
+    # Anything else must be an ELF platform - Linux, *BSD, Solaris/illumos
+    shared_object = "libglean_ffi.so"
 
 
 class build(_build):
@@ -171,22 +167,26 @@ class build(_build):
             sys.exit(1)
 
         env = os.environ.copy()
-        config = get_rustc_config()
 
         # For `musl`-based targets (e.g. Alpine Linux), we need to set a flag
         # to produce a shared object Python extension.
-        if config.get("target_env") == "musl":
+        if "-musl" in target:
             env["RUSTFLAGS"] = (
                 env.get("RUSTFLAGS", "") + " -C target-feature=-crt-static"
             )
+        if target == "i686-pc-windows-gnu":
+            env["RUSTFLAGS"] = env.get("RUSTFLAGS", "") + " -C panic=abort"
 
-        command = ["cargo", "build", "--package", "glean-ffi"]
+        command = ["cargo", "build", "--package", "glean-ffi", "--target", target]
         if buildvariant != "debug":
             command.append(f"--{buildvariant}")
 
+        if "-darwin" in target:
+            env["MACOSX_DEPLOYMENT_TARGET"] = macos_compat(target)
+
         subprocess.run(command, cwd=SRC_ROOT, env=env)
         shutil.copyfile(
-            shared_object_build_dir / buildvariant / shared_object,
+            SRC_ROOT / "target" / target / buildvariant / shared_object,
             PYTHON_ROOT / "glean" / shared_object,
         )
 
