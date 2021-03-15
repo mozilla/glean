@@ -4,7 +4,6 @@
 
 package mozilla.telemetry.glean.private
 
-import android.os.SystemClock
 import androidx.annotation.VisibleForTesting
 import com.sun.jna.StringArray
 import mozilla.telemetry.glean.Dispatchers
@@ -112,7 +111,7 @@ class EventMetricType<ExtraKeysEnum : Enum<ExtraKeysEnum>> internal constructor(
 
         // We capture the event time now, since we don't know when the async code below
         // might get executed.
-        val timestamp = SystemClock.elapsedRealtime()
+        val timestamp = LibGleanFFI.INSTANCE.glean_get_timestamp_ms()
 
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.launch {

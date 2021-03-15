@@ -29,9 +29,14 @@ class BaselinePingTest: XCTestCase {
 
     func setupServer(expectPingType: String) -> HttpServer {
         return mockServer(expectPingType: expectPingType) { json in
-            self.lastPingJson = json
-            // Fulfill test's expectation once we parsed the incoming data.
-            self.expectation?.fulfill()
+            let pingInfo = json!["ping_info"] as! [String: Any]
+            let reason = pingInfo["reason"] as! String
+
+            if reason != "dirty_startup" {
+                self.lastPingJson = json
+                // Fulfill test's expectation once we parsed the incoming data.
+                self.expectation?.fulfill()
+            }
         }
     }
 

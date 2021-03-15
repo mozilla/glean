@@ -530,4 +530,9 @@ pub extern "C" fn glean_set_source_tags(raw_tags: RawStringArray, tags_count: i3
     })
 }
 
+#[no_mangle]
+pub extern "C" fn glean_get_timestamp_ms() -> u64 {
+    glean_core::get_timestamp_ms()
+}
+
 define_string_destructor!(glean_str_free);

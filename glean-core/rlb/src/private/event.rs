@@ -48,8 +48,7 @@ impl<K: traits::ExtraKeys> traits::Event for EventMetric<K> {
     type Extra = K;
 
     fn record<M: Into<Option<HashMap<<Self as traits::Event>::Extra, String>>>>(&self, extra: M) {
-        const NANOS_PER_MILLI: u64 = 1_000_000;
-        let now = time::precise_time_ns() / NANOS_PER_MILLI;
+        let now = crate::get_timestamp_ms();
 
         // Translate from [ExtraKey -> String] to a [Int -> String] map
         let extra = extra

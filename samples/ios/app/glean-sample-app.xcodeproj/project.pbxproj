@@ -23,6 +23,7 @@
 		BFEA24D025CC3A4F00110728 /* Gzip.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BFEA24BB25CC39BF00110728 /* Gzip.xcframework */; };
 		BFEA24D325CC3A5200110728 /* Swifter.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BFEA24C025CC39CB00110728 /* Swifter.xcframework */; };
 		BFED6B2C238C1638006E2BC4 /* DeletionRequestPingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFED6B2B238C1638006E2BC4 /* DeletionRequestPingTest.swift */; };
+		CD99D84625F131D600BD5339 /* EventPingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD99D84525F131D600BD5339 /* EventPingTest.swift */; };
 		CDDD7A9D25D1635F00837394 /* Gzip.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BFEA24BB25CC39BF00110728 /* Gzip.xcframework */; };
 		CDDD7A9E25D1635F00837394 /* Gzip.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BFEA24BB25CC39BF00110728 /* Gzip.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CDDD7AA125D1636C00837394 /* Swifter.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BFEA24C025CC39CB00110728 /* Swifter.xcframework */; };
@@ -89,6 +90,7 @@
 		BFEA24BB25CC39BF00110728 /* Gzip.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Gzip.xcframework; path = Carthage/Build/Gzip.xcframework; sourceTree = "<group>"; };
 		BFEA24C025CC39CB00110728 /* Swifter.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Swifter.xcframework; path = Carthage/Build/Swifter.xcframework; sourceTree = "<group>"; };
 		BFED6B2B238C1638006E2BC4 /* DeletionRequestPingTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeletionRequestPingTest.swift; sourceTree = "<group>"; };
+		CD99D84525F131D600BD5339 /* EventPingTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventPingTest.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -184,6 +186,7 @@
 			children = (
 				BFD3AB4D224D475E00AD9255 /* BaselinePingTest.swift */,
 				BFED6B2B238C1638006E2BC4 /* DeletionRequestPingTest.swift */,
+				CD99D84525F131D600BD5339 /* EventPingTest.swift */,
 				BFDA7ACF2371CE4900575C7B /* ViewControllerTest.swift */,
 				BFD3AB4F224D475E00AD9255 /* Info.plist */,
 				BFDA7AD12371D2BA00575C7B /* MockServer.swift */,
@@ -381,6 +384,7 @@
 				BFDA7AD22371D2BA00575C7B /* MockServer.swift in Sources */,
 				BFDA7AD02371CE4900575C7B /* ViewControllerTest.swift in Sources */,
 				BFD3AB4E224D475E00AD9255 /* BaselinePingTest.swift in Sources */,
+				CD99D84625F131D600BD5339 /* EventPingTest.swift in Sources */,
 				BFED6B2C238C1638006E2BC4 /* DeletionRequestPingTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
