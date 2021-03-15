@@ -94,8 +94,9 @@ class EventMetricTypeTest {
         assertEquals("click", secondEvent.name)
         assertEquals("bar", secondEvent.extra?.get("other"))
 
-        assertTrue("The sequence of the events must be preserved",
-            firstEvent.timestamp < secondEvent.timestamp)
+        assertTrue("The sequence of the events must be preserved" +
+            ", first: ${firstEvent.timestamp}, second: ${secondEvent.timestamp}",
+            firstEvent.timestamp <= secondEvent.timestamp)
     }
 
     @Test
@@ -129,8 +130,9 @@ class EventMetricTypeTest {
         val secondEvent = snapshot.single { e -> e.extra?.get("object_id") == "buttonB" }
         assertEquals("click", secondEvent.name)
 
-        assertTrue("The sequence of the events must be preserved",
-            firstEvent.timestamp < secondEvent.timestamp)
+        assertTrue("The sequence of the events must be preserved" +
+            ", first: ${firstEvent.timestamp}, second: ${secondEvent.timestamp}",
+            firstEvent.timestamp <= secondEvent.timestamp)
     }
 
     @Test
@@ -198,8 +200,9 @@ class EventMetricTypeTest {
         assertEquals("ui", secondEvent.category)
         assertEquals("click", secondEvent.name)
 
-        assertTrue("The sequence of the events must be preserved",
-            firstEvent.timestamp < secondEvent.timestamp)
+        assertTrue("The sequence of the events must be preserved" +
+            ", first: ${firstEvent.timestamp}, second: ${secondEvent.timestamp}",
+            firstEvent.timestamp <= secondEvent.timestamp)
     }
 
     @Test
