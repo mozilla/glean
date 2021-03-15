@@ -41,6 +41,15 @@ impl<K: traits::ExtraKeys> EventMetric<K> {
             extra_keys: PhantomData,
         }
     }
+
+    /// Record a new event with a provided timestamp.
+    ///
+    /// It's the caller's responsibility to ensure the timestamp comes from the same clock source.
+    /// Use [`glean::get_timestamp_ms`](crate::get_timestamp_ms) to get a valid timestamp.
+    pub fn record_with_time(&self, timestamp: u64, extra: HashMap<i32, String>) {
+        let metric = Arc::clone(&self.inner);
+        crate::launch_with_glean(move |glean| metric.record(glean, timestamp, Some(extra)));
+    }
 }
 
 #[inherent(pub)]
