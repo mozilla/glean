@@ -98,7 +98,7 @@ class EventMetricTypeTests: XCTestCase {
         XCTAssertEqual("buttonB", events[1].extra?["object_id"])
         XCTAssertEqual("bar", events[1].extra?["other"])
 
-        XCTAssert(events[0].timestamp < events[1].timestamp, "The sequence of events must be preserved")
+        XCTAssertLessThanOrEqual(events[0].timestamp, events[1].timestamp, "The sequence of events must be preserved")
     }
 
     func testEventRecordedWithEmptyCategory() {
@@ -125,7 +125,8 @@ class EventMetricTypeTests: XCTestCase {
 
         XCTAssertEqual("click", events[0].identifier)
         XCTAssertEqual("click", events[1].identifier)
-        XCTAssert(events[0].timestamp < events[1].timestamp, "The sequence of events must be preserved")
+
+        XCTAssertLessThanOrEqual(events[0].timestamp, events[1].timestamp, "The sequence of events must be preserved")
     }
 
     func testEventNotRecordedWhenDisabled() {
@@ -186,7 +187,7 @@ class EventMetricTypeTests: XCTestCase {
         XCTAssertEqual("ui", events[1].category)
         XCTAssertEqual("click", events[1].name)
 
-        XCTAssert(events[0].timestamp < events[1].timestamp, "The sequence of events must be preserved")
+        XCTAssertLessThanOrEqual(events[0].timestamp, events[1].timestamp, "The sequence of events must be preserved")
     }
 
     func testEventNotRecordWhenUploadDisabled() {
