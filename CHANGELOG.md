@@ -10,14 +10,15 @@
   * The Glean SDK can now produce testing coverage reports for your metrics ([#1482](https://github.com/mozilla/glean/pull/1482/files)).
 * Python
   * Update minimal required version of `cffi` dependency to 1.13.0 ([#1520](https://github.com/mozilla/glean/pull/1520)).
+  * Ship wheels for arm64 macOS ([#1534](https://github.com/mozilla/glean/pull/1534)).
 * RLB
   * Added `rate` metric type ([#1516](https://github.com/mozilla/glean/pull/1516)).
   * Set `internal_metrics::os_version` for MacOS, Windows and Linux ([#1538](https://github.com/mozilla/glean/pull/1538))
-  * Expose a function `get_timestamp_ms` to get a timestamp from a monotonic clock on all supported operating systems, to be used for event timestamps.
+  * Expose a function `get_timestamp_ms` to get a timestamp from a monotonic clock on all supported operating systems, to be used for event timestamps ([#1546](https://github.com/mozilla/glean/pull/1546)).
   * Expose a function to record events with an externally provided timestamp.
 * iOS
-  * **Breaking Change**: Event timestamps are now correctly recorded in milliseconds.
-    * Since the first release event timestamps were erroneously recorded with nanosecond precision.
+  * **Breaking Change**: Event timestamps are now correctly recorded in milliseconds ([#1546](https://github.com/mozilla/glean/pull/1546)).
+    * Since the first release event timestamps were erroneously recorded with nanosecond precision ([#1549](https://github.com/mozilla/glean/pull/1549)).
       This is now fixed and event timestamps are in milliseconds.
       This is equivalent to how it works in all other language bindings.
 
