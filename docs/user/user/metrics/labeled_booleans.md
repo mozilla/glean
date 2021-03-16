@@ -163,6 +163,64 @@ assert_eq!(
 
 </div>
 
+<div data-lang="C++" class="tab">
+
+> **Note**: C++ APIs are only available in Firefox Desktop.
+
+```c++
+
+mozilla::glean::flags::a11y_enabled.Set(false);
+```
+
+There are test APIs available too:
+
+```c++
+#include "mozilla/glean/GleanMetrics.h"
+
+mozilla::glean::accessibility::features.Get("screen_reader"_ns).Set(is_screen_reader_enabled());
+mozilla::glean::accessibility::features.Get("high_contrast"_ns).Set(is_high_contrast_enabled());
+```
+
+There are test APIs available too:
+
+```c++
+#include "mozilla/glean/GleanMetrics.h"
+
+// Was anything recorded?
+ASSERT_TRUE(mozilla::glean::accessibility::features.Get("screen_reader"_ns).TestGetValue().isSome());
+ASSERT_TRUE(mozilla::glean::accessibility::features.Get("high_contrast"_ns).TestGetValue().isSome());
+// Do the booleans have the expected values?
+ASSERT_TRUE(mozilla::glean::accessibility::features.Get("screen_reader"_ns).TestGetValue().value());
+ASSERT_FALSE(mozilla::glean::accessibility::features.Get("high_contrast"_ns).TestGetValue().value());
+```
+
+</div>
+
+<div data-lang="JS" class="tab">
+
+```js
+import * as accessibility from "generated/accessibility"
+
+accessibility.features["screen_reader"].set(isScreenReaderEnabled());
+accessibility.features["high_contrast"].set(isHighContrastEnabled());
+```
+
+There are test APIs available too:
+
+```js
+import * as accessibility from "generated/accessibility"
+
+// Was anything recorded?
+assert.notStrictEqual(await accessibility.features["screen_reader"].testGetValue(), undefined);
+assert.notStrictEqual(await accessibility.features["high_contrast"].testGetValue(), undefined);
+// Do the booleans have the expected values?
+assert.strictEqual(await accessibility.features["screen_reader"].testGetValue(), true);
+assert.strictEqual(await accessibility.features["high_contrast"].testGetValue(), false);
+
+```
+
+</div>
+
 {{#include ../../../shared/tab_footer.md}}
 
 ## Limits
