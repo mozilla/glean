@@ -251,7 +251,7 @@ dependencies = [
 
 [[package]]
 name = "glean"
-version = "35.0.0"
+version = "36.0.0"
 dependencies = [
  "chrono",
  "crossbeam-channel",
@@ -273,7 +273,7 @@ dependencies = [
 
 [[package]]
 name = "glean-core"
-version = "35.0.0"
+version = "36.0.0"
 dependencies = [
  "bincode",
  "chrono",
@@ -294,7 +294,7 @@ dependencies = [
 
 [[package]]
 name = "glean-ffi"
-version = "35.0.0"
+version = "36.0.0"
 dependencies = [
  "android_logger",
  "env_logger",

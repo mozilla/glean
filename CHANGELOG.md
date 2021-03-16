@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v35.0.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v36.0.0...main)
+
+# v36.0.0 (2021-03-16)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v35.0.0...v36.0.0)
 
 * General
   * Introduce a new API `Ping#test_before_next_submit` to run a callback right before a custom ping is submitted ([#1507](https://github.com/mozilla/glean/pull/1507)).

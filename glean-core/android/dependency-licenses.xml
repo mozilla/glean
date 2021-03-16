@@ -213,6 +213,14 @@ the details of which are reproduced below.
     <url>https://github.com/uuid-rs/uuid</url>
   </license>
   <license>
+    <name>Apache License 2.0: android_log-sys</name>
+    <url>https://github.com/nercury/android_log-sys-rs</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: android_logger</name>
+    <url>https://github.com/Nercury/android_logger-rs</url>
+  </license>
+  <license>
     <name>Apache License 2.0: lmdb-rkv-sys</name>
     <url>https://github.com/mozilla/lmdb-rs.git</url>
   </license>
@@ -223,14 +231,6 @@ the details of which are reproduced below.
   <license>
     <name>Apache License 2.0: winapi-x86_64-pc-windows-gnu</name>
     <url>https://github.com/retep998/winapi-rs</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: android_log-sys</name>
-    <url>https://github.com/nercury/android_log-sys-rs</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: android_logger</name>
-    <url>https://github.com/Nercury/android_logger-rs</url>
   </license>
   <license>
     <name>Apache License 2.0: chrono</name>
@@ -277,6 +277,10 @@ the details of which are reproduced below.
     <url>https://github.com/BurntSushi/winapi-util</url>
   </license>
   <license>
+    <name>MIT License: whatsys</name>
+    <url>https://github.com/badboy/whatsys</url>
+  </license>
+  <license>
     <name>Mozilla Public License 2.0: glean</name>
     <url>https://github.com/mozilla/glean</url>
   </license>
@@ -287,6 +291,10 @@ the details of which are reproduced below.
   <license>
     <name>Mozilla Public License 2.0: glean-ffi</name>
     <url>https://github.com/mozilla/glean</url>
+  </license>
+  <license>
+    <name>Mozilla Public License 2.0: zeitstempel</name>
+    <url>https://github.com/badboy/whatsys</url>
   </license>
 </licenses>
 
