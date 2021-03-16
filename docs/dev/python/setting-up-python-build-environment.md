@@ -2,7 +2,7 @@
 
 This document describes how to set up an environment for the development of the Glean Python bindings.
 
-Instructions for installing a copy of the Glean Python bindings into your own environment for use in your project are described in [adding Glean to your project](../../user/adding-glean-to-your-project.html).
+Instructions for installing a copy of the Glean Python bindings into your own environment for use in your project are described in [adding Glean to your project](../../book/user/adding-glean-to-your-project.html).
 
 ## Prerequisites
 
@@ -174,7 +174,7 @@ The Python API docs are built using [pdoc3](https://pdoc3.github.io/pdoc/).
 
 ## Building wheels for Linux
 
-Building on Linux using the above instructions will create Linux binaries that dynamically link against the version of `libc` installed on your machine. 
+Building on Linux using the above instructions will create Linux binaries that dynamically link against the version of `libc` installed on your machine.
 This generally will not be portable to other Linux distributions, and PyPI will not even allow it to be uploaded.
 In order to create wheels that can be installed on the broadest range of Linux distributions, the Python Packaging Authority's [manylinux](https://github.com/pypa/manylinux) project maintains a Docker image for building compatible Linux wheels.
 

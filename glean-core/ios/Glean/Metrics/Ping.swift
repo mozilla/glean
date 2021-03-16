@@ -45,6 +45,7 @@ public class PingBase {
 public class Ping<ReasonCodesEnum: ReasonCodes>: PingBase {
     let includeClientId: Bool
     let reasonCodes: [String]
+    var testCallback: ((ReasonCodesEnum?) throws -> Void)?
 
     /// The public constructor used by automatically generated metrics.
     public init(name: String, includeClientId: Bool, sendIfEmpty: Bool, reasonCodes: [String]) {
@@ -71,6 +72,19 @@ public class Ping<ReasonCodesEnum: ReasonCodes>: PingBase {
         }
     }
 
+    /// **Test-only API**
+    ///
+    /// Attach a callback to be called right before a new ping is submitted.
+    /// The provided function is called exactly once before submitting a ping.
+    ///
+    /// Note: The callback will be called on any call to submit.
+    /// A ping might not be sent afterwards, e.g. if the ping is otherwise empty (and
+    /// `send_if_empty` is `false`).
+    public func testBeforeNextSubmit(cb: @escaping (ReasonCodesEnum?) throws -> Void) {
+        Dispatchers.shared.assertInTestingMode()
+        self.testCallback = cb
+    }
+
     /// Collect and submit the ping for eventual uploading.
     ///
     /// While the collection of metrics into pings happens synchronously, the
@@ -82,6 +96,15 @@ public class Ping<ReasonCodesEnum: ReasonCodes>: PingBase {
     /// - parameters:
     ///     * reason: The reason the ping is being submitted.
     public func submit(reason: ReasonCodesEnum? = nil) {
+        if let cb = self.testCallback {
+            do {
+                try cb(reason)
+            } catch {
+                assert(false, "Callback threw before submitting ping \(name).")
+            }
+            self.testCallback = nil
+        }
+
         var reasonString: String?
         if reason != nil {
             reasonString = self.reasonCodes[reason!.index()]

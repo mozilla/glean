@@ -434,7 +434,7 @@ fn initialize_core_metrics(
     if let Some(app_channel) = channel {
         core_metrics::internal_metrics::app_channel.set_sync(glean, app_channel);
     }
-    core_metrics::internal_metrics::os_version.set_sync(glean, "unknown".to_string());
+    core_metrics::internal_metrics::os_version.set_sync(glean, system::get_os_version());
     core_metrics::internal_metrics::architecture.set_sync(glean, system::ARCH.to_string());
     core_metrics::internal_metrics::device_manufacturer.set_sync(glean, "unknown".to_string());
     core_metrics::internal_metrics::device_model.set_sync(glean, "unknown".to_string());
@@ -758,6 +758,11 @@ pub fn set_source_tags(tags: Vec<String>) -> bool {
         // we don't validate the tags, thus this function always returns true.
         true
     }
+}
+
+/// Returns a timestamp corresponding to "now" with millisecond precision.
+pub fn get_timestamp_ms() -> u64 {
+    glean_core::get_timestamp_ms()
 }
 
 #[cfg(test)]

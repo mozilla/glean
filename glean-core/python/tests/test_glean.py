@@ -877,3 +877,37 @@ def test_client_activity_api(tmpdir, monkeypatch):
     assert "baseline" == url_path.split("/")[3]
     assert payload["ping_info"]["reason"] == "active"
     assert "timespan" not in payload["metrics"]
+
+
+def test_sending_of_custom_pings(safe_httpserver):
+    safe_httpserver.serve_content(b"", code=200)
+    Glean._configuration.server_endpoint = safe_httpserver.url
+
+    counter_metric = CounterMetricType(
+        disabled=False,
+        category="telemetry",
+        lifetime=Lifetime.APPLICATION,
+        name="counter_metric",
+        send_in_pings=["store1"],
+    )
+
+    custom_ping = PingType(
+        name="store1", include_client_id=True, send_if_empty=False, reason_codes=[]
+    )
+
+    counter_metric.add()
+
+    # Need a mutable object and plain booleans are not.
+    callback_was_called = [False]
+
+    def check_custom_ping(reason):
+        assert reason is None
+        assert 1 == counter_metric.test_get_value()
+        callback_was_called[0] = True
+
+    custom_ping.test_before_next_submit(check_custom_ping)
+    custom_ping.submit()
+
+    assert callback_was_called[0]
+
+    assert 1 == len(safe_httpserver.requests)

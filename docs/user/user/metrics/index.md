@@ -6,6 +6,8 @@ There are different metrics to choose from, depending on what you want to achiev
 
 * [Boolean](boolean.md): Records a single truth value, for example "is a11y enabled?"
 
+* [Labeled boolean](labeled_booleans.md): Records truth values for a set of labels, for example "which a11y features are enabled?"
+
 * [Counter](counter.md): Used to count how often something happens, for example, how often a certain button was pressed.
 
 * [Labeled counter](labeled_counters.md): Used to count how often something happens, for example which kind of crash occurred (`"uncaught_exception"` or `"native_code_crash"`).
@@ -31,6 +33,9 @@ There are different metrics to choose from, depending on what you want to achiev
 * [Events](event.md): Records events e.g. individual occurrences of user actions, say every time a view was open and from where.
 
 * [Quantity](quantity.md): Used to record a single non-negative integer value. For example, the width of the display in pixels.
+
+* [Rate](rate.md): Used to record the rate something happens relative to some other thing.
+  For example, the number of HTTP connections that experienced an error relative to the number of total HTTP connections made.
 
 * [Custom Distribution](custom_distribution.md): Used to record the distribution of a value that needs fine-grained control of how the histogram buckets are computed.  **Custom distributions are only available for values that come from Gecko.**
 

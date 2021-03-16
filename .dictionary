@@ -1,7 +1,8 @@
-personal_ws-1.1 en 211 utf-8
+personal_ws-1.1 en 215 utf-8
 AAR
 AARs
 ABI
+API's
 APIs
 APK
 BUGFIX
@@ -35,6 +36,7 @@ JNI
 JSON
 JUnit
 JWE
+Javascript
 JetBrains
 Karlton
 Kotlin
@@ -188,10 +190,12 @@ serializer
 setuptools
 stateful
 struct
+subcommand
 subprocess
 subprocesses
 swiftlint
 tcsh
+templating
 timespan
 timespan's
 timespans

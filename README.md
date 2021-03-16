@@ -1,6 +1,6 @@
 # Glean SDK
 
-![Glean logo](docs/glean.jpeg)
+![Glean logo](docs/user/glean.jpeg)
 
 [![glean-core on crates.io](http://meritbadge.herokuapp.com/glean-core)](https://crates.io/crates/glean-core)
 [![License: MPL-2.0](https://img.shields.io/crates/l/glean-core)](https://github.com/mozilla/glean/blob/main/LICENSE)
@@ -15,7 +15,7 @@ All documentation is available online:
 
 ## Overview
 
-Refer to the documentation for [using and developing the Glean SDK][book].
+Refer to the documentation for [using][book] and [developing][devbook] the Glean SDK.
 
 For an overview of Glean beyond just the SDK, see the [section in the Firefox data docs](https://docs.telemetry.mozilla.org/concepts/glean/glean.html).
 
@@ -52,5 +52,6 @@ It's licensed under MPL.
 
 [newbugzilla]: https://bugzilla.mozilla.org/enter_bug.cgi?product=Data+Platform+and+Tools&component=Glean%3A+SDK&priority=P3&status_whiteboard=%5Btelemetry%3Aglean-rs%3Am%3F%5D
 [book]: https://mozilla.github.io/glean/
+[devbook]: https://mozilla.github.io/glean/dev/
 [rustdoc]: https://mozilla.github.io/glean/docs/index.html
 [ktdoc]: https://mozilla.github.io/glean/javadoc/glean/index.html

@@ -27,6 +27,7 @@ use uuid::Uuid;
 mod macros;
 
 mod common_metric_data;
+mod coverage;
 mod database;
 mod debug;
 mod error;
@@ -970,8 +971,13 @@ impl Glean {
     }
 }
 
+/// Returns a timestamp corresponding to "now" with millisecond precision.
+pub fn get_timestamp_ms() -> u64 {
+    const NANOS_PER_MILLI: u64 = 1_000_000;
+    zeitstempel::now() / NANOS_PER_MILLI
+}
+
 // Split unit tests to a separate file, to reduce the file of this one.
-#[cfg(test)]
 #[cfg(test)]
 #[path = "lib_unit_tests.rs"]
 mod tests;

@@ -38,22 +38,10 @@ def get_locale_tag() -> str:
 
 if sys.version_info >= (3, 7):
 
-    def time_ms() -> int:
-        """
-        Get time from a monotonic timer in milliseconds.
-        """
-        return int(time.monotonic_ns() / 1000000.0)
-
     time_ns = time.monotonic_ns
 
 
 else:
-
-    def time_ms() -> int:
-        """
-        Get time from a monotonic timer in milliseconds.
-        """
-        return int(time.monotonic() * 1000.0)
 
     def time_ns() -> int:
         """

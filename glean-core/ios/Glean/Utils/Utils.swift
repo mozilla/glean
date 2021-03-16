@@ -21,7 +21,7 @@ extension UInt8 {
 /// Turn a string into an error, so that it can be thrown as an exception.
 ///
 /// This should only be used in tests.
-extension String: Error {
+extension String: Swift.Error {
     /// The string itself is the error description.
     public var errorDescription: String? { return self }
 }

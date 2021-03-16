@@ -1,6 +1,6 @@
 [package]
 name = "glean-core"
-version = "35.0.0"
+version = "36.0.0"
 authors = ["Jan-Erik Rediger <jrediger@mozilla.com>", "The Glean Team <glean-team@mozilla.com>"]
 description = "A modern Telemetry library"
 repository = "https://github.com/mozilla/glean"
@@ -18,7 +18,7 @@ include = [
 ]
 
 [package.metadata.glean]
-glean-parser = "2.2.0"
+glean-parser = "2.5.0"
 
 [badges]
 circle-ci = { repository = "mozilla/glean", branch = "main" }
@@ -35,6 +35,7 @@ ffi-support = "0.4.0"
 chrono = { version = "0.4.10", features = ["serde"] }
 once_cell = "1.4.1"
 flate2 = "1.0.19"
+zeitstempel = "0.1.0"
 
 [dev-dependencies]
 env_logger = { version = "0.7.1", default-features = false, features = ["termcolor", "atty", "humantime"] }

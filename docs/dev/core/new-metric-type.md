@@ -1,13 +1,27 @@
 # Adding a new metric type
 
 Data in the Glean SDK is stored in so-called metrics.
-You can find the full list of implemented metric types [in the user overview](../../user/metrics/index.md).
+You can find the full list of implemented metric types [in the user overview](../../book/user/metrics/index.md).
 
 Adding a new metric type involves defining the metric type's API, its persisted and in-memory storage as well as its serialization into the ping payload.
 
+## `glean_parser`
+
+In order for your metric to be usable, you must add it to
+[`glean_parser`](https://github.com/mozilla/glean_parser)
+so that instances of your new metric can be instantiated and available to our users.
+
+The documentation for how to do this should live in the `glean_parser` repository,
+but in short:
+* Your metric type must be added to the metrics schema.
+* Your metric type must be added as a type in the object model
+* Any new parameters outside of the common metric data must also be added to the schema,
+  and be stored in the object model.
+* You must add tests.
+
 ## The metric type's API
 
-A metric type implementation is defined in its own file under `glean-core/src/metrics/`, e.g. `glean-core/src/metrics/counter.rs` for a [Counter](../../user/metrics/counter.md).
+A metric type implementation is defined in its own file under `glean-core/src/metrics/`, e.g. `glean-core/src/metrics/counter.rs` for a [Counter](../../book/user/metrics/counter.md).
 
 Start by defining a structure to hold the metric's metadata:
 
@@ -127,6 +141,27 @@ For example, the `DateTime` serializer has the following entry, where `get_iso_t
 ```rust,noplaypen
 Metric::Datetime(d, time_unit) => json!(get_iso_time_string(*d, *time_unit)),
 ```
+
+## Documentation
+
+Documentation for the new metric type must be added to the
+[user book](https://mozilla.github.io/glean/book/index.html).
+
+* Add a new file for your new metric in `docs/user/user/metrics/`.
+  Its contents should follow the form and content of the other examples in that folder.
+* Reference that file in `docs/user/SUMMARY.md` so it will be included in the build.
+* Follow the [Documentation Contribution Guide](../docs.html).
+
+You must also update the
+[payload documentation](internal/payload.md)
+with how the metric looks in the payload.
+
+## Tests
+
+Tests are written in the Language Bindings and tend to just cover basic functionality:
+* The metric returns the correct value when it has no value
+* The metric correctly reports errors
+* The metric returns the correct value when it has value
 
 ---
 

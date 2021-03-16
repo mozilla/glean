@@ -977,3 +977,73 @@ fn registering_pings_before_init_must_work() {
     let url = r.recv().unwrap();
     assert!(url.contains("pre-register"));
 }
+
+#[test]
+fn test_a_ping_before_submission() {
+    let _lock = lock_test();
+
+    // Define a fake uploader that reports back the submission headers
+    // using a crossbeam channel.
+    let (s, r) = crossbeam_channel::bounded::<String>(1);
+
+    #[derive(Debug)]
+    pub struct FakeUploader {
+        sender: crossbeam_channel::Sender<String>,
+    }
+    impl net::PingUploader for FakeUploader {
+        fn upload(
+            &self,
+            url: String,
+            _body: Vec<u8>,
+            _headers: Vec<(String, String)>,
+        ) -> net::UploadResult {
+            self.sender.send(url).unwrap();
+            net::UploadResult::HttpStatus(200)
+        }
+    }
+
+    // Create a custom configuration to use a fake uploader.
+    let dir = tempfile::tempdir().unwrap();
+    let tmpname = dir.path().to_path_buf();
+
+    let cfg = Configuration {
+        data_path: tmpname,
+        application_id: GLOBAL_APPLICATION_ID.into(),
+        upload_enabled: true,
+        max_events: None,
+        delay_ping_lifetime_io: false,
+        channel: Some("testing".into()),
+        server_endpoint: Some("invalid-test-host".into()),
+        uploader: Some(Box::new(FakeUploader { sender: s })),
+    };
+
+    let _t = new_glean(Some(cfg), true);
+
+    // Create a custom ping and register it.
+    let sample_ping = PingType::new("custom1", true, true, vec![]);
+
+    let metric = CounterMetric::new(CommonMetricData {
+        name: "counter_metric".into(),
+        category: "test".into(),
+        send_in_pings: vec!["custom1".into()],
+        lifetime: Lifetime::Application,
+        disabled: false,
+        dynamic_label: None,
+    });
+
+    crate::block_on_dispatcher();
+
+    metric.add(1);
+
+    sample_ping.test_before_next_submit(move |reason| {
+        assert_eq!(None, reason);
+        assert_eq!(1, metric.test_get_value(None).unwrap());
+    });
+
+    // Submit a baseline ping.
+    sample_ping.submit(None);
+
+    // Wait for the ping to arrive.
+    let url = r.recv().unwrap();
+    assert!(url.contains("custom1"));
+}

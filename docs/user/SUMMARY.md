@@ -30,6 +30,7 @@
     - [Event](user/metrics/event.md)
     - [Custom Distribution](user/metrics/custom_distribution.md)
     - [Quantity](user/metrics/quantity.md)
+    - [Rate](user/metrics/rate.md)
 - [Pings](user/pings/index.md)
     - [Ping schedules and timings overview](user/pings/ping-schedules-and-timings.md)
     - [Baseline Ping](user/pings/baseline.md)

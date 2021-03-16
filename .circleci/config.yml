@@ -60,12 +60,19 @@ commands:
           rust-version: <<parameters.rust-version>>
       - run:
           name: Test
-          command: cargo test --all --verbose -- --nocapture
+          command: GLEAN_TEST_COVERAGE=$(realpath glean_coverage.txt) cargo test --all --verbose -- --nocapture
       - run:
           name: Test Glean with rkv safe-mode
           command: |
             cd glean-core
             cargo test -p glean-core --features rkv-safe-mode -- --nocapture
+      - run:
+          name: Upload coverage report
+          command: |
+            sudo apt install python3-pip
+            pip3 install glean_parser
+            glean_parser coverage --allow-reserved -c glean_coverage.txt -f codecovio -o codecov.json glean-core/metrics.yaml
+            bash <(curl -s https://codecov.io/bash) -X yaml -f codecov.json
 
   install-rustup:
     steps:
@@ -131,16 +138,12 @@ commands:
           command:
             make python-setup
       - run:
-          name: Build Windows glean_ffi.dll
-          command:
-            cargo build --target x86_64-pc-windows-gnu --release
-      - run:
           name: Build Windows wheel
           command: |
             cd glean-core/python
             .venv3.8/bin/python3 setup.py bdist_wheel
           environment:
-            GLEAN_PYTHON_MINGW_X86_64_BUILD: 1
+            GLEAN_BUILD_TARGET: x86_64-pc-windows-gnu
             GLEAN_BUILD_VARIANT: release
 
   build-windows-i686-wheel:
@@ -154,16 +157,12 @@ commands:
           command:
             make python-setup
       - run:
-          name: Build Windows glean_ffi.dll
-          command:
-            RUSTFLAGS="-C panic=abort" cargo build --target i686-pc-windows-gnu --release
-      - run:
           name: Build Windows wheel
           command: |
             cd glean-core/python
              .venv3.8/bin/python3 setup.py bdist_wheel
           environment:
-            GLEAN_PYTHON_MINGW_I686_BUILD: 1
+            GLEAN_BUILD_TARGET: i686-pc-windows-gnu
             GLEAN_BUILD_VARIANT: release
 
   install-python-windows-deps:
@@ -276,7 +275,7 @@ jobs:
     steps:
       - checkout
       - run: sudo pip install yamllint
-      - run: make yamllint
+      - run: make lint-yaml
 
   ###########################################################################
   # Rust / C / FFI
@@ -556,7 +555,6 @@ jobs:
           name: Setup build environment
           command: |
             rustup target add aarch64-apple-ios x86_64-apple-ios
-            cargo install cargo-lipo
 
             # Bootstrap dependencies
             bin/bootstrap.sh
@@ -644,12 +642,19 @@ jobs:
           name: Setup build environment
           command: |
             rustup target add aarch64-apple-ios x86_64-apple-ios
-            cargo install cargo-lipo
 
             # List available devices -- allows us to see what's there
             xcrun instruments -w list || true
             # See https://circleci.com/docs/2.0/testing-ios/#pre-starting-the-simulator
             xcrun instruments -w "iPhone 11 (14" || true
+      - run:
+          name: Install Rust Nightly toolchain
+          command: |
+            # Need a nightly toolchain and the source code for targetting the arm64 iOS simulator
+            # We don't need that build on CI, but its hard to exclude it from the build
+            # while still allowing it in developer builds.
+            rustup toolchain add nightly --profile minimal
+            rustup component add rust-src --toolchain nightly
       - run:
           name: Use current commit of Glean
           command: |
@@ -719,7 +724,7 @@ jobs:
       - checkout
       - run:
           name: Python lints
-          command: make pythonlint
+          command: make lint-python
 
   Python 3_6 tests:
     docker:
@@ -761,17 +766,6 @@ jobs:
           root: glean-core/python/
           paths: .venv3.8
 
-  Python 3_8 tests minimum dependencies:
-    docker:
-      - image: circleci/python:3.8.5
-    steps:
-      - checkout
-      - skip-if-doc-only
-      - run:
-          command: |
-              echo "export GLEAN_PYDEPS=min" >> $BASH_ENV
-      - test-python
-
   Python 3_9 tests:
     docker:
       - image: circleci/python:3.9.0
@@ -781,6 +775,17 @@ jobs:
       - persist_to_workspace:
           root: glean-core/python/
           paths: .venv3.9
+
+  Python 3_9 tests minimum dependencies:
+    docker:
+      - image: circleci/python:3.9.0
+    steps:
+      - checkout
+      - skip-if-doc-only
+      - run:
+          command: |
+              echo "export GLEAN_PYDEPS=min" >> $BASH_ENV
+      - test-python
 
   Python 3_9 on Alpine tests:
     docker:
@@ -930,6 +935,8 @@ jobs:
           command: |
             make test-python
           environment:
+            # setup.py would set it automatically, but we're building separately.
+            MACOSX_DEPLOYMENT_TARGET: 10.7
             GLEAN_BUILD_VARIANT: release
       - run:
           name: Build macOS wheel
@@ -940,6 +947,37 @@ jobs:
             # variables are configured in CircleCI's environment variables.
             .venv3.9/bin/python3 -m twine upload dist/*
           environment:
+            GLEAN_BUILD_VARIANT: release
+      - install-ghr-darwin
+      - run:
+          name: Publish to Github
+          command: |
+            # Upload to GitHub
+            ./ghr -replace ${CIRCLE_TAG} glean-core/python/dist
+
+  pypi-macos-arm64-release:
+    macos:
+      xcode: "12.3.0"
+    steps:
+      - install-rustup
+      - setup-rust-toolchain
+      - checkout
+      - run:
+          name: Install Python development tools for host
+          command:
+            make python-setup
+      - run:
+          name: Build macOS wheel
+          command: |
+            rustup target add aarch64-apple-darwin
+            cd glean-core/python
+            .venv3.9/bin/python3 setup.py bdist_wheel
+            # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
+            # variables are configured in CircleCI's environment variables.
+            .venv3.9/bin/python3 -m twine upload dist/*
+          environment:
+            SDKROOT: /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk
+            GLEAN_BUILD_TARGET: aarch64-apple-darwin
             GLEAN_BUILD_VARIANT: release
       - install-ghr-darwin
       - run:
@@ -1023,14 +1061,7 @@ jobs:
       - run:
           name: Check internal documentation links
           command: |
-            link-checker \
-              build/docs/book \
-              --disable-external true \
-              --allow-hash-href true \
-              --url-ignore ".*/swift/.*" \
-              --url-ignore ".*/python/.*" \
-              --url-ignore ".*/javadoc/.*" \
-              --url-ignore ".*/docs/glean_.*"
+            make linkcheck-raw
 
   docs-spellcheck:
     docker:
@@ -1117,8 +1148,8 @@ workflows:
       - Python 3_6 tests minimum dependencies
       - Python 3_7 tests
       - Python 3_8 tests
-      - Python 3_8 tests minimum dependencies
       - Python 3_9 tests
+      - Python 3_9 tests minimum dependencies
       - Python 3_9 on Alpine tests
       - Python Windows x86_64 tests
       - Python Windows i686 tests
@@ -1178,6 +1209,10 @@ workflows:
             - Python 3_8 tests
           filters: *release-filters
       - pypi-macos-release:
+          requires:
+            - Python 3_8 tests
+          filters: *release-filters
+      - pypi-macos-arm64-release:
           requires:
             - Python 3_8 tests
           filters: *release-filters

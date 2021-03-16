@@ -42,3 +42,4 @@ They could be release notes, documentation, hopes, dreams, or whatever: so long 
 * 2020-12-18: [Glean in 2021](https://fnordig.de/2020/12/18/glean-in-2021/)
 * 2021-01-15: [Proposals for Asynchronous Design](https://blog.mozilla.org/data/2021/01/15/this-week-in-glean-proposals-for-asynchronous-design/)
 * 2021-01-28: [The Glean Dictionary](https://blog.mozilla.org/data/2021/01/27/this-week-in-glean-the-glean-dictionary/)
+* 2021-02-24: [Boring Monitoring](https://blog.mozilla.org/data/2021/02/24/this-week-in-glean-boring-monitoring/)

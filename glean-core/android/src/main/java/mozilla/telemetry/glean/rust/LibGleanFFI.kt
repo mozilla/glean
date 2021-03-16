@@ -610,5 +610,7 @@ internal interface LibGleanFFI : Library {
 
     // Misc
 
+    fun glean_get_timestamp_ms(): Long
+
     fun glean_str_free(ptr: Pointer)
 }

@@ -71,6 +71,8 @@ RUN apt-get update -qq \
         unzip \
         # Required by tooltool to extract tar.xz archives.
         xz-utils \
+        # Required to unpack compiler
+        zstd \
         # Required to build libs/.
         make \
         # Required to build sqlcipher.

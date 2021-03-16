@@ -1,6 +1,30 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v35.0.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v36.0.0...main)
+
+# v36.0.0 (2021-03-16)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v35.0.0...v36.0.0)
+
+* General
+  * Introduce a new API `Ping#test_before_next_submit` to run a callback right before a custom ping is submitted ([#1507](https://github.com/mozilla/glean/pull/1507)).
+    * The new API exists for all language bindings (Kotlin, Swift, Rust, Python).
+  * Updated `glean_parser` version to 2.5.0
+  * Change the `fmt-` and `lint-` make commands for consistency ([#1526](https://github.com/mozilla/glean/pull/1526))
+  * The Glean SDK can now produce testing coverage reports for your metrics ([#1482](https://github.com/mozilla/glean/pull/1482/files)).
+* Python
+  * Update minimal required version of `cffi` dependency to 1.13.0 ([#1520](https://github.com/mozilla/glean/pull/1520)).
+  * Ship wheels for arm64 macOS ([#1534](https://github.com/mozilla/glean/pull/1534)).
+* RLB
+  * Added `rate` metric type ([#1516](https://github.com/mozilla/glean/pull/1516)).
+  * Set `internal_metrics::os_version` for MacOS, Windows and Linux ([#1538](https://github.com/mozilla/glean/pull/1538))
+  * Expose a function `get_timestamp_ms` to get a timestamp from a monotonic clock on all supported operating systems, to be used for event timestamps ([#1546](https://github.com/mozilla/glean/pull/1546)).
+  * Expose a function to record events with an externally provided timestamp.
+* iOS
+  * **Breaking Change**: Event timestamps are now correctly recorded in milliseconds ([#1546](https://github.com/mozilla/glean/pull/1546)).
+    * Since the first release event timestamps were erroneously recorded with nanosecond precision ([#1549](https://github.com/mozilla/glean/pull/1549)).
+      This is now fixed and event timestamps are in milliseconds.
+      This is equivalent to how it works in all other language bindings.
 
 # v35.0.0 (2021-02-22)
 
@@ -11,8 +35,8 @@
   * The `testGetValue` APIs now include a message on the `NullPointerException` thrown when the value is missing.
   * **Breaking change:** `LEGACY_TAG_PINGS` is removed from `GleanDebugActivity` ([#1510](https://github.com/mozilla/glean/pull/1510))
 * RLB
-  * **Breaking change:** `Configuration.data_path` is now a `std::path::PathBuf`([#1493](https://github.com/mozilla/glean/pull/1493)). 
-  
+  * **Breaking change:** `Configuration.data_path` is now a `std::path::PathBuf`([#1493](https://github.com/mozilla/glean/pull/1493)).
+
 # v34.1.0 (2021-02-04)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v34.0.0...v34.1.0)

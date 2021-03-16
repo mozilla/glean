@@ -26,7 +26,7 @@ $(GLEAN_PYENV)/bin/python3:
 	python3 -m venv $(GLEAN_PYENV)
 	$(GLEAN_PYENV)/bin/pip install --upgrade pip
 	$(GLEAN_PYENV)/bin/pip install --use-feature=2020-resolver -r glean-core/python/requirements_dev.txt
-	sh -c "if [ \"$(GLEAN_PYDEPS)\" == \"min\" ]; then \
+	sh -c "if [ \"$(GLEAN_PYDEPS)\" = \"min\" ]; then \
 		$(GLEAN_PYENV)/bin/pip install requirements-builder; \
 		$(GLEAN_PYENV)/bin/requirements-builder --level=min glean-core/python/setup.py > min_requirements.txt; \
 		$(GLEAN_PYENV)/bin/pip install --use-feature=2020-resolver -r min_requirements.txt; \
@@ -37,7 +37,7 @@ $(GLEAN_PYENV)/bin/python3:
 build: build-rust
 
 build-rust: ## Build all Rust code
-	cargo build --all $(GLEAN_BUILD_PROFILE)
+	cargo build --all $(GLEAN_BUILD_PROFILE) $(addprefix --target ,$(GLEAN_BUILD_TARGET))
 
 build-kotlin: ## Build all Kotlin code
 	./gradlew build -x test
@@ -61,10 +61,10 @@ build-csharp: ## Build the C# bindings
 test: test-rust
 
 test-rust: ## Run Rust tests for glean-core and glean-ffi
-	cargo test --all
+	cargo test --all $(addprefix --target ,$(GLEAN_BUILD_TARGET))
 
 test-rust-with-logs: ## Run all Rust tests with debug logging and single-threaded
-	RUST_LOG=glean_core=debug cargo test --all -- --nocapture --test-threads=1
+	RUST_LOG=glean_core=debug cargo test --all -- --nocapture --test-threads=1 $(addprefix --target ,$(GLEAN_BUILD_TARGET))
 
 test-kotlin: ## Run all Kotlin tests
 	./gradlew :glean:testDebugUnitTest
@@ -86,48 +86,44 @@ test-csharp: ## Run all C# tests
 # Benchmarks
 
 bench-rust: ## Run Rust benchmarks
-	cargo bench -p benchmark
+	cargo bench -p benchmark $(addprefix --target ,$(GLEAN_BUILD_TARGET))
 
 .PHONY: bench-rust
 
 # Linting
 
-lint: clippy
-
-clippy: ## Run cargo-clippy to lint Rust code
+lint-rust: ## Run cargo-clippy to lint Rust code
 	cargo clippy --all --all-targets --all-features -- -D warnings
 
-ktlint: ## Run ktlint to lint Kotlin code
+lint-kotlin: ## Run ktlint to lint Kotlin code
 	./gradlew ktlint detekt
 
-swiftlint: ## Run swiftlint to lint Swift code
+lint-swift: ## Run swiftlint to lint Swift code
 	swiftlint --strict
 
-yamllint: ## Run yamllint to lint YAML files
+lint-yaml: ## Run yamllint to lint YAML files
 	yamllint glean-core .circleci
 
 shellcheck: ## Run shellcheck against important shell scripts
 	shellcheck glean-core/ios/sdk_generator.sh
 	shellcheck bin/check-artifact.sh
 
-pythonlint: python-setup ## Run flake8 and black to lint Python code
+lint-python: python-setup ## Run flake8 and black to lint Python code
 	$(GLEAN_PYENV)/bin/python3 -m flake8 glean-core/python/glean glean-core/python/tests
 	$(GLEAN_PYENV)/bin/python3 -m black --check --exclude \(.venv\*\)\|\(.eggs\) glean-core/python
 	$(GLEAN_PYENV)/bin/python3 -m mypy glean-core/python/glean
 
-.PHONY: lint clippy ktlint swiftlint yamllint
+.PHONY: lint-rust lint-kotlin lint-swift lint-yaml
 
 # Formatting
 
-fmt: rustfmt
-
-rustfmt: ## Format all Rust code
+fmt-rust: ## Format all Rust code
 	cargo fmt --all
 
-pythonfmt: python-setup ## Run black to format Python code
+fmt-python: python-setup ## Run black to format Python code
 	$(GLEAN_PYENV)/bin/python3 -m black glean-core/python/glean glean-core/python/tests
 
-.PHONY: fmt rustfmt
+.PHONY: fmt-rust fmt-python
 
 # Docs
 
@@ -148,23 +144,29 @@ python-docs: build-python ## Build the Python documentation
 .PHONY: docs rust-docs kotlin-docs swift-docs
 
 metrics-docs: python-setup ## Build the internal metrics documentation
-	$(GLEAN_PYENV)/bin/pip install glean_parser==2.2.0
+	$(GLEAN_PYENV)/bin/pip install glean_parser==2.5.0
 	$(GLEAN_PYENV)/bin/glean_parser translate --allow-reserved \
 		 -f markdown \
 		 -o ./docs/user/user/collected-metrics \
 		 glean-core/metrics.yaml glean-core/pings.yaml glean-core/android/metrics.yaml
 
-linkcheck: docs ## Run link-checker on the generated docs
+linkcheck: docs linkcheck-raw  ## Run link-checker on the generated docs
+
+linkcheck-raw:
 	# Requires https://www.npmjs.com/package/link-checker
 	link-checker \
-		build/docs/book \
+		build/docs \
     --disable-external true \
     --allow-hash-href true \
+    --file-ignore "swift/.*" \
+    --file-ignore "python/.*" \
+    --file-ignore "javadoc/.*" \
+    --file-ignore "docs/.*" \
     --url-ignore ".*/swift/.*" \
     --url-ignore ".*/python/.*" \
     --url-ignore ".*/javadoc/.*" \
     --url-ignore ".*/docs/glean_.*"
-.PHONY: linkcheck
+.PHONY: linkcheck linkcheck-raw
 
 spellcheck: ## Spellcheck the docs
 	# Requires http://aspell.net/
@@ -188,8 +190,8 @@ rust-coverage: export RUSTUP_TOOLCHAIN=nightly
 rust-coverage: ## Generate code coverage information for Rust code
 	# Expects a Rust nightly toolchain to be available.
 	# Expects grcov and genhtml to be available in $PATH.
-	cargo build --verbose
-	cargo test --verbose
+	cargo build --verbose $(addprefix --target ,$(GLEAN_BUILD_TARGET))
+	cargo test --verbose $(addprefix --target ,$(GLEAN_BUILD_TARGET))
 	zip -0 ccov.zip `find . \( -name "glean*.gc*" \) -print`
 	grcov ccov.zip -s . -t lcov --llvm --branch --ignore-not-existing --ignore "/*" --ignore "glean-core/ffi/*" -o lcov.info
 	genhtml -o report/ --show-details --highlight --ignore-errors source --legend lcov.info

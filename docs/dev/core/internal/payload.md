@@ -1,6 +1,6 @@
 # Payload format
 
-The main sections of a Glean ping are described in [Ping Sections](../../../user/pings/index.md#ping-sections).
+The main sections of a Glean ping are described in [Ping Sections](../../../book/user/pings/index.md#ping-sections).
 This **Payload format** chapter describes details of the ping payload that are relevant for decoding Glean pings in the pipeline.
 
 > NOTE: The payload format is an implementation detail of the Glean SDK and subject to change at any time. 
@@ -16,7 +16,7 @@ It is written as a set of [templates](https://github.com/mozilla-services/mozill
 
 ### Boolean
 
-A [Boolean](../../../user/metrics/boolean.md) is represented by its boolean value.
+A [Boolean](../../../book/user/metrics/boolean.md) is represented by its boolean value.
 
 #### Example
 
@@ -27,7 +27,7 @@ true
 
 ### Counter
 
-A [Counter](../../../user/metrics/counter.md) is represented by its integer value.
+A [Counter](../../../book/user/metrics/counter.md) is represented by its integer value.
 
 #### Example
 
@@ -37,7 +37,7 @@ A [Counter](../../../user/metrics/counter.md) is represented by its integer valu
 
 ### Quantity
 
-A [Quantity](../../../user/metrics/quantity.md) is represented by its integer value.
+A [Quantity](../../../book/user/metrics/quantity.md) is represented by its integer value.
 
 #### Example
 
@@ -47,7 +47,7 @@ A [Quantity](../../../user/metrics/quantity.md) is represented by its integer va
 
 ### String
 
-A [String](../../../user/metrics/string.md) is represented by its string value.
+A [String](../../../book/user/metrics/string.md) is represented by its string value.
 
 #### Example
 
@@ -57,7 +57,7 @@ A [String](../../../user/metrics/string.md) is represented by its string value.
 
 ### JWE
 
-A [JWE](../../../user/metrics/jwe.md) is represented by its [compact representation](https://tools.ietf.org/html/rfc7516#appendix-A.2.7).
+A [JWE](../../../book/user/metrics/jwe.md) is represented by its [compact representation](https://tools.ietf.org/html/rfc7516#appendix-A.2.7).
 
 #### Example
 
@@ -67,7 +67,7 @@ A [JWE](../../../user/metrics/jwe.md) is represented by its [compact representat
 
 ### String list
 
-A [String List](../../../user/metrics/string_list.md) is represented as an array of strings.
+A [String List](../../../book/user/metrics/string_list.md) is represented as an array of strings.
 
 ```json
 ["sample string", "another one"]
@@ -75,12 +75,12 @@ A [String List](../../../user/metrics/string_list.md) is represented as an array
 
 ### Timespan
 
-A [Timespan](../../../user/metrics/timespan.md) is represented as an object of their duration as an integer and the time unit.
+A [Timespan](../../../book/user/metrics/timespan.md) is represented as an object of their duration as an integer and the time unit.
 
 | Field name | Type | Description |
 |---|---|---|
 | `value` | Integer | The value in the marked time unit. |
-| `time_unit` | String | The time unit, see the [timespan's configuration](../../../user/metrics/timespan.md#configuration) for valid values. |
+| `time_unit` | String | The time unit, see the [timespan's configuration](../../../book/user/metrics/timespan.md#configuration) for valid values. |
 
 #### Example
 
@@ -93,7 +93,7 @@ A [Timespan](../../../user/metrics/timespan.md) is represented as an object of t
 
 ### Timing Distribution
 
-A [Timing distribution](../../../user/metrics/timing_distribution.md) is represented as an object with the following fields.
+A [Timing distribution](../../../book/user/metrics/timing_distribution.md) is represented as an object with the following fields.
 
 | Field name | Type | Description |
 |---|---|---|
@@ -128,7 +128,7 @@ sent:      1024: 2, 1116: 1, 1217: 0, 1327: 0, 1448: 1, 1579: 0
 
 ### Memory Distribution
 
-A [Memory distribution](../../../user/metrics/memory_distribution.md) is represented as an object with the following fields.
+A [Memory distribution](../../../book/user/metrics/memory_distribution.md) is represented as an object with the following fields.
 
 | Field name | Type | Description |
 |---|---|---|
@@ -152,7 +152,7 @@ See [timing distribution](#timing-distribution) for more details.
 
 ### UUID
 
-A [UUID](../../../user/metrics/uuid.md) is represented by the string representation of the UUID.
+A [UUID](../../../book/user/metrics/uuid.md) is represented by the string representation of the UUID.
 
 #### Example
 
@@ -162,7 +162,7 @@ A [UUID](../../../user/metrics/uuid.md) is represented by the string representat
 
 ### Datetime
 
-A [Datetime](../../../user/metrics/datetime.md) is represented by its ISO8601 string representation, truncated to the metric's time unit.
+A [Datetime](../../../book/user/metrics/datetime.md) is represented by its ISO8601 string representation, truncated to the metric's time unit.
 It always includes the timezone offset.
 
 #### Example
@@ -173,7 +173,7 @@ It always includes the timezone offset.
 
 ### Event
 
-[Events](../../../user/metrics/event.md) are represented as an array of objects, with one object for each event.
+[Events](../../../book/user/metrics/event.md) are represented as an array of objects, with one object for each event.
 Each event object has the following keys:
 
 | Field name | Type | Description |
@@ -208,12 +208,12 @@ Also see [the JSON schema for events](https://github.com/mozilla-services/mozill
 To avoid losing events when the application is killed by the operating system, events are queued on disk as they are recorded.
 When the application starts up again, there is no good way to determine if the device has rebooted since the last run and therefore any timestamps recorded in the new run could not be guaranteed to be consistent with those recorded in the previous run.
 To get around this, on application startup, any queued events are immediately collected into pings and then cleared.
-These "startup-triggered pings" are likely to have a very short duration, as recorded in `ping_info.start_time` and `ping_info.end_time` (see [the `ping_info` section](../../../user/pings/index.md#the-ping_info-section)).
+These "startup-triggered pings" are likely to have a very short duration, as recorded in `ping_info.start_time` and `ping_info.end_time` (see [the `ping_info` section](../../../book/user/pings/index.md#the-ping_info-section)).
 The maximum timestamp of the events in these pings are quite likely to exceed the duration of the ping, but this is to be expected.
 
 ### Custom Distribution
 
-A [Custom distribution](../../../user/metrics/custom_distribution.md) is represented as an object with the following fields.
+A [Custom distribution](../../../book/user/metrics/custom_distribution.md) is represented as an object with the following fields.
 
 | Field name | Type | Description |
 |---|---|---|
@@ -258,8 +258,8 @@ sent:     10: 0, 12: 2, 14: 0, 17: 0, 19: 0, 22: 1, 24: 0
 
 Currently several labeled metrics are supported:
 
-* [Labeled Counters](../../../user/metrics/labeled_counters.md).
-* [Labeled Strings](../../../user/metrics/labeled_strings.md).
+* [Labeled Counters](../../../book/user/metrics/labeled_counters.md).
+* [Labeled Strings](../../../book/user/metrics/labeled_strings.md).
 
 All are on the top-level represented in the same way, as an object mapping the label to the metric's value.
 See the individual metric types for details on the value payload:
@@ -273,5 +273,18 @@ See the individual metric types for details on the value payload:
 {
     "label1": 2,
     "label2": 17
+}
+```
+
+### Rate
+
+A [Rate](../../../book/user/metrics/rate.md) is represented by its `numerator` and `denominator`.
+
+#### Example
+
+```json
+{
+    "numerator": 22,
+    "denominator": 7,
 }
 ```
