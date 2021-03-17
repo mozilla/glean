@@ -98,6 +98,8 @@ class bdist_wheel(wheel.bdist_wheel.bdist_wheel):
             plat_name = f"linux_{cpu}"
         elif "-darwin" in target:
             compat = macos_compat(target).replace(".", "_")
+            if cpu == "aarch64":
+                cpu = "arm64"
             plat_name = f"macosx_{compat}_{cpu}"
         elif "-windows" in target:
             impl, abi_tag = "py3", "none"
