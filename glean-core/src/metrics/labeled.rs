@@ -200,7 +200,7 @@ pub fn strip_label(identifier: &str) -> &str {
 ///
 /// The entire identifier for the metric, including the base identifier and the corrected label.
 /// The errors are logged.
-pub fn dynamic_label(
+pub fn validate_dynamic_label(
     glean: &Glean,
     meta: &CommonMetricData,
     base_identifier: &str,
