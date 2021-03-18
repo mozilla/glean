@@ -2,6 +2,8 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v36.0.0...main)
 
+* RLB
+  * Provide an internal-use-only API to pass in raw samples for timing distributions ([#1561](https://github.com/mozilla/glean/pull/1561)).
 * Android
   * BUGFIX: `TimespanMetricType.measure` and `TimingDistributionMetricType.measure` won't get inlined anymore ([#1560](https://github.com/mozilla/glean/pull/1560)).
     This avoids a potential bug where a `return` used inside the closure would end up not measuring the time.
