@@ -289,6 +289,36 @@ class TimespanMetricTypeTest {
     }
 
     @Test
+    fun `measure function does not change behavior with early return`() {
+        val metric = TimespanMetricType(
+            disabled = false,
+            category = "telemetry",
+            lifetime = Lifetime.Ping,
+            name = "inlined",
+            sendInPings = listOf("store1"),
+            timeUnit = TimeUnit.Nanosecond
+        )
+
+        // We define a function that measures the whole function call runtime
+        fun testFunc(): Long = metric.measure {
+            // We want to simulate an early return.
+            if (true) {
+                // Blank 'return' is not allowed here, because `measure` is not inlined.
+                // We can return by label though.
+                return@measure 17
+            }
+
+            42
+        }
+
+        val res = testFunc()
+        assertEquals("Test value must match", 17, res)
+
+        assertTrue("Metric must have a value", metric.testHasValue())
+        assertTrue("Metric value must be greater than zero", metric.testGetValue() >= 0)
+    }
+
+    @Test
     fun `measure function bubbles up exceptions and timing is canceled`() {
         // Define a timespan metric, which will be stored in "store1"
         val metric = TimespanMetricType(

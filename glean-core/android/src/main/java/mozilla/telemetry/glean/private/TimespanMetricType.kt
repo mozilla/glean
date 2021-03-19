@@ -94,7 +94,7 @@ class TimespanMetricType internal constructor(
      * If the measured function throws, the measurement is canceled and the exception rethrown.
      */
     @Suppress("TooGenericExceptionCaught")
-    inline fun <U> measure(funcToMeasure: () -> U): U {
+    fun <U> measure(funcToMeasure: () -> U): U {
         start()
 
         val returnValue = try {

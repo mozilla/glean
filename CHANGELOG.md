@@ -2,6 +2,11 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v36.0.0...main)
 
+* Android
+  * BUGFIX: `TimespanMetricType.measure` and `TimingDistributionMetricType.measure` won't get inlined anymore ([#1560](https://github.com/mozilla/glean/pull/1560)).
+    This avoids a potential bug where a `return` used inside the closure would end up not measuring the time.
+    Use `return@measure <val>` for early returns.
+
 # v36.0.0 (2021-03-16)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v35.0.0...v36.0.0)
