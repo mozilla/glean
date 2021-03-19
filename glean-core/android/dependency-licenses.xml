@@ -5,44 +5,16 @@ These dependencies are available under a variety of free and open source license
 the details of which are reproduced below.
 -->
   <license>
-    <name>Apache License 2.0: const_fn</name>
-    <url>https://github.com/taiki-e/const_fn</url>
+    <name>Apache License 2.0: adler</name>
+    <url>https://github.com/jonas-schievink/adler.git</url>
   </license>
   <license>
-    <name>Apache License 2.0: miniz_oxide</name>
-    <url>https://github.com/Frommi/miniz_oxide/tree/master/miniz_oxide</url>
+    <name>Apache License 2.0: android_log-sys</name>
+    <url>https://github.com/nercury/android_log-sys-rs</url>
   </license>
   <license>
-    <name>Apache License 2.0: lmdb-rkv</name>
-    <url>https://github.com/mozilla/lmdb-rs.git</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: rkv</name>
-    <url>https://github.com/mozilla/rkv</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: ryu</name>
-    <url>https://github.com/dtolnay/ryu</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: winapi</name>
-    <url>https://github.com/retep998/winapi-rs</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: crc32fast</name>
-    <url>https://github.com/srijs/rust-crc32fast</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: humantime</name>
-    <url>https://crates.io/crates/humantime</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: quick-error</name>
-    <url>http://github.com/tailhook/quick-error</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: ahash</name>
-    <url>https://github.com/tkaitchuck/ahash</url>
+    <name>Apache License 2.0: android_logger</name>
+    <url>https://github.com/Nercury/android_logger-rs</url>
   </license>
   <license>
     <name>Apache License 2.0: bitflags</name>
@@ -55,14 +27,6 @@ the details of which are reproduced below.
   <license>
     <name>Apache License 2.0: cfg-if</name>
     <url>https://github.com/alexcrichton/cfg-if</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: const-random</name>
-    <url>https://github.com/tkaitchuck/constrandom</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: const-random-macro</name>
-    <url>https://github.com/tkaitchuck/constrandom</url>
   </license>
   <license>
     <name>Apache License 2.0: crossbeam-channel</name>
@@ -201,24 +165,36 @@ the details of which are reproduced below.
     <url>https://github.com/servo/rust-url</url>
   </license>
   <license>
+    <name>Apache License 2.0: chrono</name>
+    <url>https://github.com/chronotope/chrono</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: const_fn</name>
+    <url>https://github.com/taiki-e/const_fn</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: miniz_oxide</name>
+    <url>https://github.com/Frommi/miniz_oxide/tree/master/miniz_oxide</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: crc32fast</name>
+    <url>https://github.com/srijs/rust-crc32fast</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: humantime</name>
+    <url>https://crates.io/crates/humantime</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: quick-error</name>
+    <url>http://github.com/tailhook/quick-error</url>
+  </license>
+  <license>
     <name>Apache License 2.0: getrandom</name>
     <url>https://github.com/rust-random/getrandom</url>
   </license>
   <license>
-    <name>Apache License 2.0: adler</name>
-    <url>https://github.com/jonas-schievink/adler.git</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: uuid</name>
-    <url>https://github.com/uuid-rs/uuid</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: android_log-sys</name>
-    <url>https://github.com/nercury/android_log-sys-rs</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: android_logger</name>
-    <url>https://github.com/Nercury/android_logger-rs</url>
+    <name>Apache License 2.0: lmdb-rkv</name>
+    <url>https://github.com/mozilla/lmdb-rs.git</url>
   </license>
   <license>
     <name>Apache License 2.0: lmdb-rkv-sys</name>
@@ -233,32 +209,28 @@ the details of which are reproduced below.
     <url>https://github.com/retep998/winapi-rs</url>
   </license>
   <license>
-    <name>Apache License 2.0: chrono</name>
-    <url>https://github.com/chronotope/chrono</url>
+    <name>Apache License 2.0: rkv</name>
+    <url>https://github.com/mozilla/rkv</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: ryu</name>
+    <url>https://github.com/dtolnay/ryu</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: uuid</name>
+    <url>https://github.com/uuid-rs/uuid</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: winapi</name>
+    <url>https://github.com/retep998/winapi-rs</url>
   </license>
   <license>
     <name>BSD 2-Clause "Simplified" License: arrayref</name>
     <url>https://github.com/droundy/arrayref</url>
   </license>
   <license>
-    <name>MIT License: matches</name>
-    <url>https://github.com/SimonSapin/rust-std-candidates</url>
-  </license>
-  <license>
-    <name>MIT License: ordered-float</name>
-    <url>https://github.com/reem/rust-ordered-float</url>
-  </license>
-  <license>
     <name>MIT License: atty</name>
     <url>https://github.com/softprops/atty</url>
-  </license>
-  <license>
-    <name>MIT License: dashmap</name>
-    <url>https://github.com/xacrimon/dashmap</url>
-  </license>
-  <license>
-    <name>MIT License: oslog</name>
-    <url>https://github.com/steven-joruk/oslog</url>
   </license>
   <license>
     <name>MIT License: bincode</name>
@@ -273,12 +245,28 @@ the details of which are reproduced below.
     <url>https://github.com/BurntSushi/termcolor</url>
   </license>
   <license>
-    <name>MIT License: winapi-util</name>
-    <url>https://github.com/BurntSushi/winapi-util</url>
+    <name>MIT License: dashmap</name>
+    <url>https://github.com/xacrimon/dashmap</url>
+  </license>
+  <license>
+    <name>MIT License: matches</name>
+    <url>https://github.com/SimonSapin/rust-std-candidates</url>
+  </license>
+  <license>
+    <name>MIT License: ordered-float</name>
+    <url>https://github.com/reem/rust-ordered-float</url>
+  </license>
+  <license>
+    <name>MIT License: oslog</name>
+    <url>https://github.com/steven-joruk/oslog</url>
   </license>
   <license>
     <name>MIT License: whatsys</name>
     <url>https://github.com/badboy/whatsys</url>
+  </license>
+  <license>
+    <name>MIT License: winapi-util</name>
+    <url>https://github.com/BurntSushi/winapi-util</url>
   </license>
   <license>
     <name>Mozilla Public License 2.0: glean</name>
