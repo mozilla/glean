@@ -281,6 +281,44 @@ class TimingDistributionMetricTypeTest {
     }
 
     @Test
+    fun `measure function does not change behavior with early return`() {
+        val metric = spy(TimingDistributionMetricType(
+            disabled = false,
+            category = "telemetry",
+            lifetime = Lifetime.Ping,
+            name = "inlined",
+            sendInPings = listOf("store1"),
+            timeUnit = TimeUnit.Nanosecond
+        ))
+
+        // We define a function that measures the whole function call runtime
+        fun testFunc(): Long = metric.measure {
+            // Stop should call `getElapsedTimeNanos` again,
+            // so we give it a later timestamp
+            `when`(metric.getElapsedTimeNanos()).thenReturn(10L)
+
+            // We want to simulate an early return.
+            if (true) {
+                // Blank 'return' is not allowed here, because `measure` is not inlined.
+                // We can return by label though.
+                return@measure 17
+            }
+
+            42
+        }
+
+        // We start time at `0`
+        `when`(metric.getElapsedTimeNanos()).thenReturn(0L)
+
+        val res = testFunc()
+        assertEquals("Test value must match", 17, res)
+
+        assertTrue("Metric must have a value", metric.testHasValue())
+        val snapshot = metric.testGetValue()
+        assertEquals("Should have stored 10 nanoseconds", 10L, snapshot.sum)
+    }
+
+    @Test
     fun `measure function bubbles up exceptions and timing is canceled`() {
         val metric = TimingDistributionMetricType(
             disabled = false,
