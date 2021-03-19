@@ -166,7 +166,7 @@ pub extern "C" fn glean_enable_logging() {
         #[cfg(not(debug_assertions))]
         let level = log::LevelFilter::Info;
 
-        let logger = oslog::OsLogger::new("org.mozilla.glean", "glean_core").level_filter(level);
+        let logger = oslog::OsLogger::new("org.mozilla.glean").level_filter(level);
 
         match logger.init() {
             Ok(_) => log::trace!("os_log should be hooked up!"),
