@@ -809,6 +809,8 @@ impl Glean {
     ///
     /// Ping tags will show in the destination datasets, after ingestion.
     ///
+    /// **Note** If one or more tags are invalid, all tags are ignored.
+    ///
     /// # Arguments
     ///
     /// * `value` - A vector of at most 5 valid HTTP header values. Individual tags must match the regex: "[a-zA-Z0-9-]{1,20}".
