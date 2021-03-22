@@ -552,12 +552,13 @@ public class Glean {
     /// Set the source tags to be applied as headers when uploading pings.
     ///
     /// If any of the tags is invalid nothing will be set and this function will
-    /// return `false`, although if we are not initialized yet, there won't be any validation.
+    /// return `false`.
+    /// If Glean is not initialized yet, tags will not be validated at this point.
     ///
     /// This is only meant to be used internally by the `GleanDebugActivity`.
     ///
-    /// @param tags A list of tags, which must be valid HTTP header values.
-    ///
+    /// - parameters:
+    ///    * tags: A list of tags, which must be valid HTTP header values.
     func setSourceTags(_ value: [String]) -> Bool {
         if self.isInitialized() {
             let len = value.count
