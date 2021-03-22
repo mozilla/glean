@@ -69,6 +69,14 @@ fun onPageLoaded(e: Event) {
 }
 ```
 
+For convenience one can measure the time of a function or block of code:
+
+```Kotlin
+Pages.pageLoad.measure {
+    // Load a page
+}
+```
+
 There are test APIs available too.  For convenience, properties `sum` and `count` are exposed to facilitate validating that data was recorded correctly.
 
 Continuing the `pageLoad` example above, at this point the metric should have a `sum == 11` and a `count == 2`:
@@ -151,6 +159,15 @@ func onPageLoaded() {
     Pages.pageLoad.stopAndAccumulate(timerId)
 }
 ```
+
+For convenience one can measure the time of a function or block of code:
+
+```Swift
+Pages.pageLoad.measure {
+    // Load a page
+}
+```
+
 
 There are test APIs available too.  For convenience, properties `sum` and `count` are exposed to facilitate validating that data was recorded correctly.
 
