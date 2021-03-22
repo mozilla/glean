@@ -42,3 +42,7 @@ env_logger = { version = "0.7.1", default-features = false, features = ["termcol
 tempfile = "3.1.0"
 jsonschema-valid = "0.4.0"
 flate2 = "1.0.19"
+
+[features]
+# Enable the "safe-mode" Rust storage backend instead of the default LMDB one.
+rkv-safe-mode = ["glean-core/rkv-safe-mode"]
