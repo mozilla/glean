@@ -57,6 +57,14 @@ fun onLoginCancel() {
 }
 ```
 
+For convenience one can measure the time of a function or block of code:
+
+```Kotlin
+Auth.loginTime.measure {
+    // Process login flow
+}
+```
+
 The time reported in the telemetry ping will be timespan recorded during the lifetime of the ping.
 
 There are test APIs available too:
@@ -133,6 +141,14 @@ func onLogin() {
 func onLoginCancel() {
     Auth.loginTime.cancel()
     // ...
+}
+```
+
+For convenience one can measure the time of a function or block of code:
+
+```Kotlin
+Auth.loginTime.measure {
+    // Process login flow
 }
 ```
 
