@@ -15,6 +15,28 @@ enum ClickKeys: Int32, ExtraKeys {
     }
 }
 
+struct ClickExtras: EventExtraClass {
+    var objectId: String? = nil
+    var other: String? = nil
+
+    func toFfiExtra() -> ([Int32], [String]) {
+        var keys = [Int32]()
+        var values = [String]()
+
+        if let objectId = self.objectId {
+            keys.append(0)
+            values.append(objectId)
+        }
+        if let other = self.other {
+            keys.append(1)
+            values.append(other)
+        }
+
+        return (keys, values)
+    }
+
+}
+
 enum TestNameKeys: Int32, ExtraKeys {
     case testName = 0
 
@@ -78,7 +100,7 @@ class EventMetricTypeTests: XCTestCase {
 
         XCTAssertFalse(metric.testHasValue())
 
-        metric.record(extra: [.objectId: "buttonA", .other: "foo"])
+        metric.record(ClickExtras(objectId: "buttonA", other: "foo"))
 
         /* SKIPPED: resetting system clock to return fixed time value */
 
