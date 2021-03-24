@@ -33,6 +33,19 @@ public protocol ExtraKeys: Hashable {
     func index() -> Int32
 }
 
+/// Extra keys for events by name.
+///
+/// For user-defined `EventMetricType`s every event with extras
+/// will get their own corresponding event extra data class.
+public protocol EventExtras {
+    /// Convert the event extras into 2 lists:
+    ///
+    /// 1. The list of extra key indices.
+    ///    Unset keys will be skipped.
+    /// 2. The list of extra values.
+    func toFfiExtra() -> ([Int32], [String])
+}
+
 /// Default of no extra keys for events.
 ///
 /// An enum with no values for convenient use as the default set of extra keys
@@ -40,6 +53,23 @@ public protocol ExtraKeys: Hashable {
 public enum NoExtraKeys: ExtraKeys {
     public func index() -> Int32 {
         return 0
+    }
+}
+
+/// Default-implement `EventExtras` for a map of ExtraKeys to Strings.
+extension Dictionary: EventExtras where Key: ExtraKeys, Value == String {
+    public func toFfiExtra() -> ([Int32], [String]) {
+        var keys = [Int32]()
+        var values = [String]()
+        keys.reserveCapacity(self.count)
+        values.reserveCapacity(self.count)
+
+        for (key, value) in self {
+            keys.append(key.index())
+            values.append(value)
+        }
+
+        return (keys, values)
     }
 }
 
@@ -97,6 +127,10 @@ public class EventMetricType<ExtraKeysEnum: ExtraKeys> {
     ///              This is used for events where additional richer context is needed.
     ///              The maximum length for values is defined by `MAX_LENGTH_EXTRA_KEY_VALUE`.
     public func record(extra: [ExtraKeysEnum: String]? = nil) {
+        self.record(extra)
+    }
+
+    public func record(_ properties: EventExtras? = nil) {
         guard !self.disabled else { return }
 
         // We capture the event time now, since we don't know when the async code below
@@ -110,20 +144,11 @@ public class EventMetricType<ExtraKeysEnum: ExtraKeys> {
             var keys: [Int32]?
             var values: [String]?
 
-            if let extra = extra {
-                len = extra.count
-
-                if len > 0 {
-                    keys = []
-                    values = []
-                    keys?.reserveCapacity(len)
-                    values?.reserveCapacity(len)
-
-                    for (key, value) in extra {
-                        keys?.append(key.index())
-                        values?.append(value)
-                    }
-                }
+            if let extra = properties {
+                let (k, v) = extra.toFfiExtra()
+                len = k.count
+                keys = k
+                values = v
             }
 
             withArrayOfCStrings(values) { values in

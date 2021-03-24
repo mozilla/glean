@@ -15,6 +15,27 @@ enum ClickKeys: Int32, ExtraKeys {
     }
 }
 
+struct ClickExtras: EventExtras {
+    var objectId: String?
+    var other: String?
+
+    func toFfiExtra() -> ([Int32], [String]) {
+        var keys = [Int32]()
+        var values = [String]()
+
+        if let objectId = self.objectId {
+            keys.append(0)
+            values.append(objectId)
+        }
+        if let other = self.other {
+            keys.append(1)
+            values.append(other)
+        }
+
+        return (keys, values)
+    }
+}
+
 enum TestNameKeys: Int32, ExtraKeys {
     case testName = 0
 
@@ -78,15 +99,20 @@ class EventMetricTypeTests: XCTestCase {
 
         XCTAssertFalse(metric.testHasValue())
 
-        metric.record(extra: [.objectId: "buttonA", .other: "foo"])
+        // Newer API
+        metric.record(ClickExtras(objectId: "buttonA", other: "foo"))
+        // Some extra keys can be left undefined.
+        metric.record(ClickExtras(objectId: "buttonA"))
 
         /* SKIPPED: resetting system clock to return fixed time value */
 
+        // Old API, this is available only because we manually implemented the enum.
+        // Generated code will have only one of the APIs available.
         metric.record(extra: [.objectId: "buttonB", .other: "bar"])
 
         XCTAssert(metric.testHasValue())
         let events = try! metric.testGetValue()
-        XCTAssertEqual(2, events.count)
+        XCTAssertEqual(3, events.count)
 
         XCTAssertEqual("ui", events[0].category)
         XCTAssertEqual("click", events[0].name)
@@ -95,8 +121,13 @@ class EventMetricTypeTests: XCTestCase {
 
         XCTAssertEqual("ui", events[1].category)
         XCTAssertEqual("click", events[1].name)
-        XCTAssertEqual("buttonB", events[1].extra?["object_id"])
-        XCTAssertEqual("bar", events[1].extra?["other"])
+        XCTAssertEqual("buttonA", events[1].extra?["object_id"])
+        XCTAssertEqual(nil, events[1].extra?["other"])
+
+        XCTAssertEqual("ui", events[2].category)
+        XCTAssertEqual("click", events[2].name)
+        XCTAssertEqual("buttonB", events[2].extra?["object_id"])
+        XCTAssertEqual("bar", events[2].extra?["other"])
 
         XCTAssertLessThanOrEqual(events[0].timestamp, events[1].timestamp, "The sequence of events must be preserved")
     }
