@@ -125,7 +125,9 @@ class CustomPingTest {
         assertEquals(1L, pingInfo.tryGetLong("seq")!!)
     }
 
+    // Suppressing our own deprecation before we move over to the new event recording API.
     @Test
+    @Suppress("DEPRECATION")
     fun `events for custom pings are flushed at startup`() {
         delayMetricsPing(context)
         resetGlean(context, Glean.configuration.copy(

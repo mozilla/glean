@@ -175,8 +175,9 @@ class GleanTest {
         assertFalse(Glean.testIsExperimentActive("experiment_preinit_disabled"))
     }
 
+    // Suppressing our own deprecation before we move over to the new event recording API.
     @Test
-    @Suppress("ComplexMethod", "LongMethod")
+    @Suppress("ComplexMethod", "LongMethod", "DEPRECATION")
     fun `test sending of foreground and background pings`() {
         val server = getMockWebServer()
 

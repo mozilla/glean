@@ -36,6 +36,7 @@ open class MainActivity : AppCompatActivity() {
             // order to illustrate adding extra information to the event, it is also adding to the
             // 'extras' field a dictionary of values.  Note that the dictionary keys must be
             // declared in the metrics.yaml file under the 'extra_keys' section of an event metric.
+            @Suppress("DEPRECATION")
             BrowserEngagement.click.record(
                     mapOf(
                         BrowserEngagement.clickKeys.key1 to "extra_value_1",
