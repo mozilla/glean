@@ -179,14 +179,23 @@ class build(_build):
         if target == "i686-pc-windows-gnu":
             env["RUSTFLAGS"] = env.get("RUSTFLAGS", "") + " -C panic=abort"
 
-        command = ["cargo", "build", "--package", "glean-ffi", "--target", target]
+        command = [
+            "cargo",
+            "build",
+            "--package",
+            "glean-ffi",
+            "--target",
+            target,
+            "--features",
+            "rkv-safe-mode",
+        ]
         if buildvariant != "debug":
             command.append(f"--{buildvariant}")
 
         if "-darwin" in target:
             env["MACOSX_DEPLOYMENT_TARGET"] = macos_compat(target)
 
-        subprocess.run(command, cwd=SRC_ROOT, env=env)
+        subprocess.check_call(command, cwd=SRC_ROOT / "glean-core" / "ffi", env=env)
         shutil.copyfile(
             SRC_ROOT / "target" / target / buildvariant / shared_object,
             PYTHON_ROOT / "glean" / shared_object,

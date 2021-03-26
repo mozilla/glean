@@ -197,27 +197,17 @@ def _subprocess():
         send_in_pings=["store1"],
     )
 
-    for i in range(1000):
-        string_metric.set(str(i))
+    string_metric.set("foo")
 
 
 @pytest.mark.skipif(
     not sys.platform.startswith("linux"), reason="Test only works on Linux"
 )
-def test_single_threaded_in_multiprocessing_subprocess():
+def test_recording_in_subprocess_throws_exception():
     import multiprocessing
 
     p = multiprocessing.Process(target=_subprocess)
     p.start()
-    p.join()
+    returncode = p.join()
 
-    # This must match the definition in _subprocess() above.
-    string_metric = metrics.StringMetricType(
-        disabled=False,
-        category="telemetry",
-        lifetime=Lifetime.APPLICATION,
-        name="string_metric",
-        send_in_pings=["store1"],
-    )
-
-    assert string_metric.test_get_value() == "999"
+    assert returncode != 0
