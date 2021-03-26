@@ -111,7 +111,11 @@ def _process(data_dir: Path, application_id: str, configuration) -> bool:
         cfg = _ffi.make_config(
             data_dir,
             application_id,
-            True,
+            # Set upload enabled to False. The subprocess should not record
+            # telemetry. In the special `glean_initialize_for_subprocess` mode,
+            # this does not have any side effects like resetting the client_id
+            # or sending a deletion-request ping.
+            False,
             configuration.max_events,
         )
         if _ffi.lib.glean_initialize_for_subprocess(cfg) == 0:
