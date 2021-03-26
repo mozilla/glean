@@ -98,7 +98,7 @@ impl ByteBuffer {
         let data = buf.as_mut_ptr();
         let len = i32::try_from(buf.len()).expect("buffer length cannot fit into a i32.");
         std::mem::forget(buf);
-        Self { data, len }
+        Self { len, data }
     }
 
     /// Convert this `ByteBuffer` into a Vec<u8>. This is the only way
