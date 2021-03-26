@@ -8,12 +8,7 @@ export RUST_BACKTRACE='1'
 export RUSTFLAGS='-Dwarnings'
 export CARGO_INCREMENTAL='0'
 export CI='1'
-export CCACHE='sccache'
-export RUSTC_WRAPPER='sccache'
-export SCCACHE_IDLE_TIMEOUT='1200'
-export SCCACHE_CACHE_SIZE='40G'
-export SCCACHE_ERROR_LOG='/builds/worker/sccache.log'
-export RUST_LOG='sccache=info,glean_core=debug,glean_ffi=debug'
+export RUST_LOG='glean_core=debug,glean_ffi=debug'
 
 # Rust
 set -eux; \
