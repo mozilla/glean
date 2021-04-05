@@ -37,7 +37,7 @@ definition and event metric definition, the `metrics.yaml` should look like this
 
 ```YAML
 # Required to indicate this is a `metrics.yaml` file
-$schema: moz://mozilla.org/schemas/glean/metrics/1-0-0
+$schema: moz://mozilla.org/schemas/glean/metrics/2-0-0
 
 crash:
   exception:
@@ -77,7 +77,7 @@ The name of the ping will be `crash`, so the `pings.yaml` file should look like 
 
 ```YAML
 # Required to indicate this is a `pings.yaml` file
-$schema: moz://mozilla.org/schemas/glean/pings/1-0-0
+$schema: moz://mozilla.org/schemas/glean/pings/2-0-0
 
 crash:
   description: >

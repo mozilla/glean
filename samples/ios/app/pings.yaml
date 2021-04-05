@@ -8,7 +8,7 @@
 
 ---
 
-$schema: moz://mozilla.org/schemas/glean/pings/1-0-0
+$schema: moz://mozilla.org/schemas/glean/pings/2-0-0
 
 sample:
   description: |

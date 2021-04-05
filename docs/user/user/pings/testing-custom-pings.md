@@ -13,7 +13,7 @@ One possible strategy could be to wrap the Glean SDK API call to send the ping i
 Let us start by defining a custom ping with a sample metric in it. Here is the `pings.yaml` file:
 
 ```yaml
-$schema: moz://mozilla.org/schemas/glean/pings/1-0-0
+$schema: moz://mozilla.org/schemas/glean/pings/2-0-0
 
 my-custom-ping:
   description: >
@@ -32,7 +32,7 @@ my-custom-ping:
 And here is the `metrics.yaml`
 
 ```yaml
-$schema: moz://mozilla.org/schemas/glean/metrics/1-0-0
+$schema: moz://mozilla.org/schemas/glean/metrics/2-0-0
 
 custom_ping_data:
   sample_string:

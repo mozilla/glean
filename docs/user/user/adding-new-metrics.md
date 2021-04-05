@@ -169,7 +169,7 @@ The overall organization is:
 
 ```YAML
 # Required to indicate this is a `metrics.yaml` file
-$schema: moz://mozilla.org/schemas/glean/metrics/1-0-0
+$schema: moz://mozilla.org/schemas/glean/metrics/2-0-0
 
 toolbar:
   click:
