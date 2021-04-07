@@ -622,7 +622,7 @@ impl Glean {
         let ping_maker = PingMaker::new();
         let doc_id = Uuid::new_v4().to_string();
         let url_path = self.make_path(&ping.name, &doc_id);
-        match ping_maker.collect(self, &ping, reason) {
+        match ping_maker.make_ping(self, &ping, reason, &doc_id, &url_path) {
             None => {
                 log::info!(
                     "No content for ping '{}', therefore no ping queued.",
@@ -630,7 +630,7 @@ impl Glean {
                 );
                 Ok(false)
             }
-            Some(content) => {
+            Some(ping) => {
                 // This metric is recorded *after* the ping is collected (since
                 // that is the only way to know *if* it will be submitted). The
                 // implication of this is that the count for a metrics ping will
@@ -641,12 +641,8 @@ impl Glean {
                     .add(&self, 1);
 
                 if let Err(e) = ping_maker.store_ping(
-                    self,
-                    &doc_id,
-                    &ping.name,
                     &self.get_data_path(),
-                    &url_path,
-                    &content,
+                    &ping,
                 ) {
                     log::warn!("IO error while writing ping to file: {}", e);
                     self.core_metrics.io_errors.add(self, 1);
