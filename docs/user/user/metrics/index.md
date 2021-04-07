@@ -2,6 +2,8 @@
 
 > **Not sure which metric type to use?** These docs contain a [series of questions](../adding-new-metrics.html#choosing-a-metric-type) that can help. Reference information about each metric type is linked below.
 
+The parameters available that apply to any metric type are in the [metric parameters page](../metric-parameters.html).
+
 There are different metrics to choose from, depending on what you want to achieve:
 
 * [Boolean](boolean.md): Records a single truth value, for example "is a11y enabled?"
@@ -51,7 +53,7 @@ This is useful when you need to break down metrics by a label known at build tim
 
 Labeled metrics come in two forms:
 
-- **Static labels**: The labels are specified at build time in the `metrics.yaml` file.
+- **Static labels**: The labels are specified at build time in the `metrics.yaml` file, in the `labels` parameter.
   If a label that isn't part of this set is used at run time, it is converted to the special label `__other__`.
 
 - **Dynamic labels**: The labels aren't known at build time, so are set at run time.
