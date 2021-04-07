@@ -22,16 +22,16 @@ use crate::{
 
 /// Holds everything you need to store or send a ping.
 pub struct Ping<'a> {
-  /// The doc id. Unique.
-  pub doc_id: &'a str,
-  /// The ping's name.
-  pub name: &'a str,
-  /// The path on the server to use when uplaoding this ping.
-  pub url_path: &'a str,
-  /// The payload, including `*_info` fields.
-  pub content: JsonValue,
-  /// The headers to upload with the payload.
-  pub headers: HeaderMap,
+    /// The doc id. Unique.
+    pub doc_id: &'a str,
+    /// The ping's name.
+    pub name: &'a str,
+    /// The path on the server to use when uplaoding this ping.
+    pub url_path: &'a str,
+    /// The payload, including `*_info` fields.
+    pub content: JsonValue,
+    /// The headers to upload with the payload.
+    pub headers: HeaderMap,
 }
 
 /// Collect a ping's data, assemble it into its full payload and store it on disk.
@@ -192,18 +192,11 @@ impl PingMaker {
         let mut headers_map = HeaderMap::new();
 
         if let Some(debug_view_tag) = glean.debug_view_tag() {
-            headers_map.insert(
-                    "X-Debug-ID".to_string(),
-                    debug_view_tag.to_string(),
-                );
+            headers_map.insert("X-Debug-ID".to_string(), debug_view_tag.to_string());
         }
 
         if let Some(source_tags) = glean.source_tags() {
-            headers_map
-                .insert(
-                    "X-Source-Tags".to_string(),
-                    source_tags.join(","),
-                );
+            headers_map.insert("X-Source-Tags".to_string(), source_tags.join(","));
         }
 
         headers_map
@@ -257,12 +250,12 @@ impl PingMaker {
             json_obj.insert("events".to_string(), events_data);
         }
 
-        Some(Ping{
-          content: json,
-          name: &ping.name,
-          doc_id,
-          url_path,
-          headers: self.get_headers(glean),
+        Some(Ping {
+            content: json,
+            name: &ping.name,
+            doc_id,
+            url_path,
+            headers: self.get_headers(glean),
         })
     }
 
@@ -325,7 +318,11 @@ impl PingMaker {
         let temp_ping_path = temp_dir.join(ping.doc_id);
         let ping_path = pings_dir.join(ping.doc_id);
 
-        log::debug!("Storing ping '{}' at '{}'", ping.doc_id, ping_path.display());
+        log::debug!(
+            "Storing ping '{}' at '{}'",
+            ping.doc_id,
+            ping_path.display()
+        );
 
         {
             let mut file = File::create(&temp_ping_path)?;

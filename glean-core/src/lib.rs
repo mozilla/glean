@@ -640,15 +640,18 @@ impl Glean {
                     .get(&ping.name)
                     .add(&self, 1);
 
-                if let Err(e) = ping_maker.store_ping(
-                    &self.get_data_path(),
-                    &ping,
-                ) {
+                if let Err(e) = ping_maker.store_ping(&self.get_data_path(), &ping) {
                     log::warn!("IO error while writing ping to file: {}", e);
                     self.core_metrics.io_errors.add(self, 1);
                     log::warn!("Gonna try sending what we have in memory.");
                     let content = ::serde_json::to_string(&ping.content)?;
-                    self.upload_manager.enqueue_ping(self, ping.doc_id, ping.url_path, &content, Some(ping.headers));
+                    self.upload_manager.enqueue_ping(
+                        self,
+                        ping.doc_id,
+                        ping.url_path,
+                        &content,
+                        Some(ping.headers),
+                    );
                     return Err(e.into());
                 }
 
