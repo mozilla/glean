@@ -24,6 +24,13 @@ views:
         description: The source from which the login view was opened, e.g. "toolbar".
 ```
 
+The `extra_keys` parameter enumerates the acceptable keys on the event. This is
+an object mapping the key to an object containing metadata about the key. A
+maximum of 10 extra keys is allowed. This metadata object has the following
+keys:
+
+- `description`: **Required.** A description of the key.
+
 ## API
 
 {{#include ../../../shared/tab_header.md}}
