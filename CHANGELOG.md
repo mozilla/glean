@@ -15,6 +15,8 @@
     Use `return@measure <val>` for early returns.
 * Python
   * The Glean Python bindings now use rkv's safe mode backend. This should avoid intermittent segfaults in the LMDB backend.
+* General
+  * Attempt to upload a ping even in the face of IO Errors ([#1576](https://github.com/mozilla/glean/pull/1576)).
 
 # v36.0.0 (2021-03-16)
 
