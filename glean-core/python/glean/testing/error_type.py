@@ -30,3 +30,8 @@ class ErrorType(Enum):
     """
     For when the value to be recorded overflows the metric-specific upper range
     """
+
+    UNEXPECTED_EXCEPTION = 4
+    """
+    When an unexpected exception occurs.
+    """

@@ -36,6 +36,8 @@ pub enum ErrorType {
     InvalidState,
     /// For when the value to be recorded overflows the metric-specific upper range
     InvalidOverflow,
+    /// For an unexpected exception in a dynamic language binding
+    UnexpectedException,
 }
 
 impl ErrorType {
@@ -46,6 +48,7 @@ impl ErrorType {
             ErrorType::InvalidLabel => "invalid_label",
             ErrorType::InvalidState => "invalid_state",
             ErrorType::InvalidOverflow => "invalid_overflow",
+            ErrorType::UnexpectedException => "unexpected_exception",
         }
     }
 }
@@ -59,6 +62,7 @@ impl TryFrom<i32> for ErrorType {
             1 => Ok(ErrorType::InvalidLabel),
             2 => Ok(ErrorType::InvalidState),
             3 => Ok(ErrorType::InvalidOverflow),
+            4 => Ok(ErrorType::UnexpectedException),
             e => Err(ErrorKind::Lifetime(e).into()),
         }
     }
@@ -165,6 +169,8 @@ mod test {
         assert_eq!(error, ErrorType::InvalidState);
         let error: ErrorType = std::convert::TryFrom::try_from(3).unwrap();
         assert_eq!(error, ErrorType::InvalidOverflow);
+        let error: ErrorType = std::convert::TryFrom::try_from(4).unwrap();
+        assert_eq!(error, ErrorType::UnexpectedException);
     }
 
     #[test]

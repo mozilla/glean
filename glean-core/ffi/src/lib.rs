@@ -16,6 +16,7 @@ use once_cell::sync::OnceCell;
 
 pub use glean_core::metrics::MemoryUnit;
 pub use glean_core::metrics::TimeUnit;
+use glean_core::record_error;
 pub use glean_core::upload::ffi_upload_result::*;
 use glean_core::Glean;
 pub use glean_core::Lifetime;

@@ -9,6 +9,7 @@ from typing import List, Optional
 from .. import _ffi
 from .._dispatcher import Dispatcher
 from ..testing import ErrorType
+from .._util import record_error
 
 
 from .lifetime import Lifetime
@@ -63,6 +64,7 @@ class StringMetricType:
             return
 
         @Dispatcher.launch
+        @record_error(self)
         def set():
             _ffi.lib.glean_string_set(self._handle, _ffi.ffi_encode_string(value))
 
@@ -77,7 +79,11 @@ class StringMetricType:
         if self._disabled:
             return
 
-        _ffi.lib.glean_string_set(self._handle, _ffi.ffi_encode_string(value))
+        @record_error(self)
+        def set():
+            _ffi.lib.glean_string_set(self._handle, _ffi.ffi_encode_string(value))
+
+        set()
 
     def test_has_value(self, ping_name: Optional[str] = None) -> bool:
         """
@@ -145,6 +151,16 @@ class StringMetricType:
             self._handle,
             error_type.value,
             _ffi.ffi_encode_string(ping_name),
+        )
+
+    def _record_error(
+        self,
+        error_type: ErrorType,
+        message: str = "Python error recorded",
+        count: int = 1,
+    ) -> None:
+        _ffi.lib.glean_string_record_error(
+            self._handle, error_type.value, _ffi.ffi_encode_string(message), count
         )
 
 

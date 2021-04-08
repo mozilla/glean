@@ -42,6 +42,20 @@ impl glean_core::traits::String for StringMetric {
         crate::launch_with_glean(move |glean| metric.set(glean, new_value));
     }
 
+    fn record_error<S: Into<std::string::String>, O: Into<Option<i32>>>(
+        &self,
+        error: ErrorType,
+        message: S,
+        num_errors: O,
+    ) {
+        let metric = Arc::clone(&self.0);
+        let new_message = message.into();
+        let new_num_errors = num_errors.into();
+        crate::launch_with_glean(move |glean| {
+            glean_core::record_error(&glean, metric.meta(), error, new_message, new_num_errors)
+        })
+    }
+
     fn test_get_value<'a, S: Into<Option<&'a str>>>(
         &self,
         ping_name: S,

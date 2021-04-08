@@ -702,6 +702,11 @@ uint64_t glean_new_string_metric(FfiStr category,
                                  Lifetime lifetime,
                                  uint8_t disabled);
 
+void glean_string_record_error(uint64_t metric_id,
+                               int32_t error_type,
+                               FfiStr message,
+                               int32_t error_count);
+
 int32_t glean_string_test_get_num_recorded_errors(uint64_t metric_id,
                                                   int32_t error_type,
                                                   FfiStr storage_name);
