@@ -209,12 +209,14 @@ impl PingMaker {
     /// * `glean` - the [`Glean`] instance to collect data from.
     /// * `ping` - the ping to collect for.
     /// * `reason` - an optional reason code to include in the ping.
+    /// * `doc_id` - the ping's unique document identifier.
+    /// * `url_path` - the path on the server to upload this ping to.
     ///
     /// # Returns
     ///
-    /// A fully assembled JSON representation of the ping payload.
+    /// A fully assembled representation of the ping payload and associated metadata.
     /// If there is no data stored for the ping, `None` is returned.
-    pub fn make_ping<'a>(
+    pub fn collect<'a>(
         &self,
         glean: &Glean,
         ping: &'a PingType,
@@ -277,7 +279,7 @@ impl PingMaker {
         ping: &PingType,
         reason: Option<&str>,
     ) -> Option<String> {
-        self.make_ping(glean, ping, reason, "", "")
+        self.collect(glean, ping, reason, "", "")
             .map(|ping| ::serde_json::to_string_pretty(&ping.content).unwrap())
     }
 

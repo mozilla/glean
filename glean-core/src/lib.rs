@@ -613,6 +613,7 @@ impl Glean {
     /// # Errors
     ///
     /// If collecting or writing the ping to disk failed.
+    /// We may still attempt upload if collection succeeded but writing to disk failed.
     pub fn submit_ping(&self, ping: &PingType, reason: Option<&str>) -> Result<bool> {
         if !self.is_upload_enabled() {
             log::info!("Glean disabled: not submitting any pings.");
@@ -622,7 +623,7 @@ impl Glean {
         let ping_maker = PingMaker::new();
         let doc_id = Uuid::new_v4().to_string();
         let url_path = self.make_path(&ping.name, &doc_id);
-        match ping_maker.make_ping(self, &ping, reason, &doc_id, &url_path) {
+        match ping_maker.collect(self, &ping, reason, &doc_id, &url_path) {
             None => {
                 log::info!(
                     "No content for ping '{}', therefore no ping queued.",

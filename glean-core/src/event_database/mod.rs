@@ -227,7 +227,7 @@ impl EventDatabase {
         for store_name in stores_to_submit {
             if let Err(err) = glean.submit_ping_by_name(store_name, Some("max_capacity")) {
                 log::warn!(
-                    "Got more than {} events, but could not send {} ping: {}",
+                    "Got more than {} events, but could not persist {} ping: {}",
                     glean.get_max_events(),
                     store_name,
                     err
