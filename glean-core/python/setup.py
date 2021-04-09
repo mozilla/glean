@@ -56,7 +56,7 @@ with (SRC_ROOT / "CHANGELOG.md").open() as history_file:
     history = history_file.read()
 
 # glean version. Automatically updated by the bin/prepare_release.sh script
-version = "36.0.0"
+version = "36.0.1"
 
 requirements = [
     "cffi>=1.13.0",
@@ -98,6 +98,8 @@ class bdist_wheel(wheel.bdist_wheel.bdist_wheel):
             plat_name = f"linux_{cpu}"
         elif "-darwin" in target:
             compat = macos_compat(target).replace(".", "_")
+            if cpu == "aarch64":
+                cpu = "arm64"
             plat_name = f"macosx_{compat}_{cpu}"
         elif "-windows" in target:
             impl, abi_tag = "py3", "none"
@@ -177,14 +179,23 @@ class build(_build):
         if target == "i686-pc-windows-gnu":
             env["RUSTFLAGS"] = env.get("RUSTFLAGS", "") + " -C panic=abort"
 
-        command = ["cargo", "build", "--package", "glean-ffi", "--target", target]
+        command = [
+            "cargo",
+            "build",
+            "--package",
+            "glean-ffi",
+            "--target",
+            target,
+            "--features",
+            "rkv-safe-mode",
+        ]
         if buildvariant != "debug":
             command.append(f"--{buildvariant}")
 
         if "-darwin" in target:
             env["MACOSX_DEPLOYMENT_TARGET"] = macos_compat(target)
 
-        subprocess.run(command, cwd=SRC_ROOT, env=env)
+        subprocess.check_call(command, cwd=SRC_ROOT / "glean-core" / "ffi", env=env)
         shutil.copyfile(
             SRC_ROOT / "target" / target / buildvariant / shared_object,
             PYTHON_ROOT / "glean" / shared_object,

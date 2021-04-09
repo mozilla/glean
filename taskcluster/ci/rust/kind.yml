@@ -26,4 +26,4 @@ jobs:
       commands:
         - ['cargo', 'test', '--all', '--verbose']
         - ['cargo', 'clippy', '--version']
-        - ['cargo', 'clippy', '--all', '--all-targets', '--all-features', '--', '-D', 'warnings']
+        - ['cargo', 'clippy', '--verbose', '--all', '--all-targets', '--all-features', '--', '-D', 'warnings']

@@ -1,6 +1,6 @@
 [package]
 name = "glean-ffi"
-version = "36.0.0"
+version = "36.0.1"
 authors = ["Jan-Erik Rediger <jrediger@mozilla.com>", "The Glean Team <glean-team@mozilla.com>"]
 description = "FFI layer for Glean, a modern Telemetry library"
 repository = "https://github.com/mozilla/glean"
@@ -36,16 +36,20 @@ once_cell = "1.2.0"
 
 [dependencies.glean-core]
 path = ".."
-version = "36.0.0"
+version = "36.0.1"
 
 [target.'cfg(target_os = "android")'.dependencies]
 android_logger = { version = "0.9.0", default-features = false }
 
 [target.'cfg(target_os = "ios")'.dependencies]
-oslog = { version = "0.0.3", default-features = false, features = ["logger"] }
+oslog = { version = "0.1.0", default-features = false, features = ["logger"] }
 
 [target.'cfg(not(target_os = "android"))'.dependencies]
 env_logger = { version = "0.7.1", default-features = false, features = ["termcolor", "atty", "humantime"] }
 
 [target.'cfg(unix)'.dependencies]
 libc = "0.2.82"
+
+[features]
+# Enable the "safe-mode" Rust storage backend instead of the default LMDB one.
+rkv-safe-mode = ["glean-core/rkv-safe-mode"]

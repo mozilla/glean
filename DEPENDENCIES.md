@@ -1270,12 +1270,9 @@ The following text applies to code linked from these dependencies:
 
 The following text applies to code linked from these dependencies:
 
-* [ahash 0.3.8]( https://github.com/tkaitchuck/ahash )
 * [bitflags 1.2.1]( https://github.com/bitflags/bitflags )
 * [cfg-if 0.1.10]( https://github.com/alexcrichton/cfg-if )
 * [cfg-if 1.0.0]( https://github.com/alexcrichton/cfg-if )
-* [const-random 0.1.11]( https://github.com/tkaitchuck/constrandom )
-* [const-random-macro 0.1.11]( https://github.com/tkaitchuck/constrandom )
 * [crossbeam-channel 0.5.0]( https://github.com/crossbeam-rs/crossbeam )
 * [crossbeam-utils 0.8.0]( https://github.com/crossbeam-rs/crossbeam )
 * [env_logger 0.7.1]( https://github.com/sebasmagri/env_logger/ )
@@ -3058,7 +3055,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
-* [dashmap 3.11.10]( https://github.com/xacrimon/dashmap )
+* [dashmap 4.0.2]( https://github.com/xacrimon/dashmap )
 
 
 ```
@@ -3090,7 +3087,7 @@ SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
-* [oslog 0.0.3]( https://github.com/steven-joruk/oslog )
+* [oslog 0.1.0]( https://github.com/steven-joruk/oslog )
 
 
 ```
@@ -3251,10 +3248,10 @@ THE SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
-* [glean 36.0.0]( https://github.com/mozilla/glean )
-* [glean-core 36.0.0]( https://github.com/mozilla/glean )
-* [glean-ffi 36.0.0]( https://github.com/mozilla/glean )
-* [zeitstempel 0.1.0]( https://github.com/badboy/whatsys )
+* [glean 36.0.1]( https://github.com/mozilla/glean )
+* [glean-core 36.0.1]( https://github.com/mozilla/glean )
+* [glean-ffi 36.0.1]( https://github.com/mozilla/glean )
+* [zeitstempel 0.1.1]( https://github.com/badboy/zeitstempel )
 
 
 ```

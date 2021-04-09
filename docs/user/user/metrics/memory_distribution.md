@@ -13,6 +13,16 @@ This makes them suitable for measuring memory sizes on a number of different sca
 
 ## Configuration
 
+Memory distributions have a required `memory_unit` parameter, which specifies
+the unit the incoming memory size values are recorded in. The units are the
+power-of-2 units, so "kilobyte" is more correctly a "kibibyte".
+
+```
+- kilobyte == 2^10 ==         1,024 bytes
+- megabyte == 2^20 ==     1,048,576 bytes
+- gigabyte == 2^30 == 1,073,741,824 bytes
+```
+
 If you wanted to create a memory distribution to measure the amount of heap memory allocated, first you need to add an entry for it to the `metrics.yaml` file:
 
 ```YAML

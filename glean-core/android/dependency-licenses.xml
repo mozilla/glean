@@ -41,10 +41,6 @@ the details of which are reproduced below.
     <url>http://github.com/tailhook/quick-error</url>
   </license>
   <license>
-    <name>Apache License 2.0: ahash</name>
-    <url>https://github.com/tkaitchuck/ahash</url>
-  </license>
-  <license>
     <name>Apache License 2.0: bitflags</name>
     <url>https://github.com/bitflags/bitflags</url>
   </license>
@@ -55,14 +51,6 @@ the details of which are reproduced below.
   <license>
     <name>Apache License 2.0: cfg-if</name>
     <url>https://github.com/alexcrichton/cfg-if</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: const-random</name>
-    <url>https://github.com/tkaitchuck/constrandom</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: const-random-macro</name>
-    <url>https://github.com/tkaitchuck/constrandom</url>
   </license>
   <license>
     <name>Apache License 2.0: crossbeam-channel</name>
@@ -294,7 +282,7 @@ the details of which are reproduced below.
   </license>
   <license>
     <name>Mozilla Public License 2.0: zeitstempel</name>
-    <url>https://github.com/badboy/whatsys</url>
+    <url>https://github.com/badboy/zeitstempel</url>
   </license>
 </licenses>
 

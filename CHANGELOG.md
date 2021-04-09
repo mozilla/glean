@@ -1,6 +1,20 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v36.0.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v36.0.1...main)
+
+# v36.0.1 (2021-04-09)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v36.0.0...v36.0.1)
+
+* RLB
+  * Provide an internal-use-only API to pass in raw samples for timing distributions ([#1561](https://github.com/mozilla/glean/pull/1561)).
+  * Expose Timespan's `set_raw` to Rust ([#1578](https://github.com/mozilla/glean/pull/1578)).
+* Android
+  * BUGFIX: `TimespanMetricType.measure` and `TimingDistributionMetricType.measure` won't get inlined anymore ([#1560](https://github.com/mozilla/glean/pull/1560)).
+    This avoids a potential bug where a `return` used inside the closure would end up not measuring the time.
+    Use `return@measure <val>` for early returns.
+* Python
+  * The Glean Python bindings now use rkv's safe mode backend. This should avoid intermittent segfaults in the LMDB backend.
 
 # v36.0.0 (2021-03-16)
 
