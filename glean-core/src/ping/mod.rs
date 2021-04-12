@@ -22,7 +22,7 @@ use crate::{
 
 /// Holds everything you need to store or send a ping.
 pub struct Ping<'a> {
-    /// The doc id. Unique.
+    /// The unique document id.
     pub doc_id: &'a str,
     /// The ping's name.
     pub name: &'a str,

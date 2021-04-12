@@ -642,9 +642,8 @@ impl Glean {
                     .add(&self, 1);
 
                 if let Err(e) = ping_maker.store_ping(&self.get_data_path(), &ping) {
-                    log::warn!("IO error while writing ping to file: {}", e);
+                    log::warn!("IO error while writing ping to file: {}. Enqueuing upload of what we have in memory.", e);
                     self.core_metrics.io_errors.add(self, 1);
-                    log::warn!("Gonna try sending what we have in memory.");
                     let content = ::serde_json::to_string(&ping.content)?;
                     self.upload_manager.enqueue_ping(
                         self,
@@ -653,7 +652,8 @@ impl Glean {
                         &content,
                         Some(ping.headers),
                     );
-                    return Err(e.into());
+                    // Not actually 100% 'Ok'. bug 1704606
+                    return Ok(true);
                 }
 
                 self.upload_manager.enqueue_ping_from_file(self, &doc_id);
