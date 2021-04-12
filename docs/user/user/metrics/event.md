@@ -1,5 +1,7 @@
 # Events
 
+> **Important:** events are the most expensive metric type to record, transmit, store and analyze, so they should be used sparingly, and only when none of the other metric types are sufficient for answering your question.
+
 Events allow recording of e.g. individual occurrences of user actions, say every time a view was open and from where.
 
 Each event contains the following data:
