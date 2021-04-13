@@ -609,10 +609,6 @@ impl Glean {
     /// # Returns
     ///
     /// Whether the ping was succesfully assembled and queued.
-    ///
-    /// # Errors
-    ///
-    /// If collecting or writing the ping to disk failed.
     pub fn submit_ping(&self, ping: &PingType, reason: Option<&str>) -> Result<bool> {
         if !self.is_upload_enabled() {
             log::info!("Glean disabled: not submitting any pings.");
@@ -622,7 +618,7 @@ impl Glean {
         let ping_maker = PingMaker::new();
         let doc_id = Uuid::new_v4().to_string();
         let url_path = self.make_path(&ping.name, &doc_id);
-        match ping_maker.collect(self, &ping, reason) {
+        match ping_maker.collect(self, &ping, reason, &doc_id, &url_path) {
             None => {
                 log::info!(
                     "No content for ping '{}', therefore no ping queued.",
@@ -630,7 +626,7 @@ impl Glean {
                 );
                 Ok(false)
             }
-            Some(content) => {
+            Some(ping) => {
                 // This metric is recorded *after* the ping is collected (since
                 // that is the only way to know *if* it will be submitted). The
                 // implication of this is that the count for a metrics ping will
@@ -640,17 +636,19 @@ impl Glean {
                     .get(&ping.name)
                     .add(&self, 1);
 
-                if let Err(e) = ping_maker.store_ping(
-                    self,
-                    &doc_id,
-                    &ping.name,
-                    &self.get_data_path(),
-                    &url_path,
-                    &content,
-                ) {
-                    log::warn!("IO error while writing ping to file: {}", e);
+                if let Err(e) = ping_maker.store_ping(&self.get_data_path(), &ping) {
+                    log::warn!("IO error while writing ping to file: {}. Enqueuing upload of what we have in memory.", e);
                     self.core_metrics.io_errors.add(self, 1);
-                    return Err(e.into());
+                    let content = ::serde_json::to_string(&ping.content)?;
+                    self.upload_manager.enqueue_ping(
+                        self,
+                        ping.doc_id,
+                        ping.url_path,
+                        &content,
+                        Some(ping.headers),
+                    );
+                    // Not actually 100% 'Ok'. bug 1704606
+                    return Ok(true);
                 }
 
                 self.upload_manager.enqueue_ping_from_file(self, &doc_id);
