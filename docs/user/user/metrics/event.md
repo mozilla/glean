@@ -8,6 +8,8 @@ Each event contains the following data:
 - The name of the event.
 - A set of key-value pairs, where the keys are predefined in the `extra_keys` metric parameter, and the values are strings.
 
+> **Important:** events are the most expensive metric type to record, transmit, store and analyze, so they should be used sparingly, and only when none of the other metric types are sufficient for answering your question.
+
 ## Configuration
 
 Say you're adding a new event for when a view is shown. First you need to add an entry for the event to the `metrics.yaml` file:
