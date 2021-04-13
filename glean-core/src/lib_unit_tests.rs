@@ -893,8 +893,9 @@ fn records_io_errors() {
 
     // Writing the ping file should fail.
     let submitted = glean.internal_pings.metrics.submit(&glean, None);
-    // But the return value is still Ok because we enqueue the ping anyway.
+    // But the return value is still Ok(true) because we enqueue the ping anyway.
     assert!(submitted.is_ok());
+    assert!(submitted.unwrap());
 
     let metric = &glean.core_metrics.io_errors;
     assert_eq!(

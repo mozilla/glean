@@ -609,11 +609,6 @@ impl Glean {
     /// # Returns
     ///
     /// Whether the ping was succesfully assembled and queued.
-    ///
-    /// # Errors
-    ///
-    /// If collecting or writing the ping to disk failed.
-    /// We may still attempt upload if collection succeeded but writing to disk failed.
     pub fn submit_ping(&self, ping: &PingType, reason: Option<&str>) -> Result<bool> {
         if !self.is_upload_enabled() {
             log::info!("Glean disabled: not submitting any pings.");
