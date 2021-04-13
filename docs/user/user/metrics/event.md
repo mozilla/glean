@@ -1,7 +1,5 @@
 # Events
 
-> **Important:** events are the most expensive metric type to record, transmit, store and analyze, so they should be used sparingly, and only when none of the other metric types are sufficient for answering your question.
-
 Events allow recording of e.g. individual occurrences of user actions, say every time a view was open and from where.
 
 Each event contains the following data:
@@ -9,6 +7,8 @@ Each event contains the following data:
 - A timestamp, in milliseconds. The first event in any ping always has a value of `0`, and subsequent event timestamps are relative to it.
 - The name of the event.
 - A set of key-value pairs, where the keys are predefined in the `extra_keys` metric parameter, and the values are strings.
+
+> **Important:** events are the most expensive metric type to record, transmit, store and analyze, so they should be used sparingly, and only when none of the other metric types are sufficient for answering your question.
 
 ## Configuration
 
