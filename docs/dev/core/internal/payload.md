@@ -3,8 +3,8 @@
 The main sections of a Glean ping are described in [Ping Sections](../../../book/user/pings/index.md#ping-sections).
 This **Payload format** chapter describes details of the ping payload that are relevant for decoding Glean pings in the pipeline.
 
-> NOTE: The payload format is an implementation detail of the Glean SDK and subject to change at any time. 
-> External users should not rely on this information. 
+> NOTE: The payload format is an implementation detail of the Glean SDK and subject to change at any time.
+> External users should not rely on this information.
 > It is provided as a reference for contributing to Glean only.
 
 ## JSON Schema
@@ -53,16 +53,6 @@ A [String](../../../book/user/metrics/string.md) is represented by its string va
 
 ```json
 "sample string"
-```
-
-### JWE
-
-A [JWE](../../../book/user/metrics/jwe.md) is represented by its [compact representation](https://tools.ietf.org/html/rfc7516#appendix-A.2.7).
-
-#### Example
-
-```json
-"eyJhbGciOiJSU0EtT0FFUCIsImVuYyI6IkEyNTZHQ00ifQ..48V1_ALb6US04U3b.5eym8TW_c8SuK0ltJ3rpYIzOeDQz7TALvtu6UG9oMo4vpzs9tX_EFShS8iB7j6jiSdiwkIr3ajwQzaBtQD_A.XFBoMYUZodetZdvTiFvSkQ"
 ```
 
 ### String list
