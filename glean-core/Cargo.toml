@@ -43,7 +43,7 @@ zeitstempel = "0.1.0"
 time = "0.1.40" # the same minimum version as vendored in m-c
 
 [dev-dependencies]
-env_logger = { version = "0.7.1", default-features = false, features = ["termcolor", "atty", "humantime"] }
+env_logger = { version = "0.8.0", default-features = false, features = ["termcolor", "atty", "humantime"] }
 tempfile = "3.1.0"
 iso8601 = "0.4"
 ctor = "0.1.12"
