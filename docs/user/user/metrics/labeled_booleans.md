@@ -175,6 +175,8 @@ assert_eq!(
 
 * If the labels are specified in the `metrics.yaml`, using any label not listed in that file will be replaced with the special value `__other__`.
 
+* The number of labels specified in the `metrics.yaml` is limited to 100.
+
 * If the labels aren't specified in the `metrics.yaml`, only 16 different dynamic labels may be used, after which the special value `__other__` will be used.
 
 ## Examples
