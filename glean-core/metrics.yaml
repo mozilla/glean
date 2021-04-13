@@ -620,3 +620,25 @@ glean.validation:
       - glean-team@mozilla.com
     expires:
       never
+
+glean.time:
+  invalid_timezone_offset:
+    type: counter
+    description: |
+      Counts the number of times we encountered an invalid timezone offset
+      when trying to get the current time.
+      A timezone offset is invalid if it is outside [-24h, +24h].
+      If invalid a UTC offset is used (+0h).
+    lifetime: ping
+    send_in_pings:
+      - metrics
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1611770
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1611770#c9
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - jrediger@mozilla.com
+      - glean-team@mozilla.com
+    expires: 2021-06-30
