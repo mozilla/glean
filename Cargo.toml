@@ -4,6 +4,13 @@ members = [
   "glean-core",
   "glean-core/ffi",
   "glean-core/rlb",
+  "glean-core/bundle",
+]
+
+default-members = [
+  "glean-core",
+  "glean-core/ffi",
+  "glean-core/rlb",
 ]
 
 exclude = [

@@ -523,7 +523,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "bash $PWD/../../build-scripts/xc-universal-binary.sh glean-ffi $PWD/../.. $buildvariant\n";
+			shellScript = "bash $PWD/../../build-scripts/xc-universal-binary.sh glean-bundle $PWD/../.. $buildvariant\n";
 		};
 		BFB59A9723429FC000F40CA8 /* Run Glean SDK generator */ = {
 			isa = PBXShellScriptBuildPhase;

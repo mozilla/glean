@@ -18,7 +18,7 @@ glean_app_release: $(SRC) $(OBJECTS_RELEASE) $(HEADERS)
 	$(CC) $(CFLAGS) -I.. -o $@ $(SRC) $(OBJECTS_RELEASE)
 
 $(OBJECTS_DEBUG): ../src/lib.rs
-	cargo build
+	cargo build --package glean-bundle
 
 $(OBJECTS_RELEASE): ../src/lib.rs
-	cargo build --release
+	cargo build --package glean-bundle --release

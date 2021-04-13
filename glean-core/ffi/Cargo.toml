@@ -24,7 +24,7 @@ maintenance = { status = "actively-developed" }
 
 [lib]
 name = "glean_ffi"
-crate-type = ["lib", "staticlib", "cdylib"]
+crate-type = ["lib"]
 
 [dependencies]
 ffi-support = "0.4.0"
