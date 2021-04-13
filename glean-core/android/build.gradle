@@ -140,7 +140,7 @@ afterEvaluate {
 
 cargo {
     // The directory of the Cargo.toml to build.
-    module = '../ffi'
+    module = '../bundle'
 
     // The Android NDK API level to target.
     apiLevel = 21

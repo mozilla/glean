@@ -244,6 +244,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "glean-bundle"
+version = "1.0.0"
+dependencies = [
+ "glean-ffi",
+]
+
+[[package]]
 name = "glean-core"
 version = "39.1.0"
 dependencies = [
