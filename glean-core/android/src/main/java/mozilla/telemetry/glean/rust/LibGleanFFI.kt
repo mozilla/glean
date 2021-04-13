@@ -6,6 +6,7 @@
 
 package mozilla.telemetry.glean.rust
 
+import android.util.Log
 import com.sun.jna.Library
 import com.sun.jna.Native
 import com.sun.jna.Pointer
@@ -62,23 +63,33 @@ internal fun Pointer.getRustString(): String {
     return this.getString(0, "utf8")
 }
 
+/**
+ * Load the provided library by name.
+ * If it can't be loaded try loading `libxul.so` instead.
+ * If that also fails, give up and raise an exception.
+ */
+internal fun loadIndirect(libraryName: String): LibGleanFFI {
+    val lib = try {
+        Native.load(libraryName, LibGleanFFI::class.java) as LibGleanFFI
+    } catch (e: UnsatisfiedLinkError) {
+        Proxy.newProxyInstance(
+            LibGleanFFI::class.java.classLoader,
+            arrayOf(LibGleanFFI::class.java)
+        ) { _, _, _ ->
+            throw IllegalStateException("Glean functionality not available", e)
+        } as LibGleanFFI
+    }
+
+    lib.glean_enable_logging()
+    return lib
+}
+
 @Suppress("TooManyFunctions")
 internal interface LibGleanFFI : Library {
     companion object {
         private val JNA_LIBRARY_NAME = "glean_ffi"
 
-        internal var INSTANCE: LibGleanFFI = try {
-            val lib = Native.load(JNA_LIBRARY_NAME, LibGleanFFI::class.java) as LibGleanFFI
-            lib.glean_enable_logging()
-            lib
-        } catch (e: UnsatisfiedLinkError) {
-            Proxy.newProxyInstance(
-                LibGleanFFI::class.java.classLoader,
-                arrayOf(LibGleanFFI::class.java)
-            ) { _, _, _ ->
-                throw IllegalStateException("Glean functionality not available", e)
-            } as LibGleanFFI
-        }
+        internal var INSTANCE: LibGleanFFI = loadIndirect(JNA_LIBRARY_NAME)
     }
 
     // Important: strings returned from rust as *mut char must be Pointers on this end, returning a
