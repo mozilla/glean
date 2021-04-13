@@ -528,7 +528,8 @@ jobs:
       - run:
           name: Install new carthage
           command: |
-            brew upgrade carthage
+            time brew update
+            time brew upgrade carthage
       - run:
           name: Set Ruby Version
           command: echo 'chruby ruby-2.7.2' >> ~/.bash_profile
@@ -635,7 +636,8 @@ jobs:
       - run:
           name: Install new carthage
           command: |
-            brew upgrade carthage
+            time brew update
+            time brew upgrade carthage
       - install-rustup
       - setup-rust-toolchain
       - run:
