@@ -51,7 +51,7 @@ pub use crate::error::{Error, ErrorKind, Result};
 pub use crate::error_recording::{test_get_num_recorded_errors, ErrorType};
 use crate::event_database::EventDatabase;
 pub use crate::histogram::HistogramType;
-use crate::internal_metrics::{CoreMetrics, DatabaseMetrics};
+use crate::internal_metrics::{AdditionalMetrics, CoreMetrics, DatabaseMetrics};
 use crate::internal_pings::InternalPings;
 use crate::metrics::{Metric, MetricType, PingType};
 use crate::ping::PingMaker;
@@ -174,6 +174,7 @@ pub struct Glean {
     data_store: Option<Database>,
     event_data_store: EventDatabase,
     core_metrics: CoreMetrics,
+    additional_metrics: AdditionalMetrics,
     database_metrics: DatabaseMetrics,
     internal_pings: InternalPings,
     data_path: PathBuf,
@@ -213,24 +214,35 @@ impl Glean {
             let _scanning_thread = upload_manager.scan_pending_pings_directories();
         }
 
-        Ok(Self {
+        let (start_time, start_time_is_corrected) = local_now_with_offset();
+        let this = Self {
             upload_enabled: cfg.upload_enabled,
             // In the subprocess, we want to avoid accessing the database entirely.
             // The easiest way to ensure that is to just not initialize it.
             data_store: None,
             event_data_store,
             core_metrics: CoreMetrics::new(),
+            additional_metrics: AdditionalMetrics::new(),
             database_metrics: DatabaseMetrics::new(),
             internal_pings: InternalPings::new(),
             upload_manager,
             data_path: PathBuf::from(&cfg.data_path),
             application_id,
             ping_registry: HashMap::new(),
-            start_time: local_now_with_offset(),
+            start_time,
             max_events: cfg.max_events.unwrap_or(DEFAULT_MAX_EVENTS),
             is_first_run: false,
             debug: DebugOptions::new(),
-        })
+        };
+
+        // Can't use `local_now_with_offset_and_record` above, because we needed a valid `Glean` first.
+        if start_time_is_corrected {
+            this.additional_metrics
+                .invalid_timezone_offset
+                .add(&this, 1);
+        }
+
+        Ok(this)
     }
 
     /// Creates and initializes a new Glean object.
@@ -631,14 +643,14 @@ impl Glean {
                 // that is the only way to know *if* it will be submitted). The
                 // implication of this is that the count for a metrics ping will
                 // be included in the *next* metrics ping.
-                self.core_metrics
+                self.additional_metrics
                     .pings_submitted
                     .get(&ping.name)
                     .add(&self, 1);
 
                 if let Err(e) = ping_maker.store_ping(&self.get_data_path(), &ping) {
                     log::warn!("IO error while writing ping to file: {}. Enqueuing upload of what we have in memory.", e);
-                    self.core_metrics.io_errors.add(self, 1);
+                    self.additional_metrics.io_errors.add(self, 1);
                     let content = ::serde_json::to_string(&ping.content)?;
                     self.upload_manager.enqueue_ping(
                         self,
