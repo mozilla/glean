@@ -11,7 +11,7 @@
 # for additional information.
 
 ---
-$schema: moz://mozilla.org/schemas/glean/metrics/1-0-0
+$schema: moz://mozilla.org/schemas/glean/metrics/2-0-0
 
 glean.internal.metrics:
   android_sdk_version:
