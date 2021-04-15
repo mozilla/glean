@@ -12,7 +12,6 @@ plugins {
 }
 
 apply plugin: 'com.android.library'
-apply plugin: 'org.mozilla.rust-android-gradle.rust-android'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'org.jetbrains.dokka-android'
@@ -37,9 +36,6 @@ android {
         minSdkVersion rootProject.ext.build['minSdkVersion']
         targetSdkVersion rootProject.ext.build['targetSdkVersion']
 
-        // TODO: 1551691 Get the version from git tag...? Also, we need to select a
-        // version that won't conflict with legacy glean-ac versions.
-        buildConfigField("String", "LIBRARY_VERSION", "\"0.1\"")
         // Carefully escape the string here so it will support `\` in
         // Windows paths correctly.
         buildConfigField("String", "GLEAN_PING_SCHEMA_PATH", JsonOutput.toJson(GLEAN_PING_SCHEMA_PATH.path))
@@ -102,10 +98,6 @@ android {
 }
 
 afterEvaluate {
-    android.sourceSets.debug.jniLibs.srcDirs = android.sourceSets.main.jniLibs.srcDirs
-    android.sourceSets.release.jniLibs.srcDirs = android.sourceSets.main.jniLibs.srcDirs
-    android.sourceSets.main.jniLibs.srcDirs = []
-
     jacoco {
       toolVersion = "0.8.4"
     }
@@ -138,25 +130,6 @@ afterEvaluate {
     }
 }
 
-cargo {
-    // The directory of the Cargo.toml to build.
-    module = '../bundle'
-
-    // The Android NDK API level to target.
-    apiLevel = 21
-
-    // Where Cargo writes its outputs.
-    targetDirectory = '../../target'
-
-    libname = 'glean_ffi'
-
-    targets = rootProject.ext.rustTargets
-
-    profile = rootProject.ext.cargoProfile
-
-    extraCargoBuildArguments = rootProject.ext.extraCargoBuildArguments
-}
-
 configurations {
     // There's an interaction between Gradle's resolution of dependencies with different types
     // (@jar, @aar) for `implementation` and `testImplementation` and with Android Studio's built-in
@@ -177,6 +150,8 @@ configurations {
 dependencies {
     jnaForTest "net.java.dev.jna:jna:$versions.jna@jar"
     implementation "net.java.dev.jna:jna:$versions.jna@aar"
+
+    implementation project(":glean-native")
 
     // Note: the following version must be kept in sync
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$versions.kotlin"
@@ -215,32 +190,8 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:$versions.androidx_espresso"
 }
 
-afterEvaluate {
-    // The `cargoBuild` task isn't available until after evaluation.
-    android.libraryVariants.all { variant ->
-        def productFlavor = ""
-        variant.productFlavors.each {
-            productFlavor += "${it.name.capitalize()}"
-        }
-        def buildType = "${variant.buildType.name.capitalize()}"
-
-        tasks["generate${productFlavor}${buildType}Assets"].dependsOn(tasks["cargoBuild"])
-
-        // Don't merge the jni lib folders until after the Rust libraries have been built
-        tasks["merge${productFlavor}${buildType}JniLibFolders"].dependsOn(tasks["cargoBuild"])
-
-        // For unit tests.
-        tasks["process${productFlavor}${buildType}UnitTestJavaRes"].dependsOn(tasks["cargoBuild"])
-    }
-}
-
-apply from: "$rootDir/publish.gradle"
-// If using jnaForTestConfiguration
-// please also update the corresponding .buildconfig-android.yml
-// `publishedArtifacts` property.
-ext.configurePublish(
-        /* jnaForTestConfiguration= */ configurations.jnaForTest
-)
+apply from: "$projectDir/publish.gradle"
+ext.configurePublish()
 
 tasks.register("docs", org.jetbrains.dokka.gradle.DokkaAndroidTask) {
     moduleName = "glean"
