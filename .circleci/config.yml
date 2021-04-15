@@ -72,7 +72,7 @@ commands:
             sudo apt install python3-pip
             pip3 install glean_parser
             glean_parser coverage --allow-reserved -c glean_coverage.txt -f codecovio -o codecov.json glean-core/metrics.yaml
-            bash <(curl -s https://codecov.io/bash) -X yaml -f codecov.json
+            bin/codecov.sh -X yaml -f codecov.json
 
   install-rustup:
     steps:
