@@ -251,6 +251,8 @@ except:
                 args "--allow-missing-files"
                 args "-f"
                 args "markdown"
+                args "--option"
+                args "introduction_extra=\"For another view of these metrics, see the [Glean Dictionary](https://dictionary.protosaur.dev/)\""
                 args "-o"
                 args gleanDocsDirectory
 
