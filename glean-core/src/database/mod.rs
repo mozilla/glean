@@ -793,6 +793,76 @@ mod test {
     }
 
     #[test]
+    #[cfg(windows)]
+    fn windows_invalid_utf16_panicfree() {
+        use std::ffi::OsString;
+        use std::os::windows::prelude::*;
+
+        // Here the values 0x0066 and 0x006f correspond to 'f' and 'o'
+        // respectively. The value 0xD800 is a lone surrogate half, invalid
+        // in a UTF-16 sequence.
+        let source = [0x0066, 0x006f, 0xD800, 0x006f];
+        let os_string = OsString::from_wide(&source[..]);
+        let os_str = os_string.as_os_str();
+        let dir = tempdir().unwrap();
+        let path = dir.path().join(os_str);
+
+        let res = Database::new(&path, false);
+        assert!(
+            res.is_err(),
+            "Database should fail at {}: {:?}",
+            path.display(),
+            res
+        );
+    }
+
+    #[test]
+    #[cfg(target_os = "linux")]
+    fn linux_invalid_utf8_panicfree() {
+        use std::ffi::OsStr;
+        use std::os::unix::ffi::OsStrExt;
+
+        // Here, the values 0x66 and 0x6f correspond to 'f' and 'o'
+        // respectively. The value 0x80 is a lone continuation byte, invalid
+        // in a UTF-8 sequence.
+        let source = [0x66, 0x6f, 0x80, 0x6f];
+        let os_str = OsStr::from_bytes(&source[..]);
+        let dir = tempdir().unwrap();
+        let path = dir.path().join(os_str);
+
+        let res = Database::new(&path, false);
+        assert!(
+            res.is_ok(),
+            "Database should not fail at {}: {:?}",
+            path.display(),
+            res
+        );
+    }
+
+    #[test]
+    #[cfg(target_os = "macos")]
+    fn macos_invalid_utf8_panicfree() {
+        use std::ffi::OsStr;
+        use std::os::unix::ffi::OsStrExt;
+
+        // Here, the values 0x66 and 0x6f correspond to 'f' and 'o'
+        // respectively. The value 0x80 is a lone continuation byte, invalid
+        // in a UTF-8 sequence.
+        let source = [0x66, 0x6f, 0x80, 0x6f];
+        let os_str = OsStr::from_bytes(&source[..]);
+        let dir = tempdir().unwrap();
+        let path = dir.path().join(os_str);
+
+        let res = Database::new(&path, false);
+        assert!(
+            res.is_err(),
+            "Database should not fail at {}: {:?}",
+            path.display(),
+            res
+        );
+    }
+
+    #[test]
     fn test_data_dir_rkv_inits() {
         let dir = tempdir().unwrap();
         Database::new(dir.path(), false).unwrap();
