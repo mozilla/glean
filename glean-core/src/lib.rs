@@ -120,7 +120,7 @@ pub struct Configuration {
     /// Whether upload should be enabled.
     pub upload_enabled: bool,
     /// Path to a directory to store all data in.
-    pub data_path: String,
+    pub data_path: PathBuf,
     /// The application ID (will be sanitized during initialization).
     pub application_id: String,
     /// The name of the programming language used by the binding creating this instance of Glean.
