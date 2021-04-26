@@ -20,7 +20,7 @@ buildscript {
         mockito: '2.28.2',  // This is different than a-c, but we're fine, it's only tests.
         mockwebserver: '4.9.1', // This is different than a-c, but we're fine, it's only tests.
         kotlin: '1.4.10',
-        robolectric: '4.2.1', // This is different than a-c, but we're fine, it's only tests.
+        robolectric: '4.5.1', // This is different than a-c, but we're fine, it's only tests.
         rust_android_plugin: '0.8.3',
 
         // Android X dependencies
