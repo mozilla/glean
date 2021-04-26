@@ -69,15 +69,23 @@ internal fun Pointer.getRustString(): String {
  * If that also fails, give up and raise an exception.
  */
 internal fun loadIndirect(libraryName: String): LibGleanFFI {
+    // N.B.: We might want to load libxul first.
     val lib = try {
         Native.load(libraryName, LibGleanFFI::class.java) as LibGleanFFI
     } catch (e: UnsatisfiedLinkError) {
-        Proxy.newProxyInstance(
-            LibGleanFFI::class.java.classLoader,
-            arrayOf(LibGleanFFI::class.java)
-        ) { _, _, _ ->
-            throw IllegalStateException("Glean functionality not available", e)
-        } as LibGleanFFI
+        Log.d("glean/loadIndirect", "Failed to load $libraryName")
+        try {
+            Log.d("glean/loadIndirect", "Trying to load libxul directly")
+            Native.load("xul", LibGleanFFI::class.java) as LibGleanFFI
+        } catch (e: UnsatisfiedLinkError) {
+            Log.w("glean/loadIndirect", "Failed to load libxul. Can't use Glean.")
+            Proxy.newProxyInstance(
+                LibGleanFFI::class.java.classLoader,
+                arrayOf(LibGleanFFI::class.java)
+            ) { _, _, _ ->
+                throw IllegalStateException("Glean functionality not available", e)
+            } as LibGleanFFI
+        }
     }
 
     lib.glean_enable_logging()
