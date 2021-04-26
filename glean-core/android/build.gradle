@@ -61,9 +61,11 @@ android {
     }
 
     sourceSets {
-        main.jniLibs.srcDirs += "$buildDir/nativeLibs/android"
         test.resources.srcDirs += "$buildDir/rustJniLibs/desktop"
-        test.resources.srcDirs += "$buildDir/nativeLibs/desktop"
+        // Add glean-native's build directory to our resource path so that
+        // we can actually find it during tests. (Unfortunately, each project
+        // has their own build dir)
+        test.resources.srcDirs += "${project(':glean-native').buildDir}/rustJniLibs/desktop"
     }
 
     // Uncomment to include debug symbols in native library builds.
@@ -188,6 +190,22 @@ dependencies {
 
     androidTestImplementation "androidx.test:runner:$versions.androidx_test"
     androidTestImplementation "androidx.test.espresso:espresso-core:$versions.androidx_espresso"
+}
+
+evaluationDependsOn(":glean-native")
+afterEvaluate {
+    // The `cargoBuild` task isn't available until after evaluation.
+    android.libraryVariants.all { variant ->
+        def productFlavor = ""
+        variant.productFlavors.each {
+            productFlavor += "${it.name.capitalize()}"
+        }
+        def buildType = "${variant.buildType.name.capitalize()}"
+        tasks["merge${productFlavor}${buildType}JniLibFolders"].dependsOn(project(':glean-native').tasks["cargoBuild"])
+
+        // For unit tests.
+        tasks["process${productFlavor}${buildType}UnitTestJavaRes"].dependsOn(project(':glean-native').tasks["cargoBuild"])
+    }
 }
 
 apply from: "$projectDir/publish.gradle"
