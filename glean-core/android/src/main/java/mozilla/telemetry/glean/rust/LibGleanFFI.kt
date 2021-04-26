@@ -72,14 +72,22 @@ internal fun loadIndirect(libraryName: String): LibGleanFFI {
     val lib = try {
         Native.load(libraryName, LibGleanFFI::class.java) as LibGleanFFI
     } catch (e: UnsatisfiedLinkError) {
-        Proxy.newProxyInstance(
-            LibGleanFFI::class.java.classLoader,
-            arrayOf(LibGleanFFI::class.java)
-        ) { _, _, _ ->
-            throw IllegalStateException("Glean functionality not available", e)
-        } as LibGleanFFI
+        Log.i("glean/loadIndirect", "Failed to load $libraryName")
+        try {
+            Log.i("glean/loadIndirect", "Trying to load libxul directly")
+            Native.load("xul", LibGleanFFI::class.java) as LibGleanFFI
+        } catch (e: UnsatisfiedLinkError) {
+            Log.w("glean/loadIndirect", "Failed to load libxul. Can't use Glean.")
+            Proxy.newProxyInstance(
+                LibGleanFFI::class.java.classLoader,
+                arrayOf(LibGleanFFI::class.java)
+            ) { _, _, _ ->
+                throw IllegalStateException("Glean functionality not available", e)
+            } as LibGleanFFI
+        }
     }
 
+    Log.e("glean/loadIndirect", "Glean loaded. Continue.")
     lib.glean_enable_logging()
     return lib
 }
