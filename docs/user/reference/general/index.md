@@ -34,7 +34,7 @@ The following steps are required for applications using the Glean SDK, but not l
 >
 > This does not apply to special builds where telemetry is disabled at build time. In that case, it is acceptable to not call `initialize` at all.
 
-{{#include ../../shared/tab_header.md}}
+{{#include ../../../shared/tab_header.md}}
 
 <div data-lang="Kotlin" class="tab">
 
@@ -205,7 +205,7 @@ GleanInstance.Initialize(
 
 </div>
 
-{{#include ../../shared/tab_footer.md}}
+{{#include ../../../shared/tab_footer.md}}
 
 ## Behavior when uninitialized
 
@@ -219,7 +219,7 @@ Built-in pings are only available after initialization.
 
 ## Enabling and disabling metrics
 
-{{#include ../../shared/tab_header.md}}
+{{#include ../../../shared/tab_header.md}}
 
 <div data-lang="Kotlin" class="tab">
 
@@ -261,7 +261,7 @@ Set the initial state using `uploadEnabled` on `GleanInstance.initialize()`.
 
 </div>
 
-{{#include ../../shared/tab_footer.md}}
+{{#include ../../../shared/tab_footer.md}}
 
 The application should provide some form of user interface to call this method.
 

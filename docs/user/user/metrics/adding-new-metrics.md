@@ -209,7 +209,7 @@ While this may seem limiting, this is required to:
 
 One thing to note is that we try to adhere to the coding conventions of each language wherever possible, to the metric name in the `metrics.yaml` (which is in `snake_case`) may be changed to some other case convention, such as `camelCase`, when used from code.
 
-{{#include ../../shared/tab_header.md}}
+{{#include ../../../shared/tab_header.md}}
 
 <div data-lang="Kotlin" class="tab">
 
@@ -267,6 +267,6 @@ TODO. To be implemented in [this bug](https://bugzilla.mozilla.org/show_bug.cgi?
 
 </div>
 
-{{#include ../../shared/tab_footer.md}}
+{{#include ../../../shared/tab_footer.md}}
 
 [lean-data]: https://www.mozilla.org/en-US/about/policy/lean-data/stay-lean/

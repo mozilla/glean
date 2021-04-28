@@ -10,7 +10,7 @@ To encourage using the testing API, it is also possible to [generate testing cov
 
 ## General test API method semantics
 
-{{#include ../../shared/tab_header.md}}
+{{#include ../../../shared/tab_header.md}}
 
 <div data-lang="Kotlin" class="tab">
 
@@ -161,7 +161,7 @@ TODO. To be implemented in [bug 1648448](https://bugzilla.mozilla.org/show_bug.c
 
 </div>
 
-{{#include ../../shared/tab_footer.md}}
+{{#include ../../../shared/tab_footer.md}}
 
 ## Testing metrics for custom pings
 
@@ -181,7 +181,7 @@ GleanMetrics.Foo.uriCount.testGetValue("customPing")
 
 ## Example of using the test API
 
-{{#include ../../shared/tab_header.md}}
+{{#include ../../../shared/tab_header.md}}
 
 <div data-lang="Kotlin" class="tab">
 
@@ -267,7 +267,7 @@ TODO. To be implemented in [bug 1648448](https://bugzilla.mozilla.org/show_bug.c
 
 </div>
 
-{{#include ../../shared/tab_footer.md}}
+{{#include ../../../shared/tab_footer.md}}
 
 ## Generating testing coverage reports
 
