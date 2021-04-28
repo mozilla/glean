@@ -26,13 +26,13 @@
     Generally, when a metric is no longer needed, it should simply be removed. This does not affect the availability of data already collected by the pipeline.
   - `never`: This metric never expires.
   - `expired`: This metric is manually expired.
-  
+
 ## Optional metric parameters
 
 - `lifetime`: Defines the lifetime of the metric. Different lifetimes affect when the metrics value is reset.
 
-{{#include lifetimes-parameters.md}}
-    
+{{#include ../../_includes/lifetimes-parameters.md}}
+
 - `send_in_pings`: Defines which pings the metric should be sent on. If not specified, the metric is sent on the "default ping", which is the `events` ping for events and the `metrics` ping for everything else. Most metrics don't need to specify this unless they are sent on [custom pings](pings/custom.md).
 
 - `disabled`: (default: `false`) Data collection for this metric is disabled.

@@ -81,7 +81,7 @@ If the metric is still needed after its expiration date, it should go back for [
 
 The `lifetime` parameter of a metric defines when its value will be cleared. There are three lifetime options available:
 
-{{#include lifetimes-parameters.md}}
+{{#include ../../_includes/lifetimes-parameters.md}}
 
 While lifetimes are important to understand for all metric types, they are particularly important for the metric types that record single values and don't aggregate on the client (`boolean`, `string`, `labeled_string`, `string_list`, `datetime` and `uuid`), since these metrics will send the "last known" value and missing the earlier values could be a form of unintended data loss.
 
