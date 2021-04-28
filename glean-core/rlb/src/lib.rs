@@ -187,6 +187,8 @@ pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) {
                 language_binding_name: LANGUAGE_BINDING_NAME.into(),
                 max_events: cfg.max_events,
                 delay_ping_lifetime_io: cfg.delay_ping_lifetime_io,
+                app_build: client_info.app_build.clone(),
+                use_core_mps: true,
             };
 
             let glean = match Glean::new(core_cfg) {
@@ -361,6 +363,7 @@ pub fn shutdown() {
     }
 
     crate::launch_with_glean_mut(|glean| {
+        glean_core::cancel_metrics_ping_scheduler();
         glean.set_dirty_flag(false);
     });
 

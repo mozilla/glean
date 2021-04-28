@@ -38,6 +38,7 @@ mod internal_metrics;
 mod internal_pings;
 pub mod metrics;
 pub mod ping;
+mod scheduler;
 pub mod storage;
 mod system;
 pub mod traits;
@@ -97,7 +98,12 @@ pub fn setup_glean(glean: Glean) -> Result<()> {
     // calling `initialize` on the global singleton and further operations check that it has been
     // initialized.
     if GLEAN.get().is_none() {
-        if GLEAN.set(Mutex::new(glean)).is_err() {
+        if GLEAN.set(Mutex::new(glean)).is_ok() {
+            let glean = &GLEAN.get().unwrap().lock().unwrap();
+            if glean.schedule_metrics_pings {
+                scheduler::schedule(&glean);
+            }
+        } else {
             log::warn!(
                 "Global Glean object is initialized already. This probably happened concurrently."
             )
@@ -129,6 +135,11 @@ pub struct Configuration {
     pub max_events: Option<usize>,
     /// Whether Glean should delay persistence of data from metrics with ping lifetime.
     pub delay_ping_lifetime_io: bool,
+    /// The application's build identifier. If this is different from the one provided for a previous init,
+    /// and use_core_mps is `true`, we will trigger a "metrics" ping.
+    pub app_build: String,
+    /// Whether Glean should schedule "metrics" pings.
+    pub use_core_mps: bool,
 }
 
 /// The object holding meta information about a Glean instance.
@@ -147,6 +158,8 @@ pub struct Configuration {
 ///     upload_enabled: true,
 ///     max_events: None,
 ///     delay_ping_lifetime_io: false,
+///     app_build: "".into(),
+///     use_core_mps: false,
 /// };
 /// let mut glean = Glean::new(cfg).unwrap();
 /// let ping = PingType::new("sample", true, false, vec![]);
@@ -185,6 +198,8 @@ pub struct Glean {
     is_first_run: bool,
     upload_manager: PingUploadManager,
     debug: DebugOptions,
+    app_build: String,
+    schedule_metrics_pings: bool,
 }
 
 impl Glean {
@@ -208,7 +223,7 @@ impl Glean {
             /* seconds per interval */ 60, /* max pings per interval */ 15,
         );
 
-        // We only scan the pending ping sdirectories when calling this from a subprocess,
+        // We only scan the pending ping directories when calling this from a subprocess,
         // when calling this from ::new we need to scan the directories after dealing with the upload state.
         if scan_directories {
             let _scanning_thread = upload_manager.scan_pending_pings_directories();
@@ -233,6 +248,9 @@ impl Glean {
             max_events: cfg.max_events.unwrap_or(DEFAULT_MAX_EVENTS),
             is_first_run: false,
             debug: DebugOptions::new(),
+            app_build: cfg.app_build.to_string(),
+            // Subprocess doesn't use "metrics" pings so has no need for a scheduler.
+            schedule_metrics_pings: false,
         };
 
         // Can't use `local_now_with_offset_and_record` above, because we needed a valid `Glean` first.
@@ -288,6 +306,9 @@ impl Glean {
             }
         }
 
+        // We set this only for non-subprocess situations.
+        glean.schedule_metrics_pings = cfg.use_core_mps;
+
         // We only scan the pendings pings directories **after** dealing with the upload state.
         // If upload is disabled, we delete all pending pings files
         // and we need to do that **before** scanning the pending pings folder
@@ -311,6 +332,8 @@ impl Glean {
             upload_enabled,
             max_events: None,
             delay_ping_lifetime_io: false,
+            app_build: "unknown".into(),
+            use_core_mps: false,
         };
 
         let mut glean = Self::new(cfg).unwrap();
@@ -1000,6 +1023,12 @@ impl Glean {
 pub fn get_timestamp_ms() -> u64 {
     const NANOS_PER_MILLI: u64 = 1_000_000;
     zeitstempel::now() / NANOS_PER_MILLI
+}
+
+/// Instructs the Metrics Ping Scheduler's thread to exit cleanly.
+/// If Glean was configured with `use_core_mps: false`, this has no effect.
+pub fn cancel_metrics_ping_scheduler() {
+    scheduler::cancel();
 }
 
 // Split unit tests to a separate file, to reduce the file of this one.
