@@ -32,7 +32,7 @@ The Glean SDK can automatically generate Markdown documentation for metrics and 
 ext.gleanGenerateMarkdownDocs = true
 ```
 
-Flipping the feature to `true` will generate a `metrics.md` file in `$projectDir/docs` at build-time.
+Flipping the feature to `true` will generate a `metrics.md` file in `$projectDir/docs` at build-time. In general this is not necessary for projects using Mozilla's data ingestion infrastructure: in those cases human-readable documentation will automatically be viewable via the [Glean Dictionary](https://dictionary.telemetry.mozilla.org).
 
 ## `gleanDocsDirectory`
 
