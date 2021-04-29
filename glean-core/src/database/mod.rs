@@ -235,6 +235,21 @@ impl Database {
     /// It also loads any Lifetime::Ping data that might be
     /// persisted, in case `delay_ping_lifetime_io` is set.
     pub fn new(data_path: &Path, delay_ping_lifetime_io: bool) -> Result<Self> {
+        #[cfg(all(windows, not(feature = "rkv-safe-mode")))]
+        {
+            // The underlying lmdb wrapper implementation
+            // cannot actually handle non-UTF8 paths on Windows.
+            // It will unconditionally panic if passed one.
+            // See
+            // https://github.com/mozilla/lmdb-rs/blob/df1c2f56e3088f097c719c57b9925ab51e26f3f4/src/environment.rs#L43-L53
+            //
+            // To avoid this, in case we're using LMDB on Windows (that's just testing now though),
+            // we simply error out earlier.
+            if data_path.to_str().is_none() {
+                return Err(crate::Error::utf8_error());
+            }
+        }
+
         let path = data_path.join("db");
         log::debug!("Database path: {:?}", path.display());
         let file_size = database_size(&path);
@@ -808,12 +823,26 @@ mod test {
         let path = dir.path().join(os_str);
 
         let res = Database::new(&path, false);
-        assert!(
-            res.is_err(),
-            "Database should fail at {}: {:?}",
-            path.display(),
-            res
-        );
+
+        #[cfg(feature = "rkv-safe-mode")]
+        {
+            assert!(
+                res.is_ok(),
+                "Database should succeed at {}: {:?}",
+                path.display(),
+                res
+            );
+        }
+
+        #[cfg(not(feature = "rkv-safe-mode"))]
+        {
+            assert!(
+                res.is_err(),
+                "Database should fail at {}: {:?}",
+                path.display(),
+                res
+            );
+        }
     }
 
     #[test]
