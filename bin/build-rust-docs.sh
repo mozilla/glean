@@ -32,6 +32,41 @@ rm -rf build/docs
 mkdir -p build/docs
 echo '<meta http-equiv=refresh content=0;url=book/index.html>' > build/docs/index.html
 
+# Add redirections for all pages moved on the restructuring done on Bug 1708204
+# Android Specific Information
+mkdir -p build/docs/book/user/android/
+echo '<meta http-equiv=refresh content=0;url=../../impl/android/android-build-configuration-options.html>' > build/docs/book/user/android/android-build-configuration-options.html
+echo '<meta http-equiv=refresh content=0;url=../../impl/android/android-offline-builds.html>' > build/docs/book/user/android/android-offline-builds.html
+echo '<meta http-equiv=refresh content=0;url=../impl/android/instrument-android-crashes-example.html>' > build/docs/book/user/instrument-android-crashes-example.html
+echo '<meta http-equiv=refresh content=0;url=../../impl/android/index.html>' > build/docs/book/user/android/index.html
+# General API
+echo '<meta http-equiv=refresh content=0;url=../reference/general/index.html>' > build/docs/book/user/general-api.html
+# Metrics API
+mkdir -p build/docs/book/user/metrics/
+echo '<meta http-equiv=refresh content=0;url=../../reference/metrics/boolean.html>' > build/docs/book/user/metrics/boolean.html
+echo '<meta http-equiv=refresh content=0;url=../../reference/metrics/counter.html>' > build/docs/book/user/metrics/counter.html
+echo '<meta http-equiv=refresh content=0;url=../../reference/metrics/custom_distribution.html>' > build/docs/book/user/metrics/custom_distribution.html
+echo '<meta http-equiv=refresh content=0;url=../../reference/metrics/datetime.html>' > build/docs/book/user/metrics/datetime.html
+echo '<meta http-equiv=refresh content=0;url=../../reference/metrics/event.html>' > build/docs/book/user/metrics/event.html
+echo '<meta http-equiv=refresh content=0;url=../../reference/metrics/index.html>' > build/docs/book/user/metrics/index.html
+echo '<meta http-equiv=refresh content=0;url=../../reference/metrics/labeled_booleans.html>' > build/docs/book/user/metrics/labeled_booleans.html
+echo '<meta http-equiv=refresh content=0;url=../../reference/metrics/labeled_counters.html>' > build/docs/book/user/metrics/labeled_counters.html
+echo '<meta http-equiv=refresh content=0;url=../../reference/metrics/labeled_strings.html>' > build/docs/book/user/metrics/labeled_strings.html
+echo '<meta http-equiv=refresh content=0;url=../../reference/metrics/memory_distribution.html>' > build/docs/book/user/metrics/memory_distribution.html
+echo '<meta http-equiv=refresh content=0;url=../../reference/metrics/quantity.html>' > build/docs/book/user/metrics/quantity.html
+echo '<meta http-equiv=refresh content=0;url=../../reference/metrics/rate.html>' > build/docs/book/user/metrics/rate.html
+echo '<meta http-equiv=refresh content=0;url=../../reference/metrics/string.html>' > build/docs/book/user/metrics/string.html
+echo '<meta http-equiv=refresh content=0;url=../../reference/metrics/string_list.html>' > build/docs/book/user/metrics/string_list.html
+echo '<meta http-equiv=refresh content=0;url=../../reference/metrics/timespan.html>' > build/docs/book/user/metrics/timespan.html
+echo '<meta http-equiv=refresh content=0;url=../../reference/metrics/timing_distribution.html>' > build/docs/book/user/metrics/timing_distribution.html
+echo '<meta http-equiv=refresh content=0;url=../../reference/metrics/uuid.html>' > build/docs/book/user/metrics/uuid.html
+# YAML Format
+echo '<meta http-equiv=refresh content=0;url=../reference/yaml/index.html>' > build/docs/book/user/metric-parameters.html
+# Metrics User's Guides
+echo '<meta http-equiv=refresh content=0;url=metrics/adding-new-metrics.html>' > build/docs/book/user/adding-new-metrics.html
+echo '<meta http-equiv=refresh content=0;url=metrics/error-reporting.html>' > build/docs/book/user/error-reporting.html
+echo '<meta http-equiv=refresh content=0;url=metrics/testing-metrics.html>' > build/docs/book/user/testing-metrics.html
+
 mkdir -p build/docs/book
 cp -a docs/user/book/. build/docs/book
 
