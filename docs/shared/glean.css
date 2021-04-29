@@ -21,9 +21,18 @@
     background-color: #ddd;
 }
 
+.tabbar button.disabled:hover {
+    background-color: inherit;
+}
+
 /* Create an active/current tablink class */
 .tabbar button.active {
     background-color: #ccc;
+}
+
+.tabbar button.disabled {
+    color: #ccc;
+    cursor: not-allowed;
 }
 
 /* The container that holds all of the tab contents */
