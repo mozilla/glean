@@ -55,12 +55,12 @@ This section of the book contains reference pages for Glean’s user facing APIs
 
 If you are looking for information a specific Glean API, this is the section you should check out.
 
-### [Language Binding Specific Information](./language-bindings/android/index.html)
+### [Language Binding Information](./language-bindings/android/index.html)
 
 This section contains guides and essays regarding specific usage information
 and possibilities in each of Glean's language bindings.
 
-Check out this section for important information on the language binding you are using.
+Check out this section for information on the language binding you are using.
 
 ### Appendix
 
