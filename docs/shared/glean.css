@@ -1,3 +1,20 @@
+
+/* API Reference Titles */
+
+a.header code {
+    background-color: rgba(230, 230, 230, 0.8);
+    display: inline-block;
+    padding: 0 5px;
+    border-radius: 3px;
+    color: black;
+    font-weight: bold;
+    transition: all 150ms ease-in-out;
+}
+
+a.header code:hover {
+    background-color: rgba(230, 230, 230, 1);
+}
+
 /* Style the tab */
 .tabbar {
     overflow: hidden;
