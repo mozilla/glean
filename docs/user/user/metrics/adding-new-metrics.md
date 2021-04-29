@@ -26,9 +26,9 @@ If the value is a string, use a [string metric](../../reference/metrics/string.h
 
 > **Beware:** string metrics are exceedingly general, and you are probably best served by selecting the most specific metric for the job, since you'll get better error checking and richer analysis tools for free. For example, avoid storing a number in a string metric --- you probably want a [counter metric]../..(/reference/metrics/counter.html) instead.
 
-If you need to store multiple string values in a metric, use a [string list metric]../..(/reference/metrics/string_list.html). For example, you may want to record the list of other Mozilla products installed on the device.
+If you need to store multiple string values in a metric, use a [string list metric](../../reference/metrics/string_list.html). For example, you may want to record the list of other Mozilla products installed on the device.
 
-<!-- TODO: If you do know the list of values you might store and you just want to record their presence, consider using a [labeled boolean]../..(/reference/metrics/labeled_boolean.html) instead. -->
+<!-- TODO: If you do know the list of values you might store and you just want to record their presence, consider using a [labeled boolean](../../reference/metrics/labeled_boolean.html) instead. -->
 
 <!-- If you have a related set of metrics that you want to record strings for, and you don't know the things the strings relate to at build time, use a [labeled string metric](../../reference/metrics/labeled_strings.html). -->
 
@@ -36,7 +36,7 @@ For all of the metric types in this section that measure single values, it is es
 
 ### Are you counting things?
 
-If you want to know how many times something happened, use a [counter metric](../../reference/metrics/counter.html).  If you are counting a group of related things, or you don't know what all of the things to count are at build time, use a [labeled counter metric]../..(/reference/metrics/labeled_counters.html).
+If you want to know how many times something happened, use a [counter metric](../../reference/metrics/counter.html).  If you are counting a group of related things, or you don't know what all of the things to count are at build time, use a [labeled counter metric](../../reference/metrics/labeled_counters.html).
 
 If you need to know how many times something happened relative to the number of times something else happened,
 use a [rate metric](../../reference/metrics/rate.html).
@@ -52,7 +52,7 @@ If you need to record how long something takes you have a few options.
 If you need to measure the total time spent doing a particular task, look to the [timespan metric](../../reference/metrics/timespan.html). Timespan metrics allow specifying the resolution they are collected at, and to stay [lean][lean-data], they should only be collected at the minimum resolution required to answer your question.
 Note that this metric should only be used to measure time on a single thread. If multiple overlapping timespans are measured for the same metric, an invalid state error is recorded.
 
-If you need to measure the relative occurrences of many timings, use a [timing distribution]../..(/reference/metrics/timing_distribution.html). It builds a histogram of timing measurements, and is safe to record multiple concurrent timespans on different threads.
+If you need to measure the relative occurrences of many timings, use a [timing distribution](../../reference/metrics/timing_distribution.html). It builds a histogram of timing measurements, and is safe to record multiple concurrent timespans on different threads.
 
 If you need to know the time between multiple distinct actions that aren't a simple "begin" and "end" pair, consider using an [event](../../reference/metrics/event.html).
 
