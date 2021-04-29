@@ -49,7 +49,7 @@ Glean's built-in error reporting mechanism.
 
 If you want to start using Glean to report data, this is the section you should read.
 
-### [API Reference](./user/reference/yaml/index.html)
+### [API Reference](./reference/yaml/index.html)
 
 This section of the book contains reference pages for Glean’s user facing APIs.
 
@@ -60,7 +60,7 @@ If you are looking for information a specific Glean API, this is the section you
 This section contains guides and essays regarding specific usage's
 and possibilities in each Glean implementation.
 
-Make sure to check out this section for important information on the implementation of Glean you are using.
+Check out this section for important information on the implementation of Glean you are using.
 
 ### Appendix
 
