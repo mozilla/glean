@@ -44,7 +44,7 @@
     - [Quantity](reference/metrics/quantity.md)
     - [Rate](reference/metrics/rate.md)
 
-# Implementation Specific Information
+# Language Bindings Information
 
 - [Android](language-bindings/android/index.md)
     - [Android build configuration options](language-bindings/android/android-build-configuration-options.md)
