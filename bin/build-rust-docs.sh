@@ -35,10 +35,10 @@ echo '<meta http-equiv=refresh content=0;url=book/index.html>' > build/docs/inde
 # Add redirections for all pages moved on the restructuring done on Bug 1708204
 # Android Specific Information
 mkdir -p build/docs/book/user/android/
-echo '<meta http-equiv=refresh content=0;url=../../impl/android/android-build-configuration-options.html>' > build/docs/book/user/android/android-build-configuration-options.html
-echo '<meta http-equiv=refresh content=0;url=../../impl/android/android-offline-builds.html>' > build/docs/book/user/android/android-offline-builds.html
-echo '<meta http-equiv=refresh content=0;url=../impl/android/instrument-android-crashes-example.html>' > build/docs/book/user/instrument-android-crashes-example.html
-echo '<meta http-equiv=refresh content=0;url=../../impl/android/index.html>' > build/docs/book/user/android/index.html
+echo '<meta http-equiv=refresh content=0;url=../../language-bindings/android/android-build-configuration-options.html>' > build/docs/book/user/android/android-build-configuration-options.html
+echo '<meta http-equiv=refresh content=0;url=../../language-bindings/android/android-offline-builds.html>' > build/docs/book/user/android/android-offline-builds.html
+echo '<meta http-equiv=refresh content=0;url=../language-bindings/android/instrument-android-crashes-example.html>' > build/docs/book/user/instrument-android-crashes-example.html
+echo '<meta http-equiv=refresh content=0;url=../../language-bindings/android/index.html>' > build/docs/book/user/android/index.html
 # General API
 echo '<meta http-equiv=refresh content=0;url=../reference/general/index.html>' > build/docs/book/user/general-api.html
 # Metrics API

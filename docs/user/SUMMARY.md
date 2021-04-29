@@ -46,10 +46,10 @@
 
 # Implementation Specific Information
 
-- [Android](impl/android/index.md)
-    - [Android build configuration options](impl/android/android-build-configuration-options.md)
-    - [Android offline builds](impl/android/android-offline-builds.md)
-    - [Instrumenting Android crashes with the Glean SDK](impl/android/instrument-android-crashes-example.md)
+- [Android](language-bindings/android/index.md)
+    - [Android build configuration options](language-bindings/android/android-build-configuration-options.md)
+    - [Android offline builds](language-bindings/android/android-offline-builds.md)
+    - [Instrumenting Android crashes with the Glean SDK](language-bindings/android/instrument-android-crashes-example.md)
 # Appendix
 
 - [Glossary](appendix/glossary.md)
