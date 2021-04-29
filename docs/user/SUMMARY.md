@@ -1,6 +1,6 @@
 [Glean](README.md)
 
-# User's Guides
+# User Guides
 
 - [Adding Glean to your project](user/adding-glean-to-your-project.md)
 - [Metrics](user/metrics/adding-new-metrics.md)

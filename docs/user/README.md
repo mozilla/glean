@@ -38,7 +38,7 @@ file a bug in [Bugzilla in Data Platform & Tools :: Glean.js][gleanjs-bugs].
 > if you want to use Glean.js and is missing some key Glean feature.
 ## Sections
 
-### [User's Guides](./user/adding-glean-to-your-project.html)
+### [User Guides](./user/adding-glean-to-your-project.html)
 
 This section of the book contains mostly step-by-step guides and essays detailing how to
 achieve specific tasks with Glean.
@@ -57,7 +57,7 @@ If you are looking for information a specific Glean API, this is the section you
 
 ### [Language Binding Specific Information](./language-bindings/android/index.html)
 
-This section contains guides and essays regarding specific usage's
+This section contains guides and essays regarding specific usage information
 and possibilities in each of Glean's language bindings.
 
 Check out this section for important information on the language binding you are using.

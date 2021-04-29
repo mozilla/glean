@@ -62,7 +62,7 @@ echo '<meta http-equiv=refresh content=0;url=../../reference/metrics/timing_dist
 echo '<meta http-equiv=refresh content=0;url=../../reference/metrics/uuid.html>' > build/docs/book/user/metrics/uuid.html
 # YAML Format
 echo '<meta http-equiv=refresh content=0;url=../reference/yaml/index.html>' > build/docs/book/user/metric-parameters.html
-# Metrics User's Guides
+# Metrics User Guides
 echo '<meta http-equiv=refresh content=0;url=metrics/adding-new-metrics.html>' > build/docs/book/user/adding-new-metrics.html
 echo '<meta http-equiv=refresh content=0;url=metrics/error-reporting.html>' > build/docs/book/user/error-reporting.html
 echo '<meta http-equiv=refresh content=0;url=metrics/testing-metrics.html>' > build/docs/book/user/testing-metrics.html
