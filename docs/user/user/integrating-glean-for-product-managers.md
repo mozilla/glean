@@ -37,7 +37,7 @@ It is important to have a solid telemetry plan (see above) so we can make sure t
 
 ## (Optional) New metric types
 
-The Glean SDK has a number of different metric types that it can collect.  
+The Glean SDK has a number of [different metric types](https://mozilla.github.io/glean/book/user/metrics/index.html) that it can collect.  
 Metric types provide "guardrails" to make sure that telemetry is being collected correctly, and to present the data at analysis time more automatically.
 Occasionally, products need to collect data that doesn't fit neatly into one of the available metric types.
 Glean [has a process](https://wiki.mozilla.org/Glean/Adding_or_changing_Glean_metric_types) to request and introduce more metric types and we will work with you to design something appropriate.
