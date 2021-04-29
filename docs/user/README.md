@@ -38,7 +38,7 @@ file a bug in [Bugzilla in Data Platform & Tools :: Glean.js][gleanjs-bugs].
 > if you want to use Glean.js and is missing some key Glean feature.
 ## Sections
 
-### [Using Glean](./user/index.html)
+### [Using Glean](./user/adding-glean-to-your-project.html)
 
 In this section we describe how to use Glean in your own libraries and applications.
 It explains the first steps of integrating Glean into your project, choosing the right metric type for you,

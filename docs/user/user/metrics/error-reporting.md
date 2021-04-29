@@ -3,7 +3,7 @@
 The Glean SDK records the number of errors that occur when metrics are passed invalid data or are otherwise used incorrectly.
 This information is reported back in special labeled counter metrics in the `glean.error` category.
 Error metrics are included in the same pings as the metric that caused the error.
-Additionally, error metrics are always sent in the [`metrics` ping](pings/metrics.md) ping.
+Additionally, error metrics are always sent in the [`metrics` ping](../pings/metrics.md) ping.
 
 The following categories of errors are recorded:
 

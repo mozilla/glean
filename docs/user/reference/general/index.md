@@ -3,8 +3,8 @@
 The Glean SDK has a minimal API available on its top-level `Glean` object.
 This API allows one to enable and disable upload, register [custom pings][custom-pings] and set [experiment data][experiments-api].
 
-[custom-pings]: pings/custom.md
-[experiments-api]: experiments-api.md
+[custom-pings]: ../../user/pings/custom.md
+[experiments-api]: ../../user/experiments-api.md
 
 > **Important:** The Glean SDK should only be initialized from the main application, not individual libraries.
 
@@ -69,7 +69,7 @@ class SampleApplication : Application() {
 }
 ```
 
-Once initialized, if `uploadEnabled` is true, the Glean SDK will automatically start collecting [baseline metrics](pings/metrics.md) and sending its [pings](pings/index.md), according to their respective schedules.
+Once initialized, if `uploadEnabled` is true, the Glean SDK will automatically start collecting [baseline metrics](../../user/pings/metrics.md) and sending its [pings](../../user/pings/index.md), according to their respective schedules.
 If `uploadEnabled` is false, any persisted metrics, events and pings (other than `first_run_date` and `first_run_hour`) are cleared, and subsequent calls to record metrics will be no-ops.
 
 The Glean SDK should be initialized as soon as possible, and importantly, before any other libraries in the application start using Glean.
@@ -140,7 +140,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 }
 ```
 
-Once initialized, if `uploadEnabled` is true, the Glean SDK will automatically start collecting [baseline metrics](pings/metrics.md) and sending its [pings](pings/index.md), according to their respective schedules.
+Once initialized, if `uploadEnabled` is true, the Glean SDK will automatically start collecting [baseline metrics](../../user/pings/metrics.md) and sending its [pings](../../user/pings/index.md), according to their respective schedules.
 If `uploadEnabled` is false, any persisted metrics, events and pings (other than `first_run_date` and `first_run_hour`) are cleared, and subsequent calls to record metrics will be no-ops.
 
 The Glean SDK should be initialized as soon as possible, and importantly, before any other libraries in the application start using Glean.
@@ -173,13 +173,13 @@ Glean.initialize(
 )
 ```
 
-Once initialized, if `upload_enabled` is true, the Glean SDK will automatically start collecting [baseline metrics](pings/metrics.md).
+Once initialized, if `upload_enabled` is true, the Glean SDK will automatically start collecting [baseline metrics](../../user/pings/metrics.md).
 If `upload_enabled` is false, any persisted metrics, events and pings (other than `first_run_date` and `first_run_hour`) are cleared, and subsequent calls to record metrics will be no-ops.
 
 Additional configuration is available on the `glean.Configuration` object, which can be passed into `Glean.initialize()`.
 
 Unlike Android and Swift, the Python bindings do not automatically send any pings.
-See the [custom pings documentation](pings/custom.md) about adding custom pings and sending them.
+See the [custom pings documentation](../../user/pings/custom.md) about adding custom pings and sending them.
 
 </div>
 
@@ -265,5 +265,5 @@ Set the initial state using `uploadEnabled` on `GleanInstance.initialize()`.
 
 The application should provide some form of user interface to call this method.
 
-When going from enabled to disabled, all pending events, metrics and pings are cleared, except for [`first_run_date` and `first_run_hour`](pings/index.html#the-client_info-section).
+When going from enabled to disabled, all pending events, metrics and pings are cleared, except for [`first_run_date` and `first_run_hour`](../../user/pings/index.html#the-client_info-section).
 When re-enabling, core Glean metrics will be recomputed at that time.

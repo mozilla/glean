@@ -16,7 +16,7 @@ It is written as a set of [templates](https://github.com/mozilla-services/mozill
 
 ### Boolean
 
-A [Boolean](../../../book/user/metrics/boolean.md) is represented by its boolean value.
+A [Boolean](../../../book/reference/metrics/boolean.md) is represented by its boolean value.
 
 #### Example
 
@@ -27,7 +27,7 @@ true
 
 ### Counter
 
-A [Counter](../../../book/user/metrics/counter.md) is represented by its integer value.
+A [Counter](../../../book/reference/metrics/counter.md) is represented by its integer value.
 
 #### Example
 
@@ -37,7 +37,7 @@ A [Counter](../../../book/user/metrics/counter.md) is represented by its integer
 
 ### Quantity
 
-A [Quantity](../../../book/user/metrics/quantity.md) is represented by its integer value.
+A [Quantity](../../../book/reference/metrics/quantity.md) is represented by its integer value.
 
 #### Example
 
@@ -47,7 +47,7 @@ A [Quantity](../../../book/user/metrics/quantity.md) is represented by its integ
 
 ### String
 
-A [String](../../../book/user/metrics/string.md) is represented by its string value.
+A [String](../../../book/reference/metrics/string.md) is represented by its string value.
 
 #### Example
 
@@ -57,7 +57,7 @@ A [String](../../../book/user/metrics/string.md) is represented by its string va
 
 ### String list
 
-A [String List](../../../book/user/metrics/string_list.md) is represented as an array of strings.
+A [String List](../../../book/reference/metrics/string_list.md) is represented as an array of strings.
 
 ```json
 ["sample string", "another one"]
@@ -65,12 +65,12 @@ A [String List](../../../book/user/metrics/string_list.md) is represented as an 
 
 ### Timespan
 
-A [Timespan](../../../book/user/metrics/timespan.md) is represented as an object of their duration as an integer and the time unit.
+A [Timespan](../../../book/reference/metrics/timespan.md) is represented as an object of their duration as an integer and the time unit.
 
 | Field name | Type | Description |
 |---|---|---|
 | `value` | Integer | The value in the marked time unit. |
-| `time_unit` | String | The time unit, see the [timespan's configuration](../../../book/user/metrics/timespan.md#configuration) for valid values. |
+| `time_unit` | String | The time unit, see the [timespan's configuration](../../../book/reference/metrics/timespan.md#configuration) for valid values. |
 
 #### Example
 
@@ -83,7 +83,7 @@ A [Timespan](../../../book/user/metrics/timespan.md) is represented as an object
 
 ### Timing Distribution
 
-A [Timing distribution](../../../book/user/metrics/timing_distribution.md) is represented as an object with the following fields.
+A [Timing distribution](../../../book/reference/metrics/timing_distribution.md) is represented as an object with the following fields.
 
 | Field name | Type | Description |
 |---|---|---|
@@ -118,7 +118,7 @@ sent:      1024: 2, 1116: 1, 1217: 0, 1327: 0, 1448: 1, 1579: 0
 
 ### Memory Distribution
 
-A [Memory distribution](../../../book/user/metrics/memory_distribution.md) is represented as an object with the following fields.
+A [Memory distribution](../../../book/reference/metrics/memory_distribution.md) is represented as an object with the following fields.
 
 | Field name | Type | Description |
 |---|---|---|
@@ -142,7 +142,7 @@ See [timing distribution](#timing-distribution) for more details.
 
 ### UUID
 
-A [UUID](../../../book/user/metrics/uuid.md) is represented by the string representation of the UUID.
+A [UUID](../../../book/reference/metrics/uuid.md) is represented by the string representation of the UUID.
 
 #### Example
 
@@ -152,7 +152,7 @@ A [UUID](../../../book/user/metrics/uuid.md) is represented by the string repres
 
 ### Datetime
 
-A [Datetime](../../../book/user/metrics/datetime.md) is represented by its ISO8601 string representation, truncated to the metric's time unit.
+A [Datetime](../../../book/reference/metrics/datetime.md) is represented by its ISO8601 string representation, truncated to the metric's time unit.
 It always includes the timezone offset.
 
 #### Example
@@ -163,7 +163,7 @@ It always includes the timezone offset.
 
 ### Event
 
-[Events](../../../book/user/metrics/event.md) are represented as an array of objects, with one object for each event.
+[Events](../../../book/reference/metrics/event.md) are represented as an array of objects, with one object for each event.
 Each event object has the following keys:
 
 | Field name | Type | Description |
@@ -203,7 +203,7 @@ The maximum timestamp of the events in these pings are quite likely to exceed th
 
 ### Custom Distribution
 
-A [Custom distribution](../../../book/user/metrics/custom_distribution.md) is represented as an object with the following fields.
+A [Custom distribution](../../../book/reference/metrics/custom_distribution.md) is represented as an object with the following fields.
 
 | Field name | Type | Description |
 |---|---|---|
@@ -248,8 +248,8 @@ sent:     10: 0, 12: 2, 14: 0, 17: 0, 19: 0, 22: 1, 24: 0
 
 Currently several labeled metrics are supported:
 
-* [Labeled Counters](../../../book/user/metrics/labeled_counters.md).
-* [Labeled Strings](../../../book/user/metrics/labeled_strings.md).
+* [Labeled Counters](../../../book/reference/metrics/labeled_counters.md).
+* [Labeled Strings](../../../book/reference/metrics/labeled_strings.md).
 
 All are on the top-level represented in the same way, as an object mapping the label to the metric's value.
 See the individual metric types for details on the value payload:
@@ -268,7 +268,7 @@ See the individual metric types for details on the value payload:
 
 ### Rate
 
-A [Rate](../../../book/user/metrics/rate.md) is represented by its `numerator` and `denominator`.
+A [Rate](../../../book/reference/metrics/rate.md) is represented by its `numerator` and `denominator`.
 
 #### Example
 

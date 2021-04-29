@@ -1,8 +1,8 @@
 # Metrics
 
-> **Not sure which metric type to use?** These docs contain a [series of questions](../adding-new-metrics.html#choosing-a-metric-type) that can help. Reference information about each metric type is linked below.
+> **Not sure which metric type to use?** These docs contain a [series of questions](../../user/metrics/adding-new-metrics.html#choosing-a-metric-type) that can help. Reference information about each metric type is linked below.
 
-The parameters available that apply to any metric type are in the [metric parameters page](../metric-parameters.html).
+The parameters available that apply to any metric type are in the [metric parameters page](../yaml/index.html).
 
 There are different metrics to choose from, depending on what you want to achieve:
 
