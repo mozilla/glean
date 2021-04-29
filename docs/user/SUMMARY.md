@@ -3,7 +3,7 @@
 # User's Guides
 
 - [Adding Glean to your project](user/adding-glean-to-your-project.md)
-- [Metrics]()
+- [Metrics](user/metrics/adding-new-metrics.md)
     - [Adding new metrics](user/metrics/adding-new-metrics.md)
     - [Testing metrics](user/metrics/testing-metrics.md)
     - [Error reporting](user/metrics/error-reporting.md)
