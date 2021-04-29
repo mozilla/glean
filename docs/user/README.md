@@ -38,25 +38,29 @@ file a bug in [Bugzilla in Data Platform & Tools :: Glean.js][gleanjs-bugs].
 > if you want to use Glean.js and is missing some key Glean feature.
 ## Sections
 
-### [Using Glean](./user/adding-glean-to-your-project.html)
+### [User's Guides](./user/adding-glean-to-your-project.html)
 
-In this section we describe how to use Glean in your own libraries and applications.
-It explains the first steps of integrating Glean into your project, choosing the right metric type for you,
-debugging products that use Glean and Glean's built-in error reporting mechanism.
+This section of the book contains mostly step-by-step guides and essays detailing how to
+achieve specific tasks with Glean.
+
+It contains guides on the first steps of integrating Glean into your project,
+choosing the right metric type for you, debugging products that use Glean and
+Glean's built-in error reporting mechanism.
+
 If you want to start using Glean to report data, this is the section you should read.
 
-### [Metric Types](./user/metrics/index.html)
+### [API Reference](./user/reference/yaml/index.html)
 
-This sections lists all the metric types provided by Glean, with examples on how to define them
-and record data using them. Before diving into Glean's metric types details, don't forget to
-read the [Choosing a metric type](https://mozilla.github.io/glean/book/user/adding-new-metrics.html#choosing-a-metric-type) page.
+This section of the book contains reference pages for Glean’s user facing APIs.
 
-### [Pings](./user/pings/index.html)
+If you are looking for information a specific Glean API, this is the section you should check out.
 
-This section goes through what is a ping and how to define custom pings. A Glean client may provide
-off-the-shelf pings, such as the [`metrics`](https://mozilla.github.io/glean/book/user/pings/metrics.html)
-or [`baseline`](https://mozilla.github.io/glean/book/user/pings/baseline.html) pings. In this section,
-you will also find the descriptions and the schedules of each of these pings.
+### [Implementation Specific Information](./impl/android/index.html)
+
+This section contains guides and essays regarding specific usage's
+and possibilities in each Glean implementation.
+
+Make sure to check out this section for important information on the implementation of Glean you are using.
 
 ### Appendix
 
