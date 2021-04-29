@@ -1,4 +1,5 @@
 docs/*/book
+docs/*/shared/
 docs/user/appendix/changelog.md
 target
 .cargo
