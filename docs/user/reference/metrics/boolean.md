@@ -60,7 +60,14 @@ flags::a11y_enabled.set(system.is_accessibility_enabled());
 
 </div>
 
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="Javascript" class="tab">
+
+```js
+import * as flags from "./path/to/generated/files/flags.js";
+
+flags.a11yEnabled.set(this.isAccessibilityEnabled());
+```
+</div>
 
 <div data-lang="Firefox Desktop" class="tab">
 
@@ -146,7 +153,14 @@ assert!(flags::a11y_enabled.test_get_value(None).unwrap());
 
 </div>
 
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="Javascript" class="tab">
+
+```js
+import * as flags from "./path/to/generated/files/flags.js";
+
+assert(await flags.a11yEnabled.testGetValue());
+```
+</div>
 
 <div data-lang="Firefox Desktop" class="tab">
 
