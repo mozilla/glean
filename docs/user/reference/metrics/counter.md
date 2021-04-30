@@ -73,7 +73,7 @@ Increases the counter by a certain amount. If no amount is passed it defaults to
   ```js
   import * as controls from "./path/to/generated/files/controls.js";
 
-  controls.refreshPressed.add(1); // Adds 1 to the counter.
+  controls.refreshPressed.add(); // Adds 1 to the counter.
   controls.refreshPressed.add(5); // Adds 5 to the counter.
   ```
 </div>
