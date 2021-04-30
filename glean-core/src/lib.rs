@@ -282,7 +282,7 @@ impl Glean {
                         // Temporarily enable uploading so we can submit a
                         // deletion request ping.
                         glean.upload_enabled = true;
-                        glean.on_upload_disabled();
+                        glean.on_upload_disabled(true);
                     }
                 }
             }
@@ -412,7 +412,7 @@ impl Glean {
             if flag {
                 self.on_upload_enabled();
             } else {
-                self.on_upload_disabled();
+                self.on_upload_disabled(false);
             }
             true
         } else {
@@ -446,10 +446,15 @@ impl Glean {
     /// A deletion_request ping is sent, all pending metrics, events and queued
     /// pings are cleared, and the client_id is set to KNOWN_CLIENT_ID.
     /// Afterward, the upload_enabled flag is set to false.
-    fn on_upload_disabled(&mut self) {
+    fn on_upload_disabled(&mut self, during_init: bool) {
         // The upload_enabled flag should be true here, or the deletion ping
         // won't be submitted.
-        if let Err(err) = self.internal_pings.deletion_request.submit(self, None) {
+        let reason = if during_init {
+            Some("at_init")
+        } else {
+            Some("set_upload_enabled")
+        };
+        if let Err(err) = self.internal_pings.deletion_request.submit(self, reason) {
             log::error!("Failed to submit deletion-request ping on optout: {}", err);
         }
         self.clear_metrics();
