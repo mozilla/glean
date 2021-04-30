@@ -316,6 +316,21 @@ def test_event_enum_is_generated_correctly():
     } == metrics.environment.event_example.test_get_value()[0].extra
 
 
+def test_event_class_is_generated_correctly():
+    metrics = load_metrics(
+        ROOT.parent / "data" / "events_with_types.yaml", config={"allow_reserved": False}
+    )
+
+    metrics.core.preference_toggled.record(
+        metrics.core.PreferenceToggledClass(preference="value1", enabled=True)
+    )
+
+    assert {
+        "preference": "value1",
+        "enabled": "true",
+    } == metrics.core.preference_toggled.test_get_value()[0].extra
+
+
 def test_the_convenient_extrakeys_api():
     class ClickKeys(metrics.EventExtras):
         def __init__(self, object_id: Optional[str] = None, other: Optional[str] = None) -> None:
