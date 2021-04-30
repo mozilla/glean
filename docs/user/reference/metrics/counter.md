@@ -68,7 +68,15 @@ Increases the counter by a certain amount. If no amount is passed it defaults to
   controls::refresh_pressed.add(5); // Adds 5 to the counter.
   ```
 </div>
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="Javascript" class="tab">
+
+  ```js
+  import * as controls from "./path/to/generated/files/controls.js";
+
+  controls.refreshPressed.add(1); // Adds 1 to the counter.
+  controls.refreshPressed.add(5); // Adds 5 to the counter.
+  ```
+</div>
 <div data-lang="Firefox Desktop" class="tab">
 
   **C++**
@@ -158,7 +166,14 @@ assert_eq!(6, controls::refresh_pressed.test_get_value(None).unwrap());
 
 </div>
 
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="Javascript" class="tab">
+
+  ```js
+  import * as controls from "./path/to/generated/files/controls.js";
+
+  assert.strictEqual(6, await controls.refreshPressed.testGetValue());
+  ```
+</div>
 
 <div data-lang="Firefox Desktop" class="tab">
 
