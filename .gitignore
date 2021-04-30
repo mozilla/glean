@@ -51,7 +51,7 @@ dist/
 /samples/csharp/.venv/
 
 # local stuff
-data/
+/data/
 glean-core/data
 glean_app*
 !glean_app.c

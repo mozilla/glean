@@ -156,6 +156,7 @@ class EventMetricType:
                    This is used for events where additional richer context is needed.
                    The maximum length for values is 100.
         """
+
         @Dispatcher.launch
         def record():
             keys, values = extra.to_ffi_extra()
@@ -169,7 +170,9 @@ class EventMetricType:
                 nextra,
             )
 
-    def _record_dict(self, timestamp: int, extra: Optional[Dict[int, str]] = None) -> None:
+    def _record_dict(
+        self, timestamp: int, extra: Optional[Dict[int, str]] = None
+    ) -> None:
         """
         Record an event by using the information provided by the instance of
         this class.
@@ -180,6 +183,7 @@ class EventMetricType:
                 where additional richer context is needed. The maximum length
                 for values is 100.
         """
+
         @Dispatcher.launch
         def record():
             if extra is None:
