@@ -82,7 +82,12 @@ function switchAllTabs(language) {
             button.classList.add("tablinks");
             if (!tabcontent.innerHTML) {
                 button.classList.add("disabled");
-                button.title = `${tabcontent.dataset.lang} does not provide this API`;
+                if (!tabcontent.dataset.bug) {
+                    button.title = `${tabcontent.dataset.lang} does not provide this API`;
+                } else {
+                    button.title =
+                        `${tabcontent.dataset.lang} does not provide this API yet. \nFollow https://bugzilla.mozilla.org/show_bug.cgi?id=${tabcontent.dataset.bug} for updates.`;
+                }
             } else {
                 button.onclick = onClickTab;
             }

@@ -323,7 +323,7 @@ assert_eq!(
 
 <div data-lang="Javascript" class="tab"></div>
 
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab" data-bug="1683171"></div>
 
 {{#include ../../../shared/tab_footer.md}}
 
