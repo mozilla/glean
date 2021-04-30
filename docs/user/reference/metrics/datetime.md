@@ -78,7 +78,15 @@ install::first_run.set(Some(custom_date)); // Records a custom datetime
 
 </div>
 
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="Javascript" class="tab">
+
+```js
+import * as install from "./path/to/generated/files/install.js";
+
+install.firstRun.set(); // Records "now"
+install.firstRun.set(new Date("March 25, 2019 00:00:00")); // Records a custom datetime
+```
+</div>
 
 <div data-lang="Firefox Desktop" class="tab">
 
@@ -146,7 +154,15 @@ assert_eq!(expected_date, metrics.install.first_run.test_get_value(None));
 
 </div>
 
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="Javascript" class="tab">
+
+```js
+import * as install from "./path/to/generated/files/install.js";
+
+const expectedDate = new Date("March 25, 2019 00:00:00");
+assert.deepStrictEqual(expectedDate, await install.firstRun.testGetValue());
+```
+</div>
 
 <div data-lang="Firefox Desktop" class="tab">
 
@@ -222,7 +238,14 @@ assert "2019-03-25-05:00" == metrics.install.first_run.test_get_value_as_str()
 
 <div data-lang="Rust" class="tab"></div>
 
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="Javascript" class="tab">
+
+```js
+import * as install from "./path/to/generated/files/install.js";
+
+assert.strictEqual("2019-03-25-05:00", await install.firstRun.testGetValueAsString());
+```
+</div>
 
 <div data-lang="Firefox Desktop" class="tab"></div>
 
