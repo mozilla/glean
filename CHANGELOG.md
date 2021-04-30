@@ -8,6 +8,7 @@
   * Implement an additional check to avoid crash due to faulty timezone offset ([#1581](https://github.com/mozilla/glean/pull/1581))
     * This now records a new metric `glean.time.invalid_timezone_offset`, counting how often we failed to get a valid timezone offset.
   * Use proper paths throughout to hopefully handle non-UTF-8 paths more gracefully ([#1596](https://github.com/mozilla/glean/pull/1596))
+  * Updated `glean_parser` version to 3.2.0 ([#1609](https://github.com/mozilla/glean/pull/1608))
 * iOS
   * Code generator: Ensure at least pip 20.3 is available in iOS build ([#1590](https://github.com/mozilla/glean/pull/1590))
 
