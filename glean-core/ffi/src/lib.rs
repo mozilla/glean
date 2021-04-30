@@ -8,6 +8,7 @@ use std::convert::TryFrom;
 use std::ffi::CStr;
 use std::os::raw::c_char;
 use std::panic::UnwindSafe;
+use std::path::PathBuf;
 
 use ffi_support::{define_string_destructor, ConcurrentHandleMap, FfiStr, IntoFfi};
 
@@ -242,6 +243,7 @@ impl TryFrom<&FfiConfiguration<'_>> for glean_core::Configuration {
 
     fn try_from(cfg: &FfiConfiguration) -> Result<Self, Self::Error> {
         let data_path = cfg.data_dir.to_string_fallible()?;
+        let data_path = PathBuf::from(data_path);
         let application_id = cfg.package_name.to_string_fallible()?;
         let language_binding_name = cfg.language_binding_name.to_string_fallible()?;
         let upload_enabled = cfg.upload_enabled != 0;
