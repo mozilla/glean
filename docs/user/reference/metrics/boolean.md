@@ -258,7 +258,7 @@ flags:
 ```
 
 For a full reference on metrics parameters common to all metric types,
-refer to the metrics [YAML format](../yaml/index.md) referece page.
+refer to the metrics [YAML format](../yaml/index.md) reference page.
 
 ### Extra metric parameters
 
