@@ -14,7 +14,7 @@ This guide aims to provide context for answering both questions.
 ## Where to add new content?
 
 This book is divided in five different sections. Each section contains pages that are of a specific
-type. New content will fit in one of these section. Following is an explainer on what kind of content
+type. New content will fit in one of these section. Following is an explanation on what kind of content
 fits in each section.
 
 ### Overview
@@ -37,7 +37,7 @@ how to create pings, and so on.
 Pages on this section may link to the API Reference pages, but should not
 themselves be API References.
 
-Guides can be quite long, thus we should favour having one page per language binding instead
+Guides can be quite long, thus we should favor having one page per language binding instead
 of using tabs.
 
 ### API Reference
@@ -80,14 +80,15 @@ The appendix contains support information related to the Glean SDK or the conten
 
 Each page of the book should be written as if it were the first page a user is visiting ever.
 There should be links to other pages of the book wherever there is missing context in the
-current page.
+current page. This is important, because documentations are first and foremost reference books,
+manuals. They should not be expected to be read in order.
 
 #### Prefer using headers whenever a new topic is introduced
 
-[mdBook]() (the tool used to build this book) turns all headers into links. Which is useful to
-refer to specific documentation sections.
+[mdbook](https://rust-lang.github.io/mdBook/index.html) (the tool used to build this book) turns
+all headers into links. Which is useful to refer to specific documentation sections.
 
-#### Favour creating new pages, instead of adding unrelated content to an already existing page
+#### Favor creating new pages, instead of adding unrelated content to an already existing page
 
 This makes it easier to find content through the Summary.
 
@@ -96,8 +97,8 @@ This makes it easier to find content through the Summary.
 #### Tabs
 
 Tabs are useful for providing small code examples of Glean's APIs for each language binding.
-A tabs section starts with the `tab_header` [include]() and ends with the `tab_footer` [include]().
-Each tab is declared in between these [include]() statements.
+A tabs section starts with the `tab_header` [include](https://rust-lang.github.io/mdBook/format/mdbook.html#including-files) and ends with the `tab_footer` [include](https://rust-lang.github.io/mdBook/format/mdbook.html#including-files).
+Each tab is declared in between these [include](https://rust-lang.github.io/mdBook/format/mdbook.html#including-files) statements.
 
 Each tab content is placed inside an html `div` tag with the `data-lang` and `class="tab"` attributes.
 The `data-lang` attribute contains the title of the tab. Titles must match for different tabs on the
@@ -169,33 +170,33 @@ And this is how those tabs will look like:
 
 {{#include ../../shared/tab_footer.md}}
 
-#### Custom blockquotes
+#### Custom block quotes
 
 Sometimes it is necessary to bring attention to a special piece of information, or simply to provide
 extra context related to the a given text.
 
-In order to do that, there are three custom blockquote formats available.
+In order to do that, there are three custom block quote formats available.
 
 {{#include ../../shared/blockquote-info.html}}
 
 ##### Info quote
 
-> An information blockquote format, to provide useful extra context for a given text.
+> An information block quote format, to provide useful extra context for a given text.
 
 {{#include ../../shared/blockquote-warning.html}}
 
 ##### Warning quote
 
-> A warning blockquote format, to provide useful warning relate to a given text.
+> A warning block quote format, to provide useful warning related to a given text.
 
 {{#include ../../shared/blockquote-stop.html}}
 
 ##### Stop quote
 
-> A stronger warning blockquote format, to provide useful warning relate to a given text in
+> A stronger warning block quote format, to provide useful warning related to a given text in
 > a more emphatic format. Use these sparingly.
 
-To include such quotes, again you can use mdBook [include]() statements.
+To include such quotes, again you can use mdbook [include](https://rust-lang.github.io/mdBook/format/mdbook.html#including-files) statements.
 
 For the above quotes, this is the corresponding code.
 
@@ -210,15 +211,15 @@ For the above quotes, this is the corresponding code.
 
 ##### Warning quote
 
-> A warning blockquote format, to provide useful warning relate to a given text.
+> A warning blockquote format, to provide useful warning related to a given text.
 
 \{{#include ../../shared/blockquote-stop.html}}
 
 ##### Stop quote
 
-> A stronger warning blockquote format, to provide useful warning relate to a given text in a
+> A stronger warning blockquote format, to provide useful warning related to a given text in a
 > more emphatic format. Use these sparingly.
 ```
 
-It is possible to use any level header with these special blockquotes
+It is possible to use any level header with these special block quotes
 and also no header at all.

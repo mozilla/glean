@@ -213,7 +213,7 @@ footer#open-on-gh {
 .special-quote+h3,
 .special-quote+h4,
 .special-quote+h5 {
-    margin: -40px 0 18px;
+    margin: -40px 0 17px;
     margin-top: -40px;
     padding-left: 55px;
     font-size: 1.6rem;
@@ -268,4 +268,14 @@ footer#open-on-gh {
 
 .special-quote.special-quote-stop {
     color: #fd0808;
+}
+
+.special-quote.special-quote-stop,
+.special-quote.special-quote-stop+blockquote,
+.special-quote.special-quote-stop+h1+blockquote,
+.special-quote.special-quote-stop+h2+blockquote,
+.special-quote.special-quote-stop+h3+blockquote,
+.special-quote.special-quote-stop+h4+blockquote,
+.special-quote.special-quote-stop+h5+blockquote {
+    border-color: #fd0808 !important;
 }
