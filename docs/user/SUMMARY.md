@@ -55,3 +55,4 @@
 - [Glossary](appendix/glossary.md)
 - [Changelog](appendix/changelog.md)
 - [This Week in Glean](appendix/twig.md)
+- [Contribution Guidelines](appendix/contribution-guidelines.md)
