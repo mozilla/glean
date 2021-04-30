@@ -1,22 +1,12 @@
 # Boolean
 
-Booleans are used for simple flags, for example "is a11y enabled"?.
+Boolean metrics are used for reporting simple flags.
 
-## Configuration
+## Recording API
 
-Say you're adding a boolean to record whether a11y is enabled on the device. First you need to add an entry for the boolean to the `metrics.yaml` file:
+### `set`
 
-```YAML
-flags:
-  a11y_enabled:
-    type: boolean
-    description: >
-      Records whether a11y is enabled on the device.
-    lifetime: application
-    ...
-```
-
-## API
+Sets a boolean metric to a specific value.
 
 {{#include ../../../shared/tab_header.md}}
 
@@ -26,17 +16,6 @@ flags:
 import org.mozilla.yourApplication.GleanMetrics.Flags
 
 Flags.a11yEnabled.set(System.isAccesibilityEnabled())
-```
-
-There are test APIs available too:
-
-```Kotlin
-import org.mozilla.yourApplication.GleanMetrics.Flags
-
-// Was anything recorded?
-assertTrue(Flags.a11yEnabled.testHasValue())
-// Does it have the expected value?
-assertTrue(Flags.a11yEnabled.testGetValue())
 ```
 
 </div>
@@ -49,17 +28,6 @@ import org.mozilla.yourApplication.GleanMetrics.Flags;
 Flags.INSTANCE.a11yEnabled.set(System.isAccessibilityEnabled());
 ```
 
-There are test APIs available too:
-
-```Java
-import org.mozilla.yourApplication.GleanMetrics.Flags;
-
-// Was anything recorded?
-assertTrue(Flags.INSTANCE.a11yEnabled.testHasValue());
-// Does it have the expected value?
-assertTrue(Flags.INSTANCE.a11yEnabled.testGetValue());
-```
-
 </div>
 
 
@@ -67,17 +35,6 @@ assertTrue(Flags.INSTANCE.a11yEnabled.testGetValue());
 
 ```Swift
 Flags.a11yEnabled.set(self.isAccessibilityEnabled)
-```
-
-There are test APIs available too:
-
-```Swift
-@testable import Glean
-
-// Was anything recorded?
-XCTAssertTrue(Flags.a11yEnabled.testHasValue())
-// Does the counter have the expected value?
-XCTAssertTrue(try Flags.a11yEnabled.testGetValue())
 ```
 
 </div>
@@ -91,89 +48,117 @@ metrics = load_metrics("metrics.yaml")
 metrics.flags.a11y_enabled.set(is_accessibility_enabled())
 ```
 
-There are test APIs available too:
+</div>
 
-```Python
-# Was anything recorded?
-assert metrics.flags.a11y_enabled.test_has_value()
-# Does it have the expected value?
-assert True is metrics.flags.a11y_enabled.test_get_value()
+<div data-lang="Rust" class="tab">
+
+```
+use glean_metrics;
+
+flags::a11y_enabled.set(system.is_accessibility_enabled());
 ```
 
 </div>
 
-<div data-lang="C#" class="tab">
+<div data-lang="Javascript" class="tab"></div>
 
-```C#
-using static Mozilla.YourApplication.GleanMetrics.FlagsOuter;
+<div data-lang="Firefox Desktop" class="tab">
 
-Flags.a11yEnabled.Set(System.IsAccessibilityEnabled());
+**C++**
+
+```cpp
+#include "mozilla/glean/GleanMetrics.h"
+
+mozilla::glean::flags::a11y_enabled.Set(false);
 ```
 
-There are test APIs available too:
+**Javascript**
 
-```C#
-using static Mozilla.YourApplication.GleanMetrics.FlagsOuter;
+```js
+Glean.flags.a11yEnabled.set(false);
+```
 
-// Was anything recorded?
-Assert.True(Flags.a11yEnabled.TestHasValue());
-// Does it have the expected value?
-Assert.True(Flags.a11yEnabled.TestGetValue());
+</div>
+
+{{#include ../../../shared/tab_footer.md}}
+
+#### Recorded errors
+
+N/A
+
+## Testing API
+
+### `testGetValue`
+
+Gets the recorded value for a given boolean metric.
+
+{{#include ../../../shared/tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Flags
+
+assertTrue(Flags.a11yEnabled.testGetValue())
+```
+
+</div>
+
+<div data-lang="Java" class="tab">
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Flags;
+
+assertTrue(Flags.INSTANCE.a11yEnabled.testGetValue());
+```
+
+</div>
+
+
+<div data-lang="Swift" class="tab">
+
+```Swift
+@testable import Glean
+
+XCTAssertTrue(try Flags.a11yEnabled.testGetValue())
+```
+
+</div>
+
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+assert True is metrics.flags.a11y_enabled.test_get_value()
 ```
 
 </div>
 
 <div data-lang="Rust" class="tab">
 
-```rust
-use glean_metrics;
-
-flags::a11y_enabled.set(system.is_accessibility_enabled());
 ```
-
-There are test APIs available too:
-
-```rust
 use glean_metrics;
 
-// Was anything recorded?
-assert!(flags::a11y_enabled.test_get_value(None).is_some());
-// Does it have the expected value?
 assert!(flags::a11y_enabled.test_get_value(None).unwrap());
 ```
 
 </div>
 
-<div data-lang="C++" class="tab">
+<div data-lang="Javascript" class="tab"></div>
 
-> **Note**: C++ APIs are only available in Firefox Desktop.
+<div data-lang="Firefox Desktop" class="tab">
 
-```c++
-#include "mozilla/glean/GleanMetrics.h"
+**C++**
 
-mozilla::glean::flags::a11y_enabled.Set(false);
-```
-
-There are test APIs available too:
-
-```c++
+```cpp
 #include "mozilla/glean/GleanMetrics.h"
 
 ASSERT_EQ(false, mozilla::glean::flags::a11y_enabled.TestGetValue().value());
 ```
 
-</div>
-
-<div data-lang="JS" class="tab">
-
-> **Note**: JS APIs are currently only available in Firefox Desktop.
-> General JavaScript support is coming soon via [the Glean.js project](https://github.com/mozilla/glean.js/).
-
-```js
-Glean.flags.a11yEnabled.set(false);
-```
-
-There are test APIs available too:
+**Javascript**
 
 ```js
 Assert.equal(false, Glean.flags.a11yEnabled.testGetValue());
@@ -183,17 +168,91 @@ Assert.equal(false, Glean.flags.a11yEnabled.testGetValue());
 
 {{#include ../../../shared/tab_footer.md}}
 
-## Limits
+### `testHasValue`
 
-* None.
+Whether or not **any** value was recorded for a given boolean metric.
 
-## Examples
+{{#include ../../../shared/tab_header.md}}
 
-* Is a11y enabled?
+<div data-lang="Kotlin" class="tab">
 
-## Recorded errors
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Flags
 
-* None.
+assertTrue(Flags.a11yEnabled.testHasValue())
+```
+
+</div>
+
+<div data-lang="Java" class="tab">
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Flags;
+
+assertTrue(Flags.INSTANCE.a11yEnabled.testHasValue());
+```
+
+</div>
+
+
+<div data-lang="Swift" class="tab">
+
+```Swift
+@testable import Glean
+
+XCTAssertTrue(try Flags.a11yEnabled.testHasValue())
+```
+
+</div>
+
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+assert True is metrics.flags.a11y_enabled.test_has_value()
+```
+
+</div>
+
+<div data-lang="Rust" class="tab"></div>
+
+<div data-lang="Javascript" class="tab"></div>
+
+<div data-lang="Firefox Desktop" class="tab"></div>
+
+{{#include ../../../shared/tab_footer.md}}
+
+## Metric parameters
+
+Example boolean metric definition:
+
+```yaml
+flags:
+  a11y_enabled:
+    type: boolean
+    description: >
+      Records whether a11y is enabled on the device.
+    bugs:
+      - https://bugzilla.mozilla.org/000000
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=000000#c3
+    notification_emails:
+      - me@mozilla.com
+    expires: 2020-10-01
+```
+
+For a full reference on metrics parameters common to all metric types,
+refer to the metrics [YAML format](../yaml/index.md) referece page.
+
+### Extra metric parameters
+
+N/A
+
+## Data questions
+
+* Is accessibility enabled?
 
 ## Reference
 
