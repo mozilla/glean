@@ -4,6 +4,12 @@
 
 * General
   * **Breaking Change**: "deletion-request" pings now include the reason upload was disabled: `at_init` (Glean detected a change between runs) or `set_upload_enabled` (Glean was told of a change as it happened). ([#1593](https://github.com/mozilla/glean/pull/1593)).
+  * Attempt to upload a ping even in the face of IO Errors ([#1576](https://github.com/mozilla/glean/pull/1576)).
+  * Implement an additional check to avoid crash due to faulty timezone offset ([#1581](https://github.com/mozilla/glean/pull/1581))
+    * This now records a new metric `glean.time.invalid_timezone_offset`, counting how often we failed to get a valid timezone offset.
+  * Use proper paths throughout to hopefully handle non-UTF-8 paths more gracefully ([#1596](https://github.com/mozilla/glean/pull/1596))
+* iOS
+  * Code generator: Ensure at least pip 20.3 is available in iOS build ([#1590](https://github.com/mozilla/glean/pull/1590))
 
 # v36.0.1 (2021-04-09)
 
@@ -18,8 +24,6 @@
     Use `return@measure <val>` for early returns.
 * Python
   * The Glean Python bindings now use rkv's safe mode backend. This should avoid intermittent segfaults in the LMDB backend.
-* General
-  * Attempt to upload a ping even in the face of IO Errors ([#1576](https://github.com/mozilla/glean/pull/1576)).
 
 # v36.0.0 (2021-03-16)
 
