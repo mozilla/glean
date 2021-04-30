@@ -39,12 +39,12 @@ function switchTab(container, language) {
     const previouslyActiveTab = container.querySelector(".tabcontents .active");
     previouslyActiveTab && previouslyActiveTab.classList.remove("active");
     let tab = container.querySelector(`.tabcontents [data-lang="${language}"]`);
-    tab && tab.classList.add("active");
+    tab && tab.innerText && tab.classList.add("active");
 
     const previouslyActiveButton = container.querySelector(".tabbar .active");
     previouslyActiveButton && previouslyActiveButton.classList.remove("active");
     let button = container.querySelector(`.tabbar [data-lang="${language}"]`);
-    button && button.classList.add("active");
+    button && tab.innerText &&  button.classList.add("active");
 }
 
 /**
@@ -66,7 +66,7 @@ function switchAllTabs(language) {
 /**
  * Opens all tabs on the page to the given language on page load.
  */
-function openTabs() {
+(function openTabs() {
     if (!supportsHTML5Storage()) {
         return;
     }
@@ -79,8 +79,13 @@ function openTabs() {
         for (let tabcontent of tabcontents.children) {
             let button = document.createElement("button");
             button.dataset.lang = tabcontent.dataset.lang;
-            button.className = "tablinks";
-            button.onclick = onClickTab;
+            button.classList.add("tablinks");
+            if (!tabcontent.innerHTML) {
+                button.classList.add("disabled");
+                button.title = `${tabcontent.dataset.lang} does not provide this API`;
+            } else {
+                button.onclick = onClickTab;
+            }
             button.innerText = tabcontent.dataset.lang;
             tabs.appendChild(button);
         }
@@ -92,6 +97,4 @@ function openTabs() {
     }
 
     switchAllTabs(language);
-}
-
-openTabs()
+})();

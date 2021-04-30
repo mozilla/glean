@@ -43,4 +43,6 @@ They could be release notes, documentation, hopes, dreams, or whatever: so long 
 * 2021-01-15: [Proposals for Asynchronous Design](https://blog.mozilla.org/data/2021/01/15/this-week-in-glean-proposals-for-asynchronous-design/)
 * 2021-01-28: [The Glean Dictionary](https://blog.mozilla.org/data/2021/01/27/this-week-in-glean-the-glean-dictionary/)
 * 2021-02-24: [Boring Monitoring](https://blog.mozilla.org/data/2021/02/24/this-week-in-glean-boring-monitoring/)
+* 2021-03-16: [Reducing Release Friction](https://blog.mozilla.org/data/2021/03/16/this-week-in-glean-reducing-release-friction/)
 * 2021-04-07: [Publishing Glean.js or “How I configured an npm package that has multiple entry points”](https://blog.mozilla.org/data/2021/04/07/this-week-in-glean-publishing-glean-js/)
+* 2021-04-16: [rustc, iOS and an M1](https://blog.mozilla.org/data/2021/04/16/this-week-in-glean-rustc-ios-and-an-m1/)

@@ -17,19 +17,19 @@ helpful in following this guide.
 
 ## Setup Build Configuration
 
-Please follow the instruction in the ["Adding Glean to your project"](adding-glean-to-your-project.md) chapter in order to set up
+Please follow the instruction in the ["Adding Glean to your project"](../../user/adding-glean-to-your-project.md) chapter in order to set up
 Glean in an Android project.
 
 ### Add A Custom Metric
 
 Since crashes will be instrumented with some custom metrics, the next step will be to add a `metrics.yaml` file to define the
 metrics used to record the crash information and a `pings.yaml` file to define a custom ping which will give some control over
-the scheduling of the uploading.  See ["Adding new metrics"](adding-new-metrics.md) for more information about adding metrics.
+the scheduling of the uploading.  See ["Adding new metrics"](../../user/adding-new-metrics.md) for more information about adding metrics.
 
-What metric type should be used to represent the crash data?  While this could be implemented several ways, an [event](metrics/event.md) is an
+What metric type should be used to represent the crash data?  While this could be implemented several ways, an [event](../../reference/metrics/event.md) is an
 excellent choice, simply because events capture information in a nice concise way and they have a built-in way of passing
 additional information using the `extras` field.  If it is necessary to pass along the cause of the exception or a few lines of
-description, events let us do that easily (with [some limitations](metrics/event.md#limits)).
+description, events let us do that easily (with [some limitations](../../reference/metrics/event.md#limits)).
 
 Now that a metric type has been chosen to represent the metric, the next step is creating the `metrics.yaml`.  Inside of the
 root application folder of the Android Studio project create a new file named `metrics.yaml`.  After adding the schema
@@ -37,7 +37,7 @@ definition and event metric definition, the `metrics.yaml` should look like this
 
 ```YAML
 # Required to indicate this is a `metrics.yaml` file
-$schema: moz://mozilla.org/schemas/glean/metrics/1-0-0
+$schema: moz://mozilla.org/schemas/glean/metrics/2-0-0
 
 crash:
   exception:
@@ -72,12 +72,12 @@ and `message`.  This allows for sending additional information along with the ev
 ### Add A Custom Ping
 
 Define the custom ping that will help control the upload scheduling by creating a `pings.yaml` file in the same directory as
-the `metrics.yaml` file.  For more information about adding custom pings, see the section on [custom pings](pings/custom.md).  
+the `metrics.yaml` file.  For more information about adding custom pings, see the section on [custom pings](../../user/pings/custom.md).  
 The name of the ping will be `crash`, so the `pings.yaml` file should look like this:
 
 ```YAML
 # Required to indicate this is a `pings.yaml` file
-$schema: moz://mozilla.org/schemas/glean/pings/1-0-0
+$schema: moz://mozilla.org/schemas/glean/pings/2-0-0
 
 crash:
   description: >

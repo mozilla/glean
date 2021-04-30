@@ -1,3 +1,20 @@
+
+/* API Reference Titles */
+
+a.header code {
+    background-color: rgba(230, 230, 230, 0.8);
+    display: inline-block;
+    padding: 0 5px;
+    border-radius: 3px;
+    color: black;
+    font-weight: bold;
+    transition: all 150ms ease-in-out;
+}
+
+a.header code:hover {
+    background-color: rgba(230, 230, 230, 1);
+}
+
 /* Style the tab */
 .tabbar {
     overflow: hidden;
@@ -21,9 +38,18 @@
     background-color: #ddd;
 }
 
+.tabbar button.disabled:hover {
+    background-color: inherit;
+}
+
 /* Create an active/current tablink class */
 .tabbar button.active {
     background-color: #ccc;
+}
+
+.tabbar button.disabled {
+    color: #ccc;
+    cursor: not-allowed;
 }
 
 /* The container that holds all of the tab contents */
@@ -166,4 +192,90 @@ footer#open-on-gh {
 
 .hide {
     display: none !important;
+}
+
+/* Special block quotes */
+
+.special-quote  {
+    font-size: 20px;
+    padding: 20px 20px 20px;
+    border-top: 3px solid rgba(200, 200, 200, .3);
+    border-left: 3px solid rgba(200, 200, 200, .3);
+    border-right: 3px solid rgba(200, 200, 200, .3);
+    display: block;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    margin-top: 40px;
+}
+
+.special-quote+h1,
+.special-quote+h2,
+.special-quote+h3,
+.special-quote+h4,
+.special-quote+h5 {
+    margin: -40px 0 17px;
+    margin-top: -40px;
+    padding-left: 55px;
+    font-size: 1.6rem;
+}
+
+.special-quote+h1::before,
+.special-quote+h2::before,
+.special-quote+h3::before,
+.special-quote+h4::before,
+.special-quote+h5::before {
+    display: none;
+}
+
+.special-quote+blockquote,
+.special-quote+h1+blockquote,
+.special-quote+h2+blockquote,
+.special-quote+h3+blockquote,
+.special-quote+h4+blockquote,
+.special-quote+h5+blockquote {
+    margin-top: 0;
+    background-color: transparent !important;
+    border-bottom: 3px solid rgba(200, 200, 200, .3) !important;
+    border-left: 3px solid rgba(200, 200, 200, .3) !important;
+    border-right: 3px solid rgba(200, 200, 200, .3) !important;
+    border-top: none !important;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    padding-bottom: 7px;
+    margin-bottom: 40px;
+}
+
+.special-quote+blockquote *:first-child,
+.special-quote+h1+blockquote *:first-child,
+.special-quote+h2+blockquote *:first-child,
+.special-quote+h3+blockquote *:first-child,
+.special-quote+h4+blockquote *:first-child,
+.special-quote+h5+blockquote *:first-child   {
+    margin-top: 0 !important;
+}
+
+.special-quote+h3+blockquote {
+    margin-top: 17px;
+}
+
+.special-quote.special-quote-info {
+    color: #005aa8;
+}
+
+.special-quote.special-quote-warning {
+    color: #fdc008;
+}
+
+.special-quote.special-quote-stop {
+    color: #fd0808;
+}
+
+.special-quote.special-quote-stop,
+.special-quote.special-quote-stop+blockquote,
+.special-quote.special-quote-stop+h1+blockquote,
+.special-quote.special-quote-stop+h2+blockquote,
+.special-quote.special-quote-stop+h3+blockquote,
+.special-quote.special-quote-stop+h4+blockquote,
+.special-quote.special-quote-stop+h5+blockquote {
+    border-color: #fd0808 !important;
 }

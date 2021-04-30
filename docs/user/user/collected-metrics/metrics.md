@@ -89,10 +89,23 @@ This ping includes the [client id](https://mozilla.github.io/glean/book/user/pin
 **Data reviews for this ping:**
 
 - <https://bugzilla.mozilla.org/show_bug.cgi?id=1587095#c6>
+- <https://bugzilla.mozilla.org/show_bug.cgi?id=1702622#REPLACEME>
 
 **Bugs related to this ping:**
 
 - <https://bugzilla.mozilla.org/1587095>
+- <https://bugzilla.mozilla.org/1702622>
+
+**Reasons this ping may be sent:**
+
+- `at_init`: The ping was submitted at startup.
+      Glean discovered that between the last time it was run and this time,
+      upload of data has been disabled.
+
+- `set_upload_enabled`: The ping was submitted between Glean init and Glean shutdown.
+      Glean was told after init but before shutdown that upload has changed
+      from enabled to disabled.
+
 
 All Glean pings contain built-in metrics in the [`ping_info`](https://mozilla.github.io/glean/book/user/pings/index.html#the-ping_info-section) and [`client_info`](https://mozilla.github.io/glean/book/user/pings/index.html#the-client_info-section) sections.
 
@@ -143,6 +156,7 @@ In addition to those built-in metrics, the following metrics are added to the pi
 | glean.database.size |[memory_distribution](https://mozilla.github.io/glean/book/user/metrics/memory_distribution.html) |The size of the database file at startup.  |[Bug 1656589](https://bugzilla.mozilla.org/show_bug.cgi?id=1656589#c7)||never |1 |
 | glean.error.io |[counter](https://mozilla.github.io/glean/book/user/metrics/counter.html) |The number of times we encountered an IO error when writing a pending ping to disk.  |[Bug 1686233](https://bugzilla.mozilla.org/show_bug.cgi?id=1686233#c2)||never |1 |
 | glean.error.preinit_tasks_overflow |[counter](https://mozilla.github.io/glean/book/user/metrics/counter.html) |The number of tasks queued in the pre-initialization buffer. Only sent if the buffer overflows.  |[Bug 1609482](https://bugzilla.mozilla.org/show_bug.cgi?id=1609482#c3)||never |1 |
+| glean.time.invalid_timezone_offset |[counter](https://mozilla.github.io/glean/book/user/metrics/counter.html) |Counts the number of times we encountered an invalid timezone offset when trying to get the current time. A timezone offset is invalid if it is outside [-24h, +24h]. If invalid a UTC offset is used (+0h).  |[Bug 1611770](https://bugzilla.mozilla.org/show_bug.cgi?id=1611770#c9)||2021-06-30 |1 |
 | glean.upload.deleted_pings_after_quota_hit |[counter](https://mozilla.github.io/glean/book/user/metrics/counter.html) |The number of pings deleted after the quota for the size of the pending pings directory or number of files is hit. Since quota is only calculated for the pending pings directory, and deletion request ping live in a different directory, deletion request pings are never deleted.  |[Bug 1601550](https://bugzilla.mozilla.org/show_bug.cgi?id=1601550#c3)||never |1 |
 | glean.upload.discarded_exceeding_pings_size |[memory_distribution](https://mozilla.github.io/glean/book/user/metrics/memory_distribution.html) |The size of pings that exceeded the maximum ping size allowed for upload.  |[Bug 1597761](https://bugzilla.mozilla.org/show_bug.cgi?id=1597761#c10)||never |1 |
 | glean.upload.pending_pings |[counter](https://mozilla.github.io/glean/book/user/metrics/counter.html) |The total number of pending pings at startup. This does not include deletion-request pings.  |[Bug 1665041](https://bugzilla.mozilla.org/show_bug.cgi?id=1665041#c23)||never |1 |

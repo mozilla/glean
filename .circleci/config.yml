@@ -72,7 +72,7 @@ commands:
             sudo apt install python3-pip
             pip3 install glean_parser
             glean_parser coverage --allow-reserved -c glean_coverage.txt -f codecovio -o codecov.json glean-core/metrics.yaml
-            bash <(curl -s https://codecov.io/bash) -X yaml -f codecov.json
+            bin/codecov.sh -X yaml -f codecov.json
 
   install-rustup:
     steps:
@@ -506,7 +506,7 @@ jobs:
 
   Check Swift formatting:
     macos:
-      xcode: "12.3.0"
+      xcode: "12.4.0"
     steps:
       - checkout
       - run:
@@ -522,13 +522,14 @@ jobs:
 
   iOS build and test:
     macos:
-      xcode: "12.3.0"
+      xcode: "12.4.0"
     steps:
       - checkout
       - run:
           name: Install new carthage
           command: |
-            brew upgrade carthage
+            time brew update
+            time brew upgrade carthage
       - run:
           name: Set Ruby Version
           command: echo 'chruby ruby-2.7.2' >> ~/.bash_profile
@@ -628,14 +629,15 @@ jobs:
 
   iOS integration test:
     macos:
-      xcode: "12.3.0"
+      xcode: "12.4.0"
     steps:
       - checkout
       - skip-if-doc-only
       - run:
           name: Install new carthage
           command: |
-            brew upgrade carthage
+            time brew update
+            time brew upgrade carthage
       - install-rustup
       - setup-rust-toolchain
       - run:
@@ -703,7 +705,7 @@ jobs:
 
   Carthage release:
     macos:
-      xcode: "12.3.0"
+      xcode: "12.4.0"
     steps:
       - checkout
       - attach_workspace:
@@ -925,7 +927,7 @@ jobs:
 
   pypi-macos-release:
     macos:
-      xcode: "12.3.0"
+      xcode: "12.4.0"
     steps:
       - install-rustup
       - setup-rust-toolchain
@@ -957,7 +959,7 @@ jobs:
 
   pypi-macos-arm64-release:
     macos:
-      xcode: "12.3.0"
+      xcode: "12.4.0"
     steps:
       - install-rustup
       - setup-rust-toolchain

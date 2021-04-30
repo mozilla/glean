@@ -7,7 +7,7 @@
 # the `glean_parser` PyPI package.
 
 ---
-$schema: moz://mozilla.org/schemas/glean/pings/1-0-0
+$schema: moz://mozilla.org/schemas/glean/pings/2-0-0
 
 baseline:
   description: |
@@ -114,7 +114,18 @@ deletion-request:
   send_if_empty: true
   bugs:
     - https://bugzilla.mozilla.org/1587095
+    - https://bugzilla.mozilla.org/1702622
   data_reviews:
     - https://bugzilla.mozilla.org/show_bug.cgi?id=1587095#c6
+    - https://bugzilla.mozilla.org/show_bug.cgi?id=1702622#c2
   notification_emails:
     - glean-team@mozilla.com
+  reasons:
+    at_init: |
+      The ping was submitted at startup.
+      Glean discovered that between the last time it was run and this time,
+      upload of data has been disabled.
+    set_upload_enabled: |
+      The ping was submitted between Glean init and Glean shutdown.
+      Glean was told after init but before shutdown that upload has changed
+      from enabled to disabled.
