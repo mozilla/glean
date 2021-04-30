@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v36.0.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v37.0.0...main)
+
+# v37.0.0 (2021-04-30)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v36.0.1...v37.0.0)
 
 * General
   * **Breaking Change**: "deletion-request" pings now include the reason upload was disabled: `at_init` (Glean detected a change between runs) or `set_upload_enabled` (Glean was told of a change as it happened). ([#1593](https://github.com/mozilla/glean/pull/1593)).
