@@ -79,6 +79,10 @@ This section contains detailed notes about changes in Glean, per release.
 to communicate better about our work. They could be release notes, documentation, hopes, dreams,
 or whatever: so long as it is inspired by Glean.
 
+#### [Contribution Guidelines](./appendix/contribution-guidelines.html)
+
+This section contains detailed information on where and how to include new content to this book.
+
 ## Contact
 
 To contact the Glean team you can:
