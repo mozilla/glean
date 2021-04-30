@@ -1,7 +1,7 @@
 /**
  * Returns true if browser supports HTML5 localStorage.
  */
- function supportsHTML5Storage() {
+function supportsHTML5Storage() {
     try {
         return 'localStorage' in window && window['localStorage'] !== null;
     } catch (e) {
