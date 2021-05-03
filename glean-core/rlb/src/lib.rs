@@ -743,22 +743,16 @@ pub fn set_log_pings(value: bool) {
 ///
 /// * `tags` - A vector of at most 5 valid HTTP header values. Individual
 ///   tags must match the regex: "[a-zA-Z0-9-]{1,20}".
-///
-/// # Returns
-///
-/// This will return `false` in case `value` contains invalid tags and `true`
-/// otherwise or if the tag is set before Glean is initialized.
-pub fn set_source_tags(tags: Vec<String>) -> bool {
+pub fn set_source_tags(tags: Vec<String>) {
     if was_initialize_called() {
-        with_glean_mut(|glean| glean.set_source_tags(tags))
+        crate::launch_with_glean_mut(|glean| {
+            glean.set_source_tags(tags);
+        });
     } else {
         // Glean has not been initialized yet. Cache the provided source tags.
         let m = PRE_INIT_SOURCE_TAGS.get_or_init(Default::default);
         let mut lock = m.lock().unwrap();
         *lock = tags;
-        // When setting the source tags before initialization,
-        // we don't validate the tags, thus this function always returns true.
-        true
     }
 }
 
