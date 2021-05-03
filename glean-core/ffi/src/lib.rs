@@ -301,9 +301,7 @@ pub extern "C" fn glean_set_upload_enabled(flag: u8) {
 #[no_mangle]
 pub extern "C" fn glean_submit_ping_by_name(ping_name: FfiStr, reason: FfiStr) -> u8 {
     with_glean(|glean| {
-        Ok(glean
-            .submit_ping_by_name(&ping_name.to_string_fallible()?, reason.as_opt_str())
-            .unwrap_or(false))
+        Ok(glean.submit_ping_by_name(&ping_name.to_string_fallible()?, reason.as_opt_str()))
     })
 }
 
