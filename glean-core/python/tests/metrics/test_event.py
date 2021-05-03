@@ -316,13 +316,13 @@ def test_event_enum_is_generated_correctly():
     } == metrics.environment.event_example.test_get_value()[0].extra
 
 
-def test_event_class_is_generated_correctly():
+def test_event_extra_is_generated_correctly():
     metrics = load_metrics(
         ROOT.parent / "data" / "events_with_types.yaml", config={"allow_reserved": False}
     )
 
     metrics.core.preference_toggled.record(
-        metrics.core.PreferenceToggledClass(preference="value1", enabled=True)
+        metrics.core.PreferenceToggledExtra(preference="value1", enabled=True)
     )
 
     assert {
@@ -386,3 +386,33 @@ def test_the_convenient_extrakeys_api():
     assert "other" not in second_event.extra
 
     assert first_event.timestamp < second_event.timestamp
+
+
+def test_event_extra_does_typechecks():
+    metrics = load_metrics(
+        ROOT.parent / "data" / "events_with_types.yaml", config={"allow_reserved": False}
+    )
+
+    # Valid combinations of extras.
+    # These do not throw.
+    metrics.core.PreferenceToggledExtra(preference="value1")
+    metrics.core.PreferenceToggledExtra(enabled=True)
+    metrics.core.PreferenceToggledExtra(swapped=1)
+    extras = metrics.core.PreferenceToggledExtra(preference="value1", enabled=True, swapped=1)
+    # Check conversion to FFI types, extras are sorted by name
+    ffi = extras.to_ffi_extra()
+    expected = ([0, 1, 2], ["true", "value1", "1"])
+    assert expected == ffi
+
+    with pytest.raises(TypeError):
+        metrics.core.PreferenceToggledExtra(preference=True)
+    with pytest.raises(TypeError):
+        metrics.core.PreferenceToggledExtra(enabled=1)
+    with pytest.raises(TypeError):
+        metrics.core.PreferenceToggledExtra(swapped="string")
+
+    # Modifying an attribute only checks on conversion to FFI
+    extras = metrics.core.PreferenceToggledExtra(preference="string")
+    extras.preference = True
+    with pytest.raises(TypeError):
+        extras.to_ffi_extra()
