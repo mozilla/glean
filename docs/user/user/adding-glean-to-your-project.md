@@ -318,7 +318,7 @@ metrics.your_category.your_metric.set("value")
 
 The documentation for your application or library's metrics and pings are written in `metrics.yaml` and `pings.yaml`. 
 
-For Mozilla projects, this SDK documentation is automatically published on [dictionary.telemetry.mozilla.org](https://dictionary.telemetry.mozilla.org). For non-Mozilla products, it is recommended to generate markdown-based documentation of your metrics and pings into the repository. For most languages and platforms, this transformation can be done automatically as part of the build. However, for Python the integration to automatically generate docs is an additional step.
+For Mozilla projects, this SDK documentation is automatically published on the [Glean Dictionary](https://dictionary.telemetry.mozilla.org). For non-Mozilla products, it is recommended to generate markdown-based documentation of your metrics and pings into the repository. For most languages and platforms, this transformation can be done automatically as part of the build. However, for Python the integration to automatically generate docs is an additional step.
 
 The Glean SDK provides a commandline tool for automatically generating markdown documentation from your `metrics.yaml` and `pings.yaml` files. To perform that translation, run `glean_parser`'s `translate` command:
 
