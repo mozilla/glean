@@ -99,9 +99,20 @@ def _event_extra_factory(name: str, argnames: List[Tuple[str, str]]) -> Any:
 
     def __init__(self, **kwargs):
         for key, value in kwargs.items():
-            if key not in argnames:
+            typ = next((t for (k, t) in argnames if key == k), None)
+            if typ is None:
                 raise TypeError(
-                    f"Argument {key} not valid for {self.__class__.__name__}"
+                    f"Argument '{key}' not valid for {self.__class__.__name__}"
+                )
+            elif typ == "boolean" and isinstance(value, bool):
+                pass
+            elif typ == "string" and isinstance(value, str):
+                pass
+            elif typ == "quantity" and isinstance(value, int):
+                pass
+            else:
+                raise TypeError(
+                    f"Field '{key}' requires type {typ} in {self.__class__.__name__}"
                 )
             setattr(self, key, value)
 
@@ -109,15 +120,20 @@ def _event_extra_factory(name: str, argnames: List[Tuple[str, str]]) -> Any:
         keys = []
         values = []
 
-        for idx, name in enumerate(argnames):
+        for idx, (name, typ) in enumerate(argnames):
             attr = getattr(self, name, None)
             if attr is not None:
                 keys.append(idx)
-                # Special-case needed for booleans to turn them lowercase (true/false)
-                if isinstance(attr, bool):
+                if typ == "boolean" and isinstance(attr, bool):
+                    # Special-case needed for booleans to turn them lowercase (true/false)
                     values.append(str(attr).lower())
-                else:
+                elif typ == "string" and isinstance(attr, str):
                     values.append(str(attr))
+                elif typ == "quantity" and isinstance(attr, int):
+                    values.append(str(attr))
+                # Don't support other data types
+                else:
+                    raise TypeError(f"Type {type(attr)} not supported for {name}")
 
         return (keys, values)
 
@@ -156,8 +172,8 @@ def _get_metric_objects(
         if metric.has_extra_types:
             class_name = name + "_extra"
             class_name = Camelize(class_name)
-            values = metric.allowed_extra_keys
-            keys_class = event_extra_factory(class_name, values)  # type: ignore
+            values = metric.allowed_extra_keys_with_types
+            keys_class = _event_extra_factory(class_name, values)  # type: ignore
             yield class_name, keys_class
         else:
             enum_name = name + "_keys"
