@@ -9,6 +9,17 @@
 - `description`: **Required.** A textual description of the metric for humans. It should describe what the metric does, what it means for analysts, and its edge cases or any other helpful information.
 
   The description field may contain [markdown syntax](https://www.markdownguide.org/basic-syntax/).
+
+  > *Note*: The Glean linter uses a line length limit of 80 characters.
+  > If your description is longer, e.g. because it includes longer links,
+  > you can disable `yamllint` using the following annotations (and make sure to enable `yamllint` again as well):
+  >
+  > ```
+  > # yamllint disable
+  > description: |
+  >   Your extra long description, that's longer than 80 characters by far.
+  > # yamllint enable
+  > ```
   
 - `notification_emails`: **Required.** A list of email addresses to notify for important events with the metric or when people with context or ownership for the metric need to be contacted.
   For example when a metric's expiration is within in 14 days, emails will be sent from `telemetry-alerts@mozilla.com` to the `notification_emails` addresses associated with the metric.
