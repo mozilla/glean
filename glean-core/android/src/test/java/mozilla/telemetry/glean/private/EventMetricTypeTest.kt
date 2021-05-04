@@ -495,7 +495,7 @@ class EventMetricTypeTest {
             category = "telemetry",
             name = "test_event",
             lifetime = Lifetime.Ping,
-            sendInPings = listOf(pingName),
+            sendInPings = listOf(pingName, "events"), // also send in builtin ping
             allowedExtraKeys = listOf("someExtra")
         )
 
@@ -523,11 +523,14 @@ class EventMetricTypeTest {
             sendIfEmpty = false,
             reasonCodes = listOf())
 
-        // Trigger worker task to upload the pings in the background
+        // Trigger worker task to upload the pings in the background.
+        // Because this also triggers the builtin "events" ping
+        // we should definitely get _something_.
         triggerWorkManager(context)
 
         // We can't properly test the absence of data,
         // but we can try to receive one and that causes an exception if there is none.
+        // We also get the "events" ping, which we'll simply ignore here.
         assertNull(waitForPingContent(pingName, null, server))
 
         // Now try to manually submit the ping.
