@@ -923,7 +923,7 @@ impl Glean {
     /// and then sets the dirty bit.
     pub fn handle_client_active(&mut self) {
         if !self.internal_pings.baseline.submit(self, Some("active")) {
-            log::warn!("Failed to submit baseline ping on active");
+            log::info!("baseline ping not submitted on active");
         }
 
         self.set_dirty_flag(true);
@@ -935,11 +935,11 @@ impl Glean {
     /// `inactive` and then clears the dirty bit.
     pub fn handle_client_inactive(&mut self) {
         if !self.internal_pings.baseline.submit(self, Some("inactive")) {
-            log::warn!("Failed to submit baseline ping on inactive");
+            log::info!("baseline ping not submitted on inactive");
         }
 
         if !self.internal_pings.events.submit(self, Some("inactive")) {
-            log::warn!("Failed to submit events ping on inactive");
+            log::info!("events ping not submitted on inactive");
         }
 
         self.set_dirty_flag(false);
