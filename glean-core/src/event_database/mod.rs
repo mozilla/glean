@@ -161,15 +161,7 @@ impl EventDatabase {
 
         let mut ping_sent = false;
         for store_name in store_names {
-            if let Err(err) = glean.submit_ping_by_name(&store_name, Some("startup")) {
-                log::warn!(
-                    "Error flushing existing events to the '{}' ping: {}",
-                    store_name,
-                    err
-                );
-            } else {
-                ping_sent = true;
-            }
+            ping_sent |= glean.submit_ping_by_name(&store_name, Some("startup"));
         }
 
         ping_sent
@@ -225,14 +217,7 @@ impl EventDatabase {
         // If any of the event stores reached maximum size, submit the pings
         // containing those events immediately.
         for store_name in stores_to_submit {
-            if let Err(err) = glean.submit_ping_by_name(store_name, Some("max_capacity")) {
-                log::warn!(
-                    "Got more than {} events, but could not persist {} ping: {}",
-                    glean.get_max_events(),
-                    store_name,
-                    err
-                );
-            }
+            glean.submit_ping_by_name(store_name, Some("max_capacity"));
         }
     }
 

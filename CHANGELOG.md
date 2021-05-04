@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v37.0.0...main)
 
+* Rust
+  * Don't return a result from `submit_ping`. The boolean return value indicates whether a ping was submitted ([#1613](https://github.com/mozilla/glean/pull/1613))
+
 # v37.0.0 (2021-04-30)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v36.0.1...v37.0.0)

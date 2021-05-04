@@ -313,10 +313,7 @@ pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) {
                     // write lock on the `glean` object.
                     // Note that unwrapping below is safe: the function will return an
                     // `Ok` value for a known ping.
-                    if glean
-                        .submit_ping_by_name("baseline", Some("dirty_startup"))
-                        .unwrap()
-                    {
+                    if glean.submit_ping_by_name("baseline", Some("dirty_startup")) {
                         state.upload_manager.trigger_upload();
                     }
                 }
@@ -553,13 +550,13 @@ pub(crate) fn submit_ping_by_name_sync(ping: &str, reason: Option<&str>) {
             // This won't actually return from `submit_ping_by_name`, but
             // returning `false` here skips spinning up the uploader below,
             // which is basically the same.
-            return Some(false);
+            return false;
         }
 
-        glean.submit_ping_by_name(&ping, reason.as_deref()).ok()
+        glean.submit_ping_by_name(&ping, reason.as_deref())
     });
 
-    if let Some(true) = submitted_ping {
+    if submitted_ping {
         let state = global_state().lock().unwrap();
         state.upload_manager.trigger_upload();
     }
