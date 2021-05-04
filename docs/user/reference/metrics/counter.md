@@ -3,7 +3,8 @@
 Used to count how often something happens, say how often a certain button was pressed.
 A counter always starts from `0`.
 Each time you record to a counter, its value is incremented.
-Unless incremented by a positive value, a counter will not be reported in pings.
+Unless incremented by a positive value, a counter will not be reported in pings,
+that means: the value `0` is never sent in a ping.
 
 If you find that you need to control the actual value sent in the ping, you may be measuring something,
 not just counting something, and a [Quantity metric](quantity.html) may be a better choice.
