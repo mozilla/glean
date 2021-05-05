@@ -18,9 +18,116 @@ Each event contains the following data:
 
 ## Recording API
 
-### `record`
+### `record(object)`
+
+_Added in: [v38.0.0](../../appendix/changelog.md)_
+<!-- FIXME: Update anchor when v38.0.0 is actually released -->
+
+Record a new event, with optional typed extra values.
+This requires `type` annotations in the definition.
+See [Extra metrics parameters](#extra-metric-parameters).
+
+{{#include ../../../shared/tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
+
+Note that an `enum` has been generated for handling the `extra_keys`: it has the same name as the event metric, with `Extra` added.
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Views
+
+Views.loginOpened.record(Views.loginOpenedExtra(sourceOfLogin = "toolbar"))
+```
+
+</div>
+
+<div data-lang="Java" class="tab"></div>
+
+<div data-lang="Swift" class="tab">
+
+Note that an `enum` has been generated for handling the `extra_keys`: it has the same name as the event metric, with `Extra` added.
+
+```Swift
+Views.loginOpened.record(LoginOpenedExtra(sourceOfLogin: "toolbar"))
+```
+
+</div>
+
+<div data-lang="Python" class="tab">
+
+Note that an `enum` has been generated for handling the `extra_keys`: it has the same name as the event metric, with `_extra` added.
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+metrics.views.login_opened.record(LoginOpenedExtra(sourceOfLogin="toolbar"))
+```
+
+</div>
+
+<div data-lang="Rust" class="tab">
+
+Note that an `enum` has been generated for handling the `extra_keys`: it has the same name as the event metric, with `Keys` added.
+
+```Rust
+use metrics::views::{self, LoginOpenedExtra};
+
+let extra = LoginOpenedExtra { source_of_login: Some("toolbar".to_string()) };
+views::login_opened.record(extra);
+```
+
+</div>
+
+<div data-lang="JavaScript" class="tab">
+
+```js
+import * as views from "./path/to/generated/files/views.js";
+
+views.loginOpened.record({ sourceOfLogin: "toolbar" });
+```
+
+</div>
+
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+
+```c++
+#include "mozilla/glean/GleanMetrics.h"
+
+using mozilla::glean::views::LoginOpenedExtra;
+LoginOpenedExtra extra = { .source_of_login = Some("value"_ns) };
+mozilla::glean::views::login_opened.Record(std::move(extra))
+```
+
+**JavaScript**
+
+```js
+const extra = { sourceOfLogin: "toolbar" };
+Glean.views.loginOpened.record(extra);
+```
+
+</div>
+
+{{#include ../../../shared/tab_footer.md}}
+
+### `record(map)` (_deprecated_)
+
+_Deprecated in: [v38.0.0](../../appendix/changelog.md)_
+<!-- FIXME: Update anchor when v38.0.0 is actually released -->
 
 Record a new event, with optional extra values.
+
+{{#include ../../../shared/blockquote-info.html}}
+
+##### Deprecation notice
+
+> This API is used in v38.0.0 if an event has no `type` annotations in the definition.
+> See [Extra metrics parameters](#extra-metric-parameters).
+>
+> In future versions extra values will default to a `string` type and this API will be removed.  
+> In Rust and Firefox Desktop this API is not supported.
 
 {{#include ../../../shared/tab_header.md}}
 
@@ -73,19 +180,7 @@ metrics.views.login_opened.record(
 
 </div>
 
-<div data-lang="Rust" class="tab">
-
-Note that an `enum` has been generated for handling the `extra_keys`: it has the same name as the event metric, with `Keys` added.
-
-```Rust
-use metrics::views;
-
-let mut extra = HashMap::new();
-extra.insert(views::LoginOpenedKeys::SourceOfLogin, "toolbar".into());
-views::login_opened.record(extra);
-```
-
-</div>
+<div data-lang="Rust" class="tab"></div>
 
 <div data-lang="JavaScript" class="tab">
 
@@ -97,30 +192,7 @@ views.loginOpened.record({ sourceOfLogin: "toolbar" });
 
 </div>
 
-<div data-lang="Firefox Desktop" class="tab">
-
-**C++**
-
-```c++
-#include "mozilla/glean/GleanMetrics.h"
-
-using mozilla::glean::views::LoginOpenedKeys;
-nsTArray<Tuple<LoginOpenedKeys, nsCString>> extra;
-nsCString source = "toolbar"_ns;
-extra.AppendElement(MakeTuple(LoginOpenedKeys::SourceOfLogin, source));
-
-mozilla::glean::views::login_opened.Record(std::move(extra))
-```
-
-**JavaScript**
-
-```js
-const extra = { sourceOfLogin: "toolbar" };
-Glean.views.loginOpened.record(extra);
-```
-
-</div>
-
+<div data-lang="Firefox Desktop" class="tab"></div>
 
 {{#include ../../../shared/tab_footer.md}}
 
@@ -383,6 +455,7 @@ views:
     extra_keys:
       source_of_login:
         description: The source from which the login view was opened, e.g. "toolbar".
+        type: string
 ```
 
 For a full reference on metrics parameters common to all metric types,
@@ -398,6 +471,8 @@ A maximum of 10 extra keys is allowed.
 Each extra key contains additional metadata:
 
 - `description`: **Required.** A description of the key.
+* `type`: The type of value this extra key can hold. One of `string`, `boolean`, `quantity`. Defaults to `string`.
+  **Note**: If not specified only the legacy API on `record` is available.
 
 ## Data questions
 
