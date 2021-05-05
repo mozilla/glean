@@ -18,7 +18,9 @@ Products (applications or libraries) using the Glean SDK to collect telemetry **
 
 Additionally, applications (but not libraries) **must**:
 
-5. Provide a way for users to turn data collection off (e.g. providing settings to control `Glean.setUploadEnabled()`). The exact method used is application-specific.
+5. [Initialize Glean](../reference/general/index.md#initializing-the-glean-sdk) as early as possible at application startup.
+
+6. Provide a way for users to turn data collection off (e.g. providing settings to control `Glean.setUploadEnabled()`). The exact method used is application-specific.
 
 ## Usage
 
