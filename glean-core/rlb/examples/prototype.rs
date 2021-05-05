@@ -52,6 +52,7 @@ fn main() {
         channel: None,
         server_endpoint: Some("invalid-test-host".into()),
         uploader: None,
+        use_core_mps: true,
     };
 
     let client_info = ClientInfoMetrics {

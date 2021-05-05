@@ -75,6 +75,12 @@ impl MetricsPingScheduler for GleanMetricsPingScheduler {
 pub fn schedule(glean: &Glean) {
     let now = local_now_with_offset().0;
 
+    let (cancelled_lock, _condvar) = &**TASK_CONDVAR;
+    if *cancelled_lock.lock().unwrap() {
+        log::debug!("Told to schedule, but already cancelled. Are we in a test?");
+    }
+    *cancelled_lock.lock().unwrap() = false; // Uncancel the thread.
+
     let submitter = GleanMetricsPingSubmitter {};
     let scheduler = GleanMetricsPingScheduler {};
 

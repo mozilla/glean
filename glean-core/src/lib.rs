@@ -98,12 +98,7 @@ pub fn setup_glean(glean: Glean) -> Result<()> {
     // calling `initialize` on the global singleton and further operations check that it has been
     // initialized.
     if GLEAN.get().is_none() {
-        if GLEAN.set(Mutex::new(glean)).is_ok() {
-            let glean = &GLEAN.get().unwrap().lock().unwrap();
-            if glean.schedule_metrics_pings {
-                scheduler::schedule(&glean);
-            }
-        } else {
+        if GLEAN.set(Mutex::new(glean)).is_err() {
             log::warn!(
                 "Global Glean object is initialized already. This probably happened concurrently."
             )
@@ -1017,18 +1012,28 @@ impl Glean {
         // We don't care about this failing, maybe the data does just not exist.
         let _ = self.event_data_store.clear_all();
     }
+
+    /// Instructs the Metrics Ping Scheduler's thread to exit cleanly.
+    /// If Glean was configured with `use_core_mps: false`, this has no effect.
+    pub fn cancel_metrics_ping_scheduler(&self) {
+        if self.schedule_metrics_pings {
+            scheduler::cancel();
+        }
+    }
+
+    /// Instructs the Metrics Ping Scheduler to being scheduling metrics pings.
+    /// If Glean wsa configured with `use_core_mps: false`, this has no effect.
+    pub fn start_metrics_ping_scheduler(&self) {
+        if self.schedule_metrics_pings {
+            scheduler::schedule(&self);
+        }
+    }
 }
 
 /// Returns a timestamp corresponding to "now" with millisecond precision.
 pub fn get_timestamp_ms() -> u64 {
     const NANOS_PER_MILLI: u64 = 1_000_000;
     zeitstempel::now() / NANOS_PER_MILLI
-}
-
-/// Instructs the Metrics Ping Scheduler's thread to exit cleanly.
-/// If Glean was configured with `use_core_mps: false`, this has no effect.
-pub fn cancel_metrics_ping_scheduler() {
-    scheduler::cancel();
 }
 
 // Split unit tests to a separate file, to reduce the file of this one.
