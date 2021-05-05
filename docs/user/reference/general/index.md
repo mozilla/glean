@@ -43,7 +43,7 @@ The following steps are required for applications using the Glean SDK, but not l
 ##### Initialize clean with the correct value for `uploadEnabled`!
 
 > `Glean.initialize` must **always** be called with real values.
-> Always pass the user preferencen, e.g. `Glean.initialize(upload=userSettings.telemetry_enabled)` or the equivalent for your application.
+> Always pass the user preference, e.g. `Glean.initialize(upload=userSettings.telemetry_enabled)` or the equivalent for your application.
 > Never call `Glean.initialize(upload=true)` if `true` is a placeholder value that later gets reset by `Glean.setUploadEnabled(false)`.
 > Depending on the provided placeholder value, this might trigger the generation of new client ids or the submission of bogus [`deletion-request` pings](../user/pings/deletion_request.md).
 
