@@ -26,13 +26,25 @@ The Glean SDK provides a general API that supports the following operations. See
 
 The following steps are required for applications using the Glean SDK, but not libraries.
 
-> **Note**: The `initialize` function _must_ be called, even if telemetry upload is disabled.
+{{#include ../../shared/blockquote-info.html}}
+
+##### Note
+
+> The `initialize` function _must_ be called, even if telemetry upload is disabled.
 > Glean needs to perform maintenance tasks even when telemetry is disabled, and because Glean
 > does this as part of its initialization, it is _required_ to always call the `initialize`
 > function. Otherwise, Glean won't be able to clean up collected data, disable queuing of pre-init
 > tasks, or perform other required operations.
 >
 > This does not apply to special builds where telemetry is disabled at build time. In that case, it is acceptable to not call `initialize` at all.
+
+{{#include ../../shared/blockquote-stop.html}}
+
+##### Do not initialize with a fake value for `uploadEnabled`!
+
+> `Glean.initialize` **must** always be called with real values.
+> For example, never call `Glean.initialize(upload=true)` if `true` is a placeholder value that later gets reset by `Glean.setUploadEnabled(false)`.
+> Depending on the provided placeholder value, this might trigger the generation of new client ids or the submission of bogus [`deletion-request` pings](../user/pings/deletion_request.md).
 
 {{#include ../../../shared/tab_header.md}}
 
