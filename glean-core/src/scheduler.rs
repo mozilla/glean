@@ -408,7 +408,7 @@ mod test {
         );
 
         // `Tomorrow` and `Reschedule` should differ only in their `reason()`
-        // 46670 is 12h57m10s (aka, the time from 15:02:10 to 04:00:00
+        // 46670s is 12h57m10s (aka, the time from 15:02:10 to 04:00:00
         // (when the timezone doesn't change between them)).
         assert_eq!(
             std::time::Duration::from_secs(46670),
