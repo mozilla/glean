@@ -26,7 +26,7 @@ The Glean SDK provides a general API that supports the following operations. See
 
 The following steps are required for applications using the Glean SDK, but not libraries.
 
-{{#include ../../shared/blockquote-info.html}}
+{{#include ../../../shared/blockquote-info.html}}
 
 ##### Note
 
@@ -38,7 +38,7 @@ The following steps are required for applications using the Glean SDK, but not l
 >
 > This does not apply to special builds where telemetry is disabled at build time. In that case, it is acceptable to not call `initialize` at all.
 
-{{#include ../../shared/blockquote-stop.html}}
+{{#include ../../../shared/blockquote-stop.html}}
 
 ##### Initialize clean with the correct value for `uploadEnabled`!
 
