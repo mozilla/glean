@@ -28,6 +28,7 @@
 //!     channel: None,
 //!     server_endpoint: None,
 //!     uploader: None,
+//!     use_core_mps: false,
 //! };
 //! glean::initialize(cfg, ClientInfoMetrics::unknown());
 //!
@@ -187,6 +188,8 @@ pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) {
                 language_binding_name: LANGUAGE_BINDING_NAME.into(),
                 max_events: cfg.max_events,
                 delay_ping_lifetime_io: cfg.delay_ping_lifetime_io,
+                app_build: client_info.app_build.clone(),
+                use_core_mps: cfg.use_core_mps,
             };
 
             let glean = match Glean::new(core_cfg) {
@@ -302,7 +305,7 @@ pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) {
                 // Set up information and scheduling for Glean owned pings. Ideally, the "metrics"
                 // ping startup check should be performed before any other ping, since it relies
                 // on being dispatched to the API context before any other metric.
-                // TODO: start the metrics ping scheduler, will happen in bug 1672951.
+                glean.start_metrics_ping_scheduler();
 
                 // Check if the "dirty flag" is set. That means the product was probably
                 // force-closed. If that's the case, submit a 'baseline' ping with the
@@ -361,6 +364,7 @@ pub fn shutdown() {
     }
 
     crate::launch_with_glean_mut(|glean| {
+        glean.cancel_metrics_ping_scheduler();
         glean.set_dirty_flag(false);
     });
 
@@ -461,16 +465,15 @@ pub fn set_upload_enabled(enabled: bool) {
         let old_enabled = glean.is_upload_enabled();
         glean.set_upload_enabled(enabled);
 
-        // TODO: Cancel upload and any outstanding metrics ping scheduler
-        // task. Will happen on bug 1672951.
-
         if !old_enabled && enabled {
+            glean.start_metrics_ping_scheduler();
             // If uploading is being re-enabled, we have to restore the
             // application-lifetime metrics.
             initialize_core_metrics(&glean, &state.client_info, state.channel.clone());
         }
 
         if old_enabled && !enabled {
+            glean.cancel_metrics_ping_scheduler();
             // If uploading is disabled, we need to send the deletion-request ping:
             // note that glean-core takes care of generating it.
             state.upload_manager.trigger_upload();
@@ -681,8 +684,6 @@ pub(crate) fn destroy_glean(clear_stores: bool) {
 pub fn test_reset_glean(cfg: Configuration, client_info: ClientInfoMetrics, clear_stores: bool) {
     destroy_glean(clear_stores);
 
-    // Always log pings for tests
-    //Glean.setLogPings(true)
     initialize(cfg, client_info);
 }
 

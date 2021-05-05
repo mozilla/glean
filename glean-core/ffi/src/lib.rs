@@ -249,6 +249,8 @@ impl TryFrom<&FfiConfiguration<'_>> for glean_core::Configuration {
         let upload_enabled = cfg.upload_enabled != 0;
         let max_events = cfg.max_events.filter(|&&i| i >= 0).map(|m| *m as usize);
         let delay_ping_lifetime_io = cfg.delay_ping_lifetime_io != 0;
+        let app_build = "unknown".to_string();
+        let use_core_mps = false;
 
         Ok(Self {
             upload_enabled,
@@ -257,6 +259,8 @@ impl TryFrom<&FfiConfiguration<'_>> for glean_core::Configuration {
             language_binding_name,
             max_events,
             delay_ping_lifetime_io,
+            app_build,
+            use_core_mps,
         })
     }
 }
