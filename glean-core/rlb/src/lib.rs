@@ -173,12 +173,19 @@ fn launch_with_glean_mut(callback: impl FnOnce(&mut Glean) + Send + 'static) {
 /// * `client_info` - the [`ClientInfoMetrics`] values used to set Glean
 ///   core metrics.
 pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) {
+    initialize_internal(cfg, client_info);
+}
+
+fn initialize_internal(
+    cfg: Configuration,
+    client_info: ClientInfoMetrics,
+) -> Option<std::thread::JoinHandle<()>> {
     if was_initialize_called() {
         log::error!("Glean should not be initialized multiple times");
-        return;
+        return None;
     }
 
-    std::thread::Builder::new()
+    let init_handle = std::thread::Builder::new()
         .name("glean.init".into())
         .spawn(move || {
             let core_cfg = glean_core::Configuration {
@@ -347,6 +354,7 @@ pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) {
     // Mark the initialization as called: this needs to happen outside of the
     // dispatched block!
     INITIALIZE_CALLED.store(true, Ordering::SeqCst);
+    Some(init_handle)
 }
 
 /// Shuts down Glean.
@@ -691,7 +699,9 @@ pub(crate) fn destroy_glean(clear_stores: bool) {
 pub fn test_reset_glean(cfg: Configuration, client_info: ClientInfoMetrics, clear_stores: bool) {
     destroy_glean(clear_stores);
 
-    initialize(cfg, client_info);
+    if let Some(handle) = initialize_internal(cfg, client_info) {
+        handle.join().unwrap();
+    }
 }
 
 /// Sets a debug view tag.
