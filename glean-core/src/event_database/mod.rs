@@ -8,7 +8,6 @@ use std::fs::{create_dir_all, File, OpenOptions};
 use std::io::BufRead;
 use std::io::BufReader;
 use std::io::Write;
-use std::iter::FromIterator;
 use std::path::{Path, PathBuf};
 use std::sync::RwLock;
 
@@ -262,9 +261,11 @@ impl EventDatabase {
                     // in a single location.
                     store.sort_by(|a, b| a.timestamp.cmp(&b.timestamp));
                     let first_timestamp = store[0].timestamp;
-                    Some(JsonValue::from_iter(
-                        store.iter().map(|e| e.serialize_relative(first_timestamp)),
-                    ))
+                    let snapshot = store
+                        .iter()
+                        .map(|e| e.serialize_relative(first_timestamp))
+                        .collect();
+                    Some(snapshot)
                 } else {
                     log::warn!("Unexpectly got empty event store for '{}'", store_name);
                     None
