@@ -118,7 +118,7 @@ Glean.install.firstRun.set(value.getTime() * 1000);
 
 ### `testGetValue`
 
-Gets the recorded value for a given datetime metric as a language specific Date object.
+Get the recorded value for a given datetime metric as a language-specific Date object.
 
 {{#include ../../../shared/tab_header.md}}
 
@@ -188,7 +188,7 @@ Assert.ok(Glean.install.firstRun.testGetValue().startsWith("2020-06-11T12:00:00"
 
 ### `testGetValueAsString`
 
-Gets the recorded value for a given datetime metric an [ISO Date String](https://en.wikipedia.org/wiki/ISO_8601#Dates).
+Get the recorded value for a given datetime metric as an [ISO Date String](https://en.wikipedia.org/wiki/ISO_8601#Dates).
 
 The returned string will be truncated to the metric [time unit](#time_unit) and include the timezone
 offset from UTC, relative to the time of recording e.g. `2019-03-25-05:00`
@@ -307,13 +307,14 @@ assert metrics.install.first_run.test_has_value()
 
 ### `testGetNumRecordedErrors`
 
-Gets number of errors recorded for a given counter metric.
+Get number of errors recorded for a given datetime metric.
 
 {{#include ../../../shared/tab_header.md}}
 
 <div data-lang="Kotlin" class="tab">
 
 ```Kotlin
+import mozilla.telemetry.glean.testing.ErrorType
 import org.mozilla.yourApplication.GleanMetrics.Install
 
 assertEquals(0, Install.firstRun.testGetNumRecordedErrors(ErrorType.InvalidValue))
@@ -324,6 +325,7 @@ assertEquals(0, Install.firstRun.testGetNumRecordedErrors(ErrorType.InvalidValue
 <div data-lang="Java" class="tab">
 
 ```Java
+import mozilla.telemetry.glean.testing.ErrorType
 import org.mozilla.yourApplication.GleanMetrics.Install;
 
 assertEquals(0, Install.INSTANCE.firstRun.testGetNumRecordedErrors(ErrorType.InvalidValue));
