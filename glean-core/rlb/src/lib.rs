@@ -660,6 +660,9 @@ pub(crate) fn test_get_experiment_data(experiment_id: String) -> RecordedExperim
 pub(crate) fn destroy_glean(clear_stores: bool) {
     // Destroy the existing glean instance from glean-core.
     if was_initialize_called() {
+        // Reset the dispatcher first (it might still run tasks against the database)
+        dispatcher::reset_dispatcher();
+
         // We need to check if the Glean object (from glean-core) is
         // initialized, otherwise this will crash on the first test
         // due to bug 1675215 (this check can be removed once that
@@ -674,8 +677,6 @@ pub(crate) fn destroy_glean(clear_stores: bool) {
         }
         // Allow us to go through initialization again.
         INITIALIZE_CALLED.store(false, Ordering::SeqCst);
-        // Reset the dispatcher.
-        dispatcher::reset_dispatcher();
     }
 }
 
