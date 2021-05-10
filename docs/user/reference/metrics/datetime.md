@@ -122,9 +122,23 @@ Get the recorded value for a given datetime metric as a language-specific Date o
 
 {{#include ../../../shared/tab_header.md}}
 
-<div data-lang="Kotlin" class="tab"></div>
+<div data-lang="Kotlin" class="tab">
 
-<div data-lang="Java" class="tab"></div>
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Install
+
+assertEquals(Install.firstRun.testGetValue(), Date(2019, 3, 25))
+```
+</div>
+
+<div data-lang="Java" class="tab">
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Install;
+
+assertEquals(Install.INSTANCE.firstRun.testGetValue(), Date(2019, 3, 25));
+```
+</div>
 
 <div data-lang="Swift" class="tab">
 
@@ -139,7 +153,18 @@ XCTAssertEqual(expectedDate.date!, try Install.firstRun.testGetValue())
 ```
 </div>
 
-<div data-lang="Python" class="tab"></div>
+<div data-lang="Python" class="tab">
+
+```Python
+import datetime
+
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+value = datetime.datetime(1993, 2, 23, 5, 43, tzinfo=datetime.timezone.utc)
+assert value == metrics.install.first_run.test_get_value()
+```
+</div>
 
 <div data-lang="Rust" class="tab">
 
@@ -190,7 +215,7 @@ Assert.ok(Glean.install.firstRun.testGetValue().startsWith("2020-06-11T12:00:00"
 
 Get the recorded value for a given datetime metric as an [ISO Date String](https://en.wikipedia.org/wiki/ISO_8601#Dates).
 
-The returned string will be truncated to the metric [time unit](#time_unit) and include the timezone
+The returned string will be truncated to the metric [time unit](#time_unit) and will include the timezone
 offset from UTC, relative to the time of recording e.g. `2019-03-25-05:00`
 (In this example, `time_unit` is `day`).
 
