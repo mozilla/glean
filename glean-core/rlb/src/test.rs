@@ -58,7 +58,7 @@ fn send_a_ping() {
 
     // Wait for the ping to arrive.
     let url = r.recv().unwrap();
-    assert_eq!(url.contains(PING_NAME), true);
+    assert!(url.contains(PING_NAME));
 }
 
 #[test]
@@ -310,7 +310,7 @@ fn sending_of_startup_baseline_ping() {
 
     // Wait for the ping to arrive.
     let url = r.recv().unwrap();
-    assert_eq!(url.contains("baseline"), true);
+    assert!(url.contains("baseline"));
 }
 
 #[test]
@@ -658,7 +658,7 @@ fn sending_deletion_ping_if_disabled_outside_of_run() {
 
     // Wait for the ping to arrive.
     let url = r.recv().unwrap();
-    assert_eq!(url.contains("deletion-request"), true);
+    assert!(url.contains("deletion-request"));
 }
 
 #[test]
@@ -1002,7 +1002,7 @@ fn flipping_upload_enabled_respects_order_of_events() {
 
     // Wait for the ping to arrive.
     let url = r.recv().unwrap();
-    assert_eq!(url.contains("deletion-request"), true);
+    assert!(url.contains("deletion-request"));
 }
 
 #[test]

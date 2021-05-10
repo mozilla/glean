@@ -813,11 +813,11 @@ fn test_setting_debug_view_tag() {
     let (mut glean, _) = new_glean(Some(dir));
 
     let valid_tag = "valid-tag";
-    assert_eq!(true, glean.set_debug_view_tag(valid_tag));
+    assert!(glean.set_debug_view_tag(valid_tag));
     assert_eq!(valid_tag, glean.debug_view_tag().unwrap());
 
     let invalid_tag = "invalid tag";
-    assert_eq!(false, glean.set_debug_view_tag(invalid_tag));
+    assert!(!glean.set_debug_view_tag(invalid_tag));
     assert_eq!(valid_tag, glean.debug_view_tag().unwrap());
 }
 
