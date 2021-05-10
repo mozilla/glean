@@ -663,6 +663,12 @@ pub(crate) fn destroy_glean(clear_stores: bool) {
         // Reset the dispatcher first (it might still run tasks against the database)
         dispatcher::reset_dispatcher();
 
+        // Wait for any background uploader thread to finish.
+        // This needs to be done before the check below,
+        // as the uploader will also try to acquire a lock on the global Glean.
+        let state = global_state().lock().unwrap();
+        state.upload_manager.test_wait_for_upload();
+
         // We need to check if the Glean object (from glean-core) is
         // initialized, otherwise this will crash on the first test
         // due to bug 1675215 (this check can be removed once that

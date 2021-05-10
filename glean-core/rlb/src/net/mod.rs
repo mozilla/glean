@@ -69,10 +69,30 @@ impl UploadManager {
         }
     }
 
+    /// Wait for the last upload thread to end and ensure no new one is started.
+    pub(crate) fn test_wait_for_upload(&self) {
+        // Spin-waiting is fine, this is for tests only.
+        while self
+            .inner
+            .thread_running
+            .compare_exchange(false, true, Ordering::SeqCst, Ordering::SeqCst)
+            .is_err()
+        {
+            std::thread::yield_now();
+        }
+    }
+
     /// Signals Glean to upload pings at the next best opportunity.
     pub(crate) fn trigger_upload(&self) {
-        if self.inner.thread_running.load(Ordering::SeqCst) {
-            log::debug!("The upload task is already running.");
+        // If no other upload proces is running, we're the one starting it.
+        // Need atomic compare/exchange to avoid any further races
+        // or we can end up with 2+ uploader threads.
+        if self
+            .inner
+            .thread_running
+            .compare_exchange(false, true, Ordering::SeqCst, Ordering::SeqCst)
+            .is_err()
+        {
             return;
         }
 
@@ -81,9 +101,6 @@ impl UploadManager {
         thread::Builder::new()
             .name("glean.upload".into())
             .spawn(move || {
-                // Mark the uploader as running.
-                inner.thread_running.store(true, Ordering::SeqCst);
-
                 loop {
                     let incoming_task = with_glean(|glean| glean.get_upload_task());
 
