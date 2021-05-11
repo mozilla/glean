@@ -399,14 +399,9 @@ fn initialize_must_not_crash_if_data_dir_is_messed_up() {
     };
 
     test_reset_glean(cfg, ClientInfoMetrics::unknown(), false);
-    // TODO(bug 1675215): ensure initialize runs through dispatcher.
-    // Glean init is async and, for this test, it bails out early due to
-    // an caused by not being able to create the data dir: we can do nothing
-    // but wait. Tests in other bindings use the dispatcher's test mode, which
-    // runs tasks sequentially on the main thread, so no sleep is required,
-    // because we're guaranteed that, once we reach this point, the full
-    // init potentially ran.
-    std::thread::sleep(std::time::Duration::from_secs(3));
+
+    // We don't need to sleep here.
+    // The `test_reset_glean` already waited on the initialize task.
 }
 
 #[test]
@@ -465,9 +460,11 @@ fn initializing_twice_is_a_noop() {
         true,
     );
 
-    crate::block_on_dispatcher();
+    // Glean was initialized and it waited for a full initialization to finish.
+    // We now just want to try to initialize again.
+    // This will bail out early.
 
-    test_reset_glean(
+    crate::initialize(
         Configuration {
             data_path: tmpname,
             application_id: GLOBAL_APPLICATION_ID.into(),
@@ -480,15 +477,13 @@ fn initializing_twice_is_a_noop() {
             use_core_mps: false,
         },
         ClientInfoMetrics::unknown(),
-        false,
     );
 
-    // TODO(bug 1675215): ensure initialize runs through dispatcher.
-    // Glean init is async and, for this test, it bails out early due to
-    // being initialized: we can do nothing but wait. Tests in other bindings use
-    // the dispatcher's test mode, which runs tasks sequentially on the main
-    // thread, so no sleep is required. Bug 1675215 might fix this, as well.
-    std::thread::sleep(std::time::Duration::from_secs(3));
+    // We don't need to sleep here.
+    // The `test_reset_glean` already waited on the initialize task,
+    // and the 2nd initialize will bail out early.
+    //
+    // All we tested is that this didn't crash.
 }
 
 #[test]

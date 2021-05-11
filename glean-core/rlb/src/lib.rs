@@ -173,12 +173,19 @@ fn launch_with_glean_mut(callback: impl FnOnce(&mut Glean) + Send + 'static) {
 /// * `client_info` - the [`ClientInfoMetrics`] values used to set Glean
 ///   core metrics.
 pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) {
+    initialize_internal(cfg, client_info);
+}
+
+fn initialize_internal(
+    cfg: Configuration,
+    client_info: ClientInfoMetrics,
+) -> Option<std::thread::JoinHandle<()>> {
     if was_initialize_called() {
         log::error!("Glean should not be initialized multiple times");
-        return;
+        return None;
     }
 
-    std::thread::Builder::new()
+    let init_handle = std::thread::Builder::new()
         .name("glean.init".into())
         .spawn(move || {
             let core_cfg = glean_core::Configuration {
@@ -347,6 +354,7 @@ pub fn initialize(cfg: Configuration, client_info: ClientInfoMetrics) {
     // Mark the initialization as called: this needs to happen outside of the
     // dispatched block!
     INITIALIZE_CALLED.store(true, Ordering::SeqCst);
+    Some(init_handle)
 }
 
 /// Shuts down Glean.
@@ -660,6 +668,19 @@ pub(crate) fn test_get_experiment_data(experiment_id: String) -> RecordedExperim
 pub(crate) fn destroy_glean(clear_stores: bool) {
     // Destroy the existing glean instance from glean-core.
     if was_initialize_called() {
+        // Reset the dispatcher first (it might still run tasks against the database)
+        dispatcher::reset_dispatcher();
+
+        // Wait for any background uploader thread to finish.
+        // This needs to be done before the check below,
+        // as the uploader will also try to acquire a lock on the global Glean.
+        //
+        // Note: requires the block here, so we drop the lock again.
+        {
+            let state = global_state().lock().unwrap();
+            state.upload_manager.test_wait_for_upload();
+        }
+
         // We need to check if the Glean object (from glean-core) is
         // initialized, otherwise this will crash on the first test
         // due to bug 1675215 (this check can be removed once that
@@ -674,8 +695,12 @@ pub(crate) fn destroy_glean(clear_stores: bool) {
         }
         // Allow us to go through initialization again.
         INITIALIZE_CALLED.store(false, Ordering::SeqCst);
-        // Reset the dispatcher.
-        dispatcher::reset_dispatcher();
+
+        // If Glean initialization previously didn't finish,
+        // then the global state might not have been reset
+        // and thus needs to be cleared here.
+        let state = global_state().lock().unwrap();
+        state.upload_manager.test_clear_upload_thread();
     }
 }
 
@@ -684,7 +709,9 @@ pub(crate) fn destroy_glean(clear_stores: bool) {
 pub fn test_reset_glean(cfg: Configuration, client_info: ClientInfoMetrics, clear_stores: bool) {
     destroy_glean(clear_stores);
 
-    initialize(cfg, client_info);
+    if let Some(handle) = initialize_internal(cfg, client_info) {
+        handle.join().unwrap();
+    }
 }
 
 /// Sets a debug view tag.
