@@ -78,8 +78,16 @@ impl UploadManager {
             .compare_exchange(false, true, Ordering::SeqCst, Ordering::SeqCst)
             .is_err()
         {
-            std::thread::yield_now();
+            thread::yield_now();
         }
+    }
+
+    /// Clear the flag of a running thread.
+    ///
+    /// This should only be called after `test_wait_for_upload` returned
+    /// and the global Glean object is fully destroyed.
+    pub(crate) fn test_clear_upload_thread(&self) {
+        self.inner.thread_running.store(false, Ordering::SeqCst);
     }
 
     /// Signals Glean to upload pings at the next best opportunity.
@@ -104,6 +112,7 @@ impl UploadManager {
                 loop {
                     let incoming_task = with_glean(|glean| glean.get_upload_task());
 
+                    log::trace!("Received upload task: {:?}", incoming_task);
                     match incoming_task {
                         PingUploadTask::Upload(request) => {
                             let doc_id = request.document_id.clone();

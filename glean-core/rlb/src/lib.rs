@@ -674,8 +674,12 @@ pub(crate) fn destroy_glean(clear_stores: bool) {
         // Wait for any background uploader thread to finish.
         // This needs to be done before the check below,
         // as the uploader will also try to acquire a lock on the global Glean.
-        let state = global_state().lock().unwrap();
-        state.upload_manager.test_wait_for_upload();
+        //
+        // Note: requires the block here, so we drop the lock again.
+        {
+            let state = global_state().lock().unwrap();
+            state.upload_manager.test_wait_for_upload();
+        }
 
         // We need to check if the Glean object (from glean-core) is
         // initialized, otherwise this will crash on the first test
@@ -691,6 +695,12 @@ pub(crate) fn destroy_glean(clear_stores: bool) {
         }
         // Allow us to go through initialization again.
         INITIALIZE_CALLED.store(false, Ordering::SeqCst);
+
+        // If Glean initialization previously didn't finish,
+        // then the global state might not have been reset
+        // and thus needs to be cleared here.
+        let state = global_state().lock().unwrap();
+        state.upload_manager.test_clear_upload_thread();
     }
 }
 
