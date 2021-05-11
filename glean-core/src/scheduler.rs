@@ -489,8 +489,8 @@ mod test {
 
         // We're actually going to submit a ping from the scheduler, which requires a global glean.
         let (glean, _t) = new_glean(None);
-        assert_eq!(
-            false, glean.schedule_metrics_pings,
+        assert!(
+            !glean.schedule_metrics_pings,
             "Real schedulers not allowed in tests!"
         );
         assert!(crate::setup_glean(glean).is_ok());
