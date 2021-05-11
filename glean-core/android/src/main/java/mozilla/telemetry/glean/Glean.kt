@@ -562,19 +562,8 @@ open class GleanInternalAPI internal constructor () {
         // Please note that the following metrics must be set synchronously, so
         // that they are guaranteed to be available with the first ping that is
         // generated. We use an internal only API to do that.
-        // https://developer.android.com/reference/android/os/Build.VERSION
-        GleanInternalMetrics.androidSdkVersion.setSync(Build.VERSION.SDK_INT.toString())
-        GleanInternalMetrics.osVersion.setSync(Build.VERSION.RELEASE)
-        // https://developer.android.com/reference/android/os/Build
-        GleanInternalMetrics.deviceManufacturer.setSync(Build.MANUFACTURER)
-        GleanInternalMetrics.deviceModel.setSync(Build.MODEL)
-        GleanInternalMetrics.architecture.setSync(Build.SUPPORTED_ABIS[0])
-        GleanInternalMetrics.locale.setSync(getLocaleTag())
 
-        configuration.channel?.let {
-            GleanInternalMetrics.appChannel.setSync(it)
-        }
-
+        // Set required information first.
         buildInfo?.let {
             GleanInternalMetrics.appBuild.setSync(it.versionCode)
             GleanInternalMetrics.appDisplayVersion.setSync(it.versionName)
@@ -604,6 +593,21 @@ open class GleanInternalAPI internal constructor () {
                 packageInfo.versionName?.let { it } ?: "Unknown"
             )
         }
+
+        GleanInternalMetrics.architecture.setSync(Build.SUPPORTED_ABIS[0])
+        GleanInternalMetrics.osVersion.setSync(Build.VERSION.RELEASE)
+
+        // Optional data is set last.
+
+        configuration.channel?.let {
+            GleanInternalMetrics.appChannel.setSync(it)
+        }
+        // https://developer.android.com/reference/android/os/Build.VERSION
+        GleanInternalMetrics.androidSdkVersion.setSync(Build.VERSION.SDK_INT.toString())
+        // https://developer.android.com/reference/android/os/Build
+        GleanInternalMetrics.deviceManufacturer.setSync(Build.MANUFACTURER)
+        GleanInternalMetrics.deviceModel.setSync(Build.MODEL)
+        GleanInternalMetrics.locale.setSync(getLocaleTag())
     }
 
     /**
