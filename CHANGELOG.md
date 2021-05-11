@@ -5,6 +5,8 @@
 * Rust
   * Don't return a result from `submit_ping`. The boolean return value indicates whether a ping was submitted ([#1613](https://github.com/mozilla/glean/pull/1613))
   * **Breaking Change**: Glean now schedules "metrics" pings, accepting a new Configuration parameter. ([#1599](https://github.com/mozilla/glean/pull/1599))
+* Android
+  * Set required fields for `client_info` before optional ones ([#1633](https://github.com/mozilla/glean/pull/1633))
 
 # v37.0.0 (2021-04-30)
 
