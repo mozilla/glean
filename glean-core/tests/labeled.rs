@@ -9,8 +9,8 @@ use serde_json::json;
 
 use glean_core::metrics::*;
 use glean_core::storage::StorageManager;
-use glean_core::{CommonMetricData, Lifetime};
 use glean_core::{test_get_num_recorded_errors, ErrorType};
+use glean_core::{CommonMetricData, Lifetime};
 
 #[test]
 fn can_create_labeled_counter_metric() {
