@@ -45,7 +45,7 @@ Install.firstRun.set() // Records "now"
 let dateComponents = DateComponents(
                         calendar: Calendar.current,
                         year: 2004, month: 12, day: 9, hour: 8, minute: 3, second: 29
-                    )
+                     )
 Install.firstRun.set(dateComponents.date!) // Records a custom datetime
 ```
 </div>
@@ -148,7 +148,7 @@ assertEquals(Install.INSTANCE.firstRun.testGetValue(), Date(2019, 3, 25));
 let expectedDate = DateComponents(
                       calendar: Calendar.current,
                       year: 2004, month: 12, day: 9, hour: 8, minute: 3, second: 29
-                  )
+                   )
 XCTAssertEqual(expectedDate.date!, try Install.firstRun.testGetValue())
 ```
 </div>
@@ -215,9 +215,9 @@ Assert.ok(Glean.install.firstRun.testGetValue().startsWith("2020-06-11T12:00:00"
 
 Get the recorded value for a given datetime metric as an [ISO Date String](https://en.wikipedia.org/wiki/ISO_8601#Dates).
 
-The returned string will be truncated to the metric [time unit](#time_unit) and will include the timezone
-offset from UTC, relative to the time of recording e.g. `2019-03-25-05:00`
-(In this example, `time_unit` is `day`).
+The returned string will be truncated to the metric's [time unit](#time_unit)
+and will include the timezone offset from UTC, e.g. `2019-03-25-05:00`
+(in this example, `time_unit` is `day`).
 
 {{#include ../../../shared/tab_header.md}}
 
