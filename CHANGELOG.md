@@ -2,11 +2,16 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v37.0.0...main)
 
+* General
+  * Update documentation to recommend using Glean Dictionary instead of metrics.md ([#1604](https://github.com/mozilla/glean/pull/1604))
 * Rust
-  * Don't return a result from `submit_ping`. The boolean return value indicates whether a ping was submitted ([#1613](https://github.com/mozilla/glean/pull/1613))
+  * **Breaking Change**: Don't return a result from `submit_ping`. The boolean return value indicates whether a ping was submitted ([#1613](https://github.com/mozilla/glean/pull/1613))
   * **Breaking Change**: Glean now schedules "metrics" pings, accepting a new Configuration parameter. ([#1599](https://github.com/mozilla/glean/pull/1599))
+  * Dispatch setting the source tag to avoid a potential crash ([#1614](https://github.com/mozilla/glean/pull/1614))
+  * Testing mode will wait for init & upload tasks to finish ([#1628](https://github.com/mozilla/glean/pull/1628))
 * Android
   * Set required fields for `client_info` before optional ones ([#1633](https://github.com/mozilla/glean/pull/1633))
+  * Provide forward-compatibility with Gradle 6.8 ([#1616](https://github.com/mozilla/glean/pull/1633))
 
 # v37.0.0 (2021-04-30)
 
