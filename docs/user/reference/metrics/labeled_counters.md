@@ -1,6 +1,11 @@
 # Labeled Counters
 
 Labeled counters are used to record different related counts that should sum up to a total.
+Each counter always starts from `0`.
+Each time you record to a labeled counter, its value is incremented.
+Unless incremented by a positive value, a counter will not be reported in pings,
+that means: the value `0` is never sent in a ping.
+
 
 ## Configuration
 

@@ -27,6 +27,8 @@ browser.engagement:
       key2:
         description: "This is key two"
     expires: 2100-01-01
+    no_lint:
+      - EXPIRATION_DATE_TOO_FAR
 
   event_no_keys:
     type: event
@@ -39,6 +41,8 @@ browser.engagement:
     notification_emails:
       - CHANGE-ME@example.com
     expires: 2100-01-01
+    no_lint:
+      - EXPIRATION_DATE_TOO_FAR
 
 basic:
   os:
@@ -52,6 +56,8 @@ basic:
     notification_emails:
       - CHANGE-ME@example.com
     expires: 2100-01-01
+    no_lint:
+      - EXPIRATION_DATE_TOO_FAR
 
 test:
   string_list:
@@ -70,6 +76,7 @@ test:
     expires: 2100-01-01
     no_lint:
       - USER_LIFETIME_EXPIRATION
+      - EXPIRATION_DATE_TOO_FAR
 
   counter:
     type: counter
@@ -87,6 +94,7 @@ test:
     expires: 2100-01-01
     no_lint:
       - USER_LIFETIME_EXPIRATION
+      - EXPIRATION_DATE_TOO_FAR
 
   timespan:
     type: timespan
@@ -101,6 +109,8 @@ test:
     notification_emails:
       - CHANGE-ME@example.com
     expires: 2100-01-01
+    no_lint:
+      - EXPIRATION_DATE_TOO_FAR
 
   is_started:
     type: boolean
@@ -118,6 +128,7 @@ test:
     expires: 2100-01-01
     no_lint:
       - BASELINE_PING
+      - EXPIRATION_DATE_TOO_FAR
 
 custom:
   counter:
@@ -134,6 +145,8 @@ custom:
     notification_emails:
       - CHANGE-ME@test-only.com
     expires: 2100-01-01
+    no_lint:
+      - EXPIRATION_DATE_TOO_FAR
 
 legacy_ids:
   client_id:
@@ -149,3 +162,5 @@ legacy_ids:
     notification_emails:
       - CHANGE-ME@example.com
     expires: 2100-01-01
+    no_lint:
+      - EXPIRATION_DATE_TOO_FAR

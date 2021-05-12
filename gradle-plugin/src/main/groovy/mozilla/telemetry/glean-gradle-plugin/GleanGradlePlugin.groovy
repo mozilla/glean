@@ -135,7 +135,15 @@ except:
             // depending on the variant type: the generated API definitions don't need to be
             // different due to that.
             TaskProvider buildConfigProvider = variant.getGenerateBuildConfigProvider()
-            def originalPackageName = buildConfigProvider.get().getBuildConfigPackageName().get()
+            def configProvider = buildConfigProvider.get()
+            def originalPackageName
+            // In Gradle 6.x `getBuildConfigPackageName` was reaplced by `namespace`.
+            // We want to be forward compatible, so we check that first or fallback to the old method.
+            if (configProvider.hasProperty("namespace")) {
+                originalPackageName = configProvider.namespace.get()
+            } else {
+                originalPackageName = configProvider.getBuildConfigPackageName().get()
+            }
 
             def fullNamespace = "${originalPackageName}.GleanMetrics"
             def generateKotlinAPI = project.task("${TASK_NAME_PREFIX}SourceFor${variant.name.capitalize()}", type: Exec) {
@@ -473,7 +481,7 @@ except:
     void apply(Project project) {
         isOffline = project.gradle.startParameter.offline
 
-        project.ext.glean_version = "37.0.0"
+        project.ext.glean_version = "38.0.0"
 
         // Print the required glean_parser version to the console. This is
         // offline builds, and is mentioned in the documentation for offline

@@ -249,6 +249,8 @@ impl TryFrom<&FfiConfiguration<'_>> for glean_core::Configuration {
         let upload_enabled = cfg.upload_enabled != 0;
         let max_events = cfg.max_events.filter(|&&i| i >= 0).map(|m| *m as usize);
         let delay_ping_lifetime_io = cfg.delay_ping_lifetime_io != 0;
+        let app_build = "unknown".to_string();
+        let use_core_mps = false;
 
         Ok(Self {
             upload_enabled,
@@ -257,6 +259,8 @@ impl TryFrom<&FfiConfiguration<'_>> for glean_core::Configuration {
             language_binding_name,
             max_events,
             delay_ping_lifetime_io,
+            app_build,
+            use_core_mps,
         })
     }
 }
@@ -301,9 +305,7 @@ pub extern "C" fn glean_set_upload_enabled(flag: u8) {
 #[no_mangle]
 pub extern "C" fn glean_submit_ping_by_name(ping_name: FfiStr, reason: FfiStr) -> u8 {
     with_glean(|glean| {
-        Ok(glean
-            .submit_ping_by_name(&ping_name.to_string_fallible()?, reason.as_opt_str())
-            .unwrap_or(false))
+        Ok(glean.submit_ping_by_name(&ping_name.to_string_fallible()?, reason.as_opt_str()))
     })
 }
 

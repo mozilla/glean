@@ -1,5 +1,7 @@
 # Adding Glean to your project
 
+<!-- toc -->
+
 ## Glean integration checklist
 
 The Glean integration checklist can help to ensure your Glean SDK-using product is meeting all of the recommended guidelines.
@@ -8,15 +10,15 @@ Products (applications or libraries) using the Glean SDK to collect telemetry **
 
 1. [Integrate the Glean SDK into the build system](#integrating-with-your-project). Since the Glean SDK does some code generation for your metrics at build time, this requires a few more steps than just adding a library.
 
-2. Include the markdown-formatted documentation generated from the `metrics.yaml` and `pings.yaml` files in the project's documentation.
+2. Go through [data review process](https://wiki.mozilla.org/Firefox/Data_Collection) for all newly collected data.
 
-3. Go through [data review process](https://wiki.mozilla.org/Firefox/Data_Collection) for all newly collected data.
+3. Ensure that telemetry coming from automated testing or continuous integration is either not sent to the telemetry server or [tagged with the `automation` tag using the `sourceTag` feature](debugging/index.md#available-debugging-features).
 
-4. Ensure that telemetry coming from automated testing or continuous integration is either not sent to the telemetry server or [tagged with the `automation` tag using the `sourceTag` feature](debugging/index.md#available-debugging-features).
-
-5. [File a data engineering bug][dataeng-bug] to enable your product's application id.
+4. [File a data engineering bug][dataeng-bug] to enable your product's application id and have your metrics be indexed by the [Glean Dictionary].
 
 Additionally, applications (but not libraries) **must**:
+
+5. [Initialize Glean](../reference/general/index.md#initializing-the-glean-sdk) as early as possible at application startup.
 
 6. Provide a way for users to turn data collection off (e.g. providing settings to control `Glean.setUploadEnabled()`). The exact method used is application-specific.
 
@@ -316,7 +318,9 @@ metrics.your_category.your_metric.set("value")
 
 #### Documentation
 
-The documentation for your application or library's metrics and pings are written in `metrics.yaml` and `pings.yaml`. However, you should also provide human-readable markdown files based on this information, and this is a requirement for Mozilla projects using the Glean SDK. For other languages and platforms, this transformation is done automatically as part of the build. However, for Python the integration to automatically generate docs is an additional step.
+The documentation for your application or library's metrics and pings are written in `metrics.yaml` and `pings.yaml`. 
+
+For Mozilla projects, this SDK documentation is automatically published on the [Glean Dictionary](https://dictionary.telemetry.mozilla.org). For non-Mozilla products, it is recommended to generate markdown-based documentation of your metrics and pings into the repository. For most languages and platforms, this transformation can be done automatically as part of the build. However, for some language bindings the integration to automatically generate docs is an additional step.
 
 The Glean SDK provides a commandline tool for automatically generating markdown documentation from your `metrics.yaml` and `pings.yaml` files. To perform that translation, run `glean_parser`'s `translate` command:
 
@@ -429,3 +433,4 @@ In practice, this should not be a performance issue: since the work is already i
 In order to make testing metrics easier 'out of the box', all metrics include a set of test API functions in order to facilitate unit testing.  These include functions to test whether a value has been stored, and functions to retrieve the stored value for validation.  For more information, please refer to [Unit testing Glean metrics](testing-metrics.md).
 
 [dataeng-bug]: https://bugzilla.mozilla.org/enter_bug.cgi?assigned_to=nobody%40mozilla.org&bug_ignored=0&bug_severity=--&bug_status=NEW&bug_type=task&cf_fx_iteration=---&cf_fx_points=---&comment=Application%20friendly%20name%3A%20my_app_name%0D%0AApplication%20ID%3A%20org.mozilla.my_app_id%0D%0ADescription%3A%20Brief%20description%20of%20your%20application%0D%0AGit%20Repository%20URL%3A%20https%3A%2F%2Fgithub.com%2Fmozilla%2Fmy_app_name%0D%0ALocations%20of%20%60metrics.yaml%60%20files%20%28can%20be%20many%29%3A%0D%0A%20%20-%20src%2Fmetrics.yaml%0D%0ALocations%20of%20%60pings.yaml%60%20files%20%28can%20be%20many%29%3A%0D%0A%20-%20src%2Fpings.yaml%0D%0ADependencies%2A%3A%0D%0A%20-%20org.mozilla.components%3Aservice-glean%0D%0ARetention%20Days%3A%20N%2A%2A%0D%0A%0D%0A%0D%0A%2A%20Dependencies%20can%20be%20found%20%5Bin%20the%20Glean%20repositories%5D%28https%3A%2F%2Fprobeinfo.telemetry.mozilla.org%2Fglean%2Frepositories%29.%20Each%20dependency%20must%20be%20listed%20explicitly.%20For%20example%2C%20the%20default%20Glean%20probes%20will%20only%20be%20included%20if%20glean%20itself%20is%20a%20dependency.%0D%0A%0D%0A%2A%2A%20Number%20of%20days%20that%20raw%20data%20will%20be%20retained.%20A%20good%20default%20is%20180.%0D%0A%0D%0AIf%20you%20need%20new%20dependencies%2C%20please%20file%20new%20bugs%20for%20them%2C%20separately%20from%20this%20one.%20For%20any%20questions%2C%20ask%20in%20the%20%23glean%20channel.&component=General&contenttypemethod=list&contenttypeselection=text%2Fplain&defined_groups=1&filed_via=standard_form&flag_type-4=X&flag_type-607=X&flag_type-800=X&flag_type-803=X&flag_type-936=X&form_name=enter_bug&maketemplate=Remember%20values%20as%20bookmarkable%20template&needinfo_from=fbertsch%40mozilla.com%2C%20&op_sys=Unspecified&priority=--&product=Data%20Platform%20and%20Tools&rep_platform=Unspecified&short_desc=Enable%20new%20Glean%20App%20my_app_name&target_milestone=---&version=unspecified
+[Glean Dictionary]: https://dictionary.telemetry.mozilla.org
