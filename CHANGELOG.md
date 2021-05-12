@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v37.0.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v38.0.0...main)
+
+# v38.0.0 (2021-05-12)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v37.0.0...v38.0.0)
 
 * General
   * Update documentation to recommend using Glean Dictionary instead of metrics.md ([#1604](https://github.com/mozilla/glean/pull/1604))
