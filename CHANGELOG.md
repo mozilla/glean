@@ -1,6 +1,13 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v38.0.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v38.0.1...main)
+
+# v38.0.1 (2021-05-17)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v38.0.0...v38.0.1)
+
+* General
+  * BUGFIX: Invert the lock order in glean-core's metrics ping scheduler ([#1637](https://github.com/mozilla/glean/pull/1637))
 
 # v38.0.0 (2021-05-12)
 
