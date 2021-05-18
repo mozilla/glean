@@ -69,9 +69,29 @@ metrics.search_default.name.set("wikipedia")
 
 </div>
 
-<div data-lang="Rust" class="tab"></div>
+<div data-lang="Rust" class="tab">
 
-<div data-lang="Javascript" class="tab"></div>
+```rust
+use glean_metrics;
+
+// Record a value into the metric.
+search_default::name.set("duck duck go");
+// If it changed later, you can record the new value:
+search_default::name.set("wikipedia");
+```
+</div>
+
+<div data-lang="Javascript" class="tab">
+
+```js
+import * as searchDefault from "./path/to/generated/files/searchDefault.js";
+
+// Record a value into the metric.
+searchDefault.name.set("duck duck go");
+// If it changed later, you can record the new value:
+searchDefault.name.set("wikipedia");
+```
+</div>
 
 <div data-lang="Firefox Desktop" class="tab">
 
@@ -156,9 +176,25 @@ assert "wikipedia" == metrics.search_default.name.test_get_value()
 
 </div>
 
-<div data-lang="Rust" class="tab"></div>
+<div data-lang="Rust" class="tab">
 
-<div data-lang="Javascript" class="tab"></div>
+```rust
+use glean_metrics;
+
+// Does the string metric have the expected value?
+assert_eq!(6, search_default::name.test_get_value(None).unwrap());
+```
+
+</div>
+
+<div data-lang="Javascript" class="tab">
+
+```js
+import * as searchDefault from "./path/to/generated/files/searchDefault.js";
+
+assert.strictEqual("wikipedia", await searchDefault.name.testGetValue());
+```
+</div>
 
 <div data-lang="Firefox Desktop" class="tab">
 
@@ -256,7 +292,7 @@ Gets number of errors recorded for a given string metric.
 import org.mozilla.yourApplication.GleanMetrics.SearchDefault
 
 // Was the string truncated, and an error reported?
-assertEquals(1, SearchDefault.name.testGetNumRecordedErrors(ErrorType.InvalidValue))
+assertEquals(1, SearchDefault.name.testGetNumRecordedErrors(ErrorType.InvalidOverflow))
 ```
 
 </div>
@@ -270,7 +306,7 @@ import org.mozilla.yourApplication.GleanMetrics.SearchDefault;
 assertEquals(
     1,
     SearchDefault.INSTANCE.name.testGetNumRecordedErrors(
-        ErrorType.InvalidValue
+        ErrorType.InvalidOverflow
     )
 );
 ```
@@ -283,7 +319,7 @@ assertEquals(
 @testable import Glean
 
 // Was the string truncated, and an error reported?
-XCTAssertEqual(1, SearchDefault.name.testGetNumRecordedErrors(.invalidValue))
+XCTAssertEqual(1, SearchDefault.name.testGetNumRecordedErrors(.invalidOverflow))
 ```
 
 </div>
@@ -296,15 +332,38 @@ metrics = load_metrics("metrics.yaml")
 
 # Was the string truncated, and an error reported?
 assert 1 == metrics.search_default.name.test_get_num_recorded_errors(
-    ErrorType.INVALID_VALUE
+    ErrorType.INVALID_OVERFLOW
 )
 ```
 
 </div>
 
-<div data-lang="Rust" class="tab"></div>
+<div data-lang="Rust" class="tab">
 
-<div data-lang="Javascript" class="tab"></div>
+```rust
+use glean::ErrorType;
+
+use glean_metrics;
+
+// Was the string truncated, and an error reported?
+assert_eq!(
+  1,
+  search_default::name.test_get_num_recorded_errors(
+    ErrorType::InvalidOverflow
+  )
+);
+```
+</div>
+
+<div data-lang="Javascript" class="tab">
+
+```js
+import * as searchDefault from "./path/to/generated/files/searchDefault.js";
+
+// Was the string truncated, and an error reported?
+assert.strictEqual(1, await searchDefault.name.testGetNumRecordedErrors("invalid_overflow"));
+```
+</div>
 
 <div data-lang="Firefox Desktop" class="tab" data-bug="1683171"></div>
 
@@ -344,6 +403,8 @@ N/A
 
 ## Reference
 
-* [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-string-metric-type/index.html).
+* [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-string-metric-type/index.html)
 * [Swift API docs](../../../swift/Classes/StringMetricType.html)
 * [Python API docs](../../../python/glean/metrics/string.html)
+* [Rust API docs](../../../docs/glean/private/struct.StringMetric.html)
+* [Javascript API docs](https://mozilla.github.io/glean.js/classes/core_metrics_types_string.default.html#set)
