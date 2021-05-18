@@ -70,7 +70,7 @@ A [Timespan](../../../book/reference/metrics/timespan.md) is represented as an o
 | Field name | Type | Description |
 |---|---|---|
 | `value` | Integer | The value in the marked time unit. |
-| `time_unit` | String | The time unit, see the [timespan's configuration](../../../book/reference/metrics/timespan.md#configuration) for valid values. |
+| `time_unit` | String | The [time unit](../../../book/reference/metrics/timespan.md#time_unit). |
 
 #### Example
 
