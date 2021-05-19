@@ -107,6 +107,7 @@ changelog
 chutten
 ci
 circleci
+clippy
 cmd
 codecov
 codepoints
