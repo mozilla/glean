@@ -50,7 +50,7 @@ metrics.login.errors_by_stage["server_auth"].set("Invalid password")
 ```js
 import * as login from "./path/to/generated/files/login.js";
 
-login.errorsByStage["server_auth"].set("Invalid password"));
+login.errorsByStage["server_auth"].set("Invalid password");
 ```
 </div>
 
