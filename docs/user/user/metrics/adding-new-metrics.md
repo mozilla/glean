@@ -254,17 +254,76 @@ GleanMetrics.Views.loginOpened...
 ```
 
 </div>
-
 <div data-lang="Python" class="tab">
 
 Category and metric names in the `metrics.yaml` are in `snake_case`, which matches the [PEP8](https://www.python.org/dev/peps/pep-0008/) standard, so no translation is needed for Python.
 
 </div>
+<div data-lang="Rust" class="tab">
 
-<div data-lang="C#" class="tab">
+Given the Rust coding standards defined by
+[clippy](https://github.com/rust-lang/rust-clippy),
+identifiers should all be `snake_case`.
+This includes category names which in the `metrics.yaml` are `dotted.snake_case`:
 
-TODO. To be implemented in [this bug](https://bugzilla.mozilla.org/show_bug.cgi?id=1643568).
+```YAML
+compound.category:
+  metric_name:
+    ...
+```
 
+In Rust this becomes:
+
+```Rust
+use fog::metrics;
+
+metrics::compound_category::metric_name...
+```
+</div>
+<div data-lang="Javascript" class="tab">
+
+Javascript identifiers are customarily `camelCase`.
+This requires transforming a metric defined in the `metrics.yaml` as:
+
+```YAML
+compound.category:
+  metric_name:
+    ...
+```
+
+to a form useful in JS as:
+
+```js
+import * as compoundCategory from "./path/to/generated/files/compoundCategory.js";
+
+compoundCategory.metricName...
+```
+</div>
+<div data-lang="Firefox Desktop" class="tab">
+
+Firefox Desktop has
+[Coding Style Guidelines](https://firefox-source-docs.mozilla.org/code-quality/coding-style/index.html)
+for both C++ and JS.
+This results in, for a metric defined in the `metrics.yaml` as:
+
+```YAML
+compound.category:
+  metric_name:
+    ...
+```
+
+an identifier that looks like:
+
+**C++**
+```cpp
+#include "mozilla/glean/GleanMetrics.h"
+
+mozilla::glean::compound_category::metric_name...
+```
+**JS**
+```js
+Glean.compoundCategory.metricName...
+```
 </div>
 
 {{#include ../../../shared/tab_footer.md}}

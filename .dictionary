@@ -1,4 +1,4 @@
-personal_ws-1.1 en 221 utf-8
+personal_ws-1.1 en 223 utf-8
 AAR
 AARs
 ABI
@@ -104,6 +104,7 @@ changelog
 chutten
 ci
 circleci
+clippy
 cmd
 codecov
 codepoints
