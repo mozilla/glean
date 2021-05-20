@@ -64,6 +64,7 @@ a.header code:hover {
     border: 1px solid #ccc;
     border-top: none;
     padding: 6px 12px;
+    box-sizing: border-box;
 }
 
 .tab.active {
