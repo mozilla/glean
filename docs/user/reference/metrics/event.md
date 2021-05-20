@@ -357,7 +357,14 @@ assert_eq!(
 
 </div>
 
-<div data-lang="JavaScript" class="tab"></div>
+<div data-lang="Javascript" class="tab">
+
+```js
+import * as views from "./path/to/generated/files/views.js";
+
+assert.strictEqual(1, await views.loginOpened.testGetNumRecordedErrors("invalid_value"));
+```
+</div>
 
 <div data-lang="Firefox Desktop" class="tab"></div>
 
@@ -416,3 +423,4 @@ Each extra key contains additional metadata:
 * [Swift API docs](../../../swift/Classes/EventMetricType.html)
 * [Python API docs](../../../python/glean/metrics/event.html)
 * [Rust API docs](../../../docs/glean/private/event/struct.EventMetric.html)
+* [Javascript API docs](https://mozilla.github.io/glean.js/classes/core_metrics_types_event.default.html)

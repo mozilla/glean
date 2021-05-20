@@ -329,7 +329,6 @@ refer to the metrics [YAML format](../yaml/index.md) reference page.
 
 Quantities have the required `unit` parameter, which is a free-form string for documentation purposes.
 
-
 ## Data questions
 
 * What is the width of the display, in pixels?
