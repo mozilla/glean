@@ -30,6 +30,19 @@ Install helper tools:
 cargo install cargo-lipo
 ```
 
+### Building on M1 hardware
+
+If you are on M1-powered Mac hardware (also known as "Apple Silicon" or "macOS aarch64") you will need Rust Nightly to build Glean for iOS.
+
+Install the toolchain using the following commands:
+
+```
+rustup toolchain add nightly
+rustup component add rust-src --toolchain nightly
+```
+
+The build system will auto-detect your machine architecture and build for the appropriate targets.
+
 ## Building
 
 This should be relatively straightforward and painless:
