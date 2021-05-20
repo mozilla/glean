@@ -9,7 +9,7 @@ mypy==0.812
 pdoc3==0.9.2
 pip
 pytest-localserver==0.5.0
-pytest-runner==5.3.0
+pytest-runner==5.3.1
 pytest==6.2.4
 setuptools-git==1.2
 twine==3.4.1
