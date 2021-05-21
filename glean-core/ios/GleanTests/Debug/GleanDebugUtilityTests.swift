@@ -74,7 +74,7 @@ class GleanDebugUtilityTests: XCTestCase {
 
         // Create a dummy event and a dummy metric so that the
         // respective pings will be sent
-        let event = EventMetricType<ClickKeys>(
+        let event = EventMetricType<ClickKeys, NoExtras>(
             category: "ui",
             name: "click",
             sendInPings: ["events"],

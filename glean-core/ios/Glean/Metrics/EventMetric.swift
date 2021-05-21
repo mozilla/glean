@@ -56,6 +56,16 @@ public enum NoExtraKeys: ExtraKeys {
     }
 }
 
+/// Default of no extra keys for events (for the new API).
+///
+/// An empty class for convenient use as the default set of extra keys
+/// that an `EventMetricType` can accept.
+public class NoExtras: EventExtras {
+    public func toFfiExtra() -> ([Int32], [String]) {
+        return ([Int32](), [String]())
+    }
+}
+
 /// Default-implement `EventExtras` for a map of ExtraKeys to Strings.
 extension Dictionary: EventExtras where Key: ExtraKeys, Value == String {
     public func toFfiExtra() -> ([Int32], [String]) {
@@ -80,7 +90,7 @@ extension Dictionary: EventExtras where Key: ExtraKeys, Value == String {
 ///
 /// The Events API only exposes the `EventMetricType.record(extra:)` method, which takes care of validating the input
 /// data and making sure that limits are enforced.
-public class EventMetricType<ExtraKeysEnum: ExtraKeys> {
+public class EventMetricType<ExtraKeysEnum: ExtraKeys, ExtraObject: EventExtras> {
     let handle: UInt64
     let disabled: Bool
     let sendInPings: [String]
@@ -126,16 +136,21 @@ public class EventMetricType<ExtraKeysEnum: ExtraKeys> {
     ///              values need to be strings.
     ///              This is used for events where additional richer context is needed.
     ///              The maximum length for values is defined by `MAX_LENGTH_EXTRA_KEY_VALUE`.
-    public func record(extra: [ExtraKeysEnum: String]? = nil) {
-        self.record(extra)
+    @available(*, deprecated, message: "Specify types for your event extras. See the reference for details.")
+    public func record(extra: [ExtraKeysEnum: String]) {
+        let timestamp = glean_get_timestamp_ms()
+        self.recordInternal(timestamp: timestamp, extras: extra.toFfiExtra())
     }
 
-    public func record(_ properties: EventExtras? = nil) {
-        guard !self.disabled else { return }
-
+    public func record(_ properties: ExtraObject? = nil) {
         // We capture the event time now, since we don't know when the async code below
         // might get executed.
         let timestamp = glean_get_timestamp_ms()
+        self.recordInternal(timestamp: timestamp, extras: properties.map { $0.toFfiExtra() })
+    }
+
+    func recordInternal(timestamp: UInt64, extras: ([Int32], [String])?) {
+        guard !self.disabled else { return }
 
         Dispatchers.shared.launchAPI {
             // The map is sent over FFI as a pair of arrays, one containing the
@@ -144,11 +159,10 @@ public class EventMetricType<ExtraKeysEnum: ExtraKeys> {
             var keys: [Int32]?
             var values: [String]?
 
-            if let extra = properties {
-                let (k, v) = extra.toFfiExtra()
-                len = k.count
-                keys = k
-                values = v
+            if let extra = extras {
+                keys = extra.0
+                values = extra.1
+                len = extra.0.count
             }
 
             withArrayOfCStrings(values) { values in

@@ -72,19 +72,23 @@ class EventPingTest: XCTestCase {
         XCTAssertEqual("inactive", reason, "Should have gotten a inactive events ping")
 
         let events = lastPingJson!["events"] as! [[String: Any]]
-        XCTAssertEqual(4, events.count, "Events ping should have all button-tap events")
+        // Per button tap we record 3 events.
+        XCTAssertEqual(4 * 3, events.count, "Events ping should have all button-tap events")
 
         let firstEvent = events[0]
         XCTAssertEqual(0, firstEvent["timestamp"] as! Int, "First event should be at timestamp 0")
 
-        for i in 1...3 {
+        for i in 1...11 {
             let earlier = events[i-1]["timestamp"] as! Int
             let this = events[i]["timestamp"] as! Int
             XCTAssert(earlier <= this, "Events should be ordered monotonically non-decreasing")
         }
 
-        let notLast = events[2]["timestamp"] as! Int
-        let last = events[3]["timestamp"] as! Int
+        // 3 events per tap,
+        // thus event 8 is the last event of the third tap,
+        // event 9 is the first event of the fourth tap.
+        let notLast = events[8]["timestamp"] as! Int
+        let last = events[9]["timestamp"] as! Int
         let diff = last - notLast
         // Sleeping and tapping the button has a delay of ~600ms,
         // so we account for a tiny bit more here.
