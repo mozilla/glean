@@ -23,6 +23,7 @@ import mozilla.telemetry.glean.private.CounterMetricType
 import mozilla.telemetry.glean.private.EventMetricType
 import mozilla.telemetry.glean.private.Lifetime
 import mozilla.telemetry.glean.private.NoExtraKeys
+import mozilla.telemetry.glean.private.NoExtras
 import mozilla.telemetry.glean.private.NoReasonCodes
 import mozilla.telemetry.glean.private.PingType
 import mozilla.telemetry.glean.private.StringMetricType
@@ -181,7 +182,7 @@ class GleanTest {
     fun `test sending of foreground and background pings`() {
         val server = getMockWebServer()
 
-        val click = EventMetricType<NoExtraKeys>(
+        val click = EventMetricType<NoExtraKeys, NoExtras>(
             disabled = false,
             category = "ui",
             lifetime = Lifetime.Ping,

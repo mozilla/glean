@@ -23,6 +23,25 @@ browser.engagement:
       - CHANGE-ME@example.com
     extra_keys:
       key1:
+        type: string
+        description: "This is key one"
+      key2:
+        type: string
+        description: "This is key two"
+    expires: 2100-01-01
+
+  old_event_style:
+    type: event
+    description: |
+      Just testing events
+    bugs:
+      - https://bugzilla.mozilla.org/123456789
+    data_reviews:
+      - N/A
+    notification_emails:
+      - CHANGE-ME@example.com
+    extra_keys:
+      key1:
         description: "This is key one"
       key2:
         description: "This is key two"
