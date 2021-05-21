@@ -88,7 +88,7 @@ class EventMetricTypeTests: XCTestCase {
     }
 
     func testEventSavesToStorage() {
-        let metric = EventMetricType<ClickKeys>(
+        let metric = EventMetricType<NoExtraKeys, ClickExtras>(
             category: "ui",
             name: "click",
             sendInPings: ["store1"],
@@ -108,7 +108,7 @@ class EventMetricTypeTests: XCTestCase {
 
         // Old API, this is available only because we manually implemented the enum.
         // Generated code will have only one of the APIs available.
-        metric.record(extra: [.objectId: "buttonB", .other: "bar"])
+        metric.record(ClickExtras(objectId: "buttonB", other: "bar"))
 
         XCTAssert(metric.testHasValue())
         let events = try! metric.testGetValue()
@@ -133,7 +133,7 @@ class EventMetricTypeTests: XCTestCase {
     }
 
     func testEventRecordedWithEmptyCategory() {
-        let metric = EventMetricType<ClickKeys>(
+        let metric = EventMetricType<ClickKeys, NoExtras>(
             category: "",
             name: "click",
             sendInPings: ["store1"],
@@ -161,7 +161,7 @@ class EventMetricTypeTests: XCTestCase {
     }
 
     func testEventNotRecordedWhenDisabled() {
-        let metric = EventMetricType<ClickKeys>(
+        let metric = EventMetricType<ClickKeys, NoExtras>(
             category: "ui",
             name: "click",
             sendInPings: ["store1"],
@@ -177,7 +177,7 @@ class EventMetricTypeTests: XCTestCase {
     }
 
     func testCounterGetValueThrowsExceptionIfNothingIsStored() {
-        let metric = EventMetricType<ClickKeys>(
+        let metric = EventMetricType<ClickKeys, NoExtras>(
             category: "ui",
             name: "click",
             sendInPings: ["store1"],
@@ -191,7 +191,7 @@ class EventMetricTypeTests: XCTestCase {
     }
 
     func testEventSavesToSecondaryPings() {
-        let metric = EventMetricType<ClickKeys>(
+        let metric = EventMetricType<ClickKeys, NoExtras>(
             category: "ui",
             name: "click",
             sendInPings: ["store1", "store2"],
@@ -222,7 +222,7 @@ class EventMetricTypeTests: XCTestCase {
     }
 
     func testEventNotRecordWhenUploadDisabled() {
-        let metric = EventMetricType<TestNameKeys>(
+        let metric = EventMetricType<TestNameKeys, NoExtras>(
             category: "ui",
             name: "click",
             sendInPings: ["store1", "store2"],
@@ -250,7 +250,7 @@ class EventMetricTypeTests: XCTestCase {
         setupHttpResponseStub()
         expectation = expectation(description: "Completed upload")
 
-        let event = EventMetricType<SomeExtraKeys>(
+        let event = EventMetricType<SomeExtraKeys, NoExtras>(
             category: "telemetry",
             name: "test_event",
             sendInPings: ["events"],
@@ -282,7 +282,7 @@ class EventMetricTypeTests: XCTestCase {
         setupHttpResponseStub()
         expectation = expectation(description: "Completed upload")
 
-        let event = EventMetricType<SomeExtraKeys>(
+        let event = EventMetricType<SomeExtraKeys, NoExtras>(
             category: "telemetry",
             name: "test_event",
             sendInPings: ["events"],
@@ -327,7 +327,7 @@ class EventMetricTypeTests: XCTestCase {
     }
 
     func testEventLongExtraRecordsError() {
-        let metric = EventMetricType<TestNameKeys>(
+        let metric = EventMetricType<TestNameKeys, NoExtras>(
             category: "ui",
             name: "click",
             sendInPings: ["store1", "store2"],

@@ -60,10 +60,13 @@ class ViewController: UIViewController {
         // order to illustrate adding extra information to the event, it is also adding to the
         // 'extras' field a dictionary of values.  Note that the dictionary keys must be
         // declared in the metrics.yaml file under the 'extra_keys' section of an event metric.
-        BrowserEngagement.click.record(extra: [
-            .key1: "extra_value_1",
-            .key2: "extra_value_2"
-        ])
+        BrowserEngagement.click.record(BrowserEngagement.ClickExtra(key1: "extra_value_1", key2: "extra_value_2"))
+
+        // An event without any extra keys
+        BrowserEngagement.eventNoKeys.record()
+
+        // Testing the old API. It should still be possible, even if deprecated
+        BrowserEngagement.oldEventStyle.record(extra: [.key1: "extra_value1", .key2: "extra_value2"])
     }
 
     @IBAction func sendButtonTapped(_: Any) {
