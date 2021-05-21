@@ -76,7 +76,7 @@ if found_version != expected_version:
             'pip',
             'install',
             '--upgrade',
-            f'{module_name}=={expected_version}'
+            'git+ssh://git@github.com/mozilla/glean_parser@missing-event-imports#egg=glean_parser'
         ])
     else:
         print(f'Using Python environment at {sys.executable},')
@@ -416,7 +416,7 @@ except:
 
                 // Setup a miniconda environment. conda is used because it works
                 // non-interactively on Windows, unlike the standard Python installers
-                conda "Miniconda3", "Miniconda3-${MINICONDA_VERSION}", "64", ["glean_parser==${GLEAN_PARSER_VERSION}"]
+                conda "Miniconda3", "Miniconda3-${MINICONDA_VERSION}", "64", ["git+ssh://git@github.com/mozilla/glean_parser@missing-event-imports#egg=glean_parser"]
             }
             File envDir = new File(
                 condaBootstrapDir,

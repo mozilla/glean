@@ -142,7 +142,7 @@ VENVDIR="${SOURCE_ROOT}/.venv"
 # We need at least pip 20.3 for Big Sur support, see https://pip.pypa.io/en/stable/news/#id48
 # Latest pip is 21.0.1
 "${VENVDIR}"/bin/pip install "pip>=20.3"
-"${VENVDIR}"/bin/pip install --upgrade glean_parser==$GLEAN_PARSER_VERSION
+"${VENVDIR}"/bin/pip install --upgrade "git+ssh://git@github.com/mozilla/glean_parser@missing-event-imports#egg=glean_parser"
 
 # Run the glinter
 # Turn its warnings into warnings visible in Xcode (but don't do for the success message)
