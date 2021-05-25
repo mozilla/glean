@@ -282,7 +282,7 @@ metrics::compound_category::metric_name...
 </div>
 <div data-lang="Javascript" class="tab">
 
-Javascript identifiers are customarily `camelCase`.
+JavaScript identifiers are customarily `camelCase`.
 This requires transforming a metric defined in the `metrics.yaml` as:
 
 ```YAML
@@ -320,7 +320,7 @@ an identifier that looks like:
 
 mozilla::glean::compound_category::metric_name...
 ```
-**JS**
+**JavaScript**
 ```js
 Glean.compoundCategory.metricName...
 ```
