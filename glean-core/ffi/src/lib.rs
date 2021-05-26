@@ -5,7 +5,7 @@
 #![deny(broken_intra_doc_links)]
 
 use std::convert::TryFrom;
-use std::ffi::CStr;
+use std::ffi::{CStr, CString};
 use std::os::raw::c_char;
 use std::panic::UnwindSafe;
 use std::path::PathBuf;
@@ -537,6 +537,18 @@ pub extern "C" fn glean_set_source_tags(raw_tags: RawStringArray, tags_count: i3
 #[no_mangle]
 pub extern "C" fn glean_get_timestamp_ms() -> u64 {
     glean_core::get_timestamp_ms()
+}
+
+#[no_mangle]
+pub extern "C" fn glean_test_register_platform_panic(panic_fn: unsafe extern "C" fn(msg: FfiStr)) {
+    glean_core::test_register_platform_panic(move |msg| {
+        // Safety: If this function no longer exists across the FFI,
+        // we may explode. But seeing as the whole point is to panic, we're fine.
+        let c_msg = CString::new(msg).unwrap_or_else(|_| panic!("CString::new failed on {}", msg));
+        unsafe {
+            panic_fn(FfiStr::from_cstr(&c_msg));
+        }
+    });
 }
 
 define_string_destructor!(glean_str_free);

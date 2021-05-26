@@ -38,6 +38,7 @@ mod internal_metrics;
 mod internal_pings;
 pub mod metrics;
 pub mod ping;
+pub(crate) mod platform_panic;
 mod scheduler;
 pub mod storage;
 mod system;
@@ -1034,6 +1035,14 @@ impl Glean {
 pub fn get_timestamp_ms() -> u64 {
     const NANOS_PER_MILLI: u64 = 1_000_000;
     zeitstempel::now() / NANOS_PER_MILLI
+}
+
+/// Registers a platform-specific panic function to be used in tests.
+pub fn test_register_platform_panic<F: 'static>(panic_fn: F)
+where
+    F: Fn(&str) + Send + Sync,
+{
+    platform_panic::register(panic_fn);
 }
 
 // Split unit tests to a separate file, to reduce the file of this one.
