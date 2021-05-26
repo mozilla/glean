@@ -170,6 +170,46 @@ And this is how those tabs will look like:
 
 {{#include ../../shared/tab_footer.md}}
 
+#### Tab tooltips
+
+When a tab is disabled i.e. does not have any content, it is possible to provide extra context
+on why a it is disabled through special `data-*` attributes.
+
+##### `data-bug`
+
+This attribute expects a Bugzilla bug number. When this attribute is added a link to the provided
+bug will be added to the tooltip text.
+
+##### `data-info`
+
+This attribute expects free form text or valid HTML. Be careful when adding long texts here. If a text needs to be
+too long, consider adding it as an actual section / paragraph to the page instead of as a tooltip.
+
+
+
+This is how you can use the above attributes.
+
+```html
+\{{#include ../../shared/tab_header.md}}
+...
+
+<!-- No attribute, default text will show up. -->
+<div data-lang="Rust" class="tab"></div>
+<!-- data-bug attribute, default text will show up + link to bug. -->
+<div data-lang="Javascript" class="tab" data-bug="000000"></div>
+<!-- data-info attribute, free form text will show up. -->
+<div data-lang="Firefox Desktop" class="tab" data-info="Hello, Glean world!"></div>
+\{{#include ../../shared/tab_footer.md}}
+```
+
+And this is how each tool tip is rendered.
+
+{{#include ../../shared/tab_header.md}}
+<div data-lang="Rust" class="tab"></div>
+<div data-lang="Javascript" class="tab" data-bug="000000"></div>
+<div data-lang="Firefox Desktop" class="tab" data-info="Hello, Glean world!"></div>
+{{#include ../../shared/tab_footer.md}}
+
 #### Custom block quotes
 
 Sometimes it is necessary to bring attention to a special piece of information, or simply to provide
