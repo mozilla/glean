@@ -18,6 +18,7 @@ use std::fmt::Display;
 use crate::error::{Error, ErrorKind};
 use crate::metrics::labeled::{combine_base_identifier_and_label, strip_label};
 use crate::metrics::CounterMetric;
+use crate::platform_panic;
 use crate::CommonMetricData;
 use crate::Glean;
 use crate::Lifetime;
@@ -64,8 +65,31 @@ impl TryFrom<i32> for ErrorType {
     }
 }
 
+pub(crate) fn test_assert_no_errors(glean: &Glean, meta: &CommonMetricData) {
+    let error_types = [
+        ErrorType::InvalidValue,
+        ErrorType::InvalidLabel,
+        ErrorType::InvalidState,
+        ErrorType::InvalidOverflow,
+    ];
+    for error_type in error_types.iter() {
+        let metric = get_error_metric_for_metric(meta, error_type);
+        let num_errors = metric
+            .test_get_value_no_assert(glean, &meta.send_in_pings[0])
+            .unwrap_or(0);
+        if num_errors > 0 {
+            platform_panic::panic(&format!(
+                "Metric {} had {} error(s) of type {}! Aborting!",
+                meta.base_identifier(),
+                num_errors,
+                error_type.as_str(),
+            ));
+        }
+    }
+}
+
 /// For a given metric, get the metric in which to record errors
-fn get_error_metric_for_metric(meta: &CommonMetricData, error: ErrorType) -> CounterMetric {
+fn get_error_metric_for_metric(meta: &CommonMetricData, error: &ErrorType) -> CounterMetric {
     // Can't use meta.identifier here, since that might cause infinite recursion
     // if the label on this metric needs to report an error.
     let identifier = meta.base_identifier();
@@ -110,7 +134,7 @@ pub fn record_error<O: Into<Option<i32>>>(
     message: impl Display,
     num_errors: O,
 ) {
-    let metric = get_error_metric_for_metric(meta, error);
+    let metric = get_error_metric_for_metric(meta, &error);
 
     log::warn!("{}: {}", meta.base_identifier(), message);
     let to_report = num_errors.into().unwrap_or(1);
@@ -138,7 +162,7 @@ pub fn test_get_num_recorded_errors(
     ping_name: Option<&str>,
 ) -> Result<i32, String> {
     let use_ping_name = ping_name.unwrap_or(&meta.send_in_pings[0]);
-    let metric = get_error_metric_for_metric(meta, error);
+    let metric = get_error_metric_for_metric(meta, &error);
 
     metric.test_get_value(glean, use_ping_name).ok_or_else(|| {
         format!(

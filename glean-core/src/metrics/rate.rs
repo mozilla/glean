@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use crate::error_recording::{record_error, ErrorType};
+use crate::error_recording::{record_error, test_assert_no_errors, ErrorType};
 use crate::metrics::Metric;
 use crate::metrics::MetricType;
 use crate::storage::StorageManager;
@@ -115,6 +115,7 @@ impl RateMetric {
     ///
     /// This doesn't clear the stored value.
     pub fn test_get_value(&self, glean: &Glean, storage_name: &str) -> Option<(i32, i32)> {
+        test_assert_no_errors(glean, &self.meta);
         match StorageManager.snapshot_metric_for_test(
             glean.storage(),
             storage_name,

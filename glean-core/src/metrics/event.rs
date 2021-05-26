@@ -6,7 +6,7 @@ use std::collections::HashMap;
 
 use serde_json::{json, Value as JsonValue};
 
-use crate::error_recording::{record_error, ErrorType};
+use crate::error_recording::{record_error, test_assert_no_errors, ErrorType};
 use crate::event_database::RecordedEvent;
 use crate::metrics::MetricType;
 use crate::util::truncate_string_at_boundary_with_error;
@@ -121,6 +121,7 @@ impl EventMetric {
     ///
     /// This doesn't clear the stored value.
     pub fn test_get_value(&self, glean: &Glean, store_name: &str) -> Option<Vec<RecordedEvent>> {
+        test_assert_no_errors(glean, &self.meta);
         glean.event_storage().test_get_value(&self.meta, store_name)
     }
 
@@ -130,6 +131,7 @@ impl EventMetric {
     ///
     /// This doesn't clear the stored value.
     pub fn test_get_value_as_json_string(&self, glean: &Glean, store_name: &str) -> String {
+        test_assert_no_errors(glean, &self.meta);
         match self.test_get_value(glean, store_name) {
             Some(value) => json!(value),
             None => json!(JsonValue::Null),

@@ -2,6 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+use crate::error_recording::test_assert_no_errors;
 use crate::metrics::Metric;
 use crate::metrics::MetricType;
 use crate::storage::StorageManager;
@@ -64,15 +65,6 @@ impl StringMetric {
     /// Non-exported API used for crate-internal storage.
     /// Gets the current-stored value as a string, or None if there is no value.
     pub(crate) fn get_value(&self, glean: &Glean, storage_name: &str) -> Option<String> {
-        self.test_get_value(&glean, &storage_name)
-    }
-
-    /// **Test-only API (exported for FFI purposes).**
-    ///
-    /// Gets the currently stored value as a string.
-    ///
-    /// This doesn't clear the stored value.
-    pub fn test_get_value(&self, glean: &Glean, storage_name: &str) -> Option<String> {
         match StorageManager.snapshot_metric_for_test(
             glean.storage(),
             storage_name,
@@ -82,6 +74,16 @@ impl StringMetric {
             Some(Metric::String(s)) => Some(s),
             _ => None,
         }
+    }
+
+    /// **Test-only API (exported for FFI purposes).**
+    ///
+    /// Gets the currently stored value as a string.
+    ///
+    /// This doesn't clear the stored value.
+    pub fn test_get_value(&self, glean: &Glean, storage_name: &str) -> Option<String> {
+        test_assert_no_errors(glean, &self.meta);
+        self.get_value(&glean, &storage_name)
     }
 }
 

@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use crate::error_recording::{record_error, ErrorType};
+use crate::error_recording::{record_error, test_assert_no_errors, ErrorType};
 use crate::metrics::Metric;
 use crate::metrics::MetricType;
 use crate::storage::StorageManager;
@@ -80,6 +80,21 @@ impl CounterMetric {
     ///
     /// This doesn't clear the stored value.
     pub fn test_get_value(&self, glean: &Glean, storage_name: &str) -> Option<i32> {
+        test_assert_no_errors(glean, &self.meta);
+        self.test_get_value_no_assert(glean, storage_name)
+    }
+
+    /// **Test-only API.**
+    ///
+    /// Gets the currently stored value as an integer.
+    /// The automated checks for recorded errors are bypassed.
+    ///
+    /// This doesn't clear the stored value.
+    pub(crate) fn test_get_value_no_assert(
+        &self,
+        glean: &Glean,
+        storage_name: &str,
+    ) -> Option<i32> {
         match StorageManager.snapshot_metric_for_test(
             glean.storage(),
             storage_name,

@@ -4,7 +4,7 @@
 
 use std::time::Duration;
 
-use crate::error_recording::{record_error, ErrorType};
+use crate::error_recording::{record_error, test_assert_no_errors, ErrorType};
 use crate::metrics::time_unit::TimeUnit;
 use crate::metrics::Metric;
 use crate::metrics::MetricType;
@@ -179,6 +179,7 @@ impl TimespanMetric {
     ///
     /// This doesn't clear the stored value.
     pub fn test_get_value(&self, glean: &Glean, storage_name: &str) -> Option<u64> {
+        test_assert_no_errors(glean, &self.meta);
         match StorageManager.snapshot_metric_for_test(
             glean.storage(),
             storage_name,

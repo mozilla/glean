@@ -4,7 +4,7 @@
 
 use uuid::Uuid;
 
-use crate::error_recording::{record_error, ErrorType};
+use crate::error_recording::{record_error, test_assert_no_errors, ErrorType};
 use crate::metrics::Metric;
 use crate::metrics::MetricType;
 use crate::storage::StorageManager;
@@ -116,6 +116,7 @@ impl UuidMetric {
     ///
     /// This doesn't clear the stored value.
     pub fn test_get_value(&self, glean: &Glean, storage_name: &str) -> Option<Uuid> {
+        test_assert_no_errors(glean, &self.meta);
         self.get_value(glean, storage_name)
     }
 }

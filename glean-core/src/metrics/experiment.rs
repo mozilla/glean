@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::{json, Map as JsonMap, Value as JsonValue};
 use std::collections::HashMap;
 
-use crate::error_recording::{record_error, ErrorType};
+use crate::error_recording::{record_error, test_assert_no_errors, ErrorType};
 use crate::metrics::Metric;
 use crate::metrics::MetricType;
 use crate::storage::StorageManager;
@@ -221,6 +221,7 @@ impl ExperimentMetric {
     ///
     /// This doesn't clear the stored value.
     pub fn test_get_value_as_json_string(&self, glean: &Glean) -> Option<String> {
+        test_assert_no_errors(glean, &self.meta);
         match StorageManager.snapshot_metric_for_test(
             glean.storage(),
             INTERNAL_STORAGE,
