@@ -196,16 +196,20 @@ assert.deepStrictEqual(expectedDate, await install.firstRun.testGetValue());
 ```c++
 #include "mozilla/glean/GleanMetrics.h"
 
-ASSERT_STREQ(
-  mozilla::glean::install::first_run.TestGetValue().value(),
-  "2020-11-06T12:10:35+05:00"_ns
-);
+PRExplodedTime date{0, 35, 10, 12, 6, 10, 2020, 0, 0, {5 * 60 * 60, 0}};
+ASSERT_EQ(
+    0,
+    std::memcmp(
+        &date,
+        mozilla::glean::install::first_run.TestGetValue().ptr(),
+        sizeof(date)));
 ```
 
-**Javascript**
+**JavaScript**
 
 ```js
-Assert.ok(Glean.install.firstRun.testGetValue().startsWith("2020-06-11T12:00:00"));
+const value = new Date("2020-06-11T12:00:00");
+Assert.equal(Glean.install.firstRun.testGetValue().getTime(), value.getTime());
 ```
 
 </div>
