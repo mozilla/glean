@@ -69,7 +69,17 @@ fn show_login() {
 }
 ```
 </div>
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="Javascript" class="tab">
+
+```js
+import * as auth from "./path/to/generated/files/auth.js";
+
+function onShowLogin() {
+    auth.loginTime.start();
+    // ...
+}
+```
+</div>
 <div data-lang="Firefox Desktop" class="tab">
 
 **C++**
@@ -96,7 +106,7 @@ function onShowLogin() {
 
 #### Limits
 * The maximum resolution of the elapsed duration is limited by the clock used on each platform.
-  This also determines the behavior of a timespan over sleep:
+* This also determines the behavior of a timespan over sleep:
   * On Android, the
     [`SystemClock.elapsedRealtimeNanos()`](https://developer.android.com/reference/android/os/SystemClock.html#elapsedRealtimeNanos())
     function is used, so it is limited by the accuracy and performance of that timer.
@@ -173,7 +183,17 @@ fn login() {
 }
 ```
 </div>
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="Javascript" class="tab">
+
+```js
+import * as auth from "./path/to/generated/files/auth.js";
+
+function onLogin() {
+    auth.login_time.stop();
+    // ...
+}
+```
+</div>
 <div data-lang="Firefox Desktop" class="tab">
 
 **C++**
@@ -258,7 +278,17 @@ fn login_cancel() {
 }
 ```
 </div>
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="Javascript" class="tab">
+
+```js
+import * as auth from "./path/to/generated/files/auth.js";
+
+function onLoginCancel() {
+    auth.login_time.cancel();
+    // ...
+}
+```
+</div>
 <div data-lang="Firefox Desktop" class="tab">
 
 **C++**
@@ -335,6 +365,8 @@ with metrics.auth.login_time.measure():
 
 Explicitly sets the timespan's value.
 
+Regardless of the time unit chosen for the metric, this API expects the raw value to be in **nanoseconds**.
+
 {{#include ../../../shared/blockquote-warning.html}}
 
 ## Only use this if you have to
@@ -398,7 +430,17 @@ fn after_login(login_elapsed: Duration) {
 }
 ```
 </div>
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="Javascript" class="tab">
+
+```js
+import * as auth from "./path/to/generated/files/auth.js";
+
+function onAfterLogin(loginElapsedNs) {
+    auth.loginTime.setRawNanos(loginElapsedNs);
+    // ...
+}
+```
+</div>
 <div data-lang="Firefox Desktop" class="tab">
 
 {{#include ../../../shared/blockquote-warning.html}}
@@ -483,7 +525,14 @@ use fog::metrics;
 assert!(metrics::login_time.test_get_value().unwrap() > 0);
 ```
 </div>
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="Javascript" class="tab">
+
+```js
+import * as auth from "./path/to/generated/files/auth.js";
+
+assert(await auth.loginTime.testGetValue() > 0);
+```
+</div>
 <div data-lang="Firefox Desktop" class="tab">
 
 **C++**
@@ -603,14 +652,21 @@ use fog::metrics;
 assert_eq!(1, login_time.test_get_num_recorded_errors(ErrorType::InvalidValue));
 ```
 </div>
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="Javascript" class="tab">
+
+```js
+import * as auth from "./path/to/generated/files/auth.js";
+
+assert.strictEqual(1, await auth.loginTime.testGetNumRecordedErrors("invalid_value"));
+```
+</div>
 <div data-lang="Firefox Desktop" class="tab" data-bug="1683171"></div>
 
 {{#include ../../../shared/tab_footer.md}}
 
 ## Metric parameters
 
-Example datetime metric definition:
+Example timespan metric definition:
 
 ```YAML
 auth:
@@ -669,3 +725,4 @@ and use the largest possible value that will provide useful information so as to
 * [Swift API docs](../../../swift/Classes/TimespanMetricType.html)
 * [Python API docs](../../../python/glean/metrics/timespan.html)
 * [Rust API docs](../../../docs/glean/private/struct.TimespanMetric.html)
+* [Javascript API docs](https://mozilla.github.io/glean.js/classes/core_metrics_types_timespan.default.html)
