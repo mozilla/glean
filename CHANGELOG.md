@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v38.0.1...main)
 
+* General
+  * test_get_value now panics if errors have been recorded on the metric. ([#1651](https://github.com/mozilla/glean/pull/1651))
+
 # v38.0.1 (2021-05-17)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v38.0.0...v38.0.1)
