@@ -113,7 +113,8 @@ mod test {
         metric.set(&glean, sample_string.clone());
 
         let truncated = truncate_string_at_boundary(sample_string, MAX_LENGTH_VALUE);
-        assert_eq!(truncated, metric.test_get_value(&glean, "store1").unwrap());
+        // Gonna be sneaky here and use the internal `get_value`.
+        assert_eq!(truncated, metric.get_value(&glean, "store1").unwrap());
 
         assert_eq!(
             1,

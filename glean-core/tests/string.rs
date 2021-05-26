@@ -107,11 +107,16 @@ fn long_string_values_are_truncated() {
     let test_sting = "01234567890".repeat(20);
     metric.set(&glean, test_sting.clone());
 
+    // We're specifically interested in testing behaviour that should cause
+    // tests to panic. Suppress panics with a benign substitute:
+    glean_core::test_register_platform_panic(|_| {});
     // Check that data was truncated
     assert_eq!(
         test_sting[..100],
         metric.test_get_value(&glean, "store1").unwrap()
     );
+    // Panicky call done. Return to normal.
+    glean_core::test_register_platform_panic(|msg| panic!("{}", msg));
 
     // Make sure that the errors have been recorded
     assert_eq!(

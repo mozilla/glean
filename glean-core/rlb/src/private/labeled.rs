@@ -346,7 +346,15 @@ mod test {
 
         let invalid_label = "!#I'm invalid#--_";
         metric.get(invalid_label).set(true);
+        // We're specifically interested in testing behaviour that should cause
+        // tests to panic. Suppress this with a benign substitute panic.
+        glean_core::test_register_platform_panic(|_| {});
+
         assert!(metric.get("__other__").test_get_value(None).unwrap());
+
+        // Panicky calls done. Return to normal.
+        glean_core::test_register_platform_panic(|msg| panic!("{}", msg));
+
         assert_eq!(
             1,
             metric.test_get_num_recorded_errors(ErrorType::InvalidLabel, None)

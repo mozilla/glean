@@ -54,6 +54,9 @@ fn experiment_id_and_branch_get_truncated_if_too_long() {
     let mut expected_branch_id = very_long_branch_id;
     expected_branch_id.truncate(100);
 
+    // test_{is|get}_* methods panic if they've recorded an error.
+    // Suppress this by supplying a replacement panic for this test.
+    crate::test_register_platform_panic(|_| {});
     assert!(
         glean.test_is_experiment_active(expected_id.clone()),
         "An experiment with the truncated id should be available"
@@ -61,6 +64,9 @@ fn experiment_id_and_branch_get_truncated_if_too_long() {
 
     // Make sure the branch id was truncated as well.
     let experiment_data = glean.test_get_experiment_data_as_json(expected_id);
+    // Don't forget to retore normal panic behaviour.
+    crate::test_register_platform_panic(|msg| panic!("{}", msg));
+
     assert!(
         !experiment_data.is_none(),
         "Experiment data must be available"
@@ -92,6 +98,10 @@ fn limits_on_experiments_extras_are_applied_correctly() {
     // Mark the experiment as active.
     glean.set_experiment_active(experiment_id.clone(), branch_id, Some(extras));
 
+    // We deliberately exceeded limits, which records an error.
+    // `test_{get|is}*` panics if there is a recorded error.
+    // Temporarily suspend this with a benign panic replacement.
+    crate::test_register_platform_panic(|_| {});
     // Make sure it is active
     assert!(
         glean.test_is_experiment_active(experiment_id.clone()),
@@ -100,6 +110,8 @@ fn limits_on_experiments_extras_are_applied_correctly() {
 
     // Get the data
     let experiment_data = glean.test_get_experiment_data_as_json(experiment_id);
+    // Restore previous panicky behaviour.
+    crate::test_register_platform_panic(|msg| panic!("{}", msg));
     assert!(
         !experiment_data.is_none(),
         "Experiment data must be available"
@@ -738,7 +750,13 @@ fn timing_distribution_truncation() {
             dist.set_stop_and_accumulate(&glean, timer_id, value);
         }
 
+        // Truncation records an error. `test_get_value` will panic if
+        // there is a recorded error. Temporarily suspend this with a benign
+        // panic replacement.
+        crate::test_register_platform_panic(|_| {});
         let snapshot = dist.test_get_value(&glean, "baseline").unwrap();
+        // Restore previous panicky behaviour.
+        crate::test_register_platform_panic(|msg| panic!("{}", msg));
 
         let mut keys = HashSet::new();
         let mut recorded_values = 0;
@@ -797,7 +815,13 @@ fn timing_distribution_truncation_accumulate() {
             ],
         );
 
+        // Truncation records an error. `test_get_value` will panic if
+        // there is a recorded error. Temporarily suspend this with a benign
+        // panic replacement.
+        crate::test_register_platform_panic(|_| {});
         let snapshot = dist.test_get_value(&glean, "baseline").unwrap();
+        // Restore previous panicky behaviour.
+        crate::test_register_platform_panic(|msg| panic!("{}", msg));
 
         // The number of samples was originally designed around 1ns to
         // 10minutes, with 8 steps per power of 2, which works out to 316 items.

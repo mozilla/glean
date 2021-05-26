@@ -97,15 +97,6 @@ mod test {
             0
         );
 
-        // Adding a negative value errors.
-        metric.add_to_numerator(-1);
-        metric.add_to_denominator(-1);
-
-        assert_eq!(
-            metric.test_get_num_recorded_errors(ErrorType::InvalidValue, None),
-            2
-        );
-
         // Getting the value returns 0s if that's all we have.
         assert_eq!(metric.test_get_value(None), Some((0, 0)));
 
@@ -114,5 +105,14 @@ mod test {
         metric.add_to_denominator(7);
 
         assert_eq!(metric.test_get_value(None), Some((22, 7)));
+
+        // Adding a negative value errors.
+        metric.add_to_numerator(-1);
+        metric.add_to_denominator(-1);
+
+        assert_eq!(
+            metric.test_get_num_recorded_errors(ErrorType::InvalidValue, None),
+            2
+        );
     }
 }

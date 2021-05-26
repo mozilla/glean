@@ -174,9 +174,15 @@ mod linear {
         // Accumulate the samples.
         metric.accumulate_samples_signed(&glean, [-1, 1, 2, 3].to_vec());
 
+        // We're specifically interested in testing behaviour that should cause
+        // tests to panic. Suppress panics with a benign substitute:
+        glean_core::test_register_platform_panic(|_| {});
+        // Get the value.
         let snapshot = metric
             .test_get_value(&glean, "store1")
             .expect("Value should be stored");
+        // Panicky call done. Return to normal.
+        glean_core::test_register_platform_panic(|msg| panic!("{}", msg));
 
         // Check that we got the right sum of samples.
         assert_eq!(snapshot.sum, 6);
@@ -385,9 +391,15 @@ mod exponential {
         // Accumulate the samples.
         metric.accumulate_samples_signed(&glean, [-1, 1, 2, 3].to_vec());
 
+        // We're specifically interested in testing behaviour that should cause
+        // tests to panic. Suppress panics with a benign substitute:
+        glean_core::test_register_platform_panic(|_| {});
+        // Get the value.
         let snapshot = metric
             .test_get_value(&glean, "store1")
             .expect("Value should be stored");
+        // Panicky call done. Return to normal.
+        glean_core::test_register_platform_panic(|msg| panic!("{}", msg));
 
         // Check that we got the right sum of samples.
         assert_eq!(snapshot.sum, 6);

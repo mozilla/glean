@@ -126,7 +126,14 @@ fn timing_distributions_must_not_accumulate_negative_values() {
     let id = metric.set_start(duration);
     metric.set_stop_and_accumulate(&glean, id, 0);
 
+    // We're specifically interested in testing behaviour that should cause
+    // tests to panic. Suppress panics with a benign substitute:
+    glean_core::test_register_platform_panic(|_| {});
+
     assert!(metric.test_get_value(&glean, "store1").is_none());
+
+    // Panicky calls done. Return to normal.
+    glean_core::test_register_platform_panic(|msg| panic!("{}", msg));
 
     // Make sure that the errors have been recorded
     assert_eq!(
@@ -205,9 +212,15 @@ fn the_accumulate_samples_api_correctly_handles_negative_values() {
     // Accumulate the samples.
     metric.accumulate_samples_signed(&glean, [-1, 1, 2, 3].to_vec());
 
+    // We're specifically interested in testing behaviour that should cause
+    // tests to panic. Suppress panics with a benign substitute:
+    glean_core::test_register_platform_panic(|_| {});
+    // Get the value.
     let snapshot = metric
         .test_get_value(&glean, "store1")
         .expect("Value should be stored");
+    // Panicky call done. Return to normal.
+    glean_core::test_register_platform_panic(|msg| panic!("{}", msg));
 
     // Check that we got the right sum and number of samples.
     assert_eq!(snapshot.sum, 6);
@@ -251,9 +264,16 @@ fn the_accumulate_samples_api_correctly_handles_overflowing_values() {
     // Accumulate the samples.
     metric.accumulate_samples_signed(&glean, [overflowing_val, 1, 2, 3].to_vec());
 
+    // We're specifically interested in testing behaviour that should cause
+    // tests to panic. Suppress panics with a benign substitute:
+    glean_core::test_register_platform_panic(|_| {});
+
     let snapshot = metric
         .test_get_value(&glean, "store1")
         .expect("Value should be stored");
+
+    // Panicky calls done. Return to normal.
+    glean_core::test_register_platform_panic(|msg| panic!("{}", msg));
 
     // Overflowing values are truncated to MAX_SAMPLE_TIME and recorded.
     assert_eq!(snapshot.sum, MAX_SAMPLE_TIME + 6);
@@ -409,9 +429,16 @@ fn raw_samples_api_error_cases() {
         ],
     );
 
+    // We're specifically interested in testing behaviour that should cause
+    // tests to panic. Suppress this with a benign substitute panic.
+    glean_core::test_register_platform_panic(|_| {});
+
     let snapshot = metric
         .test_get_value(&glean, "store1")
         .expect("Value should be stored");
+
+    // Panicky calls done. Return to normal.
+    glean_core::test_register_platform_panic(|msg| panic!("{}", msg));
 
     // Check that we got the right sum and number of samples.
     assert_eq!(snapshot.sum, 2 + max_sample_time);

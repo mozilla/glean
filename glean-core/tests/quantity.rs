@@ -107,8 +107,14 @@ fn quantities_must_not_set_when_passed_negative() {
 
     // Attempt to set the quantity with negative
     metric.set(&glean, -1);
+
+    // We're specifically interested in testing behaviour that should cause
+    // tests to panic. Suppress panics with a benign substitute:
+    glean_core::test_register_platform_panic(|_| {});
     // Check that nothing was recorded
     assert!(metric.test_get_value(&glean, "store1").is_none());
+    // Panicky call done. Return to normal.
+    glean_core::test_register_platform_panic(|msg| panic!("{}", msg));
 
     // Make sure that the errors have been recorded
     assert_eq!(

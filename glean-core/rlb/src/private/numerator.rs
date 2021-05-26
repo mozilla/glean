@@ -89,14 +89,6 @@ mod test {
             0
         );
 
-        // Adding a negative value errors.
-        metric.add_to_numerator(-1);
-
-        assert_eq!(
-            metric.test_get_num_recorded_errors(ErrorType::InvalidValue, None),
-            1
-        );
-
         // Getting the value returns 0s if that's all we have.
         assert_eq!(metric.test_get_value(None), Some((0, 0)));
 
@@ -104,5 +96,13 @@ mod test {
         metric.add_to_numerator(22);
 
         assert_eq!(metric.test_get_value(None), Some((22, 0)));
+
+        // Adding a negative value errors.
+        metric.add_to_numerator(-1);
+
+        assert_eq!(
+            metric.test_get_num_recorded_errors(ErrorType::InvalidValue, None),
+            1
+        );
     }
 }

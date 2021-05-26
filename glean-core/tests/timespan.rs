@@ -125,8 +125,15 @@ fn second_timer_run_is_skipped() {
     metric.set_start(&glean, 0);
     metric.set_stop(&glean, duration * 2);
 
+    // We're specifically interested in testing behaviour that should cause
+    // tests to panic. Suppress panics with a benign substitute:
+    glean_core::test_register_platform_panic(|_| {});
+
     let second_value = metric.test_get_value(&glean, "store1").unwrap();
     assert_eq!(second_value, first_value);
+
+    // Panicky calls done. Return to normal.
+    glean_core::test_register_platform_panic(|msg| panic!("{}", msg));
 
     // Make sure that the error has been recorded: we had a stored value, the
     // new measurement was dropped.
@@ -275,8 +282,13 @@ fn set_raw_time_does_nothing_when_timer_running() {
     metric.set_raw(&glean, time);
     metric.set_stop(&glean, 60);
 
+    // We're specifically interested in testing behaviour that should cause
+    // tests to panic. Suppress panics with a benign substitute:
+    glean_core::test_register_platform_panic(|_| {});
     // We expect the start/stop value, not the raw value.
     assert_eq!(Some(60), metric.test_get_value(&glean, "store1"));
+    // Panicky calls done. Return to normal.
+    glean_core::test_register_platform_panic(|msg| panic!("{}", msg));
 
     // Make sure that the error has been recorded
     assert_eq!(
@@ -318,8 +330,13 @@ fn timespan_is_not_tracked_across_upload_toggle() {
     // None should be running.
     metric.set_stop(&glean, 200);
 
+    // We're specifically interested in testing behaviour that should cause
+    // tests to panic. Suppress panics with a benign substitute:
+    glean_core::test_register_platform_panic(|_| {});
     // Nothing should have been recorded.
     assert_eq!(None, metric.test_get_value(&glean, "store1"));
+    // Panicky calls done. Return to normal.
+    glean_core::test_register_platform_panic(|msg| panic!("{}", msg));
 
     // Make sure that the error has been recorded
     assert_eq!(
@@ -345,7 +362,12 @@ fn time_cannot_go_backwards() {
     // Time cannot go backwards.
     metric.set_start(&glean, 10);
     metric.set_stop(&glean, 0);
+    // We're specifically interested in testing behaviour that should cause
+    // tests to panic. Suppress panics with a benign substitute:
+    glean_core::test_register_platform_panic(|_| {});
     assert!(metric.test_get_value(&glean, "test1").is_none());
+    // Panicky calls done. Return to normal.
+    glean_core::test_register_platform_panic(|msg| panic!("{}", msg));
     assert_eq!(
         Ok(1),
         test_get_num_recorded_errors(&glean, metric.meta(), ErrorType::InvalidValue, None),

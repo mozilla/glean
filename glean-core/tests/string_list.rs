@@ -119,6 +119,10 @@ fn long_string_values_are_truncated() {
     let test_string = "0123456789".repeat(20);
     metric.add(&glean, test_string.clone());
 
+    // We're specifically interested in testing behaviour that should cause
+    // tests to panic. Suppress panics with a benign substitute:
+    glean_core::test_register_platform_panic(|_| {});
+
     // Ensure the string was truncated to the proper length.
     assert_eq!(
         vec![test_string[..50].to_string()],
@@ -138,6 +142,9 @@ fn long_string_values_are_truncated() {
         vec![test_string[..50].to_string()],
         metric.test_get_value(&glean, "store1").unwrap()
     );
+
+    // Panicky call done. Return to normal.
+    glean_core::test_register_platform_panic(|msg| panic!("{}", msg));
 
     // Ensure the error has been recorded.
     assert_eq!(
@@ -192,6 +199,10 @@ fn string_lists_dont_exceed_max_items() {
         metric.add(&glean, "test_string");
     }
 
+    // We're specifically interested in testing behaviour that should cause
+    // tests to panic. Suppress panics with a benign substitute:
+    glean_core::test_register_platform_panic(|_| {});
+
     let expected: Vec<String> = "test_string "
         .repeat(20)
         .split_whitespace()
@@ -217,6 +228,9 @@ fn string_lists_dont_exceed_max_items() {
         .collect();
     metric.set(&glean, too_many);
     assert_eq!(expected, metric.test_get_value(&glean, "store1").unwrap());
+
+    // Panicky call done. Return to normal.
+    glean_core::test_register_platform_panic(|msg| panic!("{}", msg));
 
     assert_eq!(
         Ok(2),

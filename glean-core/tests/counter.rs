@@ -105,6 +105,10 @@ fn counters_must_not_increment_when_passed_zero_or_negative() {
         ..Default::default()
     });
 
+    // We're specifically interested in testing behaviour that should cause
+    // tests to panic. Suppress this with a benign substitute panic.
+    glean_core::test_register_platform_panic(|_| {});
+
     // Attempt to increment the counter with zero
     metric.add(&glean, 0);
     // Check that nothing was recorded
@@ -117,8 +121,11 @@ fn counters_must_not_increment_when_passed_zero_or_negative() {
 
     // Attempt increment counter properly
     metric.add(&glean, 1);
-    // Check that nothing was recorded
+    // Check that it was recorded
     assert_eq!(1, metric.test_get_value(&glean, "store1").unwrap());
+
+    // Panicky calls done. Return to normal.
+    glean_core::test_register_platform_panic(|msg| panic!("{}", msg));
 
     // Make sure that the errors have been recorded
     assert_eq!(
