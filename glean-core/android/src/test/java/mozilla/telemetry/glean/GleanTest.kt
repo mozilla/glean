@@ -14,7 +14,6 @@ import kotlinx.coroutines.Dispatchers as KotlinDispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.runBlocking
-import mozilla.telemetry.glean.GleanMetrics.GleanBuildInfo
 import mozilla.telemetry.glean.GleanMetrics.GleanError
 import mozilla.telemetry.glean.GleanMetrics.GleanInternalMetrics
 import mozilla.telemetry.glean.GleanMetrics.Pings

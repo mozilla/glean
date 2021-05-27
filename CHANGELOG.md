@@ -31,6 +31,7 @@
 * Android
   * **Deprecation**: The old event recording API is replaced by a new one, accepting a typed object ([#1603](https://github.com/mozilla/glean/pull/1603)).
     See [the event documentation](https://mozilla.github.io/glean/book/reference/metrics/event.html#recordobject) for details.
+  * Skip build info generation for libraries ([#1654](https://github.com/mozilla/glean/pull/1654))
 * Python
   * **Deprecation**: The old event recording API is replaced by a new one, accepting a typed object ([#1603](https://github.com/mozilla/glean/pull/1603)).
     See [the event documentation](https://mozilla.github.io/glean/book/reference/metrics/event.html#recordobject) for details.
