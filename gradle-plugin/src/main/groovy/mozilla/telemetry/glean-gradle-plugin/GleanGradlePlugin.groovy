@@ -127,7 +127,7 @@ except:
     /*
      * Adds tasks that generates the Glean metrics API for a project.
      */
-    def setupTasks(Project project, File envDir) {
+    def setupTasks(Project project, File envDir, boolean isApplication) {
         return { variant ->
             def sourceOutputDir = "${project.buildDir}/generated/source/glean/${variant.dirName}/kotlin"
             // Get the name of the package as if it were to be used in the R or BuildConfig
@@ -198,6 +198,14 @@ except:
                 // use metrics in the "glean..." category
                 if (project.ext.has("allowGleanInternal")) {
                     args "--allow-reserved"
+                }
+
+                // Only generate build info for applications, not for libraries.
+                // From android-gradle 7.0 on the `VERSION_CODE` and `VERSION_NAME` fields 
+                // are not set for libraries anymore
+                if (!isApplication) {
+                    args "-s"
+                    args "with_buildinfo=false"
                 }
 
                 doFirst {
@@ -497,9 +505,9 @@ except:
         setupExtractMetricsFromAARTasks(project)
 
         if (project.android.hasProperty('applicationVariants')) {
-            project.android.applicationVariants.all(setupTasks(project, envDir))
+            project.android.applicationVariants.all(setupTasks(project, envDir, true))
         } else {
-            project.android.libraryVariants.all(setupTasks(project, envDir))
+            project.android.libraryVariants.all(setupTasks(project, envDir, false))
         }
     }
 }
