@@ -3,6 +3,7 @@
 # User Guides
 
 - [Adding Glean to your project](user/adding-glean-to-your-project.md)
+  - [C#](user/adding-glean-to-your-project/csharp.md)
   - [Kotlin](user/adding-glean-to-your-project/kotlin.md)
   - [Python](user/adding-glean-to-your-project/python.md)
   - [Swift](user/adding-glean-to-your-project/swift.md)
