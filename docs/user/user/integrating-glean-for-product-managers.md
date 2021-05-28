@@ -1,7 +1,7 @@
 # Integrating Glean for product managers
 
 This chapter provides guidance for planning the work involved in integrating Glean into your product, for internal Mozilla customers.
-For a technical coding perspective, see [adding Glean to your project](adding-glean-to-your-project.html).
+For a technical coding perspective, see [adding Glean to your project](adding-glean-to-your-project/index.html).
 
 Glean is the standard telemetry platform required for all new Mozilla products.
 While there are some upfront costs to integrating Glean in your product, this pays off in easier long-term maintenance and a rich set of self-serve analysis tools.

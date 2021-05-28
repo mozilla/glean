@@ -2,7 +2,7 @@
 
 # User Guides
 
-- [Adding Glean to your project](user/adding-glean-to-your-project.md)
+- [Adding Glean to your project](user/adding-glean-to-your-project/index.md)
   - [C#](user/adding-glean-to-your-project/csharp.md)
   - [Javascript](user/adding-glean-to-your-project/javascript.md)
   - [Kotlin](user/adding-glean-to-your-project/kotlin.md)
