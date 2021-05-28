@@ -7,6 +7,9 @@
 # Build all docs with one command
 # Documentation will be placed in `build/docs`.
 
+# IMPORTANT: When changing this file make sure to update the
+# `build-rust-docs.bat` file, too.
+
 set -xe
 
 CRATE_NAME=glean_core
