@@ -72,7 +72,22 @@ display::width.set(width);
 ```
 </div>
 
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+
+```cpp
+#include "mozilla/glean/GleanMetrics.h"
+
+mozilla::glean::display::width.Set(innerHeight);
+```
+
+**Javascript**
+
+```js
+Glean.display.width.set(innerHeight);
+```
+</div>
 
 {{#include ../../../shared/tab_footer.md}}
 
@@ -156,7 +171,22 @@ assert!(display::width.test_get_value(None).is_some());
 ```
 </div>
 
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+
+```cpp
+#include "mozilla/glean/GleanMetrics.h"
+
+ASSERT_EQ(433, mozilla::glean::display::width.TestGetValue().value());
+```
+
+**Javascript**
+
+```js
+Assert.equal(433, Glean.display.width.testGetValue());
+```
+</div>
 
 {{#include ../../../shared/tab_footer.md}}
 
@@ -296,7 +326,7 @@ assert_eq!(
 ```
 </div>
 
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab" data-bug="1683171"></div>
 
 {{#include ../../../shared/tab_footer.md}}
 
