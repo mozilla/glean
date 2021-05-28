@@ -81,3 +81,31 @@ As part of your continuous integration, you should run the following on your `me
 ```sh
 python3 -m glean_parser glinter metrics.yaml pings.yaml
 ```
+
+### Parallelism
+
+All of the Glean SDK's target languages use a separate worker thread to do most of its work, including any I/O. This thread is fully managed by the Glean SDK as an implementation detail. Therefore, users should feel free to use the Glean SDK wherever it is most convenient, without worrying about the performance impact of updating metrics and sending pings.
+
+Since the Glean SDK performs disk and networking I/O, it tries to do as much of its work as possible on separate threads and processes.
+Since there are complex trade-offs and corner cases to support Python parallelism, it is hard to design a one-size-fits-all approach.
+
+#### Default behavior
+
+When using the Python bindings, most of the Glean SDK's work is done on a separate thread, managed by the Glean SDK itself.
+The Glean SDK releases the Global Interpreter Lock (GIL) for most of its operations, therefore your application's threads should not be in contention with the Glean SDK's worker thread.
+
+The Glean SDK installs an [`atexit` handler](https://docs.python.org/3/library/atexit.html) so that its worker thread can cleanly finish when your application exits.
+This handler will wait up to 30 seconds for any pending work to complete.
+
+By default, ping uploading is performed in a separate child process. This process will continue to upload any pending pings even after the main process shuts down. This is important for commandline tools where you want to return control to the shell as soon as possible and not be delayed by network connectivity.
+
+#### Cases where subprocesses aren't possible
+
+The default approach may not work with applications built using [`PyInstaller`](https://www.pyinstaller.org/) or similar tools which bundle an application together with a Python interpreter making it impossible to spawn new subprocesses of that interpreter. For these cases, there is an option to ensure that ping uploading occurs in the main process. To do this, set the `allow_multiprocessing` parameter on the `glean.Configuration` object to `False`.
+
+#### Using the `multiprocessing` module
+
+Additionally, the default approach does not work if your application uses the `multiprocessing` module for parallelism.
+The Glean SDK can not wait to finish its work in a `multiprocessing` subprocess, since `atexit` handlers are not supported in that context.  
+Therefore, if the Glean SDK detects that it is running in a `multiprocessing` subprocess, all of its work that would normally run on a worker thread will run on the main thread.
+In practice, this should not be a performance issue: since the work is already in a subprocess, it will not block the main process of your application.
