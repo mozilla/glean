@@ -11,7 +11,7 @@ This module contains all of the metric types.
 from .boolean import BooleanMetricType
 from .counter import CounterMetricType
 from .datetime import DatetimeMetricType
-from .event import EventMetricType, RecordedEventData
+from .event import EventMetricType, RecordedEventData, EventExtras
 from .experiment import RecordedExperimentData
 from .quantity import QuantityMetricType
 from .jwe import JweMetricType
@@ -47,6 +47,7 @@ __all__ = [
     "MemoryUnit",
     "PingType",
     "RecordedEventData",
+    "EventExtras",
     "RecordedExperimentData",
     "StringMetricType",
     "StringListMetricType",

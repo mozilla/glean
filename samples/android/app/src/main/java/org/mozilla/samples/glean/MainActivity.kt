@@ -36,12 +36,17 @@ open class MainActivity : AppCompatActivity() {
             // order to illustrate adding extra information to the event, it is also adding to the
             // 'extras' field a dictionary of values.  Note that the dictionary keys must be
             // declared in the metrics.yaml file under the 'extra_keys' section of an event metric.
-            BrowserEngagement.click.record(
-                    mapOf(
-                        BrowserEngagement.clickKeys.key1 to "extra_value_1",
-                        BrowserEngagement.clickKeys.key2 to "extra_value_2"
-                    )
-            )
+            BrowserEngagement.click.record(BrowserEngagement.ClickExtra(key1 = "extra_value_1", key2 = "extra_value_2"))
+
+            // An event without any extra keys
+            BrowserEngagement.eventNoKeys.record()
+
+            // Testing the old API. It should still be possible, even if deprecated
+            @Suppress("DEPRECATION")
+            BrowserEngagement.oldEventStyle.record(mapOf(
+                BrowserEngagement.oldEventStyleKeys.key1 to "extra_value1",
+                BrowserEngagement.oldEventStyleKeys.key2 to "extra_value2"
+            ))
         }
 
         uploadSwitch.setOnCheckedChangeListener { _, isChecked ->
