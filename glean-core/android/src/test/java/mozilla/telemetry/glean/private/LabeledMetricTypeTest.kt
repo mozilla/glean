@@ -10,7 +10,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.collectAndCheckPingSchema
-import mozilla.telemetry.glean.GleanMetrics.GleanBuildInfo
+import mozilla.telemetry.glean.GleanBuildInfo
 import mozilla.telemetry.glean.GleanMetrics.Pings
 import mozilla.telemetry.glean.testing.ErrorType
 import mozilla.telemetry.glean.testing.GleanTestRule
