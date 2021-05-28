@@ -69,7 +69,22 @@ acessibility.features["high_contrast"].set(this.isHighContrastEnabled());
 ```
 </div>
 
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+```cpp
+#include "mozilla/glean/GleanMetrics.h"
+
+mozilla::glean::accessibility::features.Get("screen_reader"_ns).Set(true);
+mozilla::glean::accessibility::features.Get("high_contrast"_ns).Set(false);
+```
+
+**Javascript**
+```js
+Glean.accessibility.features.screen_reader.set(true);
+Glean.accessibility.features["high_contrast"].set(false);
+```
+</div>
 
 {{#include ../../../shared/tab_footer.md}}
 
@@ -153,7 +168,26 @@ assert(!(await accessibility.features["high_contrast"].testGetValue()));
 ```
 </div>
 
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+```cpp
+#include "mozilla/glean/GleanMetrics.h"
+
+ASSERT_EQ(
+    true,
+    mozilla::glean::accessibility::features.Get("screen_reader"_ns).TestGetValue().ref());
+ASSERT_EQ(
+    false,
+    mozilla::glean::accessibility::features.Get("high_contrast"_ns).TestGetValue().ref());
+```
+
+**Javascript**
+```js
+Assert.equal(true, Glean.accessibility.features["screen_reader"].testGetValue());
+Assert.equal(false, Glean.accessibility.features.high_contrast.testGetValue());
+```
+</div>
 
 {{#include ../../../shared/tab_footer.md}}
 
@@ -292,7 +326,7 @@ assert(await accessibility.features.testGetNumRecordedErrors("invalid_label"));
 ```
 </div>
 
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab" data-bug="1683171"></div>
 
 {{#include ../../../shared/tab_footer.md}}
 
