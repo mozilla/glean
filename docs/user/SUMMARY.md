@@ -4,6 +4,7 @@
 
 - [Adding Glean to your project](user/adding-glean-to-your-project.md)
   - [Kotlin](user/adding-glean-to-your-project/kotlin.md)
+  - [Swift](user/adding-glean-to-your-project/swift.md)
 - [Integrating Glean for project managers](user/integrating-glean-for-product-managers.md)
 - [Metrics](user/metrics/adding-new-metrics.md)
     - [Adding new metrics](user/metrics/adding-new-metrics.md)
