@@ -45,6 +45,15 @@ metrics.login.errors_by_stage["server_auth"].set("Invalid password")
 ```
 </div>
 
+<div data-lang="Rust" class="tab">
+
+```rust
+use glean_metrics;
+
+login::errors_by_stage.get("server_auth").set("Invalid password");
+```
+</div>
+
 <div data-lang="Javascript" class="tab">
 
 ```js
@@ -54,12 +63,18 @@ login.errorsByStage["server_auth"].set("Invalid password");
 ```
 </div>
 
-<div data-lang="Rust" class="tab">
+<div data-lang="Firefox Desktop" class="tab">
 
-```rust
-use glean_metrics;
+**C++**
+```cpp
+#include "mozilla/glean/GleanMetrics.h"
 
-login::errors_by_stage.get("server_auth").set("Invalid password");
+mozilla::glean::login::errors_by_stage.Get("server_auth"_ns).Set("Invalid password"_ns);
+```
+
+**Javascript**
+```js
+Glean.login.errorsByStage["server_auth"].set("Invalid password");
 ```
 </div>
 
@@ -126,16 +141,6 @@ assert "Invalid password" == metrics.login.errors_by_stage["server_auth"].testGe
 ```
 </div>
 
-<div data-lang="Javascript" class="tab">
-
-```js
-import * as login from "./path/to/generated/files/login.js";
-
-// Does the metric have the expected value?
-assert.strictEqual("Invalid password", await metrics.login.errorsByStage["server_auth"].testGetValue())
-```
-</div>
-
 <div data-lang="Rust" class="tab">
 
 ```rust
@@ -146,6 +151,34 @@ assert!(login::errors_by_stage.get("server_auth").test_get_value());
 ```
 </div>
 
+<div data-lang="Javascript" class="tab">
+
+```js
+import * as login from "./path/to/generated/files/login.js";
+
+// Does the metric have the expected value?
+assert.strictEqual("Invalid password", await metrics.login.errorsByStage["server_auth"].testGetValue())
+```
+</div>
+
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+```cpp
+#include "mozilla/glean/GleanMetrics.h"
+
+ASSERT_STREQ("Invalid password",
+             mozilla::glean::login::errors_by_stage.Get("server_auth"_ns)
+                .TestGetValue()
+                .ref()
+                .get());
+```
+
+**Javascript**
+```js
+Assert.equal("Invalid password", Glean.login.errorsByStage["server_auth"].testGetValue());
+```
+</div>
 {{#include ../../../shared/tab_footer.md}}
 
 ### `testHasValue`
@@ -193,9 +226,11 @@ assert metrics.login.errors_by_stage["server_auth"].test_has_value()
 ```
 </div>
 
+<div data-lang="Rust" class="tab"></div>
+
 <div data-lang="Javascript" class="tab"></div>
 
-<div data-lang="Rust" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab"></div>
 
 {{#include ../../../shared/tab_footer.md}}
 
@@ -249,16 +284,6 @@ assert 0 == metrics.login.errors_by_stage.test_get_num_recorded_errors(
 ```
 </div>
 
-<div data-lang="Javascript" class="tab">
-
-```js
-import * as login from "./path/to/generated/files/login.js";
-
-// Were there any invalid labels?
-assert.strictEqual(0, await login.errorsByStage["server_auth"].testGetNumRecordedErrors("invalid_label"));
-```
-</div>
-
 <div data-lang="Rust" class="tab">
 
 ```rust
@@ -275,6 +300,18 @@ assert_eq!(
 );
 ```
 </div>
+
+<div data-lang="Javascript" class="tab">
+
+```js
+import * as login from "./path/to/generated/files/login.js";
+
+// Were there any invalid labels?
+assert.strictEqual(0, await login.errorsByStage["server_auth"].testGetNumRecordedErrors("invalid_label"));
+```
+</div>
+
+<div data-lang="Firefox Desktop" calss="tab" data-bug="1683171"></div>
 
 {{#include ../../../shared/tab_footer.md}}
 
