@@ -85,7 +85,7 @@ Increases the counter by a certain amount. If no amount is passed it defaults to
   ```cpp
   #include "mozilla/glean/GleanMetrics.h"
 
-  mozila::glean::controls::refresh_pressed.Add(1);
+  mozilla::glean::controls::refresh_pressed.Add(1);
   mozilla::glean::controls::refresh_pressed.Add(5);
   ```
 
