@@ -30,6 +30,13 @@ import Glean from "@mozilla/glean/webext";
 const { default: Glean } = require("@mozilla/glean/webext");
 ```
 
+{{#include ../../../shared/blockquote-warning.html}}
+
+##### Security considerations
+
+> In case of privilege-escalation attack into the context of the web extension using Glean, the malicious scripts would be able to call Glean APIs or use the `browser.storage.local` APIs directly.
+> That would be a risk to Glean data, but not caused by Glean. Glean-using extensions should be careful not to relax the default Content-Security-Policy that generally prevents these attacks.
+
 ### Common import errors
 
 #### "Cannot find module '@mozilla/glean'"
