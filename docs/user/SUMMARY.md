@@ -30,7 +30,8 @@
 # API Reference
 
 - [YAML Registry Format](reference/yaml/index.md)
-- [General](reference/general/index.md)
+- [General API](reference/general/index.md)
+    - [Initializing](reference/general/initializing.md)
 - [Metric types](reference/metrics/index.md)
     - [Boolean](reference/metrics/boolean.md)
     - [Labeled Booleans](reference/metrics/labeled_booleans.md)
