@@ -58,6 +58,7 @@ PowerShell
 ProGuard
 Protobufs
 PyPI
+QML
 RLB
 Redash
 Rkv's
@@ -199,6 +200,7 @@ setuptools
 stateful
 struct
 subcommand
+subpath
 subprocess
 subprocesses
 swiftlint
