@@ -4,6 +4,7 @@
 
 * General
   * Add new event extras API to all implementations. See below for details ([#1603](https://github.com/mozilla/glean/pull/1603))
+  * Updated `glean_parser` version to 3.4.0 ([#1603](https://github.com/mozilla/glean/pull/1603))
 * Rust
   * **Breaking Change**: Allow event extras to be passed as an object.
     This replaces the old `HashMap`-based API.
