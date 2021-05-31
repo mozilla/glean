@@ -205,6 +205,7 @@ subcommand
 subpath
 subprocess
 subprocesses
+substring
 swiftlint
 tcsh
 templating
@@ -215,6 +216,7 @@ timezones
 toolchain
 toolchains
 tooltip
+tooltips
 transpiler
 travis
 und

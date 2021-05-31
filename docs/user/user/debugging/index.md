@@ -26,7 +26,7 @@ If nothing is showing up on the dashboard after you set a `debugViewTag` and you
 `Glean must be enabled before sending pings.` in the logs, Glean is disabled. Check with
 the application author on how to re-enable it.
 
-### Soure Tags
+### Source Tags
 
 Tags outgoing pings with a maximum of 5 comma-separated tags.
 

@@ -14,7 +14,7 @@ For debugging and validation purposes on iOS, the Glean SDK makes use of a custo
 
 ### Available commands and query format
 
-All 4 Glean debuging features are available through the custom URL scheme tool.
+All 4 Glean debugging features are available through the custom URL scheme tool.
 
 - [`logPings`](../../referece/debugging/logPings.md): This is either true or false and will cause pings that are submitted to also be echoed to the device's log.
 - [`debugViewTag`](../../referece/debugging/debugViewTag.md): This command will tag outgoing pings with the provided value, in order to identify them in the Glean Debug View.
