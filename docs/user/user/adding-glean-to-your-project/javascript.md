@@ -33,6 +33,10 @@ import Glean from "@mozilla/glean/webext";
 const { default: Glean } = require("@mozilla/glean/webext");
 ```
 
+The currently available entry points are:
+
+* `@mozilla/glean/webext`
+
 {{#include ../../../shared/blockquote-warning.html}}
 
 ##### Security considerations
