@@ -38,7 +38,7 @@ file a bug in [Bugzilla in Data Platform & Tools :: Glean.js][gleanjs-bugs].
 > if you want to use Glean.js and is missing some key Glean feature.
 ## Sections
 
-### [User Guides](./user/adding-glean-to-your-project.html)
+### [User Guides](./user/adding-glean-to-your-project/index.html)
 
 This section of the book contains mostly step-by-step guides and essays detailing how to
 achieve specific tasks with Glean.

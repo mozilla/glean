@@ -13,6 +13,3 @@ additional-js = ["../shared/tabs.js", "../shared/mermaid.min.js", "../shared/mer
 git-repository-url = "https://github.com/mozilla/glean"
 git-branch = "main"
 mathjax-support = true
-
-[preprocessor.open-on-gh]
-command = "mdbook-open-on-gh"

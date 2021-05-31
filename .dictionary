@@ -58,6 +58,7 @@ PowerShell
 ProGuard
 Protobufs
 PyPI
+QML
 RLB
 Redash
 Rkv's
@@ -80,6 +81,7 @@ Unbreak
 Underflowing
 Wasm
 WebRender
+Webpack
 Xcode
 YAML
 aarch
@@ -199,6 +201,7 @@ setuptools
 stateful
 struct
 subcommand
+subpath
 subprocess
 subprocesses
 swiftlint
