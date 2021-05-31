@@ -4,7 +4,7 @@ The Glean SDK has a minimal API available on its top-level `Glean` object called
 This API allows, among other things, to enable and disable upload, register [custom pings][custom-pings] and set [experiment data][experiments-api].
 
 [custom-pings]: ../../user/pings/custom.md
-[experiments-api]: ../../user/experiments-api.md
+[experiments-api]: ./experiments-api.md
 
 {{#include ../../../shared/blockquote-warning.html}}
 

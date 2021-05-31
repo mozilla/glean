@@ -6,9 +6,12 @@
 
 `Glean.setUploadEnabled()` should be called in response to the user enabling or disabling telemetry.
 
-**Note**:
-If called before `Glean.initialize()` the call to `Glean.setUploadEnabled()` will be ignored.
-Set the initial state using `uploadEnabled` on `Glean.initialize()`.
+{{#include ../../../shared/blockquote-warning.html}}
+
+##### Do not call `setUploadEnabled` before initializing
+
+> If called before `Glean.initialize()` the call to `Glean.setUploadEnabled()` will be ignored.
+> Set the initial state using `uploadEnabled` on `Glean.initialize()`.
 
 </div>
 
@@ -16,9 +19,12 @@ Set the initial state using `uploadEnabled` on `Glean.initialize()`.
 
 `Glean.shared.setUploadEnabled()` should be called in response to the user enabling or disabling telemetry.
 
-**Note**:
-If called before `Glean.shared.initialize()` the call to `Glean.shared.setUploadEnabled()` will be ignored.
-Set the initial state using `uploadEnabled` on `Glean.shared.initialize()`.
+{{#include ../../../shared/blockquote-warning.html}}
+
+##### Do not call `setUploadEnabled` before initializing
+
+> If called before `Glean.shared.initialize()` the call to `Glean.shared.setUploadEnabled()` will be ignored.
+> Set the initial state using `uploadEnabled` on `Glean.shared.initialize()`.
 
 </div>
 
@@ -26,9 +32,12 @@ Set the initial state using `uploadEnabled` on `Glean.shared.initialize()`.
 
 `Glean.set_upload_enabled()` should be called in response to the user enabling or disabling telemetry.
 
-**Note**:
-If called before `Glean.initialize()` the call to `Glean.set_upload_enabled()` will be ignored.
-Set the initial state using `upload_enabled` on `Glean.initialize()`.
+{{#include ../../../shared/blockquote-warning.html}}
+
+##### Do not call `setUploadEnabled` before initializing
+
+> If called before `Glean.initialize()` the call to `Glean.set_upload_enabled()` will be ignored.
+> Set the initial state using `upload_enabled` on `Glean.initialize()`.
 
 </div>
 
@@ -36,9 +45,12 @@ Set the initial state using `upload_enabled` on `Glean.initialize()`.
 
 `GleanInstance.SetUploadEnabled()` should be called in response to the user enabling or disabling telemetry.
 
-**Note**:
-If called before `GleanInstance.initialize()` the call to `GleanInstance.SetUploadEnabled()` will be ignored.
-Set the initial state using `uploadEnabled` on `GleanInstance.initialize()`.
+{{#include ../../../shared/blockquote-warning.html}}
+
+##### Do not call `setUploadEnabled` before initializing
+
+> If called before `GleanInstance.initialize()` the call to `GleanInstance.SetUploadEnabled()` will be ignored.
+> Set the initial state using `uploadEnabled` on `GleanInstance.initialize()`.
 
 </div>
 
