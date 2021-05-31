@@ -2,7 +2,7 @@
 
 This page provides a step-by-step guide on how to integrate the [Glean.js](https://github.com/mozilla/glean.js/) library into a Javascript project.
 
-Nevertheless this is just one of the required steps for integrating Glean succesfully into a project. Check you the full [Glean integration checklist](./index.md) for a comprehensive list of all the steps involved in doing so.
+Nevertheless this is just one of the required steps for integrating Glean successfully into a project. Check you the full [Glean integration checklist](./index.md) for a comprehensive list of all the steps involved in doing so.
 
 Currently, these bindings support collecting data from [Browser Extensions](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions) (cross-browser) and [Qt/QML applications](https://doc.qt.io/qt-5/qtqml-index.html).
 
