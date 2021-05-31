@@ -51,7 +51,7 @@ dist/
 /samples/csharp/.venv/
 
 # local stuff
-data/
+/data/
 glean-core/data
 glean_app*
 !glean_app.c
@@ -62,6 +62,7 @@ samples/ios/app/.venv/
 htmlcov/
 *.log
 
+glean-core/python/glean/_glean_ffi.py
 __pycache__
 *.py[cod]
 .Python

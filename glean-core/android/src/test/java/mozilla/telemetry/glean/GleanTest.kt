@@ -14,7 +14,6 @@ import kotlinx.coroutines.Dispatchers as KotlinDispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.runBlocking
-import mozilla.telemetry.glean.GleanMetrics.GleanBuildInfo
 import mozilla.telemetry.glean.GleanMetrics.GleanError
 import mozilla.telemetry.glean.GleanMetrics.GleanInternalMetrics
 import mozilla.telemetry.glean.GleanMetrics.Pings
@@ -23,6 +22,7 @@ import mozilla.telemetry.glean.private.CounterMetricType
 import mozilla.telemetry.glean.private.EventMetricType
 import mozilla.telemetry.glean.private.Lifetime
 import mozilla.telemetry.glean.private.NoExtraKeys
+import mozilla.telemetry.glean.private.NoExtras
 import mozilla.telemetry.glean.private.NoReasonCodes
 import mozilla.telemetry.glean.private.PingType
 import mozilla.telemetry.glean.private.StringMetricType
@@ -175,12 +175,13 @@ class GleanTest {
         assertFalse(Glean.testIsExperimentActive("experiment_preinit_disabled"))
     }
 
+    // Suppressing our own deprecation before we move over to the new event recording API.
     @Test
-    @Suppress("ComplexMethod", "LongMethod")
+    @Suppress("ComplexMethod", "LongMethod", "DEPRECATION")
     fun `test sending of foreground and background pings`() {
         val server = getMockWebServer()
 
-        val click = EventMetricType<NoExtraKeys>(
+        val click = EventMetricType<NoExtraKeys, NoExtras>(
             disabled = false,
             category = "ui",
             lifetime = Lifetime.Ping,

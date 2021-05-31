@@ -12,6 +12,7 @@ import mozilla.telemetry.glean.getMockWebServer
 import mozilla.telemetry.glean.private.EventMetricType
 import mozilla.telemetry.glean.private.Lifetime
 import mozilla.telemetry.glean.private.NoExtraKeys
+import mozilla.telemetry.glean.private.NoExtras
 import mozilla.telemetry.glean.private.NoReasonCodes
 import mozilla.telemetry.glean.private.PingType
 import mozilla.telemetry.glean.resetGlean
@@ -125,7 +126,9 @@ class CustomPingTest {
         assertEquals(1L, pingInfo.tryGetLong("seq")!!)
     }
 
+    // Suppressing our own deprecation before we move over to the new event recording API.
     @Test
+    @Suppress("DEPRECATION")
     fun `events for custom pings are flushed at startup`() {
         delayMetricsPing(context)
         resetGlean(context, Glean.configuration.copy(
@@ -135,7 +138,7 @@ class CustomPingTest {
         val pingName = "custom-events-1"
 
         // Define a 'click' event
-        val click = EventMetricType<NoExtraKeys>(
+        val click = EventMetricType<NoExtraKeys, NoExtras>(
             disabled = false,
             category = "ui",
             lifetime = Lifetime.Ping,

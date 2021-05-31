@@ -6,28 +6,12 @@ Each time you record to a labeled counter, its value is incremented.
 Unless incremented by a positive value, a counter will not be reported in pings,
 that means: the value `0` is never sent in a ping.
 
+## Recording API
 
-## Configuration
+### `add`
 
-For example, you may want to record a count of different types of crashes for your Android application, such as native code crashes and uncaught exceptions:
-
-```YAML
-stability:
-  crash_count:
-    type: labeled_counter
-    description: >
-      Counts the number of crashes that occur in the application. ...
-    labels:
-      - uncaught_exception
-      - native_code_crash
-    ...
-```
-
-> **Note:** removing or changing labels, including their order in the registry file, is permitted. Avoid reusing labels that were removed in the past. It is best practice to add documentation about removed labels to the description field so that analysts will know of their existence and meaning in historical data. Special care must be taken when changing GeckoView metrics sent through the Glean SDK, as the index of the labels is used to report Gecko data through the Glean SDK.
-
-## API
-
-Now you can use the labeled counter from the application's code:
+Increases one of the labels in a labeled counter metric by a certain amount.
+If no amount is passed it defaults to `1`.
 
 {{#include ../../../shared/tab_header.md}}
 
@@ -35,24 +19,20 @@ Now you can use the labeled counter from the application's code:
 
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.Stability
+
 Stability.crashCount["uncaught_exception"].add() // Adds 1 to the "uncaught_exception" counter.
 Stability.crashCount["native_code_crash"].add(3) // Adds 3 to the "native_code_crash" counter.
 ```
+</div>
 
-There are test APIs available too:
+<div data-lang="Java" class="tab">
 
-```Kotlin
-import org.mozilla.yourApplication.GleanMetrics.Stability
-// Was anything recorded?
-assertTrue(Stability.crashCount["uncaught_exception"].testHasValue())
-assertTrue(Stability.crashCount["native_code_crash"].testHasValue())
-// Do the counters have the expected values?
-assertEquals(1, Stability.crashCount["uncaught_exception"].testGetValue())
-assertEquals(3, Stability.crashCount["native_code_crash"].testGetValue())
-// Were there any invalid labels?
-assertEquals(0, Stability.crashCount.testGetNumRecordedErrors(ErrorType.InvalidLabel))
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Stability;
+
+Stability.INSTANCE.crashCount["uncaught_exception"].add(); // Adds 1 to the "uncaught_exception" counter.
+Stability.INSTANCE.crashCount["native_code_crash"].add(3); // Adds 3 to the "native_code_crash" counter.
 ```
-
 </div>
 
 <div data-lang="Swift" class="tab">
@@ -61,22 +41,6 @@ assertEquals(0, Stability.crashCount.testGetNumRecordedErrors(ErrorType.InvalidL
 Stability.crashCount["uncaught_exception"].add() // Adds 1 to the "uncaught_exception" counter.
 Stability.crashCount["native_code_crash"].add(3) // Adds 3 to the "native_code_crash" counter.
 ```
-
-There are test APIs available too:
-
-```Swift
-@testable import Glean
-
-// Was anything recorded?
-XCTAssert(Stability.crashCount["uncaught_exception"].testHasValue())
-XCTAssert(Stability.crashCount["native_code_crash"].testHasValue())
-// Do the counters have the expected values?
-XCTAssertEqual(1, try Stability.crashCount["uncaught_exception"].testGetValue())
-XCTAssertEqual(3, try Stability.crashCount["native_code_crash"].testGetValue())
-// Were there any invalid labels?
-XCTAssertEqual(0, Stability.crashCount.testGetNumRecordedErrors(.invalidLabel))
-```
-
 </div>
 
 <div data-lang="Python" class="tab">
@@ -90,46 +54,6 @@ metrics.stability.crash_count["uncaught_exception"].add()
 # Adds 3 to the "native_code_crash" counter.
 metrics.stability.crash_count["native_code_crash"].add(3)
 ```
-
-There are test APIs available too:
-
-```Python
-# Was anything recorded?
-assert metrics.stability.crash_count["uncaught_exception"].test_has_value()
-assert metrics.stability.crash_count["native_code_crash"].test_has_value()
-# Do the counters have the expected values?
-assert 1 == metrics.stability.crash_count["uncaught_exception"].test_get_value()
-assert 3 == metrics.stability.crash_count["native_code_crash"].test_get_value()
-# Were there any invalid labels?
-assert 0 == metrics.stability.crash_count.test_get_num_recorded_errors(
-    ErrorType.INVALID_LABEL
-)
-```
-
-</div>
-
-<div data-lang="C#" class="tab">
-
-```C#
-using static Mozilla.YourApplication.GleanMetrics.Stability;
-Stability.crashCount["uncaught_exception"].Add(); // Adds 1 to the "uncaught_exception" counter.
-Stability.crashCount["native_code_crash"].Add(3); // Adds 3 to the "native_code_crash" counter.
-```
-
-There are test APIs available too:
-
-```C#
-using static Mozilla.YourApplication.GleanMetrics.Stability;
-// Was anything recorded?
-Assert.True(Stability.crashCount["uncaught_exception"].TestHasValue());
-Assert.True(Stability.crashCount["native_code_crash"].TestHasValue());
-// Do the counters have the expected values?
-Assert.Equal(1, Stability.crashCount["uncaught_exception"].TestGetValue());
-Assert.Equal(3, Stability.crashCount["native_code_crash"].TestGetValue());
-// Were there any invalid labels?
-Assert.Equal(0, Stability.crashCount.TestGetNumRecordedErrors(ErrorType.InvalidLabel));
-```
-
 </div>
 
 <div data-lang="Rust" class="tab">
@@ -140,19 +64,230 @@ use glean_metrics;
 stability::crash_count.get("uncaught_exception").add(1); // Adds 1 to the "uncaught_exception" counter.
 stability::crash_count.get("native_code_crash").add(3); // Adds 3 to the "native_code_crash" counter.
 ```
+</div>
 
-There are test APIs available too:
+<div data-lang="Javascript" class="tab">
+
+```js
+import * as stability from "./path/to/generated/files/stability.js";
+
+// Adds 1 to the "uncaught_exception" counter.
+stability.crashCount["uncaught_exception"].add();
+// Adds 3 to the "native_code_crash" counter.
+stability.crashCount["native_code_crash"].add(3);
+```
+</div>
+
+<div data-lang="Firefox Desktop" class="tab"></div>
+
+{{#include ../../../shared/tab_footer.md}}
+
+#### Errors recorded
+
+* [`invalid_value`](../../user/metrics/error-reporting.md): If the counter is incremented by `0` or a negative value.
+* [`invalid_label`](../../user/metrics/error-reporting.md):
+  * If the label contains invalid characters. Data is still recorded to the special label `__other__`.
+  * If the label exceeds the maximum number of allowed characters. Data is still recorded to the special label `__other__`.
+
+#### Limits
+
+* Only increments;
+* Saturates at the largest value that can be represented as a 32-bit signed integer.
+
+## Testing API
+
+### `testGetValue`
+
+Gets the recorded value for a given label in a labeled counter metric.
+
+{{#include ../../../shared/tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Stability
+
+// Do the counters have the expected values?
+assertEquals(1, Stability.crashCount["uncaught_exception"].testGetValue())
+assertEquals(3, Stability.crashCount["native_code_crash"].testGetValue())
+```
+</div>
+
+<div data-lang="Java" class="tab">
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Stability;
+
+// Do the counters have the expected values?
+assertEquals(1, Stability.INSTANCE.crashCount["uncaught_exception"].testGetValue());
+assertEquals(3, Stability.INSTANCE.crashCount["native_code_crash"].testGetValue());
+```
+</div>
+
+<div data-lang="Swift" class="tab">
+
+```Swift
+@testable import Glean
+
+// Do the counters have the expected values?
+XCTAssertEqual(1, try Stability.crashCount["uncaught_exception"].testGetValue())
+XCTAssertEqual(3, try Stability.crashCount["native_code_crash"].testGetValue())
+```
+</div>
+
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+# Do the counters have the expected values?
+assert 1 == metrics.stability.crash_count["uncaught_exception"].test_get_value()
+assert 3 == metrics.stability.crash_count["native_code_crash"].test_get_value()
+```
+</div>
+
+<div data-lang="Rust" class="tab">
+
+```rust
+use glean_metrics;
+
+// Do the counters have the expected values?
+assert_eq!(1, stability::crash_count.get("uncaught_exception").test_get_value().unwrap());
+assert_eq!(3, stability::crash_count.get("native_code_crash").test_get_value().unwrap());
+```
+</div>
+
+<div data-lang="Javascript" class="tab">
+
+```js
+import * as stability from "./path/to/generated/files/stability.js";
+
+// Do the counters have the expected values?
+assert.strictEqual(1, await stability.crashCount["uncaught_exception"].testGetValue());
+assert.strictEqual(3, await stability.crashCount["native_code_crash"].testGetValue());
+```
+</div>
+
+<div data-lang="Firefox Desktop" class="tab"></div>
+
+{{#include ../../../shared/tab_footer.md}}
+
+### `testHasValue`
+
+Whether or not **any** value was recorded for a given label in a labeled counter metric.
+
+{{#include ../../../shared/tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Stability
+
+// Was anything recorded?
+assertTrue(Stability.crashCount["uncaught_exception"].testHasValue())
+assertTrue(Stability.crashCount["native_code_crash"].testHasValue())
+```
+</div>
+
+<div data-lang="Java" class="tab">
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Stability;
+
+// Was anything recorded?
+assertTrue(Stability.INSTANCE.crashCount["uncaught_exception"].testHasValue());
+assertTrue(Stability.INSTANCE.crashCount["native_code_crash"].testHasValue());
+```
+</div>
+
+<div data-lang="Swift" class="tab">
+
+```Swift
+@testable import Glean
+
+// Was anything recorded?
+XCTAssert(Stability.crashCount["uncaught_exception"].testHasValue())
+XCTAssert(Stability.crashCount["native_code_crash"].testHasValue())
+```
+</div>
+
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+# Was anything recorded?
+assert metrics.stability.crash_count["uncaught_exception"].test_has_value()
+assert metrics.stability.crash_count["native_code_crash"].test_has_value()
+```
+</div>
+
+<div data-lang="Rust" class="tab"></div>
+
+<div data-lang="Javascript" class="tab"></div>
+
+<div data-lang="Firefox Desktop" class="tab"></div>
+
+{{#include ../../../shared/tab_footer.md}}
+
+### `testGetNumRecordedErrors`
+
+Gets the number of errors recorded for a given labeled counter metric in total.
+
+{{#include ../../../shared/tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Stabilit
+
+// Were there any invalid labels?
+assertEquals(0, Stability.crashCount.testGetNumRecordedErrors(ErrorType.InvalidLabel))
+```
+</div>
+
+<div data-lang="Java" class="tab">
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Stability;
+
+// Were there any invalid labels?
+assertEquals(0, Stability.INSTANCE.crashCount.testGetNumRecordedErrors(ErrorType.InvalidLabel));
+```
+</div>
+
+<div data-lang="Swift" class="tab">
+
+```Swift
+@testable import Glean
+
+// Were there any invalid labels?
+XCTAssertEqual(0, Stability.crashCount.testGetNumRecordedErrors(.invalidLabel))
+```
+</div>
+
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+# Were there any invalid labels?
+assert 0 == metrics.stability.crash_count.test_get_num_recorded_errors(
+    ErrorType.INVALID_LABEL
+)
+```
+</div>
+
+<div data-lang="Rust" class="tab">
 
 ```rust
 use glean::ErrorType;
 
 use glean_metrics;
-// Was anything recorded?
-assert!(stability::crash_count.get("uncaught_exception").test_get_value().is_some());
-assert!(stability::crash_count.get("native_code_crash").test_get_value().is_some());
-// Do the counters have the expected values?
-assert_eq!(1, stability::crash_count.get("uncaught_exception").test_get_value().unwrap());
-assert_eq!(3, stability::crash_count.get("native_code_crash").test_get_value().unwrap());
+
 // Were there any invalid labels?
 assert_eq!(
   0,
@@ -161,37 +296,57 @@ assert_eq!(
   )
 );
 ```
-
 </div>
+
+<div data-lang="Javascript" class="tab">
+
+```js
+import * as stability from "./path/to/generated/files/stability.js";
+
+// Were there any invalid labels?
+assert.strictEqual(0, await stability.crashCount.testGetNumRecordedErrors("invalid_label"));
+```
+</div>
+
+<div data-lang="Firefox Desktop" class="tab"></div>
 
 {{#include ../../../shared/tab_footer.md}}
 
-## Limits
+## Metric parameters
 
-* Labels must conform to the [label formatting regular expression](index.md#label-format).
+Example labeled counter metric definition:
 
-* Labels support lowercase alphanumeric characters; they additionally allow for dots (`.`), underscores (`_`) and/or hyphens (`-`).
+```YAML
+accessibility:
+  features:
+    type: labeled_counter
+    description: >
+      Counts the number of crashes that occur in the application.
+    bugs:
+      - https://bugzilla.mozilla.org/000000
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=000000#c3
+    notification_emails:
+      - me@mozilla.com
+    expires: 2020-10-01
+    labels:
+      - uncaught_exception
+      - native_code_crash
+      ...
+```
 
-* Each label must have a maximum of 60 bytes, when encoded as UTF-8.
+### Extra metric parameters
 
-* If the labels are specified in the `metrics.yaml`, using any label not listed in that file will be replaced with the special value `__other__`.
+{{#include ../../_includes/labels-parameter.md}}
 
-* The number of labels specified in the `metrics.yaml` is limited to 100.
+## Data questions
 
-* If the labels aren't specified in the `metrics.yaml`, only 16 different dynamic labels may be used, after which the special value `__other__` will be used.
-
-## Examples
-
-* Record the number of times different kinds of crashes occurred.
-
-## Recorded Errors
-
-* `invalid_label`: If the label contains invalid characters. Data is still recorded to the special label `__other__`.
-
-* `invalid_label`: If the label exceeds the maximum number of allowed characters. Data is still recorded to the special label `__other__`.
+* How many times did different types of crashes occur?
 
 ## Reference
 
 * Kotlin API docs [`LabeledMetricType`](../../../javadoc/glean/mozilla.telemetry.glean.private/-labeled-metric-type/index.html), [`CounterMetricType`](../../../javadoc/glean/mozilla.telemetry.glean.private/-counter-metric-type/index.html)
 * Swift API docs: [`LabeledMetricType`](../../../swift/Classes/LabeledMetricType.html), [`CounterMetricType`](../../../swift/Classes/CounterMetricType.html)
 * Python API docs: [`LabeledMetricBase`](../../../python/glean/metrics/labeled.html), [`CounterMetricType`](../../../python/glean/metrics/counter.html)
+* Rust API docs: [`LabeledMetric`](../../../docs/glean/private/struct.LabeledMetric.html), [`CounterMetricType`](../../../docs/glean/private/struct.CounterMetric.html)
+* Javascript API docs: [`LabeledMetricType`](https://mozilla.github.io/glean.js/classes/core_metrics_types_labeled.default.html), [`CounterMetricType`](https://mozilla.github.io/glean.js/classes/core_metrics_types_counter.default.html)

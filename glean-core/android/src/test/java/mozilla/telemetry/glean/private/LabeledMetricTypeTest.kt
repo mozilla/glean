@@ -10,7 +10,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.collectAndCheckPingSchema
-import mozilla.telemetry.glean.GleanMetrics.GleanBuildInfo
+import mozilla.telemetry.glean.GleanBuildInfo
 import mozilla.telemetry.glean.GleanMetrics.Pings
 import mozilla.telemetry.glean.testing.ErrorType
 import mozilla.telemetry.glean.testing.GleanTestRule
@@ -398,7 +398,7 @@ class LabeledMetricTypeTest {
 
     @Test(expected = IllegalStateException::class)
     fun `Test that labeled events are an exception`() {
-        val eventMetric = EventMetricType<NoExtraKeys>(
+        val eventMetric = EventMetricType<NoExtraKeys, NoExtras>(
             disabled = false,
             category = "telemetry",
             lifetime = Lifetime.Application,
@@ -406,7 +406,7 @@ class LabeledMetricTypeTest {
             sendInPings = listOf("metrics")
         )
 
-        val labeledEventMetric = LabeledMetricType<EventMetricType<NoExtraKeys>>(
+        val labeledEventMetric = LabeledMetricType<EventMetricType<NoExtraKeys, NoExtras>>(
             disabled = false,
             category = "telemetry",
             lifetime = Lifetime.Application,

@@ -4,7 +4,7 @@
 
 
 import json
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union, Tuple
 
 
 from .. import _ffi
@@ -13,6 +13,23 @@ from ..testing import ErrorType
 
 
 from .lifetime import Lifetime
+
+
+class EventExtras:
+    """
+    A class that can be converted into key-value pairs of event extras.
+    This will be automatically implemented for event properties of an [EventMetricType].
+    """
+
+    def to_ffi_extra(self) -> Tuple[List[int], List[str]]:
+        """
+        Convert the event extras into 2 lists:
+
+        1. The list of extra key indices.
+           Unset keys will be skipped.
+        2. The list of extra values.
+        """
+        return ([], [])
 
 
 class RecordedEventData:
@@ -110,7 +127,52 @@ class EventMetricType:
         if getattr(self, "_handle", 0) != 0:
             _ffi.lib.glean_destroy_event_metric(self._handle)
 
-    def record(self, extra: Optional[Dict[int, str]] = None) -> None:
+    def record(self, extra: Optional[Union[Dict[int, str], EventExtras]] = None) -> None:
+        """
+        Record an event by using the information provided by the instance of
+        this class.
+
+        Args:
+            extra: optional. The extra keys and values for this event.
+                   The maximum length for values is 100.
+        """
+        if self._disabled:
+            return
+
+        timestamp = _ffi.lib.glean_get_timestamp_ms()
+
+        if isinstance(extra, EventExtras):
+            self._record_class(timestamp, extra)
+        else:
+            self._record_dict(timestamp, extra)
+
+    def _record_class(self, timestamp: int, extra: EventExtras) -> None:
+        """
+        Record an event by using the information provided by the instance of
+        this class.
+
+        Args:
+            extra: This is the object specifying extra keys and their values.
+                   This is used for events where additional richer context is needed.
+                   The maximum length for values is 100.
+        """
+
+        @Dispatcher.launch
+        def record():
+            keys, values = extra.to_ffi_extra()
+            nextra = len(keys)
+
+            _ffi.lib.glean_event_record(
+                self._handle,
+                timestamp,
+                _ffi.ffi_encode_vec_int32(keys),
+                _ffi.ffi_encode_vec_string(values),
+                nextra,
+            )
+
+    def _record_dict(
+        self, timestamp: int, extra: Optional[Dict[int, str]] = None
+    ) -> None:
         """
         Record an event by using the information provided by the instance of
         this class.
@@ -121,10 +183,6 @@ class EventMetricType:
                 where additional richer context is needed. The maximum length
                 for values is 100.
         """
-        if self._disabled:
-            return
-
-        timestamp = _ffi.lib.glean_get_timestamp_ms()
 
         @Dispatcher.launch
         def record():

@@ -5,6 +5,7 @@
 import enum
 from pathlib import Path
 import time
+from typing import List, Optional, Tuple
 
 
 import pytest
@@ -313,3 +314,105 @@ def test_event_enum_is_generated_correctly():
         "key1": "value1",
         "key2": "value2",
     } == metrics.environment.event_example.test_get_value()[0].extra
+
+
+def test_event_extra_is_generated_correctly():
+    metrics = load_metrics(
+        ROOT.parent / "data" / "events_with_types.yaml", config={"allow_reserved": False}
+    )
+
+    metrics.core.preference_toggled.record(
+        metrics.core.PreferenceToggledExtra(preference="value1", enabled=True)
+    )
+
+    assert {
+        "preference": "value1",
+        "enabled": "true",
+    } == metrics.core.preference_toggled.test_get_value()[0].extra
+
+
+def test_the_convenient_extrakeys_api():
+    class ClickKeys(metrics.EventExtras):
+        def __init__(self, object_id: Optional[str] = None, other: Optional[str] = None) -> None:
+            self._object_id = object_id
+            self._other = other
+
+        def to_ffi_extra(self) -> Tuple[List[int], List[str]]:
+            keys = []
+            values = []
+
+            if self._object_id is not None:
+                keys.append(0)
+                values.append(self._object_id)
+
+            if self._other is not None:
+                keys.append(1)
+                values.append(self._other)
+
+            return (keys, values)
+
+    click = metrics.EventMetricType(
+        disabled=False,
+        category="ui",
+        lifetime=Lifetime.PING,
+        name="click",
+        send_in_pings=["store1"],
+        allowed_extra_keys=["object_id", "other"],
+    )
+
+    # Record two events of the same type, with a little delay
+    click.record(ClickKeys(object_id="buttonA", other="foo"))
+
+    time.sleep(0.001)
+
+    # Some extra keys can be left undefined.
+    click.record(ClickKeys(object_id="buttonB"))
+    click.record()
+
+    # Check that data was properly recorded
+    snapshot = click.test_get_value()
+    assert click.test_has_value()
+    assert 3 == len(snapshot)
+
+    first_event = [x for x in snapshot if x.extra.get("object_id") == "buttonA"][0]
+    assert "ui" == first_event.category
+    assert "click" == first_event.name
+    assert "ui.click" == first_event.identifier
+    assert "foo" == first_event.extra["other"]
+
+    second_event = [x for x in snapshot if x.extra.get("object_id") == "buttonB"][0]
+    assert "ui" == second_event.category
+    assert "click" == second_event.name
+    assert "other" not in second_event.extra
+
+    assert first_event.timestamp < second_event.timestamp
+
+
+def test_event_extra_does_typechecks():
+    metrics = load_metrics(
+        ROOT.parent / "data" / "events_with_types.yaml", config={"allow_reserved": False}
+    )
+
+    # Valid combinations of extras.
+    # These do not throw.
+    metrics.core.PreferenceToggledExtra(preference="value1")
+    metrics.core.PreferenceToggledExtra(enabled=True)
+    metrics.core.PreferenceToggledExtra(swapped=1)
+    extras = metrics.core.PreferenceToggledExtra(preference="value1", enabled=True, swapped=1)
+    # Check conversion to FFI types, extras are sorted by name
+    ffi = extras.to_ffi_extra()
+    expected = ([0, 1, 2], ["true", "value1", "1"])
+    assert expected == ffi
+
+    with pytest.raises(TypeError):
+        metrics.core.PreferenceToggledExtra(preference=True)
+    with pytest.raises(TypeError):
+        metrics.core.PreferenceToggledExtra(enabled=1)
+    with pytest.raises(TypeError):
+        metrics.core.PreferenceToggledExtra(swapped="string")
+
+    # Modifying an attribute only checks on conversion to FFI
+    extras = metrics.core.PreferenceToggledExtra(preference="string")
+    extras.preference = True
+    with pytest.raises(TypeError):
+        extras.to_ffi_extra()

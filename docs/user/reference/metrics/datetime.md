@@ -196,16 +196,20 @@ assert.deepStrictEqual(expectedDate, await install.firstRun.testGetValue());
 ```c++
 #include "mozilla/glean/GleanMetrics.h"
 
-ASSERT_STREQ(
-  mozilla::glean::install::first_run.TestGetValue().value(),
-  "2020-11-06T12:10:35+05:00"_ns
-);
+PRExplodedTime date{0, 35, 10, 12, 6, 10, 2020, 0, 0, {5 * 60 * 60, 0}};
+ASSERT_EQ(
+    0,
+    std::memcmp(
+        &date,
+        mozilla::glean::install::first_run.TestGetValue().ptr(),
+        sizeof(date)));
 ```
 
-**Javascript**
+**JavaScript**
 
 ```js
-Assert.ok(Glean.install.firstRun.testGetValue().startsWith("2020-06-11T12:00:00"));
+const value = new Date("2020-06-11T12:00:00");
+Assert.equal(Glean.install.firstRun.testGetValue().getTime(), value.getTime());
 ```
 
 </div>
@@ -393,7 +397,14 @@ assert_eq!(0, install::first_run.test_get_num_recorded_errors(
 
 </div>
 
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="Javascript" class="tab">
+
+```js
+import * as install from "./path/to/generated/files/install.js";
+
+assert.strictEqual(1, await install.firstRun.testGetNumRecordedErrors("invalid_value"));
+```
+</div>
 
 <div data-lang="Firefox Desktop" class="tab" data-bug="1683171"></div>
 
@@ -448,3 +459,4 @@ Carefully consider the required resolution for recording your metric, and choose
 * [Swift API docs](../../../swift/Classes/DatetimeMetricType.html)
 * [Python API docs](../../../python/glean/metrics/datetime.html)
 * [Rust API docs](../../../docs/glean/private/struct.DatetimeMetric.html)
+* [Datetime API docs](https://mozilla.github.io/glean.js/classes/core_metrics_types_datetime.default.html)

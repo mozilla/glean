@@ -1,6 +1,48 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v38.0.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v39.0.0...main)
+
+# v39.0.0 (2021-05-31)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v38.0.1...v39.0.0)
+
+* General
+  * Add new event extras API to all implementations. See below for details ([#1603](https://github.com/mozilla/glean/pull/1603))
+  * Updated `glean_parser` version to 3.4.0 ([#1603](https://github.com/mozilla/glean/pull/1603))
+* Rust
+  * **Breaking Change**: Allow event extras to be passed as an object.
+    This replaces the old `HashMap`-based API.
+    Values default to `string`.
+    See [the event documentation](https://mozilla.github.io/glean/book/reference/metrics/event.html#recordobject) for details.
+    ([#1603](https://github.com/mozilla/glean/pull/1603))
+    Old code:
+
+    ```
+    let mut extra = HashMap::new();
+    extra.insert(SomeExtra::Key1, "1".into());
+    extra.insert(SomeExtra::Key2, "2".into());
+    metric.record(extra);
+    ```
+
+    New code:
+
+    ```
+    let extra = SomeExtra {
+        key1: Some("1".into()),
+        key2: Some("2".into()),
+    };
+    metric.record(extra);
+    ```
+* Android
+  * **Deprecation**: The old event recording API is replaced by a new one, accepting a typed object ([#1603](https://github.com/mozilla/glean/pull/1603)).
+    See [the event documentation](https://mozilla.github.io/glean/book/reference/metrics/event.html#recordobject) for details.
+  * Skip build info generation for libraries ([#1654](https://github.com/mozilla/glean/pull/1654))
+* Python
+  * **Deprecation**: The old event recording API is replaced by a new one, accepting a typed object ([#1603](https://github.com/mozilla/glean/pull/1603)).
+    See [the event documentation](https://mozilla.github.io/glean/book/reference/metrics/event.html#recordobject) for details.
+* Swift
+  * **Deprecation**: The old event recording API is replaced by a new one, accepting a typed object ([#1603](https://github.com/mozilla/glean/pull/1603)).
+    See [the event documentation](https://mozilla.github.io/glean/book/reference/metrics/event.html#recordobject) for details.
 
 # v38.0.1 (2021-05-17)
 

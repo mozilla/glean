@@ -36,7 +36,7 @@ class GleanMetricsYamlTransform extends ArtifactTransform {
 @SuppressWarnings("GrPackage")
 class GleanPlugin implements Plugin<Project> {
     // The version of glean_parser to install from PyPI.
-    private String GLEAN_PARSER_VERSION = "3.2.0"
+    private String GLEAN_PARSER_VERSION = "3.4.0"
     // The version of Miniconda is explicitly specified.
     // Miniconda3-4.5.12 is known to not work on Windows.
     private String MINICONDA_VERSION = "4.5.11"
@@ -127,7 +127,7 @@ except:
     /*
      * Adds tasks that generates the Glean metrics API for a project.
      */
-    def setupTasks(Project project, File envDir) {
+    def setupTasks(Project project, File envDir, boolean isApplication) {
         return { variant ->
             def sourceOutputDir = "${project.buildDir}/generated/source/glean/${variant.dirName}/kotlin"
             // Get the name of the package as if it were to be used in the R or BuildConfig
@@ -198,6 +198,14 @@ except:
                 // use metrics in the "glean..." category
                 if (project.ext.has("allowGleanInternal")) {
                     args "--allow-reserved"
+                }
+
+                // Only generate build info for applications, not for libraries.
+                // From android-gradle 7.0 on the `VERSION_CODE` and `VERSION_NAME` fields 
+                // are not set for libraries anymore
+                if (!isApplication) {
+                    args "-s"
+                    args "with_buildinfo=false"
                 }
 
                 doFirst {
@@ -481,7 +489,7 @@ except:
     void apply(Project project) {
         isOffline = project.gradle.startParameter.offline
 
-        project.ext.glean_version = "38.0.1"
+        project.ext.glean_version = "39.0.0"
 
         // Print the required glean_parser version to the console. This is
         // offline builds, and is mentioned in the documentation for offline
@@ -497,9 +505,9 @@ except:
         setupExtractMetricsFromAARTasks(project)
 
         if (project.android.hasProperty('applicationVariants')) {
-            project.android.applicationVariants.all(setupTasks(project, envDir))
+            project.android.applicationVariants.all(setupTasks(project, envDir, true))
         } else {
-            project.android.libraryVariants.all(setupTasks(project, envDir))
+            project.android.libraryVariants.all(setupTasks(project, envDir, false))
         }
     }
 }

@@ -631,7 +631,43 @@ The following text applies to code linked from these dependencies:
 
 The following text applies to code linked from these dependencies:
 
-* [ryu 1.0.5]( https://github.com/dtolnay/ryu )
+* [bitflags 1.2.1]( https://github.com/bitflags/bitflags )
+* [cfg-if 0.1.10]( https://github.com/alexcrichton/cfg-if )
+* [cfg-if 1.0.0]( https://github.com/alexcrichton/cfg-if )
+* [crossbeam-channel 0.5.1]( https://github.com/crossbeam-rs/crossbeam )
+* [crossbeam-utils 0.8.0]( https://github.com/crossbeam-rs/crossbeam )
+* [env_logger 0.7.1]( https://github.com/sebasmagri/env_logger/ )
+* [ffi-support 0.4.3]( https://github.com/mozilla/application-services )
+* [flate2 1.0.19]( https://github.com/rust-lang/flate2-rs )
+* [form_urlencoded 1.0.0]( https://github.com/servo/rust-url )
+* [id-arena 2.2.1]( https://github.com/fitzgen/id-arena )
+* [idna 0.2.0]( https://github.com/servo/rust-url/ )
+* [inherent 0.1.6]( https://github.com/dtolnay/inherent )
+* [itoa 0.4.6]( https://github.com/dtolnay/itoa )
+* [lazy_static 1.4.0]( https://github.com/rust-lang-nursery/lazy-static.rs )
+* [libc 0.2.87]( https://github.com/rust-lang/libc )
+* [log 0.4.13]( https://github.com/rust-lang/log )
+* [num-integer 0.1.44]( https://github.com/rust-num/num-integer )
+* [num-traits 0.2.14]( https://github.com/rust-num/num-traits )
+* [num_cpus 1.13.0]( https://github.com/seanmonstar/num_cpus )
+* [once_cell 1.7.2]( https://github.com/matklad/once_cell )
+* [paste 0.1.18]( https://github.com/dtolnay/paste )
+* [paste-impl 0.1.18]( https://github.com/dtolnay/paste )
+* [percent-encoding 2.1.0]( https://github.com/servo/rust-url/ )
+* [proc-macro-hack 0.5.19]( https://github.com/dtolnay/proc-macro-hack )
+* [proc-macro2 1.0.24]( https://github.com/alexcrichton/proc-macro2 )
+* [quote 1.0.9]( https://github.com/dtolnay/quote )
+* [serde 1.0.126]( https://github.com/serde-rs/serde )
+* [serde_derive 1.0.126]( https://github.com/serde-rs/serde )
+* [serde_json 1.0.64]( https://github.com/serde-rs/json )
+* [syn 1.0.67]( https://github.com/dtolnay/syn )
+* [thiserror 1.0.25]( https://github.com/dtolnay/thiserror )
+* [thiserror-impl 1.0.25]( https://github.com/dtolnay/thiserror )
+* [time 0.1.44]( https://github.com/time-rs/time )
+* [unicode-bidi 0.3.4]( https://github.com/servo/unicode-bidi )
+* [unicode-normalization 0.1.13]( https://github.com/unicode-rs/unicode-normalization )
+* [unicode-xid 0.2.1]( https://github.com/unicode-rs/unicode-xid )
+* [url 2.2.0]( https://github.com/servo/rust-url )
 
 
 ```
@@ -3248,9 +3284,9 @@ THE SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
-* [glean 38.0.1]( https://github.com/mozilla/glean )
-* [glean-core 38.0.1]( https://github.com/mozilla/glean )
-* [glean-ffi 38.0.1]( https://github.com/mozilla/glean )
+* [glean 39.0.0]( https://github.com/mozilla/glean )
+* [glean-core 39.0.0]( https://github.com/mozilla/glean )
+* [glean-ffi 39.0.0]( https://github.com/mozilla/glean )
 * [zeitstempel 0.1.1]( https://github.com/badboy/zeitstempel )
 
 
