@@ -19,6 +19,7 @@ a.header code:hover {
 .tabs {
     display: flex;
     flex-direction: column;
+    margin-bottom: 40px;
 }
 
 .tabbar {
@@ -307,6 +308,10 @@ footer#open-on-gh {
     left: calc(50% - 100px);
     box-sizing: border-box;
     user-select: text;
+}
+
+.tablinks .tooltip a {
+    color: #048dc2 !important;
 }
 
 .tablinks .tooltip::after {
