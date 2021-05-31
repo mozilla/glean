@@ -322,7 +322,14 @@ assert_eq!(
 
 </div>
 
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="Javascript" class="tab">
+
+```js
+import * as controls from "./path/to/generated/files/controls.js";
+
+assert.strictEqual(1, await controls.refreshPressed.testGetNumRecordedErrors("invalid_value"));
+```
+</div>
 
 <div data-lang="Firefox Desktop" class="tab" data-bug="1683171"></div>
 
@@ -364,3 +371,4 @@ N/A
 * [Swift API docs](../../../swift/Classes/CounterMetricType.html)
 * [Python API docs](../../../python/glean/metrics/counter.html)
 * [Rust API docs](../../../docs/glean/private/counter/struct.CounterMetric.html)
+* [Javascript API docs](https://mozilla.github.io/glean.js/classes/core_metrics_types_counter.default.html)

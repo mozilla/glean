@@ -397,7 +397,14 @@ assert_eq!(0, install::first_run.test_get_num_recorded_errors(
 
 </div>
 
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="Javascript" class="tab">
+
+```js
+import * as install from "./path/to/generated/files/install.js";
+
+assert.strictEqual(1, await install.firstRun.testGetNumRecordedErrors("invalid_value"));
+```
+</div>
 
 <div data-lang="Firefox Desktop" class="tab" data-bug="1683171"></div>
 
@@ -452,3 +459,4 @@ Carefully consider the required resolution for recording your metric, and choose
 * [Swift API docs](../../../swift/Classes/DatetimeMetricType.html)
 * [Python API docs](../../../python/glean/metrics/datetime.html)
 * [Rust API docs](../../../docs/glean/private/struct.DatetimeMetric.html)
+* [Datetime API docs](https://mozilla.github.io/glean.js/classes/core_metrics_types_datetime.default.html)

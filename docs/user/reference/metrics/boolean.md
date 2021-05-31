@@ -274,3 +274,4 @@ N/A
 * [Swift API docs](../../../swift/Classes/BooleanMetricType.html)
 * [Python API docs](../../../python/glean/metrics/boolean.html)
 * [Rust API docs](../../../docs/glean/private/boolean/struct.BooleanMetric.html)
+* [Javascript API docs](https://mozilla.github.io/glean.js/classes/core_metrics_types_boolean.default.html)
