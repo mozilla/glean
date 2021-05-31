@@ -10,7 +10,7 @@ The Glean integration checklist can help to ensure your Glean SDK-using product 
 
 Products (applications or libraries) using the Glean SDK to collect telemetry **must**:
 
-1. [Integrate the Glean SDK into the build system](#integrating-with-your-project). Since the Glean SDK does some code generation for your metrics at build time, this requires a few more steps than just adding a library.
+1. [Integrate the Glean SDK into the build system](#looking-for-an-integration-guide). Since the Glean SDK does some code generation for your metrics at build time, this requires a few more steps than just adding a library.
 
 2. Go through [data review process](https://wiki.mozilla.org/Firefox/Data_Collection) for all newly collected data.
 
@@ -33,7 +33,6 @@ Additionally, applications (but not libraries) **must**:
 > Step-by-step tutorials for each supported language/platform,
 > can be found on the specific integration guides:
 >
-> - [C#](./csharp.md)
 > - [Javascript](./javascript.md)
 > - [Kotlin](./kotlin.md)
 > - [Python](./python.md)

@@ -3,11 +3,10 @@
 # User Guides
 
 - [Adding Glean to your project](user/adding-glean-to-your-project/index.md)
-  - [C#](user/adding-glean-to-your-project/csharp.md)
-  - [Javascript](user/adding-glean-to-your-project/javascript.md)
   - [Kotlin](user/adding-glean-to-your-project/kotlin.md)
-  - [Python](user/adding-glean-to-your-project/python.md)
   - [Swift](user/adding-glean-to-your-project/swift.md)
+  - [Python](user/adding-glean-to-your-project/python.md)
+  - [Javascript](user/adding-glean-to-your-project/javascript.md)
 - [Integrating Glean for project managers](user/integrating-glean-for-product-managers.md)
 - [Metrics](user/metrics/adding-new-metrics.md)
     - [Adding new metrics](user/metrics/adding-new-metrics.md)
@@ -30,7 +29,7 @@
     - [Python](user/debugging/python.md)
 # API Reference
 
-- [YAML Format](reference/yaml/index.md)
+- [YAML Registry Format](reference/yaml/index.md)
 - [General](reference/general/index.md)
 - [Metric types](reference/metrics/index.md)
     - [Boolean](reference/metrics/boolean.md)

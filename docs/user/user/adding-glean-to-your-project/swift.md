@@ -1,6 +1,9 @@
 # Adding Glean to your Swift project
 
-Swift projects use the Swift Language Bindings provided by the Glean SDK.
+This page provides a step-by-step guide on how to integrate the Glean library into a Swift project.
+
+Nevertheless this is just one of the required steps for integrating Glean succesfully into a project. Check you the full [Glean integration checklist](./index.md) for a comprehensive list of all the steps involved in doing so.
+
 
 Currently, these bindings only support the iOS platform.
 

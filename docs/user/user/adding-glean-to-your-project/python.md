@@ -1,6 +1,9 @@
 # Adding Glean to your Python project
 
-Python projects use the Python Language Bindings provided by the Glean SDK.
+This page provides a step-by-step guide on how to integrate the Glean library into a Python project.
+
+Nevertheless this is just one of the required steps for integrating Glean succesfully into a project. Check you the full [Glean integration checklist](./index.md) for a comprehensive list of all the steps involved in doing so.
+
 
 ## Setting up the dependency
 

@@ -1,6 +1,8 @@
 # Adding Glean to your Javascript project
 
-Javascript projects use the Javascript APIs provided by Glean.js.
+This page provides a step-by-step guide on how to integrate the [Glean.js](https://github.com/mozilla/glean.js/) library into a Javascript project.
+
+Nevertheless this is just one of the required steps for integrating Glean succesfully into a project. Check you the full [Glean integration checklist](./index.md) for a comprehensive list of all the steps involved in doing so.
 
 Currently, these bindings support collecting data from [Browser Extensions](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions) (cross-browser) and [Qt/QML applications](https://doc.qt.io/qt-5/qtqml-index.html).
 
@@ -8,6 +10,7 @@ Currently, these bindings support collecting data from [Browser Extensions](http
 
 * Node.js >= 12.20.0.
 * npm >= 7.0.0.
+* Webpack >= 5.34.0.
 
 ## Setting up the dependency
 
