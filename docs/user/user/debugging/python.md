@@ -2,7 +2,7 @@
 
 Debugging features in Python can be enabled using environment variables.
 For more information on the available features and how to enable them,
-see [Enabling debugging features through environment variables](./index.md).
+see the [Debugging API reference](../../reference/debugging/index.md).
 
 ## Sending pings
 
