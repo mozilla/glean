@@ -16,7 +16,7 @@ In the above:
 |key|type|description|
 |---|----|-----------|
 | `logPings` | boolean (`--ez`)  | If set to `true`, pings are dumped to logcat; defaults to `false` |
-| `debugViewTag` | string (`--es`)  | Tags all outgoing pings as debug pings to make them available for real-time validation, on the [Glean Debug View](./index.html#glean-debug-view.md). The value must match the pattern `[a-zA-Z0-9-]{1,20}`. **Important**: in older versions of the Glean SDK, this was named `tagPings` |
+| `debugViewTag` | string (`--es`)  | Tags all outgoing pings as debug pings to make them available for real-time validation, on the [Glean Debug View](./index.md#glean-debug-view). The value must match the pattern `[a-zA-Z0-9-]{1,20}`. **Important**: in older versions of the Glean SDK, this was named `tagPings` |
 | `sourceTags` | string array (`--esa`)  | Tags outgoing pings with a maximum of 5 comma-separated tags. The tags must match the pattern `[a-zA-Z0-9-]{1,20}`. The `automation` tag is meant for tagging pings generated on automation: such pings will be specially handled on the pipeline (i.e. discarded from [non-live views](https://docs.telemetry.mozilla.org/cookbooks/bigquery/querying.html#table-layout-and-naming)). Tags starting with `glean` are reserved for future use. Subsequent calls of this overwrite any previously stored tag |
 | `sendPing` | string (`--es`)  | Sends the ping with the given name immediately |
 | `startNext` | string (`--es`)  | The name of an exported Android `Activity`, as defined in the product manifest file, to start right after the `GleanDebugActivity` completes. All the options provided are propagated to this next activity as well. When omitted, the default launcher activity for the product is started instead. |

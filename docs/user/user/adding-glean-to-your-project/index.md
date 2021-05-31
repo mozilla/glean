@@ -14,7 +14,7 @@ Products (applications or libraries) using the Glean SDK to collect telemetry **
 
 2. Go through [data review process](https://wiki.mozilla.org/Firefox/Data_Collection) for all newly collected data.
 
-3. Ensure that telemetry coming from automated testing or continuous integration is either not sent to the telemetry server or [tagged with the `automation` tag using the `sourceTag` feature](../debugging/index.md#available-debugging-features).
+3. Ensure that telemetry coming from automated testing or continuous integration is either not sent to the telemetry server or [tagged with the `automation` tag using the `sourceTag` feature](../../reference/debug/sourceTags.md).
 
 4. At least one week before releasing your product, [file a data engineering bug][dataeng-bug] to enable your product's application id and have your metrics be indexed by the [Glean Dictionary].
 

@@ -4,7 +4,7 @@
 
 Debugging features in iOS can be enabled using environment variables.
 For more information on the available features accessible through this method
-and how to enable them, see [Debugging API reference](../../reference/debugging/index.md).
+and how to enable them, see [Debugging API reference](../../reference/debug/index.md).
 
 These environment variables must be set on the device that is running the application.
 
@@ -16,9 +16,9 @@ For debugging and validation purposes on iOS, the Glean SDK makes use of a custo
 
 All 4 Glean debugging features are available through the custom URL scheme tool.
 
-- [`logPings`](../../referece/debugging/logPings.md): This is either true or false and will cause pings that are submitted to also be echoed to the device's log.
-- [`debugViewTag`](../../referece/debugging/debugViewTag.md): This command will tag outgoing pings with the provided value, in order to identify them in the Glean Debug View.
-- [`sourceTags`](../../referece/debugging/sourceTags.md): This command tags outgoing pings with a maximum of 5 comma-separated tags.
+- [`logPings`](../../reference/debug/logPings.md): This is either true or false and will cause pings that are submitted to also be echoed to the device's log.
+- [`debugViewTag`](../../reference/debug/debugViewTag.md): This command will tag outgoing pings with the provided value, in order to identify them in the Glean Debug View.
+- [`sourceTags`](../../reference/debug/sourceTags.md): This command tags outgoing pings with a maximum of 5 comma-separated tags.
 - `sendPing`: This command expects a string name of a ping to force immediate collection and submission of.
 
 The structure of the custom URL uses the following format:

@@ -43,7 +43,7 @@ interact with and enable these debugging functionalities.
 2. Enable debugging features through environment variables set at runtime;
 3. Enable debugging features through platform specific tooling.
 
-For methods 1. and 2., refer to the API reference section ["Debugging"](../../debug/index.md)
+For methods 1. and 2., refer to the API reference section ["Debugging"](../../reference/debug/index.md)
 for detailed information on how to use them.
 
 For method 3. please refer to the platform specific pages on how to debug products using Glean.
@@ -71,4 +71,3 @@ For method 3. please refer to the platform specific pages on how to debug produc
 [^2]: In Swift, the Glean SDK exposes a [custom URL format](./ios.md) for interacting with debug features.
 
 [^3]: In Firefox Desktop, developers may use the interface exposed through `about:glean` to log, tag or send pings.
-

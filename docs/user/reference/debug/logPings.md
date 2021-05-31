@@ -9,7 +9,7 @@ Once enabled, the only way to disable this feature is to restart or manually res
 ## On how to access logs
 
 > The Glean SDK logs warnings and errors through platform-specific logging frameworks.
-> See the [platform-specific instructions](./index.md#platform_specific_information) for information
+> See the [platform-specific instructions](./index.md#platform-specific-information) for information
 > on how to view the logs on the platform you are on.
 
 ## Limits

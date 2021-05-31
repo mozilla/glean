@@ -2,7 +2,7 @@
 
 Debugging features in Python can be enabled through APIs exposed on the Glean object.
 For more information on the available features and how to enable them,
-see the [Debugging API reference](../../reference/debugging/index.md).
+see the [Debugging API reference](../../reference/debug/index.md).
 
 ## Sending pings
 
