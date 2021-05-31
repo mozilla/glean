@@ -91,7 +91,7 @@ plugins {
 ```
 
 Right before the end of the same file, we need to apply the Glean Gradle plugin.
-Set any [additional parameters](android/android-build-configuration-options.md) to control the behavior of the Glean Gradle plugin before calling `apply plugin`.
+Set any [additional parameters](../../language-bindings/android/android-build-configuration-options.md) to control the behavior of the Glean Gradle plugin before calling `apply plugin`.
 
 
 ```Groovy
@@ -110,4 +110,4 @@ apply plugin: "org.mozilla.telemetry.glean-gradle-plugin"
 
 ##### Offline builds
 
-> The Glean Gradle plugin has limited support for [offline builds](android/android-offline-builds.md) of applications that use the Glean SDK.
+> The Glean Gradle plugin has limited support for [offline builds](../../language-bindings/android/android-offline-builds.md) of applications that use the Glean SDK.

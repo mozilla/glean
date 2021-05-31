@@ -17,7 +17,7 @@ It is best to frame this document in the form of questions and use cases rather 
 
 ## Integrating the Glean SDK into your product
 
-The [technical steps for integrating the Glean SDK in your product are documented in its own chapter](adding-glean-to-your-project.html) for supported platforms.
+The [technical steps for integrating the Glean SDK in your product are documented in its own chapter](adding-glean-to-your-project/index.html) for supported platforms.
 We recommend having a member of the Glean SDK team review this integration to catch any potential pitfalls.
 
 ## (Optional) Adapting Glean to your platform
