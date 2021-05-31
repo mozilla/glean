@@ -1,9 +1,14 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v38.0.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v39.0.0...main)
+
+# v39.0.0 (2021-05-31)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v38.0.1...v39.0.0)
 
 * General
   * Add new event extras API to all implementations. See below for details ([#1603](https://github.com/mozilla/glean/pull/1603))
+  * Updated `glean_parser` version to 3.4.0 ([#1603](https://github.com/mozilla/glean/pull/1603))
 * Rust
   * **Breaking Change**: Allow event extras to be passed as an object.
     This replaces the old `HashMap`-based API.
