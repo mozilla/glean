@@ -27,7 +27,11 @@ The following steps are required for applications using the Glean SDK, but not l
 
 <div data-lang="Kotlin" class="tab">
 
-> **Note**: The Glean SDK does not support use across multiple processes, and must only be initialized on the application's main process. Initializing in other processes is a no-op.
+{{#include ../../../shared/blockquote-info.html}}
+
+##### Multiple processes support
+
+> The Glean SDK does not support use across multiple processes, and must only be initialized on the application's main process. Initializing in other processes is a no-op.
 > Additionally, Glean must be initialized on the main (UI) thread of the applications main process. Failure to do so will throw an `IllegalThreadStateException`.
 
 An excellent place to initialize Glean is within the `onCreate` method of the class that extends Android's `Application` class.
@@ -64,7 +68,11 @@ If `uploadEnabled` is false, any persisted metrics, events and pings (other than
 The Glean SDK should be initialized as soon as possible, and importantly, before any other libraries in the application start using Glean.
 Library code should never call `Glean.initialize`, since it should be called exactly once per application.
 
-> **Note**: if the application has the concept of release channels and knows which channel it is on at run-time, then it can provide the Glean SDK with this information by setting it as part of the `Configuration` object parameter of the `Glean.initialize` method. For example:
+{{#include ../../../shared/blockquote-info.html}}
+
+##### Release channels
+
+> If the application has the concept of release channels and knows which channel it is on at run-time, then it can provide the Glean SDK with this information by setting it as part of the `Configuration` object parameter of the `Glean.initialize` method. For example:
 
 ```Kotlin
 Glean.initialize(
@@ -75,35 +83,43 @@ Glean.initialize(
 )
 ```
 
+{{#include ../../../shared/blockquote-warning.html}}
+
+##### Uploads when using Android Components
+
 > **Note**: When the Glean SDK is consumed through Android Components, it is required to configure an HTTP client to be used for upload.
 > For example:
-
-```Kotlin
-// Requires `org.mozilla.components:concept-fetch`
-import mozilla.components.concept.fetch.Client
-// Requires `org.mozilla.components:lib-fetch-httpurlconnection`.
-// This can be replaced by other implementations, e.g. `lib-fetch-okhttp`
-// or an implementation from `browser-engine-gecko`.
-import mozilla.components.lib.fetch.httpurlconnection.HttpURLConnectionClient
-
-import mozilla.components.service.glean.config.Configuration
-import mozilla.components.service.glean.net.ConceptFetchHttpUploader
-
-val httpClient = ConceptFetchHttpUploader(lazy { HttpURLConnectionClient() as Client })
-val config = Configuration(httpClient = httpClient)
-Glean.initialize(
-    context,
-    uploadEnabled = true,
-    configuration = config,
-    buildInfo = GleanBuildInfo.buildInfo
-)
-```
+>
+> ```Kotlin
+> // Requires `org.mozilla.components:concept-fetch`
+> import mozilla.components.concept.fetch.Client
+> // Requires `org.mozilla.components:lib-fetch-httpurlconnection`.
+> // This can be replaced by other implementations, e.g. `lib-fetch-okhttp`
+> // or an implementation from `browser-engine-gecko`.
+> import mozilla.components.lib.fetch.httpurlconnection.HttpURLConnectionClient
+>
+> import mozilla.components.service.glean.config.Configuration
+> import mozilla.components.service.glean.net.ConceptFetchHttpUploader
+>
+> val httpClient = ConceptFetchHttpUploader(lazy { HttpURLConnectionClient() as Client })
+> val config = Configuration(httpClient = httpClient)
+> Glean.initialize(
+>    context,
+>    uploadEnabled = true,
+>    configuration = config,
+>    buildInfo = GleanBuildInfo.buildInfo
+>)
+>```
 
 </div>
 
 <div data-lang="Swift" class="tab">
 
-> **Note**: The Glean SDK does not support use across multiple processes, and must only be initialized on the application's main process.
+{{#include ../../../shared/blockquote-info.html}}
+
+##### Multiple processes support
+
+> The Glean SDK does not support use across multiple processes, and must only be initialized on the application's main process.
 
 An excellent place to initialize Glean is within the `application(_:)` method of the class that extends the `UIApplicationDelegate` class.
 
@@ -135,12 +151,16 @@ If `uploadEnabled` is false, any persisted metrics, events and pings (other than
 The Glean SDK should be initialized as soon as possible, and importantly, before any other libraries in the application start using Glean.
 Library code should never call `Glean.shared.initialize`, since it should be called exactly once per application.
 
-> **Note**: if the application has the concept of release channels and knows which channel it is on at run-time,
->  then it can provide the Glean SDK with this information by setting it as part of the `Configuration` object parameter of the `Glean.shared.initialize` method. For example:
+{{#include ../../../shared/blockquote-info.html}}
 
-```Swift
-Glean.shared.initialize(Configuration(channel: "beta"))
-```
+##### Release channels
+
+> If the application has the concept of release channels and knows which channel it is on at run-time,
+>  then it can provide the Glean SDK with this information by setting it as part of the `Configuration` object parameter of the `Glean.shared.initialize` method. For example:
+> 
+>```Swift
+>Glean.shared.initialize(Configuration(channel: "beta"))
+>```
 
 </div>
 
