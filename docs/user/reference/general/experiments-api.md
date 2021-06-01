@@ -171,7 +171,7 @@ Assert.Equal(
 
 {{#include ../../../shared/blockquote-info.html}}
 
-##### Value truncations
+##### Value truncation
 
 > Any truncation that occurs when recording to the Experiments API will result in an `invalid_value` error being recorded. See [Error Reporting](../../user/metrics/error-reporting.md) for more information about this type of error.
 
