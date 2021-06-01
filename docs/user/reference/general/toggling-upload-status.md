@@ -34,23 +34,23 @@
 
 {{#include ../../../shared/blockquote-warning.html}}
 
-##### Do not call `setUploadEnabled` before initializing
+##### Do not call `set_upload_enabled` before initializing
 
 > If called before `Glean.initialize()` the call to `Glean.set_upload_enabled()` will be ignored.
 > Set the initial state using `upload_enabled` on `Glean.initialize()`.
 
 </div>
 
-<div data-lang="C#" class="tab">
+<div data-lang="Javascript" class="tab">
 
-`GleanInstance.SetUploadEnabled()` should be called in response to the user enabling or disabling telemetry.
+`Glean.setUploadEnabled()` should be called in response to the user enabling or disabling telemetry.
 
 {{#include ../../../shared/blockquote-warning.html}}
 
 ##### Do not call `setUploadEnabled` before initializing
 
-> If called before `GleanInstance.initialize()` the call to `GleanInstance.SetUploadEnabled()` will be ignored.
-> Set the initial state using `uploadEnabled` on `GleanInstance.initialize()`.
+> If called before `Glean.initialize()` the call to `Glean.setUploadEnabled()` will be ignored.
+> Set the initial state using `uploadEnabled` on `Glean.initialize()`.
 
 </div>
 

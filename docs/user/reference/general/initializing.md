@@ -62,32 +62,14 @@ class SampleApplication : Application() {
 }
 ```
 
-Once initialized, if `uploadEnabled` is true, the Glean SDK will automatically start collecting [baseline metrics](../../user/pings/metrics.md) and sending its [pings](../../user/pings/index.md), according to their respective schedules.
-If `uploadEnabled` is false, any persisted metrics, events and pings (other than `first_run_date` and `first_run_hour`) are cleared, and subsequent calls to record metrics will be no-ops.
-
 The Glean SDK should be initialized as soon as possible, and importantly, before any other libraries in the application start using Glean.
 Library code should never call `Glean.initialize`, since it should be called exactly once per application.
-
-{{#include ../../../shared/blockquote-info.html}}
-
-##### Release channels
-
-> If the application has the concept of release channels and knows which channel it is on at run-time, then it can provide the Glean SDK with this information by setting it as part of the `Configuration` object parameter of the `Glean.initialize` method. For example:
-
-```Kotlin
-Glean.initialize(
-    applicationContext,
-    uploadEnabled = setting().isTelemetryEnabled,
-    configuration = Configuration(channel = "beta"),
-    buildInfo = GleanBuildInfo.buildInfo
-)
-```
 
 {{#include ../../../shared/blockquote-warning.html}}
 
 ##### Uploads when using Android Components
 
-> **Note**: When the Glean SDK is consumed through Android Components, it is required to configure an HTTP client to be used for upload.
+> When the Glean SDK is consumed through Android Components, it is required to configure an HTTP client to be used for upload.
 > For example:
 >
 > ```Kotlin
@@ -145,22 +127,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 }
 ```
 
-Once initialized, if `uploadEnabled` is true, the Glean SDK will automatically start collecting [baseline metrics](../../user/pings/metrics.md) and sending its [pings](../../user/pings/index.md), according to their respective schedules.
-If `uploadEnabled` is false, any persisted metrics, events and pings (other than `first_run_date` and `first_run_hour`) are cleared, and subsequent calls to record metrics will be no-ops.
-
 The Glean SDK should be initialized as soon as possible, and importantly, before any other libraries in the application start using Glean.
 Library code should never call `Glean.shared.initialize`, since it should be called exactly once per application.
-
-{{#include ../../../shared/blockquote-info.html}}
-
-##### Release channels
-
-> If the application has the concept of release channels and knows which channel it is on at run-time,
->  then it can provide the Glean SDK with this information by setting it as part of the `Configuration` object parameter of the `Glean.shared.initialize` method. For example:
-> 
->```Swift
->Glean.shared.initialize(Configuration(channel: "beta"))
->```
 
 </div>
 
@@ -182,9 +150,6 @@ Glean.initialize(
 )
 ```
 
-Once initialized, if `upload_enabled` is true, the Glean SDK will automatically start collecting [baseline metrics](../../user/pings/metrics.md).
-If `upload_enabled` is false, any persisted metrics, events and pings (other than `first_run_date` and `first_run_hour`) are cleared, and subsequent calls to record metrics will be no-ops.
-
 Additional configuration is available on the `glean.Configuration` object, which can be passed into `Glean.initialize()`.
 
 Unlike Android and Swift, the Python bindings do not automatically send any pings.
@@ -192,29 +157,38 @@ See the [custom pings documentation](../../user/pings/custom.md) about adding cu
 
 </div>
 
-<div data-lang="C#" class="tab">
+<div data-lang="Javascript" class="tab">
 
-The main control for the Glean SDK is on the `GleanInstance` singleton.
+The main control for Glean is on the `Glean` singleton.
 
-The Glean SDK should be initialized as soon as possible, and importantly, before any other libraries in the application start using Glean.
-Library code should never call `Glean.initialize`, since it should be called exactly once per application.
+The Glean.js library should be initialized as soon as possible when the product using it is started.
 
+```js
+// Glean.js for webextensions: the following code
+// runs in the background script.
+import Glean from "@mozilla/glean/webext";
 
-```C#
-using static Mozilla.Glean.Glean;
-
-GleanInstance.Initialize(
-    applicationId: "my.app.id",
-    applicationVersion: "0.1.1",
-    uploadEnabled: true,
-    configuration: new Configuration(),
-    dataDir: gleanDataDir
-    );
+Glean.initialize(
+    "my-app-id",
+    true, // uploadEnabled
+    {
+      appDisplayVersion: "0.1.0"
+    }
+);
 ```
-
 </div>
 
 {{#include ../../../shared/tab_footer.md}}
+
+## What happens after Glean is initialized?
+
+Once initialized, if upload is enabled, the Glean SDK will automatically start collecting [baseline metrics](../../user/pings/metrics.md).
+If upload is disabled, any persisted metrics, events and pings (other than `first_run_date` and `first_run_hour`) are cleared, and subsequent calls to record metrics will be no-ops.
+
+## Release channels
+
+If the application has the concept of release channels and knows which channel it is on at run-time,
+then it can provide the Glean SDK with this information by setting it as part of the `Configuration` object parameter of the `initialize` method.
 
 ## Behavior when uninitialized
 
