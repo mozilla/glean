@@ -22,7 +22,7 @@ Additionally, applications (but not libraries) **must**:
 
 5. Request a [data review](https://wiki.mozilla.org/Firefox/Data_Collection) to add Glean to your application (since it _can_ send data out of the box).
 
-6. [Initialize Glean](../../reference/general/index.md#initializing-the-glean-sdk) as early as possible at application startup.
+6. [Initialize Glean](../../reference/general/initializing.md) as early as possible at application startup.
 
 7. Provide a way for users to turn data collection off (e.g. providing settings to control `Glean.setUploadEnabled()`). The exact method used is application-specific.
 

@@ -44,9 +44,10 @@ echo '<meta http-equiv=refresh content=0;url=../language-bindings/android/instru
 echo '<meta http-equiv=refresh content=0;url=../../language-bindings/android/index.html>' > build/docs/book/user/android/index.html
 # Adding Glean to your project
 mkdir -p build/docs/book/user/adding-glean-to-your-project/
-echo '<meta http-equiv=refresh content=0;url=./adding-glean-to-your-project.html>' > build/docs/book/user/adding-glean-to-your-project/index.html
+echo '<meta http-equiv=refresh content=0;url=./adding-glean-to-your-project/index.html>' > build/docs/book/user/adding-glean-to-your-project.html
 # General API
 echo '<meta http-equiv=refresh content=0;url=../reference/general/index.html>' > build/docs/book/user/general-api.html
+echo '<meta http-equiv=refresh content=0;url=../reference/general/experiments-api.html>' > build/docs/book/user/experiments-api.html
 # Metrics API
 mkdir -p build/docs/book/user/metrics/
 echo '<meta http-equiv=refresh content=0;url=../../reference/metrics/boolean.html>' > build/docs/book/user/metrics/boolean.html
