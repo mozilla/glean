@@ -20,8 +20,7 @@ Each event contains the following data:
 
 ### `record(object)`
 
-_Added in: [v38.0.0](../../appendix/changelog.md)_
-<!-- FIXME: Update anchor when v38.0.0 is actually released -->
+_Added in: [v38.0.0](../../appendix/changelog/sdk.md#v3800-2021-05-12)_
 
 Record a new event, with optional typed extra values.
 This requires `type` annotations in the definition.
@@ -114,7 +113,7 @@ Glean.views.loginOpened.record(extra);
 
 ### `record(map)` (_deprecated_)
 
-_Deprecated in: [v38.0.0](../../appendix/changelog.md)_
+_Deprecated in: [v38.0.0](../../appendix/changelog/sdk.md#v3800-2021-05-12)_
 <!-- FIXME: Update anchor when v38.0.0 is actually released -->
 
 Record a new event, with optional extra values.
