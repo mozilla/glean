@@ -61,6 +61,8 @@
 # Appendix
 
 - [Glossary](appendix/glossary.md)
-- [Changelog](appendix/changelog.md)
+- [Changelog](appendix/changelog/index.md)
+    - [Glean SDK](appendix/changelog/sdk.md)
+    - [Glean.js](appendix/changelog/js.md)
 - [This Week in Glean](appendix/twig.md)
 - [Contribution Guidelines](appendix/contribution-guidelines.md)

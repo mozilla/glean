@@ -14,8 +14,9 @@ set -xe
 
 CRATE_NAME=glean_core
 
-# Add the changelog file
-cp -a CHANGELOG.md docs/user/appendix/changelog.md
+# Add the changelog files
+cp -a CHANGELOG.md docs/user/appendix/changelog/sdk.md
+wget https://raw.githubusercontent.com/mozilla/glean.js/main/CHANGELOG.md -O docs/user/appendix/changelog/js.md
 
 # Build the Glean client user book
 output=$(mdbook build docs/user/ 2>&1)

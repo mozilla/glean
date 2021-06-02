@@ -19,7 +19,7 @@ set "docs_location=build\docs"
 set "crate_name=glean_core"
 
 :: Add the changelog file.
-copy /Y CHANGELOG.md docs\user\appendix\changelog.md
+copy /Y CHANGELOG.md docs\user\appendix\changelog\sdk.md
 
 mdbook build docs\user\
 if errorlevel 1 exit /b %errorlevel%
