@@ -69,7 +69,7 @@ Check out this section for information on the language binding you are using.
 In this book we use a lot of Glean specific terminology. In the glossary, we go through
 many of the terms used throughout this book and describe exactly what we mean when we use them.
 
-#### [Changelog](./appendix/changelog.html)
+#### [Changelog](./appendix/changelog/index.html)
 
 This section contains detailed notes about changes in Glean, per release.
 
