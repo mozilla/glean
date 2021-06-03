@@ -9,7 +9,11 @@ This ping contains the client id.
 This ping is intended to communicate to the Data Pipeline that the user wishes to have their reported Telemetry data deleted.
 As such it attempts to send itself at the moment the user opts out of data collection, and continues to try and send itself.
 
-> **Note:** It is possible to send secondary ids in the deletion request ping.  For instance, if the application is migrating
+{{#include ../../../shared/blockquote-info.html}}
+
+##### Adding secondary ids
+
+> It is possible to send secondary ids in the deletion request ping.  For instance, if the application is migrating
 > from legacy telemetry to Glean, the legacy client ids can be added to the deletion request ping by creating a `metrics.yaml`
 > entry for the id to be added with a `send_in_pings` value of `deletion_request`.
 >

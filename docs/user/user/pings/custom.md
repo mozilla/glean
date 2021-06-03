@@ -41,6 +41,10 @@ search:
     - http://example.com/path/to/data-review
 ```
 
+{{#include ../../../shared/blockquote-info.html}}
+
+##### Reserved ping names
+
 > Note: the names `baseline`, `metrics`, `events`, `deletion-request` and `all-pings` are reserved and may not be used as the name of a custom ping.
 
 ## Loading custom ping metadata into your application or library
@@ -115,28 +119,6 @@ pings = load_pings(resource_filename(__name__, "pings.yaml"))
 
 </div>
 
-<div data-lang="C#" class="tab">
-
-In C#, this object must be registered with the Glean SDK from your startup code (such as in your application's `Main` method or a function called from that method).
-
-```C#
-using static Mozilla.YourApplication.GleanMetrics.Pings;
-
-...
-
-class Program
-{
-    static void Main(string[] args)
-    {
-        ...
-        Glean.RegisterPings(Pings);
-        ...
-    }
-}
-```
-
-</div>
-
 {{#include ../../../shared/tab_footer.md}}
 
 ## Sending metrics in a custom ping
@@ -204,18 +186,6 @@ from glean import load_pings
 pings = load_pings("pings.yaml")
 
 pings.search.submit(pings.search_reason_codes.PERFORMED)
-```
-
-</div>
-
-<div data-lang="C#" class="tab">
-
-```C#
-using static Mozilla.YourApplication.GleanMetrics.Pings;
-
-Pings.search.Submit(
-    GleanMetrics.Pings.searchReasonCodes.performed
-);
 ```
 
 </div>

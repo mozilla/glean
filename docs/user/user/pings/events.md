@@ -16,7 +16,11 @@ The `events` ping is collected under the following circumstances:
 
 All of these cases are handled automatically, with no intervention or configuration required by the application.
 
-> **Note:** Since the Python bindings don't have a concept of "going to background", case (1) above does not apply.
+{{#include ../../../shared/blockquote-info.html}}
+
+##### Python and Glean.js caveats
+
+> Since the Python bindings don't have a concept of "going to background", case (1) above does not apply.
 
 ## Contents
 At the top-level, this ping contains the following keys:
