@@ -506,7 +506,7 @@ jobs:
 
   Check Swift formatting:
     macos:
-      xcode: "12.4.0"
+      xcode: "12.5.0"
     steps:
       - checkout
       - run:
@@ -522,16 +522,12 @@ jobs:
 
   iOS build and test:
     macos:
-      xcode: "12.4.0"
+      xcode: "12.5.0"
     steps:
       - checkout
       - run:
-          name: Install new carthage
-          command: |
-            brew upgrade carthage
-      - run:
           name: Set Ruby Version
-          command: echo 'chruby ruby-2.7.2' >> ~/.bash_profile
+          command: echo 'chruby ruby-2.7.3' >> ~/.bash_profile
       - run:
           name: Show Ruby environment
           command: |
@@ -546,16 +542,16 @@ jobs:
             rustup component add rust-src --toolchain nightly
       - restore_cache:
           name: Restore rubygems cache
-          key: swift-docs-gems-v8
+          key: swift-docs-gems-v9
       - run:
           name: Install jazzy
           command: gem install jazzy
       - save_cache:
           name: Save rubygems cache
           # NEEDS TO CHANGE WHEN JAZZY OR RUBY IS UPDATED
-          key: swift-docs-gems-v8
+          key: swift-docs-gems-v9
           paths:
-            - ~/.gem/ruby/2.7.2
+            - ~/.gem/ruby/2.7.3
       - run:
           name: Setup build environment
           command: |
@@ -644,14 +640,10 @@ jobs:
 
   iOS integration test:
     macos:
-      xcode: "12.4.0"
+      xcode: "12.5.0"
     steps:
       - checkout
       - skip-if-doc-only
-      - run:
-          name: Install new carthage
-          command: |
-            brew upgrade carthage
       - install-rustup
       - setup-rust-toolchain
       - run:
@@ -719,7 +711,7 @@ jobs:
 
   iOS Framework release:
     macos:
-      xcode: "12.4.0"
+      xcode: "12.5.0"
     steps:
       - checkout
       - attach_workspace:
@@ -955,7 +947,7 @@ jobs:
 
   pypi-macos-release:
     macos:
-      xcode: "12.4.0"
+      xcode: "12.5.0"
     steps:
       - install-rustup
       - setup-rust-toolchain
@@ -987,7 +979,7 @@ jobs:
 
   pypi-macos-arm64-release:
     macos:
-      xcode: "12.4.0"
+      xcode: "12.5.0"
     steps:
       - install-rustup
       - setup-rust-toolchain
