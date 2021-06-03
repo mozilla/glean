@@ -190,6 +190,15 @@ pings.search.submit(pings.search_reason_codes.PERFORMED)
 
 </div>
 
+<div data-lang="Javascript" class="tab">
+
+```js
+import * as pings from "./path/to/generated/files/pings.js";
+
+pings.search.submit("performed");
+```
+</div>
+
 <div data-lang="Rust" class="tab">
 
 ```Rust
