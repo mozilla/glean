@@ -539,6 +539,11 @@ jobs:
             gem env
       - install-rustup
       - setup-rust-toolchain
+      - run:
+          name: Install Rust Nightly toolchain
+          command: |
+            rustup toolchain add nightly --profile minimal
+            rustup component add rust-src --toolchain nightly
       - restore_cache:
           name: Restore rubygems cache
           key: swift-docs-gems-v8
@@ -621,10 +626,21 @@ jobs:
             else
               bash bin/build-carthage.sh Glean
             fi
+      - run:
+          name: Build XCFramework archive
+          no_output_timeout: 20m
+          command: |
+            if [ -z "${CIRCLE_TAG}" ]; then
+              # No need to build the framework archive unless we build for a tagged release.
+              circleci-agent step halt
+            else
+              bash bin/build-xcframework.sh
+            fi
       - persist_to_workspace:
           root: .
           paths:
             - Glean.framework.zip
+            - Glean.xcframework.zip
 
   iOS integration test:
     macos:
@@ -701,7 +717,7 @@ jobs:
           path: device_logs.zip
           destination: device_logs.zip
 
-  Carthage release:
+  iOS Framework release:
     macos:
       xcode: "12.4.0"
     steps:
@@ -710,9 +726,10 @@ jobs:
           at: .
       - install-ghr-darwin
       - run:
-          name: Release Carthage archive on GitHub
+          name: Release framework archives on GitHub
           command: |
             ./ghr -replace "${CIRCLE_TAG}" Glean.framework.zip
+            ./ghr -replace "${CIRCLE_TAG}" Glean.xcframework.zip
 
   ###########################################################################
   # Python
@@ -1226,7 +1243,7 @@ workflows:
           filters: *release-filters
       - iOS build and test:
           filters: *release-filters
-      - Carthage release:
+      - iOS Framework release:
           requires:
             - iOS build and test
           filters: *release-filters
