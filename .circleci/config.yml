@@ -731,6 +731,19 @@ jobs:
             ./ghr -replace "${CIRCLE_TAG}" Glean.framework.zip
             ./ghr -replace "${CIRCLE_TAG}" Glean.xcframework.zip
 
+  glean-swift release:
+    docker:
+      - image: circleci/rust:latest
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: Release glean-swift
+          command: |
+              git config --global user.email "jrediger@mozilla.com"
+              git config --global user.name "Glean automated release"
+              ./bin/publish-glean-swift.sh "${CIRCLE_TAG}"
+
   ###########################################################################
   # Python
 
@@ -1246,6 +1259,10 @@ workflows:
       - iOS Framework release:
           requires:
             - iOS build and test
+          filters: *release-filters
+      - glean-swift release:
+          requires:
+            - iOS Framework release
           filters: *release-filters
       - Publish Rust crates:
           filters: *release-filters
