@@ -999,7 +999,7 @@ jobs:
             # variables are configured in CircleCI's environment variables.
             .venv3.9/bin/python3 -m twine upload dist/*
           environment:
-            SDKROOT: /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk
+            SDKROOT: /Library/Developer/CommandLineTools/SDKs/MacOSX11.sdk
             GLEAN_BUILD_TARGET: aarch64-apple-darwin
             GLEAN_BUILD_VARIANT: release
       - install-ghr-darwin
