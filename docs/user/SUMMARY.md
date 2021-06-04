@@ -16,7 +16,6 @@
     - [Metrics collected by the Glean SDK](user/collected-metrics/metrics.md)
 - [Pings](user/pings/index.md)
     - [Adding new custom pings](user/pings/custom.md)
-    - [Submitting custom pings](user/pings/submitting-custom-pings.md)
     - [Testing custom pings](user/pings/testing-custom-pings.md)
     - [Pings sent by Glean](user/pings/sent-by-glean.md)
         - [Baseline Ping](user/pings/baseline.md)
@@ -58,6 +57,7 @@
     - [Custom Distribution](reference/metrics/custom_distribution.md)
     - [Quantity](reference/metrics/quantity.md)
     - [Rate](reference/metrics/rate.md)
+- [Pings](user/pings/submitting-custom-pings.md)
 
 # Language Bindings Information
 

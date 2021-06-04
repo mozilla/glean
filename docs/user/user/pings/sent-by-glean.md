@@ -13,7 +13,7 @@ There is also a [high-level overview](ping-schedules-and-timings.html) of how th
 
 ### Available pings per platform
 
-| Language Binding | [`baseline` ping](baseline.md) | [`deletion-request` ping](deletion_request.md) | [`events` ping](events.md) | [`metrics` ping](metrics.md) |
+| Language Binding | [`baseline`](baseline.md) | [`deletion-request`](deletion_request.md) | [`events`](events.md) | [`metrics`](metrics.md) |
 |-:|:-:|:-:|:-:|:-:|
 | Kotlin | ✅ | ✅ | ✅ | ✅ |
 | Swift | ✅ | ✅ | ✅ | ✅ |

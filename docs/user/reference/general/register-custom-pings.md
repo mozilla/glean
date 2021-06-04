@@ -2,7 +2,10 @@
 
 After defining [custom pings](../../user/pings/custom.md) The Glean SDK build generates code from `pings.yaml` in a `Pings` object, which must be instantiated so Glean can send pings by name.
 
-## Loading custom ping metadata into your application or library
+## API
+
+### `registerPings`
+Loads custom ping metadata into your application or library
 
 {{#include ../../../shared/tab_header.md}}
 
@@ -22,6 +25,8 @@ override fun onCreate() {
 ```
 
 </div>
+
+<div data-lang="Java" class="tab"></div>
 
 <div data-lang="Swift" class="tab">
 
@@ -47,7 +52,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 For Python, the `pings.yaml` file must be available and loaded at runtime.
 
-If your project is a script (i.e. just Python files in a directory), you can load the `pings.yaml` before calling `Glean.initialize` using:
+While the Python language bindings do provide a `Glean.register_ping_type` function, if your project is a script (i.e. just Python files in a directory), you can load the `pings.yaml` before calling `Glean.initialize` using:
 
 ```python
 from glean import load_pings
@@ -71,5 +76,9 @@ pings = load_pings(resource_filename(__name__, "pings.yaml"))
 ```
 
 </div>
+
+<div data-lang="Rust" class="tab"></div>
+<div data-lang="Javascript" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab"></div>
 
 {{#include ../../../shared/tab_footer.md}}

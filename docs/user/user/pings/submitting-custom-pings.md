@@ -19,6 +19,8 @@ Pings.search.submit(
 
 </div>
 
+<div data-lang="Java" class="tab"></div>
+
 <div data-lang="Swift" class="tab">
 
 ```swift
@@ -43,15 +45,6 @@ pings.search.submit(pings.search_reason_codes.PERFORMED)
 
 </div>
 
-<div data-lang="Javascript" class="tab">
-
-```js
-import * as pings from "./path/to/generated/files/pings.js";
-
-pings.search.submit("performed");
-```
-</div>
-
 <div data-lang="Rust" class="tab">
 
 ```Rust
@@ -61,6 +54,17 @@ pings::search.submit(pings::SearchReasonCodes::Performed);
 ```
 
 </div>
+
+<div data-lang="Javascript" class="tab">
+
+```js
+import * as pings from "./path/to/generated/files/pings.js";
+
+pings.search.submit("performed");
+```
+</div>
+
+<div data-lang="Firefox Desktop" class="tab"></div>
 
 {{#include ../../../shared/tab_footer.md}}
 
