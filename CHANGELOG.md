@@ -2,6 +2,10 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v39.0.0...main)
 
+* iOS
+  * Build and release Glean as an xcframework ([#1663](https://github.com/mozilla/glean/pull/1663))
+    This will now also auto-update the Glean package at https://github.com/mozilla/glean-swift.
+
 # v39.0.0 (2021-05-31)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v38.0.1...v39.0.0)
