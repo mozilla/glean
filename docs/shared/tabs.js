@@ -85,10 +85,12 @@ function switchAllTabs(language) {
                 button.classList.add("disabled");
                 const tooltip = document.createElement("span");
                 tooltip.classList.add("tooltip");
+
                 if (tabcontent.dataset.bug) {
                     tooltip.innerHTML +=
                     `${tabcontent.dataset.lang} does not provide this API yet. \nFollow <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=${tabcontent.dataset.bug}" target="_blank">Bug ${tabcontent.dataset.bug}</a> for updates.`;
                 } else if (tabcontent.dataset.info) {
+                    // Note: it is safe to use .innerHTML since we have full control over `tabcontent.dataset.info`.
                     tooltip.innerHTML += `${tabcontent.dataset.info}`;
                 } else {
                     tooltip.innerHTML += `${tabcontent.dataset.lang} does not provide this API.`;
