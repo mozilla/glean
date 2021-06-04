@@ -1,6 +1,6 @@
 # Log pings
 
-This flag causes all subsequent pings that are submitted, to also be echoed to the device's log.
+This flag causes all subsequent pings that are submitted to also be echoed to the product's log.
 
 Once enabled, the only way to disable this feature is to restart or manually reset the application.
 

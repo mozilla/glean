@@ -1,6 +1,6 @@
 # Debugging products using the Glean SDK
 
-Glean provide a few debugging features to assist on debugging a product using Glean.
+Glean provides a few debugging features to assist with debugging a product using Glean.
 
 ## Features
 
