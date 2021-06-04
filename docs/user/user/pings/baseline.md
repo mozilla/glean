@@ -4,11 +4,11 @@
 
 This ping is intended to provide metrics that are managed by the Glean SDK itself, and not explicitly set by the application or included in the application's `metrics.yaml` file.
 
-{{#include ../../../shared/blockquote-warning.html}}
+### Platform availability
 
-##### This ping is not available in Python and Glean.js
-
-> As the `baseline` ping was specifically designed for mobile operating systems, it is not sent when using the Glean Python bindings.
+| Language Binding | Kotlin | Swift | Python | Rust | Javascript | Firefox Desktop |
+|-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| [`baseline` ping](baseline.md) | ✅ | ✅ | | ✅ | | ✅ |
 
 ## Scheduling
 

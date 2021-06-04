@@ -4,6 +4,12 @@
 The events ping's purpose is to transport all of the event metric information.
 If the application crashes, an `events` ping is generated next time the application starts with events that were not sent before the crash.
 
+### Platform availability
+
+| Language Binding | Kotlin | Swift | Python | Rust | Javascript | Firefox Desktop |
+|-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| [`events` ping](events.md) | ✅ | ✅ | ✅ | ✅ | | ✅ |
+
 ## Scheduling
 
 The `events` ping is collected under the following circumstances:
