@@ -24,12 +24,16 @@ After doing that, import Glean like so:
 import org.mozilla.Glean <version>
 ```
 
-The `<version>` number is the version of the release you downloaded minus its patch version.
-For example, if you downloaded Glean.js version `0.15.0` your import statement will be:
+{{#include ../../../shared/blockquote-info.html}}
 
-```qml
-import org.mozilla.Glean 0.15
-```
+### Picking the correct version
+
+> The `<version>` number is the version of the release you downloaded minus its patch version.
+> For example, if you downloaded Glean.js version `0.15.0` your import statement will be:
+>
+> ```qml
+> import org.mozilla.Glean 0.15
+> ```
 
 ## Consuming YAML registry files
 
@@ -54,7 +58,7 @@ glean_parser translate path/to/metrics.yaml path/to/pings.yaml \
   -f javascript \
   -o path/to/generated/files \
   --option platform=qt \
-  --option version=0.14
+  --option version=0.15
 ```
 
 The `translate` command will takes a list of YAML registry file paths and an output path and parse
