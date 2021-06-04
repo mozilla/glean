@@ -13,7 +13,7 @@ Currently, these bindings support collecting data from [Browser Extensions](http
 * Webpack >= 5.34.0.
 * Python >= 3.6.[^1]
 
-[1]: The `glean` command requires Python to download [`glean_parser`](https://mozilla.github.io/glean_parser/) which is a Python library.
+[^1]: The `glean` command requires Python to download [`glean_parser`](https://mozilla.github.io/glean_parser/) which is a Python library.
 
 ## Setting up the dependency
 
