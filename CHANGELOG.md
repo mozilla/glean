@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v39.0.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v39.0.1...main)
+
+# v39.0.1 (2021-06-04)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v39.0.0...v39.0.1)
 
 * iOS
   * Build and release Glean as an xcframework ([#1663](https://github.com/mozilla/glean/pull/1663))
