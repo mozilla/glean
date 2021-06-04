@@ -105,11 +105,11 @@ The `data-lang` attribute contains the title of the tab. Titles must match for d
 same language binding. Whenever a user clicks in a tab with a specific title, all tabs with that same
 title will be opened by default, until the user clicks in a tab with a different title.
 
-Every tab section contains tabs for each Glean language binding, even that language binding does not
-provide the API in question. In this case, the tab div is still there without any inner HTML. When
-that is the case that tab will be rendered in a disabled state.
+Every tab section should contain tabs for all Glean language bindings, even if a language binding does not
+provide the API in question. In this case, the tab div should still be there without any inner HTML.
+When that is the case that tab will be rendered in a disabled state.
 
-Each tab section contains tabs for the following language bindings:
+These are the tabs every tab section is expected to contain, in order:
 
 - Kotlin
 - Java
@@ -172,8 +172,9 @@ And this is how those tabs will look like:
 
 #### Tab tooltips
 
-When a tab is disabled i.e. does not have any content, it is possible to provide extra context
-on why a it is disabled through special `data-*` attributes.
+Tabs in a disabled i.e. tabs that do not have any content, will show a tooltip when hovered.
+
+By default, this tooltip will show the message `<lang> doe not provide this API`. The following `data-*` attributes can be used to modify this message.
 
 ##### `data-bug`
 
