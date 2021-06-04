@@ -36,4 +36,4 @@ This will tag all subsequent outgoing pings with a maximum of 5 comma-separated 
 
 _This feature is only available through the Android and iOS debug tools._
 
-This expects the name of a ping and forces its immediate collection and submission.
+This expects the name of a ping and forces its immediate submission.
