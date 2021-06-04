@@ -506,7 +506,7 @@ jobs:
 
   Check Swift formatting:
     macos:
-      xcode: "12.4.0"
+      xcode: "12.5.0"
     steps:
       - checkout
       - run:
@@ -522,16 +522,12 @@ jobs:
 
   iOS build and test:
     macos:
-      xcode: "12.4.0"
+      xcode: "12.5.0"
     steps:
       - checkout
       - run:
-          name: Install new carthage
-          command: |
-            brew upgrade carthage
-      - run:
           name: Set Ruby Version
-          command: echo 'chruby ruby-2.7.2' >> ~/.bash_profile
+          command: echo 'chruby ruby-2.7.3' >> ~/.bash_profile
       - run:
           name: Show Ruby environment
           command: |
@@ -539,18 +535,23 @@ jobs:
             gem env
       - install-rustup
       - setup-rust-toolchain
+      - run:
+          name: Install Rust Nightly toolchain
+          command: |
+            rustup toolchain add nightly --profile minimal
+            rustup component add rust-src --toolchain nightly
       - restore_cache:
           name: Restore rubygems cache
-          key: swift-docs-gems-v8
+          key: swift-docs-gems-v9
       - run:
           name: Install jazzy
           command: gem install jazzy
       - save_cache:
           name: Save rubygems cache
           # NEEDS TO CHANGE WHEN JAZZY OR RUBY IS UPDATED
-          key: swift-docs-gems-v8
+          key: swift-docs-gems-v9
           paths:
-            - ~/.gem/ruby/2.7.2
+            - ~/.gem/ruby/2.7.3
       - run:
           name: Setup build environment
           command: |
@@ -621,21 +622,28 @@ jobs:
             else
               bash bin/build-carthage.sh Glean
             fi
+      - run:
+          name: Build XCFramework archive
+          no_output_timeout: 20m
+          command: |
+            if [ -z "${CIRCLE_TAG}" ]; then
+              # No need to build the framework archive unless we build for a tagged release.
+              circleci-agent step halt
+            else
+              bash bin/build-xcframework.sh
+            fi
       - persist_to_workspace:
           root: .
           paths:
             - Glean.framework.zip
+            - Glean.xcframework.zip
 
   iOS integration test:
     macos:
-      xcode: "12.4.0"
+      xcode: "12.5.0"
     steps:
       - checkout
       - skip-if-doc-only
-      - run:
-          name: Install new carthage
-          command: |
-            brew upgrade carthage
       - install-rustup
       - setup-rust-toolchain
       - run:
@@ -701,18 +709,32 @@ jobs:
           path: device_logs.zip
           destination: device_logs.zip
 
-  Carthage release:
+  iOS Framework release:
     macos:
-      xcode: "12.4.0"
+      xcode: "12.5.0"
     steps:
       - checkout
       - attach_workspace:
           at: .
       - install-ghr-darwin
       - run:
-          name: Release Carthage archive on GitHub
+          name: Release framework archives on GitHub
           command: |
             ./ghr -replace "${CIRCLE_TAG}" Glean.framework.zip
+            ./ghr -replace "${CIRCLE_TAG}" Glean.xcframework.zip
+
+  glean-swift release:
+    docker:
+      - image: circleci/rust:latest
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: Release glean-swift
+          command: |
+              git config --global user.email "jrediger@mozilla.com"
+              git config --global user.name "Glean automated release"
+              ./bin/publish-glean-swift.sh "${CIRCLE_TAG}"
 
   ###########################################################################
   # Python
@@ -925,7 +947,7 @@ jobs:
 
   pypi-macos-release:
     macos:
-      xcode: "12.4.0"
+      xcode: "12.5.0"
     steps:
       - install-rustup
       - setup-rust-toolchain
@@ -957,7 +979,7 @@ jobs:
 
   pypi-macos-arm64-release:
     macos:
-      xcode: "12.4.0"
+      xcode: "12.5.0"
     steps:
       - install-rustup
       - setup-rust-toolchain
@@ -1226,9 +1248,13 @@ workflows:
           filters: *release-filters
       - iOS build and test:
           filters: *release-filters
-      - Carthage release:
+      - iOS Framework release:
           requires:
             - iOS build and test
+          filters: *release-filters
+      - glean-swift release:
+          requires:
+            - iOS Framework release
           filters: *release-filters
       - Publish Rust crates:
           filters: *release-filters

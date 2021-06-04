@@ -78,7 +78,22 @@ stability.crashCount["native_code_crash"].add(3);
 ```
 </div>
 
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+```cpp
+#include "mozilla/glean/GleanMetrics.h"
+
+mozilla::glean::stability::crash_count.Get("uncaught_exception"_ns).Add(1);
+mozilla::glean::stability::crash_count.Get("native_code_crash"_ns).Add(3);
+```
+
+**Javascript**
+```js
+Glean.stability.crashCount.uncaught_exception.add(1);
+Glean.stability.crashCount["native_code_crash"].add(3);
+```
+</div>
 
 {{#include ../../../shared/tab_footer.md}}
 
@@ -169,7 +184,26 @@ assert.strictEqual(3, await stability.crashCount["native_code_crash"].testGetVal
 ```
 </div>
 
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+```cpp
+#include "mozilla/glean/GleanMetrics.h"
+
+ASSERT_EQ(
+    1,
+    mozilla::glean::stability::crash_count.Get("uncaught_exception"_ns).TestGetValue().ref());
+ASSERT_EQ(
+    3,
+    mozilla::glean::stability::crash_count.Get("native_code_crash"_ns).TestGetValue().ref());
+```
+
+**Javascript**
+```js
+Assert.equal(1, Glean.stability.crashCount["uncaught_exception"].testGetValue());
+Assert.equal(3, Glean.stability.crashCount.native_code_crash.testGetValue());
+```
+</div>
 
 {{#include ../../../shared/tab_footer.md}}
 
@@ -308,7 +342,7 @@ assert.strictEqual(0, await stability.crashCount.testGetNumRecordedErrors("inval
 ```
 </div>
 
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab" data-bug="1683171"></div>
 
 {{#include ../../../shared/tab_footer.md}}
 

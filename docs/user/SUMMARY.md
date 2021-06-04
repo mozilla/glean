@@ -2,7 +2,11 @@
 
 # User Guides
 
-- [Adding Glean to your project](user/adding-glean-to-your-project.md)
+- [Adding Glean to your project](user/adding-glean-to-your-project/index.md)
+  - [Kotlin](user/adding-glean-to-your-project/kotlin.md)
+  - [Swift](user/adding-glean-to-your-project/swift.md)
+  - [Python](user/adding-glean-to-your-project/python.md)
+  - [Javascript](user/adding-glean-to-your-project/javascript.md)
 - [Integrating Glean for project managers](user/integrating-glean-for-product-managers.md)
 - [Metrics](user/metrics/adding-new-metrics.md)
     - [Adding new metrics](user/metrics/adding-new-metrics.md)
@@ -17,7 +21,6 @@
     - [Events Ping](user/pings/events.md)
     - [Custom Pings](user/pings/custom.md)
     - [Testing custom pings](user/pings/testing-custom-pings.md)
-- [Using the experiments API](user/experiments-api.md)
 - [Debugging products using Glean](user/debugging/index.md)
     - [Glean Debug Ping View](user/debugging/debug-ping-view.md)
     - [Android](user/debugging/android.md)
@@ -25,8 +28,11 @@
     - [Python](user/debugging/python.md)
 # API Reference
 
-- [YAML Format](reference/yaml/index.md)
-- [General](reference/general/index.md)
+- [YAML Registry Format](reference/yaml/index.md)
+- [General API](reference/general/index.md)
+    - [Initializing](reference/general/initializing.md)
+    - [Toggling upload status](reference/general/toggling-upload-status.md)
+    - [Annotating experiments](reference/general/experiments-api.md)
 - [Metric types](reference/metrics/index.md)
     - [Boolean](reference/metrics/boolean.md)
     - [Labeled Booleans](reference/metrics/labeled_booleans.md)
@@ -55,6 +61,8 @@
 # Appendix
 
 - [Glossary](appendix/glossary.md)
-- [Changelog](appendix/changelog.md)
+- [Changelog](appendix/changelog/index.md)
+    - [Glean SDK](appendix/changelog/sdk.md)
+    - [Glean.js](appendix/changelog/js.md)
 - [This Week in Glean](appendix/twig.md)
 - [Contribution Guidelines](appendix/contribution-guidelines.md)

@@ -1,6 +1,7 @@
 docs/*/book
 docs/*/shared/
-docs/user/appendix/changelog.md
+docs/user/appendix/changelog/sdk.md
+docs/user/appendix/changelog/js.md
 target
 .cargo
 

@@ -7,12 +7,16 @@
 # Build all docs with one command
 # Documentation will be placed in `build/docs`.
 
+# IMPORTANT: When changing this file make sure to update the
+# `build-rust-docs.bat` file, too.
+
 set -xe
 
 CRATE_NAME=glean_core
 
-# Add the changelog file
-cp -a CHANGELOG.md docs/user/appendix/changelog.md
+# Add the changelog files
+cp -a CHANGELOG.md docs/user/appendix/changelog/sdk.md
+wget https://raw.githubusercontent.com/mozilla/glean.js/main/CHANGELOG.md -O docs/user/appendix/changelog/js.md
 
 # Build the Glean client user book
 output=$(mdbook build docs/user/ 2>&1)
@@ -39,8 +43,12 @@ echo '<meta http-equiv=refresh content=0;url=../../language-bindings/android/and
 echo '<meta http-equiv=refresh content=0;url=../../language-bindings/android/android-offline-builds.html>' > build/docs/book/user/android/android-offline-builds.html
 echo '<meta http-equiv=refresh content=0;url=../language-bindings/android/instrument-android-crashes-example.html>' > build/docs/book/user/instrument-android-crashes-example.html
 echo '<meta http-equiv=refresh content=0;url=../../language-bindings/android/index.html>' > build/docs/book/user/android/index.html
+# Adding Glean to your project
+mkdir -p build/docs/book/user/adding-glean-to-your-project/
+echo '<meta http-equiv=refresh content=0;url=./adding-glean-to-your-project/index.html>' > build/docs/book/user/adding-glean-to-your-project.html
 # General API
 echo '<meta http-equiv=refresh content=0;url=../reference/general/index.html>' > build/docs/book/user/general-api.html
+echo '<meta http-equiv=refresh content=0;url=../reference/general/experiments-api.html>' > build/docs/book/user/experiments-api.html
 # Metrics API
 mkdir -p build/docs/book/user/metrics/
 echo '<meta http-equiv=refresh content=0;url=../../reference/metrics/boolean.html>' > build/docs/book/user/metrics/boolean.html

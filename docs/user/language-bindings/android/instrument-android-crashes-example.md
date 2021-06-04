@@ -17,7 +17,7 @@ helpful in following this guide.
 
 ## Setup Build Configuration
 
-Please follow the instruction in the ["Adding Glean to your project"](../../user/adding-glean-to-your-project.md) chapter in order to set up
+Please follow the instruction in the ["Adding Glean to your project"](../../user/adding-glean-to-your-project/index.md) chapter in order to set up
 Glean in an Android project.
 
 ### Add A Custom Metric

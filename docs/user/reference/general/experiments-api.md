@@ -1,13 +1,17 @@
 # Using the experiments API
 
-The Glean SDK supports tagging all its pings with experiments annotations. The annotations are useful to report that experiments were active at the time the measurement were collected. The annotations are reported in the optional `experiments` entry in the [`ping_info` section](pings/index.md) of all the Glean SDK pings.
+The Glean SDK supports tagging all its pings with experiments annotations. The annotations are useful to report that experiments were active at the time the measurement were collected. The annotations are reported in the optional `experiments` entry in the [`ping_info` section](../../user/pings/index.md) of all the Glean SDK pings.
 
-> **Important**: the experiment annotations set through this API are not persisted by the Glean SDK.
+{{#include ../../../shared/blockquote-warning.html}}
+
+##### Experiment annotations are not persisted
+
+> The experiment annotations set through this API are not persisted by the Glean SDK.
 > The application or consuming library is responsible for setting the relevant experiment annotations at each run.
 
 ## API
 
-{{#include ../../shared/tab_header.md}}
+{{#include ../../../shared/tab_header.md}}
 
 <div data-lang="Kotlin" class="tab">
 
@@ -25,8 +29,12 @@ Glean.setExperimentActive(
 Glean.setExperimentInactive("blue-button-effective")
 ```
 
-> **Important**: Experiment IDs and branches don't need to be pre-defined in the Glean SDK registry files.
-Please also note that the `extra` map is a non-nested arbitrary `String` to `String` map. It also has limits on the size of the keys and values defined below.
+{{#include ../../../shared/blockquote-info.html}}
+
+##### It's not required to define experiment IDs and branches
+
+> Experiment IDs and branches don't need to be pre-defined in the Glean SDK registry files.
+> Please also note that the `extra` map is a non-nested arbitrary `String` to `String` map. It also has limits on the size of the keys and values defined below.
 
 There are test APIs available too:
 
@@ -55,8 +63,12 @@ Glean.shared.setExperimentActive(
 Glean.shared.setExperimentInactive(experimentId: "blue-button-effective")
 ```
 
-> **Important**: Experiment IDs and branch don't need to be pre-defined in the Glean SDK registry files.
-Please also note that the `extra` is a non-nested `Dictionary` of type `[String: String]`.
+{{#include ../../../shared/blockquote-info.html}}
+
+##### It's not required to define experiment IDs and branches
+
+> Experiment IDs and branch don't need to be pre-defined in the Glean SDK registry files.
+> Please also note that the `extra` is a non-nested `Dictionary` of type `[String: String]`.
 
 There are test APIs available too:
 
@@ -91,8 +103,12 @@ Glean.set_experiment_active(
 Glean.set_experiment_inactive("blue-button-effective")
 ```
 
-> **Important**: Experiment IDs and branch don't need to be pre-defined in the Glean SDK registry files.
-Please also note that the `extra` dict is non-nested arbitrary `str` to `str` mapping.
+{{#include ../../../shared/blockquote-info.html}}
+
+##### It's not required to define experiment IDs and branches
+
+> Experiment IDs and branch don't need to be pre-defined in the Glean SDK registry files.
+> Please also note that the `extra` dict is non-nested arbitrary `str` to `str` mapping.
 
 There are test APIs available too:
 
@@ -126,8 +142,12 @@ GleanInstance.SetExperimentActive(
 GleanInstance.SetExperimentInactive("blue-button-effective");
 ```
 
-> **Important**: Experiment IDs and branches don't need to be pre-defined in the Glean SDK registry files.
-Please also note that the `extra` map is a non-nested arbitrary `string` to `string` dictionary. It also has limits on the size of the keys and values defined below.
+{{#include ../../../shared/blockquote-info.html}}
+
+##### It's not required to define experiment IDs and branches
+
+> Experiment IDs and branches don't need to be pre-defined in the Glean SDK registry files.
+> Please also note that the `extra` map is a non-nested arbitrary `string` to `string` dictionary. It also has limits on the size of the keys and values defined below.
 
 There are test APIs available too:
 
@@ -142,16 +162,20 @@ Assert.Equal(
 
 </div>
 
-{{#include ../../shared/tab_footer.md}}
+{{#include ../../../shared/tab_footer.md}}
 
 ## Limits
 
 * `experimentId`, `branch`, and the keys and values of the 'extra' field are fixed at a maximum length of 100 bytes. Longer strings used as ids, keys, or values are truncated to their respective maximum length. (Specifically, this is measured in the number of bytes when the string is encoded in UTF-8.)
 * `extra` map is limited to 20 entries. If passed a map which contains more elements than this, it is truncated to 20 elements.  **WARNING** Which items are truncated is nondeterministic due to the unordered nature of maps and what's left may not necessarily be the first elements added.
 
-**NOTE:** Any truncation that occurs when recording to the Experiments API will result in an `invalid_value` error being recorded. See [Error Reporting](error-reporting.md) for more information about this type of error.
+{{#include ../../../shared/blockquote-info.html}}
+
+##### Value truncation
+
+> Any truncation that occurs when recording to the Experiments API will result in an `invalid_value` error being recorded. See [Error Reporting](../../user/metrics/error-reporting.md) for more information about this type of error.
 
 ## Reference
 
-* [Kotlin API docs](../../javadoc/glean/mozilla.telemetry.glean/-glean.html).
-* [Python API docs](../../python/glean/glean.html)
+* [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean/-glean.html).
+* [Python API docs](../../../python/glean/glean.html)
