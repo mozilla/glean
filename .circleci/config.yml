@@ -727,6 +727,7 @@ jobs:
     docker:
       - image: circleci/rust:latest
     steps:
+      - checkout
       - attach_workspace:
           at: .
       - run:
