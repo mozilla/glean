@@ -11,6 +11,17 @@ Applications can also define and send their own [custom pings](custom.md) when t
 
 There is also a [high-level overview](ping-schedules-and-timings.html) of how the `metrics` and `baseline` pings relate and the timings they record.
 
+### Available pings per platform
+
+| Language Binding | [`baseline` ping](baseline.md) | [`deletion-request` ping](deletion_request.md) | [`events` ping](events.md) | [`metrics` ping](metrics.md) |
+|-:|:-:|:-:|:-:|:-:|
+| Kotlin | ✅ | ✅ | ✅ | ✅ |
+| Swift | ✅ | ✅ | ✅ | ✅ |
+| Python | | ✅ | | |
+| Rust | ✅ | ✅ | ✅ | ✅ |
+| Javascript | | ✅ | | |
+| Firefox Desktop | ✅ | ✅ | ✅ | ✅ |
+
 ## Defining foreground and background state
 
 These docs refer to application 'foreground' and 'background' state in several places.

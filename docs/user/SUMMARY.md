@@ -16,6 +16,7 @@
     - [Metrics collected by the Glean SDK](user/collected-metrics/metrics.md)
 - [Pings](user/pings/index.md)
     - [Adding new custom pings](user/pings/custom.md)
+    - [Submitting custom pings](user/pings/submitting-custom-pings.md)
     - [Testing custom pings](user/pings/testing-custom-pings.md)
     - [Pings sent by Glean](user/pings/sent-by-glean.md)
         - [Baseline Ping](user/pings/baseline.md)
@@ -31,10 +32,11 @@
 # API Reference
 
 - [YAML Registry Format](reference/yaml/index.md)
-- [General](reference/general/index.md)
+- [General API](reference/general/index.md)
     - [Initializing](reference/general/initializing.md)
     - [Toggling upload status](reference/general/toggling-upload-status.md)
     - [Annotating experiments](reference/general/experiments-api.md)
+    - [Registering custom pings](reference/general/register-custom-pings.md)
 - [Debugging](reference/debug/index.md)
     - [Log pings](reference/debug/logPings.md)
     - [Debug View Tag](reference/debug/debugViewTag.md)
