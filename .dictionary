@@ -1,4 +1,4 @@
-personal_ws-1.1 en 227 utf-8
+personal_ws-1.1 en 228 utf-8
 AAR
 AARs
 ABI
@@ -223,6 +223,7 @@ uniffi
 uploader
 vendored
 webpages
+xcframework
 xcpretty
 yaml
 zsh
