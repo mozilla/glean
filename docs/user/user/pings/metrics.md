@@ -10,7 +10,11 @@ If the application crashes, unsent recorded metrics are sent along with the next
 
 Additionally, it is undesirable to mix metric recording from different versions of the application. Therefore, if a version upgrade is detected, the `metrics` ping is collected immediately before further metrics from the new version are recorded.
 
-> **Note:** As the `metrics` ping was specifically designed for mobile operating systems, it is not sent when using the Glean Python bindings.
+### Platform availability
+
+| Language Binding | Kotlin | Swift | Python | Rust | Javascript | Firefox Desktop |
+|-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| [`metrics` ping](metrics.md) | ✅ | ✅ | | ✅ | | ✅ |
 
 ## Scheduling
 The desired behavior is to collect the ping at the first available opportunity after 04:00 local time on a new calendar day, but given constraints of the platform, it can only be submitted while the application is running. 

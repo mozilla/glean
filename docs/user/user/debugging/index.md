@@ -1,51 +1,73 @@
 # Debugging products using the Glean SDK
 
-## Platform-specific debugging
+Glean provides a few debugging features to assist with debugging a product using Glean.
 
-1. [Debugging Android applications using the Glean SDK](android.md)
-2. [Debugging iOS applications using the Glean SDK](ios.md)
-3. [Debugging Python applications using the Glean SDK](python.md)
+## Features
 
-## General debugging information
+### Log Pings
 
-### Available debugging features
+Print the ping payload upon sending a ping.
 
-The Glean SDK has 4 available debugging features:
+### Debug View Tag
 
-- `logPings`: This is either `true` or `false` and will cause all subsequent pings that are submitted, to also be echoed to the device's log. Once enabled, the only way to disable this feature is to restart or manually reset the application.
-- `debugViewTag`: This will tag all subsequent outgoing pings with the provided value, in order to identify them in the Glean Debug View. Once enabled, the only way to disable this feature is to restart or manually reset the application.
-- `sourceTags`: This will tag all subsequent outgoing pings with a maximum of 5 comma-separated tags. Once enabled, the only way to disable this feature is to restart or manually reset the application.
-- `sendPing`: This expects the name of a ping and forces its immediate collection and submission. _This feature is only available for Android and iOS_.
+Tags all outgoing pings as debug pings to make them available for real-time validation, on the Glean Debug View.
 
-Different platforms may have different ways to enable these features.
+#### Glean Debug View
 
-### Enabling debugging features through environment variables
+The [Glean Debug View](https://debug-ping-preview.firebaseapp.com/) enables you to easily see in real-time what data your application is sending.
 
-Some of the debugging features described above may be enabled using environment variables:
+This data is what actually arrives in our data pipeline, shown in a web
+interface that is automatically updated when new data arrives. Any data sent from a Glean-instrumented application usually shows up within 10 seconds,
+updating the pages automatically. Pings are retained for 3 weeks.
 
-- `logPings`: May be set by the `GLEAN_LOG_PINGS` environment variable. The accepted values are `true` or `false`. Any other value will be ignored.
-- `debugViewTag`: May be set by the `GLEAN_DEBUG_VIEW_TAG` environment variable. Any valid HTTP header value is expected here (e.g. any value that matches the regex `[a-zA-Z0-9-]{1,20}`). Invalid values will be ignored.
-- `sourceTags`: May be set by the `GLEAN_SOURCE_TAGS` environment variable. A comma-separated list of valid HTTP header values is expected here (e.g. any value that matches the regex `[a-zA-Z0-9-]{1,20}`). If any of the values in the list is invalid, all values will be ignored. The special value of `automation` is meant for tagging pings generated on automation: such pings will be specially handled on the pipeline (i.e. discarded from [non-live views](https://docs.telemetry.mozilla.org/cookbooks/bigquery/querying.html#table-layout-and-naming)).
+#### Troubleshooting
 
-These variables must be set at runtime, not at compile time. They will be checked upon Glean initialization.
+If nothing is showing up on the dashboard after you set a `debugViewTag` and you see
+`Glean must be enabled before sending pings.` in the logs, Glean is disabled. Check with
+the application author on how to re-enable it.
 
-Enabling debugging features using environment variables is available for all supported platforms.
+### Source Tags
 
-> **Note** Although it is technically possible to use the environment variables described here to enable debugging features in Android, the Glean team is not currently aware of a proper way to set environment variables in Android devices or emulators.
+Tags outgoing pings with a maximum of 5 comma-separated tags.
 
-### Important considerations when using Glean SDK debug features
+### Send Ping
 
-- Enabled features will persist until the application is closed or manually reset. When enabled by environment variables, the variables need to be cleared upon resetting for the feature to be disabled.
+Sends a ping on demand.
 
-- There are a couple different ways in which to send pings using the Glean SDK debug tools.
-    1. You can tag pings using the debug tools and trigger them manually using the UI. This should always produce a ping with all required fields.
-    2. You can tag _and_ send pings using the debug tools.  This has the side effect of potentially sending a ping which does not include all fields because `sendPing` triggers pings to be sent before certain application behaviors can occur which would record that information.  For example, `duration` is not calculated or included in a baseline ping sent with `sendPing` because it forces the ping to be sent before the `duration` metric has been recorded.  Keep in mind that there may be nothing to send, in which case no ping is generated.
-    3. You can trigger a command while the instrumented application is still running.  This is useful for toggling commands or for triggering pings that have schedules that are difficult to trigger manually.  This is especially useful if you need to trigger a ping submission after some activity within the application, such as with the metrics ping.
+## Debugging methods
 
-### Glean SDK Log messages
+Each language binding or platform supported may expose one or more of the following methods to
+interact with and enable these debugging functionalities.
 
-The Glean SDK logs warnings and errors through the platform-specific logging frameworks.  See the platform-specific instructions for information on how to view the logs.
+1. Enable debugging features through APIs exposed through the Glean singleton;
+2. Enable debugging features through environment variables set at runtime;
+3. Enable debugging features through platform specific tooling.
 
-### Implementation details
+For methods 1. and 2., refer to the API reference section ["Debugging"](../../reference/debug/index.md)
+for detailed information on how to use them.
 
-See [Debug Pings](../../../dev/core/internal/debug-pings.md).
+For method 3. please refer to the platform specific pages on how to debug products using Glean.
+
+### Platform Specific Information
+
+1. [Debugging Android applications using the Glean SDK](./android.md)
+2. [Debugging iOS applications using the Glean SDK](./ios.md)
+3. [Debugging Python applications using the Glean SDK](./python.md)
+4. [Debugging Javascript applications using Glean.js](./javascript.md)
+
+### Available debugging methods per platform
+
+| | Glean API | Environment Variables | Platform Specific Tooling |
+|-:|:-:|:-:|:-:|
+| Kotlin | | | ✅ [^1] |
+| Swift | ✅ | ✅ | ✅ [^2] |
+| Python | | ✅ | |
+| Rust | ✅ | ✅ | |
+| Javascript | ✅ | | |
+| Firefox Desktop | | ✅ | ✅ [^3] |
+
+[^1]: In Kotlin, the Glean SDK exposes the [`GleanDebugActivity`](./android.md) for interacting with debug features. Although it is technically possible to also use environment variables in Android, the Glean team is not aware of a proper way to set environment variables in Android devices or emulators.
+
+[^2]: In Swift, the Glean SDK exposes a [custom URL format](./ios.md) for interacting with debug features.
+
+[^3]: In Firefox Desktop, developers may use the interface exposed through `about:glean` to log, tag or send pings.

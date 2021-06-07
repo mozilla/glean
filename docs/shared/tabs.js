@@ -79,19 +79,26 @@ function switchAllTabs(language) {
         for (let tabcontent of tabcontents.children) {
             let button = document.createElement("button");
             button.dataset.lang = tabcontent.dataset.lang;
+            button.innerText = tabcontent.dataset.lang;
             button.classList.add("tablinks");
             if (!tabcontent.innerHTML) {
                 button.classList.add("disabled");
-                if (!tabcontent.dataset.bug) {
-                    button.title = `${tabcontent.dataset.lang} does not provide this API`;
+                const tooltip = document.createElement("span");
+                tooltip.classList.add("tooltip");
+
+                if (tabcontent.dataset.bug) {
+                    tooltip.innerHTML +=
+                    `${tabcontent.dataset.lang} does not provide this API yet. \nFollow <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=${tabcontent.dataset.bug}" target="_blank">Bug ${tabcontent.dataset.bug}</a> for updates.`;
+                } else if (tabcontent.dataset.info) {
+                    // Note: it is safe to use .innerHTML since we have full control over `tabcontent.dataset.info`.
+                    tooltip.innerHTML += `${tabcontent.dataset.info}`;
                 } else {
-                    button.title =
-                        `${tabcontent.dataset.lang} does not provide this API yet. \nFollow https://bugzilla.mozilla.org/show_bug.cgi?id=${tabcontent.dataset.bug} for updates.`;
+                    tooltip.innerHTML += `${tabcontent.dataset.lang} does not provide this API.`;
                 }
+                button.appendChild(tooltip);
             } else {
                 button.onclick = onClickTab;
             }
-            button.innerText = tabcontent.dataset.lang;
             tabs.appendChild(button);
         }
     }

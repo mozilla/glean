@@ -1,24 +1,24 @@
-# Enabling debugging features in iOS through environment variables
+# Debugging iOS applications using the Glean SDK
+
+## Enabling debugging features in iOS through environment variables
 
 Debugging features in iOS can be enabled using environment variables.
 For more information on the available features accessible through this method
-and how to enable them, see [Enabling debugging features through environment variables](./index.md).
+and how to enable them, see [Debugging API reference](../../reference/debug/index.md).
 
 These environment variables must be set on the device that is running the application.
 
-> **Note** To set environment variables to the process running your app in an iOS device or emulator you need to edit the scheme for your app. In the Xcode IDE, you can use the shortcut `Cmd + <` to open the scheme editor popup. The environment variables editor is under the `Arguments` tab on this popup.
-
-# Debugging iOS applications using the Glean SDK
+## Enabling debugging features in iOS through a custom URL scheme
 
 For debugging and validation purposes on iOS, the Glean SDK makes use of a custom URL scheme which is implemented _within the application_ that is consuming the Glean SDK.  The Glean SDK provides some convenience functions to facilitate this, but it's up to the consuming application to enable this functionality.  Applications that enable this Glean SDK feature will be able to launch the application from a URL with the Glean debug commands embedded in the URL itself.
 
 ### Available commands and query format
 
-There are 4 available commands that you can use with the Glean SDK debug tools
+All 4 Glean debugging features are available through the custom URL scheme tool.
 
-- `logPings`: This is either true or false and will cause pings that are submitted to also be echoed to the device's log
-- `debugViewTag`: This command will tag outgoing pings with the provided value, in order to identify them in the Glean Debug View. Tags need to be string with upper and lower case letters, numbers and dashes, with a max length of 20 characters. **Important**: in older versions of the Glean SDK, this was named `tagPings`.
-- `sourceTags`: This command tags outgoing pings with a maximum of 5 comma-separated tags. The tags must match the pattern `[a-zA-Z0-9-]{1,20}`. The `automation` tag is meant for tagging pings generated on automation: such pings will be specially handled on the pipeline (i.e. discarded from [non-live views](https://docs.telemetry.mozilla.org/cookbooks/bigquery/querying.html#table-layout-and-naming)). Tags starting with `glean` are reserved for future use.
+- [`logPings`](../../reference/debug/logPings.md): This is either true or false and will cause pings that are submitted to also be echoed to the device's log.
+- [`debugViewTag`](../../reference/debug/debugViewTag.md): This command will tag outgoing pings with the provided value, in order to identify them in the Glean Debug View.
+- [`sourceTags`](../../reference/debug/sourceTags.md): This command tags outgoing pings with a maximum of 5 comma-separated tags.
 - `sendPing`: This command expects a string name of a ping to force immediate collection and submission of.
 
 The structure of the custom URL uses the following format:
