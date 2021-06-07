@@ -49,6 +49,29 @@ implementation "org.mozilla.components:service-glean:33.0.0"
 
 > The Glean SDK APK ships binary libraries for all the supported platforms. Each library file measures about 600KB. If the final APK size of the consuming project is a concern, please enable [ABI splits](https://developer.android.com/studio/build/configure-apk-splits#configure-abi-split).
 
+### Dependency for local testing
+
+Due to its use of a native library you will need additional setup to allow local testing.
+
+First add a new configuration to your `build.gradle`, just before your `dependencies`:
+
+```Groovy
+configurations {
+    jnaForTest
+}
+```
+
+Then add the following lines to your `dependencies` block:
+
+```Groovy
+jnaForTest "net.java.dev.jna:jna:5.6.0@jar"
+testImplementation files(configurations.jnaForTest.copyRecursive().files)
+testImplementation "org.mozilla.telemetry:glean-forUnitTests:${project.ext.glean_version}"
+```
+
+**Note:** Always use `org.mozilla.telemetry:glean-forUnitTests`.
+This package is standalone and its version will be exported from the main Glean package automatically.
+
 ## Setting up metrics and pings code generation
 
 In order for the Glean SDK to generate an API for your metrics, two Gradle plugins must be included in your build:
