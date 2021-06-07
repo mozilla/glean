@@ -489,7 +489,7 @@ except:
     void apply(Project project) {
         isOffline = project.gradle.startParameter.offline
 
-        project.ext.glean_version = "39.0.1"
+        project.ext.glean_version = "39.0.2"
 
         // Print the required glean_parser version to the console. This is
         // offline builds, and is mentioned in the documentation for offline
