@@ -4,11 +4,17 @@
 The events ping's purpose is to transport all of the event metric information.
 If the application crashes, an `events` ping is generated next time the application starts with events that were not sent before the crash.
 
+### Platform availability
+
+| Language Binding | Kotlin | Swift | Python | Rust | Javascript | Firefox Desktop |
+|-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| [`events` ping](events.md) | ✅ | ✅ | ✅ | ✅ | | ✅ |
+
 ## Scheduling
 
 The `events` ping is collected under the following circumstances:
 
-1. Normally, it is collected when the application becomes inactive (on mobile, this means going to [background](index.md#defining-foreground-and-background-state)), if there are any recorded events to send.
+1. Normally, it is collected when the application becomes inactive (on mobile, this means going to [background](sent-by-glean.md#defining-foreground-and-background-state)), if there are any recorded events to send.
 
 2. When the queue of events exceeds `Glean.configuration.maxEvents` (default 500).
 
@@ -16,7 +22,11 @@ The `events` ping is collected under the following circumstances:
 
 All of these cases are handled automatically, with no intervention or configuration required by the application.
 
-> **Note:** Since the Python bindings don't have a concept of "going to background", case (1) above does not apply.
+{{#include ../../../shared/blockquote-info.html}}
+
+##### Python and Glean.js caveats
+
+> Since the Python bindings don't have a concept of "going to background", case (1) above does not apply.
 
 ## Contents
 At the top-level, this ping contains the following keys:

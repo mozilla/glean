@@ -41,107 +41,21 @@ search:
     - http://example.com/path/to/data-review
 ```
 
-> Note: the names `baseline`, `metrics`, `events`, `deletion-request` and `all-pings` are reserved and may not be used as the name of a custom ping.
+{{#include ../../../shared/blockquote-info.html}}
 
-## Loading custom ping metadata into your application or library
+##### Reserved ping names
 
-The Glean SDK build generates code from `pings.yaml` in a `Pings` object, which must be instantiated so Glean can send pings by name.
-
-{{#include ../../../shared/tab_header.md}}
-
-<div data-lang="Kotlin" class="tab">
-
-In Kotlin, this object must be registered with the Glean SDK from your startup code before calling `Glean.initialize`
-(such as in your application's `onCreate` method or a function called from that method).
-
-```Kotlin
-import org.mozilla.yourApplication.GleanMetrics.Pings
-
-override fun onCreate() {
-    Glean.registerPings(Pings)
-
-    Glean.initialize(applicationContext, uploadEnabled = true)
-}
-```
-
-</div>
-
-<div data-lang="Swift" class="tab">
-
-In Swift, this object must be registered with the Glean SDK from your startup code before calling `Glean.shared.initialize`
-(such as in your application's `UIApplicationDelegate` [`application(_:didFinishLaunchingWithOptions:)`](https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622921-application) method or a function called from that method).
-
-```swift
-import Glean
-
-@UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
-    func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        Glean.shared.registerPings(GleanMetrics.Pings)
-
-        Glean.shared.initialize(uploadEnabled = true)
-    }
-}
-```
-
-</div>
-
-<div data-lang="Python" class="tab">
-
-For Python, the `pings.yaml` file must be available and loaded at runtime.
-
-If your project is a script (i.e. just Python files in a directory), you can load the `pings.yaml` before calling `Glean.initialize` using:
-
-```python
-from glean import load_pings
-
-pings = load_pings("pings.yaml")
-
-Glean.initialize(
-    application_id="my-app-id",
-    application_version="0.1.0",
-    upload_enabled=True,
-)
-```
-
-If your project is a distributable Python package, you need to include the `pings.yaml` file using [one of the myriad ways to include data in a Python package](https://setuptools.readthedocs.io/en/latest/setuptools.html#including-data-files) and then use [`pkg_resources.resource_filename()`](https://setuptools.readthedocs.io/en/latest/pkg_resources.html#resource-extraction) to get the filename at runtime.
-
-```Python
-from glean import load_pings
-from pkg_resources import resource_filename
-
-pings = load_pings(resource_filename(__name__, "pings.yaml"))
-```
-
-</div>
-
-<div data-lang="C#" class="tab">
-
-In C#, this object must be registered with the Glean SDK from your startup code (such as in your application's `Main` method or a function called from that method).
-
-```C#
-using static Mozilla.YourApplication.GleanMetrics.Pings;
-
-...
-
-class Program
-{
-    static void Main(string[] args)
-    {
-        ...
-        Glean.RegisterPings(Pings);
-        ...
-    }
-}
-```
-
-</div>
-
-{{#include ../../../shared/tab_footer.md}}
+> The names `baseline`, `metrics`, `events`, `deletion-request` and `all-pings` are reserved and may not be used as the name of a custom ping.
 
 ## Sending metrics in a custom ping
 
 To send a metric on a custom ping, you add the custom ping's name to the `send_in_pings` parameter in the `metrics.yaml` file.
+
+{{#include ../../../shared/blockquote-warning.html}}
+
+##### Ping metadata must be loaded before sending!
+
+> After defining a custom ping, before it can be used for sending data, its metadata must be [loaded into your application or library](../../reference/general/register-custom-pings.md).
 
 For example, to define a new metric to record the default search engine, which is sent in a custom ping called `search`, put `search` in the `send_in_pings` parameter.  Note that it is an error to specify a ping in `send_in_pings` that does not also have an entry in `pings.yaml`.
 
@@ -162,74 +76,3 @@ If this metric should also be sent in the default ping for the given metric type
       - search
       - default
 ```
-
-## Submitting a custom ping
-
-To collect and queue a custom ping for eventual uploading, call the `submit` method on the `PingType` object that the Glean SDK generated for your ping.
-
-By default, if the ping doesn't currently have any events or metrics set, `submit` will do nothing.  However, if the `send_if_empty` flag is set to true in the ping definition, it will always be submitted.
-
-For example, to submit the custom ping defined above:
-
-{{#include ../../../shared/tab_header.md}}
-
-<div data-lang="Kotlin" class="tab">
-
-```kotlin
-import org.mozilla.yourApplication.GleanMetrics.Pings
-Pings.search.submit(
-    GleanMetrics.Pings.searchReasonCodes.performed
-)
-```
-
-</div>
-
-<div data-lang="Swift" class="tab">
-
-```swift
-import Glean
-
-GleanMetrics.Pings.shared.search.submit(
-    reason: .performed
-)
-```
-
-</div>
-
-<div data-lang="Python" class="tab">
-
-```Python
-from glean import load_pings
-
-pings = load_pings("pings.yaml")
-
-pings.search.submit(pings.search_reason_codes.PERFORMED)
-```
-
-</div>
-
-<div data-lang="C#" class="tab">
-
-```C#
-using static Mozilla.YourApplication.GleanMetrics.Pings;
-
-Pings.search.Submit(
-    GleanMetrics.Pings.searchReasonCodes.performed
-);
-```
-
-</div>
-
-<div data-lang="Rust" class="tab">
-
-```Rust
-use glean::Pings;
-
-pings::search.submit(pings::SearchReasonCodes::Performed);
-```
-
-</div>
-
-{{#include ../../../shared/tab_footer.md}}
-
-If none of the metrics for the ping contain data the ping is not sent (unless `send_if_empty` is set to true in the definition file)

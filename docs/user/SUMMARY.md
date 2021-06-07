@@ -15,13 +15,14 @@
     - [Error reporting](user/metrics/error-reporting.md)
     - [Metrics collected by the Glean SDK](user/collected-metrics/metrics.md)
 - [Pings](user/pings/index.md)
-    - [Ping schedules and timings overview](user/pings/ping-schedules-and-timings.md)
-    - [Baseline Ping](user/pings/baseline.md)
-    - [Deletion Request Ping](user/pings/deletion_request.md)
-    - [Metrics Ping](user/pings/metrics.md)
-    - [Events Ping](user/pings/events.md)
-    - [Custom Pings](user/pings/custom.md)
+    - [Adding new custom pings](user/pings/custom.md)
     - [Testing custom pings](user/pings/testing-custom-pings.md)
+    - [Pings sent by Glean](user/pings/sent-by-glean.md)
+        - [Baseline Ping](user/pings/baseline.md)
+        - [Deletion Request Ping](user/pings/deletion_request.md)
+        - [Events Ping](user/pings/events.md)
+        - [Metrics Ping](user/pings/metrics.md)
+        - [Schedules and timings overview](user/pings/ping-schedules-and-timings.md)
 - [Debugging products using Glean](user/debugging/index.md)
     - [Android](user/debugging/android.md)
     - [iOS](user/debugging/ios.md)
@@ -30,10 +31,11 @@
 # API Reference
 
 - [YAML Registry Format](reference/yaml/index.md)
-- [General](reference/general/index.md)
+- [General API](reference/general/index.md)
     - [Initializing](reference/general/initializing.md)
     - [Toggling upload status](reference/general/toggling-upload-status.md)
     - [Annotating experiments](reference/general/experiments-api.md)
+    - [Registering custom pings](reference/general/register-custom-pings.md)
 - [Debugging](reference/debug/index.md)
     - [Log pings](reference/debug/logPings.md)
     - [Debug View Tag](reference/debug/debugViewTag.md)
@@ -55,6 +57,7 @@
     - [Custom Distribution](reference/metrics/custom_distribution.md)
     - [Quantity](reference/metrics/quantity.md)
     - [Rate](reference/metrics/rate.md)
+- [Pings](reference/pings/index.md)
 
 # Language Bindings Information
 
