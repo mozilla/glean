@@ -12,9 +12,9 @@ This ping is intended to provide metrics that are managed by the Glean SDK itsel
 
 ## Scheduling
 
-The `baseline` ping is automatically submitted with a `reason: active` when the application becomes active (on mobile it means getting to [foreground](index.md#defining-foreground-and-background-state)).  These baseline pings do not contain `duration`.
+The `baseline` ping is automatically submitted with a `reason: active` when the application becomes active (on mobile it means getting to [foreground](sent-by-glean.md#defining-foreground-and-background-state)).  These baseline pings do not contain `duration`.
 
-The `baseline` ping is automatically submitted with a `reason: inactive` when the application becomes inactive (on mobile it means getting to [background](index.md#defining-foreground-and-background-state)).
+The `baseline` ping is automatically submitted with a `reason: inactive` when the application becomes inactive (on mobile it means getting to [background](sent-by-glean.md#defining-foreground-and-background-state)).
 If no `baseline` ping is triggered when becoming inactive (e.g. the process is abruptly killed) a `baseline` ping with reason `dirty_startup` will be submitted on the next application startup. This only happens from the second application start onward.
 
 See also the [ping schedules and timing overview](ping-schedules-and-timings.html).
