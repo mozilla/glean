@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v39.0.1...main)
 
+* iOS
+  * Fix iOS release build ([#1668](https://github.com/mozilla/glean/pull/1668), [#1669](https://github.com/mozilla/glean/pull/1669))
+
 # v39.0.1 (2021-06-04)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v39.0.0...v39.0.1)
