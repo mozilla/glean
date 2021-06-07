@@ -105,11 +105,11 @@ The `data-lang` attribute contains the title of the tab. Titles must match for d
 same language binding. Whenever a user clicks in a tab with a specific title, all tabs with that same
 title will be opened by default, until the user clicks in a tab with a different title.
 
-Every tab section contains tabs for each Glean language binding, even that language binding does not
-provide the API in question. In this case, the tab div is still there without any inner HTML. When
-that is the case that tab will be rendered in a disabled state.
+Every tab section should contain tabs for all Glean language bindings, even if a language binding does not
+provide the API in question. In this case, the tab div should still be there without any inner HTML.
+When that is the case that tab will be rendered in a disabled state.
 
-Each tab section contains tabs for the following language bindings:
+These are the tabs every tab section is expected to contain, in order:
 
 - Kotlin
 - Java
@@ -168,6 +168,47 @@ And this is how those tabs will look like:
 <div data-lang="Javascript" class="tab"></div>
 <div data-lang="Firefox Desktop" class="tab"></div>
 
+{{#include ../../shared/tab_footer.md}}
+
+#### Tab tooltips
+
+Tabs in a disabled i.e. tabs that do not have any content, will show a tooltip when hovered.
+
+By default, this tooltip will show the message `<lang> doe not provide this API`. The following `data-*` attributes can be used to modify this message.
+
+##### `data-bug`
+
+This attribute expects a Bugzilla bug number. When this attribute is added a link to the provided
+bug will be added to the tooltip text.
+
+##### `data-info`
+
+This attribute expects free form text or valid HTML. Be careful when adding long texts here. If a text needs to be
+too long, consider adding it as an actual section / paragraph to the page instead of as a tooltip.
+
+
+
+This is how you can use the above attributes.
+
+```html
+\{{#include ../../shared/tab_header.md}}
+...
+
+<!-- No attribute, default text will show up. -->
+<div data-lang="Rust" class="tab"></div>
+<!-- data-bug attribute, default text will show up + link to bug. -->
+<div data-lang="Javascript" class="tab" data-bug="000000"></div>
+<!-- data-info attribute, free form text will show up. -->
+<div data-lang="Firefox Desktop" class="tab" data-info="Hello, Glean world!"></div>
+\{{#include ../../shared/tab_footer.md}}
+```
+
+And this is how each tool tip is rendered.
+
+{{#include ../../shared/tab_header.md}}
+<div data-lang="Rust" class="tab"></div>
+<div data-lang="Javascript" class="tab" data-bug="000000"></div>
+<div data-lang="Firefox Desktop" class="tab" data-info="Hello, Glean world!"></div>
 {{#include ../../shared/tab_footer.md}}
 
 #### Custom block quotes
