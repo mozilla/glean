@@ -77,8 +77,23 @@ pings = load_pings(resource_filename(__name__, "pings.yaml"))
 
 </div>
 
-<div data-lang="Rust" class="tab"></div>
+<div data-lang="Rust" class="tab">
+
+In Rust custom pings need to be registered individually.
+This should be done before calling `glean::initialize`.
+
+```Rust
+use your_glean_metrics::pings;
+
+glean::register_ping_type(&pings::custom_ping);
+glean::register_ping_type(&pings::search);
+glean::initialize(cfg, client_info);
+```
+
+</div>
 <div data-lang="Javascript" class="tab"></div>
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab" data-info="On Firefox Desktop all custom pings are registered automatically."></div>
+
+</div>
 
 {{#include ../../../shared/tab_footer.md}}

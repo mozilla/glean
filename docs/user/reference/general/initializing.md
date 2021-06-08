@@ -157,6 +157,46 @@ See the [custom pings documentation](../../user/pings/custom.md) about adding cu
 
 </div>
 
+<div data-lang="Rust" class="tab">
+
+{{#include ../../../shared/blockquote-info.html}}
+
+##### Multiple processes support
+
+> The Glean SDK does not support use across multiple processes, and must only be initialized on the application's main process.
+
+The Glean SDK should be initialized as soon as possible,
+and importantly, before any other libraries in the application start using Glean.
+Library code should never call Glean.initialize,
+since it should be called exactly once per application.
+
+```Rust
+use glean::{ClientInfoMetrics, Configuration};
+let cfg = Configuration {
+    data_path,
+    application_id: "my-app-id".into(),
+    upload_enabled: true,
+    max_events: None,
+    delay_ping_lifetime_io: false,
+    channel: None,
+    server_endpoint: Some("https://incoming.telemetry.mozilla.org".into()),
+    uploader: None,
+    use_core_mps: true,
+};
+
+let client_info = ClientInfoMetrics {
+    app_build: env!("CARGO_PKG_VERSION").to_string(),
+    app_display_version: env!("CARGO_PKG_VERSION").to_string(),
+};
+
+glean::initialize(cfg, client_info);
+```
+
+Unlike in other implementations, the Rust language bindings do not provide a default uploader.
+See [`PingUploader`](../../../docs/glean/net/trait.PingUploader.html) for details.
+
+</div>
+
 <div data-lang="Javascript" class="tab">
 
 The main control for Glean is on the `Glean` singleton.
@@ -177,6 +217,8 @@ Glean.initialize(
 );
 ```
 </div>
+
+<div data-lang="Firefox Desktop" class="tab" data-info="On Firefox Desktop Glean initialization is handled internally."></div>
 
 {{#include ../../../shared/tab_footer.md}}
 
