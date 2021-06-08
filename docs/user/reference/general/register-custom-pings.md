@@ -79,21 +79,21 @@ pings = load_pings(resource_filename(__name__, "pings.yaml"))
 
 <div data-lang="Rust" class="tab">
 
-In Kotlin, this object must be registered with the Glean SDK from your startup code before calling `Glean.initialize`
-(such as in your application's `onCreate` method or a function called from that method).
+In Rust custom pings need to be registered individually.
+This should be done before calling `glean::initialize`.
 
-```Kotlin
-import org.mozilla.yourApplication.GleanMetrics.Pings
+```Rust
+use your_glean_metrics::pings;
 
-override fun onCreate() {
-    Glean.registerPings(Pings)
-
-    Glean.initialize(applicationContext, uploadEnabled = true)
-}
+glean::register_ping_type(&pings::custom_ping);
+glean::register_ping_type(&pings::search);
+glean::initialize(cfg, client_info);
 ```
 
 </div>
 <div data-lang="Javascript" class="tab"></div>
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab" data-info="On Firefox Desktop all custom pings are registered automatically."></div>
+
+</div>
 
 {{#include ../../../shared/tab_footer.md}}
