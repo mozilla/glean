@@ -77,7 +77,22 @@ pings = load_pings(resource_filename(__name__, "pings.yaml"))
 
 </div>
 
-<div data-lang="Rust" class="tab"></div>
+<div data-lang="Rust" class="tab">
+
+In Kotlin, this object must be registered with the Glean SDK from your startup code before calling `Glean.initialize`
+(such as in your application's `onCreate` method or a function called from that method).
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Pings
+
+override fun onCreate() {
+    Glean.registerPings(Pings)
+
+    Glean.initialize(applicationContext, uploadEnabled = true)
+}
+```
+
+</div>
 <div data-lang="Javascript" class="tab"></div>
 <div data-lang="Firefox Desktop" class="tab"></div>
 
