@@ -6,7 +6,7 @@ UUIDs metrics are used to record values that uniquely identify some entity, such
 
 ### `generateAndSet`
 
-Sets a UUID metric to a generated [UUID](https://datatracker.ietf.org/doc/html/rfc4122) value.
+Sets a UUID metric to a randomly generated [UUID](https://datatracker.ietf.org/doc/html/rfc4122) value (UUID v4) .
 
 {{#include ../../../shared/tab_header.md}}
 
@@ -100,6 +100,7 @@ Glean.user.clientId.generateAndSet();
 ### `set`
 
 Sets a UUID metric to a specific value.
+Accepts any UUID version.
 
 {{#include ../../../shared/tab_header.md}}
 
