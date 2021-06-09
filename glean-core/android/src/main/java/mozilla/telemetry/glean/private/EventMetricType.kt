@@ -132,7 +132,8 @@ class EventMetricType<ExtraKeysEnum : Enum<ExtraKeysEnum>, ExtraObject : EventEx
      *              The maximum length for values is 100 bytes.
      */
     @Deprecated("Specify types for your event extras. See the reference for details.")
-    fun record(extra: Map<ExtraKeysEnum, String>) {
+    @JvmOverloads
+    fun record(extra: Map<ExtraKeysEnum, String>? = null) {
         if (disabled) {
             return
         }
@@ -148,10 +149,15 @@ class EventMetricType<ExtraKeysEnum : Enum<ExtraKeysEnum>, ExtraObject : EventEx
             // In Kotlin, Map.keys and Map.values are not guaranteed to return the entries
             // in any particular order. Therefore, we iterate over the pairs together and
             // create the keys and values arrays step-by-step.
-            val extraList = extra.toList()
-            val keys = IntArray(extra.size, { extraList[it].first.ordinal })
-            val values = StringArray(Array<String>(extra.size, { extraList[it].second }), "utf-8")
-            val len = extra.size
+            var keys: IntArray? = null
+            var values: StringArray? = null
+            var len: Int = 0
+            if (extra != null) {
+                val extraList = extra.toList()
+                keys = IntArray(extra.size, { extraList[it].first.ordinal })
+                values = StringArray(Array<String>(extra.size, { extraList[it].second }), "utf-8")
+                len = extra.size
+            }
 
             LibGleanFFI.INSTANCE.glean_event_record(
                 this@EventMetricType.handle,
@@ -174,8 +180,7 @@ class EventMetricType<ExtraKeysEnum : Enum<ExtraKeysEnum>, ExtraObject : EventEx
      * Note: `extra` is not optional here to avoid overlapping with the above definition of `record`.
      *       If no `extra` data is passed the above function will be invoked correctly.
      */
-    @JvmOverloads
-    fun record(extra: ExtraObject? = null) {
+    fun record(extra: ExtraObject) {
         if (disabled) {
             return
         }
@@ -186,15 +191,10 @@ class EventMetricType<ExtraKeysEnum : Enum<ExtraKeysEnum>, ExtraObject : EventEx
 
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.launch {
-            var keys: IntArray? = null
-            var values: StringArray? = null
-            var len: Int = 0
-            if (extra != null) {
-                val extras = extra.toFfiExtra()
-                keys = extras.first
-                values = StringArray(extras.second.toTypedArray(), "utf-8")
-                len = keys.size
-            }
+            val extras = extra.toFfiExtra()
+            val keys = extras.first
+            val values = StringArray(extras.second.toTypedArray(), "utf-8")
+            val len = keys.size
 
             LibGleanFFI.INSTANCE.glean_event_record(
                 this@EventMetricType.handle,

@@ -2,6 +2,11 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v39.0.2...main)
 
+* Android
+  * Unbreak Event#record API by accepting `null` on the deprecated API.
+    The previous 39.0.0 release introduced the new API, but accidentally broke certain callers that just forward arguments.
+    This restores passing `null` (or nothing) when using the old API. It remains deprecated.
+
 # v39.0.2 (2021-06-07)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v39.0.1...v39.0.2)
