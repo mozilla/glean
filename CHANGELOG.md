@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v39.0.2...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v39.0.3...main)
+
+# v39.0.3 (2021-06-09)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v39.0.2...v39.0.3)
 
 * Android
   * Unbreak Event#record API by accepting `null` on the deprecated API.
