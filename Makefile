@@ -96,7 +96,7 @@ lint-rust: ## Run cargo-clippy to lint Rust code
 	cargo clippy --all --all-targets --all-features -- -D warnings
 
 lint-kotlin: ## Run ktlint to lint Kotlin code
-	./gradlew ktlint detekt
+	./gradlew lint ktlint detekt
 
 lint-swift: ## Run swiftlint to lint Swift code
 	swiftlint --strict
