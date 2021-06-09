@@ -39,6 +39,7 @@ open class MainActivity : AppCompatActivity() {
             BrowserEngagement.click.record(BrowserEngagement.ClickExtra(key1 = "extra_value_1", key2 = "extra_value_2"))
 
             // An event without any extra keys
+            @Suppress("DEPRECATION")
             BrowserEngagement.eventNoKeys.record()
 
             // Testing the old API. It should still be possible, even if deprecated
