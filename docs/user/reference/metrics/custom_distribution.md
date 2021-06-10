@@ -231,15 +231,15 @@ Custom distributions have the following required parameters:
 - `histogram_type`:
   - `linear`: The buckets are evenly spaced
   - `exponential`: The buckets follow a natural logarithmic distribution
-- `gecko_datapoint`: (String) This is a Gecko-specific property.
-  It is the name of the Gecko metric to accumulate the data from,
-  when using the Glean SDK in a product using GeckoView.
 
 > **Note** Check out how these bucketing algorithms would behave on the [Custom distribution simulator](#simulator).
 
 Custom distributions have the following optional parameters:
 
 - `unit`: (String) The unit of the values in the metric. For documentation purposes only -- does not affect data collection.
+- `gecko_datapoint`: (String) This is a Gecko-specific property.
+  It is the name of the Gecko metric to accumulate the data from,
+  when using the Glean SDK in a product using GeckoView.
 
 
 ## Reference
