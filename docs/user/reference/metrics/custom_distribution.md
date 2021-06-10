@@ -41,7 +41,23 @@ graphics::checkerboard_peak.accumulate_samples_signed(vec![23]);
 
 </div>
 <div data-lang="Javascript" class="tab"></div>
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+
+```cpp
+#include "mozilla/glean/GleanMetrics.h"
+
+mozilla::glean::graphics::checkerboard_peak.AccumulateSamples({ 23 });
+```
+
+**JavaScript**
+
+```js
+Glean.graphics.checkerboardPeak.accumulateSamples([23])
+```
+
+</div>
 
 {{#include ../../../shared/tab_footer.md}}
 
@@ -94,7 +110,25 @@ assert_eq!(23, graphics::checkerboard_peak.test_get_value(None).unwrap().sum);
 
 </div>
 <div data-lang="Javascript" class="tab"></div>
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+
+```cpp
+#include "mozilla/glean/GleanMetrics.h"
+
+auto data = mozilla::glean::graphics::checkerboard_peak.TestGetValue().value();
+ASSERT_EQ(23UL, data.sum);
+```
+
+**JavaScript**
+
+```js
+let data = Glean.graphics.checkerboardPeak.testGetValue();
+Assert.equal(23, data.sum);
+```
+
+</div>
 
 {{#include ../../../shared/tab_footer.md}}
 
