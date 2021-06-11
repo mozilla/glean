@@ -66,6 +66,7 @@
     - [Android build configuration options](language-bindings/android/android-build-configuration-options.md)
     - [Android offline builds](language-bindings/android/android-offline-builds.md)
     - [Instrumenting Android crashes with the Glean SDK](language-bindings/android/instrument-android-crashes-example.md)
+- [Javascript](language-bindings/javascript/index.md)
 # Appendix
 
 - [Glossary](appendix/glossary.md)
