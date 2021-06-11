@@ -2,6 +2,10 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v39.0.3...main)
 
+* General
+  * Updated `glean_parser` version to 3.6.0
+  * Allow Custom Distribution metric type on all platforms ([#1679](https://github.com/mozilla/glean/pull/1679))
+
 # v39.0.3 (2021-06-09)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v39.0.2...v39.0.3)
