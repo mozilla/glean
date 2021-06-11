@@ -64,7 +64,7 @@ search::engines.add("duck duck go".to_string());
 ```
 
 </div>
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="JavaScript" class="tab"></div>
 <div data-lang="Firefox Desktop" class="tab">
 
 **C++**
@@ -145,7 +145,7 @@ search::engines.set(vec!["wikipedia".to_string(), "duck duck go".to_string()])
 ```
 
 </div>
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="JavaScript" class="tab"></div>
 <div data-lang="Firefox Desktop" class="tab">
 
 **C++**
@@ -234,7 +234,7 @@ assert_eq!(
 ```
 
 </div>
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="JavaScript" class="tab"></div>
 <div data-lang="Firefox Desktop" class="tab">
 
 **C++**
@@ -301,7 +301,7 @@ assert metrics.search.engines.test_has_value()
 
 </div>
 <div data-lang="Rust" class="tab"></div>
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="JavaScript" class="tab"></div>
 <div data-lang="Firefox Desktop" class="tab"></div>
 {{#include ../../../shared/tab_footer.md}}
 
@@ -365,7 +365,7 @@ assert_eq!(
 ```
 
 </div>
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="JavaScript" class="tab"></div>
 <div data-lang="Firefox Desktop" class="tab" data-bug="1683171"></div>
 {{#include ../../../shared/tab_footer.md}}
 

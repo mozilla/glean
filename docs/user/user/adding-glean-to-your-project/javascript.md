@@ -1,6 +1,6 @@
-# Adding Glean to your Javascript project
+# Adding Glean to your JavaScript project
 
-This page provides a step-by-step guide on how to integrate the [Glean.js](https://github.com/mozilla/glean.js/) library into a Javascript project.
+This page provides a step-by-step guide on how to integrate the [Glean.js](https://github.com/mozilla/glean.js/) library into a JavaScript project.
 
 Nevertheless this is just one of the required steps for integrating Glean successfully into a project. Check you the full [Glean integration checklist](./index.md) for a comprehensive list of all the steps involved in doing so.
 
@@ -19,7 +19,7 @@ Currently, these bindings support collecting data from [Browser Extensions](http
 
 The Glean.js package is distributed as an npm package [`@mozilla/glean`](https://www.npmjs.com/package/@mozilla/glean).
 
-Install Glean.js in your Javascript project, by running:
+Install Glean.js in your JavaScript project, by running:
 
 ```bash
 npm install @mozilla/glean
@@ -69,7 +69,7 @@ Please make sure that you are using a supported Node.js runtime and also make su
 
 ## Setting up metrics and pings code generation
 
-In Javascript, the metrics and pings definitions must be parsed at build time.
+In JavaScript, the metrics and pings definitions must be parsed at build time.
 The `@mozilla/glean` package exposes [glean_parser](https://github.com/mozilla/glean_parser) through the `glean` script.
 
 To parse your YAML registry files using this script, define a new script in your `package.json` file:

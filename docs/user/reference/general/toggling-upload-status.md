@@ -41,7 +41,7 @@
 
 </div>
 
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 `Glean.setUploadEnabled()` should be called in response to the user enabling or disabling telemetry.
 

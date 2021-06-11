@@ -6,7 +6,7 @@
   - [Kotlin](user/adding-glean-to-your-project/kotlin.md)
   - [Swift](user/adding-glean-to-your-project/swift.md)
   - [Python](user/adding-glean-to-your-project/python.md)
-  - [Javascript](user/adding-glean-to-your-project/javascript.md)
+  - [JavaScript](user/adding-glean-to-your-project/javascript.md)
   - [Qt/QML](user/adding-glean-to-your-project/qt.md)
 - [Integrating Glean for project managers](user/integrating-glean-for-product-managers.md)
 - [Metrics](user/metrics/adding-new-metrics.md)
@@ -27,7 +27,7 @@
     - [Android](user/debugging/android.md)
     - [iOS](user/debugging/ios.md)
     - [Python](user/debugging/python.md)
-    - [Javascript](user/debugging/javascript.md)
+    - [JavaScript](user/debugging/javascript.md)
 # API Reference
 
 - [YAML Registry Format](reference/yaml/index.md)
@@ -66,6 +66,9 @@
     - [Android build configuration options](language-bindings/android/android-build-configuration-options.md)
     - [Android offline builds](language-bindings/android/android-offline-builds.md)
     - [Instrumenting Android crashes with the Glean SDK](language-bindings/android/instrument-android-crashes-example.md)
+- [JavaScript](language-bindings/javascript/index.md)
+    - [Plugins](language-bindings/javascript/plugins/index.md)
+        - [Ping Encryption Plugin](language-bindings/javascript/plugins/encryption.md)
 # Appendix
 
 - [Glossary](appendix/glossary.md)

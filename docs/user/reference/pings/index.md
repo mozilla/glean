@@ -55,7 +55,7 @@ pings::search.submit(pings::SearchReasonCodes::Performed);
 
 </div>
 
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import * as pings from "./path/to/generated/files/pings.js";

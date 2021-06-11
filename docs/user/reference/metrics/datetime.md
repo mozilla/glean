@@ -78,7 +78,7 @@ install::first_run.set(Some(custom_date)); // Records a custom datetime
 
 </div>
 
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import * as install from "./path/to/generated/files/install.js";
@@ -99,7 +99,7 @@ PRExplodedTime date = {0, 35, 10, 12, 6, 10, 2020, 0, 0, {5 * 60 * 60, 0}};
 mozilla::glean::install::first_run.Set(&date);
 ```
 
-**Javascript**
+**JavaScript**
 
 ```js
 const value = new Date("2020-06-11T12:00:00");
@@ -179,7 +179,7 @@ assert_eq!(expected_date, metrics.install.first_run.test_get_value(None));
 
 </div>
 
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import * as install from "./path/to/generated/files/install.js";
@@ -267,7 +267,7 @@ assert "2019-03-25-05:00" == metrics.install.first_run.test_get_value_as_str()
 
 <div data-lang="Rust" class="tab"></div>
 
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import * as install from "./path/to/generated/files/install.js";
@@ -328,7 +328,7 @@ assert metrics.install.first_run.test_has_value()
 
 <div data-lang="Rust" class="tab"></div>
 
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="JavaScript" class="tab"></div>
 
 <div data-lang="Firefox Desktop" class="tab"></div>
 
@@ -397,7 +397,7 @@ assert_eq!(0, install::first_run.test_get_num_recorded_errors(
 
 </div>
 
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import * as install from "./path/to/generated/files/install.js";

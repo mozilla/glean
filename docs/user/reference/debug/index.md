@@ -14,7 +14,7 @@ Check out the platform specific guides on how to use Glean's debug functionaliti
 1. [Debugging Android applications using the Glean SDK](../../user/debugging/android.md)
 2. [Debugging iOS applications using the Glean SDK](../../user/debugging/ios.md)
 3. [Debugging Python applications using the Glean SDK](../../user/debugging/python.md)
-4. [Debugging Javascript applications using Glean.js](../../user/debugging/javascript.md)
+4. [Debugging JavaScript applications using Glean.js](../../user/debugging/javascript.md)
 
 ## Features
 

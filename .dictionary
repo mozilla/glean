@@ -1,4 +1,4 @@
-personal_ws-1.1 en 230 utf-8
+personal_ws-1.1 en 234 utf-8
 AAR
 AARs
 ABI
@@ -38,7 +38,7 @@ JNI
 JSON
 JUnit
 JWE
-Javascript
+JWK
 JetBrains
 Karlton
 Kotlin
@@ -54,6 +54,7 @@ Mutex
 NDK
 POSIX
 PRs
+PingEncryptionPlugin
 PowerShell
 ProGuard
 Protobufs
@@ -65,6 +66,8 @@ Rkv's
 Robolectric
 SDK
 SDK's
+SDKs
+SRE
 Solaris
 TLDs
 TODO
@@ -160,6 +163,7 @@ lfloor
 lifecycle
 linter
 linux
+logPings
 logcat
 macOS
 manylinux

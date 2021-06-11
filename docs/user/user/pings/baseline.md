@@ -6,7 +6,7 @@ This ping is intended to provide metrics that are managed by the Glean SDK itsel
 
 ### Platform availability
 
-| Language Binding | Kotlin | Swift | Python | Rust | Javascript | Firefox Desktop |
+| Language Binding | Kotlin | Swift | Python | Rust | JavaScript | Firefox Desktop |
 |-:|:-:|:-:|:-:|:-:|:-:|:-:|
 | [`baseline` ping](baseline.md) | ✅ | ✅ | | ✅ | | ✅ |
 

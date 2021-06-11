@@ -54,7 +54,7 @@ login::errors_by_stage.get("server_auth").set("Invalid password");
 ```
 </div>
 
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import * as login from "./path/to/generated/files/login.js";
@@ -72,7 +72,7 @@ login.errorsByStage["server_auth"].set("Invalid password");
 mozilla::glean::login::errors_by_stage.Get("server_auth"_ns).Set("Invalid password"_ns);
 ```
 
-**Javascript**
+**JavaScript**
 ```js
 Glean.login.errorsByStage["server_auth"].set("Invalid password");
 ```
@@ -151,7 +151,7 @@ assert!(login::errors_by_stage.get("server_auth").test_get_value());
 ```
 </div>
 
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import * as login from "./path/to/generated/files/login.js";
@@ -174,7 +174,7 @@ ASSERT_STREQ("Invalid password",
                 .get());
 ```
 
-**Javascript**
+**JavaScript**
 ```js
 Assert.equal("Invalid password", Glean.login.errorsByStage["server_auth"].testGetValue());
 ```
@@ -228,7 +228,7 @@ assert metrics.login.errors_by_stage["server_auth"].test_has_value()
 
 <div data-lang="Rust" class="tab"></div>
 
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="JavaScript" class="tab"></div>
 
 <div data-lang="Firefox Desktop" class="tab"></div>
 
@@ -301,7 +301,7 @@ assert_eq!(
 ```
 </div>
 
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import * as login from "./path/to/generated/files/login.js";
@@ -351,4 +351,4 @@ login:
 * Swift API docs: [`LabeledMetricType`](../../../swift/Classes/LabeledMetricType.html), [`StringMetricType`](../../../swift/Classes/StringMetricType.html)
 * Python API docs: [`LabeledMetricBase`](../../../python/glean/metrics/labeled.html), [`StringMetricType`](../../../python/glean/metrics/string.html)
 * Rust API docs: [`LabeledMetric`](../../../docs/glean/private/struct.LabeledMetric.html), [`StringMetricType`](../../../docs/glean/private/struct.StringMetric.html)
-* Javascript API docs: [`LabeledMetricType`](https://mozilla.github.io/glean.js/classes/core_metrics_types_labeled.default.html), [`StringMetricType`](https://mozilla.github.io/glean.js/classes/core_metrics_types_string.default.html)
+* JavaScript API docs: [`LabeledMetricType`](https://mozilla.github.io/glean.js/classes/core_metrics_types_labeled.default.html), [`StringMetricType`](https://mozilla.github.io/glean.js/classes/core_metrics_types_string.default.html)

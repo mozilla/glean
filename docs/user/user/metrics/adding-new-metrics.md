@@ -280,7 +280,7 @@ use fog::metrics;
 metrics::compound_category::metric_name...
 ```
 </div>
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 JavaScript identifiers are customarily `camelCase`.
 This requires transforming a metric defined in the `metrics.yaml` as:
