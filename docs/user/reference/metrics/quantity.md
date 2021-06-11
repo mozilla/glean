@@ -54,7 +54,7 @@ metrics.display.width.set(width)
 ```
 </div>
 
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import * as display from "./path/to/generated/files/display.js";
@@ -82,7 +82,7 @@ display::width.set(width);
 mozilla::glean::display::width.Set(innerHeight);
 ```
 
-**Javascript**
+**JavaScript**
 
 ```js
 Glean.display.width.set(innerHeight);
@@ -151,7 +151,7 @@ assert 6 == metrics.display.width.test_get_value()
 ```
 </div>
 
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import * as display from "./path/to/generated/files/display.js";
@@ -181,7 +181,7 @@ assert!(display::width.test_get_value(None).is_some());
 ASSERT_EQ(433, mozilla::glean::display::width.TestGetValue().value());
 ```
 
-**Javascript**
+**JavaScript**
 
 ```js
 Assert.equal(433, Glean.display.width.testGetValue());
@@ -239,7 +239,7 @@ assert metrics.display.width.test_has_value()
 ```
 </div>
 
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="JavaScript" class="tab"></div>
 
 <div data-lang="Rust" class="tab"></div>
 
@@ -300,7 +300,7 @@ assert 1 == metrics.display.width.test_get_num_recorded_errors(
 ```
 </div>
 
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import * as display from "./path/to/generated/files/display.js";
@@ -369,4 +369,4 @@ Quantities have the required `unit` parameter, which is a free-form string for d
 * [Swift API docs](../../../swift/Classes/QuantityMetricType.html)
 * [Python API docs](../../../python/glean/metrics/quantity.html)
 * [Rust API docs](../../../docs/glean/private/quantity/struct.QuantityMetric.html)
-* [Javascript API docs](https://mozilla.github.io/glean.js/classes/core_metrics_types_quantity.default.html#set)
+* [JavaScript API docs](https://mozilla.github.io/glean.js/classes/core_metrics_types_quantity.default.html#set)

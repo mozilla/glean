@@ -197,7 +197,7 @@ See [`PingUploader`](../../../docs/glean/net/trait.PingUploader.html) for detail
 
 </div>
 
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 The main control for Glean is on the `Glean` singleton.
 

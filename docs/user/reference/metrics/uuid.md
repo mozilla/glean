@@ -65,7 +65,7 @@ user::client_id.generate_and_set();
 ```
 </div>
 
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import * as user from "./path/to/generated/files/user.js";
@@ -85,7 +85,7 @@ user.clientId.generateAndSet();
 mozilla::glean::user::client_id.GenerateAndSet();
 ```
 
-**Javascript**
+**JavaScript**
 
 ```js
 // Generate a new UUID and record it.
@@ -157,7 +157,7 @@ user::client_id.set(Uuid::new_v4());
 ```
 </div>
 
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import * as user from "./path/to/generated/files/user.js";
@@ -179,7 +179,7 @@ nsCString kUuid("decafdec-afde-cafd-ecaf-decafdecafde");
 mozilla::glean::user::client_id.Set(kUuid);
 ```
 
-**Javascript**
+**JavaScript**
 
 ```js
 // Set a specific value.
@@ -260,7 +260,7 @@ assert_eq!(u, user::client_id.test_get_value(None).unwrap());
 
 </div>
 
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import * as user from "./path/to/generated/files/user.js";
@@ -281,7 +281,7 @@ assert(uuid, await user.clientId.testGetValue());
 ASSERT_STREQ(kUuid.get(), mozilla::glean::user::client_id.TestGetValue().value().get());
 ```
 
-**Javascript**
+**JavaScript**
 
 ```js
 const uuid = "decafdec-afde-cafd-ecaf-decafdecafde";
@@ -346,7 +346,7 @@ assert metrics.user.client_id.test_has_value()
 
 <div data-lang="Rust" class="tab"></div>
 
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="JavaScript" class="tab"></div>
 
 <div data-lang="Firefox Desktop" class="tab"></div>
 
@@ -422,7 +422,7 @@ assert_eq!(
 
 </div>
 
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import * as user from "./path/to/generated/files/user.js";
@@ -472,4 +472,4 @@ N/A
 * [Swift API docs](../../../swift/Classes/UuidMetricType.html)
 * [Python API docs](../../../python/glean/metrics/uuid.html)
 * [Rust API docs](../../../docs/glean/private/uuid/struct.UuidMetric.html)
-* [Javascript API docs](https://mozilla.github.io/glean.js/classes/core_metrics_types_uuid.default.html#set)
+* [JavaScript API docs](https://mozilla.github.io/glean.js/classes/core_metrics_types_uuid.default.html#set)

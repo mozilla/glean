@@ -40,7 +40,7 @@ graphics::checkerboard_peak.accumulate_samples_signed(vec![23]);
 ```
 
 </div>
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="JavaScript" class="tab"></div>
 <div data-lang="Firefox Desktop" class="tab">
 
 **C++**
@@ -109,7 +109,7 @@ assert_eq!(23, graphics::checkerboard_peak.test_get_value(None).unwrap().sum);
 ```
 
 </div>
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="JavaScript" class="tab"></div>
 <div data-lang="Firefox Desktop" class="tab">
 
 **C++**
@@ -153,7 +153,7 @@ assertTrue(Graphics.checkerboardPeak.testHasValue())
 <div data-lang="Swift" class="tab"></div>
 <div data-lang="Python" class="tab"></div>
 <div data-lang="Rust" class="tab"></div>
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="JavaScript" class="tab"></div>
 <div data-lang="Firefox Desktop" class="tab"></div>
 
 {{#include ../../../shared/tab_footer.md}}
@@ -191,7 +191,7 @@ assert_eq!(
 ```
 
 </div>
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="JavaScript" class="tab"></div>
 <div data-lang="Firefox Desktop" class="tab"></div>
 
 {{#include ../../../shared/tab_footer.md}}

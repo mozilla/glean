@@ -69,7 +69,7 @@ Increases the counter by a certain amount. If no amount is passed it defaults to
   controls::refresh_pressed.add(5); // Adds 5 to the counter.
   ```
 </div>
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
   ```js
   import * as controls from "./path/to/generated/files/controls.js";
@@ -89,7 +89,7 @@ Increases the counter by a certain amount. If no amount is passed it defaults to
   mozilla::glean::controls::refresh_pressed.Add(5);
   ```
 
-  **Javascript**
+  **JavaScript**
 
   ```js
   Glean.controls.refreshPressed.add(1);
@@ -167,7 +167,7 @@ assert_eq!(6, controls::refresh_pressed.test_get_value(None).unwrap());
 
 </div>
 
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
   ```js
   import * as controls from "./path/to/generated/files/controls.js";
@@ -186,7 +186,7 @@ assert_eq!(6, controls::refresh_pressed.test_get_value(None).unwrap());
 ASSERT_EQ(6, mozilla::glean::controls::refresh_pressed.TestGetValue().value());
 ```
 
-**Javascript**
+**JavaScript**
 
 ```js
 Assert.equal(6, Glean.controls.refreshPressed.testGetValue());
@@ -246,7 +246,7 @@ assert metrics.controls.refresh_pressed.test_has_value()
 
 <div data-lang="Rust" class="tab"></div>
 
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="JavaScript" class="tab"></div>
 
 <div data-lang="Firefox Desktop" class="tab"></div>
 
@@ -322,7 +322,7 @@ assert_eq!(
 
 </div>
 
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import * as controls from "./path/to/generated/files/controls.js";
@@ -371,4 +371,4 @@ N/A
 * [Swift API docs](../../../swift/Classes/CounterMetricType.html)
 * [Python API docs](../../../python/glean/metrics/counter.html)
 * [Rust API docs](../../../docs/glean/private/counter/struct.CounterMetric.html)
-* [Javascript API docs](https://mozilla.github.io/glean.js/classes/core_metrics_types_counter.default.html)
+* [JavaScript API docs](https://mozilla.github.io/glean.js/classes/core_metrics_types_counter.default.html)

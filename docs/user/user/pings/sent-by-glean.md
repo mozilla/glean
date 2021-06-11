@@ -19,7 +19,7 @@ There is also a [high-level overview](ping-schedules-and-timings.html) of how th
 | Swift | ✅ | ✅ | ✅ | ✅ |
 | Python | | ✅ | | |
 | Rust | ✅ | ✅ | ✅ | ✅ |
-| Javascript | | ✅ | | |
+| JavaScript | | ✅ | | |
 | Firefox Desktop | ✅ | ✅ | ✅ | ✅ |
 
 ## Defining foreground and background state

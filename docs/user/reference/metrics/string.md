@@ -81,7 +81,7 @@ search_default::name.set("wikipedia");
 ```
 </div>
 
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import * as searchDefault from "./path/to/generated/files/searchDefault.js";
@@ -103,7 +103,7 @@ searchDefault.name.set("wikipedia");
 mozilla::glean::search_default::name.Set("wikipedia"_ns);
 ```
 
-**Javascript**
+**JavaScript**
 
 ```js
 Glean.searchDefault.name.set("wikipedia");
@@ -187,7 +187,7 @@ assert_eq!(6, search_default::name.test_get_value(None).unwrap());
 
 </div>
 
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import * as searchDefault from "./path/to/generated/files/searchDefault.js";
@@ -210,7 +210,7 @@ ASSERT_STREQ(
 );
 ```
 
-**Javascript**
+**JavaScript**
 
 ```js
 // Does it have the expected value?
@@ -274,7 +274,7 @@ assert metrics.search_default.name.test_has_value()
 
 <div data-lang="Rust" class="tab"></div>
 
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="JavaScript" class="tab"></div>
 
 <div data-lang="Firefox Desktop" class="tab"></div>
 
@@ -355,7 +355,7 @@ assert_eq!(
 ```
 </div>
 
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import * as searchDefault from "./path/to/generated/files/searchDefault.js";
@@ -407,4 +407,4 @@ N/A
 * [Swift API docs](../../../swift/Classes/StringMetricType.html)
 * [Python API docs](../../../python/glean/metrics/string.html)
 * [Rust API docs](../../../docs/glean/private/struct.StringMetric.html)
-* [Javascript API docs](https://mozilla.github.io/glean.js/classes/core_metrics_types_string.default.html#set)
+* [JavaScript API docs](https://mozilla.github.io/glean.js/classes/core_metrics_types_string.default.html#set)

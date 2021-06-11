@@ -91,7 +91,7 @@ glean::initialize(cfg, client_info);
 ```
 
 </div>
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="JavaScript" class="tab"></div>
 <div data-lang="Firefox Desktop" class="tab" data-info="On Firefox Desktop all custom pings are registered automatically."></div>
 
 </div>

@@ -24,7 +24,7 @@ file a bug in [Bugzilla in Data Platform & Tools :: Glean: SDK](https://bugzilla
 
 ### [Glean.js](https://github.com/mozilla/glean.js)
 
-Glean.js is an implementation of Glean in **Javascript**. Currently, it only has support
+Glean.js is an implementation of Glean in **JavaScript**. Currently, it only has support
 for usage in web extensions.
 
 For development documentation on `Glean.js`,
