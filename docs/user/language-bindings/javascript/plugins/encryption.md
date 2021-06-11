@@ -7,7 +7,7 @@ of this plugin does not include data encryption _before_ collection. In other wo
 Glean will still store plain data on the user's machine and the data will only be
 encrypted during transit.
 
-Encrypted pings will not be complaint with the usual [Glean ping schema](https://github.com/mozilla-services/mozilla-pipeline-schemas/blob/main/schemas/glean/glean/glean.1.schema.json).
+Encrypted pings will not be compliant with the usual [Glean ping schema](https://github.com/mozilla-services/mozilla-pipeline-schemas/blob/main/schemas/glean/glean/glean.1.schema.json).
 Instead they will follow a specific encrypted ping schema that looks like this:
 
 ```js
