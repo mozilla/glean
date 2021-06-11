@@ -10,4 +10,4 @@ It can be used in:
 
 Support for other JavaScript environments such as websites, Electron apps and Node.js applications
 is not out of the question and if you would like to use the SDK in one of these environments
-[reach out](../../README/md#contact) to our team.
+[reach out](../../index.html#contact) to our team.
