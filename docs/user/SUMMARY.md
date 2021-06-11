@@ -67,6 +67,8 @@
     - [Android offline builds](language-bindings/android/android-offline-builds.md)
     - [Instrumenting Android crashes with the Glean SDK](language-bindings/android/instrument-android-crashes-example.md)
 - [JavaScript](language-bindings/javascript/index.md)
+    - [Plugins](language-bindings/javascript/plugins/index.md)
+        - [Ping Encryption Plugin](language-bindings/javascript/plugins/encryption.md)
 # Appendix
 
 - [Glossary](appendix/glossary.md)
