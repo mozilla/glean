@@ -467,6 +467,14 @@ views:
 For a full reference on metrics parameters common to all metric types,
 refer to the metrics [YAML format](../yaml/index.md) reference page.
 
+{{#include ../../../shared/blockquote-info.html}}
+
+#### Events require `lifetime: ping`.
+
+> Recorded events are always sent in their respective pings and then cleared.
+> They cannot be persisted longer.
+> The `glean_parser` will reject any other lifetime.
+
 ### Extra metric parameters
 
 #### `extra_keys`
