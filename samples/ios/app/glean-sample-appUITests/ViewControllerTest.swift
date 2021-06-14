@@ -36,6 +36,10 @@ class ViewControllerTest: XCTestCase {
     }
 
     func checkCustomCounterData(expectedValue: UInt64) {
+        let pingInfo = lastPingJson!["ping_info"] as! [String: Any]
+        let reason = pingInfo["reason"] as! String
+        XCTAssertEqual("button_tap", reason)
+
         let metrics = lastPingJson!["metrics"] as! [String: Any]
         let counters = metrics["counter"] as! [String: Any]
         let value = counters["custom.counter"] as! UInt64

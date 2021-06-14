@@ -20,3 +20,5 @@ sample:
     - N/A
   notification_emails:
     - CHANGE-ME@example.com
+  reasons:
+    button_tap: The button was tapped
