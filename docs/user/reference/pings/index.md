@@ -5,6 +5,15 @@
 ### `submit`
 Collect and queue a custom ping for eventual uploading.
 
+{{#include ../../../shared/blockquote-info.html}}
+
+##### Glean-owned pings are submitted automatically
+
+> Products do not need to submit Glean built-in pings,
+> as their scheduling is managed internally. The APIs
+> on this page are only relevant for products defining
+> [custom pings](../../user/pings/custom.md#defining-a-custom-ping).
+
 By default, if the ping doesn't currently have any events or metrics set, `submit` will do nothing.  However, if the `send_if_empty` flag is set to true in the ping definition, it will always be submitted.
 
 For example, to submit the custom ping defined in [Adding new custom pings](../../user/pings/custom.md#defining-a-custom-ping):
@@ -250,7 +259,7 @@ const p = pings.search.testBeforeNextSubmit(async reason => {
 // Submit the ping.
 pings.search.submit("performed");
 // Wait for the validation to finish.
-await p;
+assert.doesNotThrow(await p);
 
 // Verify that the validator run.
 assert.ok(validatorRun);

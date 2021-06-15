@@ -1,6 +1,6 @@
 # Testing custom pings
 
-Applications defining [custom pings](custom.md) can use use the [ping testing API](../../reference/pings/index.md#testing-api) test these pings in unit tests.
+Applications defining [custom pings](custom.md) can use use the [ping testing API](../../reference/pings/index.md#testing-api) to test these pings in unit tests.
 
 ## General testing strategy
 
@@ -8,4 +8,4 @@ The schedule of custom pings depends on the specific application implementation,
 
 1. Triggering the code path that accumulates/records the data.
 2. Defining a callback validation function using the [ping testing API](../../reference/pings/index.md#testbeforenextsubmit).
-3. Finally submitting the ping using the [`submit` API](../../reference/pings/index.md#submit).
+3. Finally triggering the code path that submits the custom ping or submitting the ping using the [`submit` API](../../reference/pings/index.md#submit).
