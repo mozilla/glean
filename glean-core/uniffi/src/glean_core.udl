@@ -1,0 +1,39 @@
+namespace glean {
+    boolean initialize(Configuration cfg);
+
+    void glean_enable_logging();
+};
+
+dictionary Configuration {
+    string data_dir;
+    string application_id;
+    string language_binding_name;
+    boolean upload_enabled;
+    u32? max_events;
+    boolean delay_ping_lifetime_io;
+    string app_build;
+    boolean use_core_mps;
+};
+
+enum Lifetime {
+    "Ping",
+    "Application",
+    "User",
+};
+
+dictionary CommonMetricData {
+    string category;
+    string name;
+
+    sequence<string> send_in_pings;
+    Lifetime lifetime;
+
+    boolean disabled;
+    string? dynamic_label = null;
+};
+
+interface CounterMetric {
+    constructor(CommonMetricData meta);
+
+    void add(optional i32 amount = 1);
+};

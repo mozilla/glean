@@ -1,0 +1,36 @@
+[package]
+name = "glean-uniffi"
+version = "0.1.0"
+authors = ["Jan-Erik Rediger <jrediger@mozilla.com>"]
+edition = "2018"
+
+[lib]
+name = "glean_uniffi"
+crate-type = ["cdylib"]
+
+[dependencies]
+crossbeam-channel = "0.5"
+inherent = "0.1.4"
+log = "0.4.8"
+once_cell = "1.2.0"
+thiserror = "1.0.4"
+serde_json = "1.0.44"
+serde = { version = "1.0.104", features = ["derive"] }
+uuid = { version = "0.8.1", features = ["v4"] }
+chrono = { version = "0.4.10", features = ["serde"] }
+time = "0.1.40"
+whatsys = "0.1.2"
+uniffi = "0.14.0"
+uniffi_macros = "0.14.0"
+
+[build-dependencies]
+uniffi_build = "0.14.0"
+
+[target.'cfg(target_os = "android")'.dependencies]
+android_logger = { version = "0.9.0", default-features = false }
+
+[target.'cfg(target_os = "ios")'.dependencies]
+oslog = { version = "0.1.0", default-features = false, features = ["logger"] }
+
+[target.'cfg(not(target_os = "android"))'.dependencies]
+env_logger = { version = "0.7.1", default-features = false, features = ["termcolor", "atty", "humantime"] }
