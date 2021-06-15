@@ -31,7 +31,17 @@ Pings.search.submit(
 
 </div>
 
-<div data-lang="Java" class="tab"></div>
+<div data-lang="Java" class="tab">
+
+```java
+import org.mozilla.yourApplication.GleanMetrics.Pings
+
+Pings.INSTANCE.search.submit(
+    Pings.INSTANCE.searchReasonCodes.performed
+);
+```
+
+</div>
 
 <div data-lang="Swift" class="tab">
 
