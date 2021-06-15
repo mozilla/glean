@@ -17,6 +17,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import mozilla.telemetry.glean.GleanMetrics.GleanBaseline
+import mozilla.telemetry.glean.internal.Configuration as GleanConfiguration
+import mozilla.telemetry.glean.internal.initialize as gleanInitialize
+import mozilla.telemetry.glean.internal.gleanEnableLogging
 import mozilla.telemetry.glean.config.Configuration
 import mozilla.telemetry.glean.config.FfiConfiguration
 import mozilla.telemetry.glean.utils.getLocaleTag
@@ -164,108 +167,30 @@ open class GleanInternalAPI internal constructor () {
         this.httpClient = BaseUploader(configuration.httpClient)
         this.gleanDataDir = File(applicationContext.applicationInfo.dataDir, GLEAN_DATA_DIR)
 
+        Log.e(LOG_TAG, "Glean. enable logging.")
+        gleanEnableLogging()
         // Execute startup off the main thread.
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.executeTask {
-            val cfg = FfiConfiguration(
+            val cfg = GleanConfiguration(
                 dataDir = gleanDataDir.path,
-                packageName = applicationContext.packageName,
+                applicationId = applicationContext.packageName,
                 languageBindingName = LANGUAGE_BINDING_NAME,
                 uploadEnabled = uploadEnabled,
-                maxEvents = configuration.maxEvents,
-                delayPingLifetimeIO = false
+                maxEvents = null,
+                delayPingLifetimeIo = false,
+                appBuild = "none",
+                useCoreMps = false
             )
 
-            initialized = LibGleanFFI.INSTANCE.glean_initialize(cfg).toBoolean()
+            Log.e(LOG_TAG, "Glean. initialize.")
+            initialized = gleanInitialize(cfg)
 
             // If initialization of Glean fails we bail out and don't initialize further.
             if (!initialized) {
                 return@executeTask
             }
 
-            // The debug view tag might have been set before initialize,
-            // get the cached value and set it.
-            if (debugViewTag != null) {
-                setDebugViewTag(debugViewTag!!)
-            }
-
-            // The log pings debug option might have been set before initialize,
-            // get the cached value and set it.
-            if (logPings) {
-                setLogPings(logPings)
-            }
-
-            // The source tags might have been set before initialize,
-            // get the cached value and set them.
-            sourceTags?.let { setSourceTags(it) }
-
-            // Get the current value of the dirty flag so we know whether to
-            // send a dirty startup baseline ping below.  Immediately set it to
-            // `false` so that dirty startup pings won't be sent if Glean
-            // initialization does not complete successfully. It is set to `true`
-            // again in the ON_START lifecycle event.
-            val isDirtyFlagSet = LibGleanFFI.INSTANCE.glean_is_dirty_flag_set().toBoolean()
-            LibGleanFFI.INSTANCE.glean_set_dirty_flag(false.toByte())
-
-            // Register builtin pings.
-            // Unfortunately we need to manually list them here to guarantee they are registered synchronously
-            // before we need them.
-            // We don't need to handle the deletion-request ping. It's never touched from the language implementation.
-            LibGleanFFI.INSTANCE.glean_register_ping_type(Pings.baseline.handle)
-            LibGleanFFI.INSTANCE.glean_register_ping_type(Pings.metrics.handle)
-            LibGleanFFI.INSTANCE.glean_register_ping_type(Pings.events.handle)
-
-            // If any pings were registered before initializing, do so now.
-            // We're not clearing this queue in case Glean is reset by tests.
-            synchronized(this@GleanInternalAPI) {
-                pingTypeQueue.forEach {
-                    // We're registering pings synchronously here,
-                    // as this whole `initialize` block already runs off the main thread.
-                    LibGleanFFI.INSTANCE.glean_register_ping_type(it.handle)
-                }
-            }
-
-            // If this is the first time ever the Glean SDK runs, make sure to set
-            // some initial core metrics in case we need to generate early pings.
-            // The next times we start, we would have them around already.
-            val isFirstRun = LibGleanFFI.INSTANCE.glean_is_first_run().toBoolean()
-            if (isFirstRun) {
-                initializeCoreMetrics()
-            }
-
-            // Deal with any pending events so we can start recording new ones
-            val pingSubmitted = LibGleanFFI.INSTANCE.glean_on_ready_to_submit_pings().toBoolean()
-
-            // We need to enqueue the PingUploadWorker in these cases:
-            // 1. Pings were submitted through Glean and it is ready to upload those pings;
-            // 2. Upload is disabled, to upload a possible deletion-request ping.
-            if (pingSubmitted || !uploadEnabled) {
-                PingUploadWorker.enqueueWorker(applicationContext)
-            }
-
-            // Set up information and scheduling for Glean owned pings. Ideally, the "metrics"
-            // ping startup check should be performed before any other ping, since it relies
-            // on being dispatched to the API context before any other metric.
-            metricsPingScheduler = MetricsPingScheduler(applicationContext, buildInfo)
-            metricsPingScheduler.schedule()
-
-            // Check if the "dirty flag" is set. That means the product was probably
-            // force-closed. If that's the case, submit a 'baseline' ping with the
-            // reason "dirty_startup". We only do that from the second run.
-            if (!isFirstRun && isDirtyFlagSet) {
-                submitPingByNameSync("baseline", "dirty_startup")
-            }
-
-            // From the second time we run, after all startup pings are generated,
-            // make sure to clear `lifetime: application` metrics and set them again.
-            // Any new value will be sent in newly generated pings after startup.
-            if (!isFirstRun) {
-                LibGleanFFI.INSTANCE.glean_clear_application_lifetime_metrics()
-                initializeCoreMetrics()
-            }
-
-            // Signal the RLB dispatcher to unblock, if any exists.
-            LibGleanFFI.INSTANCE.glean_flush_rlb_dispatcher()
             // Signal Dispatcher that init is complete
             Dispatchers.API.flushQueuedInitialTasks()
 

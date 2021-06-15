@@ -209,6 +209,20 @@ afterEvaluate {
 apply from: "$projectDir/publish.gradle"
 ext.configurePublish()
 
+android.libraryVariants.all { variant ->
+    def uniffiGeneratedPath = "generated/source/uniffi/${variant.name}/java"
+    def t = tasks.register("generate${variant.name.capitalize()}UniFFIBindings", Exec) {
+        workingDir project.rootDir
+        commandLine 'uniffi-bindgen', 'generate', "${project.projectDir}/../uniffi/src/glean_core.udl", '--language', 'kotlin', '--out-dir', "${buildDir}/${uniffiGeneratedPath}"
+        outputs.dir "${buildDir}/${uniffiGeneratedPath}"
+        // Re-generate if the interface definition changes.
+        inputs.file "${project.projectDir}/../uniffi/src/glean_core.udl"
+        // Re-generate if our uniffi-bindgen version changes.
+        inputs.file "${project.rootDir}/Cargo.lock"
+    }
+    variant.registerJavaGeneratingTask(t.get(), new File(buildDir, uniffiGeneratedPath))
+}
+
 // Generate markdown docs for the collected metrics.
 ext.gleanDocsDirectory = "$rootDir/docs/user/user/collected-metrics"
 ext.gleanYamlFiles = [
