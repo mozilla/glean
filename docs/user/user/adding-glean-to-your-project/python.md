@@ -26,9 +26,9 @@ $ python -m pip install glean_sdk
 
 > Installing Python wheels is still a rapidly evolving feature of the Python package ecosystem.
 > If the above command fails, try upgrading `pip`:
->  ```bash
->  $ python -m pip install --upgrade pip
->  ```
+> ```bash
+> python -m pip install --upgrade pip
+> ```
 
 {{#include ../../../shared/blockquote-warning.html}}
 
