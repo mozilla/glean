@@ -24,6 +24,16 @@ $ python -m pip install glean_sdk
 
 ##### Important
 
+> Installing Python wheels is still a rapidly evolving feature of the Python package ecosystem.
+> If the above command fails, try upgrading `pip`:
+> ```bash
+> python -m pip install --upgrade pip
+> ```
+
+{{#include ../../../shared/blockquote-warning.html}}
+
+##### Important
+
 > The Glean SDK Python bindings make extensive use of type annotations to catch type related errors at build time. We highly recommend adding [mypy](https://mypy-lang.org) to your continuous integration workflow to catch errors related to type mismatches early.
 
 ## Consuming YAML registry files
