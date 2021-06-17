@@ -1,7 +1,9 @@
 namespace glean {
     boolean initialize(Configuration cfg);
 
-    void glean_enable_logging();
+    void enable_logging();
+
+    void set_upload_enabled(boolean enabled);
 };
 
 dictionary Configuration {

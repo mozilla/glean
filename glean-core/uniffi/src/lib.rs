@@ -4,8 +4,8 @@
 
 uniffi_macros::include_scaffolding!("glean_core");
 
-mod core;
 mod common_metric_data;
+mod core;
 mod private;
 
 pub use crate::core::Glean;
@@ -34,12 +34,12 @@ pub struct Configuration {
 }
 
 pub fn initialize(cfg: Configuration) -> bool {
-    Glean::new(cfg).and_then(|glean| {
-        core::setup_glean(glean)
-    }).is_ok()
+    Glean::new(cfg)
+        .and_then(|glean| core::setup_glean(glean))
+        .is_ok()
 }
 
-pub fn glean_enable_logging() {
+pub fn enable_logging() {
     #[cfg(target_os = "android")]
     {
         let _ = std::panic::catch_unwind(|| {
@@ -62,4 +62,8 @@ pub fn glean_enable_logging() {
             Err(_) => log::warn!("stdout logging was already initialized"),
         };
     }
+}
+
+pub fn set_upload_enabled(enabled: bool) {
+    core::with_glean_mut(|glean| glean.set_upload_enabled(enabled))
 }

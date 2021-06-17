@@ -47,6 +47,15 @@ where
     f(&lock)
 }
 
+pub fn with_glean_mut<F, R>(f: F) -> R
+where
+    F: FnOnce(&mut Glean) -> R,
+{
+    let glean = global_glean().expect("Global Glean object not initialized");
+    let mut lock = glean.lock().unwrap();
+    f(&mut lock)
+}
+
 #[derive(Debug)]
 pub struct Glean {
     upload_enabled: bool,
@@ -94,5 +103,9 @@ impl Glean {
         };
 
         Ok(this)
+    }
+
+    pub fn set_upload_enabled(&mut self, enabled: bool) {
+        self.upload_enabled = enabled;
     }
 }
