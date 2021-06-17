@@ -250,7 +250,7 @@ glean.internal.metrics:
     description: |
       A running counter of the number of times pings of this type have been
       sent.
-      This metric definition is only used for documentation purposed:
+      This metric definition is only used for documentation purposes:
       internally, Glean instantiates the metric manually and calls it
       `sequence`.
     bugs:
