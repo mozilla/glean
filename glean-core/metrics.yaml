@@ -282,6 +282,7 @@ glean.internal.metrics:
 
   start_time:
     type: datetime
+    time_unit: minute
     lifetime: user
     send_in_pings:
       - glean_internal_info
@@ -300,6 +301,7 @@ glean.internal.metrics:
 
   end_time:
     type: datetime
+    time_unit: minute
     lifetime: ping
     send_in_pings:
       - glean_internal_info
