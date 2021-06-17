@@ -1,9 +1,11 @@
-use std::sync::Mutex;
 use std::path::PathBuf;
+use std::sync::Mutex;
 
 use once_cell::sync::OnceCell;
 
+use crate::database::Database;
 use crate::Configuration;
+use crate::{ErrorKind, Result};
 
 static GLEAN: OnceCell<Mutex<Glean>> = OnceCell::new();
 
@@ -12,7 +14,7 @@ pub fn global_glean() -> Option<&'static Mutex<Glean>> {
 }
 
 /// Sets or replaces the global Glean object.
-pub fn setup_glean(glean: Glean) -> Result<(), ()> {
+pub fn setup_glean(glean: Glean) -> Result<()> {
     // The `OnceCell` type wrapping our Glean is thread-safe and can only be set once.
     // Therefore even if our check for it being empty succeeds, setting it could fail if a
     // concurrent thread is quicker in setting it.
@@ -59,6 +61,7 @@ where
 #[derive(Debug)]
 pub struct Glean {
     upload_enabled: bool,
+    data_store: Option<Database>,
     data_path: PathBuf,
     application_id: String,
     max_events: u32,
@@ -84,19 +87,21 @@ fn sanitize_application_id(application_id: &str) -> String {
 }
 
 impl Glean {
-    pub fn new(cfg: Configuration) -> Result<Self, ()> {
+    pub fn new(cfg: Configuration) -> Result<Self> {
         log::info!("Creating new Glean Uniffi");
 
         let application_id = sanitize_application_id(&cfg.application_id);
         if application_id.is_empty() {
-            return Err(());
+            return Err(ErrorKind::InvalidConfig.into());
         }
+
+        let data_path = PathBuf::from(&cfg.data_dir);
+        let data_store = Some(Database::new(&data_path, cfg.delay_ping_lifetime_io)?);
 
         let this = Self {
             upload_enabled: cfg.upload_enabled,
-            // In the subprocess, we want to avoid accessing the database entirely.
-            // The easiest way to ensure that is to just not initialize it.
-            data_path: PathBuf::from(&cfg.data_dir),
+            data_store,
+            data_path,
             application_id,
             max_events: cfg.max_events.unwrap_or(500),
             schedule_metrics_pings: cfg.use_core_mps,
@@ -107,5 +112,17 @@ impl Glean {
 
     pub fn set_upload_enabled(&mut self, enabled: bool) {
         self.upload_enabled = enabled;
+    }
+
+    /// Determines whether upload is enabled.
+    ///
+    /// When upload is disabled, no data will be recorded.
+    pub fn is_upload_enabled(&self) -> bool {
+        self.upload_enabled
+    }
+
+    /// Gets a handle to the database.
+    pub fn storage(&self) -> &Database {
+        &self.data_store.as_ref().expect("No database found")
     }
 }

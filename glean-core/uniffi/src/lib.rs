@@ -6,6 +6,7 @@ uniffi_macros::include_scaffolding!("glean_core");
 
 mod common_metric_data;
 mod core;
+mod database;
 mod error;
 mod error_recording;
 mod private;
