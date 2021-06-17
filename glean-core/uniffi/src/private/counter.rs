@@ -2,13 +2,26 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use crate::{CommonMetricData, Glean};
 use std::sync::atomic::{AtomicI32, Ordering};
+
+use crate::error_recording::{record_error, ErrorType};
+use crate::private::{Metric, MetricType};
+use crate::{CommonMetricData, Glean};
 
 #[derive(Debug)]
 pub struct CounterMetric {
     meta: CommonMetricData,
     count: AtomicI32,
+}
+
+impl MetricType for CounterMetric {
+    fn meta(&self) -> &CommonMetricData {
+        &self.meta
+    }
+
+    fn meta_mut(&mut self) -> &mut CommonMetricData {
+        &mut self.meta
+    }
 }
 
 impl CounterMetric {
