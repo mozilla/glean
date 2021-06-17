@@ -137,7 +137,7 @@ Pings.search.submit(
 )
 
 // Verify that the validator run.
-assertTrue(callbackWasCalled)
+assertTrue(validatorRun)
 ```
 
 </div>
@@ -165,7 +165,7 @@ Pings.INSTANCE.search.submit(
 );
 
 // Verify that the validator run.
-assertTrue(callbackWasCalled);
+assertTrue(validatorRun);
 ```
 
 </div>
@@ -242,6 +242,12 @@ pings::search.test_before_next_submit(move |reason| {
     assert_eq!(pings::SearchReasonCodes::Performed, reason);
     assert_eq!(5, search::default_engine.test_get_value(None).unwrap());
 });
+
+// When the `submit` API is not directly called by the
+// test code, it may be worth checking that the validator
+// function run by using a canary boolean in the closure
+// used in `test_before_next_submit` and asserting on its
+// value after submission.
 
 // Submit the ping.
 pings::search.submit(pings::SearchReasonCodes::Performed);
