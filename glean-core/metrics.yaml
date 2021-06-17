@@ -243,12 +243,16 @@ glean.internal.metrics:
     expires: never
 
   seq:
-    type: string
+    type: counter
     lifetime: user
     send_in_pings:
       - glean_internal_info
     description: |
-      A running counter of the number of times pings of this type have been sent
+      A running counter of the number of times pings of this type have been
+      sent.
+      This metric definition is only used for documentation purposes:
+      internally, Glean instantiates the metric manually and calls it
+      `sequence`.
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1556964
     data_reviews:
