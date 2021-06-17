@@ -6,9 +6,12 @@ uniffi_macros::include_scaffolding!("glean_core");
 
 mod common_metric_data;
 mod core;
+mod error;
+mod error_recording;
 mod private;
 
 pub use crate::core::Glean;
+pub use crate::error::{Error, ErrorKind, Result};
 pub use common_metric_data::{CommonMetricData, Lifetime};
 pub use private::CounterMetric;
 
