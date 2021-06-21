@@ -277,14 +277,17 @@ assert(uuid, await user.clientId.testGetValue());
 ```c++
 #include "mozilla/glean/GleanMetrics.h"
 
+// Is it clear of errors?
+ASSERT_TRUE(mozilla::glean::user::client_id.TestGetValue().isOk());
 // Does it have an expected values?
-ASSERT_STREQ(kUuid.get(), mozilla::glean::user::client_id.TestGetValue().value().get());
+ASSERT_STREQ(kUuid.get(), mozilla::glean::user::client_id.TestGetValue().unwrap().value().get());
 ```
 
 **JavaScript**
 
 ```js
 const uuid = "decafdec-afde-cafd-ecaf-decafdecafde";
+// testGetValue will throw NS_ERROR_LOSS_OF_SIGNIFICANT_DATA on error.
 Assert.equal(Glean.user.clientId.testGetValue(), uuid);
 ```
 
@@ -432,7 +435,7 @@ assert.strictEqual(1, await user.clientId.testGetNumRecordedErrors("invalid_valu
 ```
 </div>
 
-<div data-lang="Firefox Desktop" class="tab" data-bug="1683171"></div>
+<div data-lang="Firefox Desktop" class="tab" data-info="Firefox Desktop uses testGetValue to communicate errors"></div>
 
 {{#include ../../../shared/tab_footer.md}}
 

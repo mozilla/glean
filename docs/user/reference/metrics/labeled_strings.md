@@ -170,6 +170,7 @@ assert.strictEqual("Invalid password", await metrics.login.errorsByStage["server
 ASSERT_STREQ("Invalid password",
              mozilla::glean::login::errors_by_stage.Get("server_auth"_ns)
                 .TestGetValue()
+                .unwrap()
                 .ref()
                 .get());
 ```
@@ -311,7 +312,7 @@ assert.strictEqual(0, await login.errorsByStage["server_auth"].testGetNumRecorde
 ```
 </div>
 
-<div data-lang="Firefox Desktop" calss="tab" data-bug="1683171"></div>
+<div data-lang="Firefox Desktop" calss="tab"></div>
 
 {{#include ../../../shared/tab_footer.md}}
 

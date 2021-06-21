@@ -539,10 +539,12 @@ assert(await auth.loginTime.testGetValue() > 0);
 ```c++
 #include "mozilla/glean/GleanMetrics.h"
 
-ASSERT_TRUE(mozilla::glean::auth::login_time.TestGetValue().value() > 0);
+ASSERT_TRUE(mozilla::glean::auth::login_time.TestGetValue().isOk());
+ASSERT_GE(mozilla::glean::auth::login_time.TestGetValue().unwrap().value(), 0);
 ```
 **JavaScript**
 ```js
+// testGetValue will throw NS_ERROR_LOSS_OF_SIGNIFICANT_DATA on error.
 Assert.ok(Glean.auth.loginTime.testGetValue() > 0);
 ```
 </div>
@@ -660,7 +662,7 @@ import * as auth from "./path/to/generated/files/auth.js";
 assert.strictEqual(1, await auth.loginTime.testGetNumRecordedErrors("invalid_value"));
 ```
 </div>
-<div data-lang="Firefox Desktop" class="tab" data-bug="1683171"></div>
+<div data-lang="Firefox Desktop" class="tab" data-info="Firefox Desktop uses testGetValue to communicate errors"></div>
 
 {{#include ../../../shared/tab_footer.md}}
 
