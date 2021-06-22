@@ -16,7 +16,7 @@ Currently, these bindings support collecting data from [Browser Extensions](http
 
 [^1]: The `glean` command requires Python to download [`glean_parser`](https://mozilla.github.io/glean_parser/) which is a Python library.
 
-[^2]: Glean.js assumes a Promise-based `browser` API: Firefox provides such an API by default. Other browsers may require using polyfills such us `webextesion-polyfill`.
+[^2]: Glean.js assumes a Promise-based `browser` API: Firefox provides such an API by default. Other browsers may require using a polyfill library such us `webextesion-polyfill` when using Glean in browser extensions.
 
 ## Setting up the dependency
 
