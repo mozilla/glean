@@ -184,6 +184,7 @@ ons
 pdoc
 pidcat
 pipenv
+polyfill
 pre
 prebuilt
 preinit
@@ -228,6 +229,7 @@ unhandled
 uniffi
 uploader
 vendored
+webextension
 webpages
 xcframework
 xcpretty
