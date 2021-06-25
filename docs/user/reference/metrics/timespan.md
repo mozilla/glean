@@ -658,8 +658,12 @@ assert_eq!(1, login_time.test_get_num_recorded_errors(ErrorType::InvalidValue));
 
 ```js
 import * as auth from "./path/to/generated/files/auth.js";
+import { ErrorType } from "@mozilla/glean/<platform>";;
 
-assert.strictEqual(1, await auth.loginTime.testGetNumRecordedErrors("invalid_value"));
+assert.strictEqual(
+  1,
+  await auth.loginTime.testGetNumRecordedErrors(ErrorType.InvalidValue)
+);
 ```
 </div>
 <div data-lang="Firefox Desktop" class="tab" data-info="Firefox Desktop uses testGetValue to communicate errors"></div>

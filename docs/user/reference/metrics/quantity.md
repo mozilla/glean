@@ -306,8 +306,12 @@ assert 1 == metrics.display.width.test_get_num_recorded_errors(
 
 ```js
 import * as display from "./path/to/generated/files/display.js";
+import { ErrorType } from "@mozilla/glean/<platform>";
 
-assert.strictEqual(0, await display.width.testGetNumRecordedErrors("invalid_value"));
+assert.strictEqual(
+  0,
+  await display.width.testGetNumRecordedErrors(ErrorType.InvalidValue)
+);
 ```
 
 </div>
