@@ -48,3 +48,4 @@ They could be release notes, documentation, hopes, dreams, or whatever: so long 
 * 2021-04-16: [rustc, iOS and an M1](https://blog.mozilla.org/data/2021/04/16/this-week-in-glean-rustc-ios-and-an-m1/)
 * 2021-05-03: [Glean Dictionary updates](https://blog.mozilla.org/data/2021/06/02/this-week-in-glean-glean-dictionary-updates/)
 * 2021-06-14: [⚠️Danger zone⚠️: handling sensitive data in Glean](https://blog.mozilla.org/data/2021/06/11/danger-zone-handling-sensitive-data-in-glean/)
+* 2021-06-25: [Funday!](https://fnordig.de/2021/06/25/funday/)
