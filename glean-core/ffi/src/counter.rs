@@ -19,7 +19,7 @@ pub extern "C" fn glean_counter_test_has_value(metric_id: u64, storage_name: Ffi
     with_glean_value(|glean| {
         COUNTER_METRICS.call_infallible(metric_id, |metric| {
             metric
-                .test_get_value(&glean, storage_name.as_str())
+                .test_get_value(glean, storage_name.as_str())
                 .is_some()
         })
     })
@@ -29,9 +29,7 @@ pub extern "C" fn glean_counter_test_has_value(metric_id: u64, storage_name: Ffi
 pub extern "C" fn glean_counter_test_get_value(metric_id: u64, storage_name: FfiStr) -> i32 {
     with_glean_value(|glean| {
         COUNTER_METRICS.call_infallible(metric_id, |metric| {
-            metric
-                .test_get_value(&glean, storage_name.as_str())
-                .unwrap()
+            metric.test_get_value(glean, storage_name.as_str()).unwrap()
         })
     })
 }
