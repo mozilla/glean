@@ -192,10 +192,10 @@ assert.strictEqual(3, await stability.crashCount["native_code_crash"].testGetVal
 
 ASSERT_EQ(
     1,
-    mozilla::glean::stability::crash_count.Get("uncaught_exception"_ns).TestGetValue().ref());
+    mozilla::glean::stability::crash_count.Get("uncaught_exception"_ns).TestGetValue().unwrap().ref());
 ASSERT_EQ(
     3,
-    mozilla::glean::stability::crash_count.Get("native_code_crash"_ns).TestGetValue().ref());
+    mozilla::glean::stability::crash_count.Get("native_code_crash"_ns).TestGetValue().unwrap().ref());
 ```
 
 **JavaScript**
@@ -342,7 +342,7 @@ assert.strictEqual(0, await stability.crashCount.testGetNumRecordedErrors("inval
 ```
 </div>
 
-<div data-lang="Firefox Desktop" class="tab" data-bug="1683171"></div>
+<div data-lang="Firefox Desktop" class="tab"></div>
 
 {{#include ../../../shared/tab_footer.md}}
 

@@ -183,12 +183,14 @@ assert_eq!(6, controls::refresh_pressed.test_get_value(None).unwrap());
 ```cpp
 #include "mozilla/glean/GleanMetrics.h"
 
-ASSERT_EQ(6, mozilla::glean::controls::refresh_pressed.TestGetValue().value());
+ASSERT_TRUE(mozilla::glean::controls::refresh_pressed.TestGetValue().isOk());
+ASSERT_EQ(6, mozilla::glean::controls::refresh_pressed.TestGetValue().unwrap().value());
 ```
 
 **JavaScript**
 
 ```js
+// testGetValue will throw NS_ERROR_LOSS_OF_SIGNIFICANT_DATA on error.
 Assert.equal(6, Glean.controls.refreshPressed.testGetValue());
 ```
 
@@ -331,7 +333,7 @@ assert.strictEqual(1, await controls.refreshPressed.testGetNumRecordedErrors("in
 ```
 </div>
 
-<div data-lang="Firefox Desktop" class="tab" data-bug="1683171"></div>
+<div data-lang="Firefox Desktop" class="tab" data-info="Firefox Desktop uses testGetValue to communicate errors"></div>
 
 {{#include ../../../shared/tab_footer.md}}
 

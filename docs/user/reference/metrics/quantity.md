@@ -178,12 +178,14 @@ assert!(display::width.test_get_value(None).is_some());
 ```cpp
 #include "mozilla/glean/GleanMetrics.h"
 
-ASSERT_EQ(433, mozilla::glean::display::width.TestGetValue().value());
+ASSERT_TRUE(mozilla::glean::display::width.TestGetValue().isOk());
+ASSERT_EQ(433, mozilla::glean::display::width.TestGetValue().unwrap().value());
 ```
 
 **JavaScript**
 
 ```js
+// testGetValue will throw NS_ERROR_LOSS_OF_SIGNIFICANT_DATA on error.
 Assert.equal(433, Glean.display.width.testGetValue());
 ```
 </div>
@@ -326,7 +328,7 @@ assert_eq!(
 ```
 </div>
 
-<div data-lang="Firefox Desktop" class="tab" data-bug="1683171"></div>
+<div data-lang="Firefox Desktop" class="tab" data-info="Firefox Desktop uses testGetValue to communicate errors"></div>
 
 {{#include ../../../shared/tab_footer.md}}
 

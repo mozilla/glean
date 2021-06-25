@@ -176,10 +176,10 @@ assert(!(await accessibility.features["high_contrast"].testGetValue()));
 
 ASSERT_EQ(
     true,
-    mozilla::glean::accessibility::features.Get("screen_reader"_ns).TestGetValue().ref());
+    mozilla::glean::accessibility::features.Get("screen_reader"_ns).TestGetValue().unwrap().ref());
 ASSERT_EQ(
     false,
-    mozilla::glean::accessibility::features.Get("high_contrast"_ns).TestGetValue().ref());
+    mozilla::glean::accessibility::features.Get("high_contrast"_ns).TestGetValue().unwrap().ref());
 ```
 
 **JavaScript**
@@ -326,7 +326,7 @@ assert(await accessibility.features.testGetNumRecordedErrors("invalid_label"));
 ```
 </div>
 
-<div data-lang="Firefox Desktop" class="tab" data-bug="1683171"></div>
+<div data-lang="Firefox Desktop" class="tab"></div>
 
 {{#include ../../../shared/tab_footer.md}}
 

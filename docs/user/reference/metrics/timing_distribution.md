@@ -331,10 +331,8 @@ There are test APIs available too:
 #include "mozilla/glean/GleanMetrics.h"
 
 // Does it have an expected values?
-const data = mozilla::glean::pages::page_load.TestGetValue().value();
+const data = mozilla::glean::pages::page_load.TestGetValue().value().unwrap();
 ASSERT_TRUE(data.sum > 0);
-// Did it run across any errors?
-// TODO: https://bugzilla.mozilla.org/show_bug.cgi?id=1683171
 ```
 
 </div>
@@ -353,8 +351,6 @@ There are test APIs available too:
 
 ```js
 Assert.ok(Glean.pages.pageLoad.testGetValue().sum > 0);
-// Did it run across any errors?
-// TODO: https://bugzilla.mozilla.org/show_bug.cgi?id=1683171
 ```
 
 </div>
