@@ -640,11 +640,13 @@ glean.time:
       - metrics
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1611770
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1717402#c1
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1611770#c9
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1717402#c4
     data_sensitivity:
       - technical
     notification_emails:
       - jrediger@mozilla.com
       - glean-team@mozilla.com
-    expires: 2021-06-30
+    expires: 2021-12-31
