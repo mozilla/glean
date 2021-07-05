@@ -2,16 +2,16 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use std::sync::atomic::{AtomicI32, Ordering};
+use std::sync::Arc;
 
 use crate::error_recording::{record_error, ErrorType};
 use crate::private::{Metric, MetricType};
+use crate::storage;
 use crate::{CommonMetricData, Glean};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct CounterMetric {
-    meta: CommonMetricData,
-    count: AtomicI32,
+    meta: Arc<CommonMetricData>,
 }
 
 impl MetricType for CounterMetric {
@@ -19,8 +19,20 @@ impl MetricType for CounterMetric {
         &self.meta
     }
 
-    fn meta_mut(&mut self) -> &mut CommonMetricData {
-        &mut self.meta
+    fn with_name(&self, name: String) -> Self {
+        let mut meta = (*self.meta).clone();
+        meta.name = name;
+        Self {
+            meta: Arc::new(meta),
+        }
+    }
+
+    fn with_dynamic_label(&self, label: String) -> Self {
+        let mut meta = (*self.meta).clone();
+        meta.dynamic_label = Some(label);
+        Self {
+            meta: Arc::new(meta),
+        }
     }
 }
 
@@ -28,8 +40,7 @@ impl CounterMetric {
     /// The public constructor used by automatically generated metrics.
     pub fn new(meta: CommonMetricData) -> Self {
         Self {
-            meta,
-            count: AtomicI32::new(0),
+            meta: Arc::new(meta),
         }
     }
 
@@ -63,19 +74,26 @@ impl CounterMetric {
     }
 
     pub fn add(&self, amount: i32) {
-        crate::core::with_glean(|glean| self.add_sync(glean, amount))
+        let metric = self.clone();
+        crate::launch_with_glean(move |glean| metric.add_sync(glean, amount))
     }
 
-    pub(crate) fn get_value(&self, _glean: &Glean, _ping_name: Option<&str>) -> Option<i32> {
-        let val = self.count.load(Ordering::SeqCst);
-        if val > 0 {
-            Some(val)
-        } else {
-            None
+    pub(crate) fn get_value(&self, glean: &Glean, ping_name: Option<&str>) -> Option<i32> {
+        let queried_ping_name = ping_name.unwrap_or_else(|| &self.meta().send_in_pings[0]);
+
+        match storage::snapshot_metric_for_test(
+            glean.storage(),
+            queried_ping_name,
+            &self.meta.identifier(glean),
+            self.meta.lifetime,
+        ) {
+            Some(Metric::Counter(i)) => Some(i),
+            _ => None,
         }
     }
 
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<i32> {
+        crate::block_on_dispatcher();
         crate::core::with_glean(|glean| self.get_value(glean, ping_name.as_deref()))
     }
 }

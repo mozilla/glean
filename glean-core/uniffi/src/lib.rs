@@ -7,9 +7,11 @@ uniffi_macros::include_scaffolding!("glean_core");
 mod common_metric_data;
 mod core;
 mod database;
+mod dispatcher;
 mod error;
 mod error_recording;
 mod private;
+mod storage;
 
 pub use crate::core::Glean;
 pub use crate::error::{Error, ErrorKind, Result};
@@ -37,10 +39,50 @@ pub struct Configuration {
     pub use_core_mps: bool,
 }
 
+/// Launches a new task on the global dispatch queue with a reference to the Glean singleton.
+fn launch_with_glean(callback: impl FnOnce(&Glean) + Send + 'static) {
+    dispatcher::launch(|| core::with_glean(callback));
+}
+
+/// Launches a new task on the global dispatch queue with a mutable reference to the
+/// Glean singleton.
+fn launch_with_glean_mut(callback: impl FnOnce(&mut Glean) + Send + 'static) {
+    dispatcher::launch(|| core::with_glean_mut(callback));
+}
+
+/// Block on the dispatcher emptying.
+///
+/// This will panic if called before Glean is initialized.
+fn block_on_dispatcher() {
+    dispatcher::block_on_queue()
+}
+
 pub fn initialize(cfg: Configuration) -> bool {
-    Glean::new(cfg)
-        .and_then(|glean| core::setup_glean(glean))
-        .is_ok()
+    initialize_inner(cfg).is_ok()
+}
+
+pub fn initialize_inner(cfg: Configuration) -> Result<()> {
+    let glean = Glean::new(cfg)?;
+    core::setup_glean(glean)?;
+    Ok(())
+}
+
+pub fn finish_initialize() -> bool {
+    // Signal Dispatcher that init is complete
+    log::info!("Flushing dispatcher after initialization finished.");
+    match dispatcher::flush_init() {
+        Ok(task_count) if task_count > 0 => {
+            log::info!("Dispatcher flushed with a total of {} tasks.", task_count);
+            //with_glean(|glean| {
+            //    glean_metrics::error::preinit_tasks_overflow
+            //        .add_sync(&glean, task_count as i32);
+            //    });
+        }
+        Ok(_) => {}
+        Err(err) => log::error!("Unable to flush the preinit queue: {}", err),
+    }
+
+    true
 }
 
 pub fn enable_logging() {
