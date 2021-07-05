@@ -20,6 +20,7 @@ import mozilla.telemetry.glean.GleanMetrics.GleanBaseline
 import mozilla.telemetry.glean.internal.Configuration as GleanConfiguration
 import mozilla.telemetry.glean.internal.initialize as gleanInitialize
 import mozilla.telemetry.glean.internal.enableLogging
+import mozilla.telemetry.glean.internal.finishInitialize
 import mozilla.telemetry.glean.config.Configuration
 import mozilla.telemetry.glean.config.FfiConfiguration
 import mozilla.telemetry.glean.utils.getLocaleTag
@@ -193,6 +194,7 @@ open class GleanInternalAPI internal constructor () {
 
             // Signal Dispatcher that init is complete
             Dispatchers.API.flushQueuedInitialTasks()
+            finishInitialize()
 
             // At this point, all metrics and events can be recorded.
             // This should only be called from the main thread. This is enforced by

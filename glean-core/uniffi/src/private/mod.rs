@@ -36,8 +36,8 @@ pub trait MetricType {
     /// Access the stored metadata
     fn meta(&self) -> &CommonMetricData;
 
-    /// Access the stored metadata mutable
-    fn meta_mut(&mut self) -> &mut CommonMetricData;
+    fn with_name(&self, name: String) -> Self;
+    fn with_dynamic_label(&self, label: String) -> Self;
 
     /// Whether this metric should currently be recorded
     ///

@@ -362,13 +362,16 @@ name = "glean-uniffi"
 version = "0.1.0"
 dependencies = [
  "android_logger 0.9.2",
+ "bincode",
  "chrono",
  "crossbeam-channel",
  "env_logger 0.7.1",
+ "ffi-support",
  "inherent",
  "log",
  "once_cell",
  "oslog",
+ "rkv",
  "serde",
  "serde_json",
  "thiserror",

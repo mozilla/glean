@@ -1,5 +1,6 @@
 namespace glean {
     boolean initialize(Configuration cfg);
+    boolean finish_initialize();
 
     void enable_logging();
 
