@@ -336,9 +336,13 @@ assert_eq!(
 
 ```js
 import * as stability from "./path/to/generated/files/stability.js";
+import { ErrorType } from "@mozilla/glean/<platform>";
 
 // Were there any invalid labels?
-assert.strictEqual(0, await stability.crashCount.testGetNumRecordedErrors("invalid_label"));
+assert(
+  0,
+  await stability.crashCount.testGetNumRecordedErrors(ErrorType.InvalidLabel)
+);
 ```
 </div>
 

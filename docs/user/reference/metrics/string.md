@@ -362,9 +362,13 @@ assert_eq!(
 
 ```js
 import * as searchDefault from "./path/to/generated/files/searchDefault.js";
+import { ErrorType } from "@mozilla/glean/<platform>";
 
 // Was the string truncated, and an error reported?
-assert.strictEqual(1, await searchDefault.name.testGetNumRecordedErrors("invalid_overflow"));
+assert.strictEqual(
+  1,
+  await searchDefault.name.testGetNumRecordedErrors(ErrorType.InvalidOverflow)
+);
 ```
 </div>
 

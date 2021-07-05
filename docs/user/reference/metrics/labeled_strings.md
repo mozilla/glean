@@ -306,9 +306,13 @@ assert_eq!(
 
 ```js
 import * as login from "./path/to/generated/files/login.js";
+import { ErrorType } from "@mozilla/glean/<platform>";
 
 // Were there any invalid labels?
-assert.strictEqual(0, await login.errorsByStage["server_auth"].testGetNumRecordedErrors("invalid_label"));
+assert(
+  0,
+  await login.errorsByStage.testGetNumRecordedErrors(ErrorType.InvalidLabel)
+);
 ```
 </div>
 

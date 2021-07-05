@@ -321,8 +321,12 @@ assert_eq!(
 
 ```js
 import * as accessibility from "./path/to/generated/files/acessibility.js";
+import { ErrorType } from "@mozilla/glean/<platform>";
 
-assert(await accessibility.features.testGetNumRecordedErrors("invalid_label"));
+assert(
+  1,
+  await accessibility.features.testGetNumRecordedErrors(ErrorType.InvalidLabel)
+);
 ```
 </div>
 

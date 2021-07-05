@@ -432,8 +432,12 @@ assert_eq!(
 
 ```js
 import * as views from "./path/to/generated/files/views.js";
+import { ErrorType } from "@mozilla/glean/<platform>";
 
-assert.strictEqual(1, await views.loginOpened.testGetNumRecordedErrors("invalid_value"));
+assert.strictEqual(
+  1,
+  await views.loginOpened.testGetNumRecordedErrors(ErrorType.InvalidValue)
+);
 ```
 </div>
 

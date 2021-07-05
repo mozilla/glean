@@ -403,8 +403,12 @@ assert_eq!(0, install::first_run.test_get_num_recorded_errors(
 
 ```js
 import * as install from "./path/to/generated/files/install.js";
+import { ErrorType } from "@mozilla/glean/<platform>";
 
-assert.strictEqual(1, await install.firstRun.testGetNumRecordedErrors("invalid_value"));
+assert.strictEqual(
+  1,
+  await install.firstRun.testGetNumRecordedErrors(ErrorType.InvalidValue)
+);
 ```
 </div>
 
