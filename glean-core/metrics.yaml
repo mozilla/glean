@@ -248,7 +248,8 @@ glean.internal.metrics:
     send_in_pings:
       - glean_internal_info
     description: |
-      The version of the Glean SDK at the time the ping was collected (e.g. 25.0.0).
+      The version of the Glean SDK
+      at the time the ping was collected (e.g. 25.0.0).
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1556966
     data_reviews:
