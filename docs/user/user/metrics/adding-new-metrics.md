@@ -207,7 +207,9 @@ While this may seem limiting, this is required to:
 
 ### Capitalization
 
-One thing to note is that we try to adhere to the coding conventions of each language wherever possible, to the metric name in the `metrics.yaml` (which is in `snake_case`) may be changed to some other case convention, such as `camelCase`, when used from code.
+One thing to note is that we try to adhere to the coding conventions of each language wherever possible, so the metric name and category in the `metrics.yaml` (which is in `snake_case`) may be changed to some other case convention, such as `camelCase`, when used from code.
+
+Event extras and labels are never capitalized, no matter the target language.
 
 {{#include ../../../shared/tab_header.md}}
 
