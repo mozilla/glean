@@ -13,8 +13,8 @@ from typing import List, Tuple
 
 from .upload_task_tag import UploadTaskTag
 
-from .. import _ffi
-from .._glean_ffi import ffi as ffi_support  # type: ignore
+#from .. import _ffi
+#from .._glean_ffi import ffi as ffi_support  # type: ignore
 from .._dispatcher import Dispatcher
 from .._process_dispatcher import ProcessDispatcher
 
