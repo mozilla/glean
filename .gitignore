@@ -64,7 +64,7 @@ samples/ios/app/.venv/
 htmlcov/
 *.log
 
-glean-core/python/glean/_glean_ffi.py
+glean-core/python/glean/_uniffi.py
 __pycache__
 *.py[cod]
 .Python
