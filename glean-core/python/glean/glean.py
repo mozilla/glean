@@ -21,7 +21,7 @@ from typing import Dict, List, Optional, Set, TYPE_CHECKING
 
 from .config import Configuration
 from ._dispatcher import Dispatcher
-from . import _ffi
+from . import _uniffi
 from .net import PingUploadWorker
 from ._process_dispatcher import ProcessDispatcher
 from . import _util
@@ -163,54 +163,60 @@ class Glean:
             # necessary on Python since it doesn't have the problem with static
             # initializers that Kotlin and Swift have.
 
-            cfg = _ffi.make_config(
-                cls._data_dir,
-                application_id,
-                upload_enabled,
-                configuration.max_events,
+            cfg = _uniffi.Configuration(
+                data_dir=str(cls._data_dir),
+                application_id=application_id,
+                language_binding_name="python",
+                upload_enabled=upload_enabled,
+                max_events=configuration.max_events,
+                delay_ping_lifetime_io=False,
+                app_build=cls._application_build_id,
+                use_core_mps=False
             )
 
-            cls._initialized = _ffi.lib.glean_initialize(cfg) != 0
+            _uniffi.enable_logging()
+            cls._initialized = _uniffi.initialize(cfg)
 
             # If initialization of Glean fails, we bail out and don't initialize
             # further
             if not cls._initialized:
                 return
 
-            # Kotlin bindings have a "synchronized" here, but that is
-            # unnecessary given that Python has a GIL.
-            with cls._thread_lock:
-                for ping in cls._ping_type_queue:
-                    cls.register_ping_type(ping)
+            ## Kotlin bindings have a "synchronized" here, but that is
+            ## unnecessary given that Python has a GIL.
+            #with cls._thread_lock:
+            #    for ping in cls._ping_type_queue:
+            #        cls.register_ping_type(ping)
 
-            # If this is the first time ever the Glean SDK runs, make sure to set
-            # some initial core metrics in case we need to generate early pings.
-            # The next times we start, we would have them around already.
-            is_first_run = _ffi.lib.glean_is_first_run() != 0
-            if is_first_run:
-                cls._initialize_core_metrics()
+            ## If this is the first time ever the Glean SDK runs, make sure to set
+            ## some initial core metrics in case we need to generate early pings.
+            ## The next times we start, we would have them around already.
+            #is_first_run = _ffi.lib.glean_is_first_run() != 0
+            #if is_first_run:
+            #    cls._initialize_core_metrics()
 
-            # Deal with any pending events so we can start recording new ones
-            if _ffi.lib.glean_on_ready_to_submit_pings() or upload_enabled is False:
-                PingUploadWorker.process()
+            ## Deal with any pending events so we can start recording new ones
+            #if _ffi.lib.glean_on_ready_to_submit_pings() or upload_enabled is False:
+            #    PingUploadWorker.process()
 
-            # Glean Android sets up the metrics ping scheduler here, but we don't
-            # have one.
+            ## Glean Android sets up the metrics ping scheduler here, but we don't
+            ## have one.
 
-            # Other platforms check for the "dirty bit" and send the `baseline` ping
-            # with reason `dirty_startup`.
+            ## Other platforms check for the "dirty bit" and send the `baseline` ping
+            ## with reason `dirty_startup`.
 
-            # From the second time we run, after all startup pings are generated,
-            # make sure to clear `lifetime: application` metrics and set them again.
-            # Any new value will be sent in newly generated pings after startup.
-            if not is_first_run:
-                _ffi.lib.glean_clear_application_lifetime_metrics()
-                cls._initialize_core_metrics()
+            ## From the second time we run, after all startup pings are generated,
+            ## make sure to clear `lifetime: application` metrics and set them again.
+            ## Any new value will be sent in newly generated pings after startup.
+            #if not is_first_run:
+            #    _ffi.lib.glean_clear_application_lifetime_metrics()
+            #    cls._initialize_core_metrics()
 
             # Signal the RLB dispatcher to unblock, if any exists.
-            _ffi.lib.glean_flush_rlb_dispatcher()
+            #_ffi.lib.glean_flush_rlb_dispatcher()
             # Signal Dispatcher that init is complete
-            Dispatcher.flush_queued_initial_tasks()
+            #Dispatcher.flush_queued_initial_tasks()
+            _uniffi.finish_initialize()
 
             # Glean Android sets up the lifecycle observer here. We don't really
             # have a lifecycle.
@@ -277,7 +283,8 @@ class Glean:
         # that the data directory can be deleted without a multiple access
         # violation.
         if cls._initialized:
-            _ffi.lib.glean_destroy_glean()
+            #_ffi.lib.glean_destroy_glean()
+            pass
         cls._init_finished = False
         cls._initialized = False
 

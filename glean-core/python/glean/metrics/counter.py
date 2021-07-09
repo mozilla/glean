@@ -6,7 +6,6 @@
 from typing import List, Optional
 
 
-from .. import _ffi
 from .._dispatcher import Dispatcher
 from ..testing import ErrorType
 

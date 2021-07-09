@@ -26,22 +26,7 @@ from . import metrics
 # A mapping from the name of the metric type as it appears in the metrics.yaml
 # to the Python class for that metric type.
 _TYPE_MAPPING = {
-    "boolean": metrics.BooleanMetricType,
     "counter": metrics.CounterMetricType,
-    "datetime": metrics.DatetimeMetricType,
-    "event": metrics.EventMetricType,
-    "labeled_boolean": metrics.LabeledBooleanMetricType,
-    "labeled_counter": metrics.LabeledCounterMetricType,
-    "labeled_string": metrics.LabeledStringMetricType,
-    "memory_distribution": metrics.MemoryDistributionMetricType,
-    "ping": metrics.PingType,
-    "string": metrics.StringMetricType,
-    "string_list": metrics.StringListMetricType,
-    "timespan": metrics.TimespanMetricType,
-    "timing_distribution": metrics.TimingDistributionMetricType,
-    "uuid": metrics.UuidMetricType,
-    "jwe": metrics.JweMetricType,
-    "quantity": metrics.QuantityMetricType,
 }
 
 

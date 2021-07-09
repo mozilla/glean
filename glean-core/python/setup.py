@@ -148,12 +148,12 @@ if not target:
 
 
 if "-darwin" in target:
-    shared_object = "libglean_ffi.dylib"
+    shared_object = "libglean_uniffi.dylib"
 elif "-windows" in target:
-    shared_object = "glean_ffi.dll"
+    shared_object = "glean_uniffi.dll"
 else:
     # Anything else must be an ELF platform - Linux, *BSD, Solaris/illumos
-    shared_object = "libglean_ffi.so"
+    shared_object = "libglean_uniffi.so"
 
 
 class build(_build):
@@ -183,7 +183,7 @@ class build(_build):
             "cargo",
             "build",
             "--package",
-            "glean-bundle",
+            "glean-uniffi",
             "--target",
             target,
             "--features",
@@ -195,10 +195,25 @@ class build(_build):
         if "-darwin" in target:
             env["MACOSX_DEPLOYMENT_TARGET"] = macos_compat(target)
 
-        subprocess.check_call(command, cwd=SRC_ROOT / "glean-core" / "ffi", env=env)
+        subprocess.check_call(command, cwd=SRC_ROOT / "glean-core" / "uniffi", env=env)
         shutil.copyfile(
             SRC_ROOT / "target" / target / buildvariant / shared_object,
             PYTHON_ROOT / "glean" / shared_object,
+        )
+
+        command = [
+            "uniffi-bindgen",
+            "generate",
+            "glean-core/uniffi/src/glean_core.udl",
+            "--language",
+            "python",
+            "--out-dir",
+            SRC_ROOT / "target"
+        ]
+        subprocess.check_call(command, cwd=SRC_ROOT, env=env)
+        shutil.copyfile(
+            SRC_ROOT / "target" / "glean.py",
+            PYTHON_ROOT / "glean" / "_uniffi.py"
         )
 
         shutil.copyfile(
@@ -245,8 +260,7 @@ setup(
         "glean.net": FROM_TOP / "glean" / "net",
         "glean.testing": FROM_TOP / "glean" / "testing",
     },
-    setup_requires=setup_requirements,
-    cffi_modules=[str(PYTHON_ROOT / "ffi_build.py:ffibuilder")],
+    setup_requires=[],
     url="https://github.com/mozilla/glean",
     zip_safe=False,
     package_data={"glean": [shared_object, "metrics.yaml", "pings.yaml"]},
