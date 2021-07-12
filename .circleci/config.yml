@@ -812,8 +812,7 @@ jobs:
 
   Python 3_9 on Alpine tests:
     docker:
-      # FIXME(bug 1719129): Use `python:3.9-alpine` again when Docker is upgraded
-      - image: python@sha256:aded2e43ada04522e712ce507ce8a04392f8cbe047c914c5a88e4016a7141bd0
+      - image: python:3.9-alpine
     shell: /bin/sh -leo pipefail
     environment:
       - BASH_ENV: /etc/profile
