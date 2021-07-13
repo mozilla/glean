@@ -32,6 +32,7 @@
 - [Internal implementation details](core/internal/index.md)
     - [Reserved ping names](core/internal/reserved-ping-names.md).
     - [Clearing metrics when disabling/enabling Glean](core/internal/clearing.md).
+    - [Database format](core/internal/database.md)
     - [Payload format](core/internal/payload.md).
     - [Directory & file structure](core/internal/directory-structure.md)
     - [Debug Pings](core/internal/debug-pings.md)
