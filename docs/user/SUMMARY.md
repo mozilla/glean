@@ -31,6 +31,8 @@
 # API Reference
 
 - [YAML Registry Format](reference/yaml/index.md)
+    - [Metrics](reference/yaml/metrics.md)
+    - [Pings](reference/yaml/pings.md)
 - [General API](reference/general/index.md)
     - [Initializing](reference/general/initializing.md)
     - [Toggling upload status](reference/general/toggling-upload-status.md)
