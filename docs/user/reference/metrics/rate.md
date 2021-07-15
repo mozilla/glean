@@ -59,7 +59,28 @@ network::http_connections.add(1);
 
 </div>
 <div data-lang="Javascript" class="tab"></div>
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab">
+
+  **C++**
+
+  ```cpp
+  #include "mozilla/glean/GleanMetrics.h"
+
+  if (aHadError) {
+    mozilla::glean::network::http_connection_error.add_to_numerator(1);
+  }
+  mozilla::glean::network::http_connection_error.add_to_denominator(1);
+  ```
+
+  **JavaScript**
+
+  ```js
+  if (aHadError) {
+    Glean.network.httpConnectionError.addToNumerator(1);
+  }
+  Glean.network.httpConnectionError.addToDenominator(1);
+  ```
+</div>
 {{#include ../../../shared/tab_footer.md}}
 
 #### Recorded errors
@@ -90,7 +111,28 @@ assert_eq!((1, 1), network::http_connection_error.test_get_value(None).unwrap())
 
 </div>
 <div data-lang="Javascript" class="tab"></div>
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab">
+
+  **C++**
+
+  ```cpp
+  #include "mozilla/glean/GleanMetrics.h"
+
+  auto pair = mozilla::glean::network::http_connection_error.TestGetValue().unwrap();
+  ASSERT_EQ(1, pair.first);
+  ASSERT_EQ(1, pair.second);
+  ```
+
+  **JavaScript**
+
+  ```js
+  // testGetValue will throw NS_ERROR_LOSS_OF_SIGNIFICANT_DATA on error.
+  Assert.deepEqual(
+    { numerator: 1, denominator: 1 },
+    Glean.network.httpConnectionError.testGetValue()
+  );
+  ```
+</div>
 {{#include ../../../shared/tab_footer.md}}
 
 ### `testHasValue`
@@ -128,7 +170,7 @@ assert_eq!(
 
 </div>
 <div data-lang="Javascript" class="tab"></div>
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab" data-info="Firefox Desktop uses testGetValue to communicate errors"></div>
 {{#include ../../../shared/tab_footer.md}}
 
 ## Metric parameters
