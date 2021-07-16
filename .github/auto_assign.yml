@@ -3,7 +3,8 @@ addAssignees: false
 reviewers:
   - badboy
   - mdboom
-  - Dexterp37
+  # Uncomment once Alessio is back.
+  # - Dexterp37
   - travis79
   - brizental
 
