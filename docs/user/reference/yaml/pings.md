@@ -18,13 +18,11 @@ section of this book.
 > Although we refer to pings definitions YAML files as `pings.yaml` throughout Glean documentation
 > this files may be named whatever makes the most sense for each project and may even be broken down
 > into multiple files, if necessary.
->
-> This does not apply to Firefox Desktop, where all custom pings for a component must be declared
-> in a file called _exactly_ `pings.yaml`.
 
 ## File structure
 
 ```yaml
+---
 # Schema
 $schema: moz://mozilla.org/schemas/glean/pings/2-0-0
 
@@ -44,19 +42,19 @@ search:
 
 ## Schema
 
-Declaring the schema at the top of a pings definitions file is advised,
+Declaring the schema at the top of a pings definitions file is required,
 as it is what indicates that the current file is a pings definitions file.
 
 ## Name
 
-Ping names are the top-level keys on pings definitions files. One single definition file
-may contain multiple ping declarations.
+Ping names are the top-level keys on pings definitions files.
+One single definition file may contain multiple ping declarations.
 
 Ping names are limited to lowercase letters from the [ISO basic Latin alphabet](https://en.wikipedia.org/wiki/ISO_basic_Latin_alphabet)
 and hyphens and a maximum of 30 characters.
 
-Ping names may not contain the words `custom` or `ping` in their names. These are considered redundant
-words in a custom ping declaration and will trigger a `REDUNDANT_PING` lint failure on `glean_parser`.
+Pings may not contain the words `custom` or `ping` in their names. These are considered redundant
+words and will trigger a `REDUNDANT_PING` lint failure on `glean_parser`.
 
 ["Capitalization"](../../user/metrics/adding-new-metrics.md#capitalization) rules apply to
 ping names on generated code.
@@ -99,7 +97,7 @@ The use of numbers alone is deprecated and will be an error in the future.
 
 #### `data_reviews`
 
-A list of URIs to any data collection reviews _responses_ relevant to the metric.
+A list of URIs to any data collection review _responses_ relevant to the metric.
 
 ### Optional parameters
 
