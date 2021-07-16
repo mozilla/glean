@@ -54,6 +54,7 @@
     - [Timing Distribution](reference/metrics/timing_distribution.md)
     - [Memory Distribution](reference/metrics/memory_distribution.md)
     - [UUID](reference/metrics/uuid.md)
+    - [URL](reference/metrics/url.md)
     - [Datetime](reference/metrics/datetime.md)
     - [Event](reference/metrics/event.md)
     - [Custom Distribution](reference/metrics/custom_distribution.md)

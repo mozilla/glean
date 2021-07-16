@@ -28,6 +28,8 @@ There are different metrics to choose from, depending on what you want to achiev
 
 * [UUID](uuid.md): Used to record universally unique identifiers (UUIDs), such as a client ID.
 
+* [URL](url.md): Used to record URL-like strings.
+
 * [Datetime](datetime.md): Used to record an absolute date and time, such as the time the user first ran the application.
 
 * [Events](event.md): Records events e.g. individual occurrences of user actions, say every time a view was open and from where.
