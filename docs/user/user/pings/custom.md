@@ -8,25 +8,11 @@ This is especially useful when metrics need to be tightly related to one another
 
 ## Defining a custom ping
 
-Custom pings must be defined in a [`pings.yaml` file](https://mozilla.github.io/glean_parser/pings-yaml.html), which is in the same directory alongside your app's `metrics.yaml` file.
-
-Ping names are limited to lowercase letters from the [ISO basic Latin alphabet](https://en.wikipedia.org/wiki/ISO_basic_Latin_alphabet)
-and hyphens and a maximum of 30 characters.
-
-Each ping has the following parameters:
-
-- `description` (required): A textual description describing the purpose of the ping. It may contain [markdown syntax](https://www.markdownguide.org/basic-syntax/).
-- `include_client_id` (required): A boolean indicating whether to include the
-  `client_id` in the [`client_info` section](index.md#the-client_info-section)).
-- `send_if_empty` (optional, default: false): A boolean indicating if the ping is sent if it contains no metric data.
-- `reasons` (optional, default: `{}`): The reasons that this ping may be sent. The keys are the reason codes, and the values are a textual description of each reason. The ping payload will (optionally) contain one of these reasons in the `ping_info.reason` field.
-
-In addition to these parameters, pings also support the parameters related to data review and expiration defined in [common metric parameters](../metric-parameters.md): `description`, `notification_emails`, `bugs`, and `data_reviews`.
+Custom pings must be defined in a [`pings.yaml` file](https://mozilla.github.io/glean_parser/pings-yaml.html), placed in the same directory alongside your app's `metrics.yaml` file.
 
 For example, to define a custom ping called `search` specifically for search information:
 
 ```YAML
-# Required to indicate this is a `pings.yaml` file
 $schema: moz://mozilla.org/schemas/glean/pings/2-0-0
 
 search:
@@ -41,11 +27,8 @@ search:
     - http://example.com/path/to/data-review
 ```
 
-{{#include ../../../shared/blockquote-info.html}}
-
-##### Reserved ping names
-
-> The names `baseline`, `metrics`, `events`, `deletion-request` and `all-pings` are reserved and may not be used as the name of a custom ping.
+Refer to the [pings YAML registry format](../../reference/yaml/pings.md) for a full reference
+on the `pings.yaml` file structure.
 
 ## Sending metrics in a custom ping
 
