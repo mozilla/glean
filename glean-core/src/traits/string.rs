@@ -20,6 +20,21 @@ pub trait String {
     /// Truncates the value if it is longer than `MAX_LENGTH_VALUE` bytes and logs an error.
     fn set<S: Into<std::string::String>>(&self, value: S);
 
+    /// Records an error for this metric into Glean.
+    ///
+    /// # Arguments
+    ///
+    /// * `error` -  The error type to record
+    /// * `message` - The message to log. This message is not sent with the ping.
+    ///             It does not need to include the metric id, as that is automatically prepended to the message.
+    /// * `num_errors` - The number of errors of the same type to report.
+    fn record_error<S: Into<std::string::String>, O: Into<Option<i32>>>(
+        &self,
+        error: ErrorType,
+        message: S,
+        num_errors: O,
+    );
+
     /// **Exported for test purposes.**
     ///
     /// Gets the currently stored value as a string.

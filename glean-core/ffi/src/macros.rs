@@ -36,6 +36,7 @@ macro_rules! define_infallible_handle_map_deleter {
 macro_rules! define_metric {
     ($metric_type:ident => $metric_map:ident {
         $(new -> $new_fn:ident($($new_argname:ident: $new_argtyp:ty),* $(,)*),)?
+        $(record_error -> $record_error_fn:ident,)?
         $(test_get_num_recorded_errors -> $test_get_num_recorded_errors_fn:ident,)?
         destroy -> $destroy_fn:ident,
 
@@ -77,6 +78,30 @@ macro_rules! define_metric {
                 }, $($new_argname),*))
             })
         }
+        )?
+
+        $(
+            #[no_mangle]
+            pub extern "C" fn $record_error_fn(
+                metric_id: u64,
+                error_type: i32,
+                message: FfiStr,
+                error_count: i32,
+            ) -> () {
+                crate::HandleMapExtension::call_infallible(&*$metric_map, metric_id, |metric| {
+                    crate::with_glean_value(|glean| {
+                        let error_type = std::convert::TryFrom::try_from(error_type).unwrap();
+                        let message = crate::FallibleToString::to_string_fallible(&message).unwrap();
+                        crate::record_error(
+                            &glean,
+                            glean_core::metrics::MetricType::meta(metric),
+                            error_type,
+                            message,
+                            Some(error_count)
+                        );
+                    })
+                })
+            }
         )?
 
         $(

@@ -13,6 +13,7 @@ use crate::{
 
 define_metric!(StringMetric => STRING_METRICS {
     new           -> glean_new_string_metric(),
+    record_error -> glean_string_record_error,
     test_get_num_recorded_errors -> glean_string_test_get_num_recorded_errors,
     destroy       -> glean_destroy_string_metric,
 });

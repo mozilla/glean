@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
+import functools
 import locale
 import sys
 import time
@@ -62,3 +63,35 @@ class classproperty:
 
     def __get__(self, obj, owner):
         return self.f(owner)
+
+
+def record_error(self):
+    """
+    A decorator to put around functions that should catch exceptions and report
+    them through the Glean error reporting system.
+
+    Example:
+
+       @record_error(self)
+       def do_work():
+           self.record_metric()
+    """
+
+    def callable(func):
+        @functools.wraps(func)
+        def wrapped(*args, **kwargs):
+            from .testing import ErrorType
+
+            try:
+                return func(*args, **kwargs)
+            except Exception as e:
+                self._record_error(
+                    ErrorType.UNEXPECTED_EXCEPTION,
+                    f"{self.__class__.__name__} threw exception: {e}",
+                    1,
+                )
+                raise
+
+        return wrapped
+
+    return callable
