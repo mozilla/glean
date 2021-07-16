@@ -183,7 +183,7 @@ class build(_build):
             "cargo",
             "build",
             "--package",
-            "glean-ffi",
+            "glean-bundle",
             "--target",
             target,
             "--features",
