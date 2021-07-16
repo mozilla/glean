@@ -100,7 +100,13 @@ See the list of [supported metric types](../metrics/index.md).
 ##### Types should not be changed after release
 
 > Once a metric is released in a product, its `type` should not be changed.
-> If any data was collected locally with the older `type`, and hasn't yet been sent in a ping, recording data with the new `type` may cause any old persisted data to be lost for that metric. See [this comment](https://bugzilla.mozilla.org/show_bug.cgi?id=1621757#c1) for an extended explanation of the different scenarios.
+> If any data was collected locally with the older `type`, and hasn't yet been sent in a ping,
+> recording data with the new `type` may cause any old persisted data to be lost for that metric.
+> See [this comment](https://bugzilla.mozilla.org/show_bug.cgi?id=1621757#c1) for an extended
+> explanation of the different scenarios.
+>
+> This does not apply to users on the Glean JavaScript SDK. The issues on changing a
+> metrics type described above, do not apply for that SDK.
 
 #### `description`
 
