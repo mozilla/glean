@@ -19,7 +19,8 @@ section of this book.
 > this files may be named whatever makes the most sense for each project and may even be broken down
 > into multiple files, if necessary.
 >
-> {TODO BEFORE MERGE} Add note related to Firefox Desktop being an exception to this.
+> This does not apply to Firefox Desktop, where all custom pings for a component must be declared
+> in a file called _exactly_ `pings.yaml`.
 
 ## File structure
 
