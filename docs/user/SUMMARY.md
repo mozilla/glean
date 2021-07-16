@@ -11,6 +11,7 @@
 - [Integrating Glean for project managers](user/integrating-glean-for-product-managers.md)
 - [Metrics](user/metrics/adding-new-metrics.md)
     - [Adding new metrics](user/metrics/adding-new-metrics.md)
+    - [Avoiding The Environment](user/metrics/avoiding-the-environment.md)
     - [Testing metrics](user/metrics/testing-metrics.md)
     - [Error reporting](user/metrics/error-reporting.md)
     - [Metrics collected by the Glean SDK](user/collected-metrics/metrics.md)
