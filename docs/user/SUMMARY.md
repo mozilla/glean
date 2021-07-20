@@ -38,6 +38,7 @@
     - [Toggling upload status](reference/general/toggling-upload-status.md)
     - [Annotating experiments](reference/general/experiments-api.md)
     - [Registering custom pings](reference/general/register-custom-pings.md)
+    - [Shut down](reference/general/shutdown.md)
 - [Debugging](reference/debug/index.md)
     - [Log pings](reference/debug/logPings.md)
     - [Debug View Tag](reference/debug/debugViewTag.md)
