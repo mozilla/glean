@@ -143,10 +143,20 @@ search:
     notification_emails:
       - me@mozilla.com
     expires: 2020-10-01
+    data_sensitivity:
+      - web_activity
 ```
 
 For a full reference on metrics parameters common to all metric types,
 refer to the metrics [YAML format](../yaml/index.md) reference page.
+
+{{#include ../../../shared/blockquote-warning.html}}
+
+## Note on `data_sensitivity` of URL metrics
+
+> URL metrics can only either be on categories 3 or 4, namely
+> ["Web activity data"](../yaml/metrics.md#category-3-web-activity-data-web_activity) or
+> ["Highly sensitive data"](../yaml/metrics.md#category-4-highly-sensitive-data-highly_sensitive).
 
 ### Extra metric parameters
 
