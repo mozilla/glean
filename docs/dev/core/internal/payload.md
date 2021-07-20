@@ -150,6 +150,16 @@ A [UUID](../../../book/reference/metrics/uuid.md) is represented by the string r
 "29711dc8-a954-11e9-898a-eb4ea7e8fd3f"
 ```
 
+### URL
+
+A [URL](../../../book/reference/metrics/url.md) is represented by the encoded string representation of the URL.
+
+#### Example
+
+```json
+"https://mysearchengine.com/?query=%25s"
+```
+
 ### Datetime
 
 A [Datetime](../../../book/reference/metrics/datetime.md) is represented by its ISO8601 string representation, truncated to the metric's time unit.
