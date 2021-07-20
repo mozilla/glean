@@ -220,7 +220,6 @@ tasks:
                                           REPOSITORIES: {$json: {glean: "Glean", taskgraph: "Taskgraph"}}
                                           HG_STORE_PATH: /builds/worker/checkouts/hg-store
                                           ANDROID_SDK_ROOT: /builds/worker/android-sdk
-                                          MOZ_FETCHES_DIR: /builds/worker/checkouts/src
                                         - $if: 'tasks_for in ["github-pull-request"]'
                                           then:
                                               GLEAN_PULL_REQUEST_TITLE: '${event.pull_request.title}'
