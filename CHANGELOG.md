@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v39.0.4...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v39.1.0...main)
+
+# v39.1.0 (2021-07-26)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v39.0.4...v39.1.0)
 
 * General
   * Updated `glean_parser` version to 3.6.0

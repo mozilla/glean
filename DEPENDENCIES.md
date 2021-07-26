@@ -671,7 +671,7 @@ The following text applies to code linked from these dependencies:
 * [num-integer 0.1.44]( https://github.com/rust-num/num-integer )
 * [num-traits 0.2.14]( https://github.com/rust-num/num-traits )
 * [num_cpus 1.13.0]( https://github.com/seanmonstar/num_cpus )
-* [once_cell 1.7.2]( https://github.com/matklad/once_cell )
+* [once_cell 1.8.0]( https://github.com/matklad/once_cell )
 * [paste 0.1.18]( https://github.com/dtolnay/paste )
 * [paste-impl 0.1.18]( https://github.com/dtolnay/paste )
 * [percent-encoding 2.1.0]( https://github.com/servo/rust-url/ )
@@ -682,8 +682,8 @@ The following text applies to code linked from these dependencies:
 * [serde_derive 1.0.126]( https://github.com/serde-rs/serde )
 * [serde_json 1.0.64]( https://github.com/serde-rs/json )
 * [syn 1.0.67]( https://github.com/dtolnay/syn )
-* [thiserror 1.0.25]( https://github.com/dtolnay/thiserror )
-* [thiserror-impl 1.0.25]( https://github.com/dtolnay/thiserror )
+* [thiserror 1.0.26]( https://github.com/dtolnay/thiserror )
+* [thiserror-impl 1.0.26]( https://github.com/dtolnay/thiserror )
 * [time 0.1.44]( https://github.com/time-rs/time )
 * [unicode-bidi 0.3.4]( https://github.com/servo/unicode-bidi )
 * [unicode-normalization 0.1.13]( https://github.com/unicode-rs/unicode-normalization )
@@ -3248,9 +3248,9 @@ THE SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
-* [glean 39.0.3]( https://github.com/mozilla/glean )
-* [glean-core 39.0.3]( https://github.com/mozilla/glean )
-* [glean-ffi 39.0.3]( https://github.com/mozilla/glean )
+* [glean 39.1.0]( https://github.com/mozilla/glean )
+* [glean-core 39.1.0]( https://github.com/mozilla/glean )
+* [glean-ffi 39.1.0]( https://github.com/mozilla/glean )
 * [zeitstempel 0.1.1]( https://github.com/badboy/zeitstempel )
 
 
