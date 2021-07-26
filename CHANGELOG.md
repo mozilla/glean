@@ -1,6 +1,13 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v39.0.3...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v39.0.4...main)
+
+# v39.0.4 (2021-07-26)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v39.0.3...v39.0.4)
+
+* General
+  * Extend `invalid_timezone_offset` metric until the end of the year ([#1697](https://github.com/mozilla/glean/pull/1697))
 
 # v39.0.3 (2021-06-09)
 
