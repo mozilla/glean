@@ -1,10 +1,17 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v39.0.3...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v39.0.4...main)
 
 * General
   * Updated `glean_parser` version to 3.6.0
   * Allow Custom Distribution metric type on all platforms ([#1679](https://github.com/mozilla/glean/pull/1679))
+
+# v39.0.4 (2021-07-26)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v39.0.3...v39.0.4)
+
+* General
+  * Extend `invalid_timezone_offset` metric until the end of the year ([#1697](https://github.com/mozilla/glean/pull/1697))
 
 # v39.0.3 (2021-06-09)
 
