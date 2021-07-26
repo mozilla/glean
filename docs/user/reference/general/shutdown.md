@@ -1,14 +1,14 @@
 # Shut down
 
 Provides a way for users to gracefully shut down Glean,
-by blocking until it is finished performing pending tasks,
+by blocking until it is finished performing pending tasks
 such as recording metrics and uploading pings.
 
 {{#include ../../../shared/blockquote-info.html}}
 
 ## How the Glean SDKs execute tasks
 
-> Most calls to Glean APIs are dispatched[^1]. This strategy is adopted, because most tasks
+> Most calls to Glean APIs are dispatched[^1]. This strategy is adopted because most tasks
 > performed by the Glean SDKs involve file system read or write operations, HTTP requests and
 > other time consuming actions.
 >
@@ -16,7 +16,7 @@ such as recording metrics and uploading pings.
 > get executed in the order they were called, while not requiring the caller to block on the
 > completion of each of these tasks.
 >
-> [^1]: Here this term indicates the tasks are run asynchronously in JavaScript or in a different
+> [^1]: Here, this term indicates the tasks are run asynchronously in JavaScript or in a different
 > thread for all other SDKs.
 
 ## API
