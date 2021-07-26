@@ -20,7 +20,7 @@ pub extern "C" fn glean_jwe_set_with_compact_representation(metric_id: u64, valu
     with_glean_value(|glean| {
         JWE_METRICS.call_with_log(metric_id, |metric| {
             let value = value.to_string_fallible()?;
-            metric.set_with_compact_representation(&glean, value);
+            metric.set_with_compact_representation(glean, value);
             Ok(())
         })
     })
@@ -42,7 +42,7 @@ pub extern "C" fn glean_jwe_set(
             let init_vector = init_vector.to_string_fallible()?;
             let cipher_text = cipher_text.to_string_fallible()?;
             let auth_tag = auth_tag.to_string_fallible()?;
-            metric.set(&glean, header, key, init_vector, cipher_text, auth_tag);
+            metric.set(glean, header, key, init_vector, cipher_text, auth_tag);
             Ok(())
         })
     })

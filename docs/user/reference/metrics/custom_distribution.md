@@ -8,26 +8,197 @@ Otherwise, look at the standard distribution metric types:
 * [Timing Distributions](timing_distribution.md)
 * [Memory Distributions](memory_distribution.md)
 
-> **Note**: Custom distributions are currently only allowed for GeckoView metrics (the `gecko_datapoint` parameter is present) and thus have only a Kotlin API.
+> **Note**: Custom distributions are currently not universally supported. See below for available APIs.
 
-## Configuration
+## Recording API
 
-Custom distributions have the following required parameters:
+### `accumulateSamples`
 
-  - `range_min`: (Integer) The minimum value of the first bucket
-  - `range_max`: (Integer) The minimum value of the last bucket
-  - `bucket_count`: (Integer) The number of buckets
-  - `histogram_type`:
-    - `linear`: The buckets are evenly spaced
-    - `exponential`: The buckets follow a natural logarithmic distribution
+Accumulate the provided samples in the metric.
 
-> **Note** Check out how these bucketing algorithms would behave on the [Custom distribution simulator](#simulator)
+{{#include ../../../shared/tab_header.md}}
 
-In addition, the metric should specify:
+<div data-lang="Kotlin" class="tab">
 
-  - `unit`: (String) The unit of the values in the metric. For documentation purposes only -- does not affect data collection.
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Graphics
 
-If you wanted to create a custom distribution of the peak number of pixels used during a checkerboard event, first you need to add an entry for it to the `metrics.yaml` file:
+Graphics.checkerboardPeak.accumulateSamples([23])
+```
+
+</div>
+
+<div data-lang="Java" class="tab"></div>
+<div data-lang="Swift" class="tab"></div>
+<div data-lang="Python" class="tab"></div>
+<div data-lang="Rust" class="tab">
+
+```Rust
+use glean_metrics;
+
+graphics::checkerboard_peak.accumulate_samples_signed(vec![23]);
+```
+
+</div>
+<div data-lang="JavaScript" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+
+```cpp
+#include "mozilla/glean/GleanMetrics.h"
+
+mozilla::glean::graphics::checkerboard_peak.AccumulateSamples({ 23 });
+```
+
+**JavaScript**
+
+```js
+Glean.graphics.checkerboardPeak.accumulateSamples([23])
+```
+
+</div>
+
+{{#include ../../../shared/tab_footer.md}}
+
+#### Limits
+
+* The maximum value of `bucket_count` is 100.
+* Only non-negative values may be recorded (`>= 0`).
+
+#### Recorded errors
+
+* `invalid_value`: If recording a negative value.
+
+## Testing API
+
+### `testGetValue`
+
+Gets the recorded value for a given counter metric.
+
+{{#include ../../../shared/tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Graphics
+
+// Get snapshot
+val snapshot = Graphics.checkerboardPeak.testGetValue()
+
+// Does the sum have the expected value?
+assertEquals(11, snapshot.sum)
+
+// Usually you don't know the exact timing values, but how many should have been recorded.
+assertEquals(2L, snapshot.count())
+```
+
+</div>
+
+<div data-lang="Java" class="tab"></div>
+<div data-lang="Swift" class="tab"></div>
+<div data-lang="Python" class="tab"></div>
+<div data-lang="Rust" class="tab">
+
+```Rust
+use glean::ErrorType;
+use glean_metrics::graphics;
+
+// Does it have the expected value?
+assert_eq!(23, graphics::checkerboard_peak.test_get_value(None).unwrap().sum);
+```
+
+</div>
+<div data-lang="JavaScript" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+
+```cpp
+#include "mozilla/glean/GleanMetrics.h"
+
+auto data = mozilla::glean::graphics::checkerboard_peak.TestGetValue().value();
+ASSERT_EQ(23UL, data.sum);
+```
+
+**JavaScript**
+
+```js
+let data = Glean.graphics.checkerboardPeak.testGetValue();
+Assert.equal(23, data.sum);
+```
+
+</div>
+
+{{#include ../../../shared/tab_footer.md}}
+
+### `testHasValue`
+
+Whether or not **any** value was recorded for a given counter metric.
+
+{{#include ../../../shared/tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Graphics
+
+// Was anything recorded?
+assertTrue(Graphics.checkerboardPeak.testHasValue())
+```
+
+</div>
+
+<div data-lang="Java" class="tab"></div>
+<div data-lang="Swift" class="tab"></div>
+<div data-lang="Python" class="tab"></div>
+<div data-lang="Rust" class="tab"></div>
+<div data-lang="JavaScript" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab"></div>
+
+{{#include ../../../shared/tab_footer.md}}
+
+### `testGetNumRecordedErrors`
+
+Gets number of errors recorded for a given counter metric.
+
+{{#include ../../../shared/tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Graphics
+
+/// Did the metric receive a negative value?
+assertEquals(1, Graphics.checkerboardPeak.testGetNumRecordedErrors(ErrorType.InvalidValue))
+```
+
+</div>
+
+<div data-lang="Java" class="tab"></div>
+<div data-lang="Swift" class="tab"></div>
+<div data-lang="Python" class="tab"></div>
+<div data-lang="Rust" class="tab">
+
+```Rust
+use glean::ErrorType;
+use glean_metrics::graphics;
+
+// Were any of the values negative and thus caused an error to be recorded?
+assert_eq!(
+    0,
+    graphics::checkerboard_peak.test_get_num_recorded_errors(ErrorType::InvalidValue));
+```
+
+</div>
+<div data-lang="JavaScript" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab"></div>
+
+{{#include ../../../shared/tab_footer.md}}
+
+## Metric Parameters
+
+Example custom distribution metric definition:
 
 ```YAML
 graphics:
@@ -41,88 +212,40 @@ graphics:
     histogram_type: exponential
     unit: pixels
     gecko_datapoint: CHECKERBOARD_PEAK
-    ...
+    bugs:
+      - https://bugzilla.mozilla.org/000000
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=000000#c3
+    notification_emails:
+      - me@mozilla.com
+    expires: 2020-10-01
 ```
 
-## API
+### Extra metric parameters
 
-Now you can use the custom distribution from the application's code.
+Custom distributions have the following required parameters:
 
-{{#include ../../../shared/tab_header.md}}
+- `range_min`: (Integer) The minimum value of the first bucket
+- `range_max`: (Integer) The minimum value of the last bucket
+- `bucket_count`: (Integer) The number of buckets
+- `histogram_type`:
+  - `linear`: The buckets are evenly spaced
+  - `exponential`: The buckets follow a natural logarithmic distribution
 
-<div data-lang="Kotlin" class="tab">
+> **Note** Check out how these bucketing algorithms would behave on the [Custom distribution simulator](#simulator).
 
-```Kotlin
-import org.mozilla.yourApplication.GleanMetrics.Graphics
+Custom distributions have the following optional parameters:
 
-Graphics.checkerboardPeak.accumulateSamples([23])
-```
+- `unit`: (String) The unit of the values in the metric. For documentation purposes only -- does not affect data collection.
+- `gecko_datapoint`: (String) This is a Gecko-specific property.
+  It is the name of the Gecko metric to accumulate the data from,
+  when using the Glean SDK in a product using GeckoView.
 
-There are test APIs available too.  For convenience, properties `sum` and `count` are exposed to facilitate validating that data was recorded correctly.
-
-```Kotlin
-import org.mozilla.yourApplication.GleanMetrics.Graphics
-
-// Was anything recorded?
-assertTrue(Graphics.checkerboardPeak.testHasValue())
-
-// Get snapshot
-val snapshot = Graphics.checkerboardPeak.testGetValue()
-
-// Does the sum have the expected value?
-assertEquals(11, snapshot.sum)
-
-// Usually you don't know the exact timing values, but how many should have been recorded.
-assertEquals(2L, snapshot.count())
-
-/// Did the metric receive a negative value?
-assertEquals(1, Graphics.checkerboardPeak.testGetNumRecordedErrors(ErrorType.InvalidValue))
-```
-
-</div>
-
-<div data-lang="Rust" class="tab">
-
-```rust
-use glean_metrics;
-
-graphics::checkerboard_peak.accumulate_samples_signed(vec![23]);
-```
-
-There are test APIs available too.
-
-```rust
-use glean::ErrorType;
-use glean_metrics;
-
-// Was anything recorded?
-assert!(graphics::checkerboard_peak.test_get_value(None).is_some());
-// Does it have the expected value?
-assert_eq!(23, graphics::checkerboard_peak.test_get_value(None).unwrap().sum);
-
-// Were any of the values negative and thus caused an error to be recorded?
-assert_eq!(
-    0,
-    graphics::checkerboard_peak.test_get_num_recorded_errors(ErrorType::InvalidValue));
-```
-
-</div>
-
-{{#include ../../../shared/tab_footer.md}}
-
-## Limits
-
-* The maximum value of `bucket_count` is 100.
-
-* Only non-negative values may be recorded.
-
-## Recorded errors
-
-* `invalid_value`: If recording a negative value.
 
 ## Reference
 
 * [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-custom-distribution-metric-type/index.html)
+* [Rust API docs](../../../docs/glean/private/struct.CustomDistributionMetric.html)
 
 ## Simulator
 

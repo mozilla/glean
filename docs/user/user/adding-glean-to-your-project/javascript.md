@@ -1,6 +1,6 @@
-# Adding Glean to your Javascript project
+# Adding Glean to your JavaScript project
 
-This page provides a step-by-step guide on how to integrate the [Glean.js](https://github.com/mozilla/glean.js/) library into a Javascript project.
+This page provides a step-by-step guide on how to integrate the [Glean.js](https://github.com/mozilla/glean.js/) library into a JavaScript project.
 
 Nevertheless this is just one of the required steps for integrating Glean successfully into a project. Check you the full [Glean integration checklist](./index.md) for a comprehensive list of all the steps involved in doing so.
 
@@ -12,14 +12,17 @@ Currently, these bindings support collecting data from [Browser Extensions](http
 * npm >= 7.0.0.
 * Webpack >= 5.34.0.
 * Python >= 3.6.[^1]
+* (_for browsers other than Firefox_) [webextension-polyfill](https://github.com/mozilla/webextension-polyfill) >= 0.8.0.[^2]
 
 [^1]: The `glean` command requires Python to download [`glean_parser`](https://mozilla.github.io/glean_parser/) which is a Python library.
+
+[^2]: Glean.js assumes a Promise-based `browser` API: Firefox provides such an API by default. Other browsers may require using a polyfill library such us `webextension-polyfill` when using Glean in browser extensions.
 
 ## Setting up the dependency
 
 The Glean.js package is distributed as an npm package [`@mozilla/glean`](https://www.npmjs.com/package/@mozilla/glean).
 
-Install Glean.js in your Javascript project, by running:
+Install Glean.js in your JavaScript project, by running:
 
 ```bash
 npm install @mozilla/glean
@@ -69,7 +72,7 @@ Please make sure that you are using a supported Node.js runtime and also make su
 
 ## Setting up metrics and pings code generation
 
-In Javascript, the metrics and pings definitions must be parsed at build time.
+In JavaScript, the metrics and pings definitions must be parsed at build time.
 The `@mozilla/glean` package exposes [glean_parser](https://github.com/mozilla/glean_parser) through the `glean` script.
 
 To parse your YAML registry files using this script, define a new script in your `package.json` file:

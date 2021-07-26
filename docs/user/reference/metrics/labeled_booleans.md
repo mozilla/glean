@@ -59,7 +59,7 @@ accessibility::features.get("high_contrast").set(is_high_contrast_enabled());
 ```
 </div>
 
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import * as acessibility from "./path/to/generated/files/acessibility.js";
@@ -79,7 +79,7 @@ mozilla::glean::accessibility::features.Get("screen_reader"_ns).Set(true);
 mozilla::glean::accessibility::features.Get("high_contrast"_ns).Set(false);
 ```
 
-**Javascript**
+**JavaScript**
 ```js
 Glean.accessibility.features.screen_reader.set(true);
 Glean.accessibility.features["high_contrast"].set(false);
@@ -158,7 +158,7 @@ assert!(!accessibility::features.get("high_contrast").test_get_value(None).unwra
 ```
 </div>
 
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import * as accessibility from "./path/to/generated/files/acessibility.js";
@@ -176,13 +176,13 @@ assert(!(await accessibility.features["high_contrast"].testGetValue()));
 
 ASSERT_EQ(
     true,
-    mozilla::glean::accessibility::features.Get("screen_reader"_ns).TestGetValue().ref());
+    mozilla::glean::accessibility::features.Get("screen_reader"_ns).TestGetValue().unwrap().ref());
 ASSERT_EQ(
     false,
-    mozilla::glean::accessibility::features.Get("high_contrast"_ns).TestGetValue().ref());
+    mozilla::glean::accessibility::features.Get("high_contrast"_ns).TestGetValue().unwrap().ref());
 ```
 
-**Javascript**
+**JavaScript**
 ```js
 Assert.equal(true, Glean.accessibility.features["screen_reader"].testGetValue());
 Assert.equal(false, Glean.accessibility.features.high_contrast.testGetValue());
@@ -245,7 +245,7 @@ assert metrics.accessibility.features["high_contrast"].test_has_value()
 
 <div data-lang="Rust" class="tab"></div>
 
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="JavaScript" class="tab"></div>
 
 <div data-lang="Firefox Desktop" class="tab"></div>
 
@@ -317,16 +317,20 @@ assert_eq!(
 ```
 </div>
 
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import * as accessibility from "./path/to/generated/files/acessibility.js";
+import { ErrorType } from "@mozilla/glean/<platform>";
 
-assert(await accessibility.features.testGetNumRecordedErrors("invalid_label"));
+assert(
+  1,
+  await accessibility.features.testGetNumRecordedErrors(ErrorType.InvalidLabel)
+);
 ```
 </div>
 
-<div data-lang="Firefox Desktop" class="tab" data-bug="1683171"></div>
+<div data-lang="Firefox Desktop" class="tab"></div>
 
 {{#include ../../../shared/tab_footer.md}}
 
@@ -367,4 +371,4 @@ accessibility:
 * Swift API docs: [`LabeledMetricType`](../../../swift/Classes/LabeledMetricType.html), [`BooleanMetricType`](../../../swift/Classes/BooleanMetricType.html)
 * Python API docs: [`LabeledMetricBase`](../../../python/glean/metrics/labeled.html), [`BooleanMetricType`](../../../python/glean/metrics/boolean.html)
 * Rust API docs: [`LabeledMetric`](../../../docs/glean/private/struct.LabeledMetric.html), [`BooleanMetricType`](../../../docs/glean/private/struct.BooleanMetric.html)
-* Javascript API docs: [`LabeledMetricType`](https://mozilla.github.io/glean.js/classes/core_metrics_types_labeled.default.html), [`BooleanMetricType`](https://mozilla.github.io/glean.js/classes/core_metrics_types_boolean.default.html)
+* JavaScript API docs: [`LabeledMetricType`](https://mozilla.github.io/glean.js/classes/core_metrics_types_labeled.default.html), [`BooleanMetricType`](https://mozilla.github.io/glean.js/classes/core_metrics_types_boolean.default.html)

@@ -65,7 +65,7 @@ user::client_id.generate_and_set();
 ```
 </div>
 
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import * as user from "./path/to/generated/files/user.js";
@@ -85,7 +85,7 @@ user.clientId.generateAndSet();
 mozilla::glean::user::client_id.GenerateAndSet();
 ```
 
-**Javascript**
+**JavaScript**
 
 ```js
 // Generate a new UUID and record it.
@@ -157,7 +157,7 @@ user::client_id.set(Uuid::new_v4());
 ```
 </div>
 
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import * as user from "./path/to/generated/files/user.js";
@@ -179,7 +179,7 @@ nsCString kUuid("decafdec-afde-cafd-ecaf-decafdecafde");
 mozilla::glean::user::client_id.Set(kUuid);
 ```
 
-**Javascript**
+**JavaScript**
 
 ```js
 // Set a specific value.
@@ -260,7 +260,7 @@ assert_eq!(u, user::client_id.test_get_value(None).unwrap());
 
 </div>
 
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import * as user from "./path/to/generated/files/user.js";
@@ -277,14 +277,17 @@ assert(uuid, await user.clientId.testGetValue());
 ```c++
 #include "mozilla/glean/GleanMetrics.h"
 
+// Is it clear of errors?
+ASSERT_TRUE(mozilla::glean::user::client_id.TestGetValue().isOk());
 // Does it have an expected values?
-ASSERT_STREQ(kUuid.get(), mozilla::glean::user::client_id.TestGetValue().value().get());
+ASSERT_STREQ(kUuid.get(), mozilla::glean::user::client_id.TestGetValue().unwrap().value().get());
 ```
 
-**Javascript**
+**JavaScript**
 
 ```js
 const uuid = "decafdec-afde-cafd-ecaf-decafdecafde";
+// testGetValue will throw NS_ERROR_LOSS_OF_SIGNIFICANT_DATA on error.
 Assert.equal(Glean.user.clientId.testGetValue(), uuid);
 ```
 
@@ -346,7 +349,7 @@ assert metrics.user.client_id.test_has_value()
 
 <div data-lang="Rust" class="tab"></div>
 
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="JavaScript" class="tab"></div>
 
 <div data-lang="Firefox Desktop" class="tab"></div>
 
@@ -422,17 +425,21 @@ assert_eq!(
 
 </div>
 
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import * as user from "./path/to/generated/files/user.js";
+import { ErrorType } from "@mozilla/glean/<platform>";
 
 // Was the string truncated, and an error reported?
-assert.strictEqual(1, await user.clientId.testGetNumRecordedErrors("invalid_value"));
+assert.strictEqual(
+  1,
+  await user.clientId.testGetNumRecordedErrors(ErrorType.InvalidValue)
+);
 ```
 </div>
 
-<div data-lang="Firefox Desktop" class="tab" data-bug="1683171"></div>
+<div data-lang="Firefox Desktop" class="tab" data-info="Firefox Desktop uses testGetValue to communicate errors"></div>
 
 {{#include ../../../shared/tab_footer.md}}
 
@@ -456,7 +463,7 @@ user:
 ```
 
 For a full reference on metrics parameters common to all metric types,
-refer to the metrics [YAML format](../yaml/index.md) reference page.
+refer to the [metrics YAML registry format](../yaml/metrics.md) reference page.
 
 ### Extra metric parameters
 
@@ -472,4 +479,4 @@ N/A
 * [Swift API docs](../../../swift/Classes/UuidMetricType.html)
 * [Python API docs](../../../python/glean/metrics/uuid.html)
 * [Rust API docs](../../../docs/glean/private/uuid/struct.UuidMetric.html)
-* [Javascript API docs](https://mozilla.github.io/glean.js/classes/core_metrics_types_uuid.default.html#set)
+* [JavaScript API docs](https://mozilla.github.io/glean.js/classes/core_metrics_types_uuid.default.html#set)

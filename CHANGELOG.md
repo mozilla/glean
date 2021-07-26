@@ -1,6 +1,14 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v39.0.4...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v39.1.0...main)
+
+# v39.1.0 (2021-07-26)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v39.0.4...v39.1.0)
+
+* General
+  * Updated `glean_parser` version to 3.6.0
+  * Allow Custom Distribution metric type on all platforms ([#1679](https://github.com/mozilla/glean/pull/1679))
 
 # v39.0.4 (2021-07-26)
 

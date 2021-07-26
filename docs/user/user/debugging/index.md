@@ -53,7 +53,7 @@ For method 3. please refer to the platform specific pages on how to debug produc
 1. [Debugging Android applications using the Glean SDK](./android.md)
 2. [Debugging iOS applications using the Glean SDK](./ios.md)
 3. [Debugging Python applications using the Glean SDK](./python.md)
-4. [Debugging Javascript applications using Glean.js](./javascript.md)
+4. [Debugging JavaScript applications using Glean.js](./javascript.md)
 
 ### Available debugging methods per platform
 
@@ -63,7 +63,7 @@ For method 3. please refer to the platform specific pages on how to debug produc
 | Swift | ✅ | ✅ | ✅ [^2] |
 | Python | | ✅ | |
 | Rust | ✅ | ✅ | |
-| Javascript | ✅ | | |
+| JavaScript | ✅ | | |
 | Firefox Desktop | | ✅ | ✅ [^3] |
 
 [^1]: In Kotlin, the Glean SDK exposes the [`GleanDebugActivity`](./android.md) for interacting with debug features. Although it is technically possible to also use environment variables in Android, the Glean team is not aware of a proper way to set environment variables in Android devices or emulators.

@@ -62,7 +62,7 @@ glean_parser translate path/to/metrics.yaml path/to/pings.yaml \
 ```
 
 The `translate` command will takes a list of YAML registry file paths and an output path and parse
-the given YAML registry files into QML Javascript files.
+the given YAML registry files into QML JavaScript files.
 
 The generated folder will be a QML module. Make sure wherever the generated module is placed is also
 part of the [QML Import Path](https://doc.qt.io/qt-5/qtqml-syntax-imports.html#qml-import-path).
@@ -71,7 +71,7 @@ Notice that when building for Qt/QML it is mandatory to give the `translate` com
 
 #### `--option platform=qt`
 
-This option is what changes the output file from standard Javascript to QML Javascript.
+This option is what changes the output file from standard JavaScript to QML JavaScript.
 
 #### `--option version=<version>`
 

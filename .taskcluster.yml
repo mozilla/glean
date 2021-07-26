@@ -10,7 +10,7 @@ tasks:
     - $let:
           taskgraph:
               branch: taskgraph
-              revision: a8366f88fc8b35b284ad550358c89ec10133fb42
+              revision: f807e7d4d50000fac74fd1b0845f5a669dc9e247
           trustDomain: glean
       in:
           $let:
@@ -220,7 +220,6 @@ tasks:
                                           REPOSITORIES: {$json: {glean: "Glean", taskgraph: "Taskgraph"}}
                                           HG_STORE_PATH: /builds/worker/checkouts/hg-store
                                           ANDROID_SDK_ROOT: /builds/worker/android-sdk
-                                          MOZ_FETCHES_DIR: /builds/worker/checkouts/src
                                         - $if: 'tasks_for in ["github-pull-request"]'
                                           then:
                                               GLEAN_PULL_REQUEST_TITLE: '${event.pull_request.title}'
@@ -231,7 +230,7 @@ tasks:
                                 # Note: This task is built server side without the context or tooling that
                                 # exist in tree so we must hard code the hash
                                 image:
-                                    mozillareleases/taskgraph:decision-mobile-6607973bc60e32323a541861cc5856cd6a0f51ea9fd664ef7d43bca8df53db47@sha256:8c471aacc469ea8e7bb4846c16efe086f7350a5cc1df570cc6c86b22895a2456
+                                    mozillareleases/taskgraph:decision-mobile-0e1cefb4ec46060d53bcd0eb2c0dd296210fa969998af468d693d1c6922efd1d@sha256:7cfb913bee636f1ab1477a09f8ad746e1f8c68fab0e2a3e1408c985d2ddc27f7
 
                                 maxRunTime: 1800
 
@@ -244,8 +243,8 @@ tasks:
                                     - bash
                                     - -cx
                                     - >
-                                      PIP_IGNORE_INSTALLED=0 pip install --user /builds/worker/checkouts/taskgraph &&
-                                      PIP_IGNORE_INSTALLED=0 pip install --user arrow taskcluster pyyaml &&
+                                      PIP_IGNORE_INSTALLED=0 pip3 install --user /builds/worker/checkouts/taskgraph &&
+                                      PIP_IGNORE_INSTALLED=0 pip3 install --user arrow taskcluster pyyaml &&
                                       ln -s /builds/worker/artifacts artifacts &&
                                       ~/.local/bin/taskgraph decision
                                       --pushlog-id='0'
@@ -266,6 +265,14 @@ tasks:
                                         type: 'directory'
                                         path: '/builds/worker/artifacts'
                                         expires: {$fromNow: '1 year'}
+                                    'public/docker-contexts':
+                                        type: 'directory'
+                                        path: '/builds/worker/checkouts/src/docker-contexts'
+                                        # This needs to be at least the deadline of the
+                                        # decision task + the docker-image task deadlines.
+                                        # It is set to a week to allow for some time for
+                                        # debugging, but they are not useful long-term.
+                                        expires: {$fromNow: '7 day'}
                             extra:
                                 $merge:
                                     - treeherder:

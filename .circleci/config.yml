@@ -383,9 +383,9 @@ jobs:
       - run:
           name: Install mdbook-dtmo
           command: |
-              MDBOOK_VERSION=0.8.1
+              MDBOOK_VERSION=0.9.0
               MDBOOK="mdbook-dtmo-${MDBOOK_VERSION}-x86_64-unknown-linux-gnu.tar.gz"
-              MDBOOK_SHA256=5b8fc7444816c685ae6a3018e6168844a2fcde73e681a9bfbe4775f361dec64c
+              MDBOOK_SHA256=c83f0df5b3104b283b6a6156c4394bb496f3a9c1368d90760313c98887267610
               curl -sfSL --retry 5 -O "https://github.com/badboy/mdbook-dtmo/releases/download/${MDBOOK_VERSION}/${MDBOOK}"
               echo "${MDBOOK_SHA256} *${MDBOOK}" | shasum -a 256 -c -
               tar -xvf "${MDBOOK}"

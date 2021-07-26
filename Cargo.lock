@@ -223,7 +223,7 @@ dependencies = [
 
 [[package]]
 name = "glean"
-version = "39.0.4"
+version = "39.1.0"
 dependencies = [
  "chrono",
  "crossbeam-channel",
@@ -245,7 +245,7 @@ dependencies = [
 
 [[package]]
 name = "glean-core"
-version = "39.0.4"
+version = "39.1.0"
 dependencies = [
  "bincode",
  "chrono",
@@ -267,7 +267,7 @@ dependencies = [
 
 [[package]]
 name = "glean-ffi"
-version = "39.0.4"
+version = "39.1.0"
 dependencies = [
  "android_logger",
  "env_logger",
@@ -496,9 +496,9 @@ dependencies = [
 
 [[package]]
 name = "once_cell"
-version = "1.7.2"
+version = "1.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "af8b08b04175473088b46763e51ee54da5f9a164bc162f615b91bc179dbf15a3"
+checksum = "692fcb63b64b1758029e0a96ee63e049ce8c5948587f2f7208df04625e5f6b56"
 
 [[package]]
 name = "ordered-float"
@@ -765,18 +765,18 @@ dependencies = [
 
 [[package]]
 name = "thiserror"
-version = "1.0.25"
+version = "1.0.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fa6f76457f59514c7eeb4e59d891395fab0b2fd1d40723ae737d64153392e9c6"
+checksum = "93119e4feac1cbe6c798c34d3a53ea0026b0b1de6a120deef895137c0529bfe2"
 dependencies = [
  "thiserror-impl",
 ]
 
 [[package]]
 name = "thiserror-impl"
-version = "1.0.25"
+version = "1.0.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8a36768c0fbf1bb15eca10defa29526bda730a2376c2ab4393ccfa16fb1a318d"
+checksum = "060d69a0afe7796bf42e9e2ff91f5ee691fb15c53d38b4b62a9a53eb23164745"
 dependencies = [
  "proc-macro2",
  "quote",

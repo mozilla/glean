@@ -33,7 +33,7 @@ Additionally, applications (but not libraries) **must**:
 > Step-by-step tutorials for each supported language/platform,
 > can be found on the specific integration guides:
 >
-> - [Javascript](./javascript.md)
+> - [JavaScript](./javascript.md)
 > - [Kotlin](./kotlin.md)
 > - [Python](./python.md)
 > - [Swift](./swift.md)

@@ -137,4 +137,37 @@ class PingTests: XCTestCase {
         XCTAssert(Glean.shared.testHasPingType("events"))
         XCTAssert(Glean.shared.testHasPingType("baseline"))
     }
+
+    func testPingWithReasonCodes() {
+        enum CustomReasonCodes: Int, ReasonCodes {
+            case wasTested = 0
+
+            public func index() -> Int {
+                return self.rawValue
+            }
+        }
+
+        let customPing = Ping<CustomReasonCodes>(
+            name: "custom2",
+            includeClientId: true,
+            sendIfEmpty: true,
+            reasonCodes: ["was_tested"]
+        )
+
+        setupHttpResponseStub("custom2")
+        expectation = expectation(description: "Completed upload")
+
+        var callbackWasCalled = false
+        customPing.testBeforeNextSubmit { reason in
+            XCTAssertEqual(CustomReasonCodes.wasTested, reason, "Unexpected reason for custom ping submitted")
+            callbackWasCalled = true
+        }
+
+        customPing.submit(reason: .wasTested)
+        XCTAssert(callbackWasCalled, "Expected callback to be called by now.")
+
+        waitForExpectations(timeout: 5.0) { error in
+            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
+        }
+    }
 }

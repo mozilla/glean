@@ -576,7 +576,7 @@ function formatNumber(number) {
 
 
 /**
- * Arbitrary base log function, Javascript doesn't have one
+ * Arbitrary base log function, JavaScript doesn't have one
  *
  * @param {Number} number A numeric expression
  * @param {base} base The log base

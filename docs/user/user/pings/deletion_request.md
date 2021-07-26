@@ -30,7 +30,7 @@ As such it attempts to send itself at the moment the user opts out of data colle
 
 ### Platform availability
 
-| Language Binding | Kotlin | Swift | Python | Rust | Javascript | Firefox Desktop |
+| Language Binding | Kotlin | Swift | Python | Rust | JavaScript | Firefox Desktop |
 |-:|:-:|:-:|:-:|:-:|:-:|:-:|
 | [`deletion-request` ping](deletion_request.md) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 

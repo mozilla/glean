@@ -169,7 +169,7 @@ The overall organization is:
 
 ```YAML
 # Required to indicate this is a `metrics.yaml` file
-$schema: moz://mozilla.org/schemas/glean/../../reference/metrics/2-0-0
+$schema: moz://mozilla.org/schemas/glean/metrics/2-0-0
 
 toolbar:
   click:
@@ -188,13 +188,8 @@ toolbar:
     ...
 ```
 
-Categories can have `.` characters to provide extra structure, for example `category.subcategory`, as long as the total length doesn't exceed 40 characters.
-
-Metric names have a maximum length of 30 characters.
-
-The details of the metric parameters are described in [metric parameters](../../reference/yaml/index.md).
-
-The `metrics.yaml` file is used to generate code in the target language (e.g. Kotlin, Swift, ...) that becomes the public API to access your application's metrics.
+Refer to the [metrics YAML registry format](../../reference/yaml/metrics.md) for a full reference
+on the `metrics.yaml` file structure.
 
 ## Using the metric from your code
 
@@ -207,7 +202,9 @@ While this may seem limiting, this is required to:
 
 ### Capitalization
 
-One thing to note is that we try to adhere to the coding conventions of each language wherever possible, to the metric name in the `metrics.yaml` (which is in `snake_case`) may be changed to some other case convention, such as `camelCase`, when used from code.
+One thing to note is that we try to adhere to the coding conventions of each language wherever possible, so the metric name and category in the `metrics.yaml` (which is in `snake_case`) may be changed to some other case convention, such as `camelCase`, when used from code.
+
+Event extras and labels are never capitalized, no matter the target language.
 
 {{#include ../../../shared/tab_header.md}}
 
@@ -280,7 +277,7 @@ use fog::metrics;
 metrics::compound_category::metric_name...
 ```
 </div>
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 JavaScript identifiers are customarily `camelCase`.
 This requires transforming a metric defined in the `metrics.yaml` as:

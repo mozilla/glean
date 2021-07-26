@@ -116,7 +116,7 @@ These are the tabs every tab section is expected to contain, in order:
 - Swift
 - Python
 - Rust
-- Javascript
+- JavaScript
 - Firefox Desktop
 
 Finally, here is an example code for a tabs sections:
@@ -139,10 +139,10 @@ Finally, here is an example code for a tabs sections:
   Rust information...
 </div>
 <!--
-  In this example, Javascript and Firefox Desktop
+  In this example, JavaScript and Firefox Desktop
   would show up as disabled in the final page.
 -->
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="JavaScript" class="tab"></div>
 <div data-lang="Firefox Desktop" class="tab"></div>
 \{{#include ../../shared/tab_footer.md}}
 ```
@@ -165,7 +165,7 @@ And this is how those tabs will look like:
 <div data-lang="Rust" class="tab">
   Rust information...
 </div>
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="JavaScript" class="tab"></div>
 <div data-lang="Firefox Desktop" class="tab"></div>
 
 {{#include ../../shared/tab_footer.md}}
@@ -197,7 +197,7 @@ This is how you can use the above attributes.
 <!-- No attribute, default text will show up. -->
 <div data-lang="Rust" class="tab"></div>
 <!-- data-bug attribute, default text will show up + link to bug. -->
-<div data-lang="Javascript" class="tab" data-bug="000000"></div>
+<div data-lang="JavaScript" class="tab" data-bug="000000"></div>
 <!-- data-info attribute, free form text will show up. -->
 <div data-lang="Firefox Desktop" class="tab" data-info="Hello, Glean world!"></div>
 \{{#include ../../shared/tab_footer.md}}
@@ -207,7 +207,7 @@ And this is how each tool tip is rendered.
 
 {{#include ../../shared/tab_header.md}}
 <div data-lang="Rust" class="tab"></div>
-<div data-lang="Javascript" class="tab" data-bug="000000"></div>
+<div data-lang="JavaScript" class="tab" data-bug="000000"></div>
 <div data-lang="Firefox Desktop" class="tab" data-info="Hello, Glean world!"></div>
 {{#include ../../shared/tab_footer.md}}
 

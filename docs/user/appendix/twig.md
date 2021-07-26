@@ -47,3 +47,7 @@ They could be release notes, documentation, hopes, dreams, or whatever: so long 
 * 2021-04-07: [Publishing Glean.js or “How I configured an npm package that has multiple entry points”](https://blog.mozilla.org/data/2021/04/07/this-week-in-glean-publishing-glean-js/)
 * 2021-04-16: [rustc, iOS and an M1](https://blog.mozilla.org/data/2021/04/16/this-week-in-glean-rustc-ios-and-an-m1/)
 * 2021-05-03: [Glean Dictionary updates](https://blog.mozilla.org/data/2021/06/02/this-week-in-glean-glean-dictionary-updates/)
+* 2021-06-14: [⚠️Danger zone⚠️: handling sensitive data in Glean](https://blog.mozilla.org/data/2021/06/11/danger-zone-handling-sensitive-data-in-glean/)
+* 2021-06-25: [Funday!](https://fnordig.de/2021/06/25/funday/)
+* 2021-07-22: [Firefox Telemetry is to Glean as C++ is to Rust](https://blog.mozilla.org/data/2021/07/22/this-week-in-glean-firefox-telemetry-is-to-glean-as-c-is-to-rust/)
+* 2021-07-26: [Shipping Glean with GeckoView](https://blog.mozilla.org/data/2021/07/26/this-week-in-glean-shipping-glean-with-geckoview/)

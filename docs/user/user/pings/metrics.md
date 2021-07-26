@@ -12,7 +12,7 @@ Additionally, it is undesirable to mix metric recording from different versions 
 
 ### Platform availability
 
-| Language Binding | Kotlin | Swift | Python | Rust | Javascript | Firefox Desktop |
+| Language Binding | Kotlin | Swift | Python | Rust | JavaScript | Firefox Desktop |
 |-:|:-:|:-:|:-:|:-:|:-:|:-:|
 | [`metrics` ping](metrics.md) | ✅ | ✅ | | ✅ | | ✅ |
 

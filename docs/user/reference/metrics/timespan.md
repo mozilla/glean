@@ -69,7 +69,7 @@ fn show_login() {
 }
 ```
 </div>
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import * as auth from "./path/to/generated/files/auth.js";
@@ -90,7 +90,7 @@ void OnShowLogin() {
   // ...
 }
 ```
-**Javascript**
+**JavaScript**
 ```js
 function onShowLogin() {
   Glean.auth.loginTime.start();
@@ -183,7 +183,7 @@ fn login() {
 }
 ```
 </div>
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import * as auth from "./path/to/generated/files/auth.js";
@@ -204,7 +204,7 @@ void OnLogin() {
   // ...
 }
 ```
-**Javascript**
+**JavaScript**
 ```js
 function onLogin() {
   Glean.auth.loginTime.stop();
@@ -278,7 +278,7 @@ fn login_cancel() {
 }
 ```
 </div>
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import * as auth from "./path/to/generated/files/auth.js";
@@ -299,7 +299,7 @@ void OnLoginCancel() {
   // ...
 }
 ```
-**Javascript**
+**JavaScript**
 ```js
 function onLoginCancel() {
   Glean.auth.loginTime.cancel();
@@ -356,7 +356,7 @@ with metrics.auth.login_time.measure():
 ```
 </div>
 <div data-lang="Rust" class="tab"></div>
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="JavaScript" class="tab"></div>
 <div data-lang="Firefox Desktop" class="tab"></div>
 
 {{#include ../../../shared/tab_footer.md}}
@@ -430,7 +430,7 @@ fn after_login(login_elapsed: Duration) {
 }
 ```
 </div>
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import * as auth from "./path/to/generated/files/auth.js";
@@ -460,7 +460,7 @@ void AfterLogin(uint32_t aDuration) {
   // ...
 }
 ```
-**Javascript**
+**JavaScript**
 ```js
 function afterLogin(aDuration) {
   Glean.auth.loginTime.setRaw(aDuration);
@@ -525,7 +525,7 @@ use fog::metrics;
 assert!(metrics::login_time.test_get_value().unwrap() > 0);
 ```
 </div>
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import * as auth from "./path/to/generated/files/auth.js";
@@ -539,10 +539,12 @@ assert(await auth.loginTime.testGetValue() > 0);
 ```c++
 #include "mozilla/glean/GleanMetrics.h"
 
-ASSERT_TRUE(mozilla::glean::auth::login_time.TestGetValue().value() > 0);
+ASSERT_TRUE(mozilla::glean::auth::login_time.TestGetValue().isOk());
+ASSERT_GE(mozilla::glean::auth::login_time.TestGetValue().unwrap().value(), 0);
 ```
-**Javascript**
+**JavaScript**
 ```js
+// testGetValue will throw NS_ERROR_LOSS_OF_SIGNIFICANT_DATA on error.
 Assert.ok(Glean.auth.loginTime.testGetValue() > 0);
 ```
 </div>
@@ -594,7 +596,7 @@ use fog::metrics;
 assert!(metrics::login_time.test_has_value().unwrap() > 0);
 ```
 </div>
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="JavaScript" class="tab"></div>
 <div data-lang="Firefox Desktop" class="tab"></div>
 
 {{#include ../../../shared/tab_footer.md}}
@@ -652,15 +654,19 @@ use fog::metrics;
 assert_eq!(1, login_time.test_get_num_recorded_errors(ErrorType::InvalidValue));
 ```
 </div>
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import * as auth from "./path/to/generated/files/auth.js";
+import { ErrorType } from "@mozilla/glean/<platform>";;
 
-assert.strictEqual(1, await auth.loginTime.testGetNumRecordedErrors("invalid_value"));
+assert.strictEqual(
+  1,
+  await auth.loginTime.testGetNumRecordedErrors(ErrorType.InvalidValue)
+);
 ```
 </div>
-<div data-lang="Firefox Desktop" class="tab" data-bug="1683171"></div>
+<div data-lang="Firefox Desktop" class="tab" data-info="Firefox Desktop uses testGetValue to communicate errors"></div>
 
 {{#include ../../../shared/tab_footer.md}}
 
@@ -687,7 +693,7 @@ auth:
 ```
 
 For a full reference on metrics parameters common to all metric types,
-refer to the metrics [YAML format](../yaml/index.md) reference page.
+refer to the [metrics YAML registry format](../yaml/metrics.md) reference page.
 
 ### Extra metric parameters
 
@@ -725,4 +731,4 @@ and use the largest possible value that will provide useful information so as to
 * [Swift API docs](../../../swift/Classes/TimespanMetricType.html)
 * [Python API docs](../../../python/glean/metrics/timespan.html)
 * [Rust API docs](../../../docs/glean/private/struct.TimespanMetric.html)
-* [Javascript API docs](https://mozilla.github.io/glean.js/classes/core_metrics_types_timespan.default.html)
+* [JavaScript API docs](https://mozilla.github.io/glean.js/classes/core_metrics_types_timespan.default.html)

@@ -42,7 +42,7 @@ use glean;
 glean.set_debug_view_tag("my-tag");
 ```
 </div>
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import Glean from "@mozilla/glean/<platform>";
@@ -86,7 +86,7 @@ $ GLEAN_DEBUG_VIEW_TAG="my-tag" python my_application.py
 $ GLEAN_DEBUG_VIEW_TAG="my-tag" cargo run
 ```
 </div>
-<div data-lang="Javascript" class="tab" data-info="It is not possible to access environment variables from the currently supported Javascript platforms: Qt and browsers."></div>
+<div data-lang="JavaScript" class="tab" data-info="It is not possible to access environment variables from the currently supported JavaScript platforms: Qt and browsers."></div>
 <div data-lang="Firefox Desktop" class="tab">
 
 ```bash

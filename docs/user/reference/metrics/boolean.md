@@ -60,7 +60,7 @@ flags::a11y_enabled.set(system.is_accessibility_enabled());
 
 </div>
 
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import * as flags from "./path/to/generated/files/flags.js";
@@ -79,7 +79,7 @@ flags.a11yEnabled.set(this.isAccessibilityEnabled());
 mozilla::glean::flags::a11y_enabled.Set(false);
 ```
 
-**Javascript**
+**JavaScript**
 
 ```js
 Glean.flags.a11yEnabled.set(false);
@@ -153,7 +153,7 @@ assert!(flags::a11y_enabled.test_get_value(None).unwrap());
 
 </div>
 
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import * as flags from "./path/to/generated/files/flags.js";
@@ -172,7 +172,7 @@ assert(await flags.a11yEnabled.testGetValue());
 ASSERT_EQ(false, mozilla::glean::flags::a11y_enabled.TestGetValue().value());
 ```
 
-**Javascript**
+**JavaScript**
 
 ```js
 Assert.equal(false, Glean.flags.a11yEnabled.testGetValue());
@@ -232,7 +232,7 @@ assert True is metrics.flags.a11y_enabled.test_has_value()
 
 <div data-lang="Rust" class="tab"></div>
 
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="JavaScript" class="tab"></div>
 
 <div data-lang="Firefox Desktop" class="tab"></div>
 
@@ -258,7 +258,7 @@ flags:
 ```
 
 For a full reference on metrics parameters common to all metric types,
-refer to the metrics [YAML format](../yaml/index.md) reference page.
+refer to the [metrics YAML registry format](../yaml/metrics.md) reference page.
 
 ### Extra metric parameters
 
@@ -274,4 +274,4 @@ N/A
 * [Swift API docs](../../../swift/Classes/BooleanMetricType.html)
 * [Python API docs](../../../python/glean/metrics/boolean.html)
 * [Rust API docs](../../../docs/glean/private/boolean/struct.BooleanMetric.html)
-* [Javascript API docs](https://mozilla.github.io/glean.js/classes/core_metrics_types_boolean.default.html)
+* [JavaScript API docs](https://mozilla.github.io/glean.js/classes/core_metrics_types_boolean.default.html)

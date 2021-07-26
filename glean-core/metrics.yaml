@@ -242,13 +242,35 @@ glean.internal.metrics:
       - glean-team@mozilla.com
     expires: never
 
-  seq:
+  telemetry_sdk_build:
     type: string
+    lifetime: ping
+    send_in_pings:
+      - glean_internal_info
+    description: |
+      The version of the Glean SDK
+      at the time the ping was collected (e.g. 25.0.0).
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1556966
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+    expires: never
+
+  seq:
+    type: counter
     lifetime: user
     send_in_pings:
       - glean_internal_info
     description: |
-      A running counter of the number of times pings of this type have been sent
+      A running counter of the number of times pings of this type have been
+      sent.
+      This metric definition is only used for documentation purposes:
+      internally, Glean instantiates the metric manually and calls it
+      `sequence`.
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1556964
     data_reviews:
@@ -278,6 +300,7 @@ glean.internal.metrics:
 
   start_time:
     type: datetime
+    time_unit: minute
     lifetime: user
     send_in_pings:
       - glean_internal_info
@@ -296,6 +319,7 @@ glean.internal.metrics:
 
   end_time:
     type: datetime
+    time_unit: minute
     lifetime: ping
     send_in_pings:
       - glean_internal_info

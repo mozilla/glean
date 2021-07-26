@@ -1,4 +1,4 @@
-# Debugging Javascript applications using Glean.js
+# Debugging JavaScript applications using Glean.js
 
 Debugging features in Python can be enabled through APIs exposed on the Glean object.
 For more information on the available features and how to enable them,

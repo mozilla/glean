@@ -234,9 +234,7 @@ There are test APIs available too:
 #include "mozilla/glean/GleanMetrics.h"
 
 // Does it have the expected value?
-ASSERT_EQ(11 * 1024, mozilla::glean::memory::heap_allocated.TestGetValue().value().sum);
-// Did it run across any errors?
-// TODO: https://bugzilla.mozilla.org/show_bug.cgi?id=1683171
+ASSERT_EQ(11 * 1024, mozilla::glean::memory::heap_allocated.TestGetValue().unwrap().value().sum);
 ```
 
 </div>
@@ -256,8 +254,6 @@ const data = Glean.memory.heapAllocated.testGetValue();
 Assert.equal(11 * 1024, data.sum);
 // Does it have the right number of samples?
 Assert.equal(1, Object.entries(data.values).reduce(([bucket, count], sum) => count + sum, 0));
-// Did it run across any errors?
-// TODO: https://bugzilla.mozilla.org/show_bug.cgi?id=1683171
 ```
 
 </div>

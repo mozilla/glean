@@ -81,7 +81,7 @@ search_default::name.set("wikipedia");
 ```
 </div>
 
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import * as searchDefault from "./path/to/generated/files/searchDefault.js";
@@ -103,7 +103,7 @@ searchDefault.name.set("wikipedia");
 mozilla::glean::search_default::name.Set("wikipedia"_ns);
 ```
 
-**Javascript**
+**JavaScript**
 
 ```js
 Glean.searchDefault.name.set("wikipedia");
@@ -187,7 +187,7 @@ assert_eq!(6, search_default::name.test_get_value(None).unwrap());
 
 </div>
 
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import * as searchDefault from "./path/to/generated/files/searchDefault.js";
@@ -203,17 +203,20 @@ assert.strictEqual("wikipedia", await searchDefault.name.testGetValue());
 ```c++
 #include "mozilla/glean/GleanMetrics.h"
 
+// Is it clear of errors?
+ASSERT_TRUE(mozilla::glean::search_default::name.TestGetValue().isOk());
 // Does it have the expected value?
 ASSERT_STREQ(
   "wikipedia",
-  mozilla::glean::search_default::name.TestGetValue().value().get()
+  mozilla::glean::search_default::name.TestGetValue().unwrap().value().get()
 );
 ```
 
-**Javascript**
+**JavaScript**
 
 ```js
 // Does it have the expected value?
+// testGetValue will throw NS_ERROR_LOSS_OF_SIGNIFICANT_DATA on error.
 Assert.equal("wikipedia", Glean.searchDefault.name.testGetValue());
 ```
 
@@ -274,7 +277,7 @@ assert metrics.search_default.name.test_has_value()
 
 <div data-lang="Rust" class="tab"></div>
 
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="JavaScript" class="tab"></div>
 
 <div data-lang="Firefox Desktop" class="tab"></div>
 
@@ -355,17 +358,21 @@ assert_eq!(
 ```
 </div>
 
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import * as searchDefault from "./path/to/generated/files/searchDefault.js";
+import { ErrorType } from "@mozilla/glean/<platform>";
 
 // Was the string truncated, and an error reported?
-assert.strictEqual(1, await searchDefault.name.testGetNumRecordedErrors("invalid_overflow"));
+assert.strictEqual(
+  1,
+  await searchDefault.name.testGetNumRecordedErrors(ErrorType.InvalidOverflow)
+);
 ```
 </div>
 
-<div data-lang="Firefox Desktop" class="tab" data-bug="1683171"></div>
+<div data-lang="Firefox Desktop" class="tab" data-info="Firefox Desktop uses testGetValue to communicate errors"></div>
 
 {{#include ../../../shared/tab_footer.md}}
 
@@ -389,7 +396,7 @@ controls:
 ```
 
 For a full reference on metrics parameters common to all metric types,
-refer to the metrics [YAML format](../yaml/index.md) reference page.
+refer to the [metrics YAML registry format](../yaml/metrics.md) reference page.
 
 ### Extra metric parameters
 
@@ -407,4 +414,4 @@ N/A
 * [Swift API docs](../../../swift/Classes/StringMetricType.html)
 * [Python API docs](../../../python/glean/metrics/string.html)
 * [Rust API docs](../../../docs/glean/private/struct.StringMetric.html)
-* [Javascript API docs](https://mozilla.github.io/glean.js/classes/core_metrics_types_string.default.html#set)
+* [JavaScript API docs](https://mozilla.github.io/glean.js/classes/core_metrics_types_string.default.html#set)

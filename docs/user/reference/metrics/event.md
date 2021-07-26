@@ -428,12 +428,16 @@ assert_eq!(
 
 </div>
 
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import * as views from "./path/to/generated/files/views.js";
+import { ErrorType } from "@mozilla/glean/<platform>";
 
-assert.strictEqual(1, await views.loginOpened.testGetNumRecordedErrors("invalid_value"));
+assert.strictEqual(
+  1,
+  await views.loginOpened.testGetNumRecordedErrors(ErrorType.InvalidValue)
+);
 ```
 </div>
 
@@ -465,7 +469,15 @@ views:
 ```
 
 For a full reference on metrics parameters common to all metric types,
-refer to the metrics [YAML format](../yaml/index.md) reference page.
+refer to the [metrics YAML registry format](../yaml/metrics.md) reference page.
+
+{{#include ../../../shared/blockquote-info.html}}
+
+#### Events require `lifetime: ping`.
+
+> Recorded events are always sent in their respective pings and then cleared.
+> They cannot be persisted longer.
+> The `glean_parser` will reject any other lifetime.
 
 ### Extra metric parameters
 
@@ -497,4 +509,4 @@ Each extra key contains additional metadata:
 * [Swift API docs](../../../swift/Classes/EventMetricType.html)
 * [Python API docs](../../../python/glean/metrics/event.html)
 * [Rust API docs](../../../docs/glean/private/event/struct.EventMetric.html)
-* [Javascript API docs](https://mozilla.github.io/glean.js/classes/core_metrics_types_event.default.html)
+* [JavaScript API docs](https://mozilla.github.io/glean.js/classes/core_metrics_types_event.default.html)

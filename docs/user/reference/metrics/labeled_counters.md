@@ -66,7 +66,7 @@ stability::crash_count.get("native_code_crash").add(3); // Adds 3 to the "native
 ```
 </div>
 
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import * as stability from "./path/to/generated/files/stability.js";
@@ -88,7 +88,7 @@ mozilla::glean::stability::crash_count.Get("uncaught_exception"_ns).Add(1);
 mozilla::glean::stability::crash_count.Get("native_code_crash"_ns).Add(3);
 ```
 
-**Javascript**
+**JavaScript**
 ```js
 Glean.stability.crashCount.uncaught_exception.add(1);
 Glean.stability.crashCount["native_code_crash"].add(3);
@@ -173,7 +173,7 @@ assert_eq!(3, stability::crash_count.get("native_code_crash").test_get_value().u
 ```
 </div>
 
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import * as stability from "./path/to/generated/files/stability.js";
@@ -192,13 +192,13 @@ assert.strictEqual(3, await stability.crashCount["native_code_crash"].testGetVal
 
 ASSERT_EQ(
     1,
-    mozilla::glean::stability::crash_count.Get("uncaught_exception"_ns).TestGetValue().ref());
+    mozilla::glean::stability::crash_count.Get("uncaught_exception"_ns).TestGetValue().unwrap().ref());
 ASSERT_EQ(
     3,
-    mozilla::glean::stability::crash_count.Get("native_code_crash"_ns).TestGetValue().ref());
+    mozilla::glean::stability::crash_count.Get("native_code_crash"_ns).TestGetValue().unwrap().ref());
 ```
 
-**Javascript**
+**JavaScript**
 ```js
 Assert.equal(1, Glean.stability.crashCount["uncaught_exception"].testGetValue());
 Assert.equal(3, Glean.stability.crashCount.native_code_crash.testGetValue());
@@ -260,7 +260,7 @@ assert metrics.stability.crash_count["native_code_crash"].test_has_value()
 
 <div data-lang="Rust" class="tab"></div>
 
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="JavaScript" class="tab"></div>
 
 <div data-lang="Firefox Desktop" class="tab"></div>
 
@@ -332,17 +332,21 @@ assert_eq!(
 ```
 </div>
 
-<div data-lang="Javascript" class="tab">
+<div data-lang="JavaScript" class="tab">
 
 ```js
 import * as stability from "./path/to/generated/files/stability.js";
+import { ErrorType } from "@mozilla/glean/<platform>";
 
 // Were there any invalid labels?
-assert.strictEqual(0, await stability.crashCount.testGetNumRecordedErrors("invalid_label"));
+assert(
+  0,
+  await stability.crashCount.testGetNumRecordedErrors(ErrorType.InvalidLabel)
+);
 ```
 </div>
 
-<div data-lang="Firefox Desktop" class="tab" data-bug="1683171"></div>
+<div data-lang="Firefox Desktop" class="tab"></div>
 
 {{#include ../../../shared/tab_footer.md}}
 
@@ -383,4 +387,4 @@ accessibility:
 * Swift API docs: [`LabeledMetricType`](../../../swift/Classes/LabeledMetricType.html), [`CounterMetricType`](../../../swift/Classes/CounterMetricType.html)
 * Python API docs: [`LabeledMetricBase`](../../../python/glean/metrics/labeled.html), [`CounterMetricType`](../../../python/glean/metrics/counter.html)
 * Rust API docs: [`LabeledMetric`](../../../docs/glean/private/struct.LabeledMetric.html), [`CounterMetricType`](../../../docs/glean/private/struct.CounterMetric.html)
-* Javascript API docs: [`LabeledMetricType`](https://mozilla.github.io/glean.js/classes/core_metrics_types_labeled.default.html), [`CounterMetricType`](https://mozilla.github.io/glean.js/classes/core_metrics_types_counter.default.html)
+* JavaScript API docs: [`LabeledMetricType`](https://mozilla.github.io/glean.js/classes/core_metrics_types_labeled.default.html), [`CounterMetricType`](https://mozilla.github.io/glean.js/classes/core_metrics_types_counter.default.html)
