@@ -2,7 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import absolute_import, print_function, unicode_literals
 
 from taskgraph.transforms.base import TransformSequence
 
@@ -27,10 +26,10 @@ def build_task(config, tasks):
         all_extensions = get_extensions(name)
         for publication_name, extensions in all_extensions.items():
             for extension in extensions:
-                artifact_filename = "{}-{}{}".format(publication_name, version, extension)
+                artifact_filename = f"{publication_name}-{version}{extension}"
                 artifacts.append({
-                    "name": "public/build/{}".format(artifact_filename),
-                    "path": "/builds/worker/checkouts/src/build/maven/org/mozilla/telemetry/{}/{}/{}".format(publication_name, version, artifact_filename),
+                    "name": f"public/build/{artifact_filename}",
+                    "path": f"/builds/worker/checkouts/src/build/maven/org/mozilla/telemetry/{publication_name}/{version}/{artifact_filename}",
                     "type": "file",
                 })
 
