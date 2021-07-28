@@ -38,7 +38,7 @@ the details of which are reproduced below.
   </license>
   <license>
     <name>Apache License 2.0: env_logger</name>
-    <url>https://github.com/sebasmagri/env_logger/</url>
+    <url>https://github.com/env-logger-rs/env_logger/</url>
   </license>
   <license>
     <name>Apache License 2.0: ffi-support</name>
@@ -75,10 +75,6 @@ the details of which are reproduced below.
   <license>
     <name>Apache License 2.0: libc</name>
     <url>https://github.com/rust-lang/libc</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: log</name>
-    <url>https://github.com/rust-lang/log</url>
   </license>
   <license>
     <name>Apache License 2.0: num-integer</name>
@@ -182,11 +178,7 @@ the details of which are reproduced below.
   </license>
   <license>
     <name>Apache License 2.0: humantime</name>
-    <url>https://crates.io/crates/humantime</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: quick-error</name>
-    <url>http://github.com/tailhook/quick-error</url>
+    <url>https://github.com/tailhook/humantime</url>
   </license>
   <license>
     <name>Apache License 2.0: getrandom</name>
@@ -209,16 +201,20 @@ the details of which are reproduced below.
     <url>https://github.com/retep998/winapi-rs</url>
   </license>
   <license>
+    <name>Apache License 2.0: log</name>
+    <url>https://github.com/rust-lang/log</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: uuid</name>
+    <url>https://github.com/uuid-rs/uuid</url>
+  </license>
+  <license>
     <name>Apache License 2.0: rkv</name>
     <url>https://github.com/mozilla/rkv</url>
   </license>
   <license>
     <name>Apache License 2.0: ryu</name>
     <url>https://github.com/dtolnay/ryu</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: uuid</name>
-    <url>https://github.com/uuid-rs/uuid</url>
   </license>
   <license>
     <name>Apache License 2.0: winapi</name>
@@ -283,6 +279,10 @@ the details of which are reproduced below.
   <license>
     <name>Mozilla Public License 2.0: zeitstempel</name>
     <url>https://github.com/badboy/zeitstempel</url>
+  </license>
+  <license>
+    <name>Mozilla Public License 2.0: glean-bundle</name>
+    <url>https://github.com/mozilla/glean</url>
   </license>
 </licenses>
 
