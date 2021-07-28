@@ -9,7 +9,7 @@ set -eu
 if [[ "$#" -ne 2 ]]
 then
     echo "Usage:"
-    echo "./automation/check_artifact_size.sh <buildDir> <artifactId>"
+    echo "./bin/check-artifact.sh <buildDir> <artifactId>"
     exit 1
 fi
 
@@ -35,6 +35,13 @@ check_files() {
     local missing
 
     artifact="$1"
+    echo "Artifact: $artifact"
+
+    if [[ -z "$artifact" ]]; then
+        echo "No artifact found. Skipping."
+        return
+    fi
+
     shift
     files=("$@")
     content="$(unzip -l "$artifact")"
@@ -57,11 +64,11 @@ check_files() {
 
 
 case "$ARTIFACT_ID" in
-    glean)
+    glean-native)
         ARTIFACT="$(find "${BUILD_DIR}" -path "*/${ARTIFACT_ID}/*" -name "*.aar")"
         check_files "$ARTIFACT" "${REQUIRED_FILES_AAR[@]}"
         ;;
-    glean-forUnitTests)
+    glean-native-forUnitTests)
         ARTIFACT="$(find "${BUILD_DIR}" -path "*/${ARTIFACT_ID}/*" -name "*.jar")"
         check_files "$ARTIFACT" "${REQUIRED_FILES_TEST[@]}"
         ;;

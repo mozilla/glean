@@ -38,7 +38,7 @@ time = "0.1.40"
 whatsys = "0.1.2"
 
 [dev-dependencies]
-env_logger = { version = "0.7.1", default-features = false, features = ["termcolor", "atty", "humantime"] }
+env_logger = { version = "0.8.0", default-features = false, features = ["termcolor", "atty", "humantime"] }
 tempfile = "3.1.0"
 jsonschema-valid = "0.4.0"
 flate2 = "1.0.19"
