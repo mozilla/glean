@@ -1,6 +1,30 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v39.1.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v40.0.0...main)
+
+# v40.0.0 (2021-07-28)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v39.1.0...v40.0.0)
+
+* Android
+  * **Breaking Change**: Split the Glean Kotlin SDK into two packages: `glean` and `glean-native` ([#1595](https://github.com/mozilla/glean/pull/1595)).  
+    Consumers will need to switch to `org.mozilla.telemetry:glean-native-forUnitTests`.  
+    Old code in `build.gradle`:
+
+    ```
+    testImplementation "org.mozilla.telemetry:glean-forUnitTests:${project.ext.glean_version}"
+    ```
+
+    New code in `build.gradle`:
+
+    ```
+    testImplementation "org.mozilla.telemetry:glean-native-forUnitTests:${project.ext.glean_version}"
+    ```
+  * The `glean-gradle-plugin` now automatically excludes the `glean-native` dependency if `geckoview-omni` is also part of the build.
+    Glean native functionality will be provided by the `geckoview-omni` package.
+* Rust
+  * The `glean-ffi` is no longer compiled as a `cdylib`. Other language SDKs consume `glean-bundle` instead as a `cdylib`.
+    This doesn't affect consumers.
 
 # v39.1.0 (2021-07-26)
 

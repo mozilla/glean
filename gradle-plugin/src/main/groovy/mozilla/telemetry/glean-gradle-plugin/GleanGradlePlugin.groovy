@@ -8,9 +8,14 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.artifacts.transform.ArtifactTransform
+import org.gradle.api.artifacts.ComponentMetadataRule
+import org.gradle.api.artifacts.ComponentMetadataContext
+import org.gradle.api.artifacts.component.ModuleComponentIdentifier
 import org.gradle.api.internal.artifacts.ArtifactAttributes
 import org.gradle.api.tasks.Exec
 import org.gradle.api.tasks.TaskProvider
+
+import groovy.transform.CompileStatic
 
 import java.util.concurrent.Semaphore
 
@@ -30,6 +35,51 @@ class GleanMetricsYamlTransform extends ArtifactTransform {
             return [f]
         }
         return []
+    }
+}
+
+// Add the "glean-native" capability to any geckoview-like dependency.
+//
+// This effectively replaces glean-native anywhere in the dependency tree with that GeckoView,
+// which will provide the necessary FFI implementation.
+@CompileStatic
+class GleanCapability implements ComponentMetadataRule {
+    final static Set<String> GLEAN_CAPABILITY_MODULES =
+        [
+            'geckoview-omni',
+            'geckoview-omni-armeabi-v7a',
+            'geckoview-omni-arm64-v8a',
+            'geckoview-omni-x86',
+            'geckoview-omni-x86_64',
+
+            'geckoview-default-omni',
+
+            'geckoview-nightly-omni',
+            'geckoview-nightly-omni-armeabi-v7a',
+            'geckoview-nightly-omni-arm64-v8a',
+            'geckoview-nightly-omni-x86',
+            'geckoview-nightly-omni-x86_64',
+
+            'geckoview-beta-omni',
+            'geckoview-beta-omni-armeabi-v7a',
+            'geckoview-beta-omni-arm64-v8a',
+            'geckoview-beta-omni-x86',
+            'geckoview-beta-omni-x86_64',
+        ] as Set<String>
+
+    void execute(ComponentMetadataContext context) {
+        context.details.with {
+            if (GLEAN_CAPABILITY_MODULES.contains(id.name)) {
+                println("[Glean Plugin] Adding Glean capability through GeckoView (provided by ${id.name})")
+                allVariants {
+                    it.withCapabilities {
+                        // Declare glean-native capability for GeckoView
+                        it.addCapability("org.mozilla.telemetry", "glean-native", id.version)
+                    }
+                }
+            }
+        }
+
     }
 }
 
@@ -489,7 +539,7 @@ except:
     void apply(Project project) {
         isOffline = project.gradle.startParameter.offline
 
-        project.ext.glean_version = "39.1.0"
+        project.ext.glean_version = "40.0.0"
 
         // Print the required glean_parser version to the console. This is
         // offline builds, and is mentioned in the documentation for offline
@@ -503,6 +553,21 @@ except:
         project.ext.set("gleanPythonEnvDir", envDir)
 
         setupExtractMetricsFromAARTasks(project)
+
+        // If this project uses both Glean and GeckoView,
+        // then Glean's FFI is provided by GeckoView and we need to exclude glean-native
+        // (which contains the libglean_ffi).
+        project.dependencies.components.all(GleanCapability)
+
+        project.configurations.all {
+            resolutionStrategy.capabilitiesResolution.withCapability("org.mozilla.telemetry:glean-native") {
+                def toBeSelected = candidates.find { it.id instanceof ModuleComponentIdentifier && it.id.module.contains('geckoview') }
+                if (toBeSelected != null) {
+                    select(toBeSelected)
+                }
+                because 'use GeckoView Glean instead of standalone Glean'
+            }
+        }
 
         if (project.android.hasProperty('applicationVariants')) {
             project.android.applicationVariants.all(setupTasks(project, envDir, true))

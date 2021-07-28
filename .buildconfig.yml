@@ -1,4 +1,4 @@
-libraryVersion: 39.1.0
+libraryVersion: 40.0.0
 groupId: org.mozilla.telemetry
 projects:
   glean:
@@ -7,9 +7,16 @@ projects:
     publications:
       - name: glean
         type: aar
-      - name: glean-forUnitTests
-        type: jar
     description: 'The Glean SDK is a modern approach for a Telemetry library and is part of the Glean project.'
+  glean-native:
+    path: glean-core/android-native
+    artifactId: glean-native
+    publications:
+      - name: glean-native
+        type: aar
+      - name: glean-native-forUnitTests
+        type: jar
+    description: 'The native libglean_ffi library for use with the Glean SDK.'
   glean-sample-app:
     path: samples/android/app
     artifactId: glean-sample-app
