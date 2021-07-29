@@ -331,9 +331,9 @@ jobs:
       - run:
           name: FFI header consistency check
           command: |
-            CBINDGEN_VERSION=v0.16.0
+            CBINDGEN_VERSION=v0.20.0
             CBINDGEN=cbindgen
-            CBINDGEN_SHA256=a2f6ae99ba02f0ec8db63b830a60037a347d81b71970db18b4cb80c9fa0df7e8
+            CBINDGEN_SHA256=aef0a9e8a7ef57ee71fe877f32424e6581e54200ad7b6d62f0ab0dd881911191
             curl -sfSL --retry 5 -O "https://github.com/eqrion/cbindgen/releases/download/${CBINDGEN_VERSION}/${CBINDGEN}"
             echo "${CBINDGEN_SHA256} *${CBINDGEN}" | shasum -a 256 -c -
             mv cbindgen /usr/local/cargo/bin/cbindgen
