@@ -180,9 +180,9 @@ dependencies = [
 
 [[package]]
 name = "ffi-support"
-version = "0.4.3"
+version = "0.4.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6f476e3c4fa6d9a3e0eeabd4f7555a382025ec05194675d72fa1db347e53ae6c"
+checksum = "27838c6815cfe9de2d3aeb145ffd19e565f577414b33f3bdbf42fe040e9e0ff6"
 dependencies = [
  "lazy_static",
  "log",
