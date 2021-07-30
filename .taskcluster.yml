@@ -249,7 +249,6 @@ tasks:
                                     - '--'
                                     - bash
                                     - -cx
-                                    - >
                                     - $let:
                                           extraArgs: {$if: 'tasks_for == "cron"', then: '${cron.quoted_args}', else: ''}
                                       in:
@@ -261,7 +260,6 @@ tasks:
                                               ln -s /builds/worker/artifacts artifacts &&
                                               ~/.local/bin/taskgraph action-callback
                                           else: >
-
                                               PIP_IGNORE_INSTALLED=0 pip3 install --user /builds/worker/checkouts/taskgraph &&
                                               PIP_IGNORE_INSTALLED=0 pip3 install --user arrow taskcluster pyyaml &&
                                               ln -s /builds/worker/artifacts artifacts &&
@@ -279,6 +277,8 @@ tasks:
                                               --head-tag="$GLEAN_HEAD_TAG"
                                               --repository-type="$GLEAN_REPOSITORY_TYPE"
                                               --tasks-for='${tasks_for}'
+                                              #{extraArgs}
+
                                 artifacts:
                                     'public':
                                         type: 'directory'
