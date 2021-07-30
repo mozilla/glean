@@ -8,15 +8,19 @@ Currently, these bindings support collecting data from [Browser Extensions](http
 
 ## Requirements
 
-* Node.js >= 12.20.0.
-* npm >= 7.0.0.
-* Webpack >= 5.34.0.
-* Python >= 3.6.[^1]
-* (_for browsers other than Firefox_) [webextension-polyfill](https://github.com/mozilla/webextension-polyfill) >= 0.8.0.[^2]
+* Node.js >= 12.20.0;
+* npm >= 7.0.0;
+* Webpack >= 5.34.0;
+* Python >= 3.6.
+  * The `glean` command requires Python to download [`glean_parser`](https://mozilla.github.io/glean_parser/) which is a Python library.
 
-[^1]: The `glean` command requires Python to download [`glean_parser`](https://mozilla.github.io/glean_parser/) which is a Python library.
+### Web extension specific requirements
 
-[^2]: Glean.js assumes a Promise-based `browser` API: Firefox provides such an API by default. Other browsers may require using a polyfill library such us `webextension-polyfill` when using Glean in browser extensions.
+* ["storage"](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/permissions#api_permissions) API permission;
+* [Host permission](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/permissions#host_permissions) to the Telemetry server;
+  * Only necessary if the defined server endpoint denies [cross-origin](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) requests.
+* (_for browsers other than Firefox_) [webextension-polyfill](https://github.com/mozilla/webextension-polyfill) >= 0.8.0.[^1]
+  * Glean.js assumes a Promise-based `browser` API: Firefox provides such an API by default. Other browsers may require using a polyfill library such us `webextension-polyfill` when using Glean in browser extensions.
 
 ## Setting up the dependency
 
@@ -45,7 +49,7 @@ The currently available entry points are:
 
 {{#include ../../../shared/blockquote-warning.html}}
 
-##### Security considerations
+### Security considerations
 
 > In case of privilege-escalation attack into the context of the web extension using Glean, the malicious scripts would be able to call Glean APIs or use the `browser.storage.local` APIs directly.
 > That would be a risk to Glean data, but not caused by Glean. Glean-using extensions should be careful not to relax the default Content-Security-Policy that generally prevents these attacks.
@@ -101,7 +105,7 @@ npm run build:glean
 
 {{#include ../../../shared/blockquote-warning.html}}
 
-##### Prefer using the Glean Dictionary
+#### Prefer using the Glean Dictionary
 
 > While it is still possible to generate Markdown documentation, if working on a public Mozilla project rely on the [Glean Dictionary] for documentation.
 > Your product will be automatically indexed by the Glean Dictionary after it gets enabled in the pipeline.
