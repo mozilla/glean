@@ -88,7 +88,7 @@ tasks:
                   $if: '"github" in tasks_for'
                   then: {$eval: as_slugid("decision_task")}
                   else:
-                      $if: 'tasks_for == "cron"'
+                      $if: 'tasks_for in ["cron", "action"]'
                       then: '${ownTaskId}'
               pullRequestAction:
                   $if: 'tasks_for == "github-pull-request"'
@@ -224,6 +224,13 @@ tasks:
                                           then:
                                               GLEAN_PULL_REQUEST_TITLE: '${event.pull_request.title}'
                                               GLEAN_PULL_REQUEST_NUMBER: '${event.pull_request.number}'
+                                        - $if: 'tasks_for == "action"'
+                                          then:
+                                              ACTION_TASK_GROUP_ID: '${action.taskGroupId}'  # taskGroupId of the target task
+                                              ACTION_TASK_ID: {$json: {$eval: 'taskId'}}  # taskId of the target task (JSON-encoded)
+                                              ACTION_INPUT: {$json: {$eval: 'input'}}
+                                              ACTION_CALLBACK: '${action.cb_name}'
+
                                 features:
                                     taskclusterProxy: true
                                     chainOfTrust: true
@@ -243,23 +250,35 @@ tasks:
                                     - bash
                                     - -cx
                                     - >
-                                      PIP_IGNORE_INSTALLED=0 pip3 install --user /builds/worker/checkouts/taskgraph &&
-                                      PIP_IGNORE_INSTALLED=0 pip3 install --user arrow taskcluster pyyaml &&
-                                      ln -s /builds/worker/artifacts artifacts &&
-                                      ~/.local/bin/taskgraph decision
-                                      --pushlog-id='0'
-                                      --pushdate='0'
-                                      --project='${project}'
-                                      --message=""
-                                      --owner='${ownerEmail}'
-                                      --level='${level}'
-                                      --base-repository="$GLEAN_BASE_REPOSITORY"
-                                      --head-repository="$GLEAN_HEAD_REPOSITORY"
-                                      --head-ref="$GLEAN_HEAD_REF"
-                                      --head-rev="$GLEAN_HEAD_REV"
-                                      --head-tag="$GLEAN_HEAD_TAG"
-                                      --repository-type="$GLEAN_REPOSITORY_TYPE"
-                                      --tasks-for='${tasks_for}'
+                                    - $let:
+                                          extraArgs: {$if: 'tasks_for == "cron"', then: '${cron.quoted_args}', else: ''}
+                                      in:
+                                          $if: 'tasks_for == "action"'
+                                          then: >
+                                              PIP_IGNORE_INSTALLED=0 pip3 install --user /builds/worker/checkouts/taskgraph &&
+                                              PIP_IGNORE_INSTALLED=0 pip3 install --user arrow taskcluster pyyaml &&
+                                              cd /builds/worker/checkouts/src &&
+                                              ln -s /builds/worker/artifacts artifacts &&
+                                              ~/.local/bin/taskgraph action-callback
+                                          else: >
+
+                                              PIP_IGNORE_INSTALLED=0 pip3 install --user /builds/worker/checkouts/taskgraph &&
+                                              PIP_IGNORE_INSTALLED=0 pip3 install --user arrow taskcluster pyyaml &&
+                                              ln -s /builds/worker/artifacts artifacts &&
+                                              ~/.local/bin/taskgraph decision
+                                              --pushlog-id='0'
+                                              --pushdate='0'
+                                              --project='${project}'
+                                              --message=""
+                                              --owner='${ownerEmail}'
+                                              --level='${level}'
+                                              --base-repository="$GLEAN_BASE_REPOSITORY"
+                                              --head-repository="$GLEAN_HEAD_REPOSITORY"
+                                              --head-ref="$GLEAN_HEAD_REF"
+                                              --head-rev="$GLEAN_HEAD_REV"
+                                              --head-tag="$GLEAN_HEAD_TAG"
+                                              --repository-type="$GLEAN_REPOSITORY_TYPE"
+                                              --tasks-for='${tasks_for}'
                                 artifacts:
                                     'public':
                                         type: 'directory'
@@ -275,6 +294,19 @@ tasks:
                                         expires: {$fromNow: '7 day'}
                             extra:
                                 $merge:
+                                    - $if: 'tasks_for == "action"'
+                                      then:
+                                          parent: '${action.taskGroupId}'
+                                          action:
+                                              name: '${action.name}'
+                                              context:
+                                                  taskGroupId: '${action.taskGroupId}'
+                                                  taskId: {$eval: 'taskId'}
+                                                  input: {$eval: 'input'}
+                                    - $if: 'tasks_for == "cron"'
+                                      then:
+                                          cron: {$json: {$eval: 'cron'}}
+
                                     - treeherder:
                                           $merge:
                                               - machine:
@@ -286,4 +318,14 @@ tasks:
                                                     $if: 'tasks_for == "github-release"'
                                                     then:
                                                         symbol: 'ship_glean'
+                                                    else:
+                                                        $if: 'tasks_for == "action"'
+                                                        then:
+                                                            groupName: 'action-callback'
+                                                            groupSymbol: AC
+                                                            symbol: "${action.symbol}"
+                                                        else:
+                                                            groupSymbol: cron
+                                                            symbol: "${cron.job_symbol}"
+
                                     - tasks_for: '${tasks_for}'
