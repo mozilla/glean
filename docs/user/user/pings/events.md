@@ -49,7 +49,7 @@ Each entry in the `events` array is an object with the following properties:
 - `"extra"` (optional): A mapping of strings to strings providing additional data about the event. The keys are restricted to 40 characters and values in this map will never exceed 100 characters.
   
 ### Example event JSON
-  
+
 ```json
 {
   "ping_info": {
@@ -77,7 +77,7 @@ Each entry in the `events` array is an object with the following properties:
   },
   "events": [
     {
-      "timestamp": 123456789,
+      "timestamp": 0,
       "category": "examples",
       "name": "event_example",
       "extra": {
@@ -86,7 +86,7 @@ Each entry in the `events` array is an object with the following properties:
       }
     },
     {
-      "timestamp": 123456791,
+      "timestamp": 1000,
       "category": "examples",
       "name": "event_example"
     }
