@@ -8,19 +8,33 @@ Currently, these bindings support collecting data from [Browser Extensions](http
 
 ## Requirements
 
-* Node.js >= 12.20.0;
-* npm >= 7.0.0;
-* Webpack >= 5.34.0;
-* Python >= 3.6.
-  * The `glean` command requires Python to download [`glean_parser`](https://mozilla.github.io/glean_parser/) which is a Python library.
+* Node.js >= 12.20.0
+* npm >= 7.0.0
+* Webpack >= 5.34.0
+* Python >= 3.6
+  * The `glean` command requires Python to download [`glean_parser`](https://mozilla.github.io/glean_parser/) which is a Python library
 
-### Web extension specific requirements
+### Browser extension specific requirements
 
-* ["storage"](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/permissions#api_permissions) API permission;
-* [Host permission](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/permissions#host_permissions) to the Telemetry server;
-  * Only necessary if the defined server endpoint denies [cross-origin](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) requests.
-* (_for browsers other than Firefox_) [webextension-polyfill](https://github.com/mozilla/webextension-polyfill) >= 0.8.0.[^1]
-  * Glean.js assumes a Promise-based `browser` API: Firefox provides such an API by default. Other browsers may require using a polyfill library such us `webextension-polyfill` when using Glean in browser extensions.
+* [webextension-polyfill](https://github.com/mozilla/webextension-polyfill) >= 0.8.0
+  * Glean.js assumes a Promise-based `browser` API: Firefox provides such an API by default.
+  Other browsers may require using a polyfill library such us `webextension-polyfill`
+  when using Glean in browser extensions
+* [Host permissions](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/permissions#host_permissions) to the telemetry server
+  * Only necessary if the defined server endpoint denies
+  [cross-origin](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) requests
+  * The default `incoming.telemetry.mozilla.org` server does require this type of permission.
+  Follow [Bug 1676676](https://bugzilla.mozilla.org/show_bug.cgi?id=1676676) for updates on this requirement
+* ["storage"](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/permissions#api_permissions) API permissions
+
+{{#include ../../../shared/blockquote-info.html}}
+
+#### Browser extension example configuration
+
+> The [`manifest.json`](https://github.com/mozilla/glean.js/blob/main/samples/web-extension/javascript/manifest.json)
+> file of the sample browser extension available on the `mozilla/glean.js` repository provides
+> an example on how to define the above permissions as well as how and where to load
+> the `webextension-polyfill` script.
 
 ## Setting up the dependency
 
