@@ -1,6 +1,7 @@
 # The `events` ping
 
 ## Description
+
 The events ping's purpose is to transport all of the event metric information.
 If the application crashes, an `events` ping is generated next time the application starts with events that were not sent before the crash.
 
@@ -18,17 +19,19 @@ The `events` ping is collected under the following circumstances:
 
 2. When the queue of events exceeds `Glean.configuration.maxEvents` (default 500).
 
-3. If there are any unsent events found on disk when starting the application. It would be impossible to coordinate the timestamps across a reboot, so it's best to just collect all events from the previous run into their own ping, and start over.
+3. If there are any unsent events found on disk when starting the application. _(This results in this ping never containing the [`glean.restarted`](./custom.md#the-gleanrestarted-event) event.)_
 
 All of these cases are handled automatically, with no intervention or configuration required by the application.
 
 {{#include ../../../shared/blockquote-info.html}}
 
-##### Python and Glean.js caveats
+##### Python and JavaScript caveats
 
-> Since the Python bindings don't have a concept of "going to background", case (1) above does not apply.
+> Since the Glean Python and JavaScript SDKs don't have a concept of "going to background",
+> case (1) above does not apply.
 
 ## Contents
+
 At the top-level, this ping contains the following keys:
 
 - `ping_info`: The information [common to all pings](index.md#the-ping_info-section).
