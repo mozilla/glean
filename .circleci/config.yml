@@ -539,7 +539,7 @@ jobs:
           name: Install Rust Nightly toolchain
           command: |
             rustup toolchain add nightly --profile minimal
-            rustup component add rust-src --toolchain nightly
+            rustup target add aarch64-apple-ios-sim --toolchain nightly
       - restore_cache:
           name: Restore rubygems cache
           key: swift-docs-gems-v9
@@ -662,7 +662,7 @@ jobs:
             # We don't need that build on CI, but its hard to exclude it from the build
             # while still allowing it in developer builds.
             rustup toolchain add nightly --profile minimal
-            rustup component add rust-src --toolchain nightly
+            rustup target add aarch64-apple-ios-sim --toolchain nightly
       - run:
           name: Use current commit of Glean
           command: |
