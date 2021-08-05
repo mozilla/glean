@@ -129,6 +129,14 @@ In the case that timestamps in between application runs are not monotonically in
 will take the value of the previous timestamp and add one millisecond, thus guaranteeing that
 timestamps are always increasing.
 
+{{#include ../../../shared/blockquote-info.html}}
+
+##### Checking for decreasing time offsets between restarts
+
+> When this edge case is hit, Glean records an [`InvalidValue` error](../error-reporting.md)
+> for the `glean.restarted` metric. This metric may be consulted at analysis time.
+> It is sent in the same ping where the error happened.
+
 In the below example payload, the first and second application runs go exactly like in the
 [example above](#example).
 
