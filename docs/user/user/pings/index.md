@@ -259,17 +259,30 @@ A pre-defined set of headers is additionally sent along with the submitted ping.
 
 Describes the data sent to the server. Value is always `application/json; charset=utf-8`.
 
-#### `User-Agent`
-
-Describes the application sending the ping using the Glean SDK.
-
-Defaults to e.g. `Glean/0.40.0 (Kotlin on Android)`, where `0.40.0` is the Glean SDK version number
-and `Kotlin on Android` is the name of the language used by the binding that sent the request
-plus the name of the platform it is running on.
-
 #### `Date`
 
 Submission date/time in GMT/UTC+0 offset e.g. `Mon, 23 Jan 2019 10:10:10 GMT+00:00`.
+
+#### `User-Agent`
+
+The Glean SDKs do not set this header[^1], so it will contain whatever value was set
+by the underlying uploading mechanism. For example, when sending pings from browsers
+it will contain the characteristic [browser UA string](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent#syntax).
+
+This header is parsed by the Glean pipeline and can be queried at analysis time through
+the [`metadata.user_agent.*`](https://docs.telemetry.mozilla.org/datasets/pings.html?highlight=metadata#ping-metadata)
+fields in the ping tables.
+
+#### `X-Telemetry-Agent`
+
+This header is useful for debugging purposes when pings are sent to [the error stream](https://docs.telemetry.mozilla.org/concepts/pipeline/filtering.html?highlight=error%20stream#querying-the-error-stream),
+as it describes the application and the Glean SDK used for sending the ping.
+
+It's looks like `Glean/0.40.0 (Kotlin on Android)`, where `0.40.0` is the Glean SDK version number
+and `Kotlin on Android` is the name of the language used by the SDK that sent the request
+plus the name of the platform it is running on.
+
+_This header is currently only sent by the Glean JavaScript SDK. See [note](#1)._
 
 #### `X-Client-Type`
 
@@ -281,10 +294,20 @@ The Glean SDK version e.g. `0.40.0`, sent as a custom header to support handling
 
 #### `X-Debug-Id` _(optional)_
 
-Debug header attached to Glean pings when using the [debug tools](../../user/debugging/index.md)
+Debug header attached to Glean pings by using the [debug APIs](../../reference/debug/debugViewTag.md)
 e.g. `test-tag`.
+
+When this header is present, the ping is redirected to the
+[Glean Debug View](http://localhost:3000/user/debugging/index.html#glean-debug-view).
 
 #### `X-Source-Tags` _(optional)_
 
 A list of tags to associate with the ping, useful for clustering pings at analysis time,
 for example to tell data generated from CI from other data e.g. `automation, perf`.
+
+This header is attached to Glean pings by using the [debug APIs](../../reference/debug/sourceTags.md).
+
+[^1]: This is only true for the Glean JavaScript SDK at the moment. For the other SDKs this
+header is overwritten with the value that is described on the `X-Telemetry-Agent` header section.
+However, this feature will be implemented soon on all SDKs.
+Follow [Bug 1711928](https://bugzilla.mozilla.org/show_bug.cgi?id=1711928) for updates.
