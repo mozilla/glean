@@ -228,21 +228,23 @@ To keep resource usage in check, the Glean SDK enforces some limitations on ping
 #### Rate limiting
 
 Only up to 10 ping submissions every 60 seconds are allowed. There are no exposed methods
-to change these rate limiting defaults yet, follow [Bug 1647630](https://bugzilla.mozilla.org/show_bug.cgi?id=1647630)
+to change these rate limiting defaults, follow [Bug 1647630](https://bugzilla.mozilla.org/show_bug.cgi?id=1647630)
 for updates.
+
+Rate limiting is not implemented on the Glean JavaScript SDK yet,
+follow [Bug 1712920](https://bugzilla.mozilla.org/show_bug.cgi?id=1712920) for updates.
 
 #### Request body size limiting
 
-The body of a ping request may have up to 1MB. Pings that exceed this size are discarded
+The body of a ping request may have up to 1MB (after compression). Pings that exceed this size are discarded
 and don't get uploaded. Size and number of discarded pings are recorded on the internal
 Glean metric [`glean.upload.discarded_exceeding_pings_size`](../collected-metrics/metrics.md#metrics-1).
 
 #### Storage quota
 
-Pending pings are stored on disk. The storage directory is scanned every time Glean is initialized
-and upon scanning Glean checks its size. If this directory exceeds a size of 10MB or 250 pending ping files,
-pings are deleted to get the directory back to an accepted size. Pings are deleted oldest first,
-until the directory size is below the quota.
+Pending pings are stored on disk. Storage is scanned every time Glean is initialized and upon scanning
+Glean checks its size. If it exceeds a size of 10MB or 250 pending ping, pings are deleted to get the
+storage back to an accepted size. Pings are deleted oldest first, until the storage size is below the quota.
 
 The number of deleted pings due to exceeding storage quota is recorded on the metric
 [`glean.upload.deleted_pings_after_quota_hit`](../collected-metrics/metrics.md#metrics-1)
