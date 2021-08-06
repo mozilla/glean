@@ -150,6 +150,9 @@ metrics-docs: python-setup ## Build the internal metrics documentation
 		 -o ./docs/user/user/collected-metrics \
 		 glean-core/metrics.yaml glean-core/pings.yaml glean-core/android/metrics.yaml
 
+		 cat ./docs/user/_includes/glean-js-redirect-collected-metrics.md ./docs/user/user/collected-metrics/metrics.md > ./docs/user/user/collected-metrics/metrics.tmp.md
+		 mv ./docs/user/user/collected-metrics/metrics.tmp.md ./docs/user/user/collected-metrics/metrics.md
+
 linkcheck: docs linkcheck-raw  ## Run link-checker on the generated docs
 
 linkcheck-raw:
