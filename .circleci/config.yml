@@ -93,6 +93,15 @@ commands:
             rustup target add i686-linux-android
             rustup target add x86_64-linux-android
 
+  install-android-ndk:
+    steps:
+      - run:
+          name: Install missing Android SDK & NDK
+          command: |
+              sdkmanager \
+                "build-tools;28.0.3" \
+                "ndk;21.3.6528147"
+
   android-setup:
     steps:
       - checkout
@@ -100,10 +109,7 @@ commands:
       - setup-rust-toolchain:
           rust-version: stable
       - install-android-targets
-      - run:
-          name: Install missing Android SDK
-          command: |
-              sdkmanager 'build-tools;28.0.3'
+      - install-android-ndk
 
   test-python:
     steps:
@@ -436,16 +442,17 @@ jobs:
 
   Lint Android with ktlint and detekt:
     docker:
-      - image: circleci/android:api-28-ndk
+      - image: circleci/android:api-28
     steps:
       - checkout
+      - install-android-ndk
       - run: ./gradlew --no-daemon lint
       - run: ./gradlew --no-daemon ktlint
       - run: ./gradlew --no-daemon detekt
 
   Android tests:
     docker:
-      - image: circleci/android:api-28-ndk
+      - image: circleci/android:api-28
     steps:
       - android-setup
       - skip-if-doc-only
@@ -491,7 +498,7 @@ jobs:
 
   Generate Kotlin documentation:
     docker:
-      - image: circleci/android:api-28-ndk
+      - image: circleci/android:api-28
     steps:
       - android-setup
       - run:
