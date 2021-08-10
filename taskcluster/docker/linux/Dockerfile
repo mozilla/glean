@@ -141,25 +141,10 @@ RUN curl -sfSL --retry 5 --retry-delay 10 https://dl.google.com/android/reposito
         "platforms;android-${ANDROID_PLATFORM_VERSION}" \
         "build-tools;${ANDROID_BUILD_TOOLS}" \
         "extras;android;m2repository" \
-        "extras;google;m2repository"
+        "extras;google;m2repository" \
+        "ndk;21.3.6528147"
 
 RUN chown -R worker:worker /builds/worker/android-sdk
-
-# Android NDK
-
-ENV ANDROID_NDK_VERSION "r21"
-
-# $ANDROID_NDK_ROOT is the preferred name, but the android gradle plugin uses $ANDROID_NDK_HOME.
-ENV ANDROID_NDK_ROOT /builds/worker/android-ndk
-ENV ANDROID_NDK_HOME /builds/worker/android-ndk
-
-RUN curl -sfSL --retry 5 --retry-delay 10 https://dl.google.com/android/repository/android-ndk-${ANDROID_NDK_VERSION}-linux-x86_64.zip > ndk.zip \
-    && unzip -q ndk.zip -d /builds/worker \
-    && rm ndk.zip \
-    && mv /builds/worker/android-ndk-${ANDROID_NDK_VERSION} ${ANDROID_NDK_ROOT}
-
-ENV ANDROID_NDK_TOOLCHAIN_DIR /builds/worker/.android-ndk-r21-toolchain
-ENV ANDROID_NDK_API_VERSION 21
 
 # sccache
 RUN \
