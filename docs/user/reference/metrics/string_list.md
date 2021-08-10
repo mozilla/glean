@@ -403,7 +403,6 @@ N/A
 
 ## Reference
 
-* [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-string-list-metric-type/index.html)
 * [Swift API docs](../../../swift/Classes/StringListMetricType.html)
 * [Python API docs](../../../python/glean/metrics/string_list.html)
 * [Rust API docs](../../../docs/glean/private/struct.StringListMetric.html)

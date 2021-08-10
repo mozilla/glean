@@ -461,7 +461,6 @@ Carefully consider the required resolution for recording your metric, and choose
 
 ## Reference
 
-* [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-datetime-metric-type/index.html)
 * [Swift API docs](../../../swift/Classes/DatetimeMetricType.html)
 * [Python API docs](../../../python/glean/metrics/datetime.html)
 * [Rust API docs](../../../docs/glean/private/struct.DatetimeMetric.html)

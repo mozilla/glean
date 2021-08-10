@@ -410,7 +410,6 @@ N/A
 
 ## Reference
 
-* [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-string-metric-type/index.html)
 * [Swift API docs](../../../swift/Classes/StringMetricType.html)
 * [Python API docs](../../../python/glean/metrics/string.html)
 * [Rust API docs](../../../docs/glean/private/struct.StringMetric.html)

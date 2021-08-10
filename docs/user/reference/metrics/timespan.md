@@ -727,7 +727,6 @@ and use the largest possible value that will provide useful information so as to
 
 ## Reference
 
-* [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-timespan-metric-type/index.html)
 * [Swift API docs](../../../swift/Classes/TimespanMetricType.html)
 * [Python API docs](../../../python/glean/metrics/timespan.html)
 * [Rust API docs](../../../docs/glean/private/struct.TimespanMetric.html)

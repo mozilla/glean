@@ -33,20 +33,7 @@ The built narrative documentation is saved in `build/docs/book`, and the Rust AP
 
 {{#include ../shared/tab_header.md}}
 
-<div data-lang="Kotlin" class="tab">
-
-Kotlin API documentation is generated using [dokka](https://github.com/Kotlin/dokka).
-It is automatically installed by Gradle.
-
-To build the Kotlin API documentation:
-
-```sh
-make kotlin-docs
-```
-
-The generated documentation is saved in `build/docs/javadoc`.
-
-</div>
+<div data-lang="Kotlin" class="tab" data-info="Kotlin API documentation was removed due to tooling issues."></div>
 
 <div data-lang="Swift" class="tab">
 

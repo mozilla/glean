@@ -496,18 +496,6 @@ jobs:
       - store_test_results:
           path: ~/test-results
 
-  Generate Kotlin documentation:
-    docker:
-      - image: circleci/android:api-28
-    steps:
-      - android-setup
-      - run:
-          name: Build Kotlin documentation
-          command: ./gradlew --no-daemon docs
-      - persist_to_workspace:
-          root: build/
-          paths: docs/javadoc
-
   ###########################################################################
   # Swift / iOS / macOS
 
@@ -1187,14 +1175,12 @@ workflows:
       - Generate Rust documentation:
           requires:
             - docs-spellcheck
-      - Generate Kotlin documentation
       - Generate Python documentation:
           requires:
             - Python 3_8 tests
       - docs-linkcheck:
           requires:
             - Generate Rust documentation
-            - Generate Kotlin documentation
             - Generate Python documentation
       - docs-spellcheck
       - docs-deploy:

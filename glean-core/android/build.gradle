@@ -14,7 +14,6 @@ plugins {
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'org.jetbrains.dokka-android'
 apply plugin: 'jacoco'
 
 /*
@@ -210,14 +209,6 @@ afterEvaluate {
 
 apply from: "$projectDir/publish.gradle"
 ext.configurePublish()
-
-tasks.register("docs", org.jetbrains.dokka.gradle.DokkaAndroidTask) {
-    moduleName = "glean"
-    outputDirectory = "$buildDir/../../../build/docs/javadoc"
-    outputFormat = "html"
-    jdkVersion = 7
-    reportUndocumented = true
-}
 
 // Generate markdown docs for the collected metrics.
 ext.gleanGenerateMarkdownDocs = true
