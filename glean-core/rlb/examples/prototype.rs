@@ -66,4 +66,6 @@ fn main() {
     glean_metrics::sample_boolean.set(true);
 
     glean::submit_ping_by_name("prototype", None);
+
+    glean::shutdown();
 }
