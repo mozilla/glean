@@ -46,7 +46,7 @@ build-swift: ## Build all Swift code
 	bin/run-ios-build.sh
 
 build-apk: build-kotlin ## Build an apk of the Glean sample app
-	./gradlew glean-sample-app:build
+	./gradlew glean-sample-app:build glean-sample-app:assembleAndroidTest
 
 build-python: python-setup ## Build the Python bindings
 	$(GLEAN_PYENV)/bin/python3 glean-core/python/setup.py build install
@@ -71,6 +71,9 @@ test-kotlin: ## Run all Kotlin tests
 
 test-swift: ## Run all Swift tests
 	bin/run-ios-tests.sh
+
+test-android-sample: build-apk ## Run the Android UI tests on the sample app
+	./gradlew :glean-sample-app:connectedAndroidTest
 
 test-ios-sample: ## Run the iOS UI tests on the sample app
 	bin/run-ios-sample-app-test.sh
