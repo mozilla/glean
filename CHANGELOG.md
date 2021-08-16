@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v40.0.0...main)
 
+* Android
+  * Updated to Kotlin 1.5, Android Gradle Plugin 4.2.2 and Gradle 6.7.1 ([#1747](https://github.com/mozilla/glean/pull/1747))
+
 # v40.0.0 (2021-07-28)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v39.1.0...v40.0.0)
