@@ -1,44 +1,84 @@
-# Glean Pings
+# Pings
 
 A ping is a bundle of related metrics, gathered in a payload to be transmitted.
-The ping payload will be encoded in JSON format and contains one or more of the [common sections](#ping-sections) with shared information data.
+The ping payload is encoded in JSON format and contains one or more of the
+[common sections](#payload-structure) with shared information data.
 
-If data collection is enabled, the Glean SDK provides a set of [built-in pings](./sent-by-glean.md) that are assembled out of the box without any developer intervention.
+If data collection is enabled, the chosen Glean SDK may provide a set of [built-in pings](./sent-by-glean.md)
+that are assembled out of the box without any developer intervention.
 
-## Ping sections
+## Table of contents
 
-Every ping has the following keys at the top-level:
+<!-- toc -->
 
-- The [`ping_info` section](#the-ping_info-section) contains core metadata that is included in **every** ping.
+## Payload structure
+
+Every ping payload has the following keys at the top-level:
+
+- The [`ping_info` section](#the-ping_info-section) contains core metadata
+  that is included in **every** ping.
 
 - The [`client_info` section](#the-client_info-section) contains information that identifies the client.
-  It is included in most pings (including all built-in pings), but may be excluded from pings where we don't want to connect client information with the other metrics in the ping.
+  It is included in most pings (including all built-in pings), but may be excluded from pings
+  where we don't want to connect client information with the other metrics in the ping.
 
-- The `metrics` section contains the submitted values for all metric types except for [events](../metrics/event.md).
-  It has keys for each of the metric types, under which is data for each metric.
+The following keys are only present if any metrics or events were recorded for the given ping:
+
+- The `metrics` section contains the submitted values for all metric types
+  except for [events](../metrics/event.md). It has keys for each of the metric types,
+  under which is data for each metric.
 
 - The `events` section contains the events recorded in the ping.
 
-See the [payload documentation](../../../dev/core/internal/payload.md) for more details for each metric type in the `metrics` and `events` section.
+See the [payload documentation](../../../dev/core/internal/payload.md)
+for more details for each metric type in the `metrics` and `events` section.
 
 ### The `ping_info` section
+
 The following fields are included in the `ping_info` section, for every ping.
 Optional fields are marked accordingly.
 
-| Field name | Type | Description |
-|---|---|---|
-| `seq` | Counter | A running counter of the number of times pings of this type have been sent |
-| `experiments` | Object | *Optional*. A dictionary of [active experiments](#the-experiments-object) |
-| `start_time` | Datetime | The time of the start of collection of the data in the ping, in local time and with minute precision, including timezone information. |
-| `end_time` | Datetime | The time of the end of collection of the data in the ping, in local time and with minute precision, including timezone information. This is also the time this ping was generated and is likely well before ping transmission time. |
-| `reason` | String | *Optional*. The reason the ping was submitted. The specific set of values and their meanings are defined for each metric type in the `reasons` field in the `pings.yaml` file. |
+#### `seq`
 
-All the metrics surviving application restarts (e.g. `seq`, ...) are removed once the application using the Glean SDK is uninstalled.
+_Type: [Counter](../../reference/metrics/counter.md),
+Lifetime: [User](../../reference/yaml/metrics.md#user)_
 
-#### The `experiments` object
+A running counter of the number of times pings of this type have been sent.
 
-This object (included in the [`ping_info` section](#the-ping_info-section)) contains experiment annotations keyed by the experiment `id`. Each annotation contains the experiment `branch` the client is enrolled in and may contain a string to string map with additional data in the `extra` key. Both the `id` and `branch` are truncated to 30 characters.
-See [Using the Experiments API](../experiments-api.md) on how to record experiments data.
+#### `start_time`
+
+_Type: [Datetime](../../reference/metrics/datetime.md),
+Lifetime: [User](../../reference/yaml/metrics.md#user)_
+
+The time of the start of collection of the data in the ping, in local time
+and with minute precision, including timezone information.
+
+#### `end_time`
+
+_Type: [Datetime](../../reference/metrics/datetime.md),
+Lifetime: [Ping](../../reference/yaml/metrics.md#ping-default)_
+
+The time of the end of collection of the data in the ping, in local time and with minute precision,
+including timezone information. This is also the time this ping was generated
+and is likely well before ping transmission time.
+
+#### `reason` _(optional)_
+
+The reason the ping was submitted. The specific set of values
+and their meanings are defined for each metric type in the [`reasons`](../../reference/yaml/pings.md#reasons)
+field in the `pings.yaml` file.
+
+#### `experiments` _(optional)_
+
+A dictionary of active experiments.
+
+This object contains experiment annotations keyed by the experiment `id`.
+Each annotation contains the experiment `branch` the client is enrolled in
+and may contain a string to string map with additional data in the `extra` key.
+
+Both the `id` and `branch` are truncated to 30 characters.
+See [Using the Experiments API](../../reference/general/experiments-api.md)
+on how to record experiments data.
 
 ```json
 {
@@ -52,36 +92,126 @@ See [Using the Experiments API](../experiments-api.md) on how to record experime
 ```
 
 ### The `client_info` section
+
 The following fields are included in the `client_info` section.
 Optional fields are marked accordingly.
 
-| Field name | Type | Description |
-|---|---|---|
-| `app_build` | String | The build identifier generated by the CI system (e.g. "1234/A"). For language bindings that provide automatic detection for this value, (e.g. Android/Kotlin), in the unlikely event that the build identifier can not be retrieved from the OS, it is set to `inaccessible`. For other language bindings, if the value was not provided through configuration, this metric gets set to `Unknown`. |
-| `app_channel` | String | *Optional* The product-provided release channel (e.g. "beta") |
-| `app_display_version` | String | The user-visible version string (e.g. "1.0.3"). The meaning of the string (e.g. whether semver or a git hash) is application-specific. In the unlikely event this value can not be obtained from the OS, it is set to "inaccessible". If it is accessible, but not set by the application, it is set to "Unknown". |
-| `architecture` | String | The architecture of the device (e.g. "arm", "x86") |
-| `client_id` | UUID |  *Optional* A UUID identifying a profile and allowing user-oriented correlation of data |
-| `device_manufacturer` | String | *Optional* The manufacturer of the device |
-| `device_model` | String | *Optional* The model name of the device. On Android, this is [`Build.MODEL`], the user-visible name of the device. |
-| `first_run_date` | Datetime | The date of the first run of the application, in local time and with day precision, including timezone information. |
-| `os` | String | The name of the operating system (e.g. "linux", "Android", "ios") |
-| `os_version` | String | The user-visible version of the operating system (e.g. "1.2.3") |
-| `android_sdk_version` | String | *Optional*. The Android specific SDK version of the software running on this hardware device (e.g. "23") |
-| `telemetry_sdk_build` | String | The version of the Glean SDK |
-| `locale` | String | *Optional*. The locale of the application during initialization (e.g. "es-ES"). If the locale can't be determined on the system, the value is "und", to indicate "undetermined". |
+#### `app_build`
 
-All the metrics surviving application restarts (e.g. `client_id`, ...) are removed once the application using the Glean SDK is uninstalled.
+_Type: [String](../../reference/metrics/counter.md),
+Lifetime: [Ping](../../reference/yaml/metrics.md#ping-default)_
+
+The build identifier generated by the CI system (e.g. "1234/A"). For language bindings that provide
+automatic detection for this value, (e.g. Android/Kotlin), in the unlikely event that
+the build identifier can not be retrieved from the OS, it is set to `inaccessible`.
+For other language bindings, if the value was not provided through configuration,
+this metric gets set to `Unknown`.
+
+#### `app_channel` _(optional)_
+
+_Type: [String](../../reference/metrics/counter.md),
+Lifetime: [Ping](../../reference/yaml/metrics.md#ping-default)_
+
+The product-provided release channel (e.g. "beta").
+
+#### `app_display_version`
+
+_Type: [String](../../reference/metrics/counter.md),
+Lifetime: [Ping](../../reference/yaml/metrics.md#ping-default)_
+
+The user-visible version string (e.g. "1.0.3"). The meaning of the string (e.g. whether semver
+or a git hash) is application-specific. In the unlikely event this value can not be obtained from the OS,
+ it is set to "inaccessible". If it is accessible, but not set by the application, it is set to "Unknown".
+
+#### `architecture`
+
+_Type: [String](../../reference/metrics/counter.md),
+Lifetime: [Ping](../../reference/yaml/metrics.md#ping-default)_
+
+The architecture of the device (e.g. "arm", "x86").
+
+#### `client_id` _(optional)_
+
+_Type: [String](../../reference/metrics/counter.md),
+Lifetime: [User](../../reference/yaml/metrics.md#user)_
+
+A UUID identifying a profile and allowing user-oriented correlation of data.
+
+#### `device_manufacturer` _(optional)_
+
+_Type: [String](../../reference/metrics/counter.md),
+Lifetime: [Application](../../reference/yaml/metrics.md#application)_
+
+The model name of the device. On Android, this is [`Build.MODEL`], the user-visible name of the device.
+
+#### `device_model` _(optional)_
+
+_Type: [String](../../reference/metrics/counter.md),
+Lifetime: [Application](../../reference/yaml/metrics.md#application)_
+
+The model of the device the application is running on.
+On Android, this is `Build.MODEL`, the user-visible marketing name, like "Pixel 2 XL".
+
+Not set if the device model can't be determined (e.g. on Desktop).
+
+#### `first_run_date`
+
+_Type: [Datetime](../../reference/metrics/datetime.md),
+Lifetime: [User](../../reference/yaml/metrics.md#user)_
+
+The date of the first run of the application, in local time and with day precision,
+including timezone information.
+
+#### `os`
+
+_Type: [String](../../reference/metrics/counter.md),
+Lifetime: [Application](../../reference/yaml/metrics.md#application)_
+
+The name of the operating system (e.g. "Linux", "Android", "iOS").
+
+#### `os_version`
+
+_Type: [String](../../reference/metrics/counter.md),
+Lifetime: [Application](../../reference/yaml/metrics.md#application)_
+
+The user-visible version of the operating system (e.g. "1.2.3").
+
+#### `android_sdk_version` _(optional)_
+
+_Type: [String](../../reference/metrics/counter.md),
+Lifetime: [Application](../../reference/yaml/metrics.md#application)_
+
+The Android specific SDK version of the software running on this hardware device (e.g. "23").
+
+#### `telemetry_sdk_build`
+
+_Type: [String](../../reference/metrics/counter.md),
+Lifetime: [Application](../../reference/yaml/metrics.md#application)_
+
+The version of the Glean SDK.
+
+#### `locale` _(optional)_
+
+_Type: [String](../../reference/metrics/counter.md),
+Lifetime: [Application](../../reference/yaml/metrics.md#application)_
+
+The locale of the application during initialization (e.g. "es-ES").
+If the locale can't be determined on the system, the value is "und", to indicate "undetermined".
 
 [`Build.MODEL`]: https://developer.android.com/reference/android/os/Build.html#MODEL
 
 ## Ping submission
 
-The pings that the Glean SDK generates are submitted to the Mozilla servers at specific paths, in order to provide additional metadata without the need to unpack the ping payload.
+The pings that the Glean SDK generates are submitted to the Mozilla servers at specific paths,
+in order to provide additional metadata without the need to unpack the ping payload.
+
+### URL
 
 A typical submission URL looks like
 
-  `"<server-address>/submit/<application-id>/<doc-type>/<glean-schema-version>/<document-id>"`
+```
+"<server-address>/submit/<application-id>/<doc-type>/<glean-schema-version>/<document-id>"
+```
 
 where:
 
@@ -95,21 +225,92 @@ where:
 
 To keep resource usage in check, the Glean SDK enforces some limitations on ping uploading and ping storage.
 
-- **Rate limiting**: only up to 10 ping submissions every 60 seconds are allowed. There are no exposed methods to change these rate limiting defaults yet, follow [Bug 1647630](https://bugzilla.mozilla.org/show_bug.cgi?id=1647630) for updates.
-- **Request body size limiting**: the body of a ping request may have up to 1MB. Pings that exceed this size are discarded and don't get uploaded. Size and number of discarded pings are recorded on the internal Glean metric [`glean.upload.discarded_exceeding_pings_size`](../collected-metrics/metrics.md#metrics-1).
-- **Storage quota**: Pending pings are stored on disk. The storage directory is scanned every time Glean is initialized and upon scanning Glean checks its size. If this directory exceeds a size of 10MB or 250 pending ping files, pings are deleted to get the directory back to an accepted size. Pings are deleted oldest first, until the directory size is below the quota.
-  The number of deleted pings due to exceeding storage quota is recorded on the metric [`glean.upload.deleted_pings_after_quota_hit`](../collected-metrics/metrics.md#metrics-1) and the size of the pending pings directory is recorded (regardless on whether quota has been reached) on the metric [`glean.upload.pending_pings_directory_size`](../collected-metrics/metrics.md#metrics-1)
-  **Note** Deletion request pings are stored in a different directory, are not subject to this limitation and never get deleted.
+#### Rate limiting
+
+Only up to 10 ping submissions every 60 seconds are allowed. There are no exposed methods
+to change these rate limiting defaults, follow [Bug 1647630](https://bugzilla.mozilla.org/show_bug.cgi?id=1647630)
+for updates.
+
+Rate limiting is not implemented on the Glean JavaScript SDK yet,
+follow [Bug 1712920](https://bugzilla.mozilla.org/show_bug.cgi?id=1712920) for updates.
+
+#### Request body size limiting
+
+The body of a ping request may have up to 1MB (after compression). Pings that exceed this size are discarded
+and don't get uploaded. Size and number of discarded pings are recorded on the internal
+Glean metric [`glean.upload.discarded_exceeding_pings_size`](../collected-metrics/metrics.md#metrics-1).
+
+#### Storage quota
+
+Pending pings are stored on disk. Storage is scanned every time Glean is initialized and upon scanning
+Glean checks its size. If it exceeds a size of 10MB or 250 pending pings, pings are deleted to get the
+storage back to an accepted size. Pings are deleted oldest first, until the storage size is below the quota.
+
+The number of deleted pings due to exceeding storage quota is recorded on the metric
+[`glean.upload.deleted_pings_after_quota_hit`](../collected-metrics/metrics.md#metrics-1)
+and the size of the pending pings directory is recorded (regardless on whether quota has been reached)
+on the metric [`glean.upload.pending_pings_directory_size`](../collected-metrics/metrics.md#metrics-1).
+
+Deletion request pings are not subject to this limitation and never get deleted.
 
 ### Submitted headers
-A pre-defined set of headers is additionally sent along with the submitted ping:
 
-| Header | Value | Description |
-|--------|-------|-------------|
-| `Content-Type` | `application/json; charset=utf-8` | Describes the data sent to the server |
-| `User-Agent` | Defaults to e.g. `Glean/0.40.0 (Kotlin on Android)`, where `0.40.0` is the Glean SDK version number and `Kotlin on Android` is the name of the language used by the binding that sent the request plus the name of the platform it is running on. | Describes the application sending the ping using the Glean SDK |
-| `Date` | e.g. `Mon, 23 Jan 2019 10:10:10 GMT+00:00` | Submission date/time in GMT/UTC+0 offset |
-| `X-Client-Type` | `Glean` | Custom header to support handling of Glean pings in the legacy pipeline |
-| `X-Client-Version` | e.g. `0.40.0` | The Glean SDK version, sent as a custom header to support handling of Glean pings in the legacy pipeline |
-| `X-Debug-ID` | *Optional*, e.g. `test-tag` | Debug header attached to Glean pings when using the [debug tools](../../user/debugging/index.md) |
-| `X-Source-Tags` | *Optional*, e.g. `automation, perf` | A list of tags to associate with the ping, useful for clustering pings at analysis time, for example to tell data generated from CI from other data. |
+A pre-defined set of headers is additionally sent along with the submitted ping.
+
+#### `Content-Type`
+
+Describes the data sent to the server. Value is always `application/json; charset=utf-8`.
+
+#### `Date`
+
+Submission date/time in GMT/UTC+0 offset, e.g. `Mon, 23 Jan 2019 10:10:10 GMT+00:00`.
+
+#### `User-Agent`
+
+The Glean SDKs do not set this header[^1], so it will contain whatever value was set
+by the underlying uploading mechanism. For example, when sending pings from browsers
+it will contain the characteristic [browser UA string](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent#syntax).
+
+This header is parsed by the Glean pipeline and can be queried at analysis time through
+the [`metadata.user_agent.*`](https://docs.telemetry.mozilla.org/datasets/pings.html?highlight=metadata#ping-metadata)
+fields in the ping tables.
+
+#### `X-Telemetry-Agent`
+
+The Glean SDK version and platform this ping is sent from.
+Useful for debugging purposes when pings are sent to [the error stream](https://docs.telemetry.mozilla.org/concepts/pipeline/filtering.html?highlight=error%20stream#querying-the-error-stream).
+as it describes the application and the Glean SDK used for sending the ping.
+
+It's looks like `Glean/40.0.0 (Kotlin on Android)`, where `40.0.0` is the Glean SDK version number
+and `Kotlin on Android` is the name of the language used by the SDK that sent the request
+plus the name of the platform it is running on.
+
+_This header is currently only sent by the Glean JavaScript SDK. See [note](#1)._
+
+#### `X-Client-Type`
+
+Custom header to support handling of Glean pings in the legacy pipeline. Values is always `Glean`.
+
+#### `X-Client-Version`
+
+The Glean SDK version e.g. `0.40.0`, sent as a custom header to support handling of Glean pings in the legacy pipeline.
+
+#### `X-Debug-Id` _(optional)_
+
+Debug header attached to Glean pings by using the [debug APIs](../../reference/debug/debugViewTag.md),
+e.g. `test-tag`.
+
+When this header is present, the ping is redirected to the
+[Glean Debug View](../debugging/index.md#glean-debug-view).
+
+#### `X-Source-Tags` _(optional)_
+
+A list of tags to associate with the ping, useful for clustering pings at analysis time,
+for example to tell data generated from CI from other data e.g. `automation, perf`.
+
+This header is attached to Glean pings by using the [debug APIs](../../reference/debug/sourceTags.md).
+
+[^1]: This is only true for the Glean JavaScript SDK at the moment. For the other SDKs this
+header is overwritten with the value that is described on the `X-Telemetry-Agent` header section.
+However, this feature will be implemented soon on all SDKs.
+Follow [Bug 1711928](https://bugzilla.mozilla.org/show_bug.cgi?id=1711928) for updates.
