@@ -43,7 +43,7 @@ Optional fields are marked accordingly.
 _Type: [Counter](../../reference/metrics/counter.md),
 Lifetime: [User](../../reference/yaml/metrics.md#user)_
 
-A running counter of the number of times pings of this type have been sent
+A running counter of the number of times pings of this type have been sent.
 
 #### `start_time`
 
@@ -150,7 +150,7 @@ _Type: [String](../../reference/metrics/counter.md),
 Lifetime: [Application](../../reference/yaml/metrics.md#application)_
 
 The model of the device the application is running on.
-On Android, this is Build.MODEL, the user-visible marketing name, like "Pixel 2 XL".
+On Android, this is `Build.MODEL`, the user-visible marketing name, like "Pixel 2 XL".
 
 Not set if the device model can't be determined (e.g. on Desktop).
 
@@ -167,7 +167,7 @@ including timezone information.
 _Type: [String](../../reference/metrics/counter.md),
 Lifetime: [Application](../../reference/yaml/metrics.md#application)_
 
-The name of the operating system (e.g. "linux", "Android", "ios").
+The name of the operating system (e.g. "Linux", "Android", "iOS").
 
 #### `os_version`
 
@@ -263,7 +263,7 @@ Describes the data sent to the server. Value is always `application/json; charse
 
 #### `Date`
 
-Submission date/time in GMT/UTC+0 offset e.g. `Mon, 23 Jan 2019 10:10:10 GMT+00:00`.
+Submission date/time in GMT/UTC+0 offset, e.g. `Mon, 23 Jan 2019 10:10:10 GMT+00:00`.
 
 #### `User-Agent`
 
@@ -277,7 +277,8 @@ fields in the ping tables.
 
 #### `X-Telemetry-Agent`
 
-This header is useful for debugging purposes when pings are sent to [the error stream](https://docs.telemetry.mozilla.org/concepts/pipeline/filtering.html?highlight=error%20stream#querying-the-error-stream),
+The Glean SDK version and platform this ping is sent from.
+Useful for debugging purposes when pings are sent to [the error stream](https://docs.telemetry.mozilla.org/concepts/pipeline/filtering.html?highlight=error%20stream#querying-the-error-stream).
 as it describes the application and the Glean SDK used for sending the ping.
 
 It's looks like `Glean/40.0.0 (Kotlin on Android)`, where `40.0.0` is the Glean SDK version number
@@ -296,11 +297,11 @@ The Glean SDK version e.g. `0.40.0`, sent as a custom header to support handling
 
 #### `X-Debug-Id` _(optional)_
 
-Debug header attached to Glean pings by using the [debug APIs](../../reference/debug/debugViewTag.md)
+Debug header attached to Glean pings by using the [debug APIs](../../reference/debug/debugViewTag.md),
 e.g. `test-tag`.
 
 When this header is present, the ping is redirected to the
-[Glean Debug View](http://localhost:3000/user/debugging/index.html#glean-debug-view).
+[Glean Debug View](../debugging/index.md#glean-debug-view).
 
 #### `X-Source-Tags` _(optional)_
 
