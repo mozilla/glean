@@ -243,7 +243,7 @@ Glean metric [`glean.upload.discarded_exceeding_pings_size`](../collected-metric
 #### Storage quota
 
 Pending pings are stored on disk. Storage is scanned every time Glean is initialized and upon scanning
-Glean checks its size. If it exceeds a size of 10MB or 250 pending ping, pings are deleted to get the
+Glean checks its size. If it exceeds a size of 10MB or 250 pending pings, pings are deleted to get the
 storage back to an accepted size. Pings are deleted oldest first, until the storage size is below the quota.
 
 The number of deleted pings due to exceeding storage quota is recorded on the metric
@@ -280,7 +280,7 @@ fields in the ping tables.
 This header is useful for debugging purposes when pings are sent to [the error stream](https://docs.telemetry.mozilla.org/concepts/pipeline/filtering.html?highlight=error%20stream#querying-the-error-stream),
 as it describes the application and the Glean SDK used for sending the ping.
 
-It's looks like `Glean/0.40.0 (Kotlin on Android)`, where `0.40.0` is the Glean SDK version number
+It's looks like `Glean/40.0.0 (Kotlin on Android)`, where `40.0.0` is the Glean SDK version number
 and `Kotlin on Android` is the name of the language used by the SDK that sent the request
 plus the name of the platform it is running on.
 
