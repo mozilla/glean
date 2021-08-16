@@ -211,7 +211,6 @@ apply from: "$projectDir/publish.gradle"
 ext.configurePublish()
 
 // Generate markdown docs for the collected metrics.
-ext.gleanGenerateMarkdownDocs = true
 ext.gleanDocsDirectory = "$rootDir/docs/user/user/collected-metrics"
 ext.gleanYamlFiles = [
     "$rootDir/glean-core/metrics.yaml",
