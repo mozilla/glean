@@ -24,11 +24,27 @@ such as recording metrics and uploading pings.
 ### `shutdown`
 
 {{#include ../../../shared/tab_header.md}}
-<div data-lang="Kotlin" class="tab"></div>
-<div data-lang="Java" class="tab"></div>
-<div data-lang="Swift" class="tab"></div>
-<div data-lang="Python" class="tab"></div>
-<div data-lang="Rust" class="tab"></div>
+<div data-lang="Kotlin" class="tab" data-info="No blocking tasks will be performed on application shutdown, pending pings will be sent on startup."></div>
+<div data-lang="Java" class="tab" data-info="No blocking tasks will be performed on application shutdown, pending pings will be sent on startup."></div>
+<div data-lang="Swift" class="tab" data-info="No blocking tasks will be performed on application shutdown, pending pings will be sent on startup."></div>
+<div data-lang="Python" class="tab" data-info="On application shutdown Glean will wait for up to 30 seconds to finish upload tasks."></div>
+<div data-lang="Rust" class="tab">
+
+
+```Rust
+fn main() {
+    let cfg = Configuration {
+        // ...
+    };
+    let client_info = /* ... */;
+    glean::initialize(cfg, client_info);
+
+    // Ensure the dispatcher thread winds down
+    glean::shutdown();
+}
+```
+
+</div>
 <div data-lang="JavaScript" class="tab">
 
 ```js
@@ -52,9 +68,10 @@ async function onUninstall() {
 The `shutdown` API is available for all JavaScript targets, even though the above example
 is explicitly using the `webext` target.
 </div>
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab" data-info="On application shutdown Glean will automatically wait for the dispatcher thread to finish."></div>
 {{#include ../../../shared/tab_footer.md}}
 
 ## Reference
 
+* [Rust API docs](../../../docs/glean/fn.shutdown.html)
 * [JavaScript API docs](https://mozilla.github.io/glean.js/classes/core_glean.default.html#shutdown)
