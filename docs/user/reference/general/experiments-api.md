@@ -177,5 +177,4 @@ Assert.Equal(
 
 ## Reference
 
-* [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean/-glean.html).
 * [Python API docs](../../../python/glean/glean.html)

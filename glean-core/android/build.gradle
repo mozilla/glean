@@ -14,7 +14,6 @@ plugins {
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'org.jetbrains.dokka-android'
 apply plugin: 'jacoco'
 
 /*
@@ -101,7 +100,7 @@ android {
 
 afterEvaluate {
     jacoco {
-      toolVersion = "0.8.4"
+      toolVersion = "0.8.7"
     }
 
     task jacocoTestReport(type: JacocoReport) {
@@ -156,7 +155,7 @@ dependencies {
     implementation project(":glean-native")
 
     // Note: the following version must be kept in sync
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$versions.kotlin"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.coroutines"
 
     implementation "androidx.annotation:annotation:$versions.androidx_annotation"
@@ -210,14 +209,6 @@ afterEvaluate {
 
 apply from: "$projectDir/publish.gradle"
 ext.configurePublish()
-
-tasks.register("docs", org.jetbrains.dokka.gradle.DokkaAndroidTask) {
-    moduleName = "glean"
-    outputDirectory = "$buildDir/../../../build/docs/javadoc"
-    outputFormat = "html"
-    jdkVersion = 7
-    reportUndocumented = true
-}
 
 // Generate markdown docs for the collected metrics.
 ext.gleanGenerateMarkdownDocs = true

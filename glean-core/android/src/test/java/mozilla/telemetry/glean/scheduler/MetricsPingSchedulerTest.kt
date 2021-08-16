@@ -81,7 +81,7 @@ class MetricsPingSchedulerTest {
         fakeNow.set(2015, 6, 11, 3, 0, 0)
 
         // We expect the function to return 1 hour, in milliseconds.
-        assertEquals(60 * 60 * 1000,
+        assertEquals(60 * 60 * 1000L,
             metricsPingScheduler.getMillisecondsUntilDueTime(
                 sendTheNextCalendarDay = false, now = fakeNow, dueHourOfTheDay = 4)
         )
@@ -104,7 +104,7 @@ class MetricsPingSchedulerTest {
 
         // With `sendTheNextCalendarDay` true, we expect the function to return 23 hours
         // and 55 minutes, in milliseconds.
-        assertEquals(23 * 60 * 60 * 1000 + 55 * 60 * 1000,
+        assertEquals(23 * 60 * 60 * 1000L + 55 * 60 * 1000L,
             metricsPingScheduler.getMillisecondsUntilDueTime(
                 sendTheNextCalendarDay = true, now = fakeNow, dueHourOfTheDay = 4)
         )

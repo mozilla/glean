@@ -62,7 +62,7 @@ object GleanBuildInfo {
  * @throws AssertionError If the JSON content is not valid
  */
 internal fun checkPingSchema(content: JSONObject) {
-    val os = System.getProperty("os.name")?.toLowerCase()
+    val os = System.getProperty("os.name")?.lowercase()
     val pythonExecutable =
         if (os?.indexOf("win")?.compareTo(0) == 0)
             "${BuildConfig.GLEAN_MINICONDA_DIR}/python"

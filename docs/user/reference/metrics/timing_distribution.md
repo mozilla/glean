@@ -394,7 +394,6 @@ Assert.ok(Glean.pages.pageLoad.testGetValue().sum > 0);
 
 ## Reference
 
-* [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-timing-distribution-metric-type/index.html)
 * [Swift API docs](../../../swift/Classes/TimingDistributionMetricType.html)
 * [Python API docs](../../../python/glean/metrics/timing_distribution.html)
 

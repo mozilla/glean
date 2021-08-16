@@ -367,7 +367,6 @@ accessibility:
 
 ## Reference
 
-* Kotlin API docs [`LabeledMetricType`](../../../javadoc/glean/mozilla.telemetry.glean.private/-labeled-metric-type/index.html), [`BooleanMetricType`](../../../javadoc/glean/mozilla.telemetry.glean.private/-boolean-metric-type/index.html)
 * Swift API docs: [`LabeledMetricType`](../../../swift/Classes/LabeledMetricType.html), [`BooleanMetricType`](../../../swift/Classes/BooleanMetricType.html)
 * Python API docs: [`LabeledMetricBase`](../../../python/glean/metrics/labeled.html), [`BooleanMetricType`](../../../python/glean/metrics/boolean.html)
 * Rust API docs: [`LabeledMetric`](../../../docs/glean/private/struct.LabeledMetric.html), [`BooleanMetricType`](../../../docs/glean/private/struct.BooleanMetric.html)

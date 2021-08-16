@@ -244,7 +244,6 @@ Custom distributions have the following optional parameters:
 
 ## Reference
 
-* [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-custom-distribution-metric-type/index.html)
 * [Rust API docs](../../../docs/glean/private/struct.CustomDistributionMetric.html)
 
 ## Simulator

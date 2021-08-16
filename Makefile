@@ -46,7 +46,7 @@ build-swift: ## Build all Swift code
 	bin/run-ios-build.sh
 
 build-apk: build-kotlin ## Build an apk of the Glean sample app
-	./gradlew glean-sample-app:build
+	./gradlew glean-sample-app:build glean-sample-app:assembleAndroidTest
 
 build-python: python-setup ## Build the Python bindings
 	$(GLEAN_PYENV)/bin/python3 glean-core/python/setup.py build install
@@ -71,6 +71,9 @@ test-kotlin: ## Run all Kotlin tests
 
 test-swift: ## Run all Swift tests
 	bin/run-ios-tests.sh
+
+test-android-sample: build-apk ## Run the Android UI tests on the sample app
+	./gradlew :glean-sample-app:connectedAndroidTest
 
 test-ios-sample: ## Run the iOS UI tests on the sample app
 	bin/run-ios-sample-app-test.sh
@@ -127,13 +130,10 @@ fmt-python: python-setup ## Run black to format Python code
 
 # Docs
 
-docs: rust-docs kotlin-docs ## Build the Rust and Kotlin API documentation
+docs: rust-docs ## Build the Rust API documentation
 
 rust-docs: ## Build the Rust documentation
 	bin/build-rust-docs.sh
-
-kotlin-docs: ## Build the Kotlin documentation
-	./gradlew docs
 
 swift-docs: ## Build the Swift documentation
 	bin/build-swift-docs.sh
@@ -141,7 +141,7 @@ swift-docs: ## Build the Swift documentation
 python-docs: build-python ## Build the Python documentation
 	$(GLEAN_PYENV)/bin/python3 -m pdoc --html glean --force -o build/docs/python --config show_type_annotations=True
 
-.PHONY: docs rust-docs kotlin-docs swift-docs
+.PHONY: docs rust-docs swift-docs
 
 metrics-docs: python-setup ## Build the internal metrics documentation
 	$(GLEAN_PYENV)/bin/pip install glean_parser==3.6.0

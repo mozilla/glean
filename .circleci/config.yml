@@ -93,6 +93,15 @@ commands:
             rustup target add i686-linux-android
             rustup target add x86_64-linux-android
 
+  install-android-ndk:
+    steps:
+      - run:
+          name: Install missing Android SDK & NDK
+          command: |
+              sdkmanager \
+                "build-tools;28.0.3" \
+                "ndk;21.3.6528147"
+
   android-setup:
     steps:
       - checkout
@@ -100,10 +109,7 @@ commands:
       - setup-rust-toolchain:
           rust-version: stable
       - install-android-targets
-      - run:
-          name: Install missing Android SDK
-          command: |
-              sdkmanager 'build-tools;28.0.3'
+      - install-android-ndk
 
   test-python:
     steps:
@@ -436,16 +442,17 @@ jobs:
 
   Lint Android with ktlint and detekt:
     docker:
-      - image: circleci/android:api-28-ndk
+      - image: circleci/android:api-28
     steps:
       - checkout
+      - install-android-ndk
       - run: ./gradlew --no-daemon lint
       - run: ./gradlew --no-daemon ktlint
       - run: ./gradlew --no-daemon detekt
 
   Android tests:
     docker:
-      - image: circleci/android:api-28-ndk
+      - image: circleci/android:api-28
     steps:
       - android-setup
       - skip-if-doc-only
@@ -488,18 +495,13 @@ jobs:
           destination: coredumps
       - store_test_results:
           path: ~/test-results
-
-  Generate Kotlin documentation:
-    docker:
-      - image: circleci/android:api-28-ndk
-    steps:
-      - android-setup
       - run:
-          name: Build Kotlin documentation
-          command: ./gradlew --no-daemon docs
-      - persist_to_workspace:
-          root: build/
-          paths: docs/javadoc
+          name: Build Android Sample App
+          command: |
+              ./gradlew :glean-sample-app:assembleAndroidTest
+          environment:
+            GRADLE_OPTS: -Xmx2048m
+            TARGET_CFLAGS: -DNDEBUG
 
   ###########################################################################
   # Swift / iOS / macOS
@@ -1180,14 +1182,12 @@ workflows:
       - Generate Rust documentation:
           requires:
             - docs-spellcheck
-      - Generate Kotlin documentation
       - Generate Python documentation:
           requires:
             - Python 3_8 tests
       - docs-linkcheck:
           requires:
             - Generate Rust documentation
-            - Generate Kotlin documentation
             - Generate Python documentation
       - docs-spellcheck
       - docs-deploy:

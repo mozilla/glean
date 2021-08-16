@@ -11,6 +11,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'org.mozilla.rust-android-gradle.rust-android'
 
 android {
+    ndkVersion rootProject.ext.build.ndkVersion
     compileSdkVersion rootProject.ext.build.compileSdkVersion
 
     defaultConfig {
