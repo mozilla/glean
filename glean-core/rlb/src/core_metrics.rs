@@ -20,8 +20,8 @@ impl ClientInfoMetrics {
     /// Creates the client info with dummy values for all.
     pub fn unknown() -> Self {
         ClientInfoMetrics {
-            app_build: "unknown".to_string(),
-            app_display_version: "unknown".to_string(),
+            app_build: "Unknown".to_string(),
+            app_display_version: "Unknown".to_string(),
         }
     }
 }
