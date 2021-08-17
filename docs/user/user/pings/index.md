@@ -139,7 +139,8 @@ A UUID identifying a profile and allowing user-oriented correlation of data.
 _Type: [String](../../reference/metrics/counter.md),
 Lifetime: [Application](../../reference/yaml/metrics.md#application)_
 
-The model name of the device. On Android, this is [`Build.MODEL`], the user-visible name of the device.
+The manufacturer of the device the application is running on.
+Not set if the device manufacturer can't be determined (e.g. on Desktop).
 
 #### `device_model` _(optional)_
 
@@ -148,7 +149,6 @@ Lifetime: [Application](../../reference/yaml/metrics.md#application)_
 
 The model of the device the application is running on.
 On Android, this is `Build.MODEL`, the user-visible marketing name, like "Pixel 2 XL".
-
 Not set if the device model can't be determined (e.g. on Desktop).
 
 #### `first_run_date`
