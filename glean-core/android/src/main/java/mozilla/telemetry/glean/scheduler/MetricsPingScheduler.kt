@@ -11,6 +11,7 @@ import android.text.format.DateUtils
 import android.util.Log
 import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.Glean
+import mozilla.telemetry.glean.BuildInfo
 import mozilla.telemetry.glean.GleanMetrics.Pings
 import mozilla.telemetry.glean.utils.getISOTimeString
 import mozilla.telemetry.glean.utils.parseISOTimeString
@@ -31,6 +32,7 @@ import java.util.TimerTask
 @Suppress("TooManyFunctions")
 internal class MetricsPingScheduler(
     private val applicationContext: Context,
+    private val buildInfo: BuildInfo,
     migratedLastSentDate: String? = null
 ) {
     internal val sharedPreferences: SharedPreferences by lazy {
@@ -118,11 +120,7 @@ internal class MetricsPingScheduler(
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     internal fun isDifferentVersion(): Boolean {
-        // Determine if the version has changed since the last time we ran.
-        val packageInfo = applicationContext.packageManager.getPackageInfo(
-            applicationContext.packageName, 0
-        )
-        val currentVersion = packageInfo.versionName?.let { it } ?: "Unknown"
+        val currentVersion = buildInfo.versionName
         val lastVersion = try {
             sharedPreferences.getString(LAST_VERSION_OF_APP_USED, null)
         } catch (e: ClassCastException) {

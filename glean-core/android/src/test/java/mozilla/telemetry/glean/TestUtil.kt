@@ -8,8 +8,6 @@ package mozilla.telemetry.glean
 
 import android.content.Context
 import android.os.SystemClock
-import android.content.pm.PackageInfo
-import android.content.pm.PackageManager
 import androidx.test.core.app.ApplicationProvider
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
@@ -18,7 +16,6 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.json.JSONObject
-import org.mockito.ArgumentMatchers
 import org.mockito.Mockito
 import mozilla.telemetry.glean.config.Configuration
 import mozilla.telemetry.glean.scheduler.PingUploadWorker
@@ -33,7 +30,6 @@ import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import org.junit.Assert
 import org.mockito.ArgumentCaptor
-import org.mockito.Mockito.spy
 import org.robolectric.shadows.ShadowLog
 import java.io.ByteArrayInputStream
 import java.util.Calendar
@@ -150,25 +146,12 @@ internal fun resetGlean(
 }
 
 /**
- * Get a context that contains [PackageInfo.versionName] mocked to the passed value
- * or "glean.version.name" by default.
+ * Get an application context.
  *
- * @param versionName a [String] used as the display version (default: "glean.version.name").
  * @return an application [Context] that can be used to init Glean
  */
-internal fun getContextWithMockedInfo(versionName: String = "glean.version.name"): Context {
-    val context = Mockito.spy<Context>(ApplicationProvider.getApplicationContext<Context>())
-    val packageInfo = Mockito.mock(PackageInfo::class.java)
-    packageInfo.versionName = versionName
-    val packageManager = Mockito.mock(PackageManager::class.java)
-    Mockito.`when`(
-        packageManager.getPackageInfo(
-            ArgumentMatchers.anyString(),
-            ArgumentMatchers.anyInt()
-        )
-    ).thenReturn(packageInfo)
-    Mockito.`when`(context.packageManager).thenReturn(packageManager)
-    return context
+internal fun getContext(): Context {
+    return ApplicationProvider.getApplicationContext<Context>()
 }
 
 /**
@@ -282,7 +265,10 @@ fun RecordedRequest.getPlainBody(): String {
  * This can be used when tests should receive other pings,
  * but don't want to deal with a potential overdue metrics ping first
  */
-internal fun delayMetricsPing(context: Context) {
+internal fun delayMetricsPing(
+    context: Context,
+    buildInfo: BuildInfo = BuildInfo(versionCode = "0.0.1", versionName = "0.0.1")
+) {
     // Set the current system time to a known datetime.
     val fakeNow = Calendar.getInstance()
     fakeNow.clear()
@@ -290,7 +276,7 @@ internal fun delayMetricsPing(context: Context) {
     SystemClock.setCurrentTimeMillis(fakeNow.timeInMillis)
 
     // Set the last sent date to yesterday.
-    val mps = MetricsPingScheduler(context)
+    val mps = MetricsPingScheduler(context, buildInfo)
 
     mps.updateSentDate(getISOTimeString(fakeNow, truncateTo = TimeUnit.Day))
 }

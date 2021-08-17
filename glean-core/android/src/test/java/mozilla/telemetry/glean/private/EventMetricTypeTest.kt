@@ -17,7 +17,7 @@ import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.getPlainBody
 import mozilla.telemetry.glean.checkPingSchema
 import mozilla.telemetry.glean.Dispatchers
-import mozilla.telemetry.glean.getContextWithMockedInfo
+import mozilla.telemetry.glean.getContext
 import mozilla.telemetry.glean.getMockWebServer
 import mozilla.telemetry.glean.resetGlean
 import mozilla.telemetry.glean.delayMetricsPing
@@ -258,7 +258,7 @@ class EventMetricTypeTest {
     fun `flush queued events on startup`() {
         val server = getMockWebServer()
 
-        val context = getContextWithMockedInfo()
+        val context = getContext()
         resetGlean(
             context,
             Glean.configuration.copy(
@@ -317,7 +317,7 @@ class EventMetricTypeTest {
     fun `flush queued events on startup and correctly handle pre-init events`() {
         val server = getMockWebServer()
 
-        val context = getContextWithMockedInfo()
+        val context = getContext()
         delayMetricsPing(context)
         resetGlean(
             context,
@@ -423,7 +423,7 @@ class EventMetricTypeTest {
     @Test
     fun `overdue events are submitted in registered custom pings`() {
         val server = getMockWebServer()
-        val context = getContextWithMockedInfo()
+        val context = getContext()
         delayMetricsPing(context)
 
         resetGlean(
@@ -498,7 +498,7 @@ class EventMetricTypeTest {
         // Overdue events are thus discarded because the ping is unknown at initialization time.
 
         val server = getMockWebServer()
-        val context = getContextWithMockedInfo()
+        val context = getContext()
         delayMetricsPing(context)
 
         resetGlean(
