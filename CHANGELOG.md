@@ -4,6 +4,7 @@
 
 * Android
   * Updated to Kotlin 1.5, Android Gradle Plugin 4.2.2 and Gradle 6.7.1 ([#1747](https://github.com/mozilla/glean/pull/1747))
+  * The `glean-gradle-plugin` now forces a compile failure when multiple Glean versions are detected in the build ([#1756](https://github.com/mozilla/glean/pull/1756))
 
 # v40.0.0 (2021-07-28)
 
