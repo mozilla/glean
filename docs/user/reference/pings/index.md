@@ -82,7 +82,7 @@ pings::search.submit(pings::SearchReasonCodes::Performed);
 ```js
 import * as pings from "./path/to/generated/files/pings.js";
 
-pings.search.submit("performed");
+pings.search.submit(pings.searchReasonCodes.Performed);
 ```
 </div>
 
