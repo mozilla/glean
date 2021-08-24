@@ -572,7 +572,7 @@ except:
                 resolutionResult.allComponents {
                     if (selectionReason.conflictResolution && moduleVersion != null) {
                         if (moduleVersion.group.contains("org.mozilla.telemetry") && moduleVersion.name.contains("glean")) {
-                            throw AssertionError("Cannot have a conflict on Glean ${selectionReason}")
+                            throw new AssertionError("Cannot have a conflict on Glean ${selectionReason}")
                         }
                     }
                 }
