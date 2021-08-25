@@ -440,7 +440,7 @@ limitations under the License.
 
 The following text applies to code linked from these dependencies:
 
-* [android_logger 0.10.0]( https://github.com/Nercury/android_logger-rs )
+* [android_logger 0.10.1]( https://github.com/Nercury/android_logger-rs )
 
 
 ```
@@ -657,8 +657,8 @@ The following text applies to code linked from these dependencies:
 * [cfg-if 1.0.0]( https://github.com/alexcrichton/cfg-if )
 * [crossbeam-channel 0.5.1]( https://github.com/crossbeam-rs/crossbeam )
 * [crossbeam-utils 0.8.0]( https://github.com/crossbeam-rs/crossbeam )
-* [env_logger 0.8.3]( https://github.com/env-logger-rs/env_logger/ )
-* [ffi-support 0.4.3]( https://github.com/mozilla/application-services )
+* [env_logger 0.8.4]( https://github.com/env-logger-rs/env_logger/ )
+* [ffi-support 0.4.4]( https://github.com/mozilla/ffi-support )
 * [flate2 1.0.19]( https://github.com/rust-lang/flate2-rs )
 * [form_urlencoded 1.0.0]( https://github.com/servo/rust-url )
 * [id-arena 2.2.1]( https://github.com/fitzgen/id-arena )
@@ -677,9 +677,9 @@ The following text applies to code linked from these dependencies:
 * [proc-macro-hack 0.5.19]( https://github.com/dtolnay/proc-macro-hack )
 * [proc-macro2 1.0.24]( https://github.com/alexcrichton/proc-macro2 )
 * [quote 1.0.9]( https://github.com/dtolnay/quote )
-* [serde 1.0.126]( https://github.com/serde-rs/serde )
-* [serde_derive 1.0.126]( https://github.com/serde-rs/serde )
-* [serde_json 1.0.64]( https://github.com/serde-rs/json )
+* [serde 1.0.127]( https://github.com/serde-rs/serde )
+* [serde_derive 1.0.127]( https://github.com/serde-rs/serde )
+* [serde_json 1.0.66]( https://github.com/serde-rs/json )
 * [syn 1.0.67]( https://github.com/dtolnay/syn )
 * [thiserror 1.0.26]( https://github.com/dtolnay/thiserror )
 * [thiserror-impl 1.0.26]( https://github.com/dtolnay/thiserror )
@@ -3247,9 +3247,9 @@ THE SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
-* [glean 40.0.0]( https://github.com/mozilla/glean )
-* [glean-core 40.0.0]( https://github.com/mozilla/glean )
-* [glean-ffi 40.0.0]( https://github.com/mozilla/glean )
+* [glean 40.1.0]( https://github.com/mozilla/glean )
+* [glean-core 40.1.0]( https://github.com/mozilla/glean )
+* [glean-ffi 40.1.0]( https://github.com/mozilla/glean )
 * [zeitstempel 0.1.1]( https://github.com/badboy/zeitstempel )
 
 
