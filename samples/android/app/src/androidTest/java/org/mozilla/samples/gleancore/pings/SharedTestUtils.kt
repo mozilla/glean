@@ -21,7 +21,7 @@ import java.util.zip.GZIPInputStream
  */
 internal fun createMockWebServer(): MockWebServer {
     val server = MockWebServer()
-    server.setDispatcher(object : Dispatcher() {
+    server.dispatcher = (object : Dispatcher() {
         override fun dispatch(request: RecordedRequest): MockResponse {
             return MockResponse().setBody("OK")
         }
@@ -72,7 +72,7 @@ fun waitForPingContent(
     var parsedPayload: JSONObject? = null
     for (attempts in 1..maxAttempts) {
         val request = server.takeRequest(20L, TimeUnit.SECONDS) ?: break
-        val docType = request.path.split("/")[3]
+        val docType = request.path!!.split("/")[3]
         if (pingName == docType) {
             parsedPayload = JSONObject(request.getPlainBody())
             if (pingReason == null) {

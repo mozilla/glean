@@ -275,7 +275,6 @@ Assert.equal(1, Object.entries(data.values).reduce(([bucket, count], sum) => cou
 
 ## Reference
 
-* [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-memory-distribution-metric-type/index.html)
 * [Swift API docs](../../../swift/Classes/MemoryDistributionMetricType.html)
 * [Python API docs](../../../python/glean/metrics/timing_distribution.html)
 * [Rust API docs](../../../docs/glean/private/struct.MemoryDistributionMetric.html)

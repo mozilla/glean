@@ -38,7 +38,7 @@ ext.configurePublish = {
         publications {
             aar(MavenPublication) {
                 project.afterEvaluate {
-                    from components.findByName("androidRelease")
+                    from components.release
                 }
                 artifact sourcesJar
                 // Can't publish Javadoc yet: Glean isn't well behaved.

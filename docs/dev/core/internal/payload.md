@@ -1,6 +1,6 @@
 # Payload format
 
-The main sections of a Glean ping are described in [Ping Sections](../../../book/user/pings/index.md#ping-sections).
+The main sections of a Glean ping are described in [Ping Sections](../../../book/user/pings/index.md#payload-structure).
 This **Payload format** chapter describes details of the ping payload that are relevant for decoding Glean pings in the pipeline.
 
 > NOTE: The payload format is an implementation detail of the Glean SDK and subject to change at any time.

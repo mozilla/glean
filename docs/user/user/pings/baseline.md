@@ -21,7 +21,7 @@ See also the [ping schedules and timing overview](ping-schedules-and-timings.htm
 
 ## Contents
 
-The `baseline` ping also includes the common [ping sections](index.md#ping-sections) found in all pings.
+The `baseline` ping also includes the common [ping sections](index.md#payload-structure) found in all pings.
 
 It also includes a number of [metrics defined in the Glean SDK itself](../collected-metrics/metrics.html#baseline).
 

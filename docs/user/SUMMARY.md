@@ -13,7 +13,7 @@
     - [Adding new metrics](user/metrics/adding-new-metrics.md)
     - [Testing metrics](user/metrics/testing-metrics.md)
     - [Error reporting](user/metrics/error-reporting.md)
-    - [Metrics collected by the Glean SDK](user/collected-metrics/metrics.md)
+    - [Metrics collected by the Glean SDKs](user/collected-metrics/metrics.md)
 - [Pings](user/pings/index.md)
     - [Adding new custom pings](user/pings/custom.md)
     - [Testing custom pings](user/pings/testing-custom-pings.md)

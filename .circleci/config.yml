@@ -93,6 +93,15 @@ commands:
             rustup target add i686-linux-android
             rustup target add x86_64-linux-android
 
+  install-android-ndk:
+    steps:
+      - run:
+          name: Install missing Android SDK & NDK
+          command: |
+              sdkmanager \
+                "build-tools;28.0.3" \
+                "ndk;21.3.6528147"
+
   android-setup:
     steps:
       - checkout
@@ -100,10 +109,7 @@ commands:
       - setup-rust-toolchain:
           rust-version: stable
       - install-android-targets
-      - run:
-          name: Install missing Android SDK
-          command: |
-              sdkmanager 'build-tools;28.0.3'
+      - install-android-ndk
 
   test-python:
     steps:
@@ -331,9 +337,9 @@ jobs:
       - run:
           name: FFI header consistency check
           command: |
-            CBINDGEN_VERSION=v0.16.0
+            CBINDGEN_VERSION=v0.20.0
             CBINDGEN=cbindgen
-            CBINDGEN_SHA256=a2f6ae99ba02f0ec8db63b830a60037a347d81b71970db18b4cb80c9fa0df7e8
+            CBINDGEN_SHA256=aef0a9e8a7ef57ee71fe877f32424e6581e54200ad7b6d62f0ab0dd881911191
             curl -sfSL --retry 5 -O "https://github.com/eqrion/cbindgen/releases/download/${CBINDGEN_VERSION}/${CBINDGEN}"
             echo "${CBINDGEN_SHA256} *${CBINDGEN}" | shasum -a 256 -c -
             mv cbindgen /usr/local/cargo/bin/cbindgen
@@ -436,16 +442,17 @@ jobs:
 
   Lint Android with ktlint and detekt:
     docker:
-      - image: circleci/android:api-28-ndk
+      - image: circleci/android:api-28
     steps:
       - checkout
+      - install-android-ndk
       - run: ./gradlew --no-daemon lint
       - run: ./gradlew --no-daemon ktlint
       - run: ./gradlew --no-daemon detekt
 
   Android tests:
     docker:
-      - image: circleci/android:api-28-ndk
+      - image: circleci/android:api-28
     steps:
       - android-setup
       - skip-if-doc-only
@@ -488,18 +495,13 @@ jobs:
           destination: coredumps
       - store_test_results:
           path: ~/test-results
-
-  Generate Kotlin documentation:
-    docker:
-      - image: circleci/android:api-28-ndk
-    steps:
-      - android-setup
       - run:
-          name: Build Kotlin documentation
-          command: ./gradlew --no-daemon docs
-      - persist_to_workspace:
-          root: build/
-          paths: docs/javadoc
+          name: Build Android Sample App
+          command: |
+              ./gradlew :glean-sample-app:assembleAndroidTest
+          environment:
+            GRADLE_OPTS: -Xmx2048m
+            TARGET_CFLAGS: -DNDEBUG
 
   ###########################################################################
   # Swift / iOS / macOS
@@ -539,7 +541,7 @@ jobs:
           name: Install Rust Nightly toolchain
           command: |
             rustup toolchain add nightly --profile minimal
-            rustup component add rust-src --toolchain nightly
+            rustup target add aarch64-apple-ios-sim --toolchain nightly
       - restore_cache:
           name: Restore rubygems cache
           key: swift-docs-gems-v9
@@ -662,7 +664,7 @@ jobs:
             # We don't need that build on CI, but its hard to exclude it from the build
             # while still allowing it in developer builds.
             rustup toolchain add nightly --profile minimal
-            rustup component add rust-src --toolchain nightly
+            rustup target add aarch64-apple-ios-sim --toolchain nightly
       - run:
           name: Use current commit of Glean
           command: |
@@ -1180,14 +1182,12 @@ workflows:
       - Generate Rust documentation:
           requires:
             - docs-spellcheck
-      - Generate Kotlin documentation
       - Generate Python documentation:
           requires:
             - Python 3_8 tests
       - docs-linkcheck:
           requires:
             - Generate Rust documentation
-            - Generate Kotlin documentation
             - Generate Python documentation
       - docs-spellcheck
       - docs-deploy:

@@ -6,6 +6,7 @@ say every time a view was open and from where.
 Each event contains the following data:
 
 - A timestamp, in milliseconds. The first event in any ping always has a value of `0`, and subsequent event timestamps are relative to it.
+  - If sending events in custom pings, see [note](../../user/pings/custom.md#the-gleanrestarted-event) on event timestamp calculation throughout restarts.
 - The name of the event.
 - A set of key-value pairs, where the keys are predefined in the `extra_keys` metric parameter, and the values are strings.
 
@@ -505,7 +506,6 @@ Each extra key contains additional metadata:
   
 ## Reference
 
-* [Kotlin API docs](../../../javadoc/glean/mozilla.telemetry.glean.private/-event-metric-type/index.html)
 * [Swift API docs](../../../swift/Classes/EventMetricType.html)
 * [Python API docs](../../../python/glean/metrics/event.html)
 * [Rust API docs](../../../docs/glean/private/event/struct.EventMetric.html)

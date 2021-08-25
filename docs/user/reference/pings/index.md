@@ -82,7 +82,7 @@ pings::search.submit(pings::SearchReasonCodes::Performed);
 ```js
 import * as pings from "./path/to/generated/files/pings.js";
 
-pings.search.submit("performed");
+pings.search.submit(pings.searchReasonCodes.Performed);
 ```
 </div>
 
@@ -283,6 +283,31 @@ assert.ok(validatorRun);
 
 </div>
 
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab">
+
+**JavaScript:**
+```js
+Glean.search.defaultEngine.add(5);
+let submitted = false;
+GleanPings.search.testBeforeNextSubmit(reason => {
+  submitted = true;
+  Assert.equal(5, Glean.search.defaultEngine.testGetValue());
+});
+GleanPings.search.submit();
+Assert.ok(submitted);
+```
+
+**C++:**
+```cpp
+mozilla::glean::search::default_engine.Add(5);
+bool submitted = false;
+mozilla::glean_pings::Search.TestBeforeNextSubmit([&submitted](const nsACString& aReason) {
+  submitted = true;
+  ASSERT_EQ(false, mozilla::glean::search::default_engine.TestGetValue().unwrap().ref());
+});
+mozilla::glean_pings::Search.Submit();
+ASSERT_TRUE(submitted);
+```
+</div>
 
 {{#include ../../../shared/tab_footer.md}}
