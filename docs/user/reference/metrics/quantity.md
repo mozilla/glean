@@ -338,7 +338,7 @@ assert_eq!(
 
 ## Metric parameters
 
-Example counter metric definition:
+Example quantity metric definition:
 
 ```yaml
 controls:
