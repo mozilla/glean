@@ -30,6 +30,7 @@
 		5FE1C4D124C0A6A2000CAA1A /* JweMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FE1C4D024C0A6A2000CAA1A /* JweMetric.swift */; };
 		97C5C1A423708C6700B79C93 /* ErrorType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97C5C1A323708C6700B79C93 /* ErrorType.swift */; };
 		AC06529C26E032E300D92D5E /* QuantityMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC06529B26E032E300D92D5E /* QuantityMetric.swift */; };
+		AC06529E26E034BF00D92D5E /* QuantityMetricTypeTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC06529D26E034BF00D92D5E /* QuantityMetricTypeTest.swift */; };
 		AC1DB401237EF0ED005A0F8A /* Glean.h in Headers */ = {isa = PBXBuildFile; fileRef = BF3DE3942243A2F20018E23F /* Glean.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AC54D225233133DB0019319A /* PingUploadOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC54D224233133DB0019319A /* PingUploadOperation.swift */; };
 		AC54D227233134A30019319A /* GleanOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC54D226233134A30019319A /* GleanOperation.swift */; };
@@ -106,6 +107,7 @@
 		5FE1C4D024C0A6A2000CAA1A /* JweMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JweMetric.swift; sourceTree = "<group>"; };
 		97C5C1A323708C6700B79C93 /* ErrorType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorType.swift; sourceTree = "<group>"; };
 		AC06529B26E032E300D92D5E /* QuantityMetric.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuantityMetric.swift; sourceTree = "<group>"; };
+		AC06529D26E034BF00D92D5E /* QuantityMetricTypeTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuantityMetricTypeTest.swift; sourceTree = "<group>"; };
 		AC54D224233133DB0019319A /* PingUploadOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PingUploadOperation.swift; sourceTree = "<group>"; };
 		AC54D226233134A30019319A /* GleanOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GleanOperation.swift; sourceTree = "<group>"; };
 		BF10007D23548AF400064051 /* MemoryUnit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryUnit.swift; sourceTree = "<group>"; };
@@ -355,6 +357,7 @@
 		BF43A8CB232A613100545310 /* Metrics */ = {
 			isa = PBXGroup;
 			children = (
+				AC06529D26E034BF00D92D5E /* QuantityMetricTypeTest.swift */,
 				5FE1C4CE24C0A676000CAA1A /* JweMetricTests.swift */,
 				1F6A8FF1233C068A007837D5 /* BooleanMetricTypeTest.swift */,
 				BF43A8CC232A615200545310 /* CounterMetricTests.swift */,
@@ -603,6 +606,7 @@
 				BFAED50A2369752400DF293D /* StringListMetricTests.swift in Sources */,
 				BF890561232BC227003CA2BA /* StringMetricTests.swift in Sources */,
 				BFCBD6AB246D55CC0032096D /* TestUtils.swift in Sources */,
+				AC06529E26E034BF00D92D5E /* QuantityMetricTypeTest.swift in Sources */,
 				1F58921223C923C4007D2D80 /* MetricsPingSchedulerTests.swift in Sources */,
 				1FD4527723395EEB00F4C7E8 /* UuidMetricTests.swift in Sources */,
 				BF80AA5B2399301300A8B172 /* HttpPingUploaderTests.swift in Sources */,
