@@ -46,7 +46,7 @@ class QuantityMetricTypeTests: XCTestCase {
 
         XCTAssertFalse(quantityMetric.testHasValue())
 
-        quantityMetric.add(1)
+        quantityMetric.set(1)
 
         XCTAssertFalse(quantityMetric.testHasValue(), "Quantities must not be recorded if they are disabled")
     }
