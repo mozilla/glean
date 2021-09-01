@@ -24,7 +24,7 @@ If the value is true or false, use a [boolean metric](../../reference/metrics/bo
 
 If the value is a string, use a [string metric](../../reference/metrics/string.html). For example, to record the name of the default search engine.
 
-> **Beware:** string metrics are exceedingly general, and you are probably best served by selecting the most specific metric for the job, since you'll get better error checking and richer analysis tools for free. For example, avoid storing a number in a string metric --- you probably want a [counter metric]../..(/reference/metrics/counter.html) instead.
+> **Beware:** string metrics are exceedingly general, and you are probably best served by selecting the most specific metric for the job, since you'll get better error checking and richer analysis tools for free. For example, avoid storing a number in a string metric --- you probably want a [counter metric](../../reference/metrics/counter.html) instead.
 
 If you need to store multiple string values in a metric, use a [string list metric](../../reference/metrics/string_list.html). For example, you may want to record the list of other Mozilla products installed on the device.
 
@@ -59,8 +59,6 @@ If you need to know the time between multiple distinct actions that aren't a sim
 ### Do you need to know the order of events relative to other events?
 
 If you need to know the order of actions relative to other actions, such as, the user performed tasks A, B, and then C, and this is meaningfully different from the user performing tasks A, C and then B, (in other words, the order is meaningful beyond just the *fact* that a set of tasks were performed), use an [event metric](../../reference/metrics/event.html).
-
-> **Important:** events are the most expensive metric type to record, transmit, store and analyze, so they should be used sparingly, and only when none of the other metric types are sufficient for answering your question.
 
 ## For how long do you need to collect this data?
 

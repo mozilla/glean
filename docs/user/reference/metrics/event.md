@@ -10,12 +10,19 @@ Each event contains the following data:
 - The name of the event.
 - A set of key-value pairs, where the keys are predefined in the `extra_keys` metric parameter, and the values are strings.
 
-{{#include ../../../shared/blockquote-warning.html}}
+{{#include ../../../shared/blockquote-info.html}}
 
-##### Important
+## Are you sure you need an event metric?
 
-> Events are the most expensive metric type to record, transmit, store and analyze,
-> so they should be used sparingly, and only when none of the other metric types are sufficient for answering your question.
+> Event metrics are able to carry a lot of information. As such they can be used in place
+> of other metric types. However, their complexity means they are an
+> expensive metric type to record, transmit, store and, most importantly, analyze.
+>
+> Make sure to use events only when their complexity is unavoidable
+> e.g. when it is necessary to know the order of events relative to one another.
+>  
+> When in doubt, refer to the
+> [metric type choosing guide](../../user/metrics/adding-new-metrics.mdl#choosing-a-metric-type).
 
 ## Recording API
 
