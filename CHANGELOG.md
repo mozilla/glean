@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v40.1.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v40.1.1...main)
+
+# v40.1.1 (2021-09-02)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v40.1.0...v40.1.1)
 
 * iOS
   * Use 'Unknown' value if system data can't be decoded as UTF-8 ([#1769](https://github.com/mozilla/glean/pull/1769))
