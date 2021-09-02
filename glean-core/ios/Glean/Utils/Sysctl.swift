@@ -149,14 +149,16 @@ struct Sysctl {
 
     /// e.g. "N71mAP"
     public static var machine: String {
-        return try! Sysctl.string(for: [CTL_HW, HW_MODEL])
+        return (try? Sysctl.string(for: [CTL_HW, HW_MODEL])) ?? "Unknown"
     }
 
     /// e.g. "iPhone8,1"
     public static var model: String {
-        return try! Sysctl.string(for: [CTL_HW, HW_MACHINE])
+        return (try? Sysctl.string(for: [CTL_HW, HW_MACHINE])) ?? "Unknown"
     }
 
     /// e.g. "15D21" or "13D20"
-    public static var osVersion: String { return try! Sysctl.string(for: [CTL_KERN, KERN_OSVERSION]) }
+    public static var osVersion: String {
+        return (try? Sysctl.string(for: [CTL_KERN, KERN_OSVERSION])) ?? "Unknown"
+    }
 }
