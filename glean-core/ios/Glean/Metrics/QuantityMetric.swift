@@ -50,11 +50,11 @@ public class QuantityMetricType {
     ///
     /// - parameters:
     ///     * value: The value to set. Must be non-negative.
-    public func set(_ value: Int32) {
+    public func set(_ value: Int64) {
         guard !self.disabled else { return }
 
         Dispatchers.shared.launchAPI {
-            glean_quantity_set(self.handle, amount)
+            glean_quantity_set(self.handle, value)
         }
     }
 
@@ -83,7 +83,7 @@ public class QuantityMetricType {
     ///                 Defaults to the first value in `sendInPings`.
     ///
     /// - returns:  value of the stored metric
-    public func testGetValue(_ pingName: String? = nil) throws -> Int32 {
+    public func testGetValue(_ pingName: String? = nil) throws -> Int64 {
         Dispatchers.shared.assertInTestingMode()
 
         let pingName = pingName ?? self.sendInPings[0]
