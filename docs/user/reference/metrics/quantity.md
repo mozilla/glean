@@ -7,9 +7,8 @@ For example, the width of the display in pixels.
 
 ## Do not use Quantity for counting
 
-> If you need to _count_ something (e.g. number of tabs open or number of times a button is pressed)
-> prefer using the [Counter](./counter.md) metric type, which has a specific API for counting things
-> and also takes care of resetting the count at the correct time.
+> If you need to _count_ something (e.g. the number of times a button is pressed)
+> prefer using the [Counter](./counter.md) metric type, which has a specific API for counting things.
 
 ## Recording API
 
@@ -338,7 +337,7 @@ assert_eq!(
 
 ## Metric parameters
 
-Example counter metric definition:
+Example quantity metric definition:
 
 ```yaml
 controls:

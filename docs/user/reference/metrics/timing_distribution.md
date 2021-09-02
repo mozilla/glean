@@ -322,7 +322,7 @@ for error in errors {
 
 auto timerId = mozilla::glean::pages::page_load.Start();
 PR_Sleep(PR_MillisecondsToInterval(10));
-mozilla::glean::pages::page_load.StopAndAccumulate(timerId);
+mozilla::glean::pages::page_load.StopAndAccumulate(std::move(timerId));
 ```
 
 There are test APIs available too:

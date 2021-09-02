@@ -61,6 +61,7 @@
     - [Custom Distribution](reference/metrics/custom_distribution.md)
     - [Quantity](reference/metrics/quantity.md)
     - [Rate](reference/metrics/rate.md)
+    - [Text](reference/metrics/text.md)
 - [Pings](reference/pings/index.md)
 
 # Language Bindings Information
