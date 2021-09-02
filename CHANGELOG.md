@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v40.1.1...main)
 
+* General
+  * Updated `glean_parser` version to 4.0.0
+
 # v40.1.1 (2021-09-02)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v40.1.0...v40.1.1)
