@@ -4,7 +4,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-set -e
+set -xe
 
 # Strip any `v` prefix from `vX.Y.Z`
 NEW_VERSION=$(echo "$1" | sed 's/^v//')
