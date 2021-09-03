@@ -43,11 +43,49 @@ search.template.set("https://mysearchengine.com/");
 Set a URL metric to a specific URL value.
 
 {{#include ../../../shared/tab_header.md}}
-<div data-lang="Kotlin" class="tab"></div>
-<div data-lang="Java" class="tab"></div>
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Search
+
+Search.template.set("https://mysearchengine.com/")
+```
+
+</div>
+
+<div data-lang="Java" class="tab">
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Search;
+
+Search.INSTANCE.template.set("https://mysearchengine.com/");
+```
+
+</div>
+
 <div data-lang="Swift" class="tab"></div>
-<div data-lang="Python" class="tab"></div>
-<div data-lang="Rust" class="tab"></div>
+
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+metrics.search.template.set("https://mysearchengine.com/")
+```
+
+</div>
+
+<div data-lang="Rust" class="tab">
+
+```rust
+use glean_metrics;
+
+search::template.set("https://mysearchengine.com/");
+```
+
+</div>
+
 <div data-lang="JavaScript" class="tab">
 
 ```js
@@ -78,17 +116,55 @@ Gets the recorded value for a given URL metric as a (unencoded) string.
 
 {{#include ../../../shared/tab_header.md}}
 
-<div data-lang="Kotlin" class="tab"></div>
-<div data-lang="Java" class="tab"></div>
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Search
+
+assertEquals("https://mysearchengine.com/", Search.template.testGetValue())
+```
+
+</div>
+
+<div data-lang="Java" class="tab">
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Search
+
+assertEquals("https://mysearchengine.com/", Search.INSTANCE.template.testGetValue());
+```
+
+</div>
+
 <div data-lang="Swift" class="tab"></div>
-<div data-lang="Python" class="tab"></div>
-<div data-lang="Rust" class="tab"></div>
+
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+assert "https://mysearchengine.com/" == metrics.search.template.test_get_value()
+```
+
+</div>
+
+<div data-lang="Rust" class="tab">
+
+```rust
+use glean_metrics;
+
+assert_eq!("https://mysearchengine.com/", search::template.test_get_value(None).unwrap());
+```
+
+</div>
+
 <div data-lang="JavaScript" class="tab">
 
 ```js
 import * as search from "./path/to/generated/files/search.js";
 
-assert.strictEqual(, await search.template.testGetValue());
+assert.strictEqual("https://mysearchengine.com/", await search.template.testGetValue());
 ```
 </div>
 <div data-lang="Firefox Desktop" class="tab"></div>
@@ -101,11 +177,83 @@ Gets number of errors recorded for a given counter metric.
 
 {{#include ../../../shared/tab_header.md}}
 
-<div data-lang="Kotlin" class="tab"></div>
-<div data-lang="Java" class="tab"></div>
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Search
+
+assertEquals(0, Search.template.testGetNumRecordedErrors(ErrorType.InvalidValue))
+
+assertEquals(0, Search.template.testGetNumRecordedErrors(ErrorType.InvalidOverflow))
+```
+
+</div>
+
+<div data-lang="Java" class="tab">
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Search;
+
+assertEquals(
+    0,
+    Search.INSTANCE.template.testGetNumRecordedErrors(
+        ErrorType.InvalidValue
+    )
+);
+
+assertEquals(
+    0,
+    Search.INSTANCE.template.testGetNumRecordedErrors(
+        ErrorType.InvalidOverflow
+    )
+);
+```
+
+</div>
+
 <div data-lang="Swift" class="tab"></div>
-<div data-lang="Python" class="tab"></div>
-<div data-lang="Rust" class="tab"></div>
+
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+assert 0 == metrics.search.template.test_get_num_recorded_errors(
+    ErrorType.INVALID_VALUE
+)
+
+assert 0 == metrics.search.template.test_get_num_recorded_errors(
+    ErrorType.INVALID_OVERFLOW
+)
+```
+
+</div>
+
+<div data-lang="Rust" class="tab">
+
+```rust
+use glean::ErrorType;
+
+use glean_metrics;
+
+assert_eq!(
+  0,
+  search::template.test_get_num_recorded_errors(
+    ErrorType::InvalidValue
+  )
+);
+
+assert_eq!(
+  0,
+  search::template.test_get_num_recorded_errors(
+    ErrorType::InvalidOverflow
+  )
+);
+```
+
+</div>
+
 <div data-lang="JavaScript" class="tab">
 
 ```js
