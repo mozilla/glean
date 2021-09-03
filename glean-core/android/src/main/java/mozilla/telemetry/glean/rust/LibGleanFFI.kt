@@ -617,6 +617,31 @@ internal interface LibGleanFFI : Library {
         storage_name: String
     ): Int
 
+    // URL
+
+    fun glean_new_url_metric(
+        category: String,
+        name: String,
+        send_in_pings: StringArray,
+        send_in_pings_len: Int,
+        lifetime: Int,
+        disabled: Byte
+    ): Long
+
+    fun glean_destroy_url_metric(handle: Long)
+
+    fun glean_url_set(metric_id: Long, value: String)
+
+    fun glean_url_test_get_value(metric_id: Long, storage_name: String): Pointer?
+
+    fun glean_url_test_has_value(metric_id: Long, storage_name: String): Byte
+
+    fun glean_url_test_get_num_recorded_errors(
+        metric_id: Long,
+        error_type: Int,
+        storage_name: String
+    ): Int
+
     fun glean_get_upload_task(task: FfiPingUploadTask.ByReference)
 
     fun glean_process_ping_upload_response(task: FfiPingUploadTask.ByReference, status: Int)
