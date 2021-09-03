@@ -144,7 +144,7 @@ mod test {
             dynamic_label: None,
         });
 
-        let sample_url = "glean://test";
+        let sample_url = "glean://test".to_string();
         metric.set(&glean, sample_url.clone());
         assert_eq!(sample_url, metric.test_get_value(&glean, "store1").unwrap());
     }
@@ -164,7 +164,7 @@ mod test {
 
         let long_path = "testing".repeat(2000);
         let test_url = format!("glean://{}", long_path);
-        metric.set(&glean, test_url.clone());
+        metric.set(&glean, test_url);
 
         assert!(metric.test_get_value(&glean, "store1").is_none());
 
@@ -189,7 +189,7 @@ mod test {
         });
 
         let test_url = "data:application/json";
-        metric.set(&glean, test_url.clone());
+        metric.set(&glean, test_url);
 
         assert!(metric.test_get_value(&glean, "store1").is_none());
 
@@ -248,7 +248,7 @@ mod test {
         ];
 
         for incorrect in incorrects.clone().into_iter() {
-            metric.set(&glean, incorrect.clone());
+            metric.set(&glean, incorrect);
             assert!(metric.test_get_value(&glean, "store1").is_none());
         }
 
@@ -259,7 +259,7 @@ mod test {
         );
 
         for correct in corrects.into_iter() {
-            metric.set(&glean, correct.clone());
+            metric.set(&glean, correct);
             assert_eq!(metric.test_get_value(&glean, "store1").unwrap(), correct);
         }
     }
