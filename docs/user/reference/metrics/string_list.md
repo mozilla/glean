@@ -64,7 +64,14 @@ search::engines.add("duck duck go".to_string());
 ```
 
 </div>
-<div data-lang="JavaScript" class="tab"></div>
+<div data-lang="JavaScript" class="tab">
+
+```js
+Glean.search.engines.add("wikipedia");
+Glean.search.engines.add("duck duck go");
+```
+
+</div>
 <div data-lang="Firefox Desktop" class="tab">
 
 **C++**
@@ -74,13 +81,6 @@ search::engines.add("duck duck go".to_string());
 
 mozilla::glean::search::engines.Add("wikipedia"_ns);
 mozilla::glean::search::engines.Add("duck duck go"_ns);
-```
-
-**JavaScript**
-
-```js
-Glean.search.engines.add("wikipedia");
-Glean.search.engines.add("duck duck go");
 ```
 
 </div>
@@ -145,7 +145,13 @@ search::engines.set(vec!["wikipedia".to_string(), "duck duck go".to_string()])
 ```
 
 </div>
-<div data-lang="JavaScript" class="tab"></div>
+<div data-lang="JavaScript" class="tab">
+
+```js
+Glean.search.engines.set(["wikipedia", "duck duck go"]);
+```
+
+</div>
 <div data-lang="Firefox Desktop" class="tab">
 
 **C++**
@@ -154,12 +160,6 @@ search::engines.set(vec!["wikipedia".to_string(), "duck duck go".to_string()])
 #include "mozilla/glean/GleanMetrics.h"
 
 mozilla::glean::search::engines.Set({"wikipedia"_ns, "duck duck go"_ns});
-```
-
-**JavaScript**
-
-```js
-Glean.search.engines.set(["wikipedia", "duck duck go"]);
 ```
 
 </div>
@@ -234,7 +234,16 @@ assert_eq!(
 ```
 
 </div>
-<div data-lang="JavaScript" class="tab"></div>
+<div data-lang="JavaScript" class="tab">
+
+```js
+// testGetValue will throw NS_ERROR_LOSS_OF_SIGNIFICANT_DATA on error.
+const engines = Glean.search.engines.testGetValue();
+Assert.ok(engines.includes("wikipedia"));
+Assert.ok(engines.includes("duck duck go"));
+```
+
+</div>
 <div data-lang="Firefox Desktop" class="tab">
 
 **C++**
@@ -246,15 +255,6 @@ ASSERT_EQUAL(mozilla::glean::search::engines.TestGetValue().isOk());
 nsTArray<nsCString> list = mozilla::glean::search::engines.TestGetValue().unwrap();
 ASSERT_TRUE(list.Contains("wikipedia"_ns));
 ASSERT_TRUE(list.Constains("duck duck go"_ns));
-```
-
-**JavaScript**
-
-```js
-// testGetValue will throw NS_ERROR_LOSS_OF_SIGNIFICANT_DATA on error.
-const engines = Glean.search.engines.testGetValue();
-Assert.ok(engines.includes("wikipedia"));
-Assert.ok(engines.includes("duck duck go"));
 ```
 
 </div>
