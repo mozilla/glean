@@ -13,6 +13,13 @@
   * Use 'Unknown' value if system data can't be decoded as UTF-8 ([#1769](https://github.com/mozilla/glean/pull/1769))
   * BUGFIX: Add quantity metric type to the build ([#1774](https://github.com/mozilla/glean/pull/1774)). Previous builds are unable to use quantity metrics
 
+* Android
+  * Add support for the URL metric type ([#1778](https://github.com/mozilla/glean/pull/1778))
+* Rust
+  * Add support for the URL metric type ([#1778](https://github.com/mozilla/glean/pull/1778))
+* Python
+  * Add support for the URL metric type ([#1778](https://github.com/mozilla/glean/pull/1778))
+
 # v40.1.0 (2021-08-25)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v40.0.0...v40.1.0)
