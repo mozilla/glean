@@ -123,7 +123,7 @@ pub enum Metric {
     Jwe(String),
     /// A rate metric. See [`RateMetric`] for more information.
     Rate(i32, i32),
-    /// TODO
+    /// A URL metric. See [`UrlMetric`] for more information.
     Url(String),
 }
 

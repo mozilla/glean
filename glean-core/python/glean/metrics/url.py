@@ -22,7 +22,7 @@ class UrlMetricType:
     `glean.load_metrics`, allowing developers to record values that were
     previously registered in the metrics.yaml file.
 
-    The string API only exposes the `StringMetricType.set` method, which
+    The url API only exposes the `UrlMetricType.set` method, which
     takes care of validating the input data and making sure that limits are
     enforced.
     """
