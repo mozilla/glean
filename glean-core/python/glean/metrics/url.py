@@ -25,6 +25,8 @@ class UrlMetricType:
     The url API only exposes the `UrlMetricType.set` method, which
     takes care of validating the input data and making sure that limits are
     enforced.
+    
+    See https://mozilla.github.io/glean/book/reference/metrics/url.html#limits
     """
 
     def __init__(
