@@ -4,6 +4,12 @@
 
 * General
   * Updated `glean_parser` version to 4.0.0
+* Android
+  * Add support for the URL metric type ([#1778](https://github.com/mozilla/glean/pull/1778))
+* Rust
+  * Add support for the URL metric type ([#1778](https://github.com/mozilla/glean/pull/1778))
+* Python
+  * Add support for the URL metric type ([#1778](https://github.com/mozilla/glean/pull/1778))
 
 # v40.1.1 (2021-09-02)
 
@@ -12,13 +18,6 @@
 * iOS
   * Use 'Unknown' value if system data can't be decoded as UTF-8 ([#1769](https://github.com/mozilla/glean/pull/1769))
   * BUGFIX: Add quantity metric type to the build ([#1774](https://github.com/mozilla/glean/pull/1774)). Previous builds are unable to use quantity metrics
-
-* Android
-  * Add support for the URL metric type ([#1778](https://github.com/mozilla/glean/pull/1778))
-* Rust
-  * Add support for the URL metric type ([#1778](https://github.com/mozilla/glean/pull/1778))
-* Python
-  * Add support for the URL metric type ([#1778](https://github.com/mozilla/glean/pull/1778))
 
 # v40.1.0 (2021-08-25)
 
