@@ -51,3 +51,4 @@ They could be release notes, documentation, hopes, dreams, or whatever: so long 
 * 2021-06-25: [Funday!](https://fnordig.de/2021/06/25/funday/)
 * 2021-07-22: [Firefox Telemetry is to Glean as C++ is to Rust](https://blog.mozilla.org/data/2021/07/22/this-week-in-glean-firefox-telemetry-is-to-glean-as-c-is-to-rust/)
 * 2021-07-26: [Shipping Glean with GeckoView](https://blog.mozilla.org/data/2021/07/26/this-week-in-glean-shipping-glean-with-geckoview/)
+* 2021-09-07: [Data Reviews are Important, Glean Parser makes them Easy ](https://blog.mozilla.org/data/2021/09/07/this-week-in-glean-data-reviews-are-important-glean-parser-makes-them-easy/)

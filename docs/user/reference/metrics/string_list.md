@@ -64,7 +64,14 @@ search::engines.add("duck duck go".to_string());
 ```
 
 </div>
-<div data-lang="JavaScript" class="tab"></div>
+<div data-lang="JavaScript" class="tab">
+
+```js
+Glean.search.engines.add("wikipedia");
+Glean.search.engines.add("duck duck go");
+```
+
+</div>
 <div data-lang="Firefox Desktop" class="tab">
 
 **C++**
@@ -145,7 +152,13 @@ search::engines.set(vec!["wikipedia".to_string(), "duck duck go".to_string()])
 ```
 
 </div>
-<div data-lang="JavaScript" class="tab"></div>
+<div data-lang="JavaScript" class="tab">
+
+```js
+Glean.search.engines.set(["wikipedia", "duck duck go"]);
+```
+
+</div>
 <div data-lang="Firefox Desktop" class="tab">
 
 **C++**
@@ -234,7 +247,16 @@ assert_eq!(
 ```
 
 </div>
-<div data-lang="JavaScript" class="tab"></div>
+<div data-lang="JavaScript" class="tab">
+
+```js
+// testGetValue will throw NS_ERROR_LOSS_OF_SIGNIFICANT_DATA on error.
+const engines = Glean.search.engines.testGetValue();
+Assert.ok(engines.includes("wikipedia"));
+Assert.ok(engines.includes("duck duck go"));
+```
+
+</div>
 <div data-lang="Firefox Desktop" class="tab">
 
 **C++**

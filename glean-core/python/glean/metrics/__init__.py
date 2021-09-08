@@ -29,6 +29,7 @@ from .string_list import StringListMetricType
 from .timespan import TimespanMetricType
 from .timeunit import TimeUnit
 from .timing_distribution import TimingDistributionMetricType
+from .url import UrlMetricType
 from .uuid import UuidMetricType
 
 
@@ -54,5 +55,6 @@ __all__ = [
     "TimespanMetricType",
     "TimeUnit",
     "TimingDistributionMetricType",
+    "UrlMetricType",
     "UuidMetricType",
 ]

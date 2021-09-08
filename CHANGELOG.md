@@ -1,6 +1,19 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v40.1.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v40.2.0...main)
+
+# v40.2.0 (2021-09-08)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v40.1.1...v40.2.0)
+
+* General
+  * Updated `glean_parser` version to 4.0.0
+* Android
+  * Add support for the URL metric type ([#1778](https://github.com/mozilla/glean/pull/1778))
+* Rust
+  * Add support for the URL metric type ([#1778](https://github.com/mozilla/glean/pull/1778))
+* Python
+  * Add support for the URL metric type ([#1778](https://github.com/mozilla/glean/pull/1778))
 
 # v40.1.1 (2021-09-02)
 
