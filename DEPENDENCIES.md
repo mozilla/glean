@@ -3247,9 +3247,9 @@ THE SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
-* [glean 40.1.1]( https://github.com/mozilla/glean )
-* [glean-core 40.1.1]( https://github.com/mozilla/glean )
-* [glean-ffi 40.1.1]( https://github.com/mozilla/glean )
+* [glean 40.2.0]( https://github.com/mozilla/glean )
+* [glean-core 40.2.0]( https://github.com/mozilla/glean )
+* [glean-ffi 40.2.0]( https://github.com/mozilla/glean )
 * [zeitstempel 0.1.1]( https://github.com/badboy/zeitstempel )
 
 
