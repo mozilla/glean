@@ -56,8 +56,32 @@ public class HttpPingUploader {
         // Build the request and create an async upload operation and launch it through the
         // Dispatchers
         if let request = buildRequest(path: path, data: data, headers: headers) {
-            let uploadOperation = PingUploadOperation(request: request, data: data, callback: callback)
-            Dispatchers.shared.launchConcurrent(operation: uploadOperation)
+            // Build a URLSession with no-caching suitable for uploading our pings
+            let config = URLSessionConfiguration.background(withIdentifier: "\(path)")
+            config.sessionSendsLaunchEvents = false // We don't need to notify the app when we are done.
+            config.requestCachePolicy = NSURLRequest.CachePolicy.reloadIgnoringLocalCacheData
+            config.isDiscretionary = false
+            config.urlCache = nil
+            let session = URLSession(configuration: config,
+                                     delegate: SessionResponseDelegate(callback),
+                                     delegateQueue: Dispatchers.shared.serialOperationQueue)
+
+            let tmpFile = URL.init(fileURLWithPath: NSTemporaryDirectory(),
+                                   isDirectory: true).appendingPathComponent("\(path.split(separator: "/").last!)")
+            do {
+                try data.write(to: tmpFile, options: .noFileProtection)
+            } catch {
+                logger.error("\(error)")
+            }
+
+            // Create an URLSessionUploadTask to upload our ping in the background and handle the
+            // server responses.
+            let uploadTask = session.uploadTask(with: request, fromFile: tmpFile)
+
+            uploadTask.countOfBytesClientExpectsToSend = 1024 * 1024
+            uploadTask.countOfBytesClientExpectsToReceive = 512
+
+            uploadTask.resume()
         }
     }
 
@@ -122,6 +146,59 @@ public class HttpPingUploader {
             case .done:
                 return
             }
+        }
+    }
+}
+
+/// An object that can be assigned as a session delegate and will hold the callback with which to respond to
+/// glean-core with the network response
+private class SessionResponseDelegate: NSObject, URLSessionTaskDelegate {
+    private let callback: (UploadResult) -> Void
+
+    init(_ callback: @escaping (UploadResult) -> Void) {
+        self.callback = callback
+    }
+
+    public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        let httpResponse = task.response as? HTTPURLResponse
+        let statusCode = UInt32(httpResponse?.statusCode ?? 0)
+
+        if let error = error {
+            // Upload failed on the client-side. We should try again.
+            callback(.recoverableFailure(error))
+        } else {
+            // HTTP status codes are handled on the Rust side
+            callback(.httpResponse(statusCode))
+        }
+    }
+}
+
+enum UploadResult {
+    /// A HTTP response code.
+    ///
+    /// This can still indicate an error, depending on the status code.
+    case httpResponse(UInt32)
+
+    /// An unrecoverable upload failure.
+    ///
+    /// A possible cause might be a malformed URL.
+    case unrecoverableFailure(Error)
+
+    /// A recoverable failure.
+    ///
+    /// During upload something went wrong,
+    /// e.g. the network connection failed.
+    /// The upload should be retried at a later time.
+    case recoverableFailure(Error)
+
+    func toFfi() -> UInt32 {
+        switch self {
+        case let .httpResponse(status):
+            return UInt32(UPLOAD_RESULT_HTTP_STATUS) | status
+        case .unrecoverableFailure:
+            return UInt32(UPLOAD_RESULT_UNRECOVERABLE)
+        case .recoverableFailure:
+            return UInt32(UPLOAD_RESULT_RECOVERABLE)
         }
     }
 }
