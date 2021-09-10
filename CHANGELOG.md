@@ -4,6 +4,7 @@
 
 * General
   * BUGFIX: Only clear specified storage in delayed ping io mode ([#1782](https://github.com/mozilla/glean/pull/1782))
+  * Require Rust >= 1.53.0 ([#1782](https://github.com/mozilla/glean/pull/1782))
 
 # v40.2.0 (2021-09-08)
 
