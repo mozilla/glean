@@ -246,7 +246,7 @@ open class GleanInternalAPI internal constructor () {
             // Set up information and scheduling for Glean owned pings. Ideally, the "metrics"
             // ping startup check should be performed before any other ping, since it relies
             // on being dispatched to the API context before any other metric.
-            metricsPingScheduler = MetricsPingScheduler(applicationContext)
+            metricsPingScheduler = MetricsPingScheduler(applicationContext, buildInfo)
             metricsPingScheduler.schedule()
 
             // Check if the "dirty flag" is set. That means the product was probably

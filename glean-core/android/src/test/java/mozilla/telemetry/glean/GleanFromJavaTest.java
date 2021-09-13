@@ -28,7 +28,7 @@ public class GleanFromJavaTest {
     // callable from Java. If something goes wrong, it should complain about missing
     // methods at build-time.
 
-    private Context appContext = TestUtilKt.getContextWithMockedInfo("java-test");
+    private Context appContext = TestUtilKt.getContext();
     private BuildInfo buildInfo = new BuildInfo("java-test", "java-test");
 
     @Before

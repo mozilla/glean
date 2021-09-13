@@ -7,7 +7,7 @@ package mozilla.telemetry.glean.scheduler
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.getPlainBody
-import mozilla.telemetry.glean.getContextWithMockedInfo
+import mozilla.telemetry.glean.getContext
 import mozilla.telemetry.glean.getMockWebServer
 import mozilla.telemetry.glean.private.EventMetricType
 import mozilla.telemetry.glean.private.Lifetime
@@ -40,7 +40,7 @@ import java.util.concurrent.TimeUnit
  */
 @RunWith(AndroidJUnit4::class)
 class CustomPingTest {
-    private val context = getContextWithMockedInfo()
+    private val context = getContext()
     private lateinit var server: MockWebServer
 
     @get:Rule
