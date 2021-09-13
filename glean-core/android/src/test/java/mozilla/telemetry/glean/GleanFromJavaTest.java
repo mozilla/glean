@@ -28,7 +28,8 @@ public class GleanFromJavaTest {
     // callable from Java. If something goes wrong, it should complain about missing
     // methods at build-time.
 
-    private Context appContext = TestUtilKt.getContextWithMockedInfo("java-test");
+    private Context appContext = TestUtilKt.getContext();
+    private BuildInfo buildInfo = new BuildInfo("java-test", "java-test");
 
     @Before
     public void setup() {
@@ -37,14 +38,15 @@ public class GleanFromJavaTest {
 
     @Test
     public void testInitGleanWithDefaults() {
-        Glean.INSTANCE.initialize(appContext, true);
+        Configuration config = new Configuration();
+        Glean.INSTANCE.initialize(appContext, true, config, buildInfo);
     }
 
     @Test
     public void testInitGleanWithConfiguration() {
         Configuration config =
                 new Configuration(Configuration.DEFAULT_TELEMETRY_ENDPOINT, "test-channel");
-        Glean.INSTANCE.initialize(appContext, true, config);
+        Glean.INSTANCE.initialize(appContext, true, config, buildInfo);
     }
 
     @Test

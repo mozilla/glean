@@ -6,7 +6,7 @@ package mozilla.telemetry.glean.scheduler
 
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import mozilla.telemetry.glean.getContextWithMockedInfo
+import mozilla.telemetry.glean.getContext
 import mozilla.telemetry.glean.getMockWebServer
 import mozilla.telemetry.glean.getWorkerStatus
 import mozilla.telemetry.glean.Glean
@@ -58,7 +58,7 @@ class DeletionPingTest {
         pingFile.writeText(content)
 
         val server = getMockWebServer()
-        val context = getContextWithMockedInfo()
+        val context = getContext()
 
         resetGlean(context, Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port
@@ -73,7 +73,7 @@ class DeletionPingTest {
     @Test
     fun `deletion-request pings are only sent when toggled from on to off`() {
         val server = getMockWebServer()
-        val context = getContextWithMockedInfo()
+        val context = getContext()
 
         resetGlean(context, Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port
@@ -127,7 +127,7 @@ class DeletionPingTest {
         pingFile.writeText(content)
 
         val server = getMockWebServer()
-        val context = getContextWithMockedInfo()
+        val context = getContext()
 
         resetGlean(context, Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port

@@ -189,7 +189,7 @@ class GleanTest {
             sendInPings = listOf("events")
         )
 
-        val context = getContextWithMockedInfo()
+        val context = getContext()
         delayMetricsPing(context)
         resetGlean(context, Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port
@@ -267,7 +267,7 @@ class GleanTest {
 
         // Restart glean and don't clear the stores.
         val server = getMockWebServer()
-        val context = getContextWithMockedInfo()
+        val context = getContext()
         delayMetricsPing(context)
         resetGlean(context, Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port
@@ -373,13 +373,13 @@ class GleanTest {
     fun `The appChannel must be correctly set, if requested`() {
         // No appChannel must be set if nothing was provided through the config
         // options.
-        resetGlean(getContextWithMockedInfo(), Configuration())
+        resetGlean(getContext(), Configuration())
         assertFalse(GleanInternalMetrics.appChannel.testHasValue())
 
         // The appChannel must be correctly reported if a channel value
         // was provided.
         val testChannelName = "my-test-channel"
-        resetGlean(getContextWithMockedInfo(), Configuration(channel = testChannelName))
+        resetGlean(getContext(), Configuration(channel = testChannelName))
         assertTrue(GleanInternalMetrics.appChannel.testHasValue())
         assertEquals(testChannelName, GleanInternalMetrics.appChannel.testGetValue())
     }
@@ -437,7 +437,7 @@ class GleanTest {
 
         val server = getMockWebServer()
 
-        val context = getContextWithMockedInfo()
+        val context = getContext()
         delayMetricsPing(context)
         resetGlean(context, Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port
@@ -694,7 +694,7 @@ class GleanTest {
 
         // Restart glean and don't clear the stores.
         val server = getMockWebServer()
-        val context = getContextWithMockedInfo()
+        val context = getContext()
         delayMetricsPing(context)
         resetGlean(context, Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port
@@ -773,7 +773,7 @@ class GleanTest {
         // This test relies on Glean not being initialized, we do that ourselves.
         Glean.testDestroyGleanHandle()
 
-        val context = getContextWithMockedInfo()
+        val context = getContext()
         delayMetricsPing(context)
 
         // This test relies on testing mode to be disabled, since we need to prove the

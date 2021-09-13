@@ -9,7 +9,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.checkPingSchema
 import mozilla.telemetry.glean.getPlainBody
-import mozilla.telemetry.glean.getContextWithMockedInfo
+import mozilla.telemetry.glean.getContext
 import mozilla.telemetry.glean.getMockWebServer
 import mozilla.telemetry.glean.getWorkerStatus
 import mozilla.telemetry.glean.resetGlean
@@ -38,7 +38,7 @@ class PingTypeTest {
     fun `test sending of custom pings`() {
         val server = getMockWebServer()
 
-        val context = getContextWithMockedInfo()
+        val context = getContext()
         delayMetricsPing(context)
         resetGlean(context, Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port
@@ -88,7 +88,7 @@ class PingTypeTest {
     fun `test sending of custom pings with snake_case`() {
         val server = getMockWebServer()
 
-        val context = getContextWithMockedInfo()
+        val context = getContext()
         delayMetricsPing(context)
         resetGlean(context, Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port
@@ -129,7 +129,7 @@ class PingTypeTest {
     fun `test sending of custom pings with kebab-case`() {
         val server = getMockWebServer()
 
-        val context = getContextWithMockedInfo()
+        val context = getContext()
         delayMetricsPing(context)
         resetGlean(context, Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port
@@ -170,7 +170,7 @@ class PingTypeTest {
     fun `test sending of custom pings without client_id`() {
         val server = getMockWebServer()
 
-        val context = getContextWithMockedInfo()
+        val context = getContext()
         delayMetricsPing(context)
         resetGlean(context, Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port
@@ -219,7 +219,7 @@ class PingTypeTest {
             sendInPings = listOf("unknown")
         )
 
-        val context = getContextWithMockedInfo()
+        val context = getContext()
         delayMetricsPing(context)
         resetGlean(context, Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port

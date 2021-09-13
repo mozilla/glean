@@ -7,8 +7,6 @@ package mozilla.telemetry.glean
 import android.app.ActivityManager
 import android.util.Log
 import android.content.Context
-import android.content.pm.PackageInfo
-import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Process
 import androidx.annotation.MainThread
@@ -105,42 +103,7 @@ open class GleanInternalAPI internal constructor () {
     internal var isSendingToTestEndpoint: Boolean = false
 
     // Store the build information provided by the application.
-    internal var buildInfo: BuildInfo? = null
-
-    /**
-     * Initialize the Glean SDK.
-     *
-     * This should only be initialized once by the application, and not by
-     * libraries using the Glean SDK. A message is logged to error and no
-     * changes are made to the state if initialize is called a more than
-     * once.
-     *
-     * A LifecycleObserver will be added to send pings when the application goes
-     * into foreground and background.
-     *
-     * This method must be called from the main thread.
-     *
-     * This form of `initialize` is deprecated. Use the form that requires a
-     * `buildInfo` parameter instead.
-     *
-     * @param applicationContext [Context] to access application features, such
-     * as shared preferences
-     * @param uploadEnabled A [Boolean] that determines whether telemetry is enabled.
-     *     If disabled, all persisted metrics, events and queued pings (except
-     *     first_run_date and first_run_hour) are cleared.
-     * @param configuration A Glean [Configuration] object with global settings.
-     */
-    @JvmOverloads
-    @Synchronized
-    @MainThread
-    @Deprecated("The buildInfo parameter will be required in the future. See bug 1691953")
-    fun initialize(
-        applicationContext: Context,
-        uploadEnabled: Boolean,
-        configuration: Configuration = Configuration()
-    ) {
-        return initializeInternal(applicationContext, uploadEnabled, configuration, null)
-    }
+    internal lateinit var buildInfo: BuildInfo
 
     /**
      * Initialize the Glean SDK.
@@ -165,6 +128,7 @@ open class GleanInternalAPI internal constructor () {
      *     object is generated at build time by glean_parser at the import path
      *     ${YOUR_PACKAGE_ROOT}.GleanMetrics.GleanBuildInfo.buildInfo
      */
+    @Suppress("ReturnCount", "LongMethod", "ComplexMethod")
     @JvmOverloads
     @Synchronized
     @MainThread
@@ -173,18 +137,6 @@ open class GleanInternalAPI internal constructor () {
         uploadEnabled: Boolean,
         configuration: Configuration = Configuration(),
         buildInfo: BuildInfo
-    ) {
-        return initializeInternal(applicationContext, uploadEnabled, configuration, buildInfo)
-    }
-
-    @Suppress("ReturnCount", "LongMethod", "ComplexMethod")
-    @Synchronized
-    @MainThread
-    internal fun initializeInternal(
-        applicationContext: Context,
-        uploadEnabled: Boolean,
-        configuration: Configuration = Configuration(),
-        buildInfo: BuildInfo? = null
     ) {
         this.buildInfo = buildInfo
 
@@ -278,7 +230,7 @@ open class GleanInternalAPI internal constructor () {
             // The next times we start, we would have them around already.
             val isFirstRun = LibGleanFFI.INSTANCE.glean_is_first_run().toBoolean()
             if (isFirstRun) {
-                initializeCoreMetrics(applicationContext)
+                initializeCoreMetrics()
             }
 
             // Deal with any pending events so we can start recording new ones
@@ -294,7 +246,7 @@ open class GleanInternalAPI internal constructor () {
             // Set up information and scheduling for Glean owned pings. Ideally, the "metrics"
             // ping startup check should be performed before any other ping, since it relies
             // on being dispatched to the API context before any other metric.
-            metricsPingScheduler = MetricsPingScheduler(applicationContext)
+            metricsPingScheduler = MetricsPingScheduler(applicationContext, buildInfo)
             metricsPingScheduler.schedule()
 
             // Check if the "dirty flag" is set. That means the product was probably
@@ -309,7 +261,7 @@ open class GleanInternalAPI internal constructor () {
             // Any new value will be sent in newly generated pings after startup.
             if (!isFirstRun) {
                 LibGleanFFI.INSTANCE.glean_clear_application_lifetime_metrics()
-                initializeCoreMetrics(applicationContext)
+                initializeCoreMetrics()
             }
 
             // Signal the RLB dispatcher to unblock, if any exists.
@@ -393,7 +345,7 @@ open class GleanInternalAPI internal constructor () {
             if (!originalEnabled && enabled) {
                 // If uploading is being re-enabled, we have to restore the
                 // application-lifetime metrics.
-                initializeCoreMetrics((this@GleanInternalAPI).applicationContext)
+                initializeCoreMetrics()
             }
 
             if (originalEnabled && !enabled) {
@@ -557,42 +509,15 @@ open class GleanInternalAPI internal constructor () {
     /**
      * Initialize the core metrics internally managed by Glean (e.g. client id).
      */
-    private fun initializeCoreMetrics(applicationContext: Context) {
+    private fun initializeCoreMetrics() {
         // Set a few more metrics that will be sent as part of every ping.
         // Please note that the following metrics must be set synchronously, so
         // that they are guaranteed to be available with the first ping that is
         // generated. We use an internal only API to do that.
 
         // Set required information first.
-        buildInfo?.let {
-            GleanInternalMetrics.appBuild.setSync(it.versionCode)
-            GleanInternalMetrics.appDisplayVersion.setSync(it.versionName)
-        } ?: run {
-            val packageInfo: PackageInfo
-
-            try {
-                packageInfo = applicationContext.packageManager.getPackageInfo(
-                    applicationContext.packageName, 0
-                )
-            } catch (e: PackageManager.NameNotFoundException) {
-                Log.e(
-                    LOG_TAG,
-                    "Could not get own package info, unable to report build id and display version"
-                )
-
-                GleanInternalMetrics.appBuild.setSync("inaccessible")
-                GleanInternalMetrics.appDisplayVersion.setSync("inaccessible")
-
-                return
-            }
-
-            @Suppress("DEPRECATION")
-            GleanInternalMetrics.appBuild.setSync(packageInfo.versionCode.toString())
-
-            GleanInternalMetrics.appDisplayVersion.setSync(
-                packageInfo.versionName?.let { it } ?: "Unknown"
-            )
-        }
+        GleanInternalMetrics.appBuild.setSync(buildInfo.versionCode)
+        GleanInternalMetrics.appDisplayVersion.setSync(buildInfo.versionName)
 
         GleanInternalMetrics.architecture.setSync(Build.SUPPORTED_ABIS[0])
         GleanInternalMetrics.osVersion.setSync(Build.VERSION.RELEASE)
@@ -845,7 +770,9 @@ open class GleanInternalAPI internal constructor () {
         Glean.testDestroyGleanHandle()
         // Always log pings for tests
         Glean.setLogPings(true)
-        Glean.initializeInternal(context, uploadEnabled, config, null)
+
+        val buildInfo = BuildInfo(versionCode = "0.0.1", versionName = "0.0.1")
+        Glean.initialize(context, uploadEnabled, config, buildInfo)
     }
 
     /**
