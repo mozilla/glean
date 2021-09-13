@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v40.2.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v41.0.0...main)
+
+# v41.0.0 (2021-09-13)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v40.2.0...v41.0.0)
 
 * General
   * BUGFIX: Only clear specified storage in delayed ping io mode ([#1782](https://github.com/mozilla/glean/pull/1782))
