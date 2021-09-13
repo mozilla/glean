@@ -11,6 +11,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.work.testing.WorkManagerTestInitHelper
 import mozilla.telemetry.glean.any
 import mozilla.telemetry.glean.Glean
+import mozilla.telemetry.glean.BuildInfo
 import mozilla.telemetry.glean.GleanBuildInfo
 import mozilla.telemetry.glean.GleanMetrics.Pings
 import mozilla.telemetry.glean.checkPingSchema
@@ -497,9 +498,12 @@ class MetricsPingSchedulerTest {
 
         val oldVersion = "version.0"
         val oldContext = getContextWithMockedInfo(oldVersion)
+        val oldBuildInfo = BuildInfo(versionCode = oldVersion, versionName = oldVersion)
 
         // New version
-        val newContext = getContextWithMockedInfo("version.1")
+        val newVersion = "version.1"
+        val newContext = getContextWithMockedInfo(newVersion)
+        val newBuildInfo = BuildInfo(versionCode = newVersion, versionName = newVersion)
 
         try {
             // Initialize Glean for the first time.
@@ -509,7 +513,8 @@ class MetricsPingSchedulerTest {
             Glean.initialize(
                 oldContext,
                 true,
-                configuration
+                configuration,
+                oldBuildInfo
             )
 
             // Create a metric and set its value. We expect this to be sent after the restart
@@ -539,7 +544,8 @@ class MetricsPingSchedulerTest {
             Glean.initialize(
                 newContext,
                 true,
-                configuration
+                configuration,
+                newBuildInfo
             )
 
             // Unfortunately, we need to delay a bit here to give init time to run because we are
