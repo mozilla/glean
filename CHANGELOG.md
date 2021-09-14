@@ -2,6 +2,8 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v41.1.0...main)
 
+* Android
+  * Updated to Gradle 7, Android Gradle Plugin 7 and Rust Android Plugin 0.9 as well as building with Java 11 ([#1801](https://github.com/mozilla/glean/pull/1801))
 * iOS
   * Add support for the URL metric type ([#1791](https://github.com/mozilla/glean/pull/1791))
 

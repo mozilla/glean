@@ -30,7 +30,7 @@ class PingUploadWorkerTest {
     @Before
     @Throws(Exception::class)
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
         resetGlean(context, config = Configuration())
         pingUploadWorker = PingUploadWorker(context, workerParams!!)
     }
