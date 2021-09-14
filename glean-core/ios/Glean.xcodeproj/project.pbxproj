@@ -70,6 +70,8 @@
 		BFFE183C2350A9CC0068D97B /* DistributionData.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFFE183B2350A9CC0068D97B /* DistributionData.swift */; };
 		BFFE33A92328F4EF005348FE /* GleanFfi.h in Headers */ = {isa = PBXBuildFile; fileRef = BFFE33A82328F4EF005348FE /* GleanFfi.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		BFFE33AB232927C3005348FE /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFFE33AA232927C3005348FE /* Utils.swift */; };
+		CD0F7CC026F0F27900EDA6A4 /* UrlMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0F7CBF26F0F27900EDA6A4 /* UrlMetric.swift */; };
+		CD0F7CC226F0F28900EDA6A4 /* UrlMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0F7CC126F0F28900EDA6A4 /* UrlMetricTests.swift */; };
 		CD6E200A25CAD68900C7EF2B /* OHHTTPStubs.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6E200925CAD68900C7EF2B /* OHHTTPStubs.xcframework */; };
 		CD75918125CAE020003F2CFB /* libglean_ffi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD75918025CAE020003F2CFB /* libglean_ffi.a */; };
 /* End PBXBuildFile section */
@@ -154,6 +156,8 @@
 		BFFE183B2350A9CC0068D97B /* DistributionData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DistributionData.swift; sourceTree = "<group>"; };
 		BFFE33A82328F4EF005348FE /* GleanFfi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GleanFfi.h; sourceTree = "<group>"; };
 		BFFE33AA232927C3005348FE /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
+		CD0F7CBF26F0F27900EDA6A4 /* UrlMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UrlMetric.swift; sourceTree = "<group>"; };
+		CD0F7CC126F0F28900EDA6A4 /* UrlMetricTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UrlMetricTests.swift; sourceTree = "<group>"; };
 		CD6E200525CAD66100C7EF2B /* Gzip.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Gzip.xcframework; path = ../../Carthage/Build/Gzip.xcframework; sourceTree = "<group>"; };
 		CD6E200925CAD68900C7EF2B /* OHHTTPStubs.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = OHHTTPStubs.xcframework; path = ../../Carthage/Build/OHHTTPStubs.xcframework; sourceTree = "<group>"; };
 		CD75918025CAE020003F2CFB /* libglean_ffi.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libglean_ffi.a; path = ../../target/universal/debug/libglean_ffi.a; sourceTree = "<group>"; };
@@ -344,6 +348,7 @@
 				BFAED5072369751100DF293D /* StringListMetric.swift */,
 				BF89055E232BC213003CA2BA /* StringMetric.swift */,
 				1FD4527423395B4500F4C7E8 /* UuidMetric.swift */,
+				CD0F7CBF26F0F27900EDA6A4 /* UrlMetric.swift */,
 				BF2E57042334B77D00364D92 /* EventMetric.swift */,
 				BFE1CDC3233B63A70019EE47 /* LabeledMetric.swift */,
 				BFFE18372350A5F50068D97B /* TimingDistributionMetric.swift */,
@@ -367,6 +372,7 @@
 				BFAED5092369752400DF293D /* StringListMetricTests.swift */,
 				BF890560232BC227003CA2BA /* StringMetricTests.swift */,
 				1FD4527623395EEB00F4C7E8 /* UuidMetricTests.swift */,
+				CD0F7CC126F0F28900EDA6A4 /* UrlMetricTests.swift */,
 				BF2E57062334BD7600364D92 /* EventMetricTests.swift */,
 				BFE1CDC5233B6B6D0019EE47 /* LabeledMetricTests.swift */,
 				BFFE18392350A61F0068D97B /* TimingDistributionMetricTests.swift */,
@@ -566,6 +572,7 @@
 				BF30FDC22332312300840607 /* Sysctl.swift in Sources */,
 				AC54D227233134A30019319A /* GleanOperation.swift in Sources */,
 				BFAED5082369751100DF293D /* StringListMetric.swift in Sources */,
+				CD0F7CC026F0F27900EDA6A4 /* UrlMetric.swift in Sources */,
 				1F60589723148BF800307A9F /* GleanLifecycleObserver.swift in Sources */,
 				1FD4527523395B4500F4C7E8 /* UuidMetric.swift in Sources */,
 				BFE1CDC8233B73B30019EE47 /* Unreachable.swift in Sources */,
@@ -605,6 +612,7 @@
 				1F39E7B3239F0777009B13B3 /* GleanDebugUtilityTests.swift in Sources */,
 				BFAED50A2369752400DF293D /* StringListMetricTests.swift in Sources */,
 				BF890561232BC227003CA2BA /* StringMetricTests.swift in Sources */,
+				CD0F7CC226F0F28900EDA6A4 /* UrlMetricTests.swift in Sources */,
 				BFCBD6AB246D55CC0032096D /* TestUtils.swift in Sources */,
 				AC06529E26E034BF00D92D5E /* QuantityMetricTypeTest.swift in Sources */,
 				1F58921223C923C4007D2D80 /* MetricsPingSchedulerTests.swift in Sources */,
