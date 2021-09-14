@@ -22,9 +22,10 @@ WORKDIR /builds/worker/
 
 # Configuration
 
-ENV ANDROID_BUILD_TOOLS "28.0.3"
-ENV ANDROID_SDK_VERSION "3859397"
-ENV ANDROID_PLATFORM_VERSION "28"
+ENV ANDROID_BUILD_TOOLS "30.0.3"
+ENV ANDROID_TOOLS_VERSION "7583922"
+ENV ANDROID_PLATFORM_VERSION "30"
+ENV ANDROID_NDK_VERSION "21.3.6528147"
 
 # Set up the language variables to avoid problems (we run locale-gen later).
 ENV LANG en_US.UTF-8
@@ -49,7 +50,7 @@ ENV \
 RUN apt-get update -qq \
     && apt-get install -qy --no-install-recommends \
         # To compile Android stuff.
-        openjdk-8-jdk \
+        openjdk-11-jdk \
         git \
         curl \
         # Required by symbolstore.py.
@@ -129,10 +130,14 @@ WORKDIR /builds/worker
 
 ENV ANDROID_HOME /builds/worker/android-sdk
 ENV ANDROID_SDK_HOME /builds/worker/android-sdk
-ENV PATH ${PATH}:${ANDROID_SDK_HOME}/tools:${ANDROID_SDK_HOME}/tools/bin:${ANDROID_SDK_HOME}/platform-tools:/opt/tools:${ANDROID_SDK_HOME}/build-tools/${ANDROID_BUILD_TOOLS}
+ENV PATH ${PATH}:${ANDROID_SDK_HOME}/cmdline-tools/latest/bin:${ANDROID_SDK_HOME}/platform-tools:/opt/tools:${ANDROID_SDK_HOME}/build-tools/${ANDROID_BUILD_TOOLS}
 
-RUN curl -sfSL --retry 5 --retry-delay 10 https://dl.google.com/android/repository/sdk-tools-linux-${ANDROID_SDK_VERSION}.zip > sdk.zip \
-    && unzip -q sdk.zip -d ${ANDROID_SDK_HOME} \
+# Download the Android SDK tools, unzip them to ${ANDROID_SDK_HOME}/cmdline-tools/latest/, accept all licenses
+# The download link comes from https://developer.android.com/studio/#downloads
+RUN curl -sfSL --retry 5 --retry-delay 10 https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_TOOLS_VERSION}_latest.zip > sdk.zip \
+    && unzip -q sdk.zip \
+    && mkdir $ANDROID_SDK_HOME/cmdline-tools \
+    && mv cmdline-tools $ANDROID_HOME/cmdline-tools/latest \
     && rm sdk.zip \
     && mkdir -p /builds/worker/android-sdk/.android/ \
     && touch /builds/worker/android-sdk/.android/repositories.cfg \
@@ -142,7 +147,7 @@ RUN curl -sfSL --retry 5 --retry-delay 10 https://dl.google.com/android/reposito
         "build-tools;${ANDROID_BUILD_TOOLS}" \
         "extras;android;m2repository" \
         "extras;google;m2repository" \
-        "ndk;21.3.6528147"
+        "ndk;${ANDROID_NDK_VERSION}"
 
 RUN chown -R worker:worker /builds/worker/android-sdk
 
@@ -155,11 +160,10 @@ RUN \
 
 # tooltool
 RUN \
-    curl -sfSL --retry 10 --retry-delay 10 \
+    curl -sfSL --retry 5 --retry-delay 10 \
          -o /usr/local/bin/tooltool.py \
          https://raw.githubusercontent.com/mozilla/build-tooltool/36511dae0ead6848017e2d569b1f6f1b36984d40/tooltool.py && \
          chmod +x /usr/local/bin/tooltool.py
-
 
 # %include-run-task
 
@@ -167,10 +171,8 @@ ENV SHELL=/bin/bash \
     HOME=/builds/worker \
     PATH=/builds/worker/.local/bin:$PATH
 
-
 VOLUME /builds/worker/checkouts
 VOLUME /builds/worker/.cache
-
 
 # run-task expects to run as root
 USER root
