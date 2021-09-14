@@ -22,27 +22,6 @@ all the validations performed are the ones listed in the
 Set a URL metric to a specific string value.
 
 {{#include ../../../shared/tab_header.md}}
-<div data-lang="Kotlin" class="tab"></div>
-<div data-lang="Java" class="tab"></div>
-<div data-lang="Swift" class="tab"></div>
-<div data-lang="Python" class="tab"></div>
-<div data-lang="Rust" class="tab"></div>
-<div data-lang="JavaScript" class="tab">
-
-```js
-import * as search from "./path/to/generated/files/search.js";
-
-search.template.set("https://mysearchengine.com/");
-```
-</div>
-<div data-lang="Firefox Desktop" class="tab"></div>
-{{#include ../../../shared/tab_footer.md}}
-
-### `setUrl`
-
-Set a URL metric to a specific URL value.
-
-{{#include ../../../shared/tab_header.md}}
 <div data-lang="Kotlin" class="tab">
 
 ```Kotlin
@@ -63,7 +42,17 @@ Search.INSTANCE.template.set("https://mysearchengine.com/");
 
 </div>
 
-<div data-lang="Swift" class="tab"></div>
+<div data-lang="Swift" class="tab">
+
+```Swift
+Search.template.set("https://mysearchengine.com")
+
+// Swift's URL type is supported
+let url = URL(string: "https://mysearchengine.com")!
+Search.template.set(url: url)
+```
+
+</div>
 
 <div data-lang="Python" class="tab">
 
@@ -85,6 +74,31 @@ search::template.set("https://mysearchengine.com/");
 ```
 
 </div>
+<div data-lang="JavaScript" class="tab">
+
+```js
+import * as search from "./path/to/generated/files/search.js";
+
+search.template.set("https://mysearchengine.com/");
+```
+</div>
+<div data-lang="Firefox Desktop" class="tab"></div>
+{{#include ../../../shared/tab_footer.md}}
+
+### `setUrl`
+
+Set a URL metric to a specific URL value.
+
+{{#include ../../../shared/tab_header.md}}
+<div data-lang="Kotlin" class="tab"></div>
+
+<div data-lang="Java" class="tab"></div>
+
+<div data-lang="Swift" class="tab"></div>
+
+<div data-lang="Python" class="tab"></div>
+
+<div data-lang="Rust" class="tab"></div>
 
 <div data-lang="JavaScript" class="tab">
 
@@ -136,7 +150,15 @@ assertEquals("https://mysearchengine.com/", Search.INSTANCE.template.testGetValu
 
 </div>
 
-<div data-lang="Swift" class="tab"></div>
+<div data-lang="Swift" class="tab">
+
+```Swift
+@testable import Glean
+
+XCTAssertEqual("https://mysearchengine.com/", try Search.template.testGetValue())
+```
+
+</div>
 
 <div data-lang="Python" class="tab">
 
@@ -167,6 +189,61 @@ import * as search from "./path/to/generated/files/search.js";
 assert.strictEqual("https://mysearchengine.com/", await search.template.testGetValue());
 ```
 </div>
+<div data-lang="Firefox Desktop" class="tab"></div>
+
+{{#include ../../../shared/tab_footer.md}}
+
+### `testHasValue`
+
+Whether or not **any** value was recorded for a given UUID metric.
+
+{{#include ../../../shared/tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Search
+
+assertTrue(Search.template.testHasValue())
+```
+
+</div>
+
+<div data-lang="Java" class="tab">
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Search
+
+assertTrue(Search.INSTANCE.template.testHasValue());
+```
+
+</div>
+
+<div data-lang="Swift" class="tab">
+
+```Swift
+@testable import Glean
+
+XCTAssert(try Search.template.testHasValue())
+```
+
+</div>
+
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+assert metrics.search.template.test_has_value()
+```
+
+</div>
+
+<div data-lang="Rust" class="tab"></div>
+
+<div data-lang="JavaScript" class="tab"></div>
+
 <div data-lang="Firefox Desktop" class="tab"></div>
 
 {{#include ../../../shared/tab_footer.md}}
@@ -211,7 +288,16 @@ assertEquals(
 
 </div>
 
-<div data-lang="Swift" class="tab"></div>
+<div data-lang="Swift" class="tab">
+
+```Swift
+@testable import Glean
+
+XCTAssertEqual(0, Search.template.testGetNumRecordedErrors(.invalidValue))
+XCTAssertEqual(0, Search.template.testGetNumRecordedErrors(.invalidOverflow))
+```
+
+</div>
 
 <div data-lang="Python" class="tab">
 
