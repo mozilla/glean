@@ -53,11 +53,19 @@ public class HttpPingUploader {
     /// headers are added to the HTTP request in addition to the UserAgent. This allows
     /// us to easily handle pings coming from Glean on the legacy Mozilla pipeline.
     func upload(path: String, data: Data, headers: [String: String], callback: @escaping (UploadResult) -> Void) {
-        // Build the request and create an async upload operation and launch it through the
-        // Dispatchers
-        if let request = buildRequest(path: path, data: data, headers: headers) {
+        // Build the request and create an async upload operation using a background URLSession
+        if let request = self.buildRequest(path: path, data: data, headers: headers) {
             // Build a URLSession with no-caching suitable for uploading our pings
-            let config = URLSessionConfiguration.background(withIdentifier: "\(path)")
+            let config: URLSessionConfiguration
+            if Dispatchers.shared.testingMode {
+                // For test mode, we want the URLSession to send things ASAP, rather than in the background
+                config = URLSessionConfiguration.default
+            } else {
+                // For normal use cases, we will take advantage of the background URLSessionConfiguration
+                // which will pass the data to the OS as a file and the OS will then handle the request
+                // in a separate process
+                config = URLSessionConfiguration.background(withIdentifier: "\(path)")
+            }
             config.sessionSendsLaunchEvents = false // We don't need to notify the app when we are done.
             config.requestCachePolicy = NSURLRequest.CachePolicy.reloadIgnoringLocalCacheData
             config.isDiscretionary = false
@@ -71,7 +79,7 @@ public class HttpPingUploader {
             do {
                 try data.write(to: tmpFile, options: .noFileProtection)
             } catch {
-                logger.error("\(error)")
+                self.logger.error("\(error)")
             }
 
             // Create an URLSessionUploadTask to upload our ping in the background and handle the
@@ -103,9 +111,8 @@ public class HttpPingUploader {
             request.httpMethod = "POST"
             request.httpShouldHandleCookies = false
 
-            // NOTE: We're using `URLSession.uploadTask` in `PingUploadOperation`,
-            // which ignores the `httpBody` and instead takes the body payload as a parameter
-            // to add to the request.
+            // NOTE: We're using `URLSession.uploadTask` which ignores the `httpBody` and
+            // instead takes the body payload as a parameter to add to the request.
             // However in tests we're using OHHTTPStubs to stub out the HTTP upload.
             // It has the known limitation that it doesn't simulate data upload,
             // because the underlying protocol doesn't expose a hook for that.
