@@ -191,22 +191,6 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:$versions.androidx_espresso"
 }
 
-evaluationDependsOn(":glean-native")
-afterEvaluate {
-    // The `cargoBuild` task isn't available until after evaluation.
-    android.libraryVariants.all { variant ->
-        def productFlavor = ""
-        variant.productFlavors.each {
-            productFlavor += "${it.name.capitalize()}"
-        }
-        def buildType = "${variant.buildType.name.capitalize()}"
-        tasks["merge${productFlavor}${buildType}JniLibFolders"].dependsOn(project(':glean-native').tasks["cargoBuild"])
-
-        // For unit tests.
-        tasks["process${productFlavor}${buildType}UnitTestJavaRes"].dependsOn(project(':glean-native').tasks["cargoBuild"])
-    }
-}
-
 apply from: "$projectDir/publish.gradle"
 ext.configurePublish()
 
