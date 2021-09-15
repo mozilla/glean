@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 @testable import Glean
-import OHHTTPStubs
 import XCTest
 
 // REASON: This test is long because of setup boilerplate
@@ -15,10 +14,11 @@ class HttpPingUploaderTests: XCTestCase {
     override func tearDown() {
         // Reset expectations
         expectation = nil
-        OHHTTPStubs.removeAllStubs()
+        tearDownStubs()
     }
 
     func testHTTPStatusCode() {
+        Dispatchers.shared.setTestingMode(enabled: true)
         var testValue: UploadResult?
         stubServerReceive { _, json in
             XCTAssert(json != nil)
