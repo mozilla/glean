@@ -357,10 +357,7 @@ fn initialize_internal(
     Some(init_handle)
 }
 
-/// Shuts down Glean.
-///
-/// This currently only attempts to shut down the
-/// internal dispatcher.
+/// Shuts down Glean in an orderly fashion.
 pub fn shutdown() {
     if global_glean().is_none() {
         log::warn!("Shutdown called before Glean is initialized");
@@ -379,6 +376,13 @@ pub fn shutdown() {
     if let Err(e) = dispatcher::shutdown() {
         log::error!("Can't shutdown dispatcher thread: {:?}", e);
     }
+
+    // Be sure to call this _after_ draining the dispatcher
+    crate::with_glean(|glean| {
+        if let Err(e) = glean.persist_ping_lifetime_data() {
+            log::error!("Can't persist ping lifetime data: {:?}", e);
+        }
+    });
 }
 
 /// Unblock the global dispatcher to start processing queued tasks.
