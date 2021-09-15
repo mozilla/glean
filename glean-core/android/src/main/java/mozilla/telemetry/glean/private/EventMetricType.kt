@@ -278,7 +278,7 @@ class EventMetricType<ExtraKeysEnum : Enum<ExtraKeysEnum>, ExtraObject : EventEx
 
         val jsonRes = try {
             JSONArray(ptr.getAndConsumeRustString())
-        } catch (e: org.json.JSONException) {
+        } catch (_: org.json.JSONException) {
             throw NullPointerException("Could not parse metric data as JSON")
         }
         if (jsonRes.length() == 0) {
