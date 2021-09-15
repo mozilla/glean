@@ -446,6 +446,13 @@ jobs:
     steps:
       - checkout
       - install-android-ndk
+      - install-rustup
+      - setup-rust-toolchain:
+          rust-version: stable
+      - run:
+          name: Restrict to Linux builds only
+          command: |
+              echo "rust.targets=linux-x86-64" > local.properties
       - run: ./gradlew --no-daemon lint
       - run: ./gradlew --no-daemon ktlint
       - run: ./gradlew --no-daemon detekt
