@@ -499,7 +499,7 @@ open class GleanInternalAPI internal constructor () {
             val jsonRes = JSONObject(ptr.getAndConsumeRustString())
             branchId = jsonRes.getString("branch")
             extraMap = getMapFromJSONObject(jsonRes)
-        } catch (e: org.json.JSONException) {
+        } catch (_: org.json.JSONException) {
             throw NullPointerException("Could not parse experiment data as JSON")
         }
 

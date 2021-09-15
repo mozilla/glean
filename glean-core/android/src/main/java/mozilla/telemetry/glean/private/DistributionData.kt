@@ -35,7 +35,7 @@ data class DistributionData(
             val jsonObject: JSONObject
             try {
                 jsonObject = JSONObject(json)
-            } catch (e: org.json.JSONException) {
+            } catch (_: org.json.JSONException) {
                 return null
             }
 
@@ -48,7 +48,7 @@ data class DistributionData(
                     valueMap[key.toLong()] = mapData.tryGetLong(key) ?: 0L
                 }
                 valueMap
-            } catch (e: org.json.JSONException) {
+            } catch (_: org.json.JSONException) {
                 // This should only occur if there isn't a key/value pair stored for "values"
                 return null
             }

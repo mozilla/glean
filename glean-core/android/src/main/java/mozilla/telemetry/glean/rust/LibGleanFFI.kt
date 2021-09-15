@@ -29,15 +29,20 @@ internal fun Byte.toBoolean(): Boolean = this != 0.toByte()
  * THEY MUST BE THE SAME ACROSS BOTH FILES!
  */
 class Constants {
+    private constructor() {
+        // hiding the constructor.
+        // intentionally left empty otherwise.
+    }
+
     companion object {
         // A recoverable error.
-        val UPLOAD_RESULT_RECOVERABLE: Int = 0x1
+        const val UPLOAD_RESULT_RECOVERABLE: Int = 0x1
 
         // An unrecoverable error.
-        val UPLOAD_RESULT_UNRECOVERABLE: Int = 0x2
+        const val UPLOAD_RESULT_UNRECOVERABLE: Int = 0x2
 
         // A HTTP response code.
-        val UPLOAD_RESULT_HTTP_STATUS: Int = 0x8000
+        const val UPLOAD_RESULT_HTTP_STATUS: Int = 0x8000
     }
 }
 
@@ -95,7 +100,7 @@ internal fun loadIndirect(libraryName: String): LibGleanFFI {
 @Suppress("TooManyFunctions")
 internal interface LibGleanFFI : Library {
     companion object {
-        private val JNA_LIBRARY_NAME = "glean_ffi"
+        private const val JNA_LIBRARY_NAME = "glean_ffi"
 
         internal var INSTANCE: LibGleanFFI = loadIndirect(JNA_LIBRARY_NAME)
     }

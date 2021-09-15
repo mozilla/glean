@@ -23,6 +23,7 @@ import mozilla.telemetry.glean.testing.ErrorType
  * `$category.$name/$label`. The collect method knows how to pull these special values back
  * out of the individual metric storage and rearrange them correctly in the ping.
  */
+@Suppress("LongParameterList")
 class LabeledMetricType<T>(
     private val disabled: Boolean,
     category: String,
