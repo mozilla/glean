@@ -10,13 +10,16 @@ class GleanDebugUtilityTests: XCTestCase {
     var expectation: XCTestExpectation?
 
     override func setUp() {
+        expectation = setUpDummyStubAndExpectation(testCase: self, tag: "GleanDebugUtilityTests")
         Glean.shared.resetGlean(clearStores: true)
-        Glean.shared.enableTestingMode()
+        waitForExpectations(timeout: 5.0) { error in
+            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
+        }
     }
 
     override func tearDown() {
-        Glean.shared.setUploadEnabled(true)
-        OHHTTPStubs.removeAllStubs()
+        expectation = nil
+        tearDownStubs()
     }
 
     func testHandleCustomUrlLogPings() {

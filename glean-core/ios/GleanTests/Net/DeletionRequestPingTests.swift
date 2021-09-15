@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 @testable import Glean
-import OHHTTPStubs
 import XCTest
 
 // swiftlint:disable force_cast
@@ -30,11 +29,15 @@ class DeletionRequestPingTests: XCTestCase {
     override func tearDown() {
         lastPingJson = nil
         expectation = nil
-        OHHTTPStubs.removeAllStubs()
+        tearDownStubs()
     }
 
     func testDeletionRequestPingsAreSentWhenUploadDisabled() {
+        expectation = setUpDummyStubAndExpectation(testCase: self, tag: "DeletionRequestPingTests")
         Glean.shared.resetGlean(clearStores: true)
+        waitForExpectations(timeout: 5.0) { error in
+            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
+        }
 
         setupHttpResponseStub("deletion-request")
         expectation = expectation(description: "Completed upload")

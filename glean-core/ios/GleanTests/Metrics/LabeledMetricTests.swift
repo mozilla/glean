@@ -8,8 +8,19 @@ import XCTest
 // swiftlint:disable force_cast
 // REASON: Used in a test
 class LabeledMetricTypeTests: XCTestCase {
+    var expectation: XCTestExpectation?
+
     override func setUp() {
+        expectation = setUpDummyStubAndExpectation(testCase: self, tag: "LabeledMetricTypeTests")
         Glean.shared.resetGlean(clearStores: true)
+        waitForExpectations(timeout: 5.0) { error in
+            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
+        }
+    }
+
+    override func tearDown() {
+        expectation = nil
+        tearDownStubs()
     }
 
     func testLabeledCounterType() {

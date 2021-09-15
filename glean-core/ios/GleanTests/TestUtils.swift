@@ -5,6 +5,7 @@
 @testable import Glean
 import Gzip
 import OHHTTPStubs
+import XCTest
 
 /// Stub out receiving a request on Glean's default Telemetry endpoint.
 ///
@@ -42,6 +43,27 @@ func stubServerReceive(callback: @escaping (String, [String: Any]?) -> Void) {
     }
 }
 
+func setUpDummyStubAndExpectation(testCase: XCTestCase, tag: String) -> XCTestExpectation {
+    let expectation = testCase.expectation(description: "\(tag): Ping Received")
+
+    // We are using OHHTTPStubs combined with an XCTestExpectation in order to capture
+    // outgoing network requests and prevent actual requests being made from tests.
+    stubServerReceive { _, _ in
+        // Fulfill test's expectation once we parsed the incoming data.
+        DispatchQueue.main.async {
+            // Let the response get processed before we mark the expectation fulfilled
+            expectation.fulfill()
+        }
+    }
+
+    expectation.assertForOverFulfill = false
+    return expectation
+}
+
+func tearDownStubs() {
+    OHHTTPStubs.removeAllStubs()
+}
+
 /// Stringify a JSON object and if unable to, just return an empty string.
 func JSONStringify(_ json: Any) -> String {
     do {
@@ -54,4 +76,10 @@ func JSONStringify(_ json: Any) -> String {
     }
 
     return ""
+}
+
+func getGleanTestConfig() -> Configuration {
+    return Configuration(
+        maxEvents: nil, channel: "glean-test", serverEndpoint: "http://localhost"
+    )
 }
