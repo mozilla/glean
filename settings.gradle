@@ -8,7 +8,7 @@ buildscript {
         classpath 'org.yaml:snakeyaml:1.23'
     }
     repositories {
-        jcenter()
+        mavenCentral()
     }
 }
 rootProject.name = "glean"
