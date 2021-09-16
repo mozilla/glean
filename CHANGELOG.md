@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v41.1.0...main)
 
+* iOS
+  * Add support for the URL metric type ([#1791](https://github.com/mozilla/glean/pull/1791))
+
 # v41.1.0 (2021-09-16)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v41.0.0...v41.1.0)
