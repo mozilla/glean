@@ -2,6 +2,10 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v41.0.0...main)
 
+* Rust
+  * BUGFIX: Ensure RLB persists ping lifetime data on shutdown ([#1793](https://github.com/mozilla/glean/pull/1793))
+  * Expose `persist_ping_lifetime_data` in the RLB. Consumers can call this to persist data at convenient times, data is also persisted on shutdown ([#1793](https://github.com/mozilla/glean/pull/1793))
+
 # v41.0.0 (2021-09-13)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v40.2.0...v41.0.0)
