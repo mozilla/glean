@@ -275,7 +275,7 @@ const p = pings.search.testBeforeNextSubmit(async reason => {
 // Submit the ping.
 pings.search.submit("performed");
 // Wait for the validation to finish.
-assert.doesNotThrow(await p);
+assert.doesNotThrow(async () => await p);
 
 // Verify that the validator run.
 assert.ok(validatorRun);
