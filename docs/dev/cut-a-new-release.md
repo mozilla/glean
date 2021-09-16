@@ -84,6 +84,7 @@ When CI has finished and is green for your specific release branch, you are read
 6. Send a pull request to merge back the specific release branch to the development branch: <https://github.com/mozilla/glean/compare/main...release-v25.0.0?expand=1>
     * This is important so that no changes are lost.
     * This might have merge conflicts with the `main` branch, which you need to fix before it is merged.
+    * If this PR is "trivial" (no bugfixes or merge conflicts of note from earlier steps) you may land it without review.
 7. Once the above pull request lands, delete the specific release branch.
 8. Update `glean-ffi` in the iOS megazord. See the [application-services documentation for that](https://github.com/mozilla/application-services/blob/main/megazords/ios/README.md#glean-component).
 

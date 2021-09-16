@@ -44,7 +44,7 @@ buildscript {
 
     repositories {
         google()
-        jcenter()
+        mavenCentral()
         maven {
             url "https://plugins.gradle.org/m2/"
         }
@@ -74,7 +74,7 @@ plugins {
 allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
         maven {
             url "https://maven.mozilla.org/maven2"
         }
