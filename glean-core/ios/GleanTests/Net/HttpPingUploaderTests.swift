@@ -18,6 +18,8 @@ class HttpPingUploaderTests: XCTestCase {
     }
 
     func testHTTPStatusCode() {
+        // We are explicitly setting the test mode to true here to force the uploader to not
+        // run in the background, which can make this test take a long time.
         Dispatchers.shared.setTestingMode(enabled: true)
         var testValue: UploadResult?
         stubServerReceive { _, json in

@@ -18,18 +18,11 @@ class JweMetricTests: XCTestCase {
     private let minimumJwe: String = "eyJhbGciOiJSU0EtT0FFUCIsImVuYyI6IkEyNTZHQ00ifQ...5eym8TW_c8SuK0ltJ3rpYIzOeDQz7TALvtu6UG9oMo4vpzs9tX_EFShS8iB7j6jiSdiwkIr3ajwQzaBtQD_A."
     // swiftlint:enable line_length
 
-    var expectation: XCTestExpectation?
-
     override func setUp() {
-        expectation = setUpDummyStubAndExpectation(testCase: self, tag: "JweMetricTests")
-        Glean.shared.resetGlean(clearStores: true)
-        waitForExpectations(timeout: 5.0) { error in
-            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
-        }
+        resetGleanDiscardingInitialPings(testCase: self, tag: "JweMetricTests")
     }
 
     override func tearDown() {
-        expectation = nil
         tearDownStubs()
     }
 

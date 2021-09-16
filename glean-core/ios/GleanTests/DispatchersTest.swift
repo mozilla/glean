@@ -6,10 +6,7 @@
 import XCTest
 
 class DispatchersTest: XCTestCase {
-    var expectation: XCTestExpectation?
-
     override func tearDown() {
-        expectation = nil
         tearDownStubs()
     }
 
@@ -225,11 +222,8 @@ class DispatchersTest: XCTestCase {
     }
 
     func testOverflowingTheTaskQueueRecordsTelemetry() {
-        expectation = setUpDummyStubAndExpectation(testCase: self, tag: "DispatchersTest")
-        Glean.shared.resetGlean(clearStores: true)
-        waitForExpectations(timeout: 5.0) { error in
-            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
-        }
+        resetGleanDiscardingInitialPings(testCase: self, tag: "DispatchersTest")
+
         Dispatchers.shared.preInitOperations.removeAll()
         Dispatchers.shared.setTestingMode(enabled: true)
         Dispatchers.shared.setTaskQueueing(enabled: true)
@@ -255,11 +249,7 @@ class DispatchersTest: XCTestCase {
         // queueing turned off, this should cause the error metric to
         // be recorded so we can check it to ensure the value matches
         // the expected value.
-        expectation = setUpDummyStubAndExpectation(testCase: self, tag: "DispatchersTest")
-        Glean.shared.resetGlean(clearStores: false)
-        waitForExpectations(timeout: 5.0) { error in
-            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
-        }
+        resetGleanDiscardingInitialPings(testCase: self, tag: "DispatchersTest", clearStores: false)
 
         XCTAssertEqual(
             Dispatchers.Constants.maxQueueSize + 10,
@@ -267,10 +257,7 @@ class DispatchersTest: XCTestCase {
             "preInitTaskCount is correct"
         )
 
-        expectation = setUpDummyStubAndExpectation(testCase: self, tag: "DispatchersTest")
-        Glean.shared.resetGlean(clearStores: true)
-        waitForExpectations(timeout: 5.0) { error in
-            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
-        }
+        // Clean up
+        resetGleanDiscardingInitialPings(testCase: self, tag: "DispatchersTest")
     }
 }

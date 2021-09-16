@@ -6,7 +6,6 @@
 import XCTest
 
 // swiftlint:disable function_body_length
-// swiftlint:disable type_body_length
 class MetricsPingSchedulerTests: XCTestCase {
     var expectation: XCTestExpectation?
 
@@ -111,14 +110,9 @@ class MetricsPingSchedulerTests: XCTestCase {
         let mps = MetricsPingScheduler()
         let now = Date()
 
-        // Here we reset Glean and set uploadEnabled to false to ensure that this does not generate a
-        // metrics ping. We are only interested in the updated date that is scheduled after the call
-        // to `collectPingAndReschedule`.
-        expectation = setUpDummyStubAndExpectation(testCase: self, tag: "MetricsPingSchedulerTests")
-        Glean.shared.resetGlean(configuration: Configuration(), clearStores: true, uploadEnabled: false)
-        waitForExpectations(timeout: 5.0) { error in
-            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
-        }
+        // Here we reset Glean and just discard any pings that might be generated since we are only
+        // interested in the updated date that is scheduled after the call to `collectPingAndReschedule`.
+        resetGleanDiscardingInitialPings(testCase: self, tag: "MetricsPingSchedulerTests")
 
         UserDefaults.standard.set(nil, forKey: MetricsPingScheduler.Constants.lastMetricsPingSentDateTime)
         mps.collectPingAndReschedule(now, reason: GleanMetrics.Pings.MetricsReasonCodes.overdue)
@@ -168,11 +162,8 @@ class MetricsPingSchedulerTests: XCTestCase {
         )
         let expectedValue = "must-exist-in-the-first-ping"
 
-        expectation = setUpDummyStubAndExpectation(testCase: self, tag: "MetricsPingSchedulerTests")
-        Glean.shared.resetGlean(clearStores: false)
-        waitForExpectations(timeout: 5.0) { error in
-            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
-        }
+        resetGleanDiscardingInitialPings(testCase: self, tag: "MetricsPingSchedulerTests", clearStores: false)
+
         expectedStringMetric.set(expectedValue)
 
         // Destroy Glean, it will retain the recorded metric.
@@ -232,11 +223,7 @@ class MetricsPingSchedulerTests: XCTestCase {
         }
 
         // Clean up
-        expectation = setUpDummyStubAndExpectation(testCase: self, tag: "MetricsPingSchedulerTests")
-        Glean.shared.resetGlean(clearStores: true)
-        waitForExpectations(timeout: 5.0) { error in
-            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
-        }
+        resetGleanDiscardingInitialPings(testCase: self, tag: "MetricsPingSchedulerTests")
         Glean.shared.testDestroyGleanHandle()
     }
 
@@ -262,11 +249,8 @@ class MetricsPingSchedulerTests: XCTestCase {
         let expectedValue = "I-will-survive!"
 
         // Reset Glean and start it for the FIRST time, then record a value.
-        expectation = setUpDummyStubAndExpectation(testCase: self, tag: "MetricsPingSchedulerTests")
-        Glean.shared.resetGlean(clearStores: false)
-        waitForExpectations(timeout: 5.0) { error in
-            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
-        }
+        resetGleanDiscardingInitialPings(testCase: self, tag: "MetricsPingSchedulerTests", clearStores: false)
+
         testMetric.set(expectedValue)
 
         // Set the last time the "metrics" ping was sent to yesterday, which should make
@@ -310,11 +294,7 @@ class MetricsPingSchedulerTests: XCTestCase {
         XCTAssertFalse(testMetric.testHasValue(), "The metric must be cleared after startup")
 
         // Clean up
-        expectation = setUpDummyStubAndExpectation(testCase: self, tag: "MetricsPingSchedulerTests")
-        Glean.shared.resetGlean(clearStores: true)
-        waitForExpectations(timeout: 5.0) { error in
-            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
-        }
+        resetGleanDiscardingInitialPings(testCase: self, tag: "MetricsPingSchedulerTests")
         Glean.shared.testDestroyGleanHandle()
     }
 
@@ -338,11 +318,7 @@ class MetricsPingSchedulerTests: XCTestCase {
 
     func testTimerInvocation() {
         // Reset Glean clearing the stores so that the metrics ping will be empty
-        expectation = setUpDummyStubAndExpectation(testCase: self, tag: "MetricsPingSchedulerTests")
-        Glean.shared.resetGlean(clearStores: true)
-        waitForExpectations(timeout: 5.0) { error in
-            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
-        }
+        resetGleanDiscardingInitialPings(testCase: self, tag: "MetricsPingSchedulerTests")
 
         // Set up the expectation
         expectation = expectation(description: "Timer fired")
@@ -380,4 +356,3 @@ class MetricsPingSchedulerTests: XCTestCase {
         waitForExpectations(timeout: 10.0)
     }
 }
-// swiftlint:enable type_body_length

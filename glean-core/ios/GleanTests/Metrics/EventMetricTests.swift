@@ -81,11 +81,7 @@ class EventMetricTypeTests: XCTestCase {
     }
 
     override func setUp() {
-        expectation = setUpDummyStubAndExpectation(testCase: self, tag: "EventMetricTypeTests")
-        Glean.shared.resetGlean(clearStores: true)
-        waitForExpectations(timeout: 5.0) { error in
-            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
-        }
+        resetGleanDiscardingInitialPings(testCase: self, tag: "EventMetricTypeTests")
     }
 
     override func tearDown() {

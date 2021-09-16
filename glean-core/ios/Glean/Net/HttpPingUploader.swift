@@ -89,7 +89,13 @@ public class HttpPingUploader {
             uploadTask.countOfBytesClientExpectsToSend = 1024 * 1024
             uploadTask.countOfBytesClientExpectsToReceive = 512
 
+            // Start the upload task
             uploadTask.resume()
+
+            // Since we won't be reusing this session, we can call `finishTasksAndInvalidate` which
+            // should allow our upload task to complete and then invalidate the session and release
+            // the strong reference to the delegate.
+            session.finishTasksAndInvalidate()
         }
     }
 
