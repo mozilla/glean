@@ -33,11 +33,7 @@ class DeletionRequestPingTests: XCTestCase {
     }
 
     func testDeletionRequestPingsAreSentWhenUploadDisabled() {
-        expectation = setUpDummyStubAndExpectation(testCase: self, tag: "DeletionRequestPingTests")
-        Glean.shared.resetGlean(clearStores: true)
-        waitForExpectations(timeout: 5.0) { error in
-            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
-        }
+        resetGleanDiscardingInitialPings(testCase: self, tag: "DeletionRequestPingTests")
 
         setupHttpResponseStub("deletion-request")
         expectation = expectation(description: "Completed upload")
