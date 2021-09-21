@@ -424,7 +424,7 @@ fn block_on_dispatcher() {
         was_initialize_called(),
         "initialize was never called. Can't block on the dispatcher queue."
     );
-    dispatcher::block_on_queue()
+    dispatcher::block_on_queue().unwrap();
 }
 
 /// Checks if [`initialize`] was ever called.
@@ -800,7 +800,11 @@ pub fn persist_ping_lifetime_data() -> Result<()> {
         });
         Ok(())
     } else {
-        block_on_dispatcher();
+        // Calling the dispatcher directly to not panic on errors.
+        // Blocking on the queue will fail when the queue is already shutdown,
+        // which is equivalent to Glean not being initialized
+        // (In production Glean can't be re-initialized).
+        dispatcher::block_on_queue().map_err(|_| Error::not_initialized())?;
         with_glean(|glean| glean.persist_ping_lifetime_data())
     }
 }
