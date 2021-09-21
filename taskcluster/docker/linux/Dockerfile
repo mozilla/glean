@@ -62,6 +62,9 @@ RUN apt-get update -qq \
         # For `cc` crates; see https://github.com/jwilm/alacritty/issues/1440.
         # <TODO: Is this still true?>.
         g++ \
+        libxml2-dev \
+        # Python 2 for tooltool
+        python \
         python3 \
         python3-pip \
         # taskcluster > mohawk > setuptools.

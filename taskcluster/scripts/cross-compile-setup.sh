@@ -1,4 +1,7 @@
 #!/bin/bash
+
+set -eux
+
 export PATH=$PATH:/builds/worker/clang/bin
 export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_CC=/builds/worker/clang/bin/clang
 export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_TOOLCHAIN_PREFIX=/builds/worker/cctools/bin
@@ -28,7 +31,7 @@ export TARGET_CFLAGS="-DNDEBUG"
 # * Pick the "index.*.hash.*" route
 # * Use that in the URLs below
 #   (drop the "index." prefix, ensure the "public/build" path matches the artifacts of the TC task)
-pushd /builds/worker || exit
+pushd /builds/worker
 curl -sfSL --retry 5 --retry-delay 10 \
     https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/gecko.cache.level-3.toolchains.v3.linux64-cctools-port-clang-11.hash.0605c7bc8e4a474ee8ffa6d9e075f57d5063ff31793516d9f62dc6e7dcec41c3/artifacts/public/build/cctools.tar.xz > cctools.tar.xz && \
 tar -xf cctools.tar.xz && \
@@ -37,16 +40,18 @@ curl -sfSL --retry 5 --retry-delay 10 \
     https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/gecko.cache.level-3.toolchains.v3.linux64-clang-11-macosx-cross.hash.8da28431c601f847cd59f8582181836e1acbb263c434cb6151d361d835812afb/artifacts/public/build/clang.tar.zst > clang.tar.zst && \
 tar -I zstd -xf clang.tar.zst && \
 rm clang.tar.zst
-popd || exit
+popd
 
-pushd /tmp || exit
+pushd /tmp
 
 tooltool.py \
   --url=http://taskcluster/tooltool.mozilla-releng.net/ \
-  --manifest="/builds/worker/checkouts/src/taskcluster/scripts/macos-cc-tools.manifest" \
+  --manifest="/builds/worker/checkouts/src/taskcluster/scripts/macos.manifest" \
   fetch
 
 rustup target add x86_64-apple-darwin
 rustup target add x86_64-pc-windows-gnu
 
-popd || exit
+popd
+
+set +eux
