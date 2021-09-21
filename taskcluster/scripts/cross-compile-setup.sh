@@ -15,9 +15,29 @@ export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_PC_WINDOWS_GNU_RUSTF
 # This is required for rkv/lmdb to work correctly on Android targets and not link to unavailable symbols.
 export TARGET_CFLAGS="-DNDEBUG"
 
-# Install clang, a port of cctools, and the macOS SDK into /tmp. This
-# is all cribbed from mozilla-central; start at
-# https://searchfox.org/mozilla-central/rev/39cb1e96cf97713c444c5a0404d4f84627aee85d/build/macosx/cross-mozconfig.common.
+# Install clang, a port of cctools, and the macOS SDK into /tmp.
+# If it weren't for the size we could do it in the Dockerfile directly to cache it.
+#
+# To update:
+# * Go to https://firefox-ci-tc.services.mozilla.com/tasks/index/gecko.cache.level-3.toolchains.v3
+# * Find the tasks for `linux64-clang-11-macosx-cross` and `linux64-cctools-port-clang-11` (or higher Clang version)
+# * Per task, follow the link to the latest indexed task
+# * In the detail view, click "View Task"
+# * In the task view, click "See more"
+# * Find the "Routes" list
+# * Pick the "index.*.hash.*" route
+# * Use that in the URLs below
+#   (drop the "index." prefix, ensure the "public/build" path matches the artifacts of the TC task)
+pushd /builds/worker || exit
+curl -sfSL --retry 5 --retry-delay 10 \
+    https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/gecko.cache.level-3.toolchains.v3.linux64-cctools-port-clang-11.hash.0605c7bc8e4a474ee8ffa6d9e075f57d5063ff31793516d9f62dc6e7dcec41c3/artifacts/public/build/cctools.tar.xz > cctools.tar.xz && \
+tar -xf cctools.tar.xz && \
+rm cctools.tar.xz && \
+curl -sfSL --retry 5 --retry-delay 10 \
+    https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/gecko.cache.level-3.toolchains.v3.linux64-clang-11-macosx-cross.hash.8da28431c601f847cd59f8582181836e1acbb263c434cb6151d361d835812afb/artifacts/public/build/clang.tar.zst > clang.tar.zst && \
+tar -I zstd -xf clang.tar.zst && \
+rm clang.tar.zst
+popd || exit
 
 pushd /tmp || exit
 
