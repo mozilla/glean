@@ -6,6 +6,8 @@
   * Updated to Gradle 7, Android Gradle Plugin 7 and Rust Android Plugin 0.9 as well as building with Java 11 ([#1801](https://github.com/mozilla/glean/pull/1801))
 * iOS
   * Add support for the URL metric type ([#1791](https://github.com/mozilla/glean/pull/1791))
+* Rust
+  * BUGFIX: No panic if trying to flush ping-lifetime data after shutdown ([#1800](https://github.com/mozilla/glean/pull/1800))
 
 # v41.1.0 (2021-09-16)
 
