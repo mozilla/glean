@@ -11,16 +11,16 @@ buildscript {
     // changing them. Please note that, for using in Android-Components, the
     // versions below must match the ones in that repository.
     ext.versions = [
-        android_gradle_plugin: '4.2.2',
+        android_gradle_plugin: '7.0.0',
         android_maven_publish_plugin: '3.6.2',
         coroutines: '1.5.0',
-        jna: '5.6.0',
+        jna: '5.8.0',
         junit: '4.12',
-        mockito: '2.28.2',  // This is different than a-c, but we're fine, it's only tests.
+        mockito: '3.11.2',  // This is different than a-c, but we're fine, it's only tests.
         mockwebserver: '4.9.1', // This is different than a-c, but we're fine, it's only tests.
         kotlin: '1.5.20',
         robolectric: '4.5.1', // This is different than a-c, but we're fine, it's only tests.
-        rust_android_plugin: '0.8.7',
+        rust_android_plugin: '0.9.0',
 
         // Android X dependencies
         androidx_annotation: '1.1.0',
@@ -68,7 +68,7 @@ buildscript {
 }
 
 plugins {
-    id("io.gitlab.arturbosch.detekt").version("1.0.1")
+    id("io.gitlab.arturbosch.detekt").version("1.18.1")
 }
 
 allprojects {
@@ -163,13 +163,16 @@ subprojects {
 
 detekt {
     input = files("${projectDir}/glean-core", "${projectDir}/samples/android", "buildSrc")
-    filters = ".*test.*,.*/resources/.*,.*/tmp/.*,.*/build/.*"
     failFast = false
     config = files("${projectDir}/.detekt.yml")
     buildUponDefaultConfig = true
     reports {
         xml.enabled = false
     }
+}
+
+tasks.withType(io.gitlab.arturbosch.detekt.Detekt) {
+    exclude(".*test.*,.*/resources/.*,.*/tmp/.*,.*/build/.*")
 }
 
 configurations {

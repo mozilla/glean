@@ -156,7 +156,7 @@ class StringListMetricType(
             pingName)!!
         try {
             jsonRes = JSONArray(ptr.getAndConsumeRustString())
-        } catch (e: org.json.JSONException) {
+        } catch (_: org.json.JSONException) {
             throw NullPointerException("Could not parse metric as JSON")
         }
         return jsonRes.toList()

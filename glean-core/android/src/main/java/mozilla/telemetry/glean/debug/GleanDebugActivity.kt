@@ -63,7 +63,7 @@ class GleanDebugActivity : Activity() {
     private fun isActivityExported(targetActivity: ComponentName): Boolean {
         return try {
             packageManager.getActivityInfo(targetActivity, PackageManager.GET_META_DATA).exported
-        } catch (e: PackageManager.NameNotFoundException) {
+        } catch (_: PackageManager.NameNotFoundException) {
             false
         }
     }

@@ -13,6 +13,7 @@ import kotlin.reflect.KClass
 inline fun <reified T : Any> argumentCaptor(): KArgumentCaptor<T> {
     return KArgumentCaptor(ArgumentCaptor.forClass(T::class.java), T::class)
 }
+@Suppress("UnusedPrivateMember")
 class KArgumentCaptor<out T : Any?>(
     private val captor: ArgumentCaptor<T>,
     private val tClass: KClass<*>
