@@ -566,8 +566,8 @@ jobs:
             # Bootstrap dependencies
             bin/bootstrap.sh
 
-            # See https://circleci.com/docs/2.0/testing-ios/#pre-starting-the-simulator
-            xcrun instruments -w "iPhone 11 (14" || true
+            UDID=$(xcrun xctrace list devices 2>&1 | grep 'iPhone 11 Simulator (14' | awk -F'[()]' '{print $4}')
+            xcrun simctl boot "$UDID"
             # Store build type for use in cache key
             if [ -z "${CIRCLE_TAG}" ]; then
               echo "debug" > buildtype.txt
@@ -658,9 +658,11 @@ jobs:
             rustup target add aarch64-apple-ios x86_64-apple-ios
 
             # List available devices -- allows us to see what's there
-            xcrun instruments -w list || true
-            # See https://circleci.com/docs/2.0/testing-ios/#pre-starting-the-simulator
-            xcrun instruments -w "iPhone 11 (14" || true
+            DEVICES=$(xcrun xctrace list devices 2>&1)
+            echo "$DEVICES"
+            # Pick a device and start it
+            UDID=$(echo "$DEVICES" | grep 'iPhone 11 Simulator (14' | awk -F'[()]' '{print $4}')
+            xcrun simctl boot "$UDID"
       - run:
           name: Install Rust Nightly toolchain
           command: |
