@@ -127,15 +127,18 @@ ext.rustTargets = [
 // Generate libs for our current platform so we can run unit tests.
 switch (DefaultPlatform.RESOURCE_PREFIX) {
     case 'darwin':
-        ext.rustTargets += 'darwin'
+    case 'darwin-x86-64':
+    case 'darwin-aarch64':
+        ext.nativeRustTarget = 'darwin'
         break
     case 'linux-x86-64':
-        ext.rustTargets += 'linux-x86-64'
+        ext.nativeRustTarget = 'linux-x86-64'
         break
     case 'win32-x86-64':
-        ext.rustTargets += 'win32-x86-64-msvc'
+        ext.nativeRustTarget = 'win32-x86-64-gnu'
         break
 }
+ext.rustTargets += ext.nativeRustTarget
 
 subprojects {
     apply plugin: 'digital.wup.android-maven-publish'
