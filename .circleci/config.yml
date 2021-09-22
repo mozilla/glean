@@ -535,9 +535,6 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Set Ruby Version
-          command: echo 'chruby ruby-2.7.4' >> ~/.bash_profile
-      - run:
           name: Show Ruby environment
           command: |
             ruby --version
@@ -551,16 +548,16 @@ jobs:
             rustup target add aarch64-apple-ios-sim --toolchain nightly
       - restore_cache:
           name: Restore rubygems cache
-          key: swift-docs-gems-v9
+          key: swift-docs-gems-v10
       - run:
           name: Install jazzy
           command: gem install jazzy
       - save_cache:
           name: Save rubygems cache
           # NEEDS TO CHANGE WHEN JAZZY OR RUBY IS UPDATED
-          key: swift-docs-gems-v9
+          key: swift-docs-gems-v10
           paths:
-            - ~/.gem/ruby/2.7.3
+            - ~/.gem/ruby/2.7.4
       - run:
           name: Setup build environment
           command: |
