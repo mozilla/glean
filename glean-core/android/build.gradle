@@ -191,6 +191,21 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:$versions.androidx_espresso"
 }
 
+evaluationDependsOn(":glean-native")
+afterEvaluate {
+  // The `cargoBuild` task isn't available until after evaluation.
+  android.libraryVariants.all { variant ->
+      def productFlavor = ""
+      variant.productFlavors.each {
+          productFlavor += "${it.name.capitalize()}"
+      }
+
+      def buildType = "${variant.buildType.name.capitalize()}"
+      def nativeCargoBuildTask = "cargoBuild${rootProject.ext.nativeRustTarget.capitalize()}"
+      tasks["process${productFlavor}${buildType}UnitTestJavaRes"].dependsOn(project(':glean-native').tasks[nativeCargoBuildTask])
+  }
+}
+
 apply from: "$projectDir/publish.gradle"
 ext.configurePublish()
 
