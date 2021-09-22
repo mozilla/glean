@@ -7,6 +7,7 @@
 * iOS
   * Add support for the URL metric type ([#1791](https://github.com/mozilla/glean/pull/1791))
   * Remove reliance on `Operation` for uploading and instead use the background capabilities of `URLSession` ([#1783](https://github.com/mozilla/glean/pull/1783))
+  * Glean for iOS is now being built with Xcode 13.0.0 ([#1802](https://github.com/mozilla/glean/pull/1802)).
 * Rust
   * BUGFIX: No panic if trying to flush ping-lifetime data after shutdown ([#1800](https://github.com/mozilla/glean/pull/1800))
 
