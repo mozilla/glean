@@ -4,7 +4,14 @@ This page provides a step-by-step guide on how to integrate the [Glean.js](https
 
 Nevertheless this is just one of the required steps for integrating Glean successfully into a project. Check you the full [Glean integration checklist](./index.md) for a comprehensive list of all the steps involved in doing so.
 
-Currently, these bindings support collecting data from [Browser Extensions](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions) (cross-browser) and [Qt/QML applications](https://doc.qt.io/qt-5/qtqml-index.html).
+Currently, these bindings support collecting data from [Browser Extensions](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions) (cross-browser), [Node.js](https://nodejs.org/en/)[^1] applications or scripts and [Qt/QML applications](https://doc.qt.io/qt-5/qtqml-index.html)[^2].
+
+[^1]: The Node.js SDK does not have persistent storage yet. This means, Glean does not persist
+state throughout application runs. For updates on the implementation of this feature in Node.js,
+follow [Bug 1728807](https://bugzilla.mozilla.org/show_bug.cgi?id=1728807).
+
+[^2]: For information on adding Glean to a Qt/QML application, refer to the
+[Qt specific documentation](./qt.md).
 
 ## Requirements
 
@@ -38,7 +45,8 @@ Currently, these bindings support collecting data from [Browser Extensions](http
 
 ## Setting up the dependency
 
-The Glean.js package is distributed as an npm package [`@mozilla/glean`](https://www.npmjs.com/package/@mozilla/glean).
+The Glean.js package is distributed as an npm package
+[`@mozilla/glean`](https://www.npmjs.com/package/@mozilla/glean).
 
 Install Glean.js in your JavaScript project, by running:
 
@@ -49,24 +57,34 @@ npm install @mozilla/glean
 Then import Glean into your project:
 
 ```js
-// Glean.js for webextensions
+// Glean.js for browser extensions
 //
 // esm
 import Glean from "@mozilla/glean/webext";
 // cjs
 const { default: Glean } = require("@mozilla/glean/webext");
+
+// Glean.js for Node.js
+//
+// esm
+import Glean from "@mozilla/glean/node";
+// cjs
+const { default: Glean } = require("@mozilla/glean/node");
 ```
 
 The currently available entry points are:
 
 * `@mozilla/glean/webext`
+* `@mozilla/glean/node`
 
 {{#include ../../../shared/blockquote-warning.html}}
 
-### Security considerations
+### Browser extension security considerations
 
-> In case of privilege-escalation attack into the context of the web extension using Glean, the malicious scripts would be able to call Glean APIs or use the `browser.storage.local` APIs directly.
-> That would be a risk to Glean data, but not caused by Glean. Glean-using extensions should be careful not to relax the default Content-Security-Policy that generally prevents these attacks.
+> In case of privilege-escalation attack into the context of the web extension using Glean,
+> the malicious scripts would be able to call Glean APIs or use the `browser.storage.local` APIs directly.
+> That would be a risk to Glean data, but not caused by Glean. Glean-using extensions should be careful
+> not to relax the default Content-Security-Policy that generally prevents these attacks.
 
 ### Common import errors
 
