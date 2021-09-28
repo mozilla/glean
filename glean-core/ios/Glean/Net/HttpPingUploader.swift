@@ -64,7 +64,7 @@ public class HttpPingUploader {
                 // For normal use cases, we will take advantage of the background URLSessionConfiguration
                 // which will pass the data to the OS as a file and the OS will then handle the request
                 // in a separate process
-                config = URLSessionConfiguration.background(withIdentifier: "\(path)")
+                config = URLSessionConfiguration.background(withIdentifier: path)
             }
             config.sessionSendsLaunchEvents = false // We don't need to notify the app when we are done.
             config.requestCachePolicy = NSURLRequest.CachePolicy.reloadIgnoringLocalCacheData
@@ -79,7 +79,10 @@ public class HttpPingUploader {
             do {
                 try data.write(to: tmpFile, options: .noFileProtection)
             } catch {
+                // Since we cannot write the file, there is no need to continue and schedule an
+                // upload task. So instead we log the error and return.
                 self.logger.error("\(error)")
+                return
             }
 
             // Create an URLSessionUploadTask to upload our ping in the background and handle the
