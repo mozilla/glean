@@ -109,3 +109,21 @@ glean_parser glinter path/to/metrics.yaml path/to/pings.yaml
 
 [Glean Dictionary]: https://dictionary.telemetry.mozilla.org
 
+## Debugging
+
+By default, the Glean.js QML module uses a minified version of the Glean.js library.
+It may be useful to use the unminified version of the library in order to get proper
+line numbers and function names when debugging crashes.
+
+The bundle provided contains the unminified version of the library.
+In order to use it, open the `glean.js` file inside the included module and change the line:
+
+```
+.import "glean.lib.js" as Glean
+```
+
+to
+
+```
+.import "glean.dev.js" as Glean
+```
