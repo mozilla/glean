@@ -337,7 +337,7 @@ class GleanTests: XCTestCase {
         // Restart Glean
         Glean.shared.resetGlean(clearStores: false)
         waitForExpectations(timeout: 2.0) { error in
-            XCTAssertNil(error, "Error while waiting for inverted expectation: \(error!)")
+            XCTAssertNil(error, "Received a ping upload when we shouldn't have: \(error!)")
         }
 
         // Check to see if Glean is initialized
@@ -426,7 +426,7 @@ class GleanTests: XCTestCase {
 
         expectation = expectation(description: "Completed upload")
 
-        // We just want to
+        // We only want to submit the baseline ping, so we sumbit it by name
         Glean.shared.submitPingByName(pingName: "baseline")
 
         waitForExpectations(timeout: 5.0) { error in
