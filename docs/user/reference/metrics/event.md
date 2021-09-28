@@ -14,11 +14,11 @@ Each event contains the following data:
 
 ## Are you sure you need an event metric?
 
-> Event metrics are able to carry a lot of information. As such they can be used in place
+> Event metrics are able to carry a lot of information. As such, they can be used in place
 > of other metric types. However, their complexity means they are an
 > expensive metric type to record, transmit, store and, most importantly, analyze.
 >
-> Make sure to use events only when their complexity is unavoidable
+> Make sure to use events only when their complexity is unavoidable,
 > e.g. when it is necessary to know the order of events relative to one another.
 >  
 > When in doubt, refer to the
