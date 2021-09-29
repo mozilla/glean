@@ -88,9 +88,3 @@ func JSONStringify(_ json: Any) -> String {
 
     return ""
 }
-
-func getGleanTestConfig() -> Configuration {
-    return Configuration(
-        maxEvents: nil, channel: "glean-test", serverEndpoint: "http://localhost"
-    )
-}

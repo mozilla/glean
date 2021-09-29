@@ -55,6 +55,19 @@ public class HttpPingUploader {
     func upload(path: String, data: Data, headers: [String: String], callback: @escaping (UploadResult) -> Void) {
         // Build the request and create an async upload operation using a background URLSession
         if let request = self.buildRequest(path: path, data: data, headers: headers) {
+            // Try to write the temporary file which the URLSession will use for transfer. If this fails
+            // then there is no need to create the URLSessionConfiguration or URLSession.
+            let tmpFile = URL.init(fileURLWithPath: NSTemporaryDirectory(),
+                                   isDirectory: true).appendingPathComponent("\(path.split(separator: "/").last!)")
+            do {
+                try data.write(to: tmpFile, options: .noFileProtection)
+            } catch {
+                // Since we cannot write the file, there is no need to continue and schedule an
+                // upload task. So instead we log the error and return.
+                self.logger.error("\(error)")
+                return
+            }
+
             // Build a URLSession with no-caching suitable for uploading our pings
             let config: URLSessionConfiguration
             if Dispatchers.shared.testingMode {
@@ -73,17 +86,6 @@ public class HttpPingUploader {
             let session = URLSession(configuration: config,
                                      delegate: SessionResponseDelegate(callback),
                                      delegateQueue: Dispatchers.shared.serialOperationQueue)
-
-            let tmpFile = URL.init(fileURLWithPath: NSTemporaryDirectory(),
-                                   isDirectory: true).appendingPathComponent("\(path.split(separator: "/").last!)")
-            do {
-                try data.write(to: tmpFile, options: .noFileProtection)
-            } catch {
-                // Since we cannot write the file, there is no need to continue and schedule an
-                // upload task. So instead we log the error and return.
-                self.logger.error("\(error)")
-                return
-            }
 
             // Create an URLSessionUploadTask to upload our ping in the background and handle the
             // server responses.
