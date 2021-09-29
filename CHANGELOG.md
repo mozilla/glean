@@ -2,13 +2,6 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v41.1.1...main)
 
-# v41.1.1 (2021-09-29)
-
-[Full changelog](https://github.com/mozilla/glean/compare/v41.1.0...v41.1.1)
-
-* Android
-  * BUGFIX: Limit logging to Glean crates ([#1808](https://github.com/mozilla/glean/pull/1808))
-
 * Android
   * Updated to Gradle 7, Android Gradle Plugin 7 and Rust Android Plugin 0.9 as well as building with Java 11 ([#1801](https://github.com/mozilla/glean/pull/1801))
 * iOS
@@ -16,6 +9,13 @@
   * Remove reliance on `Operation` for uploading and instead use the background capabilities of `URLSession` ([#1783](https://github.com/mozilla/glean/pull/1783))
 * Rust
   * BUGFIX: No panic if trying to flush ping-lifetime data after shutdown ([#1800](https://github.com/mozilla/glean/pull/1800))
+
+# v41.1.1 (2021-09-29)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v41.1.0...v41.1.1)
+
+* Android
+  * BUGFIX: Limit logging to Glean crates ([#1808](https://github.com/mozilla/glean/pull/1808))
 
 # v41.1.0 (2021-09-16)
 
