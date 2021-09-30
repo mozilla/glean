@@ -10,6 +10,7 @@
   * Glean for iOS is now being built with Xcode 13.0.0 ([#1802](https://github.com/mozilla/glean/pull/1802)).
 * Rust
   * BUGFIX: No panic if trying to flush ping-lifetime data after shutdown ([#1800](https://github.com/mozilla/glean/pull/1800))
+  * BREAKING CHANGE: `glean::persist_ping_lifetime_data` is now async ([#1812](https://github.com/mozilla/glean/pull/1812))
 
 # v41.1.1 (2021-09-29)
 

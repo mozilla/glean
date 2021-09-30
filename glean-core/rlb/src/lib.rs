@@ -788,25 +788,12 @@ pub fn get_timestamp_ms() -> u64 {
     glean_core::get_timestamp_ms()
 }
 
-/// Asks the database to persist ping-lifetime data to disk. Probably expensive to call.
-/// Only has effect when Glean is configured with `delay_ping_lifetime_io: true`.
-/// If Glean hasn't been initialized this will dispatch and return Ok(()),
-/// otherwise it will block until the persist is done and return its Result.
-pub fn persist_ping_lifetime_data() -> Result<()> {
-    if !was_initialize_called() {
-        crate::launch_with_glean(|glean| {
-            // This is async, we can't get the Error back to the caller.
-            let _ = glean.persist_ping_lifetime_data();
-        });
-        Ok(())
-    } else {
-        // Calling the dispatcher directly to not panic on errors.
-        // Blocking on the queue will fail when the queue is already shutdown,
-        // which is equivalent to Glean not being initialized
-        // (In production Glean can't be re-initialized).
-        dispatcher::block_on_queue().map_err(|_| Error::not_initialized())?;
-        with_glean(|glean| glean.persist_ping_lifetime_data())
-    }
+/// Dispatches a request to the database to persist ping-lifetime data to disk.
+pub fn persist_ping_lifetime_data() {
+    crate::launch_with_glean(|glean| {
+        // This is async, we can't get the Error back to the caller.
+        let _ = glean.persist_ping_lifetime_data();
+    });
 }
 
 #[cfg(test)]
