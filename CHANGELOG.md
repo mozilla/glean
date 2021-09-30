@@ -9,6 +9,7 @@
   * Remove reliance on `Operation` for uploading and instead use the background capabilities of `URLSession` ([#1783](https://github.com/mozilla/glean/pull/1783))
 * Rust
   * BUGFIX: No panic if trying to flush ping-lifetime data after shutdown ([#1800](https://github.com/mozilla/glean/pull/1800))
+  * BREAKING CHANGE: `glean::persist_ping_lifetime_data` is now async ([#1812](https://github.com/mozilla/glean/pull/1812))
 
 # v41.1.1 (2021-09-29)
 
