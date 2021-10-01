@@ -515,7 +515,7 @@ jobs:
 
   Check Swift formatting:
     macos:
-      xcode: "12.5.0"
+      xcode: "13.0.0"
     steps:
       - checkout
       - run:
@@ -531,12 +531,9 @@ jobs:
 
   iOS build and test:
     macos:
-      xcode: "12.5.0"
+      xcode: "13.0.0"
     steps:
       - checkout
-      - run:
-          name: Set Ruby Version
-          command: echo 'chruby ruby-2.7.3' >> ~/.bash_profile
       - run:
           name: Show Ruby environment
           command: |
@@ -551,16 +548,16 @@ jobs:
             rustup target add aarch64-apple-ios-sim --toolchain nightly
       - restore_cache:
           name: Restore rubygems cache
-          key: swift-docs-gems-v9
+          key: swift-docs-gems-v10
       - run:
           name: Install jazzy
           command: gem install jazzy
       - save_cache:
           name: Save rubygems cache
           # NEEDS TO CHANGE WHEN JAZZY OR RUBY IS UPDATED
-          key: swift-docs-gems-v9
+          key: swift-docs-gems-v10
           paths:
-            - ~/.gem/ruby/2.7.3
+            - ~/.gem/ruby/2.7.4
       - run:
           name: Setup build environment
           command: |
@@ -569,8 +566,8 @@ jobs:
             # Bootstrap dependencies
             bin/bootstrap.sh
 
-            # See https://circleci.com/docs/2.0/testing-ios/#pre-starting-the-simulator
-            xcrun instruments -w "iPhone 11 (14" || true
+            UDID=$(xcrun xctrace list devices 2>&1 | grep 'iPhone 11 Simulator (14' | awk -F'[()]' '{print $4}')
+            xcrun simctl boot "$UDID"
             # Store build type for use in cache key
             if [ -z "${CIRCLE_TAG}" ]; then
               echo "debug" > buildtype.txt
@@ -649,7 +646,7 @@ jobs:
 
   iOS integration test:
     macos:
-      xcode: "12.5.0"
+      xcode: "13.0.0"
     steps:
       - checkout
       - skip-if-doc-only
@@ -661,9 +658,11 @@ jobs:
             rustup target add aarch64-apple-ios x86_64-apple-ios
 
             # List available devices -- allows us to see what's there
-            xcrun instruments -w list || true
-            # See https://circleci.com/docs/2.0/testing-ios/#pre-starting-the-simulator
-            xcrun instruments -w "iPhone 11 (14" || true
+            DEVICES=$(xcrun xctrace list devices 2>&1)
+            echo "$DEVICES"
+            # Pick a device and start it
+            UDID=$(echo "$DEVICES" | grep 'iPhone 11 Simulator (14' | awk -F'[()]' '{print $4}')
+            xcrun simctl boot "$UDID"
       - run:
           name: Install Rust Nightly toolchain
           command: |
@@ -720,7 +719,7 @@ jobs:
 
   iOS Framework release:
     macos:
-      xcode: "12.5.0"
+      xcode: "13.0.0"
     steps:
       - checkout
       - attach_workspace:
@@ -957,7 +956,7 @@ jobs:
 
   pypi-macos-release:
     macos:
-      xcode: "12.5.0"
+      xcode: "13.0.0"
     steps:
       - install-rustup
       - setup-rust-toolchain
@@ -989,7 +988,7 @@ jobs:
 
   pypi-macos-arm64-release:
     macos:
-      xcode: "12.5.0"
+      xcode: "13.0.0"
     steps:
       - install-rustup
       - setup-rust-toolchain
