@@ -1,12 +1,12 @@
 # Debugging JavaScript applications using Glean.js
 
-Debugging features in Python can be enabled through APIs exposed on the Glean object.
+Debugging features in JavaScript can be enabled through APIs exposed on the Glean object.
 For more information on the available features and how to enable them,
 see the [Debugging API reference](../../reference/debug/index.md).
 
 ## Sending pings
 
-Unlike other platforms, Python doesn't expose convenience methods to send pings on demand.
+Unlike other platforms, JavaScript doesn't expose convenience methods to send pings on demand.
 
 In case that is necessary, calling the `submit` function for a given ping,
 such as `pings.customPing.submit()`, will send it.
