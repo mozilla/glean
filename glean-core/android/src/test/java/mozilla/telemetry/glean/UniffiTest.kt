@@ -77,5 +77,7 @@ class UniffiTest {
         ))
 
         counterMetric.add()
+
+        assertEquals(1, counterMetric.testGetValue())
     }
 }

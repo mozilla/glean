@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 import mozilla.telemetry.glean.GleanMetrics.GleanBaseline
 import mozilla.telemetry.glean.internal.Configuration as GleanConfiguration
 import mozilla.telemetry.glean.internal.initialize as gleanInitialize
-import mozilla.telemetry.glean.internal.gleanEnableLogging
+import mozilla.telemetry.glean.internal.enableLogging
 import mozilla.telemetry.glean.config.Configuration
 import mozilla.telemetry.glean.config.FfiConfiguration
 import mozilla.telemetry.glean.utils.getLocaleTag
@@ -168,7 +168,7 @@ open class GleanInternalAPI internal constructor () {
         this.gleanDataDir = File(applicationContext.applicationInfo.dataDir, GLEAN_DATA_DIR)
 
         Log.e(LOG_TAG, "Glean. enable logging.")
-        gleanEnableLogging()
+        enableLogging()
         // Execute startup off the main thread.
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.executeTask {

@@ -1,7 +1,9 @@
 namespace glean {
     boolean initialize(Configuration cfg);
 
-    void glean_enable_logging();
+    void enable_logging();
+
+    void set_upload_enabled(boolean enabled);
 };
 
 dictionary Configuration {
@@ -36,4 +38,6 @@ interface CounterMetric {
     constructor(CommonMetricData meta);
 
     void add(optional i32 amount = 1);
+
+    i32? test_get_value(optional string? ping_name = null);
 };
