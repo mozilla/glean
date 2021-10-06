@@ -222,6 +222,7 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
     ],
     description="Mozilla's Glean Telemetry SDK: The Machine that Goes 'Ping!'",
     install_requires=requirements,
