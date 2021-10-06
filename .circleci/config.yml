@@ -82,7 +82,7 @@ commands:
       - run:
           name: Setup custom environment variables
           command: |
-              echo "export PATH=$HOME/.cargo/bin:$PATH" >> $BASH_ENV
+              echo 'export PATH=$HOME/.cargo/bin:$PATH' >> $BASH_ENV
 
   install-android-targets:
     steps:
@@ -907,7 +907,7 @@ jobs:
       - run:
           name: Setup default Python version
           command: |
-            echo "export PATH=/opt/python/cp38-cp38/bin:$PATH" >> $BASH_ENV
+            echo 'export PATH=/opt/python/cp38-cp38/bin:$PATH' >> $BASH_ENV
       - run:
           name: Build Python extension
           command: |
@@ -930,7 +930,7 @@ jobs:
       - run:
           name: Setup default Python version
           command: |
-            echo "export PATH=/opt/python/cp38-cp38/bin:$PATH" >> $BASH_ENV
+            echo 'export PATH=/opt/python/cp38-cp38/bin:$PATH' >> $BASH_ENV
       - run:
           name: Build Python extension
           command: |
