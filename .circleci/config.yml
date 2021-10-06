@@ -280,7 +280,7 @@ jobs:
       - image: cimg/python:3.8
     steps:
       - checkout
-      - run: sudo pip install yamllint
+      - run: pip install yamllint
       - run: make lint-yaml
 
   ###########################################################################
