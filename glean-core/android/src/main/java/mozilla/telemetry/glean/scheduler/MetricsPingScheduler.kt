@@ -79,7 +79,7 @@ internal class MetricsPingScheduler(
         // value.
         return try {
             date.time.toString()
-        } catch (e: AssertionError) {
+        } catch (_: AssertionError) {
             "<buggy Android 8>"
         }
     }
@@ -123,7 +123,7 @@ internal class MetricsPingScheduler(
         val currentVersion = buildInfo.versionName
         val lastVersion = try {
             sharedPreferences.getString(LAST_VERSION_OF_APP_USED, null)
-        } catch (e: ClassCastException) {
+        } catch (_: ClassCastException) {
             null
         }
         if (currentVersion != lastVersion) {
@@ -323,7 +323,7 @@ internal class MetricsPingScheduler(
     internal fun getLastCollectedDate(): Date? {
         val loadedDate = try {
             sharedPreferences.getString(LAST_METRICS_PING_SENT_DATETIME, null)
-        } catch (e: ClassCastException) {
+        } catch (_: ClassCastException) {
             null
         }
 

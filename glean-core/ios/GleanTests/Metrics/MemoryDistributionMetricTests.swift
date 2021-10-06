@@ -9,7 +9,11 @@ import XCTest
 // REASON: Used in a test
 class MemoryDistributionTypeTests: XCTestCase {
     override func setUp() {
-        Glean.shared.resetGlean(clearStores: true)
+        resetGleanDiscardingInitialPings(testCase: self, tag: "MemoryDistributionTypeTests")
+    }
+
+    override func tearDown() {
+        tearDownStubs()
     }
 
     func testTiminingDistributionSavesToStorage() {

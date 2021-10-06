@@ -9,7 +9,11 @@ import XCTest
 // REASON: Used in a test
 class TimingDistributionTypeTests: XCTestCase {
     override func setUp() {
-        Glean.shared.resetGlean(clearStores: true)
+        resetGleanDiscardingInitialPings(testCase: self, tag: "TimingDistributionMetricTypeTests")
+    }
+
+    override func tearDown() {
+        tearDownStubs()
     }
 
     func testTiminingDistributionSavesToStorage() {

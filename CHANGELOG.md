@@ -1,6 +1,20 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v41.1.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v42.0.0...main)
+
+# v42.0.0 (2021-10-06)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v41.1.1...v42.0.0)
+
+* Android
+  * Updated to Gradle 7, Android Gradle Plugin 7 and Rust Android Plugin 0.9 as well as building with Java 11 ([#1801](https://github.com/mozilla/glean/pull/1801))
+* iOS
+  * Add support for the URL metric type ([#1791](https://github.com/mozilla/glean/pull/1791))
+  * Remove reliance on `Operation` for uploading and instead use the background capabilities of `URLSession` ([#1783](https://github.com/mozilla/glean/pull/1783))
+  * Glean for iOS is now being built with Xcode 13.0.0 ([#1802](https://github.com/mozilla/glean/pull/1802)).
+* Rust
+  * BUGFIX: No panic if trying to flush ping-lifetime data after shutdown ([#1800](https://github.com/mozilla/glean/pull/1800))
+  * BREAKING CHANGE: `glean::persist_ping_lifetime_data` is now async ([#1812](https://github.com/mozilla/glean/pull/1812))
 
 # v41.1.1 (2021-09-29)
 

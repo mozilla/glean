@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 @testable import Glean
-import OHHTTPStubs
 import XCTest
 
 class PingTests: XCTestCase {
@@ -11,13 +10,13 @@ class PingTests: XCTestCase {
     var lastPingJson: [String: Any]?
 
     override func setUp() {
-        Glean.shared.resetGlean(clearStores: true)
+        resetGleanDiscardingInitialPings(testCase: self, tag: "PingTests")
     }
 
     override func tearDown() {
         lastPingJson = nil
         expectation = nil
-        OHHTTPStubs.removeAllStubs()
+        tearDownStubs()
     }
 
     private func setupHttpResponseStub(_ expectedPingType: String) {

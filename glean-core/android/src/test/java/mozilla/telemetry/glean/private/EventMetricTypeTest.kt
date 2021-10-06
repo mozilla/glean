@@ -245,7 +245,7 @@ class EventMetricTypeTest {
         try {
             eventMetric.testGetValue()
             fail("Expected events to be empty")
-        } catch (e: NullPointerException) {
+        } catch (_: NullPointerException) {
         }
         Glean.setUploadEnabled(true)
         eventMetric.record(mapOf(testNameKeys.testName to "event3"))

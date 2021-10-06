@@ -6,6 +6,10 @@
 import XCTest
 
 class DispatchersTest: XCTestCase {
+    override func tearDown() {
+        tearDownStubs()
+    }
+
     func testTaskQueuing() {
         var threadCanary = 0
 
@@ -218,7 +222,8 @@ class DispatchersTest: XCTestCase {
     }
 
     func testOverflowingTheTaskQueueRecordsTelemetry() {
-        Glean.shared.resetGlean(clearStores: true)
+        resetGleanDiscardingInitialPings(testCase: self, tag: "DispatchersTest")
+
         Dispatchers.shared.preInitOperations.removeAll()
         Dispatchers.shared.setTestingMode(enabled: true)
         Dispatchers.shared.setTaskQueueing(enabled: true)
@@ -244,7 +249,7 @@ class DispatchersTest: XCTestCase {
         // queueing turned off, this should cause the error metric to
         // be recorded so we can check it to ensure the value matches
         // the expected value.
-        Glean.shared.resetGlean(clearStores: false)
+        resetGleanDiscardingInitialPings(testCase: self, tag: "DispatchersTest", clearStores: false)
 
         XCTAssertEqual(
             Dispatchers.Constants.maxQueueSize + 10,
@@ -252,6 +257,7 @@ class DispatchersTest: XCTestCase {
             "preInitTaskCount is correct"
         )
 
-        Glean.shared.resetGlean(clearStores: true)
+        // Clean up
+        resetGleanDiscardingInitialPings(testCase: self, tag: "DispatchersTest")
     }
 }

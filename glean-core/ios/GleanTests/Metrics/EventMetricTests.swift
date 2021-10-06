@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 @testable import Glean
-import OHHTTPStubs
 import XCTest
 
 // The event extra keys.
@@ -82,13 +81,13 @@ class EventMetricTypeTests: XCTestCase {
     }
 
     override func setUp() {
-        Glean.shared.resetGlean(clearStores: true)
+        resetGleanDiscardingInitialPings(testCase: self, tag: "EventMetricTypeTests")
     }
 
     override func tearDown() {
         lastPingJson = nil
         expectation = nil
-        OHHTTPStubs.removeAllStubs()
+        tearDownStubs()
     }
 
     func testEventSavesToStorage() {

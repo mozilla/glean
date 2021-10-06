@@ -53,11 +53,54 @@ public class HttpPingUploader {
     /// headers are added to the HTTP request in addition to the UserAgent. This allows
     /// us to easily handle pings coming from Glean on the legacy Mozilla pipeline.
     func upload(path: String, data: Data, headers: [String: String], callback: @escaping (UploadResult) -> Void) {
-        // Build the request and create an async upload operation and launch it through the
-        // Dispatchers
-        if let request = buildRequest(path: path, data: data, headers: headers) {
-            let uploadOperation = PingUploadOperation(request: request, data: data, callback: callback)
-            Dispatchers.shared.launchConcurrent(operation: uploadOperation)
+        // Build the request and create an async upload operation using a background URLSession
+        if let request = self.buildRequest(path: path, data: data, headers: headers) {
+            // Try to write the temporary file which the URLSession will use for transfer. If this fails
+            // then there is no need to create the URLSessionConfiguration or URLSession.
+            let tmpFile = URL.init(fileURLWithPath: NSTemporaryDirectory(),
+                                   isDirectory: true).appendingPathComponent("\(path.split(separator: "/").last!)")
+            do {
+                try data.write(to: tmpFile, options: .noFileProtection)
+            } catch {
+                // Since we cannot write the file, there is no need to continue and schedule an
+                // upload task. So instead we log the error and return.
+                self.logger.error("\(error)")
+                return
+            }
+
+            // Build a URLSession with no-caching suitable for uploading our pings
+            let config: URLSessionConfiguration
+            if Dispatchers.shared.testingMode {
+                // For test mode, we want the URLSession to send things ASAP, rather than in the background
+                config = URLSessionConfiguration.default
+            } else {
+                // For normal use cases, we will take advantage of the background URLSessionConfiguration
+                // which will pass the data to the OS as a file and the OS will then handle the request
+                // in a separate process
+                config = URLSessionConfiguration.background(withIdentifier: path)
+            }
+            config.sessionSendsLaunchEvents = false // We don't need to notify the app when we are done.
+            config.requestCachePolicy = NSURLRequest.CachePolicy.reloadIgnoringLocalCacheData
+            config.isDiscretionary = false
+            config.urlCache = nil
+            let session = URLSession(configuration: config,
+                                     delegate: SessionResponseDelegate(callback),
+                                     delegateQueue: Dispatchers.shared.serialOperationQueue)
+
+            // Create an URLSessionUploadTask to upload our ping in the background and handle the
+            // server responses.
+            let uploadTask = session.uploadTask(with: request, fromFile: tmpFile)
+
+            uploadTask.countOfBytesClientExpectsToSend = 1024 * 1024
+            uploadTask.countOfBytesClientExpectsToReceive = 512
+
+            // Start the upload task
+            uploadTask.resume()
+
+            // Since we won't be reusing this session, we can call `finishTasksAndInvalidate` which
+            // should allow our upload task to complete and then invalidate the session and release
+            // the strong reference to the delegate.
+            session.finishTasksAndInvalidate()
         }
     }
 
@@ -79,9 +122,8 @@ public class HttpPingUploader {
             request.httpMethod = "POST"
             request.httpShouldHandleCookies = false
 
-            // NOTE: We're using `URLSession.uploadTask` in `PingUploadOperation`,
-            // which ignores the `httpBody` and instead takes the body payload as a parameter
-            // to add to the request.
+            // NOTE: We're using `URLSession.uploadTask` which ignores the `httpBody` and
+            // instead takes the body payload as a parameter to add to the request.
             // However in tests we're using OHHTTPStubs to stub out the HTTP upload.
             // It has the known limitation that it doesn't simulate data upload,
             // because the underlying protocol doesn't expose a hook for that.
@@ -122,6 +164,59 @@ public class HttpPingUploader {
             case .done:
                 return
             }
+        }
+    }
+}
+
+/// An object that can be assigned as a session delegate and will hold the callback with which to respond to
+/// glean-core with the network response
+private class SessionResponseDelegate: NSObject, URLSessionTaskDelegate {
+    private let callback: (UploadResult) -> Void
+
+    init(_ callback: @escaping (UploadResult) -> Void) {
+        self.callback = callback
+    }
+
+    public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        let httpResponse = task.response as? HTTPURLResponse
+        let statusCode = UInt32(httpResponse?.statusCode ?? 0)
+
+        if let error = error {
+            // Upload failed on the client-side. We should try again.
+            callback(.recoverableFailure(error))
+        } else {
+            // HTTP status codes are handled on the Rust side
+            callback(.httpResponse(statusCode))
+        }
+    }
+}
+
+enum UploadResult {
+    /// A HTTP response code.
+    ///
+    /// This can still indicate an error, depending on the status code.
+    case httpResponse(UInt32)
+
+    /// An unrecoverable upload failure.
+    ///
+    /// A possible cause might be a malformed URL.
+    case unrecoverableFailure(Error)
+
+    /// A recoverable failure.
+    ///
+    /// During upload something went wrong,
+    /// e.g. the network connection failed.
+    /// The upload should be retried at a later time.
+    case recoverableFailure(Error)
+
+    func toFfi() -> UInt32 {
+        switch self {
+        case let .httpResponse(status):
+            return UInt32(UPLOAD_RESULT_HTTP_STATUS) | status
+        case .unrecoverableFailure:
+            return UInt32(UPLOAD_RESULT_UNRECOVERABLE)
+        case .recoverableFailure:
+            return UInt32(UPLOAD_RESULT_RECOVERABLE)
         }
     }
 }

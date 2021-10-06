@@ -9,7 +9,11 @@ import XCTest
 // REASON: Used in a test
 class DatetimeMetricTypeTests: XCTestCase {
     override func setUp() {
-        Glean.shared.resetGlean(clearStores: true)
+        resetGleanDiscardingInitialPings(testCase: self, tag: "DatetimeMetricTypeTests")
+    }
+
+    override func tearDown() {
+        tearDownStubs()
     }
 
     // swiftlint:disable function_parameter_count

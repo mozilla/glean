@@ -9,7 +9,11 @@ import XCTest
 // REASON: Used in a test
 class QuantityMetricTypeTests: XCTestCase {
     override func setUp() {
-        Glean.shared.resetGlean(clearStores: true)
+        resetGleanDiscardingInitialPings(testCase: self, tag: "QuantityMetricTypeTests")
+    }
+
+    override func tearDown() {
+        tearDownStubs()
     }
 
     func testCounterSavesToStorage() {

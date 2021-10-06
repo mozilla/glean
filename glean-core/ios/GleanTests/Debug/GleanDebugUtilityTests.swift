@@ -10,13 +10,12 @@ class GleanDebugUtilityTests: XCTestCase {
     var expectation: XCTestExpectation?
 
     override func setUp() {
-        Glean.shared.resetGlean(clearStores: true)
-        Glean.shared.enableTestingMode()
+        resetGleanDiscardingInitialPings(testCase: self, tag: "GleanDebugUtilityTests")
     }
 
     override func tearDown() {
-        Glean.shared.setUploadEnabled(true)
-        OHHTTPStubs.removeAllStubs()
+        expectation = nil
+        tearDownStubs()
     }
 
     func testHandleCustomUrlLogPings() {

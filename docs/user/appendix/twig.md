@@ -54,3 +54,4 @@ They could be release notes, documentation, hopes, dreams, or whatever: so long 
 * 2021-08-05: [Building a Mobile Acquisition Dashboard in Looker](https://blog.mozilla.org/data/2021/08/05/this-week-in-glean-building-a-mobile-acquisition-dashboard-in-looker/)
 * 2021-08-23: [Why choosing the right data type for your metric matters](https://blog.mozilla.org/data/2021/08/23/this-week-in-glean-why-choosing-the-right-data-type-for-your-metric-matters/)
 * 2021-09-07: [Data Reviews are Important, Glean Parser makes them Easy ](https://blog.mozilla.org/data/2021/09/07/this-week-in-glean-data-reviews-are-important-glean-parser-makes-them-easy/)
+* 2021-09-17: [Glean & GeckoView](https://blog.mozilla.org/data/2021/09/17/this-week-in-glean-glean-geckoview/)

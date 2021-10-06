@@ -5,6 +5,7 @@
 @testable import Glean
 import Gzip
 import OHHTTPStubs
+import XCTest
 
 /// Stub out receiving a request on Glean's default Telemetry endpoint.
 ///
@@ -40,6 +41,38 @@ func stubServerReceive(callback: @escaping (String, [String: Any]?) -> Void) {
             headers: ["Content-Type": "application/json"]
         )
     }
+}
+
+/// Resets Glean, and discards any pings sent during `initialize()`
+/// that might interfere with what is being tested in the specific unit test
+///
+/// This also prevents outgoing network requests during unit tests while
+/// still allowing us to use the default telemetry endpoint.
+func resetGleanDiscardingInitialPings(testCase: XCTestCase, tag: String, clearStores: Bool = true) {
+    let expectation = testCase.expectation(description: "\(tag): Ping Received")
+
+    // We are using OHHTTPStubs combined with an XCTestExpectation in order to capture
+    // outgoing network requests and prevent actual requests being made from tests.
+    stubServerReceive { _, _ in
+        // Fulfill test's expectation once we parsed the incoming data.
+        DispatchQueue.main.async {
+            // Let the response get processed before we mark the expectation fulfilled
+            expectation.fulfill()
+        }
+    }
+
+    // We may recieve more than one ping, using this function means we don't care about any of them
+    expectation.assertForOverFulfill = false
+
+    Glean.shared.resetGlean(clearStores: clearStores)
+
+    testCase.waitForExpectations(timeout: 5.0) { error in
+        XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
+    }
+}
+
+func tearDownStubs() {
+    OHHTTPStubs.removeAllStubs()
 }
 
 /// Stringify a JSON object and if unable to, just return an empty string.

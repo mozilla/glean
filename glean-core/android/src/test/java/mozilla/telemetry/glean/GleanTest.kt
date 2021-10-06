@@ -177,7 +177,7 @@ class GleanTest {
 
     // Suppressing our own deprecation before we move over to the new event recording API.
     @Test
-    @Suppress("ComplexMethod", "LongMethod", "DEPRECATION")
+    @Suppress("ComplexMethod", "LongMethod", "NestedBlockDepth", "DEPRECATION")
     fun `test sending of foreground and background pings`() {
         val server = getMockWebServer()
 
@@ -218,7 +218,7 @@ class GleanTest {
             // Trigger worker task to upload the pings in the background
             triggerWorkManager(context)
 
-            for (i in 0..5) {
+            for (ignored in 0..5) {
                 val request = server.takeRequest(20L, TimeUnit.SECONDS)!!
                 val docType = request.path!!.split("/")[3]
 
@@ -327,7 +327,7 @@ class GleanTest {
         Dispatchers.API.setTaskQueueing(true)
 
         // This will queue 3 tasks that will add to the metric value once Glean is initialized
-        for (i in 0..2) {
+        for (ignored in 0..2) {
             counterMetric.add()
         }
 

@@ -178,9 +178,9 @@ internal fun getWorkerStatus(context: Context, tag: String): WorkerStatus {
                 return WorkerStatus(true, workInfo.id)
             }
         }
-    } catch (e: ExecutionException) {
+    } catch (_: ExecutionException) {
         // Do nothing but will return false
-    } catch (e: InterruptedException) {
+    } catch (_: InterruptedException) {
         // Do nothing but will return false
     }
 
@@ -332,7 +332,8 @@ fun waitForPingContent(
 ): JSONObject?
 {
     var parsedPayload: JSONObject? = null
-    for (attempts in 1..maxAttempts) {
+    @Suppress("LoopWithTooManyJumpStatements")
+    for (ignored in 1..maxAttempts) {
         val request = server.takeRequest(20L, java.util.concurrent.TimeUnit.SECONDS) ?: break
         val docType = request.path!!.split("/")[3]
         if (pingName == docType) {

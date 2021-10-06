@@ -19,7 +19,11 @@ class JweMetricTests: XCTestCase {
     // swiftlint:enable line_length
 
     override func setUp() {
-        Glean.shared.resetGlean(clearStores: true)
+        resetGleanDiscardingInitialPings(testCase: self, tag: "JweMetricTests")
+    }
+
+    override func tearDown() {
+        tearDownStubs()
     }
 
     func testJweSavesToStorage() {

@@ -9,7 +9,11 @@ import XCTest
 // REASON: Used in a test
 class TimespanMetricTypeTests: XCTestCase {
     override func setUp() {
-        Glean.shared.resetGlean(clearStores: true)
+        resetGleanDiscardingInitialPings(testCase: self, tag: "TimespanMetricTypeTests")
+    }
+
+    override func tearDown() {
+        tearDownStubs()
     }
 
     func testTimespanSavesToStorage() {
