@@ -1,8 +1,19 @@
 [package]
 name = "glean-uniffi"
 version = "0.1.0"
-authors = ["Jan-Erik Rediger <jrediger@mozilla.com>"]
+authors = ["Jan-Erik Rediger <jrediger@mozilla.com>", "The Glean Team <glean-team@mozilla.com>"]
 edition = "2018"
+license = "MPL-2.0"
+include = [
+  "/README.md",
+  "/LICENSE",
+  "/src",
+  "/tests",
+  "/Cargo.toml",
+  "/uniffi.toml",
+  "/build.rs",
+]
+publish = false
 
 [lib]
 name = "glean_uniffi"
