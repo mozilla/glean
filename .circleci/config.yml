@@ -844,7 +844,7 @@ jobs:
       - run:
           name: Install Wine
           command: |
-            sudo apt install wine
+            sudo apt install wine-stable
       - run:
           name: Install Python for Windows
           command: |
