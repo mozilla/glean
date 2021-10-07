@@ -15,6 +15,8 @@
 * Rust
   * BUGFIX: No panic if trying to flush ping-lifetime data after shutdown ([#1800](https://github.com/mozilla/glean/pull/1800))
   * BREAKING CHANGE: `glean::persist_ping_lifetime_data` is now async ([#1812](https://github.com/mozilla/glean/pull/1812))
+* Python
+  * Glean now officially supports Python 3.10
 
 # v41.1.1 (2021-09-29)
 
