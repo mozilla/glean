@@ -835,7 +835,6 @@ jobs:
 
   Python Windows x86_64 tests:
     docker:
-      # Windows tests require "legacy" Docker images
       - image: cimg/python:3.8.5
     steps:
       - checkout
@@ -860,7 +859,6 @@ jobs:
 
   Python Windows i686 tests:
     docker:
-      # Windows tests require "legacy" Docker images
       - image: cimg/python:3.8.5
     steps:
       - checkout
