@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v41.1.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v42.0.0...main)
+
+# v42.0.0 (2021-10-06)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v41.1.1...v42.0.0)
 
 * Android
   * Updated to Gradle 7, Android Gradle Plugin 7 and Rust Android Plugin 0.9 as well as building with Java 11 ([#1801](https://github.com/mozilla/glean/pull/1801))
