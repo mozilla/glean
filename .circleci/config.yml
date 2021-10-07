@@ -836,7 +836,7 @@ jobs:
   Python Windows x86_64 tests:
     docker:
       # Windows tests require "legacy" Docker images
-      - image: circleci/python:3.8.5
+      - image: cimg/python:3.8.5
     steps:
       - checkout
       - skip-if-doc-only
@@ -861,7 +861,7 @@ jobs:
   Python Windows i686 tests:
     docker:
       # Windows tests require "legacy" Docker images
-      - image: circleci/python:3.8.5
+      - image: cimg/python:3.8.5
     steps:
       - checkout
       - skip-if-doc-only
