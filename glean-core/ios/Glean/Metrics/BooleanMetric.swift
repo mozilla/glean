@@ -39,13 +39,6 @@ public class BooleanMetricType {
         self.sendInPings = sendInPings
     }
 
-    /// Destroy this metric.
-    deinit {
-        if self.handle != 0 {
-            glean_destroy_boolean_metric(self.handle)
-        }
-    }
-
     /// Set a boolean value.
     ///
     /// - parameters:

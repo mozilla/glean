@@ -251,3 +251,30 @@ def test_invalid_labels_go_to_other():
     assert 4 == labeled_counter_metric.test_get_num_recorded_errors(
         ErrorType.INVALID_LABEL
     )
+
+
+def test_rapidly_recreating_labeled_metrics_does_not_crash():
+    """
+    Regression test for bug 1733757.
+    The underlying map implementation has an upper limit of entries it can handle,
+    currently set to (1<<15)-1 = 32767.
+    We used to create a new object every time a label was referenced,
+    leading to exhausting the available storage in that map, which finally results in a panic.
+    """
+
+    labeled_counter_metric = metrics.LabeledCounterMetricType(
+        category="telemetry",
+        name="labeled_nocrash",
+        send_in_pings=["metrics"],
+        lifetime=Lifetime.APPLICATION,
+        disabled=False,
+        labels=["foo"],
+    )
+
+    # We go higher than the maximum of `(1<<15)-1 = 32767`.
+    # Python is slow, so we only go a tiny bit higher.
+    max_attempts = (1 << 15) + 1  # 32769
+    for _ in range(max_attempts):
+        labeled_counter_metric["foo"].add(1)
+
+    assert max_attempts == labeled_counter_metric["foo"].test_get_value()

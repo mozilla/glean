@@ -44,10 +44,6 @@ class BooleanMetricType:
             disabled,
         )
 
-    def __del__(self):
-        if getattr(self, "_handle", 0) != 0:
-            _ffi.lib.glean_destroy_boolean_metric(self._handle)
-
     def set(self, value: bool) -> None:
         """
         Set a boolean value.
