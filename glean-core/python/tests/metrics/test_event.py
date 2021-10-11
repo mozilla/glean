@@ -318,7 +318,8 @@ def test_event_enum_is_generated_correctly():
 
 def test_event_extra_is_generated_correctly():
     metrics = load_metrics(
-        ROOT.parent / "data" / "events_with_types.yaml", config={"allow_reserved": False}
+        ROOT.parent / "data" / "events_with_types.yaml",
+        config={"allow_reserved": False},
     )
 
     metrics.core.preference_toggled.record(
@@ -333,7 +334,9 @@ def test_event_extra_is_generated_correctly():
 
 def test_the_convenient_extrakeys_api():
     class ClickKeys(metrics.EventExtras):
-        def __init__(self, object_id: Optional[str] = None, other: Optional[str] = None) -> None:
+        def __init__(
+            self, object_id: Optional[str] = None, other: Optional[str] = None
+        ) -> None:
             self._object_id = object_id
             self._other = other
 
@@ -390,7 +393,8 @@ def test_the_convenient_extrakeys_api():
 
 def test_event_extra_does_typechecks():
     metrics = load_metrics(
-        ROOT.parent / "data" / "events_with_types.yaml", config={"allow_reserved": False}
+        ROOT.parent / "data" / "events_with_types.yaml",
+        config={"allow_reserved": False},
     )
 
     # Valid combinations of extras.
@@ -398,7 +402,9 @@ def test_event_extra_does_typechecks():
     metrics.core.PreferenceToggledExtra(preference="value1")
     metrics.core.PreferenceToggledExtra(enabled=True)
     metrics.core.PreferenceToggledExtra(swapped=1)
-    extras = metrics.core.PreferenceToggledExtra(preference="value1", enabled=True, swapped=1)
+    extras = metrics.core.PreferenceToggledExtra(
+        preference="value1", enabled=True, swapped=1
+    )
     # Check conversion to FFI types, extras are sorted by name
     ffi = extras.to_ffi_extra()
     expected = ([0, 1, 2], ["true", "value1", "1"])

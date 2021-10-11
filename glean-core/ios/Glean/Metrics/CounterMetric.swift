@@ -39,13 +39,6 @@ public class CounterMetricType {
         self.sendInPings = sendInPings
     }
 
-    /// Destroy this metric.
-    deinit {
-        if self.handle != 0 {
-            glean_destroy_counter_metric(self.handle)
-        }
-    }
-
     /// Add to counter value.
     ///
     /// - parameters:

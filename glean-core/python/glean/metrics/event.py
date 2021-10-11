@@ -127,7 +127,9 @@ class EventMetricType:
         if getattr(self, "_handle", 0) != 0:
             _ffi.lib.glean_destroy_event_metric(self._handle)
 
-    def record(self, extra: Optional[Union[Dict[int, str], EventExtras]] = None) -> None:
+    def record(
+        self, extra: Optional[Union[Dict[int, str], EventExtras]] = None
+    ) -> None:
         """
         Record an event by using the information provided by the instance of
         this class.
