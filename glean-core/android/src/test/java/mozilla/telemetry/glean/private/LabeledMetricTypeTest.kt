@@ -456,4 +456,39 @@ class LabeledMetricTypeTest {
         assertEquals(1, labeledCounterMetric["bar"].testGetValue())
         assertEquals(100, labeledCounterMetric["__other__"].testGetValue())
     }
+
+    @Test
+    fun `rapidly re-creating labeled metrics does not crash`() {
+        // Regression test for bug 1733757.
+        // The underlying map implementation has an upper limit of entries it can handle,
+        // currently set to (1<<15)-1 = 32767.
+        // We used to create a new object every time a label was referenced,
+        // leading to exhausting the available storage in that map, which finally results in a panic.
+
+        val counterMetric = CounterMetricType(
+            disabled = false,
+            category = "telemetry",
+            lifetime = Lifetime.Application,
+            name = "labeled_nocrash_counter",
+            sendInPings = listOf("metrics")
+        )
+
+        val labeledCounterMetric = LabeledMetricType(
+            disabled = false,
+            category = "telemetry",
+            lifetime = Lifetime.Application,
+            name = "labeled_nocrash",
+            sendInPings = listOf("metrics"),
+            subMetric = counterMetric,
+            labels = setOf("foo")
+        )
+
+        // We go higher than the maximum of `(1<<15)-1 = 32767`.
+        val maxAttempts = 1 shl 16
+        for (ignored in 1..maxAttempts) {
+            labeledCounterMetric["foo"].add(1)
+        }
+
+        assertEquals(maxAttempts, labeledCounterMetric["foo"].testGetValue())
+    }
 }

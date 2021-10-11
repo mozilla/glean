@@ -1,6 +1,15 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v42.0.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v42.0.1...main)
+
+# v42.0.1 (2021-10-11)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v42.0.0...v42.0.1)
+
+* General
+  * BUGFIX: Avoid a crash when accessing labeled metrics by caching created objects ([#1823](https://github.com/mozilla/glean/pull/1823)).
+* Python
+  * Glean now officially supports Python 3.10 ([#1818](https://github.com/mozilla/glean/pull/1818))
 
 # v42.0.0 (2021-10-06)
 
@@ -76,8 +85,8 @@
 [Full changelog](https://github.com/mozilla/glean/compare/v39.1.0...v40.0.0)
 
 * Android
-  * **Breaking Change**: Split the Glean Kotlin SDK into two packages: `glean` and `glean-native` ([#1595](https://github.com/mozilla/glean/pull/1595)).  
-    Consumers will need to switch to `org.mozilla.telemetry:glean-native-forUnitTests`.  
+  * **Breaking Change**: Split the Glean Kotlin SDK into two packages: `glean` and `glean-native` ([#1595](https://github.com/mozilla/glean/pull/1595)).
+    Consumers will need to switch to `org.mozilla.telemetry:glean-native-forUnitTests`.
     Old code in `build.gradle`:
 
     ```

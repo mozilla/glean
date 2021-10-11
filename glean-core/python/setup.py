@@ -56,7 +56,7 @@ with (SRC_ROOT / "CHANGELOG.md").open() as history_file:
     history = history_file.read()
 
 # glean version. Automatically updated by the bin/prepare_release.sh script
-version = "42.0.0"
+version = "42.0.1"
 
 requirements = [
     "cffi>=1.13.0",
@@ -222,6 +222,7 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
     ],
     description="Mozilla's Glean Telemetry SDK: The Machine that Goes 'Ping!'",
     install_requires=requirements,

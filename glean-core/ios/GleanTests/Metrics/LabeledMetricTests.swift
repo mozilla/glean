@@ -149,7 +149,7 @@ class LabeledMetricTypeTests: XCTestCase {
     }
 
     func testLabeledStringType() {
-        let counterMetric = StringMetricType(
+        let stringMetric = StringMetricType(
             category: "telemetry",
             name: "labeled_counter_metric",
             sendInPings: ["metrics"],
@@ -163,7 +163,7 @@ class LabeledMetricTypeTests: XCTestCase {
             sendInPings: ["metrics"],
             lifetime: .application,
             disabled: false,
-            subMetric: counterMetric
+            subMetric: stringMetric
         )
 
         labeledStringMetric["label1"].set("foo")
@@ -217,5 +217,39 @@ class LabeledMetricTypeTests: XCTestCase {
         )) { error in
             XCTAssertEqual(error as! String, "Can not create a labeled version of this metric type")
         }
+    }
+
+    func testRapidlyRecreatingLabeledMetricsDoesNotCrash() {
+        // Regression test for bug 1733757.
+        // The underlying map implementation has an upper limit of entries it can handle,
+        // currently set to (1<<15)-1 = 32767.
+        // We used to create a new object every time a label was referenced,
+        // leading to exhausting the available storage in that map, which finally results in a panic.
+
+        let counterMetric = CounterMetricType(
+            category: "telemetry",
+            name: "labeled_nocrash_counter",
+            sendInPings: ["metrics"],
+            lifetime: .application,
+            disabled: false
+        )
+
+        let labeledCounterMetric = try! LabeledMetricType<CounterMetricType>(
+            category: "telemetry",
+            name: "labeled_nocrash",
+            sendInPings: ["metrics"],
+            lifetime: .application,
+            disabled: false,
+            subMetric: counterMetric,
+            labels: ["foo"]
+        )
+
+        // We go higher than the maximum of `(1<<15)-1 = 32767`.
+        let maxAttempts = Int32(1 << 16)
+        for _ in 1 ... maxAttempts {
+            labeledCounterMetric["foo"].add(1)
+        }
+
+        XCTAssertEqual(maxAttempts, try labeledCounterMetric["foo"].testGetValue())
     }
 }

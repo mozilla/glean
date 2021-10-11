@@ -82,7 +82,7 @@ commands:
       - run:
           name: Setup custom environment variables
           command: |
-              echo "export PATH=$HOME/.cargo/bin:$PATH" >> $BASH_ENV
+              echo 'export PATH=$HOME/.cargo/bin:$PATH' >> $BASH_ENV
 
   install-android-targets:
     steps:
@@ -277,10 +277,10 @@ jobs:
 
   Lint YAML with yamllint:
     docker:
-      - image: circleci/python:3.8.5
+      - image: cimg/python:3.8
     steps:
       - checkout
-      - run: sudo pip install yamllint
+      - run: pip install yamllint
       - run: make lint-yaml
 
   ###########################################################################
@@ -750,7 +750,7 @@ jobs:
 
   Lint Python:
     docker:
-      - image: circleci/python:3.8.5
+      - image: cimg/python:3.8
     steps:
       - checkout
       - run:
@@ -759,7 +759,7 @@ jobs:
 
   Python 3_6 tests:
     docker:
-      - image: circleci/python:3.6.12
+      - image: cimg/python:3.6
     steps:
       - checkout
       - skip-if-doc-only
@@ -767,7 +767,7 @@ jobs:
 
   Python 3_6 tests minimum dependencies:
     docker:
-      - image: circleci/python:3.6.12
+      - image: cimg/python:3.6
     steps:
       - checkout
       - skip-if-doc-only
@@ -778,18 +778,15 @@ jobs:
 
   Python 3_7 tests:
     docker:
-      - image: circleci/python:3.7.9
+      - image: cimg/python:3.7
     steps:
       - checkout
       - skip-if-doc-only
       - test-python
-      - persist_to_workspace:
-          root: glean-core/python/
-          paths: .venv3.7
 
   Python 3_8 tests:
     docker:
-      - image: circleci/python:3.8.5
+      - image: cimg/python:3.8
     steps:
       - checkout
       - test-python
@@ -799,17 +796,14 @@ jobs:
 
   Python 3_9 tests:
     docker:
-      - image: circleci/python:3.9.0
+      - image: cimg/python:3.9
     steps:
       - checkout
       - test-python
-      - persist_to_workspace:
-          root: glean-core/python/
-          paths: .venv3.9
 
   Python 3_9 tests minimum dependencies:
     docker:
-      - image: circleci/python:3.9.0
+      - image: cimg/python:3.9
     steps:
       - checkout
       - skip-if-doc-only
@@ -832,9 +826,16 @@ jobs:
       - checkout
       - test-python
 
+  Python 3_10 tests:
+    docker:
+      - image: cimg/python:3.10
+    steps:
+      - checkout
+      - test-python
+
   Python Windows x86_64 tests:
     docker:
-      - image: circleci/python:3.8.5
+      - image: cimg/python:3.8.5
     steps:
       - checkout
       - skip-if-doc-only
@@ -842,7 +843,7 @@ jobs:
       - run:
           name: Install Wine
           command: |
-            sudo apt install wine
+            sudo apt install wine-stable
       - run:
           name: Install Python for Windows
           command: |
@@ -858,7 +859,7 @@ jobs:
 
   Python Windows i686 tests:
     docker:
-      - image: circleci/python:3.8.5
+      - image: cimg/python:3.8.5
     steps:
       - checkout
       - skip-if-doc-only
@@ -884,7 +885,7 @@ jobs:
 
   Generate Python documentation:
     docker:
-      - image: circleci/python:3.8.5
+      - image: cimg/python:3.8
     steps:
       - checkout
       - attach_workspace:
@@ -898,7 +899,7 @@ jobs:
 
   pypi-source-release:
     docker:
-      - image: circleci/python:3.8.2
+      - image: cimg/python:3.8
     steps:
       - install-rustup
       - setup-rust-toolchain
@@ -906,7 +907,7 @@ jobs:
       - run:
           name: Setup default Python version
           command: |
-            echo "export PATH=/opt/python/cp38-cp38/bin:$PATH" >> $BASH_ENV
+            echo 'export PATH=/opt/python/cp38-cp38/bin:$PATH' >> $BASH_ENV
       - run:
           name: Build Python extension
           command: |
@@ -929,7 +930,7 @@ jobs:
       - run:
           name: Setup default Python version
           command: |
-            echo "export PATH=/opt/python/cp38-cp38/bin:$PATH" >> $BASH_ENV
+            echo 'export PATH=/opt/python/cp38-cp38/bin:$PATH' >> $BASH_ENV
       - run:
           name: Build Python extension
           command: |
@@ -1019,7 +1020,7 @@ jobs:
 
   pypi-windows-x86_64-release:
     docker:
-      - image: circleci/python:3.8.5
+      - image: cimg/python:3.8
     steps:
       - checkout
       - build-windows-x86_64-wheel
@@ -1039,7 +1040,7 @@ jobs:
 
   pypi-windows-i686-release:
     docker:
-      - image: circleci/python:3.8.5
+      - image: cimg/python:3.8
     steps:
       - checkout
       - build-windows-i686-wheel
@@ -1062,7 +1063,7 @@ jobs:
 
   Docs internal metrics check:
     docker:
-      - image: circleci/python:3.8.5
+      - image: cimg/python:3.8
     steps:
       - checkout
       - run:
@@ -1182,6 +1183,7 @@ workflows:
       - Python 3_9 tests
       - Python 3_9 tests minimum dependencies
       - Python 3_9 on Alpine tests
+      - Python 3_10 tests
       - Python Windows x86_64 tests
       - Python Windows i686 tests
 

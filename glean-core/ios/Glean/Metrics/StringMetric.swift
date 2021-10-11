@@ -39,13 +39,6 @@ public class StringMetricType {
         self.sendInPings = sendInPings
     }
 
-    /// Destroy this metric.
-    deinit {
-        if self.handle != 0 {
-            glean_destroy_string_metric(self.handle)
-        }
-    }
-
     /// Set a string value.
     ///
     /// - parameters:
