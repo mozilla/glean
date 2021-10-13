@@ -1,7 +1,7 @@
 auditwheel==5.0.0
 black==21.9b0
 cffi==1.14.6
-coverage==6.0.1
+coverage==6.0.2
 flake8==4.0.1
 flake8-bugbear==21.9.2
 jsonschema==3.2.0
