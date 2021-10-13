@@ -140,6 +140,4 @@ This bug is only reproduced in iOS devices, it does not happen in emulators. It 
 **only happens when using the Qt debug library for iOS**.
 
 There is no way around this bug other than avoiding the Qt debug library for iOS altogether until
-this bug is fixed. In order to do that, we suggest overwriting the `QT_LIBRARY_SUFFIX` environment
-variable with `""` when building for this environment. Other techniques for achieving this same goal
-can be found over on [the Qt debugging documentation](https://doc.qt.io/qt-5/debug.html#debugging-in-macos-and-xcode).
+it is fixed. Refer to the [the Qt debugging documentation](https://doc.qt.io/qt-5/debug.html#debugging-in-macos-and-xcode) on how to do that.
