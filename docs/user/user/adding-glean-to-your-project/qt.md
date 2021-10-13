@@ -6,7 +6,8 @@ Nevertheless this is just one of the required steps for integrating Glean succes
 
 ## Requirements
 
-* Python >= 3.6.
+* Python >= 3.6
+* Qt >= 5.15.2
 
 ## Setting up the dependency
 
@@ -127,3 +128,16 @@ to
 ```
 .import "glean.dev.js" as Glean
 ```
+
+## Troubleshooting
+
+### `submitPing` may cause crashes when debugging iOS devices
+
+The [`submitPing`](../../reference/pings/index.md) function hits a
+[known bug](https://bugreports.qt.io/browse/QTBUG-96788) in the Qt JavaScript interpreter.
+
+This bug is only reproduced in iOS devices, it does not happen in emulators. It also
+**only happens when using the Qt debug library for iOS**.
+
+There is no way around this bug other than avoiding the Qt debug library for iOS altogether until
+it is fixed. Refer to the [the Qt debugging documentation](https://doc.qt.io/qt-5/debug.html#debugging-in-macos-and-xcode) on how to do that.
