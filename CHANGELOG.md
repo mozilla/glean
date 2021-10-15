@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v42.0.1...main)
 
+* Rust
+  * Backwards-compatible API Change: Make experiment test APIs public. ([#1834](https://github.com/mozilla/glean/pull/1834))
+
 # v42.0.1 (2021-10-11)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v42.0.0...v42.0.1)
