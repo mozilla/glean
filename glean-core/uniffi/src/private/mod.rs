@@ -29,6 +29,8 @@ pub enum Metric {
     Boolean(bool),
     /// A counter metric. See [`CounterMetric`] for more information.
     Counter(i32),
+    /// A string metric. See [`StringMetric`] for more information.
+    String(String),
 }
 
 /// A [`MetricType`] describes common behavior across all metrics.
@@ -57,6 +59,7 @@ impl Metric {
         match self {
             Metric::Boolean(_) => "boolean",
             Metric::Counter(_) => "counter",
+            Metric::String(_) => "string",
         }
     }
 
@@ -65,6 +68,7 @@ impl Metric {
         match self {
             Metric::Boolean(b) => json!(b),
             Metric::Counter(c) => json!(c),
+            Metric::String(s) => json!(s),
         }
     }
 }
