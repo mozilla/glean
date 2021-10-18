@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v42.0.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v42.1.0...main)
+
+# v42.1.0 (2021-10-18)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v42.0.1...v42.1.0)
 
 * Rust
   * Backwards-compatible API Change: Make experiment test APIs public. ([#1834](https://github.com/mozilla/glean/pull/1834))
