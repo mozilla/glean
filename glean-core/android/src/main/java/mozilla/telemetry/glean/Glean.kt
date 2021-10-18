@@ -17,7 +17,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import mozilla.telemetry.glean.GleanMetrics.GleanBaseline
-import mozilla.telemetry.glean.internal.Configuration as GleanConfiguration
+import mozilla.telemetry.glean.internal.InternalConfiguration
 import mozilla.telemetry.glean.internal.initialize as gleanInitialize
 import mozilla.telemetry.glean.internal.enableLogging
 import mozilla.telemetry.glean.internal.finishInitialize
@@ -173,7 +173,7 @@ open class GleanInternalAPI internal constructor () {
         // Execute startup off the main thread.
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.executeTask {
-            val cfg = GleanConfiguration(
+            val cfg = InternalConfiguration(
                 dataPath = gleanDataDir.path,
                 applicationId = applicationContext.packageName,
                 languageBindingName = LANGUAGE_BINDING_NAME,

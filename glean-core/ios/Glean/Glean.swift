@@ -12,6 +12,11 @@ private typealias Pings = GleanMetrics.Pings
 /// Public exported type identifying individual timers for `TimingDistributionMetricType`
 public typealias GleanTimerId = UInt64
 
+/// Alias for the exported `initialize` function.
+func gleanInitialize(cfg: InternalConfiguration) -> Bool {
+    return initialize(cfg: cfg)
+}
+
 /// The main Glean API.
 ///
 /// This is exposed through the global `Glean.shared` object.
@@ -56,7 +61,7 @@ public class Glean {
         // intentionally left private, no external user can instantiate a new global object.
 
         // Enable logging in the Rust library
-        glean_enable_logging()
+        enableLogging()
     }
 
     deinit {
@@ -98,19 +103,17 @@ public class Glean {
 
         // Execute startup off the main thread
         Dispatchers.shared.launchConcurrent {
-            self.initialized = withFfiConfiguration(
-                // The FileManager returns `file://` URLS with absolute paths.
-                // The Rust side expects normal path strings to be used.
-                // `relativePath` for a file URL gives us the absolute filesystem path.
-                dataDir: getGleanDirectory().relativePath,
-                packageName: AppInfo.name,
+            let cfg = InternalConfiguration(
+                dataPath: getGleanDirectory().relativePath,
+                applicationId: AppInfo.name,
                 languageBindingName: Constants.languageBindingName,
                 uploadEnabled: uploadEnabled,
-                configuration: configuration
-            ) { cfg in
-                var cfg = cfg
-                return glean_initialize(&cfg).toBool()
-            }
+                maxEvents: configuration.maxEvents.map { UInt32($0) },
+                delayPingLifetimeIo: false,
+                appBuild: "0.0.0",
+                useCoreMps: false
+            )
+            self.initialized = gleanInitialize(cfg: cfg)
 
             // If initialization of Glean fails, bail out and don't initialize further
             if !self.initialized {
@@ -680,6 +683,6 @@ public class Glean {
         testDestroyGleanHandle()
         // Enable ping logging for all tests
         setLogPings(true)
-        initialize(uploadEnabled: uploadEnabled, configuration: configuration)
+        //initialize(uploadEnabled: uploadEnabled, configuration: configuration)
     }
 }

@@ -4,7 +4,7 @@ use std::sync::Mutex;
 use once_cell::sync::OnceCell;
 
 use crate::database::Database;
-use crate::Configuration;
+use crate::InternalConfiguration;
 use crate::{ErrorKind, Result};
 
 static GLEAN: OnceCell<Mutex<Glean>> = OnceCell::new();
@@ -87,7 +87,7 @@ fn sanitize_application_id(application_id: &str) -> String {
 }
 
 impl Glean {
-    pub fn new(cfg: Configuration) -> Result<Self> {
+    pub fn new(cfg: InternalConfiguration) -> Result<Self> {
         log::info!("Creating new Glean Uniffi");
 
         let application_id = sanitize_application_id(&cfg.application_id);
