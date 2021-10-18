@@ -17,7 +17,7 @@ publish = false
 
 [lib]
 name = "glean_uniffi"
-crate-type = ["cdylib"]
+crate-type = ["cdylib", "staticlib"]
 
 [dependencies]
 serde = { version = "1.0.104", features = ["derive"] }
