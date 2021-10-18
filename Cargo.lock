@@ -374,6 +374,7 @@ dependencies = [
  "rkv",
  "serde",
  "serde_json",
+ "tempfile",
  "thiserror",
  "time",
  "uniffi",

@@ -174,7 +174,7 @@ open class GleanInternalAPI internal constructor () {
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.executeTask {
             val cfg = GleanConfiguration(
-                dataDir = gleanDataDir.path,
+                dataPath = gleanDataDir.path,
                 applicationId = applicationContext.packageName,
                 languageBindingName = LANGUAGE_BINDING_NAME,
                 uploadEnabled = uploadEnabled,

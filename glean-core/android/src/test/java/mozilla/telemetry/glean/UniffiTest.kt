@@ -65,7 +65,8 @@ class UniffiTest {
 
     @Test
     fun smoke() {
-        Glean.initializeInternal(context, uploadEnabled = true, Configuration(), null)
+        val buildInfo = BuildInfo("0.0.1", "0.0.1")
+        Glean.initialize(context, uploadEnabled = true, Configuration(), buildInfo)
 
         val counterMetric = CounterMetric(CommonMetricData(
             disabled = false,

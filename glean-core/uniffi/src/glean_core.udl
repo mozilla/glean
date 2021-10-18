@@ -8,7 +8,7 @@ namespace glean {
 };
 
 dictionary Configuration {
-    string data_dir;
+    string data_path;
     string application_id;
     string language_binding_name;
     boolean upload_enabled;

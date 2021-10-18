@@ -164,7 +164,7 @@ class Glean:
             # initializers that Kotlin and Swift have.
 
             cfg = _uniffi.Configuration(
-                data_dir=str(cls._data_dir),
+                data_path=str(cls._data_dir),
                 application_id=application_id,
                 language_binding_name="python",
                 upload_enabled=upload_enabled,

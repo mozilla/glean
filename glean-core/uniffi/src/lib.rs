@@ -23,7 +23,7 @@ pub struct Configuration {
     /// Whether upload should be enabled.
     pub upload_enabled: bool,
     /// Path to a directory to store all data in.
-    pub data_dir: String,
+    pub data_path: String,
     /// The application ID (will be sanitized during initialization).
     pub application_id: String,
     /// The name of the programming language used by the binding creating this instance of Glean.
@@ -113,3 +113,8 @@ pub fn enable_logging() {
 pub fn set_upload_enabled(enabled: bool) {
     core::with_glean_mut(|glean| glean.set_upload_enabled(enabled))
 }
+
+// Split unit tests to a separate file, to reduce the length of this one.
+#[cfg(test)]
+#[path = "lib_unit_tests.rs"]
+mod tests;

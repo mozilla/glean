@@ -37,6 +37,9 @@ whatsys = "0.1.2"
 uniffi = "0.14.0"
 uniffi_macros = "0.14.0"
 
+[dev-dependencies]
+tempfile = "3.1.0"
+
 [build-dependencies]
 uniffi_build = "0.14.0"
 

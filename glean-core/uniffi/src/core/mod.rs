@@ -95,7 +95,7 @@ impl Glean {
             return Err(ErrorKind::InvalidConfig.into());
         }
 
-        let data_path = PathBuf::from(&cfg.data_dir);
+        let data_path = PathBuf::from(&cfg.data_path);
         let data_store = Some(Database::new(&data_path, cfg.delay_ping_lifetime_io)?);
 
         let this = Self {
@@ -108,6 +108,28 @@ impl Glean {
         };
 
         Ok(this)
+    }
+
+    /// For tests make it easy to create a Glean object using only the required configuration.
+    #[cfg(test)]
+    pub(crate) fn with_options(
+        data_path: &str,
+        application_id: &str,
+        upload_enabled: bool,
+    ) -> Self {
+        let cfg = Configuration {
+            data_path: data_path.into(),
+            application_id: application_id.into(),
+            language_binding_name: "Rust".into(),
+            upload_enabled,
+            max_events: None,
+            delay_ping_lifetime_io: false,
+            app_build: "Unknown".into(),
+            use_core_mps: false,
+        };
+
+        let glean = Self::new(cfg).unwrap();
+        glean
     }
 
     pub fn set_upload_enabled(&mut self, enabled: bool) {
@@ -124,5 +146,36 @@ impl Glean {
     /// Gets a handle to the database.
     pub fn storage(&self) -> &Database {
         &self.data_store.as_ref().expect("No database found")
+    }
+
+    /// Whether or not this is the first run on this profile.
+    pub fn is_first_run(&self) -> bool {
+        false
+    }
+
+    /// **This is not meant to be used directly.**
+    ///
+    /// Sets the value of a "dirty flag" in the permanent storage.
+    ///
+    /// The "dirty flag" is meant to have the following behaviour, implemented
+    /// by the consumers of the FFI layer:
+    ///
+    /// - on mobile: set to `false` when going to background or shutting down,
+    ///   set to `true` at startup and when going to foreground.
+    /// - on non-mobile platforms: set to `true` at startup and `false` at
+    ///   shutdown.
+    ///
+    /// At startup, before setting its new value, if the "dirty flag" value is
+    /// `true`, then Glean knows it did not exit cleanly and can implement
+    /// coping mechanisms (e.g. sending a `baseline` ping).
+    pub fn set_dirty_flag(&self, new_value: bool) {
+        let _ = new_value;
+    }
+
+    /// **This is not meant to be used directly.**
+    ///
+    /// Checks the stored value of the "dirty flag".
+    pub fn is_dirty_flag_set(&self) -> bool {
+        false
     }
 }
