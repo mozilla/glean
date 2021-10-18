@@ -1,5 +1,5 @@
 namespace glean {
-    boolean initialize(Configuration cfg);
+    boolean initialize(InternalConfiguration cfg);
     boolean finish_initialize();
 
     void enable_logging();
@@ -7,7 +7,7 @@ namespace glean {
     void set_upload_enabled(boolean enabled);
 };
 
-dictionary Configuration {
+dictionary InternalConfiguration {
     string data_path;
     string application_id;
     string language_binding_name;

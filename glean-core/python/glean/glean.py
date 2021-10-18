@@ -163,7 +163,7 @@ class Glean:
             # necessary on Python since it doesn't have the problem with static
             # initializers that Kotlin and Swift have.
 
-            cfg = _uniffi.Configuration(
+            cfg = _uniffi.InternalConfiguration(
                 data_path=str(cls._data_dir),
                 application_id=application_id,
                 language_binding_name="python",

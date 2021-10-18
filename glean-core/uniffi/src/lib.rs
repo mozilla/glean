@@ -19,7 +19,7 @@ pub use common_metric_data::{CommonMetricData, Lifetime};
 pub use private::CounterMetric;
 
 #[derive(Debug, Clone)]
-pub struct Configuration {
+pub struct InternalConfiguration {
     /// Whether upload should be enabled.
     pub upload_enabled: bool,
     /// Path to a directory to store all data in.
@@ -57,11 +57,11 @@ fn block_on_dispatcher() {
     dispatcher::block_on_queue()
 }
 
-pub fn initialize(cfg: Configuration) -> bool {
+pub fn initialize(cfg: InternalConfiguration) -> bool {
     initialize_inner(cfg).is_ok()
 }
 
-pub fn initialize_inner(cfg: Configuration) -> Result<()> {
+pub fn initialize_inner(cfg: InternalConfiguration) -> Result<()> {
     let glean = Glean::new(cfg)?;
     core::setup_glean(glean)?;
     Ok(())

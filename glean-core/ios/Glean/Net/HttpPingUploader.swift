@@ -113,7 +113,7 @@ public class HttpPingUploader {
     ///
     /// - returns: Optional `URLRequest` object with the configured headings set.
     func buildRequest(path: String, data: Data, headers: [String: String]) -> URLRequest? {
-        if let url = URL(string: config.serverEndpoint + path) {
+        if let url = URL(string: "" + path) {
             var request = URLRequest(url: url)
             for (field, value) in headers {
                 request.addValue(value, forHTTPHeaderField: field)
