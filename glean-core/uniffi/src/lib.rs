@@ -114,7 +114,7 @@ pub fn set_upload_enabled(enabled: bool) {
     core::with_glean_mut(|glean| glean.set_upload_enabled(enabled))
 }
 
-// Split unit tests to a separate file, to reduce the file of this one.
+// Split unit tests to a separate file, to reduce the length of this one.
 #[cfg(test)]
 #[path = "lib_unit_tests.rs"]
 mod tests;
