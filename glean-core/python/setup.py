@@ -204,7 +204,7 @@ class build(_build):
         command = [
             "uniffi-bindgen",
             "generate",
-            "glean-core/uniffi/src/glean_core.udl",
+            "glean-core/uniffi/src/glean.udl",
             "--language",
             "python",
             "--out-dir",
