@@ -406,21 +406,8 @@ class Glean:
             extra (dict of str -> str): Optional metadata to output with the
                 ping
         """
-        if extra is None:
-            keys: List[str] = []
-            values: List[str] = []
-        else:
-            keys, values = zip(*extra.items())  # type: ignore
-
-        @Dispatcher.launch
-        def set_experiment_active():
-            _ffi.lib.glean_set_experiment_active(
-                _ffi.ffi_encode_string(experiment_id),
-                _ffi.ffi_encode_string(branch),
-                _ffi.ffi_encode_vec_string(keys),
-                _ffi.ffi_encode_vec_string(values),
-                len(keys),
-            )
+        map = {} if extra is None else extra
+        _uniffi.set_experiment_active(experiment_id, branch, map)
 
     @classmethod
     def set_experiment_inactive(cls, experiment_id: str) -> None:
@@ -430,12 +417,7 @@ class Glean:
         Args:
             experiment_id (str): The id of the experiment to deactivate.
         """
-
-        @Dispatcher.launch
-        def set_experiment_inactive():
-            _ffi.lib.glean_set_experiment_inactive(
-                _ffi.ffi_encode_string(experiment_id)
-            )
+        _uniffi.set_experiment_inactive(experiment_id)
 
     @classmethod
     def test_is_experiment_active(cls, experiment_id: str) -> bool:
@@ -449,11 +431,7 @@ class Glean:
             is_active (bool): If the experiement is active and reported in
                 pings.
         """
-        return bool(
-            _ffi.lib.glean_experiment_test_is_active(
-                _ffi.ffi_encode_string(experiment_id)
-            )
-        )
+        return _uniffi.test_is_experiment_active(experiment_id)
 
     @classmethod
     def test_get_experiment_data(cls, experiment_id: str) -> "RecordedExperimentData":
@@ -464,20 +442,10 @@ class Glean:
             experiment_id (str): The id of the experiment to look for.
 
         Returns:
-            experiment_data (RecordedExperimentData): The data associated with
+            experiment_data (RecordedExperiment): The data associated with
                 the experiment.
         """
-        from .metrics import RecordedExperimentData
-
-        json_string = _ffi.ffi_decode_string(
-            _ffi.lib.glean_experiment_test_get_data(
-                _ffi.ffi_encode_string(experiment_id)
-            )
-        )
-
-        json_tree = json.loads(json_string)
-
-        return RecordedExperimentData(**json_tree)  # type: ignore
+        return _uniffi.test_get_experiment_data(experiment_id)
 
     @classmethod
     def handle_client_active(cls):

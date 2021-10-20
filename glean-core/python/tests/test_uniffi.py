@@ -18,6 +18,7 @@ import uuid
 import pytest
 
 
+from glean import _uniffi
 from glean import Configuration, Glean, load_metrics
 from glean import __version__ as glean_version
 from glean.metrics import (
@@ -50,3 +51,21 @@ def test_smoke():
     counter.add()
 
     assert 1 == counter.test_get_value()
+
+def test_smoke_experiment_api():
+    Glean._initialize_with_tempdir_for_testing(
+        application_id=GLEAN_APP_ID,
+        application_version=glean_version,
+        upload_enabled=True,
+    )
+
+    with pytest.raises(_uniffi.InternalError):
+        Glean.set_experiment_active("my-experiment", "control")
+    with pytest.raises(_uniffi.InternalError):
+        Glean.set_experiment_active("my-experiment", "control", {"report": "nothing"})
+    with pytest.raises(_uniffi.InternalError):
+        Glean.set_experiment_inactive("my-experiment")
+    with pytest.raises(_uniffi.InternalError):
+        Glean.test_is_experiment_active("my-experiment")
+    with pytest.raises(_uniffi.InternalError):
+        Glean.test_get_experiment_data("my-experiment")
