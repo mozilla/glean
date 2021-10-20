@@ -302,7 +302,9 @@ jobs:
       - checkout
       - run: rustup component add clippy
       - run: cargo clippy --version
-      - run: cargo clippy --all --all-targets --all-features -- -D warnings
+      - run:
+          name: Clippy
+          command: make lint-rust
 
   Rust tests - stable:
     docker:
