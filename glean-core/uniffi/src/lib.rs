@@ -14,6 +14,7 @@ mod error;
 mod error_recording;
 mod private;
 mod storage;
+mod util;
 
 pub use crate::core::Glean;
 pub use crate::error::{Error, ErrorKind, Result};
@@ -122,31 +123,41 @@ pub fn set_upload_enabled(enabled: bool) {
 ///
 /// See [`glean_core::Glean::set_experiment_active`].
 pub fn set_experiment_active(
-    _experiment_id: String,
-    _branch: String,
-    _extra: HashMap<String, String>,
+    experiment_id: String,
+    branch: String,
+    extra: HashMap<String, String>,
 ) {
-    todo!()
+    launch_with_glean(|glean| glean.set_experiment_active(experiment_id, branch, extra))
 }
 
 /// Indicate that an experiment is no longer running.
 ///
 /// See [`glean_core::Glean::set_experiment_inactive`].
-pub fn set_experiment_inactive(_experiment_id: String) {
-    todo!()
+pub fn set_experiment_inactive(experiment_id: String) {
+    launch_with_glean(|glean| glean.set_experiment_inactive(experiment_id))
 }
 
 /// TEST ONLY FUNCTION.
 /// Checks if an experiment is currently active.
-pub fn test_is_experiment_active(_experiment_id: String) -> bool {
-    todo!()
+pub fn test_is_experiment_active(experiment_id: String) -> bool {
+    block_on_dispatcher();
+    core::with_glean(|glean| {
+        glean
+            .test_get_experiment_data(experiment_id.to_owned())
+            .is_some()
+    })
 }
 
 /// TEST ONLY FUNCTION.
 /// Returns the [`RecordedExperiment`] for the given `experiment_id` or panics if
 /// the id isn't found.
-pub fn test_get_experiment_data(_experiment_id: String) -> RecordedExperiment {
-    todo!()
+pub fn test_get_experiment_data(experiment_id: String) -> RecordedExperiment {
+    block_on_dispatcher();
+    core::with_glean(|glean| {
+        glean
+            .test_get_experiment_data(experiment_id.to_owned())
+            .unwrap_or_else(|| panic!("No experiment found for id: {}", experiment_id))
+    })
 }
 
 // Split unit tests to a separate file, to reduce the length of this one.

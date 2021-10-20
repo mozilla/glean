@@ -59,13 +59,14 @@ def test_smoke_experiment_api():
         upload_enabled=True,
     )
 
-    with pytest.raises(_uniffi.InternalError):
-        Glean.set_experiment_active("my-experiment", "control")
-    with pytest.raises(_uniffi.InternalError):
-        Glean.set_experiment_active("my-experiment", "control", {"report": "nothing"})
-    with pytest.raises(_uniffi.InternalError):
-        Glean.set_experiment_inactive("my-experiment")
-    with pytest.raises(_uniffi.InternalError):
-        Glean.test_is_experiment_active("my-experiment")
-    with pytest.raises(_uniffi.InternalError):
-        Glean.test_get_experiment_data("my-experiment")
+    Glean.set_experiment_active("my-experiment", "control")
+    assert Glean.test_is_experiment_active("my-experiment")
+
+    Glean.set_experiment_inactive("my-experiment")
+    assert not Glean.test_is_experiment_active("my-experiment")
+
+    Glean.set_experiment_active("my-experiment", "control", {"report": "nothing"})
+    assert Glean.test_is_experiment_active("my-experiment")
+    experiment = Glean.test_get_experiment_data("my-experiment")
+    assert "control" == experiment.branch
+    assert {"report": "nothing"} == experiment.extra
