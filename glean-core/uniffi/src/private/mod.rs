@@ -9,11 +9,15 @@ use crate::CommonMetricData;
 use crate::Glean;
 
 mod counter;
+mod experiment;
 pub(crate) mod labeled;
 mod recorded_experiment;
+mod time_unit;
 
 pub use counter::CounterMetric;
+pub use experiment::ExperimentMetric;
 pub use recorded_experiment::RecordedExperiment;
+pub use time_unit::TimeUnit;
 
 /// The available metrics.
 ///
@@ -31,6 +35,8 @@ pub enum Metric {
     Boolean(bool),
     /// A counter metric. See [`CounterMetric`] for more information.
     Counter(i32),
+    /// An experiment metric. See `ExperimentMetric` for more information.
+    Experiment(RecordedExperiment),
     /// A string metric. See [`StringMetric`] for more information.
     String(String),
 }
@@ -61,6 +67,7 @@ impl Metric {
         match self {
             Metric::Boolean(_) => "boolean",
             Metric::Counter(_) => "counter",
+            Metric::Experiment(_) => panic!("Experiments should not be serialized through this"),
             Metric::String(_) => "string",
         }
     }
@@ -70,6 +77,7 @@ impl Metric {
         match self {
             Metric::Boolean(b) => json!(b),
             Metric::Counter(c) => json!(c),
+            Metric::Experiment(e) => e.as_json(),
             Metric::String(s) => json!(s),
         }
     }

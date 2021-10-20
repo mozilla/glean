@@ -88,9 +88,16 @@ class UniffiTest {
         Glean.initialize(context, uploadEnabled = true, Configuration(), buildInfo)
 
         Glean.setExperimentActive("my-experiment", "control")
-        Glean.setExperimentActive("my-experiment", "control", mapOf("report" to "nothing"))
+        assertTrue(Glean.testIsExperimentActive("my-experiment"))
+
         Glean.setExperimentInactive("my-experiment")
-        Glean.testIsExperimentActive("my-experiment")
+        assertFalse(Glean.testIsExperimentActive("my-experiment"))
+
+        Glean.setExperimentActive("my-experiment", "control", mapOf("report" to "nothing"))
+        assertTrue(Glean.testIsExperimentActive("my-experiment"))
+
         val experiment = Glean.testGetExperimentData("my-experiment")
+        assertEquals("control", experiment.branch)
+        assertEquals(mapOf("report" to "nothing"), experiment.extra)
     }
 }

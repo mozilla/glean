@@ -15,6 +15,9 @@ use crate::database::Database;
 use crate::private::Metric;
 use crate::Lifetime;
 
+// An internal ping name, not to be touched by anything else
+pub(crate) const INTERNAL_STORAGE: &str = "glean_internal_info";
+
 /// Labeled metrics are stored as `<metric id>/<label>`.
 /// They need to go into a nested object in the final snapshot.
 ///
