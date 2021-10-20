@@ -81,4 +81,16 @@ class UniffiTest {
 
         assertEquals(1, counterMetric.testGetValue())
     }
+
+    @Test
+    fun smokeExperimentAPI() {
+        val buildInfo = BuildInfo("0.0.1", "0.0.1")
+        Glean.initialize(context, uploadEnabled = true, Configuration(), buildInfo)
+
+        Glean.setExperimentActive("my-experiment", "control")
+        Glean.setExperimentActive("my-experiment", "control", mapOf("report" to "nothing"))
+        Glean.setExperimentInactive("my-experiment")
+        Glean.testIsExperimentActive("my-experiment")
+        val experiment = Glean.testGetExperimentData("my-experiment")
+    }
 }

@@ -10,8 +10,10 @@ use crate::Glean;
 
 mod counter;
 pub(crate) mod labeled;
+mod recorded_experiment;
 
 pub use counter::CounterMetric;
+pub use recorded_experiment::RecordedExperiment;
 
 /// The available metrics.
 ///

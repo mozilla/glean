@@ -4,6 +4,8 @@
 
 uniffi_macros::include_scaffolding!("glean");
 
+use std::collections::HashMap;
+
 mod common_metric_data;
 mod core;
 mod database;
@@ -16,7 +18,7 @@ mod storage;
 pub use crate::core::Glean;
 pub use crate::error::{Error, ErrorKind, Result};
 pub use common_metric_data::{CommonMetricData, Lifetime};
-pub use private::CounterMetric;
+pub use private::{CounterMetric, RecordedExperiment};
 
 #[derive(Debug, Clone)]
 pub struct InternalConfiguration {
@@ -112,6 +114,39 @@ pub fn enable_logging() {
 
 pub fn set_upload_enabled(enabled: bool) {
     core::with_glean_mut(|glean| glean.set_upload_enabled(enabled))
+}
+
+/// Indicate that an experiment is running.  Glean will then add an
+/// experiment annotation to the environment which is sent with pings. This
+/// infomration is not persisted between runs.
+///
+/// See [`glean_core::Glean::set_experiment_active`].
+pub fn set_experiment_active(
+    _experiment_id: String,
+    _branch: String,
+    _extra: HashMap<String, String>,
+) {
+    todo!()
+}
+
+/// Indicate that an experiment is no longer running.
+///
+/// See [`glean_core::Glean::set_experiment_inactive`].
+pub fn set_experiment_inactive(_experiment_id: String) {
+    todo!()
+}
+
+/// TEST ONLY FUNCTION.
+/// Checks if an experiment is currently active.
+pub fn test_is_experiment_active(_experiment_id: String) -> bool {
+    todo!()
+}
+
+/// TEST ONLY FUNCTION.
+/// Returns the [`RecordedExperiment`] for the given `experiment_id` or panics if
+/// the id isn't found.
+pub fn test_get_experiment_data(_experiment_id: String) -> RecordedExperiment {
+    todo!()
 }
 
 // Split unit tests to a separate file, to reduce the length of this one.

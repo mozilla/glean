@@ -5,6 +5,17 @@ namespace glean {
     void enable_logging();
 
     void set_upload_enabled(boolean enabled);
+
+    // Experiment reporting API
+    void set_experiment_active(string experiment_id, string branch, record<DOMString, string> extra);
+    void set_experiment_inactive(string experiment_id);
+    boolean test_is_experiment_active(string experiment_id);
+    RecordedExperiment test_get_experiment_data(string experiment_id);
+};
+
+dictionary RecordedExperiment {
+    string branch;
+    record<DOMString, string>? extra;
 };
 
 dictionary InternalConfiguration {

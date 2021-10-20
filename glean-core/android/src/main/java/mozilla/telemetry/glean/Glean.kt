@@ -21,6 +21,11 @@ import mozilla.telemetry.glean.internal.InternalConfiguration
 import mozilla.telemetry.glean.internal.initialize as gleanInitialize
 import mozilla.telemetry.glean.internal.enableLogging
 import mozilla.telemetry.glean.internal.finishInitialize
+import mozilla.telemetry.glean.internal.setExperimentActive as gleanSetExperimentActive
+import mozilla.telemetry.glean.internal.setExperimentInactive as gleanSetExperimentInactive
+import mozilla.telemetry.glean.internal.testIsExperimentActive as gleanTestIsExperimentActive
+import mozilla.telemetry.glean.internal.testGetExperimentData as gleanTestGetExperimentData
+import mozilla.telemetry.glean.internal.*
 import mozilla.telemetry.glean.config.Configuration
 import mozilla.telemetry.glean.config.FfiConfiguration
 import mozilla.telemetry.glean.utils.getLocaleTag
@@ -34,7 +39,6 @@ import mozilla.telemetry.glean.GleanMetrics.GleanValidation
 import mozilla.telemetry.glean.GleanMetrics.Pings
 import mozilla.telemetry.glean.net.BaseUploader
 import mozilla.telemetry.glean.private.PingTypeBase
-import mozilla.telemetry.glean.private.RecordedExperimentData
 import mozilla.telemetry.glean.scheduler.GleanLifecycleObserver
 import mozilla.telemetry.glean.scheduler.PingUploadWorker
 import mozilla.telemetry.glean.scheduler.MetricsPingScheduler
@@ -327,34 +331,8 @@ open class GleanInternalAPI internal constructor () {
         branch: String,
         extra: Map<String, String>? = null
     ) {
-        // The Map is sent over FFI as a pair of arrays, one containing the
-        // keys, and the other containing the values.
-        // In Kotlin, Map.keys and Map.values are not guaranteed to return the entries
-        // in any particular order. Therefore, we iterate over the pairs together and
-        // create the keys and values arrays step-by-step.
-        var keys: StringArray? = null
-        var values: StringArray? = null
-        var numKeys = 0
-
-        extra?.let {
-            numKeys = extra.size
-            val extraList = extra.toList()
-            keys = StringArray(Array(extra.size) { extraList[it].first }, "utf-8")
-            values = StringArray(Array(extra.size) { extraList[it].second }, "utf-8")
-        }
-
-        // We dispatch this asynchronously so that, if called before the Glean SDK is
-        // initialized, it doesn't get ignored and will be replayed after init.
-        @Suppress("EXPERIMENTAL_API_USAGE")
-        Dispatchers.API.launch {
-            LibGleanFFI.INSTANCE.glean_set_experiment_active(
-                experimentId,
-                branch,
-                keys,
-                values,
-                numKeys
-            )
-        }
+        var map = extra ?: mapOf()
+        gleanSetExperimentActive(experimentId, branch, map)
     }
 
     /**
@@ -363,12 +341,7 @@ open class GleanInternalAPI internal constructor () {
      * @param experimentId The id of the experiment to deactivate.
      */
     fun setExperimentInactive(experimentId: String) {
-        // We dispatch this asynchronously so that, if called before the Glean SDK is
-        // initialized, it doesn't get ignored and will be replayed after init.
-        @Suppress("EXPERIMENTAL_API_USAGE")
-        Dispatchers.API.launch {
-            LibGleanFFI.INSTANCE.glean_set_experiment_inactive(experimentId)
-        }
+        gleanSetExperimentInactive(experimentId)
     }
 
     /**
@@ -379,58 +352,19 @@ open class GleanInternalAPI internal constructor () {
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun testIsExperimentActive(experimentId: String): Boolean {
-        @Suppress("EXPERIMENTAL_API_USAGE")
-        Dispatchers.API.assertInTestingMode()
-
-        return LibGleanFFI.INSTANCE.glean_experiment_test_is_active(experimentId).toBoolean()
-    }
-
-    /**
-     * Utility function to get a String -> String [Map] out of a [JSONObject].
-     */
-    private fun getMapFromJSONObject(jsonRes: JSONObject): Map<String, String>? {
-        return jsonRes.optJSONObject("extra")?.let {
-            val map = mutableMapOf<String, String>()
-            it.names()?.let { names ->
-                for (i in 0 until names.length()) {
-                    map[names.getString(i)] = it.getString(names.getString(i))
-                }
-            }
-            map
-        }
+        return gleanTestIsExperimentActive(experimentId)
     }
 
     /**
     * Returns the stored data for the requested active experiment, for testing purposes only.
     *
     * @param experimentId the id of the experiment to look for.
-    * @return the [RecordedExperimentData] for the experiment
+    * @return the [RecordedExperiment] for the experiment
     * @throws [NullPointerException] if the requested experiment is not active or data is corrupt.
     */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    fun testGetExperimentData(experimentId: String): RecordedExperimentData {
-        @Suppress("EXPERIMENTAL_API_USAGE")
-        Dispatchers.API.assertInTestingMode()
-
-        val ptr = LibGleanFFI.INSTANCE.glean_experiment_test_get_data(
-            experimentId
-        ) ?: throw NullPointerException("Experiment data is not set")
-
-        var branchId: String
-        var extraMap: Map<String, String>?
-
-        try {
-            // Parse and extract the fields from the JSON string here so
-            // that we can always throw NullPointerException if something
-            // goes wrong.
-            val jsonRes = JSONObject(ptr.getAndConsumeRustString())
-            branchId = jsonRes.getString("branch")
-            extraMap = getMapFromJSONObject(jsonRes)
-        } catch (_: org.json.JSONException) {
-            throw NullPointerException("Could not parse experiment data as JSON")
-        }
-
-        return RecordedExperimentData(branchId, extraMap)
+    fun testGetExperimentData(experimentId: String): RecordedExperiment {
+        return gleanTestGetExperimentData(experimentId)
     }
 
     /**
