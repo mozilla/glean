@@ -117,7 +117,7 @@ impl Glean {
         application_id: &str,
         upload_enabled: bool,
     ) -> Self {
-        let cfg = Configuration {
+        let cfg = InternalConfiguration {
             data_path: data_path.into(),
             application_id: application_id.into(),
             language_binding_name: "Rust".into(),
