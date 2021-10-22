@@ -174,8 +174,8 @@ class Glean:
                 use_core_mps=False
             )
 
-            _uniffi.enable_logging()
-            cls._initialized = _uniffi.initialize(cfg)
+            _uniffi.glean_enable_logging()
+            cls._initialized = _uniffi.glean_initialize(cfg)
 
             # If initialization of Glean fails, we bail out and don't initialize
             # further
@@ -216,7 +216,7 @@ class Glean:
             #_ffi.lib.glean_flush_rlb_dispatcher()
             # Signal Dispatcher that init is complete
             #Dispatcher.flush_queued_initial_tasks()
-            _uniffi.finish_initialize()
+            _uniffi.glean_finish_initialize()
 
             # Glean Android sets up the lifecycle observer here. We don't really
             # have a lifecycle.
@@ -407,7 +407,7 @@ class Glean:
                 ping
         """
         map = {} if extra is None else extra
-        _uniffi.set_experiment_active(experiment_id, branch, map)
+        _uniffi.glean_set_experiment_active(experiment_id, branch, map)
 
     @classmethod
     def set_experiment_inactive(cls, experiment_id: str) -> None:
@@ -417,7 +417,7 @@ class Glean:
         Args:
             experiment_id (str): The id of the experiment to deactivate.
         """
-        _uniffi.set_experiment_inactive(experiment_id)
+        _uniffi.glean_set_experiment_inactive(experiment_id)
 
     @classmethod
     def test_is_experiment_active(cls, experiment_id: str) -> bool:
@@ -431,7 +431,7 @@ class Glean:
             is_active (bool): If the experiement is active and reported in
                 pings.
         """
-        return _uniffi.test_get_experiment_data(experiment_id) is not None
+        return _uniffi.glean_test_get_experiment_data(experiment_id) is not None
 
     @classmethod
     def test_get_experiment_data(cls, experiment_id: str) -> "RecordedExperimentData":
@@ -445,7 +445,7 @@ class Glean:
             experiment_data (RecordedExperiment): The data associated with
                 the experiment.
         """
-        data = _uniffi.test_get_experiment_data(experiment_id)
+        data = _uniffi.glean_test_get_experiment_data(experiment_id)
         if data is not None:
             return data
         else:

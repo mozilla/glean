@@ -60,7 +60,7 @@ fn block_on_dispatcher() {
     dispatcher::block_on_queue()
 }
 
-pub fn initialize(cfg: InternalConfiguration) -> bool {
+pub fn glean_initialize(cfg: InternalConfiguration) -> bool {
     initialize_inner(cfg).is_ok()
 }
 
@@ -70,7 +70,7 @@ pub fn initialize_inner(cfg: InternalConfiguration) -> Result<()> {
     Ok(())
 }
 
-pub fn finish_initialize() -> bool {
+pub fn glean_finish_initialize() -> bool {
     // Signal Dispatcher that init is complete
     log::info!("Flushing dispatcher after initialization finished.");
     match dispatcher::flush_init() {
@@ -88,7 +88,7 @@ pub fn finish_initialize() -> bool {
     true
 }
 
-pub fn enable_logging() {
+pub fn glean_enable_logging() {
     #[cfg(target_os = "android")]
     {
         let _ = std::panic::catch_unwind(|| {
@@ -113,7 +113,7 @@ pub fn enable_logging() {
     }
 }
 
-pub fn set_upload_enabled(enabled: bool) {
+pub fn glean_set_upload_enabled(enabled: bool) {
     core::with_glean_mut(|glean| glean.set_upload_enabled(enabled))
 }
 
@@ -122,7 +122,7 @@ pub fn set_upload_enabled(enabled: bool) {
 /// infomration is not persisted between runs.
 ///
 /// See [`glean_core::Glean::set_experiment_active`].
-pub fn set_experiment_active(
+pub fn glean_set_experiment_active(
     experiment_id: String,
     branch: String,
     extra: HashMap<String, String>,
@@ -133,14 +133,14 @@ pub fn set_experiment_active(
 /// Indicate that an experiment is no longer running.
 ///
 /// See [`glean_core::Glean::set_experiment_inactive`].
-pub fn set_experiment_inactive(experiment_id: String) {
+pub fn glean_set_experiment_inactive(experiment_id: String) {
     launch_with_glean(|glean| glean.set_experiment_inactive(experiment_id))
 }
 
 /// TEST ONLY FUNCTION.
 /// Returns the [`RecordedExperiment`] for the given `experiment_id`
 /// or `None` if the id isn't found.
-pub fn test_get_experiment_data(experiment_id: String) -> Option<RecordedExperiment> {
+pub fn glean_test_get_experiment_data(experiment_id: String) -> Option<RecordedExperiment> {
     block_on_dispatcher();
     core::with_glean(|glean| glean.test_get_experiment_data(experiment_id.to_owned()))
 }

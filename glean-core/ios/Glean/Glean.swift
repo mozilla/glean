@@ -12,23 +12,6 @@ private typealias Pings = GleanMetrics.Pings
 /// Public exported type identifying individual timers for `TimingDistributionMetricType`
 public typealias GleanTimerId = UInt64
 
-/// Alias for the exported `initialize` function.
-func gleanInitialize(cfg: InternalConfiguration) -> Bool {
-    return initialize(cfg: cfg)
-}
-
-func gleanSetExperimentActive(_ experimentId: String, _ branch: String, extra: [String: String]) {
-    setExperimentActive(experimentId: experimentId, branch: branch, extra: extra)
-}
-
-func gleanSetExperimentInactive(_ experimentId: String) {
-    setExperimentInactive(experimentId: experimentId)
-}
-
-func gleanTestGetExperimentData(_ experimentId: String) -> RecordedExperiment {
-    return testGetExperimentData(experimentId: experimentId)
-}
-
 /// The main Glean API.
 ///
 /// This is exposed through the global `Glean.shared` object.
@@ -73,7 +56,7 @@ public class Glean {
         // intentionally left private, no external user can instantiate a new global object.
 
         // Enable logging in the Rust library
-        enableLogging()
+        gleanEnableLogging()
     }
 
     deinit {

@@ -17,14 +17,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import mozilla.telemetry.glean.GleanMetrics.GleanBaseline
-import mozilla.telemetry.glean.internal.InternalConfiguration
-import mozilla.telemetry.glean.internal.initialize as gleanInitialize
-import mozilla.telemetry.glean.internal.enableLogging
-import mozilla.telemetry.glean.internal.finishInitialize
-import mozilla.telemetry.glean.internal.setExperimentActive as gleanSetExperimentActive
-import mozilla.telemetry.glean.internal.setExperimentInactive as gleanSetExperimentInactive
-import mozilla.telemetry.glean.internal.testIsExperimentActive as gleanTestIsExperimentActive
-import mozilla.telemetry.glean.internal.testGetExperimentData as gleanTestGetExperimentData
 import mozilla.telemetry.glean.internal.*
 import mozilla.telemetry.glean.config.Configuration
 import mozilla.telemetry.glean.config.FfiConfiguration
@@ -173,7 +165,7 @@ open class GleanInternalAPI internal constructor () {
         this.gleanDataDir = File(applicationContext.applicationInfo.dataDir, GLEAN_DATA_DIR)
 
         Log.e(LOG_TAG, "Glean. enable logging.")
-        enableLogging()
+        gleanEnableLogging()
         // Execute startup off the main thread.
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.executeTask {
@@ -198,7 +190,7 @@ open class GleanInternalAPI internal constructor () {
 
             // Signal Dispatcher that init is complete
             Dispatchers.API.flushQueuedInitialTasks()
-            finishInitialize()
+            gleanFinishInitialize()
 
             // At this point, all metrics and events can be recorded.
             // This should only be called from the main thread. This is enforced by
