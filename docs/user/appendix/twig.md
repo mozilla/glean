@@ -57,3 +57,4 @@ They could be release notes, documentation, hopes, dreams, or whatever: so long 
 * 2021-09-17: [Glean & GeckoView](https://blog.mozilla.org/data/2021/09/17/this-week-in-glean-glean-geckoview/)
 * 2021-09-30: [Glean.js v0.19.0 Supports Node.js](https://blog.mozilla.org/data/2021/09/30/this-week-in-glean-announcement-glean-js-v0-19-0-supports-node-js/)
 * 2021-10-18: [Designing a telemetry collection with Glean](https://blog.mozilla.org/data/2021/10/18/this-week-in-glean-designing-a-telemetry-collection-with-glean/)
+* 2021-10-22: [The Three Roles of Data Engagements](https://blog.mozilla.org/data/2021/10/22/this-week-in-glean-the-three-roles-of-data-engagements/)
