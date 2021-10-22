@@ -352,7 +352,7 @@ open class GleanInternalAPI internal constructor () {
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun testIsExperimentActive(experimentId: String): Boolean {
-        return gleanTestIsExperimentActive(experimentId)
+        return gleanTestGetExperimentData(experimentId) != null
     }
 
     /**
@@ -364,7 +364,7 @@ open class GleanInternalAPI internal constructor () {
     */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun testGetExperimentData(experimentId: String): RecordedExperiment {
-        return gleanTestGetExperimentData(experimentId)
+        return gleanTestGetExperimentData(experimentId) ?: throw NullPointerException("Experiment data is not set")
     }
 
     /**

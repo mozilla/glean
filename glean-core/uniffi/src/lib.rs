@@ -138,26 +138,11 @@ pub fn set_experiment_inactive(experiment_id: String) {
 }
 
 /// TEST ONLY FUNCTION.
-/// Checks if an experiment is currently active.
-pub fn test_is_experiment_active(experiment_id: String) -> bool {
+/// Returns the [`RecordedExperiment`] for the given `experiment_id`
+/// or `None` if the id isn't found.
+pub fn test_get_experiment_data(experiment_id: String) -> Option<RecordedExperiment> {
     block_on_dispatcher();
-    core::with_glean(|glean| {
-        glean
-            .test_get_experiment_data(experiment_id.to_owned())
-            .is_some()
-    })
-}
-
-/// TEST ONLY FUNCTION.
-/// Returns the [`RecordedExperiment`] for the given `experiment_id` or panics if
-/// the id isn't found.
-pub fn test_get_experiment_data(experiment_id: String) -> RecordedExperiment {
-    block_on_dispatcher();
-    core::with_glean(|glean| {
-        glean
-            .test_get_experiment_data(experiment_id.to_owned())
-            .unwrap_or_else(|| panic!("No experiment found for id: {}", experiment_id))
-    })
+    core::with_glean(|glean| glean.test_get_experiment_data(experiment_id.to_owned()))
 }
 
 // Split unit tests to a separate file, to reduce the length of this one.
