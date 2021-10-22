@@ -25,10 +25,6 @@ func gleanSetExperimentInactive(_ experimentId: String) {
     setExperimentInactive(experimentId: experimentId)
 }
 
-func gleanTestIsExperimentActive(_ experimentId: String) -> Bool {
-    return testIsExperimentActive(experimentId: experimentId)
-}
-
 func gleanTestGetExperimentData(_ experimentId: String) -> RecordedExperiment {
     return testGetExperimentData(experimentId: experimentId)
 }
@@ -356,7 +352,7 @@ public class Glean {
     ///
     /// - returns: `true` if the experiment is active and reported in pings.
     public func testIsExperimentActive(experimentId: String) -> Bool {
-        return gleanTestIsExperimentActive(experimentId)
+        return gleanTestGetExperimentData(experimentId) != nil
     }
 
     /// PUBLIC TEST ONLY FUNCTION.
@@ -368,10 +364,7 @@ public class Glean {
     ///
     /// - returns: `RecordedExperiment` if the experiment is active and reported in pings, `nil` otherwise.
     public func testGetExperimentData(experimentId: String) -> RecordedExperiment? {
-        if testIsExperimentActive(experimentId: experimentId) {
-            return gleanTestGetExperimentData(experimentId)
-        }
-        return nil
+        return gleanTestGetExperimentData(experimentId)
     }
 
     /// Returns true if the Glean SDK has been initialized.

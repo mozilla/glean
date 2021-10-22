@@ -431,7 +431,7 @@ class Glean:
             is_active (bool): If the experiement is active and reported in
                 pings.
         """
-        return _uniffi.test_is_experiment_active(experiment_id)
+        return _uniffi.test_get_experiment_data(experiment_id) is not None
 
     @classmethod
     def test_get_experiment_data(cls, experiment_id: str) -> "RecordedExperimentData":
@@ -445,7 +445,11 @@ class Glean:
             experiment_data (RecordedExperiment): The data associated with
                 the experiment.
         """
-        return _uniffi.test_get_experiment_data(experiment_id)
+        data = _uniffi.test_get_experiment_data(experiment_id)
+        if data is not None:
+            return data
+        else:
+            raise RuntimeError("Experiment data is not set")
 
     @classmethod
     def handle_client_active(cls):
