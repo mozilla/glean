@@ -80,3 +80,7 @@ Glean has a [well-defined process](https://wiki.mozilla.org/Glean/Adding_or_chan
 1.  Glean consumers need to file a bug in the [Data platforms & tools::Glean Metric Types](https://bugzilla.mozilla.org/enter_bug.cgi?product=Data%20Platform%20and%20Tools&component=Glean%20Metric%20Types) component, filling in the provided form;
 2.  The triage owner of the Bugzilla component prioritizes this within 6 business days and kicks off the [decision making process](https://wiki.mozilla.org/Glean/Adding_or_changing_Glean_metric_types#The_decision_making_process).
 3.  Once the decision process is completed, the bug is closed with a comment outlining the decision that was made.
+
+
+## Deprecated metrics
+- JWE: Deprecated in [v37.0.0](https://github.com/mozilla/glean/blob/main/CHANGELOG.md#v3700-2021-04-30)
