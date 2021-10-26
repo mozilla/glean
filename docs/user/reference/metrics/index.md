@@ -83,4 +83,5 @@ Glean has a [well-defined process](https://wiki.mozilla.org/Glean/Adding_or_chan
 
 
 ## Deprecated metrics
+
 - JWE: Deprecated in [v37.0.0](https://github.com/mozilla/glean/blob/main/CHANGELOG.md#v3700-2021-04-30)
