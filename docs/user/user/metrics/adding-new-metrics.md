@@ -177,6 +177,9 @@ toolbar:
     type: event
     description: |
       Event to record toolbar clicks.
+    metadata:
+      tags:
+        - Interaction
     notification_emails:
       - CHANGE-ME@example.com
     bugs:

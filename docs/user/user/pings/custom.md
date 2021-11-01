@@ -18,6 +18,9 @@ $schema: moz://mozilla.org/schemas/glean/pings/2-0-0
 search:
   description: >
     A ping to record search data.
+  metadata:
+    tags:
+      - Search
   include_client_id: false
   notification_emails:
     - CHANGE-ME@example.com
@@ -26,6 +29,9 @@ search:
   data_reviews:
     - http://example.com/path/to/data-review
 ```
+
+Tags are an optional feature you can use to provide an additional layer of categorization to metrics.
+Any tags specified in the `metadata` section of a ping *must* have a corresponding entry in a [tags YAML registry](../../reference/yaml/tags.md) for your project.
 
 Refer to the [pings YAML registry format](../../reference/yaml/pings.md) for a full reference
 on the `pings.yaml` file structure.
