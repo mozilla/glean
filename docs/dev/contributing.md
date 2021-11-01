@@ -76,6 +76,8 @@ When submitting a PR:
 - Base your branch off the current `main`.
 - Add both your code and new tests if relevant.
 - Please do not include merge commits in pull requests; include only commits with the new relevant code.
+- When submitting a PR for a bug, label the PR "Bug <Insert bug number here>"
+- When committing a PR and when it makes sense to skip the CI, add in a `[doc only]` annotation to the commit message
 
 ## Code Review
 
