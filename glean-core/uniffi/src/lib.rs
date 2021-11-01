@@ -113,8 +113,29 @@ pub fn glean_enable_logging() {
     }
 }
 
-pub fn glean_set_upload_enabled(enabled: bool) {
-    core::with_glean_mut(|glean| glean.set_upload_enabled(enabled))
+pub trait OnUploadEnabledChanges {
+    fn will_be_disabled(&self);
+    fn on_enabled(&self);
+    fn on_disabled(&self);
+}
+
+pub fn glean_set_upload_enabled(enabled: bool, changes_callback: Box<dyn OnUploadEnabledChanges>) {
+    core::with_glean_mut(|glean| {
+        let original_enabled = glean.is_upload_enabled();
+        if !enabled {
+            changes_callback.will_be_disabled();
+        }
+
+        glean.set_upload_enabled(enabled);
+
+        if !original_enabled && enabled {
+            changes_callback.on_enabled();
+        }
+
+        if original_enabled && !enabled {
+            changes_callback.on_disabled();
+        }
+    })
 }
 
 /// Indicate that an experiment is running.  Glean will then add an
