@@ -42,7 +42,7 @@ See also the [ping schedules and timing overview](ping-schedules-and-timings.htm
 
 ## Contents
 
-The `metrics` ping contains all of the metrics defined in `metrics.yaml` (except events) that don't specify a ping or where `default` is specified in their [`send in pings`](https://mozilla.github.io/glean_parser/metrics-yaml.html#send-in-pings) property.
+The `metrics` ping contains all of the metrics defined in `metrics.yaml` (except events) that don't specify a ping or where `default` is specified in their [`send in pings`](../../reference/yaml/metrics.md#send_in_pings) property.
 
 Additionally, error metrics in the `glean.error` category are included in the `metrics` ping.
 

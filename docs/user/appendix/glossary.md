@@ -43,7 +43,7 @@ Glean provides additional tools for its usage:
 ## Metric
 
 Metrics are the individual things being measured using Glean.
-They are defined in [metrics.yaml](https://mozilla.github.io/glean_parser/metrics-yaml.html) files, also known as _registry files_.
+They are defined in [metrics.yaml](../reference/yaml/metrics.md) files, also known as _registry files_.
 
 Glean itself provides [some metrics out of the box](../user/collected-metrics/metrics.md).
 

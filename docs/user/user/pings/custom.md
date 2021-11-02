@@ -8,7 +8,7 @@ This is especially useful when metrics need to be tightly related to one another
 
 ## Defining a custom ping
 
-Custom pings must be defined in a [`pings.yaml` file](https://mozilla.github.io/glean_parser/pings-yaml.html), placed in the same directory alongside your app's `metrics.yaml` file.
+Custom pings must be defined in a [`pings.yaml` file](../../reference/yaml/pings.md), placed in the same directory alongside your app's `metrics.yaml` file.
 
 For example, to define a custom ping called `search` specifically for search information:
 
