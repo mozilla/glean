@@ -75,6 +75,13 @@ ping names on generated code.
 A textual description of the purpose of the ping.
 It may contain [markdown syntax](https://www.markdownguide.org/basic-syntax/).
 
+#### `tags`
+
+_default: `[]`_
+
+A list of tag names associated with this ping.
+Must correspond to an entry specified in a [tags file](./tags.md).
+
 #### `include_client_id`
 
 A boolean indicating whether to include the client_id in
