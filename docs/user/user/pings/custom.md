@@ -30,7 +30,7 @@ search:
     - http://example.com/path/to/data-review
 ```
 
-Tags are an optional feature you can use to provide an additional layer of categorization to metrics.
+Tags are an optional feature you can use to provide an additional layer of categorization to pings.
 Any tags specified in the `metadata` section of a ping *must* have a corresponding entry in a [tags YAML registry](../../reference/yaml/tags.md) for your project.
 
 Refer to the [pings YAML registry format](../../reference/yaml/pings.md) for a full reference
