@@ -12,6 +12,31 @@ private typealias Pings = GleanMetrics.Pings
 /// Public exported type identifying individual timers for `TimingDistributionMetricType`
 public typealias GleanTimerId = UInt64
 
+class OnUploadEnabledChangesImpl: OnUploadEnabledChanges {
+    let glean: Glean
+    let configuration: Configuration
+
+    init(glean: Glean, configuration: Configuration) {
+        self.glean = glean
+        self.configuration = configuration
+    }
+
+    func willBeDisabled() {
+        Dispatchers.shared.cancelBackgroundTasks()
+    }
+
+    func onEnabled() {
+        // If uploading is being re-enabled, we have to restore the
+        // application-lifetime metrics.
+        self.glean.initializeCoreMetrics()
+    }
+
+    func onDisabled() {
+        // If uploading is disabled, we need to send the deletion-request ping
+        HttpPingUploader.launch(configuration: self.configuration)
+    }
+}
+
 /// The main Glean API.
 ///
 /// This is exposed through the global `Glean.shared` object.
@@ -206,7 +231,7 @@ public class Glean {
     // swiftlint:enable function_body_length cyclomatic_complexity
 
     /// Initialize the core metrics internally managed by Glean (e.g. client id).
-    private func initializeCoreMetrics() {
+    internal func initializeCoreMetrics() {
         // Set a few more metrics that will be sent as part of every ping.
         // Please note that the following metrics must be set synchronously, so
         // that they are guaranteed to be available with the first ping that is
@@ -240,59 +265,8 @@ public class Glean {
     /// - parameters:
     ///     * enabled: When true, enable metric collection.
     public func setUploadEnabled(_ enabled: Bool) {
-        if !self.initFinished.value {
-            let msg = """
-            Changing upload enabled before Glean is initialized is not supported.
-            Pass the correct state into `Glean.initialize()`.
-            See documentation at https://mozilla.github.io/glean/book/user/general-api.html#initializing-the-glean-sdk
-            """
-            self.logger.error(msg)
-
-            return
-        }
-        // Changing upload enabled always happens asynchronous.
-        // That way it follows what a user expect when calling it inbetween other calls:
-        // It executes in the right order.
-        //
-        // Because the dispatch queue is halted until Glean is fully initialized
-        // we can safely enqueue here and it will execute after initialization.
-        Dispatchers.shared.launchAPI {
-            // glean_set_upload_enabled might delete all of the queued pings.
-            // Currently a ping uploader could be scheduled ahead of this,
-            // at which point it will pick up scheduled pings before the setting was toggled.
-            // Or it is scheduled afterwards and will not schedule or find any left-over pings to send.
-
-            let originalEnabled = self.internalGetUploadEnabled()
-            glean_set_upload_enabled(enabled.toByte())
-
-            if !enabled {
-                Dispatchers.shared.cancelBackgroundTasks()
-            }
-
-            if !originalEnabled && enabled {
-                // If uploading is being re-enabled, we have to restore the
-                // application-lifetime metrics.
-                self.initializeCoreMetrics()
-            }
-
-            if originalEnabled && !enabled {
-                // If uploading is disabled, we need to send the deletion-request ping
-                HttpPingUploader.launch(configuration: self.configuration!)
-            }
-        }
-    }
-
-    /// Get whether or not Glean is allowed to record and upload data.
-    ///
-    /// Caution: the result is only correct if Glean is already initialized.
-    ///
-    /// **THIS METHOD IS DEPRECATED.**
-    /// Applications should not rely on Glean's internal state.
-    /// Upload enabled status should be tracked by the application and communicated to Glean if it changes.
-    @available(*, deprecated,
-               message: "Upload enabled should be tracked by the application and communicated to Glean if it changes")
-    public func getUploadEnabled() -> Bool {
-        return internalGetUploadEnabled()
+        let changes = OnUploadEnabledChangesImpl(glean: self, configuration: self.configuration!)
+        gleanSetUploadEnabled(enabled: enabled, changesCallback: changes)
     }
 
     /// Get whether or not Glean is allowed to record and upload data.

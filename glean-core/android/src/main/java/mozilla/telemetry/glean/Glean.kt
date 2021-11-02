@@ -45,6 +45,29 @@ data class GleanTimerId internal constructor(internal val id: Long)
 
 data class BuildInfo(val versionCode: String, val versionName: String)
 
+internal class OnUploadEnabledChangesImpl(
+    val metricsPingScheduler: MetricsPingScheduler,
+    val applicationContext: Context,
+    val glean: GleanInternalAPI,
+) : OnUploadEnabledChanges {
+    override fun willBeDisabled() {
+        // Cancel any pending workers here so that we don't accidentally upload or
+        // collect data after the upload has been disabled.
+        metricsPingScheduler.cancel()
+        // Cancel any pending workers here so that we don't accidentally upload
+        // data after the upload has been disabled.
+        PingUploadWorker.cancel(applicationContext)
+    }
+
+    override fun onEnabled() {
+        glean.initializeCoreMetrics()
+    }
+
+    override fun onDisabled() {
+        PingUploadWorker.enqueueWorker(applicationContext)
+    }
+}
+
 /**
  * The main Glean API.
  *
@@ -236,60 +259,8 @@ open class GleanInternalAPI internal constructor () {
      * @param enabled When true, enable metric collection.
      */
     fun setUploadEnabled(enabled: Boolean) {
-        if (!this.initFinished) {
-            val msg = """
-            Changing upload enabled before Glean is initialized is not supported.
-            Pass the correct state into `Glean.initialize()`.
-            See documentation at https://mozilla.github.io/glean/book/user/general-api.html#initializing-the-glean-sdk
-            """.trimIndent()
-            Log.e(LOG_TAG, msg)
-            return
-        }
-        // Changing upload enabled always happens asynchronous.
-        // That way it follows what a user expect when calling it inbetween other calls:
-        // It executes in the right order.
-        //
-        // Because the dispatch queue is halted until Glean is fully initialized
-        // we can safely enqueue here and it will execute after initialization.
-        @Suppress("EXPERIMENTAL_API_USAGE")
-        Dispatchers.API.launch {
-            val originalEnabled = internalGetUploadEnabled()
-            LibGleanFFI.INSTANCE.glean_set_upload_enabled(enabled.toByte())
-
-            if (!enabled) {
-                // Cancel any pending workers here so that we don't accidentally upload or
-                // collect data after the upload has been disabled.
-                metricsPingScheduler.cancel()
-                // Cancel any pending workers here so that we don't accidentally upload
-                // data after the upload has been disabled.
-                PingUploadWorker.cancel(applicationContext)
-            }
-
-            if (!originalEnabled && enabled) {
-                // If uploading is being re-enabled, we have to restore the
-                // application-lifetime metrics.
-                initializeCoreMetrics()
-            }
-
-            if (originalEnabled && !enabled) {
-                // If uploading is disabled, we need to send the deletion-request ping
-                PingUploadWorker.enqueueWorker(applicationContext)
-            }
-        }
-    }
-
-    /**
-     * Get whether or not Glean is allowed to record and upload data.
-     *
-     * Caution: the result is only correct if Glean is already initialized.
-     *
-     * **THIS METHOD IS DEPRECATED.**
-     * Applications should not rely on Glean's internal state.
-     * Upload enabled status should be tracked by the application and communicated to Glean if it changes.
-     */
-    @Deprecated("Upload enabled should be tracked by the application and communicated to Glean if it changes")
-    fun getUploadEnabled(): Boolean {
-        return internalGetUploadEnabled()
+        val changes_cb = OnUploadEnabledChangesImpl(metricsPingScheduler, applicationContext, this)
+        gleanSetUploadEnabled(enabled, changes_cb)
     }
 
     /**
@@ -362,7 +333,7 @@ open class GleanInternalAPI internal constructor () {
     /**
      * Initialize the core metrics internally managed by Glean (e.g. client id).
      */
-    private fun initializeCoreMetrics() {
+    internal fun initializeCoreMetrics() {
         // Set a few more metrics that will be sent as part of every ping.
         // Please note that the following metrics must be set synchronously, so
         // that they are guaranteed to be available with the first ping that is
