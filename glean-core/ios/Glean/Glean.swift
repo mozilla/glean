@@ -280,7 +280,7 @@ public class Glean {
     ///     * extra: Optional metadata to output with the ping.
     public func setExperimentActive(experimentId: String, branch: String, extra: [String: String]?) {
         let map = extra ?? [:]
-        gleanSetExperimentActive(experimentId, branch, extra: map)
+        gleanSetExperimentActive(experimentId: experimentId, branch: branch, extra: map)
     }
 
     /// Used to indicate that an experiment is no longer running.
@@ -288,7 +288,7 @@ public class Glean {
     /// - parameters:
     ///     * experimentsId: The id of the experiment to deactivate.
     public func setExperimentInactive(experimentId: String) {
-        gleanSetExperimentInactive(experimentId)
+        gleanSetExperimentInactive(experimentId: experimentId)
     }
 
     /// Tests wheter an experiment is active, for testing purposes only.
@@ -298,7 +298,7 @@ public class Glean {
     ///
     /// - returns: `true` if the experiment is active and reported in pings.
     public func testIsExperimentActive(experimentId: String) -> Bool {
-        return gleanTestGetExperimentData(experimentId) != nil
+        return gleanTestGetExperimentData(experimentId: experimentId) != nil
     }
 
     /// PUBLIC TEST ONLY FUNCTION.
@@ -310,7 +310,7 @@ public class Glean {
     ///
     /// - returns: `RecordedExperiment` if the experiment is active and reported in pings, `nil` otherwise.
     public func testGetExperimentData(experimentId: String) -> RecordedExperiment? {
-        return gleanTestGetExperimentData(experimentId)
+        return gleanTestGetExperimentData(experimentId: experimentId)
     }
 
     /// Returns true if the Glean SDK has been initialized.
