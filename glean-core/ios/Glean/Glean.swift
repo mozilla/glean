@@ -455,13 +455,8 @@ public class Glean {
     ///
     /// - parameters:
     ///     * value: The value of the tag, which must be a valid HTTP header value.
-    func setDebugViewTag(_ value: String) -> Bool {
-        if self.isInitialized() {
-            return glean_set_debug_view_tag(value).toBool()
-        } else {
-            debugViewTag = value
-            return true
-        }
+    func setDebugViewTag(_ tag: String) -> Bool {
+        return gleanSetDebugViewTag(tag: tag)
     }
 
     /// Set the log_pings debug option,
@@ -470,11 +465,7 @@ public class Glean {
     /// - parameters:
     ///     * value: The value of the option.
     func setLogPings(_ value: Bool) {
-        if self.isInitialized() {
-            glean_set_log_pings(value.toByte())
-        } else {
-            logPings = value
-        }
+        gleanSetLogPings(value: value)
     }
 
     /// Set the source tags to be applied as headers when uploading pings.
@@ -487,16 +478,8 @@ public class Glean {
     ///
     /// - parameters:
     ///    * tags: A list of tags, which must be valid HTTP header values.
-    func setSourceTags(_ value: [String]) -> Bool {
-        if self.isInitialized() {
-            let len = value.count
-            return withArrayOfCStrings(value) { value in
-                glean_set_source_tags(value, Int32(len)).toBool()
-            }
-        } else {
-            sourceTags = value
-            return true
-        }
+    func setSourceTags(_ tags: [String]) -> Bool {
+        gleanSetSourceTags(tags: tags)
     }
 
     /// When applications are launched using the custom URL scheme, this helper function will process

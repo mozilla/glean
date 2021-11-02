@@ -505,14 +505,7 @@ open class GleanInternalAPI internal constructor () {
      * @param value The value of the tag, which must be a valid HTTP header value.
      */
     internal fun setDebugViewTag(value: String): Boolean {
-        if (isInitialized()) {
-            return LibGleanFFI.INSTANCE.glean_set_debug_view_tag(value).toBoolean()
-        } else {
-            debugViewTag = value
-            // When setting the debug view tag before initialization,
-            // we don't validate the tag, thus this function always returns true.
-            return true
-        }
+        return gleanSetDebugViewTag(value)
     }
 
     /**
@@ -526,15 +519,7 @@ open class GleanInternalAPI internal constructor () {
      * @param tags A list of tags, which must be valid HTTP header values.
      */
     internal fun setSourceTags(tags: Set<String>): Boolean {
-        return if (isInitialized()) {
-            val tagList = StringArray(tags.toList().toTypedArray(), "utf-8")
-            LibGleanFFI.INSTANCE.glean_set_source_tags(tagList, tags.size).toBoolean()
-        } else {
-            sourceTags = tags
-            // When setting the source tags before initialization,
-            // we don't validate the tags, thus this function always returns true.
-            true
-        }
+        return gleanSetSourceTags(tags.toList())
     }
 
     /**
@@ -546,11 +531,7 @@ open class GleanInternalAPI internal constructor () {
      * @param value The value of the option.
      */
     internal fun setLogPings(value: Boolean) {
-        if (isInitialized()) {
-            return LibGleanFFI.INSTANCE.glean_set_log_pings(value.toByte())
-        } else {
-            logPings = value
-        }
+        gleanSetLogPings(value)
     }
 
     /**

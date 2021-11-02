@@ -4,6 +4,7 @@ use std::sync::Mutex;
 
 use once_cell::sync::OnceCell;
 
+use crate::debug::DebugOptions;
 use crate::database::Database;
 use crate::private::{ExperimentMetric, RecordedExperiment};
 use crate::InternalConfiguration;
@@ -67,6 +68,7 @@ pub struct Glean {
     data_path: PathBuf,
     application_id: String,
     max_events: u32,
+    debug: DebugOptions,
     schedule_metrics_pings: bool,
 }
 
@@ -106,6 +108,7 @@ impl Glean {
             data_path,
             application_id,
             max_events: cfg.max_events.unwrap_or(500),
+            debug: DebugOptions::new(),
             schedule_metrics_pings: cfg.use_core_mps,
         };
 
@@ -221,5 +224,72 @@ impl Glean {
     pub fn test_get_experiment_data(&self, experiment_id: String) -> Option<RecordedExperiment> {
         let metric = ExperimentMetric::new(self, experiment_id);
         metric.test_get_value(self)
+    }
+
+    /// Sets a debug view tag.
+    ///
+    /// This will return `false` in case `value` is not a valid tag.
+    ///
+    /// When the debug view tag is set, pings are sent with a `X-Debug-ID` header with the value of the tag
+    /// and are sent to the ["Ping Debug Viewer"](https://mozilla.github.io/glean/book/dev/core/internal/debug-pings.html).
+    ///
+    /// # Arguments
+    ///
+    /// * `value` - A valid HTTP header value. Must match the regex: "[a-zA-Z0-9-]{1,20}".
+    pub fn set_debug_view_tag(&mut self, value: &str) -> bool {
+        self.debug.debug_view_tag.set(value.into())
+    }
+
+    /// Return the value for the debug view tag or [`None`] if it hasn't been set.
+    ///
+    /// The `debug_view_tag` may be set from an environment variable
+    /// (`GLEAN_DEBUG_VIEW_TAG`) or through the [`set_debug_view_tag`] function.
+    pub(crate) fn debug_view_tag(&self) -> Option<&String> {
+        self.debug.debug_view_tag.get()
+    }
+
+    /// Sets source tags.
+    ///
+    /// This will return `false` in case `value` contains invalid tags.
+    ///
+    /// Ping tags will show in the destination datasets, after ingestion.
+    ///
+    /// **Note** If one or more tags are invalid, all tags are ignored.
+    ///
+    /// # Arguments
+    ///
+    /// * `value` - A vector of at most 5 valid HTTP header values. Individual tags must match the regex: "[a-zA-Z0-9-]{1,20}".
+    pub fn set_source_tags(&mut self, value: Vec<String>) -> bool {
+        self.debug.source_tags.set(value)
+    }
+
+    /// Return the value for the source tags or [`None`] if it hasn't been set.
+    ///
+    /// The `source_tags` may be set from an environment variable (`GLEAN_SOURCE_TAGS`)
+    /// or through the [`set_source_tags`] function.
+    pub(crate) fn source_tags(&self) -> Option<&Vec<String>> {
+        self.debug.source_tags.get()
+    }
+
+    /// Sets the log pings debug option.
+    ///
+    /// This will return `false` in case we are unable to set the option.
+    ///
+    /// When the log pings debug option is `true`,
+    /// we log the payload of all succesfully assembled pings.
+    ///
+    /// # Arguments
+    ///
+    /// * `value` - The value of the log pings option
+    pub fn set_log_pings(&mut self, value: bool) -> bool {
+        self.debug.log_pings.set(value)
+    }
+
+    /// Return the value for the log pings debug option or [`None`] if it hasn't been set.
+    ///
+    /// The `log_pings` option may be set from an environment variable (`GLEAN_LOG_PINGS`)
+    /// or through the [`set_log_pings`] function.
+    pub(crate) fn log_pings(&self) -> bool {
+        self.debug.log_pings.get().copied().unwrap_or(false)
     }
 }
