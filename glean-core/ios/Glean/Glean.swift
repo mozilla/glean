@@ -269,17 +269,6 @@ public class Glean {
         gleanSetUploadEnabled(enabled: enabled, changesCallback: changes)
     }
 
-    /// Get whether or not Glean is allowed to record and upload data.
-    ///
-    /// Caution: the result is only correct if Glean is already initialized.
-    func internalGetUploadEnabled() -> Bool {
-        if isInitialized() {
-            return glean_is_upload_enabled().toBool()
-        } else {
-            return false
-        }
-    }
-
     /// Used to indicate that an experiment is running.
     ///
     /// Glean will add an experiment annotation that is sent with pings.  This information is _not_
@@ -395,11 +384,6 @@ public class Glean {
     func submitPingByNameSync(pingName: String, reason: String? = nil) {
         if !self.isInitialized() {
             self.logger.error("Glean must be initialized before sending pings")
-            return
-        }
-
-        if !self.internalGetUploadEnabled() {
-            self.logger.info("Glean disabled: not submitting any pings")
             return
         }
 
