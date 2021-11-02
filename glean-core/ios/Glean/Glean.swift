@@ -269,17 +269,6 @@ public class Glean {
         gleanSetUploadEnabled(enabled: enabled, changesCallback: changes)
     }
 
-    /// Get whether or not Glean is allowed to record and upload data.
-    ///
-    /// Caution: the result is only correct if Glean is already initialized.
-    func internalGetUploadEnabled() -> Bool {
-        if isInitialized() {
-            return glean_is_upload_enabled().toBool()
-        } else {
-            return false
-        }
-    }
-
     /// Used to indicate that an experiment is running.
     ///
     /// Glean will add an experiment annotation that is sent with pings.  This information is _not_
@@ -291,7 +280,7 @@ public class Glean {
     ///     * extra: Optional metadata to output with the ping.
     public func setExperimentActive(experimentId: String, branch: String, extra: [String: String]?) {
         let map = extra ?? [:]
-        gleanSetExperimentActive(experimentId, branch, extra: map)
+        gleanSetExperimentActive(experimentId: experimentId, branch: branch, extra: map)
     }
 
     /// Used to indicate that an experiment is no longer running.
@@ -299,7 +288,7 @@ public class Glean {
     /// - parameters:
     ///     * experimentsId: The id of the experiment to deactivate.
     public func setExperimentInactive(experimentId: String) {
-        gleanSetExperimentInactive(experimentId)
+        gleanSetExperimentInactive(experimentId: experimentId)
     }
 
     /// Tests wheter an experiment is active, for testing purposes only.
@@ -309,7 +298,7 @@ public class Glean {
     ///
     /// - returns: `true` if the experiment is active and reported in pings.
     public func testIsExperimentActive(experimentId: String) -> Bool {
-        return gleanTestGetExperimentData(experimentId) != nil
+        return gleanTestGetExperimentData(experimentId: experimentId) != nil
     }
 
     /// PUBLIC TEST ONLY FUNCTION.
@@ -321,7 +310,7 @@ public class Glean {
     ///
     /// - returns: `RecordedExperiment` if the experiment is active and reported in pings, `nil` otherwise.
     public func testGetExperimentData(experimentId: String) -> RecordedExperiment? {
-        return gleanTestGetExperimentData(experimentId)
+        return gleanTestGetExperimentData(experimentId: experimentId)
     }
 
     /// Returns true if the Glean SDK has been initialized.
@@ -398,11 +387,6 @@ public class Glean {
             return
         }
 
-        if !self.internalGetUploadEnabled() {
-            self.logger.info("Glean disabled: not submitting any pings")
-            return
-        }
-
         let submittedPing = glean_submit_ping_by_name(
             pingName,
             reason
@@ -455,13 +439,8 @@ public class Glean {
     ///
     /// - parameters:
     ///     * value: The value of the tag, which must be a valid HTTP header value.
-    func setDebugViewTag(_ value: String) -> Bool {
-        if self.isInitialized() {
-            return glean_set_debug_view_tag(value).toBool()
-        } else {
-            debugViewTag = value
-            return true
-        }
+    func setDebugViewTag(_ tag: String) -> Bool {
+        return gleanSetDebugViewTag(tag: tag)
     }
 
     /// Set the log_pings debug option,
@@ -470,11 +449,7 @@ public class Glean {
     /// - parameters:
     ///     * value: The value of the option.
     func setLogPings(_ value: Bool) {
-        if self.isInitialized() {
-            glean_set_log_pings(value.toByte())
-        } else {
-            logPings = value
-        }
+        gleanSetLogPings(value: value)
     }
 
     /// Set the source tags to be applied as headers when uploading pings.
@@ -487,16 +462,8 @@ public class Glean {
     ///
     /// - parameters:
     ///    * tags: A list of tags, which must be valid HTTP header values.
-    func setSourceTags(_ value: [String]) -> Bool {
-        if self.isInitialized() {
-            let len = value.count
-            return withArrayOfCStrings(value) { value in
-                glean_set_source_tags(value, Int32(len)).toBool()
-            }
-        } else {
-            sourceTags = value
-            return true
-        }
+    func setSourceTags(_ tags: [String]) -> Bool {
+        gleanSetSourceTags(tags: tags)
     }
 
     /// When applications are launched using the custom URL scheme, this helper function will process
