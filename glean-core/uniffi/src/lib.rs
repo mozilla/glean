@@ -286,6 +286,55 @@ pub fn glean_set_log_pings(value: bool) {
     }
 }
 
+pub trait OnTriggerUpload: Send {
+    fn trigger_upload(&self);
+}
+
+/// Performs the collection/cleanup operations required by becoming active.
+///
+/// This functions generates a baseline ping with reason `active`
+/// and then sets the dirty bit.
+/// This should be called whenever the consuming product becomes active (e.g.
+/// getting to foreground).
+pub fn glean_handle_client_active(callback: Box<dyn OnTriggerUpload>) {
+    crate::launch_with_glean_mut(move |glean| {
+        glean.handle_client_active();
+
+        // The above call may generate pings, so we need to trigger
+        // the uploader. It's fine to trigger it if no ping was generated:
+        // it will bail out.
+        callback.trigger_upload();
+    });
+
+    // The previous block of code may send a ping containing the `duration` metric,
+    // in `glean.handle_client_active`. We intentionally start recording a new
+    // `duration` after that happens, so that the measurement gets reported when
+    // calling `handle_client_inactive`.
+    //core_metrics::internal_metrics::baseline_duration.start();
+}
+
+/// Performs the collection/cleanup operations required by becoming inactive.
+///
+/// This functions generates a baseline and an events ping with reason
+/// `inactive` and then clears the dirty bit.
+/// This should be called whenever the consuming product becomes inactive (e.g.
+/// getting to background).
+pub fn glean_handle_client_inactive(callback: Box<dyn OnTriggerUpload>) {
+    // This needs to be called before the `handle_client_inactive` api: it stops
+    // measuring the duration of the previous activity time, before any ping is sent
+    // by the next call.
+    //core_metrics::internal_metrics::baseline_duration.stop();
+
+    crate::launch_with_glean_mut(move |glean| {
+        glean.handle_client_inactive();
+
+        // The above call may generate pings, so we need to trigger
+        // the uploader. It's fine to trigger it if no ping was generated:
+        // it will bail out.
+        callback.trigger_upload();
+    })
+}
+
 // Split unit tests to a separate file, to reduce the length of this one.
 #[cfg(test)]
 #[path = "lib_unit_tests.rs"]

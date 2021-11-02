@@ -37,6 +37,18 @@ class OnUploadEnabledChangesImpl: OnUploadEnabledChanges {
     }
 }
 
+class OnTriggerUploadImpl: OnTriggerUpload {
+    let configuration: Configuration
+
+    init(configuration: Configuration) {
+        self.configuration = configuration
+    }
+
+    func triggerUpload() {
+        HttpPingUploader.launch(configuration: self.configuration)
+    }
+}
+
 /// The main Glean API.
 ///
 /// This is exposed through the global `Glean.shared` object.
@@ -320,32 +332,16 @@ public class Glean {
 
     /// Handle foreground event and submit appropriate pings
     func handleForegroundEvent() {
-        Dispatchers.shared.launchAPI {
-            glean_handle_client_active()
-            // The above call may generate pings, so we need to trigger
-            // the uploader. It's fine to trigger it if no ping was generated:
-            // it will bail out.
-            HttpPingUploader.launch(configuration: self.configuration!)
-        }
+        worker_cb = OnTriggerUploadImpl(configuration: self.configuration!)
+        glean_handle_client_active(worker_cb)
 
-        // Start the timespan for the new activity period.
-        GleanBaseline.duration.start()
         GleanValidation.foregroundCount.add(1)
     }
 
     /// Handle background event and submit appropriate pings
     func handleBackgroundEvent() {
-        // We're going to background, so store how much time we spent
-        // on foreground.
-        GleanBaseline.duration.stop()
-
-        Dispatchers.shared.launchAPI {
-            glean_handle_client_inactive()
-            // The above call may generate pings, so we need to trigger
-            // the uploader. It's fine to trigger it if no ping was generated:
-            // it will bail out.
-            HttpPingUploader.launch(configuration: self.configuration!)
-        }
+        worker_cb = OnTriggerUploadImpl(configuration: self.configuration!)
+        glean_handle_client_inactive(worker_cb)
     }
 
     /// Collect and submit a ping by name for eventual uploading
