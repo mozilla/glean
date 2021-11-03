@@ -1,10 +1,11 @@
 namespace glean {
-    boolean glean_initialize(InternalConfiguration cfg);
-    boolean glean_finish_initialize();
+    // Initializes Glean.
+    //
+    // This will fully initialize Glean in a separate thread.
+    // It will return immediately.
+    boolean glean_initialize(InternalConfiguration cfg, ClientInfoMetrics client_info, OnGleanEvents callback);
 
-    void glean_enable_logging();
-
-    void glean_set_upload_enabled(boolean enabled, OnUploadEnabledChanges changes_callback);
+    void glean_set_upload_enabled(boolean enabled);
 
     // Experiment reporting API
     void glean_set_experiment_active(string experiment_id, string branch, record<DOMString, string> extra);
@@ -15,30 +16,14 @@ namespace glean {
     boolean glean_set_source_tags(sequence<string> tags);
     void glean_set_log_pings(boolean value);
 
-    void glean_handle_client_active(OnTriggerUpload callback);
-    void glean_handle_client_inactive(OnTriggerUpload callback);
+    void glean_handle_client_active();
+    void glean_handle_client_inactive();
 };
 
-callback interface OnTriggerUpload {
-    void trigger_upload();
-};
-
-callback interface OnUploadEnabledChanges {
-    // Called when upload is to be disabled
-    void will_be_disabled();
-
-    // Called when upload was toggled from off to on.
-    void on_enabled();
-
-    // Called when upload was toggled from on to off.
-    void on_disabled();
-};
-
-dictionary RecordedExperiment {
-    string branch;
-    record<DOMString, string>? extra;
-};
-
+// The Glean configuration.
+//
+// This exposes all configurable parameters to the SDK side.
+// They should not be exposed directly to users of the SDK (except `upload_enabled`).
 dictionary InternalConfiguration {
     string data_path;
     string application_id;
@@ -48,6 +33,52 @@ dictionary InternalConfiguration {
     boolean delay_ping_lifetime_io;
     string app_build;
     boolean use_core_mps;
+};
+
+// Values for the `client_info` metrics.
+// The language SDK should collect them on `initialize` once.
+// They will be re-used, e.g. when upload is toggled from off to on, to re-set them.
+//
+// See https://mozilla.github.io/glean/book/user/pings/index.html#the-client_info-section for details.
+dictionary ClientInfoMetrics {
+    string app_build;
+    string app_display_version;
+    string architecture;
+    string os_version;
+
+    string? channel;
+    string? android_sdk_version;
+    string? device_manufacturer;
+    string? device_model;
+    string? locale;
+};
+
+// A callback object, that is stored within the core logic for the entire lifetime of the application.
+//
+// This is used to trigger certain actions that need to happen on the foreign-language side.
+callback interface OnGleanEvents {
+    // Initialization finished.
+    //
+    // The language SDK can do additional things from within the same initializer thread,
+    // e.g. starting to observe application events for foreground/background behavior.
+    // The observer then needs to call the respective client activity API.
+    void on_initialize_finished();
+
+    // Trigger the uploader whenever a ping was submitted.
+    //
+    // This should not block.
+    // The uploader needs to asynchronously poll Glean for new pings to upload.
+    void trigger_upload();
+
+    // Start the Metrics Ping Scheduler.
+    //
+    // The language SDK
+    void start_mps();
+}
+
+dictionary RecordedExperiment {
+    string branch;
+    record<DOMString, string>? extra;
 };
 
 enum Lifetime {
