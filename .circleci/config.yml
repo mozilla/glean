@@ -104,7 +104,6 @@ commands:
 
   android-setup:
     steps:
-      - checkout
       - install-rustup
       - setup-rust-toolchain:
           rust-version: stable
@@ -463,8 +462,9 @@ jobs:
     docker:
       - image: circleci/android:api-28
     steps:
-      - android-setup
+      - checkout
       - skip-if-doc-only
+      - android-setup
       - run:
           name: Restrict to Linux builds only
           command: |
