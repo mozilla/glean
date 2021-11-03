@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v42.1.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v42.2.0...main)
+
+# v42.2.0 (2021-11-03)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v42.1.0...v42.2.0)
 
 * General
   * Updated `glean_parser` version to 4.3.1 ([#1852](https://github.com/mozilla/glean/pull/1852))
