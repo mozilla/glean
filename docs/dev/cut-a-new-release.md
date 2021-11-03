@@ -21,10 +21,10 @@ The development & release process roughly follows the [GitFlow model](https://nv
 
 ## Published artifacts
 
-* The Kotlin libraries are published to [GitHub Releases](https://github.com/mozilla/glean/releases) and [Mozilla Maven](https://maven.mozilla.org/?prefix=maven2/org/mozilla/telemetry/).
+* The Kotlin libraries are published to [Mozilla Maven](https://maven.mozilla.org/?prefix=maven2/org/mozilla/telemetry/).
 * Python bindings are published on PyPI: [glean-sdk](https://pypi.org/project/glean-sdk/).
-* iOS framework artifacts: [GitHub Releases](https://github.com/mozilla/glean/releases).
-* Rust crates are published on crates.io: [glean-core](https://crates.io/crates/glean-core), [glean-ffi](https://crates.io/crates/glean-ffi).
+* Swift package available as [mozilla/glean-swift](https://github.com/mozilla/glean-swift).
+* Rust crates are published on crates.io: [glean](https://crates.io/crates/glean), [glean-core](https://crates.io/crates/glean-core), [glean-ffi](https://crates.io/crates/glean-ffi).
 
 ## Standard Release
 
