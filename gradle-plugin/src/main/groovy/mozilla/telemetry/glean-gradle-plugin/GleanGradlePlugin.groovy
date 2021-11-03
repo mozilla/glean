@@ -124,7 +124,8 @@ except:
         } else {
             return [
                 "${project.projectDir}/metrics.yaml",
-                "${project.projectDir}/pings.yaml"
+                "${project.projectDir}/pings.yaml",
+                "${project.projectDir}/tags.yaml"
             ]
         }
     }
@@ -206,7 +207,7 @@ except:
                 }
 
                 // Only generate build info for applications, not for libraries.
-                // From android-gradle 7.0 on the `VERSION_CODE` and `VERSION_NAME` fields 
+                // From android-gradle 7.0 on the `VERSION_CODE` and `VERSION_NAME` fields
                 // are not set for libraries anymore
                 if (!isApplication) {
                     args "-s"
@@ -442,7 +443,7 @@ except:
                     // The Bootstrap_CONDA* tasks all install miniconda to the
                     // same place, so they can't run at the same time. This
                     // holds a semaphore while running the task to make sure
-                    // only one of these classes of tasks runs at the same time. 
+                    // only one of these classes of tasks runs at the same time.
                     // Solution proposed in this Gradle bug:
                     // https://github.com/gradle/gradle/issues/7047#issuecomment-430139316
                     task.doFirst { bootstrapMinicondaSemaphore.acquire() }
