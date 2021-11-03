@@ -2,7 +2,7 @@
 
 ## Prepare your build environment
 
-1. Install Xcode 12.4
+1. Install Xcode 13.0 or higher.
 2. Install [Carthage](https://github.com/Carthage/Carthage): `brew install carthage`
 3. Ensure you have Python 3 installed: `brew install python`
 4. Install linting and formatting tools: `brew install swiftlint`
@@ -21,27 +21,8 @@ done using the `rustup target` command. In order to enable building to real
 devices and iOS emulators, the following targets need to be installed:
 
 ```
-rustup target add aarch64-apple-ios x86_64-apple-ios
+rustup target add aarch64-apple-ios x86_64-apple-ios aarch64-apple-ios-sim
 ```
-
-Install helper tools:
-
-```
-cargo install cargo-lipo
-```
-
-### Building on M1 hardware
-
-If you are on M1-powered Mac hardware (also known as "Apple Silicon" or "macOS aarch64") you will need Rust Nightly to build Glean for iOS.
-
-Install the toolchain using the following commands:
-
-```
-rustup toolchain add nightly
-rustup component add rust-src --toolchain nightly
-```
-
-The build system will auto-detect your machine architecture and build for the appropriate targets.
 
 ## Building
 

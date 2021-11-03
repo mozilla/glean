@@ -29,6 +29,9 @@ browser.engagement:
         type: string
         description: "This is key two"
     expires: 2100-01-01
+    metadata:
+      tags:
+        - testing
 
   old_event_style:
     type: event
@@ -89,6 +92,9 @@ test:
     expires: 2100-01-01
     no_lint:
       - USER_LIFETIME_EXPIRATION
+    metadata:
+      tags:
+        - testing
 
   counter:
     type: counter
@@ -106,6 +112,9 @@ test:
     expires: 2100-01-01
     no_lint:
       - USER_LIFETIME_EXPIRATION
+    metadata:
+      tags:
+        - testing
 
   timespan:
     type: timespan

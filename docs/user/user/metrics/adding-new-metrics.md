@@ -164,7 +164,7 @@ dashboard when that's ready
 
 ## Adding the metric to the `metrics.yaml` file
 
-The [`metrics.yaml` file](https://mozilla.github.io/glean_parser/metrics-yaml.html) defines the metrics your application or library will send.
+The [`metrics.yaml` file](../../reference/yaml/metrics.md) defines the metrics your application or library will send.
 They are organized into categories.
 The overall organization is:
 
@@ -177,6 +177,9 @@ toolbar:
     type: event
     description: |
       Event to record toolbar clicks.
+    metadata:
+      tags:
+        - Interaction
     notification_emails:
       - CHANGE-ME@example.com
     bugs:

@@ -104,7 +104,6 @@ commands:
 
   android-setup:
     steps:
-      - checkout
       - install-rustup
       - setup-rust-toolchain:
           rust-version: stable
@@ -302,7 +301,9 @@ jobs:
       - checkout
       - run: rustup component add clippy
       - run: cargo clippy --version
-      - run: cargo clippy --all --all-targets --all-features -- -D warnings
+      - run:
+          name: Clippy
+          command: make lint-rust
 
   Rust tests - stable:
     docker:
@@ -461,8 +462,9 @@ jobs:
     docker:
       - image: circleci/android:api-28
     steps:
-      - android-setup
+      - checkout
       - skip-if-doc-only
+      - android-setup
       - run:
           name: Restrict to Linux builds only
           command: |
@@ -541,11 +543,6 @@ jobs:
             gem env
       - install-rustup
       - setup-rust-toolchain
-      - run:
-          name: Install Rust Nightly toolchain
-          command: |
-            rustup toolchain add nightly --profile minimal
-            rustup target add aarch64-apple-ios-sim --toolchain nightly
       - restore_cache:
           name: Restore rubygems cache
           key: swift-docs-gems-v10
@@ -561,7 +558,7 @@ jobs:
       - run:
           name: Setup build environment
           command: |
-            rustup target add aarch64-apple-ios x86_64-apple-ios
+            rustup target add aarch64-apple-ios aarch64-apple-ios-sim x86_64-apple-ios
 
             # Bootstrap dependencies
             bin/bootstrap.sh
@@ -655,7 +652,7 @@ jobs:
       - run:
           name: Setup build environment
           command: |
-            rustup target add aarch64-apple-ios x86_64-apple-ios
+            rustup target add aarch64-apple-ios aarch64-apple-ios-sim x86_64-apple-ios
 
             # List available devices -- allows us to see what's there
             DEVICES=$(xcrun xctrace list devices 2>&1)
@@ -663,14 +660,6 @@ jobs:
             # Pick a device and start it
             UDID=$(echo "$DEVICES" | grep 'iPhone 11 Simulator (14' | awk -F'[()]' '{print $4}')
             xcrun simctl boot "$UDID"
-      - run:
-          name: Install Rust Nightly toolchain
-          command: |
-            # Need a nightly toolchain and the source code for targetting the arm64 iOS simulator
-            # We don't need that build on CI, but its hard to exclude it from the build
-            # while still allowing it in developer builds.
-            rustup toolchain add nightly --profile minimal
-            rustup target add aarch64-apple-ios-sim --toolchain nightly
       - run:
           name: Use current commit of Glean
           command: |
