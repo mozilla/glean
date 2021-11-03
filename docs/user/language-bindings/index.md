@@ -49,7 +49,7 @@ It is available standalone as `org.mozilla.telemetry:glean`
 or via [Android Components][ac] as `org.mozilla.components:service-glean`
 from the [Mozilla Maven instance][maven].
 
-The Kotlin bindings can also be used from Java.
+The Kotlin SDK can also be used from Java.
 
 [ac]: https://github.com/mozilla-mobile/android-components/
 [maven]: https://maven.mozilla.org/?prefix=maven2

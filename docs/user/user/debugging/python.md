@@ -28,7 +28,7 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 ```
 
-All log messages from the Glean SDK are on the `glean` logger, so if you need to control it independently, you can set a level for just the Glean SDK (but note that the global Python logging level also needs to be set as above):
+All log messages from the Glean Python SDK are on the `glean` logger, so if you need to control it independently, you can set a level for just the Glean Python SDK (but note that the global Python logging level also needs to be set as above):
 
 ```python
 logging.getLogger("glean").setLevel(logging.DEBUG)

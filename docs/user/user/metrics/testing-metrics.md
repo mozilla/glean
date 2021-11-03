@@ -1,7 +1,7 @@
 # Unit testing Glean metrics
 
 In order to support unit testing inside of client applications using the Glean SDK, a set of testing API functions have been included.
-The intent is to make the Glean SDK easier to test 'out of the box' in any client application it may be used in.
+The intent is to make the Glean SDKs easier to test 'out of the box' in any client application it may be used in.
 These functions expose a way to inspect and validate recorded metric values within the client application but are restricted to test code only through visibility annotations
 (`@VisibleForTesting(otherwise = VisibleForTesting.NONE)` for Kotlin, `internal` methods for Swift).
 (Outside of a testing context, Glean APIs are otherwise write-only so that it can enforce semantics and constraints about data).
@@ -14,7 +14,7 @@ To encourage using the testing API, it is also possible to [generate testing cov
 
 <div data-lang="Kotlin" class="tab">
 
-Using the Glean SDK's unit testing API requires adding [Robolectric 4.0 or later](http://robolectric.org/) as a testing dependency. In Gradle, this can be done by declaring a `testImplementation` dependency:
+Using the Glean Kotlin SDK's unit testing API requires adding [Robolectric 4.0 or later](http://robolectric.org/) as a testing dependency. In Gradle, this can be done by declaring a `testImplementation` dependency:
 
 ```groovy
 dependencies {
@@ -23,8 +23,8 @@ dependencies {
 ```
 
 In order to prevent issues with async calls when unit testing the Glean SDK,
-it is important to put the Glean SDK into testing mode by applying the JUnit `GleanTestRule` to your test class.
-When the Glean SDK is in testing mode, it enables uploading and clears the recorded metrics at the beginning of each test run.
+it is important to put the Glean Kotlin SDK into testing mode by applying the JUnit `GleanTestRule` to your test class.
+When the Glean Kotlin SDK is in testing mode, it enables uploading and clears the recorded metrics at the beginning of each test run.
 The rule can be used as shown below:
 
 ```kotlin
@@ -37,7 +37,7 @@ class ActivityCollectingDataTest {
 
     @Test
     fun checkCollectedData() {
-      // The Glean SDK testing API can be called here.
+      // The Glean Kotlin SDK testing API can be called here.
     }
 }
 ```
@@ -67,8 +67,8 @@ so the IDE should complain if you attempt to use them inside of client code.
 
 > **NOTE**: There's no automatic test rule for Glean tests implemented.
 
-In order to prevent issues with async calls when unit testing the Glean SDK, it is important to put the Glean SDK into testing mode.
-When the Glean SDK is in testing mode, it enables uploading and clears the recorded metrics at the beginning of each test run.
+In order to prevent issues with async calls when unit testing the Glean SDK, it is important to put the Glean Swift SDK into testing mode.
+When the Glean Swift SDK is in testing mode, it enables uploading and clears the recorded metrics at the beginning of each test run.
 
 Activate it by resetting Glean in your test's setup:
 
@@ -111,11 +111,11 @@ Note that each of these functions is marked as `internal`, you need to import `G
 
 <div data-lang="Python" class="tab">
 
-It is generally a good practice to "reset" the Glean SDK prior to every unit test that uses the Glean SDK, to prevent side effects of one unit test impacting others.
-The Glean SDK contains a helper function `glean.testing.reset_glean()` for this purpose.
+It is generally a good practice to "reset" the Glean Python SDK prior to every unit test that uses the Glean Python SDK, to prevent side effects of one unit test impacting others.
+The Glean Python SDK contains a helper function `glean.testing.reset_glean()` for this purpose.
 It has two required arguments: the application ID, and the application version.
-Each reset of the Glean SDK will create a new temporary directory for Glean to store its data in.
-This temporary directory is automatically cleaned up the next time the Glean SDK is reset or when the testing framework finishes.
+Each reset of the Glean Python SDK will create a new temporary directory for Glean to store its data in.
+This temporary directory is automatically cleaned up the next time the Glean Python SDK is reset or when the testing framework finishes.
 
 The instructions below assume you are using [pytest](https://pypi.org/project/pytest/) as the test runner.
 Other test-running libraries have similar features, but are different in the details.

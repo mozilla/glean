@@ -210,7 +210,7 @@ class PageHandler:
         metrics.pages.page_load.stop_and_accumulate(self.timer_id)
 ```
 
-The Python bindings also have a context manager for measuring time:
+The Python SDK also has a context manager for measuring time:
 
 ```Python
 with metrics.pages.page_load.measure():

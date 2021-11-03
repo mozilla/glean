@@ -65,13 +65,13 @@
     - [Text](reference/metrics/text.md)
 - [Pings](reference/pings/index.md)
 
-# Language Bindings Information
+# SDK Specific Information
 
 - [Overview](language-bindings/index.md)
 - [Android](language-bindings/android/index.md)
     - [Android build configuration options](language-bindings/android/android-build-configuration-options.md)
     - [Android offline builds](language-bindings/android/android-offline-builds.md)
-    - [Instrumenting Android crashes with the Glean SDK](language-bindings/android/instrument-android-crashes-example.md)
+    - [Instrumenting Android crashes with Glean](language-bindings/android/instrument-android-crashes-example.md)
 - [JavaScript](language-bindings/javascript/index.md)
     - [Plugins](language-bindings/javascript/plugins/index.md)
         - [Ping Encryption Plugin](language-bindings/javascript/plugins/encryption.md)
@@ -79,7 +79,7 @@
 
 - [Glossary](appendix/glossary.md)
 - [Changelog](appendix/changelog/index.md)
-    - [Glean SDK](appendix/changelog/sdk.md)
-    - [Glean.js](appendix/changelog/js.md)
+    - [mozilla/glean](appendix/changelog/sdk.md)
+    - [mozilla/glean.js](appendix/changelog/js.md)
 - [This Week in Glean](appendix/twig.md)
 - [Contribution Guidelines](appendix/contribution-guidelines.md)

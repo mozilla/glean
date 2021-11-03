@@ -4,12 +4,11 @@ This page provides a step-by-step guide on how to integrate the Glean library in
 
 Nevertheless this is just one of the required steps for integrating Glean successfully into a project. Check you the full [Glean integration checklist](./index.md) for a comprehensive list of all the steps involved in doing so.
 
-
-Currently, these bindings only support the Android platform.
+Currently, this SDK only supports the Android platform.
 
 ## Setting up the dependency
 
-The Glean SDK is published on [maven.mozilla.org](https://maven.mozilla.org/).
+The Glean Kotlin SDK is published on [maven.mozilla.org](https://maven.mozilla.org/).
 To use it, you need to add the following to your project's top-level build file,
 in the `allprojects` block (see e.g. [Glean SDK's own `build.gradle`](https://github.com/mozilla/glean/blob/main/build.gradle)):
 
@@ -21,7 +20,7 @@ repositories {
 }
 ```
 
-Each module that uses Glean SDK needs to specify it in its build file, in the `dependencies` block.
+Each module that uses the Glean Kotlin SDK needs to specify it in its build file, in the `dependencies` block.
 Add this to your Gradle configuration:
 
 ```Groovy
@@ -34,7 +33,7 @@ implementation "org.mozilla.components:service-glean:{latest-version}"
 
 > The `{latest-version}` placeholder in the above link should be replaced with the version of Android Components used by the project.
 
-The Glean SDK is released as part of [android-components](https://github.com/mozilla-mobile/android-components).  Therefore, it follows android-components' versions.
+The Glean Kotlin SDK is released as part of [android-components](https://github.com/mozilla-mobile/android-components). Therefore, it follows android-components' versions.
 The [android-components release page](https://github.com/mozilla-mobile/android-components/releases/) can be used to determine the latest version.
 
 For example, if version *33.0.0* is used, then the include directive becomes:
@@ -47,7 +46,7 @@ implementation "org.mozilla.components:service-glean:33.0.0"
 
 ##### Size impact on the application APK
 
-> The Glean SDK APK ships binary libraries for all the supported platforms. Each library file measures about 600KB. If the final APK size of the consuming project is a concern, please enable [ABI splits](https://developer.android.com/studio/build/configure-apk-splits#configure-abi-split).
+> The Glean Kotlin SDK APK ships binary libraries for all the supported platforms. Each library file measures about 600KB. If the final APK size of the consuming project is a concern, please enable [ABI splits](https://developer.android.com/studio/build/configure-apk-splits#configure-abi-split).
 
 ### Dependency for local testing
 
@@ -74,7 +73,7 @@ This package is standalone and its version will be exported from the main Glean 
 
 ## Setting up metrics and pings code generation
 
-In order for the Glean SDK to generate an API for your metrics, two Gradle plugins must be included in your build:
+In order for the Glean Kotlin SDK to generate an API for your metrics, two Gradle plugins must be included in your build:
 
 - The [Glean Gradle plugin](https://github.com/mozilla/glean/tree/main/gradle-plugin/)
 - JetBrains' [Python envs plugin](https://github.com/JetBrains/gradle-python-envs/)

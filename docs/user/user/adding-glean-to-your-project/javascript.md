@@ -4,7 +4,7 @@ This page provides a step-by-step guide on how to integrate the [Glean.js](https
 
 Nevertheless this is just one of the required steps for integrating Glean successfully into a project. Check you the full [Glean integration checklist](./index.md) for a comprehensive list of all the steps involved in doing so.
 
-Currently, these bindings support collecting data from [Browser Extensions](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions) (cross-browser), [Node.js](https://nodejs.org/en/)[^1] applications or scripts and [Qt/QML applications](https://doc.qt.io/qt-5/qtqml-index.html)[^2].
+Currently, this SDK supports collecting data from [Browser Extensions](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions) (cross-browser), [Node.js](https://nodejs.org/en/)[^1] applications or scripts and [Qt/QML applications](https://doc.qt.io/qt-5/qtqml-index.html)[^2].
 
 [^1]: The Node.js SDK does not have persistent storage yet. This means, Glean does not persist
 state throughout application runs. For updates on the implementation of this feature in Node.js,

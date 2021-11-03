@@ -12,7 +12,7 @@ Additionally, it is undesirable to mix metric recording from different versions 
 
 ### Platform availability
 
-| Language Binding | Kotlin | Swift | Python | Rust | JavaScript | Firefox Desktop |
+| SDK | Kotlin | Swift | Python | Rust | JavaScript | Firefox Desktop |
 |-:|:-:|:-:|:-:|:-:|:-:|:-:|
 | [`metrics` ping](metrics.md) | ✅ | ✅ | | ✅ | | ✅ |
 
@@ -46,7 +46,7 @@ The `metrics` ping contains all of the metrics defined in `metrics.yaml` (except
 
 Additionally, error metrics in the `glean.error` category are included in the `metrics` ping.
 
-The `metrics` ping shall also include the common [`ping_info`](index.md#the-ping_info-section) and ['client_info'](index.md#the-client_info-section) sections.  It also includes a number of [metrics defined in the Glean SDK itself](../collected-metrics/metrics.html#metrics-1).
+The `metrics` ping shall also include the common [`ping_info`](index.md#the-ping_info-section) and ['client_info'](index.md#the-client_info-section) sections.  It also includes a number of [metrics defined in the Glean SDKs themselves](../collected-metrics/metrics.html#metrics-1).
 
 ### Querying ping contents
 

@@ -141,7 +141,7 @@ For example, if defining a set of events related to search, put them in a catego
 
 ## What if none of these metric types is the right fit?
 
-The current set of metrics the Glean SDK supports is based on known common use cases, but new use cases are discovered all the time.
+The current set of metrics the Glean SDKs support is based on known common use cases, but new use cases are discovered all the time.
 
 Please reach out to us on [#glean:mozilla.org](https://chat.mozilla.org/#/room/#glean:mozilla.org). If you think you need a new metric type, we [have a process for that](../../reference/metrics/index.html#adding-or-changing-metric-types).
 

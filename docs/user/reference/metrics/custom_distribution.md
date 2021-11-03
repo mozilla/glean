@@ -239,7 +239,7 @@ Custom distributions have the following optional parameters:
 - `unit`: (String) The unit of the values in the metric. For documentation purposes only -- does not affect data collection.
 - `gecko_datapoint`: (String) This is a Gecko-specific property.
   It is the name of the Gecko metric to accumulate the data from,
-  when using the Glean SDK in a product using GeckoView.
+  when using a Glean SDK in a product using GeckoView.
 
 
 ## Reference

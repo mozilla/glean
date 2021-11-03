@@ -7,7 +7,7 @@ If the application crashes, an `events` ping is generated next time the applicat
 
 ### Platform availability
 
-| Language Binding | Kotlin | Swift | Python | Rust | JavaScript | Firefox Desktop |
+| SDK | Kotlin | Swift | Python | Rust | JavaScript | Firefox Desktop |
 |-:|:-:|:-:|:-:|:-:|:-:|:-:|
 | [`events` ping](events.md) | ✅ | ✅ | ✅ | ✅ | | ✅ |
 
