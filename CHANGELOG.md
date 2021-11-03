@@ -2,6 +2,11 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v42.1.0...main)
 
+* General
+  * Updated `glean_parser` version to 4.3.1 ([#1852](https://github.com/mozilla/glean/pull/1852))
+* Android
+  * Automatic detection of `tags.yaml` files ([#1852](https://github.com/mozilla/glean/pull/1852))
+
 # v42.1.0 (2021-10-18)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v42.0.1...v42.1.0)
