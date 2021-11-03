@@ -34,6 +34,9 @@ toolbar:
     type: event
     description: |
       Event to record toolbar clicks.
+    metadata:
+      tags:
+        - Interaction
     notification_emails:
       - CHANGE-ME@example.com
     bugs:
@@ -168,6 +171,13 @@ May be one of the following values:
 - `expired`: This metric is manually expired.
 
 ### Optional parameters
+
+#### `tags`
+
+_default: `[]`_
+
+A list of tag names associated with this metric.
+Must correspond to an entry specified in a [tags file](./tags.md).
 
 #### `lifetime`
 
