@@ -75,7 +75,7 @@ callback interface OnGleanEvents {
     // Start the Metrics Ping Scheduler.
     //
     // The language SDK
-    void start_metric_ping_scheduler();
+    void start_metrics_ping_scheduler();
 };
 
 dictionary RecordedExperiment {
