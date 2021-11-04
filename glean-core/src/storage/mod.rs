@@ -242,7 +242,7 @@ mod test {
 
         let metric = ExperimentMetric::new(&glean, "some-experiment".to_string());
 
-        metric.set_active(&glean, "test-branch".to_string(), Some(extra));
+        metric.set_active_sync(&glean, "test-branch".to_string(), Some(extra));
         let snapshot = StorageManager
             .snapshot_experiments_as_json(glean.storage(), "glean_internal_info")
             .unwrap();
@@ -266,7 +266,7 @@ mod test {
 
         let metric = ExperimentMetric::new(&glean, "some-experiment".to_string());
 
-        metric.set_active(&glean, "test-branch".to_string(), None);
+        metric.set_active_sync(&glean, "test-branch".to_string(), None);
         let snapshot = StorageManager
             .snapshot_experiments_as_json(glean.storage(), "glean_internal_info")
             .unwrap();

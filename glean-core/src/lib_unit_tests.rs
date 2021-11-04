@@ -9,7 +9,7 @@ use std::collections::HashSet;
 use std::iter::FromIterator;
 
 use super::*;
-use crate::metrics::RecordedExperimentData;
+use crate::metrics::RecordedExperiment;
 use crate::metrics::{StringMetric, TimeUnit, TimespanMetric, TimingDistributionMetric};
 
 const GLOBAL_APPLICATION_ID: &str = "org.mozilla.glean.test.app";

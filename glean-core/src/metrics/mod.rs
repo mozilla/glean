@@ -24,6 +24,7 @@ mod memory_unit;
 mod ping;
 mod quantity;
 mod rate;
+mod recorded_experiment;
 mod string;
 mod string_list;
 mod time_unit;
@@ -46,11 +47,6 @@ pub use self::datetime::DatetimeMetric;
 pub use self::denominator::DenominatorMetric;
 pub use self::event::EventMetric;
 pub(crate) use self::experiment::ExperimentMetric;
-pub use crate::histogram::HistogramType;
-// Note: only expose RecordedExperimentData to tests in
-// the next line, so that glean-core\src\lib.rs won't fail to build.
-#[cfg(test)]
-pub(crate) use self::experiment::RecordedExperimentData;
 pub use self::jwe::JweMetric;
 pub use self::labeled::LabeledMetric;
 pub use self::memory_distribution::MemoryDistributionMetric;
@@ -66,6 +62,8 @@ pub use self::timing_distribution::TimerId;
 pub use self::timing_distribution::TimingDistributionMetric;
 pub use self::url::UrlMetric;
 pub use self::uuid::UuidMetric;
+pub use crate::histogram::HistogramType;
+pub use recorded_experiment::RecordedExperiment;
 
 /// A snapshot of all buckets and the accumulated sum of a distribution.
 #[derive(Debug, Serialize)]
@@ -104,7 +102,7 @@ pub enum Metric {
     /// A datetime metric. See [`DatetimeMetric`] for more information.
     Datetime(DateTime<FixedOffset>, TimeUnit),
     /// An experiment metric. See `ExperimentMetric` for more information.
-    Experiment(experiment::RecordedExperimentData),
+    Experiment(recorded_experiment::RecordedExperiment),
     /// A quantity metric. See [`QuantityMetric`] for more information.
     Quantity(i64),
     /// A string metric. See [`StringMetric`] for more information.
