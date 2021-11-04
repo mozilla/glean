@@ -72,6 +72,16 @@ pub(crate) const INTERNAL_STORAGE: &str = "glean_internal_info";
 pub(crate) const PENDING_PINGS_DIRECTORY: &str = "pending_pings";
 pub(crate) const DELETION_REQUEST_PINGS_DIRECTORY: &str = "deletion_request";
 
+/// Launches a new task on the global dispatch queue with a reference to the Glean singleton.
+fn launch_with_glean(callback: impl FnOnce(&Glean) + Send + 'static) {
+    let _ = callback;
+    todo!();
+}
+
+fn block_on_dispatcher() {
+    todo!()
+}
+
 /// The global Glean instance.
 ///
 /// This is the singleton used by all wrappers to allow for a nice API.
@@ -252,7 +262,7 @@ impl Glean {
         if start_time_is_corrected {
             this.additional_metrics
                 .invalid_timezone_offset
-                .add(&this, 1);
+                .add_sync(&this, 1);
         }
 
         Ok(this)
@@ -669,11 +679,11 @@ impl Glean {
                 self.additional_metrics
                     .pings_submitted
                     .get(ping.name)
-                    .add(self, 1);
+                    .add_sync(self, 1);
 
                 if let Err(e) = ping_maker.store_ping(self.get_data_path(), &ping) {
                     log::warn!("IO error while writing ping to file: {}. Enqueuing upload of what we have in memory.", e);
-                    self.additional_metrics.io_errors.add(self, 1);
+                    self.additional_metrics.io_errors.add_sync(self, 1);
                     // `serde_json::to_string` only fails if serialization of the content
                     // fails or it contains maps with non-string keys.
                     // However `ping.content` is already a `JsonValue`,

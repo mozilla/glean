@@ -132,8 +132,21 @@ pub trait MetricType {
     /// Access the stored metadata
     fn meta(&self) -> &CommonMetricData;
 
-    /// Access the stored metadata mutable
-    fn meta_mut(&mut self) -> &mut CommonMetricData;
+    /// Create a new metric from this with a new name.
+    fn with_name(&self, _name: String) -> Self
+    where
+        Self: Sized,
+    {
+        unimplemented!()
+    }
+
+    /// Create a new metric from this with a specific label.
+    fn with_dynamic_label(&self, _label: String) -> Self
+    where
+        Self: Sized,
+    {
+        unimplemented!()
+    }
 
     /// Whether this metric should currently be recorded
     ///

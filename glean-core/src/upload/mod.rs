@@ -384,7 +384,7 @@ impl PingUploadManager {
             let total = cached_pings.pending_pings.len() as u64;
             self.upload_metrics
                 .pending_pings
-                .add(glean, total.try_into().unwrap_or(0));
+                .add_sync(glean, total.try_into().unwrap_or(0));
 
             if total > self.policy.max_pending_pings_count() {
                 log::warn!(
@@ -423,7 +423,7 @@ impl PingUploadManager {
                 if deleting && self.directory_manager.delete_file(document_id) {
                     self.upload_metrics
                         .deleted_pings_after_quota_hit
-                        .add(glean, 1);
+                        .add_sync(glean, 1);
                     return false;
                 }
 
@@ -644,7 +644,7 @@ impl PingUploadManager {
 
         if let Some(label) = status.get_label() {
             let metric = self.upload_metrics.ping_upload_failure.get(label);
-            metric.add(glean, 1);
+            metric.add_sync(glean, 1);
         }
 
         match status {

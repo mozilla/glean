@@ -64,10 +64,6 @@ impl MetricType for ExperimentMetric {
     fn meta(&self) -> &CommonMetricData {
         &self.meta
     }
-
-    fn meta_mut(&mut self) -> &mut CommonMetricData {
-        &mut self.meta
-    }
 }
 
 impl ExperimentMetric {

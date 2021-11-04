@@ -25,8 +25,16 @@ impl MetricType for StringMetric {
         &self.meta
     }
 
-    fn meta_mut(&mut self) -> &mut CommonMetricData {
-        &mut self.meta
+    fn with_name(&self, name: String) -> Self {
+        let mut meta = self.meta.clone();
+        meta.name = name;
+        Self { meta }
+    }
+
+    fn with_dynamic_label(&self, label: String) -> Self {
+        let mut meta = self.meta.clone();
+        meta.dynamic_label = Some(label);
+        Self { meta }
     }
 }
 

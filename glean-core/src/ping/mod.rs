@@ -87,7 +87,7 @@ impl PingMaker {
         };
 
         // Increase to next sequence id
-        seq.add(glean, 1);
+        seq.add_sync(glean, 1);
 
         current_seq as usize
     }

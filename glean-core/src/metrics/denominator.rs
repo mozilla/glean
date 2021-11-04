@@ -25,10 +25,6 @@ impl MetricType for DenominatorMetric {
     fn meta(&self) -> &CommonMetricData {
         self.counter.meta()
     }
-
-    fn meta_mut(&mut self) -> &mut CommonMetricData {
-        self.counter.meta_mut()
-    }
 }
 
 impl DenominatorMetric {

@@ -117,10 +117,6 @@ impl MetricType for TimingDistributionMetric {
     fn meta(&self) -> &CommonMetricData {
         &self.meta
     }
-
-    fn meta_mut(&mut self) -> &mut CommonMetricData {
-        &mut self.meta
-    }
 }
 
 // IMPORTANT:
