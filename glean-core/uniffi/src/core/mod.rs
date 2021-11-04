@@ -160,6 +160,24 @@ impl Glean {
 
     /// **This is not meant to be used directly.**
     ///
+    /// Clears all the metrics that have [`Lifetime::Application`].
+    pub fn clear_application_lifetime_metrics(&self) {
+        //log::trace!("Clearing Lifetime::Application metrics");
+        //if let Some(data) = self.data_store.as_ref() {
+        //    data.clear_lifetime(Lifetime::Application);
+        //}
+
+        // Set internally handled app lifetime metrics again.
+        self.set_application_lifetime_core_metrics();
+    }
+
+    /// Sets internally-handled application lifetime metrics.
+    fn set_application_lifetime_core_metrics(&self) {
+        //self.core_metrics.os.set(self, system::OS);
+    }
+
+    /// **This is not meant to be used directly.**
+    ///
     /// Sets the value of a "dirty flag" in the permanent storage.
     ///
     /// The "dirty flag" is meant to have the following behaviour, implemented
@@ -302,7 +320,7 @@ impl Glean {
         //    log::info!("baseline ping not submitted on active");
         //}
 
-        //self.set_dirty_flag(true);
+        self.set_dirty_flag(true);
     }
 
     /// Performs the collection/cleanup operations required by becoming inactive.
@@ -318,6 +336,20 @@ impl Glean {
         //    log::info!("events ping not submitted on inactive");
         //}
 
-        //self.set_dirty_flag(false);
+        self.set_dirty_flag(false);
+    }
+
+    /// Signals that the environment is ready to submit pings.
+    ///
+    /// Should be called when Glean is initialized to the point where it can correctly assemble pings.
+    /// Usually called from the language binding after all of the core metrics have been set
+    /// and the ping types have been registered.
+    ///
+    /// # Returns
+    ///
+    /// Whether at least one ping was generated.
+    pub fn on_ready_to_submit_pings(&self) -> bool {
+        //self.event_data_store.flush_pending_events_on_startup(self)
+        true
     }
 }

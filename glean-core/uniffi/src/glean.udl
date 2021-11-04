@@ -1,9 +1,11 @@
 namespace glean {
+    void glean_enable_logging();
+
     // Initializes Glean.
     //
     // This will fully initialize Glean in a separate thread.
     // It will return immediately.
-    boolean glean_initialize(InternalConfiguration cfg, ClientInfoMetrics client_info, OnGleanEvents callback);
+    boolean glean_initialize(InternalConfiguration cfg, ClientInfoMetrics client_info, OnGleanEvents callbacks);
 
     void glean_set_upload_enabled(boolean enabled);
 
@@ -73,8 +75,8 @@ callback interface OnGleanEvents {
     // Start the Metrics Ping Scheduler.
     //
     // The language SDK
-    void start_mps();
-}
+    void start_metric_ping_scheduler();
+};
 
 dictionary RecordedExperiment {
     string branch;
