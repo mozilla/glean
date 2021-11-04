@@ -322,8 +322,10 @@ dependencies = [
 name = "glean-core"
 version = "41.1.1"
 dependencies = [
+ "android_logger 0.9.2",
  "bincode",
  "chrono",
+ "crossbeam-channel",
  "ctor",
  "env_logger 0.8.4",
  "ffi-support",
@@ -331,12 +333,15 @@ dependencies = [
  "iso8601",
  "log",
  "once_cell",
+ "oslog",
  "rkv",
  "serde",
  "serde_json",
  "tempfile",
+ "thiserror",
  "time",
  "uuid",
+ "whatsys",
  "zeitstempel",
 ]
 
