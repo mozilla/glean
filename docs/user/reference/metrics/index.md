@@ -60,7 +60,7 @@ Labeled metrics come in two forms:
   The number of static labels is limited to 100 per metric.
 
 - **Dynamic labels**: The labels aren't known at build time, so are set at run time.
-  Only the first 16 labels seen by the Glean SDK will be tracked. After that, any additional labels are converted to the special label `__other__`.
+  Only the first 16 labels seen by Glean will be tracked. After that, any additional labels are converted to the special label `__other__`.
 
 > **Note**: Be careful with using arbitrary strings as labels and make sure they can't accidentally contain identifying data (like directory paths or user input).
 

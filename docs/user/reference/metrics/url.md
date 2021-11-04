@@ -2,7 +2,7 @@
 
 URL metrics allow recording URL-like[^1] strings.
 
-This metric type does not support recording [data URLs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs) - please get in contact with the Glean SDK team if you're missing a type.
+This metric type does not support recording [data URLs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs) - please get in contact with the Glean team if you're missing a type.
 
 {{#include ../../../shared/blockquote-warning.html}}
 

@@ -1,8 +1,8 @@
 ## Offline builds of Android applications that use Glean
 
-The Glean SDK has basic support for building Android applications that use Glean in offline mode.
+The Glean Kotlin SDK has basic support for building Android applications that use Glean in offline mode.
 
-The Glean SDK uses a Python script, [`glean_parser`](https://github.com/mozilla/glean_parser/) to generate code for metrics from the `metrics.yaml` and `pings.yaml` files when Glean-using applications are built. When online, the pieces necessary to run this script are installed automatically.
+The Glean Kotlin SDK uses a Python script, [`glean_parser`](https://github.com/mozilla/glean_parser/) to generate code for metrics from the `metrics.yaml` and `pings.yaml` files when Glean-using applications are built. When online, the pieces necessary to run this script are installed automatically.
 
 For offline builds, the Python environment, and packages of `glean_parser` and its dependencies must be provided prior to building the Glean-using application.
 

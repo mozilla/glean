@@ -200,7 +200,7 @@ If the locale can't be determined on the system, the value is "und", to indicate
 
 ## Ping submission
 
-The pings that the Glean SDK generates are submitted to the Mozilla servers at specific paths,
+The pings that the Glean SDKs generate are submitted to the Mozilla servers at specific paths,
 in order to provide additional metadata without the need to unpack the ping payload.
 
 ### URL
@@ -277,7 +277,7 @@ The Glean SDK version and platform this ping is sent from.
 Useful for debugging purposes when pings are sent to [the error stream](https://docs.telemetry.mozilla.org/concepts/pipeline/filtering.html?highlight=error%20stream#querying-the-error-stream).
 as it describes the application and the Glean SDK used for sending the ping.
 
-It's looks like `Glean/40.0.0 (Kotlin on Android)`, where `40.0.0` is the Glean SDK version number
+It's looks like `Glean/40.0.0 (Kotlin on Android)`, where `40.0.0` is the Glean Kotlin SDK version number
 and `Kotlin on Android` is the name of the language used by the SDK that sent the request
 plus the name of the platform it is running on.
 

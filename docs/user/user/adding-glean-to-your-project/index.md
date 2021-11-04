@@ -8,7 +8,7 @@ your are looking for, refer to the [Adding new metrics](../metrics/adding-new-me
 
 The Glean integration checklist can help to ensure your Glean SDK-using product is meeting all of the recommended guidelines.
 
-Products (applications or libraries) using the Glean SDK to collect telemetry **must**:
+Products (applications or libraries) using a Glean SDK to collect telemetry **must**:
 
 1. [Integrate the Glean SDK into the build system](#looking-for-an-integration-guide). Since the Glean SDK does some code generation for your metrics at build time, this requires a few more steps than just adding a library.
 

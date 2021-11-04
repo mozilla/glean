@@ -1,47 +1,38 @@
 # Introduction
 
-Glean is a modern approach for a telemetry library
-and is part of the [Glean project](https://docs.telemetry.mozilla.org/concepts/glean/glean.html).
+The Glean SDKs are modern cross-platform telemetry client libraries
+and are a part of the [Glean project](https://docs.telemetry.mozilla.org/concepts/glean/glean.html).
 
 ![Glean logo](glean.jpeg)
 
-There are two implementations of Glean, with support for 5 different programming languages in total.
-Both implementations strive to contain the same features with similar, but idiomatic APIs.
+The Glean SDKs are available for several programming languages and development environments.
+Each SDK aims to contain the same group of features with similar, but idiomatic APIs.
 
-Unless clearly stated otherwise, regard the text in this book as valid for both clients
-and all the supported programming languages and environments.
+To learn more about each SDK, refer to the [SDKs overview](./language-bindings/index.md) page.
 
-### [The Glean SDK](https://github.com/mozilla/glean)
+To get started adding Glean to your project, choose one of the following guides:
 
-The Glean SDK is an implementation of Glean in Rust, with language bindings for **Kotlin**,
-**Python**, **Rust** and **Swift**.
+- **[Kotlin](./user/adding-glean-to-your-project/kotlin.md)**
+  - Get started adding Glean to an Android application or library.
+- **[Swift](./user/adding-glean-to-your-project/swift.md)**
+  - Get started adding Glean to an iOS application or library.
+- **[Python](./user/adding-glean-to-your-project/python.md)**
+  - Get started adding Glean to any Python project.
+- **[JavaScript](./user/adding-glean-to-your-project/javascript.md)**
+  - Get started adding Glean to a website, web extension or Node.js project.
+- **[QML](./user/adding-glean-to-your-project/qt.md)**
+  - Get started adding Glean to a Qt/QML application or library.
+<!-- - **[Rust](TODO)**
+  - Get started adding Glean to any Rust project.
+- **[Firefox Desktop](TODO)**
+  - Get started adding Glean to a Firefox Desktop component. -->
 
-For development documentation on the `Glean SDK`,
-refer to [the Glean SDK development book](../dev/index.html).
-
-To report issues or request changes on the Glean SDK,
-file a bug in [Bugzilla in Data Platform & Tools :: Glean: SDK](https://bugzilla.mozilla.org/enter_bug.cgi?product=Data+Platform+and+Tools&component=Glean%3A+SDK&priority=P3&status_whiteboard=%5Btelemetry%3Aglean-rs%3Am%3F%5D).
-
-### [Glean.js](https://github.com/mozilla/glean.js)
-
-Glean.js is an implementation of Glean in **JavaScript**. Currently, it only has support
-for usage in web extensions.
-
-For development documentation on `Glean.js`,
-refer to [the Glean.js development documentation](https://github.com/mozilla/glean.js/tree/main/docs).
-
-To report issues or request changes on Glean.js,
-file a bug in [Bugzilla in Data Platform & Tools :: Glean.js][gleanjs-bugs].
-
-> **Note** Glean.js is still in development and does not provide all the features the Glean SDK does.
-> Feature parity will be worked on after initial validation. Do not hesitate to [file a bug][gleanjs-bugs]
-> if you want to use Glean.js and is missing some key Glean feature.
 ## Sections
 
 ### [User Guides](./user/adding-glean-to-your-project/index.html)
 
-This section of the book contains mostly step-by-step guides and essays detailing how to
-achieve specific tasks with Glean.
+This section of the book contains step-by-step guides and essays detailing how to
+achieve specific tasks with each Glean SDK.
 
 It contains guides on the first steps of integrating Glean into your project,
 choosing the right metric type for you, debugging products that use Glean and
@@ -55,12 +46,12 @@ This section of the book contains reference pages for Glean’s user facing APIs
 
 If you are looking for information a specific Glean API, this is the section you should check out.
 
-### [Language Binding Information](./language-bindings/android/index.html)
+### [SDK Specific Information](./language-bindings/android/index.html)
 
 This section contains guides and essays regarding specific usage information
-and possibilities in each of Glean's language bindings.
+and possibilities in each Glean SDK.
 
-Check out this section for information on the language binding you are using.
+Check out this section for more information on the SDK you are using.
 
 ### Appendix
 
@@ -89,11 +80,9 @@ To contact the Glean team you can:
 
 - Find us in the [#glean channel on chat.mozilla.org](https://chat.mozilla.org/#/room/#glean:mozilla.org).
 - Send an email to *glean-team@mozilla.com*.
-- The Glean SDK team is: *:janerik*, *:dexter*, *:travis*, *:mdroettboom*, *:gfritzsche*, *:chutten*, *:brizental*.
+- The Glean SDKs team is: *:janerik*, *:dexter*, *:travis*, *:mdroettboom*, *:chutten*, *:brizental*.
 
 ## License
 
-Glean.js and the Glean SDK Source Code is subject to the terms of the Mozilla Public License v2.0.
+The Glean SDKs Source Code is subject to the terms of the Mozilla Public License v2.0.
 You can obtain a copy of the MPL at <https://mozilla.org/MPL/2.0/>.
-
-[gleanjs-bugs]: https://bugzilla.mozilla.org/enter_bug.cgi?product=Data+Platform+and+Tools&component=Glean.js&priority=P4&status_whiteboard=%5Btelemetry%3Aglean-js%3Am%3F%5D

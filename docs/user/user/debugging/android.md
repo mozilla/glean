@@ -1,6 +1,6 @@
 # Debugging Android applications using the Glean SDK
 
-The Glean SDK exports the `GleanDebugActivity` that can be used to toggle debugging features on or off.
+The Glean Kotlin SDK exports the `GleanDebugActivity` that can be used to toggle debugging features on or off.
 Users can invoke this special activity, at run-time, using the following [`adb`](https://developer.android.com/studio/command-line/adb) command:
 
 ```bash
@@ -44,7 +44,7 @@ If no metrics have been collected, no pings will be sent *unless* [`send_if_empt
 Options that are set using the `adb` flags are not immediately reset and will
 persist until the application is closed or manually reset.
 
-## Glean SDK Log messages
+## Glean Kotlin SDK Log messages
 
 When running a Glean SDK-powered app in the Android emulator or on a device connected to your computer via cable, there are several ways to read the log output.
 
