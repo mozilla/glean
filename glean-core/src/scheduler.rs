@@ -9,7 +9,9 @@
 //! [the docs](https://mozilla.github.io/glean/book/user/pings/metrics.html#scheduling)
 
 use crate::metrics::{DatetimeMetric, StringMetric, TimeUnit};
-use crate::{local_now_with_offset, CommonMetricData, Glean, Lifetime, INTERNAL_STORAGE};
+use crate::storage::INTERNAL_STORAGE;
+use crate::util::local_now_with_offset;
+use crate::{CommonMetricData, Glean, Lifetime};
 use chrono::prelude::*;
 use chrono::Duration;
 use once_cell::sync::Lazy;
@@ -107,7 +109,7 @@ fn schedule_internal(
         // This will be externally-observable as InvalidOverflow errors on both the core
         // `client_info.app_build` metric and the scheduler's internal metric.
         if last_sent_build != glean.app_build {
-            last_sent_build_metric.set(glean, &glean.app_build);
+            last_sent_build_metric.set_sync(glean, &glean.app_build);
             log::info!("App build changed. Sending 'metrics' ping");
             submitter.submit_metrics_ping(glean, Some("upgrade"), now);
             scheduler.start_scheduler(submitter, now, When::Reschedule);
@@ -229,7 +231,7 @@ fn start_scheduler(
                 // we'll immediately exit. But first we need to submit our "metrics" ping.
                 if timed_out {
                     log::info!("Time to submit our metrics ping, {:?}", when);
-                    let glean = crate::global_glean().expect("Global Glean not present when trying to send scheduled 'metrics' ping?!").lock().unwrap();
+                    let glean = crate::core::global_glean().expect("Global Glean not present when trying to send scheduled 'metrics' ping?!").lock().unwrap();
                     submitter.submit_metrics_ping(&glean, Some(when.reason()), now);
                     when = When::Reschedule;
                 }

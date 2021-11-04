@@ -58,7 +58,7 @@ impl StringMetric {
     /// ## Notes
     ///
     /// Truncates the value if it is longer than `MAX_LENGTH_VALUE` bytes and logs an error.
-    pub fn set<S: Into<String>>(&self, glean: &Glean, value: S) {
+    pub fn set_sync<S: Into<String>>(&self, glean: &Glean, value: S) {
         if !self.should_record(glean) {
             return;
         }
