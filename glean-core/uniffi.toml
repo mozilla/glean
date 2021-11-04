@@ -1,6 +1,6 @@
 [bindings.kotlin]
 package_name = "mozilla.telemetry.glean.internal"
-cdylib_name = "glean_uniffi"
+cdylib_name = "glean"
 
 [bindings.python]
-cdylib_name = "glean_uniffi"
+cdylib_name = "glean"

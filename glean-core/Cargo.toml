@@ -14,7 +14,9 @@ include = [
   "/src",
   "/examples",
   "/tests",
-  "/Cargo.toml"
+  "/Cargo.toml",
+  "/uniffi.toml",
+  "/build.rs",
 ]
 
 [package.metadata.glean]
@@ -39,6 +41,8 @@ zeitstempel = "0.1.0"
 crossbeam-channel = "0.5"
 thiserror = "1.0.4"
 whatsys = "0.1.2"
+uniffi = "0.14.0"
+uniffi_macros = "0.14.0"
 
 # Needed for a workaround for a timezone bug on Windows.
 # See https://bugzilla.mozilla.org/show_bug.cgi?id=1611770
@@ -59,6 +63,9 @@ env_logger = { version = "0.8.0", default-features = false, features = ["termcol
 tempfile = "3.1.0"
 iso8601 = "0.4"
 ctor = "0.1.12"
+
+[build-dependencies]
+uniffi_build = "0.14.0"
 
 [features]
 # Enable the "safe-mode" Rust storage backend instead of the default LMDB one.

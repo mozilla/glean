@@ -315,7 +315,7 @@ dependencies = [
 name = "glean-bundle"
 version = "1.0.0"
 dependencies = [
- "glean-ffi",
+ "glean-core",
 ]
 
 [[package]]
@@ -340,6 +340,9 @@ dependencies = [
  "tempfile",
  "thiserror",
  "time",
+ "uniffi",
+ "uniffi_build",
+ "uniffi_macros",
  "uuid",
  "whatsys",
  "zeitstempel",

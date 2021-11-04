@@ -62,7 +62,7 @@ internal class OnGleanEventsImpl(
         PingUploadWorker.enqueueWorker(glean.applicationContext)
     }
 
-    override fun startMps() {
+    override fun startMetricsPingScheduler() {
         glean.metricsPingScheduler = MetricsPingScheduler(glean.applicationContext, glean.buildInfo)
         glean.metricsPingScheduler.schedule()
     }
