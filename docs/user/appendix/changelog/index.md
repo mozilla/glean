@@ -1,4 +1,4 @@
 # Changelog
 
-- [`mozilla/glean` (glean-core)](./sdk.md)
-- [`mozilla/glean.js` (Glean.js)](./js.md)
+- [`mozilla/glean`](./sdk.md)
+- [`mozilla/glean.js`](./js.md)

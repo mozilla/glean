@@ -80,7 +80,7 @@ To contact the Glean team you can:
 
 - Find us in the [#glean channel on chat.mozilla.org](https://chat.mozilla.org/#/room/#glean:mozilla.org).
 - Send an email to *glean-team@mozilla.com*.
-- The Glean team is: *:janerik*, *:dexter*, *:travis*, *:mdroettboom*, *:gfritzsche*, *:chutten*, *:brizental*.
+- The Glean SDKs team is: *:janerik*, *:dexter*, *:travis*, *:mdroettboom*, *:chutten*, *:brizental*.
 
 ## License
 

@@ -20,8 +20,6 @@ that provides a list of useful development tools for developers instrumenting a 
 The code for the Rust Core-based SDKs is available on the
 [`mozilla/glean`](https://github.com/mozilla/glean) repository.
 
-This collection of SDKs is commonly referred to as **glean-core**.
-
 {{#include ../../shared/blockquote-info.html}}
 
 > These group of SDKs were previously referred to as "language bindings" i.e.
