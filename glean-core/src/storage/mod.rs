@@ -15,6 +15,9 @@ use crate::database::Database;
 use crate::metrics::Metric;
 use crate::Lifetime;
 
+// An internal ping name, not to be touched by anything else
+pub(crate) const INTERNAL_STORAGE: &str = "glean_internal_info";
+
 /// Snapshot metrics from the underlying database.
 pub struct StorageManager;
 

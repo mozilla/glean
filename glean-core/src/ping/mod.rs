@@ -13,12 +13,10 @@ use serde_json::{json, Value as JsonValue};
 
 use crate::common_metric_data::{CommonMetricData, Lifetime};
 use crate::metrics::{CounterMetric, DatetimeMetric, Metric, MetricType, PingType, TimeUnit};
-use crate::storage::StorageManager;
+use crate::storage::{StorageManager, INTERNAL_STORAGE};
 use crate::upload::HeaderMap;
 use crate::util::{get_iso_time_string, local_now_with_offset_and_record};
-use crate::{
-    Glean, Result, DELETION_REQUEST_PINGS_DIRECTORY, INTERNAL_STORAGE, PENDING_PINGS_DIRECTORY,
-};
+use crate::{Glean, Result, DELETION_REQUEST_PINGS_DIRECTORY, PENDING_PINGS_DIRECTORY};
 
 /// Holds everything you need to store or send a ping.
 pub struct Ping<'a> {
