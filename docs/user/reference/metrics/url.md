@@ -4,6 +4,13 @@ URL metrics allow recording URL-like[^1] strings.
 
 This metric type does not support recording [data URLs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs) - please get in contact with the Glean team if you're missing a type.
 
+{{#include ../../shared/blockquote-stop.html}}
+
+## Warning
+
+> This metric is not yet usable for most Mozilla products and releases due to a data pipeline issue.
+> See [bug 1737656](https://bugzilla.mozilla.org/show_bug.cgi?id=1737656) for more information.
+
 {{#include ../../../shared/blockquote-warning.html}}
 
 ## Important

@@ -2,6 +2,13 @@
 
 Records a single long Unicode text, used when the limits on `String` are too low.
 
+{{#include ../../shared/blockquote-stop.html}}
+
+## Warning
+
+> This metric is not yet usable for most Mozilla products due to a data pipeline issue.
+> See [bug 1737656](https://bugzilla.mozilla.org/show_bug.cgi?id=1737656) for more information.
+
 {{#include ../../../shared/blockquote-warning.html}}
 
 ## Important
