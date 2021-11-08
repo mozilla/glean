@@ -43,11 +43,7 @@ thiserror = "1.0.4"
 whatsys = "0.1.2"
 uniffi = "0.14.0"
 uniffi_macros = "0.14.0"
-
-# Needed for a workaround for a timezone bug on Windows.
-# See https://bugzilla.mozilla.org/show_bug.cgi?id=1611770
-[target.'cfg(target_os = "windows")'.dependencies]
-time = "0.1.40" # the same minimum version as vendored in m-c
+time = "0.1.40"
 
 [target.'cfg(target_os = "android")'.dependencies]
 android_logger = { version = "0.9.0", default-features = false }

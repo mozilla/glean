@@ -552,7 +552,7 @@ pub fn glean_handle_client_active() {
     // in `glean.handle_client_active`. We intentionally start recording a new
     // `duration` after that happens, so that the measurement gets reported when
     // calling `handle_client_inactive`.
-    //core_metrics::internal_metrics::baseline_duration.start();
+    core_metrics::internal_metrics::baseline_duration.start();
 }
 
 /// Performs the collection/cleanup operations required by becoming inactive.
@@ -565,7 +565,7 @@ pub fn glean_handle_client_inactive() {
     // This needs to be called before the `handle_client_inactive` api: it stops
     // measuring the duration of the previous activity time, before any ping is sent
     // by the next call.
-    //core_metrics::internal_metrics::baseline_duration.stop();
+    core_metrics::internal_metrics::baseline_duration.stop();
 
     crate::launch_with_glean_mut(move |glean| {
         glean.handle_client_inactive();
