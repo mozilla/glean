@@ -70,7 +70,7 @@
 		CD0F7CC226F0F28900EDA6A4 /* UrlMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0F7CC126F0F28900EDA6A4 /* UrlMetricTests.swift */; };
 		CD38785F271D989900C097D8 /* gleanFFI.h in Headers */ = {isa = PBXBuildFile; fileRef = CD38785E271D989900C097D8 /* gleanFFI.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		CD38786B271DA2B800C097D8 /* glean.udl in Sources */ = {isa = PBXBuildFile; fileRef = CD387868271D9CD100C097D8 /* glean.udl */; };
-		CD38786D271DCCC700C097D8 /* libglean_uniffi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD38786C271DCCC700C097D8 /* libglean_uniffi.a */; };
+		CD38786D271DCCC700C097D8 /* libglean_ffi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD38786C271DCCC700C097D8 /* libglean_ffi.a */; };
 		CD6E200A25CAD68900C7EF2B /* OHHTTPStubs.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6E200925CAD68900C7EF2B /* OHHTTPStubs.xcframework */; };
 /* End PBXBuildFile section */
 
@@ -169,8 +169,8 @@
 		CD0F7CBF26F0F27900EDA6A4 /* UrlMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UrlMetric.swift; sourceTree = "<group>"; };
 		CD0F7CC126F0F28900EDA6A4 /* UrlMetricTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UrlMetricTests.swift; sourceTree = "<group>"; };
 		CD38785E271D989900C097D8 /* gleanFFI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gleanFFI.h; sourceTree = "<group>"; };
-		CD387868271D9CD100C097D8 /* glean.udl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = glean.udl; path = ../../uniffi/src/glean.udl; sourceTree = "<group>"; };
-		CD38786C271DCCC700C097D8 /* libglean_uniffi.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libglean_uniffi.a; path = ../../target/libglean_uniffi.a; sourceTree = "<group>"; };
+		CD387868271D9CD100C097D8 /* glean.udl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = glean.udl; path = ../../src/glean.udl; sourceTree = "<group>"; };
+		CD38786C271DCCC700C097D8 /* libglean_ffi.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libglean_ffi.a; path = ../../target/libglean_ffi.a; sourceTree = "<group>"; };
 		CD6E200525CAD66100C7EF2B /* Gzip.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Gzip.xcframework; path = ../../Carthage/Build/Gzip.xcframework; sourceTree = "<group>"; };
 		CD6E200925CAD68900C7EF2B /* OHHTTPStubs.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = OHHTTPStubs.xcframework; path = ../../Carthage/Build/OHHTTPStubs.xcframework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -180,7 +180,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CD38786D271DCCC700C097D8 /* libglean_uniffi.a in Frameworks */,
+				CD38786D271DCCC700C097D8 /* libglean_ffi.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -394,7 +394,7 @@
 		BF6F2DA6224BF8F000394062 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				CD38786C271DCCC700C097D8 /* libglean_uniffi.a */,
+				CD38786C271DCCC700C097D8 /* libglean_ffi.a */,
 				CD6E200925CAD68900C7EF2B /* OHHTTPStubs.xcframework */,
 				CD6E200525CAD66100C7EF2B /* Gzip.xcframework */,
 			);
@@ -545,7 +545,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "bash $PWD/../../build-scripts/xc-universal-binary.sh glean-uniffi $PWD/../.. $buildvariant\n";
+			shellScript = "bash $PWD/../../build-scripts/xc-universal-binary.sh glean-bundle $PWD/../.. $buildvariant\n";
 		};
 		BFB59A9723429FC000F40CA8 /* Run Glean SDK generator */ = {
 			isa = PBXShellScriptBuildPhase;
