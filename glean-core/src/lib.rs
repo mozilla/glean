@@ -44,7 +44,7 @@ pub mod upload;
 mod util;
 
 pub use crate::common_metric_data::{CommonMetricData, Lifetime};
-use crate::core::Glean;
+pub use crate::core::Glean;
 use crate::core_metrics::ClientInfoMetrics;
 pub use crate::error::{Error, ErrorKind, Result};
 pub use crate::error_recording::{test_get_num_recorded_errors, ErrorType};

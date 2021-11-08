@@ -80,8 +80,8 @@ where
 /// ping.
 ///
 /// ```rust,no_run
-/// # use glean_core::{Glean, Configuration, CommonMetricData, metrics::*};
-/// let cfg = Configuration {
+/// # use glean_core::{Glean, InternalConfiguration, CommonMetricData, metrics::*};
+/// let cfg = InternalConfiguration {
 ///     data_path: "/tmp/glean".into(),
 ///     application_id: "glean.sample.app".into(),
 ///     language_binding_name: "Rust".into(),
@@ -102,7 +102,7 @@ where
 ///     ..Default::default()
 /// });
 ///
-/// call_counter.add(&glean, 1);
+/// call_counter.add_sync(&glean, 1);
 ///
 /// glean.submit_ping(&ping, None);
 /// ```
@@ -114,22 +114,22 @@ where
 #[derive(Debug)]
 pub struct Glean {
     upload_enabled: bool,
-    data_store: Option<Database>,
+    pub(crate) data_store: Option<Database>,
     event_data_store: EventDatabase,
-    core_metrics: CoreMetrics,
-    pub additional_metrics: AdditionalMetrics,
-    database_metrics: DatabaseMetrics,
-    internal_pings: InternalPings,
+    pub(crate) core_metrics: CoreMetrics,
+    pub(crate) additional_metrics: AdditionalMetrics,
+    pub(crate) database_metrics: DatabaseMetrics,
+    pub(crate) internal_pings: InternalPings,
     data_path: PathBuf,
     application_id: String,
     ping_registry: HashMap<String, PingType>,
     start_time: DateTime<FixedOffset>,
     max_events: u32,
     is_first_run: bool,
-    upload_manager: PingUploadManager,
+    pub(crate) upload_manager: PingUploadManager,
     debug: DebugOptions,
-    pub app_build: String,
-    schedule_metrics_pings: bool,
+    pub(crate) app_build: String,
+    pub(crate) schedule_metrics_pings: bool,
 }
 
 impl Glean {
@@ -551,7 +551,7 @@ impl Glean {
             .unwrap_or_else(|| String::from(""))
     }
 
-    fn make_path(&self, ping_name: &str, doc_id: &str) -> String {
+    pub(crate) fn make_path(&self, ping_name: &str, doc_id: &str) -> String {
         format!(
             "/submit/{}/{}/{}/{}",
             self.get_application_id(),

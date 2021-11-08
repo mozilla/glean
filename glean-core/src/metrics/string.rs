@@ -116,7 +116,7 @@ mod test {
         });
 
         let sample_string = "0123456789".repeat(11);
-        metric.set(&glean, sample_string.clone());
+        metric.set_sync(&glean, sample_string.clone());
 
         let truncated = truncate_string_at_boundary(sample_string, MAX_LENGTH_VALUE);
         assert_eq!(truncated, metric.test_get_value(&glean, "store1").unwrap());

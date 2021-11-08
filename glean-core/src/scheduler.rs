@@ -332,7 +332,7 @@ mod test {
         let (mut glean, _t) = new_glean(None);
 
         glean.app_build = "a build".into();
-        get_last_sent_build_metric().set(&glean, "a different build");
+        get_last_sent_build_metric().set_sync(&glean, "a different build");
 
         let (submitter, submitter_count, scheduler, scheduler_count) = new_proxies(
             |_, reason| assert_eq!(reason, Some("upgrade")),
@@ -506,7 +506,7 @@ mod test {
             !glean.schedule_metrics_pings,
             "Real schedulers not allowed in tests!"
         );
-        assert!(crate::setup_glean(glean).is_ok());
+        assert!(crate::core::setup_glean(glean).is_ok());
 
         // We're choosing a time after SCHEDULED_HOUR so `When::Today` will give us a duration of 0.
         let now = FixedOffset::east(0).ymd(2021, 4, 20).and_hms(15, 42, 0);

@@ -55,7 +55,7 @@ impl CounterMetric {
     }
 
     /// Internal only, synchronous API for incremeting a counter
-    pub(crate) fn add_sync(&self, glean: &Glean, amount: i32) {
+    pub fn add_sync(&self, glean: &Glean, amount: i32) {
         if !self.should_record(glean) {
             return;
         }
@@ -96,7 +96,8 @@ impl CounterMetric {
         crate::launch_with_glean(move |glean| metric.add_sync(glean, amount))
     }
 
-    pub(crate) fn get_value(&self, glean: &Glean, ping_name: Option<&str>) -> Option<i32> {
+    /// Get current value
+    pub fn get_value(&self, glean: &Glean, ping_name: Option<&str>) -> Option<i32> {
         let queried_ping_name = ping_name.unwrap_or_else(|| &self.meta().send_in_pings[0]);
 
         match StorageManager.snapshot_metric_for_test(

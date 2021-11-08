@@ -9,7 +9,6 @@ use std::collections::HashSet;
 use std::iter::FromIterator;
 
 use super::*;
-use crate::metrics::RecordedExperiment;
 use crate::metrics::{StringMetric, TimeUnit, TimespanMetric, TimingDistributionMetric};
 
 const GLOBAL_APPLICATION_ID: &str = "org.mozilla.glean.test.app";
@@ -46,7 +45,11 @@ fn experiment_id_and_branch_get_truncated_if_too_long() {
     let very_long_branch_id = "test-branch-id".repeat(10);
 
     // Mark the experiment as active.
-    glean.set_experiment_active(very_long_id.clone(), very_long_branch_id.clone(), None);
+    glean.set_experiment_active(
+        very_long_id.clone(),
+        very_long_branch_id.clone(),
+        HashMap::new(),
+    );
 
     // Generate the expected id and branch strings.
     let mut expected_id = very_long_id;
@@ -55,20 +58,21 @@ fn experiment_id_and_branch_get_truncated_if_too_long() {
     expected_branch_id.truncate(100);
 
     assert!(
-        glean.test_is_experiment_active(expected_id.clone()),
+        glean
+            .test_get_experiment_data(expected_id.clone())
+            .is_some(),
         "An experiment with the truncated id should be available"
     );
 
     // Make sure the branch id was truncated as well.
-    let experiment_data = glean.test_get_experiment_data_as_json(expected_id);
+    let experiment_data = glean.test_get_experiment_data(expected_id);
     assert!(
-        !experiment_data.is_none(),
+        experiment_data.is_some(),
         "Experiment data must be available"
     );
 
-    let parsed_json: RecordedExperimentData =
-        ::serde_json::from_str(&experiment_data.unwrap()).unwrap();
-    assert_eq!(expected_branch_id, parsed_json.branch);
+    let experiment_data = experiment_data.unwrap();
+    assert_eq!(expected_branch_id, experiment_data.branch);
 }
 
 #[test]
@@ -90,31 +94,32 @@ fn limits_on_experiments_extras_are_applied_correctly() {
     }
 
     // Mark the experiment as active.
-    glean.set_experiment_active(experiment_id.clone(), branch_id, Some(extras));
+    glean.set_experiment_active(experiment_id.clone(), branch_id, extras);
 
     // Make sure it is active
     assert!(
-        glean.test_is_experiment_active(experiment_id.clone()),
+        glean
+            .test_get_experiment_data(experiment_id.clone())
+            .is_some(),
         "An experiment with the truncated id should be available"
     );
 
     // Get the data
-    let experiment_data = glean.test_get_experiment_data_as_json(experiment_id);
+    let experiment_data = glean.test_get_experiment_data(experiment_id);
     assert!(
         !experiment_data.is_none(),
         "Experiment data must be available"
     );
 
     // Parse the JSON and validate the lengths
-    let parsed_json: RecordedExperimentData =
-        ::serde_json::from_str(&experiment_data.unwrap()).unwrap();
+    let experiment_data = experiment_data.unwrap();
     assert_eq!(
         20,
-        parsed_json.clone().extra.unwrap().len(),
+        experiment_data.extra.as_ref().unwrap().len(),
         "Experiments extra must be less than max length"
     );
 
-    for (key, value) in parsed_json.extra.as_ref().unwrap().iter() {
+    for (key, value) in experiment_data.extra.as_ref().unwrap().iter() {
         assert!(
             key.len() <= 100,
             "Experiments extra key must be less than max length"
@@ -141,29 +146,30 @@ fn experiments_status_is_correctly_toggled() {
         .collect();
 
     // Activate an experiment.
-    glean.set_experiment_active(experiment_id.clone(), branch_id, Some(extra.clone()));
+    glean.set_experiment_active(experiment_id.clone(), branch_id, extra.clone());
 
     // Check that the experiment is marekd as active.
     assert!(
-        glean.test_is_experiment_active(experiment_id.clone()),
+        glean
+            .test_get_experiment_data(experiment_id.clone())
+            .is_some(),
         "The experiment must be marked as active."
     );
 
     // Check that the extra data was stored.
-    let experiment_data = glean.test_get_experiment_data_as_json(experiment_id.clone());
+    let experiment_data = glean.test_get_experiment_data(experiment_id.clone());
     assert!(
         experiment_data.is_some(),
         "Experiment data must be available"
     );
 
-    let parsed_data: RecordedExperimentData =
-        ::serde_json::from_str(&experiment_data.unwrap()).unwrap();
-    assert_eq!(parsed_data.extra.unwrap(), extra);
+    let experiment_data = experiment_data.unwrap();
+    assert_eq!(experiment_data.extra.unwrap(), extra);
 
     // Disable the experiment and check that is no longer available.
     glean.set_experiment_inactive(experiment_id.clone());
     assert!(
-        !glean.test_is_experiment_active(experiment_id),
+        glean.test_get_experiment_data(experiment_id).is_none(),
         "The experiment must not be available any more."
     );
 }
@@ -223,19 +229,19 @@ fn basic_metrics_should_be_cleared_when_uploading_is_disabled() {
         "baseline",
     ));
 
-    metric.set(&glean, "TEST VALUE");
+    metric.set_sync(&glean, "TEST VALUE");
     assert!(metric.test_get_value(&glean, "baseline").is_some());
 
     glean.set_upload_enabled(false);
     assert!(metric.test_get_value(&glean, "baseline").is_none());
 
-    metric.set(&glean, "TEST VALUE");
+    metric.set_sync(&glean, "TEST VALUE");
     assert!(metric.test_get_value(&glean, "baseline").is_none());
 
     glean.set_upload_enabled(true);
     assert!(metric.test_get_value(&glean, "baseline").is_none());
 
-    metric.set(&glean, "TEST VALUE");
+    metric.set_sync(&glean, "TEST VALUE");
     assert!(metric.test_get_value(&glean, "baseline").is_some());
 }
 
@@ -402,7 +408,7 @@ fn correct_order() {
         CustomDistributionExponential(Histogram::exponential(1, 500, 10)),
         CustomDistributionLinear(Histogram::linear(1, 500, 10)),
         Datetime(local_now_with_offset().0, TimeUnit::Second),
-        Experiment(RecordedExperimentData { branch: "branch".into(), extra: None, }),
+        Experiment(RecordedExperiment { branch: "branch".into(), extra: None, }),
         Quantity(0),
         String("glean".into()),
         StringList(vec!["glean".into()]),
@@ -504,7 +510,7 @@ fn backwards_compatible_deserialization() {
         (
             "experiment",
             vec![5, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 98, 114, 97, 110, 99, 104, 0],
-            Experiment(RecordedExperimentData { branch: "branch".into(), extra: None, }),
+            Experiment(RecordedExperiment { branch: "branch".into(), extra: None, }),
         ),
         (
             "quantity",
@@ -656,7 +662,7 @@ fn test_change_metric_type_runtime() {
     });
 
     let string_value = "definitely-a-string!";
-    string_metric.set(&glean, string_value);
+    string_metric.set_sync(&glean, string_value);
 
     assert_eq!(
         string_metric.test_get_value(&glean, ping_name).unwrap(),
@@ -664,7 +670,7 @@ fn test_change_metric_type_runtime() {
         "Expected properly deserialized string"
     );
 
-    let mut timespan_metric = TimespanMetric::new(
+    let timespan_metric = TimespanMetric::new(
         CommonMetricData {
             name: metric_name.into(),
             category: metric_category.into(),
@@ -681,7 +687,7 @@ fn test_change_metric_type_runtime() {
     timespan_metric.set_stop(&glean, duration);
 
     assert_eq!(
-        timespan_metric.test_get_value(&glean, ping_name).unwrap(),
+        timespan_metric.get_value(&glean, Some(ping_name)).unwrap(),
         60,
         "Expected properly deserialized time"
     );
@@ -900,7 +906,7 @@ fn records_io_errors() {
     let metric = &glean.additional_metrics.io_errors;
     assert_eq!(
         1,
-        metric.test_get_value(&glean, "metrics").unwrap(),
+        metric.get_value(&glean, Some("metrics")).unwrap(),
         "Should have recorded an IO error"
     );
 
@@ -944,7 +950,7 @@ fn handles_local_now_gracefully() {
     let metric = &glean.additional_metrics.invalid_timezone_offset;
     assert_eq!(
         None,
-        metric.test_get_value(&glean, "metrics"),
+        metric.get_value(&glean, Some("metrics")),
         "Timezones should be valid"
     );
 }

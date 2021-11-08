@@ -1240,7 +1240,7 @@ mod test {
             upload_manager
                 .upload_metrics
                 .deleted_pings_after_quota_hit
-                .test_get_value(&glean, "metrics")
+                .get_value(&glean, Some("metrics"))
                 .unwrap()
         );
         assert_eq!(
@@ -1248,7 +1248,7 @@ mod test {
             upload_manager
                 .upload_metrics
                 .pending_pings
-                .test_get_value(&glean, "metrics")
+                .get_value(&glean, Some("metrics"))
                 .unwrap()
         );
     }
@@ -1312,7 +1312,7 @@ mod test {
             upload_manager
                 .upload_metrics
                 .deleted_pings_after_quota_hit
-                .test_get_value(&glean, "metrics")
+                .get_value(&glean, Some("metrics"))
                 .unwrap()
         );
         assert_eq!(
@@ -1320,7 +1320,7 @@ mod test {
             upload_manager
                 .upload_metrics
                 .pending_pings
-                .test_get_value(&glean, "metrics")
+                .get_value(&glean, Some("metrics"))
                 .unwrap()
         );
     }
@@ -1386,7 +1386,7 @@ mod test {
             upload_manager
                 .upload_metrics
                 .deleted_pings_after_quota_hit
-                .test_get_value(&glean, "metrics")
+                .get_value(&glean, Some("metrics"))
                 .unwrap()
         );
         assert_eq!(
@@ -1394,7 +1394,7 @@ mod test {
             upload_manager
                 .upload_metrics
                 .pending_pings
-                .test_get_value(&glean, "metrics")
+                .get_value(&glean, Some("metrics"))
                 .unwrap()
         );
     }
@@ -1460,7 +1460,7 @@ mod test {
             upload_manager
                 .upload_metrics
                 .deleted_pings_after_quota_hit
-                .test_get_value(&glean, "metrics")
+                .get_value(&glean, Some("metrics"))
                 .unwrap()
         );
         assert_eq!(
@@ -1468,7 +1468,7 @@ mod test {
             upload_manager
                 .upload_metrics
                 .pending_pings
-                .test_get_value(&glean, "metrics")
+                .get_value(&glean, Some("metrics"))
                 .unwrap()
         );
     }

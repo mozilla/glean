@@ -28,7 +28,7 @@ fn can_create_labeled_counter_metric() {
     );
 
     let metric = labeled.get("label1");
-    metric.add(&glean, 1);
+    metric.add_sync(&glean, 1);
 
     let snapshot = StorageManager
         .snapshot_as_json(glean.storage(), "store1", true)
@@ -60,7 +60,7 @@ fn can_create_labeled_string_metric() {
     );
 
     let metric = labeled.get("label1");
-    metric.set(&glean, "text");
+    metric.set_sync(&glean, "text");
 
     let snapshot = StorageManager
         .snapshot_as_json(glean.storage(), "store1", true)
@@ -124,10 +124,10 @@ fn can_use_multiple_labels() {
     );
 
     let metric = labeled.get("label1");
-    metric.add(&glean, 1);
+    metric.add_sync(&glean, 1);
 
     let metric = labeled.get("label2");
-    metric.add(&glean, 2);
+    metric.add_sync(&glean, 2);
 
     let snapshot = StorageManager
         .snapshot_as_json(glean.storage(), "store1", true)
@@ -162,7 +162,7 @@ fn can_record_error_for_submetric() {
     );
 
     let metric = labeled.get("label1");
-    metric.set(&glean, "01234567890".repeat(20));
+    metric.set_sync(&glean, "01234567890".repeat(20));
 
     // Make sure that the errors have been recorded
     assert_eq!(
@@ -187,16 +187,16 @@ fn labels_are_checked_against_static_list() {
     );
 
     let metric = labeled.get("label1");
-    metric.add(&glean, 1);
+    metric.add_sync(&glean, 1);
 
     let metric = labeled.get("label2");
-    metric.add(&glean, 2);
+    metric.add_sync(&glean, 2);
 
     // All non-registed labels get mapped to the `other` label
     let metric = labeled.get("label3");
-    metric.add(&glean, 3);
+    metric.add_sync(&glean, 3);
     let metric = labeled.get("label4");
-    metric.add(&glean, 4);
+    metric.add_sync(&glean, 4);
 
     let snapshot = StorageManager
         .snapshot_as_json(glean.storage(), "store1", true)
@@ -232,7 +232,7 @@ fn dynamic_labels_too_long() {
     );
 
     let metric = labeled.get("this_string_has_more_than_thirty_characters");
-    metric.add(&glean, 1);
+    metric.add_sync(&glean, 1);
 
     let snapshot = StorageManager
         .snapshot_as_json(glean.storage(), "store1", true)
@@ -278,7 +278,7 @@ fn dynamic_labels_regex_mismatch() {
     let num_non_validating = labels_not_validating.len();
 
     for label in &labels_not_validating {
-        labeled.get(label).add(&glean, 1);
+        labeled.get(label).add_sync(&glean, 1);
     }
 
     let snapshot = StorageManager
@@ -324,7 +324,7 @@ fn dynamic_labels_regex_allowed() {
     ];
 
     for label in &labels_validating {
-        labeled.get(label).add(&glean, 1);
+        labeled.get(label).add_sync(&glean, 1);
     }
 
     let snapshot = StorageManager
@@ -373,7 +373,7 @@ fn seen_labels_get_reloaded_from_disk() {
         // Set the maximum number of labels
         for i in 1..=16 {
             let label = format!("label{}", i);
-            labeled.get(&label).add(&glean, i);
+            labeled.get(&label).add_sync(&glean, i);
         }
 
         let snapshot = StorageManager
@@ -397,7 +397,7 @@ fn seen_labels_get_reloaded_from_disk() {
         let (glean, _) = new_glean(Some(tempdir));
 
         // Try to store another label
-        labeled.get("new_label").add(&glean, 40);
+        labeled.get("new_label").add_sync(&glean, 40);
 
         let snapshot = StorageManager
             .snapshot_as_json(glean.storage(), "store1", false)
@@ -445,13 +445,13 @@ fn caching_metrics_with_dynamic_labels() {
 
     // Only now use them.
     for metric in metrics {
-        metric.add(&glean, 1);
+        metric.add_sync(&glean, 1);
     }
 
     // The maximum number of labels we store is 16.
     // So we should have put 4 metrics in the __other__ bucket.
     let other = labeled.get("__other__");
-    assert_eq!(Some(4), other.test_get_value(&glean, "store1"));
+    assert_eq!(Some(4), other.get_value(&glean, Some("store1")));
 }
 
 #[test]
@@ -479,13 +479,13 @@ fn caching_metrics_with_dynamic_labels_across_pings() {
 
     // Only now use them.
     for metric in &metrics {
-        metric.add(&glean, 1);
+        metric.add_sync(&glean, 1);
     }
 
     // The maximum number of labels we store is 16.
     // So we should have put 4 metrics in the __other__ bucket.
     let other = labeled.get("__other__");
-    assert_eq!(Some(4), other.test_get_value(&glean, "store1"));
+    assert_eq!(Some(4), other.get_value(&glean, Some("store1")));
 
     // Snapshot (so we can inspect the JSON)
     // and clear out storage (the same way submitting a ping would)
@@ -502,16 +502,16 @@ fn caching_metrics_with_dynamic_labels_across_pings() {
     // We now set the ones that ended up in `__other__` before.
     // Note: indexing is zero-based,
     // but we later check the names, so let's offset it by 1.
-    metrics[16].add(&glean, 17);
-    metrics[17].add(&glean, 18);
-    metrics[18].add(&glean, 19);
-    metrics[19].add(&glean, 20);
+    metrics[16].add_sync(&glean, 17);
+    metrics[17].add_sync(&glean, 18);
+    metrics[18].add_sync(&glean, 19);
+    metrics[19].add_sync(&glean, 20);
 
-    assert_eq!(Some(17), metrics[16].test_get_value(&glean, "store1"));
-    assert_eq!(Some(18), metrics[17].test_get_value(&glean, "store1"));
-    assert_eq!(Some(19), metrics[18].test_get_value(&glean, "store1"));
-    assert_eq!(Some(20), metrics[19].test_get_value(&glean, "store1"));
-    assert_eq!(None, other.test_get_value(&glean, "store1"));
+    assert_eq!(Some(17), metrics[16].get_value(&glean, Some("store1")));
+    assert_eq!(Some(18), metrics[17].get_value(&glean, Some("store1")));
+    assert_eq!(Some(19), metrics[18].get_value(&glean, Some("store1")));
+    assert_eq!(Some(20), metrics[19].get_value(&glean, Some("store1")));
+    assert_eq!(None, other.get_value(&glean, Some("store1")));
 
     let snapshot = StorageManager
         .snapshot_as_json(glean.storage(), "store1", true)
