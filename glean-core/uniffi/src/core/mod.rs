@@ -292,4 +292,32 @@ impl Glean {
     pub(crate) fn log_pings(&self) -> bool {
         self.debug.log_pings.get().copied().unwrap_or(false)
     }
+
+    /// Performs the collection/cleanup operations required by becoming active.
+    ///
+    /// This functions generates a baseline ping with reason `active`
+    /// and then sets the dirty bit.
+    pub fn handle_client_active(&mut self) {
+        //if !self.internal_pings.baseline.submit(self, Some("active")) {
+        //    log::info!("baseline ping not submitted on active");
+        //}
+
+        //self.set_dirty_flag(true);
+    }
+
+    /// Performs the collection/cleanup operations required by becoming inactive.
+    ///
+    /// This functions generates a baseline and an events ping with reason
+    /// `inactive` and then clears the dirty bit.
+    pub fn handle_client_inactive(&mut self) {
+        //if !self.internal_pings.baseline.submit(self, Some("inactive")) {
+        //    log::info!("baseline ping not submitted on inactive");
+        //}
+
+        //if !self.internal_pings.events.submit(self, Some("inactive")) {
+        //    log::info!("events ping not submitted on inactive");
+        //}
+
+        //self.set_dirty_flag(false);
+    }
 }

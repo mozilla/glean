@@ -14,6 +14,13 @@ namespace glean {
     boolean glean_set_debug_view_tag(string tag);
     boolean glean_set_source_tags(sequence<string> tags);
     void glean_set_log_pings(boolean value);
+
+    void glean_handle_client_active(OnTriggerUpload callback);
+    void glean_handle_client_inactive(OnTriggerUpload callback);
+};
+
+callback interface OnTriggerUpload {
+    void trigger_upload();
 };
 
 callback interface OnUploadEnabledChanges {
