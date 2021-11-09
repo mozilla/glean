@@ -7,6 +7,8 @@ use glean_core::{CommonMetricData, Glean};
 use tempfile::Builder;
 
 fn main() {
+    // TODO: Re-enable this once the API is clear. Will probably become the sample from RLB.
+    /*
     env_logger::init();
 
     let mut args = env::args().skip(1);
@@ -77,4 +79,5 @@ fn main() {
 
     let ping = ping_maker.collect_string(&glean, glean.get_ping_by_name("metrics").unwrap(), None);
     println!("Metrics Ping: {:?}", ping);
+    */
 }
