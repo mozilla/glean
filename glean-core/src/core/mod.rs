@@ -268,7 +268,11 @@ impl Glean {
             use_core_mps: false,
         };
 
-        let glean = Self::new(cfg).unwrap();
+        let mut glean = Self::new(cfg).unwrap();
+
+        // Disable all upload manager policies for testing
+        glean.upload_manager = PingUploadManager::no_policy(data_path);
+
         glean
     }
 
