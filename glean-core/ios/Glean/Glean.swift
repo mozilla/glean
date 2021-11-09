@@ -12,40 +12,26 @@ private typealias Pings = GleanMetrics.Pings
 /// Public exported type identifying individual timers for `TimingDistributionMetricType`
 public typealias GleanTimerId = UInt64
 
-class OnUploadEnabledChangesImpl: OnUploadEnabledChanges {
+class OnGleanEventsImpl: OnGleanEvents {
     let glean: Glean
-    let configuration: Configuration
 
-    init(glean: Glean, configuration: Configuration) {
+    init(glean: Glean) {
         self.glean = glean
-        self.configuration = configuration
     }
 
-    func willBeDisabled() {
-        Dispatchers.shared.cancelBackgroundTasks()
-    }
-
-    func onEnabled() {
-        // If uploading is being re-enabled, we have to restore the
-        // application-lifetime metrics.
-        self.glean.initializeCoreMetrics()
-    }
-
-    func onDisabled() {
-        // If uploading is disabled, we need to send the deletion-request ping
-        HttpPingUploader.launch(configuration: self.configuration)
-    }
-}
-
-class OnTriggerUploadImpl: OnTriggerUpload {
-    let configuration: Configuration
-
-    init(configuration: Configuration) {
-        self.configuration = configuration
+    func onInitializeFinished() {
+        self.glean.observer = GleanLifecycleObserver()
+        self.glean.initialized = true
     }
 
     func triggerUpload() {
-        HttpPingUploader.launch(configuration: self.configuration)
+        // If uploading is disabled, we need to send the deletion-request ping
+        HttpPingUploader.launch(configuration: self.glean.configuration!)
+    }
+
+    func startMetricsPingScheduler() {
+        // Check for overdue metrics pings
+        self.glean.metricsPingScheduler.schedule()
     }
 }
 
@@ -100,7 +86,6 @@ public class Glean {
         self.initialized = false
     }
 
-    // swiftlint:disable function_body_length cyclomatic_complexity
     /// Initialize the Glean SDK.
     ///
     /// This should only be initialized once by the application, and not by
@@ -132,135 +117,33 @@ public class Glean {
         }
 
         self.configuration = configuration
-
-        // Execute startup off the main thread
-        Dispatchers.shared.launchConcurrent {
-            let cfg = InternalConfiguration(
-                dataPath: getGleanDirectory().relativePath,
-                applicationId: AppInfo.name,
-                languageBindingName: Constants.languageBindingName,
-                uploadEnabled: uploadEnabled,
-                maxEvents: configuration.maxEvents.map { UInt32($0) },
-                delayPingLifetimeIo: false,
-                appBuild: "0.0.0",
-                useCoreMps: false
-            )
-            self.initialized = gleanInitialize(cfg: cfg)
-
-            // If initialization of Glean fails, bail out and don't initialize further
-            if !self.initialized {
-                return
-            }
-
-            if let debugViewTag = self.debugViewTag {
-                _ = self.setDebugViewTag(debugViewTag)
-            }
-
-            if self.logPings {
-                self.setLogPings(self.logPings)
-            }
-
-            if let sourceTags = self.sourceTags {
-                _ = self.setSourceTags(sourceTags)
-            }
-
-            // Get the current value of the dirty flag so we know whether to
-            // send a dirty startup baseline ping below.  Immediately set it to
-            // `false` so that dirty startup pings won't be sent if Glean
-            // initialization does not complete successfully.
-            // It is set to `true` again when registering the lifecycle observer.
-            let isDirtyFlagSet = glean_is_dirty_flag_set().toBool()
-            glean_set_dirty_flag(false.toByte())
-
-            // Register builtin pings.
-            // Unfortunately we need to manually list them here to guarantee they are registered synchronously
-            // before we need them.
-            // We don't need to handle the deletion-request ping. It's never touched from the language implementation.
-            glean_register_ping_type(Pings.shared.baseline.handle)
-            glean_register_ping_type(Pings.shared.metrics.handle)
-            glean_register_ping_type(Pings.shared.events.handle)
-
-            // If any pings were registered before initializing, do so now
-            for ping in self.pingTypeQueue {
-                // We're registering pings synchronously here,
-                // as this whole `initialize` block already runs off the main thread.
-                glean_register_ping_type(ping.handle)
-            }
-
-            // If this is the first time ever the Glean SDK runs, make sure to set
-            // some initial core metrics in case we need to generate early pings.
-            // The next times we start, we would have them around already.
-            let isFirstRun = glean_is_first_run().toBool()
-            if isFirstRun {
-                self.initializeCoreMetrics()
-            }
-
-            // Deal with any pending events so we can start recording new ones
-            let pingSubmitted = glean_on_ready_to_submit_pings().toBool()
-
-            // We need to enqueue the ping uploader in these cases:
-            // 1. Pings were submitted through Glean and it is ready to upload those pings;
-            // 2. Upload is disabled, to upload a possible deletion-request ping.
-            if pingSubmitted || !uploadEnabled {
-                HttpPingUploader.launch(configuration: configuration)
-            }
-
-            // Check for overdue metrics pings
-            self.metricsPingScheduler.schedule()
-
-            // Check if the "dirty flag" is set. That means the product was probably
-            // force-closed. If that's the case, submit a 'baseline' ping with the
-            // reason "dirty_startup". We only do that from the second run.
-            if !isFirstRun && isDirtyFlagSet {
-                self.submitPingByNameSync(
-                    pingName: "baseline",
-                    reason: "dirty_startup"
-                )
-            }
-
-            // From the second time we run, after all startup pings are generated,
-            // make sure to clear `lifetime: application` metrics and set them again.
-            // Any new value will be sent in newly generted pings after startup.
-            // NOTE: we are adding this directly to the serialOperationQueue which
-            // bypasses the queue for initial tasks, otherwise this could get lost
-            // if the initial tasks queue overflows.
-            if !isFirstRun {
-                glean_clear_application_lifetime_metrics()
-                self.initializeCoreMetrics()
-            }
-
-            // Signal the RLB dispatcher to unblock, if any exists.
-            glean_flush_rlb_dispatcher()
-            // Signal Dispatcher that init is complete
-            Dispatchers.shared.flushQueuedInitialTasks()
-
-            self.observer = GleanLifecycleObserver()
-        }
-
-        self.initFinished.value = true
+        let cfg = InternalConfiguration(
+            dataPath: getGleanDirectory().relativePath,
+            applicationId: AppInfo.name,
+            languageBindingName: Constants.languageBindingName,
+            uploadEnabled: uploadEnabled,
+            maxEvents: configuration.maxEvents.map { UInt32($0) },
+            delayPingLifetimeIo: false,
+            appBuild: "0.0.0",
+            useCoreMps: false
+        )
+        let clientInfo = getClientInfo(configuration)
+        let callbacks = OnGleanEventsImpl(glean: self)
+        gleanInitialize(cfg: cfg, clientInfo: clientInfo, callbacks: callbacks)
     }
 
-    // swiftlint:enable function_body_length cyclomatic_complexity
-
     /// Initialize the core metrics internally managed by Glean (e.g. client id).
-    internal func initializeCoreMetrics() {
-        // Set a few more metrics that will be sent as part of every ping.
-        // Please note that the following metrics must be set synchronously, so
-        // that they are guaranteed to be available with the first ping that is
-        // generated. We use an internal only API to do that.
-
-        GleanInternalMetrics.osVersion.setSync(UIDevice.current.systemVersion)
-        GleanInternalMetrics.deviceManufacturer.setSync(Sysctl.manufacturer)
-        GleanInternalMetrics.deviceModel.setSync(Sysctl.model)
-        GleanInternalMetrics.architecture.setSync(Sysctl.machine)
-        GleanInternalMetrics.locale.setSync(getLocaleTag())
-
-        if let channel = self.configuration?.channel {
-            GleanInternalMetrics.appChannel.setSync(channel)
-        }
-
-        GleanInternalMetrics.appBuild.setSync(AppInfo.buildId)
-        GleanInternalMetrics.appDisplayVersion.setSync(AppInfo.displayVersion)
+    internal func getClientInfo(_ configuration: Configuration) -> ClientInfoMetrics {
+        return ClientInfoMetrics(
+            appBuild: AppInfo.buildId,
+            appDisplayVersion: AppInfo.displayVersion,
+            architecture: Sysctl.machine,
+            osVersion: UIDevice.current.systemVersion,
+            channel: configuration.channel,
+            locale: getLocaleTag(),
+            deviceManufacturer: Sysctl.manufacturer,
+            deviceModel: Sysctl.model
+        )
     }
 
     /// Enable or disable Glean collection and upload.
@@ -277,8 +160,7 @@ public class Glean {
     /// - parameters:
     ///     * enabled: When true, enable metric collection.
     public func setUploadEnabled(_ enabled: Bool) {
-        let changes = OnUploadEnabledChangesImpl(glean: self, configuration: self.configuration!)
-        gleanSetUploadEnabled(enabled: enabled, changesCallback: changes)
+        gleanSetUploadEnabled(enabled: enabled)
     }
 
     /// Used to indicate that an experiment is running.
@@ -332,16 +214,14 @@ public class Glean {
 
     /// Handle foreground event and submit appropriate pings
     func handleForegroundEvent() {
-        worker_cb = OnTriggerUploadImpl(configuration: self.configuration!)
-        glean_handle_client_active(worker_cb)
+        gleanHandleClientActive()
 
         GleanValidation.foregroundCount.add(1)
     }
 
     /// Handle background event and submit appropriate pings
     func handleBackgroundEvent() {
-        worker_cb = OnTriggerUploadImpl(configuration: self.configuration!)
-        glean_handle_client_inactive(worker_cb)
+        gleanHandleClientInactive()
     }
 
     /// Collect and submit a ping by name for eventual uploading

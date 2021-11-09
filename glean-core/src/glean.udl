@@ -48,11 +48,11 @@ dictionary ClientInfoMetrics {
     string architecture;
     string os_version;
 
-    string? channel;
-    string? android_sdk_version;
-    string? device_manufacturer;
-    string? device_model;
-    string? locale;
+    string? channel = null;
+    string? locale = null;
+    string? device_manufacturer = null;
+    string? device_model = null;
+    string? android_sdk_version = null;
 };
 
 // A callback object, that is stored within the core logic for the entire lifetime of the application.
