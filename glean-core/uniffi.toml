@@ -1,6 +1,9 @@
 [bindings.kotlin]
 package_name = "mozilla.telemetry.glean.internal"
-cdylib_name = "glean"
+cdylib_name = "glean_ffi"
+
+[bindings.swift]
+cdylib_name = "glean_ffi"
 
 [bindings.python]
-cdylib_name = "glean"
+cdylib_name = "glean_ffi"
