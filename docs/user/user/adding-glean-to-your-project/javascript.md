@@ -25,8 +25,6 @@ The Glean JavaScript SDK allows integration with three distinct JavaScript envir
 * [Host permissions](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/permissions#host_permissions) to the telemetry server
   * Only necessary if the defined server endpoint denies
   [cross-origin](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) requests
-  * The default `incoming.telemetry.mozilla.org` server does require this type of permission.
-  Follow [Bug 1676676](https://bugzilla.mozilla.org/show_bug.cgi?id=1676676) for updates on this requirement
 * ["storage"](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/permissions#api_permissions) API permissions
 
 {{#include ../../../shared/blockquote-info.html}}
