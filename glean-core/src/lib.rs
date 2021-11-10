@@ -598,6 +598,29 @@ pub fn glean_submit_ping_by_name_sync(ping_name: String, reason: Option<String>)
     })
 }
 
+/// **TEST-ONLY Method**
+///
+/// Destroy the underlying database.
+pub fn glean_test_destroy_glean(clear_stores: bool) {
+    if !was_initialize_called() {
+        return;
+    }
+
+    dispatcher::reset_dispatcher();
+
+    if core::global_glean().is_some() {
+        core::with_glean_mut(|glean| {
+            if clear_stores {
+                glean.test_clear_all_stores()
+            }
+            glean.destroy_db()
+        });
+    }
+
+    // Allow us to go through initialization again.
+    INITIALIZE_CALLED.store(false, Ordering::SeqCst);
+}
+
 #[allow(missing_docs)]
 mod ffi {
     use super::*;

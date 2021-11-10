@@ -475,15 +475,10 @@ open class GleanInternalAPI internal constructor () {
     ) {
         Glean.enableTestingMode()
 
-        if (isInitialized() && clearStores) {
-            // Clear all the stored data.
-            LibGleanFFI.INSTANCE.glean_test_clear_all_stores()
-        }
-
         isMainProcess = null
 
         // Init Glean.
-        Glean.testDestroyGleanHandle()
+        Glean.testDestroyGleanHandle(clearStores)
         // Always log pings for tests
         Glean.setLogPings(true)
 
@@ -518,17 +513,15 @@ open class GleanInternalAPI internal constructor () {
      * Test-only method to destroy the owned glean-core handle.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    internal fun testDestroyGleanHandle() {
+    internal fun testDestroyGleanHandle(clearStores: Boolean = false) {
         if (!isInitialized()) {
             // We don't need to destroy Glean: it wasn't initialized.
             return
         }
 
-        LibGleanFFI.INSTANCE.glean_destroy_glean()
+        glean_test_destroy_glean(clearStores)
 
         // Reset all state.
-        @Suppress("EXPERIMENTAL_API_USAGE")
-        Dispatchers.API.setTaskQueueing(true)
         initialized = false
     }
 
