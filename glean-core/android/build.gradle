@@ -213,7 +213,7 @@ android.libraryVariants.all { variant ->
     def uniffiGeneratedPath = "generated/source/uniffi/${variant.name}/java"
     def t = tasks.register("generate${variant.name.capitalize()}UniFFIBindings", Exec) {
         workingDir project.rootDir
-        commandLine 'uniffi-bindgen', 'generate', "${project.projectDir}/../src/glean.udl", '--language', 'kotlin', '--out-dir', "${buildDir}/${uniffiGeneratedPath}"
+        commandLine 'uniffi-bindgen', 'generate', '--no-format', "${project.projectDir}/../src/glean.udl", '--language', 'kotlin', '--out-dir', "${buildDir}/${uniffiGeneratedPath}"
         outputs.dir "${buildDir}/${uniffiGeneratedPath}"
         // Re-generate if the interface definition changes.
         inputs.file "${project.projectDir}/../src/glean.udl"
