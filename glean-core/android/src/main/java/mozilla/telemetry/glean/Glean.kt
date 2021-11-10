@@ -240,22 +240,6 @@ open class GleanInternalAPI internal constructor () {
     }
 
     /**
-     * Get whether or not Glean is allowed to record and upload data.
-     *
-     * Caution: the result is only correct if Glean is already initialized.
-     *
-     * Note: due to the deprecation notice and because warnings break the build,
-     * we pull out the implementation into an internal method.
-     */
-    internal fun internalGetUploadEnabled(): Boolean {
-        if (isInitialized()) {
-            return LibGleanFFI.INSTANCE.glean_is_upload_enabled().toBoolean()
-        } else {
-            return false
-        }
-    }
-
-    /**
      * Indicate that an experiment is running. Glean will then add an
      * experiment annotation to the environment which is sent with pings. This
      * information is not persisted between runs.
@@ -376,8 +360,8 @@ open class GleanInternalAPI internal constructor () {
      * @param reason The reason the ping is being submitted.
      * @return The async [Job] performing the work of assembling the ping
      */
-    internal fun submitPing(ping: PingTypeBase, reason: String? = null): Job? {
-        return submitPingByName(ping.name, reason)
+    internal fun submitPing(ping: PingTypeBase, reason: String? = null) {
+        submitPingByName(ping.name, reason)
     }
 
     /**
@@ -399,8 +383,8 @@ open class GleanInternalAPI internal constructor () {
      * @return The async [Job] performing the work of assembling the ping
      */
     @Suppress("EXPERIMENTAL_API_USAGE")
-    internal fun submitPingByName(pingName: String, reason: String? = null) = Dispatchers.API.launch {
-        submitPingByNameSync(pingName, reason)
+    internal fun submitPingByName(pingName: String, reason: String? = null) {
+        gleanSubmitPingByName(pingName, reason)
     }
 
     /**
@@ -426,19 +410,7 @@ open class GleanInternalAPI internal constructor () {
             return
         }
 
-        if (!internalGetUploadEnabled()) {
-            Log.i(LOG_TAG, "Glean disabled: not submitting any pings.")
-            return
-        }
-
-        val submittedPing = LibGleanFFI.INSTANCE.glean_submit_ping_by_name(
-            pingName,
-            reason
-        ).toBoolean()
-
-        if (submittedPing) {
-            PingUploadWorker.enqueueWorker(applicationContext)
-        }
+        gleanSubmitPingByNameSync(pingName, reason)
     }
 
     /**

@@ -20,6 +20,9 @@ namespace glean {
 
     void glean_handle_client_active();
     void glean_handle_client_inactive();
+
+    void glean_submit_ping_by_name(string ping_name, optional string? reason = null);
+    void glean_submit_ping_by_name_sync(string ping_name, optional string? reason = null);
 };
 
 // The Glean configuration.

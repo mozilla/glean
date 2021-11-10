@@ -578,6 +578,26 @@ pub fn glean_handle_client_inactive() {
     })
 }
 
+/// Collect and submit a ping for eventual upload by name.
+pub fn glean_submit_ping_by_name(ping_name: String, reason: Option<String>) {
+    dispatcher::launch(|| glean_submit_ping_by_name_sync(ping_name, reason))
+}
+
+/// Collect and submit a ping (by its name) for eventual upload, synchronously.
+pub fn glean_submit_ping_by_name_sync(ping_name: String, reason: Option<String>) {
+    core::with_glean(|glean| {
+        if !glean.is_upload_enabled() {
+            return;
+        }
+
+        let sent = glean.submit_ping_by_name(&ping_name, reason.as_deref());
+        if sent {
+            let state = global_state().lock().unwrap();
+            state.callbacks.trigger_upload();
+        }
+    })
+}
+
 #[allow(missing_docs)]
 mod ffi {
     use super::*;
