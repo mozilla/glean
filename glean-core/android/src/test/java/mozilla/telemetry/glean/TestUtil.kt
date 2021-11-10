@@ -19,7 +19,6 @@ import org.json.JSONObject
 import org.mockito.Mockito
 import mozilla.telemetry.glean.config.Configuration
 import mozilla.telemetry.glean.scheduler.PingUploadWorker
-import mozilla.telemetry.glean.private.PingTypeBase
 import mozilla.telemetry.glean.private.TimeUnit
 import mozilla.telemetry.glean.utils.decompressGZIP
 import mozilla.telemetry.glean.utils.getISOTimeString

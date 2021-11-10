@@ -222,21 +222,24 @@ impl PingMaker {
         doc_id: &'a str,
         url_path: &'a str,
     ) -> Option<Ping<'a>> {
-        info!("Collecting {}", ping.name);
+        info!("Collecting {}", ping.name());
 
-        let metrics_data = StorageManager.snapshot_as_json(glean.storage(), &ping.name, true);
-        let events_data = glean.event_storage().snapshot_as_json(&ping.name, true);
+        let metrics_data = StorageManager.snapshot_as_json(glean.storage(), ping.name(), true);
+        let events_data = glean.event_storage().snapshot_as_json(ping.name(), true);
 
         let is_empty = metrics_data.is_none() && events_data.is_none();
-        if !ping.send_if_empty && is_empty {
-            info!("Storage for {} empty. Bailing out.", ping.name);
+        if !ping.send_if_empty() && is_empty {
+            info!("Storage for {} empty. Bailing out.", ping.name());
             return None;
         } else if is_empty {
-            info!("Storage for {} empty. Ping will still be sent.", ping.name);
+            info!(
+                "Storage for {} empty. Ping will still be sent.",
+                ping.name()
+            );
         }
 
-        let ping_info = self.get_ping_info(glean, &ping.name, reason);
-        let client_info = self.get_client_info(glean, ping.include_client_id);
+        let ping_info = self.get_ping_info(glean, ping.name(), reason);
+        let client_info = self.get_client_info(glean, ping.include_client_id());
 
         let mut json = json!({
             "ping_info": ping_info,
@@ -252,7 +255,7 @@ impl PingMaker {
 
         Some(Ping {
             content: json,
-            name: &ping.name,
+            name: ping.name(),
             doc_id,
             url_path,
             headers: self.get_headers(glean),

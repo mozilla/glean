@@ -18,9 +18,9 @@ pub mod pings {
             true,
             true,
             vec![
-                "background".to_string(),
+                "active".to_string(),
                 "dirty_startup".to_string(),
-                "foreground".to_string(),
+                "inactive".to_string(),
             ],
         )
     });
@@ -48,9 +48,9 @@ pub mod pings {
             true,
             false,
             vec![
-                "background".to_string(),
-                "max_capacity".to_string(),
                 "startup".to_string(),
+                "max_capacity".to_string(),
+                "inactive".to_string(),
             ],
         )
     });

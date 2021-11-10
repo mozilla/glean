@@ -112,3 +112,8 @@ interface CounterMetric {
 
     i32? test_get_value(optional string? ping_name = null);
 };
+
+interface PingType {
+    constructor(string name, boolean include_client_id, boolean send_if_empty, sequence<string> reason_codes);
+    void submit(optional string? reason = null);
+};

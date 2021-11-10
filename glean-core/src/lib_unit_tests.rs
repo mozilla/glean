@@ -899,7 +899,7 @@ fn records_io_errors() {
     fs::set_permissions(&pending_pings_dir, permissions).unwrap();
 
     // Writing the ping file should fail.
-    let submitted = glean.internal_pings.metrics.submit(&glean, None);
+    let submitted = glean.internal_pings.metrics.submit_sync(&glean, None);
     // But the return value is still `true` because we enqueue the ping anyway.
     assert!(submitted);
 
@@ -914,7 +914,7 @@ fn records_io_errors() {
     fs::set_permissions(&pending_pings_dir, original_permissions).unwrap();
 
     // Now we can submit a ping
-    let submitted = glean.internal_pings.metrics.submit(&glean, None);
+    let submitted = glean.internal_pings.metrics.submit_sync(&glean, None);
     assert!(submitted);
 }
 

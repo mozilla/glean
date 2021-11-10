@@ -874,10 +874,13 @@ mod test {
         // Submit the ping multiple times
         let n = 10;
         for _ in 0..n {
-            glean.submit_ping(&ping_type, None);
+            ping_type.submit_sync(&glean, None);
         }
 
-        glean.internal_pings.deletion_request.submit(&glean, None);
+        glean
+            .internal_pings
+            .deletion_request
+            .submit_sync(&glean, None);
 
         // Clear the queue
         drop(glean.upload_manager.clear_ping_queue());
@@ -903,7 +906,7 @@ mod test {
         // Submit the ping multiple times
         let n = 10;
         for _ in 0..n {
-            glean.submit_ping(&ping_type, None);
+            ping_type.submit_sync(&glean, None);
         }
 
         // Create a new upload manager pointing to the same data_path as the glean instance.
@@ -931,7 +934,7 @@ mod test {
         glean.register_ping_type(&ping_type);
 
         // Submit a ping
-        glean.submit_ping(&ping_type, None);
+        ping_type.submit_sync(&glean, None);
 
         // Get the pending ping directory path
         let pending_pings_dir = dir.path().join(PENDING_PINGS_DIRECTORY);
@@ -961,7 +964,7 @@ mod test {
         glean.register_ping_type(&ping_type);
 
         // Submit a ping
-        glean.submit_ping(&ping_type, None);
+        ping_type.submit_sync(&glean, None);
 
         // Get the pending ping directory path
         let pending_pings_dir = dir.path().join(PENDING_PINGS_DIRECTORY);
@@ -991,7 +994,7 @@ mod test {
         glean.register_ping_type(&ping_type);
 
         // Submit a ping
-        glean.submit_ping(&ping_type, None);
+        ping_type.submit_sync(&glean, None);
 
         // Get the submitted PingRequest
         match glean.get_upload_task() {
@@ -1023,7 +1026,7 @@ mod test {
         glean.register_ping_type(&ping_type);
 
         // Submit a ping
-        glean.submit_ping(&ping_type, None);
+        ping_type.submit_sync(&glean, None);
 
         // Get the pending ping directory path
         let pending_pings_dir = dir.path().join(PENDING_PINGS_DIRECTORY);
@@ -1100,7 +1103,7 @@ mod test {
         glean.register_ping_type(&ping_type);
 
         // Submit a ping
-        glean.submit_ping(&ping_type, None);
+        ping_type.submit_sync(&glean, None);
 
         // Get the submitted PingRequest
         match glean.get_upload_task() {
@@ -1148,7 +1151,7 @@ mod test {
         // Submit the ping multiple times
         let n = 5;
         for _ in 0..n {
-            glean.submit_ping(&ping_type, None);
+            ping_type.submit_sync(&glean, None);
         }
 
         let mut upload_manager = PingUploadManager::no_policy(dir.path());
@@ -1196,7 +1199,7 @@ mod test {
         // Submit the ping multiple times
         let n = 10;
         for _ in 0..n {
-            glean.submit_ping(&ping_type, None);
+            ping_type.submit_sync(&glean, None);
         }
 
         let directory_manager = PingDirectoryManager::new(dir.path());
@@ -1268,7 +1271,7 @@ mod test {
 
         // Submit the ping multiple times
         for _ in 0..n {
-            glean.submit_ping(&ping_type, None);
+            ping_type.submit_sync(&glean, None);
         }
 
         let directory_manager = PingDirectoryManager::new(dir.path());
@@ -1339,7 +1342,7 @@ mod test {
 
         // Submit the ping multiple times
         for _ in 0..n {
-            glean.submit_ping(&ping_type, None);
+            ping_type.submit_sync(&glean, None);
         }
 
         let directory_manager = PingDirectoryManager::new(dir.path());
@@ -1413,7 +1416,7 @@ mod test {
 
         // Submit the ping multiple times
         for _ in 0..n {
-            glean.submit_ping(&ping_type, None);
+            ping_type.submit_sync(&glean, None);
         }
 
         let directory_manager = PingDirectoryManager::new(dir.path());

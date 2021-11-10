@@ -10,6 +10,7 @@ import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.toByte
+import mozilla.telemetry.glean.internal.PingType as GleanPingType
 
 /**
  * An enum with no values for convenient use as the default set of reason codes.
@@ -22,16 +23,6 @@ enum class NoReasonCodes(
     val value: Int
 ) {
     // deliberately empty
-}
-
-/**
- * The base class of all PingTypes with just enough to track their registration, so
- * we can create a heterogeneous collection of ping types.
- */
-open class PingTypeBase(
-    internal val name: String
-) {
-    internal var handle: Long = 0L
 }
 
 /**
@@ -48,20 +39,17 @@ class PingType<ReasonCodesEnum : Enum<ReasonCodesEnum>> (
     includeClientId: Boolean,
     sendIfEmpty: Boolean,
     val reasonCodes: List<String>
-) : PingTypeBase(name) {
+) {
     private var testCallback: ((ReasonCodesEnum?) -> Unit)? = null
+    private val innerPing: GleanPingType
 
     init {
-        val ffiReasonList = StringArray(reasonCodes.toTypedArray(), "utf-8")
-        val ffiReasonListLen = reasonCodes.size
-        this.handle = LibGleanFFI.INSTANCE.glean_new_ping_type(
+        this.innerPing = GleanPingType(
             name = name,
-            include_client_id = includeClientId.toByte(),
-            send_if_empty = sendIfEmpty.toByte(),
-            reason_codes = ffiReasonList,
-            reason_codes_len = ffiReasonListLen
+            includeClientId = includeClientId,
+            sendIfEmpty = sendIfEmpty,
+            reasonCodes = reasonCodes
         )
-        Glean.registerPingType(this)
     }
 
     /**
@@ -101,22 +89,6 @@ class PingType<ReasonCodesEnum : Enum<ReasonCodesEnum>> (
         this.testCallback = null
 
         val reasonString = reason?.let { this.reasonCodes[it.ordinal] }
-        Glean.submitPing(this, reasonString)
-    }
-
-    /**
-     * Collect and submit the ping for eventual upload.
-     *
-     * **THIS METHOD IS DEPRECATED.**  Use `submit()` instead.
-     *
-     * While the collection of metrics into pings happens synchronously, the
-     * ping queuing and ping uploading happens asyncronously.
-     * There are no guarantees that this will happen immediately.
-     *
-     * If the ping currently contains no content, it will not be queued.
-     */
-    @Deprecated("Renamed to submit()")
-    fun send() {
-        submit()
+        this.innerPing.submit(reasonString)
     }
 }

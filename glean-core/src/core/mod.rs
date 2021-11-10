@@ -4,7 +4,6 @@ use std::sync::Mutex;
 
 use chrono::{DateTime, FixedOffset};
 use once_cell::sync::OnceCell;
-use uuid::Uuid;
 
 use crate::database::Database;
 use crate::debug::DebugOptions;
@@ -409,7 +408,11 @@ impl Glean {
         } else {
             Some("set_upload_enabled")
         };
-        if !self.internal_pings.deletion_request.submit(self, reason) {
+        if !self
+            .internal_pings
+            .deletion_request
+            .submit_sync(self, reason)
+        {
             log::error!("Failed to submit deletion-request ping on optout.");
         }
         self.clear_metrics();
@@ -565,80 +568,6 @@ impl Glean {
         )
     }
 
-    /// Collects and submits a ping for eventual uploading.
-    ///
-    /// The ping content is assembled as soon as possible, but upload is not
-    /// guaranteed to happen immediately, as that depends on the upload policies.
-    ///
-    /// If the ping currently contains no content, it will not be sent,
-    /// unless it is configured to be sent if empty.
-    ///
-    /// # Arguments
-    ///
-    /// * `ping` - The ping to submit
-    /// * `reason` - A reason code to include in the ping
-    ///
-    /// # Returns
-    ///
-    /// Whether the ping was succesfully assembled and queued.
-    pub fn submit_ping(&self, ping: &PingType, reason: Option<&str>) -> bool {
-        if !self.is_upload_enabled() {
-            log::info!("Glean disabled: not submitting any pings.");
-            return false;
-        }
-
-        let ping_maker = PingMaker::new();
-        let doc_id = Uuid::new_v4().to_string();
-        let url_path = self.make_path(&ping.name, &doc_id);
-        match ping_maker.collect(self, ping, reason, &doc_id, &url_path) {
-            None => {
-                log::info!(
-                    "No content for ping '{}', therefore no ping queued.",
-                    ping.name
-                );
-                false
-            }
-            Some(ping) => {
-                // This metric is recorded *after* the ping is collected (since
-                // that is the only way to know *if* it will be submitted). The
-                // implication of this is that the count for a metrics ping will
-                // be included in the *next* metrics ping.
-                self.additional_metrics
-                    .pings_submitted
-                    .get(ping.name)
-                    .add_sync(self, 1);
-
-                if let Err(e) = ping_maker.store_ping(self.get_data_path(), &ping) {
-                    log::warn!("IO error while writing ping to file: {}. Enqueuing upload of what we have in memory.", e);
-                    self.additional_metrics.io_errors.add_sync(self, 1);
-                    // `serde_json::to_string` only fails if serialization of the content
-                    // fails or it contains maps with non-string keys.
-                    // However `ping.content` is already a `JsonValue`,
-                    // so both scenarios should be impossible.
-                    let content =
-                        ::serde_json::to_string(&ping.content).expect("ping serialization failed");
-                    self.upload_manager.enqueue_ping(
-                        self,
-                        ping.doc_id,
-                        ping.url_path,
-                        &content,
-                        Some(ping.headers),
-                    );
-                    return true;
-                }
-
-                self.upload_manager.enqueue_ping_from_file(self, &doc_id);
-
-                log::info!(
-                    "The ping '{}' was submitted and will be sent as soon as possible",
-                    ping.name
-                );
-
-                true
-            }
-        }
-    }
-
     /// Collects and submits a ping by name for eventual uploading.
     ///
     /// The ping content is assembled as soon as possible, but upload is not
@@ -665,7 +594,7 @@ impl Glean {
                 log::error!("Attempted to submit unknown ping '{}'", ping_name);
                 false
             }
-            Some(ping) => self.submit_ping(ping, reason),
+            Some(ping) => ping.submit_sync(self, reason),
         }
     }
 
@@ -681,11 +610,12 @@ impl Glean {
 
     /// Register a new [`PingType`](metrics/struct.PingType.html).
     pub fn register_ping_type(&mut self, ping: &PingType) {
-        if self.ping_registry.contains_key(&ping.name) {
-            log::debug!("Duplicate ping named '{}'", ping.name)
+        if self.ping_registry.contains_key(ping.name()) {
+            log::debug!("Duplicate ping named '{}'", ping.name())
         }
 
-        self.ping_registry.insert(ping.name.clone(), ping.clone());
+        self.ping_registry
+            .insert(ping.name().to_string(), ping.clone());
     }
 
     /// Get create time of the Glean object.
@@ -889,7 +819,11 @@ impl Glean {
     /// This functions generates a baseline ping with reason `active`
     /// and then sets the dirty bit.
     pub fn handle_client_active(&mut self) {
-        if !self.internal_pings.baseline.submit(self, Some("active")) {
+        if !self
+            .internal_pings
+            .baseline
+            .submit_sync(self, Some("active"))
+        {
             log::info!("baseline ping not submitted on active");
         }
 
@@ -901,11 +835,19 @@ impl Glean {
     /// This functions generates a baseline and an events ping with reason
     /// `inactive` and then clears the dirty bit.
     pub fn handle_client_inactive(&mut self) {
-        if !self.internal_pings.baseline.submit(self, Some("inactive")) {
+        if !self
+            .internal_pings
+            .baseline
+            .submit_sync(self, Some("inactive"))
+        {
             log::info!("baseline ping not submitted on inactive");
         }
 
-        if !self.internal_pings.events.submit(self, Some("inactive")) {
+        if !self
+            .internal_pings
+            .events
+            .submit_sync(self, Some("inactive"))
+        {
             log::info!("events ping not submitted on inactive");
         }
 

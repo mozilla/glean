@@ -48,7 +48,7 @@ pub use crate::core::Glean;
 use crate::core_metrics::ClientInfoMetrics;
 pub use crate::error::{Error, ErrorKind, Result};
 pub use crate::error_recording::{test_get_num_recorded_errors, ErrorType};
-pub use crate::metrics::{CounterMetric, RecordedExperiment};
+pub use crate::metrics::{CounterMetric, PingType, RecordedExperiment};
 
 const GLEAN_VERSION: &str = env!("CARGO_PKG_VERSION");
 const GLEAN_SCHEMA_VERSION: u32 = 1;
