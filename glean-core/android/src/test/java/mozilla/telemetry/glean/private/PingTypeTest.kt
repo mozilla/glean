@@ -234,11 +234,4 @@ class PingTypeTest {
             getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued
         )
     }
-
-    @Test
-    fun `Registry should contain built-in pings`() {
-        assertTrue(Glean.testHasPingType("metrics"))
-        assertTrue(Glean.testHasPingType("events"))
-        assertTrue(Glean.testHasPingType("baseline"))
-    }
 }

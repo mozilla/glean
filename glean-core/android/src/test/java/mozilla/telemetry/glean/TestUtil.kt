@@ -108,18 +108,6 @@ internal fun checkPingSchema(content: String): JSONObject {
 }
 
 /**
- * Collects a specified ping type and checks it against the Glean ping schema.
- *
- * @param ping The ping to check
- * @return the ping contents, in a JSONObject
- * @throws AssertionError If the JSON content is not valid
- */
-internal fun collectAndCheckPingSchema(ping: PingTypeBase): JSONObject {
-    val jsonString = Glean.testCollect(ping)!!
-    return checkPingSchema(jsonString)
-}
-
-/**
  * Resets the Glean state and trigger init again.
  *
  * @param context the application context to init Glean with

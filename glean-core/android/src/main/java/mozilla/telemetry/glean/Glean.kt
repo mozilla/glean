@@ -320,14 +320,6 @@ open class GleanInternalAPI internal constructor () {
     }
 
     /**
-     * Collect a ping and return a string
-     */
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    internal fun testCollect(ping: PingTypeBase, reason: String? = null): String? {
-        return LibGleanFFI.INSTANCE.glean_ping_collect(ping.handle, reason)?.getAndConsumeRustString()
-    }
-
-    /**
      * Handle the foreground event and send the appropriate pings.
      */
     internal fun handleForegroundEvent() {
@@ -563,16 +555,6 @@ open class GleanInternalAPI internal constructor () {
         // It's a set and keeping them around forever should not have much of an impact.
 
         pingTypeQueue.add(pingType)
-    }
-
-    /**
-     * Returns true if a ping by this name is in the ping registry.
-     *
-     * For internal testing only.
-     */
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    internal fun testHasPingType(pingName: String): Boolean {
-        return LibGleanFFI.INSTANCE.glean_test_has_ping_type(pingName).toBoolean()
     }
 
     /**
