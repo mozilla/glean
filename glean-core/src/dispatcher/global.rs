@@ -36,8 +36,12 @@ fn guard() -> DispatchGuard {
 ///
 /// [`flush_init`]: fn.flush_init.html
 pub fn launch(task: impl FnOnce() + Send + 'static) {
-    let guard = guard();
-    match guard.launch(task) {
+    if TESTING_MODE.load(Ordering::SeqCst) {
+        task();
+        return;
+    }
+
+    match guard().launch(task) {
         Ok(_) => {}
         Err(DispatchError::QueueFull) => {
             log::info!("Exceeded maximum queue size, discarding task");
@@ -46,9 +50,6 @@ pub fn launch(task: impl FnOnce() + Send + 'static) {
         Err(_) => {
             log::info!("Failed to launch a task on the queue. Discarding task.");
         }
-    }
-    if TESTING_MODE.load(Ordering::SeqCst) {
-        guard.block_on_queue();
     }
 }
 
