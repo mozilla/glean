@@ -11,6 +11,7 @@ import android.text.format.DateUtils
 import android.util.Log
 import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.Glean
+import mozilla.telemetry.glean.internal.gleanSubmitPingByNameSync
 import mozilla.telemetry.glean.BuildInfo
 import mozilla.telemetry.glean.GleanMetrics.Pings
 import mozilla.telemetry.glean.utils.getISOTimeString
@@ -49,6 +50,7 @@ internal class MetricsPingScheduler(
     }
 
     init {
+        Log.i(LOG_TAG, "New MetricsPingSched")
         // In testing mode, set the "last seen version" as the same as this one.
         // Otherwise, all we will ever send is pings for the "upgrade" reason.
         @Suppress("EXPERIMENTAL_API_USAGE")
@@ -105,7 +107,7 @@ internal class MetricsPingScheduler(
         val millisUntilNextDueTime = getMillisecondsUntilDueTime(sendTheNextCalendarDay, now)
         Log.d(LOG_TAG, "Scheduling the 'metrics' ping in ${millisUntilNextDueTime}ms")
 
-        // Cancel any existing scheduled work. Does not actually cancel a
+        // Cancel any existing scheduled work. Does not actually ancel a
         // currently-running task.
         cancel()
 
@@ -211,6 +213,7 @@ internal class MetricsPingScheduler(
      * collection.
      */
     fun schedule() {
+        Log.i(LOG_TAG, "MetricsPingSched.schedule")
         val now = getCalendarInstance()
 
         // If the version of the app is different from the last time we ran the app,
@@ -302,7 +305,8 @@ internal class MetricsPingScheduler(
             //
             // * Do not change this line without checking what it implies for the above wall
             // of text. *
-            Glean.submitPingByNameSync("metrics", reasonString)
+            gleanSubmitPingByNameSync("metrics", reasonString)
+            // The initialization process will take care of triggering the uploader here.
         } else {
             Pings.metrics.submit(reason)
         }

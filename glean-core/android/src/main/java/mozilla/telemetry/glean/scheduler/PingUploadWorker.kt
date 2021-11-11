@@ -15,11 +15,11 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import mozilla.telemetry.glean.rust.LibGleanFFI
+import mozilla.telemetry.glean.internal.gleanGetUploadTask
+import mozilla.telemetry.glean.internal.gleanProcessPingUploadResponse
+import mozilla.telemetry.glean.internal.PingUploadTask
 import mozilla.telemetry.glean.Glean
-import mozilla.telemetry.glean.net.FfiPingUploadTask
 import mozilla.telemetry.glean.utils.testFlushWorkManagerJob
-import mozilla.telemetry.glean.net.PingUploadTask
 
 /**
  * Build the constraints around which the worker can be run, such as whether network
@@ -97,27 +97,24 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
     @Suppress("ReturnCount")
     override fun doWork(): Result {
         do {
-            // Create a slot of memory for the task: glean-core will write data into
-            // the allocated memory.
-            val incomingTask = FfiPingUploadTask.ByReference()
-            LibGleanFFI.INSTANCE.glean_get_upload_task(incomingTask)
-            when (val action = incomingTask.toPingUploadTask()) {
+            when (val action = gleanGetUploadTask()) {
                 is PingUploadTask.Upload -> {
                     // Upload the ping request.
                     // If the status is `null` there was some kind of unrecoverable error
                     // so we return a known unrecoverable error status code
                     // which will ensure this gets treated as such.
+                    val body = action.request.body.toUByteArray().asByteArray()
                     val result = Glean.httpClient.doUpload(
                         action.request.path,
-                        action.request.body,
+                        body,
                         action.request.headers,
                         Glean.configuration
-                    ).toFfi()
+                    )
 
                     // Process the upload response
-                    LibGleanFFI.INSTANCE.glean_process_ping_upload_response(incomingTask, result)
+                    gleanProcessPingUploadResponse(action.request.documentId, result)
                 }
-                is PingUploadTask.Wait -> SystemClock.sleep(action.time)
+                is PingUploadTask.Wait -> SystemClock.sleep(action.time.toLong())
                 is PingUploadTask.Done -> return Result.success()
             }
         } while (true)

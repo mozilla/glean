@@ -21,7 +21,6 @@ import mozilla.telemetry.glean.config.Configuration
 import mozilla.telemetry.glean.internal.CounterMetric
 import mozilla.telemetry.glean.internal.Lifetime
 import mozilla.telemetry.glean.internal.CommonMetricData
-import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.toBoolean
 import mozilla.telemetry.glean.rust.toByte
 import mozilla.telemetry.glean.scheduler.GleanLifecycleObserver

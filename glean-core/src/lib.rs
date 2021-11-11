@@ -49,6 +49,7 @@ use crate::core_metrics::ClientInfoMetrics;
 pub use crate::error::{Error, ErrorKind, Result};
 pub use crate::error_recording::{test_get_num_recorded_errors, ErrorType};
 pub use crate::metrics::{CounterMetric, PingType, RecordedExperiment};
+pub use crate::upload::{PingRequest, PingUploadTask, UploadResult};
 
 const GLEAN_VERSION: &str = env!("CARGO_PKG_VERSION");
 const GLEAN_SCHEMA_VERSION: u32 = 1;
@@ -187,6 +188,9 @@ pub trait OnGleanEvents: Send {
 
     /// Start the Metrics Ping Scheduler.
     fn start_metrics_ping_scheduler(&self);
+
+    /// Called when upload is disabled and uploads should be stopped
+    fn cancel_uploads(&self);
 }
 
 /// Initializes Glean.
@@ -212,10 +216,10 @@ fn initialize_inner(
 ) -> Result<()> {
     if was_initialize_called() {
         log::error!("Glean should not be initialized multiple times");
-        todo!();
+        return Ok(());
     }
 
-    let _init_handle = std::thread::Builder::new()
+    let init_handle = std::thread::Builder::new()
         .name("glean.init".into())
         .spawn(move || {
             let upload_enabled = cfg.upload_enabled;
@@ -238,6 +242,8 @@ fn initialize_inner(
                 callbacks,
             });
 
+            let mut is_first_run = false;
+            let mut dirty_flag = false;
             core::with_glean_mut(|glean| {
                 let state = global_state().lock().unwrap();
 
@@ -271,7 +277,7 @@ fn initialize_inner(
                 // `false` so that dirty startup pings won't be sent if Glean
                 // initialization does not complete successfully.
                 // TODO Bug 1672956 will decide where to set this flag again.
-                let dirty_flag = glean.is_dirty_flag_set();
+                dirty_flag = glean.is_dirty_flag_set();
                 glean.set_dirty_flag(false);
 
                 // Perform registration of pings that were attempted to be
@@ -288,7 +294,7 @@ fn initialize_inner(
                 // If this is the first time ever the Glean SDK runs, make sure to set
                 // some initial core metrics in case we need to generate early pings.
                 // The next times we start, we would have them around already.
-                let is_first_run = glean.is_first_run();
+                is_first_run = glean.is_first_run();
                 if is_first_run {
                     initialize_core_metrics(glean, &state.client_info);
                 }
@@ -302,11 +308,27 @@ fn initialize_inner(
                 if pings_submitted || !upload_enabled {
                     state.callbacks.trigger_upload();
                 }
+            });
+
+            // The metrics ping scheduler might _synchronously_ submit a ping
+            // so that it runs before we clear application-lifetime metrics further below.
+            // For that it needs access to the `Glean` object.
+            // Thus we need to unlock that by leaving the context above,
+            // then re-lock it afterwards.
+            // That's safe because user-visible functions will be queued and thus not execute until
+            // we unblock later anyway.
+            {
+                let state = global_state().lock().unwrap();
 
                 // Set up information and scheduling for Glean owned pings. Ideally, the "metrics"
                 // ping startup check should be performed before any other ping, since it relies
                 // on being dispatched to the API context before any other metric.
                 state.callbacks.start_metrics_ping_scheduler();
+                state.callbacks.trigger_upload();
+            }
+
+            core::with_glean_mut(|glean| {
+                let state = global_state().lock().unwrap();
 
                 // Check if the "dirty flag" is set. That means the product was probably
                 // force-closed. If that's the case, submit a 'baseline' ping with the
@@ -347,6 +369,13 @@ fn initialize_inner(
             state.callbacks.on_initialize_finished();
         })
         .expect("Failed to spawn Glean's init thread");
+
+    // In test mode we wait for initialization to finish.
+    if dispatcher::global::is_test_mode() {
+        init_handle
+            .join()
+            .expect("Failed to join initialization thread");
+    }
 
     // Mark the initialization as called: this needs to happen outside of the
     // dispatched block!
@@ -403,20 +432,26 @@ pub fn glean_enable_logging() {
 
 /// Sets whether upload is enabled or not.
 pub fn glean_set_upload_enabled(enabled: bool) {
-    core::with_glean_mut(|glean| {
+    if !was_initialize_called() {
+        return;
+    }
+
+    crate::launch_with_glean_mut(move |glean| {
+        let state = global_state().lock().unwrap();
         let original_enabled = glean.is_upload_enabled();
+
         if !enabled {
-            //changes_callback.will_be_disabled();
+            state.callbacks.cancel_uploads();
         }
 
         glean.set_upload_enabled(enabled);
 
         if !original_enabled && enabled {
-            //changes_callback.on_enabled();
+            initialize_core_metrics(glean, &state.client_info);
         }
 
         if original_enabled && !enabled {
-            //changes_callback.on_disabled();
+            state.callbacks.trigger_upload();
         }
     })
 }
@@ -574,21 +609,21 @@ pub fn glean_handle_client_inactive() {
 
 /// Collect and submit a ping for eventual upload by name.
 pub fn glean_submit_ping_by_name(ping_name: String, reason: Option<String>) {
-    dispatcher::launch(|| glean_submit_ping_by_name_sync(ping_name, reason))
-}
-
-/// Collect and submit a ping (by its name) for eventual upload, synchronously.
-pub fn glean_submit_ping_by_name_sync(ping_name: String, reason: Option<String>) {
-    core::with_glean(|glean| {
-        if !glean.is_upload_enabled() {
-            return;
-        }
-
+    crate::launch_with_glean(move |glean| {
         let sent = glean.submit_ping_by_name(&ping_name, reason.as_deref());
         if sent {
             let state = global_state().lock().unwrap();
             state.callbacks.trigger_upload();
         }
+    })
+}
+
+/// Collect and submit a ping (by its name) for eventual upload, synchronously.
+///
+/// Note: This does not trigger the uploader. The caller is responsible to do this.
+pub fn glean_submit_ping_by_name_sync(ping_name: String, reason: Option<String>) -> bool {
+    core::with_glean(|glean| {
+        glean.submit_ping_by_name(&ping_name, reason.as_deref())
     })
 }
 
@@ -620,6 +655,16 @@ pub fn glean_test_destroy_glean(clear_stores: bool) {
 
     // Allow us to go through initialization again.
     INITIALIZE_CALLED.store(false, Ordering::SeqCst);
+}
+
+/// Get the next upload task
+pub fn glean_get_upload_task() -> PingUploadTask {
+    core::with_glean(|glean| glean.get_upload_task())
+}
+
+/// Processes the response from an attempt to upload a ping.
+pub fn glean_process_ping_upload_response(uuid: String, result: UploadResult) {
+    core::with_glean(|glean| glean.process_ping_upload_response(&uuid, result))
 }
 
 #[allow(missing_docs)]

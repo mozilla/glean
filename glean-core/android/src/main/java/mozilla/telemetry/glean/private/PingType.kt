@@ -4,12 +4,8 @@
 
 package mozilla.telemetry.glean.private
 
-import com.sun.jna.StringArray
 import androidx.annotation.VisibleForTesting
 import mozilla.telemetry.glean.Glean
-import mozilla.telemetry.glean.Dispatchers
-import mozilla.telemetry.glean.rust.LibGleanFFI
-import mozilla.telemetry.glean.rust.toByte
 import mozilla.telemetry.glean.internal.PingType as GleanPingType
 
 /**
@@ -65,8 +61,6 @@ class PingType<ReasonCodesEnum : Enum<ReasonCodesEnum>> (
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     @Synchronized
     fun testBeforeNextSubmit(cb: (ReasonCodesEnum?) -> Unit) {
-        @Suppress("EXPERIMENTAL_API_USAGE")
-        Dispatchers.API.assertInTestingMode()
         this.testCallback = cb
     }
 

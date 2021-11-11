@@ -62,7 +62,16 @@ internal class OnGleanEventsImpl(
 
     override fun startMetricsPingScheduler() {
         glean.metricsPingScheduler = MetricsPingScheduler(glean.applicationContext, glean.buildInfo)
-        glean.metricsPingScheduler.schedule()
+        glean.metricsPingScheduler?.schedule()
+    }
+
+    override fun cancelUploads() {
+        // Cancel any pending workers here so that we don't accidentally upload or
+        // collect data after the upload has been disabled.
+        glean.metricsPingScheduler?.cancel()
+        // Cancel any pending workers here so that we don't accidentally upload
+        // data after the upload has been disabled.
+        PingUploadWorker.cancel(glean.applicationContext)
     }
 }
 
@@ -106,7 +115,7 @@ open class GleanInternalAPI internal constructor () {
 
     // This object holds data related to any persistent information about the metrics ping,
     // such as the last time it was sent and the store name
-    internal lateinit var metricsPingScheduler: MetricsPingScheduler
+    internal var metricsPingScheduler: MetricsPingScheduler? = null
 
     // This is used to cache the process state and is used by the function `isMainProcess()`
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -118,6 +127,10 @@ open class GleanInternalAPI internal constructor () {
 
     // Store the build information provided by the application.
     internal lateinit var buildInfo: BuildInfo
+
+    init {
+        gleanEnableLogging()
+    }
 
     /**
      * Initialize the Glean SDK.
@@ -178,9 +191,6 @@ open class GleanInternalAPI internal constructor () {
         this.configuration = configuration
         this.httpClient = BaseUploader(configuration.httpClient)
         this.gleanDataDir = File(applicationContext.applicationInfo.dataDir, GLEAN_DATA_DIR)
-
-        Log.e(LOG_TAG, "Glean. enable logging.")
-        gleanEnableLogging()
 
         val cfg = InternalConfiguration(
             dataPath = gleanDataDir.path,
@@ -323,7 +333,8 @@ open class GleanInternalAPI internal constructor () {
         // time the app goes to background.
         gleanHandleClientActive()
 
-        GleanValidation.foregroundCount.add(1)
+        // TODO: Re-enable when Counter metric is working
+        //GleanValidation.foregroundCount.add(1)
     }
 
     /**
@@ -354,32 +365,6 @@ open class GleanInternalAPI internal constructor () {
     @Suppress("EXPERIMENTAL_API_USAGE")
     internal fun submitPingByName(pingName: String, reason: String? = null) {
         gleanSubmitPingByName(pingName, reason)
-    }
-
-    /**
-     * Collect and submit a ping (by its name) for eventual upload, synchronously.
-     *
-     * The ping will be looked up in the known instances of [PingType]. If the
-     * ping isn't known, an error is logged and the ping isn't queued for uploading.
-     *
-     * The ping content is assembled as soon as possible, but upload is not
-     * guaranteed to happen immediately, as that depends on the upload
-     * policies.
-     *
-     * If the ping currently contains no content, it will not be assembled and
-     * queued for sending, unless explicitly specified otherwise in the registry
-     * file.
-     *
-     * @param pingName Name of the ping to submit.
-     * @param reason The reason the ping is being submitted.
-     */
-    internal fun submitPingByNameSync(pingName: String, reason: String? = null) {
-        if (!isInitialized()) {
-            Log.e(LOG_TAG, "Glean must be initialized before submitting pings.")
-            return
-        }
-
-        gleanSubmitPingByNameSync(pingName, reason)
     }
 
     /**
@@ -452,6 +437,10 @@ open class GleanInternalAPI internal constructor () {
         Glean.enableTestingMode()
 
         isMainProcess = null
+
+        // Resetting MPS and uploader
+        metricsPingScheduler?.cancel()
+        PingUploadWorker.cancel(context)
 
         // Init Glean.
         Glean.testDestroyGleanHandle(clearStores)
