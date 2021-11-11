@@ -160,7 +160,7 @@ impl Glean {
         }
 
         let (start_time, start_time_is_corrected) = local_now_with_offset();
-        let this = Self {
+        let mut this = Self {
             upload_enabled: cfg.upload_enabled,
             // In the subprocess, we want to avoid accessing the database entirely.
             // The easiest way to ensure that is to just not initialize it.
@@ -182,6 +182,13 @@ impl Glean {
             // Subprocess doesn't use "metrics" pings so has no need for a scheduler.
             schedule_metrics_pings: false,
         };
+
+        // Ensuring these pings are registered.
+        let pings = this.internal_pings.clone();
+        this.register_ping_type(&pings.baseline);
+        this.register_ping_type(&pings.metrics);
+        this.register_ping_type(&pings.events);
+        this.register_ping_type(&pings.deletion_request);
 
         // Can't use `local_now_with_offset_and_record` above, because we needed a valid `Glean` first.
         if start_time_is_corrected {

@@ -274,20 +274,6 @@ fn initialize_inner(
                 let dirty_flag = glean.is_dirty_flag_set();
                 glean.set_dirty_flag(false);
 
-                // Register builtin pings.
-                // Unfortunately we need to manually list them here to guarantee
-                // they are registered synchronously before we need them.
-                // We don't need to handle the deletion-request ping. It's never touched
-                // from the language implementation.
-                //
-                // Note: this will actually double-register them.
-                // On instantiation they will launch a task to register themselves.
-                // That task could fail to run if the dispatcher queue is full.
-                // We still register them here synchronously.
-                glean.register_ping_type(&glean_metrics::pings::baseline);
-                glean.register_ping_type(&glean_metrics::pings::metrics);
-                glean.register_ping_type(&glean_metrics::pings::events);
-
                 // Perform registration of pings that were attempted to be
                 // registered before init.
                 if let Some(tags) = PRE_INIT_PING_REGISTRATION.get() {
@@ -478,7 +464,10 @@ pub fn glean_test_get_experiment_data(experiment_id: String) -> Option<RecordedE
 /// If called before Glean is initialized it will always return `true`.
 pub fn glean_set_debug_view_tag(tag: String) -> bool {
     if was_initialize_called() {
-        core::with_glean_mut(|glean| glean.set_debug_view_tag(&tag))
+        crate::launch_with_glean_mut(move |glean| {
+            glean.set_debug_view_tag(&tag);
+        });
+        true
     } else {
         // Glean has not been initialized yet. Cache the provided tag value.
         let m = PRE_INIT_DEBUG_VIEW_TAG.get_or_init(Default::default);
@@ -503,7 +492,10 @@ pub fn glean_set_debug_view_tag(tag: String) -> bool {
 ///   tags must match the regex: "[a-zA-Z0-9-]{1,20}".
 pub fn glean_set_source_tags(tags: Vec<String>) -> bool {
     if was_initialize_called() {
-        core::with_glean_mut(|glean| glean.set_source_tags(tags))
+        crate::launch_with_glean_mut(|glean| {
+            glean.set_source_tags(tags);
+        });
+        true
     } else {
         // Glean has not been initialized yet. Cache the provided source tags.
         let m = PRE_INIT_SOURCE_TAGS.get_or_init(Default::default);
@@ -525,7 +517,9 @@ pub fn glean_set_source_tags(tags: Vec<String>) -> bool {
 /// * `value` - The value of the log pings option
 pub fn glean_set_log_pings(value: bool) {
     if was_initialize_called() {
-        core::with_glean_mut(|glean| glean.set_log_pings(value));
+        crate::launch_with_glean_mut(move |glean| {
+            glean.set_log_pings(value);
+        });
     } else {
         PRE_INIT_LOG_PINGS.store(value, Ordering::SeqCst);
     }

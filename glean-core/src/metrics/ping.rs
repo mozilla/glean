@@ -59,18 +59,13 @@ impl PingType {
         send_if_empty: bool,
         reason_codes: Vec<String>,
     ) -> Self {
-        let ping = Self(Arc::new(InnerPing {
+        // TODO: register those pings.
+        Self(Arc::new(InnerPing {
             name: name.into(),
             include_client_id,
             send_if_empty,
             reason_codes,
-        }));
-
-        // Self-register this ping.
-        let clone = Self(Arc::clone(&ping.0));
-        crate::launch_with_glean_mut(move |glean| glean.register_ping_type(&clone));
-
-        ping
+        }))
     }
 
     pub(crate) fn name(&self) -> &str {
