@@ -600,6 +600,13 @@ pub fn glean_submit_ping_by_name_sync(ping_name: String, reason: Option<String>)
 
 /// **TEST-ONLY Method**
 ///
+/// Enable test mode
+pub fn glean_set_test_mode(enabled: bool) {
+    dispatcher::global::TESTING_MODE.store(enabled, Ordering::SeqCst);
+}
+
+/// **TEST-ONLY Method**
+///
 /// Destroy the underlying database.
 pub fn glean_test_destroy_glean(clear_stores: bool) {
     if !was_initialize_called() {

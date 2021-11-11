@@ -24,6 +24,7 @@ namespace glean {
     void glean_submit_ping_by_name(string ping_name, optional string? reason = null);
     void glean_submit_ping_by_name_sync(string ping_name, optional string? reason = null);
 
+    void glean_set_test_mode(boolean enabled);
     void glean_test_destroy_glean(boolean clear_stores);
 };
 

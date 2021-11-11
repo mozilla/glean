@@ -40,7 +40,7 @@ use thiserror::Error;
 
 pub use global::*;
 
-mod global;
+pub(crate) mod global;
 
 /// Command received while blocked from further work.
 enum Blocked {
