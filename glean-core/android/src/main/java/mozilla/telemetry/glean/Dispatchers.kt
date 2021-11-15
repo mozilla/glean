@@ -138,7 +138,7 @@ internal object Dispatchers {
                 // This must happen after `queueInitialTasks.set(false)` is run, or it
                 // would be added to a full task queue and be silently dropped.
                 if (overflowCount > 0) {
-                    GleanError.preinitTasksOverflow.addSync(MAX_QUEUE_SIZE + overflowCount)
+                    //GleanError.preinitTasksOverflow.addSync(MAX_QUEUE_SIZE + overflowCount)
                 }
             }?.join()
         }
