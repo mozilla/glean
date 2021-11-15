@@ -73,20 +73,6 @@ except ImportError:
     found_version = None
 else:
     found_version = getattr(module, '__version__')
-if found_version != expected_version:
-    if not offline:
-        subprocess.check_call([
-            sys.executable,
-            '-m',
-            'pip',
-            'install',
-            '--upgrade',
-            f'{module_name}=={expected_version}'
-        ])
-    else:
-        print(f'Using Python environment at {sys.executable},')
-        print(f'expected glean_parser version {expected_version}, found {found_version}.')
-        sys.exit(1)
 try:
     subprocess.check_call([
         sys.executable,
@@ -206,7 +192,7 @@ except:
                 }
 
                 // Only generate build info for applications, not for libraries.
-                // From android-gradle 7.0 on the `VERSION_CODE` and `VERSION_NAME` fields 
+                // From android-gradle 7.0 on the `VERSION_CODE` and `VERSION_NAME` fields
                 // are not set for libraries anymore
                 if (!isApplication) {
                     args "-s"
@@ -429,7 +415,7 @@ except:
 
                 // Setup a miniconda environment. conda is used because it works
                 // non-interactively on Windows, unlike the standard Python installers
-                conda "Miniconda3", "Miniconda3-${MINICONDA_VERSION}", "64", ["glean_parser==${GLEAN_PARSER_VERSION}"]
+                conda "Miniconda3", "Miniconda3-${MINICONDA_VERSION}", "64", ["git+ssh://git@github.com/badboy/glean_parser@uniffi-preparation#glean-parser"]
             }
             File envDir = new File(
                 condaBootstrapDir,
@@ -442,7 +428,7 @@ except:
                     // The Bootstrap_CONDA* tasks all install miniconda to the
                     // same place, so they can't run at the same time. This
                     // holds a semaphore while running the task to make sure
-                    // only one of these classes of tasks runs at the same time. 
+                    // only one of these classes of tasks runs at the same time.
                     // Solution proposed in this Gradle bug:
                     // https://github.com/gradle/gradle/issues/7047#issuecomment-430139316
                     task.doFirst { bootstrapMinicondaSemaphore.acquire() }
@@ -499,7 +485,7 @@ except:
         // Print the required glean_parser version to the console. This is
         // offline builds, and is mentioned in the documentation for offline
         // builds.
-        println("Requires glean_parser==${GLEAN_PARSER_VERSION}")
+        println("Requires glean_parser==git")
 
         File envDir = setupPythonEnvironmentTasks(project)
         // Store in both gleanCondaDir (for backward compatibility reasons) and
