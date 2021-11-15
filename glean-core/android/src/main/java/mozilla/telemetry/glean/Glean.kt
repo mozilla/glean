@@ -60,9 +60,9 @@ internal class OnGleanEventsImpl(
         PingUploadWorker.enqueueWorker(glean.applicationContext)
     }
 
-    override fun startMetricsPingScheduler() {
+    override fun startMetricsPingScheduler(): Boolean {
         glean.metricsPingScheduler = MetricsPingScheduler(glean.applicationContext, glean.buildInfo)
-        glean.metricsPingScheduler?.schedule()
+        return glean.metricsPingScheduler!!.schedule()
     }
 
     override fun cancelUploads() {

@@ -83,8 +83,12 @@ callback interface OnGleanEvents {
 
     // Start the Metrics Ping Scheduler.
     //
-    // The language SDK
-    void start_metrics_ping_scheduler();
+    // *Note*: The implementor
+    // * DOES NOT need to schedule the uploader.
+    // * MUST NOT use a dispatched call in the immediate invocation.
+    //
+    // Returns whether it submitted a ping immediately.
+    boolean start_metrics_ping_scheduler();
 
     // Called when upload is disabled and uploads should be stopped
     void cancel_uploads();

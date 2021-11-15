@@ -212,7 +212,7 @@ internal class MetricsPingScheduler(
      * Performs startup checks to decide when to schedule the next metrics ping
      * collection.
      */
-    fun schedule() {
+    fun schedule(): Boolean {
         Log.i(LOG_TAG, "MetricsPingSched.schedule")
         val now = getCalendarInstance()
 
@@ -226,7 +226,7 @@ internal class MetricsPingScheduler(
             // that this gets executed now before the Application lifetime metrics get cleared.
             collectPingAndReschedule(now, startupPing = true, reason = Pings.metricsReasonCodes.upgrade)
 
-            return
+            return true
         }
 
         val lastSentDate = getLastCollectedDate()
@@ -251,6 +251,7 @@ internal class MetricsPingScheduler(
                 // calendar day. This addresses (1).
                 Log.i(LOG_TAG, "The 'metrics' ping was already sent today, ${safeDateToString(now.time)}.")
                 schedulePingCollection(now, sendTheNextCalendarDay = true, reason = Pings.metricsReasonCodes.tomorrow)
+                return false
             }
             isAfterDueTime(now) -> {
                 // The ping wasn't already sent today. Are we overdue or just waiting for
@@ -263,12 +264,14 @@ internal class MetricsPingScheduler(
                 // Since `schedule` is only ever called from Glean.initialize, we need to ensure
                 // that this gets executed now before the Application lifetime metrics get cleared.
                 collectPingAndReschedule(now, startupPing = true, reason = Pings.metricsReasonCodes.overdue)
+                return true
             }
             else -> {
                 // This covers (3).
                 Log.i(LOG_TAG, "The 'metrics' collection is scheduled for today, ${safeDateToString(now.time)}")
 
                 schedulePingCollection(now, sendTheNextCalendarDay = false, reason = Pings.metricsReasonCodes.today)
+                return false
             }
         }
     }

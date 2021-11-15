@@ -187,7 +187,7 @@ pub trait OnGleanEvents: Send {
     fn trigger_upload(&self);
 
     /// Start the Metrics Ping Scheduler.
-    fn start_metrics_ping_scheduler(&self);
+    fn start_metrics_ping_scheduler(&self) -> bool;
 
     /// Called when upload is disabled and uploads should be stopped
     fn cancel_uploads(&self);
@@ -323,8 +323,9 @@ fn initialize_inner(
                 // Set up information and scheduling for Glean owned pings. Ideally, the "metrics"
                 // ping startup check should be performed before any other ping, since it relies
                 // on being dispatched to the API context before any other metric.
-                state.callbacks.start_metrics_ping_scheduler();
-                state.callbacks.trigger_upload();
+                if state.callbacks.start_metrics_ping_scheduler() {
+                    state.callbacks.trigger_upload();
+                }
             }
 
             core::with_glean_mut(|glean| {
