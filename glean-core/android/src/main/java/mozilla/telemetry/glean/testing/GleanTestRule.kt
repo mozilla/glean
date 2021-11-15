@@ -5,12 +5,18 @@
 package mozilla.telemetry.glean.testing
 
 import android.content.Context
+import android.os.SystemClock
 import androidx.annotation.VisibleForTesting
 import androidx.work.testing.WorkManagerTestInitHelper
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.config.Configuration
+import mozilla.telemetry.glean.scheduler.MetricsPingScheduler
+import mozilla.telemetry.glean.utils.getISOTimeString
+import mozilla.telemetry.glean.BuildInfo
+import mozilla.telemetry.glean.private.TimeUnit
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
+import java.util.Calendar
 
 /**
  * This implements a JUnit rule for writing tests for Glean SDK metrics.
@@ -41,6 +47,25 @@ class GleanTestRule(
         // We're using the WorkManager in a bunch of places, and Glean will crash
         // in tests without this line. Let's simply put it here.
         WorkManagerTestInitHelper.initializeTestWorkManager(context)
+
+        /**
+         * Always skip the first metrics ping, which would otherwise be overdue.
+         * Tests should explicitly destroy Glean and recreate it to test the metrics ping scheduler.
+         * This is the same as `delayMetricsPing` from `TestUtils.kt`,
+         * but now part of the publicly available test rule.
+         */
+
+        // Set the current system time to a known datetime.
+        val fakeNow = Calendar.getInstance()
+        fakeNow.clear()
+        fakeNow.set(2015, 6, 11, 2, 0, 0)
+        SystemClock.setCurrentTimeMillis(fakeNow.timeInMillis)
+
+        // Set the last sent date to yesterday.
+        val buildInfo = BuildInfo(versionCode = "0.0.1", versionName = "0.0.1")
+        val mps = MetricsPingScheduler(context, buildInfo)
+
+        mps.updateSentDate(getISOTimeString(fakeNow, truncateTo = TimeUnit.Day))
 
         Glean.resetGlean(
             context = context,

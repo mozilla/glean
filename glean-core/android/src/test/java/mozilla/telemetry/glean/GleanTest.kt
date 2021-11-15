@@ -89,18 +89,13 @@ class GleanTest {
         // Trigger it to upload
         triggerWorkManager(context)
 
-        // We got exactly 2 pings here:
-        // 1. The overdue metrics ping from the initial `Glean` setup before we reset it.
-        // 2. The baseline ping triggered by the background event above.
-        assertEquals(2, server.requestCount)
+        // We got exactly 1 ping here:
+        // The baseline ping triggered by the background event above.
+        assertEquals(1, server.requestCount)
 
         var request = server.takeRequest(20L, TimeUnit.SECONDS)!!
         var docType = request.path!!.split("/")[3]
         assertEquals("baseline", docType)
-
-        request = server.takeRequest(20L, TimeUnit.SECONDS)!!
-        docType = request.path!!.split("/")[3]
-        assertEquals("metrics", docType)
     }
 
     @Test
@@ -294,13 +289,15 @@ class GleanTest {
             var docType = request.path!!.split("/")[3]
             assertEquals("The received ping must be a 'baseline' ping", "baseline", docType)
 
-            val baselineJson = JSONObject(request.getPlainBody())
+            var baselineJson = JSONObject(request.getPlainBody())
             assertEquals("dirty_startup", baselineJson.getJSONObject("ping_info")["reason"])
             checkPingSchema(baselineJson)
 
             request = server.takeRequest(20L, TimeUnit.SECONDS)!!
             docType = request.path!!.split("/")[3]
-            assertEquals("The received ping must be a 'metrics' ping", "metrics", docType)
+            assertEquals("The received ping must be a 'baseline' ping", "baseline", docType)
+            baselineJson = JSONObject(request.getPlainBody())
+            assertEquals("active", baselineJson.getJSONObject("ping_info")["reason"])
         } finally {
             server.shutdown()
         }
