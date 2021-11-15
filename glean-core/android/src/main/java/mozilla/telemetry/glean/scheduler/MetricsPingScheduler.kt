@@ -54,7 +54,7 @@ internal class MetricsPingScheduler(
         // In testing mode, set the "last seen version" as the same as this one.
         // Otherwise, all we will ever send is pings for the "upgrade" reason.
         @Suppress("EXPERIMENTAL_API_USAGE")
-        if (Dispatchers.API.testingMode) {
+        if (Glean.testingMode) {
             isDifferentVersion()
         }
 

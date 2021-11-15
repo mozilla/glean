@@ -113,6 +113,9 @@ open class GleanInternalAPI internal constructor () {
     // Keep track of source tags if set before Glean is initialized.
     private var sourceTags: Set<String>? = null
 
+    // Are we in testing mode?
+    internal var testingMode: Boolean = false
+
     // This object holds data related to any persistent information about the metrics ping,
     // such as the last time it was sent and the store name
     internal var metricsPingScheduler: MetricsPingScheduler? = null
@@ -416,6 +419,7 @@ open class GleanInternalAPI internal constructor () {
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     internal fun enableTestingMode() {
+        this.testingMode = true
         gleanSetTestMode(true)
     }
 
