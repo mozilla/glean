@@ -94,7 +94,11 @@ impl PingType {
     pub fn submit(&self, reason: Option<String>) {
         let ping = PingType(Arc::clone(&self.0));
         crate::launch_with_glean(move |glean| {
-            ping.submit_sync(glean, reason.as_deref());
+            let sent = ping.submit_sync(glean, reason.as_deref());
+            if sent {
+                let state = crate::global_state().lock().unwrap();
+                state.callbacks.trigger_upload();
+            }
         });
     }
 
