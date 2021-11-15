@@ -27,6 +27,9 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.util.concurrent.TimeUnit
+import mozilla.telemetry.glean.internal.CounterMetric as CounterMetricType
+import mozilla.telemetry.glean.internal.CommonMetricData
+import mozilla.telemetry.glean.internal.Lifetime
 
 @RunWith(AndroidJUnit4::class)
 class PingTypeTest {
@@ -51,13 +54,13 @@ class PingTypeTest {
             reasonCodes = listOf()
         )
 
-        val counter = CounterMetricType(
+        val counter = CounterMetricType(CommonMetricData(
             disabled = false,
             category = "test",
-            lifetime = Lifetime.Ping,
+            lifetime = Lifetime.PING,
             name = "counter",
             sendInPings = listOf("custom")
-        )
+        ))
 
         counter.add()
         assertTrue(counter.testHasValue())
@@ -101,13 +104,13 @@ class PingTypeTest {
             reasonCodes = listOf()
         )
 
-        val counter = CounterMetricType(
+        val counter = CounterMetricType(CommonMetricData(
             disabled = false,
             category = "test",
-            lifetime = Lifetime.Ping,
+            lifetime = Lifetime.PING,
             name = "counter",
             sendInPings = listOf("custom_ping")
-        )
+        ))
 
         counter.add()
         assertTrue(counter.testHasValue())
@@ -142,13 +145,13 @@ class PingTypeTest {
             reasonCodes = listOf()
         )
 
-        val counter = CounterMetricType(
+        val counter = CounterMetricType(CommonMetricData(
             disabled = false,
             category = "test",
-            lifetime = Lifetime.Ping,
+            lifetime = Lifetime.PING,
             name = "counter",
             sendInPings = listOf("custom-ping")
-        )
+        ))
 
         counter.add()
         assertTrue(counter.testHasValue())
@@ -183,13 +186,13 @@ class PingTypeTest {
             reasonCodes = listOf()
         )
 
-        val counter = CounterMetricType(
+        val counter = CounterMetricType(CommonMetricData(
             disabled = false,
             category = "test",
-            lifetime = Lifetime.Ping,
+            lifetime = Lifetime.PING,
             name = "counter",
             sendInPings = listOf("custom")
-        )
+        ))
 
         counter.add()
         assertTrue(counter.testHasValue())
@@ -211,13 +214,13 @@ class PingTypeTest {
     fun `Sending a ping with an unknown name is a no-op`() {
         val server = getMockWebServer()
 
-        val counter = CounterMetricType(
+        val counter = CounterMetricType(CommonMetricData(
             disabled = false,
             category = "test",
-            lifetime = Lifetime.Ping,
+            lifetime = Lifetime.PING,
             name = "counter",
             sendInPings = listOf("unknown")
-        )
+        ))
 
         val context = getContext()
         delayMetricsPing(context)
