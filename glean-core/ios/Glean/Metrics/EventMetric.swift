@@ -7,15 +7,15 @@ import Foundation
 /// Deserialized event data.
 public struct RecordedEventData {
     /// The event's category, part of the full identifier
-    let category: String
+    public let category: String
     /// The event's name, part of the full identifier
-    let name: String
+    public let name: String
     /// The event's timestamp
-    let timestamp: UInt64
+    public let timestamp: UInt64
     /// Any extra data recorded for the event
-    let extra: [String: String]?
+    public let extra: [String: String]?
 
-    var identifier: String {
+    public var identifier: String {
         if category.isEmpty {
             return name
         } else {
