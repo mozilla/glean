@@ -12,6 +12,11 @@ pub const GLOBAL_DISPATCHER_LIMIT: usize = 100;
 static GLOBAL_DISPATCHER: Lazy<RwLock<Option<Dispatcher>>> =
     Lazy::new(|| RwLock::new(Some(Dispatcher::new(GLOBAL_DISPATCHER_LIMIT))));
 pub static TESTING_MODE: AtomicBool = AtomicBool::new(false);
+pub static QUEUE_TASKS: AtomicBool = AtomicBool::new(true);
+
+pub fn is_test_mode() -> bool {
+    TESTING_MODE.load(Ordering::SeqCst)
+}
 
 /// Get a dispatcher for the global queue.
 ///
@@ -36,12 +41,8 @@ fn guard() -> DispatchGuard {
 ///
 /// [`flush_init`]: fn.flush_init.html
 pub fn launch(task: impl FnOnce() + Send + 'static) {
-    if TESTING_MODE.load(Ordering::SeqCst) {
-        task();
-        return;
-    }
-
-    match guard().launch(task) {
+    let guard = guard();
+    match guard.launch(task) {
         Ok(_) => {}
         Err(DispatchError::QueueFull) => {
             log::info!("Exceeded maximum queue size, discarding task");
@@ -50,6 +51,13 @@ pub fn launch(task: impl FnOnce() + Send + 'static) {
         Err(_) => {
             log::info!("Failed to launch a task on the queue. Discarding task.");
         }
+    }
+
+    // In test mode wait for the execution, unless we're still queueing tasks.
+    let is_queueing = QUEUE_TASKS.load(Ordering::SeqCst);
+    let is_test = TESTING_MODE.load(Ordering::SeqCst);
+    if !is_queueing && is_test {
+        guard.block_on_queue();
     }
 }
 
@@ -110,6 +118,9 @@ pub(crate) fn reset_dispatcher() {
     // definitely happen if this is run concurrently.
     // We will still replace the global dispatcher.
     let _ = shutdown();
+
+    // New dispatcher = we're queuing again.
+    QUEUE_TASKS.store(true, Ordering::SeqCst);
 
     // Now that the dispatcher is shut down, replace it.
     // For that we
