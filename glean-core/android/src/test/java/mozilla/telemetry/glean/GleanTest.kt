@@ -15,11 +15,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import mozilla.telemetry.glean.internal.gleanSetTestMode
+import mozilla.telemetry.glean.internal.gleanSubmitPingByNameSync
 import mozilla.telemetry.glean.GleanMetrics.GleanError
 import mozilla.telemetry.glean.GleanMetrics.GleanInternalMetrics
 import mozilla.telemetry.glean.GleanMetrics.Pings
 import mozilla.telemetry.glean.config.Configuration
-import mozilla.telemetry.glean.private.CounterMetricType
+import mozilla.telemetry.glean.internal.CounterMetric as CounterMetricType
+import mozilla.telemetry.glean.internal.CommonMetricData
+import mozilla.telemetry.glean.internal.Lifetime as InternalLifetime
 import mozilla.telemetry.glean.private.EventMetricType
 import mozilla.telemetry.glean.private.Lifetime
 import mozilla.telemetry.glean.private.NoExtraKeys
@@ -54,6 +57,11 @@ import java.io.File
 import java.util.Calendar
 import java.util.Locale
 import java.util.concurrent.TimeUnit
+
+// This will move to CounterMetricType.kt soon
+fun CounterMetricType.testHasValue(pingName: String? = null): Boolean {
+    return this.testGetValue(pingName) != null
+}
 
 @ObsoleteCoroutinesApi
 @RunWith(AndroidJUnit4::class)
@@ -319,27 +327,25 @@ class GleanTest {
     }
 
     @Test
-    @Ignore("needs UniFFI migration")
     fun `queued recorded metrics correctly record during init`() {
-        val counterMetric = CounterMetricType(
+        val counterMetric = CounterMetricType(CommonMetricData(
             disabled = false,
             category = "telemetry",
-            lifetime = Lifetime.Application,
+            lifetime = InternalLifetime.APPLICATION,
             name = "counter_metric",
             sendInPings = listOf("store1")
-        )
+        ))
 
-        // Enable queuing
-        Dispatchers.API.setTaskQueueing(true)
+        // Destroy Glean, so that the dispatcher will queue tasks until flushed.
+        Glean.testDestroyGleanHandle(clearStores = true)
 
         // This will queue 3 tasks that will add to the metric value once Glean is initialized
         for (ignored in 0..2) {
             counterMetric.add()
         }
 
-        // Ensure that no value has been stored yet since the tasks have only been queued and not
-        // executed yet
-        assertFalse("No value must be stored", counterMetric.testHasValue())
+        // We can't ensure that no value has been stored yet.
+        // The tasks have been queued, but we have no Glean object yet to query the database.
 
         // Calling resetGlean here will cause Glean to be initialized and should cause the queued
         // tasks recording metrics to execute
@@ -366,14 +372,9 @@ class GleanTest {
     }
 
     @Test
-    @Ignore("needs UniFFI migration")
-    fun `Don't handle events when uninitialized`() {
-        val gleanSpy = spy<GleanInternalAPI>(GleanInternalAPI::class.java)
-
-        gleanSpy.testDestroyGleanHandle()
-        runBlocking {
-            assertFalse(LibGleanFFI.INSTANCE.glean_submit_ping_by_name("events", null).toBoolean())
-        }
+    fun `synchronous submit without Glean is a no-op`() {
+        Glean.testDestroyGleanHandle()
+        assertFalse(gleanSubmitPingByNameSync("events"))
     }
 
     @Test
@@ -391,14 +392,6 @@ class GleanTest {
         assertTrue(GleanInternalMetrics.appChannel.testHasValue())
         assertEquals(testChannelName, GleanInternalMetrics.appChannel.testGetValue())
     }
-
-    // glean-ac test removed.
-    // `client_id and first_run_date metrics should be copied from the old location` was here.
-    // 1539480 BACKWARD COMPATIBILITY HACK that is not needed anymore.
-
-    // glean-ac test removed.
-    // `client_id and first_run_date metrics should not override new location` was here.
-    // 1539480 BACKWARD COMPATIBILITY HACK that is not needed anymore.
 
     @Test
     fun `getLanguageTag reports the tag for the default locale`() {
@@ -427,7 +420,6 @@ class GleanTest {
     }
 
     @Test
-    @Ignore("needs UniFFI migration")
     fun `getLanguage reports the modern translation for some languages`() {
         assertEquals("he", getLanguageFromLocale(Locale("iw", "IL")))
         assertEquals("id", getLanguageFromLocale(Locale("in", "ID")))
@@ -641,7 +633,6 @@ class GleanTest {
     }
 
     @Test
-    @Ignore("needs UniFFI migration")
     fun `sending deletion ping if disabled outside of run`() {
         val server = getMockWebServer()
         resetGlean(
@@ -736,7 +727,7 @@ class GleanTest {
     }
 
     @Test
-    @Ignore("needs UniFFI migration")
+    @Ignore("needs a Rust test, as we don't have this API on the Kotlin side anymore")
     fun `test dirty flag is reset to false`() {
         // Set the dirty flag.
         LibGleanFFI.INSTANCE.glean_set_dirty_flag(true.toByte())
@@ -747,7 +738,6 @@ class GleanTest {
     }
 
     @Test
-    @Ignore("needs UniFFI migration")
     fun `setting debugViewTag before initialization should not crash`() {
         // Can't use resetGlean directly
         Glean.testDestroyGleanHandle()

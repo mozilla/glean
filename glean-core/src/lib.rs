@@ -622,9 +622,11 @@ pub fn glean_submit_ping_by_name(ping_name: String, reason: Option<String>) {
 ///
 /// Note: This does not trigger the uploader. The caller is responsible to do this.
 pub fn glean_submit_ping_by_name_sync(ping_name: String, reason: Option<String>) -> bool {
-    core::with_glean(|glean| {
-        glean.submit_ping_by_name(&ping_name, reason.as_deref())
-    })
+    if !was_initialize_called() {
+        return false;
+    }
+
+    core::with_glean(|glean| glean.submit_ping_by_name(&ping_name, reason.as_deref()))
 }
 
 /// **TEST-ONLY Method**
