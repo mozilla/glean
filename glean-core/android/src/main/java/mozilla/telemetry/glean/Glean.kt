@@ -45,32 +45,26 @@ data class GleanTimerId internal constructor(internal val id: Long)
 
 data class BuildInfo(val versionCode: String, val versionName: String)
 
-internal class OnUploadEnabledChangesImpl(
-    val metricsPingScheduler: MetricsPingScheduler,
-    val applicationContext: Context,
+internal class OnGleanEventsImpl(
     val glean: GleanInternalAPI,
-) : OnUploadEnabledChanges {
-    override fun willBeDisabled() {
-        // Cancel any pending workers here so that we don't accidentally upload or
-        // collect data after the upload has been disabled.
-        metricsPingScheduler.cancel()
-        // Cancel any pending workers here so that we don't accidentally upload
-        // data after the upload has been disabled.
-        PingUploadWorker.cancel(applicationContext)
+) : OnGleanEvents {
+    override fun onInitializeFinished() {
+        // At this point, all metrics and events can be recorded.
+        // This should only be called from the main thread. This is enforced by
+        // the @MainThread decorator and the `assertOnUiThread` call.
+        MainScope().launch {
+            ProcessLifecycleOwner.get().lifecycle.addObserver(glean.gleanLifecycleObserver)
+        }
+        glean.initialized = true
     }
 
-    override fun onEnabled() {
-        glean.initializeCoreMetrics()
-    }
-
-    override fun onDisabled() {
-        PingUploadWorker.enqueueWorker(applicationContext)
-    }
-}
-
-internal class OnTriggerUploadImpl(val applicationContext: Context) : OnTriggerUpload {
     override fun triggerUpload() {
-        PingUploadWorker.enqueueWorker(applicationContext)
+        PingUploadWorker.enqueueWorker(glean.applicationContext)
+    }
+
+    override fun startMps() {
+        glean.metricsPingScheduler = MetricsPingScheduler(glean.applicationContext, glean.buildInfo)
+        glean.metricsPingScheduler.schedule()
     }
 }
 
@@ -87,11 +81,7 @@ open class GleanInternalAPI internal constructor () {
         internal const val GLEAN_DATA_DIR: String = "glean_data"
     }
 
-    private var initialized: Boolean = false
-    // Set when `initialize()` returns.
-    // This allows to detect calls that happen before `Glean.initialize()` was called.
-    // Note: The initialization might still be in progress, as it runs in a separate thread.
-    private var initFinished: Boolean = false
+    internal var initialized: Boolean = false
 
     internal lateinit var configuration: Configuration
 
@@ -100,10 +90,10 @@ open class GleanInternalAPI internal constructor () {
     // the `Configuration`.
     internal lateinit var httpClient: BaseUploader
 
-    private lateinit var applicationContext: Context
+    internal lateinit var applicationContext: Context
 
     // Note: we set `applicationContext` early during startup so this should be fine.
-    private val gleanLifecycleObserver by lazy { GleanLifecycleObserver() }
+    internal val gleanLifecycleObserver by lazy { GleanLifecycleObserver() }
 
     private lateinit var gleanDataDir: File
 
@@ -169,6 +159,7 @@ open class GleanInternalAPI internal constructor () {
     ) {
         this.buildInfo = buildInfo
 
+
         // Glean initialization must be called on the main thread, or lifecycle
         // registration may fail. This is also enforced at build time by the
         // @MainThread decorator, but this run time check is also performed to
@@ -195,40 +186,20 @@ open class GleanInternalAPI internal constructor () {
 
         Log.e(LOG_TAG, "Glean. enable logging.")
         gleanEnableLogging()
-        // Execute startup off the main thread.
-        @Suppress("EXPERIMENTAL_API_USAGE")
-        Dispatchers.API.executeTask {
-            val cfg = InternalConfiguration(
-                dataPath = gleanDataDir.path,
-                applicationId = applicationContext.packageName,
-                languageBindingName = LANGUAGE_BINDING_NAME,
-                uploadEnabled = uploadEnabled,
-                maxEvents = null,
-                delayPingLifetimeIo = false,
-                appBuild = "none",
-                useCoreMps = false
-            )
 
-            Log.e(LOG_TAG, "Glean. initialize.")
-            initialized = gleanInitialize(cfg)
-
-            // If initialization of Glean fails we bail out and don't initialize further.
-            if (!initialized) {
-                return@executeTask
-            }
-
-            // Signal Dispatcher that init is complete
-            Dispatchers.API.flushQueuedInitialTasks()
-            gleanFinishInitialize()
-
-            // At this point, all metrics and events can be recorded.
-            // This should only be called from the main thread. This is enforced by
-            // the @MainThread decorator and the `assertOnUiThread` call.
-            MainScope().launch {
-                ProcessLifecycleOwner.get().lifecycle.addObserver(gleanLifecycleObserver)
-            }
-        }
-        this.initFinished = true
+        val cfg = InternalConfiguration(
+            dataPath = gleanDataDir.path,
+            applicationId = applicationContext.packageName,
+            languageBindingName = LANGUAGE_BINDING_NAME,
+            uploadEnabled = uploadEnabled,
+            maxEvents = null,
+            delayPingLifetimeIo = false,
+            appBuild = "none",
+            useCoreMps = false
+        )
+        val clientInfo = getClientInfo(configuration, buildInfo)
+        val callbacks = OnGleanEventsImpl(this)
+        gleanInitialize(cfg, clientInfo, callbacks)
     }
 
     /**
@@ -265,8 +236,7 @@ open class GleanInternalAPI internal constructor () {
      * @param enabled When true, enable metric collection.
      */
     fun setUploadEnabled(enabled: Boolean) {
-        val changes_cb = OnUploadEnabledChangesImpl(metricsPingScheduler, applicationContext, this)
-        gleanSetUploadEnabled(enabled, changes_cb)
+        gleanSetUploadEnabled(enabled)
     }
 
     /**
@@ -339,30 +309,23 @@ open class GleanInternalAPI internal constructor () {
     /**
      * Initialize the core metrics internally managed by Glean (e.g. client id).
      */
-    internal fun initializeCoreMetrics() {
-        // Set a few more metrics that will be sent as part of every ping.
-        // Please note that the following metrics must be set synchronously, so
-        // that they are guaranteed to be available with the first ping that is
-        // generated. We use an internal only API to do that.
+    internal fun getClientInfo(configuration: Configuration, buildInfo: BuildInfo): ClientInfoMetrics {
+        return ClientInfoMetrics(
+            appBuild = buildInfo.versionCode,
+            appDisplayVersion = buildInfo.versionName,
 
-        // Set required information first.
-        GleanInternalMetrics.appBuild.setSync(buildInfo.versionCode)
-        GleanInternalMetrics.appDisplayVersion.setSync(buildInfo.versionName)
+            architecture = Build.SUPPORTED_ABIS[0],
+            osVersion = Build.VERSION.RELEASE,
 
-        GleanInternalMetrics.architecture.setSync(Build.SUPPORTED_ABIS[0])
-        GleanInternalMetrics.osVersion.setSync(Build.VERSION.RELEASE)
+            channel = configuration.channel,
 
-        // Optional data is set last.
-
-        configuration.channel?.let {
-            GleanInternalMetrics.appChannel.setSync(it)
-        }
-        // https://developer.android.com/reference/android/os/Build.VERSION
-        GleanInternalMetrics.androidSdkVersion.setSync(Build.VERSION.SDK_INT.toString())
-        // https://developer.android.com/reference/android/os/Build
-        GleanInternalMetrics.deviceManufacturer.setSync(Build.MANUFACTURER)
-        GleanInternalMetrics.deviceModel.setSync(Build.MODEL)
-        GleanInternalMetrics.locale.setSync(getLocaleTag())
+            // https://developer.android.com/reference/android/os/Build.VERSION
+            androidSdkVersion = Build.VERSION.SDK_INT.toString(),
+            // https://developer.android.com/reference/android/os/Build
+            deviceManufacturer = Build.MANUFACTURER,
+            deviceModel = Build.MODEL,
+            locale = getLocaleTag()
+        )
     }
 
     /**
@@ -387,8 +350,7 @@ open class GleanInternalAPI internal constructor () {
         // Note that this is sending the length of the last foreground session
         // because it belongs to the baseline ping and that ping is sent every
         // time the app goes to background.
-        val workerCb = OnTriggerUploadImpl(applicationContext)
-        gleanHandleClientActive(workerCb)
+        gleanHandleClientActive()
 
         GleanValidation.foregroundCount.add(1)
     }
@@ -397,8 +359,7 @@ open class GleanInternalAPI internal constructor () {
      * Handle the background event and send the appropriate pings.
      */
     internal fun handleBackgroundEvent() {
-        val workerCb = OnTriggerUploadImpl(applicationContext)
-        gleanHandleClientInactive(workerCb)
+        gleanHandleClientInactive()
     }
 
     /**
@@ -604,7 +565,6 @@ open class GleanInternalAPI internal constructor () {
         // Reset all state.
         @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.setTaskQueueing(true)
-        initFinished = false
         initialized = false
     }
 
@@ -617,13 +577,11 @@ open class GleanInternalAPI internal constructor () {
         // we dispatch ping registration on the thread pool.
         // Registering a ping should not block the application.
         // Submission itself is also dispatched, so it will always come after the registration.
-        if (this.initFinished) {
-            @Suppress("EXPERIMENTAL_API_USAGE")
-            Dispatchers.API.launch {
-                LibGleanFFI.INSTANCE.glean_register_ping_type(
-                    pingType.handle
-                )
-            }
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        Dispatchers.API.launch {
+            LibGleanFFI.INSTANCE.glean_register_ping_type(
+                pingType.handle
+            )
         }
 
         // We need to keep track of pings, so they get re-registered after a reset.
