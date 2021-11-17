@@ -67,7 +67,7 @@ Glean.set_experiment_active(
 ```
 </div>
 
-<div data-lang="JavaScript" class="tab"></div>
+<div data-lang="JavaScript" class="tab" data-bug="1741583"></div>
 
 <div data-lang="Rust" class="tab">
 
@@ -156,7 +156,7 @@ Glean.set_experiment_inactive("blue-button-effective")
 ```
 </div>
 
-<div data-lang="JavaScript" class="tab"></div>
+<div data-lang="JavaScript" class="tab" data-bug="1741583"></div>
 
 <div data-lang="Rust" class="tab">
 
@@ -218,7 +218,7 @@ assert Glean.test_is_experiment_active("blue-button-effective")
 ```
 </div>
 
-<div data-lang="JavaScript" class="tab"></div>
+<div data-lang="JavaScript" class="tab" data-bug="1741583"></div>
 
 <div data-lang="Rust" class="tab">
 
@@ -270,7 +270,7 @@ assert (
 ```
 </div>
 
-<div data-lang="JavaScript" class="tab"></div>
+<div data-lang="JavaScript" class="tab" data-bug="1741583"></div>
 
 <div data-lang="Rust" class="tab">
 
