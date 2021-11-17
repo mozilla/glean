@@ -92,7 +92,7 @@ Let's work through an example to see how these lifetimes play out in practice. L
 
 In this diagram, the ping measurement windows are represented as rectangles, but the moment the ping is "submitted" is represented by its right edge. The user changes the "turbo mode" setting from `false` to `true` in the first run, and then toggles it again twice in the second run.
   
-![Metric lifetime timeline](metric-lifetime-timeline.svg)
+![Metric lifetime timeline](../metric-lifetime-timeline.svg)
 
 - **A. Ping lifetime, set on change**: The value isn't included in Ping 1, because Glean doesn't know about it yet.  It is included in the first ping after being recorded (Ping 2), which causes it to be cleared.
 
