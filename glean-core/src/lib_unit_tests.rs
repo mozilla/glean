@@ -687,14 +687,14 @@ fn test_change_metric_type_runtime() {
     timespan_metric.set_stop(&glean, duration);
 
     assert_eq!(
-        timespan_metric.get_value(&glean, Some(ping_name)).unwrap(),
+        timespan_metric.get_value(&glean, ping_name).unwrap(),
         60,
         "Expected properly deserialized time"
     );
 
     // We expect old data to be lost forever. See the following bug comment
     // https://bugzilla.mozilla.org/show_bug.cgi?id=1621757#c1 for more context.
-    assert_eq!(None, string_metric.test_get_value(&glean, ping_name));
+    assert_eq!(None, string_metric.get_value(&glean, ping_name));
 }
 
 #[test]
