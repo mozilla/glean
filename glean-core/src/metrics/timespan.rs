@@ -2,10 +2,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+use std::convert::TryInto;
 use std::sync::{Arc, RwLock};
 use std::time::Duration;
 
-use crate::error_recording::{record_error, ErrorType};
+use crate::error_recording::{record_error, test_get_num_recorded_errors, ErrorType};
 use crate::metrics::time_unit::TimeUnit;
 use crate::metrics::Metric;
 use crate::metrics::MetricType;
@@ -173,6 +174,25 @@ impl TimespanMetric {
         crate::launch_with_glean(move |glean| metric.set_raw_sync(glean, elapsed));
     }
 
+    /// Explicitly sets the timespan value.
+    ///
+    /// This API should only be used if your library or application requires
+    /// recording times in a way that can not make use of
+    /// [`set_start`](TimespanMetric::set_start)/[`set_stop`](TimespanMetric::set_stop)/[`cancel`](TimespanMetric::cancel).
+    ///
+    /// Care should be taken using this if the ping lifetime might contain more
+    /// than one timespan measurement. To be safe,
+    /// [`set_raw`](TimespanMetric::set_raw) should generally be followed by
+    /// sending a custom ping containing the timespan.
+    ///
+    /// # Arguments
+    ///
+    /// * `elapsed_nanos` - The elapsed time to record, in nanoseconds.
+    pub fn set_raw_nanos(&self, elapsed_nanos: i64) {
+        let elapsed = Duration::from_nanos(elapsed_nanos.try_into().unwrap_or(0));
+        self.set_raw(elapsed)
+    }
+
     /// Set raw but sync
     pub fn set_raw_sync(&self, glean: &Glean, elapsed: Duration) {
         if !self.meta.should_record() {
@@ -229,14 +249,25 @@ impl TimespanMetric {
     /// Gets the currently stored value as an integer.
     ///
     /// This doesn't clear the stored value.
-    pub fn test_get_value(&self, ping_name: Option<String>) -> Option<u64> {
+    pub fn test_get_value(&self, ping_name: Option<String>) -> Option<i64> {
         crate::block_on_dispatcher();
-        crate::core::with_glean(|glean| self.get_value(glean, ping_name.as_deref()))
+        crate::core::with_glean(|glean| {
+            self.get_value(glean, ping_name.as_deref()).map(|val| {
+                val.try_into()
+                    .expect("Timespan can't be represented as i64")
+            })
+        })
     }
 
     /// Get the current value
-    pub fn get_value(&self, glean: &Glean, ping_name: Option<&str>) -> Option<u64> {
-        let queried_ping_name = ping_name.unwrap_or_else(|| &self.meta.send_in_pings[0]);
+    pub fn get_value<'a, S: Into<Option<&'a str>>>(
+        &self,
+        glean: &Glean,
+        ping_name: S,
+    ) -> Option<u64> {
+        let queried_ping_name = ping_name
+            .into()
+            .unwrap_or_else(|| &self.meta().send_in_pings[0]);
 
         match StorageManager.snapshot_metric_for_test(
             glean.storage(),
@@ -247,5 +278,27 @@ impl TimespanMetric {
             Some(Metric::Timespan(time, time_unit)) => Some(time_unit.duration_convert(time)),
             _ => None,
         }
+    }
+
+    /// **Exported for test purposes.**
+    ///
+    /// Gets the number of recorded errors for the given metric and error type.
+    ///
+    /// # Arguments
+    ///
+    /// * `error` - The type of error
+    /// * `ping_name` - represents the optional name of the ping to retrieve the
+    ///   metric for. Defaults to the first value in `send_in_pings`.
+    ///
+    /// # Returns
+    ///
+    /// The number of errors reported.
+    pub fn test_get_num_recorded_errors(&self, error: ErrorType, ping_name: Option<String>) -> i32 {
+        crate::block_on_dispatcher();
+
+        crate::core::with_glean_mut(|glean| {
+            test_get_num_recorded_errors(glean, self.meta(), error, ping_name.as_deref())
+                .unwrap_or(0)
+        })
     }
 }

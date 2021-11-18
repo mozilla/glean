@@ -126,6 +126,34 @@ enum Lifetime {
     "User",
 };
 
+enum TimeUnit {
+    // Represents nanosecond precision.
+    "Nanosecond",
+    // Represents microsecond precision.
+    "Microsecond",
+    // Represents millisecond precision.
+    "Millisecond",
+    // Represents second precision.
+    "Second",
+    // Represents minute precision.
+    "Minute",
+    // Represents hour precision.
+    "Hour",
+    // Represents day precision.
+    "Day",
+};
+
+enum ErrorType {
+    /// For when the value to be recorded does not match the metric-specific restrictions
+    "InvalidValue",
+    /// For when the label of a labeled metric does not match the restrictions
+    "InvalidLabel",
+    /// For when the metric caught an invalid state while recording
+    "InvalidState",
+    /// For when the value to be recorded overflows the metric-specific upper range
+    "InvalidOverflow",
+};
+
 dictionary CommonMetricData {
     string category;
     string name;
@@ -148,4 +176,20 @@ interface CounterMetric {
 interface PingType {
     constructor(string name, boolean include_client_id, boolean send_if_empty, sequence<string> reason_codes);
     void submit(optional string? reason = null);
+};
+
+interface TimespanMetric {
+    constructor(CommonMetricData meta, TimeUnit time_unit);
+
+    void start();
+
+    void stop();
+
+    void cancel();
+
+    void set_raw_nanos(i64 elapsed);
+
+    i64? test_get_value(optional string? ping_name = null);
+
+    i32 test_get_num_recorded_errors(ErrorType error, optional string? ping_name = null);
 };
