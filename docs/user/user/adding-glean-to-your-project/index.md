@@ -17,6 +17,7 @@ Products (applications or libraries) using a Glean SDK to collect telemetry **mu
 3. Ensure that telemetry coming from automated testing or continuous integration is either not sent to the telemetry server or [tagged with the `automation` tag using the `sourceTag` feature](../../reference/debug/sourceTags.md).
 
 4. At least one week before releasing your product, [file a data engineering bug][dataeng-bug] to enable your product's application id and have your metrics be indexed by the [Glean Dictionary].
+**Important consideration for libraries:** For libraries that are adding Glean, you will need to indicate which _applications_ use the library as a dependency so that the library metrics get correctly indexed and added to the products that consume the library. If the library is added to a new product later, then it is necessary to file a new [bug][dataeng-bug] to add it as a dependency to that product in order for the library metrics to be collected along with the data from the new product.
 
 Additionally, applications (but not libraries) **must**:
 
