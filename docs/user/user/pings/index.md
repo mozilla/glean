@@ -225,10 +225,10 @@ To keep resource usage in check, the Glean SDK enforces some limitations on ping
 
 #### Rate limiting
 
-Only up to 15 ping submissions every 60 seconds are allowed. 
+Only up to 15 ping submissions every 60 seconds are allowed.
 
-There are no exposed methods to change these rate limiting defaults, follow [Bug 1647630](https://bugzilla.mozilla.org/show_bug.cgi?id=1647630)
-and [Bug 1727069](https://bugzilla.mozilla.org/show_bug.cgi?id=1727069) for updates.
+For the JavaScript SDK that limit is higher
+and up to 40 ping submissions every 60 seconds are allowed.
 
 #### Request body size limiting
 
