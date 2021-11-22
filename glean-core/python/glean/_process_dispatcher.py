@@ -120,8 +120,14 @@ class ProcessDispatcher:
                     Path(".coveragerc").absolute()
                 )
 
+            # Explicitly pass the contents of `sys.path` as `PYTHONPATH` to the
+            # subprocess so that there aren't any module search path
+            # differences.
+            python_path = ":".join(sys.path)[1:]
+
             p = subprocess.Popen(
-                [sys.executable, _process_dispatcher_helper.__file__, payload]
+                [sys.executable, _process_dispatcher_helper.__file__, payload],
+                env={"PYTHONPATH": python_path},
             )
 
             cls._last_process = p
