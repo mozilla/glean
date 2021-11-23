@@ -147,6 +147,13 @@ subprojects {
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
         // TODO: Re-enable when we fixed all those warnings.
         //kotlinOptions.allWarningsAsErrors = true
+        kotlinOptions {
+            // FIXME: Currently required for `toUByteArray` in the ping uploader.
+            // Should probably be handled with an annotation.
+            freeCompilerArgs += [
+                "-Xuse-experimental=kotlin.ExperimentalUnsignedTypes",
+            ]
+        }
     }
 
     // This allows to invoke Gradle like `./gradlew publishToRootProjectBuildDir` (equivalent to

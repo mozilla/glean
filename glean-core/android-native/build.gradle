@@ -53,7 +53,7 @@ android {
 
 cargo {
     // The directory of the Cargo.toml to build.
-    module = '../uniffi'
+    module = '../bundle'
 
     // The Android NDK API level to target.
     apiLevel = 21
@@ -61,7 +61,7 @@ cargo {
     // Where Cargo writes its outputs.
     targetDirectory = '../../target'
 
-    libname = 'glean_uniffi'
+    libname = 'glean_ffi'
 
     targets = rootProject.ext.rustTargets
 

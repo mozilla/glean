@@ -29,7 +29,7 @@ import mozilla.telemetry.glean.getMockWebServer
 import mozilla.telemetry.glean.net.HeadersList
 import mozilla.telemetry.glean.net.PingUploader
 import mozilla.telemetry.glean.net.UploadResult
-import mozilla.telemetry.glean.net.HttpResponse
+import mozilla.telemetry.glean.net.HttpStatus
 import mozilla.telemetry.glean.private.NoReasonCodes
 import mozilla.telemetry.glean.private.PingType
 import mozilla.telemetry.glean.testing.GleanTestRule
@@ -50,14 +50,14 @@ private class TestPingTagClient(
             url.startsWith(responseUrl))
         debugHeaderValue?.let {
             assertEquals("The debug view header must match what the ping tag was set to",
-                debugHeaderValue, headers.find { it.first == "X-Debug-ID" }!!.second)
+                debugHeaderValue, headers.get("X-Debug-ID")!!)
         }
         sourceTagsValue?.let {
             assertEquals("The source tags header must match what the ping tag was set to",
-                sourceTagsValue.joinToString(","), headers.find { it.first == "X-Source-Tags" }!!.second)
+                sourceTagsValue.joinToString(","), headers.get("X-Source-Tags")!!)
         }
 
-        return HttpResponse(200)
+        return HttpStatus(200)
     }
 }
 

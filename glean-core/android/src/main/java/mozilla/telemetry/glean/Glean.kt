@@ -22,7 +22,6 @@ import mozilla.telemetry.glean.config.Configuration
 import mozilla.telemetry.glean.config.FfiConfiguration
 import mozilla.telemetry.glean.utils.getLocaleTag
 import java.io.File
-import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.getAndConsumeRustString
 import mozilla.telemetry.glean.rust.toBoolean
 import mozilla.telemetry.glean.rust.toByte
@@ -30,7 +29,6 @@ import mozilla.telemetry.glean.GleanMetrics.GleanInternalMetrics
 import mozilla.telemetry.glean.GleanMetrics.GleanValidation
 import mozilla.telemetry.glean.GleanMetrics.Pings
 import mozilla.telemetry.glean.net.BaseUploader
-import mozilla.telemetry.glean.private.PingTypeBase
 import mozilla.telemetry.glean.scheduler.GleanLifecycleObserver
 import mozilla.telemetry.glean.scheduler.PingUploadWorker
 import mozilla.telemetry.glean.scheduler.MetricsPingScheduler
@@ -62,9 +60,18 @@ internal class OnGleanEventsImpl(
         PingUploadWorker.enqueueWorker(glean.applicationContext)
     }
 
-    override fun startMps() {
+    override fun startMetricsPingScheduler(): Boolean {
         glean.metricsPingScheduler = MetricsPingScheduler(glean.applicationContext, glean.buildInfo)
-        glean.metricsPingScheduler.schedule()
+        return glean.metricsPingScheduler!!.schedule()
+    }
+
+    override fun cancelUploads() {
+        // Cancel any pending workers here so that we don't accidentally upload or
+        // collect data after the upload has been disabled.
+        glean.metricsPingScheduler?.cancel()
+        // Cancel any pending workers here so that we don't accidentally upload
+        // data after the upload has been disabled.
+        PingUploadWorker.cancel(glean.applicationContext)
     }
 }
 
@@ -106,12 +113,12 @@ open class GleanInternalAPI internal constructor () {
     // Keep track of source tags if set before Glean is initialized.
     private var sourceTags: Set<String>? = null
 
+    // Are we in testing mode?
+    internal var testingMode: Boolean = false
+
     // This object holds data related to any persistent information about the metrics ping,
     // such as the last time it was sent and the store name
-    internal lateinit var metricsPingScheduler: MetricsPingScheduler
-
-    // Keep track of ping types that have been registered before Glean is initialized.
-    internal val pingTypeQueue: MutableSet<PingTypeBase> = mutableSetOf()
+    internal var metricsPingScheduler: MetricsPingScheduler? = null
 
     // This is used to cache the process state and is used by the function `isMainProcess()`
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -123,6 +130,10 @@ open class GleanInternalAPI internal constructor () {
 
     // Store the build information provided by the application.
     internal lateinit var buildInfo: BuildInfo
+
+    init {
+        gleanEnableLogging()
+    }
 
     /**
      * Initialize the Glean SDK.
@@ -184,9 +195,6 @@ open class GleanInternalAPI internal constructor () {
         this.httpClient = BaseUploader(configuration.httpClient)
         this.gleanDataDir = File(applicationContext.applicationInfo.dataDir, GLEAN_DATA_DIR)
 
-        Log.e(LOG_TAG, "Glean. enable logging.")
-        gleanEnableLogging()
-
         val cfg = InternalConfiguration(
             dataPath = gleanDataDir.path,
             applicationId = applicationContext.packageName,
@@ -237,22 +245,6 @@ open class GleanInternalAPI internal constructor () {
      */
     fun setUploadEnabled(enabled: Boolean) {
         gleanSetUploadEnabled(enabled)
-    }
-
-    /**
-     * Get whether or not Glean is allowed to record and upload data.
-     *
-     * Caution: the result is only correct if Glean is already initialized.
-     *
-     * Note: due to the deprecation notice and because warnings break the build,
-     * we pull out the implementation into an internal method.
-     */
-    internal fun internalGetUploadEnabled(): Boolean {
-        if (isInitialized()) {
-            return LibGleanFFI.INSTANCE.glean_is_upload_enabled().toBoolean()
-        } else {
-            return false
-        }
     }
 
     /**
@@ -336,14 +328,6 @@ open class GleanInternalAPI internal constructor () {
     }
 
     /**
-     * Collect a ping and return a string
-     */
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    internal fun testCollect(ping: PingTypeBase, reason: String? = null): String? {
-        return LibGleanFFI.INSTANCE.glean_ping_collect(ping.handle, reason)?.getAndConsumeRustString()
-    }
-
-    /**
      * Handle the foreground event and send the appropriate pings.
      */
     internal fun handleForegroundEvent() {
@@ -352,7 +336,8 @@ open class GleanInternalAPI internal constructor () {
         // time the app goes to background.
         gleanHandleClientActive()
 
-        GleanValidation.foregroundCount.add(1)
+        // TODO: Re-enable when Counter metric is working
+        //GleanValidation.foregroundCount.add(1)
     }
 
     /**
@@ -360,24 +345,6 @@ open class GleanInternalAPI internal constructor () {
      */
     internal fun handleBackgroundEvent() {
         gleanHandleClientInactive()
-    }
-
-    /**
-     * Collect and submit a ping for eventual upload.
-     *
-     * The ping content is assembled as soon as possible, but upload is not
-     * guaranteed to happen immediately, as that depends on the upload
-     * policies.
-     *
-     * If the ping currently contains no content, it will not be assembled and
-     * queued for sending.
-     *
-     * @param ping Ping to submit.
-     * @param reason The reason the ping is being submitted.
-     * @return The async [Job] performing the work of assembling the ping
-     */
-    internal fun submitPing(ping: PingTypeBase, reason: String? = null): Job? {
-        return submitPingByName(ping.name, reason)
     }
 
     /**
@@ -399,46 +366,8 @@ open class GleanInternalAPI internal constructor () {
      * @return The async [Job] performing the work of assembling the ping
      */
     @Suppress("EXPERIMENTAL_API_USAGE")
-    internal fun submitPingByName(pingName: String, reason: String? = null) = Dispatchers.API.launch {
-        submitPingByNameSync(pingName, reason)
-    }
-
-    /**
-     * Collect and submit a ping (by its name) for eventual upload, synchronously.
-     *
-     * The ping will be looked up in the known instances of [PingType]. If the
-     * ping isn't known, an error is logged and the ping isn't queued for uploading.
-     *
-     * The ping content is assembled as soon as possible, but upload is not
-     * guaranteed to happen immediately, as that depends on the upload
-     * policies.
-     *
-     * If the ping currently contains no content, it will not be assembled and
-     * queued for sending, unless explicitly specified otherwise in the registry
-     * file.
-     *
-     * @param pingName Name of the ping to submit.
-     * @param reason The reason the ping is being submitted.
-     */
-    internal fun submitPingByNameSync(pingName: String, reason: String? = null) {
-        if (!isInitialized()) {
-            Log.e(LOG_TAG, "Glean must be initialized before submitting pings.")
-            return
-        }
-
-        if (!internalGetUploadEnabled()) {
-            Log.i(LOG_TAG, "Glean disabled: not submitting any pings.")
-            return
-        }
-
-        val submittedPing = LibGleanFFI.INSTANCE.glean_submit_ping_by_name(
-            pingName,
-            reason
-        ).toBoolean()
-
-        if (submittedPing) {
-            PingUploadWorker.enqueueWorker(applicationContext)
-        }
+    internal fun submitPingByName(pingName: String, reason: String? = null) {
+        gleanSubmitPingByName(pingName, reason)
     }
 
     /**
@@ -490,8 +419,8 @@ open class GleanInternalAPI internal constructor () {
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     internal fun enableTestingMode() {
-        @Suppress("EXPERIMENTAL_API_USAGE")
-        Dispatchers.API.setTestingMode(enabled = true)
+        this.testingMode = true
+        gleanSetTestMode(true)
     }
 
     /**
@@ -511,15 +440,14 @@ open class GleanInternalAPI internal constructor () {
     ) {
         Glean.enableTestingMode()
 
-        if (isInitialized() && clearStores) {
-            // Clear all the stored data.
-            LibGleanFFI.INSTANCE.glean_test_clear_all_stores()
-        }
-
         isMainProcess = null
 
+        // Resetting MPS and uploader
+        metricsPingScheduler?.cancel()
+        PingUploadWorker.cancel(context)
+
         // Init Glean.
-        Glean.testDestroyGleanHandle()
+        Glean.testDestroyGleanHandle(clearStores)
         // Always log pings for tests
         Glean.setLogPings(true)
 
@@ -554,53 +482,16 @@ open class GleanInternalAPI internal constructor () {
      * Test-only method to destroy the owned glean-core handle.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    internal fun testDestroyGleanHandle() {
+    internal fun testDestroyGleanHandle(clearStores: Boolean = false) {
         if (!isInitialized()) {
             // We don't need to destroy Glean: it wasn't initialized.
             return
         }
 
-        LibGleanFFI.INSTANCE.glean_destroy_glean()
+        gleanTestDestroyGlean(clearStores)
 
         // Reset all state.
-        @Suppress("EXPERIMENTAL_API_USAGE")
-        Dispatchers.API.setTaskQueueing(true)
         initialized = false
-    }
-
-    /**
-     * Register a [PingType] in the registry associated with this [Glean] object.
-     */
-    @Synchronized
-    internal fun registerPingType(pingType: PingTypeBase) {
-        // If this happens after Glean.initialize is called (and returns),
-        // we dispatch ping registration on the thread pool.
-        // Registering a ping should not block the application.
-        // Submission itself is also dispatched, so it will always come after the registration.
-        @Suppress("EXPERIMENTAL_API_USAGE")
-        Dispatchers.API.launch {
-            LibGleanFFI.INSTANCE.glean_register_ping_type(
-                pingType.handle
-            )
-        }
-
-        // We need to keep track of pings, so they get re-registered after a reset.
-        // This state is kept across Glean resets, which should only ever happen in test mode.
-        // Or by the instrumentation tests (`connectedAndroidTest`), which relaunches the application activity,
-        // but not the whole process, meaning globals, such as the ping types, still exist from the old run.
-        // It's a set and keeping them around forever should not have much of an impact.
-
-        pingTypeQueue.add(pingType)
-    }
-
-    /**
-     * Returns true if a ping by this name is in the ping registry.
-     *
-     * For internal testing only.
-     */
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    internal fun testHasPingType(pingName: String): Boolean {
-        return LibGleanFFI.INSTANCE.glean_test_has_ping_type(pingName).toBoolean()
     }
 
     /**

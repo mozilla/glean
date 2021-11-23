@@ -17,10 +17,10 @@ publish = false
 name = "glean_ffi"
 crate-type = ["staticlib", "cdylib"]
 
-[dependencies.glean-ffi]
+[dependencies.glean-core]
 # No version specified, we build against what's available here.
-path = "../ffi"
+path = ".."
 
 [features]
 # Enable the "safe-mode" Rust storage backend instead of the default LMDB one.
-rkv-safe-mode = ["glean-ffi/rkv-safe-mode"]
+rkv-safe-mode = ["glean-core/rkv-safe-mode"]

@@ -289,7 +289,7 @@ class MetricsPingSchedulerTest {
             assertTrue("The initial test data must have been recorded", testMetric.testHasValue())
 
             // Manually call the function to trigger the collection.
-            Glean.metricsPingScheduler.collectPingAndReschedule(
+            Glean.metricsPingScheduler!!.collectPingAndReschedule(
                 Calendar.getInstance(),
                 false,
                 Pings.metricsReasonCodes.overdue
@@ -634,19 +634,19 @@ class MetricsPingSchedulerTest {
         Glean.metricsPingScheduler = MetricsPingScheduler(context, GleanBuildInfo.buildInfo)
 
         // No work should be enqueued at the beginning of the test.
-        assertNull(Glean.metricsPingScheduler.timer)
+        assertNull(Glean.metricsPingScheduler!!.timer)
 
         // Manually schedule a collection task for today.
-        Glean.metricsPingScheduler.schedulePingCollection(
+        Glean.metricsPingScheduler!!.schedulePingCollection(
             Calendar.getInstance(),
             sendTheNextCalendarDay = false,
             reason = Pings.metricsReasonCodes.overdue
         )
 
         // We expect the worker to be scheduled.
-        assertNotNull(Glean.metricsPingScheduler.timer)
+        assertNotNull(Glean.metricsPingScheduler!!.timer)
 
-        Glean.metricsPingScheduler.cancel()
+        Glean.metricsPingScheduler!!.cancel()
 
         resetGlean(clearStores = true)
     }
@@ -660,14 +660,14 @@ class MetricsPingSchedulerTest {
 
         // Verify that the worker is enqueued
         assertNotNull("MetricsPingWorker is enqueued",
-            Glean.metricsPingScheduler.timer)
+            Glean.metricsPingScheduler!!.timer)
 
         // Cancel the worker
-        Glean.metricsPingScheduler.cancel()
+        Glean.metricsPingScheduler!!.cancel()
 
         // Verify worker has been cancelled
         assertNull("MetricsPingWorker is not enqueued",
-            Glean.metricsPingScheduler.timer)
+            Glean.metricsPingScheduler!!.timer)
     }
 
     @Test

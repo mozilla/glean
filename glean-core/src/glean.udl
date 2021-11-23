@@ -20,6 +20,15 @@ namespace glean {
 
     void glean_handle_client_active();
     void glean_handle_client_inactive();
+
+    void glean_submit_ping_by_name(string ping_name, optional string? reason = null);
+    boolean glean_submit_ping_by_name_sync(string ping_name, optional string? reason = null);
+
+    void glean_set_test_mode(boolean enabled);
+    void glean_test_destroy_glean(boolean clear_stores);
+
+    PingUploadTask glean_get_upload_task();
+    void glean_process_ping_upload_response(string uuid, UploadResult result);
 };
 
 // The Glean configuration.
@@ -48,11 +57,11 @@ dictionary ClientInfoMetrics {
     string architecture;
     string os_version;
 
-    string? channel;
-    string? android_sdk_version;
-    string? device_manufacturer;
-    string? device_model;
-    string? locale;
+    string? channel = null;
+    string? locale = null;
+    string? device_manufacturer = null;
+    string? device_model = null;
+    string? android_sdk_version = null;
 };
 
 // A callback object, that is stored within the core logic for the entire lifetime of the application.
@@ -74,13 +83,41 @@ callback interface OnGleanEvents {
 
     // Start the Metrics Ping Scheduler.
     //
-    // The language SDK
-    void start_metric_ping_scheduler();
+    // *Note*: The implementor
+    // * DOES NOT need to schedule the uploader.
+    // * MUST NOT use a dispatched call in the immediate invocation.
+    //
+    // Returns whether it submitted a ping immediately.
+    boolean start_metrics_ping_scheduler();
+
+    // Called when upload is disabled and uploads should be stopped
+    void cancel_uploads();
 };
 
 dictionary RecordedExperiment {
     string branch;
     record<DOMString, string>? extra;
+};
+
+dictionary PingRequest {
+    string document_id;
+    string path;
+    sequence<u8> body;
+    record<DOMString, string> headers;
+};
+
+[Enum]
+interface PingUploadTask {
+    Upload(PingRequest request);
+    Wait(u64 time);
+    Done(i8 unused);
+};
+
+[Enum]
+interface UploadResult {
+    RecoverableFailure(i8 unused);
+    UnrecoverableFailure(i8 unused);
+    HttpStatus(i32 code);
 };
 
 enum Lifetime {
@@ -106,4 +143,9 @@ interface CounterMetric {
     void add(optional i32 amount = 1);
 
     i32? test_get_value(optional string? ping_name = null);
+};
+
+interface PingType {
+    constructor(string name, boolean include_client_id, boolean send_if_empty, sequence<string> reason_codes);
+    void submit(optional string? reason = null);
 };

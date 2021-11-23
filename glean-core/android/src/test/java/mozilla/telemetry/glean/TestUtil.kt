@@ -19,7 +19,6 @@ import org.json.JSONObject
 import org.mockito.Mockito
 import mozilla.telemetry.glean.config.Configuration
 import mozilla.telemetry.glean.scheduler.PingUploadWorker
-import mozilla.telemetry.glean.private.PingTypeBase
 import mozilla.telemetry.glean.private.TimeUnit
 import mozilla.telemetry.glean.utils.decompressGZIP
 import mozilla.telemetry.glean.utils.getISOTimeString
@@ -105,18 +104,6 @@ internal fun checkPingSchema(content: String): JSONObject {
     val jsonContent = JSONObject(content)
     checkPingSchema(jsonContent)
     return jsonContent
-}
-
-/**
- * Collects a specified ping type and checks it against the Glean ping schema.
- *
- * @param ping The ping to check
- * @return the ping contents, in a JSONObject
- * @throws AssertionError If the JSON content is not valid
- */
-internal fun collectAndCheckPingSchema(ping: PingTypeBase): JSONObject {
-    val jsonString = Glean.testCollect(ping)!!
-    return checkPingSchema(jsonString)
 }
 
 /**

@@ -15,6 +15,9 @@ use crate::database::Database;
 use crate::metrics::Metric;
 use crate::Lifetime;
 
+// An internal ping name, not to be touched by anything else
+pub(crate) const INTERNAL_STORAGE: &str = "glean_internal_info";
+
 /// Snapshot metrics from the underlying database.
 pub struct StorageManager;
 
@@ -239,7 +242,7 @@ mod test {
 
         let metric = ExperimentMetric::new(&glean, "some-experiment".to_string());
 
-        metric.set_active(&glean, "test-branch".to_string(), Some(extra));
+        metric.set_active_sync(&glean, "test-branch".to_string(), extra);
         let snapshot = StorageManager
             .snapshot_experiments_as_json(glean.storage(), "glean_internal_info")
             .unwrap();
@@ -248,7 +251,7 @@ mod test {
             snapshot
         );
 
-        metric.set_inactive(&glean);
+        metric.set_inactive_sync(&glean);
 
         let empty_snapshot =
             StorageManager.snapshot_experiments_as_json(glean.storage(), "glean_internal_info");
@@ -263,7 +266,7 @@ mod test {
 
         let metric = ExperimentMetric::new(&glean, "some-experiment".to_string());
 
-        metric.set_active(&glean, "test-branch".to_string(), None);
+        metric.set_active_sync(&glean, "test-branch".to_string(), HashMap::new());
         let snapshot = StorageManager
             .snapshot_experiments_as_json(glean.storage(), "glean_internal_info")
             .unwrap();
@@ -272,7 +275,7 @@ mod test {
             snapshot
         );
 
-        metric.set_inactive(&glean);
+        metric.set_inactive_sync(&glean);
 
         let empty_snapshot =
             StorageManager.snapshot_experiments_as_json(glean.storage(), "glean_internal_info");

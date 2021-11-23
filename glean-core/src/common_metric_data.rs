@@ -6,8 +6,6 @@ use std::convert::TryFrom;
 
 use crate::error::{Error, ErrorKind};
 use crate::metrics::labeled::validate_dynamic_label;
-#[allow(unused_imports)]
-use crate::metrics::LabeledMetric;
 use crate::Glean;
 
 /// The supported metrics' lifetimes.

@@ -17,7 +17,7 @@ import org.robolectric.RobolectricTestRunner
 class BaseUploaderTest {
     private val testPath: String = "/some/random/path/not/important"
     private val testPing: String = "{ 'ping': 'test' }"
-    private val testHeaders: HeadersList = mutableListOf(Pair("X-Test-Glean", "nothing-to-see-here"))
+    private val testHeaders: HeadersList = mutableMapOf("X-Test-Glean" to "nothing-to-see-here")
     private val testDefaultConfig = Configuration()
 
     /**
@@ -25,7 +25,7 @@ class BaseUploaderTest {
      */
     private class TestUploader : PingUploader {
         override fun upload(url: String, data: ByteArray, headers: HeadersList): UploadResult {
-            return UnrecoverableFailure
+            return UnrecoverableFailure(0)
         }
     }
 

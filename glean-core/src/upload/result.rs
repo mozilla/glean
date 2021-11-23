@@ -35,17 +35,28 @@ pub enum UploadResult {
     /// During upload something went wrong,
     /// e.g. the network connection failed.
     /// The upload should be retried at a later time.
-    RecoverableFailure,
+    RecoverableFailure {
+        #[doc(hidden)]
+        /// Unused field. Required because UniFFI can't handle variants without fields.
+        unused: i8,
+    },
 
     /// An unrecoverable upload failure.
     ///
     /// A possible cause might be a malformed URL.
-    UnrecoverableFailure,
+    UnrecoverableFailure {
+        #[doc(hidden)]
+        /// Unused field. Required because UniFFI can't handle variants without fields.
+        unused: i8,
+    },
 
     /// A HTTP response code.
     ///
     /// This can still indicate an error, depending on the status code.
-    HttpStatus(u32),
+    HttpStatus {
+        /// The HTTP status code
+        code: i32,
+    },
 }
 
 impl From<u32> for UploadResult {
@@ -54,13 +65,13 @@ impl From<u32> for UploadResult {
             status if (status & UPLOAD_RESULT_HTTP_STATUS) == UPLOAD_RESULT_HTTP_STATUS => {
                 // Extract the status code from the lower bits.
                 let http_status = status & !UPLOAD_RESULT_HTTP_STATUS;
-                UploadResult::HttpStatus(http_status)
+                UploadResult::http_status(http_status as i32)
             }
-            UPLOAD_RESULT_RECOVERABLE => UploadResult::RecoverableFailure,
-            UPLOAD_RESULT_UNRECOVERABLE => UploadResult::UnrecoverableFailure,
+            UPLOAD_RESULT_RECOVERABLE => UploadResult::recoverable_failure(),
+            UPLOAD_RESULT_UNRECOVERABLE => UploadResult::unrecoverable_failure(),
 
             // Any unknown result code is treated as unrecoverable.
-            _ => UploadResult::UnrecoverableFailure,
+            _ => UploadResult::unrecoverable_failure(),
         }
     }
 }
@@ -72,12 +83,24 @@ impl UploadResult {
     /// Failures are recorded in the `ping_upload_failure` metric.
     pub fn get_label(&self) -> Option<&str> {
         match self {
-            UploadResult::HttpStatus(200..=299) => None,
-            UploadResult::HttpStatus(400..=499) => Some("status_code_4xx"),
-            UploadResult::HttpStatus(500..=599) => Some("status_code_5xx"),
-            UploadResult::HttpStatus(_) => Some("status_code_unknown"),
-            UploadResult::UnrecoverableFailure => Some("unrecoverable"),
-            UploadResult::RecoverableFailure => Some("recoverable"),
+            UploadResult::HttpStatus { code: 200..=299 } => None,
+            UploadResult::HttpStatus { code: 400..=499 } => Some("status_code_4xx"),
+            UploadResult::HttpStatus { code: 500..=599 } => Some("status_code_5xx"),
+            UploadResult::HttpStatus { .. } => Some("status_code_unknown"),
+            UploadResult::UnrecoverableFailure { .. } => Some("unrecoverable"),
+            UploadResult::RecoverableFailure { .. } => Some("recoverable"),
         }
+    }
+
+    pub(crate) fn recoverable_failure() -> Self {
+        Self::RecoverableFailure { unused: 0 }
+    }
+
+    pub(crate) fn unrecoverable_failure() -> Self {
+        Self::UnrecoverableFailure { unused: 0 }
+    }
+
+    pub(crate) fn http_status(code: i32) -> Self {
+        Self::HttpStatus { code }
     }
 }

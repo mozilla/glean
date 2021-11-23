@@ -148,12 +148,12 @@ if not target:
 
 
 if "-darwin" in target:
-    shared_object = "libglean_uniffi.dylib"
+    shared_object = "libglean_ffi.dylib"
 elif "-windows" in target:
-    shared_object = "glean_uniffi.dll"
+    shared_object = "glean_ffi.dll"
 else:
     # Anything else must be an ELF platform - Linux, *BSD, Solaris/illumos
-    shared_object = "libglean_uniffi.so"
+    shared_object = "libglean_ffi.so"
 
 
 class build(_build):
@@ -183,7 +183,7 @@ class build(_build):
             "cargo",
             "build",
             "--package",
-            "glean-uniffi",
+            "glean-bundle",
             "--target",
             target,
             "--features",
@@ -195,7 +195,7 @@ class build(_build):
         if "-darwin" in target:
             env["MACOSX_DEPLOYMENT_TARGET"] = macos_compat(target)
 
-        subprocess.check_call(command, cwd=SRC_ROOT / "glean-core" / "uniffi", env=env)
+        subprocess.check_call(command, cwd=SRC_ROOT / "glean-core", env=env)
         shutil.copyfile(
             SRC_ROOT / "target" / target / buildvariant / shared_object,
             PYTHON_ROOT / "glean" / shared_object,
@@ -204,7 +204,7 @@ class build(_build):
         command = [
             "uniffi-bindgen",
             "generate",
-            "glean-core/uniffi/src/glean.udl",
+            "glean-core/src/glean.udl",
             "--language",
             "python",
             "--out-dir",
