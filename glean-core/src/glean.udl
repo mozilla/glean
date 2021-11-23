@@ -195,3 +195,11 @@ interface TimespanMetric {
 
     i32 test_get_num_recorded_errors(ErrorType error, optional string? ping_name = null);
 };
+
+interface BooleanMetric {
+    constructor(CommonMetricData meta);
+
+    void set(boolean value);
+
+    boolean? test_get_value(optional string? ping_name = null);
+};
