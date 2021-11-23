@@ -92,7 +92,7 @@ fn can_create_labeled_bool_metric() {
     );
 
     let metric = labeled.get("label1");
-    metric.set(&glean, true);
+    metric.set_sync(&glean, true);
 
     let snapshot = StorageManager
         .snapshot_as_json(glean.storage(), "store1", true)

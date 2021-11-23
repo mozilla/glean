@@ -22,7 +22,9 @@ import android.content.pm.ResolveInfo
 import androidx.test.core.app.ActivityScenario.launch
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import mozilla.telemetry.glean.private.BooleanMetricType
+import mozilla.telemetry.glean.private.CommonMetricData
 import mozilla.telemetry.glean.private.Lifetime
+import mozilla.telemetry.glean.private.testHasValue
 import mozilla.telemetry.glean.resetGlean
 import mozilla.telemetry.glean.triggerWorkManager
 import mozilla.telemetry.glean.getMockWebServer
@@ -133,13 +135,13 @@ class GleanDebugActivityTest {
 
         // Put some metric data in the store, otherwise we won't get a ping out
         // Define a 'booleanMetric' boolean metric, which will be stored in "store1"
-        val booleanMetric = BooleanMetricType(
+        val booleanMetric = BooleanMetricType(CommonMetricData(
             disabled = false,
             category = "telemetry",
-            lifetime = Lifetime.Application,
+            lifetime = Lifetime.APPLICATION,
             name = "boolean_metric",
             sendInPings = listOf("metrics")
-        )
+        ))
 
         booleanMetric.set(true)
         assertTrue(booleanMetric.testHasValue())
@@ -178,13 +180,13 @@ class GleanDebugActivityTest {
 
         // Put some metric data in the store, otherwise we won't get a ping out
         // Define a 'booleanMetric' boolean metric, which will be stored in "store1"
-        val booleanMetric = BooleanMetricType(
+        val booleanMetric = BooleanMetricType(CommonMetricData(
             disabled = false,
             category = "telemetry",
-            lifetime = Lifetime.Application,
+            lifetime = Lifetime.APPLICATION,
             name = "boolean_metric",
             sendInPings = listOf("metrics")
-        )
+        ))
 
         booleanMetric.set(true)
         assertTrue(booleanMetric.testHasValue())

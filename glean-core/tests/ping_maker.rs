@@ -25,7 +25,7 @@ fn set_up_basic_ping() -> (Glean, PingMaker, PingType, tempfile::TempDir) {
         lifetime: Lifetime::User,
         ..Default::default()
     });
-    metric.set(&glean, true);
+    metric.set_sync(&glean, true);
 
     (glean, ping_maker, ping_type, t)
 }
@@ -102,7 +102,7 @@ fn seq_number_must_be_sequential() {
         lifetime: Lifetime::User,
         ..Default::default()
     });
-    metric.set(&glean, true);
+    metric.set_sync(&glean, true);
 
     for i in 0..=1 {
         for ping_name in ["store1", "store2"].iter() {
@@ -175,7 +175,7 @@ fn clear_pending_pings() {
         lifetime: Lifetime::User,
         ..Default::default()
     });
-    metric.set(&glean, true);
+    metric.set_sync(&glean, true);
 
     assert!(ping_type.submit_sync(&glean, None));
     assert_eq!(1, get_queued_pings(glean.get_data_path()).unwrap().len());

@@ -15,10 +15,10 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Assert.assertTrue
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.lang.NullPointerException
 
 @RunWith(AndroidJUnit4::class)
 class BooleanMetricTypeTest {
@@ -29,37 +29,37 @@ class BooleanMetricTypeTest {
     @Test
     fun `The API saves to its storage engine`() {
         // Define a 'booleanMetric' boolean metric, which will be stored in "store1"
-        val booleanMetric = BooleanMetricType(
+        val booleanMetric = BooleanMetricType(CommonMetricData(
             disabled = false,
             category = "telemetry",
-            lifetime = Lifetime.Application,
+            lifetime = Lifetime.APPLICATION,
             name = "boolean_metric",
             sendInPings = listOf("store1")
-        )
+        ))
 
         // Record two booleans of the same type, with a little delay.
         booleanMetric.set(true)
         // Check that data was properly recorded.
         assertTrue(booleanMetric.testHasValue())
-        assertTrue(booleanMetric.testGetValue())
+        assertTrue(booleanMetric.testGetValue()!!)
 
         booleanMetric.set(false)
         // Check that data was properly recorded.
         assertTrue(booleanMetric.testHasValue())
-        assertFalse(booleanMetric.testGetValue())
+        assertFalse(booleanMetric.testGetValue()!!)
     }
 
     @Test
     fun `disabled booleans must not record data`() {
         // Define a 'booleanMetric' boolean metric, which will be stored in "store1". It's disabled
         // so it should not record anything.
-        val booleanMetric = BooleanMetricType(
+        val booleanMetric = BooleanMetricType(CommonMetricData(
             disabled = true,
             category = "telemetry",
-            lifetime = Lifetime.Application,
+            lifetime = Lifetime.APPLICATION,
             name = "booleanMetric",
             sendInPings = listOf("store1")
-        )
+        ))
 
         // Attempt to store the boolean.
         booleanMetric.set(true)
@@ -67,40 +67,40 @@ class BooleanMetricTypeTest {
         assertFalse(booleanMetric.testHasValue())
     }
 
-    @Test(expected = NullPointerException::class)
+    @Test
     fun `testGetValue() throws NullPointerException if nothing is stored`() {
         // Define a 'booleanMetric' boolean metric to have an instance to call
         // testGetValue() on
-        val booleanMetric = BooleanMetricType(
+        val booleanMetric = BooleanMetricType(CommonMetricData(
             disabled = true,
             category = "telemetry",
-            lifetime = Lifetime.Application,
+            lifetime = Lifetime.APPLICATION,
             name = "booleanMetric",
             sendInPings = listOf("store1")
-        )
-        booleanMetric.testGetValue()
+        ))
+        assertNull(booleanMetric.testGetValue())
     }
 
     @Test
     fun `The API saves to secondary pings`() {
         // Define a 'booleanMetric' boolean metric, which will be stored in "store1" and "store2"
-        val booleanMetric = BooleanMetricType(
+        val booleanMetric = BooleanMetricType(CommonMetricData(
             disabled = false,
             category = "telemetry",
-            lifetime = Lifetime.Application,
+            lifetime = Lifetime.APPLICATION,
             name = "boolean_metric",
             sendInPings = listOf("store1", "store2")
-        )
+        ))
 
         // Record two booleans of the same type, with a little delay.
         booleanMetric.set(true)
         // Check that data was properly recorded in the second ping
         assertTrue(booleanMetric.testHasValue("store2"))
-        assertTrue(booleanMetric.testGetValue("store2"))
+        assertTrue(booleanMetric.testGetValue("store2")!!)
 
         booleanMetric.set(false)
         // Check that data was properly recorded in the second ping.
         assertTrue(booleanMetric.testHasValue("store2"))
-        assertFalse(booleanMetric.testGetValue("store2"))
+        assertFalse(booleanMetric.testGetValue("store2")!!)
     }
 }

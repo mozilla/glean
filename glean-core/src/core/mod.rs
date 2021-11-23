@@ -103,7 +103,7 @@ where
 ///
 /// call_counter.add_sync(&glean, 1);
 ///
-/// glean.submit_ping(&ping, None);
+/// ping.submit_sync(&glean, None);
 /// ```
 ///
 /// ## Note
@@ -802,7 +802,7 @@ impl Glean {
     /// `true`, then Glean knows it did not exit cleanly and can implement
     /// coping mechanisms (e.g. sending a `baseline` ping).
     pub fn set_dirty_flag(&self, new_value: bool) {
-        self.get_dirty_bit_metric().set(self, new_value);
+        self.get_dirty_bit_metric().set_sync(self, new_value);
     }
 
     /// **This is not meant to be used directly.**
