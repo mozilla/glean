@@ -244,15 +244,14 @@ class LabeledMetricTypeTest {
     }
 
     @Test
-    @Ignore("needs uniffi migration")
     fun `Ensure invalid labels on labeled string go to __other__`() {
-        val stringMetric = StringMetricType(
+        val stringMetric = StringMetricType(CommonMetricData(
             disabled = false,
             category = "telemetry",
-            lifetime = GleanLifetime.Application,
+            lifetime = Lifetime.APPLICATION,
             name = "labeled_string_metric",
             sendInPings = listOf("metrics")
-        )
+        ))
 
         val labeledStringMetric = LabeledMetricType<StringMetricType>(
             disabled = false,
@@ -268,12 +267,12 @@ class LabeledMetricTypeTest {
         labeledStringMetric["with/slash"].set("foo")
         labeledStringMetric["this_string_has_more_than_thirty_characters"].set("foo")
 
-        //assertEquals(
-        //    4,
-        //    labeledStringMetric.testGetNumRecordedErrors(
-        //        ErrorType.INVALID_LABEL
-        //    )
-        //)
+        assertEquals(
+            4,
+            labeledStringMetric.testGetNumRecordedErrors(
+                ErrorType.INVALID_LABEL
+            )
+        )
         assertEquals(
             "foo",
             labeledStringMetric["__other__"].testGetValue()
@@ -281,15 +280,14 @@ class LabeledMetricTypeTest {
     }
 
     @Test
-    @Ignore("needs uniffi migration")
     fun `Test labeled string metric type`() {
-        val stringMetric = StringMetricType(
+        val stringMetric = StringMetricType(CommonMetricData(
             disabled = false,
             category = "telemetry",
-            lifetime = GleanLifetime.Application,
+            lifetime = Lifetime.APPLICATION,
             name = "labeled_string_metric",
             sendInPings = listOf("metrics")
-        )
+        ))
 
         val labeledStringMetric = LabeledMetricType<StringMetricType>(
             disabled = false,

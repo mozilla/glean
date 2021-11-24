@@ -7,6 +7,7 @@ package mozilla.telemetry.glean.private
 import androidx.annotation.VisibleForTesting
 import mozilla.telemetry.glean.internal.LabeledBoolean
 import mozilla.telemetry.glean.internal.LabeledCounter
+import mozilla.telemetry.glean.internal.LabeledString
 import mozilla.telemetry.glean.testing.ErrorType
 
 /**
@@ -46,6 +47,7 @@ class LabeledMetricType<T>(
         this.inner  = when (subMetric) {
             is CounterMetricType -> LabeledCounter(meta, labels?.toList())
             is BooleanMetricType -> LabeledBoolean(meta, labels?.toList())
+            is StringMetricType -> LabeledString(meta, labels?.toList())
             else -> throw IllegalStateException(
                 "Can not create a labeled version of this metric type"
             )
@@ -74,6 +76,7 @@ class LabeledMetricType<T>(
         return when (this.inner) {
             is LabeledCounter -> this.inner.get(label) as T
             is LabeledBoolean -> this.inner.get(label) as T
+            is LabeledString -> this.inner.get(label) as T
             else -> throw IllegalStateException(
                 "Can not create a labeled version of this metric type"
             )
@@ -115,6 +118,7 @@ class LabeledMetricType<T>(
         return when (this.inner) {
             is LabeledCounter -> this.inner.testGetNumRecordedErrors(errorType, pingName)
             is LabeledBoolean -> this.inner.testGetNumRecordedErrors(errorType, pingName)
+            is LabeledString -> this.inner.testGetNumRecordedErrors(errorType, pingName)
             else -> throw IllegalStateException(
                 "Can not create a labeled version of this metric type"
             )
