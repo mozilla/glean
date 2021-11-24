@@ -6,12 +6,12 @@ package mozilla.telemetry.glean.private
 
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import java.lang.NullPointerException
 import mozilla.telemetry.glean.testing.ErrorType
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Assert.assertNull
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -25,13 +25,13 @@ class UrlMetricTypeTest {
     @Test
     fun `The API saves to its storage engine`() {
         // Define a 'urlMetric' string metric, which will be stored in "store1"
-        val urlMetric = UrlMetricType(
+        val urlMetric = UrlMetricType(CommonMetricData(
             disabled = false,
             category = "telemetry",
-            lifetime = Lifetime.Application,
+            lifetime = Lifetime.APPLICATION,
             name = "url_metric",
             sendInPings = listOf("store1")
-        )
+        ))
 
         // Record two URLs of the same type, with a little delay.
         urlMetric.set("glean://test")
@@ -50,13 +50,13 @@ class UrlMetricTypeTest {
     fun `disabled urls must not record data`() {
         // Define a 'urlMetric' metric, which will be stored in "store1". It's disabled
         // so it should not record anything.
-        val urlMetric = UrlMetricType(
+        val urlMetric = UrlMetricType(CommonMetricData(
             disabled = true,
             category = "telemetry",
-            lifetime = Lifetime.Application,
+            lifetime = Lifetime.APPLICATION,
             name = "urlMetric",
             sendInPings = listOf("store1")
-        )
+        ))
 
         // Attempt to store the URL.
         urlMetric.set("glean://notrecorded")
@@ -65,28 +65,28 @@ class UrlMetricTypeTest {
             urlMetric.testHasValue())
     }
 
-    @Test(expected = NullPointerException::class)
+    @Test
     fun `testGetValue() throws NullPointerException if nothing is stored`() {
-        val urlMetric = UrlMetricType(
+        val urlMetric = UrlMetricType(CommonMetricData(
             disabled = true,
             category = "telemetry",
-            lifetime = Lifetime.Application,
+            lifetime = Lifetime.APPLICATION,
             name = "urlMetric",
             sendInPings = listOf("store1")
-        )
-        urlMetric.testGetValue()
+        ))
+        assertNull(urlMetric.testGetValue())
     }
 
     @Test
     fun `The API saves to secondary pings`() {
         // Define a 'urlMetric' metric, which will be stored in "store1" and "store2"
-        val urlMetric = UrlMetricType(
+        val urlMetric = UrlMetricType(CommonMetricData(
             disabled = false,
             category = "telemetry",
-            lifetime = Lifetime.Application,
+            lifetime = Lifetime.APPLICATION,
             name = "url_metric",
             sendInPings = listOf("store1", "store2")
-        )
+        ))
 
         urlMetric.set("glean://value")
 
@@ -103,16 +103,16 @@ class UrlMetricTypeTest {
     @Test
     fun `Setting a long URL records an error`() {
         // Define a 'urlMetric' URL metric, which will be stored in "store1" and "store2"
-        val urlMetric = UrlMetricType(
+        val urlMetric = UrlMetricType(CommonMetricData(
             disabled = false,
             category = "telemetry",
-            lifetime = Lifetime.Application,
+            lifetime = Lifetime.APPLICATION,
             name = "url_metric",
             sendInPings = listOf("store1", "store2")
-        )
+        ))
 
         urlMetric.set("glean://" + "testing".repeat(2000))
 
-        assertEquals(1, urlMetric.testGetNumRecordedErrors(ErrorType.InvalidOverflow))
+        assertEquals(1, urlMetric.testGetNumRecordedErrors(ErrorType.INVALID_OVERFLOW))
     }
 }
