@@ -12,12 +12,12 @@ package mozilla.telemetry.glean.private
 
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import java.lang.NullPointerException
 import mozilla.telemetry.glean.testing.ErrorType
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Assert.assertNull
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -31,13 +31,13 @@ class QuantityMetricTypeTest {
     @Test
     fun `The API saves to its storage engine`() {
         // Define a 'quantityMetric' quantity metric, which will be stored in "store1"
-        val quantityMetric = QuantityMetricType(
+        val quantityMetric = QuantityMetricType(CommonMetricData(
             disabled = false,
             category = "telemetry",
-            lifetime = Lifetime.Application,
+            lifetime = Lifetime.APPLICATION,
             name = "quantity_metric",
             sendInPings = listOf("store1")
-        )
+        ))
 
         assertFalse(quantityMetric.testHasValue())
 
@@ -60,13 +60,13 @@ class QuantityMetricTypeTest {
     fun `quantities with no lifetime must not record data`() {
         // Define a 'quantityMetric' quantity metric, which will be stored in "store1".
         // It's disabled so it should not record anything.
-        val quantityMetric = QuantityMetricType(
+        val quantityMetric = QuantityMetricType(CommonMetricData(
             disabled = true,
             category = "telemetry",
-            lifetime = Lifetime.Ping,
+            lifetime = Lifetime.PING,
             name = "quantity_metric",
             sendInPings = listOf("store1")
-        )
+        ))
 
         // Attempt to increment the quantity
         quantityMetric.set(1L)
@@ -79,13 +79,13 @@ class QuantityMetricTypeTest {
     fun `disabled quantities must not record data`() {
         // Define a 'quantityMetric' quantity metric, which will be stored in "store1".  It's disabled
         // so it should not record anything.
-        val quantityMetric = QuantityMetricType(
+        val quantityMetric = QuantityMetricType(CommonMetricData(
             disabled = true,
             category = "telemetry",
-            lifetime = Lifetime.Application,
+            lifetime = Lifetime.APPLICATION,
             name = "quantity_metric",
             sendInPings = listOf("store1")
-        )
+        ))
 
         // Attempt to store the quantity.
         quantityMetric.set(1L)
@@ -94,28 +94,28 @@ class QuantityMetricTypeTest {
             quantityMetric.testHasValue())
     }
 
-    @Test(expected = NullPointerException::class)
+    @Test
     fun `testGetValue() throws NullPointerException if nothing is stored`() {
-        val quantityMetric = QuantityMetricType(
+        val quantityMetric = QuantityMetricType(CommonMetricData(
             disabled = true,
             category = "telemetry",
-            lifetime = Lifetime.Application,
+            lifetime = Lifetime.APPLICATION,
             name = "quantity_metric",
             sendInPings = listOf("store1")
-        )
-        quantityMetric.testGetValue()
+        ))
+        assertNull(quantityMetric.testGetValue())
     }
 
     @Test
     fun `The API saves to secondary pings`() {
         // Define a 'quantityMetric' quantity metric, which will be stored in "store1" and "store2"
-        val quantityMetric = QuantityMetricType(
+        val quantityMetric = QuantityMetricType(CommonMetricData(
             disabled = false,
             category = "telemetry",
-            lifetime = Lifetime.Application,
+            lifetime = Lifetime.APPLICATION,
             name = "quantity_metric",
             sendInPings = listOf("store1", "store2")
-        )
+        ))
 
         quantityMetric.set(1L)
 
@@ -130,19 +130,19 @@ class QuantityMetricTypeTest {
     @Test
     fun `negative values are not recorded`() {
         // Define a 'quantityMetric' quantity metric, which will be stored in "store1"
-        val quantityMetric = QuantityMetricType(
+        val quantityMetric = QuantityMetricType(CommonMetricData(
             disabled = false,
             category = "telemetry",
-            lifetime = Lifetime.Application,
+            lifetime = Lifetime.APPLICATION,
             name = "quantity_metric",
             sendInPings = listOf("store1")
-        )
+        ))
 
         quantityMetric.set(-10L)
         // Check that quantity was NOT recorded
         assertFalse(quantityMetric.testHasValue("store1"))
 
         // Make sure that the errors have been recorded
-        assertEquals(1, quantityMetric.testGetNumRecordedErrors(ErrorType.InvalidValue))
+        assertEquals(1, quantityMetric.testGetNumRecordedErrors(ErrorType.INVALID_VALUE))
     }
 }
