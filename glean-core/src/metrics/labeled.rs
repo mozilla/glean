@@ -7,7 +7,7 @@ use std::sync::{Arc, Mutex};
 
 use crate::common_metric_data::CommonMetricData;
 use crate::error_recording::{record_error, test_get_num_recorded_errors, ErrorType};
-use crate::metrics::{BooleanMetric, CounterMetric, Metric, MetricType};
+use crate::metrics::{BooleanMetric, CounterMetric, Metric, MetricType, StringMetric};
 use crate::Glean;
 
 const MAX_LABELS: usize = 16;
@@ -19,6 +19,9 @@ pub type LabeledCounter = LabeledMetric<CounterMetric>;
 
 /// A labeled boolean.
 pub type LabeledBoolean = LabeledMetric<BooleanMetric>;
+
+/// A labeled string.
+pub type LabeledString = LabeledMetric<StringMetric>;
 
 /// Checks whether the given label is sane.
 ///
@@ -106,6 +109,12 @@ impl AllowedLabeled for CounterMetric {
 }
 
 impl AllowedLabeled for BooleanMetric {
+    fn new_labeled(meta: CommonMetricData) -> Self {
+        Self::new(meta)
+    }
+}
+
+impl AllowedLabeled for StringMetric {
     fn new_labeled(meta: CommonMetricData) -> Self {
         Self::new(meta)
     }

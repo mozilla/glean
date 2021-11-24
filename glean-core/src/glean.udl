@@ -204,6 +204,16 @@ interface BooleanMetric {
     boolean? test_get_value(optional string? ping_name = null);
 };
 
+interface StringMetric {
+    constructor(CommonMetricData meta);
+
+    void set(string value);
+
+    string? test_get_value(optional string? ping_name = null);
+
+    i32 test_get_num_recorded_errors(ErrorType error, optional string? ping_name = null);
+};
+
 interface LabeledCounter {
     constructor(CommonMetricData meta, sequence<string>? labels);
 
@@ -216,6 +226,14 @@ interface LabeledBoolean {
     constructor(CommonMetricData meta, sequence<string>? labels);
 
     BooleanMetric get(string label);
+
+    i32 test_get_num_recorded_errors(ErrorType error, optional string? ping_name = null);
+};
+
+interface LabeledString {
+    constructor(CommonMetricData meta, sequence<string>? labels);
+
+    StringMetric get(string label);
 
     i32 test_get_num_recorded_errors(ErrorType error, optional string? ping_name = null);
 };

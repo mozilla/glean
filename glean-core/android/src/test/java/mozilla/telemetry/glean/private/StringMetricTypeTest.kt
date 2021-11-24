@@ -12,12 +12,12 @@ package mozilla.telemetry.glean.private
 
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import java.lang.NullPointerException
 import mozilla.telemetry.glean.testing.ErrorType
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Assert.assertNull
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -31,13 +31,13 @@ class StringMetricTypeTest {
     @Test
     fun `The API saves to its storage engine`() {
         // Define a 'stringMetric' string metric, which will be stored in "store1"
-        val stringMetric = StringMetricType(
+        val stringMetric = StringMetricType(CommonMetricData(
             disabled = false,
             category = "telemetry",
-            lifetime = Lifetime.Application,
+            lifetime = Lifetime.APPLICATION,
             name = "string_metric",
             sendInPings = listOf("store1")
-        )
+        ))
 
         // Record two strings of the same type, with a little delay.
         stringMetric.set("value")
@@ -56,13 +56,13 @@ class StringMetricTypeTest {
     fun `disabled strings must not record data`() {
         // Define a 'stringMetric' string metric, which will be stored in "store1". It's disabled
         // so it should not record anything.
-        val stringMetric = StringMetricType(
+        val stringMetric = StringMetricType(CommonMetricData(
             disabled = true,
             category = "telemetry",
-            lifetime = Lifetime.Application,
+            lifetime = Lifetime.APPLICATION,
             name = "stringMetric",
             sendInPings = listOf("store1")
-        )
+        ))
 
         // Attempt to store the string.
         stringMetric.set("value")
@@ -71,28 +71,28 @@ class StringMetricTypeTest {
             stringMetric.testHasValue())
     }
 
-    @Test(expected = NullPointerException::class)
+    @Test
     fun `testGetValue() throws NullPointerException if nothing is stored`() {
-        val stringMetric = StringMetricType(
+        val stringMetric = StringMetricType(CommonMetricData(
             disabled = true,
             category = "telemetry",
-            lifetime = Lifetime.Application,
+            lifetime = Lifetime.APPLICATION,
             name = "stringMetric",
             sendInPings = listOf("store1")
-        )
-        stringMetric.testGetValue()
+        ))
+        assertNull(stringMetric.testGetValue())
     }
 
     @Test
     fun `The API saves to secondary pings`() {
         // Define a 'stringMetric' string metric, which will be stored in "store1" and "store2"
-        val stringMetric = StringMetricType(
+        val stringMetric = StringMetricType(CommonMetricData(
             disabled = false,
             category = "telemetry",
-            lifetime = Lifetime.Application,
+            lifetime = Lifetime.APPLICATION,
             name = "string_metric",
             sendInPings = listOf("store1", "store2")
-        )
+        ))
 
         // Record two strings of the same type, with a little delay.
         stringMetric.set("value")
@@ -110,16 +110,16 @@ class StringMetricTypeTest {
     @Test
     fun `Setting a long string records an error`() {
         // Define a 'stringMetric' string metric, which will be stored in "store1" and "store2"
-        val stringMetric = StringMetricType(
+        val stringMetric = StringMetricType(CommonMetricData(
             disabled = false,
             category = "telemetry",
-            lifetime = Lifetime.Application,
+            lifetime = Lifetime.APPLICATION,
             name = "string_metric",
             sendInPings = listOf("store1", "store2")
-        )
+        ))
 
         stringMetric.set("0123456789".repeat(11))
 
-        assertEquals(1, stringMetric.testGetNumRecordedErrors(ErrorType.InvalidOverflow))
+        assertEquals(1, stringMetric.testGetNumRecordedErrors(ErrorType.INVALID_OVERFLOW))
     }
 }

@@ -103,7 +103,7 @@ fn schedule_internal(
     now: DateTime<FixedOffset>,
 ) {
     let last_sent_build_metric = get_last_sent_build_metric();
-    if let Some(last_sent_build) = last_sent_build_metric.get_value(glean, INTERNAL_STORAGE) {
+    if let Some(last_sent_build) = last_sent_build_metric.get_value(glean, Some(INTERNAL_STORAGE)) {
         // If `app_build` is longer than StringMetric's max length, we will always
         // treat it as a changed build when really it isn't.
         // This will be externally-observable as InvalidOverflow errors on both the core
