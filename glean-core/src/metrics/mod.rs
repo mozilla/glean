@@ -17,7 +17,6 @@ mod datetime;
 mod denominator;
 mod event;
 mod experiment;
-mod jwe;
 pub(crate) mod labeled;
 mod memory_distribution;
 mod memory_unit;
@@ -47,7 +46,6 @@ pub use self::datetime::DatetimeMetric;
 pub use self::denominator::DenominatorMetric;
 pub use self::event::EventMetric;
 pub(crate) use self::experiment::ExperimentMetric;
-pub use self::jwe::JweMetric;
 pub use self::labeled::{LabeledBoolean, LabeledCounter, LabeledMetric, LabeledString};
 pub use self::memory_distribution::MemoryDistributionMetric;
 pub use self::memory_unit::MemoryUnit;
@@ -117,7 +115,9 @@ pub enum Metric {
     TimingDistribution(Histogram<Functional>),
     /// A memory distribution. See [`MemoryDistributionMetric`] for more information.
     MemoryDistribution(Histogram<Functional>),
-    /// A JWE metric. See [`JweMetric`] for more information.
+    /// **DEPRECATED**: A JWE metric..
+    /// Note: This variant MUST NOT be removed to avoid backwards-incompatible changes to the
+    /// serialization. This type has no underlying implementation anymore.
     Jwe(String),
     /// A rate metric. See [`RateMetric`] for more information.
     Rate(i32, i32),

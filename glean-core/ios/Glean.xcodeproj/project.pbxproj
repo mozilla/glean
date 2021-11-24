@@ -25,8 +25,6 @@
 		1FB8F8382326EABD00618E47 /* ConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB8F8372326EABD00618E47 /* ConfigurationTests.swift */; };
 		1FD4527523395B4500F4C7E8 /* UuidMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FD4527423395B4500F4C7E8 /* UuidMetric.swift */; };
 		1FD4527723395EEB00F4C7E8 /* UuidMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FD4527623395EEB00F4C7E8 /* UuidMetricTests.swift */; };
-		5FE1C4CF24C0A676000CAA1A /* JweMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FE1C4CE24C0A676000CAA1A /* JweMetricTests.swift */; };
-		5FE1C4D124C0A6A2000CAA1A /* JweMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FE1C4D024C0A6A2000CAA1A /* JweMetric.swift */; };
 		97C5C1A423708C6700B79C93 /* ErrorType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97C5C1A323708C6700B79C93 /* ErrorType.swift */; };
 		AC06529C26E032E300D92D5E /* QuantityMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC06529B26E032E300D92D5E /* QuantityMetric.swift */; };
 		AC06529E26E034BF00D92D5E /* QuantityMetricTypeTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC06529D26E034BF00D92D5E /* QuantityMetricTypeTest.swift */; };
@@ -119,8 +117,6 @@
 		1FB8F8372326EABD00618E47 /* ConfigurationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigurationTests.swift; sourceTree = "<group>"; };
 		1FD4527423395B4500F4C7E8 /* UuidMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UuidMetric.swift; sourceTree = "<group>"; };
 		1FD4527623395EEB00F4C7E8 /* UuidMetricTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UuidMetricTests.swift; sourceTree = "<group>"; };
-		5FE1C4CE24C0A676000CAA1A /* JweMetricTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JweMetricTests.swift; sourceTree = "<group>"; };
-		5FE1C4D024C0A6A2000CAA1A /* JweMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JweMetric.swift; sourceTree = "<group>"; };
 		97C5C1A323708C6700B79C93 /* ErrorType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorType.swift; sourceTree = "<group>"; };
 		AC06529B26E032E300D92D5E /* QuantityMetric.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuantityMetric.swift; sourceTree = "<group>"; };
 		AC06529D26E034BF00D92D5E /* QuantityMetricTypeTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuantityMetricTypeTest.swift; sourceTree = "<group>"; };
@@ -354,7 +350,6 @@
 				BF6C53B1232F870C00E3B43A /* Ping.swift */,
 				BF30FDC3233260B500840607 /* TimespanMetric.swift */,
 				BF30FDC72332640400840607 /* TimeUnit.swift */,
-				5FE1C4D024C0A6A2000CAA1A /* JweMetric.swift */,
 				BF10007D23548AF400064051 /* MemoryUnit.swift */,
 				BFAED5072369751100DF293D /* StringListMetric.swift */,
 				BF89055E232BC213003CA2BA /* StringMetric.swift */,
@@ -373,7 +368,6 @@
 			isa = PBXGroup;
 			children = (
 				AC06529D26E034BF00D92D5E /* QuantityMetricTypeTest.swift */,
-				5FE1C4CE24C0A676000CAA1A /* JweMetricTests.swift */,
 				1F6A8FF1233C068A007837D5 /* BooleanMetricTypeTest.swift */,
 				BF43A8CC232A615200545310 /* CounterMetricTests.swift */,
 				1F6A8FF5233C1555007837D5 /* DatetimeMetricTypeTests.swift */,
@@ -609,7 +603,6 @@
 				BF43A8C7232A4BA400545310 /* CounterMetric.swift in Sources */,
 				BFFE33AB232927C3005348FE /* Utils.swift in Sources */,
 				BFE1CDC4233B63A70019EE47 /* LabeledMetric.swift in Sources */,
-				5FE1C4D124C0A6A2000CAA1A /* JweMetric.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -639,7 +632,6 @@
 				BFFE183A2350A61F0068D97B /* TimingDistributionMetricTests.swift in Sources */,
 				BF3DE3A02243A2F20018E23F /* GleanTests.swift in Sources */,
 				BF2E57072334BD7600364D92 /* EventMetricTests.swift in Sources */,
-				5FE1C4CF24C0A676000CAA1A /* JweMetricTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
