@@ -2,7 +2,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use std::sync::Arc;
+use std::collections::{hash_map::Entry, HashMap};
+use std::sync::{Arc, Mutex};
 
 use crate::common_metric_data::CommonMetricData;
 use crate::error_recording::{record_error, test_get_num_recorded_errors, ErrorType};
@@ -82,12 +83,16 @@ fn matches_label_regex(value: &str) -> bool {
 /// A labeled metric.
 ///
 /// Labeled metrics allow to record multiple sub-metrics of the same type under different string labels.
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 pub struct LabeledMetric<T> {
     labels: Option<Vec<String>>,
     /// Type of the underlying metric
     /// We hold on to an instance of it, which is cloned to create new modified instances.
     submetric: T,
+
+    /// A map from a unique ID for the labeled submetric to a handle of an instantiated
+    /// metric type.
+    label_map: Mutex<HashMap<String, Arc<T>>>,
 }
 
 pub trait AllowedLabeled: MetricType {
@@ -119,7 +124,12 @@ where
     }
 
     fn new_inner(submetric: T, labels: Option<Vec<String>>) -> LabeledMetric<T> {
-        LabeledMetric { labels, submetric }
+        let label_map = Default::default();
+        LabeledMetric {
+            labels,
+            submetric,
+            label_map,
+        }
     }
 
     /// Creates a new metric with a specific label.
@@ -174,31 +184,36 @@ where
     /// If an invalid label is used, the metric will be recorded in the special `OTHER_LABEL` label.
     pub fn get<S: AsRef<str>>(&self, label: S) -> Arc<T> {
         let label = label.as_ref();
-        // We have 2 scenarios to consider:
-        // * Static labels. No database access needed. We just look at what is in memory.
-        // * Dynamic labels. We look up in the database all previously stored
-        //   labels in order to keep a maximum of allowed labels. This is done later
-        //   when the specific metric is actually recorded, when we are guaranteed to have
-        //   an initialized Glean object.
-        let metric = match self.labels {
-            Some(_) => {
-                let label = self.static_label(&label);
-                self.new_metric_with_name(combine_base_identifier_and_label(
-                    &self.submetric.meta().name,
-                    label,
-                ))
-            }
-            None => self.new_metric_with_dynamic_label(label.to_string()),
-        };
-        Arc::new(metric)
-    }
 
-    /// Gets the template submetric.
-    ///
-    /// The template submetric is the actual metric that is cloned and modified
-    /// to record for a specific label.
-    pub fn get_submetric(&self) -> &T {
-        &self.submetric
+        // The handle is a unique number per metric.
+        // The label identifies the submetric.
+        let id = format!("{}/{}", self.submetric.meta().base_identifier(), label);
+
+        let mut map = self.label_map.lock().unwrap();
+        match map.entry(id) {
+            Entry::Occupied(entry) => Arc::clone(entry.get()),
+            Entry::Vacant(entry) => {
+                // We have 2 scenarios to consider:
+                // * Static labels. No database access needed. We just look at what is in memory.
+                // * Dynamic labels. We look up in the database all previously stored
+                //   labels in order to keep a maximum of allowed labels. This is done later
+                //   when the specific metric is actually recorded, when we are guaranteed to have
+                //   an initialized Glean object.
+                let metric = match self.labels {
+                    Some(_) => {
+                        let label = self.static_label(label);
+                        self.new_metric_with_name(combine_base_identifier_and_label(
+                            &self.submetric.meta().name,
+                            label,
+                        ))
+                    }
+                    None => self.new_metric_with_dynamic_label(label.to_string()),
+                };
+                let metric = Arc::new(metric);
+                entry.insert(Arc::clone(&metric));
+                metric
+            }
+        }
     }
 
     /// **Exported for test purposes.**

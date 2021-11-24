@@ -393,4 +393,39 @@ class LabeledMetricTypeTest {
         assertEquals(1, labeledCounterMetric["bar"].testGetValue())
         assertEquals(100, labeledCounterMetric["__other__"].testGetValue())
     }
+
+
+    @Test
+    fun `rapidly re-creating labeled metrics does not crash`() {
+        // Regression test for bug 1733757.
+        // The new implementation is different now,
+        // but it still does the caching, so this is now a stress test of that implementation.
+
+        val counterMetric = CounterMetricType(CommonMetricData(
+            disabled = false,
+            category = "telemetry",
+            lifetime = Lifetime.APPLICATION,
+            name = "labeled_nocrash_counter",
+            sendInPings = listOf("metrics")
+        ))
+
+        val labeledCounterMetric = LabeledMetricType(
+            disabled = false,
+            category = "telemetry",
+            lifetime = Lifetime.APPLICATION,
+            name = "labeled_nocrash",
+            sendInPings = listOf("metrics"),
+            subMetric = counterMetric,
+            labels = setOf("foo")
+        )
+
+        // We go higher than the maximum of `(1<<15)-1 = 32767`.
+        val maxAttempts = 1 shl 16
+        for (ignored in 1..maxAttempts) {
+            labeledCounterMetric["foo"].add(1)
+        }
+
+        assertEquals(maxAttempts, labeledCounterMetric["foo"].testGetValue())
+        assertEquals(0, labeledCounterMetric.testGetNumRecordedErrors(ErrorType.INVALID_LABEL))
+    }
 }
