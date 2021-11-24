@@ -20,5 +20,5 @@ interface HistogramBase {
      *
      * @param samples the [LongArray] holding the samples to be recorded by the metric.
      */
-    fun accumulateSamples(samples: LongArray)
+    fun accumulateSamples(samples: List<Long>)
 }
