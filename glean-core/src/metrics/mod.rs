@@ -69,10 +69,10 @@ pub struct DistributionData {
     /// A map containig the bucket index mapped to the accumulated count.
     ///
     /// This can contain buckets with a count of `0`.
-    pub values: HashMap<u64, u64>,
+    pub values: HashMap<String, i64>,
 
     /// The accumulated sum of all the samples in the distribution.
-    pub sum: u64,
+    pub sum: i64,
 }
 
 /// The available metrics.

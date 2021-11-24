@@ -52,6 +52,9 @@ pub use crate::metrics::labeled::{LabeledBoolean, LabeledCounter, LabeledString}
 pub use crate::metrics::{
     BooleanMetric, CounterMetric, PingType, QuantityMetric, RecordedExperiment, StringListMetric,
     StringMetric, TimeUnit, TimespanMetric, UrlMetric, UuidMetric,
+    MemoryDistributionMetric,
+    DistributionData,
+    MemoryUnit
 };
 pub use crate::upload::{PingRequest, PingUploadTask, UploadResult};
 

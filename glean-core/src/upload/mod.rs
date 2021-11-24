@@ -327,7 +327,7 @@ impl PingUploadManager {
                 if let ErrorKind::PingBodyOverflow(s) = e.kind() {
                     self.upload_metrics
                         .discarded_exceeding_pings_size
-                        .accumulate(glean, *s as u64 / 1024);
+                        .accumulate_sync(glean, *s as i64 / 1024);
                 }
 
                 None
@@ -448,7 +448,7 @@ impl PingUploadManager {
             cached_pings.pending_pings.reverse();
             self.upload_metrics
                 .pending_pings_directory_size
-                .accumulate(glean, pending_pings_directory_size as u64 / 1024);
+                .accumulate_sync(glean, pending_pings_directory_size as i64 / 1024);
 
             // Enqueue the remaining pending pings and
             // enqueue all deletion-request pings.

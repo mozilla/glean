@@ -108,8 +108,8 @@ pub(crate) fn snapshot(hist: &Histogram<Functional>) -> DistributionData {
     DistributionData {
         // **Caution**: This cannot use `Histogram::snapshot_values` and needs to use the more
         // specialized snapshot function.
-        values: hist.snapshot(),
-        sum: hist.sum(),
+        values: hist.snapshot().into_iter().map(|(k, v)| (k.to_string(), v as i64)).collect(),
+        sum: hist.sum() as i64,
     }
 }
 
