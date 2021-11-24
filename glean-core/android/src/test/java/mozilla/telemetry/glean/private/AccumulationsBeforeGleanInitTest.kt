@@ -10,7 +10,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.work.testing.WorkManagerTestInitHelper
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.GleanBuildInfo
-import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.config.Configuration
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -33,8 +32,6 @@ class AccumulationsBeforeGleanInitTest {
     @Before
     fun cleanup() {
         Glean.testDestroyGleanHandle()
-        @Suppress("EXPERIMENTAL_API_USAGE")
-        Dispatchers.API.setTaskQueueing(true)
         WorkManagerTestInitHelper.initializeTestWorkManager(context)
     }
 
@@ -45,18 +42,18 @@ class AccumulationsBeforeGleanInitTest {
 
     @Test
     fun `LabeledMetricTypes must allow accumulation before Glean inits`() {
-        val counterMetric = CounterMetricType(
+        val counterMetric = CounterMetricType(CommonMetricData(
             disabled = false,
             category = "test.telemetry",
-            lifetime = Lifetime.Application,
+            lifetime = Lifetime.APPLICATION,
             name = "pre_init_counter",
             sendInPings = listOf("metrics")
-        )
+        ))
 
         val labeledCounterMetric = LabeledMetricType(
             disabled = false,
             category = "test.telemetry",
-            lifetime = Lifetime.Application,
+            lifetime = Lifetime.APPLICATION,
             name = "pre_init_counter",
             sendInPings = listOf("metrics"),
             subMetric = counterMetric

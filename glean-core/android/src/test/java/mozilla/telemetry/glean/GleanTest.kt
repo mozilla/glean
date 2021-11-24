@@ -16,7 +16,6 @@ import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import mozilla.telemetry.glean.internal.gleanSetTestMode
 import mozilla.telemetry.glean.internal.gleanSubmitPingByNameSync
-import mozilla.telemetry.glean.GleanMetrics.GleanError
 import mozilla.telemetry.glean.GleanMetrics.GleanInternalMetrics
 import mozilla.telemetry.glean.GleanMetrics.Pings
 import mozilla.telemetry.glean.config.Configuration
@@ -606,8 +605,6 @@ class GleanTest {
         Glean.initialize(context, true, Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port
         ), GleanBuildInfo.buildInfo)
-
-        assertEquals(110, GleanError.preinitTasksOverflow.testGetValue())
 
         Pings.metrics.submit()
 

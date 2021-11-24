@@ -296,7 +296,7 @@ impl TimespanMetric {
     pub fn test_get_num_recorded_errors(&self, error: ErrorType, ping_name: Option<String>) -> i32 {
         crate::block_on_dispatcher();
 
-        crate::core::with_glean_mut(|glean| {
+        crate::core::with_glean(|glean| {
             test_get_num_recorded_errors(glean, self.meta(), error, ping_name.as_deref())
                 .unwrap_or(0)
         })

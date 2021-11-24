@@ -48,7 +48,7 @@ pub use self::denominator::DenominatorMetric;
 pub use self::event::EventMetric;
 pub(crate) use self::experiment::ExperimentMetric;
 pub use self::jwe::JweMetric;
-pub use self::labeled::LabeledMetric;
+pub use self::labeled::{LabeledBoolean, LabeledCounter, LabeledMetric};
 pub use self::memory_distribution::MemoryDistributionMetric;
 pub use self::memory_unit::MemoryUnit;
 pub use self::ping::PingType;

@@ -2,14 +2,22 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+use std::sync::Arc;
+
 use crate::common_metric_data::CommonMetricData;
-use crate::error_recording::{record_error, ErrorType};
-use crate::metrics::{Metric, MetricType};
+use crate::error_recording::{record_error, test_get_num_recorded_errors, ErrorType};
+use crate::metrics::{BooleanMetric, CounterMetric, Metric, MetricType};
 use crate::Glean;
 
 const MAX_LABELS: usize = 16;
 const OTHER_LABEL: &str = "__other__";
 const MAX_LABEL_LENGTH: usize = 61;
+
+/// A labeled counter.
+pub type LabeledCounter = LabeledMetric<CounterMetric>;
+
+/// A labeled boolean.
+pub type LabeledBoolean = LabeledMetric<BooleanMetric>;
 
 /// Checks whether the given label is sane.
 ///
@@ -82,14 +90,35 @@ pub struct LabeledMetric<T> {
     submetric: T,
 }
 
+pub trait AllowedLabeled: MetricType {
+    fn new_labeled(meta: CommonMetricData) -> Self;
+}
+
+impl AllowedLabeled for CounterMetric {
+    fn new_labeled(meta: CommonMetricData) -> Self {
+        Self::new(meta)
+    }
+}
+
+impl AllowedLabeled for BooleanMetric {
+    fn new_labeled(meta: CommonMetricData) -> Self {
+        Self::new(meta)
+    }
+}
+
 impl<T> LabeledMetric<T>
 where
-    T: MetricType + Clone,
+    T: AllowedLabeled + Clone,
 {
     /// Creates a new labeled metric from the given metric instance and optional list of labels.
     ///
     /// See [`get`](LabeledMetric::get) for information on how static or dynamic labels are handled.
-    pub fn new(submetric: T, labels: Option<Vec<String>>) -> LabeledMetric<T> {
+    pub fn new(meta: CommonMetricData, labels: Option<Vec<String>>) -> LabeledMetric<T> {
+        let submetric = T::new_labeled(meta);
+        LabeledMetric::new_inner(submetric, labels)
+    }
+
+    fn new_inner(submetric: T, labels: Option<Vec<String>>) -> LabeledMetric<T> {
         LabeledMetric { labels, submetric }
     }
 
@@ -143,23 +172,25 @@ where
     ///
     /// Labels must be `snake_case` and less than 30 characters.
     /// If an invalid label is used, the metric will be recorded in the special `OTHER_LABEL` label.
-    pub fn get(&self, label: &str) -> T {
+    pub fn get<S: AsRef<str>>(&self, label: S) -> Arc<T> {
+        let label = label.as_ref();
         // We have 2 scenarios to consider:
         // * Static labels. No database access needed. We just look at what is in memory.
         // * Dynamic labels. We look up in the database all previously stored
         //   labels in order to keep a maximum of allowed labels. This is done later
         //   when the specific metric is actually recorded, when we are guaranteed to have
         //   an initialized Glean object.
-        match self.labels {
+        let metric = match self.labels {
             Some(_) => {
-                let label = self.static_label(label);
+                let label = self.static_label(&label);
                 self.new_metric_with_name(combine_base_identifier_and_label(
                     &self.submetric.meta().name,
                     label,
                 ))
             }
             None => self.new_metric_with_dynamic_label(label.to_string()),
-        }
+        };
+        Arc::new(metric)
     }
 
     /// Gets the template submetric.
@@ -168,6 +199,27 @@ where
     /// to record for a specific label.
     pub fn get_submetric(&self) -> &T {
         &self.submetric
+    }
+
+    /// **Exported for test purposes.**
+    ///
+    /// Gets the number of recorded errors for the given metric and error type.
+    ///
+    /// # Arguments
+    ///
+    /// * `error` - The type of error
+    /// * `ping_name` - represents the optional name of the ping to retrieve the
+    ///   metric for. Defaults to the first value in `send_in_pings`.
+    ///
+    /// # Returns
+    ///
+    /// The number of errors reported.
+    pub fn test_get_num_recorded_errors(&self, error: ErrorType, ping_name: Option<String>) -> i32 {
+        crate::block_on_dispatcher();
+        crate::core::with_glean(|glean| {
+            test_get_num_recorded_errors(glean, self.submetric.meta(), error, ping_name.as_deref())
+                .unwrap_or(0)
+        })
     }
 }
 

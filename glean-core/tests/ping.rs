@@ -125,15 +125,15 @@ fn test_pings_submitted_metric() {
 
     // Reconstructed here so we can test it without reaching into the library
     // internals.
-    let pings_submitted = LabeledMetric::new(
-        CounterMetric::new(CommonMetricData {
+    let pings_submitted = LabeledCounter::new(
+        CommonMetricData {
             name: "pings_submitted".into(),
             category: "glean.validation".into(),
             send_in_pings: vec!["metrics".into(), "baseline".into()],
             lifetime: Lifetime::Ping,
             disabled: false,
             dynamic_label: None,
-        }),
+        },
         None,
     );
 
@@ -157,29 +157,23 @@ fn test_pings_submitted_metric() {
     // Check recording in the metrics ping
     assert_eq!(
         Some(1),
-        pings_submitted
-            .get("metrics")
-            .get_value(&glean, Some("metrics"))
+        pings_submitted.get("metrics").get_value(&glean, "metrics")
     );
     assert_eq!(
         None,
-        pings_submitted
-            .get("baseline")
-            .get_value(&glean, Some("metrics"))
+        pings_submitted.get("baseline").get_value(&glean, "metrics")
     );
 
     // Check recording in the baseline ping
     assert_eq!(
         Some(1),
-        pings_submitted
-            .get("metrics")
-            .get_value(&glean, Some("baseline"))
+        pings_submitted.get("metrics").get_value(&glean, "baseline")
     );
     assert_eq!(
         None,
         pings_submitted
             .get("baseline")
-            .get_value(&glean, Some("baseline"))
+            .get_value(&glean, "baseline")
     );
 
     // Trigger 2 baseline pings.
