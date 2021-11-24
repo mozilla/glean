@@ -230,19 +230,19 @@ fn basic_metrics_should_be_cleared_when_uploading_is_disabled() {
     ));
 
     metric.set_sync(&glean, "TEST VALUE");
-    assert!(metric.test_get_value(&glean, "baseline").is_some());
+    assert!(metric.get_value(&glean, "baseline").is_some());
 
     glean.set_upload_enabled(false);
-    assert!(metric.test_get_value(&glean, "baseline").is_none());
+    assert!(metric.get_value(&glean, "baseline").is_none());
 
     metric.set_sync(&glean, "TEST VALUE");
-    assert!(metric.test_get_value(&glean, "baseline").is_none());
+    assert!(metric.get_value(&glean, "baseline").is_none());
 
     glean.set_upload_enabled(true);
-    assert!(metric.test_get_value(&glean, "baseline").is_none());
+    assert!(metric.get_value(&glean, "baseline").is_none());
 
     metric.set_sync(&glean, "TEST VALUE");
-    assert!(metric.test_get_value(&glean, "baseline").is_some());
+    assert!(metric.get_value(&glean, "baseline").is_some());
 }
 
 #[test]
@@ -665,7 +665,7 @@ fn test_change_metric_type_runtime() {
     string_metric.set_sync(&glean, string_value);
 
     assert_eq!(
-        string_metric.test_get_value(&glean, ping_name).unwrap(),
+        string_metric.get_value(&glean, ping_name).unwrap(),
         string_value,
         "Expected properly deserialized string"
     );

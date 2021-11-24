@@ -110,7 +110,7 @@ fn long_string_values_are_truncated() {
     // Check that data was truncated
     assert_eq!(
         test_sting[..100],
-        metric.test_get_value(&glean, "store1").unwrap()
+        metric.get_value(&glean, "store1").unwrap()
     );
 
     // Make sure that the errors have been recorded

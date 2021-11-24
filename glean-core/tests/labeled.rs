@@ -47,15 +47,15 @@ fn can_create_labeled_counter_metric() {
 #[test]
 fn can_create_labeled_string_metric() {
     let (glean, _t) = new_glean(None);
-    let labeled = LabeledMetric::new(
-        StringMetric::new(CommonMetricData {
+    let labeled = LabeledString::new(
+        CommonMetricData {
             name: "labeled_metric".into(),
             category: "telemetry".into(),
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
             ..Default::default()
-        }),
+        },
         Some(vec!["label1".into()]),
     );
 
@@ -149,15 +149,15 @@ fn can_use_multiple_labels() {
 #[test]
 fn can_record_error_for_submetric() {
     let (glean, _t) = new_glean(None);
-    let labeled = LabeledMetric::new(
-        StringMetric::new(CommonMetricData {
+    let labeled = LabeledString::new(
+        CommonMetricData {
             name: "labeled_metric".into(),
             category: "telemetry".into(),
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
             ..Default::default()
-        }),
+        },
         Some(vec!["label1".into()]),
     );
 
