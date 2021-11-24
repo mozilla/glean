@@ -259,3 +259,15 @@ interface UrlMetric {
 
     i32 test_get_num_recorded_errors(ErrorType error, optional string? ping_name = null);
 };
+
+interface UuidMetric {
+    constructor(CommonMetricData meta);
+
+    void set(string value);
+
+    string generate_and_set();
+
+    string? test_get_value(optional string? ping_name = null);
+
+    i32 test_get_num_recorded_errors(ErrorType error, optional string? ping_name = null);
+};

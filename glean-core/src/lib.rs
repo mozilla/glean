@@ -51,7 +51,7 @@ pub use crate::error_recording::{test_get_num_recorded_errors, ErrorType};
 pub use crate::metrics::labeled::{LabeledBoolean, LabeledCounter, LabeledString};
 pub use crate::metrics::{
     BooleanMetric, CounterMetric, PingType, RecordedExperiment, StringListMetric, StringMetric,
-    TimeUnit, TimespanMetric, UrlMetric,
+    TimeUnit, TimespanMetric, UrlMetric, UuidMetric,
 };
 pub use crate::upload::{PingRequest, PingUploadTask, UploadResult};
 

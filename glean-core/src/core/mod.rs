@@ -230,7 +230,7 @@ impl Glean {
             match glean
                 .core_metrics
                 .client_id
-                .get_value(&glean, "glean_client_info")
+                .get_value(&glean, Some("glean_client_info"))
             {
                 None => glean.clear_metrics(),
                 Some(uuid) => {
@@ -294,13 +294,13 @@ impl Glean {
         let need_new_client_id = match self
             .core_metrics
             .client_id
-            .get_value(self, "glean_client_info")
+            .get_value(self, Some("glean_client_info"))
         {
             None => true,
             Some(uuid) => uuid == *KNOWN_CLIENT_ID,
         };
         if need_new_client_id {
-            self.core_metrics.client_id.generate_and_set(self);
+            self.core_metrics.client_id.generate_and_set_sync(self);
         }
 
         if self
@@ -475,7 +475,9 @@ impl Glean {
             // Store a "dummy" KNOWN_CLIENT_ID in the client_id metric. This will
             // make it easier to detect if pings were unintentionally sent after
             // uploading is disabled.
-            self.core_metrics.client_id.set(self, *KNOWN_CLIENT_ID);
+            self.core_metrics
+                .client_id
+                .set_from_uuid_sync(self, *KNOWN_CLIENT_ID);
 
             // Restore the first_run_date.
             if let Some(existing_first_run_date) = existing_first_run_date {

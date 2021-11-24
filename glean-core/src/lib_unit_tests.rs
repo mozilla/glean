@@ -186,7 +186,7 @@ fn client_id_and_first_run_date_and_first_run_hour_must_be_regenerated() {
         assert!(glean
             .core_metrics
             .client_id
-            .test_get_value(&glean, "glean_client_info")
+            .get_value(&glean, "glean_client_info")
             .is_none());
         assert!(glean
             .core_metrics
@@ -205,7 +205,7 @@ fn client_id_and_first_run_date_and_first_run_hour_must_be_regenerated() {
         assert!(glean
             .core_metrics
             .client_id
-            .test_get_value(&glean, "glean_client_info")
+            .get_value(&glean, "glean_client_info")
             .is_some());
         assert!(glean
             .core_metrics
