@@ -54,7 +54,8 @@ impl CounterMetric {
         }
     }
 
-    /// Internal only, synchronous API for incremeting a counter
+    /// Increases the counter by `amount` synchronously.
+    #[doc(hidden)]
     pub fn add_sync(&self, glean: &Glean, amount: i32) {
         if !self.should_record(glean) {
             return;
@@ -97,8 +98,15 @@ impl CounterMetric {
     }
 
     /// Get current value
-    pub fn get_value(&self, glean: &Glean, ping_name: Option<&str>) -> Option<i32> {
-        let queried_ping_name = ping_name.unwrap_or_else(|| &self.meta().send_in_pings[0]);
+    #[doc(hidden)]
+    pub fn get_value<'a, S: Into<Option<&'a str>>>(
+        &self,
+        glean: &Glean,
+        ping_name: S,
+    ) -> Option<i32> {
+        let queried_ping_name = ping_name
+            .into()
+            .unwrap_or_else(|| &self.meta().send_in_pings[0]);
 
         match StorageManager.snapshot_metric_for_test(
             glean.storage(),
