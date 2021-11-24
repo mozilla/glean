@@ -16,10 +16,10 @@ import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.lang.NullPointerException
 import java.util.UUID
 
 @RunWith(AndroidJUnit4::class)
@@ -31,19 +31,19 @@ class UuidMetricTypeTest {
     @Test
     fun `The API saves to its storage engine`() {
         // Define a 'uuidMetric' uuid metric, which will be stored in "store1"
-        val uuidMetric = UuidMetricType(
+        val uuidMetric = UuidMetricType(CommonMetricData(
             disabled = false,
             category = "telemetry",
-            lifetime = Lifetime.Application,
+            lifetime = Lifetime.APPLICATION,
             name = "uuid_metric",
             sendInPings = listOf("store1")
-        )
+        ))
 
         // Check that there is no UUID recorded
         assertFalse(uuidMetric.testHasValue())
 
         // Record two uuids of the same type, with a little delay.
-        val uuid = uuidMetric.generateAndSet()
+        val uuid: UUID = uuidMetric.generateAndSet()
 
         // Check that data was properly recorded.
         assertTrue(uuidMetric.testHasValue())
@@ -61,13 +61,13 @@ class UuidMetricTypeTest {
     fun `disabled uuids must not record data`() {
         // Define a 'uuidMetric' uuid metric, which will be stored in "store1". It's disabled
         // so it should not record anything.
-        val uuidMetric = UuidMetricType(
+        val uuidMetric = UuidMetricType(CommonMetricData(
             disabled = true,
             category = "telemetry",
-            lifetime = Lifetime.Application,
+            lifetime = Lifetime.APPLICATION,
             name = "uuidMetric",
             sendInPings = listOf("store1")
-        )
+        ))
 
         // Attempt to store the uuid.
         uuidMetric.generateAndSet()
@@ -76,28 +76,28 @@ class UuidMetricTypeTest {
             uuidMetric.testHasValue())
     }
 
-    @Test(expected = NullPointerException::class)
+    @Test
     fun `testGetValue() throws NullPointerException if nothing is stored`() {
-        val uuidMetric = UuidMetricType(
+        val uuidMetric = UuidMetricType(CommonMetricData(
             disabled = true,
             category = "telemetry",
-            lifetime = Lifetime.Application,
+            lifetime = Lifetime.APPLICATION,
             name = "uuidMetric",
             sendInPings = listOf("store1")
-        )
-        uuidMetric.testGetValue()
+        ))
+        assertNull(uuidMetric.testGetValue())
     }
 
     @Test
     fun `The API saves to secondary pings`() {
         // Define a 'uuidMetric' uuid metric, which will be stored in "store1" and "store2"
-        val uuidMetric = UuidMetricType(
+        val uuidMetric = UuidMetricType(CommonMetricData(
             disabled = false,
             category = "telemetry",
-            lifetime = Lifetime.Application,
+            lifetime = Lifetime.APPLICATION,
             name = "uuid_metric",
             sendInPings = listOf("store1", "store2")
-        )
+        ))
 
         // Record two uuids of the same type, with a little delay.
         val uuid = uuidMetric.generateAndSet()
