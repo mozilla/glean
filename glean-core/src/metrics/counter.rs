@@ -4,7 +4,7 @@
 
 use std::sync::Arc;
 
-use crate::error_recording::{record_error, ErrorType};
+use crate::error_recording::{record_error, test_get_num_recorded_errors, ErrorType};
 use crate::metrics::Metric;
 use crate::metrics::MetricType;
 use crate::storage::StorageManager;
@@ -119,5 +119,27 @@ impl CounterMetric {
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<i32> {
         crate::block_on_dispatcher();
         crate::core::with_glean(|glean| self.get_value(glean, ping_name.as_deref()))
+    }
+
+    /// **Exported for test purposes.**
+    ///
+    /// Gets the number of recorded errors for the given metric and error type.
+    ///
+    /// # Arguments
+    ///
+    /// * `error` - The type of error
+    /// * `ping_name` - represents the optional name of the ping to retrieve the
+    ///   metric for. Defaults to the first value in `send_in_pings`.
+    ///
+    /// # Returns
+    ///
+    /// The number of errors reported.
+    pub fn test_get_num_recorded_errors(&self, error: ErrorType, ping_name: Option<String>) -> i32 {
+        crate::block_on_dispatcher();
+
+        crate::core::with_glean(|glean| {
+            test_get_num_recorded_errors(glean, self.meta(), error, ping_name.as_deref())
+                .unwrap_or(0)
+        })
     }
 }

@@ -22,8 +22,6 @@ import org.junit.Assert.assertNull
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import mozilla.telemetry.glean.internal.CommonMetricData
-import mozilla.telemetry.glean.internal.Lifetime
 
 @RunWith(AndroidJUnit4::class)
 class CounterMetricTypeTest {
@@ -139,7 +137,6 @@ class CounterMetricTypeTest {
         // Check that count was NOT incremented.
         assertTrue(counterMetric.testHasValue("store1"))
         assertEquals(1, counterMetric.testGetValue("store1"))
-        // TODO: Fixme
-        //assertEquals(1, counterMetric.testGetNumRecordedErrors(ErrorType.InvalidValue))
+        assertEquals(1, counterMetric.testGetNumRecordedErrors(ErrorType.INVALID_VALUE))
     }
 }
