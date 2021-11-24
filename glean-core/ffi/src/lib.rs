@@ -32,7 +32,6 @@ mod event;
 mod ffi_string_ext;
 mod from_raw;
 mod handlemap_ext;
-mod jwe;
 mod labeled;
 mod memory_distribution;
 pub mod ping_type;
