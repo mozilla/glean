@@ -249,3 +249,13 @@ interface StringListMetric {
 
     i32 test_get_num_recorded_errors(ErrorType error, optional string? ping_name = null);
 };
+
+interface UrlMetric {
+    constructor(CommonMetricData meta);
+
+    void set(string value);
+
+    string? test_get_value(optional string? ping_name = null);
+
+    i32 test_get_num_recorded_errors(ErrorType error, optional string? ping_name = null);
+};
