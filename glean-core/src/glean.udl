@@ -237,3 +237,15 @@ interface LabeledString {
 
     i32 test_get_num_recorded_errors(ErrorType error, optional string? ping_name = null);
 };
+
+interface StringListMetric {
+    constructor(CommonMetricData meta);
+
+    void add(string value);
+
+    void set(sequence<string> value);
+
+    sequence<string>? test_get_value(optional string? ping_name = null);
+
+    i32 test_get_num_recorded_errors(ErrorType error, optional string? ping_name = null);
+};
