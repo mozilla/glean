@@ -26,8 +26,8 @@ pub struct CustomDistributionMetric {
 /// The snapshot can be serialized into the payload format.
 pub(crate) fn snapshot<B: Bucketing>(hist: &Histogram<B>) -> DistributionData {
     DistributionData {
-        values: hist.snapshot_values(),
-        sum: hist.sum(),
+        values: hist.snapshot_values().into_iter().map(|(k, v)| (k.to_string(), v as i64)).collect(),
+        sum: hist.sum() as i64,
     }
 }
 

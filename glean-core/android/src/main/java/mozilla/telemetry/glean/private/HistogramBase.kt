@@ -18,7 +18,7 @@ interface HistogramBase {
      * method was called on is using [TimeUnit.SECOND], then `samples` are assumed
      * to be in that unit).
      *
-     * @param samples the [LongArray] holding the samples to be recorded by the metric.
+     * @param samples the [List<Long>] holding the samples to be recorded by the metric.
      */
-    fun accumulateSamples(samples: LongArray)
+    fun accumulateSamples(samples: List<Long>)
 }
