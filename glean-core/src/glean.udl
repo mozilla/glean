@@ -337,3 +337,27 @@ interface CustomDistributionMetric {
 
     i32 test_get_num_recorded_errors(ErrorType error, optional string? ping_name = null);
 };
+
+// Representation of a date, time and timezone.
+dictionary Datetime {
+    i32 year;
+    u32 month;
+    u32 day;
+    u32 hour;
+    u32 minute;
+    u32 second;
+    u32 nanosecond;
+    i32 offset_seconds;
+};
+
+interface DatetimeMetric {
+    constructor(CommonMetricData meta, TimeUnit time_unit);
+
+    void set(optional Datetime? value = null);
+
+    Datetime? test_get_value(optional string? ping_name = null);
+
+    string? test_get_value_as_string(optional string? ping_name = null);
+
+    i32 test_get_num_recorded_errors(ErrorType error, optional string? ping_name = null);
+};
