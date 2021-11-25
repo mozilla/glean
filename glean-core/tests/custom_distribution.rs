@@ -40,10 +40,10 @@ mod linear {
                 HistogramType::Linear,
             );
 
-            metric.accumulate_samples_signed(&glean, vec![50]);
+            metric.accumulate_samples_sync(&glean, vec![50]);
 
             let snapshot = metric
-                .test_get_value(&glean, "store1")
+                .get_value(&glean, "store1")
                 .expect("Value should be stored");
 
             assert_eq!(snapshot.sum, 50);
@@ -84,7 +84,7 @@ mod linear {
             HistogramType::Linear,
         );
 
-        metric.accumulate_samples_signed(&glean, vec![50]);
+        metric.accumulate_samples_sync(&glean, vec![50]);
 
         for store_name in store_names {
             let snapshot = StorageManager
@@ -126,10 +126,10 @@ mod linear {
 
         // Accumulate the samples. We intentionally do not report
         // negative values to not trigger error reporting.
-        metric.accumulate_samples_signed(&glean, [1, 2, 3].to_vec());
+        metric.accumulate_samples_sync(&glean, [1, 2, 3].to_vec());
 
         let snapshot = metric
-            .test_get_value(&glean, "store1")
+            .get_value(&glean, "store1")
             .expect("Value should be stored");
 
         // Check that we got the right sum of samples.
@@ -138,9 +138,9 @@ mod linear {
         // We should get a sample in 3 buckets.
         // These numbers are a bit magic, but they correspond to
         // `hist.sample_to_bucket_minimum(i * kb)` for `i = 1..=3`.
-        assert_eq!(1, snapshot.values[&1]);
-        assert_eq!(1, snapshot.values[&2]);
-        assert_eq!(1, snapshot.values[&3]);
+        assert_eq!(1, snapshot.values["1"]);
+        assert_eq!(1, snapshot.values["2"]);
+        assert_eq!(1, snapshot.values["3"]);
 
         // No errors should be reported.
         assert!(test_get_num_recorded_errors(
@@ -172,10 +172,10 @@ mod linear {
         );
 
         // Accumulate the samples.
-        metric.accumulate_samples_signed(&glean, [-1, 1, 2, 3].to_vec());
+        metric.accumulate_samples_sync(&glean, [-1, 1, 2, 3].to_vec());
 
         let snapshot = metric
-            .test_get_value(&glean, "store1")
+            .get_value(&glean, "store1")
             .expect("Value should be stored");
 
         // Check that we got the right sum of samples.
@@ -184,9 +184,9 @@ mod linear {
         // We should get a sample in 3 buckets.
         // These numbers are a bit magic, but they correspond to
         // `hist.sample_to_bucket_minimum(i * kb)` for `i = 1..=3`.
-        assert_eq!(1, snapshot.values[&1]);
-        assert_eq!(1, snapshot.values[&2]);
-        assert_eq!(1, snapshot.values[&3]);
+        assert_eq!(1, snapshot.values["1"]);
+        assert_eq!(1, snapshot.values["2"]);
+        assert_eq!(1, snapshot.values["3"]);
 
         // 1 error should be reported.
         assert_eq!(
@@ -218,9 +218,9 @@ mod linear {
             HistogramType::Linear,
         );
 
-        metric.accumulate_samples_signed(&glean, vec![50]);
+        metric.accumulate_samples_sync(&glean, vec![50]);
 
-        let snapshot = metric.test_get_value_as_json_string(&glean, "store1");
+        let snapshot = metric.get_value(&glean, "store1");
         assert!(snapshot.is_some());
     }
 }
@@ -251,10 +251,10 @@ mod exponential {
                 HistogramType::Exponential,
             );
 
-            metric.accumulate_samples_signed(&glean, vec![50]);
+            metric.accumulate_samples_sync(&glean, vec![50]);
 
             let snapshot = metric
-                .test_get_value(&glean, "store1")
+                .get_value(&glean, "store1")
                 .expect("Value should be stored");
 
             assert_eq!(snapshot.sum, 50);
@@ -295,7 +295,7 @@ mod exponential {
             HistogramType::Exponential,
         );
 
-        metric.accumulate_samples_signed(&glean, vec![50]);
+        metric.accumulate_samples_sync(&glean, vec![50]);
 
         for store_name in store_names {
             let snapshot = StorageManager
@@ -337,10 +337,10 @@ mod exponential {
 
         // Accumulate the samples. We intentionally do not report
         // negative values to not trigger error reporting.
-        metric.accumulate_samples_signed(&glean, [1, 2, 3].to_vec());
+        metric.accumulate_samples_sync(&glean, [1, 2, 3].to_vec());
 
         let snapshot = metric
-            .test_get_value(&glean, "store1")
+            .get_value(&glean, "store1")
             .expect("Value should be stored");
 
         // Check that we got the right sum of samples.
@@ -349,9 +349,9 @@ mod exponential {
         // We should get a sample in 3 buckets.
         // These numbers are a bit magic, but they correspond to
         // `hist.sample_to_bucket_minimum(i * kb)` for `i = 1..=3`.
-        assert_eq!(1, snapshot.values[&1]);
-        assert_eq!(1, snapshot.values[&2]);
-        assert_eq!(1, snapshot.values[&3]);
+        assert_eq!(1, snapshot.values["1"]);
+        assert_eq!(1, snapshot.values["2"]);
+        assert_eq!(1, snapshot.values["3"]);
 
         // No errors should be reported.
         assert!(test_get_num_recorded_errors(
@@ -383,10 +383,10 @@ mod exponential {
         );
 
         // Accumulate the samples.
-        metric.accumulate_samples_signed(&glean, [-1, 1, 2, 3].to_vec());
+        metric.accumulate_samples_sync(&glean, [-1, 1, 2, 3].to_vec());
 
         let snapshot = metric
-            .test_get_value(&glean, "store1")
+            .get_value(&glean, "store1")
             .expect("Value should be stored");
 
         // Check that we got the right sum of samples.
@@ -395,9 +395,9 @@ mod exponential {
         // We should get a sample in 3 buckets.
         // These numbers are a bit magic, but they correspond to
         // `hist.sample_to_bucket_minimum(i * kb)` for `i = 1..=3`.
-        assert_eq!(1, snapshot.values[&1]);
-        assert_eq!(1, snapshot.values[&2]);
-        assert_eq!(1, snapshot.values[&3]);
+        assert_eq!(1, snapshot.values["1"]);
+        assert_eq!(1, snapshot.values["2"]);
+        assert_eq!(1, snapshot.values["3"]);
 
         // 1 error should be reported.
         assert_eq!(
@@ -429,9 +429,9 @@ mod exponential {
             HistogramType::Exponential,
         );
 
-        metric.accumulate_samples_signed(&glean, vec![50]);
+        metric.accumulate_samples_sync(&glean, vec![50]);
 
-        let snapshot = metric.test_get_value_as_json_string(&glean, "store1");
+        let snapshot = metric.get_value(&glean, "store1");
         assert!(snapshot.is_some());
     }
 }

@@ -319,3 +319,21 @@ interface MemoryDistributionMetric {
 
     i32 test_get_num_recorded_errors(ErrorType error, optional string? ping_name = null);
 };
+
+// Different kinds of histograms.
+enum HistogramType {
+    // A histogram with linear distributed buckets.
+    "Linear",
+    // A histogram with exponential distributed buckets.
+    "Exponential",
+};
+
+interface CustomDistributionMetric {
+    constructor(CommonMetricData meta, i64 range_min, i64 range_max, i64 bucket_count, HistogramType histogram_type);
+
+    void accumulate_samples(sequence<i64> samples);
+
+    DistributionData? test_get_value(optional string? ping_name = null);
+
+    i32 test_get_num_recorded_errors(ErrorType error, optional string? ping_name = null);
+};

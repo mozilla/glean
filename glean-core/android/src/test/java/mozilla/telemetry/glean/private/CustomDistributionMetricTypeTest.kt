@@ -5,7 +5,6 @@
 package mozilla.telemetry.glean.private
 
 import androidx.test.core.app.ApplicationProvider
-import java.lang.NullPointerException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import mozilla.telemetry.glean.testing.ErrorType
@@ -13,6 +12,7 @@ import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Assert.assertNull
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -29,170 +29,176 @@ class CustomDistributionMetricTypeTest {
     @Test
     fun `The API saves to its storage engine`() {
         // Define a custom distribution metric which will be stored in "store1"
-        val metric = CustomDistributionMetricType(
+        val metric = CustomDistributionMetricType(CommonMetricData(
             disabled = false,
             category = "telemetry",
-            lifetime = Lifetime.Ping,
+            lifetime = Lifetime.PING,
             name = "custom_distribution",
             sendInPings = listOf("store1"),
+        ),
             rangeMin = 0L,
             rangeMax = 60000L,
             bucketCount = 100,
-            histogramType = HistogramType.Exponential
+            histogramType = HistogramType.EXPONENTIAL
         )
 
         // Accumulate a few values
         for (i in 1L..3L) {
-            metric.accumulateSamples(listOf(i).toLongArray())
+            metric.accumulateSamples(listOf(i))
         }
 
         // Check that data was properly recorded.
         assertTrue(metric.testHasValue())
-        val snapshot = metric.testGetValue()
+        val snapshot = metric.testGetValue()!!
         // Check the sum
         assertEquals(6L, snapshot.sum)
         // Check that the 1L fell into the first value bucket
-        assertEquals(1L, snapshot.values[1])
+        assertEquals(1L, snapshot.values["1"])
         // Check that the 2L fell into the second value bucket
-        assertEquals(1L, snapshot.values[2])
+        assertEquals(1L, snapshot.values["2"])
         // Check that the 3L fell into the third value bucket
-        assertEquals(1L, snapshot.values[3])
+        assertEquals(1L, snapshot.values["3"])
     }
 
     @Test
     fun `disabled custom distributions must not record data`() {
         // Define a custom distribution metric which will be stored in "store1"
-        // It's lifetime is set to Lifetime.Ping so it should not record anything.
-        val metric = CustomDistributionMetricType(
+        // It's lifetime is set to Lifetime.PING SO IT SHOULD NOT RECORD ANYTHING.
+        val metric = CustomDistributionMetricType(CommonMetricData(
             disabled = true,
             category = "telemetry",
-            lifetime = Lifetime.Ping,
+            lifetime = Lifetime.PING,
             name = "custom_distribution",
             sendInPings = listOf("store1"),
+        ),
             rangeMin = 0L,
             rangeMax = 60000L,
             bucketCount = 100,
-            histogramType = HistogramType.Exponential
+            histogramType = HistogramType.EXPONENTIAL
         )
 
         // Attempt to store to the distribution
-        metric.accumulateSamples(listOf(0L).toLongArray())
+        metric.accumulateSamples(listOf(0L))
 
         // Check that nothing was recorded.
         assertFalse("Disabled CustomDistributions should not record data.",
             metric.testHasValue())
     }
 
-    @Test(expected = NullPointerException::class)
+    @Test
     fun `testGetValue() throws NullPointerException if nothing is stored`() {
         // Define a custom distribution metric which will be stored in "store1"
-        val metric = CustomDistributionMetricType(
+        val metric = CustomDistributionMetricType(CommonMetricData(
             disabled = false,
             category = "telemetry",
-            lifetime = Lifetime.Ping,
+            lifetime = Lifetime.PING,
             name = "custom_distribution",
             sendInPings = listOf("store1"),
+        ),
             rangeMin = 0L,
             rangeMax = 60000L,
             bucketCount = 100,
-            histogramType = HistogramType.Exponential
+            histogramType = HistogramType.EXPONENTIAL
         )
-        metric.testGetValue()
+        assertNull(metric.testGetValue())
     }
 
     @Test
     fun `The API saves to secondary pings`() {
         // Define a custom distribution metric which will be stored in multiple stores
-        val metric = CustomDistributionMetricType(
+        val metric = CustomDistributionMetricType(CommonMetricData(
             disabled = false,
             category = "telemetry",
-            lifetime = Lifetime.Ping,
+            lifetime = Lifetime.PING,
             name = "custom_distribution",
             sendInPings = listOf("store1", "store2", "store3"),
+        ),
             rangeMin = 0L,
             rangeMax = 60000L,
             bucketCount = 100,
-            histogramType = HistogramType.Exponential
+            histogramType = HistogramType.EXPONENTIAL
         )
 
         // Accumulate a few values
-        metric.accumulateSamples(listOf(1L, 2L, 3L).toLongArray())
+        metric.accumulateSamples(listOf(1L, 2L, 3L))
 
         // Check that data was properly recorded in the second ping.
         assertTrue(metric.testHasValue("store2"))
-        val snapshot = metric.testGetValue("store2")
+        val snapshot = metric.testGetValue("store2")!!
         // Check the sum
         assertEquals(6L, snapshot.sum)
         // Check that the 1L fell into the first bucket
-        assertEquals(1L, snapshot.values[1])
+        assertEquals(1L, snapshot.values["1"])
         // Check that the 2L fell into the second bucket
-        assertEquals(1L, snapshot.values[2])
+        assertEquals(1L, snapshot.values["2"])
         // Check that the 3L fell into the third bucket
-        assertEquals(1L, snapshot.values[3])
+        assertEquals(1L, snapshot.values["3"])
 
         // Check that data was properly recorded in the third ping.
         assertTrue(metric.testHasValue("store3"))
-        val snapshot2 = metric.testGetValue("store3")
+        val snapshot2 = metric.testGetValue("store3")!!
         // Check the sum
         assertEquals(6L, snapshot2.sum)
         // Check that the 1L fell into the first bucket
-        assertEquals(1L, snapshot2.values[1])
+        assertEquals(1L, snapshot2.values["1"])
         // Check that the 2L fell into the second bucket
-        assertEquals(1L, snapshot2.values[2])
+        assertEquals(1L, snapshot2.values["2"])
         // Check that the 3L fell into the third bucket
-        assertEquals(1L, snapshot2.values[3])
+        assertEquals(1L, snapshot2.values["3"])
     }
 
     @Test
     fun `The accumulateSamples API correctly stores values`() {
         // Define a custom distribution metric which will be stored in multiple stores
-        val metric = CustomDistributionMetricType(
+        val metric = CustomDistributionMetricType(CommonMetricData(
             disabled = false,
             category = "telemetry",
-            lifetime = Lifetime.Ping,
+            lifetime = Lifetime.PING,
             name = "custom_distribution_samples",
             sendInPings = listOf("store1"),
+        ),
             rangeMin = 0L,
             rangeMax = 60000L,
             bucketCount = 100,
-            histogramType = HistogramType.Exponential
+            histogramType = HistogramType.EXPONENTIAL
         )
 
         // Accumulate a few values
-        val testSamples = (1L..3L).toList().toLongArray()
+        val testSamples = (1L..3L).toList()
         metric.accumulateSamples(testSamples)
 
         // Check that data was properly recorded in the second ping.
         assertTrue(metric.testHasValue("store1"))
-        val snapshot = metric.testGetValue("store1")
+        val snapshot = metric.testGetValue("store1")!!
         // Check the sum
         assertEquals(6L, snapshot.sum)
         // Check that the 1L fell into the first bucket
-        assertEquals(1L, snapshot.values[1])
+        assertEquals(1L, snapshot.values["1"])
         // Check that the 2L fell into the second bucket
-        assertEquals(1L, snapshot.values[2])
+        assertEquals(1L, snapshot.values["2"])
         // Check that the 3L fell into the third bucket
-        assertEquals(1L, snapshot.values[3])
+        assertEquals(1L, snapshot.values["3"])
     }
 
     @Test
     fun `Accumulating negative values records an error`() {
         // Define a custom distribution metric which will be stored in multiple stores
-        val metric = CustomDistributionMetricType(
+        val metric = CustomDistributionMetricType(CommonMetricData(
             disabled = false,
             category = "telemetry",
-            lifetime = Lifetime.Ping,
+            lifetime = Lifetime.PING,
             name = "custom_distribution_samples",
             sendInPings = listOf("store1"),
+        ),
             rangeMin = 0L,
             rangeMax = 60000L,
             bucketCount = 100,
-            histogramType = HistogramType.Exponential
+            histogramType = HistogramType.EXPONENTIAL
         )
 
         // Accumulate a few values
-        metric.accumulateSamples(listOf(-1L).toLongArray())
+        metric.accumulateSamples(listOf(-1L))
 
-        assertEquals(1, metric.testGetNumRecordedErrors(ErrorType.InvalidValue))
+        assertEquals(1, metric.testGetNumRecordedErrors(ErrorType.INVALID_VALUE))
     }
 }
