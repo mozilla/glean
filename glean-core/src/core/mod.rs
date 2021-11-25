@@ -309,8 +309,8 @@ impl Glean {
             .get_value(self, "glean_client_info")
             .is_none()
         {
-            self.core_metrics.first_run_date.set(self, None);
-            self.core_metrics.first_run_hour.set(self, None);
+            self.core_metrics.first_run_date.set_sync(self, None);
+            self.core_metrics.first_run_hour.set_sync(self, None);
             // The `first_run_date` field is generated on the very first run
             // and persisted across upload toggling. We can assume that, the only
             // time it is set, that's indeed our "first run".
@@ -483,14 +483,14 @@ impl Glean {
             if let Some(existing_first_run_date) = existing_first_run_date {
                 self.core_metrics
                     .first_run_date
-                    .set(self, Some(existing_first_run_date));
+                    .set_sync(self, Some(existing_first_run_date));
             }
 
             // Restore the first_run_hour.
             if let Some(existing_first_run_hour) = existing_first_run_hour {
                 self.core_metrics
                     .first_run_hour
-                    .set(self, Some(existing_first_run_hour));
+                    .set_sync(self, Some(existing_first_run_hour));
             }
 
             self.upload_enabled = false;

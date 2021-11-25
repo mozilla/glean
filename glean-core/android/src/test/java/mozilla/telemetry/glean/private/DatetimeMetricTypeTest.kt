@@ -12,6 +12,7 @@ package mozilla.telemetry.glean.private
 
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import mozilla.telemetry.glean.testing.ErrorType
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -22,6 +23,7 @@ import org.junit.runner.RunWith
 import java.util.Calendar
 import java.util.Date
 import java.util.TimeZone
+import java.util.concurrent.TimeUnit as AndroidTimeUnit
 
 const val MILLIS_PER_SEC = 1000L
 private fun Date.asSeconds() = time / MILLIS_PER_SEC
@@ -35,13 +37,13 @@ class DatetimeMetricTypeTest {
     @Test
     fun `The API saves to its storage engine`() {
         // Define a 'datetimeMetric' datetime metric, which will be stored in "store1"
-        val datetimeMetric = DatetimeMetricType(
+        val datetimeMetric = DatetimeMetricType(CommonMetricData(
             disabled = false,
             category = "telemetry",
-            lifetime = Lifetime.Application,
+            lifetime = Lifetime.APPLICATION,
             name = "datetime_metric",
             sendInPings = listOf("store1")
-        )
+        ))
 
         val value = Calendar.getInstance()
         value.set(2004, 11, 9, 8, 3, 29)
@@ -68,27 +70,26 @@ class DatetimeMetricTypeTest {
         assertEquals("1969-08-20T20:17-12:00", datetimeMetric.testGetValueAsString())
 
         // A date following 2038 (the extent of signed 32-bits after UNIX epoch)
-        // This fails on some workers on Taskcluster.  32-bit platforms, perhaps?
-
-        // val value4 = Calendar.getInstance()
-        // value4.set(2039, 7, 20, 20, 17, 3)
-        // datetimeMetric.set(value4)
-        // // Check that data was properly recorded.
-        // assertTrue(datetimeMetric.testHasValue())
-        // assertEquals("2039-08-20T20:17:03-04:00", datetimeMetric.testGetValueAsString())
+        val value4 = Calendar.getInstance()
+        value4.set(2039, 7, 20, 20, 17, 3)
+        value4.timeZone = TimeZone.getTimeZone("GMT-4")
+        datetimeMetric.set(value4)
+        // Check that data was properly recorded.
+        assertTrue(datetimeMetric.testHasValue())
+        assertEquals("2039-08-20T20:17-04:00", datetimeMetric.testGetValueAsString())
     }
 
     @Test
     fun `disabled datetimes must not record data`() {
         // Define a 'datetimeMetric' datetime metric, which will be stored in "store1". It's disabled
         // so it should not record anything.
-        val datetimeMetric = DatetimeMetricType(
+        val datetimeMetric = DatetimeMetricType(CommonMetricData(
             disabled = true,
             category = "telemetry",
-            lifetime = Lifetime.Application,
+            lifetime = Lifetime.APPLICATION,
             name = "datetimeMetric",
             sendInPings = listOf("store1")
-        )
+        ))
 
         // Attempt to store the datetime.
         datetimeMetric.set()
@@ -100,14 +101,13 @@ class DatetimeMetricTypeTest {
         // This test is adopted from `SyncTelemetryTest.kt` in android-components.
         // Previously we failed to properly deal with DST when converting from `Calendar` into its pieces.
 
-        val datetimeMetric = DatetimeMetricType(
+        val datetimeMetric = DatetimeMetricType(CommonMetricData(
             disabled = false,
             category = "telemetry",
-            lifetime = Lifetime.Ping,
+            lifetime = Lifetime.PING,
             name = "datetimeMetric",
             sendInPings = listOf("store1"),
-            timeUnit = TimeUnit.Millisecond
-        )
+        ), timeUnit = TimeUnit.MILLISECOND)
 
         val nowDate = Date()
         val now = nowDate.asSeconds()
@@ -115,6 +115,6 @@ class DatetimeMetricTypeTest {
 
         datetimeMetric.set(timestamp)
 
-        assertEquals(now, datetimeMetric.testGetValue().asSeconds())
+        assertEquals(now, datetimeMetric.testGetValue()!!.asSeconds())
     }
 }
