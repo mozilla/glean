@@ -54,7 +54,7 @@ impl MetricsPingSubmitter for GleanMetricsPingSubmitter {
     fn submit_metrics_ping(&self, glean: &Glean, reason: Option<&str>, now: DateTime<FixedOffset>) {
         glean.submit_ping_by_name("metrics", reason);
         // Always update the collection date, irrespective of the ping being sent.
-        get_last_sent_time_metric().set(glean, Some(now));
+        get_last_sent_time_metric().set_sync(glean, Some(now));
     }
 }
 
@@ -351,7 +351,7 @@ mod test {
         let (glean, _t) = new_glean(None);
 
         let fake_now = FixedOffset::east(0).ymd(2021, 4, 30).and_hms(14, 36, 14);
-        get_last_sent_time_metric().set(&glean, Some(fake_now));
+        get_last_sent_time_metric().set_sync(&glean, Some(fake_now));
 
         let (submitter, submitter_count, scheduler, scheduler_count) = new_proxies(
             |_, reason| panic!("Case #1 shouldn't submit a ping! reason: {:?}", reason),
@@ -372,7 +372,7 @@ mod test {
         let fake_yesterday = FixedOffset::east(0)
             .ymd(2021, 4, 29)
             .and_hms(SCHEDULED_HOUR, 0, 1);
-        get_last_sent_time_metric().set(&glean, Some(fake_yesterday));
+        get_last_sent_time_metric().set_sync(&glean, Some(fake_yesterday));
         let fake_now = fake_yesterday + Duration::days(1);
 
         let (submitter, submitter_count, scheduler, scheduler_count) = new_proxies(
@@ -395,7 +395,7 @@ mod test {
             FixedOffset::east(0)
                 .ymd(2021, 4, 29)
                 .and_hms(SCHEDULED_HOUR - 1, 0, 1);
-        get_last_sent_time_metric().set(&glean, Some(fake_yesterday));
+        get_last_sent_time_metric().set_sync(&glean, Some(fake_yesterday));
         let fake_now = fake_yesterday + Duration::days(1);
 
         let (submitter, submitter_count, scheduler, scheduler_count) = new_proxies(

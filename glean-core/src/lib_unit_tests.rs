@@ -191,12 +191,12 @@ fn client_id_and_first_run_date_and_first_run_hour_must_be_regenerated() {
         assert!(glean
             .core_metrics
             .first_run_date
-            .test_get_value_as_string(&glean, "glean_client_info")
+            .get_value(&glean, "glean_client_info")
             .is_none());
         assert!(glean
             .core_metrics
             .first_run_hour
-            .test_get_value_as_string(&glean, "metrics")
+            .get_value(&glean, "metrics")
             .is_none());
     }
 
@@ -210,12 +210,12 @@ fn client_id_and_first_run_date_and_first_run_hour_must_be_regenerated() {
         assert!(glean
             .core_metrics
             .first_run_date
-            .test_get_value_as_string(&glean, "glean_client_info")
+            .get_value(&glean, "glean_client_info")
             .is_some());
         assert!(glean
             .core_metrics
             .first_run_hour
-            .test_get_value_as_string(&glean, "metrics")
+            .get_value(&glean, "metrics")
             .is_some());
     }
 }

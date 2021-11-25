@@ -14,6 +14,11 @@ package mozilla.telemetry.glean.private
 typealias CommonMetricData = mozilla.telemetry.glean.internal.CommonMetricData
 
 /**
+ * Representation of a date, time and timezone.
+ */
+typealias Datetime = mozilla.telemetry.glean.internal.Datetime
+
+/**
  * Enumeration of the different kinds of histograms supported by metrics based on histograms.
  */
 typealias HistogramType = mozilla.telemetry.glean.internal.HistogramType
