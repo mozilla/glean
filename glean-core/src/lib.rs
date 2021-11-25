@@ -48,13 +48,13 @@ pub use crate::core::Glean;
 use crate::core_metrics::ClientInfoMetrics;
 pub use crate::error::{Error, ErrorKind, Result};
 pub use crate::error_recording::{test_get_num_recorded_errors, ErrorType};
+use crate::histogram::HistogramType;
 pub use crate::metrics::labeled::{LabeledBoolean, LabeledCounter, LabeledString};
 pub use crate::metrics::{
-    BooleanMetric, CounterMetric, PingType, QuantityMetric, RecordedExperiment, StringListMetric,
-    StringMetric, TimeUnit, TimespanMetric, UrlMetric, UuidMetric,
-    MemoryDistributionMetric,
-    DistributionData,
-    MemoryUnit
+    BooleanMetric, CounterMetric, DistributionData, MemoryDistributionMetric, MemoryUnit, PingType,
+    QuantityMetric, RecordedExperiment, StringListMetric, StringMetric, TimeUnit, TimespanMetric,
+    UrlMetric, UuidMetric,
+    CustomDistributionMetric,
 };
 pub use crate::upload::{PingRequest, PingUploadTask, UploadResult};
 
