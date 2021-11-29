@@ -433,8 +433,6 @@ open class GleanInternalAPI internal constructor () {
         clearStores: Boolean,
         uploadEnabled: Boolean = true
     ) {
-        Glean.enableTestingMode()
-
         isMainProcess = null
 
         // Resetting MPS and uploader
@@ -443,6 +441,8 @@ open class GleanInternalAPI internal constructor () {
 
         // Init Glean.
         Glean.testDestroyGleanHandle(clearStores)
+        // Enable test mode.
+        Glean.enableTestingMode()
         // Always log pings for tests
         Glean.setLogPings(true)
 
@@ -486,6 +486,8 @@ open class GleanInternalAPI internal constructor () {
         gleanTestDestroyGlean(clearStores)
 
         // Reset all state.
+        gleanSetTestMode(false)
+        testingMode = false
         initialized = false
     }
 

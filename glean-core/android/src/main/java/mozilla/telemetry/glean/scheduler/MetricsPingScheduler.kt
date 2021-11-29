@@ -9,7 +9,6 @@ import android.content.SharedPreferences
 import androidx.annotation.VisibleForTesting
 import android.text.format.DateUtils
 import android.util.Log
-import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.internal.gleanSubmitPingByNameSync
 import mozilla.telemetry.glean.BuildInfo
@@ -298,9 +297,9 @@ internal class MetricsPingScheduler(
             //
             // During the Glean initialization, we require any metric recording to be
             // batched up and replayed after any startup metrics ping is sent. To guarantee
-            // that, we dispatch this function from `Dispatchers.API.executeTask`. However,
-            // Pings.metrics.submit() ends up calling `Dispatchers.API.launch` again which
-            // will delay the ping collection task after any pending metric recording is
+            // that, this scheduling is run synchronously in the intializer task.
+            // However, Pings.metrics.submit() ends running asynchronously again,
+            // which will delay the ping collection task after any pending metric recording is
             // executed, breaking the 'metrics' ping promise of sending a startup 'metrics'
             // ping only containing data from the previous session.
             // To prevent that, we synchronously manually dispatch the 'metrics' ping, without

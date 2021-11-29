@@ -15,15 +15,14 @@ import mozilla.telemetry.glean.BuildInfo
 import mozilla.telemetry.glean.GleanBuildInfo
 import mozilla.telemetry.glean.GleanMetrics.Pings
 import mozilla.telemetry.glean.checkPingSchema
+import mozilla.telemetry.glean.private.CommonMetricData
 import mozilla.telemetry.glean.private.Lifetime
 import mozilla.telemetry.glean.private.StringMetricType
 import mozilla.telemetry.glean.private.TimeUnit
 import mozilla.telemetry.glean.config.Configuration
 import mozilla.telemetry.glean.eq
-import mozilla.telemetry.glean.getContext
 import mozilla.telemetry.glean.getMockWebServer
 import mozilla.telemetry.glean.getPlainBody
-import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.resetGlean
 import mozilla.telemetry.glean.triggerWorkManager
 import mozilla.telemetry.glean.utils.getISOTimeString
@@ -47,6 +46,7 @@ import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import java.util.Calendar
 import java.util.concurrent.TimeUnit as AndroidTimeUnit
+import org.robolectric.shadows.ShadowLog
 
 @RunWith(AndroidJUnit4::class)
 class MetricsPingSchedulerTest {
@@ -57,6 +57,7 @@ class MetricsPingSchedulerTest {
     fun setup() {
         WorkManagerTestInitHelper.initializeTestWorkManager(context)
 
+        ShadowLog.stream = System.out
         Glean.enableTestingMode()
     }
 
@@ -69,8 +70,6 @@ class MetricsPingSchedulerTest {
         // Once all data is cleared, destroy the handle.
         // Individual tests will start Glean if necessary.
         Glean.testDestroyGleanHandle()
-        @Suppress("EXPERIMENTAL_API_USAGE")
-        Dispatchers.API.setTaskQueueing(true)
     }
 
     @Test
@@ -259,7 +258,6 @@ class MetricsPingSchedulerTest {
         // Setup a test server and make Glean point to it.
         val server = getMockWebServer()
 
-        val context = getContext()
         resetGlean(context, Configuration(
             serverEndpoint = "http://" + server.hostName + ":" + server.port
         ))
@@ -276,17 +274,17 @@ class MetricsPingSchedulerTest {
 
         try {
             // Setup a testing metric and set it to some value.
-            val testMetric = StringMetricType(
+            val testMetric = StringMetricType(CommonMetricData(
                 disabled = false,
                 category = "telemetry",
-                lifetime = Lifetime.Application,
+                lifetime = Lifetime.APPLICATION,
                 name = "string_metric",
                 sendInPings = listOf("metrics")
-            )
+            ))
 
             val expectedValue = "test-only metric"
             testMetric.set(expectedValue)
-            assertTrue("The initial test data must have been recorded", testMetric.testHasValue())
+            assertNotNull("The initial test data must have been recorded", testMetric.testGetValue())
 
             // Manually call the function to trigger the collection.
             Glean.metricsPingScheduler!!.collectPingAndReschedule(
@@ -348,9 +346,6 @@ class MetricsPingSchedulerTest {
         // Make sure to return the fake date when requested.
         doReturn(fakeNow).`when`(mpsSpy).getCalendarInstance()
 
-        // Trigger the startup check. We need to wrap this in `blockDispatchersAPI` since
-        // the immediate startup collection happens in the Dispatchers.API context. If we
-        // don't, test will fail due to async weirdness.
         mpsSpy.schedule()
 
         // And that we're storing the current date (this only reports the date, not the time).
@@ -377,7 +372,7 @@ class MetricsPingSchedulerTest {
         val mpsSpy =
             spy(MetricsPingScheduler(context, GleanBuildInfo.buildInfo))
 
-        mpsSpy.updateSentDate(getISOTimeString(fakeNow, truncateTo = TimeUnit.Day))
+        mpsSpy.updateSentDate(getISOTimeString(fakeNow, truncateTo = TimeUnit.DAY))
 
         verify(mpsSpy, never()).schedulePingCollection(any(), anyBoolean(), eq(Pings.metricsReasonCodes.overdue))
 
@@ -416,7 +411,7 @@ class MetricsPingSchedulerTest {
         val fakeYesterday = Calendar.getInstance()
         fakeYesterday.time = fakeNow.time
         fakeYesterday.add(Calendar.DAY_OF_MONTH, -1)
-        mpsSpy.updateSentDate(getISOTimeString(fakeYesterday, truncateTo = TimeUnit.Day))
+        mpsSpy.updateSentDate(getISOTimeString(fakeYesterday, truncateTo = TimeUnit.DAY))
 
         // Make sure to return the fake date when requested.
         doReturn(fakeNow).`when`(mpsSpy).getCalendarInstance()
@@ -498,12 +493,10 @@ class MetricsPingSchedulerTest {
         )
 
         val oldVersion = "version.0"
-        val oldContext = getContext()
         val oldBuildInfo = BuildInfo(versionCode = oldVersion, versionName = oldVersion)
 
         // New version
         val newVersion = "version.1"
-        val newContext = getContext()
         val newBuildInfo = BuildInfo(versionCode = newVersion, versionName = newVersion)
 
         try {
@@ -512,20 +505,20 @@ class MetricsPingSchedulerTest {
             // No metric is stored, so no metrics ping will be sent.
             @Suppress("DEPRECATION")
             Glean.initialize(
-                oldContext,
+                context,
                 true,
                 configuration,
                 oldBuildInfo
             )
 
             // Create a metric and set its value. We expect this to be sent after the restart
-            val expectedStringMetric = StringMetricType(
+            val expectedStringMetric = StringMetricType(CommonMetricData(
                 disabled = false,
                 category = "telemetry",
-                lifetime = Lifetime.Ping,
+                lifetime = Lifetime.PING,
                 name = "expected_metric",
                 sendInPings = listOf("metrics")
-            )
+            ))
             val expectedValue = "canary"
             expectedStringMetric.set(expectedValue)
 
@@ -534,16 +527,12 @@ class MetricsPingSchedulerTest {
 
             // Reset Glean.
             Glean.testDestroyGleanHandle()
-            @Suppress("EXPERIMENTAL_API_USAGE")
-            Dispatchers.API.setTaskQueueing(true)
-            @Suppress("EXPERIMENTAL_API_USAGE")
-            Dispatchers.API.setTestingMode(false)
 
             // Initialize Glean again with the new version.
             // This should trigger a metrics ping after an upgrade (differing version).
             @Suppress("DEPRECATION")
             Glean.initialize(
-                newContext,
+                context,
                 true,
                 configuration,
                 newBuildInfo
@@ -585,10 +574,6 @@ class MetricsPingSchedulerTest {
 
             // Reset Glean.
             Glean.testDestroyGleanHandle()
-            @Suppress("EXPERIMENTAL_API_USAGE")
-            Dispatchers.API.setTaskQueueing(true)
-            @Suppress("EXPERIMENTAL_API_USAGE")
-            Dispatchers.API.setTestingMode(true)
         }
     }
 
@@ -673,12 +658,8 @@ class MetricsPingSchedulerTest {
     @Test
     @Suppress("LongMethod")
     fun `Data recorded before Glean inits must not get into overdue pings`() {
-        val context = getContext()
-
         // Reset Glean and do not start it right away.
         Glean.testDestroyGleanHandle()
-        @Suppress("EXPERIMENTAL_API_USAGE")
-        Dispatchers.API.setTaskQueueing(true)
 
         // Let's create a fake time the metrics ping was sent: this is required for
         // us to not send a 'metrics' ping the first time we init glean.
@@ -690,17 +671,17 @@ class MetricsPingSchedulerTest {
         // Create a fake instance of the metrics ping scheduler just to set the last
         // collection time.
         val fakeMpsSetter = spy(MetricsPingScheduler(context, GleanBuildInfo.buildInfo))
-        fakeMpsSetter.updateSentDate(getISOTimeString(fakeNowDoNotSend, truncateTo = TimeUnit.Day))
+        fakeMpsSetter.updateSentDate(getISOTimeString(fakeNowDoNotSend, truncateTo = TimeUnit.DAY))
 
         // Create a metric and set its value. We expect this to be sent in the ping that gets
         // generated the SECOND time we start glean.
-        val expectedStringMetric = StringMetricType(
+        val expectedStringMetric = StringMetricType(CommonMetricData(
             disabled = false,
             category = "telemetry",
-            lifetime = Lifetime.Ping,
+            lifetime = Lifetime.PING,
             name = "expected_metric",
             sendInPings = listOf("metrics")
-        )
+        ))
         val expectedValue = "must-exist-in-the-first-ping"
 
         // Reset Glean and start it for the FIRST time, then record a value.
@@ -709,18 +690,16 @@ class MetricsPingSchedulerTest {
 
         // Destroy glean: it will retain the previously stored metric.
         Glean.testDestroyGleanHandle()
-        @Suppress("EXPERIMENTAL_API_USAGE")
-        Dispatchers.API.setTaskQueueing(true)
 
         // Create a metric and attempt to record data before Glean is initialized. This
         // will be queued in the dispatcher.
-        val stringMetric = StringMetricType(
+        val stringMetric = StringMetricType(CommonMetricData(
             disabled = false,
             category = "telemetry",
-            lifetime = Lifetime.Ping,
+            lifetime = Lifetime.PING,
             name = "canary_metric",
             sendInPings = listOf("metrics")
-        )
+        ))
         val canaryValue = "must-not-be-in-the-first-ping"
         stringMetric.set(canaryValue)
 
@@ -738,13 +717,13 @@ class MetricsPingSchedulerTest {
             // Initialize Glean the SECOND time: it will send the expected string metric (stored
             // from the previous run) but must not send the canary string, which would be sent
             // next time the 'metrics' ping is collected after this one.
-            Glean.initialize(
-                context,
-                true,
-                Configuration(
+            resetGlean(
+                context = context,
+                clearStores = false,
+                uploadEnabled = true,
+                config = Configuration(
                     serverEndpoint = "http://" + server.hostName + ":" + server.port
-                ),
-                GleanBuildInfo.buildInfo
+                )
             )
 
             // Trigger worker task to upload the pings in the background.
@@ -768,14 +747,8 @@ class MetricsPingSchedulerTest {
 
     @Test
     fun `Glean must preserve lifetime application metrics across runs`() {
-        // This test requires to use the glean instance (it's more an integration
-        // test than a unit test).
-        val context = getContext()
-
         // Reset Glean and do not start it right away.
         Glean.testDestroyGleanHandle()
-        @Suppress("EXPERIMENTAL_API_USAGE")
-        Dispatchers.API.setTaskQueueing(true)
 
         // Let's create a fake time the metrics ping was sent: this is required for
         // us to not send a 'metrics' ping the first time we init glean.
@@ -786,19 +759,19 @@ class MetricsPingSchedulerTest {
 
         // Create a fake instance of the metrics ping scheduler just to set the last
         // collection time.
-        val fakeMpsSetter = spy(MetricsPingScheduler(context, GleanBuildInfo.buildInfo))
-        fakeMpsSetter.updateSentDate(getISOTimeString(fakeNowDoNotSend, truncateTo = TimeUnit.Day))
+        val mps = MetricsPingScheduler(context, GleanBuildInfo.buildInfo)
+        mps.updateSentDate(getISOTimeString(fakeNowDoNotSend, truncateTo = TimeUnit.DAY))
 
         // Create a metric with lifetime: application and set it. Put
         // it in the metrics ping so that we can easily trigger it for
         // the purpose of this test.
-        val testMetric = StringMetricType(
+        val testMetric = StringMetricType(CommonMetricData(
             disabled = false,
             category = "telemetry",
-            lifetime = Lifetime.Application,
+            lifetime = Lifetime.APPLICATION,
             name = "test_applifetime_metric",
             sendInPings = listOf("metrics")
-        )
+        ))
         val expectedString = "I-will-survive!"
 
         // Reset Glean and start it for the FIRST time, then record a value.
@@ -823,7 +796,7 @@ class MetricsPingSchedulerTest {
                 Configuration(
                     serverEndpoint = "http://" + server.hostName + ":" + server.port
                 ),
-                false
+                clearStores = false
             )
 
             // Trigger worker task to upload the pings in the background.
@@ -835,11 +808,22 @@ class MetricsPingSchedulerTest {
             assertEquals("The received ping must be a 'metrics' ping", "metrics", docType)
 
             val metricsJsonData = request.getPlainBody()
+            val metricsJson = JSONObject(metricsJsonData)
 
-            assertTrue("The expected metric must be in this ping",
-                metricsJsonData.contains(expectedString))
-            assertFalse("The metric must be cleared after startup",
-                testMetric.testHasValue())
+            assertEquals(
+                "The expected metric must be in this ping",
+                expectedString,
+                metricsJson.getJSONObject("metrics")
+                    .getJSONObject("string")
+                    .getString("telemetry.test_applifetime_metric")
+            )
+            assertEquals(
+                "The reason should be 'overdue'",
+                "overdue",
+                metricsJson.getJSONObject("ping_info").getString("reason")
+            )
+            assertNull("The metric must be cleared after startup",
+                testMetric.testGetValue())
         } finally {
             server.shutdown()
         }
