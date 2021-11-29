@@ -297,6 +297,24 @@ dictionary DistributionData {
     i64 sum;
 };
 
+interface TimingDistributionMetric {
+    constructor(CommonMetricData meta, TimeUnit time_unit);
+
+    u64 start();
+
+    void stop_and_accumulate(u64 timer_id);
+
+    void cancel(u64 timer_id);
+
+    void accumulate_samples(sequence<i64> samples);
+
+    DistributionData? test_get_value(optional string? ping_name = null);
+
+    i32 test_get_num_recorded_errors(ErrorType error, optional string? ping_name = null);
+};
+
+// Different resolutions supported by the memory related metric types
+// (e.g. MemoryDistributionMetric).
 enum MemoryUnit {
     // 1 byte
     "Byte",

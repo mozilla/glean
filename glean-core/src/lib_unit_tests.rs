@@ -723,7 +723,7 @@ fn timing_distribution_truncation() {
             ]),
         ),
     ] {
-        let mut dist = TimingDistributionMetric::new(
+        let dist = TimingDistributionMetric::new(
             CommonMetricData {
                 name: format!("local_metric_{:?}", unit),
                 category: "local".into(),
@@ -741,16 +741,18 @@ fn timing_distribution_truncation() {
             max_sample_time * 1_000,
             max_sample_time * 1_000_000,
         ] {
-            let timer_id = dist.set_start(0);
+            let timer_id = 4;
+            dist.set_start(timer_id, 0);
             dist.set_stop_and_accumulate(&glean, timer_id, value);
         }
 
-        let snapshot = dist.test_get_value(&glean, "baseline").unwrap();
+        let snapshot = dist.get_value(&glean, "baseline").unwrap();
 
         let mut keys = HashSet::new();
         let mut recorded_values = 0;
 
-        for (&key, &value) in &snapshot.values {
+        for (key, &value) in &snapshot.values {
+            let key = key.parse().unwrap();
             // A snapshot potentially includes buckets with a 0 count.
             // We can ignore them here.
             if value > 0 {
@@ -782,7 +784,7 @@ fn timing_distribution_truncation_accumulate() {
         TimeUnit::Microsecond,
         TimeUnit::Millisecond,
     ] {
-        let mut dist = TimingDistributionMetric::new(
+        let dist = TimingDistributionMetric::new(
             CommonMetricData {
                 name: format!("local_metric_{:?}", unit),
                 category: "local".into(),
@@ -792,19 +794,22 @@ fn timing_distribution_truncation_accumulate() {
             unit,
         );
 
-        dist.accumulate_samples_signed(
-            &glean,
-            vec![
-                1,
-                1_000,
-                1_000_000,
-                max_sample_time,
-                max_sample_time * 1_000,
-                max_sample_time * 1_000_000,
-            ],
-        );
+        let samples = [
+            1,
+            1000,
+            100000,
+            max_sample_time,
+            max_sample_time * 1000,
+            max_sample_time * 1000000,
+        ];
+        let timer_id = 4; // xkcd#221
 
-        let snapshot = dist.test_get_value(&glean, "baseline").unwrap();
+        for sample in samples {
+            dist.set_start(timer_id, 0);
+            dist.set_stop_and_accumulate(&glean, timer_id, sample);
+        }
+
+        let snapshot = dist.get_value(&glean, "baseline").unwrap();
 
         // The number of samples was originally designed around 1ns to
         // 10minutes, with 8 steps per power of 2, which works out to 316 items.
@@ -865,7 +870,7 @@ fn records_database_file_size() {
     // Initialize Glean once to ensure we create the database.
     let glean = Glean::with_options(&tmpname, GLOBAL_APPLICATION_ID, true);
     let database_size = &glean.database_metrics.size;
-    let data = database_size.test_get_value(&glean, "metrics");
+    let data = database_size.get_value(&glean, "metrics");
     assert!(data.is_none());
     drop(glean);
 
@@ -873,7 +878,7 @@ fn records_database_file_size() {
     let glean = Glean::with_options(&tmpname, GLOBAL_APPLICATION_ID, true);
 
     let database_size = &glean.database_metrics.size;
-    let data = database_size.test_get_value(&glean, "metrics");
+    let data = database_size.get_value(&glean, "metrics");
     assert!(data.is_some());
     let data = data.unwrap();
 
