@@ -7,17 +7,4 @@ package mozilla.telemetry.glean.private
 /**
  * Enumeration of different metric lifetimes.
  */
-enum class Lifetime {
-    /**
-     * The metric is reset with each sent ping
-     */
-    Ping,
-    /**
-     * The metric is reset on application restart
-     */
-    Application,
-    /**
-     * The metric is reset with each user profile
-     */
-    User
-}
+typealias Lifetime = mozilla.telemetry.glean.internal.Lifetime
