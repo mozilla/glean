@@ -4,57 +4,8 @@
 
 package mozilla.telemetry.glean.config
 
-import mozilla.telemetry.glean.rust.toByte
-
-import com.sun.jna.Structure
-import com.sun.jna.ptr.IntByReference
 import mozilla.telemetry.glean.net.HttpURLConnectionUploader
 import mozilla.telemetry.glean.net.PingUploader
-
-/**
- * Define the order of fields as laid out in memory.
- * **CAUTION**: This must match _exactly_ the definition on the Rust side.
- *  If this side is changed, the Rust side need to be changed, too.
- */
-@Structure.FieldOrder(
-    "dataDir",
-    "packageName",
-    "languageBindingName",
-    "uploadEnabled",
-    "maxEvents",
-    "delayPingLifetimeIO"
-)
-internal class FfiConfiguration(
-    dataDir: String,
-    packageName: String,
-    languageBindingName: String,
-    uploadEnabled: Boolean,
-    maxEvents: Int? = null,
-    delayPingLifetimeIO: Boolean
-) : Structure() {
-    /**
-     * Expose all structure fields as actual fields,
-     * in order for Structure to turn them into the right memory representiation
-     */
-
-    @JvmField
-    public var dataDir: String = dataDir
-    @JvmField
-    public var packageName: String = packageName
-    @JvmField
-    public var languageBindingName: String = languageBindingName
-    @JvmField
-    public var uploadEnabled: Byte = uploadEnabled.toByte()
-    @JvmField
-    public var maxEvents: IntByReference = if (maxEvents == null) IntByReference() else IntByReference(maxEvents)
-    @JvmField
-    public var delayPingLifetimeIO: Byte = delayPingLifetimeIO.toByte()
-
-    init {
-        // Force UTF-8 string encoding when passing strings over the FFI
-        this.stringEncoding = "UTF-8"
-    }
-}
 
 /**
  * The Configuration class describes how to configure Glean.

@@ -141,7 +141,7 @@ class CustomPingTest {
         val click = EventMetricType<NoExtraKeys, NoExtras>(
             disabled = false,
             category = "ui",
-            lifetime = Lifetime.Ping,
+            lifetime = Lifetime.PING,
             name = "click",
             sendInPings = listOf(pingName),
             allowedExtraKeys = listOf()

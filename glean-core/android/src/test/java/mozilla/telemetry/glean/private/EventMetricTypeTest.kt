@@ -85,7 +85,7 @@ class EventMetricTypeTest {
         val click = EventMetricType<NoExtraKeys, ClickExtras>(
             disabled = false,
             category = "ui",
-            lifetime = Lifetime.Ping,
+            lifetime = Lifetime.PING,
             name = "click",
             sendInPings = listOf("store1"),
             allowedExtraKeys = listOf("object_id", "other")
@@ -125,7 +125,7 @@ class EventMetricTypeTest {
         val click = EventMetricType<clickKeys, NoExtras>(
             disabled = false,
             category = "",
-            lifetime = Lifetime.Ping,
+            lifetime = Lifetime.PING,
             name = "click",
             sendInPings = listOf("store1"),
             allowedExtraKeys = listOf("object_id")
@@ -162,7 +162,7 @@ class EventMetricTypeTest {
         val click = EventMetricType<NoExtraKeys, NoExtras>(
             disabled = true,
             category = "ui",
-            lifetime = Lifetime.Ping,
+            lifetime = Lifetime.PING,
             name = "click",
             sendInPings = listOf("store1")
         )
@@ -180,7 +180,7 @@ class EventMetricTypeTest {
         val testEvent = EventMetricType<NoExtraKeys, NoExtras>(
             disabled = false,
             category = "ui",
-            lifetime = Lifetime.Ping,
+            lifetime = Lifetime.PING,
             name = "testEvent",
             sendInPings = listOf("store1")
         )
@@ -193,7 +193,7 @@ class EventMetricTypeTest {
         val click = EventMetricType<clickKeys, NoExtras>(
             disabled = false,
             category = "ui",
-            lifetime = Lifetime.Ping,
+            lifetime = Lifetime.PING,
             name = "click",
             sendInPings = listOf("store1", "store2"),
             allowedExtraKeys = listOf("object_id")
@@ -230,7 +230,7 @@ class EventMetricTypeTest {
         val eventMetric = EventMetricType<testNameKeys, NoExtras>(
             disabled = false,
             category = "ui",
-            lifetime = Lifetime.Ping,
+            lifetime = Lifetime.PING,
             name = "event_metric",
             sendInPings = listOf("store1"),
             allowedExtraKeys = listOf("test_name")
@@ -271,7 +271,7 @@ class EventMetricTypeTest {
             disabled = false,
             category = "telemetry",
             name = "test_event",
-            lifetime = Lifetime.Ping,
+            lifetime = Lifetime.PING,
             sendInPings = listOf("events"),
             allowedExtraKeys = listOf("someExtra")
         )
@@ -331,7 +331,7 @@ class EventMetricTypeTest {
             disabled = false,
             category = "telemetry",
             name = "test_event",
-            lifetime = Lifetime.Ping,
+            lifetime = Lifetime.PING,
             sendInPings = listOf("events"),
             allowedExtraKeys = listOf("someExtra")
         )
@@ -407,7 +407,7 @@ class EventMetricTypeTest {
         val click = EventMetricType<clickKeys, NoExtras>(
             disabled = false,
             category = "ui",
-            lifetime = Lifetime.Ping,
+            lifetime = Lifetime.PING,
             name = "click",
             sendInPings = listOf("store1"),
             allowedExtraKeys = listOf("object_id", "other")
@@ -417,7 +417,7 @@ class EventMetricTypeTest {
 
         click.record(extra = mapOf(clickKeys.objectId to longString))
 
-        assertEquals(1, click.testGetNumRecordedErrors(ErrorType.InvalidOverflow))
+        assertEquals(1, click.testGetNumRecordedErrors(ErrorType.INVALID_OVERFLOW))
     }
 
     @Test
@@ -439,7 +439,7 @@ class EventMetricTypeTest {
             disabled = false,
             category = "telemetry",
             name = "test_event",
-            lifetime = Lifetime.Ping,
+            lifetime = Lifetime.PING,
             sendInPings = listOf(pingName),
             allowedExtraKeys = listOf("someExtra")
         )
@@ -514,7 +514,7 @@ class EventMetricTypeTest {
             disabled = false,
             category = "telemetry",
             name = "test_event",
-            lifetime = Lifetime.Ping,
+            lifetime = Lifetime.PING,
             sendInPings = listOf(pingName, "events"), // also send in builtin ping
             allowedExtraKeys = listOf("someExtra")
         )

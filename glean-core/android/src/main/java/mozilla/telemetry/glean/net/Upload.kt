@@ -4,13 +4,6 @@
 
 package mozilla.telemetry.glean.net
 
-import android.util.Log
-import org.json.JSONObject
-import org.json.JSONException
-import com.sun.jna.Structure
-import com.sun.jna.Pointer
-import com.sun.jna.Union
-
 typealias PingUploadTask = mozilla.telemetry.glean.internal.PingUploadTask
 typealias PingRequest = mozilla.telemetry.glean.internal.PingRequest
 typealias UploadResult = mozilla.telemetry.glean.internal.UploadResult
