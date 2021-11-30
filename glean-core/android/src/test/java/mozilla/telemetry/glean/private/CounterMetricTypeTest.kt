@@ -22,14 +22,8 @@ import org.junit.Assert.assertNull
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import mozilla.telemetry.glean.internal.CounterMetric as CounterMetricType
 import mozilla.telemetry.glean.internal.CommonMetricData
 import mozilla.telemetry.glean.internal.Lifetime
-
-// This will move to CounterMetricType.kt soon
-fun CounterMetricType.testHasValue(pingName: String? = null): Boolean {
-    return this.testGetValue(pingName) != null
-}
 
 @RunWith(AndroidJUnit4::class)
 class CounterMetricTypeTest {
