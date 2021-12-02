@@ -585,27 +585,34 @@ class GleanTest {
     }
 
     @Test
-    @Ignore("needs UniFFI migration")
     fun `overflowing the task queue records telemetry`() {
         delayMetricsPing(context)
         val server = getMockWebServer()
-        Dispatchers.API.setTestingMode(true)
-        Dispatchers.API.setTaskQueueing(true)
+
+        // No Glean active, tasks will be queued.
+        Glean.testDestroyGleanHandle(clearStores = true)
+
+        val counterMetric = CounterMetricType(CommonMetricData(
+            disabled = false,
+            category = "telemetry",
+            lifetime = Lifetime.APPLICATION,
+            name = "repeatedly",
+            sendInPings = listOf("metrics")
+        ))
 
         repeat(110) {
-            Dispatchers.API.launch {
-            }
+            counterMetric.add()
         }
 
-        assertEquals("Task queue contains the maximum number of tasks",
-            100, Dispatchers.API.taskQueue.size)
-        assertEquals("overflowCount is correct", 10, Dispatchers.API.overflowCount)
-
-        Glean.testDestroyGleanHandle()
         // Now trigger execution to ensure the tasks fired
-        Glean.initialize(context, true, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port
-        ), GleanBuildInfo.buildInfo)
+        resetGlean(
+            context,
+            config = Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port
+            ),
+            clearStores = false,
+            uploadEnabled = true
+        )
 
         Pings.metrics.submit()
 
@@ -616,15 +623,19 @@ class GleanTest {
 
         val request = server.takeRequest(20L, TimeUnit.SECONDS)!!
         val jsonContent = JSONObject(request.getPlainBody())
-        assertEquals(
-            110,
+        val counters =
             jsonContent
                 .getJSONObject("metrics")
                 .getJSONObject("counter")
-                .getInt("glean.error.preinit_tasks_overflow")
+        assertTrue(
+            "Ping payload: ${jsonContent}",
+            110 <= counters.getInt("glean.error.preinit_tasks_overflow")
         )
-
-        Dispatchers.API.overflowCount = 0
+        assertEquals(
+            "Ping payload: ${jsonContent}",
+            100,
+            counters.getInt("telemetry.repeatedly")
+        )
     }
 
     @Test
