@@ -94,8 +94,11 @@ callback interface OnGleanEvents {
     void cancel_uploads();
 };
 
+// Deserialized experiment data.
 dictionary RecordedExperiment {
+    // The experiment's branch.
     string branch;
+    // Any extra data associated with this experiment.
     record<DOMString, string>? extra;
 };
 
