@@ -102,24 +102,64 @@ dictionary RecordedExperiment {
     record<DOMString, string>? extra;
 };
 
+// Represents a request to upload a ping.
 dictionary PingRequest {
+    // The Job ID to identify this request,
+    // this is the same as the ping UUID.
     string document_id;
+    // The path for the server to upload the ping to.
     string path;
+    // The body of the request, as a byte array.
+    // If gzip encoded, then the `headers` list will
+    // contain a `Content-Encoding` header with the value `gzip`.
     sequence<u8> body;
+    // A map with all the headers to be sent with the request.
     record<DOMString, string> headers;
 };
 
+// An enum representing the possible upload tasks to be performed by an uploader.
 [Enum]
 interface PingUploadTask {
+    // An upload task.
+    //
+    // * request: the ping request for upload
     Upload(PingRequest request);
+    // A flag signaling that the pending pings directories are not done being processed,
+    // thus the requester should wait and come back later.
+    //
+    // * time: The time in milliseconds the requester should wait before requesting a new task.
     Wait(u64 time);
+
+    // A flag signaling that requester doesn't need to request
+    // any more upload tasks at this moment.
+    //
+    // * unused: _ignored_.
     Done(i8 unused);
 };
 
+// The result of an attempted ping upload.
 [Enum]
 interface UploadResult {
+    // A recoverable failure.
+    //
+    // During upload something went wrong,/ e.g. the network connection failed.
+    // The upload should be retried at a later time.
+    //
+    // * unused: _ignored_.
     RecoverableFailure(i8 unused);
+
+    // An unrecoverable upload failure.
+    //
+    // A possible cause might be a malformed URL.
+    //
+    // * unused: _ignored_.
     UnrecoverableFailure(i8 unused);
+
+    // A HTTP response code.
+    //
+    // This can still indicate an error, depending on the status code.
+    //
+    // * code: The HTTP status code
     HttpStatus(i32 code);
 };
 
