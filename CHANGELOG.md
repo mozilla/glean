@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v42.2.0...main)
 
+* Rust
+  * BUGFIX: Correct category & name for `preinit_tasks_overflow` metric. Previously it would have been wrongly recorded as `preinit_tasks_overflow.glean.error` ([#1887](https://github.com/mozilla/glean/pull/1887))
+
 # v42.2.0 (2021-11-03)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v42.1.0...v42.2.0)
