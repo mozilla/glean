@@ -192,14 +192,28 @@ interface PingType {
     void submit(optional string? reason = null);
 };
 
+// The common set of data shared across all different metric types.
 dictionary CommonMetricData {
+    // The metric's category.
     string category;
+    // The metric's name.
     string name;
 
+    // List of ping names to include this metric in.
     sequence<string> send_in_pings;
+    // The metric's lifetime.
     Lifetime lifetime;
 
+    // Whether or not the metric is disabled.
+    //
+    // Disabled metrics are never recorded.
     boolean disabled;
+
+    // Dynamic label.
+    //
+    // When a labeled metric factory creates the specific metric to be recorded to,
+    // dynamic labels are stored in the specific label so that
+    // we can validate them when the Glean singleton is available.
     string? dynamic_label = null;
 };
 
