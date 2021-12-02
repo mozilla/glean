@@ -137,6 +137,11 @@ enum ErrorType {
     "InvalidOverflow",
 };
 
+interface PingType {
+    constructor(string name, boolean include_client_id, boolean send_if_empty, sequence<string> reason_codes);
+    void submit(optional string? reason = null);
+};
+
 dictionary CommonMetricData {
     string category;
     string name;
@@ -156,11 +161,6 @@ interface CounterMetric {
     i32? test_get_value(optional string? ping_name = null);
 
     i32 test_get_num_recorded_errors(ErrorType error, optional string? ping_name = null);
-};
-
-interface PingType {
-    constructor(string name, boolean include_client_id, boolean send_if_empty, sequence<string> reason_codes);
-    void submit(optional string? reason = null);
 };
 
 // Different resolutions supported by the time related metric types
