@@ -52,8 +52,8 @@ use crate::histogram::HistogramType;
 pub use crate::metrics::labeled::{LabeledBoolean, LabeledCounter, LabeledString};
 pub use crate::metrics::{
     BooleanMetric, CounterMetric, CustomDistributionMetric, Datetime, DatetimeMetric,
-    DistributionData, MemoryDistributionMetric, MemoryUnit, PingType, QuantityMetric,
-    RecordedExperiment, StringListMetric, StringMetric, TimeUnit, TimespanMetric,
+    DistributionData, EventMetric, MemoryDistributionMetric, MemoryUnit, PingType, QuantityMetric,
+    RecordedEvent, RecordedExperiment, StringListMetric, StringMetric, TimeUnit, TimespanMetric,
     TimingDistributionMetric, UrlMetric, UuidMetric,
 };
 pub use crate::upload::{PingRequest, PingUploadTask, UploadResult};
@@ -464,6 +464,28 @@ pub fn glean_set_upload_enabled(enabled: bool) {
             state.callbacks.trigger_upload();
         }
     })
+}
+
+/// Register a new [`PingType`](PingType).
+pub(crate) fn register_ping_type(ping: &PingType) {
+    // If this happens after Glean.initialize is called (and returns),
+    // we dispatch ping registration on the thread pool.
+    // Registering a ping should not block the application.
+    // Submission itself is also dispatched, so it will always come after the registration.
+    if was_initialize_called() {
+        let ping = ping.clone();
+        crate::launch_with_glean_mut(move |glean| {
+            glean.register_ping_type(&ping);
+        })
+    } else {
+        // We need to keep track of pings, so they get re-registered after a reset or
+        // if ping registration is attempted before Glean initializes.
+        // This state is kept across Glean resets, which should only ever happen in test mode.
+        // It's a set and keeping them around forever should not have much of an impact.
+        let m = PRE_INIT_PING_REGISTRATION.get_or_init(Default::default);
+        let mut lock = m.lock().unwrap();
+        lock.push(ping.clone());
+    }
 }
 
 /// Indicate that an experiment is running.  Glean will then add an

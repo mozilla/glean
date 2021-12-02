@@ -15,6 +15,7 @@ import mozilla.telemetry.glean.private.NoExtraKeys
 import mozilla.telemetry.glean.private.NoExtras
 import mozilla.telemetry.glean.private.NoReasonCodes
 import mozilla.telemetry.glean.private.PingType
+import mozilla.telemetry.glean.private.CommonMetricData
 import mozilla.telemetry.glean.resetGlean
 import mozilla.telemetry.glean.testing.GleanTestRule
 import mozilla.telemetry.glean.triggerWorkManager
@@ -138,14 +139,13 @@ class CustomPingTest {
         val pingName = "custom-events-1"
 
         // Define a 'click' event
-        val click = EventMetricType<NoExtraKeys, NoExtras>(
+        val click = EventMetricType<NoExtraKeys, NoExtras>(CommonMetricData(
             disabled = false,
             category = "ui",
             lifetime = Lifetime.PING,
             name = "click",
             sendInPings = listOf(pingName),
-            allowedExtraKeys = listOf()
-        )
+        ), allowedExtraKeys = emptyList())
         // and record it in the currently initialized Glean instance.
         click.record()
 
