@@ -163,12 +163,19 @@ interface UploadResult {
     HttpStatus(i32 code);
 };
 
+// The supported metrics' lifetimes.
+//
+// A metric's lifetime determines when its stored data gets reset.
 enum Lifetime {
+    // The metric is reset with each sent ping
     "Ping",
+    // The metric is reset on application restart
     "Application",
+    // The metric is reset with each user profile
     "User",
 };
 
+// The possible error types for metric recording.
 enum ErrorType {
     // For when the value to be recorded does not match the metric-specific restrictions
     "InvalidValue",
