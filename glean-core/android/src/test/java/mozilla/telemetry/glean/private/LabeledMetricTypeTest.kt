@@ -333,13 +333,13 @@ class LabeledMetricTypeTest {
 
     @Test(expected = IllegalStateException::class)
     fun `Test that labeled events are an exception`() {
-        val eventMetric = EventMetricType<NoExtraKeys, NoExtras>(
+        val eventMetric = EventMetricType<NoExtraKeys, NoExtras>(CommonMetricData(
             disabled = false,
             category = "telemetry",
             lifetime = Lifetime.APPLICATION,
             name = "labeled_event_metric",
             sendInPings = listOf("metrics")
-        )
+        ), allowedExtraKeys = emptyList())
 
         val labeledEventMetric = LabeledMetricType<EventMetricType<NoExtraKeys, NoExtras>>(
             disabled = false,

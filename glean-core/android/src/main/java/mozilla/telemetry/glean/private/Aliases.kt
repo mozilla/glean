@@ -40,3 +40,8 @@ typealias MemoryUnit = mozilla.telemetry.glean.internal.MemoryUnit
  * the Timespan and DateTime metric types.
  */
 typealias TimeUnit = mozilla.telemetry.glean.internal.TimeUnit
+
+/*
+ * Represents the recorded data for a single event.
+ */
+typealias RecordedEvent = mozilla.telemetry.glean.internal.RecordedEvent

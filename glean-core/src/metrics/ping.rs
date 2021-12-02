@@ -59,13 +59,18 @@ impl PingType {
         send_if_empty: bool,
         reason_codes: Vec<String>,
     ) -> Self {
-        // TODO: register those pings.
-        Self(Arc::new(InnerPing {
+        let this = Self(Arc::new(InnerPing {
             name: name.into(),
             include_client_id,
             send_if_empty,
             reason_codes,
-        }))
+        }));
+
+        // Register this ping.
+        // That will happen asynchronously and not block operation.
+        crate::register_ping_type(&this);
+
+        this
     }
 
     pub(crate) fn name(&self) -> &str {

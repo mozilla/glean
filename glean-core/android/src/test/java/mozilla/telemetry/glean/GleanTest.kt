@@ -182,20 +182,18 @@ class GleanTest {
 
     // Suppressing our own deprecation before we move over to the new event recording API.
     @Test
-    @Ignore("needs UniFFI migration")
     @Suppress("ComplexMethod", "LongMethod", "NestedBlockDepth", "DEPRECATION")
     fun `test sending of foreground and background pings`() {
         val server = getMockWebServer()
 
-        val click = EventMetricType<NoExtraKeys, NoExtras>(
+        val click = EventMetricType<NoExtraKeys, NoExtras>(CommonMetricData(
             disabled = false,
             category = "ui",
             lifetime = Lifetime.Ping,
             name = "click",
             sendInPings = listOf("events")
-        )
+        ), allowedExtraKeys = emptyList())
 
-        val context = getContext()
         delayMetricsPing(context)
         resetGlean(context, Glean.configuration.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port
@@ -209,28 +207,41 @@ class GleanTest {
 
         try {
             // Simulate the first foreground event after the application starts.
+            // Triggers a `baseline` ping (1)
             lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
+
+            // Record an event in the foreground
             click.record()
 
             // Simulate going to background.
+            // Triggers a `baseline` ping (2) and an `events` ping (3)
             lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
 
             // Simulate going to foreground.
+            // Triggers a `baseline` ping (4)
             lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
 
             // Submit a metrics ping so we can check the foreground_count
+            // Triggers a `metrics` ping (5)
             Glean.submitPingByName("metrics")
 
             // Trigger worker task to upload the pings in the background
             triggerWorkManager(context)
 
-            for (ignored in 0..5) {
-                val request = server.takeRequest(20L, TimeUnit.SECONDS)!!
+            // We got 5 pings total:
+            // * 3 `baseline` pings
+            // * 1 `events` ping
+            // * 1 `metrics` ping
+            assertEquals(5, server.requestCount)
+
+            for (ignored in 1..5) {
+                val request = server.takeRequest(5L, TimeUnit.SECONDS)!!
                 val docType = request.path!!.split("/")[3]
 
                 val json = JSONObject(request.getPlainBody())
                 checkPingSchema(json)
                 if (docType == "events") {
+                    assertEquals("inactive", json.getJSONObject("ping_info").getString("reason"))
                     assertEquals(1, json.getJSONArray("events").length())
                 } else if (docType == "baseline") {
                     val seq = json.getJSONObject("ping_info").getInt("seq")
@@ -239,12 +250,18 @@ class GleanTest {
                     //   - seq: 0, reason: active, duration: null
                     //   - seq: 1, reason: inactive, duration: non-null
                     //   - seq: 2, reason: active, duration: null
+                    val baselineMetricsObject = json.getJSONObject("metrics")
+                    if (seq == 0) {
+                        assertEquals("active", json.getJSONObject("ping_info").getString("reason"))
+                    }
                     if (seq == 1) {
-                        val baselineMetricsObject = json.getJSONObject("metrics")
                         assertEquals("inactive", json.getJSONObject("ping_info").getString("reason"))
                         val baselineTimespanMetrics = baselineMetricsObject.getJSONObject("timespan")
                         assertEquals(1, baselineTimespanMetrics.length())
                         assertNotNull(baselineTimespanMetrics.get("glean.baseline.duration"))
+                    }
+                    if (seq == 2) {
+                        assertEquals("active", json.getJSONObject("ping_info").getString("reason"))
                     }
                 } else if (docType == "metrics") {
                     val seq = json.getJSONObject("ping_info").getInt("seq")
