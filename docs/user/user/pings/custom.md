@@ -95,7 +95,7 @@ so it has timestamp `1000`.
 
 The application is restarted one hour after the first event and a `glean.restarted` event is
 recorded, timestamp `3600000`. Finally, an event is recorded during the second application run
-two seconds after restart, timestamp `3800000`.
+two seconds after restart, timestamp `3602000`.
 
 ```json
 {
@@ -117,7 +117,7 @@ two seconds after restart, timestamp `3800000`.
       "name": "restarted"
     },
     {
-      "timestamp": 3800000,
+      "timestamp": 3602000,
       "category": "examples",
       "name": "event_example"
     },
