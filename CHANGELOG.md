@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v42.2.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v42.3.0...main)
+
+# v42.3.0 (2021-12-07)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v42.2.0...v42.3.0)
 
 * Rust
   * BUGFIX: Correct category & name for `preinit_tasks_overflow` metric. Previously it would have been wrongly recorded as `preinit_tasks_overflow.glean.error` ([#1887](https://github.com/mozilla/glean/pull/1887))
