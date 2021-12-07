@@ -1,6 +1,13 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v42.3.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v42.3.1...main)
+
+# v42.3.1 (2021-12-07)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v42.3.0...v42.3.1)
+
+* iOS
+  * Fix Carthage archive release ([#1891](https://github.com/mozilla/glean/pull/1891))
 
 # v42.3.0 (2021-12-07)
 
