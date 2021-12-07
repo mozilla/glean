@@ -4,6 +4,8 @@
 
 * Rust
   * BUGFIX: Correct category & name for `preinit_tasks_overflow` metric. Previously it would have been wrongly recorded as `preinit_tasks_overflow.glean.error` ([#1887](https://github.com/mozilla/glean/pull/1887))
+* iOS
+  * Skip code generation in `indexbuild` build ([#1889](https://github.com/mozilla/glean/pull/1889))
 
 # v42.2.0 (2021-11-03)
 
