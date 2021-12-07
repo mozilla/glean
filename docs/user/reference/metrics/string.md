@@ -2,7 +2,8 @@
 
 String metrics allow recording a Unicode string value with arbitrary content.
 
-This metric type does not support recording JSON blobs - please get in contact with the Glean SDK team if you're missing a type.
+This metric type does not support recording JSON blobs
+- please get in contact with the Glean team if you're missing a type.
 
 {{#include ../../../shared/blockquote-warning.html}}
 

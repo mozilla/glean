@@ -4,8 +4,7 @@ This page provides a step-by-step guide on how to integrate the Glean library in
 
 Nevertheless this is just one of the required steps for integrating Glean successfully into a project. Check you the full [Glean integration checklist](./index.md) for a comprehensive list of all the steps involved in doing so.
 
-
-Currently, these bindings only support the iOS platform.
+Currently, this SDK only supports the iOS platform.
 
 ## Requirements
 
@@ -13,7 +12,7 @@ Currently, these bindings only support the iOS platform.
 
 ## Setting up the dependency
 
-The Glean SDK can be consumed through [Carthage](https://github.com/Carthage/Carthage), a dependency manager for macOS and iOS.
+The Glean Swift SDK can be consumed through [Carthage](https://github.com/Carthage/Carthage), a dependency manager for macOS and iOS.
 For consuming the latest version of the Glean SDK, add the following line to your `Cartfile`:
 
 ```
@@ -24,7 +23,7 @@ github "mozilla/glean" "{latest-version}"
 
 ##### Pick the correct version
 
-> The `{latest-version}` placeholder should be replaced with the version number of the latest Glean SDK release.
+> The `{latest-version}` placeholder should be replaced with the version number of the latest Glean Swift SDK release.
 > You can find the version number on the [release page](https://github.com/mozilla/glean/releases/latest).
 
 Then check out and build the new dependency:
@@ -60,7 +59,7 @@ For integration with the build system you can follow the [Carthage Quick Start s
 
 ## Combined usage with application-services
 
-If your application uses both the Glean SDK and [application-services](https://github.com/mozilla/application-services)
+If your application uses both the Glean Swift SDK and [application-services](https://github.com/mozilla/application-services)
 you can use a combined release to reduce the memory usage and startup time impact.
 
 In your `Cartfile` require only `application-services`, e.g.:
@@ -98,7 +97,7 @@ Follow these steps to automatically run the parser at build time:
 
 ##### Pick the correct version
 
-> As above, the `{latest-version}` placeholder should be replaced with the version number of Glean SDK release used in this project.
+> As above, the `{latest-version}` placeholder should be replaced with the version number of Glean Swift SDK release used in this project.
 
 2. Add the `sdk_generator.sh` file to your Xcode project.
 3. On your application targets' Build Phases settings tab, click the `+` icon and choose `New Run Script Phase`.
@@ -112,7 +111,7 @@ Follow these steps to automatically run the parser at build time:
 
 ##### Using with application-services
 
-> If you are using the combined release of application-services and the Glean SDK you need to set the namespace to `MozillaAppServices`, e.g.:
+> If you are using the combined release of application-services and the Glean Swift SDK you need to set the namespace to `MozillaAppServices`, e.g.:
 >
 > ```
 > bash $PWD/sdk_generator.sh --glean-namespace MozillaAppServices

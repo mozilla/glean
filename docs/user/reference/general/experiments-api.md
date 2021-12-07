@@ -1,12 +1,12 @@
 # Using the experiments API
 
-The Glean SDK supports tagging all its pings with experiments annotations. The annotations are useful to report that experiments were active at the time the measurement were collected. The annotations are reported in the optional `experiments` entry in the [`ping_info` section](../../user/pings/index.md) of all the Glean SDK pings.
+The Glean SDKs support tagging all their pings with experiments annotations. The annotations are useful to report that experiments were active at the time the measurement were collected. The annotations are reported in the optional `experiments` entry in the [`ping_info` section](../../user/pings/index.md) of all pings.
 
 {{#include ../../../shared/blockquote-warning.html}}
 
 ##### Experiment annotations are not persisted
 
-> The experiment annotations set through this API are not persisted by the Glean SDK.
+> The experiment annotations set through this API are not persisted by the Glean SDKs.
 > The application or consuming library is responsible for setting the relevant experiment annotations at each run.
 
 {{#include ../../../shared/blockquote-info.html}}
@@ -67,7 +67,7 @@ Glean.set_experiment_active(
 ```
 </div>
 
-<div data-lang="JavaScript" class="tab"></div>
+<div data-lang="JavaScript" class="tab" data-bug="1741583"></div>
 
 <div data-lang="Rust" class="tab">
 
@@ -156,7 +156,7 @@ Glean.set_experiment_inactive("blue-button-effective")
 ```
 </div>
 
-<div data-lang="JavaScript" class="tab"></div>
+<div data-lang="JavaScript" class="tab" data-bug="1741583"></div>
 
 <div data-lang="Rust" class="tab">
 
@@ -218,7 +218,7 @@ assert Glean.test_is_experiment_active("blue-button-effective")
 ```
 </div>
 
-<div data-lang="JavaScript" class="tab"></div>
+<div data-lang="JavaScript" class="tab" data-bug="1741583"></div>
 
 <div data-lang="Rust" class="tab">
 
@@ -270,7 +270,7 @@ assert (
 ```
 </div>
 
-<div data-lang="JavaScript" class="tab"></div>
+<div data-lang="JavaScript" class="tab" data-bug="1741583"></div>
 
 <div data-lang="Rust" class="tab">
 

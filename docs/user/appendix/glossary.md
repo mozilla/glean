@@ -24,12 +24,12 @@ The Glean pipeline additionally consists of
 * the [JSON Schema transpiler](https://github.com/mozilla/jsonschema-transpiler),
 * the [ping schemas](https://github.com/mozilla-services/mozilla-pipeline-schemas).
 
-## Glean SDK
+## Glean SDKs
 
-The Glean SDK is the bundle of libraries with support for different platforms.
-The source code is available at <https://github.com/mozilla/glean>.
+The Glean SDKs are a bundle of libraries with support for different platforms.
+The source code is available at <https://github.com/mozilla/glean> and <https://github.com/mozilla/glean.js>.
 
-## Glean SDK book
+## Glean SDKs book
 
 This documentation.
 
@@ -50,13 +50,13 @@ Glean itself provides [some metrics out of the box](../user/collected-metrics/me
 ## Ping
 
 A ping is a bundle of related metrics, gathered in a payload to be transmitted.
-The Glean SDK provides default pings and allows for custom ping, see [Glean Pings](../user/pings/index.md).
+The Glean SDKs provide default pings and allows for custom pings, see [Glean Pings](../user/pings/index.md).
 
 ## Submission
 
 "To submit" means to collect & to enqueue a ping for uploading.
 
-The Glean SDK stores locally all the metrics set by it or by its clients.
+The Glean SDKs store locally all the metrics set by it or by its clients.
 Each ping has its own schedule to gather all its locally saved metrics and create a JSON payload with them. This is called "collection".
 
 Upon successful collection, the payload is queued for upload, which may not happen immediately or at all (in case network connectivity is not available).

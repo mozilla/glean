@@ -36,7 +36,7 @@ Sends a ping on demand.
 
 ## Debugging methods
 
-Each language binding or platform supported may expose one or more of the following methods to
+Each Glean SDK may expose one or more of the following methods to
 interact with and enable these debugging functionalities.
 
 1. Enable debugging features through APIs exposed through the Glean singleton;
@@ -66,8 +66,8 @@ For method 3. please refer to the platform specific pages on how to debug produc
 | JavaScript | ✅ | | |
 | Firefox Desktop | | ✅ | ✅ [^3] |
 
-[^1]: In Kotlin, the Glean SDK exposes the [`GleanDebugActivity`](./android.md) for interacting with debug features. Although it is technically possible to also use environment variables in Android, the Glean team is not aware of a proper way to set environment variables in Android devices or emulators.
+[^1]: The Glean Kotlin SDK exposes the [`GleanDebugActivity`](./android.md) for interacting with debug features. Although it is technically possible to also use environment variables in Android, the Glean team is not aware of a proper way to set environment variables in Android devices or emulators.
 
-[^2]: In Swift, the Glean SDK exposes a [custom URL format](./ios.md) for interacting with debug features.
+[^2]: The Glean Swift SDK exposes a [custom URL format](./ios.md) for interacting with debug features.
 
 [^3]: In Firefox Desktop, developers may use the interface exposed through `about:glean` to log, tag or send pings.

@@ -2,11 +2,11 @@
 
 ## Description
 
-This ping is intended to provide metrics that are managed by the Glean SDK itself, and not explicitly set by the application or included in the application's `metrics.yaml` file.
+This ping is intended to provide metrics that are managed by the Glean SDKs themselves, and not explicitly set by the application or included in the application's `metrics.yaml` file.
 
 ### Platform availability
 
-| Language Binding | Kotlin | Swift | Python | Rust | JavaScript | Firefox Desktop |
+| SDK | Kotlin | Swift | Python | Rust | JavaScript | Firefox Desktop |
 |-:|:-:|:-:|:-:|:-:|:-:|:-:|
 | [`baseline` ping](baseline.md) | ✅ | ✅ | | ✅ | | ✅ |
 
@@ -23,7 +23,7 @@ See also the [ping schedules and timing overview](ping-schedules-and-timings.htm
 
 The `baseline` ping also includes the common [ping sections](index.md#payload-structure) found in all pings.
 
-It also includes a number of [metrics defined in the Glean SDK itself](../collected-metrics/metrics.html#baseline).
+It also includes a number of [metrics defined in the Glean SDKs themselves](../collected-metrics/metrics.html#baseline).
 
 ### Querying ping contents
 

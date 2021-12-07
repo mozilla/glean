@@ -1,6 +1,6 @@
 # The General API
 
-The Glean SDK has a minimal API available on its top-level `Glean` object called the General API.
+The Glean SDKs have a minimal API available on their top-level `Glean` object called the General API.
 This API allows, among other things, to enable and disable upload, register [custom pings][custom-pings] and set [experiment data][experiments-api].
 
 [custom-pings]: ../../user/pings/custom.md
@@ -10,12 +10,12 @@ This API allows, among other things, to enable and disable upload, register [cus
 
 ##### Only initialize in the main application!
 
-> The Glean SDK should only be initialized from the main application, not individual libraries.
-> If you are adding Glean SDK support to a library, you can safely skip this section.
+> Glean should only be initialized from the main application, not individual libraries.
+> If you are adding Glean support to a library, you can safely skip this section.
 
 ## The API
 
-The Glean SDK provides a general API that supports the following operations. See below for language-specific details.
+The Glean SDKs provide a general API that supports the following operations. See API reference pages for SDK-specific details.
 
 | Operation | Description | Notes |
 | --------- | ----------- | ----- |

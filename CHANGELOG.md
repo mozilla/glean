@@ -1,6 +1,19 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v42.2.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v42.3.0...main)
+
+# v42.3.0 (2021-12-07)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v42.2.0...v42.3.0)
+
+* Rust
+  * BUGFIX: Correct category & name for `preinit_tasks_overflow` metric. Previously it would have been wrongly recorded as `preinit_tasks_overflow.glean.error` ([#1887](https://github.com/mozilla/glean/pull/1887))
+  * BUGFIX: Fix to name given to the events ping when instantiated ([#1885](https://github.com/mozilla/glean/pull/1885))
+* iOS
+  * BUGFIX: Make fields of `RecordedEventData` publicly accessible ([#1867](https://github.com/mozilla/glean/pull/1867))
+  * Skip code generation in `indexbuild` build ([#1889](https://github.com/mozilla/glean/pull/1889))
+* Python
+  * Don't let environment affect subprocess module search path ([#1542](https://github.com/mozilla/glean/pull/1542))
 
 # v42.2.0 (2021-11-03)
 
