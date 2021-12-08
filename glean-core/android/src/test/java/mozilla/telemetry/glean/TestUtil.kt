@@ -265,7 +265,7 @@ internal fun delayMetricsPing(
     // Set the last sent date to yesterday.
     val mps = MetricsPingScheduler(context, buildInfo)
 
-    mps.updateSentDate(getISOTimeString(fakeNow, truncateTo = TimeUnit.Day))
+    mps.updateSentDate(getISOTimeString(fakeNow, truncateTo = TimeUnit.DAY))
 }
 
 // The following Mockito fixups are copied over from support-test (Matchers.kt) from

@@ -15,7 +15,7 @@ interface HistogramBase {
      * Please note that this assumes that the provided samples are already in the
      * "unit" declared by the instance of the implementing metric type (e.g. if the
      * implementing class is a [TimingDistributionMetricType] and the instance this
-     * method was called on is using [TimeUnit.Second], then `samples` are assumed
+     * method was called on is using [TimeUnit.SECOND], then `samples` are assumed
      * to be in that unit).
      *
      * @param samples the [LongArray] holding the samples to be recorded by the metric.

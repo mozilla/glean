@@ -13,13 +13,13 @@ import java.util.Locale
 
 @Suppress("TopLevelPropertyNaming")
 internal val DATE_FORMAT_PATTERNS = mapOf(
-    TimeUnit.Nanosecond to "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
-    TimeUnit.Microsecond to "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
-    TimeUnit.Millisecond to "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
-    TimeUnit.Second to "yyyy-MM-dd'T'HH:mm:ssZ",
-    TimeUnit.Minute to "yyyy-MM-dd'T'HH:mmZ",
-    TimeUnit.Hour to "yyyy-MM-dd'T'HHZ",
-    TimeUnit.Day to "yyyy-MM-ddZ"
+    TimeUnit.NANOSECOND to "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
+    TimeUnit.MICROSECOND to "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
+    TimeUnit.MILLISECOND to "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
+    TimeUnit.SECOND to "yyyy-MM-dd'T'HH:mm:ssZ",
+    TimeUnit.MINUTE to "yyyy-MM-dd'T'HH:mmZ",
+    TimeUnit.HOUR to "yyyy-MM-dd'T'HHZ",
+    TimeUnit.DAY to "yyyy-MM-ddZ"
 )
 
 // A mapping from the length of the date string to the format that would parse
@@ -46,7 +46,7 @@ internal val DATE_FORMAT_PATTERN_VALUES = DATE_FORMAT_PATTERNS.values.toSet()
  */
 internal fun getISOTimeString(
     date: Date = Date(),
-    truncateTo: TimeUnit = TimeUnit.Minute
+    truncateTo: TimeUnit = TimeUnit.MINUTE
 ): String {
     val cal = Calendar.getInstance()
     cal.setTime(date)
@@ -62,7 +62,7 @@ internal fun getISOTimeString(
  */
 internal fun getISOTimeString(
     calendar: Calendar,
-    truncateTo: TimeUnit = TimeUnit.Minute
+    truncateTo: TimeUnit = TimeUnit.MINUTE
 ): String {
     val dateFormat = SimpleDateFormat(DATE_FORMAT_PATTERNS[truncateTo], Locale.US)
     dateFormat.setTimeZone(calendar.getTimeZone())

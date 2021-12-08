@@ -65,7 +65,7 @@ class GleanTestRule(
         val buildInfo = BuildInfo(versionCode = "0.0.1", versionName = "0.0.1")
         val mps = MetricsPingScheduler(context, buildInfo)
 
-        mps.updateSentDate(getISOTimeString(fakeNow, truncateTo = TimeUnit.Day))
+        mps.updateSentDate(getISOTimeString(fakeNow, truncateTo = TimeUnit.DAY))
 
         Glean.resetGlean(
             context = context,

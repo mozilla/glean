@@ -16,13 +16,13 @@ class DateUtilsTest {
     @Test
     fun `test roundtripping ISO date formats`() {
         for (timeUnit in listOf(
-            TimeUnit.Nanosecond,
-            TimeUnit.Microsecond,
-            TimeUnit.Millisecond,
-            TimeUnit.Second,
-            TimeUnit.Minute,
-            TimeUnit.Hour,
-            TimeUnit.Day
+            TimeUnit.NANOSECOND,
+            TimeUnit.MICROSECOND,
+            TimeUnit.MILLISECOND,
+            TimeUnit.SECOND,
+            TimeUnit.MINUTE,
+            TimeUnit.HOUR,
+            TimeUnit.DAY
         )) {
             val dateString = getISOTimeString(truncateTo = timeUnit)
             val parsedDate = parseISOTimeString(dateString)!!
