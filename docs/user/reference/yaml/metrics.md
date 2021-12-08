@@ -189,10 +189,19 @@ Defines the lifetime of the metric. Different lifetimes affect when the metrics 
 _default: `events`|`metrics`_
 
 Defines which pings the metric should be sent on.
-If not specified, the metric is sent on the "default ping",
+If not specified, the metric is sent on the default ping,
 which is the `events` ping for events and the `metrics` ping for everything else.
 
 Most metrics don't need to specify this unless they are sent on [custom pings](../../user/pings/custom.md).
+
+The special value `default` may be used, in case it's required for a metric to be sent
+on the default ping as well as in a custom ping.
+
+```yaml
+send_in_pings:
+  - my-custom-ping
+  - default
+```
 
 #### `disabled`
 
