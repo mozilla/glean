@@ -315,7 +315,7 @@ internal class MetricsPingScheduler(
         }
         // Update the collection date: we don't really care if we have data or not, let's
         // always update the sent date.
-        updateSentDate(getISOTimeString(now, truncateTo = TimeUnit.Day))
+        updateSentDate(getISOTimeString(now, truncateTo = TimeUnit.DAY))
         // Reschedule the collection.
         schedulePingCollection(now, sendTheNextCalendarDay = true, reason = Pings.metricsReasonCodes.reschedule)
     }
