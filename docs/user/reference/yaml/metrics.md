@@ -97,13 +97,12 @@ See the list of [supported metric types](../metrics/index.md).
 
 {{#include ../../../shared/blockquote-warning.html}}
 
-##### Types should not be changed after release
+##### Types must not be changed after release
 
-> Once a metric is released in a product, its `type` should not be changed.
-> If any data was collected locally with the older `type`, and hasn't yet been sent in a ping,
-> recording data with the new `type` may cause any old persisted data to be lost for that metric.
-> See [this comment](https://bugzilla.mozilla.org/show_bug.cgi?id=1621757#c1) for an extended
-> explanation of the different scenarios.
+> Once a metric is defined in a product, its `type` must not be changed.
+> The ingestion pipeline will not be able to handle such a change.
+> If a type change is required a new metric must be added with a new name and the new type.
+> This will require an additional data review, in which you can also reference the old data review.
 
 #### `description`
 
