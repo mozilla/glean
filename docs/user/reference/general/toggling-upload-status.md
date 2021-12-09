@@ -3,7 +3,7 @@
 The Glean SDKs provide an API for toggling Glean's upload status after initialization.
 
 Applications instrumented with Glean
-[are expected to](../../adding-glean-to-your-project/index.md#glean-integration-checklist)
+[are expected to](../../user/adding-glean-to-your-project/index.md#glean-integration-checklist)
 provide some form of user interface to allow for toggling the upload status.
 
 ## Disabling upload
@@ -19,7 +19,7 @@ While upload is disabled, metrics aren't recorded and no data is uploaded.
 
 ## Enabling upload
 
-When upload is enabled, the Glean SDK will re-initialize it's [core metrics](../../user/collected-metrics/metrics.md).
+When upload is enabled, the Glean SDK will re-initialize its [core metrics](../../user/collected-metrics/metrics.md).
 The only core metrics that are not re-initialized are the [`first_run_date` and `first_run_hour`](../../user/pings/index.html#the-client_info-section) metrics.
 
 While upload is enabled all metrics are recorded as expected
