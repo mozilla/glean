@@ -79,7 +79,7 @@ fn allocate_memory(bytes: u64) {
 ```
 
 </div>
-<div data-lang="JavaScript" class="tab"></div>
+<div data-lang="JavaScript" class="tab" data-bug="1716952"></div>
 <div data-lang="Firefox Desktop" class="tab">
 
 **C++**
@@ -102,14 +102,14 @@ Glean.memory.heapAllocated.accumulate(bytes / 1024);
 
 #### Recorded errors
 
-* `invalid_value`: If recording a negative memory size.
-* `invalid_value`: If recording a size larger than 1 TB.
+* [`invalid_value`](../../user/metrics/error-reporting.md): If recording a negative memory size.
+* [`invalid_value`](../../user/metrics/error-reporting.md): If recording a size larger than 1 TB.
 
 ## Testing API
 
 ### `testGetValue`
 
-Gets the recorded value for a given counter metric.
+Gets the recorded value for a given memory distribution metric.
 
 {{#include ../../../shared/tab_header.md}}
 
@@ -201,7 +201,7 @@ assert_eq!(2, snapshot.values.len());
 
 
 </div>
-<div data-lang="JavaScript" class="tab"></div>
+<div data-lang="JavaScript" class="tab"  data-bug="1716952"></div>
 <div data-lang="Firefox Desktop" class="tab">
 
 **C++**
@@ -227,7 +227,7 @@ Assert.equal(11 * 1024, data.sum);
 
 ### `testHasValue`
 
-Whether or not **any** value was recorded for a given counter metric.
+Whether or not **any** value was recorded for a given memory distribution metric.
 
 {{#include ../../../shared/tab_header.md}}
 
@@ -281,7 +281,7 @@ assert metrics.memory.head_allocated.test_has_value()
 
 ### `testGetNumRecordedErrors`
 
-Gets number of errors recorded for a given counter metric.
+Gets number of errors recorded for a given memory distribution metric.
 
 {{#include ../../../shared/tab_header.md}}
 
@@ -349,14 +349,14 @@ assert_eq!(
 ```
 
 </div>
-<div data-lang="JavaScript" class="tab"></div>
+<div data-lang="JavaScript" class="tab"  data-bug="1716952"></div>
 <div data-lang="Firefox Desktop" class="tab"></div>
 
 {{#include ../../../shared/tab_footer.md}}
 
 ## Metric parameters
 
-Example custom distribution metric definition:
+Example memory distribution metric definition:
 
 ```YAML
 memory:

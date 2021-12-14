@@ -111,7 +111,7 @@ fn on_page_start() {
 ```
 
 </div>
-<div data-lang="JavaScript" class="tab"></div>
+<div data-lang="JavaScript" class="tab" data-bug="1716954"></div>
 <div data-lang="Firefox Desktop" class="tab">
 
 **C++**
@@ -197,7 +197,7 @@ fn on_page_loaded() {
 ```
 
 </div>
-<div data-lang="JavaScript" class="tab"></div>
+<div data-lang="JavaScript" class="tab" data-bug="1716954"></div>
 <div data-lang="Firefox Desktop" class="tab">
 
 **C++**
@@ -220,9 +220,9 @@ Glean.pages.pageLoad.stopAndAccumulate(timerId);
 
 #### Recorded errors
 
-* `invalid_value`: If recording a negative timespan.
-* `invalid_state`: If a non-existing/stopped timer is stopped again.
-* `invalid_overflow`: If recording a time longer than the maximum for the given unit.
+* [`invalid_value`](../../user/metrics/error-reporting.md): If recording a negative timespan.
+* [`invalid_state`](../../user/metrics/error-reporting.md): If a non-existing/stopped timer is stopped again.
+* [`invalid_overflow`](../../user/metrics/error-reporting.md): If recording a time longer than the maximum for the given unit.
 
 ### `measure`
 
@@ -265,7 +265,7 @@ with metrics.pages.page_load.measure():
 
 </div>
 <div data-lang="Rust" class="tab"></div>
-<div data-lang="JavaScript" class="tab"></div>
+<div data-lang="JavaScript" class="tab" data-bug="1716954"></div>
 <div data-lang="Firefox Desktop" class="tab"></div>
 
 {{#include ../../../shared/tab_footer.md}}
@@ -358,7 +358,7 @@ Glean.pages.pageLoad.cancel(timerId);
 
 ### `testGetValue`
 
-Gets the recorded value for a given counter metric.
+Gets the recorded value for a given timing distribution metric.
 
 {{#include ../../../shared/tab_header.md}}
 
@@ -435,7 +435,7 @@ assert_eq!(1, snapshot.values.len());
 
 
 </div>
-<div data-lang="JavaScript" class="tab"></div>
+<div data-lang="JavaScript" class="tab" data-bug="1716954"></div>
 <div data-lang="Firefox Desktop" class="tab">
 
 **C++**
@@ -460,7 +460,7 @@ Assert.ok(Glean.pages.pageLoad.testGetValue().sum > 0);
 
 ### `testHasValue`
 
-Whether or not **any** value was recorded for a given counter metric.
+Whether or not **any** value was recorded for a given timing distribution metric.
 
 {{#include ../../../shared/tab_header.md}}
 
@@ -514,7 +514,7 @@ assert metrics.pages.page_load.test_has_value()
 
 ### `testGetNumRecordedErrors`
 
-Gets number of errors recorded for a given counter metric.
+Gets number of errors recorded for a given timing distribution metric.
 
 {{#include ../../../shared/tab_header.md}}
 
@@ -579,14 +579,14 @@ assert_eq!(
 ```
 
 </div>
-<div data-lang="JavaScript" class="tab"></div>
+<div data-lang="JavaScript" class="tab" data-bug="1716954"></div>
 <div data-lang="Firefox Desktop" class="tab"></div>
 
 {{#include ../../../shared/tab_footer.md}}
 
 ## Metric parameters
 
-Example custom distribution metric definition:
+Example timing distribution metric definition:
 
 ```YAML
 pages:
