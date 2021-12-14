@@ -203,7 +203,7 @@ impl Glean {
     /// Creates and initializes a new Glean object.
     ///
     /// This will create the necessary directories and files in
-    /// [`cfg.data_path`](Configuration::data_path). This will also initialize
+    /// [`cfg.data_path`](InternalConfiguration::data_path). This will also initialize
     /// the core metrics.
     pub fn new(cfg: InternalConfiguration) -> Result<Self> {
         let mut glean = Self::new_for_subprocess(&cfg, false)?;
@@ -675,7 +675,7 @@ impl Glean {
     }
 
     /// Persists [`Lifetime::Ping`] data that might be in memory in case
-    /// [`delay_ping_lifetime_io`](Configuration::delay_ping_lifetime_io) is set
+    /// [`delay_ping_lifetime_io`](InternalConfiguration::delay_ping_lifetime_io) is set
     /// or was set at a previous time.
     ///
     /// If there is no data to persist, this function does nothing.

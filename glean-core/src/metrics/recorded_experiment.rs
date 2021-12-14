@@ -10,9 +10,9 @@ use serde_json::{json, Map as JsonMap, Value as JsonValue};
 /// Deserialized experiment data.
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
 pub struct RecordedExperiment {
-    /// The experiment's branch as set through [`set_experiment_active`](crate::set_experiment_active).
+    /// The experiment's branch as set through [`set_experiment_active`](crate::glean_set_experiment_active).
     pub branch: String,
-    /// Any extra data associated with this experiment through [`set_experiment_active`](crate::set_experiment_active).
+    /// Any extra data associated with this experiment through [`set_experiment_active`](crate::glean_set_experiment_active).
     /// Note: `Option` required to keep backwards-compatibility.
     pub extra: Option<HashMap<String, String>>,
 }

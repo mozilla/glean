@@ -15,13 +15,24 @@ pub struct ClientInfoMetrics {
     /// The user visible version string (e.g. "1.0.3").
     pub app_display_version: String,
 
+    /// The architecture of the device (e.g. "arm", "x86").
     pub architecture: String,
+    /// The name of the operating system (e.g. "Linux", "Android", "iOS").
     pub os_version: String,
 
+    /// The product-provided release channel (e.g. "beta").
     pub channel: Option<String>,
+    /// The Android specific SDK version of the software running on this hardware device (e.g. "23").
     pub android_sdk_version: Option<String>,
+    /// The manufacturer of the device the application is running on.
+    /// Not set if the device manufacturer can't be determined (e.g. on Desktop).
     pub device_manufacturer: Option<String>,
+    /// The model of the device the application is running on.
+    /// On Android, this is Build.MODEL, the user-visible marketing name, like "Pixel 2 XL".
+    /// Not set if the device model can't be determined (e.g. on Desktop).
     pub device_model: Option<String>,
+    /// The locale of the application during initialization (e.g. "es-ES").
+    /// If the locale can't be determined on the system, the value is "und", to indicate "undetermined".
     pub locale: Option<String>,
 }
 
