@@ -87,9 +87,14 @@ impl PingType {
 
     /// Submits the ping for eventual uploading.
     ///
+    /// The ping content is assembled as soon as possible, but upload is not
+    /// guaranteed to happen immediately, as that depends on the upload policies.
+    ///
+    /// If the ping currently contains no content, it will not be sent,
+    /// unless it is configured to be sent if empty.
+    ///
     /// # Arguments
     ///
-    /// * `glean` - the Glean instance to use to send the ping.
     /// * `reason` - the reason the ping was triggered. Included in the
     ///   `ping_info.reason` part of the payload.
     pub fn submit(&self, reason: Option<String>) {
@@ -105,20 +110,10 @@ impl PingType {
 
     /// Collects and submits a ping for eventual uploading.
     ///
-    /// The ping content is assembled as soon as possible, but upload is not
-    /// guaranteed to happen immediately, as that depends on the upload policies.
-    ///
-    /// If the ping currently contains no content, it will not be sent,
-    /// unless it is configured to be sent if empty.
-    ///
-    /// # Arguments
-    ///
-    /// * `ping` - The ping to submit
-    /// * `reason` - A reason code to include in the ping
-    ///
     /// # Returns
     ///
     /// Whether the ping was succesfully assembled and queued.
+    #[doc(hidden)]
     pub fn submit_sync(&self, glean: &Glean, reason: Option<&str>) -> bool {
         if !glean.is_upload_enabled() {
             log::info!("Glean disabled: not submitting any pings.");
