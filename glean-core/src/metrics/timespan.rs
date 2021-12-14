@@ -62,7 +62,8 @@ impl TimespanMetric {
         crate::launch_with_glean(move |glean| metric.set_start(glean, start_time));
     }
 
-    /// Set start time.
+    /// Set start time synchronously.
+    #[doc(hidden)]
     pub fn set_start(&self, glean: &Glean, start_time: u64) {
         if !self.should_record(glean) {
             return;
@@ -97,7 +98,8 @@ impl TimespanMetric {
         crate::launch_with_glean(move |glean| metric.set_stop(glean, stop_time));
     }
 
-    /// Set stop time.
+    /// Set stop time synchronously.
+    #[doc(hidden)]
     pub fn set_stop(&self, glean: &Glean, stop_time: u64) {
         // Need to write in either case, so get the lock first.
         let mut lock = self
@@ -174,7 +176,7 @@ impl TimespanMetric {
         crate::launch_with_glean(move |glean| metric.set_raw_sync(glean, elapsed));
     }
 
-    /// Explicitly sets the timespan value.
+    /// Explicitly sets the timespan value in nanoseconds.
     ///
     /// This API should only be used if your library or application requires
     /// recording times in a way that can not make use of
@@ -193,7 +195,8 @@ impl TimespanMetric {
         self.set_raw(elapsed)
     }
 
-    /// Set raw but sync
+    /// Explicitly sets the timespan value synchronously.
+    #[doc(hidden)]
     pub fn set_raw_sync(&self, glean: &Glean, elapsed: Duration) {
         if !self.meta.should_record() {
             return;
@@ -260,6 +263,7 @@ impl TimespanMetric {
     }
 
     /// Get the current value
+    #[doc(hidden)]
     pub fn get_value<'a, S: Into<Option<&'a str>>>(
         &self,
         glean: &Glean,

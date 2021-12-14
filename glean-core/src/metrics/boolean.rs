@@ -58,6 +58,7 @@ impl BooleanMetric {
     ///
     /// * `glean` - the Glean instance this metric belongs to.
     /// * `value` - the value to set.
+    #[doc(hidden)]
     pub fn set_sync(&self, glean: &Glean, value: bool) {
         if !self.should_record(glean) {
             return;
@@ -83,6 +84,7 @@ impl BooleanMetric {
     /// Gets the currently stored value as a boolean.
     ///
     /// This doesn't clear the stored value.
+    #[doc(hidden)]
     pub fn get_value(&self, glean: &Glean, ping_name: Option<&str>) -> Option<bool> {
         let queried_ping_name = ping_name.unwrap_or_else(|| &self.meta().send_in_pings[0]);
 
