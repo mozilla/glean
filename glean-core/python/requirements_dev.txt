@@ -8,7 +8,7 @@ jsonschema==3.2.0
 mypy==0.910
 pdoc3==0.10.0
 pip
-pytest-localserver==0.5.1
+pytest-localserver==0.5.1.post0
 pytest-runner==5.3.1
 pytest==6.2.5
 setuptools-git==1.2
