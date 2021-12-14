@@ -59,3 +59,4 @@ They could be release notes, documentation, hopes, dreams, or whatever: so long 
 * 2021-10-18: [Designing a telemetry collection with Glean](https://blog.mozilla.org/data/2021/10/18/this-week-in-glean-designing-a-telemetry-collection-with-glean/)
 * 2021-10-22: [The Three Roles of Data Engagements](https://blog.mozilla.org/data/2021/10/22/this-week-in-glean-the-three-roles-of-data-engagements/)
 * 2021-11-01: [Crashes & a buggy Glean](https://blog.mozilla.org/data/2021/11/01/this-week-in-glean-crashes-a-buggy-glean/)
+* 2021-12-14: [How Long Must I Wait Before I Can See My Data?](https://blog.mozilla.org/data/2021/12/14/this-week-in-glean-how-long-must-i-wait-before-i-can-see-my-data/)
