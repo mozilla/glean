@@ -419,15 +419,45 @@ pub fn glean_enable_logging() {
     #[cfg(target_os = "android")]
     {
         let _ = std::panic::catch_unwind(|| {
+            let filter = android_logger::FilterBuilder::new()
+                .filter_module("glean_ffi", log::LevelFilter::Debug)
+                .filter_module("glean_core", log::LevelFilter::Debug)
+                .filter_module("glean", log::LevelFilter::Debug)
+                .build();
             android_logger::init_once(
                 android_logger::Config::default()
                     .with_min_level(log::Level::Debug)
+                    .with_filter(filter)
                     .with_tag("libglean_ffi"),
             );
             log::trace!("Android logging should be hooked up!")
         });
     }
 
+    // On iOS enable logging with a level filter.
+    #[cfg(target_os = "ios")]
+    {
+        // Debug logging in debug mode.
+        // (Note: `debug_assertions` is the next best thing to determine if this is a debug build)
+        #[cfg(debug_assertions)]
+        let level = log::LevelFilter::Debug;
+        #[cfg(not(debug_assertions))]
+        let level = log::LevelFilter::Info;
+
+        let logger = oslog::OsLogger::new("org.mozilla.glean").level_filter(level);
+
+        match logger.init() {
+            Ok(_) => log::trace!("os_log should be hooked up!"),
+            // Please note that this is only expected to fail during unit tests,
+            // where the logger might have already been initialized by a previous
+            // test. So it's fine to print with the "logger".
+            Err(_) => log::warn!("os_log was already initialized"),
+        };
+    }
+
+    // Make sure logging does something on non Android platforms as well.
+    // Use the RUST_LOG environment variable to set the desired log level,
+    // e.g. setting RUST_LOG=debug sets the log level to debug.
     #[cfg(all(not(target_os = "android"), not(target_os = "ios")))]
     {
         match env_logger::try_init() {
