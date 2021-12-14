@@ -45,7 +45,7 @@ mod util;
 
 pub use crate::common_metric_data::{CommonMetricData, Lifetime};
 pub use crate::core::Glean;
-use crate::core_metrics::ClientInfoMetrics;
+pub use crate::core_metrics::ClientInfoMetrics;
 pub use crate::error::{Error, ErrorKind, Result};
 pub use crate::error_recording::{test_get_num_recorded_errors, ErrorType};
 use crate::histogram::HistogramType;
@@ -204,7 +204,7 @@ pub trait OnGleanEvents: Send {
 ///
 /// # Arguments
 ///
-/// * `cfg` - the [`Configuration`] options to initialize with.
+/// * `cfg` - the [`InternalConfiguration`] options to initialize with.
 /// * `client_info` - the [`ClientInfoMetrics`] values used to set Glean
 ///   core metrics.
 /// * `callbacks` - A callback object, stored for the entire application lifetime.
@@ -492,7 +492,7 @@ pub(crate) fn register_ping_type(ping: &PingType) {
 /// experiment annotation to the environment which is sent with pings. This
 /// infomration is not persisted between runs.
 ///
-/// See [`glean_core::Glean::set_experiment_active`].
+/// See [`core::Glean::set_experiment_active`].
 pub fn glean_set_experiment_active(
     experiment_id: String,
     branch: String,
@@ -503,7 +503,7 @@ pub fn glean_set_experiment_active(
 
 /// Indicate that an experiment is no longer running.
 ///
-/// See [`glean_core::Glean::set_experiment_inactive`].
+/// See [`core::Glean::set_experiment_inactive`].
 pub fn glean_set_experiment_inactive(experiment_id: String) {
     launch_with_glean(|glean| glean.set_experiment_inactive(experiment_id))
 }

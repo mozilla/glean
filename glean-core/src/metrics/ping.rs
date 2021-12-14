@@ -85,17 +85,13 @@ impl PingType {
         self.0.send_if_empty
     }
 
-    /// Submits the ping for eventual uploading
+    /// Submits the ping for eventual uploading.
     ///
     /// # Arguments
     ///
     /// * `glean` - the Glean instance to use to send the ping.
     /// * `reason` - the reason the ping was triggered. Included in the
     ///   `ping_info.reason` part of the payload.
-    ///
-    /// # Returns
-    ///
-    /// See [`Glean::submit_ping`](crate::Glean::submit_ping) for details.
     pub fn submit(&self, reason: Option<String>) {
         let ping = PingType(Arc::clone(&self.0));
         crate::launch_with_glean(move |glean| {
