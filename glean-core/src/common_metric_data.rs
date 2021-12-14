@@ -69,7 +69,7 @@ pub struct CommonMetricData {
     pub disabled: bool,
     /// Dynamic label.
     ///
-    /// When a [`LabeledMetric<T>`](LabeledMetric) factory creates the specific
+    /// When a [`LabeledMetric<T>`](crate::metrics::LabeledMetric) factory creates the specific
     /// metric to be recorded to, dynamic labels are stored in the specific
     /// label so that we can validate them when the Glean singleton is
     /// available.
