@@ -56,13 +56,6 @@ run $SED -i.bak -E \
     "${WORKSPACE_ROOT}/${FILE}"
 run rm "${WORKSPACE_ROOT}/${FILE}.bak"
 
-# update the version in glean-core/csharp/Glean/GleanParser.cs
-FILE=glean-core/csharp/Glean/GleanParser.cs
-run $SED -i.bak -E \
-    -e "s/GleanParserVersion = \"[0-9.]+\"/GleanParserVersion = \"${NEW_VERSION}\"/" \
-    "${WORKSPACE_ROOT}/${FILE}"
-run rm "${WORKSPACE_ROOT}/${FILE}.bak"
-
 # update the version in glean-core/Cargo.toml
 FILE=glean-core/Cargo.toml
 run $SED -i.bak -E \

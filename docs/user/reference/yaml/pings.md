@@ -63,7 +63,7 @@ ping names on generated code.
 
 ### Reserved ping names
 
-> The names `baseline`, `metrics`, `events`, `deletion-request` and `all-pings` are reserved
+> The names `baseline`, `metrics`, `events`, `deletion-request`, `default` and `all-pings` are reserved
 > and may not be used as the name of a custom ping.
 
 ## Ping parameters

@@ -1,6 +1,13 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v42.3.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v42.3.2...main)
+
+# v42.3.2 (2021-12-15)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v42.3.1...v42.3.2)
+
+* Python
+  * Reuse existing environment when launching subprocess ([#1908](https://github.com/mozilla/glean/pull/1908))
 
 # v42.3.1 (2021-12-07)
 
