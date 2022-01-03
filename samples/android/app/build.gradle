@@ -55,6 +55,8 @@ dependencies {
 }
 
 ext.gleanNamespace = "mozilla.telemetry.glean"
+// Fixed build date so we can test for it
+ext.gleanBuildDate = "2020-11-06T11:30:50+00:00"
 
 // Include the glean-gradle-plugin. This is slightly different than what is
 // recommended for external users since we are loading it from the same root Gradle

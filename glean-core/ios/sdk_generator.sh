@@ -57,6 +57,7 @@ OPTIONS:
     -o, --output  <PATH>             Folder to place generated code in. Default: \$SOURCE_ROOT/\$PROJECT/Generated
     -g, --glean-namespace <NAME>     The Glean namespace to use in generated code.
     -m, --markdown <PATH>            Generate markdown documentation in provided directory.
+    -b, --build-date <TEXT>          Set a specific build date or disable build date generation with `0`.
     -h, --help                       Display this help message.
 HEREDOC
 )
@@ -69,6 +70,7 @@ declare -a PARAMS=()
 ALLOW_RESERVED=""
 GLEAN_NAMESPACE=Glean
 DOCS_DIRECTORY=""
+BUILD_DATE=""
 declare -a YAML_FILES=()
 OUTPUT_DIR="${SOURCE_ROOT}/${PROJECT}/Generated"
 
@@ -88,6 +90,10 @@ while (( "$#" )); do
             ;;
         -m|--markdown)
             DOCS_DIRECTORY=$2
+            shift 2
+            ;;
+        -b|--build-date)
+            BUILD_DATE="--option build_date=$2"
             shift 2
             ;;
         -h|--help)
@@ -163,6 +169,7 @@ PARSER_OUTPUT=$("${VENVDIR}"/bin/python -m glean_parser \
     -f "swift" \
     -o "${OUTPUT_DIR}" \
     -s "glean_namespace=${GLEAN_NAMESPACE}" \
+    $BUILD_DATE \
     $ALLOW_RESERVED \
     "${YAML_FILES[@]}" 2>&1) || { echo "$PARSER_OUTPUT"; echo "error: glean_parser failed. See errors above."; exit 1; }
 

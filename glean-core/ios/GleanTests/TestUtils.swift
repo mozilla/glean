@@ -88,3 +88,24 @@ func JSONStringify(_ json: Any) -> String {
 
     return ""
 }
+
+func stubBuildInfo(_ dateString: String? = nil) -> BuildInfo {
+    let buildDate: DateComponents
+
+    if let dateString = dateString {
+        let date = Date.fromISO8601String(dateString: dateString, precision: .second)!
+        buildDate = Calendar.current.dateComponents(in: TimeZone(abbreviation: "UTC")!, from: date)
+    } else {
+        buildDate = DateComponents(
+            calendar: Calendar.current,
+            timeZone: TimeZone(abbreviation: "UTC"),
+            year: 2019,
+            month: 10,
+            day: 23,
+            hour: 12,
+            minute: 52,
+            second: 8
+        )
+    }
+    return BuildInfo(buildDate: buildDate)
+}

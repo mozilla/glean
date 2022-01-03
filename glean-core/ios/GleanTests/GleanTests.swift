@@ -6,6 +6,8 @@
 import OHHTTPStubs
 import XCTest
 
+private typealias GleanInternalMetrics = GleanMetrics.GleanInternalMetrics
+
 // swiftlint:disable type_body_length force_cast
 // REASON: Used in a test
 class GleanTests: XCTestCase {
@@ -510,6 +512,17 @@ class GleanTests: XCTestCase {
         let foregroundCounter = GleanMetrics.GleanValidation.foregroundCount
         XCTAssert(foregroundCounter.testHasValue())
         XCTAssertEqual(2, try foregroundCounter.testGetValue())
+    }
+
+    func testPassingInExplicitBuildInfo() {
+        Glean.shared.testDestroyGleanHandle()
+        Dispatchers.shared.setTaskQueueing(enabled: true)
+
+        Glean.shared.initialize(uploadEnabled: true, buildInfo: stubBuildInfo("2020-11-06T11:30:50+0000"))
+        XCTAssertEqual(
+            "2020-11-06T11:30:50+00:00",
+            try! GleanInternalMetrics.buildDate.testGetValueAsString()
+        )
     }
 }
 

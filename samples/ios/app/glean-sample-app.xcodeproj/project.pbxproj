@@ -354,7 +354,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "bash $PWD/sdk_generator.sh\n";
+			shellScript = "bash $PWD/sdk_generator.sh --build-date \"2020-11-06T11:30:50+00:00\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

@@ -5,6 +5,19 @@ These options are not usually required for normal use.
 
 Options can be turned on by setting a variable on the Gradle [`ext`](https://docs.gradle.org/current/dsl/org.gradle.api.plugins.ExtraPropertiesExtension.html) object *before* applying the Glean Gradle plugin.
 
+## `gleanBuildDate`
+
+Overwrite the auto-generated build date.
+
+If set to `0` a static UNIX epoch time will be used.
+If set to a ISO8601 datetime string it will use that date.
+Note that any timezone offset will be ignored and UTC will be used.
+For other values it will throw an error.
+
+```groovy
+ext.gleanBuildDate = "2022-01-03T17:30:00"
+```
+
 ## `allowMetricsFromAAR`
 
 Normally, the Glean Kotlin SDK looks for `metrics.yaml` and `pings.yaml` files in the root directory of the Glean-using project.
@@ -25,6 +38,7 @@ variant.packageLibraryProvider.get().from("${topsrcdir}/path/metrics.yaml")
 ```
 
 ## `gleanGenerateMarkdownDocs`
+
 
 The Glean Kotlin SDK can automatically generate Markdown documentation for metrics and pings defined in the registry files, in addition to the metrics API code.
 

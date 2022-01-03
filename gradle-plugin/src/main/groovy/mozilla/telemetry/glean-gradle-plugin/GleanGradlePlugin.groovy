@@ -209,6 +209,12 @@ except:
                 if (!isApplication) {
                     args "-s"
                     args "with_buildinfo=false"
+                } else {
+                    // For applications check if they overwrote the build date.
+                    if (project.ext.has("gleanBuildDate")) {
+                        args "-s"
+                        args "build_date=${project.ext.get("gleanBuildDate")}"
+                    }
                 }
 
                 doFirst {
