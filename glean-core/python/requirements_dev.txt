@@ -1,4 +1,4 @@
-auditwheel==5.0.0
+auditwheel==5.1.1
 black==21.12b0
 cffi==1.15.0
 coverage==6.2
