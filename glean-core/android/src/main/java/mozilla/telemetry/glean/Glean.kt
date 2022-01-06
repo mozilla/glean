@@ -138,8 +138,6 @@ open class GleanInternalAPI internal constructor () {
         configuration: Configuration = Configuration(),
         buildInfo: BuildInfo
     ) {
-        this.buildInfo = buildInfo
-
         // Glean initialization must be called on the main thread, or lifecycle
         // registration may fail. This is also enforced at build time by the
         // @MainThread decorator, but this run time check is also performed to
@@ -158,6 +156,7 @@ open class GleanInternalAPI internal constructor () {
             return
         }
 
+        this.buildInfo = buildInfo
         this.applicationContext = applicationContext
 
         this.configuration = configuration
