@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
+import logging
 from pathlib import Path
 import uuid
 
@@ -170,3 +171,18 @@ def test_unknown_url_no_exception():
     )
 
     assert type(response) is ping_uploader.RecoverableFailure
+
+
+def test_log_on_success(safe_httpserver, caplog):
+    caplog.set_level(logging.INFO)
+    safe_httpserver.serve_content(b"", code=200)
+
+    response = HttpClientUploader.upload(
+        url=safe_httpserver.url, data=b"{}", headers=[]
+    )
+
+    assert type(response) is ping_uploader.HttpResponse
+    assert 200 == response._status_code
+    assert 1 == len(safe_httpserver.requests)
+
+    assert "HTTP status 200 uploading 2 bytes to http" in caplog.text

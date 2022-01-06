@@ -85,6 +85,8 @@ class HttpClientUploader(base_uploader.BaseUploader):
 
         conn.close()
 
+        log.info(f"HTTP status {status_code} uploading {len(data)} bytes to {url}")
+
         return ping_uploader.HttpResponse(status_code)
 
 
