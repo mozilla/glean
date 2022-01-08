@@ -173,16 +173,27 @@ def test_unknown_url_no_exception():
     assert type(response) is ping_uploader.RecoverableFailure
 
 
-def test_log_on_success(safe_httpserver, caplog):
-    caplog.set_level(logging.INFO)
+def test_log_on_success(safe_httpserver, capfd):
+    # We can't use caplog to catch log messages from the subprocess, but we can
+    # use capsys to catch its stderr.
+
     safe_httpserver.serve_content(b"", code=200)
+    Glean._configuration.server_endpoint = safe_httpserver.url
+    Glean.set_log_level(logging.INFO)
 
-    response = HttpClientUploader.upload(
-        url=safe_httpserver.url, data=b"{}", headers=[]
-    )
+    pings_dir = Glean._data_dir / "pending_pings"
+    pings_dir.mkdir()
 
-    assert type(response) is ping_uploader.HttpResponse
-    assert 200 == response._status_code
+    with (pings_dir / str(uuid.uuid4())).open("wb") as fd:
+        fd.write(b"/data/path/\n")
+        fd.write(b"{}\n")
+
+    p1 = PingUploadWorker._process()
+    p1.wait()
+    assert p1.returncode == 0
+
     assert 1 == len(safe_httpserver.requests)
 
-    assert "HTTP status 200 uploading 2 bytes to http" in caplog.text
+    captured = capfd.readouterr()
+
+    assert "successfully sent 200" in str(captured.err)

@@ -5,7 +5,7 @@
 * General
   * Removed `invalid_timezone_offset` metric ([#1923](https://github.com/mozilla/glean/pull/1923))
 * Python
-  * A log INFO message is emitted when a ping is sent ([#1918](https://github.com/mozilla/glean/pull/1918))
+  * It is now possible to emit log messages from the messaging subprocess by using the new simple log API. ([#1918](https://github.com/mozilla/glean/pull/1918))
 
 # v42.3.2 (2021-12-15)
 

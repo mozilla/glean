@@ -109,7 +109,9 @@ class ProcessDispatcher:
             # that Glean controls. This approach may need to change to pass over a pipe
             # if it becomes too large.
 
-            payload = base64.b64encode(pickle.dumps((func, args))).decode("ascii")
+            payload = base64.b64encode(
+                pickle.dumps((Glean._simple_log_level, func, args))
+            ).decode("ascii")
 
             if len(payload) > 4096:
                 log.warning("data payload to subprocess is greater than 4096 bytes")

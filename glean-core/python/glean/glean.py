@@ -95,6 +95,9 @@ class Glean:
     # A thread lock for Glean operations that need to be synchronized
     _thread_lock = threading.RLock()
 
+    # Simple logging API log level
+    _simple_log_level: Optional[int] = None
+
     @classmethod
     def initialize(
         cls,
@@ -611,6 +614,24 @@ class Glean:
 
         if sent_ping:
             PingUploadWorker.process()
+
+    @classmethod
+    def set_log_level(cls, log_level: int) -> None:
+        """
+        Set the log level for Glean log messages. This affects messages from
+        the main process as well as the networking subprocess.
+
+        If you need more control over where log messages are filtered and sent,
+        you can use the Python `logging` module's API directly, but that will
+        not affect messages emitted from Glean's networking subprocess that
+        handles HTTP requests.
+
+        Args:
+            log_level (int): The log level. One of the constants in the Python
+            `logging` module: `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`.
+        """
+        cls._simple_log_level = log_level
+        logging.basicConfig(level=log_level)
 
 
 __all__ = ["Glean"]
