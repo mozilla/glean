@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v42.3.2...main)
 
+* General
+  * Removed `invalid_timezone_offset` metric ([#](https://github.com/mozilla/glean/pull/))
+
 # v42.3.2 (2021-12-15)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v42.3.1...v42.3.2)
