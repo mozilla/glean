@@ -212,8 +212,8 @@ commands:
       - run:
           name: Get ghr release tool
           command: |
-            GHR=ghr_v0.13.0_darwin_amd64
-            GHR_SHA256=319988a001462f80b37cf40fbc41b9de60b0a1cffa2a338b47b9fe5eef25f60e
+            GHR=ghr_v0.14.0_darwin_amd64
+            GHR_SHA256=33e9c89d611b049a2cb7ace8334108e8c586ea37a713f59c8503df582710b679
             curl -sfSL --retry 5 -O "https://github.com/tcnksm/ghr/releases/download/v0.13.0/${GHR}.zip"
             echo "${GHR_SHA256} *${GHR}.zip" | shasum -a 256 -c -
             unzip "${GHR}.zip"
@@ -224,8 +224,8 @@ commands:
       - run:
           name: Get ghr release tool
           command: |
-            GHR=ghr_v0.13.0_linux_amd64
-            GHR_SHA256=c428627270ae26e206cb526cb8c7bdfba475dd278f6691ddaf863355adadfa13
+            GHR=ghr_v0.14.0_linux_amd64
+            GHR_SHA256=08fd71402df6aace23403ef3757dabc7e261d6b24fed5a0634e2275c71303c31
             curl -sfSL --retry 5 -O "https://github.com/tcnksm/ghr/releases/download/v0.13.0/${GHR}.tar.gz"
             echo "${GHR_SHA256} *${GHR}.tar.gz" | sha256sum -c -
             tar -xf "${GHR}.tar.gz"
@@ -243,9 +243,9 @@ jobs:
       - run:
           name: Install cargo-deny
           command: |
-            DENY_VERSION=0.7.3
+            DENY_VERSION=0.11.0
             DENY="cargo-deny-${DENY_VERSION}-x86_64-unknown-linux-musl"
-            DENY_SHA256=5456fed7c90f8658c085fac6a602f495fbb6107b62c9f8f54e90cad4ea33a61b
+            DENY_SHA256=bdac664b436fd8501b3bea5461bbf8566086ab0cf5555d83178c3209a848f9f8
             curl -sfSL --retry 5 -O "https://github.com/EmbarkStudios/cargo-deny/releases/download/${DENY_VERSION}/${DENY}.tar.gz"
             echo "${DENY_SHA256} *${DENY}.tar.gz" | shasum -a 256 -c -
             tar -xvf "${DENY}.tar.gz"
