@@ -117,11 +117,12 @@ Follow these steps to automatically run the parser at build time:
 > bash $PWD/sdk_generator.sh --glean-namespace MozillaAppServices
 > ```
 
-3. Add the path to your `metrics.yaml` and (optionally) `pings.yaml` under "Input files":
+3. Add the path to your `metrics.yaml` and (optionally) `pings.yaml` and `tags.yaml` under "Input files":
 
    ```
    $(SRCROOT)/{project-name}/metrics.yaml
    $(SRCROOT)/{project-name}/pings.yaml
+   $(SRCROOT)/{project-name}/tags.yaml
    ```
 
 4. Add the path to the generated code file to the "Output Files":
