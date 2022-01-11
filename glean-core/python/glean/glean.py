@@ -56,7 +56,7 @@ class Glean:
     ...     application_id="my-app",
     ...     application_version="0.0.0",
     ...     upload_enabled=True,
-    ...     data_dir: Path.home() / ".glean"
+    ...     data_dir=Path.home() / ".glean",
     ... )
     """
 
@@ -107,6 +107,7 @@ class Glean:
         configuration: Optional[Configuration] = None,
         data_dir: Path = None,
         application_build_id: Optional[str] = None,
+        log_level: Optional[int] = None,
     ) -> None:
         """
         Initialize the Glean SDK.
@@ -130,7 +131,20 @@ class Glean:
             data_dir (pathlib.Path): The path to the Glean data directory.
             application_build_id (str): (optional) The build identifier generated
                 by the CI system (e.g. "1234/A").
+            log_level (int): (optional) The level of log messages that Glean
+                will emit. One of the constants in the Python `logging` module:
+                `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`. If you need a
+                specialized logging configuration, such as to redirecting,
+                filtering or reformatting, you should use the Python `logging`
+                module's API directly, but that will not affect logging any of
+                Glean's networking operations which happen in a subprocess.
+                Details in the "Debugging Python applications with the Glean
+                SDK" chapter in the docs.
         """
+        if log_level is not None:
+            cls._simple_log_level = log_level
+            logging.basicConfig(level=log_level)
+
         with cls._thread_lock:
             if cls.is_initialized():
                 return
@@ -614,24 +628,6 @@ class Glean:
 
         if sent_ping:
             PingUploadWorker.process()
-
-    @classmethod
-    def set_log_level(cls, log_level: int) -> None:
-        """
-        Set the log level for Glean log messages. This affects messages from
-        the main process as well as the networking subprocess.
-
-        If you need more control over where log messages are filtered and sent,
-        you can use the Python `logging` module's API directly, but that will
-        not affect messages emitted from Glean's networking subprocess that
-        handles HTTP requests.
-
-        Args:
-            log_level (int): The log level. One of the constants in the Python
-            `logging` module: `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`.
-        """
-        cls._simple_log_level = log_level
-        logging.basicConfig(level=log_level)
 
 
 __all__ = ["Glean"]

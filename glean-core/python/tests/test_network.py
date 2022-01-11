@@ -179,7 +179,7 @@ def test_log_on_success(safe_httpserver, capfd):
 
     safe_httpserver.serve_content(b"", code=200)
     Glean._configuration.server_endpoint = safe_httpserver.url
-    Glean.set_log_level(logging.INFO)
+    Glean._simple_log_level = logging.INFO
 
     pings_dir = Glean._data_dir / "pending_pings"
     pings_dir.mkdir()

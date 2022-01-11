@@ -20,13 +20,13 @@ Glean offers two options for logging from Python:
 
 ### Simple logging API
 
-You can set the logging level for Glean log messages to `DEBUG` as follows:
+You can set the logging level for Glean log messages by passing `logging.DEBUG` to `Glean.initialize` as follows:
 
 ```python
 import logging
 from glean import Glean
 
-Glean.set_log_level(logging.DEBUG)
+Glean.initialize(..., log_level=logging.DEBUG)
 ```
 
 If you want to see ping contents as well, set the `GLEAN_LOG_PINGS` environment variable to `true`.
@@ -47,7 +47,7 @@ All log messages from the Glean Python SDK are on the `glean` logger, so if you 
 logging.getLogger("glean").setLevel(logging.DEBUG)
 ```
 
-This flexible logging API is unable to display networking-related log messages.
+The flexible logging API is unable to display networking-related log messages or ping contents with `GLEAN_LOG_PINGS` set to true.
 
 See the [Python logging documentation][python-logging] for more information.
 
