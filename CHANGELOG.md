@@ -4,6 +4,8 @@
 
 * General
   * Removed `invalid_timezone_offset` metric ([#1923](https://github.com/mozilla/glean/pull/1923))
+* Python
+  * It is now possible to emit log messages from the networking subprocess by using the new `log_level` parameter to `Glean.initialize`. ([#1918](https://github.com/mozilla/glean/pull/1918))
 
 # v42.3.2 (2021-12-15)
 
