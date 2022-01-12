@@ -59,7 +59,7 @@ as it is what indicates that the current file is a metrics definitions file.
 
 # `$tags`
 
-You may optionally declare tags at the file level that apply to all metrics in that file.
+You may optionally declare [tags](tags.md) at the file level that apply to all metrics in that file.
 
 ## Category
 
