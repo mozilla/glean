@@ -3,7 +3,7 @@ black==21.12b0
 cffi==1.15.0
 coverage==6.2
 flake8==4.0.1
-flake8-bugbear==21.11.29
+flake8-bugbear==22.1.11
 jsonschema==3.2.0
 mypy==0.931
 pdoc3==0.10.0
