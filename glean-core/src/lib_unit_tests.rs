@@ -62,7 +62,7 @@ fn experiment_id_and_branch_get_truncated_if_too_long() {
     // Make sure the branch id was truncated as well.
     let experiment_data = glean.test_get_experiment_data_as_json(expected_id);
     assert!(
-        !experiment_data.is_none(),
+        experiment_data.is_some(),
         "Experiment data must be available"
     );
 
@@ -101,7 +101,7 @@ fn limits_on_experiments_extras_are_applied_correctly() {
     // Get the data
     let experiment_data = glean.test_get_experiment_data_as_json(experiment_id);
     assert!(
-        !experiment_data.is_none(),
+        experiment_data.is_some(),
         "Experiment data must be available"
     );
 
