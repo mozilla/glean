@@ -178,9 +178,9 @@ pub fn set_experiment_active(
     extra: Option<HashMap<String, String>>,
 ) {
     glean_core::glean_set_experiment_active(
-        experiment_id.to_owned(),
-        branch.to_owned(),
-        extra.unwrap_or_else(HashMap::new),
+        experiment_id,
+        branch,
+        extra.unwrap_or_default(),
     )
 }
 
@@ -188,7 +188,7 @@ pub fn set_experiment_active(
 ///
 /// See [`glean_core::Glean::set_experiment_inactive`].
 pub fn set_experiment_inactive(experiment_id: String) {
-    glean_core::glean_set_experiment_inactive(experiment_id.to_owned())
+    glean_core::glean_set_experiment_inactive(experiment_id)
 }
 
 /// Performs the collection/cleanup operations required by becoming active.

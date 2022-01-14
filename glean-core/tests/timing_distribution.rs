@@ -335,7 +335,7 @@ fn stopping_non_existing_id_records_an_error() {
             &glean,
             metric.meta(),
             ErrorType::InvalidState,
-            Some("store1".into())
+            Some("store1")
         )
     );
 }
@@ -359,7 +359,7 @@ fn the_accumulate_raw_samples_api_correctly_stores_timing_values() {
     let seconds_to_nanos = 1000 * 1000 * 1000;
     metric.accumulate_raw_samples_nanos_sync(
         &glean,
-        &[seconds_to_nanos, 2 * seconds_to_nanos, 3 * seconds_to_nanos].to_vec(),
+        [seconds_to_nanos, 2 * seconds_to_nanos, 3 * seconds_to_nanos].as_ref(),
     );
 
     let snapshot = metric
@@ -381,7 +381,7 @@ fn the_accumulate_raw_samples_api_correctly_stores_timing_values() {
         &glean,
         metric.meta(),
         ErrorType::InvalidState,
-        Some("store1".into())
+        Some("store1")
     )
     .is_err());
 }

@@ -564,7 +564,7 @@ fn core_metrics_should_be_cleared_and_restored_when_disabling_and_enabling_uploa
     // No app_channel reported.
     test_reset_glean(
         Configuration {
-            data_path: tmpname.clone(),
+            data_path: tmpname,
             application_id: GLOBAL_APPLICATION_ID.into(),
             upload_enabled: true,
             max_events: None,
