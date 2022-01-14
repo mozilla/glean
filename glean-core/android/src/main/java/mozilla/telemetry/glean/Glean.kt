@@ -21,6 +21,7 @@ import mozilla.telemetry.glean.config.Configuration
 import mozilla.telemetry.glean.config.FfiConfiguration
 import mozilla.telemetry.glean.utils.getLocaleTag
 import java.io.File
+import java.util.Calendar
 import mozilla.telemetry.glean.rust.LibGleanFFI
 import mozilla.telemetry.glean.rust.getAndConsumeRustString
 import mozilla.telemetry.glean.rust.toBoolean
@@ -43,7 +44,7 @@ import org.json.JSONObject
  */
 data class GleanTimerId internal constructor(internal val id: Long)
 
-data class BuildInfo(val versionCode: String, val versionName: String)
+data class BuildInfo(val versionCode: String, val versionName: String, val buildDate: Calendar)
 
 /**
  * The main Glean API.
@@ -138,8 +139,6 @@ open class GleanInternalAPI internal constructor () {
         configuration: Configuration = Configuration(),
         buildInfo: BuildInfo
     ) {
-        this.buildInfo = buildInfo
-
         // Glean initialization must be called on the main thread, or lifecycle
         // registration may fail. This is also enforced at build time by the
         // @MainThread decorator, but this run time check is also performed to
@@ -158,6 +157,7 @@ open class GleanInternalAPI internal constructor () {
             return
         }
 
+        this.buildInfo = buildInfo
         this.applicationContext = applicationContext
 
         this.configuration = configuration
@@ -518,6 +518,7 @@ open class GleanInternalAPI internal constructor () {
         // Set required information first.
         GleanInternalMetrics.appBuild.setSync(buildInfo.versionCode)
         GleanInternalMetrics.appDisplayVersion.setSync(buildInfo.versionName)
+        GleanInternalMetrics.buildDate.setSync(buildInfo.buildDate)
 
         GleanInternalMetrics.architecture.setSync(Build.SUPPORTED_ABIS[0])
         GleanInternalMetrics.osVersion.setSync(Build.VERSION.RELEASE)
@@ -771,7 +772,7 @@ open class GleanInternalAPI internal constructor () {
         // Always log pings for tests
         Glean.setLogPings(true)
 
-        val buildInfo = BuildInfo(versionCode = "0.0.1", versionName = "0.0.1")
+        val buildInfo = BuildInfo(versionCode = "0.0.1", versionName = "0.0.1", buildDate = Calendar.getInstance())
         Glean.initialize(context, uploadEnabled, config, buildInfo)
     }
 

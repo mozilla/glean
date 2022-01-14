@@ -33,6 +33,11 @@
           "description": "The architecture of the device, (e.g. \"arm\", \"x86\").",
           "type": "string"
         },
+        "build_date": {
+          "description": "The date & time the application was built",
+          "format": "datetime",
+          "type": "string"
+        },
         "client_id": {
           "description": "A UUID uniquely identifying the client.",
           "pattern": "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$",
@@ -363,6 +368,18 @@
               "type": "string"
             },
             "type": "array"
+          },
+          "propertyNames": {
+            "maxLength": 61,
+            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "text": {
+          "additionalProperties": {
+            "maxLength": 204800,
+            "type": "string"
           },
           "propertyNames": {
             "maxLength": 61,

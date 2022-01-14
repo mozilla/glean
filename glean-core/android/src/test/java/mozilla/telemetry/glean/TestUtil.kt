@@ -33,6 +33,7 @@ import org.mockito.ArgumentCaptor
 import org.robolectric.shadows.ShadowLog
 import java.io.ByteArrayInputStream
 import java.util.Calendar
+import java.util.TimeZone
 import java.util.UUID
 import java.util.concurrent.ExecutionException
 
@@ -42,7 +43,8 @@ object GleanBuildInfo {
     val buildInfo: BuildInfo by lazy {
         BuildInfo(
             versionCode = "0.0.1",
-            versionName = "0.0.1"
+            versionName = "0.0.1",
+            buildDate = stubBuildDate()
         )
     }
 }
@@ -267,7 +269,11 @@ fun RecordedRequest.getPlainBody(): String {
  */
 internal fun delayMetricsPing(
     context: Context,
-    buildInfo: BuildInfo = BuildInfo(versionCode = "0.0.1", versionName = "0.0.1")
+    buildInfo: BuildInfo = BuildInfo(
+        versionCode = "0.0.1",
+        versionName = "0.0.1",
+        buildDate = stubBuildDate()
+    )
 ) {
     // Set the current system time to a known datetime.
     val fakeNow = Calendar.getInstance()
@@ -351,4 +357,9 @@ fun waitForPingContent(
     }
 
     return parsedPayload
+}
+
+fun stubBuildDate(): Calendar {
+    // Release date of Glean v19, the first Rust-powered Glean.
+    return Calendar.getInstance(TimeZone.getTimeZone("GMT+0")).also { cal -> cal.set(2019, 9, 23, 12, 52, 8) }
 }

@@ -107,6 +107,8 @@ Follow these steps to automatically run the parser at build time:
    bash $PWD/sdk_generator.sh
    ```
 
+   Set [additional options](../../language-bindings/ios/ios-build-configuration-options.md) to control the behavior of the script.
+
 {{#include ../../../shared/blockquote-warning.html}}
 
 ##### Using with application-services

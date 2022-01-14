@@ -72,6 +72,8 @@
     - [Android build configuration options](language-bindings/android/android-build-configuration-options.md)
     - [Android offline builds](language-bindings/android/android-offline-builds.md)
     - [Instrumenting Android crashes with Glean](language-bindings/android/instrument-android-crashes-example.md)
+- [iOS](language-bindings/ios/index.md)
+    - [iOS build configuration options](language-bindings/ios/ios-build-configuration-options.md)
 - [JavaScript](language-bindings/javascript/index.md)
     - [Plugins](language-bindings/javascript/plugins/index.md)
         - [Ping Encryption Plugin](language-bindings/javascript/plugins/encryption.md)

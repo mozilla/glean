@@ -51,6 +51,7 @@ import org.robolectric.shadows.ShadowProcess
 import org.robolectric.shadows.ShadowLog
 import java.io.File
 import java.util.Calendar
+import java.util.TimeZone
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
@@ -828,11 +829,15 @@ class GleanTest {
     @Test
     fun `test passing in explicit BuildInfo`() {
         Glean.testDestroyGleanHandle()
+
+        val buildDate = Calendar.getInstance(TimeZone.getTimeZone("GMT+0"))
+            .also { cal -> cal.set(2020, 10, 6, 11, 30, 50) }
         Glean.initialize(
-            context, true, buildInfo = BuildInfo(versionName = "foo", versionCode = "c0ffee")
+            context, true, buildInfo = BuildInfo(versionName = "foo", versionCode = "c0ffee", buildDate = buildDate)
         )
 
         assertEquals("c0ffee", GleanInternalMetrics.appBuild.testGetValue())
         assertEquals("foo", GleanInternalMetrics.appDisplayVersion.testGetValue())
+        assertEquals("2020-11-06T11:30:50+00:00", GleanInternalMetrics.buildDate.testGetValueAsString())
     }
 }

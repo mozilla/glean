@@ -71,18 +71,26 @@ public class DatetimeMetricType {
         guard !self.disabled else { return }
 
         Dispatchers.shared.launchAPI {
-            glean_datetime_set(
-                self.handle,
-                Int32(components.year ?? 0),
-                UInt32(components.month ?? 0),
-                UInt32(components.day ?? 0),
-                UInt32(components.hour ?? 0),
-                UInt32(components.minute ?? 0),
-                UInt32(components.second ?? 0),
-                Int64(components.nanosecond ?? 0),
-                Int32(components.timeZone!.secondsFromGMT(for: components.date!))
-            )
+            self.setSync(components)
         }
+    }
+
+    /// Synchronously set a date time.
+    ///
+    /// Note: The `components` need to represent a valid date (`components.isValidDate == true`).
+    /// Ensure that all required components and a calendar are set.
+    func setSync(_ components: DateComponents) {
+        glean_datetime_set(
+            self.handle,
+            Int32(components.year ?? 0),
+            UInt32(components.month ?? 0),
+            UInt32(components.day ?? 0),
+            UInt32(components.hour ?? 0),
+            UInt32(components.minute ?? 0),
+            UInt32(components.second ?? 0),
+            Int64(components.nanosecond ?? 0),
+            Int32(components.timeZone!.secondsFromGMT(for: components.date!))
+        )
     }
 
     /// Tests whether a value is stored for the metric for testing purposes only. This function will

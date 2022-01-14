@@ -25,6 +25,7 @@ import mozilla.telemetry.glean.getMockWebServer
 import mozilla.telemetry.glean.getPlainBody
 import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.resetGlean
+import mozilla.telemetry.glean.stubBuildDate
 import mozilla.telemetry.glean.triggerWorkManager
 import mozilla.telemetry.glean.utils.getISOTimeString
 import mozilla.telemetry.glean.utils.parseISOTimeString
@@ -499,12 +500,12 @@ class MetricsPingSchedulerTest {
 
         val oldVersion = "version.0"
         val oldContext = getContext()
-        val oldBuildInfo = BuildInfo(versionCode = oldVersion, versionName = oldVersion)
+        val oldBuildInfo = BuildInfo(versionCode = oldVersion, versionName = oldVersion, buildDate = stubBuildDate())
 
         // New version
         val newVersion = "version.1"
         val newContext = getContext()
-        val newBuildInfo = BuildInfo(versionCode = newVersion, versionName = newVersion)
+        val newBuildInfo = BuildInfo(versionCode = newVersion, versionName = newVersion, buildDate = stubBuildDate())
 
         try {
             // Initialize Glean for the first time.

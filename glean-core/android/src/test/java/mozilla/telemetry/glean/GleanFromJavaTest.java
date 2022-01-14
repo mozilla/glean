@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,7 +30,7 @@ public class GleanFromJavaTest {
     // methods at build-time.
 
     private Context appContext = TestUtilKt.getContext();
-    private BuildInfo buildInfo = new BuildInfo("java-test", "java-test");
+    private BuildInfo buildInfo = new BuildInfo("java-test", "java-test", Calendar.getInstance());
 
     @Before
     public void setup() {
@@ -86,7 +87,7 @@ public class GleanFromJavaTest {
         Configuration config =
             new Configuration(Configuration.DEFAULT_TELEMETRY_ENDPOINT, "test-channel");
         BuildInfo buildInfo =
-            new BuildInfo("foo", "c0ffee");
+            new BuildInfo("foo", "c0ffee", Calendar.getInstance());
         Glean.INSTANCE.initialize(appContext, true, config, buildInfo);
 
         // The testing API doesn't seem to be available from these Java tests, so the best

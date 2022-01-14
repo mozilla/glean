@@ -12,6 +12,14 @@ private typealias Pings = GleanMetrics.Pings
 /// Public exported type identifying individual timers for `TimingDistributionMetricType`
 public typealias GleanTimerId = UInt64
 
+public struct BuildInfo {
+    var buildDate: DateComponents
+
+    public init(buildDate: DateComponents) {
+        self.buildDate = buildDate
+    }
+}
+
 /// The main Glean API.
 ///
 /// This is exposed through the global `Glean.shared` object.
@@ -36,6 +44,7 @@ public class Glean {
     private var sourceTags: [String]?
     var logPings: Bool = false
     var configuration: Configuration?
+    private var buildInfo: BuildInfo?
     private var observer: GleanLifecycleObserver?
 
     // This struct is used for organizational purposes to keep the class constants in a single place
@@ -80,7 +89,8 @@ public class Glean {
     ///       first_run_date and first_run_hour) are cleared.
     ///     * configuration: A Glean `Configuration` object with global settings.
     public func initialize(uploadEnabled: Bool,
-                           configuration: Configuration = Configuration()) {
+                           configuration: Configuration = Configuration(),
+                           buildInfo: BuildInfo) {
         // In certain situations Glean.initialize may be called from a process other than the main
         // process such as an embedded extension. In this case we want to just return.
         // See https://bugzilla.mozilla.org/show_bug.cgi?id=1625157 for more information.
@@ -94,6 +104,7 @@ public class Glean {
             return
         }
 
+        self.buildInfo = buildInfo
         self.configuration = configuration
 
         // Execute startup off the main thread
@@ -226,6 +237,11 @@ public class Glean {
 
         GleanInternalMetrics.appBuild.setSync(AppInfo.buildId)
         GleanInternalMetrics.appDisplayVersion.setSync(AppInfo.displayVersion)
+
+        // It's definitely initialized at `initialize`
+        if let buildInfo = self.buildInfo {
+            GleanInternalMetrics.buildDate.setSync(buildInfo.buildDate)
+        }
     }
 
     /// Enable or disable Glean collection and upload.
@@ -680,6 +696,19 @@ public class Glean {
         testDestroyGleanHandle()
         // Enable ping logging for all tests
         setLogPings(true)
-        initialize(uploadEnabled: uploadEnabled, configuration: configuration)
+
+        let buildInfo = BuildInfo(
+            buildDate: DateComponents(
+                calendar: Calendar.current,
+                timeZone: TimeZone(abbreviation: "UTC"),
+                year: 2020,
+                month: 1,
+                day: 1,
+                hour: 0,
+                minute: 0,
+                second: 0
+            )
+        )
+        initialize(uploadEnabled: uploadEnabled, configuration: configuration, buildInfo: buildInfo)
     }
 }

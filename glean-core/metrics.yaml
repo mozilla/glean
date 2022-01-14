@@ -199,6 +199,25 @@ glean.internal.metrics:
       - glean-team@mozilla.com
     expires: never
 
+  build_date:
+    type: datetime
+    time_unit: second
+    lifetime: application
+    send_in_pings:
+      - glean_client_info
+    description: |
+      The date & time the application was built.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1742448
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1742448#c17
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+      - jrediger@mozilla.com
+    expires: never
+
   first_run_date:
     type: datetime
     lifetime: user
