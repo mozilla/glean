@@ -662,7 +662,7 @@ impl PingUploadManager {
             let metric = self
                 .upload_metrics
                 .ping_upload_failure
-                .get(label.to_string());
+                .get(label);
             metric.add_sync(glean, 1);
         }
 

@@ -107,7 +107,7 @@ fn limits_on_experiments_extras_are_applied_correctly() {
     // Get the data
     let experiment_data = glean.test_get_experiment_data(experiment_id);
     assert!(
-        !experiment_data.is_none(),
+        experiment_data.is_some(),
         "Experiment data must be available"
     );
 

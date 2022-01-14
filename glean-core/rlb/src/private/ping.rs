@@ -41,11 +41,10 @@ impl PingType {
             reason_codes,
         );
 
-        let me = Self {
+        Self {
             inner,
             test_callback: Arc::new(Default::default()),
-        };
-        me
+        }
     }
 
     /// Submits the ping for eventual uploading.

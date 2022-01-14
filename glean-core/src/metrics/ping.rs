@@ -156,7 +156,7 @@ impl PingType {
                 glean
                     .additional_metrics
                     .pings_submitted
-                    .get(ping.name.to_string())
+                    .get(ping.name)
                     .add_sync(glean, 1);
 
                 if let Err(e) = ping_maker.store_ping(glean.get_data_path(), &ping) {
