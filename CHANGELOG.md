@@ -1,6 +1,13 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v43.0.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v43.0.2...main)
+
+# v43.0.2 (2022-01-17)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v43.0.1...v43.0.2)
+
+* General
+  * Fix artifact publishing properly ([#1930](https://github.com/mozilla/glean/pull/1930))
 
 # v43.0.1 (2022-01-17)
 
