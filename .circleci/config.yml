@@ -212,9 +212,10 @@ commands:
       - run:
           name: Get ghr release tool
           command: |
-            GHR=ghr_v0.14.0_darwin_amd64
+            GHR_VERSION=v0.14.0
+            GHR=ghr_${GHR_VERSION}_darwin_amd64
             GHR_SHA256=33e9c89d611b049a2cb7ace8334108e8c586ea37a713f59c8503df582710b679
-            curl -sfSL --retry 5 -O "https://github.com/tcnksm/ghr/releases/download/v0.13.0/${GHR}.zip"
+            curl -sfSL --retry 5 -O "https://github.com/tcnksm/ghr/releases/download/${GHR_VERSION}/${GHR}.zip"
             echo "${GHR_SHA256} *${GHR}.zip" | shasum -a 256 -c -
             unzip "${GHR}.zip"
             cp ./${GHR}/ghr ghr
@@ -224,9 +225,10 @@ commands:
       - run:
           name: Get ghr release tool
           command: |
-            GHR=ghr_v0.14.0_linux_amd64
+            GHR_VERSION=v0.14.0
+            GHR=ghr_${GHR_VERSION}_linux_amd64
             GHR_SHA256=08fd71402df6aace23403ef3757dabc7e261d6b24fed5a0634e2275c71303c31
-            curl -sfSL --retry 5 -O "https://github.com/tcnksm/ghr/releases/download/v0.13.0/${GHR}.tar.gz"
+            curl -sfSL --retry 5 -O "https://github.com/tcnksm/ghr/releases/download/${GHR_VERSION}/${GHR}.tar.gz"
             echo "${GHR_SHA256} *${GHR}.tar.gz" | sha256sum -c -
             tar -xf "${GHR}.tar.gz"
             cp ./${GHR}/ghr ghr
