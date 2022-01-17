@@ -547,16 +547,16 @@ jobs:
       - setup-rust-toolchain
       - restore_cache:
           name: Restore rubygems cache
-          key: swift-docs-gems-v10
+          key: swift-docs-gems-v11
       - run:
           name: Install jazzy
           command: gem install jazzy
       - save_cache:
           name: Save rubygems cache
           # NEEDS TO CHANGE WHEN JAZZY OR RUBY IS UPDATED
-          key: swift-docs-gems-v10
+          key: swift-docs-gems-v11
           paths:
-            - ~/.gem/ruby/2.7.4
+            - ~/.gem/ruby/2.7.5
       - run:
           name: Setup build environment
           command: |
