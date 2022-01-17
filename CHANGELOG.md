@@ -1,5 +1,8 @@
 # Unreleased changes
 
+* Rust
+  * Ensure test-only `destroy_glean()` handles `initialize()` having started but not completed ([bug 1750235](https://bugzilla.mozilla.org/show_bug.cgi?id=1750235))
+
 [Full changelog](https://github.com/mozilla/glean/compare/v43.0.2...main)
 
 # v43.0.2 (2022-01-17)
