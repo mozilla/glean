@@ -217,7 +217,7 @@ class MetricsPingSchedulerTests: XCTestCase {
         // the previous run) but must not send the canary string, which would be sent the next time
         // the "metrics" ping is collected after this one.
         // Glean.shared.initialize(uploadEnabled: true)
-        Glean.shared.initialize(uploadEnabled: true)
+        Glean.shared.initialize(uploadEnabled: true, buildInfo: stubBuildInfo())
         waitForExpectations(timeout: 5.0) { error in
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
         }

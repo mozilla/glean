@@ -283,13 +283,17 @@ plus the name of the platform it is running on.
 
 _This header is currently only sent by the Glean JavaScript SDK. See [note](#1)._
 
-#### `X-Client-Type`
+#### `X-Client-Type` (deprecated)
 
 Custom header to support handling of Glean pings in the legacy pipeline. Values is always `Glean`.
 
-#### `X-Client-Version`
+This header is deprecated and will soon be removed from all Glean SDKs.
+
+#### `X-Client-Version` (deprecated)
 
 The Glean SDK version e.g. `0.40.0`, sent as a custom header to support handling of Glean pings in the legacy pipeline.
+
+This header is deprecated and will soon be removed from all Glean SDKs.
 
 #### `X-Debug-Id` _(optional)_
 

@@ -46,6 +46,9 @@ class BaselinePingTest: XCTestCase {
     //   - seq: 0, reason: active, duration: null
     //   - seq: 1, reason: inactive, duration: non-null
     //   - seq: 2, reason: active, duration: null
+    //
+    // swiftlint:disable function_body_length
+    // REASON: It's a single test case for the integration test
     func testValidateBaselinePing() {
         let server = setupServer(expectPingType: "baseline")
         expectation = expectation(description: "Completed upload (initial active)")
@@ -56,10 +59,16 @@ class BaselinePingTest: XCTestCase {
         waitForExpectations(timeout: 5.0) { error in
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
         }
+        // Set as a glean_parser parameter in the build task
+        let expectedBuildDate = "2020-11-06T11:30:50+00:00"
 
         var pingInfo = lastPingJson!["ping_info"] as! [String: Any]
         var reason = pingInfo["reason"] as! String
         XCTAssertEqual("active", reason)
+
+        var clientInfo = lastPingJson!["client_info"] as! [String: Any]
+        var buildDate = clientInfo["build_date"] as! String
+        XCTAssertEqual(expectedBuildDate, buildDate)
 
         // Wait for 1 second: this should guarantee we have some valid duration in the
         // ping.
@@ -77,6 +86,10 @@ class BaselinePingTest: XCTestCase {
         pingInfo = lastPingJson!["ping_info"] as! [String: Any]
         reason = pingInfo["reason"] as! String
         XCTAssertEqual("inactive", reason)
+
+        clientInfo = lastPingJson!["client_info"] as! [String: Any]
+        buildDate = clientInfo["build_date"] as! String
+        XCTAssertEqual(expectedBuildDate, buildDate)
 
         let metrics = lastPingJson!["metrics"] as! [String: Any]
 
@@ -109,6 +122,10 @@ class BaselinePingTest: XCTestCase {
         pingInfo = lastPingJson!["ping_info"] as! [String: Any]
         reason = pingInfo["reason"] as! String
         XCTAssertEqual("active", reason)
+
+        clientInfo = lastPingJson!["client_info"] as! [String: Any]
+        buildDate = clientInfo["build_date"] as! String
+        XCTAssertEqual(expectedBuildDate, buildDate)
 
         server.stop()
     }

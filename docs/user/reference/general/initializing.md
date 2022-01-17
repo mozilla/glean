@@ -121,7 +121,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Glean.shared.initialize(
             // Here, `Settings` is a method to get user preferences specific to
             // your application, and not part of the Glean API.
-            uploadEnabled = Settings.isTelemetryEnabled
+            uploadEnabled = Settings.isTelemetryEnabled,
+            buildInfo = GleanMetrics.GleanBuild.info
         )
     }
 }

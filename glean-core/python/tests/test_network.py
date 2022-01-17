@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
+import logging
 from pathlib import Path
 import uuid
 
@@ -170,3 +171,29 @@ def test_unknown_url_no_exception():
     )
 
     assert type(response) is ping_uploader.RecoverableFailure
+
+
+def test_log_on_success(safe_httpserver, capfd):
+    # We can't use caplog to catch log messages from the subprocess, but we can
+    # use capsys to catch its stderr.
+
+    safe_httpserver.serve_content(b"", code=200)
+    Glean._configuration.server_endpoint = safe_httpserver.url
+    Glean._simple_log_level = logging.INFO
+
+    pings_dir = Glean._data_dir / "pending_pings"
+    pings_dir.mkdir()
+
+    with (pings_dir / str(uuid.uuid4())).open("wb") as fd:
+        fd.write(b"/data/path/\n")
+        fd.write(b"{}\n")
+
+    p1 = PingUploadWorker._process()
+    p1.wait()
+    assert p1.returncode == 0
+
+    assert 1 == len(safe_httpserver.requests)
+
+    captured = capfd.readouterr()
+
+    assert "successfully sent 200" in str(captured.err)

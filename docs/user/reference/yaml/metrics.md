@@ -26,6 +26,9 @@ section of this book.
 # Schema
 $schema: moz://mozilla.org/schemas/glean/metrics/2-0-0
 
+$tags:
+  - frontend
+
 # Category
 toolbar:
   # Name
@@ -53,6 +56,10 @@ toolbar:
 
 Declaring the schema at the top of a metrics definitions file is required,
 as it is what indicates that the current file is a metrics definitions file.
+
+# `$tags`
+
+You may optionally declare [tags](tags.md) at the file level that apply to all metrics in that file.
 
 ## Category
 

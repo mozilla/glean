@@ -35,10 +35,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
             print("using a mock server, setting address: \(address)")
             let cfg = Configuration(serverEndpoint: address)
-            glean.initialize(uploadEnabled: true, configuration: cfg)
+            glean.initialize(uploadEnabled: true, configuration: cfg, buildInfo: GleanMetrics.GleanBuild.info)
         } else {
             print("using default config for Glean")
-            glean.initialize(uploadEnabled: true)
+            glean.initialize(uploadEnabled: true, buildInfo: GleanMetrics.GleanBuild.info)
         }
 
         Test.timespan.start()
