@@ -15,9 +15,9 @@
 #
 # To use it in a Swift project, follow these steps:
 # 1. Import the `sdk_generator.sh` script into your project.
-# 2. Add your `metrics.yaml` and (optionally) `pings.yaml` to your project.
+# 2. Add your `metrics.yaml` and (optionally) `pings.yaml` and `tags.yaml` to your project.
 # 3. Add a new "Run Script" build step and set the command to `bash $PWD/sdk_generator.sh`
-# 4. Add your definition files (`metrics.yaml`, `pings.yaml`) as Input Files for the "Run Script" step.
+# 4. Add your definition files (`metrics.yaml`, `pings.yaml`, `tags.yaml`) as Input Files for the "Run Script" step.
 # 5. Run the build.
 # 6. Add the files in the `Generated` folder to your project.
 # 7. Add the same files from the `Generated` folder as Output Files of the newly created "Run SCript" step.
