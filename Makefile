@@ -181,16 +181,6 @@ android-emulator: ## Start the Android emulator with a predefined image
 	$(ANDROID_HOME)/emulator/emulator -avd Nexus_5X_API_P -netdelay none -netspeed full
 .PHONY: android-emulator
 
-cbindgen: ## Regenerate the FFI header file
-	RUSTUP_TOOLCHAIN=nightly \
-	cbindgen \
-		--config glean-core/ffi/cbindgen.toml \
-		--crate glean-ffi \
-		--lockfile Cargo.lock \
-		--output glean-core/ffi/glean.h
-	cp glean-core/ffi/glean.h glean-core/ios/Glean/GleanFfi.h
-.PHONY: cbindgen
-
 rust-coverage: export CARGO_INCREMENTAL=0
 rust-coverage: export RUSTFLAGS=-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Zno-landing-pads
 rust-coverage: export RUSTUP_TOOLCHAIN=nightly

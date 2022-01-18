@@ -40,7 +40,7 @@ commands:
           name: Turn on RUST_BACKTRACE and RUST_LOG for any job that installs rustc
           command: |
               echo "export RUST_BACKTRACE=1" >> $BASH_ENV
-              echo "export RUST_LOG=glean_core=debug,glean_ffi=debug" >> $BASH_ENV
+              echo "export RUST_LOG=glean_core=debug" >> $BASH_ENV
       - run:
           name: Setup Rust toolchain
           command: |
@@ -334,58 +334,6 @@ jobs:
     steps:
       - test-rust:
           rust-version: "1.53.0"
-
-  Rust FFI header check:
-    docker:
-      - image: circleci/rust:latest
-    steps:
-      - checkout
-      - skip-if-doc-only
-      - setup-rust-toolchain:
-          rust-version: "nightly"
-      - run:
-          name: FFI header consistency check
-          command: |
-            CBINDGEN_VERSION=v0.20.0
-            CBINDGEN=cbindgen
-            CBINDGEN_SHA256=aef0a9e8a7ef57ee71fe877f32424e6581e54200ad7b6d62f0ab0dd881911191
-            curl -sfSL --retry 5 -O "https://github.com/eqrion/cbindgen/releases/download/${CBINDGEN_VERSION}/${CBINDGEN}"
-            echo "${CBINDGEN_SHA256} *${CBINDGEN}" | shasum -a 256 -c -
-            mv cbindgen /usr/local/cargo/bin/cbindgen
-            chmod +x /usr/local/cargo/bin/cbindgen
-            make cbindgen
-            if ! git diff --exit-code HEAD -- glean-core/ios/Glean/GleanFfi.h; then
-              echo "=================================================="
-              echo "GleanFfi.h is different from what's stored in git."
-              echo "Please regenerate the file using:"
-              echo "    make cbindgen"
-              echo "Commit the modified file and push."
-              echo "=================================================="
-              exit 1
-            fi
-
-  C tests:
-    docker:
-      - image: circleci/rust:latest
-    steps:
-      - checkout
-      - skip-if-doc-only
-      - setup-rust-toolchain:
-          rust-version: stable
-      - run:
-          name: FFI example
-          command: |
-            # Just a basic smoke test for now to make sure it compiles and runs
-            # without returning an error
-            cd glean-core/ffi/examples
-            make
-            ./glean_app
-      - run:
-          name: Multi-bindings sample
-          command: |
-            cd samples/multi-bindings
-            make debug
-            make run
 
   Generate Rust documentation:
     docker:
@@ -1164,7 +1112,6 @@ workflows:
       - Lint YAML with yamllint
       - License check
       - Lint Rust with clippy
-      - Rust FFI header check
       - Docs internal metrics check
       - Lint Android with ktlint and detekt
       - Lint Python
@@ -1174,7 +1121,6 @@ workflows:
     jobs:
       - Rust tests - stable
       - Rust tests - minimum version
-      - C tests
       - Android tests
       # iOS jobs run only on main by default, see below for manual-approved jobs
       - iOS build and test:
