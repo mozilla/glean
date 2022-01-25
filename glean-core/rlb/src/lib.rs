@@ -25,7 +25,6 @@
 //!     upload_enabled: true,
 //!     max_events: None,
 //!     delay_ping_lifetime_io: false,
-//!     channel: None,
 //!     server_endpoint: None,
 //!     uploader: None,
 //!     use_core_mps: false,

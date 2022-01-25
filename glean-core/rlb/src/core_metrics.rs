@@ -14,6 +14,8 @@ pub struct ClientInfoMetrics {
     pub app_build: String,
     /// The user visible version string (e.g. "1.0.3").
     pub app_display_version: String,
+    /// The product-provided release channel (e.g. "beta").
+    pub channel: Option<String>,
 }
 
 impl ClientInfoMetrics {
@@ -22,6 +24,7 @@ impl ClientInfoMetrics {
         ClientInfoMetrics {
             app_build: "Unknown".to_string(),
             app_display_version: "Unknown".to_string(),
+            channel: None,
         }
     }
 }
