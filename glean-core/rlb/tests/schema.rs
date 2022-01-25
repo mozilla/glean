@@ -8,8 +8,7 @@ use flate2::read::GzDecoder;
 use jsonschema_valid::{self, schemas::Draft};
 use serde_json::Value;
 
-use glean::private::{DenominatorMetric, NumeratorMetric, RateMetric};
-use glean::{ClientInfoMetrics, CommonMetricData, Configuration};
+//use glean::private::{DenominatorMetric, NumeratorMetric, RateMetric};
 use glean::net::UploadResult;
 use glean::{ClientInfoMetrics, CommonMetricData, Configuration};
 
@@ -99,6 +98,7 @@ fn validate_against_schema() {
 
     // TODO: 1695762 Test all of the metric types against the schema from Rust
 
+    /*
     let rate_metric: RateMetric = RateMetric::new(CommonMetricData {
         category: "test".into(),
         name: "rate".into(),
@@ -146,6 +146,7 @@ fn validate_against_schema() {
     numerator_metric1.add_to_numerator(1);
     numerator_metric2.add_to_numerator(2);
     denominator_metric.add(3);
+    */
 
     // Define a new ping and submit it.
     let custom_ping = glean::private::PingType::new(PING_NAME, true, true, vec![]);
