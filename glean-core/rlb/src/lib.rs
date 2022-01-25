@@ -130,30 +130,7 @@ fn initialize_internal(cfg: Configuration, client_info: ClientInfoMetrics) -> Op
 
 /// Shuts down Glean in an orderly fashion.
 pub fn shutdown() {
-    if global_glean().is_none() {
-        log::warn!("Shutdown called before Glean is initialized");
-        if let Err(e) = dispatcher::kill() {
-            log::error!("Can't kill dispatcher thread: {:?}", e);
-        }
-
-        return;
-    }
-
-    crate::launch_with_glean_mut(|glean| {
-        glean.cancel_metrics_ping_scheduler();
-        glean.set_dirty_flag(false);
-    });
-
-    if let Err(e) = dispatcher::shutdown() {
-        log::error!("Can't shutdown dispatcher thread: {:?}", e);
-    }
-
-    // Be sure to call this _after_ draining the dispatcher
-    crate::with_glean(|glean| {
-        if let Err(e) = glean.persist_ping_lifetime_data() {
-            log::error!("Can't persist ping lifetime data: {:?}", e);
-        }
-    });
+    glean_core::shutdown()
 }
 
 /// Unblock the global dispatcher to start processing queued tasks.
@@ -168,127 +145,14 @@ pub fn shutdown() {
 #[inline(never)]
 pub extern "C" fn rlb_flush_dispatcher() {
     log::trace!("FLushing RLB dispatcher through the FFI");
-
-    let was_initialized = was_initialize_called();
-
-    // Panic in debug mode
-    debug_assert!(!was_initialized);
-
-    // In release do a check and bail out
-    if was_initialized {
-        log::error!(
-            "Tried to flush the dispatcher from outside, but Glean was initialized in the RLB."
-        );
-        return;
-    }
-
-    if let Err(err) = dispatcher::flush_init() {
-        log::error!("Unable to flush the preinit queue: {}", err);
-    }
-}
-
-/// Block on the dispatcher emptying.
-///
-/// This will panic if called before Glean is initialized.
-fn block_on_dispatcher() {
-    assert!(
-        was_initialize_called(),
-        "initialize was never called. Can't block on the dispatcher queue."
-    );
-    dispatcher::block_on_queue().unwrap();
-}
-
-/// Checks if [`initialize`] was ever called.
-///
-/// # Returns
-///
-/// `true` if it was, `false` otherwise.
-fn was_initialize_called() -> bool {
-    INITIALIZE_CALLED.load(Ordering::SeqCst)
-}
-
-fn initialize_core_metrics(
-    glean: &Glean,
-    client_info: &ClientInfoMetrics,
-    channel: Option<String>,
-) {
-    core_metrics::internal_metrics::app_build.set_sync(glean, &client_info.app_build[..]);
-    core_metrics::internal_metrics::app_display_version
-        .set_sync(glean, &client_info.app_display_version[..]);
-    if let Some(app_channel) = channel {
-        core_metrics::internal_metrics::app_channel.set_sync(glean, app_channel);
-    }
-    core_metrics::internal_metrics::os_version.set_sync(glean, system::get_os_version());
-    core_metrics::internal_metrics::architecture.set_sync(glean, system::ARCH.to_string());
+    glean_core::rlb_flush_dispatcher()
 }
 
 /// Sets whether upload is enabled or not.
 ///
 /// See [`glean_core::Glean::set_upload_enabled`].
 pub fn set_upload_enabled(enabled: bool) {
-    if !was_initialize_called() {
-        let msg =
-            "Changing upload enabled before Glean is initialized is not supported.\n \
-            Pass the correct state into `Glean.initialize()`.\n \
-            See documentation at https://mozilla.github.io/glean/book/user/general-api.html#initializing-the-glean-sdk";
-        log::error!("{}", msg);
-        return;
-    }
-
-    // Changing upload enabled always happens asynchronous.
-    // That way it follows what a user expect when calling it inbetween other calls:
-    // it executes in the right order.
-    //
-    // Because the dispatch queue is halted until Glean is fully initialized
-    // we can safely enqueue here and it will execute after initialization.
-    crate::launch_with_glean_mut(move |glean| {
-        let state = global_state().lock().unwrap();
-        let old_enabled = glean.is_upload_enabled();
-        glean.set_upload_enabled(enabled);
-
-        if !old_enabled && enabled {
-            glean.start_metrics_ping_scheduler();
-            // If uploading is being re-enabled, we have to restore the
-            // application-lifetime metrics.
-            initialize_core_metrics(glean, &state.client_info, state.channel.clone());
-        }
-
-        if old_enabled && !enabled {
-            glean.cancel_metrics_ping_scheduler();
-            // If uploading is disabled, we need to send the deletion-request ping:
-            // note that glean-core takes care of generating it.
-            state.upload_manager.trigger_upload();
-        }
-    });
-}
-
-/// Register a new [`PingType`](private::PingType).
-pub fn register_ping_type(ping: &private::PingType) {
-    // If this happens after Glean.initialize is called (and returns),
-    // we dispatch ping registration on the thread pool.
-    // Registering a ping should not block the application.
-    // Submission itself is also dispatched, so it will always come after the registration.
-    if was_initialize_called() {
-        let ping = ping.clone();
-        crate::launch_with_glean_mut(move |glean| {
-            glean.register_ping_type(&ping.ping_type);
-        })
-    } else {
-        // We need to keep track of pings, so they get re-registered after a reset or
-        // if ping registration is attempted before Glean initializes.
-        // This state is kept across Glean resets, which should only ever happen in test mode.
-        // It's a set and keeping them around forever should not have much of an impact.
-        let m = PRE_INIT_PING_REGISTRATION.get_or_init(Default::default);
-        let mut lock = m.lock().unwrap();
-        lock.push(ping.clone());
-    }
-}
-
-/// Collects and submits a ping for eventual uploading.
-///
-/// See [`glean_core::Glean.submit_ping`].
-pub(crate) fn submit_ping(ping: &private::PingType, reason: Option<&str>) {
-    submit_ping_by_name(&ping.name, reason)
+    glean_core::glean_set_upload_enabled(enabled)
 }
 
 /// Collects and submits a ping for eventual uploading by name.
@@ -300,50 +164,7 @@ pub(crate) fn submit_ping(ping: &private::PingType, reason: Option<&str>) {
 pub fn submit_ping_by_name(ping: &str, reason: Option<&str>) {
     let ping = ping.to_string();
     let reason = reason.map(|s| s.to_string());
-    dispatcher::launch(move || {
-        submit_ping_by_name_sync(&ping, reason.as_deref());
-    })
-}
-
-/// Collect and submit a ping (by its name) for eventual upload, synchronously.
-///
-/// The ping will be looked up in the known instances of [`private::PingType`]. If the
-/// ping isn't known, an error is logged and the ping isn't queued for uploading.
-///
-/// The ping content is assembled as soon as possible, but upload is not
-/// guaranteed to happen immediately, as that depends on the upload
-/// policies.
-///
-/// If the ping currently contains no content, it will not be assembled and
-/// queued for sending, unless explicitly specified otherwise in the registry
-/// file.
-///
-/// # Arguments
-///
-/// * `ping_name` - the name of the ping to submit.
-/// * `reason` - the reason the ping is being submitted.
-pub(crate) fn submit_ping_by_name_sync(ping: &str, reason: Option<&str>) {
-    if !was_initialize_called() {
-        log::error!("Glean must be initialized before submitting pings.");
-        return;
-    }
-
-    let submitted_ping = with_glean(|glean| {
-        if !glean.is_upload_enabled() {
-            log::info!("Glean disabled: not submitting any pings.");
-            // This won't actually return from `submit_ping_by_name`, but
-            // returning `false` here skips spinning up the uploader below,
-            // which is basically the same.
-            return false;
-        }
-
-        glean.submit_ping_by_name(ping, reason.as_deref())
-    });
-
-    if submitted_ping {
-        let state = global_state().lock().unwrap();
-        state.upload_manager.trigger_upload();
-    }
+    glean_core::glean_submit_ping_by_name(ping, reason)
 }
 
 /// Indicate that an experiment is running.  Glean will then add an
@@ -356,16 +177,18 @@ pub fn set_experiment_active(
     branch: String,
     extra: Option<HashMap<String, String>>,
 ) {
-    crate::launch_with_glean(move |glean| {
-        glean.set_experiment_active(experiment_id.to_owned(), branch.to_owned(), extra)
-    })
+    glean_core::glean_set_experiment_active(
+        experiment_id.to_owned(),
+        branch.to_owned(),
+        extra.unwrap_or_else(HashMap::new),
+    )
 }
 
 /// Indicate that an experiment is no longer running.
 ///
 /// See [`glean_core::Glean::set_experiment_inactive`].
 pub fn set_experiment_inactive(experiment_id: String) {
-    crate::launch_with_glean(move |glean| glean.set_experiment_inactive(experiment_id))
+    glean_core::glean_set_experiment_inactive(experiment_id.to_owned())
 }
 
 /// Performs the collection/cleanup operations required by becoming active.
@@ -375,21 +198,7 @@ pub fn set_experiment_inactive(experiment_id: String) {
 /// This should be called whenever the consuming product becomes active (e.g.
 /// getting to foreground).
 pub fn handle_client_active() {
-    crate::launch_with_glean_mut(|glean| {
-        glean.handle_client_active();
-
-        // The above call may generate pings, so we need to trigger
-        // the uploader. It's fine to trigger it if no ping was generated:
-        // it will bail out.
-        let state = global_state().lock().unwrap();
-        state.upload_manager.trigger_upload();
-    });
-
-    // The previous block of code may send a ping containing the `duration` metric,
-    // in `glean.handle_client_active`. We intentionally start recording a new
-    // `duration` after that happens, so that the measurement gets reported when
-    // calling `handle_client_inactive`.
-    core_metrics::internal_metrics::baseline_duration.start();
+    glean_core::glean_handle_client_active()
 }
 
 /// Performs the collection/cleanup operations required by becoming inactive.
@@ -399,92 +208,46 @@ pub fn handle_client_active() {
 /// This should be called whenever the consuming product becomes inactive (e.g.
 /// getting to background).
 pub fn handle_client_inactive() {
-    // This needs to be called before the `handle_client_inactive` api: it stops
-    // measuring the duration of the previous activity time, before any ping is sent
-    // by the next call.
-    core_metrics::internal_metrics::baseline_duration.stop();
-
-    crate::launch_with_glean_mut(|glean| {
-        glean.handle_client_inactive();
-
-        // The above call may generate pings, so we need to trigger
-        // the uploader. It's fine to trigger it if no ping was generated:
-        // it will bail out.
-        let state = global_state().lock().unwrap();
-        state.upload_manager.trigger_upload();
-    })
+    glean_core::glean_handle_client_inactive()
 }
 
 /// TEST ONLY FUNCTION.
 /// Checks if an experiment is currently active.
 #[allow(dead_code)]
 pub(crate) fn test_is_experiment_active(experiment_id: String) -> bool {
-    block_on_dispatcher();
-    with_glean(|glean| glean.test_is_experiment_active(experiment_id.to_owned()))
+    glean_core::glean_test_get_experiment_data(experiment_id).is_some()
 }
 
 /// TEST ONLY FUNCTION.
 /// Returns the [`RecordedExperimentData`] for the given `experiment_id` or panics if
 /// the id isn't found.
 #[allow(dead_code)]
-pub(crate) fn test_get_experiment_data(experiment_id: String) -> RecordedExperimentData {
-    block_on_dispatcher();
-    with_glean(|glean| {
-        let json_data = glean
-            .test_get_experiment_data_as_json(experiment_id.to_owned())
-            .unwrap_or_else(|| panic!("No experiment found for id: {}", experiment_id));
-        serde_json::from_str::<RecordedExperimentData>(&json_data).unwrap()
-    })
+pub(crate) fn test_get_experiment_data(experiment_id: String) -> Option<RecordedExperiment> {
+    glean_core::glean_test_get_experiment_data(experiment_id)
 }
 
 /// Destroy the global Glean state.
 pub(crate) fn destroy_glean(clear_stores: bool) {
-    // Destroy the existing glean instance from glean-core.
-    if was_initialize_called() {
-        // Reset the dispatcher first (it might still run tasks against the database)
-        dispatcher::reset_dispatcher();
-
-        // Wait for any background uploader thread to finish.
-        // This needs to be done before the check below,
-        // as the uploader will also try to acquire a lock on the global Glean.
-        //
-        // Note: requires the block here, so we drop the lock again.
-        {
-            let state = global_state().lock().unwrap();
-            state.upload_manager.test_wait_for_upload();
-        }
-
-        // We need to check if the Glean object (from glean-core) is
-        // initialized, otherwise this will crash on the first test
-        // due to bug 1675215 (this check can be removed once that
-        // bug is fixed).
-        if global_glean().is_some() {
-            with_glean_mut(|glean| {
-                if clear_stores {
-                    glean.test_clear_all_stores()
-                }
-                glean.destroy_db()
-            });
-        }
-        // Allow us to go through initialization again.
-        INITIALIZE_CALLED.store(false, Ordering::SeqCst);
-
-        // If Glean initialization previously didn't finish,
-        // then the global state might not have been reset
-        // and thus needs to be cleared here.
+    glean_core::glean_test_destroy_glean(clear_stores)
+    /*
+    // Wait for any background uploader thread to finish.
+    // This needs to be done before the check below,
+    // as the uploader will also try to acquire a lock on the global Glean.
+    //
+    // Note: requires the block here, so we drop the lock again.
+    {
         let state = global_state().lock().unwrap();
-        state.upload_manager.test_clear_upload_thread();
+        state.upload_manager.test_wait_for_upload();
     }
+    state.upload_manager.test_clear_upload_thread();
+    */
 }
 
 /// TEST ONLY FUNCTION.
 /// Resets the Glean state and triggers init again.
 pub fn test_reset_glean(cfg: Configuration, client_info: ClientInfoMetrics, clear_stores: bool) {
     destroy_glean(clear_stores);
-
-    if let Some(handle) = initialize_internal(cfg, client_info) {
-        handle.join().unwrap();
-    }
+    initialize_internal(cfg, client_info);
 }
 
 /// Sets a debug view tag.
@@ -501,17 +264,7 @@ pub fn test_reset_glean(cfg: Configuration, client_info: ClientInfoMetrics, clea
 /// This will return `false` in case `tag` is not a valid tag and `true` otherwise.
 /// If called before Glean is initialized it will always return `true`.
 pub fn set_debug_view_tag(tag: &str) -> bool {
-    if was_initialize_called() {
-        with_glean_mut(|glean| glean.set_debug_view_tag(tag))
-    } else {
-        // Glean has not been initialized yet. Cache the provided tag value.
-        let m = PRE_INIT_DEBUG_VIEW_TAG.get_or_init(Default::default);
-        let mut lock = m.lock().unwrap();
-        *lock = tag.to_string();
-        // When setting the debug view tag before initialization,
-        // we don't validate the tag, thus this function always returns true.
-        true
-    }
+    glean_core::glean_set_debug_view_tag(tag.to_string())
 }
 
 /// Sets the log pings debug option.
@@ -523,11 +276,7 @@ pub fn set_debug_view_tag(tag: &str) -> bool {
 ///
 /// * `value` - The value of the log pings option
 pub fn set_log_pings(value: bool) {
-    if was_initialize_called() {
-        with_glean_mut(|glean| glean.set_log_pings(value));
-    } else {
-        PRE_INIT_LOG_PINGS.store(value, Ordering::SeqCst);
-    }
+    glean_core::glean_set_log_pings(value)
 }
 
 /// Sets source tags.
@@ -542,16 +291,7 @@ pub fn set_log_pings(value: bool) {
 /// * `tags` - A vector of at most 5 valid HTTP header values. Individual
 ///   tags must match the regex: "[a-zA-Z0-9-]{1,20}".
 pub fn set_source_tags(tags: Vec<String>) {
-    if was_initialize_called() {
-        crate::launch_with_glean_mut(|glean| {
-            glean.set_source_tags(tags);
-        });
-    } else {
-        // Glean has not been initialized yet. Cache the provided source tags.
-        let m = PRE_INIT_SOURCE_TAGS.get_or_init(Default::default);
-        let mut lock = m.lock().unwrap();
-        *lock = tags;
-    }
+    glean_core::glean_set_source_tags(tags);
 }
 
 /// Returns a timestamp corresponding to "now" with millisecond precision.
@@ -563,21 +303,8 @@ pub fn get_timestamp_ms() -> u64 {
 /// Only has effect when Glean is configured with `delay_ping_lifetime_io: true`.
 /// If Glean hasn't been initialized this will dispatch and return Ok(()),
 /// otherwise it will block until the persist is done and return its Result.
-pub fn persist_ping_lifetime_data() -> Result<()> {
-    if !was_initialize_called() {
-        crate::launch_with_glean(|glean| {
-            // This is async, we can't get the Error back to the caller.
-            let _ = glean.persist_ping_lifetime_data();
-        });
-        Ok(())
-    } else {
-        // Calling the dispatcher directly to not panic on errors.
-        // Blocking on the queue will fail when the queue is already shutdown,
-        // which is equivalent to Glean not being initialized
-        // (In production Glean can't be re-initialized).
-        dispatcher::block_on_queue().map_err(|_| Error::not_initialized())?;
-        with_glean(|glean| glean.persist_ping_lifetime_data())
-    }
+pub fn persist_ping_lifetime_data() {
+    glean_core::persist_ping_lifetime_data();
 }
 
 #[cfg(test)]
