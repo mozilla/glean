@@ -60,12 +60,11 @@ fn main() {
         channel: None,
     };
 
-    glean::register_ping_type(&PrototypePing);
     glean::initialize(cfg, client_info);
 
     glean_metrics::sample_boolean.set(true);
 
-    glean::submit_ping_by_name("prototype", None);
+    PrototypePing.submit(None);
 
     glean::shutdown();
 }

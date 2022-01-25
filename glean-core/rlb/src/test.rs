@@ -28,7 +28,7 @@ fn send_a_ping() {
             _headers: Vec<(String, String)>,
         ) -> net::UploadResult {
             self.sender.send(url).unwrap();
-            net::UploadResult::HttpStatus(200)
+            net::UploadResult::http_status(200)
         }
     }
 
@@ -78,7 +78,7 @@ fn disabling_upload_disables_metrics_recording() {
 
     crate::set_upload_enabled(false);
 
-    assert!(metric.test_get_value("store1").is_none())
+    assert!(metric.test_get_value(Some("store1".into())).is_none())
 }
 
 #[test]
@@ -100,7 +100,7 @@ fn test_experiments_recording() {
     set_experiment_inactive("experiment_test".to_string());
     assert!(!test_is_experiment_active("experiment_test".to_string()));
     assert!(test_is_experiment_active("experiment_api".to_string()));
-    let stored_data = test_get_experiment_data("experiment_api".to_string());
+    let stored_data = test_get_experiment_data("experiment_api".to_string()).unwrap();
     assert_eq!("branch_b", stored_data.branch);
     assert_eq!("value", stored_data.extra.unwrap()["test_key"]);
 }
@@ -180,7 +180,7 @@ fn sending_of_foreground_background_pings() {
         lifetime: Lifetime::Ping,
         disabled: false,
         ..Default::default()
-    });
+    }, allowed_extra_keys: None);
 
     // Define a fake uploader that reports back the submission headers
     // using a crossbeam channel.
@@ -198,7 +198,7 @@ fn sending_of_foreground_background_pings() {
             _headers: Vec<(String, String)>,
         ) -> net::UploadResult {
             self.sender.send(url).unwrap();
-            net::UploadResult::HttpStatus(200)
+            net::UploadResult::http_status(200)
         }
     }
 
@@ -280,7 +280,7 @@ fn sending_of_startup_baseline_ping() {
             _headers: Vec<(String, String)>,
         ) -> net::UploadResult {
             self.sender.send(url).unwrap();
-            net::UploadResult::HttpStatus(200)
+            net::UploadResult::http_status(200)
         }
     }
 
@@ -340,7 +340,7 @@ fn no_dirty_baseline_on_clean_shutdowns() {
             _headers: Vec<(String, String)>,
         ) -> net::UploadResult {
             self.sender.send(url).unwrap();
-            net::UploadResult::HttpStatus(200)
+            net::UploadResult::http_status(200)
         }
     }
 
@@ -545,17 +545,17 @@ fn basic_metrics_should_be_cleared_when_disabling_uploading() {
 
     assert!(metric.test_get_value(None).is_none());
 
-    metric.set("TEST VALUE");
+    metric.set("TEST VALUE".into());
     assert!(metric.test_get_value(None).is_some());
 
     set_upload_enabled(false);
     assert!(metric.test_get_value(None).is_none());
-    metric.set("TEST VALUE");
+    metric.set("TEST VALUE".into());
     assert!(metric.test_get_value(None).is_none());
 
     set_upload_enabled(true);
     assert!(metric.test_get_value(None).is_none());
-    metric.set("TEST VALUE");
+    metric.set("TEST VALUE".into());
     assert_eq!("TEST VALUE", metric.test_get_value(None).unwrap());
 }
 
@@ -600,7 +600,7 @@ fn sending_deletion_ping_if_disabled_outside_of_run() {
             _headers: Vec<(String, String)>,
         ) -> net::UploadResult {
             self.sender.send(url).unwrap();
-            net::UploadResult::HttpStatus(200)
+            net::UploadResult::http_status(200)
         }
     }
 
@@ -665,7 +665,7 @@ fn no_sending_of_deletion_ping_if_unchanged_outside_of_run() {
             _headers: Vec<(String, String)>,
         ) -> net::UploadResult {
             self.sender.send(url).unwrap();
-            net::UploadResult::HttpStatus(200)
+            net::UploadResult::http_status(200)
         }
     }
 
@@ -745,7 +745,7 @@ fn setting_debug_view_tag_before_initialization_should_not_crash() {
             headers: Vec<(String, String)>,
         ) -> net::UploadResult {
             self.sender.send(headers).unwrap();
-            net::UploadResult::HttpStatus(200)
+            net::UploadResult::http_status(200)
         }
     }
 
@@ -804,7 +804,7 @@ fn setting_source_tags_before_initialization_should_not_crash() {
             headers: Vec<(String, String)>,
         ) -> net::UploadResult {
             self.sender.send(headers).unwrap();
-            net::UploadResult::HttpStatus(200)
+            net::UploadResult::http_status(200)
         }
     }
 
@@ -867,7 +867,7 @@ fn setting_source_tags_after_initialization_should_not_crash() {
             headers: Vec<(String, String)>,
         ) -> net::UploadResult {
             self.sender.send(headers).unwrap();
-            net::UploadResult::HttpStatus(200)
+            net::UploadResult::http_status(200)
         }
     }
 
@@ -939,7 +939,7 @@ fn flipping_upload_enabled_respects_order_of_events() {
             _headers: Vec<(String, String)>,
         ) -> net::UploadResult {
             self.sender.send(url).unwrap();
-            net::UploadResult::HttpStatus(200)
+            net::UploadResult::http_status(200)
         }
     }
 
@@ -1006,7 +1006,7 @@ fn registering_pings_before_init_must_work() {
             _headers: Vec<(String, String)>,
         ) -> net::UploadResult {
             self.sender.send(url).unwrap();
-            net::UploadResult::HttpStatus(200)
+            net::UploadResult::http_status(200)
         }
     }
 
@@ -1059,7 +1059,7 @@ fn test_a_ping_before_submission() {
             _headers: Vec<(String, String)>,
         ) -> net::UploadResult {
             self.sender.send(url).unwrap();
-            net::UploadResult::HttpStatus(200)
+            net::UploadResult::http_status(200)
         }
     }
 

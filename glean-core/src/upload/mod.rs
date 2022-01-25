@@ -25,7 +25,7 @@ use crate::{internal_metrics::UploadMetrics, Glean};
 use directory::{PingDirectoryManager, PingPayloadsByDirectory};
 use policy::Policy;
 pub use request::{HeaderMap, PingRequest};
-pub use result::{ffi_upload_result, UploadResult};
+pub use result::UploadResult;
 
 mod directory;
 mod policy;
