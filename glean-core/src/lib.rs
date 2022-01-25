@@ -800,6 +800,11 @@ pub fn glean_process_ping_upload_response(uuid: String, result: UploadResult) {
     core::with_glean(|glean| glean.process_ping_upload_response(&uuid, result))
 }
 
+/// test re-export
+pub fn glean_set_dirty_flag(new_value: bool) {
+    core::with_glean(|glean| glean.set_dirty_flag(new_value))
+}
+
 #[allow(missing_docs)]
 mod ffi {
     use super::*;
