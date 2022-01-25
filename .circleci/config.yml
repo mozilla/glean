@@ -663,21 +663,36 @@ jobs:
             UDID=$(echo "$DEVICES" | grep 'iPhone 11 Simulator (14' | awk -F'[()]' '{print $4}')
             xcrun simctl boot "$UDID"
       - run:
+          name: Reduce dependencies in Cartfile for caching
+          command: |
+            sed -i.bak "/mozilla\/glean/d" "samples/ios/app/Cartfile"
+      - restore_cache:
+          name: Restore carthage dep cache
+          key: v1-swift-sample-deps-{{checksum "samples/ios/app/Cartfile"}}
+      - run:
+          name: Bootstrap dependencies
+          command: |
+            pushd samples/ios/app
+            ./bootstrap.sh
+            popd
+      - save_cache:
+          paths:
+            - samples/ios/app/Carthage
+          key: v1-swift-sample-deps-{{checksum "samples/ios/app/Cartfile"}}
+      - run:
           name: Use current commit of Glean
           command: |
             GLEAN_PATH="$(pwd)"
             CARTFILE_PATH="${GLEAN_PATH}/samples/ios/app/Cartfile"
 
-            echo "Current Cartfile:"
-            cat "${CARTFILE_PATH}"
-            echo "================="
             echo "New Cartfile:"
-            sed -i.bak "/mozilla\/glean/s#.*#git \"${GLEAN_PATH}\" \"${CIRCLE_SHA1}\"#" "$CARTFILE_PATH"
+            echo "git \"${GLEAN_PATH}\" \"${CIRCLE_SHA1}\"#" >> "$CARTFILE_PATH"
             cat "${CARTFILE_PATH}"
       - run:
-          name: Bootstrap dependencies
+          name: Bootstrap Glean dependency
           command: |
             pushd samples/ios/app
+            carthage update --no-build --verbose
             ./bootstrap.sh
             popd
       - run:
