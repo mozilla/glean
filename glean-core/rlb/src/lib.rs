@@ -33,25 +33,19 @@
 //!
 //! let prototype_ping = PingType::new("prototype", true, true, vec!());
 //!
-//! glean::register_ping_type(&prototype_ping);
-//!
 //! prototype_ping.submit(None);
 //! ```
 
-use once_cell::sync::OnceCell;
 use std::collections::HashMap;
-use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::Mutex;
 
 pub use configuration::Configuration;
 use configuration::DEFAULT_GLEAN_ENDPOINT;
 pub use core_metrics::ClientInfoMetrics;
-use glean_core::global_glean;
 pub use glean_core::{
     metrics::{Datetime, DistributionData, MemoryUnit, RecordedEvent, TimeUnit, TimerId},
-    traits, CommonMetricData, Error, ErrorType, Glean, HistogramType, Lifetime, Result,
+    traits, CommonMetricData, Error, ErrorType, Glean, HistogramType, Lifetime, RecordedExperiment,
+    Result,
 };
-use private::RecordedExperimentData;
 
 mod configuration;
 mod core_metrics;
@@ -63,102 +57,6 @@ mod system;
 mod common_test;
 
 const LANGUAGE_BINDING_NAME: &str = "Rust";
-
-/// State to keep track for the Rust Language bindings.
-///
-/// This is useful for setting Glean SDK-owned metrics when
-/// the state of the upload is toggled.
-#[derive(Debug)]
-struct RustBindingsState {
-    /// The channel the application is being distributed on.
-    channel: Option<String>,
-
-    /// Client info metrics set by the application.
-    client_info: ClientInfoMetrics,
-
-    /// An instance of the upload manager
-    upload_manager: net::UploadManager,
-}
-
-/// Set when `glean::initialize()` returns.
-/// This allows to detect calls that happen before `glean::initialize()` was called.
-/// Note: The initialization might still be in progress, as it runs in a separate thread.
-static INITIALIZE_CALLED: AtomicBool = AtomicBool::new(false);
-
-/// Keep track of the debug features before Glean is initialized.
-static PRE_INIT_DEBUG_VIEW_TAG: OnceCell<Mutex<String>> = OnceCell::new();
-static PRE_INIT_LOG_PINGS: AtomicBool = AtomicBool::new(false);
-static PRE_INIT_SOURCE_TAGS: OnceCell<Mutex<Vec<String>>> = OnceCell::new();
-
-/// Keep track of pings registered before Glean is initialized.
-static PRE_INIT_PING_REGISTRATION: OnceCell<Mutex<Vec<private::PingType>>> = OnceCell::new();
-
-/// A global singleton storing additional state for Glean.
-///
-/// Requires a Mutex, because in tests we can actual reset this.
-static STATE: OnceCell<Mutex<RustBindingsState>> = OnceCell::new();
-
-/// Get a reference to the global state object.
-///
-/// Panics if no global state object was set.
-fn global_state() -> &'static Mutex<RustBindingsState> {
-    STATE.get().unwrap()
-}
-
-/// Set or replace the global bindings State object.
-fn setup_state(state: RustBindingsState) {
-    // The `OnceCell` type wrapping our state is thread-safe and can only be set once.
-    // Therefore even if our check for it being empty succeeds, setting it could fail if a
-    // concurrent thread is quicker in setting it.
-    // However this will not cause a bigger problem, as the second `set` operation will just fail.
-    // We can log it and move on.
-    //
-    // For all wrappers this is not a problem, as the State object is intialized exactly once on
-    // calling `initialize` on the global singleton and further operations check that it has been
-    // initialized.
-    if STATE.get().is_none() {
-        if STATE.set(Mutex::new(state)).is_err() {
-            log::error!(
-                "Global Glean state object is initialized already. This probably happened concurrently."
-            );
-        }
-    } else {
-        // We allow overriding the global State object to support test mode.
-        // In test mode the State object is fully destroyed and recreated.
-        // This all happens behind a mutex and is therefore also thread-safe.
-        let mut lock = STATE.get().unwrap().lock().unwrap();
-        *lock = state;
-    }
-}
-
-fn with_glean<F, R>(f: F) -> R
-where
-    F: FnOnce(&Glean) -> R,
-{
-    let glean = global_glean().expect("Global Glean object not initialized");
-    let lock = glean.lock().unwrap();
-    f(&lock)
-}
-
-fn with_glean_mut<F, R>(f: F) -> R
-where
-    F: FnOnce(&mut Glean) -> R,
-{
-    let glean = global_glean().expect("Global Glean object not initialized");
-    let mut lock = glean.lock().unwrap();
-    f(&mut lock)
-}
-
-/// Launches a new task on the global dispatch queue with a reference to the Glean singleton.
-fn launch_with_glean(callback: impl FnOnce(&Glean) + Send + 'static) {
-    dispatcher::launch(|| crate::with_glean(callback));
-}
-
-/// Launches a new task on the global dispatch queue with a mutable reference to the
-/// Glean singleton.
-fn launch_with_glean_mut(callback: impl FnOnce(&mut Glean) + Send + 'static) {
-    dispatcher::launch(|| crate::with_glean_mut(callback));
-}
 
 /// Creates and initializes a new Glean object.
 ///
