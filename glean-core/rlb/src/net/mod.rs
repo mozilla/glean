@@ -14,7 +14,6 @@ use std::sync::{
 use std::thread;
 use std::time::Duration;
 
-use crate::with_glean;
 use glean_core::upload::PingUploadTask;
 pub use glean_core::upload::{PingRequest, UploadResult};
 
@@ -110,23 +109,23 @@ impl UploadManager {
             .name("glean.upload".into())
             .spawn(move || {
                 loop {
-                    let incoming_task = with_glean(|glean| glean.get_upload_task());
+                    let incoming_task = glean_core::glean_get_upload_task();
 
                     log::trace!("Received upload task: {:?}", incoming_task);
                     match incoming_task {
-                        PingUploadTask::Upload(request) => {
+                        PingUploadTask::Upload { request } => {
                             let doc_id = request.document_id.clone();
                             let upload_url = format!("{}{}", inner.server_endpoint, request.path);
                             let headers: Vec<(String, String)> =
                                 request.headers.into_iter().collect();
                             let result = inner.uploader.upload(upload_url, request.body, headers);
                             // Process the upload response.
-                            with_glean(|glean| glean.process_ping_upload_response(&doc_id, result));
+                            glean_core::glean_process_ping_upload_response(doc_id, result);
                         }
-                        PingUploadTask::Wait(time) => {
+                        PingUploadTask::Wait { time } => {
                             thread::sleep(Duration::from_millis(time));
                         }
-                        PingUploadTask::Done => {
+                        PingUploadTask::Done { .. } => {
                             // Nothing to do here, break out of the loop and clear the
                             // running flag.
                             inner.thread_running.store(false, Ordering::SeqCst);
