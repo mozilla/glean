@@ -15,7 +15,7 @@
 
 use std::collections::HashMap;
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 
 use once_cell::sync::{Lazy, OnceCell};
 use uuid::Uuid;
@@ -80,6 +80,12 @@ static PRE_INIT_SOURCE_TAGS: OnceCell<Mutex<Vec<String>>> = OnceCell::new();
 
 /// Keep track of pings registered before Glean is initialized.
 static PRE_INIT_PING_REGISTRATION: OnceCell<Mutex<Vec<metrics::PingType>>> = OnceCell::new();
+
+/// Global singleton of the handles of the glean.init threads.
+/// For joining. For tests.
+/// (Why a Vec? There might be more than one concurrent call to initialize.)
+static INIT_HANDLES: Lazy<Arc<Mutex<Vec<std::thread::JoinHandle<()>>>>> =
+    Lazy::new(|| Arc::new(Mutex::new(Vec::new())));
 
 /// Configuration for Glean
 #[derive(Debug, Clone)]
@@ -213,17 +219,17 @@ pub fn glean_initialize(
     client_info: ClientInfoMetrics,
     callbacks: Box<dyn OnGleanEvents>,
 ) -> bool {
-    initialize_inner(cfg, client_info, callbacks).is_ok()
+    initialize_inner(cfg, client_info, callbacks)
 }
 
 fn initialize_inner(
     cfg: InternalConfiguration,
     client_info: ClientInfoMetrics,
     callbacks: Box<dyn OnGleanEvents>,
-) -> Result<()> {
+) -> bool {
     if was_initialize_called() {
         log::error!("Glean should not be initialized multiple times");
-        return Ok(());
+        return true;
     }
 
     let init_handle = std::thread::Builder::new()
@@ -381,6 +387,9 @@ fn initialize_inner(
         })
         .expect("Failed to spawn Glean's init thread");
 
+    // For test purposes, store the glean init thread's JoinHandle.
+    INIT_HANDLES.lock().unwrap().push(init_handle);
+
     // Mark the initialization as called: this needs to happen outside of the
     // dispatched block!
     INITIALIZE_CALLED.store(true, Ordering::SeqCst);
@@ -388,12 +397,19 @@ fn initialize_inner(
     // In test mode we wait for initialization to finish.
     // This needs to run after we set `INITIALIZE_CALLED`, so it's similar to normal behavior.
     if dispatcher::global::is_test_mode() {
-        init_handle
-            .join()
-            .expect("Failed to join initialization thread");
+        join_init();
     }
 
-    Ok(())
+    true
+}
+
+/// TEST ONLY FUNCTION
+/// Waits on all the glean.init threads' join handles.
+pub fn join_init() {
+    let mut handles = INIT_HANDLES.lock().unwrap();
+    for handle in handles.drain(..) {
+        handle.join().unwrap();
+    }
 }
 
 /// Shuts down Glean in an orderly fashion.
@@ -771,23 +787,24 @@ pub fn glean_set_test_mode(enabled: bool) {
 ///
 /// Destroy the underlying database.
 pub fn glean_test_destroy_glean(clear_stores: bool) {
-    if !was_initialize_called() {
-        return;
+    if was_initialize_called() {
+        // Just because initialize was called doesn't mean it's done.
+        join_init();
+
+        dispatcher::reset_dispatcher();
+
+        if core::global_glean().is_some() {
+            core::with_glean_mut(|glean| {
+                if clear_stores {
+                    glean.test_clear_all_stores()
+                }
+                glean.destroy_db()
+            });
+        }
+
+        // Allow us to go through initialization again.
+        INITIALIZE_CALLED.store(false, Ordering::SeqCst);
     }
-
-    dispatcher::reset_dispatcher();
-
-    if core::global_glean().is_some() {
-        core::with_glean_mut(|glean| {
-            if clear_stores {
-                glean.test_clear_all_stores()
-            }
-            glean.destroy_db()
-        });
-    }
-
-    // Allow us to go through initialization again.
-    INITIALIZE_CALLED.store(false, Ordering::SeqCst);
 }
 
 /// Get the next upload task

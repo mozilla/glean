@@ -246,6 +246,7 @@ pub(crate) fn destroy_glean(clear_stores: bool) {
 pub fn test_reset_glean(cfg: Configuration, client_info: ClientInfoMetrics, clear_stores: bool) {
     destroy_glean(clear_stores);
     initialize_internal(cfg, client_info);
+    glean_core::join_init();
 }
 
 /// Sets a debug view tag.
