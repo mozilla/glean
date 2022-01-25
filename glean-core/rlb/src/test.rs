@@ -3,7 +3,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use crate::private::PingType;
-use crate::private::{BooleanMetric, CounterMetric, EventMetric};
+use crate::private::{BooleanMetric, CounterMetric, EventMetric, StringMetric};
 
 use super::*;
 use crate::common_test::{lock_test, new_glean, GLOBAL_APPLICATION_ID};
@@ -48,7 +48,6 @@ fn send_a_ping() {
     };
 
     let _t = new_glean(Some(cfg), true);
-    crate::block_on_dispatcher();
 
     // Define a new ping and submit it.
     const PING_NAME: &str = "test-ping";
@@ -65,7 +64,6 @@ fn disabling_upload_disables_metrics_recording() {
     let _lock = lock_test();
 
     let _t = new_glean(None, true);
-    crate::block_on_dispatcher();
 
     let metric = BooleanMetric::new(CommonMetricData {
         name: "bool_metric".into(),
@@ -109,26 +107,7 @@ fn test_experiments_recording() {
 fn test_experiments_recording_before_glean_inits() {
     let _lock = lock_test();
 
-    // Destroy the existing glean instance from glean-core so that we
-    // can test the pre-init queueing of the experiment api commands.
-    // This is doing the exact same thing that `reset_glean` is doing
-    // but without calling `initialize`.
-    if was_initialize_called() {
-        // We need to check if the Glean object (from glean-core) is
-        // initialized, otherwise this will crash on the first test
-        // due to bug 1675215 (this check can be removed once that
-        // bug is fixed).
-        if global_glean().is_some() {
-            with_glean_mut(|glean| {
-                glean.test_clear_all_stores();
-                glean.destroy_db();
-            });
-        }
-        // Allow us to go through initialization again.
-        INITIALIZE_CALLED.store(false, Ordering::SeqCst);
-        // Reset the dispatcher.
-        dispatcher::reset_dispatcher();
-    }
+    destroy_glean(true);
 
     set_experiment_active(
         "experiment_set_preinit".to_string(),
@@ -159,7 +138,6 @@ fn test_experiments_recording_before_glean_inits() {
         ClientInfoMetrics::unknown(),
         false,
     );
-    crate::block_on_dispatcher();
 
     assert!(test_is_experiment_active(
         "experiment_set_preinit".to_string()
@@ -180,7 +158,7 @@ fn sending_of_foreground_background_pings() {
         lifetime: Lifetime::Ping,
         disabled: false,
         ..Default::default()
-    }, allowed_extra_keys: None);
+    });
 
     // Define a fake uploader that reports back the submission headers
     // using a crossbeam channel.
@@ -218,7 +196,6 @@ fn sending_of_foreground_background_pings() {
     };
 
     let _t = new_glean(Some(cfg), true);
-    crate::block_on_dispatcher();
 
     // Simulate becoming active.
     handle_client_active();
@@ -255,13 +232,11 @@ fn sending_of_foreground_background_pings() {
 fn sending_of_startup_baseline_ping() {
     let _lock = lock_test();
 
-    // Create an instance of Glean, wait for init and then flip the dirty
+    // Create an instance of Glean and then flip the dirty
     // bit to true.
     let data_dir = new_glean(None, true);
 
-    crate::block_on_dispatcher();
-
-    with_glean_mut(|glean| glean.set_dirty_flag(true));
+    glean_core::glean_set_dirty_flag(true);
 
     // Restart glean and wait for a baseline ping to be generated.
     let (s, r) = crossbeam_channel::bounded::<String>(1);
@@ -317,9 +292,7 @@ fn no_dirty_baseline_on_clean_shutdowns() {
     // bit to true.
     let data_dir = new_glean(None, true);
 
-    crate::block_on_dispatcher();
-
-    with_glean_mut(|glean| glean.set_dirty_flag(true));
+    glean_core::glean_set_dirty_flag(true);
 
     crate::shutdown();
 
@@ -363,8 +336,6 @@ fn no_dirty_baseline_on_clean_shutdowns() {
         ClientInfoMetrics::unknown(),
         false,
     );
-
-    crate::block_on_dispatcher();
 
     // We don't expect a startup ping.
     assert_eq!(r.try_recv(), Err(crossbeam_channel::TryRecvError::Empty));
@@ -484,6 +455,7 @@ fn dont_handle_events_when_uninitialized() {
     todo!()
 }
 
+// TODO: Should probably move into glean-core.
 #[test]
 fn the_app_channel_must_be_correctly_set_if_requested() {
     let _lock = lock_test();
@@ -491,8 +463,42 @@ fn the_app_channel_must_be_correctly_set_if_requested() {
     let dir = tempfile::tempdir().unwrap();
     let tmpname = dir.path().to_path_buf();
 
-    // No appChannel must be set if nothing was provided through the config
-    // options.
+    // Internal metric, replicated here for testing.
+    let app_channel = StringMetric::new(CommonMetricData {
+        name: "app_channel".into(),
+        category: "".into(),
+        send_in_pings: vec!["glean_client_info".into()],
+        lifetime: Lifetime::Application,
+        disabled: false,
+        ..Default::default()
+    });
+
+    // No app_channel reported.
+    let client_info = ClientInfoMetrics {
+        channel: None,
+        ..ClientInfoMetrics::unknown()
+    };
+    test_reset_glean(
+        Configuration {
+            data_path: tmpname.clone(),
+            application_id: GLOBAL_APPLICATION_ID.into(),
+            upload_enabled: true,
+            max_events: None,
+            delay_ping_lifetime_io: false,
+            server_endpoint: Some("invalid-test-host".into()),
+            uploader: None,
+            use_core_mps: false,
+        },
+        client_info,
+        true,
+    );
+    assert!(app_channel.test_get_value(None).is_none());
+
+    // Custom app_channel reported.
+    let client_info = ClientInfoMetrics {
+        channel: Some("testing".into()),
+        ..ClientInfoMetrics::unknown()
+    };
     test_reset_glean(
         Configuration {
             data_path: tmpname,
@@ -504,22 +510,10 @@ fn the_app_channel_must_be_correctly_set_if_requested() {
             uploader: None,
             use_core_mps: false,
         },
-        ClientInfoMetrics::unknown(),
+        client_info,
         true,
     );
-    assert!(core_metrics::internal_metrics::app_channel
-        .test_get_value(None)
-        .is_none());
-
-    // The appChannel must be correctly reported if a channel value
-    // was provided.
-    let _t = new_glean(None, true);
-    assert_eq!(
-        "testing",
-        core_metrics::internal_metrics::app_channel
-            .test_get_value(None)
-            .unwrap()
-    );
+    assert_eq!("testing", app_channel.test_get_value(None).unwrap());
 }
 
 #[test]
@@ -559,25 +553,47 @@ fn basic_metrics_should_be_cleared_when_disabling_uploading() {
     assert_eq!("TEST VALUE", metric.test_get_value(None).unwrap());
 }
 
+// TODO: Should probably move into glean-core.
 #[test]
 fn core_metrics_should_be_cleared_and_restored_when_disabling_and_enabling_uploading() {
     let _lock = lock_test();
 
-    let _t = new_glean(None, false);
+    let dir = tempfile::tempdir().unwrap();
+    let tmpname = dir.path().to_path_buf();
 
-    assert!(core_metrics::internal_metrics::os_version
-        .test_get_value(None)
-        .is_some());
+    // No app_channel reported.
+    test_reset_glean(
+        Configuration {
+            data_path: tmpname.clone(),
+            application_id: GLOBAL_APPLICATION_ID.into(),
+            upload_enabled: true,
+            max_events: None,
+            delay_ping_lifetime_io: false,
+            server_endpoint: Some("invalid-test-host".into()),
+            uploader: None,
+            use_core_mps: false,
+        },
+        ClientInfoMetrics::unknown(),
+        true,
+    );
+
+    // Internal metric, replicated here for testing.
+    let os_version = StringMetric::new(CommonMetricData {
+        name: "os_version".into(),
+        category: "".into(),
+        send_in_pings: vec!["glean_client_info".into()],
+        lifetime: Lifetime::Application,
+        disabled: false,
+        ..Default::default()
+    });
+
+    assert!(os_version.test_get_value(None).is_some());
 
     set_upload_enabled(false);
-    assert!(core_metrics::internal_metrics::os_version
-        .test_get_value(None)
-        .is_none());
+    assert!(os_version.test_get_value(None).is_none());
 
     set_upload_enabled(true);
-    assert!(core_metrics::internal_metrics::os_version
-        .test_get_value(None)
-        .is_some());
+    assert!(os_version.test_get_value(None).is_some());
 }
 
 #[test]
@@ -620,8 +636,6 @@ fn sending_deletion_ping_if_disabled_outside_of_run() {
     };
 
     let _t = new_glean(Some(cfg), true);
-
-    crate::block_on_dispatcher();
 
     // Now reset Glean and disable upload: it should still send a deletion request
     // ping even though we're just starting.
@@ -686,8 +700,6 @@ fn no_sending_of_deletion_ping_if_unchanged_outside_of_run() {
 
     let _t = new_glean(Some(cfg), true);
 
-    crate::block_on_dispatcher();
-
     // Now reset Glean and keep upload enabled: no deletion-request
     // should be sent.
     test_reset_glean(
@@ -704,8 +716,6 @@ fn no_sending_of_deletion_ping_if_unchanged_outside_of_run() {
         ClientInfoMetrics::unknown(),
         false,
     );
-
-    crate::block_on_dispatcher();
 
     assert_eq!(0, r.len());
 }
@@ -727,7 +737,6 @@ fn setting_debug_view_tag_before_initialization_should_not_crash() {
     let _lock = lock_test();
 
     destroy_glean(true);
-    assert!(!was_initialize_called());
 
     // Define a fake uploader that reports back the submission headers
     // using a crossbeam channel.
@@ -768,10 +777,9 @@ fn setting_debug_view_tag_before_initialization_should_not_crash() {
     };
 
     let _t = new_glean(Some(cfg), true);
-    crate::block_on_dispatcher();
 
     // Submit a baseline ping.
-    submit_ping_by_name("baseline", Some("background"));
+    submit_ping_by_name("baseline", Some("inactive"));
 
     // Wait for the ping to arrive.
     let headers = r.recv().unwrap();
@@ -786,7 +794,7 @@ fn setting_source_tags_before_initialization_should_not_crash() {
     let _lock = lock_test();
 
     destroy_glean(true);
-    assert!(!was_initialize_called());
+    //assert!(!was_initialize_called());
 
     // Define a fake uploader that reports back the submission headers
     // using a crossbeam channel.
@@ -827,10 +835,9 @@ fn setting_source_tags_before_initialization_should_not_crash() {
     };
 
     let _t = new_glean(Some(cfg), true);
-    crate::block_on_dispatcher();
 
     // Submit a baseline ping.
-    submit_ping_by_name("baseline", Some("background"));
+    submit_ping_by_name("baseline", Some("inactive"));
 
     // Wait for the ping to arrive.
     let headers = r.recv().unwrap();
@@ -849,7 +856,7 @@ fn setting_source_tags_after_initialization_should_not_crash() {
     let _lock = lock_test();
 
     destroy_glean(true);
-    assert!(!was_initialize_called());
+    //assert!(!was_initialize_called());
 
     // Define a fake uploader that reports back the submission headers
     // using a crossbeam channel.
@@ -890,13 +897,11 @@ fn setting_source_tags_after_initialization_should_not_crash() {
 
     // Attempt to set source tags after `Glean.initialize` is called,
     // but before Glean is fully initialized.
-    assert!(was_initialize_called());
+    //assert!(was_initialize_called());
     set_source_tags(vec!["valid-tag1".to_string(), "valid-tag2".to_string()]);
 
-    crate::block_on_dispatcher();
-
     // Submit a baseline ping.
-    submit_ping_by_name("baseline", Some("background"));
+    submit_ping_by_name("baseline", Some("inactive"));
 
     // Wait for the ping to arrive.
     let headers = r.recv().unwrap();
@@ -975,7 +980,7 @@ fn flipping_upload_enabled_respects_order_of_events() {
     set_upload_enabled(false);
 
     // Set data and try to submit a custom ping.
-    metric.set("some-test-value");
+    metric.set("some-test-value".into());
     sample_ping.submit(None);
 
     // Wait for the ping to arrive.
@@ -988,7 +993,7 @@ fn registering_pings_before_init_must_work() {
     let _lock = lock_test();
 
     destroy_glean(true);
-    assert!(!was_initialize_called());
+    //assert!(!was_initialize_called());
 
     // Define a fake uploader that reports back the submission headers
     // using a crossbeam channel.
@@ -1029,7 +1034,6 @@ fn registering_pings_before_init_must_work() {
     };
 
     let _t = new_glean(Some(cfg), true);
-    crate::block_on_dispatcher();
 
     // Submit a baseline ping.
     sample_ping.submit(None);
@@ -1091,8 +1095,6 @@ fn test_a_ping_before_submission() {
         disabled: false,
         dynamic_label: None,
     });
-
-    crate::block_on_dispatcher();
 
     metric.add(1);
 
