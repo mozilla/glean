@@ -52,6 +52,19 @@ impl EventMetric {
     ///             If any key is not allowed, an error is reported and no event is recorded.
     pub fn record(&self, extra: HashMap<String, String>) {
         let timestamp = time::precise_time_ns();
+        self.record_with_time(timestamp, extra);
+    }
+
+    /// Record a new event with a provided timestamp.
+    ///
+    /// It's the caller's responsibility to ensure the timestamp comes from the same clock source.
+    ///
+    /// # Arguments
+    ///
+    /// * `extra` - A [`HashMap`] of `(key, value)` pairs.
+    ///             Keys must be one of the allowed extra keys.
+    ///             If any key is not allowed, an error is reported and no event is recorded.
+    pub fn record_with_time(&self, timestamp: u64, extra: HashMap<String, String>) {
         let metric = self.clone();
         crate::launch_with_glean(move |glean| metric.record_sync(glean, timestamp, extra));
     }
