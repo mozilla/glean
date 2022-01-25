@@ -315,6 +315,9 @@ fn initialize_inner(
                 if pings_submitted || !upload_enabled {
                     state.callbacks.trigger_upload();
                 }
+
+                // Start the MPS if its handled within Rust.
+                glean.start_metrics_ping_scheduler();
             });
 
             // The metrics ping scheduler might _synchronously_ submit a ping
@@ -482,6 +485,9 @@ pub fn glean_set_upload_enabled(enabled: bool) {
         let original_enabled = glean.is_upload_enabled();
 
         if !enabled {
+            // Stop the MPS if its handled within Rust.
+            glean.cancel_metrics_ping_scheduler();
+            // Stop wrapper-controlled uploader.
             state.callbacks.cancel_uploads();
         }
 
