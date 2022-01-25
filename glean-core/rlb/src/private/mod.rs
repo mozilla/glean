@@ -4,7 +4,8 @@
 
 //! The different metric types supported by the Glean SDK to handle data.
 
-pub use glean_core::UuidMetric;
+mod ping;
+
 pub use glean_core::BooleanMetric;
 pub use glean_core::CounterMetric;
 pub use glean_core::CustomDistributionMetric;
@@ -15,7 +16,6 @@ pub use glean_core::EventMetric;
 pub use glean_core::MemoryDistributionMetric;
 pub use glean_core::{AllowLabeled, LabeledMetric};
 //pub use glean_core::NumeratorMetric;
-pub use glean_core::PingType;
 pub use glean_core::QuantityMetric;
 pub use ping::PingType;
 //pub use glean_core::RateMetric;
