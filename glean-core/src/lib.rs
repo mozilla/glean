@@ -427,6 +427,17 @@ pub fn shutdown() {
     });
 }
 
+/// Asks the database to persist ping-lifetime data to disk. Probably expensive to call.
+/// Only has effect when Glean is configured with `delay_ping_lifetime_io: true`.
+/// If Glean hasn't been initialized this will dispatch and return Ok(()),
+/// otherwise it will block until the persist is done and return its Result.
+pub fn persist_ping_lifetime_data() {
+    // This is async, we can't get the Error back to the caller.
+    crate::launch_with_glean(|glean| {
+        let _ = glean.persist_ping_lifetime_data();
+    });
+}
+
 fn initialize_core_metrics(glean: &Glean, client_info: &ClientInfoMetrics) {
     core_metrics::internal_metrics::app_build.set_sync(glean, &client_info.app_build[..]);
     core_metrics::internal_metrics::app_display_version
