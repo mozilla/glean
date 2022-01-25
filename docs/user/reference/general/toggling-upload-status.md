@@ -10,7 +10,7 @@ provide some form of user interface to allow for toggling the upload status.
 
 When upload is disabled, the Glean SDK will perform the following tasks:
 
-1. Submit a [`deletion-request`](../../user/pings/deletion_request.md) ping.
+1. Submit a [`deletion-request`](../../user/pings/deletion-request.md) ping.
 2. Cancel scheduled ping uploads.
 3. Clear metrics and pings data from the client, except for the
   [`first_run_date` and `first_run_hour`](../../user/pings/index.html#the-client_info-section) metrics.
