@@ -2,10 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use crate::private::{StringMetric, TimespanMetric};
-use crate::{CommonMetricData, Lifetime, TimeUnit};
-
-use once_cell::sync::Lazy;
+use crate::system;
 
 /// Metrics included in every ping as `client_info`.
 #[derive(Debug)]
@@ -29,76 +26,15 @@ impl ClientInfoMetrics {
     }
 }
 
-#[allow(non_upper_case_globals)]
-pub mod internal_metrics {
-    use super::*;
-
-    pub static app_build: Lazy<StringMetric> = Lazy::new(|| {
-        StringMetric::new(CommonMetricData {
-            name: "app_build".into(),
-            category: "".into(),
-            send_in_pings: vec!["glean_client_info".into()],
-            lifetime: Lifetime::Application,
-            disabled: false,
+impl From<ClientInfoMetrics> for glean_core::ClientInfoMetrics {
+    fn from(metrics: ClientInfoMetrics) -> Self {
+        glean_core::ClientInfoMetrics {
+            app_build: metrics.app_build,
+            app_display_version: metrics.app_display_version,
+            channel: metrics.channel,
+            os_version: system::get_os_version(),
+            architecture: system::ARCH.to_string(),
             ..Default::default()
-        })
-    });
-
-    pub static app_display_version: Lazy<StringMetric> = Lazy::new(|| {
-        StringMetric::new(CommonMetricData {
-            name: "app_display_version".into(),
-            category: "".into(),
-            send_in_pings: vec!["glean_client_info".into()],
-            lifetime: Lifetime::Application,
-            disabled: false,
-            ..Default::default()
-        })
-    });
-
-    pub static app_channel: Lazy<StringMetric> = Lazy::new(|| {
-        StringMetric::new(CommonMetricData {
-            name: "app_channel".into(),
-            category: "".into(),
-            send_in_pings: vec!["glean_client_info".into()],
-            lifetime: Lifetime::Application,
-            disabled: false,
-            ..Default::default()
-        })
-    });
-
-    pub static os_version: Lazy<StringMetric> = Lazy::new(|| {
-        StringMetric::new(CommonMetricData {
-            name: "os_version".into(),
-            category: "".into(),
-            send_in_pings: vec!["glean_client_info".into()],
-            lifetime: Lifetime::Application,
-            disabled: false,
-            ..Default::default()
-        })
-    });
-
-    pub static architecture: Lazy<StringMetric> = Lazy::new(|| {
-        StringMetric::new(CommonMetricData {
-            name: "architecture".into(),
-            category: "".into(),
-            send_in_pings: vec!["glean_client_info".into()],
-            lifetime: Lifetime::Application,
-            disabled: false,
-            ..Default::default()
-        })
-    });
-
-    pub static baseline_duration: Lazy<TimespanMetric> = Lazy::new(|| {
-        TimespanMetric::new(
-            CommonMetricData {
-                name: "duration".into(),
-                category: "glean.baseline".into(),
-                send_in_pings: vec!["baseline".into()],
-                lifetime: Lifetime::Ping,
-                disabled: false,
-                ..Default::default()
-            },
-            TimeUnit::Second,
-        )
-    });
+        }
+    }
 }
