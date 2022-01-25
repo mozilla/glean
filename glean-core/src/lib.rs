@@ -396,6 +396,37 @@ fn initialize_inner(
     Ok(())
 }
 
+/// Shuts down Glean in an orderly fashion.
+pub fn shutdown() {
+    if !was_initialize_called() {
+        log::warn!("Shutdown called before Glean is initialized");
+        if let Err(e) = dispatcher::kill() {
+            log::error!("Can't kill dispatcher thread: {:?}", e);
+        }
+
+        return;
+    }
+
+    crate::launch_with_glean_mut(|glean| {
+        glean.cancel_metrics_ping_scheduler();
+        glean.set_dirty_flag(false);
+    });
+
+    // We need to wait for above task to finish.
+    dispatcher::block_on_queue();
+
+    if let Err(e) = dispatcher::shutdown() {
+        log::error!("Can't shutdown dispatcher thread: {:?}", e);
+    }
+
+    // Be sure to call this _after_ draining the dispatcher
+    core::with_glean(|glean| {
+        if let Err(e) = glean.persist_ping_lifetime_data() {
+            log::error!("Can't persist ping lifetime data: {:?}", e);
+        }
+    });
+}
+
 fn initialize_core_metrics(glean: &Glean, client_info: &ClientInfoMetrics) {
     core_metrics::internal_metrics::app_build.set_sync(glean, &client_info.app_build[..]);
     core_metrics::internal_metrics::app_display_version
