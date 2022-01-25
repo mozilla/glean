@@ -48,7 +48,7 @@ pub use crate::core::Glean;
 pub use crate::core_metrics::ClientInfoMetrics;
 pub use crate::error::{Error, ErrorKind, Result};
 pub use crate::error_recording::{test_get_num_recorded_errors, ErrorType};
-use crate::histogram::HistogramType;
+pub use crate::histogram::HistogramType;
 pub use crate::metrics::labeled::{LabeledBoolean, LabeledCounter, LabeledString};
 pub use crate::metrics::{
     BooleanMetric, CounterMetric, CustomDistributionMetric, Datetime, DatetimeMetric,
