@@ -98,31 +98,63 @@ pub struct LabeledMetric<T> {
     label_map: Mutex<HashMap<String, Arc<T>>>,
 }
 
-pub trait AllowedLabeled: MetricType {
+/// Sealed traits protect against downstream implementations.
+///
+/// We wrap it in a private module that is inaccessible outside of this module.
+mod private {
+    use crate::{
+        metrics::BooleanMetric, metrics::CounterMetric, metrics::StringMetric, CommonMetricData,
+    };
+
+    /// The sealed labeled trait.
+    ///
+    /// This also allows us to hide methods, that are only used internally
+    /// and should not be visible to users of the object implementing the
+    /// `Labeled<T>` trait.
+    pub trait Sealed {
+        /// Create a new `glean_core` metric from the metadata.
+        fn new_inner(meta: crate::CommonMetricData) -> Self;
+    }
+
+    impl Sealed for CounterMetric {
+        fn new_inner(meta: CommonMetricData) -> Self {
+            Self::new(meta)
+        }
+    }
+
+    impl Sealed for BooleanMetric {
+        fn new_inner(meta: CommonMetricData) -> Self {
+            Self::new(meta)
+        }
+    }
+
+    impl Sealed for StringMetric {
+        fn new_inner(meta: CommonMetricData) -> Self {
+            Self::new(meta)
+        }
+    }
+}
+
+/// Trait for metrics that can be nested inside a labeled metric.
+pub trait AllowLabeled: MetricType {
+    /// Create a new labeled metric.
     fn new_labeled(meta: CommonMetricData) -> Self;
 }
 
-impl AllowedLabeled for CounterMetric {
+// Implement the trait for everything we marked as allowed.
+impl<T> AllowLabeled for T
+where
+    T: MetricType,
+    T: private::Sealed,
+{
     fn new_labeled(meta: CommonMetricData) -> Self {
-        Self::new(meta)
-    }
-}
-
-impl AllowedLabeled for BooleanMetric {
-    fn new_labeled(meta: CommonMetricData) -> Self {
-        Self::new(meta)
-    }
-}
-
-impl AllowedLabeled for StringMetric {
-    fn new_labeled(meta: CommonMetricData) -> Self {
-        Self::new(meta)
+        T::new_inner(meta)
     }
 }
 
 impl<T> LabeledMetric<T>
 where
-    T: AllowedLabeled + Clone,
+    T: AllowLabeled + Clone,
 {
     /// Creates a new labeled metric from the given metric instance and optional list of labels.
     ///
