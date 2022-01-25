@@ -49,7 +49,6 @@ fn main() {
         upload_enabled: true,
         max_events: None,
         delay_ping_lifetime_io: false,
-        channel: None,
         server_endpoint: Some("invalid-test-host".into()),
         uploader: None,
         use_core_mps: true,
@@ -58,6 +57,7 @@ fn main() {
     let client_info = ClientInfoMetrics {
         app_build: env!("CARGO_PKG_VERSION").to_string(),
         app_display_version: env!("CARGO_PKG_VERSION").to_string(),
+        channel: None,
     };
 
     glean::register_ping_type(&PrototypePing);

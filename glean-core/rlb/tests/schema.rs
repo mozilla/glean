@@ -33,7 +33,6 @@ fn new_glean(configuration: Option<Configuration>) -> tempfile::TempDir {
             upload_enabled: true,
             max_events: None,
             delay_ping_lifetime_io: false,
-            channel: Some("testing".into()),
             server_endpoint: Some("invalid-test-host".into()),
             uploader: None,
             use_core_mps: false,
@@ -43,6 +42,7 @@ fn new_glean(configuration: Option<Configuration>) -> tempfile::TempDir {
     let client_info = ClientInfoMetrics {
         app_build: env!("CARGO_PKG_VERSION").to_string(),
         app_display_version: env!("CARGO_PKG_VERSION").to_string(),
+        channel: Some("testing".to_string()),
     };
 
     glean::initialize(cfg, client_info);
@@ -84,7 +84,6 @@ fn validate_against_schema() {
         upload_enabled: true,
         max_events: None,
         delay_ping_lifetime_io: false,
-        channel: Some("testing".into()),
         server_endpoint: Some("invalid-test-host".into()),
         uploader: Some(Box::new(ValidatingUploader { sender: s })),
         use_core_mps: false,
