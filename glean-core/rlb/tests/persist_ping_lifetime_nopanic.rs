@@ -36,8 +36,8 @@ fn delayed_ping_data() {
     let tmpname = dir.path().to_path_buf();
 
     common::initialize(cfg_new(tmpname));
-    assert!(glean::persist_ping_lifetime_data().is_ok());
+    glean::persist_ping_lifetime_data();
 
     glean::shutdown();
-    assert!(glean::persist_ping_lifetime_data().is_err());
+    glean::persist_ping_lifetime_data();
 }

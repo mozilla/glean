@@ -10,6 +10,8 @@ use serde_json::Value;
 
 use glean::private::{DenominatorMetric, NumeratorMetric, RateMetric};
 use glean::{ClientInfoMetrics, CommonMetricData, Configuration};
+use glean::net::UploadResult;
+use glean::{ClientInfoMetrics, CommonMetricData, Configuration};
 
 const SCHEMA_JSON: &str = include_str!("../../../glean.1.schema.json");
 
@@ -68,9 +70,9 @@ fn validate_against_schema() {
             _url: String,
             body: Vec<u8>,
             _headers: Vec<(String, String)>,
-        ) -> glean::net::UploadResult {
+        ) -> UploadResult {
             self.sender.send(body).unwrap();
-            glean::net::UploadResult::HttpStatus(200)
+            UploadResult::http_status(200)
         }
     }
 
