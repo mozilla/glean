@@ -55,7 +55,6 @@ use private::RecordedExperimentData;
 
 mod configuration;
 mod core_metrics;
-mod glean_metrics;
 pub mod net;
 pub mod private;
 mod system;
