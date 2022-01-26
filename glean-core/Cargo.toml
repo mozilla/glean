@@ -41,8 +41,8 @@ zeitstempel = "0.1.0"
 crossbeam-channel = "0.5"
 thiserror = "1.0.4"
 whatsys = "0.1.2"
-uniffi = "0.15.2"
-uniffi_macros = "0.15.2"
+uniffi = "0.17.0"
+uniffi_macros = "0.17.0"
 time = "0.1.40"
 
 [target.'cfg(target_os = "android")'.dependencies]
@@ -61,7 +61,7 @@ iso8601 = "0.4"
 ctor = "0.1.12"
 
 [build-dependencies]
-uniffi_build = "0.15.2"
+uniffi_build = "0.17.0"
 
 [features]
 # Enable the "safe-mode" Rust storage backend instead of the default LMDB one.
