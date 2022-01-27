@@ -330,7 +330,9 @@ impl Glean {
             .and_then(|database| database.file_size())
         {
             log::trace!("Database file size: {}", size.get());
-            self.database_metrics.size.accumulate_sync(self, size.get() as i64)
+            self.database_metrics
+                .size
+                .accumulate_sync(self, size.get() as i64)
         }
     }
 
