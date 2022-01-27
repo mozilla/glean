@@ -331,7 +331,7 @@ impl TimingDistributionMetric {
     ///
     /// Reports an [`ErrorType::InvalidOverflow`] error for samples that
     /// are longer than `MAX_SAMPLE_TIME`.
-    pub fn accumulate_raw_samples_nanos(&mut self, samples: Vec<u64>) {
+    pub fn accumulate_raw_samples_nanos(&self, samples: Vec<u64>) {
         let metric = self.clone();
         crate::launch_with_glean(move |glean| {
             metric.accumulate_raw_samples_nanos_sync(glean, &samples)
