@@ -92,15 +92,26 @@ impl UploadResult {
         }
     }
 
-    pub(crate) fn recoverable_failure() -> Self {
+    /// A recoverable failure.
+    ///
+    /// During upload something went wrong,
+    /// e.g. the network connection failed.
+    /// The upload should be retried at a later time.
+    pub fn recoverable_failure() -> Self {
         Self::RecoverableFailure { unused: 0 }
     }
 
-    pub(crate) fn unrecoverable_failure() -> Self {
+    /// An unrecoverable upload failure.
+    ///
+    /// A possible cause might be a malformed URL.
+    pub fn unrecoverable_failure() -> Self {
         Self::UnrecoverableFailure { unused: 0 }
     }
 
-    pub(crate) fn http_status(code: i32) -> Self {
+    /// A HTTP response code.
+    ///
+    /// This can still indicate an error, depending on the status code.
+    pub fn http_status(code: i32) -> Self {
         Self::HttpStatus { code }
     }
 }
