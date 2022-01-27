@@ -213,16 +213,14 @@ pub fn handle_client_inactive() {
 
 /// TEST ONLY FUNCTION.
 /// Checks if an experiment is currently active.
-#[allow(dead_code)]
-pub(crate) fn test_is_experiment_active(experiment_id: String) -> bool {
+pub fn test_is_experiment_active(experiment_id: String) -> bool {
     glean_core::glean_test_get_experiment_data(experiment_id).is_some()
 }
 
 /// TEST ONLY FUNCTION.
 /// Returns the [`RecordedExperimentData`] for the given `experiment_id` or panics if
 /// the id isn't found.
-#[allow(dead_code)]
-pub(crate) fn test_get_experiment_data(experiment_id: String) -> Option<RecordedExperiment> {
+pub fn test_get_experiment_data(experiment_id: String) -> Option<RecordedExperiment> {
     glean_core::glean_test_get_experiment_data(experiment_id)
 }
 
