@@ -106,6 +106,8 @@ boolean
 booleans
 brizental
 bugfixes
+bugzilla
+buildhub
 camelCase
 carthage
 changelog
@@ -140,6 +142,7 @@ exe
 experimentId
 ffi
 func
+geckoview
 gfritzsche
 glibc
 glinter
@@ -149,6 +152,7 @@ gzip
 gzipped
 hotfix
 html
+http
 illumos
 init
 inlined
@@ -182,6 +186,7 @@ mypy
 namespace
 npm
 ns
+nsHTTP
 ol
 ons
 pdoc

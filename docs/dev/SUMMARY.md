@@ -27,6 +27,7 @@
         - [Python](core/new-metric-type/python.md)
         - [Rust](core/new-metric-type/rust.md)
         - [Platform](core/new-metric-type/platform.md)
+        - [GLAM](/docs/user/user/adding-glean-to-your-project/glam.md)
 - [FFI Layer](ffi/index.md)
     - [When/How FFI](ffi/when-to-use-what-in-the-ffi.md)
 - [Internal implementation details](core/internal/index.md)
