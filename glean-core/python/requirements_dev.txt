@@ -1,5 +1,5 @@
 auditwheel==5.1.2
-black==21.12b0
+black==22.1.0
 cffi==1.15.0
 coverage==6.2
 flake8==4.0.1
