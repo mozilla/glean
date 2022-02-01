@@ -618,16 +618,6 @@ jobs:
           paths: docs/swift
       - skip-if-doc-only
       - run:
-          name: Build Carthage archive
-          no_output_timeout: 20m
-          command: |
-            if [ -z "${CIRCLE_TAG}" ]; then
-              # No need to build the framework archive unless we build for a tagged release.
-              circleci-agent step halt
-            else
-              bash bin/build-carthage.sh Glean
-            fi
-      - run:
           name: Build XCFramework archive
           no_output_timeout: 20m
           command: |
@@ -640,7 +630,6 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-            - Glean.framework.zip
             - Glean.xcframework.zip
 
   iOS integration test:
@@ -732,9 +721,8 @@ jobs:
           at: .
       - install-ghr-darwin
       - run:
-          name: Release framework archives on GitHub
+          name: Release framework archive on GitHub
           command: |
-            ./ghr -replace "${CIRCLE_TAG}" Glean.framework.zip
             ./ghr -replace "${CIRCLE_TAG}" Glean.xcframework.zip
 
   glean-swift release:

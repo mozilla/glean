@@ -293,7 +293,7 @@ This post-processor is available in the `coverage` subcommand in the [`glean_par
 For some build systems, `glean_parser` is already installed for you by the build system integration at the following locations:
 
 - On Android/Gradle, `$GRADLE_HOME/glean/bootstrap-4.5.11/Miniconda3/bin/glean_parser`
-- On iOS/Carthage, `$PROJECT_ROOT/.venv/bin/glean_parser`
+- On iOS, `$PROJECT_ROOT/.venv/bin/glean_parser`
 - For other systems, install `glean_parser` using `pip install glean_parser`
 
 The `glean_parser coverage` command requires the following parameters:
