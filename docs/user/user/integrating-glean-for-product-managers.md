@@ -43,3 +43,12 @@ Occasionally, products need to collect data that doesn't fit neatly into one of 
 Glean [has a process](https://wiki.mozilla.org/Glean/Adding_or_changing_Glean_metric_types) to request and introduce more metric types and we will work with you to design something appropriate.
 This design and implementation work is at least 4 weeks, though we are working on the foundation to accelerate that.
 Having a telemetry plan (see above) will help to identify this work early.
+
+## Integrating Glean into GLAM
+
+To use GLAM for analysis of your application's data [file a ticket in the GLAM repository](https://github.com/mozilla/glam/issues/new/choose) with the following information:
+
+1. Application Id
+2. Dataset location
+
+A data engineer from GLAM team will reach out to you if further information is required.
