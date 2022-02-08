@@ -26,8 +26,17 @@ def test_the_api_saves_to_its_storage_engine():
 
     assert datetime_metric.test_has_value() is False
 
+    # Regression test: We previously failed to record the timezone.
+    # We don't have a _fixed_ local timezone,
+    # but we know how to get it:
+    expected_dt = datetime.datetime.now(datetime.timezone.utc).astimezone()
+    expected_off = expected_dt.tzinfo.utcoffset(expected_dt).seconds
+
     datetime_metric.set()
     assert datetime_metric.test_has_value() is True
+    value = datetime_metric.test_get_value()
+    # Check that the set datetime contains the local timezone offset.
+    assert expected_off == value.tzinfo.utcoffset(value).seconds
 
     value = datetime.datetime(
         2004, 12, 9, 8, 3, 29, tzinfo=datetime.timezone(datetime.timedelta(hours=16))
