@@ -5,6 +5,8 @@
 * Swift
   * Dropping support of the Carthage-compatible framework archive ([#1943](https://github.com/mozilla/glean/pull/1943)).
     The Swift Package (https://github.com/mozilla/glean-swift) is the recommended way of consuming Glean iOS.
+* Python
+  * BUGFIX: Datetime metrics now correctly record the local timezone ([#1953](https://github.com/mozilla/glean/pull/1953)).
 
 [Full changelog](https://github.com/mozilla/glean/compare/v43.0.2...main)
 

@@ -72,15 +72,21 @@ class DatetimeMetricType:
             return
 
         if value is None:
-            value = datetime.datetime.now()
+            # now at UTC -> astimezone gives us a time with the local timezone.
+            value = datetime.datetime.now(datetime.timezone.utc).astimezone()
 
         @Dispatcher.launch
         def set():
             tzinfo = value.tzinfo
             if tzinfo is not None:
-                offset = tzinfo.utcoffset(value).seconds
+                utcoff = tzinfo.utcoffset(value)
+                if utcoff is not None:
+                    offset = utcoff.seconds
+                else:
+                    offset = 0
             else:
                 offset = 0
+
             _ffi.lib.glean_datetime_set(
                 self._handle,
                 value.year,
