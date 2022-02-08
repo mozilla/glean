@@ -46,9 +46,6 @@ Having a telemetry plan (see above) will help to identify this work early.
 
 ## Integrating Glean into GLAM
 
-To use GLAM for analysis of your application's data [file a ticket in the GLAM repository](https://github.com/mozilla/glam/issues/new/choose) with the following information:
-
-1. Application ID
-2. Dataset location
+To use GLAM for analysis of your application's data [file a ticket in the GLAM repository](https://github.com/mozilla/glam/issues/new?assignees=&labels=&template=add_to_glam.md&title=).
 
 A data engineer from the GLAM team will reach out to you if further information is required.
