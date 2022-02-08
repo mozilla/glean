@@ -48,7 +48,7 @@ Having a telemetry plan (see above) will help to identify this work early.
 
 To use GLAM for analysis of your application's data [file a ticket in the GLAM repository](https://github.com/mozilla/glam/issues/new/choose) with the following information:
 
-1. Application Id
+1. Application ID
 2. Dataset location
 
 A data engineer from GLAM team will reach out to you if further information is required.
