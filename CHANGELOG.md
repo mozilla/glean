@@ -1,5 +1,8 @@
 # Unreleased changes
 
+* General
+  * BREAKING CHANGE: Updated `glean_parser` version to 5.0.1 ([#1852](https://github.com/mozilla/glean/pull/1852)).
+    This update drops support for generating C# specific metrics API.
 * Rust
   * Ensure test-only `destroy_glean()` handles `initialize()` having started but not completed ([bug 1750235](https://bugzilla.mozilla.org/show_bug.cgi?id=1750235))
 * Swift
