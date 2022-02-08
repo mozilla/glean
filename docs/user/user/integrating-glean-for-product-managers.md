@@ -51,4 +51,4 @@ To use GLAM for analysis of your application's data [file a ticket in the GLAM r
 1. Application ID
 2. Dataset location
 
-A data engineer from GLAM team will reach out to you if further information is required.
+A data engineer from the GLAM team will reach out to you if further information is required.
