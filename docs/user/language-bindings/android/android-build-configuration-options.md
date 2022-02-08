@@ -66,3 +66,15 @@ To override this, `ext.gleanYamlFiles` may be set to a list of explicit paths.
 ```groovy
 ext.gleanYamlFiles = ["$rootDir/glean-core/metrics.yaml", "$rootDir/glean-core/pings.yaml"]
 ```
+
+## `gleanExpireByVersion`
+
+Expire the metrics and pings by version, using the provided major version.
+
+If enabled, expiring metrics or pings by date will produce an error.
+
+```groovy
+ext.gleanExpireByVersion = 25
+```
+
+

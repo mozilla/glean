@@ -217,6 +217,11 @@ except:
                     }
                 }
 
+                // Enable expiration by major version, if a major version is provided.
+                if (project.ext.has("gleanExpireByVersion")) {
+                    args "--expire-by-version=${project.ext.get("gleanExpireByVersion")}"
+                }
+
                 doFirst {
                     // Add the potential 'metrics.yaml' files at evaluation-time, rather than
                     // configuration-time. Otherwise the Gradle build will fail.
@@ -284,6 +289,11 @@ except:
                 // use metrics in the "glean..." category
                 if (project.ext.has("allowGleanInternal")) {
                     args "--allow-reserved"
+                }
+
+                // Enable expiration by major version, if a major version is provided.
+                if (project.ext.has("gleanExpireByVersion")) {
+                    args "--expire-by-version=${project.ext.get("gleanExpireByVersion")}"
                 }
 
                 doFirst {
