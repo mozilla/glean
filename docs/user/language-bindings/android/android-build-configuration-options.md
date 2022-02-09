@@ -77,4 +77,6 @@ If enabled, expiring metrics or pings by date will produce an error.
 ext.gleanExpireByVersion = 25
 ```
 
-
+Different products have different ways to compute the product version at build-time.
+For this reason the Glean Gradle plugin cannot provide an automated way to detect the product major version at build time.
+When using the expiration by version feature in Android, products must provide the major version by themselves.
