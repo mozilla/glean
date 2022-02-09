@@ -41,7 +41,7 @@ class GleanMetricsYamlTransform extends ArtifactTransform {
 @SuppressWarnings("GrPackage")
 class GleanPlugin implements Plugin<Project> {
     // The version of glean_parser to install from PyPI.
-    private String GLEAN_PARSER_VERSION = "4.4.0"
+    private String GLEAN_PARSER_VERSION = "5.0.1"
     // The version of Miniconda is explicitly specified.
     // Miniconda3-4.5.12 is known to not work on Windows.
     private String MINICONDA_VERSION = "4.5.11"
@@ -217,6 +217,11 @@ except:
                     }
                 }
 
+                // Enable expiration by major version, if a major version is provided.
+                if (project.ext.has("gleanExpireByVersion")) {
+                    args "--expire-by-version=${project.ext.get("gleanExpireByVersion")}"
+                }
+
                 doFirst {
                     // Add the potential 'metrics.yaml' files at evaluation-time, rather than
                     // configuration-time. Otherwise the Gradle build will fail.
@@ -284,6 +289,11 @@ except:
                 // use metrics in the "glean..." category
                 if (project.ext.has("allowGleanInternal")) {
                     args "--allow-reserved"
+                }
+
+                // Enable expiration by major version, if a major version is provided.
+                if (project.ext.has("gleanExpireByVersion")) {
+                    args "--expire-by-version=${project.ext.get("gleanExpireByVersion")}"
                 }
 
                 doFirst {

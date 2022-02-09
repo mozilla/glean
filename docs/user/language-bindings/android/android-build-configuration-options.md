@@ -66,3 +66,17 @@ To override this, `ext.gleanYamlFiles` may be set to a list of explicit paths.
 ```groovy
 ext.gleanYamlFiles = ["$rootDir/glean-core/metrics.yaml", "$rootDir/glean-core/pings.yaml"]
 ```
+
+## `gleanExpireByVersion`
+
+Expire the metrics and pings by version, using the provided major version.
+
+If enabled, expiring metrics or pings by date will produce an error.
+
+```groovy
+ext.gleanExpireByVersion = 25
+```
+
+Different products have different ways to compute the product version at build-time.
+For this reason the Glean Gradle plugin cannot provide an automated way to detect the product major version at build time.
+When using the expiration by version feature in Android, products must provide the major version by themselves.
