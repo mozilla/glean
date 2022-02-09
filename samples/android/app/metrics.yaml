@@ -28,7 +28,7 @@ browser.engagement:
       key2:
         type: string
         description: "This is key two"
-    expires: 2100-01-01
+    expires: 2
     metadata:
       tags:
         - testing
@@ -48,7 +48,7 @@ browser.engagement:
         description: "This is key one"
       key2:
         description: "This is key two"
-    expires: 2100-01-01
+    expires: 2
 
   event_no_keys:
     type: event
@@ -60,7 +60,7 @@ browser.engagement:
       - N/A
     notification_emails:
       - CHANGE-ME@example.com
-    expires: 2100-01-01
+    expires: 2
 
 basic:
   os:
@@ -73,7 +73,7 @@ basic:
       - N/A
     notification_emails:
       - CHANGE-ME@example.com
-    expires: 2100-01-01
+    expires: 2
 
 test:
   string_list:
@@ -89,7 +89,7 @@ test:
       - N/A
     notification_emails:
       - CHANGE-ME@example.com
-    expires: 2100-01-01
+    expires: 2
     no_lint:
       - USER_LIFETIME_EXPIRATION
     metadata:
@@ -109,7 +109,7 @@ test:
       - N/A
     notification_emails:
       - CHANGE-ME@example.com
-    expires: 2100-01-01
+    expires: 2
     no_lint:
       - USER_LIFETIME_EXPIRATION
     metadata:
@@ -128,7 +128,7 @@ test:
       - N/A
     notification_emails:
       - CHANGE-ME@example.com
-    expires: 2100-01-01
+    expires: 2
 
   is_started:
     type: boolean
@@ -143,7 +143,7 @@ test:
       - N/A
     notification_emails:
       - CHANGE-ME@test-only.com
-    expires: 2100-01-01
+    expires: 2
     no_lint:
       - BASELINE_PING
 
@@ -161,7 +161,7 @@ custom:
       - N/A
     notification_emails:
       - CHANGE-ME@test-only.com
-    expires: 2100-01-01
+    expires: 2
 
 legacy_ids:
   client_id:
@@ -176,4 +176,4 @@ legacy_ids:
       - N/A
     notification_emails:
       - CHANGE-ME@example.com
-    expires: 2100-01-01
+    expires: 2

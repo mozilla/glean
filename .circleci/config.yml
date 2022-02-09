@@ -392,9 +392,9 @@ jobs:
       - run:
           name: Install mdbook-dtmo
           command: |
-              MDBOOK_VERSION=0.9.0
+              MDBOOK_VERSION=0.10.0
               MDBOOK="mdbook-dtmo-${MDBOOK_VERSION}-x86_64-unknown-linux-gnu.tar.gz"
-              MDBOOK_SHA256=c83f0df5b3104b283b6a6156c4394bb496f3a9c1368d90760313c98887267610
+              MDBOOK_SHA256=96d30648b21cf443d64bd181cc58c8f2ba0d98b1e390e96d4639ae1ec5985ae3
               curl -sfSL --retry 5 -O "https://github.com/badboy/mdbook-dtmo/releases/download/${MDBOOK_VERSION}/${MDBOOK}"
               echo "${MDBOOK_SHA256} *${MDBOOK}" | shasum -a 256 -c -
               tar -xvf "${MDBOOK}"
@@ -547,16 +547,16 @@ jobs:
       - setup-rust-toolchain
       - restore_cache:
           name: Restore rubygems cache
-          key: swift-docs-gems-v10
+          key: swift-docs-gems-v11
       - run:
           name: Install jazzy
           command: gem install jazzy
       - save_cache:
           name: Save rubygems cache
           # NEEDS TO CHANGE WHEN JAZZY OR RUBY IS UPDATED
-          key: swift-docs-gems-v10
+          key: swift-docs-gems-v11
           paths:
-            - ~/.gem/ruby/2.7.4
+            - ~/.gem/ruby/2.7.5
       - run:
           name: Setup build environment
           command: |
@@ -618,16 +618,6 @@ jobs:
           paths: docs/swift
       - skip-if-doc-only
       - run:
-          name: Build Carthage archive
-          no_output_timeout: 20m
-          command: |
-            if [ -z "${CIRCLE_TAG}" ]; then
-              # No need to build the framework archive unless we build for a tagged release.
-              circleci-agent step halt
-            else
-              bash bin/build-carthage.sh Glean
-            fi
-      - run:
           name: Build XCFramework archive
           no_output_timeout: 20m
           command: |
@@ -640,7 +630,6 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-            - Glean.framework.zip
             - Glean.xcframework.zip
 
   iOS integration test:
@@ -663,21 +652,36 @@ jobs:
             UDID=$(echo "$DEVICES" | grep 'iPhone 11 Simulator (14' | awk -F'[()]' '{print $4}')
             xcrun simctl boot "$UDID"
       - run:
+          name: Reduce dependencies in Cartfile for caching
+          command: |
+            sed -i.bak "/mozilla\/glean/d" "samples/ios/app/Cartfile"
+      - restore_cache:
+          name: Restore carthage dep cache
+          key: v1-swift-sample-deps-{{checksum "samples/ios/app/Cartfile"}}
+      - run:
+          name: Bootstrap dependencies
+          command: |
+            pushd samples/ios/app
+            ./bootstrap.sh
+            popd
+      - save_cache:
+          paths:
+            - samples/ios/app/Carthage
+          key: v1-swift-sample-deps-{{checksum "samples/ios/app/Cartfile"}}
+      - run:
           name: Use current commit of Glean
           command: |
             GLEAN_PATH="$(pwd)"
             CARTFILE_PATH="${GLEAN_PATH}/samples/ios/app/Cartfile"
 
-            echo "Current Cartfile:"
-            cat "${CARTFILE_PATH}"
-            echo "================="
             echo "New Cartfile:"
-            sed -i.bak "/mozilla\/glean/s#.*#git \"${GLEAN_PATH}\" \"${CIRCLE_SHA1}\"#" "$CARTFILE_PATH"
+            echo "git \"${GLEAN_PATH}\" \"${CIRCLE_SHA1}\"#" >> "$CARTFILE_PATH"
             cat "${CARTFILE_PATH}"
       - run:
-          name: Bootstrap dependencies
+          name: Bootstrap Glean dependency
           command: |
             pushd samples/ios/app
+            carthage update --no-build --verbose
             ./bootstrap.sh
             popd
       - run:
@@ -717,9 +721,8 @@ jobs:
           at: .
       - install-ghr-darwin
       - run:
-          name: Release framework archives on GitHub
+          name: Release framework archive on GitHub
           command: |
-            ./ghr -replace "${CIRCLE_TAG}" Glean.framework.zip
             ./ghr -replace "${CIRCLE_TAG}" Glean.xcframework.zip
 
   glean-swift release:

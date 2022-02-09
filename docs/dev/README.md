@@ -9,7 +9,7 @@ To contact us you can:
 - Find us in the [#glean channel on chat.mozilla.org](https://chat.mozilla.org/#/room/#glean:mozilla.org).
 - To report issues or request changes, file a bug in [Bugzilla in Data Platform & Tools :: Glean: SDK](https://bugzilla.mozilla.org/enter_bug.cgi?product=Data+Platform+and+Tools&component=Glean%3A+SDK&priority=P3&status_whiteboard=%5Btelemetry%3Aglean-rs%3Am%3F%5D).
 - Send an email to *glean-team@mozilla.com*.
-- The Glean SDK team is: *:janerik*, *:dexter*, *:travis*, *:mdroettboom*, *:gfritzsche*, *:chutten*, *:brizental*.
+- The Glean SDKs team is: *:janerik*, *:dexter*, *:travis*, *:mdroettboom*, *:chutten*, *:brizental*.
 
 The source code is available [on GitHub](https://github.com/mozilla/glean/).
 

@@ -2,6 +2,14 @@
 
 At times it may be necessary to debug against a local build of Glean or another git fork or branch in order to test new features or specific versions of Glean.
 
+{{#include ../../shared/blockquote-warning.html}}
+
+#### Article out of date - Glean dropped support for its Carthage package release
+
+> Glean is shipped as a Swift Package now (as [glean-swift](https://github.com/mozilla/glean-swift)).
+> The following guide is thus not applicable anymore.
+> See [bug 1753016](https://bugzilla.mozilla.org/show_bug.cgi?id=1753016) for updates.
+
 Since Glean is consumed through [Carthage](https://github.com/Carthage/Carthage), this can be as simple as modifying the Cartfile for the consuming application.
 
 ## Building against the latest Glean

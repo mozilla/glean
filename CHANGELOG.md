@@ -1,6 +1,21 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v43.0.2...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v44.0.0...main)
+
+# v44.0.0 (2022-02-09)
+
+* General
+  * BREAKING CHANGE: Updated `glean_parser` version to 5.0.1 ([#1852](https://github.com/mozilla/glean/pull/1852)).
+    This update drops support for generating C# specific metrics API.
+* Rust
+  * Ensure test-only `destroy_glean()` handles `initialize()` having started but not completed ([bug 1750235](https://bugzilla.mozilla.org/show_bug.cgi?id=1750235))
+* Swift
+  * Dropping support of the Carthage-compatible framework archive ([#1943](https://github.com/mozilla/glean/pull/1943)).
+    The Swift Package (https://github.com/mozilla/glean-swift) is the recommended way of consuming Glean iOS.
+* Python
+  * BUGFIX: Datetime metrics now correctly record the local timezone ([#1953](https://github.com/mozilla/glean/pull/1953)).
+
+[Full changelog](https://github.com/mozilla/glean/compare/v43.0.2...v44.0.0)
 
 # v43.0.2 (2022-01-17)
 

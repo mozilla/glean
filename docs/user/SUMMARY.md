@@ -19,7 +19,7 @@
     - [Testing custom pings](user/pings/testing-custom-pings.md)
     - [Pings sent by Glean](user/pings/sent-by-glean.md)
         - [Baseline Ping](user/pings/baseline.md)
-        - [Deletion Request Ping](user/pings/deletion_request.md)
+        - [Deletion Request Ping](user/pings/deletion-request.md)
         - [Events Ping](user/pings/events.md)
         - [Metrics Ping](user/pings/metrics.md)
         - [Schedules and timings overview](user/pings/ping-schedules-and-timings.md)

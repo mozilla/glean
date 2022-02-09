@@ -3,7 +3,7 @@
 If data collection is enabled, the Glean SDKs provide a set of built-in pings that are assembled out of the box without any developer intervention.  The following is a list of these built-in pings:
 
 - [`baseline` ping](baseline.md): A small ping sent every time the application goes to foreground and background. Going to foreground also includes when the application starts.
-- [`deletion-request` ping](deletion_request.md): Sent when the user disables telemetry in order to request a deletion of their data.
+- [`deletion-request` ping](deletion-request.md): Sent when the user disables telemetry in order to request a deletion of their data.
 - [`events` ping](events.md): The default ping for events. Sent every time the application goes to background or a certain number of events is reached.
 - [`metrics` ping](metrics.md): The default ping for metrics. Sent approximately daily.
 
@@ -13,7 +13,7 @@ There is also a [high-level overview](ping-schedules-and-timings.html) of how th
 
 ### Available pings per platform
 
-| SDK | [`baseline`](baseline.md) | [`deletion-request`](deletion_request.md) | [`events`](events.md) | [`metrics`](metrics.md) |
+| SDK | [`baseline`](baseline.md) | [`deletion-request`](deletion-request.md) | [`events`](events.md) | [`metrics`](metrics.md) |
 |-:|:-:|:-:|:-:|:-:|
 | Kotlin | ✅ | ✅ | ✅ | ✅ |
 | Swift | ✅ | ✅ | ✅ | ✅ |
