@@ -1,5 +1,9 @@
 # Unreleased changes
 
+[Full changelog](https://github.com/mozilla/glean/compare/v44.0.0...main)
+
+# v44.0.0 (2022-02-09)
+
 * General
   * BREAKING CHANGE: Updated `glean_parser` version to 5.0.1 ([#1852](https://github.com/mozilla/glean/pull/1852)).
     This update drops support for generating C# specific metrics API.
@@ -11,7 +15,7 @@
 * Python
   * BUGFIX: Datetime metrics now correctly record the local timezone ([#1953](https://github.com/mozilla/glean/pull/1953)).
 
-[Full changelog](https://github.com/mozilla/glean/compare/v43.0.2...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v43.0.2...v44.0.0)
 
 # v43.0.2 (2022-01-17)
 
