@@ -13,6 +13,8 @@ from pathlib import Path
 from typing import List, Optional, Tuple
 
 
+from .._uniffi import glean_set_test_mode, glean_set_log_pings
+from .._uniffi import ErrorType
 from glean import Configuration
 from .error_type import ErrorType  # noqa
 from ..net import base_uploader, ping_uploader
@@ -36,7 +38,6 @@ def reset_glean(
             global settings.
     """
     from glean import Glean
-    from glean._dispatcher import Dispatcher
 
     data_dir: Optional[Path] = None
     if not clear_stores:
@@ -45,10 +46,9 @@ def reset_glean(
 
     Glean._reset()
 
-    # `_testing_mode` should be changed *after* `Glean._reset()` is run, so
-    # that `Glean` properly joins on the worker thread when `_testing_mode` is
-    # False.
-    Dispatcher._testing_mode = True
+    Glean._testing_mode = True
+    glean_set_test_mode(True)
+    glean_set_log_pings(True)
 
     if data_dir is None:
         Glean._initialize_with_tempdir_for_testing(
