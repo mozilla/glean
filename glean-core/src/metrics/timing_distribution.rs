@@ -158,6 +158,12 @@ impl TimingDistributionMetric {
     /// Use [`stop_and_accumulate`](Self::stop_and_accumulate) instead.
     #[doc(hidden)]
     pub fn set_stop_and_accumulate(&self, glean: &Glean, id: TimerId, stop_time: u64) {
+        if !self.should_record(glean) {
+            let mut start_times = self.start_times.lock().expect("can't lock timings map");
+            start_times.remove(&id);
+            return;
+        }
+
         // Duration is in nanoseconds.
         let mut duration = match self.set_stop(id, stop_time) {
             Err((err_type, err_msg)) => {
