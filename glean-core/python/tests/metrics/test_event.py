@@ -5,17 +5,16 @@
 import enum
 from pathlib import Path
 import time
-from typing import List, Optional, Tuple
+from typing import Dict, Optional
 
 
 import pytest
 
 
 from glean import Configuration, Glean
-from glean._dispatcher import Dispatcher
 from glean import load_metrics
 from glean import metrics
-from glean.metrics import Lifetime
+from glean.metrics import Lifetime, CommonMetricData
 from glean import testing
 from glean import __version__ as glean_version
 
@@ -25,15 +24,18 @@ ROOT = Path(__file__).parent
 
 def test_the_api_records_to_its_storage_engine():
     class ClickKeys(enum.Enum):
-        OBJECT_ID = 0
-        OTHER = 1
+        OBJECT_ID = "object_id"
+        OTHER = "other"
 
     click = metrics.EventMetricType(
-        disabled=False,
-        category="ui",
-        lifetime=Lifetime.PING,
-        name="click",
-        send_in_pings=["store1"],
+        CommonMetricData(
+            disabled=False,
+            category="ui",
+            lifetime=Lifetime.PING,
+            name="click",
+            send_in_pings=["store1"],
+            dynamic_label=None,
+        ),
         allowed_extra_keys=["object_id", "other"],
     )
 
@@ -47,13 +49,11 @@ def test_the_api_records_to_its_storage_engine():
 
     # Check that data was properly recorded
     snapshot = click.test_get_value()
-    assert click.test_has_value()
     assert 3 == len(snapshot)
 
     first_event = [x for x in snapshot if x.extra.get("object_id") == "buttonA"][0]
     assert "ui" == first_event.category
     assert "click" == first_event.name
-    assert "ui.click" == first_event.identifier
     assert "foo" == first_event.extra["other"]
 
     second_event = [x for x in snapshot if x.extra.get("object_id") == "buttonB"][0]
@@ -66,14 +66,17 @@ def test_the_api_records_to_its_storage_engine():
 
 def test_the_api_records_to_its_storage_engine_when_category_is_empty():
     class ClickKeys(enum.Enum):
-        OBJECT_ID = 0
+        OBJECT_ID = "object_id"
 
     click = metrics.EventMetricType(
-        disabled=False,
-        category="",
-        lifetime=Lifetime.PING,
-        name="click",
-        send_in_pings=["store1"],
+        CommonMetricData(
+            disabled=False,
+            category="",
+            lifetime=Lifetime.PING,
+            name="click",
+            send_in_pings=["store1"],
+            dynamic_label=None,
+        ),
         allowed_extra_keys=["object_id"],
     )
 
@@ -86,7 +89,6 @@ def test_the_api_records_to_its_storage_engine_when_category_is_empty():
 
     # Check that the data was properly recorded
     snapshot = click.test_get_value()
-    assert click.test_has_value()
     assert 2 == len(snapshot)
 
     first_event = [x for x in snapshot if x.extra["object_id"] == "buttonA"][0]
@@ -104,11 +106,14 @@ def test_disabled_events_must_not_record_data():
         OTHER = 1
 
     click = metrics.EventMetricType(
-        disabled=True,
-        category="ui",
-        lifetime=Lifetime.PING,
-        name="click",
-        send_in_pings=["store1"],
+        CommonMetricData(
+            disabled=True,
+            category="ui",
+            lifetime=Lifetime.PING,
+            name="click",
+            send_in_pings=["store1"],
+            dynamic_label=None,
+        ),
         allowed_extra_keys=["object_id", "other"],
     )
 
@@ -116,33 +121,38 @@ def test_disabled_events_must_not_record_data():
     click.record()
 
     # Check that nothing was recorded
-    assert not click.test_has_value()
+    assert not click.test_get_value()
 
 
 def test_test_get_value_throws_valueerror_if_nothing_is_stored():
     click = metrics.EventMetricType(
-        disabled=False,
-        category="ui",
-        lifetime=Lifetime.PING,
-        name="click",
-        send_in_pings=["store1"],
+        CommonMetricData(
+            disabled=False,
+            category="ui",
+            lifetime=Lifetime.PING,
+            name="click",
+            send_in_pings=["store1"],
+            dynamic_label=None,
+        ),
         allowed_extra_keys=["object_id", "other"],
     )
 
-    with pytest.raises(ValueError):
-        click.test_get_value()
+    assert not click.test_get_value()
 
 
 def test_the_api_records_to_secondary_pings():
     class ClickKeys(enum.Enum):
-        OBJECT_ID = 0
+        OBJECT_ID = "object_id"
 
     click = metrics.EventMetricType(
-        disabled=False,
-        category="ui",
-        lifetime=Lifetime.PING,
-        name="click",
-        send_in_pings=["store1", "store2"],
+        CommonMetricData(
+            disabled=False,
+            category="ui",
+            lifetime=Lifetime.PING,
+            name="click",
+            send_in_pings=["store1", "store2"],
+            dynamic_label=None,
+        ),
         allowed_extra_keys=["object_id"],
     )
 
@@ -155,7 +165,6 @@ def test_the_api_records_to_secondary_pings():
 
     # Check that the data was properly recorded in the second ping
     snapshot = click.test_get_value("store2")
-    assert click.test_has_value("store2")
     assert 2 == len(snapshot)
 
     first_event = [x for x in snapshot if x.extra["object_id"] == "buttonA"][0]
@@ -171,14 +180,17 @@ def test_the_api_records_to_secondary_pings():
 
 def test_events_should_not_record_when_upload_is_disabled():
     class EventKeys(enum.Enum):
-        TEST_NAME = 0
+        TEST_NAME = "test_name"
 
     event_metric = metrics.EventMetricType(
-        disabled=False,
-        category="ui",
-        lifetime=Lifetime.PING,
-        name="click",
-        send_in_pings=["store1"],
+        CommonMetricData(
+            disabled=False,
+            category="ui",
+            lifetime=Lifetime.PING,
+            name="click",
+            send_in_pings=["store1"],
+            dynamic_label=None,
+        ),
         allowed_extra_keys=["test_name"],
     )
 
@@ -186,10 +198,11 @@ def test_events_should_not_record_when_upload_is_disabled():
     event_metric.record({EventKeys.TEST_NAME: "event1"})
     snapshot1 = event_metric.test_get_value()
     assert 1 == len(snapshot1)
+
     Glean.set_upload_enabled(False)
     event_metric.record({EventKeys.TEST_NAME: "event2"})
-    with pytest.raises(ValueError):
-        event_metric.test_get_value()
+    assert not event_metric.test_get_value()
+
     Glean.set_upload_enabled(True)
     event_metric.record({EventKeys.TEST_NAME: "event3"})
     snapshot3 = event_metric.test_get_value()
@@ -202,14 +215,17 @@ def test_flush_queued_events_on_startup(safe_httpserver):
     Glean._configuration.server_endpoint = safe_httpserver.url
 
     class EventKeys(enum.Enum):
-        SOME_EXTRA = 0
+        SOME_EXTRA = "some_extra"
 
     event = metrics.EventMetricType(
-        disabled=False,
-        category="telemetry",
-        lifetime=Lifetime.PING,
-        name="test_event",
-        send_in_pings=["events"],
+        CommonMetricData(
+            disabled=False,
+            category="telemetry",
+            lifetime=Lifetime.PING,
+            name="test_event",
+            send_in_pings=["events"],
+            dynamic_label=None,
+        ),
         allowed_extra_keys=["some_extra"],
     )
 
@@ -229,6 +245,8 @@ def test_flush_queued_events_on_startup(safe_httpserver):
     assert "events" in request.url
 
 
+# Dispatcher usage
+@pytest.mark.skip
 def test_flush_queued_events_on_startup_and_correctly_handle_preinit_events(
     safe_httpserver,
 ):
@@ -237,21 +255,24 @@ def test_flush_queued_events_on_startup_and_correctly_handle_preinit_events(
     Glean._configuration.server_endpoint = safe_httpserver.url
 
     class EventKeys(enum.Enum):
-        SOME_EXTRA = 0
+        SOME_EXTRA = "some_extra"
 
     event = metrics.EventMetricType(
-        disabled=False,
-        category="telemetry",
-        lifetime=Lifetime.PING,
-        name="test_event",
-        send_in_pings=["events"],
+        CommonMetricData(
+            disabled=False,
+            category="telemetry",
+            lifetime=Lifetime.PING,
+            name="test_event",
+            send_in_pings=["events"],
+            dynamic_label=None,
+        ),
         allowed_extra_keys=["some_extra"],
     )
 
     event.record(extra={EventKeys.SOME_EXTRA: "run1"})
     assert 1 == len(event.test_get_value())
 
-    Dispatcher.set_task_queueing(True)
+    # Dispatcher.set_task_queueing(True)
     event.record(extra={EventKeys.SOME_EXTRA: "pre-init"})
 
     testing.reset_glean(
@@ -278,15 +299,18 @@ def test_flush_queued_events_on_startup_and_correctly_handle_preinit_events(
 
 def test_long_extra_values_record_an_error():
     class ClickKeys(enum.Enum):
-        OBJECT_ID = 0
-        OTHER = 1
+        OBJECT_ID = "object_id"
+        OTHER = "other"
 
     click = metrics.EventMetricType(
-        disabled=False,
-        category="ui",
-        lifetime=Lifetime.PING,
-        name="click",
-        send_in_pings=["store1"],
+        CommonMetricData(
+            disabled=False,
+            category="ui",
+            lifetime=Lifetime.PING,
+            name="click",
+            send_in_pings=["store1"],
+            dynamic_label=None,
+        ),
         allowed_extra_keys=["object_id", "other"],
     )
 
@@ -318,7 +342,8 @@ def test_event_enum_is_generated_correctly():
 
 def test_event_extra_is_generated_correctly():
     metrics = load_metrics(
-        ROOT.parent / "data" / "events_with_types.yaml", config={"allow_reserved": False}
+        ROOT.parent / "data" / "events_with_types.yaml",
+        config={"allow_reserved": False},
     )
 
     metrics.core.preference_toggled.record(
@@ -333,30 +358,31 @@ def test_event_extra_is_generated_correctly():
 
 def test_the_convenient_extrakeys_api():
     class ClickKeys(metrics.EventExtras):
-        def __init__(self, object_id: Optional[str] = None, other: Optional[str] = None) -> None:
+        def __init__(
+            self, object_id: Optional[str] = None, other: Optional[str] = None
+        ) -> None:
             self._object_id = object_id
             self._other = other
 
-        def to_ffi_extra(self) -> Tuple[List[int], List[str]]:
-            keys = []
-            values = []
-
+        def to_ffi_extra(self) -> Dict[str, str]:
+            extras = {}
             if self._object_id is not None:
-                keys.append(0)
-                values.append(self._object_id)
+                extras["object_id"] = str(self._object_id)
 
             if self._other is not None:
-                keys.append(1)
-                values.append(self._other)
+                extras["other"] = str(self._other)
 
-            return (keys, values)
+            return extras
 
     click = metrics.EventMetricType(
-        disabled=False,
-        category="ui",
-        lifetime=Lifetime.PING,
-        name="click",
-        send_in_pings=["store1"],
+        CommonMetricData(
+            disabled=False,
+            category="ui",
+            lifetime=Lifetime.PING,
+            name="click",
+            send_in_pings=["store1"],
+            dynamic_label=None,
+        ),
         allowed_extra_keys=["object_id", "other"],
     )
 
@@ -371,13 +397,11 @@ def test_the_convenient_extrakeys_api():
 
     # Check that data was properly recorded
     snapshot = click.test_get_value()
-    assert click.test_has_value()
     assert 3 == len(snapshot)
 
     first_event = [x for x in snapshot if x.extra.get("object_id") == "buttonA"][0]
     assert "ui" == first_event.category
     assert "click" == first_event.name
-    assert "ui.click" == first_event.identifier
     assert "foo" == first_event.extra["other"]
 
     second_event = [x for x in snapshot if x.extra.get("object_id") == "buttonB"][0]
@@ -390,7 +414,8 @@ def test_the_convenient_extrakeys_api():
 
 def test_event_extra_does_typechecks():
     metrics = load_metrics(
-        ROOT.parent / "data" / "events_with_types.yaml", config={"allow_reserved": False}
+        ROOT.parent / "data" / "events_with_types.yaml",
+        config={"allow_reserved": False},
     )
 
     # Valid combinations of extras.
@@ -398,10 +423,16 @@ def test_event_extra_does_typechecks():
     metrics.core.PreferenceToggledExtra(preference="value1")
     metrics.core.PreferenceToggledExtra(enabled=True)
     metrics.core.PreferenceToggledExtra(swapped=1)
-    extras = metrics.core.PreferenceToggledExtra(preference="value1", enabled=True, swapped=1)
+    extras = metrics.core.PreferenceToggledExtra(
+        preference="value1", enabled=True, swapped=1
+    )
     # Check conversion to FFI types, extras are sorted by name
     ffi = extras.to_ffi_extra()
-    expected = ([0, 1, 2], ["true", "value1", "1"])
+    expected = {
+        "preference": "value1",
+        "enabled": "true",
+        "swapped": "1",
+    }
     assert expected == ffi
 
     with pytest.raises(TypeError):
