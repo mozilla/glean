@@ -4,71 +4,79 @@
 
 
 from glean import metrics
-from glean.metrics import Lifetime
+from glean.metrics import Lifetime, CommonMetricData
 from glean import testing
 
 
 def test_the_api_saves_to_its_storage_engine():
     string_metric = metrics.StringMetricType(
-        disabled=False,
-        category="telemetry",
-        lifetime=Lifetime.APPLICATION,
-        name="string_metric",
-        send_in_pings=["store1"],
+        CommonMetricData(
+            disabled=False,
+            category="telemetry",
+            lifetime=Lifetime.APPLICATION,
+            name="string_metric",
+            send_in_pings=["store1"],
+            dynamic_label=None,
+        )
     )
 
     string_metric.set("value")
 
-    assert string_metric.test_has_value()
     assert "value" == string_metric.test_get_value()
 
     string_metric.set("overriddenValue")
 
-    assert string_metric.test_has_value()
     assert "overriddenValue" == string_metric.test_get_value()
 
 
 def test_disabled_strings_must_not_record_data():
     string_metric = metrics.StringMetricType(
-        disabled=True,
-        category="telemetry",
-        lifetime=Lifetime.APPLICATION,
-        name="string_metric",
-        send_in_pings=["store1"],
+        CommonMetricData(
+            disabled=True,
+            category="telemetry",
+            lifetime=Lifetime.APPLICATION,
+            name="string_metric",
+            send_in_pings=["store1"],
+            dynamic_label=None,
+        )
     )
 
     string_metric.set("value")
 
-    assert not string_metric.test_has_value()
+    assert not string_metric.test_get_value()
 
 
 def test_the_api_saves_to_secondary_pings():
     string_metric = metrics.StringMetricType(
-        disabled=False,
-        category="telemetry",
-        lifetime=Lifetime.APPLICATION,
-        name="string_metric",
-        send_in_pings=["store1", "store2"],
+        CommonMetricData(
+            disabled=False,
+            category="telemetry",
+            lifetime=Lifetime.APPLICATION,
+            name="string_metric",
+            send_in_pings=["store1", "store2"],
+            dynamic_label=None,
+        )
     )
 
     string_metric.set("value")
 
-    assert string_metric.test_has_value("store2")
     assert "value" == string_metric.test_get_value("store2")
 
     string_metric.set("overriddenValue")
 
-    assert string_metric.test_has_value("store2")
     assert "overriddenValue" == string_metric.test_get_value("store2")
 
 
 def test_setting_a_long_string_records_an_error():
     string_metric = metrics.StringMetricType(
-        disabled=False,
-        category="telemetry",
-        lifetime=Lifetime.APPLICATION,
-        name="string_metric",
-        send_in_pings=["store1", "store2"],
+        CommonMetricData(
+            disabled=False,
+            category="telemetry",
+            lifetime=Lifetime.APPLICATION,
+            name="string_metric",
+            send_in_pings=["store1", "store2"],
+            dynamic_label=None,
+        )
     )
 
     string_metric.set("0123456789" * 11)
@@ -80,13 +88,16 @@ def test_setting_a_long_string_records_an_error():
 
 def test_setting_a_string_as_none():
     string_metric = metrics.StringMetricType(
-        disabled=False,
-        category="telemetry",
-        lifetime=Lifetime.APPLICATION,
-        name="string_metric",
-        send_in_pings=["store1", "store2"],
+        CommonMetricData(
+            disabled=False,
+            category="telemetry",
+            lifetime=Lifetime.APPLICATION,
+            name="string_metric",
+            send_in_pings=["store1", "store2"],
+            dynamic_label=None,
+        )
     )
 
     string_metric.set(None)
 
-    assert not string_metric.test_has_value()
+    assert not string_metric.test_get_value()
