@@ -224,17 +224,37 @@ pub fn glean_initialize(
     client_info: ClientInfoMetrics,
     callbacks: Box<dyn OnGleanEvents>,
 ) -> bool {
-    initialize_inner(cfg, client_info, callbacks)
+    initialize_inner(cfg, client_info, callbacks);
+    true
+}
+
+/// Creates and initializes a new Glean object for use in a subprocess.
+///
+/// Importantly, this will not send any pings at startup, since that
+/// sort of management should only happen in the main process.
+pub fn glean_initialize_for_subprocess(cfg: InternalConfiguration) -> bool {
+    let glean = match Glean::new_for_subprocess(&cfg, true) {
+        Ok(glean) => glean,
+        Err(err) => {
+            log::error!("Failed to initialize Glean: {}", err);
+            return false;
+        }
+    };
+    if core::setup_glean(glean).is_err() {
+        return false;
+    }
+    log::info!("Glean initialized for subprocess");
+    true
 }
 
 fn initialize_inner(
     cfg: InternalConfiguration,
     client_info: ClientInfoMetrics,
     callbacks: Box<dyn OnGleanEvents>,
-) -> bool {
+) {
     if was_initialize_called() {
         log::error!("Glean should not be initialized multiple times");
-        return true;
+        return;
     }
 
     let init_handle = std::thread::Builder::new()
@@ -404,8 +424,6 @@ fn initialize_inner(
     if dispatcher::global::is_test_mode() {
         join_init();
     }
-
-    true
 }
 
 /// TEST ONLY FUNCTION

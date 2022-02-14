@@ -13,6 +13,15 @@ namespace glean {
     // It will return immediately.
     boolean glean_initialize(InternalConfiguration cfg, ClientInfoMetrics client_info, OnGleanEvents callbacks);
 
+    // Creates and initializes a new Glean object for use in a subprocess.
+    //
+    // Importantly, this will not send any pings at startup, since that
+    // sort of management should only happen in the main process.
+    //
+    // Must only be used for an uploader process.
+    // The general API or any metrics API **will not work**.
+    boolean glean_initialize_for_subprocess(InternalConfiguration cfg);
+
     void glean_set_upload_enabled(boolean enabled);
 
     // Experiment reporting API
