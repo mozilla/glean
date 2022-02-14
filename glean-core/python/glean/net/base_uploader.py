@@ -7,17 +7,17 @@ A base class for ping uploaders.
 """
 
 
-from typing import List, Tuple, TYPE_CHECKING
+from typing import Union, Dict, TYPE_CHECKING
 
 
-from . import ping_uploader
+from .ping_uploader import PingUploader, UploadResult
 
 
 if TYPE_CHECKING:
     from glean.config import Configuration
 
 
-class BaseUploader(ping_uploader.PingUploader):
+class BaseUploader(PingUploader):
     """
     The logic for uploading pings. This leaves the actual upload implementation
     to the user-provided delegate.
@@ -27,9 +27,14 @@ class BaseUploader(ping_uploader.PingUploader):
         self,
         path: str,
         data: bytes,
-        headers: List[Tuple[str, str]],
+        headers: Dict[str, str],
         config: "Configuration",
-    ) -> ping_uploader.UploadResult:
+    ) -> Union[
+        UploadResult,
+        UploadResult.UNRECOVERABLE_FAILURE,
+        UploadResult.RECOVERABLE_FAILURE,
+        UploadResult.HTTP_STATUS,
+    ]:
         """
         This function triggers the actual upload.
 
@@ -38,9 +43,7 @@ class BaseUploader(ping_uploader.PingUploader):
         Args:
             url (str): The URL path to upload the data to.
             data (bytes): The serialized data to send.
-            headers (list of (str, str)): List of header entries as tuple
-                pairs, where the first element is the header name and the
-                second is its value.
+            headers (dict of (str, str)): Dictionary of header entries.
             config (glean.Configuration): The Glean Configuration object.
 
         Returns:
