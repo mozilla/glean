@@ -8,20 +8,18 @@ The main Glean general API.
 
 
 import atexit
-import json
 import logging
 from pathlib import Path
-import platform
 import shutil
 import tempfile
 import threading
 import inspect
-from typing import Dict, List, Optional, Set, TYPE_CHECKING
+from typing import Dict, Optional, Set, TYPE_CHECKING
 
 
 from .config import Configuration
-from ._dispatcher import Dispatcher
 from . import _uniffi
+from . import _ffi
 from .net import PingUploadWorker
 from ._process_dispatcher import ProcessDispatcher
 from . import _util
@@ -30,10 +28,13 @@ from . import _util
 # To avoid cyclical imports, but still make mypy type-checking work.
 # See https://mypy.readthedocs.io/en/latest/common_issues.html#import-cycles
 if TYPE_CHECKING:
-    from .metrics import PingType, RecordedExperimentData
+    from .metrics import PingType, RecordedExperiment
 
 
 log = logging.getLogger("glean")
+
+
+_ffi.setup_logging()
 
 
 def _rmtree(path) -> bool:
@@ -43,6 +44,25 @@ def _rmtree(path) -> bool:
     """
     shutil.rmtree(path)
     return True
+
+
+class OnGleanEventsImpl(_uniffi.OnGleanEvents):
+    def __init__(self, glean):
+        self.glean = glean
+
+    def on_initialize_finished(self):
+        log.debug("OnGleanEventsImpl.on_initialize_finished")
+        self.glean._init_finished = True
+
+    def trigger_upload(self):
+        log.debug("OnGleanEventsImpl.trigger_upload")
+        PingUploadWorker.process(Glean._testing_mode)
+
+    def start_metrics_ping_scheduler(self):
+        log.debug("OnGleanEventsImpl.start_metrics_ping_scheduler")
+
+    def cancel_uploads(self):
+        log.debug("OnGleanEventsImpl.cancel_uploads")
 
 
 class Glean:
@@ -66,6 +86,9 @@ class Glean:
     # This allows to detect calls that happen before `Glean.initialize()` was called.
     # Note: The initialization might still be in progress, as it runs in a separate thread.
     _init_finished: bool = False
+
+    # Are we in testing mode?
+    _testing_mode: bool = False
 
     # The Configuration that was passed to `initialize`
     _configuration: Configuration
@@ -155,73 +178,30 @@ class Glean:
             else:
                 cls._application_build_id = application_build_id
 
-        # Use `Glean._execute_task` rather than `Glean.launch` here, since we
-        # never want to put this work on the `Dispatcher._preinit_queue`.
-        @Dispatcher._execute_task
-        def initialize():
-            # Other platforms register the built-in pings here. That is not
-            # necessary on Python since it doesn't have the problem with static
-            # initializers that Kotlin and Swift have.
+        client_info = _uniffi.ClientInfoMetrics(
+            app_build=cls._application_build_id,
+            app_display_version=cls._application_version,
+            channel=configuration.channel,
+            architecture="Unknown",
+            os_version="Unknown",
+            locale=None,
+            device_manufacturer=None,
+            device_model=None,
+            android_sdk_version=None,
+        )
+        callbacks = OnGleanEventsImpl(cls)
+        cfg = _uniffi.InternalConfiguration(
+            data_path=str(cls._data_dir),
+            application_id=application_id,
+            language_binding_name="Python",
+            upload_enabled=upload_enabled,
+            max_events=configuration.max_events,
+            delay_ping_lifetime_io=False,
+            use_core_mps=False,
+            app_build=cls._application_build_id,
+        )
 
-            cfg = _uniffi.InternalConfiguration(
-                data_path=str(cls._data_dir),
-                application_id=application_id,
-                language_binding_name="python",
-                upload_enabled=upload_enabled,
-                max_events=configuration.max_events,
-                delay_ping_lifetime_io=False,
-                app_build=cls._application_build_id,
-                use_core_mps=False
-            )
-
-            _uniffi.glean_enable_logging()
-            cls._initialized = _uniffi.glean_initialize(cfg)
-
-            # If initialization of Glean fails, we bail out and don't initialize
-            # further
-            if not cls._initialized:
-                return
-
-            ## Kotlin bindings have a "synchronized" here, but that is
-            ## unnecessary given that Python has a GIL.
-            #with cls._thread_lock:
-            #    for ping in cls._ping_type_queue:
-            #        cls.register_ping_type(ping)
-
-            ## If this is the first time ever the Glean SDK runs, make sure to set
-            ## some initial core metrics in case we need to generate early pings.
-            ## The next times we start, we would have them around already.
-            #is_first_run = _ffi.lib.glean_is_first_run() != 0
-            #if is_first_run:
-            #    cls._initialize_core_metrics()
-
-            ## Deal with any pending events so we can start recording new ones
-            #if _ffi.lib.glean_on_ready_to_submit_pings() or upload_enabled is False:
-            #    PingUploadWorker.process()
-
-            ## Glean Android sets up the metrics ping scheduler here, but we don't
-            ## have one.
-
-            ## Other platforms check for the "dirty bit" and send the `baseline` ping
-            ## with reason `dirty_startup`.
-
-            ## From the second time we run, after all startup pings are generated,
-            ## make sure to clear `lifetime: application` metrics and set them again.
-            ## Any new value will be sent in newly generated pings after startup.
-            #if not is_first_run:
-            #    _ffi.lib.glean_clear_application_lifetime_metrics()
-            #    cls._initialize_core_metrics()
-
-            # Signal the RLB dispatcher to unblock, if any exists.
-            #_ffi.lib.glean_flush_rlb_dispatcher()
-            # Signal Dispatcher that init is complete
-            #Dispatcher.flush_queued_initial_tasks()
-            _uniffi.glean_finish_initialize()
-
-            # Glean Android sets up the lifecycle observer here. We don't really
-            # have a lifecycle.
-
-        cls._init_finished = True
+        cls._initialized = _uniffi.glean_initialize(cfg, client_info, callbacks)
 
     @classmethod
     def _initialize_with_tempdir_for_testing(
@@ -264,14 +244,7 @@ class Glean:
         Resets the Glean singleton.
         """
         # TODO: 1594184 Send the metrics ping
-
-        # WARNING: Do not run any tasks on the Dispatcher from here since this
-        # is called atexit.
-
-        # Wait for the dispatcher thread to complete.
-        Dispatcher._task_worker._shutdown_thread()
-
-        Dispatcher.reset()
+        log.debug("Resetting Glean")
 
         # Wait for the subprocess to complete.  We only need to do this if
         # we know we are going to be deleting the data directory.
@@ -282,11 +255,12 @@ class Glean:
         # Importantly on Windows, this closes the handle to the database so
         # that the data directory can be deleted without a multiple access
         # violation.
-        if cls._initialized:
-            #_ffi.lib.glean_destroy_glean()
-            pass
+        _uniffi.glean_test_destroy_glean(False)
+
+        _uniffi.glean_set_test_mode(False)
         cls._init_finished = False
         cls._initialized = False
+        cls._testing_mode = False
 
         # Remove the atexit handler or it will get called multiple times at
         # exit.
@@ -308,30 +282,6 @@ class Glean:
         Returns True if the Glean SDK has been initialized.
         """
         return cls._initialized
-
-    @classmethod
-    def register_ping_type(cls, ping: "PingType") -> None:
-        """
-        Register the ping type in the registry.
-        """
-        with cls._thread_lock:
-            if cls.is_initialized():
-                _ffi.lib.glean_register_ping_type(ping._handle)
-
-            # We need to keep track of pings, so they get re-registered after a
-            # reset. This state is kept across Glean resets, which should only
-            # ever happen in test mode. It's a set and keeping them around
-            # forever should not have much of an impact.
-            cls._ping_type_queue.add(ping)
-
-    @classmethod
-    def test_has_ping_type(cls, ping_name: str) -> bool:
-        """
-        Returns True if a ping by this name is in the ping registry.
-        """
-        return bool(
-            _ffi.lib.glean_test_has_ping_type(_ffi.ffi_encode_string(ping_name))
-        )
 
     @classmethod
     def set_upload_enabled(cls, enabled: bool) -> None:
@@ -366,29 +316,7 @@ class Glean:
         #
         # Because the dispatch queue is halted until Glean is fully initialized
         # we can safely enqueue here and it will execute after initialization.
-        @Dispatcher.launch
-        def set_upload_enabled():
-            original_enabled = cls._get_upload_enabled()
-            _ffi.lib.glean_set_upload_enabled(enabled)
-
-            if original_enabled is False and cls._get_upload_enabled() is True:
-                cls._initialize_core_metrics()
-
-            if original_enabled is True and cls._get_upload_enabled() is False:
-                # If uploading is disabled, we need to send the deletion-request ping
-                PingUploadWorker.process()
-
-    @classmethod
-    def _get_upload_enabled(cls) -> bool:
-        """
-        Get whether or not Glean is allowed to record and upload data.
-
-        Caution: the result is only correct if Glean is already initialized.
-        """
-        if cls.is_initialized():
-            return bool(_ffi.lib.glean_is_upload_enabled())
-        else:
-            return False
+        _uniffi.glean_set_upload_enabled(enabled)
 
     @classmethod
     def set_experiment_active(
@@ -434,7 +362,7 @@ class Glean:
         return _uniffi.glean_test_get_experiment_data(experiment_id) is not None
 
     @classmethod
-    def test_get_experiment_data(cls, experiment_id: str) -> "RecordedExperimentData":
+    def test_get_experiment_data(cls, experiment_id: str) -> "RecordedExperiment":
         """
         Returns the stored data for the requested active experiment, for testing purposes only.
 
@@ -461,20 +389,7 @@ class Glean:
         This should be called whenever the consuming product becomes active (e.g.
         getting to foreground).
         """
-        from ._builtins import metrics
-
-        _ffi.lib.glean_handle_client_active()
-
-        # The above call may generate pings, so we need to trigger
-        # the uploader. It's fine to trigger it if no ping was generated:
-        # it will bail out.
-        PingUploadWorker.process()
-
-        # The previous block of code may send a ping containing the `duration` metric,
-        # in `_ffi.lib.handle_client_active`. We intentionally start recording a new
-        # `duration` after that happens, so that the measurement gets reported when
-        # calling `handle_client_inactive`.
-        metrics.glean.baseline.duration.start()
+        _uniffi.glean_handle_client_active()
 
     @classmethod
     def handle_client_inactive(cls):
@@ -486,110 +401,7 @@ class Glean:
         This should be called whenever the consuming product becomes inactive (e.g.
         getting to background).
         """
-        from ._builtins import metrics
-
-        # This needs to be called before the `handle_client_inactive` api: it stops
-        # measuring the duration of the previous activity time, before any ping is sent
-        # by the next call.
-        metrics.glean.baseline.duration.stop()
-
-        _ffi.lib.glean_handle_client_inactive()
-
-        # The above call may generate pings, so we need to trigger
-        # the uploader. It's fine to trigger it if no ping was generated:
-        # it will bail out.
-        PingUploadWorker.process()
-
-    @classmethod
-    def _initialize_core_metrics(cls) -> None:
-        """
-        Set a few metrics that will be sent as part of every ping.
-        """
-        from ._builtins import metrics
-
-        metrics.glean.internal.metrics.os_version._set_sync(platform.release())
-        metrics.glean.internal.metrics.architecture._set_sync(platform.machine())
-        metrics.glean.internal.metrics.locale._set_sync(_util.get_locale_tag())
-
-        if cls._configuration.channel is not None:
-            metrics.glean.internal.metrics.app_channel._set_sync(
-                cls._configuration.channel
-            )
-
-        metrics.glean.internal.metrics.app_build._set_sync(cls._application_build_id)
-
-        metrics.glean.internal.metrics.app_display_version._set_sync(
-            cls._application_version
-        )
-
-    @classmethod
-    def get_data_dir(cls) -> Path:
-        """
-        Get the data directory for Glean.
-        """
-        return cls._data_dir
-
-    @classmethod
-    def test_collect(cls, ping: "PingType", reason: Optional[str] = None) -> str:
-        """
-        Collect a ping and return as a string.
-
-        Args:
-            ping: The PingType to submit
-            reason (str, optional): The reason code to record in the ping.
-        """
-        return _ffi.ffi_decode_string(
-            _ffi.lib.glean_ping_collect(
-                ping._handle, _ffi.ffi_encode_string_or_none(reason)
-            )
-        )
-
-    @classmethod
-    def _submit_ping(cls, ping: "PingType", reason: Optional[str] = None) -> None:
-        """
-        Collect and submit a ping for eventual uploading.
-
-        If the ping currently contains no content, it will not be assembled and
-        queued for sending.
-
-        Args:
-            ping (PingType): Ping to submit.
-            reason (str, optional): The reason the ping was submitted.
-        """
-        cls._submit_ping_by_name(ping.name, reason)
-
-    @classmethod
-    @Dispatcher.task
-    def _submit_ping_by_name(cls, ping_name: str, reason: Optional[str] = None) -> None:
-        """
-        Collect and submit a ping by name for eventual uploading.
-
-        The ping will be looked up in the known instances of
-        `glean.metrics.PingType`. If the ping isn't known, an error is logged
-        and the ping isn't queued for uploading.
-
-        If the ping currently contains no content, it will not be assembled and
-        queued for sending.
-
-        Args:
-            ping_name (str): Ping name to submit.
-            reason (str, optional): The reason code to include in the ping.
-        """
-        if not cls.is_initialized():
-            log.error("Glean must be initialized before submitting pings.")
-            return
-
-        if not cls._get_upload_enabled():
-            log.info("Glean disabled: not submitting any pings.")
-            return
-
-        sent_ping = _ffi.lib.glean_submit_ping_by_name(
-            _ffi.ffi_encode_string(ping_name),
-            _ffi.ffi_encode_string_or_none(reason),
-        )
-
-        if sent_ping:
-            PingUploadWorker.process()
+        _uniffi.glean_handle_client_inactive()
 
 
 __all__ = ["Glean"]

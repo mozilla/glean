@@ -207,12 +207,11 @@ class build(_build):
             "--language",
             "python",
             "--out-dir",
-            SRC_ROOT / "target"
+            SRC_ROOT / "target",
         ]
         subprocess.check_call(command, cwd=SRC_ROOT, env=env)
         shutil.copyfile(
-            SRC_ROOT / "target" / "glean.py",
-            PYTHON_ROOT / "glean" / "_uniffi.py"
+            SRC_ROOT / "target" / "glean.py", PYTHON_ROOT / "glean" / "_uniffi.py"
         )
 
         shutil.copyfile(
