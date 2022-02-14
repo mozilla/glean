@@ -3,16 +3,14 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-import json
-from typing import Dict, List, Optional, Union, Tuple
+import enum
+from typing import Dict, List, Optional, Union
 
 
-from .. import _ffi
-from .._dispatcher import Dispatcher
+from .._uniffi import CommonMetricData
+from .._uniffi import EventMetric
+from .._uniffi import RecordedEvent
 from ..testing import ErrorType
-
-
-from .lifetime import Lifetime
 
 
 class EventExtras:
@@ -21,70 +19,11 @@ class EventExtras:
     This will be automatically implemented for event properties of an [EventMetricType].
     """
 
-    def to_ffi_extra(self) -> Tuple[List[int], List[str]]:
+    def to_ffi_extra(self) -> Dict[str, str]:
         """
-        Convert the event extras into 2 lists:
-
-        1. The list of extra key indices.
-           Unset keys will be skipped.
-        2. The list of extra values.
+        Convert the event extras into a key-value dict:
         """
-        return ([], [])
-
-
-class RecordedEventData:
-    """
-    Deserialized event data.
-    """
-
-    def __init__(
-        self,
-        category: str,
-        name: str,
-        timestamp: int,
-        extra: Optional[Dict[str, str]] = None,
-    ):
-        """
-        Args:
-            category (str): The event's category, part of the full identifier.
-            name (str): The event's name, part of the full identifier.
-            timestamp (int): The event's timestamp, in milliseconds.
-            extra (dict of str->str): Optional. Any extra data recorded for
-                the event.
-        """
-        self._category = category
-        self._name = name
-        self._timestamp = timestamp
-        if extra is None:
-            extra = {}
-        self._extra = extra
-
-    @property
-    def category(self) -> str:
-        """The event's category, part of the full identifier."""
-        return self._category
-
-    @property
-    def name(self) -> str:
-        """The event's name, part of the full identifier."""
-        return self._name
-
-    @property
-    def timestamp(self) -> int:
-        """The event's timestamp."""
-        return self._timestamp
-
-    @property
-    def extra(self) -> Optional[Dict[str, str]]:
-        """Any extra data recorded for the event."""
-        return self._extra
-
-    @property
-    def identifier(self) -> str:
-        if self.category == "":
-            return self.name
-        else:
-            return ".".join([self.category, self.name])
+        return {}
 
 
 class EventMetricType:
@@ -102,32 +41,14 @@ class EventMetricType:
 
     def __init__(
         self,
-        disabled: bool,
-        category: str,
-        lifetime: Lifetime,
-        name: str,
-        send_in_pings: List[str],
+        common_metric_data: CommonMetricData,
         allowed_extra_keys: List[str],
     ):
-        self._disabled = disabled
-        self._send_in_pings = send_in_pings
+        self._inner = EventMetric(common_metric_data, allowed_extra_keys)
 
-        self._handle = _ffi.lib.glean_new_event_metric(
-            _ffi.ffi_encode_string(category),
-            _ffi.ffi_encode_string(name),
-            _ffi.ffi_encode_vec_string(send_in_pings),
-            len(send_in_pings),
-            lifetime.value,
-            disabled,
-            _ffi.ffi_encode_vec_string(allowed_extra_keys),
-            len(allowed_extra_keys),
-        )
-
-    def __del__(self):
-        if getattr(self, "_handle", 0) != 0:
-            _ffi.lib.glean_destroy_event_metric(self._handle)
-
-    def record(self, extra: Optional[Union[Dict[int, str], EventExtras]] = None) -> None:
+    def record(
+        self, extra: Optional[Union[Dict[str, str], EventExtras]] = None
+    ) -> None:
         """
         Record an event by using the information provided by the instance of
         this class.
@@ -136,97 +57,24 @@ class EventMetricType:
             extra: optional. The extra keys and values for this event.
                    The maximum length for values is 100.
         """
-        if self._disabled:
-            return
-
-        timestamp = _ffi.lib.glean_get_timestamp_ms()
 
         if isinstance(extra, EventExtras):
-            self._record_class(timestamp, extra)
+            extra = extra.to_ffi_extra()
+        elif isinstance(extra, dict):
+
+            def key_to_str(key):
+                if isinstance(key, enum.Enum):
+                    return key.value
+                else:
+                    return str(key)
+
+            extra = {key_to_str(k): v for k, v in extra.items()}
         else:
-            self._record_dict(timestamp, extra)
+            extra = {}
 
-    def _record_class(self, timestamp: int, extra: EventExtras) -> None:
-        """
-        Record an event by using the information provided by the instance of
-        this class.
+        self._inner.record(extra)
 
-        Args:
-            extra: This is the object specifying extra keys and their values.
-                   This is used for events where additional richer context is needed.
-                   The maximum length for values is 100.
-        """
-
-        @Dispatcher.launch
-        def record():
-            keys, values = extra.to_ffi_extra()
-            nextra = len(keys)
-
-            _ffi.lib.glean_event_record(
-                self._handle,
-                timestamp,
-                _ffi.ffi_encode_vec_int32(keys),
-                _ffi.ffi_encode_vec_string(values),
-                nextra,
-            )
-
-    def _record_dict(
-        self, timestamp: int, extra: Optional[Dict[int, str]] = None
-    ) -> None:
-        """
-        Record an event by using the information provided by the instance of
-        this class.
-
-        Args:
-            extra (dict of (int, str)): optional. This is a map from keys
-                (which are enumerations) to values. This is used for events
-                where additional richer context is needed. The maximum length
-                for values is 100.
-        """
-
-        @Dispatcher.launch
-        def record():
-            if extra is None:
-                keys = []
-                values = []
-                nextra = 0
-            else:
-                keys, values = zip(*list(extra.items()))
-                keys = [x.value for x in keys]
-                nextra = len(extra)
-
-            _ffi.lib.glean_event_record(
-                self._handle,
-                timestamp,
-                _ffi.ffi_encode_vec_int32(keys),
-                _ffi.ffi_encode_vec_string(values),
-                nextra,
-            )
-
-    def test_has_value(self, ping_name: Optional[str] = None) -> bool:
-        """
-        Tests whether a value is stored for the metric for testing purposes
-        only.
-
-        Args:
-            ping_name (str): (default: first value in send_in_pings) The name
-                of the ping to retrieve the metric for.
-
-        Returns:
-            has_value (bool): True if the metric value exists.
-        """
-        if ping_name is None:
-            ping_name = self._send_in_pings[0]
-
-        return bool(
-            _ffi.lib.glean_event_test_has_value(
-                self._handle, _ffi.ffi_encode_string(ping_name)
-            )
-        )
-
-    def test_get_value(
-        self, ping_name: Optional[str] = None
-    ) -> List[RecordedEventData]:
+    def test_get_value(self, ping_name: Optional[str] = None) -> List[RecordedEvent]:
         """
         Returns the stored value for testing purposes only.
 
@@ -237,21 +85,15 @@ class EventMetricType:
         Returns:
             value (list of RecordedEventData): value of the stored events.
         """
-        if ping_name is None:
-            ping_name = self._send_in_pings[0]
+        # Translate NO extras into an empty dictionary,
+        # to simplify handling.
+        recordings = self._inner.test_get_value(ping_name)
+        if recordings:
+            for recording in recordings:
+                if recording.extra is None:
+                    recording.extra = {}
 
-        if not self.test_has_value(ping_name):
-            raise ValueError("metric has no value")
-
-        json_string = _ffi.ffi_decode_string(
-            _ffi.lib.glean_event_test_get_value_as_json_string(
-                self._handle, _ffi.ffi_encode_string(ping_name)
-            )
-        )
-
-        json_content = json.loads(json_string)
-
-        return [RecordedEventData(**x) for x in json_content]
+        return recordings
 
     def test_get_num_recorded_errors(
         self, error_type: ErrorType, ping_name: Optional[str] = None
@@ -268,14 +110,7 @@ class EventMetricType:
             num_errors (int): The number of errors recorded for the metric for
                 the given error type.
         """
-        if ping_name is None:
-            ping_name = self._send_in_pings[0]
-
-        return _ffi.lib.glean_event_test_get_num_recorded_errors(
-            self._handle,
-            error_type.value,
-            _ffi.ffi_encode_string(ping_name),
-        )
+        return self._inner.test_get_num_recorded_errors(error_type, ping_name)
 
 
-__all__ = ["EventMetricType", "RecordedEventData"]
+__all__ = ["EventMetricType", "RecordedEvent", "EventExtras"]
