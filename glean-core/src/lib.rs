@@ -282,9 +282,8 @@ fn initialize_inner(
 
             let mut is_first_run = false;
             let mut dirty_flag = false;
+            let mut pings_submitted = false;
             core::with_glean_mut(|glean| {
-                let state = global_state().lock().unwrap();
-
                 // The debug view tag might have been set before initialize,
                 // get the cached value and set it.
                 if let Some(tag) = PRE_INIT_DEBUG_VIEW_TAG.get() {
@@ -334,19 +333,25 @@ fn initialize_inner(
                 // The next times we start, we would have them around already.
                 is_first_run = glean.is_first_run();
                 if is_first_run {
+                    let state = global_state().lock().unwrap();
                     initialize_core_metrics(glean, &state.client_info);
                 }
 
                 // Deal with any pending events so we can start recording new ones
-                let pings_submitted = glean.on_ready_to_submit_pings();
+                pings_submitted = glean.on_ready_to_submit_pings();
+            });
 
+            {
+                let state = global_state().lock().unwrap();
                 // We need to kick off upload in these cases:
                 // 1. Pings were submitted through Glean and it is ready to upload those pings;
                 // 2. Upload is disabled, to upload a possible deletion-request ping.
                 if pings_submitted || !upload_enabled {
                     state.callbacks.trigger_upload();
                 }
+            }
 
+            core::with_glean(|glean| {
                 // Start the MPS if its handled within Rust.
                 glean.start_metrics_ping_scheduler();
             });
@@ -741,8 +746,10 @@ pub fn glean_set_log_pings(value: bool) {
 /// This should be called whenever the consuming product becomes active (e.g.
 /// getting to foreground).
 pub fn glean_handle_client_active() {
-    crate::launch_with_glean_mut(move |glean| {
-        glean.handle_client_active();
+    dispatcher::launch(|| {
+        core::with_glean_mut(|glean| {
+            glean.handle_client_active();
+        });
 
         // The above call may generate pings, so we need to trigger
         // the uploader. It's fine to trigger it if no ping was generated:
@@ -770,8 +777,10 @@ pub fn glean_handle_client_inactive() {
     // by the next call.
     core_metrics::internal_metrics::baseline_duration.stop();
 
-    crate::launch_with_glean_mut(move |glean| {
-        glean.handle_client_inactive();
+    dispatcher::launch(|| {
+        core::with_glean_mut(|glean| {
+            glean.handle_client_inactive();
+        });
 
         // The above call may generate pings, so we need to trigger
         // the uploader. It's fine to trigger it if no ping was generated:
@@ -783,8 +792,10 @@ pub fn glean_handle_client_inactive() {
 
 /// Collect and submit a ping for eventual upload by name.
 pub fn glean_submit_ping_by_name(ping_name: String, reason: Option<String>) {
-    crate::launch_with_glean(move |glean| {
-        let sent = glean.submit_ping_by_name(&ping_name, reason.as_deref());
+    dispatcher::launch(|| {
+        let sent =
+            core::with_glean(move |glean| glean.submit_ping_by_name(&ping_name, reason.as_deref()));
+
         if sent {
             let state = global_state().lock().unwrap();
             state.callbacks.trigger_upload();
