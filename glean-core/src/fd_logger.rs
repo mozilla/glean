@@ -33,7 +33,7 @@ pub struct FdLogger {
 struct FdLoggingRecord {
     level: String,
     message: String,
-    target: String
+    target: String,
 }
 
 #[cfg(target_os = "windows")]

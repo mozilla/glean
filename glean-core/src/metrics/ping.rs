@@ -99,13 +99,17 @@ impl PingType {
     ///   `ping_info.reason` part of the payload.
     pub fn submit(&self, reason: Option<String>) {
         let ping = PingType(Arc::clone(&self.0));
-        crate::launch_with_glean(move |glean| {
-            let sent = ping.submit_sync(glean, reason.as_deref());
+
+        // Need to separate access to the Glean object from access to global state.
+        // `trigger_upload` itself might lock the Glean object and we need to avoid that deadlock.
+        crate::dispatcher::launch(|| {
+            let sent =
+                crate::core::with_glean(move |glean| ping.submit_sync(glean, reason.as_deref()));
             if sent {
                 let state = crate::global_state().lock().unwrap();
                 state.callbacks.trigger_upload();
             }
-        });
+        })
     }
 
     /// Collects and submits a ping for eventual uploading.
