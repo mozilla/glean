@@ -528,7 +528,8 @@ fn was_initialize_called() -> bool {
 
 /// Initialize the logging system based on the target platform. This ensures
 /// that logging is shown when executing the Glean SDK unit tests.
-pub fn glean_enable_logging() {
+#[no_mangle]
+pub extern "C" fn glean_enable_logging() {
     #[cfg(target_os = "android")]
     {
         let _ = std::panic::catch_unwind(|| {
