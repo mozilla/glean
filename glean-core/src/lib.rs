@@ -863,6 +863,7 @@ pub fn glean_enable_logging_to_fd(fd: u64) {
     }
 }
 
+/// Unused function. Not used on Android or iOS.
 #[cfg(any(target_os = "android", target_os = "ios"))]
 pub fn glean_enable_logging_to_fd(_fd: u64) {
     // intentionally left empty
