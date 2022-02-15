@@ -218,7 +218,7 @@ pub fn test_is_experiment_active(experiment_id: String) -> bool {
 }
 
 /// TEST ONLY FUNCTION.
-/// Returns the [`RecordedExperimentData`] for the given `experiment_id` or panics if
+/// Returns the [`RecordedExperiment`] for the given `experiment_id` or panics if
 /// the id isn't found.
 pub fn test_get_experiment_data(experiment_id: String) -> Option<RecordedExperiment> {
     glean_core::glean_test_get_experiment_data(experiment_id)

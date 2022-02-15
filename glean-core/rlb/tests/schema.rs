@@ -10,7 +10,7 @@ use serde_json::Value;
 
 //use glean::private::{DenominatorMetric, NumeratorMetric, RateMetric};
 use glean::net::UploadResult;
-use glean::{ClientInfoMetrics, CommonMetricData, Configuration};
+use glean::{ClientInfoMetrics, /*CommonMetricData,*/ Configuration};
 
 const SCHEMA_JSON: &str = include_str!("../../../glean.1.schema.json");
 
