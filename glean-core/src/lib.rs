@@ -416,7 +416,11 @@ pub fn join_init() {
 
 /// Shuts down Glean in an orderly fashion.
 pub fn shutdown() {
-    if !was_initialize_called() {
+    // Either init was never called or Glean was not fully initialized
+    // (e.g. due to an error).
+    // There's the potential that Glean is not initialized _yet_,
+    // but in progress. That's fine, we shutdown either way before doing any work.
+    if !was_initialize_called() || core::global_glean().is_none() {
         log::warn!("Shutdown called before Glean is initialized");
         if let Err(e) = dispatcher::kill() {
             log::error!("Can't kill dispatcher thread: {:?}", e);
