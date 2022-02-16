@@ -829,17 +829,15 @@ def test_client_activity_api(tmpdir, monkeypatch):
 
     configuration = Glean._configuration
     configuration.ping_uploader = _RecordingUploader(info_path)
+
+    Glean._testing_mode = False
+    glean_set_test_mode(False)
     Glean._initialize_with_tempdir_for_testing(
         application_id=GLEAN_APP_ID,
         application_version=glean_version,
         upload_enabled=True,
         configuration=Glean._configuration,
     )
-
-    Glean._testing_mode = False
-    glean_set_test_mode(False)
-    # Wait until the work is complete
-    # Dispatcher._task_worker._queue.join()
 
     # Making it active
     Glean.handle_client_active()
@@ -849,6 +847,9 @@ def test_client_activity_api(tmpdir, monkeypatch):
     assert payload["ping_info"]["reason"] == "active"
     assert "timespan" not in payload["metrics"]
 
+    # The upload process is fast, but not fast enough to communicate its status.
+    # We give it just a blink of an eye to wind down.
+    time.sleep(0.1)
     # Making it inactive
     Glean.handle_client_inactive()
 
@@ -857,6 +858,9 @@ def test_client_activity_api(tmpdir, monkeypatch):
     assert payload["ping_info"]["reason"] == "inactive"
     assert "glean.baseline.duration" in payload["metrics"]["timespan"]
 
+    # The upload process is fast, but not fast enough to communicate its status.
+    # We give it just a blink of an eye to wind down.
+    time.sleep(0.1)
     # Once more active
     Glean.handle_client_active()
 
