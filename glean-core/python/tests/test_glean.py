@@ -16,9 +16,6 @@ import uuid
 
 
 from glean_parser import validate_ping
-from glean_parser.metrics import Lifetime as ParserLifetime
-from glean_parser.metrics import TimeUnit as ParserTimeUnit
-from glean_parser.metrics import MemoryUnit as ParserMemoryUnit
 import pytest
 
 
@@ -30,10 +27,8 @@ from glean.metrics import (
     CounterMetricType,
     CommonMetricData,
     Lifetime,
-    MemoryUnit,
     PingType,
     StringMetricType,
-    TimeUnit,
 )
 from glean.net import PingUploadWorker
 from glean.testing import _RecordingUploader
@@ -175,9 +170,6 @@ def test_initialize_must_not_crash_if_data_dir_is_messed_up(tmpdir):
 
 def test_queued_recorded_metrics_correctly_during_init():
     Glean._reset()
-
-    # Enable queueing
-    # Dispatcher.set_task_queueing(True)
 
     counter_metric = CounterMetricType(
         CommonMetricData(
@@ -327,7 +319,8 @@ def test_ping_collection_must_happen_after_currently_scheduled_metrics_recording
 
     # This test relies on testing mode to be disabled, since we need to prove the
     # real-world async behaviour of this.
-    # Dispatcher._testing_mode = False
+    Glean._testing_mode = False
+    glean_set_test_mode(False)
 
     # This is the important part of the test. Even though both the metrics API and
     # sendPings are async and off the main thread, "SomeTestValue" should be recorded,
@@ -335,9 +328,6 @@ def test_ping_collection_must_happen_after_currently_scheduled_metrics_recording
     test_value = "SomeTestValue"
     string_metric.set(test_value)
     ping.submit()
-
-    # Wait until the work is complete
-    # Dispatcher._task_worker._queue.join()
 
     while not info_path.exists():
         time.sleep(0.1)
@@ -656,42 +646,20 @@ def test_clear_application_lifetime_metrics(tmpdir):
     assert not metrics.core_ping.seq.test_get_value()
 
 
-# Don't match anymore, but that's fine, we're converting them in metric ctors
-@pytest.mark.skip
-def test_confirm_enums_match_values_in_glean_parser():
-    """
-    Make sure the values in the glean_parser enums match those in Glean's enums
-    (which come directly from the canonical source in the Rust implementation).
-
-    This should ensure we never update to a glean_parser version with incorrect
-    enumeration values.
-    """
-    for g_enum, gp_enum in [
-        (Lifetime, ParserLifetime),
-        (TimeUnit, ParserTimeUnit),
-        (MemoryUnit, ParserMemoryUnit),
-    ]:
-        for name in gp_enum.__members__.keys():
-            assert g_enum[name.upper()].value == gp_enum[name].value
-
-
 def test_presubmit_makes_a_valid_ping(tmpdir, ping_schema_url, monkeypatch):
     # Bug 1648140: Submitting a ping prior to initialize meant that the core
     # metrics wouldn't yet be set.
 
     info_path = Path(str(tmpdir)) / "info.txt"
 
+    # This test relies on testing mode to be disabled, since we need to prove the
+    # real-world async behaviour of this.
     Glean._reset()
 
     ping_name = "preinit_ping"
     ping = PingType(
         name=ping_name, include_client_id=True, send_if_empty=True, reason_codes=[]
     )
-
-    # This test relies on testing mode to be disabled, since we need to prove the
-    # real-world async behaviour of this.
-    # Dispatcher._testing_mode = False
-    # Dispatcher._queue_initial_tasks = True
 
     # Submit a ping prior to calling initialize
     ping.submit()
@@ -705,9 +673,6 @@ def test_presubmit_makes_a_valid_ping(tmpdir, ping_schema_url, monkeypatch):
     monkeypatch.setattr(
         Glean._configuration, "ping_uploader", _RecordingUploader(info_path)
     )
-
-    # Wait until the work is complete
-    # Dispatcher._task_worker._queue.join()
 
     while not info_path.exists():
         time.sleep(0.1)
@@ -741,9 +706,9 @@ def test_app_display_version_unknown():
     )
 
 
-# sets dispatcher, which doesn't work anymore
-@pytest.mark.skip
 def test_flipping_upload_enabled_respects_order_of_events(tmpdir, monkeypatch):
+    # This test relies on testing mode to be disabled, since we need to prove the
+    # real-world async behaviour of this.
     Glean._reset()
 
     info_path = Path(str(tmpdir)) / "info.txt"
@@ -755,11 +720,6 @@ def test_flipping_upload_enabled_respects_order_of_events(tmpdir, monkeypatch):
         send_if_empty=True,
         reason_codes=[],
     )
-
-    # This test relies on testing mode to be disabled, since we need to prove the
-    # real-world async behaviour of this.
-    # Dispatcher._testing_mode = False
-    # Dispatcher._queue_initial_tasks = True
 
     configuration = Glean._configuration
     configuration.ping_uploader = _RecordingUploader(info_path)
@@ -775,14 +735,7 @@ def test_flipping_upload_enabled_respects_order_of_events(tmpdir, monkeypatch):
     # Submit a custom ping.
     ping.submit()
 
-    # Wait until the work is complete
-    # Dispatcher._task_worker._queue.join()
-
-    while not info_path.exists():
-        time.sleep(0.1)
-
-    with info_path.open("r") as fd:
-        url_path = fd.readline()
+    url_path, payload = wait_for_ping(info_path, max_wait=20)
 
     # Validate we got the deletion-request ping
     assert "deletion-request" == url_path.split("/")[3]
