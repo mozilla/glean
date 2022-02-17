@@ -13,7 +13,6 @@ from pathlib import Path
 import shutil
 import tempfile
 import threading
-import inspect
 from typing import Dict, Optional, Set, TYPE_CHECKING
 
 
@@ -300,16 +299,6 @@ class Glean:
         Args:
             enabled (bool): When True, enable metric collection.
         """
-        if not cls._init_finished:
-            msg = """
-                  Changing upload enabled before Glean is initialized is not supported.
-                  Pass the correct state into `Glean.initialize()`.
-                  See documentation at
-                  https://mozilla.github.io/glean/book/user/general-api.html#initializing-the-glean-sdk
-                  """
-            log.error(inspect.cleandoc(msg))
-            return
-
         # Changing upload enabled always happens asynchronous.
         # That way it follows what a user expect when calling it inbetween other calls:
         # It executes in the right order.
