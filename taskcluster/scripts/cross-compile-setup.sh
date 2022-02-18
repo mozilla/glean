@@ -3,14 +3,26 @@
 set -eux
 
 export PATH=$PATH:/builds/worker/clang/bin
+
+# x86_64 Darwin
 export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_CC=/builds/worker/clang/bin/clang
 export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_TOOLCHAIN_PREFIX=/builds/worker/cctools/bin
 export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_AR=/builds/worker/cctools/bin/x86_64-apple-darwin-ar
 export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_RANLIB=/builds/worker/cctools/bin/x86_64-apple-darwin-ranlib
 export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_LD_LIBRARY_PATH=/builds/worker/clang/lib
 export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_RUSTFLAGS="-C linker=/builds/worker/clang/bin/clang -C link-arg=-B -C link-arg=/builds/worker/cctools/bin -C link-arg=-target -C link-arg=x86_64-apple-darwin -C link-arg=-isysroot -C link-arg=/tmp/MacOSX10.12.sdk -C link-arg=-Wl,-syslibroot,/tmp/MacOSX10.12.sdk -C link-arg=-Wl,-dead_strip"
-# For ring's use of `cc`.
 export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_CFLAGS_x86_64_apple_darwin="-B /builds/worker/cctools/bin -target x86_64-apple-darwin -isysroot /tmp/MacOSX10.12.sdk -Wl,-syslibroot,/tmp/MacOSX10.12.sdk -Wl,-dead_strip"
+
+# aarch64 Darwin (M1/Silicon)
+export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_AARCH64_APPLE_DARWIN_CC=/builds/worker/clang/bin/clang
+export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_AARCH64_APPLE_DARWIN_TOOLCHAIN_PREFIX=/builds/worker/cctools/bin
+export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_AARCH64_APPLE_DARWIN_AR=/builds/worker/cctools/bin/aarch64-apple-darwin-ar
+export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_AARCH64_APPLE_DARWIN_RANLIB=/builds/worker/cctools/bin/aarch64-apple-darwin-ranlib
+export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_AARCH64_APPLE_DARWIN_LD_LIBRARY_PATH=/builds/worker/clang/lib
+export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_AARCH64_APPLE_DARWIN_RUSTFLAGS="-C linker=/builds/worker/clang/bin/clang -C link-arg=-B -C link-arg=/builds/worker/cctools/bin -C link-arg=-target -C link-arg=aarch64-apple-darwin -C link-arg=-isysroot -C link-arg=/tmp/MacOSX10.12.sdk -C link-arg=-Wl,-syslibroot,/tmp/MacOSX10.12.sdk -C link-arg=-Wl,-dead_strip"
+export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_AARCH64_APPLE_DARWIN_CFLAGS_aarch64_apple_darwin="-B /builds/worker/cctools/bin -target aarch64-apple-darwin -isysroot /tmp/MacOSX10.12.sdk -Wl,-syslibroot,/tmp/MacOSX10.12.sdk -Wl,-dead_strip"
+
+# x86_64 Windows
 # The wrong linker gets used otherwise: https://github.com/rust-lang/rust/issues/33465.
 export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_PC_WINDOWS_GNU_RUSTFLAGS="-C linker=x86_64-w64-mingw32-gcc"
 
@@ -50,6 +62,7 @@ tooltool.py \
   fetch
 
 rustup target add x86_64-apple-darwin
+rustup target add aarch64-apple-darwin
 rustup target add x86_64-pc-windows-gnu
 
 popd
