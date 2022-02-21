@@ -53,7 +53,7 @@ func resetGleanDiscardingInitialPings(testCase: XCTestCase, tag: String, clearSt
 
     // We are using OHHTTPStubs combined with an XCTestExpectation in order to capture
     // outgoing network requests and prevent actual requests being made from tests.
-    stubServerReceive { _, _ in
+    stubServerReceive { pingType, json in
         // Fulfill test's expectation once we parsed the incoming data.
         DispatchQueue.main.async {
             // Let the response get processed before we mark the expectation fulfilled
@@ -63,6 +63,12 @@ func resetGleanDiscardingInitialPings(testCase: XCTestCase, tag: String, clearSt
 
     // We may recieve more than one ping, using this function means we don't care about any of them
     expectation.assertForOverFulfill = false
+
+    // Force an overdue metrics ping, so that there's definitely something we're waiting for.
+    let now = Date()
+    let fakeDate = Calendar.current.date(byAdding: Calendar.Component.day, value: -12, to: now)!
+    let mps = MetricsPingScheduler()
+    mps.updateSentDate(fakeDate)
 
     Glean.shared.resetGlean(clearStores: clearStores)
 
