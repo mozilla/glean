@@ -17,13 +17,13 @@ class QuantityMetricTypeTests: XCTestCase {
     }
 
     func testCounterSavesToStorage() {
-        let quantityMetric = QuantityMetricType(
+        let quantityMetric = QuantityMetricType(CommonMetricData(
             category: "telemetry",
             name: "quantity_metric",
             sendInPings: ["store1"],
             lifetime: .application,
             disabled: false
-        )
+        ))
 
         XCTAssertFalse(quantityMetric.testHasValue())
 
@@ -31,22 +31,22 @@ class QuantityMetricTypeTests: XCTestCase {
 
         // Check that the metric was properly recorded.
         XCTAssert(quantityMetric.testHasValue())
-        XCTAssertEqual(1, try quantityMetric.testGetValue())
+        XCTAssertEqual(1, quantityMetric.testGetValue())
 
         quantityMetric.set(10)
         // Check that the metric was properly overwritten.
         XCTAssert(quantityMetric.testHasValue())
-        XCTAssertEqual(10, try quantityMetric.testGetValue())
+        XCTAssertEqual(10, quantityMetric.testGetValue())
     }
 
     func testCounterMustNotRecordIfDisabled() {
-        let quantityMetric = QuantityMetricType(
+        let quantityMetric = QuantityMetricType(CommonMetricData(
             category: "telemetry",
             name: "quantity_metric",
             sendInPings: ["store1"],
             lifetime: .application,
             disabled: true
-        )
+        ))
 
         XCTAssertFalse(quantityMetric.testHasValue())
 
@@ -56,59 +56,57 @@ class QuantityMetricTypeTests: XCTestCase {
     }
 
     func testCounterGetValueThrowsExceptionIfNothingIsStored() {
-        let quantityMetric = QuantityMetricType(
+        let quantityMetric = QuantityMetricType(CommonMetricData(
             category: "telemetry",
             name: "quantity_metric",
             sendInPings: ["store1"],
             lifetime: .application,
             disabled: false
-        )
+        ))
 
-        XCTAssertThrowsError(try quantityMetric.testGetValue()) { error in
-            XCTAssertEqual(error as! String, "Missing value")
-        }
+        XCTAssertNil(quantityMetric.testGetValue())
     }
 
     func testCounterSavesToSecondaryPings() {
-        let quantityMetric = QuantityMetricType(
+        let quantityMetric = QuantityMetricType(CommonMetricData(
             category: "telemetry",
             name: "quantity_metric",
             sendInPings: ["store1", "store2"],
             lifetime: .application,
             disabled: false
-        )
+        ))
 
         quantityMetric.set(1)
 
         // Check that the metric was properly recorded.
         XCTAssert(quantityMetric.testHasValue("store2"))
-        XCTAssertEqual(1, try quantityMetric.testGetValue("store2"))
+        XCTAssertEqual(1, quantityMetric.testGetValue("store2"))
 
         quantityMetric.set(10)
         // Check that the metric was properly overwritten.
         XCTAssert(quantityMetric.testHasValue("store2"))
-        XCTAssertEqual(10, try quantityMetric.testGetValue("store2"))
+        XCTAssertEqual(10, quantityMetric.testGetValue("store2"))
     }
 
     func testNegativeValuesAreNotCounted() {
-        let quantityMetric = QuantityMetricType(
+        let quantityMetric = QuantityMetricType(CommonMetricData(
             category: "telemetry",
             name: "quantity_metric",
             sendInPings: ["store1", "store2"],
             lifetime: .application,
             disabled: false
-        )
+        ))
 
         quantityMetric.set(1)
 
         // Check that the metric was properly recorded.
         XCTAssert(quantityMetric.testHasValue("store1"))
-        XCTAssertEqual(1, try quantityMetric.testGetValue("store1"))
+        XCTAssertEqual(1, quantityMetric.testGetValue("store1"))
 
         quantityMetric.set(-10)
         // Check that the metric was NOT recorded.
         XCTAssert(quantityMetric.testHasValue("store1"))
-        XCTAssertEqual(1, try quantityMetric.testGetValue("store1"))
+        XCTAssertEqual(1, quantityMetric.testGetValue("store1"))
         XCTAssertEqual(1, quantityMetric.testGetNumRecordedErrors(.invalidValue))
     }
 }
