@@ -72,7 +72,6 @@ extension Date {
 extension String {
     /// Create a string from a Rust-allocated char pointer and deallocate the char pointer.
     public init(freeingGleanString rustString: UnsafeMutablePointer<CChar>) {
-        defer { glean_str_free(rustString) }
         self.init(cString: rustString)
     }
 
