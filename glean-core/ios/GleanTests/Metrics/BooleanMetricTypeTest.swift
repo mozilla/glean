@@ -17,76 +17,70 @@ class BooleanMetricTypeTests: XCTestCase {
     }
 
     func testBooleanSavesToStorage() {
-        let booleanMetric = BooleanMetricType(
+        let booleanMetric = BooleanMetricType(CommonMetricData(
             category: "telemetry",
             name: "boolean_metric",
             sendInPings: ["store1"],
             lifetime: .application,
             disabled: false
-        )
+        ))
 
-        XCTAssertFalse(booleanMetric.testHasValue())
+        XCTAssertNil(booleanMetric.testGetValue())
 
         // Record two booleans of the same type, with a little delay.
         booleanMetric.set(true)
         // Check that data was properly recorded.
-        XCTAssertTrue(booleanMetric.testHasValue())
-        XCTAssertTrue(try booleanMetric.testGetValue())
+        XCTAssertTrue(booleanMetric.testGetValue()!)
 
         booleanMetric.set(false)
         // Check that data was properly recorded.
-        XCTAssertTrue(booleanMetric.testHasValue())
-        XCTAssertFalse(try booleanMetric.testGetValue())
+        XCTAssertFalse(booleanMetric.testGetValue()!)
     }
 
     func testBooleanMustNotRecordIfDisabled() {
-        let booleanMetric = BooleanMetricType(
+        let booleanMetric = BooleanMetricType(CommonMetricData(
             category: "telemetry",
             name: "boolean_metric",
             sendInPings: ["store1"],
             lifetime: .application,
             disabled: true
-        )
+        ))
 
-        XCTAssertFalse(booleanMetric.testHasValue())
+        XCTAssertNil(booleanMetric.testGetValue())
 
         booleanMetric.set(true)
 
-        XCTAssertFalse(booleanMetric.testHasValue(), "Booleans must not be recorded if they are disabled")
+        XCTAssertNil(booleanMetric.testGetValue(), "Booleans must not be recorded if they are disabled")
     }
 
     func testBooleanGetValueThrowsExceptionIfNothingIsStored() {
-        let booleanMetric = BooleanMetricType(
+        let booleanMetric = BooleanMetricType(CommonMetricData(
             category: "telemetry",
             name: "boolean_metric",
             sendInPings: ["store1"],
             lifetime: .application,
             disabled: false
-        )
+        ))
 
-        XCTAssertThrowsError(try booleanMetric.testGetValue()) { error in
-            XCTAssertEqual(error as! String, "Missing value")
-        }
+        XCTAssertNil(booleanMetric.testGetValue())
     }
 
     func testBooleanSavesToSecondaryPings() {
-        let booleanMetric = BooleanMetricType(
+        let booleanMetric = BooleanMetricType(CommonMetricData(
             category: "telemetry",
             name: "boolean_metric",
             sendInPings: ["store1", "store2"],
             lifetime: .application,
             disabled: false
-        )
+        ))
 
         // Record two booleans of the same type, with a little delay.
         booleanMetric.set(true)
         // Check that data was properly recorded.
-        XCTAssertTrue(booleanMetric.testHasValue("store2"))
-        XCTAssertTrue(try booleanMetric.testGetValue("store2"))
+        XCTAssertTrue(booleanMetric.testGetValue("store2")!)
 
         booleanMetric.set(false)
         // Check that data was properly recorded.
-        XCTAssertTrue(booleanMetric.testHasValue("store2"))
-        XCTAssertFalse(try booleanMetric.testGetValue("store2"))
+        XCTAssertFalse(booleanMetric.testGetValue("store2")!)
     }
 }
