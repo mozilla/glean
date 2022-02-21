@@ -20,7 +20,12 @@ class OnGleanEventsImpl: OnGleanEvents {
     }
 
     func onInitializeFinished() {
-        self.glean.observer = GleanLifecycleObserver()
+        // Run this off the main thread,
+        // as it will trigger a ping submission,
+        // which itself will trigger `triggerUpload()` on this class.
+        DispatchQueue.global(qos: .utility).async {
+            self.glean.observer = GleanLifecycleObserver()
+        }
         self.glean.initialized = true
     }
 
@@ -63,7 +68,7 @@ public class Glean {
     private var sourceTags: [String]?
     var logPings: Bool = false
     var configuration: Configuration?
-    private var observer: GleanLifecycleObserver?
+    fileprivate var observer: GleanLifecycleObserver?
 
     // This struct is used for organizational purposes to keep the class constants in a single place
     struct Constants {
