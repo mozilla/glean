@@ -455,13 +455,13 @@ class GleanTests: XCTestCase {
             reasonCodes: []
         )
 
-        let counter = CounterMetricType(
+        let counter = CounterMetricType(CommonMetricData(
             category: "telemetry",
             name: "counter_metric",
             sendInPings: ["custom"],
             lifetime: .application,
             disabled: false
-        )
+        ))
 
         expectation = expectation(description: "Completed upload")
 
@@ -497,7 +497,7 @@ class GleanTests: XCTestCase {
 
         let foregroundCounter = GleanMetrics.GleanValidation.foregroundCount
         XCTAssert(foregroundCounter.testHasValue())
-        XCTAssertEqual(2, try foregroundCounter.testGetValue())
+        XCTAssertEqual(2, foregroundCounter.testGetValue())
     }
 }
 
