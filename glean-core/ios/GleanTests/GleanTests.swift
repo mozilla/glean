@@ -136,7 +136,7 @@ class GleanTests: XCTestCase {
         // send a metrics pings the first time we initialize Glean and to keep it from interfering
         // with these tests.
         let now = Date()
-        Glean.shared.metricsPingScheduler.updateSentDate(now)
+        Glean.shared.metricsPingScheduler!.updateSentDate(now)
 
         // Resetting Glean doesn't trigger lifecycle events in tests so we must call the method
         // invoked by the lifecycle observer directly.
@@ -360,7 +360,7 @@ class GleanTests: XCTestCase {
         // send a metrics pings the first time we initialize Glean and to keep it from interfering
         // with these tests.
         let now = Date()
-        Glean.shared.metricsPingScheduler.updateSentDate(now)
+        Glean.shared.metricsPingScheduler!.updateSentDate(now)
 
         let host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
         stub(condition: isHost(host)) { data in
@@ -404,7 +404,7 @@ class GleanTests: XCTestCase {
         // send a metrics pings the first time we initialize Glean and to keep it from interfering
         // with these tests.
         let now = Date()
-        Glean.shared.metricsPingScheduler.updateSentDate(now)
+        Glean.shared.metricsPingScheduler!.updateSentDate(now)
 
         let host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
         stub(condition: isHost(host)) { data in
@@ -481,7 +481,7 @@ class GleanTests: XCTestCase {
         // send a metrics pings the first time we initialize Glean and to keep it from interfering
         // with these tests.
         let now = Date()
-        Glean.shared.metricsPingScheduler.updateSentDate(now)
+        Glean.shared.metricsPingScheduler!.updateSentDate(now)
         // Restart glean
         Glean.shared.resetGlean(clearStores: false)
 

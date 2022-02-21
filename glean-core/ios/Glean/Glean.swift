@@ -29,9 +29,14 @@ class OnGleanEventsImpl: OnGleanEvents {
         HttpPingUploader.launch(configuration: self.glean.configuration!)
     }
 
-    func startMetricsPingScheduler() {
+    func startMetricsPingScheduler() -> Bool {
+        self.glean.metricsPingScheduler = MetricsPingScheduler()
         // Check for overdue metrics pings
-        self.glean.metricsPingScheduler.schedule()
+        return self.glean.metricsPingScheduler!.schedule()
+    }
+
+    func cancelUploads() {
+        // intentionally left empty
     }
 }
 
@@ -46,7 +51,7 @@ public class Glean {
     /// ```
     public static let shared = Glean()
 
-    var metricsPingScheduler: MetricsPingScheduler = MetricsPingScheduler()
+    var metricsPingScheduler: MetricsPingScheduler?
 
     var initialized: Bool = false
     // Set when `initialize()` returns.
