@@ -35,7 +35,7 @@ class OnGleanEventsImpl: OnGleanEvents {
     }
 
     func startMetricsPingScheduler() -> Bool {
-        self.glean.metricsPingScheduler = MetricsPingScheduler()
+        self.glean.metricsPingScheduler = MetricsPingScheduler(self.glean.testingMode.value)
         // Check for overdue metrics pings
         return self.glean.metricsPingScheduler!.schedule()
     }
