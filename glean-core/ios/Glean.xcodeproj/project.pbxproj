@@ -19,7 +19,6 @@
 		1F6A8FF4233C0A91007837D5 /* DatetimeMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6A8FF3233C0A91007837D5 /* DatetimeMetric.swift */; };
 		1F6A8FF6233C1555007837D5 /* DatetimeMetricTypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6A8FF5233C1555007837D5 /* DatetimeMetricTypeTests.swift */; };
 		1F6F8A0B238336AB00B6ABB9 /* Glean.h in Headers */ = {isa = PBXBuildFile; fileRef = BF3DE3942243A2F20018E23F /* Glean.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		1F70B786232995A9007395FB /* Dispatchers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F70B785232995A9007395FB /* Dispatchers.swift */; };
 		1FB70AEF23301C1D00C7CF09 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB70AEE23301C1D00C7CF09 /* Logger.swift */; };
 		1FB8F8382326EABD00618E47 /* ConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB8F8372326EABD00618E47 /* ConfigurationTests.swift */; };
 		1FD4527523395B4500F4C7E8 /* UuidMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FD4527423395B4500F4C7E8 /* UuidMetric.swift */; };
@@ -64,6 +63,7 @@
 		CD38786B271DA2B800C097D8 /* glean.udl in Sources */ = {isa = PBXBuildFile; fileRef = CD387868271D9CD100C097D8 /* glean.udl */; };
 		CD38786D271DCCC700C097D8 /* libglean_ffi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD38786C271DCCC700C097D8 /* libglean_ffi.a */; };
 		CD6E200A25CAD68900C7EF2B /* OHHTTPStubs.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6E200925CAD68900C7EF2B /* OHHTTPStubs.xcframework */; };
+		CDBFB4DC27C3FA520045CCB9 /* Dispatchers.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDBFB4DB27C3FA520045CCB9 /* Dispatchers.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -105,7 +105,6 @@
 		1F6A8FF1233C068A007837D5 /* BooleanMetricTypeTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BooleanMetricTypeTest.swift; sourceTree = "<group>"; };
 		1F6A8FF3233C0A91007837D5 /* DatetimeMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatetimeMetric.swift; sourceTree = "<group>"; };
 		1F6A8FF5233C1555007837D5 /* DatetimeMetricTypeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatetimeMetricTypeTests.swift; sourceTree = "<group>"; };
-		1F70B785232995A9007395FB /* Dispatchers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dispatchers.swift; sourceTree = "<group>"; };
 		1FB70AEE23301C1D00C7CF09 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		1FB8F8372326EABD00618E47 /* ConfigurationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigurationTests.swift; sourceTree = "<group>"; };
 		1FD4527423395B4500F4C7E8 /* UuidMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UuidMetric.swift; sourceTree = "<group>"; };
@@ -157,6 +156,7 @@
 		CD38786C271DCCC700C097D8 /* libglean_ffi.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libglean_ffi.a; path = ../../target/libglean_ffi.a; sourceTree = "<group>"; };
 		CD6E200525CAD66100C7EF2B /* Gzip.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Gzip.xcframework; path = ../../Carthage/Build/Gzip.xcframework; sourceTree = "<group>"; };
 		CD6E200925CAD68900C7EF2B /* OHHTTPStubs.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = OHHTTPStubs.xcframework; path = ../../Carthage/Build/OHHTTPStubs.xcframework; sourceTree = "<group>"; };
+		CDBFB4DB27C3FA520045CCB9 /* Dispatchers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dispatchers.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -292,6 +292,7 @@
 		BF3DE3932243A2F20018E23F /* Glean */ = {
 			isa = PBXGroup;
 			children = (
+				CDBFB4DB27C3FA520045CCB9 /* Dispatchers.swift */,
 				1F39E7AE239F04D3009B13B3 /* Debug */,
 				97C5C1A223708C1E00B79C93 /* Testing */,
 				1F6058912314861B00307A9F /* Config */,
@@ -305,7 +306,6 @@
 				BF3DE3952243A2F20018E23F /* Info.plist */,
 				BF93C697224BFC57006CE7D8 /* Glean.swift */,
 				BFE1CDCD233B989A0019EE47 /* GleanMetrics.swift */,
-				1F70B785232995A9007395FB /* Dispatchers.swift */,
 			);
 			path = Glean;
 			sourceTree = "<group>";
@@ -552,6 +552,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CD38786B271DA2B800C097D8 /* glean.udl in Sources */,
+				CDBFB4DC27C3FA520045CCB9 /* Dispatchers.swift in Sources */,
 				1F6058932314863400307A9F /* Configuration.swift in Sources */,
 				BF2E57052334B77D00364D92 /* EventMetric.swift in Sources */,
 				BF10008023548B0500064051 /* MemoryDistributionMetric.swift in Sources */,
@@ -570,7 +571,6 @@
 				AC06529C26E032E300D92D5E /* QuantityMetric.swift in Sources */,
 				BFFE18382350A5F50068D97B /* TimingDistributionMetric.swift in Sources */,
 				BF89055F232BC213003CA2BA /* StringMetric.swift in Sources */,
-				1F70B786232995A9007395FB /* Dispatchers.swift in Sources */,
 				1F605895231489AB00307A9F /* HttpPingUploader.swift in Sources */,
 				BF30FDC4233260B500840607 /* TimespanMetric.swift in Sources */,
 				BFE1CDCE233B989A0019EE47 /* GleanMetrics.swift in Sources */,
