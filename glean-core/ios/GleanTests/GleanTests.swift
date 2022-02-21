@@ -27,35 +27,35 @@ class GleanTests: XCTestCase {
 
     func testExperimentRecording() {
         Glean.shared.setExperimentActive(
-            experimentId: "experiment_test",
+            "experiment_test",
             branch: "branch_a",
             extra: nil
         )
         Glean.shared.setExperimentActive(
-            experimentId: "experiment_api",
+            "experiment_api",
             branch: "branch_b",
             extra: ["test_key": "value"]
         )
         XCTAssertTrue(
-            Glean.shared.testIsExperimentActive(experimentId: "experiment_test"),
+            Glean.shared.testIsExperimentActive("experiment_test"),
             "Experiment must be active"
         )
         XCTAssertTrue(
-            Glean.shared.testIsExperimentActive(experimentId: "experiment_api"),
+            Glean.shared.testIsExperimentActive("experiment_api"),
             "Experiment must be active"
         )
 
-        Glean.shared.setExperimentInactive(experimentId: "experiment_test")
+        Glean.shared.setExperimentInactive("experiment_test")
         XCTAssertFalse(
-            Glean.shared.testIsExperimentActive(experimentId: "experiment_test"),
+            Glean.shared.testIsExperimentActive("experiment_test"),
             "Experiment must not be active"
         )
         XCTAssertTrue(
-            Glean.shared.testIsExperimentActive(experimentId: "experiment_api"),
+            Glean.shared.testIsExperimentActive("experiment_api"),
             "Experiment must be active"
         )
 
-        let experimentData = Glean.shared.testGetExperimentData(experimentId: "experiment_api")
+        let experimentData = Glean.shared.testGetExperimentData("experiment_api")
         XCTAssertEqual(
             "branch_b",
             experimentData?.branch,
@@ -63,7 +63,7 @@ class GleanTests: XCTestCase {
         )
         XCTAssertEqual(
             "value",
-            experimentData?.extra["test_key"],
+            experimentData?.extra?["test_key"],
             "Experiment extra must have expected key/value"
         )
     }
@@ -74,29 +74,29 @@ class GleanTests: XCTestCase {
         Dispatchers.shared.setTaskQueueing(enabled: true)
 
         Glean.shared.setExperimentActive(
-            experimentId: "experiment_set_preinit",
+            "experiment_set_preinit",
             branch: "branch_a",
             extra: nil
         )
         Glean.shared.setExperimentActive(
-            experimentId: "experiment_preinit_disabled",
+            "experiment_preinit_disabled",
             branch: "branch_a",
             extra: nil
         )
 
         // Deactivate the second experiment
-        Glean.shared.setExperimentInactive(experimentId: "experiment_preinit_disabled")
+        Glean.shared.setExperimentInactive("experiment_preinit_disabled")
 
         // This will reset Glean and flush the queued tasks
         resetGleanDiscardingInitialPings(testCase: self, tag: "GleanTests", clearStores: false)
 
         // Verify the tasks were executed
         XCTAssertTrue(
-            Glean.shared.testIsExperimentActive(experimentId: "experiment_set_preinit"),
+            Glean.shared.testIsExperimentActive("experiment_set_preinit"),
             "Experiment must be active"
         )
         XCTAssertFalse(
-            Glean.shared.testIsExperimentActive(experimentId: "experiment_preinit_disabled"),
+            Glean.shared.testIsExperimentActive("experiment_preinit_disabled"),
             "Experiment must not be active"
         )
     }
@@ -384,7 +384,7 @@ class GleanTests: XCTestCase {
 
         // Resetting Glean doesn't trigger pings in tests so we must call the method
         // directly to invoke a ping to be created
-        Glean.shared.submitPingByName(pingName: "baseline")
+        Glean.shared.submitPingByName("baseline")
 
         waitForExpectations(timeout: 5.0) { error in
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
@@ -427,7 +427,7 @@ class GleanTests: XCTestCase {
         expectation = expectation(description: "Completed upload")
 
         // We only want to submit the baseline ping, so we sumbit it by name
-        Glean.shared.submitPingByName(pingName: "baseline")
+        Glean.shared.submitPingByName("baseline")
 
         waitForExpectations(timeout: 5.0) { error in
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
