@@ -25,6 +25,7 @@ class MetricsPingScheduler {
         // In testing mode, set the "last seen version" as the same as this one.
         // Otherwise, all we will ever send is pings for the "upgrade" reason.
         if Dispatchers.shared.testingMode {
+            logger.debug("MPS in testing mode. Forcing update of seen version")
             _ = isDifferentVersion()
         }
     }
@@ -110,7 +111,7 @@ class MetricsPingScheduler {
     }
 
     /// Performs startup checks to decide when to schedule the next metrics ping collection.
-    func schedule() {
+    func schedule() -> Bool {
         let now = Date()
 
         // If the version of the app is different from the last time we ran the app,
@@ -122,7 +123,7 @@ class MetricsPingScheduler {
                 startupPing: true,
                 reason: .upgrade
             )
-            return
+            return true
         }
 
         let lastSentDate = getLastCollectedDate()
@@ -147,6 +148,7 @@ class MetricsPingScheduler {
                 sendTheNextCalendarDay: true,
                 reason: .tomorrow
             )
+            return false
         } else if isAfterDueTime(now) {
             logger.info("The 'metrics' ping is scheduled for immediate collection, \(now)")
             // **IMPORTANT**
@@ -160,6 +162,7 @@ class MetricsPingScheduler {
                 startupPing: true,
                 reason: .overdue
             )
+            return true
         } else {
             // This covers (3).
             logger.info("The 'metrics' collection is scheduled for today, \(now)")
@@ -168,6 +171,7 @@ class MetricsPingScheduler {
                 sendTheNextCalendarDay: false,
                 reason: .today
             )
+            return false
         }
     }
 
@@ -193,7 +197,7 @@ class MetricsPingScheduler {
             //
             // * Do not change this line without checking what it implies for the above wall
             // of text. *
-            Glean.shared.submitPingByNameSync(pingName: "metrics", reason: reasonString)
+            gleanSubmitPingByNameSync(pingName: "metrics", reason: reasonString)
         } else {
             GleanMetrics.Pings.shared.metrics.submit(reason: reason)
         }
