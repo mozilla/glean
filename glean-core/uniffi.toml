@@ -4,6 +4,7 @@ cdylib_name = "glean_ffi"
 
 [bindings.swift]
 cdylib_name = "glean_ffi"
+omit_argument_labels = true
 
 [bindings.python]
 cdylib_name = "glean_ffi"
