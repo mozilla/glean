@@ -59,14 +59,10 @@ public class Glean {
     var metricsPingScheduler: MetricsPingScheduler?
 
     var initialized: Bool = false
-    // Set when `initialize()` returns.
-    // This allows to detect calls that happen before `Glean.shared.initialize()` was called.
-    // Note: The initialization might still be in progress, as it runs in a separate thread.
-    var initFinished = AtomicBoolean(false)
 
-    private var debugViewTag: String?
-    private var sourceTags: [String]?
-    var logPings: Bool = false
+    // Are we in testing mode?
+    internal var testingMode = AtomicBoolean(false)
+
     var configuration: Configuration?
     fileprivate var observer: GleanLifecycleObserver?
 
@@ -75,8 +71,6 @@ public class Glean {
         static let logTag = "glean/Glean"
         static let languageBindingName = "Swift"
     }
-
-    private var pingTypeQueue = [PingBase]()
 
     private let logger = Logger(tag: Constants.logTag)
 
@@ -348,24 +342,18 @@ public class Glean {
         return isMainProcess!
     }
 
-    /// PUBLIC TEST ONLY FUNCTION.
-    ///
-    /// Returns true if a ping by this name is in the ping registry.
-    public func testHasPingType(_ pingName: String) -> Bool {
-        return glean_test_has_ping_type(pingName).toBool()
-    }
-
     /// Test-only method to destroy the owned glean-core handle.
-    func testDestroyGleanHandle() {
+    func testDestroyGleanHandle(_ clearStores: Bool = false) {
         if !isInitialized() {
             // We don't need to destroy Glean: it wasn't initialized.
             return
         }
 
-        glean_destroy_glean()
-        // Reset all state.
-        Dispatchers.shared.setTaskQueueing(enabled: true)
-        self.initFinished.value = false
+        gleanTestDestroyGlean(clearStores)
+
+        // Reset all state
+        gleanSetTestMode(false)
+        self.testingMode.value = false
         self.initialized = false
     }
 
@@ -376,7 +364,8 @@ public class Glean {
     /// This makes all asynchronous work synchronous so we can test the results of the
     /// API synchronously.
     public func enableTestingMode() {
-        Dispatchers.shared.setTestingMode(enabled: true)
+        self.testingMode.value = true
+        gleanSetTestMode(true)
     }
 
     /// PUBLIC TEST ONLY FUNCTION.
@@ -389,17 +378,13 @@ public class Glean {
     public func resetGlean(configuration: Configuration = Configuration(),
                            clearStores: Bool,
                            uploadEnabled: Bool = true) {
-        enableTestingMode()
-
-        if isInitialized() && clearStores {
-            // Clear all the stored data.
-            glean_test_clear_all_stores()
-        }
-
         // Init Glean.
-        testDestroyGleanHandle()
+        testDestroyGleanHandle(clearStores)
+        // Enable test mode.
+        enableTestingMode()
         // Enable ping logging for all tests
         setLogPings(true)
-        //initialize(uploadEnabled: uploadEnabled, configuration: configuration)
+
+        initialize(uploadEnabled: uploadEnabled, configuration: configuration)
     }
 }
