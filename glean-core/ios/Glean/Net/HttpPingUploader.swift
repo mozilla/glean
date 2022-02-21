@@ -113,7 +113,7 @@ public class HttpPingUploader {
     ///
     /// - returns: Optional `URLRequest` object with the configured headings set.
     func buildRequest(path: String, data: Data, headers: [String: String]) -> URLRequest? {
-        if let url = URL(string: "" + path) {
+        if let url = URL(string: config.serverEndpoint + path) {
             var request = URLRequest(url: url)
             for (field, value) in headers {
                 request.addValue(value, forHTTPHeaderField: field)
@@ -149,14 +149,14 @@ public class HttpPingUploader {
         // Limits are enforced by glean-core to avoid an inifinite loop here.
         // Whenever a limit is reached, this binding will receive `.done` and step out.
         while true {
-            var incomingTask = FfiPingUploadTask()
-            glean_get_upload_task(&incomingTask)
-            let task = incomingTask.toPingUploadTask()
+            let task = gleanGetUploadTask()
 
             switch task {
             case let .upload(request):
-                self.upload(path: request.path, data: request.body, headers: request.headers) { result in
-                    glean_process_ping_upload_response(&incomingTask, result.toFfi())
+                var body = Data(capacity: request.body.count)
+                body.append(contentsOf: request.body)
+                self.upload(path: request.path, data: body, headers: request.headers) { result in
+                    gleanProcessPingUploadResponse(uuid: request.documentId, result: result)
                 }
             case .wait(let time):
                 sleep(UInt32(time) / 1000)
@@ -179,44 +179,14 @@ private class SessionResponseDelegate: NSObject, URLSessionTaskDelegate {
 
     public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         let httpResponse = task.response as? HTTPURLResponse
-        let statusCode = UInt32(httpResponse?.statusCode ?? 0)
+        let statusCode = Int32(httpResponse?.statusCode ?? 0)
 
-        if let error = error {
+        if error != nil {
             // Upload failed on the client-side. We should try again.
-            callback(.recoverableFailure(error))
+            callback(.recoverableFailure(unused: 0))
         } else {
             // HTTP status codes are handled on the Rust side
-            callback(.httpResponse(statusCode))
-        }
-    }
-}
-
-enum UploadResult {
-    /// A HTTP response code.
-    ///
-    /// This can still indicate an error, depending on the status code.
-    case httpResponse(UInt32)
-
-    /// An unrecoverable upload failure.
-    ///
-    /// A possible cause might be a malformed URL.
-    case unrecoverableFailure(Error)
-
-    /// A recoverable failure.
-    ///
-    /// During upload something went wrong,
-    /// e.g. the network connection failed.
-    /// The upload should be retried at a later time.
-    case recoverableFailure(Error)
-
-    func toFfi() -> UInt32 {
-        switch self {
-        case let .httpResponse(status):
-            return UInt32(UPLOAD_RESULT_HTTP_STATUS) | status
-        case .unrecoverableFailure:
-            return UInt32(UPLOAD_RESULT_UNRECOVERABLE)
-        case .recoverableFailure:
-            return UInt32(UPLOAD_RESULT_RECOVERABLE)
+            callback(.httpStatus(code: statusCode))
         }
     }
 }
