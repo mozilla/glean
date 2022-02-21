@@ -269,13 +269,13 @@ class GleanTests: XCTestCase {
         // Set the dirty flag.
         glean_set_dirty_flag(true.toByte())
 
-        let stringMetric = StringMetricType(
+        let stringMetric = StringMetricType(CommonMetricData(
             category: "telemetry",
             name: "app_lifetime",
             sendInPings: ["baseline"],
             lifetime: .application,
             disabled: false
-        )
+        ))
         stringMetric.set("HELLOOOOO!")
 
         // Set up the test stub based on the default telemetry endpoint
