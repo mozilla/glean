@@ -17,14 +17,15 @@ class TimingDistributionTypeTests: XCTestCase {
     }
 
     func testTiminingDistributionSavesToStorage() {
-        let metric = TimingDistributionMetricType(
+        let metric = TimingDistributionMetricType(CommonMetricData(
             category: "telemetry",
             name: "timing_distribution",
             sendInPings: ["store1"],
             lifetime: .ping,
-            disabled: false,
-            timeUnit: .nanosecond
-        )
+            disabled: false
+        ), .nanosecond)
+
+        XCTAssertNil(metric.testGetValue())
 
         // Accumulate a few values
         for _ in 1 ... 3 {
@@ -34,54 +35,52 @@ class TimingDistributionTypeTests: XCTestCase {
 
         // Check that data was properly recorded.
         // We can only check the count, as we don't control the time.
-        XCTAssert(metric.testHasValue())
-        let snapshot = try! metric.testGetValue()
-        XCTAssertEqual(3, snapshot.count)
+        let snapshot = metric.testGetValue()!
+        let sum = snapshot.values.values.reduce(0, +)
+        XCTAssertEqual(3, sum)
     }
 
     func testTimingDistributionMustNotRecordIfDisabled() {
-        let metric = TimingDistributionMetricType(
+        let metric = TimingDistributionMetricType(CommonMetricData(
             category: "telemetry",
             name: "timing_distribution",
             sendInPings: ["store1"],
             lifetime: .ping,
-            disabled: true,
-            timeUnit: .nanosecond
+            disabled: true
+        ), .nanosecond
         )
 
-        XCTAssertFalse(metric.testHasValue())
+        XCTAssertNil(metric.testGetValue())
 
         // Attempt to store the timespan using set
         let id = metric.start()
         metric.stopAndAccumulate(id)
 
         // Check that nothing was recorded.
-        XCTAssertFalse(metric.testHasValue(), "TimingDistributions must not be recorded if they are disabled")
+        XCTAssertNil(metric.testGetValue(), "TimingDistributions must not be recorded if they are disabled")
     }
 
     func testTimingDistributionGetValueThrowsExceptionIfNothingIsStored() {
-        let metric = TimingDistributionMetricType(
+        let metric = TimingDistributionMetricType(CommonMetricData(
             category: "telemetry",
             name: "timing_distribution",
             sendInPings: ["store1"],
             lifetime: .application,
             disabled: false
-        )
+        ), .second)
 
-        XCTAssertThrowsError(try metric.testGetValue()) { error in
-            XCTAssertEqual(error as! String, "Missing value")
-        }
+        XCTAssertNil(metric.testGetValue())
     }
 
     func testTimingDistributionSavesToSecondaryPings() {
         // Define a timing distribution metric which will be stored in multiple stores
-        let metric = TimingDistributionMetricType(
+        let metric = TimingDistributionMetricType(CommonMetricData(
             category: "telemetry",
             name: "timing_distribution",
             sendInPings: ["store1", "store2", "store3"],
             lifetime: .application,
             disabled: false
-        )
+        ), .second)
 
         // Accumulate a few values
         for _ in 1 ... 3 {
@@ -91,43 +90,43 @@ class TimingDistributionTypeTests: XCTestCase {
 
         // Check that data was properly recorded.
         // We can only check the count, as we don't control the time.
-        XCTAssert(metric.testHasValue("store2"))
-        var snapshot = try! metric.testGetValue("store2")
-        XCTAssertEqual(3, snapshot.count)
+        var snapshot = metric.testGetValue("store2")!
+        var sum = snapshot.values.values.reduce(0, +)
+        XCTAssertEqual(3, sum)
 
-        XCTAssert(metric.testHasValue("store3"))
-        snapshot = try! metric.testGetValue("store3")
-        XCTAssertEqual(3, snapshot.count)
+        snapshot = metric.testGetValue("store3")!
+        sum = snapshot.values.values.reduce(0, +)
+        XCTAssertEqual(3, sum)
     }
 
     func testTimingDistributionMustNotRecordIfCanceled() {
-        let metric = TimingDistributionMetricType(
+        let metric = TimingDistributionMetricType(CommonMetricData(
             category: "telemetry",
             name: "timing_distribution",
             sendInPings: ["store1"],
             lifetime: .ping,
-            disabled: false,
-            timeUnit: .nanosecond
+            disabled: false
+            ), .nanosecond
         )
 
-        XCTAssertFalse(metric.testHasValue())
+        XCTAssertNil(metric.testGetValue())
 
         // Attempt to store the timespan using set
         let id = metric.start()
         metric.cancel(id)
 
         // Check that nothing was recorded.
-        XCTAssertFalse(metric.testHasValue(), "TimingDistributions must not be recorded if canceled")
+        XCTAssertNil(metric.testGetValue(), "TimingDistributions must not be recorded if canceled")
     }
 
     func testStoppingNonexistentTimerRecordsAnError() {
-        let metric = TimingDistributionMetricType(
+        let metric = TimingDistributionMetricType(CommonMetricData(
             category: "telemetry",
             name: "timing_distribution",
             sendInPings: ["store1"],
             lifetime: .ping,
-            disabled: false,
-            timeUnit: .nanosecond
+            disabled: false
+            ), .nanosecond
         )
 
         metric.stopAndAccumulate(0)
@@ -136,13 +135,13 @@ class TimingDistributionTypeTests: XCTestCase {
     }
 
     func testMeasureFunctionCorrectlyStoresValues() {
-        let metric = TimingDistributionMetricType(
+        let metric = TimingDistributionMetricType(CommonMetricData(
             category: "telemetry",
             name: "timing_distribution",
             sendInPings: ["store1"],
             lifetime: .ping,
-            disabled: false,
-            timeUnit: .nanosecond
+            disabled: false
+            ), .nanosecond
         )
 
         func testFunc(value: Bool) -> Bool {
@@ -162,22 +161,22 @@ class TimingDistributionTypeTests: XCTestCase {
 
         // Check that data was properly recorded.
         // We can only check the count, as we don't control the time.
-        XCTAssert(metric.testHasValue())
-        let snapshot = try! metric.testGetValue()
-        XCTAssertEqual(3, snapshot.count)
+        let snapshot = metric.testGetValue()!
+        let sum = snapshot.values.values.reduce(0, +)
+        XCTAssertEqual(3, sum)
     }
 
     func testMeasureFunctionThrows() {
-        let metric = TimingDistributionMetricType(
+        let metric = TimingDistributionMetricType(CommonMetricData(
             category: "telemetry",
             name: "timing_distribution",
             sendInPings: ["store1"],
             lifetime: .application,
-            disabled: false,
-            timeUnit: .nanosecond
+            disabled: false
+            ), .nanosecond
         )
 
-        XCTAssertFalse(metric.testHasValue())
+        XCTAssertNil(metric.testGetValue())
 
         // Create a test function that throws an exception.
         func testFunc() throws {
@@ -199,6 +198,6 @@ class TimingDistributionTypeTests: XCTestCase {
             }
         }
 
-        XCTAssertFalse(metric.testHasValue())
+        XCTAssertNil(metric.testGetValue())
     }
 }
