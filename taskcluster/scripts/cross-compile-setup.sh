@@ -60,6 +60,9 @@ tooltool.py \
   --url=http://taskcluster/tooltool.mozilla-releng.net/ \
   --manifest="/builds/worker/checkouts/src/taskcluster/scripts/macos.manifest" \
   fetch
+# tooltool doesn't know how to unpack zstd-files,
+# so we do it manually.
+tar -I zstd -xf "MacOSX11.0.sdk.tar.zst"
 
 rustup target add x86_64-apple-darwin
 rustup target add aarch64-apple-darwin
