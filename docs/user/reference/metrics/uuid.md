@@ -193,6 +193,7 @@ Glean.user.clientId.set(uuid);
 #### Recorded errors
 
 * [`invalid_value`](../../user/metrics/error-reporting.md): if the value is set to a string that is not a UUID (only applies for dynamically-typed languages, such as Python).
+* [`invalid_type`](../../user/metrics/error-reporting.md): if a non-string value is given.
 
 
 ## Testing API

@@ -91,7 +91,7 @@ Glean.flags.a11yEnabled.set(false);
 
 #### Recorded errors
 
-N/A
+* [`invalid_type`](../../user/metrics/error-reporting.md): if a non-boolean value is given.
 
 ## Testing API
 

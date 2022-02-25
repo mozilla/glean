@@ -472,10 +472,9 @@ function afterLogin(aDuration) {
 
 #### Recorded errors
 
-* [`invalid_value`](../../user/metrics/error-reporting.md):
-  If you attempt to record a negative elapsed duration.
-* [`invalid_state`](../../user/metrics/error-reporting.md):
-  If you call this API after calling `start` or call this API multiple times.
+* [`invalid_value`](../../user/metrics/error-reporting.md): if you attempt to record a negative elapsed duration.
+* [`invalid_state`](../../user/metrics/error-reporting.md): if you call this API after calling `start` or call this API multiple times.
+* [`invalid_type`](../../user/metrics/error-reporting.md): if a negative, floating point or non-number value is given.
 
 ## Testing API
 

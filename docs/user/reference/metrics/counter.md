@@ -100,7 +100,8 @@ Increases the counter by a certain amount. If no amount is passed it defaults to
 
 #### Recorded errors
 
-* [`invalid_value`](../../user/metrics/error-reporting.md): If the counter is incremented by `0` or a negative value.
+* [`invalid_value`](../../user/metrics/error-reporting.md): if the counter is incremented by `0` or a negative value.
+* [`invalid_type`](../../user/metrics/error-reporting.md): If a negative, floating point or non-number value is given.
 
 #### Limits
 

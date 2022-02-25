@@ -95,8 +95,9 @@ Glean.search.engines.add("duck duck go");
 
 #### Recorded errors
 
-* `invalid_overflow`: if the string is too long. (Prior to Glean 31.5.0, this recorded an `invalid_value`).
-* `invalid_value`: if the list is too long.
+* [`invalid_overflow`](../../user/metrics/error-reporting.md): if the string is too long. (Prior to Glean 31.5.0, this recorded an `invalid_value`).
+* [`invalid_value`](../../user/metrics/error-reporting.md): if the list is too long.
+* [`invalid_type`](../../user/metrics/error-reporting.md): If a non-string value is given.
 
 #### Limits
 
@@ -182,6 +183,7 @@ Glean.search.engines.set(["wikipedia", "duck duck go"]);
 
 * `invalid_overflow`: if the string is too long. (Prior to Glean 31.5.0, this recorded an `invalid_value`).
 * `invalid_value`: if the list is too long.
+* [`invalid_type`](../../user/metrics/error-reporting.md): if a non-string array value is given.
 
 #### Limits
 
