@@ -10,7 +10,7 @@ In order to get a list of all commands available run `npx glean --help`.
 
 The `glean` CLI will look for / create a `.venv` virtual environment
 at the directory it is called from and install `glean_parser` there by default.
-However, it is possible to customize the directory in which it looks for a virtual enviornment,
+However, it is possible to customize the directory in which it looks for a virtual environment,
 by setting the `VIRTUAL_ENV` environment variable. Example:
 
 ```bash
