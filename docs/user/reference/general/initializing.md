@@ -247,6 +247,133 @@ Glean.initialize(
 
 {{#include ../../../shared/tab_footer.md}}
 
+## Testing API
+
+When unit testing metrics and pings, Glean needs to be put in testing mode. Initializing
+Glean for tests is referred to as "resetting". It is advised that Glean is reset before each unit test
+to prevent side effects of one unit test impacting others.
+
+How to do that and the definition of "testing mode" varies per Glean SDK. Refer to the information
+below for SDK specific information.
+
+{{#include ../../../shared/tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
+
+Using the Glean Kotlin SDK's unit testing API requires adding
+[Robolectric 4.0 or later](http://robolectric.org/) as a testing dependency.
+In Gradle, this can be done by declaring a `testImplementation` dependency:
+
+```groovy
+dependencies {
+    testImplementation "org.robolectric:robolectric:4.3.1"
+}
+```
+
+In order to put the Glean Kotlin SDK into testing mode apply the JUnit `GleanTestRule` to your test class.
+Testing mode will prevent issues with async calls when unit testing the Glean SDK on Kotlin. It also
+enables uploading and clears the recorded metrics at the beginning of each test run.
+
+The rule can be used as shown:
+
+```kotlin
+@RunWith(AndroidJUnit4::class)
+class ActivityCollectingDataTest {
+    // Apply the GleanTestRule to set up a disposable Glean instance.
+    // Please note that this clears the Glean data across tests.
+    @get:Rule
+    val gleanRule = GleanTestRule(ApplicationProvider.getApplicationContext())
+
+    @Test
+    fun checkCollectedData() {
+      // The Glean Kotlin SDK testing APIs can be called here.
+    }
+}
+```
+
+This will ensure that metrics are done recording when the other test functions are used.
+
+</div>
+
+<div data-lang="Swift" class="tab">
+
+**Note**: There's no automatic test rule for Glean tests implemented in Swift.
+
+In order to prevent issues with async calls when unit testing the Glean SDK, it is important to put
+the Glean Swift SDK into testing mode. When the Glean Swift SDK is in testing mode,
+it enables uploading and clears the recorded metrics at the beginning of each test run.
+
+Activate it by resetting Glean in your test's setup:
+
+```swift
+// All pings and metrics testing APIs are marked as `internal`
+// so you need to import `Glean` explicitly in test mode.
+@testable import Glean
+import XCTest
+
+class GleanUsageTests: XCTestCase {
+    override func setUp() {
+        Glean.shared.resetGlean(clearStores: true)
+    }
+
+    // ...
+}
+```
+
+This will ensure that metrics are done recording when the other test functions are used.
+
+</div>
+
+<div data-lang="Python" class="tab">
+
+The Glean Python SDK contains a helper function `glean.testing.reset_glean()` for resetting Glean for tests.
+It has two required arguments: the application ID, and the application version.
+
+Each reset of the Glean Python SDK will create a new temporary directory for Glean to store its data in.
+This temporary directory is automatically cleaned up the next time the Glean Python SDK is reset or when the testing framework finishes.
+
+The instructions below assume you are using [pytest](https://pypi.org/project/pytest/) as the test runner.
+Other test-running libraries have similar features, but are different in the details.
+
+Create a file `conftest.py` at the root of your test directory, and add the following to reset Glean at the start of every test in your suite:
+
+```python
+import pytest
+from glean import testing
+
+@pytest.fixture(name="reset_glean", scope="function", autouse=True)
+def fixture_reset_glean():
+    testing.reset_glean(application_id="my-app-id", application_version="0.1.0")
+```
+
+</div>
+
+<div data-lang="Rust" class="tab"></div>
+<div data-lang="JavaScript" class="tab">
+
+The Glean JavaScript SDK contains a helper function `testResetGlean()` for resetting Glean for tests.
+It expects the same list of arguments as `Glean.initialize`.
+
+Each reset of the Glean JavaScript SDK will clear stores. Calling `testResetGlean` will also make
+metrics and pings testing APIs available and replace ping uploading with a mock implementation that
+does not make real HTTP requests.
+
+```js
+import { testResetGlean } from "@mozilla/glean/testing"
+
+describe("myTestSuite", () => {
+    beforeEach(async () => {
+        await testResetGlean("my-test-id");
+    });
+});
+
+```
+
+</div>
+<div data-lang="Firefox Desktop" class="tab"></div>
+
+{{#include ../../../shared/tab_footer.md}}
+
 ## Reference
 
 - [Swift API docs](../../../swift/Classes/Glean.html#/s:5GleanAAC10initialize13uploadEnabled13configuration9buildInfoySb_AA13ConfigurationVAA05BuildG0VtF)
