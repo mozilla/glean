@@ -27,8 +27,10 @@ is recorded in the `glean.error.preinit_tasks_overflow` metric.
 ### When upload is enabled
 
 Once initialized, if upload is enabled,
-Glean will automatically start applying enqueued tasks, such as
-collection of [baseline metrics](../../user/pings/metrics.md).
+Glean applies all metric recordings and ping submissions,
+for both user-defined and builtin metrics and pings.
+
+This always happens off the main thread (or asynchronously on the JavaScript SDK).
 
 ### When upload is disabled
 
@@ -52,7 +54,7 @@ May only be called once. Subsequent calls to `initialize` are no-op.
 
 #### Configuration
 
-The available initialize configuration options may vary depending on the SDK.
+The available `initialize` configuration options may vary depending on the SDK.
 Below are listed the configuration options available on most SDKs.
 
 - `applicationId`: Application identifier. For Android and iOS applications, this is the id used on the platform's respective app store and is extracted automatically from the application context.
@@ -374,7 +376,7 @@ describe("myTestSuite", () => {
 ```
 
 </div>
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab" data-info='Documentation on how to reset Glean in Firefox Desktop tests can be found at <a href="https://firefox-source-docs.mozilla.org/toolkit/components/glean/user/instrumentation_tests.html" target="_blank">"Writing Instrumentation Tests"</a>'></div>
 
 {{#include ../../../shared/tab_footer.md}}
 
