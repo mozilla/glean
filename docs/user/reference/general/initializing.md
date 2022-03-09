@@ -30,7 +30,7 @@ Once initialized, if upload is enabled,
 Glean applies all metric recordings and ping submissions,
 for both user-defined and builtin metrics and pings.
 
-This always happens off the main thread (or asynchronously on the JavaScript SDK).
+This always happens asynchronously.
 
 ### When upload is disabled
 
