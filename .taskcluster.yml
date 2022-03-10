@@ -234,8 +234,8 @@ tasks:
 
                             command:
                                 - /usr/local/bin/run-task
-                                - '--glean-checkout=/builds/worker/checkouts/src'
-                                - '--task-cwd=/builds/worker/checkouts/src'
+                                - '--glean-checkout=/builds/worker/checkouts/vcs'
+                                - '--task-cwd=/builds/worker/checkouts/vcs'
                                 - '--'
                                 - bash
                                 - -cx
@@ -244,7 +244,7 @@ tasks:
                                   in:
                                       $if: 'tasks_for == "action"'
                                       then: >
-                                          cd /builds/worker/checkouts/src &&
+                                          cd /builds/worker/checkouts/vcs &&
                                           ln -s /builds/worker/artifacts artifacts &&
                                           ~/.local/bin/taskgraph action-callback
                                       else: >
@@ -272,7 +272,7 @@ tasks:
                                     expires: {$fromNow: '1 year'}
                                 'public/docker-contexts':
                                     type: 'directory'
-                                    path: '/builds/worker/checkouts/src/docker-contexts'
+                                    path: '/builds/worker/checkouts/vcs/docker-contexts'
                                     # This needs to be at least the deadline of the
                                     # decision task + the docker-image task deadlines.
                                     # It is set to a week to allow for some time for
