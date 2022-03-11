@@ -58,7 +58,7 @@ pushd /tmp
 
 tooltool.py \
   --url=http://taskcluster/tooltool.mozilla-releng.net/ \
-  --manifest="/builds/worker/checkouts/src/taskcluster/scripts/macos.manifest" \
+  --manifest="/builds/worker/checkouts/vcs/taskcluster/scripts/macos.manifest" \
   fetch
 # tooltool doesn't know how to unpack zstd-files,
 # so we do it manually.
