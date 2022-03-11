@@ -7,6 +7,7 @@
 /// This will typically be invoked by the appropriate scheduling mechanism to upload a ping to the server.
 public class HttpPingUploader {
     var config: Configuration
+    var testingMode: Bool
 
     // This struct is used for organizational purposes to keep the class constants in a single place
     struct Constants {
@@ -29,16 +30,17 @@ public class HttpPingUploader {
     ///
     /// - parameters:
     ///     * configuration: The Glean configuration to use.
-    public init(configuration: Configuration) {
+    public init(configuration: Configuration, testingMode: Bool = false) {
         self.config = configuration
+        self.testingMode = testingMode
     }
 
     /// Launch a new ping uploader on the background thread.
     ///
     /// This function doesn't block.
-    static func launch(configuration: Configuration) {
-        Dispatchers.shared.launchConcurrent {
-            HttpPingUploader(configuration: configuration).process()
+    static func launch(configuration: Configuration, _ testingMode: Bool = false) {
+        DispatchQueue.global(qos: .utility).async {
+            HttpPingUploader(configuration: configuration, testingMode: testingMode).process()
         }
     }
 
@@ -70,7 +72,7 @@ public class HttpPingUploader {
 
             // Build a URLSession with no-caching suitable for uploading our pings
             let config: URLSessionConfiguration
-            if Dispatchers.shared.testingMode {
+            if self.testingMode {
                 // For test mode, we want the URLSession to send things ASAP, rather than in the background
                 config = URLSessionConfiguration.default
             } else {
@@ -156,7 +158,7 @@ public class HttpPingUploader {
                 var body = Data(capacity: request.body.count)
                 body.append(contentsOf: request.body)
                 self.upload(path: request.path, data: body, headers: request.headers) { result in
-                    gleanProcessPingUploadResponse(uuid: request.documentId, result: result)
+                    gleanProcessPingUploadResponse(request.documentId, result)
                 }
             case .wait(let time):
                 sleep(UInt32(time) / 1000)
