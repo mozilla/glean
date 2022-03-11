@@ -29,6 +29,7 @@ class DeletionRequestPingTests: XCTestCase {
     override func tearDown() {
         lastPingJson = nil
         expectation = nil
+        Glean.shared.testDestroyGleanHandle()
         tearDownStubs()
     }
 
