@@ -2,7 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-/*
 @testable import Glean
 import XCTest
 
@@ -21,7 +20,6 @@ class HttpPingUploaderTests: XCTestCase {
     func testHTTPStatusCode() {
         // We are explicitly setting the test mode to true here to force the uploader to not
         // run in the background, which can make this test take a long time.
-        Dispatchers.shared.setTestingMode(enabled: true)
         var testValue: UploadResult?
         stubServerReceive { _, json in
             XCTAssert(json != nil)
@@ -30,7 +28,7 @@ class HttpPingUploaderTests: XCTestCase {
 
         expectation = expectation(description: "Completed upload")
 
-        let httpPingUploader = HttpPingUploader(configuration: Configuration())
+        let httpPingUploader = HttpPingUploader(configuration: Configuration(), testingMode: true)
         httpPingUploader.upload(path: testPath, data: Data(testPing.utf8), headers: [:]) { result in
             testValue = result
             self.expectation?.fulfill()
@@ -40,10 +38,10 @@ class HttpPingUploaderTests: XCTestCase {
         }
 
         // `UploadResult` is not `Equatable`, so instead of implementing that we just unpack it
-        if case let .httpResponse(statusCode) = testValue {
+        if case let .httpStatus(statusCode) = testValue {
             XCTAssertEqual(200, statusCode, "`upload()` returns the expected HTTP status code")
         } else {
-            XCTAssertTrue(false, "`upload()` returns the expected HTTP status code")
+            XCTAssertTrue(false, "`upload()` returns the expected HTTP status code. Was: \(String(describing: testValue ))")
         }
     }
 
@@ -81,4 +79,3 @@ class HttpPingUploaderTests: XCTestCase {
         )
     }
 }
-*/
