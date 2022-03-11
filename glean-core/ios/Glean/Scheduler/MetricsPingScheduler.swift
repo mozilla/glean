@@ -21,10 +21,10 @@ class MetricsPingScheduler {
 
     var timer: Timer?
 
-    init() {
+    init(_ testingMode: Bool) {
         // In testing mode, set the "last seen version" as the same as this one.
         // Otherwise, all we will ever send is pings for the "upgrade" reason.
-        if Dispatchers.shared.testingMode {
+        if testingMode {
             logger.debug("MPS in testing mode. Forcing update of seen version")
             _ = isDifferentVersion()
         }
@@ -197,7 +197,7 @@ class MetricsPingScheduler {
             //
             // * Do not change this line without checking what it implies for the above wall
             // of text. *
-            gleanSubmitPingByNameSync(pingName: "metrics", reason: reasonString)
+            gleanSubmitPingByNameSync("metrics", reasonString)
         } else {
             GleanMetrics.Pings.shared.metrics.submit(reason: reason)
         }
