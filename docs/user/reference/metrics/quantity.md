@@ -96,7 +96,8 @@ Glean.display.width.set(innerHeight);
 
 #### Recorded errors
 
-* [`invalid_value`](../../user/metrics/error-reporting.md): If a negative value is passed in.
+* [`invalid_value`](../../user/metrics/error-reporting.md): if a negative value is passed in.
+* [`invalid_type`](../../user/metrics/error-reporting.md): if a floating point or non-number value is given.
 
 ## Testing API
 

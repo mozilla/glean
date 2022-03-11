@@ -121,6 +121,7 @@ Glean.searchDefault.name.set("wikipedia");
 #### Recorded errors
 
 * [`invalid_overflow`](../../user/metrics/error-reporting.md): if the string is too long. (Prior to Glean 31.5.0, this recorded an `invalid_value`).
+* [`invalid_type`](../../user/metrics/error-reporting.md): if a non-string value is given.
 
 ## Testing API
 

@@ -93,6 +93,7 @@ Glean.accessibility.features["high_contrast"].set(false);
 * [`invalid_label`](../../user/metrics/error-reporting.md):
   * If the label contains invalid characters. Data is still recorded to the special label `__other__`.
   * If the label exceeds the maximum number of allowed characters. Data is still recorded to the special label `__other__`.
+* [`invalid_type`](../../user/metrics/error-reporting.md): if a non-boolean value is given.
 
 ## Testing API
 
