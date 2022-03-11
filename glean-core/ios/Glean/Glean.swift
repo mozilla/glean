@@ -133,7 +133,7 @@ public class Glean {
         )
         let clientInfo = getClientInfo(configuration)
         let callbacks = OnGleanEventsImpl(glean: self)
-        gleanInitialize(cfg: cfg, clientInfo: clientInfo, callbacks: callbacks)
+        gleanInitialize(cfg, clientInfo, callbacks)
     }
 
     /// Initialize the core metrics internally managed by Glean (e.g. client id).
@@ -164,7 +164,7 @@ public class Glean {
     /// - parameters:
     ///     * enabled: When true, enable metric collection.
     public func setUploadEnabled(_ enabled: Bool) {
-        gleanSetUploadEnabled(enabled: enabled)
+        gleanSetUploadEnabled(enabled)
     }
 
     /// Used to indicate that an experiment is running.
@@ -176,17 +176,17 @@ public class Glean {
     ///     * experimentId: The id of the active experiment (maximum 100 bytes).
     ///     * branch: The branch of the experiment (maximum 100 bytes).
     ///     * extra: Optional metadata to output with the ping.
-    public func setExperimentActive(experimentId: String, branch: String, extra: [String: String]?) {
+    public func setExperimentActive(_ experimentId: String, branch: String, extra: [String: String]?) {
         let map = extra ?? [:]
-        gleanSetExperimentActive(experimentId: experimentId, branch: branch, extra: map)
+        gleanSetExperimentActive(experimentId, branch, map)
     }
 
     /// Used to indicate that an experiment is no longer running.
     ///
     /// - parameters:
     ///     * experimentsId: The id of the experiment to deactivate.
-    public func setExperimentInactive(experimentId: String) {
-        gleanSetExperimentInactive(experimentId: experimentId)
+    public func setExperimentInactive(_ experimentId: String) {
+        gleanSetExperimentInactive(experimentId)
     }
 
     /// Tests wheter an experiment is active, for testing purposes only.
@@ -195,8 +195,8 @@ public class Glean {
     ///     * experimentId: The id of the experiment to look for.
     ///
     /// - returns: `true` if the experiment is active and reported in pings.
-    public func testIsExperimentActive(experimentId: String) -> Bool {
-        return gleanTestGetExperimentData(experimentId: experimentId) != nil
+    public func testIsExperimentActive(_ experimentId: String) -> Bool {
+        return gleanTestGetExperimentData(experimentId) != nil
     }
 
     /// PUBLIC TEST ONLY FUNCTION.
@@ -207,8 +207,8 @@ public class Glean {
     ///     * experimentId: The id of the experiment to look for.
     ///
     /// - returns: `RecordedExperiment` if the experiment is active and reported in pings, `nil` otherwise.
-    public func testGetExperimentData(experimentId: String) -> RecordedExperiment? {
-        return gleanTestGetExperimentData(experimentId: experimentId)
+    public func testGetExperimentData(_ experimentId: String) -> RecordedExperiment? {
+        return gleanTestGetExperimentData(experimentId)
     }
 
     /// Returns true if the Glean SDK has been initialized.
@@ -220,7 +220,7 @@ public class Glean {
     func handleForegroundEvent() {
         gleanHandleClientActive()
 
-        GleanValidation.foregroundCount.add(amount: 1)
+        GleanValidation.foregroundCount.add(1)
     }
 
     /// Handle background event and submit appropriate pings
@@ -241,8 +241,8 @@ public class Glean {
     ///
     /// If the ping currently contains no content, it will not be assembled and
     /// queued for sending.
-    func submitPingByName(pingName: String, reason: String? = nil) {
-        gleanSubmitPingByName(pingName: pingName, reason: reason)
+    func submitPingByName(_ pingName: String, _ reason: String? = nil) {
+        gleanSubmitPingByName(pingName, reason)
     }
 
     /// Register the pings generated from `pings.yaml` with the Glean SDK.
@@ -260,7 +260,7 @@ public class Glean {
     /// - parameters:
     ///     * value: The value of the tag, which must be a valid HTTP header value.
     func setDebugViewTag(_ tag: String) -> Bool {
-        return gleanSetDebugViewTag(tag: tag)
+        return gleanSetDebugViewTag(tag)
     }
 
     /// Set the log_pings debug option,
@@ -269,7 +269,7 @@ public class Glean {
     /// - parameters:
     ///     * value: The value of the option.
     func setLogPings(_ value: Bool) {
-        gleanSetLogPings(value: value)
+        gleanSetLogPings(value)
     }
 
     /// Set the source tags to be applied as headers when uploading pings.
@@ -283,7 +283,7 @@ public class Glean {
     /// - parameters:
     ///    * tags: A list of tags, which must be valid HTTP header values.
     func setSourceTags(_ tags: [String]) -> Bool {
-        gleanSetSourceTags(tags: tags)
+        gleanSetSourceTags(tags)
     }
 
     /// When applications are launched using the custom URL scheme, this helper function will process
@@ -350,12 +350,11 @@ public class Glean {
             return
         }
 
-        gleanTestDestroyGlean(clearStores: clearStores)
+        gleanTestDestroyGlean(clearStores)
 
         // Reset all state
-        gleanSetTestMode(enabled: false)
+        gleanSetTestMode(false)
         self.testingMode.value = false
-        Dispatchers.shared.setTestingMode(enabled: false)
         self.initialized = false
     }
 
@@ -367,8 +366,7 @@ public class Glean {
     /// API synchronously.
     public func enableTestingMode() {
         self.testingMode.value = true
-        Dispatchers.shared.setTestingMode(enabled: true)
-        gleanSetTestMode(enabled: true)
+        gleanSetTestMode(true)
     }
 
     /// PUBLIC TEST ONLY FUNCTION.
