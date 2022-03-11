@@ -16,6 +16,7 @@ class GleanTests: XCTestCase {
     }
 
     override func tearDown() {
+        Glean.shared.testDestroyGleanHandle()
         expectation = nil
         tearDownStubs()
     }
@@ -25,39 +26,37 @@ class GleanTests: XCTestCase {
         XCTAssert(Glean.shared.isInitialized(), "Glean should be initialized")
     }
 
-    /*
-    FIXME: todo
     func testExperimentRecording() {
         Glean.shared.setExperimentActive(
-            experimentId: "experiment_test",
+            "experiment_test",
             branch: "branch_a",
             extra: nil
         )
         Glean.shared.setExperimentActive(
-            experimentId: "experiment_api",
+            "experiment_api",
             branch: "branch_b",
             extra: ["test_key": "value"]
         )
         XCTAssertTrue(
-            Glean.shared.testIsExperimentActive(experimentId: "experiment_test"),
+            Glean.shared.testIsExperimentActive("experiment_test"),
             "Experiment must be active"
         )
         XCTAssertTrue(
-            Glean.shared.testIsExperimentActive(experimentId: "experiment_api"),
+            Glean.shared.testIsExperimentActive("experiment_api"),
             "Experiment must be active"
         )
 
-        Glean.shared.setExperimentInactive(experimentId: "experiment_test")
+        Glean.shared.setExperimentInactive("experiment_test")
         XCTAssertFalse(
-            Glean.shared.testIsExperimentActive(experimentId: "experiment_test"),
+            Glean.shared.testIsExperimentActive("experiment_test"),
             "Experiment must not be active"
         )
         XCTAssertTrue(
-            Glean.shared.testIsExperimentActive(experimentId: "experiment_api"),
+            Glean.shared.testIsExperimentActive("experiment_api"),
             "Experiment must be active"
         )
 
-        let experimentData = Glean.shared.testGetExperimentData(experimentId: "experiment_api")
+        let experimentData = Glean.shared.testGetExperimentData("experiment_api")
         XCTAssertEqual(
             "branch_b",
             experimentData?.branch,
@@ -65,41 +64,40 @@ class GleanTests: XCTestCase {
         )
         XCTAssertEqual(
             "value",
-            experimentData?.extra["test_key"],
+            experimentData?.extra?["test_key"],
             "Experiment extra must have expected key/value"
         )
     }
-    */
 
     func testExperimentRecordingBeforeGleanInit() {
         // This test relies on Glean not being initialized and the task queueing to be on
         Glean.shared.testDestroyGleanHandle()
-        Dispatchers.shared.setTaskQueueing(enabled: true)
+        ///Dispatchers.shared.setTaskQueueing(enabled: true)
 
         Glean.shared.setExperimentActive(
-            experimentId: "experiment_set_preinit",
+            "experiment_set_preinit",
             branch: "branch_a",
             extra: nil
         )
         Glean.shared.setExperimentActive(
-            experimentId: "experiment_preinit_disabled",
+            "experiment_preinit_disabled",
             branch: "branch_a",
             extra: nil
         )
 
         // Deactivate the second experiment
-        Glean.shared.setExperimentInactive(experimentId: "experiment_preinit_disabled")
+        Glean.shared.setExperimentInactive("experiment_preinit_disabled")
 
         // This will reset Glean and flush the queued tasks
         resetGleanDiscardingInitialPings(testCase: self, tag: "GleanTests", clearStores: false)
 
         // Verify the tasks were executed
         XCTAssertTrue(
-            Glean.shared.testIsExperimentActive(experimentId: "experiment_set_preinit"),
+            Glean.shared.testIsExperimentActive("experiment_set_preinit"),
             "Experiment must be active"
         )
         XCTAssertFalse(
-            Glean.shared.testIsExperimentActive(experimentId: "experiment_preinit_disabled"),
+            Glean.shared.testIsExperimentActive("experiment_preinit_disabled"),
             "Experiment must not be active"
         )
     }
@@ -240,6 +238,8 @@ class GleanTests: XCTestCase {
     }
 
     func testNotSendingDeletionRequestIfUnchangedOutsideOfRun() {
+        XCTAssert(Glean.shared.isInitialized(), "Glean should be initialized")
+
         // Set up the test stub based on the default telemetry endpoint
         stubServerReceive { _, _ in
             XCTFail("Should not have recieved any ping")
@@ -272,7 +272,7 @@ class GleanTests: XCTestCase {
         // Set the dirty flag.
         glean_set_dirty_flag(true.toByte())
 
-        let stringMetric = StringMetricType(meta: CommonMetricData(
+        let stringMetric = StringMetricType(CommonMetricData(
             category: "telemetry",
             name: "app_lifetime",
             sendInPings: ["baseline"],
@@ -324,10 +324,10 @@ class GleanTests: XCTestCase {
         // Check to see if Glean is initialized
         XCTAssert(Glean.shared.isInitialized())
 
+
         // Set the control variable to false to simulate that we are not running
         // in the main process
         Glean.shared.isMainProcess = false
-
         expectation = expectation(description: "GleanTests: Ping Received")
         // We are using OHHTTPStubs combined with an XCTestExpectation in order to capture
         // outgoing network requests and prevent actual requests being made from tests.
@@ -365,12 +365,6 @@ class GleanTests: XCTestCase {
         // Restart glean
         resetGleanDiscardingInitialPings(testCase: self, tag: "GleanTest", clearStores: false)
 
-        // Set the last time the "metrics" ping was sent to now. This is required for us to not
-        // send a metrics pings the first time we initialize Glean and to keep it from interfering
-        // with these tests.
-        let now = Date()
-        Glean.shared.metricsPingScheduler!.updateSentDate(now)
-
         let host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
         stub(condition: isHost(host)) { data in
             let request = data as NSURLRequest
@@ -393,7 +387,7 @@ class GleanTests: XCTestCase {
 
         // Resetting Glean doesn't trigger pings in tests so we must call the method
         // directly to invoke a ping to be created
-        Glean.shared.submitPingByName(pingName: "baseline")
+        Glean.shared.submitPingByName("baseline")
 
         waitForExpectations(timeout: 5.0) { error in
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
@@ -408,12 +402,6 @@ class GleanTests: XCTestCase {
 
         // Restart glean, disposing of any pings from startup that might interfere with the test
         resetGleanDiscardingInitialPings(testCase: self, tag: "GleanTest", clearStores: false)
-
-        // Set the last time the "metrics" ping was sent to now. This is required for us to not
-        // send a metrics pings the first time we initialize Glean and to keep it from interfering
-        // with these tests.
-        let now = Date()
-        Glean.shared.metricsPingScheduler!.updateSentDate(now)
 
         let host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
         stub(condition: isHost(host)) { data in
@@ -436,7 +424,7 @@ class GleanTests: XCTestCase {
         expectation = expectation(description: "Completed upload")
 
         // We only want to submit the baseline ping, so we sumbit it by name
-        Glean.shared.submitPingByName(pingName: "baseline")
+        Glean.shared.submitPingByName("baseline")
 
         waitForExpectations(timeout: 5.0) { error in
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
@@ -450,8 +438,8 @@ class GleanTests: XCTestCase {
         // real-world async behaviour of this.
         // We don't need to care about clearing it,
         // the test-unit hooks will call `resetGlean` anyway.
-        Dispatchers.shared.setTaskQueueing(enabled: true)
-        Dispatchers.shared.setTestingMode(enabled: false)
+        ///Dispatchers.shared.setTaskQueueing(enabled: true)
+        ///Dispatchers.shared.setTestingMode(enabled: false)
 
         // We expect only a single ping later
         stubServerReceive { pingType, _ in
@@ -476,7 +464,7 @@ class GleanTests: XCTestCase {
             reasonCodes: []
         )
 
-        let counter = CounterMetricType(meta: CommonMetricData(
+        let counter = CounterMetricType(CommonMetricData(
             category: "telemetry",
             name: "counter_metric",
             sendInPings: ["custom"],
@@ -498,7 +486,7 @@ class GleanTests: XCTestCase {
         Glean.shared.setUploadEnabled(false)
 
         // Set data and try to submit a custom ping.
-        counter.add(amount: 1)
+        counter.add(1)
         customPing.submit()
 
         waitForExpectations(timeout: 5.0) { error in

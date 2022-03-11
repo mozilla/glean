@@ -20,19 +20,22 @@ class OnGleanEventsImpl: OnGleanEvents {
     }
 
     func onInitializeFinished() {
-        Dispatchers.shared.flushQueuedInitialTasks()
-
-        self.glean.observer = GleanLifecycleObserver()
+        // Run this off the main thread,
+        // as it will trigger a ping submission,
+        // which itself will trigger `triggerUpload()` on this class.
+        DispatchQueue.global(qos: .utility).async {
+            self.glean.observer = GleanLifecycleObserver()
+        }
         self.glean.initialized = true
     }
 
     func triggerUpload() {
         // If uploading is disabled, we need to send the deletion-request ping
-        HttpPingUploader.launch(configuration: self.glean.configuration!)
+        HttpPingUploader.launch(configuration: self.glean.configuration!, self.glean.testingMode.value)
     }
 
     func startMetricsPingScheduler() -> Bool {
-        self.glean.metricsPingScheduler = MetricsPingScheduler()
+        self.glean.metricsPingScheduler = MetricsPingScheduler(self.glean.testingMode.value)
         // Check for overdue metrics pings
         return self.glean.metricsPingScheduler!.schedule()
     }
@@ -61,9 +64,6 @@ public class Glean {
     // Are we in testing mode?
     internal var testingMode = AtomicBoolean(false)
 
-    private var debugViewTag: String?
-    private var sourceTags: [String]?
-    var logPings: Bool = false
     var configuration: Configuration?
     fileprivate var observer: GleanLifecycleObserver?
 
@@ -387,5 +387,12 @@ public class Glean {
         setLogPings(true)
 
         initialize(uploadEnabled: uploadEnabled, configuration: configuration)
+
+        if checkIsMainProcess() {
+            // wait for init to finish.
+            while !self.isInitialized() {
+                // yielding.
+            }
+        }
     }
 }
