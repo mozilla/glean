@@ -81,7 +81,7 @@ class GleanDebugUtility {
             }
 
             if let pingName = parsedCommands.pingNameToSend {
-                Glean.shared.submitPingByName(pingName: pingName)
+                Glean.shared.submitPingByName(pingName)
                 logger.debug("Glean debug tools triggered ping: \(pingName)")
             }
         }
