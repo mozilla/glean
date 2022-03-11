@@ -6,8 +6,6 @@
 import OHHTTPStubs
 import XCTest
 
-// swiftlint:disable type_body_length force_cast
-// REASON: Used in a test
 class GleanTests: XCTestCase {
     var expectation: XCTestExpectation?
 
@@ -16,6 +14,7 @@ class GleanTests: XCTestCase {
     }
 
     override func tearDown() {
+        Glean.shared.testDestroyGleanHandle()
         expectation = nil
         tearDownStubs()
     }
@@ -71,7 +70,6 @@ class GleanTests: XCTestCase {
     func testExperimentRecordingBeforeGleanInit() {
         // This test relies on Glean not being initialized and the task queueing to be on
         Glean.shared.testDestroyGleanHandle()
-        Dispatchers.shared.setTaskQueueing(enabled: true)
 
         Glean.shared.setExperimentActive(
             "experiment_set_preinit",
@@ -237,6 +235,8 @@ class GleanTests: XCTestCase {
     }
 
     func testNotSendingDeletionRequestIfUnchangedOutsideOfRun() {
+        XCTAssert(Glean.shared.isInitialized(), "Glean should be initialized")
+
         // Set up the test stub based on the default telemetry endpoint
         stubServerReceive { _, _ in
             XCTFail("Should not have recieved any ping")
@@ -362,12 +362,6 @@ class GleanTests: XCTestCase {
         // Restart glean
         resetGleanDiscardingInitialPings(testCase: self, tag: "GleanTest", clearStores: false)
 
-        // Set the last time the "metrics" ping was sent to now. This is required for us to not
-        // send a metrics pings the first time we initialize Glean and to keep it from interfering
-        // with these tests.
-        let now = Date()
-        Glean.shared.metricsPingScheduler!.updateSentDate(now)
-
         let host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
         stub(condition: isHost(host)) { data in
             let request = data as NSURLRequest
@@ -406,12 +400,6 @@ class GleanTests: XCTestCase {
         // Restart glean, disposing of any pings from startup that might interfere with the test
         resetGleanDiscardingInitialPings(testCase: self, tag: "GleanTest", clearStores: false)
 
-        // Set the last time the "metrics" ping was sent to now. This is required for us to not
-        // send a metrics pings the first time we initialize Glean and to keep it from interfering
-        // with these tests.
-        let now = Date()
-        Glean.shared.metricsPingScheduler!.updateSentDate(now)
-
         let host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
         stub(condition: isHost(host)) { data in
             let request = data as NSURLRequest
@@ -443,12 +431,6 @@ class GleanTests: XCTestCase {
     func testFlippingUploadEnabledRespectsOrderOfEvents() {
         // This test relies on Glean not being initialized
         Glean.shared.testDestroyGleanHandle()
-        // This test relies on testing mode to be disabled, since we need to prove the
-        // real-world async behaviour of this.
-        // We don't need to care about clearing it,
-        // the test-unit hooks will call `resetGlean` anyway.
-        Dispatchers.shared.setTaskQueueing(enabled: true)
-        Dispatchers.shared.setTestingMode(enabled: false)
 
         // We expect only a single ping later
         stubServerReceive { pingType, _ in
