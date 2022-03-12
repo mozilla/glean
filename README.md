@@ -43,6 +43,17 @@ To contact us you can:
 The [Glean logo artwork](https://dianaciufo.wordpress.com/2019/10/11/glean-graphic-identity-for-mozilla-firefox/) was contributed by [Diana Ciufo](https://dianaciufo.wordpress.com/).
 It's licensed under MPL.
 
+### Alumni contributors
+
+* Georg Fritzsche
+* Michael Droettboom
+
+See the full list of contributors for:
+
+* the [Glean SDK](https://github.com/mozilla/glean/graphs/contributors)
+* the [Glean.js SDK](https://github.com/mozilla/glean.js/graphs/contributors)
+* the [glean_parser](https://github.com/mozilla/glean_parser/graphs/contributors)
+
 ## License
 
     This Source Code Form is subject to the terms of the Mozilla Public
