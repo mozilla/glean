@@ -54,7 +54,7 @@ commands:
       - run:
           name: Install uniffi-bindgen
           command: |
-            cargo install --git https://github.com/mozilla/uniffi-rs
+            cargo install uniffi_bindgen --version 0.17.0
 
   test-rust:
     parameters:
