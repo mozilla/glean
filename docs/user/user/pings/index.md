@@ -105,10 +105,10 @@ For historical reasons it contains metrics that are only useful on a certain pla
 
 ##### Additional metrics require a proposal
 
-> Adding new metrics maintained by the Glean SDK team will require a full proposal
-> and details on why that value is useful across multiple platforms and products and needs SDK team ownership.
+> Adding new metrics maintained by the Glean SDKs team will require a full proposal
+> and details on why that value is useful across multiple platforms and products and needs Glean SDKs team ownership.
 >
-> The Glean SDK is not taking ownership of new metrics that are platform- or product-specific.
+> The Glean SDKs are not taking ownership of new metrics that are platform- or product-specific.
 
 The following fields are included in the `client_info` section.
 Optional fields are marked accordingly.

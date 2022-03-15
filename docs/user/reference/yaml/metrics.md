@@ -207,7 +207,7 @@ on the default ping as well as in a custom ping.
 
 ##### Adding metrics to every ping
 
-> For the small number of metrics that should be in every ping the Glean SDK will eventually provide a solution.
+> For the small number of metrics that should be in every ping the Glean SDKs will eventually provide a solution.
 > See [bug 1695236](https://bugzilla.mozilla.org/show_bug.cgi?id=1695236) for details.
 
 ```yaml
