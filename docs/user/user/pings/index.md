@@ -261,7 +261,7 @@ Describes the data sent to the server. Value is always `application/json; charse
 
 Submission date/time in GMT/UTC+0 offset, e.g. `Mon, 23 Jan 2019 10:10:10 GMT+00:00`.
 
-#### `User-Agent`
+#### `User-Agent` (deprecated)
 
 The Glean SDKs do not set this header[^1], so it will contain whatever value was set
 by the underlying uploading mechanism. For example, when sending pings from browsers
