@@ -120,6 +120,11 @@ The user-visible version string (e.g. "1.0.3").
 The meaning of the string (e.g. whether semver or a git hash) is application-specific.
 If the value was not provided through configuration, this metric gets set to `Unknown`.
 
+#### `build_date` _(optional)_
+
+_Type: [Datetime](../../reference/metrics/datetime.md),
+Lifetime: [Application](../../reference/yaml/metrcs.md#application)_
+
 #### `architecture`
 
 _Type: [String](../../reference/metrics/string.md),
