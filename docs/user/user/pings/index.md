@@ -35,7 +35,10 @@ for more details for each metric type in the `metrics` and `events` section.
 
 ### The `ping_info` section
 
-The following fields are included in the `ping_info` section, for every ping.
+Metadata about the ping itself.
+This section is included in **every** ping.
+
+The following fields are included in the `ping_info` section.
 Optional fields are marked accordingly.
 
 #### `seq`
@@ -92,6 +95,20 @@ on how to record experiments data.
 ```
 
 ### The `client_info` section
+
+A limited amount of metrics that are generally useful across products.
+The data is provided by the embedding application or automatically fetched by the Glean SDK.
+It is collected at initialization time and sent in every ping afterwards.
+For historical reasons it contains metrics that are only useful on a certain platform.
+
+{{#include ../../../shared/blockquote-info.html}}
+
+##### Additional metrics require a proposal
+
+> Adding new metrics maintained by the Glean SDK team will require a full proposal
+> and details on why that value is useful across multiple platforms and products and needs SDK team ownership.
+>
+> The Glean SDK is not taking ownership of new metrics that are platform- or product-specific.
 
 The following fields are included in the `client_info` section.
 Optional fields are marked accordingly.
