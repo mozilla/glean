@@ -206,7 +206,7 @@ impl PingRequest {
     /// # Arguments
     ///
     /// * `language_binding_name` - The name of the language used by the binding that instantiated this Glean instance.
-    ///                             Now this is used to build the X-Telemetry-Agent header value.
+    ///                             This is used to build the X-Telemetry-Agent header value.
     /// * `body_max_size` - The maximum size in bytes the compressed ping body may have to be eligible for upload.
     pub fn builder(language_binding_name: &str, body_max_size: usize) -> Builder {
         Builder::new(language_binding_name, body_max_size)
