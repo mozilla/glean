@@ -263,8 +263,11 @@ Submission date/time in GMT/UTC+0 offset, e.g. `Mon, 23 Jan 2019 10:10:10 GMT+00
 
 #### `User-Agent` (deprecated)
 
-The Glean SDKs do not set this header[^1], so it will contain whatever value was set
-by the underlying uploading mechanism. For example, when sending pings from browsers
+Up to Glean v44.0.0 and Glean.js v0.13.0 this contained the Glean SDK version and platform information.
+Newer Glean SDKs do not overwrite this header.
+See [`X-Telemetry-Agent`](#x-telemetry-agent) for details.
+
+Clients might still send it, for example, when sending pings from browsers
 it will contain the characteristic [browser UA string](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent#syntax).
 
 This header is parsed by the Glean pipeline and can be queried at analysis time through
