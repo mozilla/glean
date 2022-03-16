@@ -2,16 +2,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-/*
 @testable import Glean
 import XCTest
 
 class MetricsPingSchedulerTests: XCTestCase {
     var expectation: XCTestExpectation?
-
-    override func setUp() {
-        Glean.shared.enableTestingMode()
-    }
 
     override func tearDown() {
         expectation = nil
@@ -139,12 +134,14 @@ class MetricsPingSchedulerTests: XCTestCase {
             mps.timer?.fireDate.toISO8601String(precision: .second),
             "schedulePingCollection must schedule next collection on the next day"
         )
+
+        Glean.shared.testDestroyGleanHandle()
     }
 
     func testQueuedDataNotInOverdueMetricsPings() {
         // Reset Glean and do not start it right away
         Glean.shared.testDestroyGleanHandle()
-        Dispatchers.shared.setTaskQueueing(enabled: true)
+        Glean.shared.enableTestingMode()
 
         // Set the last time the "metrics" ping was sent to now. This is required for us to not
         // send a metrics pings the first time we initialize Glean.
@@ -153,13 +150,13 @@ class MetricsPingSchedulerTests: XCTestCase {
 
         // Create a metric and set its value. We expect this to be sent in the first ping
         // that gets generated the SECOND time we start Glean.
-        let expectedStringMetric = StringMetricType(
+        let expectedStringMetric = StringMetricType(CommonMetricData(
             category: "telemetry",
             name: "expected_metric",
             sendInPings: ["metrics"],
             lifetime: Lifetime.ping,
             disabled: false
-        )
+        ))
         let expectedValue = "must-exist-in-the-first-ping"
 
         resetGleanDiscardingInitialPings(testCase: self, tag: "MetricsPingSchedulerTests", clearStores: false)
@@ -167,18 +164,17 @@ class MetricsPingSchedulerTests: XCTestCase {
         expectedStringMetric.set(expectedValue)
 
         // Destroy Glean, it will retain the recorded metric.
-        Glean.shared.testDestroyGleanHandle()
-        Dispatchers.shared.setTaskQueueing(enabled: true)
+        Glean.shared.testDestroyGleanHandle(false)
 
         // Create data and attempt to record data before Glean is initialized.  This will
         // be queued in the dispatcher.
-        let stringMetric = StringMetricType(
+        let stringMetric = StringMetricType(CommonMetricData(
             category: "telemetry",
             name: "canary_metric",
             sendInPings: ["metrics"],
             lifetime: Lifetime.ping,
             disabled: false
-        )
+        ))
         let canaryValue = "must-not-be-in-the-first-ping"
         stringMetric.set(canaryValue)
 
@@ -217,7 +213,10 @@ class MetricsPingSchedulerTests: XCTestCase {
         // the previous run) but must not send the canary string, which would be sent the next time
         // the "metrics" ping is collected after this one.
         // Glean.shared.initialize(uploadEnabled: true)
+        Glean.shared.enableTestingMode()
+        Glean.shared.setLogPings(true)
         Glean.shared.initialize(uploadEnabled: true)
+        // Enable ping logging for all tests
         waitForExpectations(timeout: 5.0) { error in
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
         }
@@ -230,7 +229,7 @@ class MetricsPingSchedulerTests: XCTestCase {
     func testGleanPreservesLifetimeApplicationMetrics() {
         // Reset Glean and do not start it right away
         Glean.shared.testDestroyGleanHandle()
-        Dispatchers.shared.setTaskQueueing(enabled: true)
+        Glean.shared.enableTestingMode()
 
         // Set the last time the "metrics" ping was sent to now. This is required for us to not
         // send a metrics pings the first time we initialize Glean.
@@ -239,13 +238,13 @@ class MetricsPingSchedulerTests: XCTestCase {
 
         // Create a metric and set its value. We expect this to be sent in the first ping
         // that gets generated the SECOND time we start Glean.
-        let testMetric = StringMetricType(
+        let testMetric = StringMetricType(CommonMetricData(
             category: "telemetry",
             name: "test_applifetime_metric",
             sendInPings: ["metrics"],
             lifetime: Lifetime.application,
             disabled: false
-        )
+        ))
         let expectedValue = "I-will-survive!"
 
         // Reset Glean and start it for the FIRST time, then record a value.
@@ -357,4 +356,3 @@ class MetricsPingSchedulerTests: XCTestCase {
         waitForExpectations(timeout: 10.0)
     }
 }
-*/
