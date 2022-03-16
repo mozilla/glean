@@ -310,8 +310,3 @@ A list of tags to associate with the ping, useful for clustering pings at analys
 for example to tell data generated from CI from other data e.g. `automation, perf`.
 
 This header is attached to Glean pings by using the [debug APIs](../../reference/debug/sourceTags.md).
-
-[^1]: This is only true for the Glean JavaScript SDK at the moment. For the other SDKs this
-header is overwritten with the value that is described on the `X-Telemetry-Agent` header section.
-However, this feature will be implemented soon on all SDKs.
-Follow [Bug 1711928](https://bugzilla.mozilla.org/show_bug.cgi?id=1711928) for updates.
