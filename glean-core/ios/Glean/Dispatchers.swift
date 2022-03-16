@@ -9,6 +9,10 @@ class Dispatchers {
     /// This is the shared singleton access to the Glean Dispatchers
     static let shared = Dispatchers()
 
+    // Don't let other instances be created, we only want singleton access through the static `shared`
+    // property
+    private init() {}
+
     // This is a task queue for background operations that are required to be executed in order.
     // It is currently set to be a serial queue by setting the `maxConcurrentOperationsCount` to 1.
     // This queue is intended for API operations that are subject to the behavior and constraints of the
@@ -20,9 +24,7 @@ class Dispatchers {
         return queue
     }()
 
-    /// Cancel any pending background tasks
-    func cancelBackgroundTasks() {
-        // This will cancel operations in the serially executed queue.
-        serialOperationQueue.cancelAllOperations()
+    func launchAsync(block: @escaping () -> Void) {
+        serialOperationQueue.addOperation(BlockOperation(block: block))
     }
 }
