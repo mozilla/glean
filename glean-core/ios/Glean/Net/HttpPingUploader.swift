@@ -159,7 +159,16 @@ public class HttpPingUploader {
                 body.append(contentsOf: request.body)
                 self.upload(path: request.path, data: body, headers: request.headers) { result in
                     gleanProcessPingUploadResponse(request.documentId, result)
+
+                    // launch a new iteration.
+                    Dispatchers.shared.launchAsync {
+                        HttpPingUploader(configuration: self.config, testingMode: self.testingMode).process()
+                    }
                 }
+
+                // we don't want to launch multiple uploads at once.
+                // if the upload finishes, we going to launch the next one.
+                return
             case .wait(let time):
                 sleep(UInt32(time) / 1000)
                 continue
