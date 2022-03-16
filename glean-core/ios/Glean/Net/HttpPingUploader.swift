@@ -39,7 +39,7 @@ public class HttpPingUploader {
     ///
     /// This function doesn't block.
     static func launch(configuration: Configuration, _ testingMode: Bool = false) {
-        DispatchQueue.global(qos: .utility).async {
+        Dispatchers.shared.launchAsync {
             HttpPingUploader(configuration: configuration, testingMode: testingMode).process()
         }
     }

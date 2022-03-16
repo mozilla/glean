@@ -23,7 +23,7 @@ class OnGleanEventsImpl: OnGleanEvents {
         // Run this off the main thread,
         // as it will trigger a ping submission,
         // which itself will trigger `triggerUpload()` on this class.
-        DispatchQueue.global(qos: .utility).async {
+        Dispatchers.shared.launchAsync {
             self.glean.observer = GleanLifecycleObserver()
         }
         self.glean.initialized = true
