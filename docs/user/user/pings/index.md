@@ -284,8 +284,6 @@ It's looks like `Glean/40.0.0 (Kotlin on Android)`, where `40.0.0` is the Glean 
 and `Kotlin on Android` is the name of the language used by the SDK that sent the request
 plus the name of the platform it is running on.
 
-_This header is currently only sent by the Glean JavaScript SDK. See [note](#1)._
-
 #### `X-Client-Type` (deprecated)
 
 Custom header to support handling of Glean pings in the legacy pipeline. Values is always `Glean`.
