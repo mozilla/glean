@@ -58,11 +58,11 @@
 		BFFE33AB232927C3005348FE /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFFE33AA232927C3005348FE /* Utils.swift */; };
 		CD0F7CC026F0F27900EDA6A4 /* UrlMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0F7CBF26F0F27900EDA6A4 /* UrlMetric.swift */; };
 		CD0F7CC226F0F28900EDA6A4 /* UrlMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0F7CC126F0F28900EDA6A4 /* UrlMetricTests.swift */; };
-		CD38785F271D989900C097D8 /* gleanFFI.h in Headers */ = {isa = PBXBuildFile; fileRef = CD38785E271D989900C097D8 /* gleanFFI.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		CD38786B271DA2B800C097D8 /* glean.udl in Sources */ = {isa = PBXBuildFile; fileRef = CD387868271D9CD100C097D8 /* glean.udl */; };
 		CD38786D271DCCC700C097D8 /* libglean_ffi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD38786C271DCCC700C097D8 /* libglean_ffi.a */; };
 		CD6E200A25CAD68900C7EF2B /* OHHTTPStubs.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6E200925CAD68900C7EF2B /* OHHTTPStubs.xcframework */; };
 		CDBFB4DC27C3FA520045CCB9 /* Dispatchers.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDBFB4DB27C3FA520045CCB9 /* Dispatchers.swift */; };
+		CDD08C8327E210DB007C8400 /* glean.udl in Sources */ = {isa = PBXBuildFile; fileRef = CD387868271D9CD100C097D8 /* glean.udl */; };
+		CDD08C8627E21104007C8400 /* gleanFFI.h in Headers */ = {isa = PBXBuildFile; fileRef = CDD08C8427E21104007C8400 /* gleanFFI.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -75,10 +75,11 @@
 			);
 			isEditable = 1;
 			outputFiles = (
-				"$(SRCROOT)/Glean/Generated/$(INPUT_FILE_BASE).swift",
-				"$(SRCROOT)/Glean/Generated/$(INPUT_FILE_BASE)FFI.h",
+				"$(SRCROOT)/Glean/Generated/uniffi/$(INPUT_FILE_BASE).swift",
+				"$(SRCROOT)/Glean/Generated/uniffi/$(INPUT_FILE_BASE)FFI.h",
 			);
-			script = "bash $PWD/../../build-scripts/xc-cargo.sh uniffi-bindgen generate $INPUT_FILE_PATH --language swift --out-dir $SRCROOT/Glean/Generated --no-format\n";
+			runOncePerArchitecture = 0;
+			script = "bash $PWD/../../build-scripts/xc-cargo.sh uniffi-bindgen generate $INPUT_FILE_PATH --language swift --out-dir $SRCROOT/Glean/Generated/uniffi --no-format\n";
 		};
 /* End PBXBuildRule section */
 
@@ -149,12 +150,13 @@
 		BFFE33AA232927C3005348FE /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		CD0F7CBF26F0F27900EDA6A4 /* UrlMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UrlMetric.swift; sourceTree = "<group>"; };
 		CD0F7CC126F0F28900EDA6A4 /* UrlMetricTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UrlMetricTests.swift; sourceTree = "<group>"; };
-		CD38785E271D989900C097D8 /* gleanFFI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gleanFFI.h; sourceTree = "<group>"; };
 		CD387868271D9CD100C097D8 /* glean.udl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = glean.udl; path = ../../src/glean.udl; sourceTree = "<group>"; };
 		CD38786C271DCCC700C097D8 /* libglean_ffi.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libglean_ffi.a; path = ../../target/libglean_ffi.a; sourceTree = "<group>"; };
 		CD6E200525CAD66100C7EF2B /* Gzip.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Gzip.xcframework; path = ../../Carthage/Build/Gzip.xcframework; sourceTree = "<group>"; };
 		CD6E200925CAD68900C7EF2B /* OHHTTPStubs.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = OHHTTPStubs.xcframework; path = ../../Carthage/Build/OHHTTPStubs.xcframework; sourceTree = "<group>"; };
 		CDBFB4DB27C3FA520045CCB9 /* Dispatchers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dispatchers.swift; sourceTree = "<group>"; };
+		CDD08C8427E21104007C8400 /* gleanFFI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gleanFFI.h; sourceTree = "<group>"; };
+		CDD08C8527E21104007C8400 /* glean.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = glean.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -250,7 +252,7 @@
 		BF3227D723336CF800CD0111 /* Generated */ = {
 			isa = PBXGroup;
 			children = (
-				CD38785E271D989900C097D8 /* gleanFFI.h */,
+				CDD08C8227E21069007C8400 /* uniffi */,
 				BF7CC0A52473F61C003B166D /* Metrics.swift */,
 			);
 			path = Generated;
@@ -375,6 +377,15 @@
 			name = Net;
 			sourceTree = "<group>";
 		};
+		CDD08C8227E21069007C8400 /* uniffi */ = {
+			isa = PBXGroup;
+			children = (
+				CDD08C8527E21104007C8400 /* glean.swift */,
+				CDD08C8427E21104007C8400 /* gleanFFI.h */,
+			);
+			path = uniffi;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -390,8 +401,8 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CDD08C8627E21104007C8400 /* gleanFFI.h in Headers */,
 				1F6F8A0B238336AB00B6ABB9 /* Glean.h in Headers */,
-				CD38785F271D989900C097D8 /* gleanFFI.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -540,7 +551,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CD38786B271DA2B800C097D8 /* glean.udl in Sources */,
+				CDD08C8327E210DB007C8400 /* glean.udl in Sources */,
 				CDBFB4DC27C3FA520045CCB9 /* Dispatchers.swift in Sources */,
 				1F6058932314863400307A9F /* Configuration.swift in Sources */,
 				BF2E57052334B77D00364D92 /* EventMetric.swift in Sources */,
