@@ -355,6 +355,7 @@ public class Glean {
         gleanSetTestMode(false)
         self.testingMode.value = false
         self.initialized = false
+        self.metricsPingScheduler = nil
     }
 
     /// PUBLIC TEST ONLY FUNCTION.

@@ -19,7 +19,7 @@ class MetricsPingSchedulerTests: XCTestCase {
     }
 
     func testIsAfterDueTime() {
-        let mps = MetricsPingScheduler()
+        let mps = MetricsPingScheduler(true)
         var fakeNow = DateComponents()
         var fakeDate = Date()
 
@@ -73,7 +73,7 @@ class MetricsPingSchedulerTests: XCTestCase {
     }
 
     func testGetLastCollectedDate() {
-        let mps = MetricsPingScheduler()
+        let mps = MetricsPingScheduler(true)
 
         // getLastCollectedDate must report nil when no stored date is available
         UserDefaults.standard.set(nil, forKey: MetricsPingScheduler.Constants.lastMetricsPingSentDateTime)
@@ -107,7 +107,7 @@ class MetricsPingSchedulerTests: XCTestCase {
     }
 
     func testSchedulePingCollection() {
-        let mps = MetricsPingScheduler()
+        let mps = MetricsPingScheduler(true)
         let now = Date()
 
         // Here we reset Glean and just discard any pings that might be generated since we are only
@@ -149,7 +149,7 @@ class MetricsPingSchedulerTests: XCTestCase {
         // Set the last time the "metrics" ping was sent to now. This is required for us to not
         // send a metrics pings the first time we initialize Glean.
         let now = Date()
-        Glean.shared.metricsPingScheduler.updateSentDate(now)
+        MetricsPingScheduler(true).updateSentDate(now)
 
         // Create a metric and set its value. We expect this to be sent in the first ping
         // that gets generated the SECOND time we start Glean.
@@ -185,7 +185,7 @@ class MetricsPingSchedulerTests: XCTestCase {
         // Set the last time the "metrics" ping was sent to yesterday, which should make
         // the ping overdue and trigger it at startup.
         let yesterday = Calendar.current.date(byAdding: Calendar.Component.day, value: -1, to: now)
-        Glean.shared.metricsPingScheduler.updateSentDate(yesterday!)
+        MetricsPingScheduler(true).updateSentDate(yesterday!)
 
         stubServerReceive { pingType, json in
             if pingType != "metrics" {
@@ -235,7 +235,7 @@ class MetricsPingSchedulerTests: XCTestCase {
         // Set the last time the "metrics" ping was sent to now. This is required for us to not
         // send a metrics pings the first time we initialize Glean.
         let now = Date()
-        Glean.shared.metricsPingScheduler.updateSentDate(now)
+        MetricsPingScheduler(true).updateSentDate(now)
 
         // Create a metric and set its value. We expect this to be sent in the first ping
         // that gets generated the SECOND time we start Glean.
@@ -256,7 +256,7 @@ class MetricsPingSchedulerTests: XCTestCase {
         // Set the last time the "metrics" ping was sent to yesterday, which should make
         // the ping overdue and trigger it at startup.
         let yesterday = Calendar.current.date(byAdding: Calendar.Component.day, value: -1, to: now)
-        Glean.shared.metricsPingScheduler.updateSentDate(yesterday!)
+        Glean.shared.metricsPingScheduler!.updateSentDate(yesterday!)
 
         // Set up the interception of the ping for inspection
         stubServerReceive { pingType, json in
@@ -305,6 +305,7 @@ class MetricsPingSchedulerTests: XCTestCase {
 
         init(expectation: XCTestExpectation?) {
             mpsExpectation = expectation
+            super.init(true)
         }
 
         override func collectPingAndReschedule(
