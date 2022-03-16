@@ -4,6 +4,8 @@
 
 * Android
   * The `glean-native-forUnitTests` now ships with separate libraries for macOS x86_64 and macOS aarch64 ([#1967](https://github.com/mozilla/glean/pull/1967))
+* Rust
+  * Glean will no longer overwrite the `User-Agent` header, but instead send that information as `X-Telemetry-Agent` ([bug 1711928](https://bugzilla.mozilla.org/show_bug.cgi?id=1711928))
 
 # v44.0.0 (2022-02-09)
 

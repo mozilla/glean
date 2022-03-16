@@ -283,10 +283,13 @@ Describes the data sent to the server. Value is always `application/json; charse
 
 Submission date/time in GMT/UTC+0 offset, e.g. `Mon, 23 Jan 2019 10:10:10 GMT+00:00`.
 
-#### `User-Agent`
+#### `User-Agent` (deprecated)
 
-The Glean SDKs do not set this header[^1], so it will contain whatever value was set
-by the underlying uploading mechanism. For example, when sending pings from browsers
+Up to Glean v44.0.0 and Glean.js v0.13.0 this contained the Glean SDK version and platform information.
+Newer Glean SDKs do not overwrite this header.
+See [`X-Telemetry-Agent`](#x-telemetry-agent) for details.
+
+Clients might still send it, for example, when sending pings from browsers
 it will contain the characteristic [browser UA string](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent#syntax).
 
 This header is parsed by the Glean pipeline and can be queried at analysis time through
@@ -302,8 +305,6 @@ as it describes the application and the Glean SDK used for sending the ping.
 It's looks like `Glean/40.0.0 (Kotlin on Android)`, where `40.0.0` is the Glean Kotlin SDK version number
 and `Kotlin on Android` is the name of the language used by the SDK that sent the request
 plus the name of the platform it is running on.
-
-_This header is currently only sent by the Glean JavaScript SDK. See [note](#1)._
 
 #### `X-Client-Type` (deprecated)
 
@@ -331,8 +332,3 @@ A list of tags to associate with the ping, useful for clustering pings at analys
 for example to tell data generated from CI from other data e.g. `automation, perf`.
 
 This header is attached to Glean pings by using the [debug APIs](../../reference/debug/sourceTags.md).
-
-[^1]: This is only true for the Glean JavaScript SDK at the moment. For the other SDKs this
-header is overwritten with the value that is described on the `X-Telemetry-Agent` header section.
-However, this feature will be implemented soon on all SDKs.
-Follow [Bug 1711928](https://bugzilla.mozilla.org/show_bug.cgi?id=1711928) for updates.
