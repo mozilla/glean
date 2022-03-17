@@ -8,7 +8,7 @@ This ping is intended to provide metrics that are managed by the Glean SDKs them
 
 | SDK | Kotlin | Swift | Python | Rust | JavaScript | Firefox Desktop |
 |-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| [`baseline` ping](baseline.md) | ✅ | ✅ | | ✅ | | ✅ |
+| [`baseline` ping](baseline.md) | ✅ | ✅ | ❌ | ✅ | ❌ | ✅ |
 
 ## Scheduling
 
