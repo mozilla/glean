@@ -1544,4 +1544,28 @@ mod test {
             _ => panic!("Expected upload manager to return a wait task!"),
         };
     }
+
+    #[test]
+    fn cannot_enqueue_ping_while_its_being_processed() {
+        let (glean, dir) = new_glean(None);
+
+        let upload_manager = PingUploadManager::no_policy(dir.path());
+
+        // Enqueue a ping and start processing it
+        let identifier = &Uuid::new_v4().to_string();
+        upload_manager.enqueue_ping(&glean, &identifier, PATH, "", None);
+        assert!(upload_manager.get_upload_task(&glean, false).is_upload());
+
+        // Attempt to re-enqueue the same ping
+        upload_manager.enqueue_ping(&glean, &identifier, PATH, "", None);
+
+        // No new pings should have been enqueued so the upload task is Done.
+        assert_eq!(
+            upload_manager.get_upload_task(&glean, false),
+            PingUploadTask::Done
+        );
+
+        // Process the upload response
+        upload_manager.process_ping_upload_response(&glean, &identifier, HttpStatus(200));
+    }
 }
