@@ -89,6 +89,10 @@ func resetGleanDiscardingInitialPings(testCase: XCTestCase, tag: String, clearSt
     testCase.waitForExpectations(timeout: 5.0) { error in
         XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
     }
+
+    // In case this isn't the first test, there might be pending operations.
+    // We wait for them to finish, so they don't clutter the next tests.
+    Dispatchers.shared.serialOperationQueue.waitUntilAllOperationsAreFinished()
 }
 
 func tearDownStubs() {
