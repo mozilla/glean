@@ -51,7 +51,7 @@ impl EventMetric {
     ///             Keys must be one of the allowed extra keys.
     ///             If any key is not allowed, an error is reported and no event is recorded.
     pub fn record(&self, extra: HashMap<String, String>) {
-        let timestamp = time::precise_time_ns();
+        let timestamp = crate::get_timestamp_ms();
         self.record_with_time(timestamp, extra);
     }
 
@@ -61,6 +61,7 @@ impl EventMetric {
     ///
     /// # Arguments
     ///
+    /// * `timestamp` - The event timestamp, in milliseconds.
     /// * `extra` - A [`HashMap`] of `(key, value)` pairs.
     ///             Keys must be one of the allowed extra keys.
     ///             If any key is not allowed, an error is reported and no event is recorded.
