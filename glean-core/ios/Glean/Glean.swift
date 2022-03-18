@@ -381,6 +381,14 @@ public class Glean {
                            uploadEnabled: Bool = true) {
         // Init Glean.
         testDestroyGleanHandle(clearStores)
+
+        // If Glean was not initialized we can't ask it to delete its data.
+        // But we can go as far as simply removing all files.
+        if clearStores {
+            let dataPath = getGleanDirectory()
+            try! FileManager.default.removeItem(at: dataPath)
+        }
+
         // Enable test mode.
         enableTestingMode()
         // Enable ping logging for all tests
