@@ -67,9 +67,9 @@ network::http_connections.add(1);
   #include "mozilla/glean/GleanMetrics.h"
 
   if (aHadError) {
-    mozilla::glean::network::http_connection_error.add_to_numerator(1);
+    mozilla::glean::network::http_connection_error.AddToNumerator(1);
   }
-  mozilla::glean::network::http_connection_error.add_to_denominator(1);
+  mozilla::glean::network::http_connection_error.AddToDenominator(1);
   ```
 
   **JavaScript**
