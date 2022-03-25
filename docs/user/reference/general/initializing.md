@@ -64,6 +64,9 @@ Below are listed the configuration options available on most SDKs.
 - `appDisplayVersion`: The user visible version string for the application running Glean. If not present, `app_display_version` will be reported as "Unknown" on all pings [`client_info`](../../user/pings/index.html#the-client_info-section) section.
 - `serverEndpoint`: The server pings are sent to. Defaults to `https://incoming.telemetry.mozilla.org`.
 - `maxEvents`: The maximum number of events the Glean storage will hold on to before submitting the 'events' ping. Defaults to 500. Refer to the [`events` ping documentation](../../user/pings/events.md) for more information on its scheduling.
+- `httpUploader`: A custom HTTP uploader instance, that will overwrite Glean's provided uploader. Useful
+for users that wish to use specific uploader implementations. See [Custom Uploaders](#custom-uploaders)
+for more information on how and when the use this feature.
 
 To learn about SDK specific configuration options available, refer to the [Reference](#reference) section.
 
@@ -251,6 +254,70 @@ Glean.initialize(
 </div>
 
 <div data-lang="Firefox Desktop" class="tab" data-info="On Firefox Desktop Glean initialization is handled internally."></div>
+
+{{#include ../../../shared/tab_footer.md}}
+
+### Custom Uploaders
+
+A custom HTTP uploader may be provided at initialization time in order to overwrite Glean's
+native ping uploader implementation. Each SDK exposes a base class for Glean users to extend
+into their own custom uploaders.
+
+{{#include ../../../shared/tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
+
+See [`BaseUploader`](https://github.com/mozilla/glean/blob/main/glean-core/android/src/main/java/mozilla/telemetry/glean/net/BaseUploader.kt)
+for details on how to implement a custom upload on Kotlin.
+
+</div>
+<div data-lang="Swift" class="tab">
+
+See [`HttpPingUploader`](../../../swift/Classes/HttpPingUploader.html)
+for details on how to implement a custom upload on Swift.
+
+</div>
+<div data-lang="Python" class="tab">
+
+See [`BaseUploader`](../../../python/glean/net/base_uploader.html#glean.net.base_uploader.BaseUploader)
+for details on how to implement a custom upload on Python.
+
+</div>
+<div data-lang="Rust" class="tab">
+
+See [`PingUploader`](../../../docs/glean/net/trait.PingUploader.html)
+for details on how to implement a custom upload on Rust.
+
+</div>
+<div data-lang="JavaScript" class="tab">
+
+```ts
+import { Uploader, UploadResult, UploadResultStatus } from "@mozilla/glean/uploader";
+import Glean from "@mozilla/glean/<platform>";
+
+/**
+ * My custom uploader implementation
+ */
+export class MyCustomUploader extends Uploader {
+  async post(url: string, body: string, headers): Promise<UploadResult> {
+    // My custom POST request code
+  }
+}
+
+Glean.initialize(
+    "my-app-id",
+    // Here, `isTelemetryEnabled` is a method to get user preferences specific to
+    // your application, and not part of the Glean API.
+    isTelemetryEnabled(),
+    {
+      httpClient: new MyCustomUploader()
+    }
+);
+```
+
+</div>
+
+<div data-lang="Firefox Desktop" class="tab"></div>
 
 {{#include ../../../shared/tab_footer.md}}
 
