@@ -181,7 +181,7 @@ class MetricsPingScheduler {
         startupPing: Bool = false,
         reason: GleanMetrics.Pings.MetricsReasonCodes
     ) {
-        let reasonString = GleanMetrics.Pings.shared.metrics.reasonCodes[reason.rawValue]
+        let reasonString = GleanMetrics.Pings.metrics.reasonCodes[reason.rawValue]
         logger.info("Collecting the 'metrics' ping, now = \(now), startup = \(startupPing), reason = \(reasonString)")
         if startupPing {
             // **IMPORTANT**
@@ -195,7 +195,7 @@ class MetricsPingScheduler {
             // of text. *
             Glean.shared.submitPingByNameSync(pingName: "metrics", reason: reasonString)
         } else {
-            GleanMetrics.Pings.shared.metrics.submit(reason: reason)
+            GleanMetrics.Pings.metrics.submit(reason: reason)
         }
         // Update the collection date: we don't really care if we have data or not, let's
         // always update the sent date.

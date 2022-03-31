@@ -152,9 +152,9 @@ public class Glean {
             // Unfortunately we need to manually list them here to guarantee they are registered synchronously
             // before we need them.
             // We don't need to handle the deletion-request ping. It's never touched from the language implementation.
-            glean_register_ping_type(Pings.shared.baseline.handle)
-            glean_register_ping_type(Pings.shared.metrics.handle)
-            glean_register_ping_type(Pings.shared.events.handle)
+            glean_register_ping_type(Pings.baseline.handle)
+            glean_register_ping_type(Pings.metrics.handle)
+            glean_register_ping_type(Pings.events.handle)
 
             // If any pings were registered before initializing, do so now
             for ping in self.pingTypeQueue {
