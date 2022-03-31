@@ -30,7 +30,7 @@ __author__ = "The Glean Team"
 __email__ = "glean-team@mozilla.com"
 
 
-GLEAN_PARSER_VERSION = "5.0.1"
+GLEAN_PARSER_VERSION = "5.1.1"
 
 
 if glean_parser.__version__ != GLEAN_PARSER_VERSION:
