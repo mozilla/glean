@@ -6,21 +6,21 @@ package mozilla.telemetry.glean.scheduler
 
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.getContext
 import mozilla.telemetry.glean.getMockWebServer
 import mozilla.telemetry.glean.getWorkerStatus
-import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.resetGlean
-import java.io.File
 import mozilla.telemetry.glean.testing.GleanTestRule
 import mozilla.telemetry.glean.triggerWorkManager
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.io.File
 import java.util.concurrent.TimeUnit
 
 /**
@@ -60,9 +60,13 @@ class DeletionPingTest {
         val server = getMockWebServer()
         val context = getContext()
 
-        resetGlean(context, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port
-        ), clearStores = true, uploadEnabled = false)
+        resetGlean(
+            context,
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port
+            ),
+            clearStores = true, uploadEnabled = false
+        )
         triggerWorkManager(context)
 
         val request = server.takeRequest(2L, TimeUnit.SECONDS)!!
@@ -75,9 +79,13 @@ class DeletionPingTest {
         val server = getMockWebServer()
         val context = getContext()
 
-        resetGlean(context, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port
-        ), clearStores = true, uploadEnabled = true)
+        resetGlean(
+            context,
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port
+            ),
+            clearStores = true, uploadEnabled = true
+        )
 
         // Get directory for pending deletion-request pings
         val pendingDeletionRequestDir = File(Glean.getDataDir(), DELETION_PING_DIR)
@@ -129,9 +137,13 @@ class DeletionPingTest {
         val server = getMockWebServer()
         val context = getContext()
 
-        resetGlean(context, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port
-        ), clearStores = true, uploadEnabled = false)
+        resetGlean(
+            context,
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port
+            ),
+            clearStores = true, uploadEnabled = false
+        )
         triggerWorkManager(context)
 
         var request = server.takeRequest(20L, TimeUnit.SECONDS)!!

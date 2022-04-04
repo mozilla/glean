@@ -12,7 +12,6 @@ package mozilla.telemetry.glean.private
 
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import mozilla.telemetry.glean.testing.ErrorType
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -23,7 +22,6 @@ import org.junit.runner.RunWith
 import java.util.Calendar
 import java.util.Date
 import java.util.TimeZone
-import java.util.concurrent.TimeUnit as AndroidTimeUnit
 
 const val MILLIS_PER_SEC = 1000L
 private fun Date.asSeconds() = time / MILLIS_PER_SEC
@@ -37,13 +35,15 @@ class DatetimeMetricTypeTest {
     @Test
     fun `The API saves to its storage engine`() {
         // Define a 'datetimeMetric' datetime metric, which will be stored in "store1"
-        val datetimeMetric = DatetimeMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "datetime_metric",
-            sendInPings = listOf("store1")
-        ))
+        val datetimeMetric = DatetimeMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "datetime_metric",
+                sendInPings = listOf("store1")
+            )
+        )
 
         val value = Calendar.getInstance()
         value.set(2004, 11, 9, 8, 3, 29)
@@ -83,13 +83,15 @@ class DatetimeMetricTypeTest {
     fun `disabled datetimes must not record data`() {
         // Define a 'datetimeMetric' datetime metric, which will be stored in "store1". It's disabled
         // so it should not record anything.
-        val datetimeMetric = DatetimeMetricType(CommonMetricData(
-            disabled = true,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "datetimeMetric",
-            sendInPings = listOf("store1")
-        ))
+        val datetimeMetric = DatetimeMetricType(
+            CommonMetricData(
+                disabled = true,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "datetimeMetric",
+                sendInPings = listOf("store1")
+            )
+        )
 
         // Attempt to store the datetime.
         datetimeMetric.set()
@@ -101,13 +103,16 @@ class DatetimeMetricTypeTest {
         // This test is adopted from `SyncTelemetryTest.kt` in android-components.
         // Previously we failed to properly deal with DST when converting from `Calendar` into its pieces.
 
-        val datetimeMetric = DatetimeMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.PING,
-            name = "datetimeMetric",
-            sendInPings = listOf("store1"),
-        ), timeUnit = TimeUnit.MILLISECOND)
+        val datetimeMetric = DatetimeMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.PING,
+                name = "datetimeMetric",
+                sendInPings = listOf("store1"),
+            ),
+            timeUnit = TimeUnit.MILLISECOND
+        )
 
         val nowDate = Date()
         val now = nowDate.asSeconds()

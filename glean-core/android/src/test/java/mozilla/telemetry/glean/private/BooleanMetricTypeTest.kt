@@ -13,9 +13,9 @@ package mozilla.telemetry.glean.private
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import mozilla.telemetry.glean.testing.GleanTestRule
-import org.junit.Assert.assertTrue
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -29,13 +29,15 @@ class BooleanMetricTypeTest {
     @Test
     fun `The API saves to its storage engine`() {
         // Define a 'booleanMetric' boolean metric, which will be stored in "store1"
-        val booleanMetric = BooleanMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "boolean_metric",
-            sendInPings = listOf("store1")
-        ))
+        val booleanMetric = BooleanMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "boolean_metric",
+                sendInPings = listOf("store1")
+            )
+        )
 
         // Record two booleans of the same type, with a little delay.
         booleanMetric.set(true)
@@ -53,13 +55,15 @@ class BooleanMetricTypeTest {
     fun `disabled booleans must not record data`() {
         // Define a 'booleanMetric' boolean metric, which will be stored in "store1". It's disabled
         // so it should not record anything.
-        val booleanMetric = BooleanMetricType(CommonMetricData(
-            disabled = true,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "booleanMetric",
-            sendInPings = listOf("store1")
-        ))
+        val booleanMetric = BooleanMetricType(
+            CommonMetricData(
+                disabled = true,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "booleanMetric",
+                sendInPings = listOf("store1")
+            )
+        )
 
         // Attempt to store the boolean.
         booleanMetric.set(true)
@@ -71,26 +75,30 @@ class BooleanMetricTypeTest {
     fun `testGetValue() throws NullPointerException if nothing is stored`() {
         // Define a 'booleanMetric' boolean metric to have an instance to call
         // testGetValue() on
-        val booleanMetric = BooleanMetricType(CommonMetricData(
-            disabled = true,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "booleanMetric",
-            sendInPings = listOf("store1")
-        ))
+        val booleanMetric = BooleanMetricType(
+            CommonMetricData(
+                disabled = true,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "booleanMetric",
+                sendInPings = listOf("store1")
+            )
+        )
         assertNull(booleanMetric.testGetValue())
     }
 
     @Test
     fun `The API saves to secondary pings`() {
         // Define a 'booleanMetric' boolean metric, which will be stored in "store1" and "store2"
-        val booleanMetric = BooleanMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "boolean_metric",
-            sendInPings = listOf("store1", "store2")
-        ))
+        val booleanMetric = BooleanMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "boolean_metric",
+                sendInPings = listOf("store1", "store2")
+            )
+        )
 
         // Record two booleans of the same type, with a little delay.
         booleanMetric.set(true)

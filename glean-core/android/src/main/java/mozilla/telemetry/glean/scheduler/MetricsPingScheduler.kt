@@ -6,16 +6,16 @@ package mozilla.telemetry.glean.scheduler
 
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.annotation.VisibleForTesting
 import android.text.format.DateUtils
 import android.util.Log
-import mozilla.telemetry.glean.Glean
-import mozilla.telemetry.glean.internal.gleanSubmitPingByNameSync
+import androidx.annotation.VisibleForTesting
 import mozilla.telemetry.glean.BuildInfo
+import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.GleanMetrics.Pings
+import mozilla.telemetry.glean.internal.gleanSubmitPingByNameSync
+import mozilla.telemetry.glean.private.TimeUnit
 import mozilla.telemetry.glean.utils.getISOTimeString
 import mozilla.telemetry.glean.utils.parseISOTimeString
-import mozilla.telemetry.glean.private.TimeUnit
 import java.util.Calendar
 import java.util.Date
 import java.util.Timer
@@ -72,8 +72,7 @@ internal class MetricsPingScheduler(
      *
      * @return the `Date` as a `String` or `<buggy Android 8>` if running on a buggy OS.
      */
-    internal fun safeDateToString(date: Date): String
-    {
+    internal fun safeDateToString(date: Date): String {
         // Work around a bug in Android 8 devices (SDK=25). See this platform issue
         // https://issuetracker.google.com/issues/110848122 . Unfortunately there isn't much
         // we could do, but since this is just a log message, we can simply add a placeholder

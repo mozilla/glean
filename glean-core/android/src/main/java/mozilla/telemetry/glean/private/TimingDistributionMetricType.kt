@@ -4,7 +4,6 @@
 
 package mozilla.telemetry.glean.private
 
-import android.os.SystemClock
 import androidx.annotation.VisibleForTesting
 import mozilla.telemetry.glean.internal.TimingDistributionMetric
 import mozilla.telemetry.glean.testing.ErrorType

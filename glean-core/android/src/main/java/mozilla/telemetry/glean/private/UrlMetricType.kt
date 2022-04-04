@@ -22,4 +22,3 @@ typealias UrlMetricType = mozilla.telemetry.glean.internal.UrlMetric
 fun UrlMetricType.testHasValue(pingName: String? = null): Boolean {
     return this.testGetValue(pingName) != null
 }
-

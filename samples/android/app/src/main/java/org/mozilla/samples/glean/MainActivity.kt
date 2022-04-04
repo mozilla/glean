@@ -8,8 +8,8 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import mozilla.telemetry.glean.Glean
-import org.mozilla.samples.gleancore.GleanMetrics.Test
 import org.mozilla.samples.gleancore.GleanMetrics.BrowserEngagement
+import org.mozilla.samples.gleancore.GleanMetrics.Test
 
 open class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,10 +44,12 @@ open class MainActivity : AppCompatActivity() {
 
             // Testing the old API. It should still be possible, even if deprecated
             @Suppress("DEPRECATION")
-            BrowserEngagement.oldEventStyle.record(mapOf(
-                BrowserEngagement.oldEventStyleKeys.key1 to "extra_value1",
-                BrowserEngagement.oldEventStyleKeys.key2 to "extra_value2"
-            ))
+            BrowserEngagement.oldEventStyle.record(
+                mapOf(
+                    BrowserEngagement.oldEventStyleKeys.key1 to "extra_value1",
+                    BrowserEngagement.oldEventStyleKeys.key2 to "extra_value2"
+                )
+            )
         }
 
         uploadSwitch.setOnCheckedChangeListener { _, isChecked ->

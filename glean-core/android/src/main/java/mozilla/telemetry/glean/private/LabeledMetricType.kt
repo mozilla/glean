@@ -41,10 +41,10 @@ class LabeledMetricType<T>(
             name = name,
             sendInPings = sendInPings,
             disabled = disabled,
-            lifetime = lifetime,
+            lifetime = lifetime
         )
 
-        this.inner  = when (subMetric) {
+        this.inner = when (subMetric) {
             is CounterMetricType -> LabeledCounter(meta, labels?.toList())
             is BooleanMetricType -> LabeledBoolean(meta, labels?.toList())
             is StringMetricType -> LabeledString(meta, labels?.toList())

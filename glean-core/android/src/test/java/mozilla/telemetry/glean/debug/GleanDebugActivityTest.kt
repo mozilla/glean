@@ -5,37 +5,37 @@
 package mozilla.telemetry.glean.debug
 
 import android.content.Context
-import org.junit.Test
-import org.junit.runner.RunWith
 import android.content.Intent
+import android.content.pm.ActivityInfo
+import android.content.pm.ResolveInfo
+import androidx.test.core.app.ActivityScenario.launch
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.config.Configuration
+import mozilla.telemetry.glean.getMockWebServer
+import mozilla.telemetry.glean.net.HeadersList
+import mozilla.telemetry.glean.net.HttpStatus
+import mozilla.telemetry.glean.net.PingUploader
+import mozilla.telemetry.glean.net.UploadResult
+import mozilla.telemetry.glean.private.BooleanMetricType
+import mozilla.telemetry.glean.private.CommonMetricData
+import mozilla.telemetry.glean.private.Lifetime
+import mozilla.telemetry.glean.private.NoReasonCodes
+import mozilla.telemetry.glean.private.PingType
+import mozilla.telemetry.glean.private.testHasValue
+import mozilla.telemetry.glean.resetGlean
+import mozilla.telemetry.glean.testing.GleanTestRule
+import mozilla.telemetry.glean.triggerWorkManager
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Ignore
-import android.content.pm.ActivityInfo
-import android.content.pm.ResolveInfo
-import androidx.test.core.app.ActivityScenario.launch
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import mozilla.telemetry.glean.private.BooleanMetricType
-import mozilla.telemetry.glean.private.CommonMetricData
-import mozilla.telemetry.glean.private.Lifetime
-import mozilla.telemetry.glean.private.testHasValue
-import mozilla.telemetry.glean.resetGlean
-import mozilla.telemetry.glean.triggerWorkManager
-import mozilla.telemetry.glean.getMockWebServer
-import mozilla.telemetry.glean.net.HeadersList
-import mozilla.telemetry.glean.net.PingUploader
-import mozilla.telemetry.glean.net.UploadResult
-import mozilla.telemetry.glean.net.HttpStatus
-import mozilla.telemetry.glean.private.NoReasonCodes
-import mozilla.telemetry.glean.private.PingType
-import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
 import java.util.concurrent.TimeUnit
 
@@ -48,15 +48,21 @@ private class TestPingTagClient(
     private val sourceTagsValue: Set<String>? = null
 ) : PingUploader {
     override fun upload(url: String, data: ByteArray, headers: HeadersList): UploadResult {
-        assertTrue("URL must be redirected for tagged pings",
-            url.startsWith(responseUrl))
+        assertTrue(
+            "URL must be redirected for tagged pings",
+            url.startsWith(responseUrl)
+        )
         debugHeaderValue?.let {
-            assertEquals("The debug view header must match what the ping tag was set to",
-                debugHeaderValue, headers.get("X-Debug-ID")!!)
+            assertEquals(
+                "The debug view header must match what the ping tag was set to",
+                debugHeaderValue, headers.get("X-Debug-ID")!!
+            )
         }
         sourceTagsValue?.let {
-            assertEquals("The source tags header must match what the ping tag was set to",
-                sourceTagsValue.joinToString(","), headers.get("X-Source-Tags")!!)
+            assertEquals(
+                "The source tags header must match what the ping tag was set to",
+                sourceTagsValue.joinToString(","), headers.get("X-Source-Tags")!!
+            )
         }
 
         return HttpStatus(200)
@@ -107,8 +113,10 @@ class GleanDebugActivityTest {
     @Test
     fun `the main activity is correctly started and intent args are propagated`() {
         // Build the intent that will call our debug activity, with no extra.
-        val intent = Intent(ApplicationProvider.getApplicationContext<Context>(),
-            GleanDebugActivity::class.java)
+        val intent = Intent(
+            ApplicationProvider.getApplicationContext<Context>(),
+            GleanDebugActivity::class.java
+        )
         // Add at least an option, otherwise the activity will be removed.
         intent.putExtra(GleanDebugActivity.LOG_PINGS_EXTRA_KEY, true)
         intent.putExtra("TestOptionFromCLI", "TestValue")
@@ -129,26 +137,33 @@ class GleanDebugActivityTest {
         val server = getMockWebServer()
 
         val context = ApplicationProvider.getApplicationContext<Context>()
-        resetGlean(context, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port
-        ))
+        resetGlean(
+            context,
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port
+            )
+        )
 
         // Put some metric data in the store, otherwise we won't get a ping out
         // Define a 'booleanMetric' boolean metric, which will be stored in "store1"
-        val booleanMetric = BooleanMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "boolean_metric",
-            sendInPings = listOf("metrics")
-        ))
+        val booleanMetric = BooleanMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "boolean_metric",
+                sendInPings = listOf("metrics")
+            )
+        )
 
         booleanMetric.set(true)
         assertTrue(booleanMetric.testHasValue())
 
         // Set the extra values and start the intent.
-        val intent = Intent(ApplicationProvider.getApplicationContext<Context>(),
-        GleanDebugActivity::class.java)
+        val intent = Intent(
+            ApplicationProvider.getApplicationContext<Context>(),
+            GleanDebugActivity::class.java
+        )
         intent.putExtra(GleanDebugActivity.SEND_PING_EXTRA_KEY, "metrics")
         launch<GleanDebugActivity>(intent)
 
@@ -174,34 +189,43 @@ class GleanDebugActivityTest {
         val server = getMockWebServer()
 
         val context = ApplicationProvider.getApplicationContext<Context>()
-        resetGlean(context, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port
-        ))
+        resetGlean(
+            context,
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port
+            )
+        )
 
         // Put some metric data in the store, otherwise we won't get a ping out
         // Define a 'booleanMetric' boolean metric, which will be stored in "store1"
-        val booleanMetric = BooleanMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "boolean_metric",
-            sendInPings = listOf("metrics")
-        ))
+        val booleanMetric = BooleanMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "boolean_metric",
+                sendInPings = listOf("metrics")
+            )
+        )
 
         booleanMetric.set(true)
         assertTrue(booleanMetric.testHasValue())
 
         // Set the extra values and start the intent.
-        val intent = Intent(ApplicationProvider.getApplicationContext<Context>(),
-            GleanDebugActivity::class.java)
+        val intent = Intent(
+            ApplicationProvider.getApplicationContext<Context>(),
+            GleanDebugActivity::class.java
+        )
         intent.putExtra(GleanDebugActivity.SEND_PING_EXTRA_KEY, "metrics")
         intent.putExtra(GleanDebugActivity.TAG_DEBUG_VIEW_EXTRA_KEY, "inv@lid_id")
         launch<GleanDebugActivity>(intent)
 
         // Since a bad tag ID results in resetting the endpoint to the default, verify that
         // has happened.
-        assertEquals("Server endpoint must be reset if tag didn't pass regex",
-            "http://" + server.hostName + ":" + server.port, Glean.configuration.serverEndpoint)
+        assertEquals(
+            "Server endpoint must be reset if tag didn't pass regex",
+            "http://" + server.hostName + ":" + server.port, Glean.configuration.serverEndpoint
+        )
 
         triggerWorkManager(context)
         val request = server.takeRequest(10L, TimeUnit.SECONDS)!!
@@ -224,9 +248,12 @@ class GleanDebugActivityTest {
 
         // Use the test client in the Glean configuration
         val context = ApplicationProvider.getApplicationContext<Context>()
-        resetGlean(context, Glean.configuration.copy(
+        resetGlean(
+            context,
+            Glean.configuration.copy(
                 httpClient = TestPingTagClient(sourceTagsValue = testTags)
-        ))
+            )
+        )
 
         // Create a custom ping for testing. Since we're testing headers,
         // it's fine for this to be empty.
@@ -238,8 +265,10 @@ class GleanDebugActivityTest {
         )
 
         // Set the extra values and start the intent.
-        val intent = Intent(ApplicationProvider.getApplicationContext<Context>(),
-                GleanDebugActivity::class.java)
+        val intent = Intent(
+            ApplicationProvider.getApplicationContext<Context>(),
+            GleanDebugActivity::class.java
+        )
         intent.putExtra(GleanDebugActivity.SEND_PING_EXTRA_KEY, "metrics")
         intent.putExtra(GleanDebugActivity.SOURCE_TAGS_KEY, testTags.toTypedArray())
         launch<GleanDebugActivity>(intent)
@@ -254,8 +283,10 @@ class GleanDebugActivityTest {
     @Test
     fun `a custom activity is correctly started`() {
         // Build the intent that will call our debug activity, with no extra.
-        val intent = Intent(ApplicationProvider.getApplicationContext<Context>(),
-            GleanDebugActivity::class.java)
+        val intent = Intent(
+            ApplicationProvider.getApplicationContext<Context>(),
+            GleanDebugActivity::class.java
+        )
         // Add at least an option, otherwise the activity will be removed.
         intent.putExtra(GleanDebugActivity.NEXT_ACTIVITY_TO_RUN, "OtherActivity")
         intent.putExtra("TestOptionFromCLI", "TestValue")
@@ -275,8 +306,10 @@ class GleanDebugActivityTest {
     @Test
     fun `non-exported activity is not started`() {
         // Build the intent that will call our debug activity, with no extra.
-        val intent = Intent(ApplicationProvider.getApplicationContext<Context>(),
-            GleanDebugActivity::class.java)
+        val intent = Intent(
+            ApplicationProvider.getApplicationContext<Context>(),
+            GleanDebugActivity::class.java
+        )
         // Add at least an option, otherwise the activity will be removed.
         intent.putExtra(GleanDebugActivity.NEXT_ACTIVITY_TO_RUN, "HiddenActivity")
         // Start the activity through our intent.

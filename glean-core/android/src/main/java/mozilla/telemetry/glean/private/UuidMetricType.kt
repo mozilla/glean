@@ -5,8 +5,8 @@
 package mozilla.telemetry.glean.private
 
 import androidx.annotation.VisibleForTesting
-import java.util.UUID
 import mozilla.telemetry.glean.internal.UuidMetric
+import java.util.UUID
 
 /**
  * This implements the developer facing API for recording UUID metrics.

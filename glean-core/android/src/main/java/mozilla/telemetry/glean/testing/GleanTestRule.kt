@@ -8,12 +8,12 @@ import android.content.Context
 import android.os.SystemClock
 import androidx.annotation.VisibleForTesting
 import androidx.work.testing.WorkManagerTestInitHelper
+import mozilla.telemetry.glean.BuildInfo
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.config.Configuration
+import mozilla.telemetry.glean.private.TimeUnit
 import mozilla.telemetry.glean.scheduler.MetricsPingScheduler
 import mozilla.telemetry.glean.utils.getISOTimeString
-import mozilla.telemetry.glean.BuildInfo
-import mozilla.telemetry.glean.private.TimeUnit
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 import java.util.Calendar

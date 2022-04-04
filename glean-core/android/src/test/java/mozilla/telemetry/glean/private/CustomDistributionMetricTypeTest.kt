@@ -11,8 +11,8 @@ import mozilla.telemetry.glean.testing.ErrorType
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -29,13 +29,14 @@ class CustomDistributionMetricTypeTest {
     @Test
     fun `The API saves to its storage engine`() {
         // Define a custom distribution metric which will be stored in "store1"
-        val metric = CustomDistributionMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.PING,
-            name = "custom_distribution",
-            sendInPings = listOf("store1"),
-        ),
+        val metric = CustomDistributionMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.PING,
+                name = "custom_distribution",
+                sendInPings = listOf("store1"),
+            ),
             rangeMin = 0L,
             rangeMax = 60000L,
             bucketCount = 100,
@@ -64,13 +65,14 @@ class CustomDistributionMetricTypeTest {
     fun `disabled custom distributions must not record data`() {
         // Define a custom distribution metric which will be stored in "store1"
         // It's disabled so it should not record anything.
-        val metric = CustomDistributionMetricType(CommonMetricData(
-            disabled = true,
-            category = "telemetry",
-            lifetime = Lifetime.PING,
-            name = "custom_distribution",
-            sendInPings = listOf("store1"),
-        ),
+        val metric = CustomDistributionMetricType(
+            CommonMetricData(
+                disabled = true,
+                category = "telemetry",
+                lifetime = Lifetime.PING,
+                name = "custom_distribution",
+                sendInPings = listOf("store1"),
+            ),
             rangeMin = 0L,
             rangeMax = 60000L,
             bucketCount = 100,
@@ -81,20 +83,23 @@ class CustomDistributionMetricTypeTest {
         metric.accumulateSamples(listOf(0L))
 
         // Check that nothing was recorded.
-        assertFalse("Disabled CustomDistributions should not record data.",
-            metric.testHasValue())
+        assertFalse(
+            "Disabled CustomDistributions should not record data.",
+            metric.testHasValue()
+        )
     }
 
     @Test
     fun `testGetValue() throws NullPointerException if nothing is stored`() {
         // Define a custom distribution metric which will be stored in "store1"
-        val metric = CustomDistributionMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.PING,
-            name = "custom_distribution",
-            sendInPings = listOf("store1"),
-        ),
+        val metric = CustomDistributionMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.PING,
+                name = "custom_distribution",
+                sendInPings = listOf("store1"),
+            ),
             rangeMin = 0L,
             rangeMax = 60000L,
             bucketCount = 100,
@@ -106,13 +111,14 @@ class CustomDistributionMetricTypeTest {
     @Test
     fun `The API saves to secondary pings`() {
         // Define a custom distribution metric which will be stored in multiple stores
-        val metric = CustomDistributionMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.PING,
-            name = "custom_distribution",
-            sendInPings = listOf("store1", "store2", "store3"),
-        ),
+        val metric = CustomDistributionMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.PING,
+                name = "custom_distribution",
+                sendInPings = listOf("store1", "store2", "store3"),
+            ),
             rangeMin = 0L,
             rangeMax = 60000L,
             bucketCount = 100,
@@ -150,13 +156,14 @@ class CustomDistributionMetricTypeTest {
     @Test
     fun `The accumulateSamples API correctly stores values`() {
         // Define a custom distribution metric which will be stored in multiple stores
-        val metric = CustomDistributionMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.PING,
-            name = "custom_distribution_samples",
-            sendInPings = listOf("store1"),
-        ),
+        val metric = CustomDistributionMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.PING,
+                name = "custom_distribution_samples",
+                sendInPings = listOf("store1"),
+            ),
             rangeMin = 0L,
             rangeMax = 60000L,
             bucketCount = 100,
@@ -183,13 +190,14 @@ class CustomDistributionMetricTypeTest {
     @Test
     fun `Accumulating negative values records an error`() {
         // Define a custom distribution metric which will be stored in multiple stores
-        val metric = CustomDistributionMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.PING,
-            name = "custom_distribution_samples",
-            sendInPings = listOf("store1"),
-        ),
+        val metric = CustomDistributionMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.PING,
+                name = "custom_distribution_samples",
+                sendInPings = listOf("store1"),
+            ),
             rangeMin = 0L,
             rangeMax = 60000L,
             bucketCount = 100,

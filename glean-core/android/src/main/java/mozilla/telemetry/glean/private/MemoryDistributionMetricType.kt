@@ -21,7 +21,7 @@ class MemoryDistributionMetricType(meta: CommonMetricData, memoryUnit: MemoryUni
      * Delegate common methods to the underlying type directly.
      */
 
-    fun accumulate(sample: Long ) = inner.accumulate(sample)
+    fun accumulate(sample: Long) = inner.accumulate(sample)
 
     override fun accumulateSamples(samples: List<Long>) = inner.accumulateSamples(samples)
 

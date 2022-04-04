@@ -5,10 +5,10 @@
 package mozilla.telemetry.glean.private
 
 import androidx.annotation.VisibleForTesting
+import mozilla.telemetry.glean.internal.DatetimeMetric
 import java.util.Calendar
 import java.util.Date
 import java.util.concurrent.TimeUnit as AndroidTimeUnit
-import mozilla.telemetry.glean.internal.DatetimeMetric
 
 /**
  * This implements the developer facing API for recording datetime metrics.
@@ -62,7 +62,7 @@ class DatetimeMetricType(meta: CommonMetricData, timeUnit: TimeUnit = TimeUnit.M
             val cal = Calendar.getInstance()
             cal.set(Calendar.ZONE_OFFSET, AndroidTimeUnit.SECONDS.toMillis(dt.offsetSeconds.toLong()).toInt())
             cal.set(Calendar.YEAR, dt.year.toInt())
-            cal.set(Calendar.MONTH, dt.month.toInt()-1) // java.util.calendar's month is 0-based for months
+            cal.set(Calendar.MONTH, dt.month.toInt() - 1) // java.util.calendar's month is 0-based for months
             cal.set(Calendar.DAY_OF_MONTH, dt.day.toInt())
             cal.set(Calendar.HOUR_OF_DAY, dt.hour.toInt())
             cal.set(Calendar.MINUTE, dt.minute.toInt())

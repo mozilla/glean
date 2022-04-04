@@ -5,30 +5,25 @@
 package mozilla.telemetry.glean
 
 import android.app.ActivityManager
-import android.util.Log
 import android.content.Context
 import android.os.Build
 import android.os.Process
+import android.util.Log
 import androidx.annotation.MainThread
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ProcessLifecycleOwner
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-import mozilla.telemetry.glean.GleanMetrics.GleanBaseline
-import mozilla.telemetry.glean.internal.*
 import mozilla.telemetry.glean.config.Configuration
-import mozilla.telemetry.glean.utils.getLocaleTag
-import java.io.File
-import mozilla.telemetry.glean.GleanMetrics.GleanInternalMetrics
-import mozilla.telemetry.glean.GleanMetrics.GleanValidation
-import mozilla.telemetry.glean.GleanMetrics.Pings
+import mozilla.telemetry.glean.internal.* // ktlint-disable no-wildcard-imports
 import mozilla.telemetry.glean.net.BaseUploader
 import mozilla.telemetry.glean.scheduler.GleanLifecycleObserver
-import mozilla.telemetry.glean.scheduler.PingUploadWorker
 import mozilla.telemetry.glean.scheduler.MetricsPingScheduler
+import mozilla.telemetry.glean.scheduler.PingUploadWorker
 import mozilla.telemetry.glean.utils.ThreadUtils
-import org.json.JSONObject
+import mozilla.telemetry.glean.utils.getLocaleTag
+import java.io.File
 
 /**
  * Public exported type identifying individual timers for
@@ -38,9 +33,7 @@ data class GleanTimerId internal constructor(internal val id: Long)
 
 data class BuildInfo(val versionCode: String, val versionName: String)
 
-internal class OnGleanEventsImpl(
-    val glean: GleanInternalAPI,
-) : OnGleanEvents {
+internal class OnGleanEventsImpl(val glean: GleanInternalAPI) : OnGleanEvents {
     override fun onInitializeFinished() {
         // At this point, all metrics and events can be recorded.
         // This should only be called from the main thread. This is enforced by
@@ -76,7 +69,7 @@ internal class OnGleanEventsImpl(
  * This is exposed through the global [Glean] object.
  */
 @Suppress("TooManyFunctions")
-open class GleanInternalAPI internal constructor () {
+open class GleanInternalAPI internal constructor() {
     companion object {
         private const val LOG_TAG: String = "glean/Glean"
         private const val LANGUAGE_BINDING_NAME: String = "Kotlin"
@@ -164,7 +157,6 @@ open class GleanInternalAPI internal constructor () {
         buildInfo: BuildInfo
     ) {
         this.buildInfo = buildInfo
-
 
         // Glean initialization must be called on the main thread, or lifecycle
         // registration may fail. This is also enforced at build time by the
@@ -282,12 +274,12 @@ open class GleanInternalAPI internal constructor () {
     }
 
     /**
-    * Returns the stored data for the requested active experiment, for testing purposes only.
-    *
-    * @param experimentId the id of the experiment to look for.
-    * @return the [RecordedExperiment] for the experiment
-    * @throws [NullPointerException] if the requested experiment is not active or data is corrupt.
-    */
+     * Returns the stored data for the requested active experiment, for testing purposes only.
+     *
+     * @param experimentId the id of the experiment to look for.
+     * @return the [RecordedExperiment] for the experiment
+     * @throws [NullPointerException] if the requested experiment is not active or data is corrupt.
+     */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun testGetExperimentData(experimentId: String): RecordedExperiment {
         return gleanTestGetExperimentData(experimentId) ?: throw NullPointerException("Experiment data is not set")
@@ -332,7 +324,7 @@ open class GleanInternalAPI internal constructor () {
         gleanHandleClientActive()
 
         // TODO: Re-enable when Counter metric is working
-        //GleanValidation.foregroundCount.add(1)
+        // GleanValidation.foregroundCount.add(1)
     }
 
     /**
@@ -501,9 +493,11 @@ open class GleanInternalAPI internal constructor () {
         val pid = Process.myPid()
         val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
 
-        isMainProcess = (activityManager.runningAppProcesses?.any { processInfo ->
-            (processInfo.pid == pid && processInfo.processName == context.packageName)
-        }) ?: false
+        isMainProcess = (
+            activityManager.runningAppProcesses?.any { processInfo ->
+                (processInfo.pid == pid && processInfo.processName == context.packageName)
+            }
+            ) ?: false
 
         return isMainProcess as Boolean
     }

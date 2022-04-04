@@ -6,29 +6,29 @@ package mozilla.telemetry.glean.scheduler
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import mozilla.telemetry.glean.Glean
-import mozilla.telemetry.glean.getPlainBody
+import mozilla.telemetry.glean.delayMetricsPing
 import mozilla.telemetry.glean.getContext
 import mozilla.telemetry.glean.getMockWebServer
+import mozilla.telemetry.glean.getPlainBody
+import mozilla.telemetry.glean.private.CommonMetricData
 import mozilla.telemetry.glean.private.EventMetricType
 import mozilla.telemetry.glean.private.Lifetime
 import mozilla.telemetry.glean.private.NoExtraKeys
 import mozilla.telemetry.glean.private.NoExtras
 import mozilla.telemetry.glean.private.NoReasonCodes
 import mozilla.telemetry.glean.private.PingType
-import mozilla.telemetry.glean.private.CommonMetricData
 import mozilla.telemetry.glean.resetGlean
 import mozilla.telemetry.glean.testing.GleanTestRule
 import mozilla.telemetry.glean.triggerWorkManager
 import mozilla.telemetry.glean.utils.tryGetLong
-import mozilla.telemetry.glean.delayMetricsPing
 import okhttp3.mockwebserver.MockWebServer
+import org.json.JSONObject
+import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.junit.After
-import org.junit.Before
-import org.json.JSONObject
 import java.util.concurrent.TimeUnit
 
 /**
@@ -62,9 +62,13 @@ class CustomPingTest {
         // a smoke test for custom pings
 
         delayMetricsPing(context)
-        resetGlean(context, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port
-        ), clearStores = true, uploadEnabled = true)
+        resetGlean(
+            context,
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port
+            ),
+            clearStores = true, uploadEnabled = true
+        )
 
         // Define a new custom ping inline.
         val customPing = PingType<NoReasonCodes>(
@@ -85,9 +89,13 @@ class CustomPingTest {
     @Test
     fun `multiple pings in one go`() {
         delayMetricsPing(context)
-        resetGlean(context, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port
-        ), clearStores = true, uploadEnabled = true)
+        resetGlean(
+            context,
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port
+            ),
+            clearStores = true, uploadEnabled = true
+        )
 
         // Define a new custom ping inline.
         val customPing = PingType<NoReasonCodes>(
@@ -132,20 +140,27 @@ class CustomPingTest {
     @Suppress("DEPRECATION")
     fun `events for custom pings are flushed at startup`() {
         delayMetricsPing(context)
-        resetGlean(context, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port
-        ), clearStores = true, uploadEnabled = true)
+        resetGlean(
+            context,
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port
+            ),
+            clearStores = true, uploadEnabled = true
+        )
 
         val pingName = "custom-events-1"
 
         // Define a 'click' event
-        val click = EventMetricType<NoExtraKeys, NoExtras>(CommonMetricData(
-            disabled = false,
-            category = "ui",
-            lifetime = Lifetime.PING,
-            name = "click",
-            sendInPings = listOf(pingName),
-        ), allowedExtraKeys = emptyList())
+        val click = EventMetricType<NoExtraKeys, NoExtras>(
+            CommonMetricData(
+                disabled = false,
+                category = "ui",
+                lifetime = Lifetime.PING,
+                name = "click",
+                sendInPings = listOf(pingName),
+            ),
+            allowedExtraKeys = emptyList()
+        )
         // and record it in the currently initialized Glean instance.
         click.record()
 
@@ -164,9 +179,13 @@ class CustomPingTest {
         )
 
         // This is equivalent to a consumer calling `Glean.initialize` at startup
-        resetGlean(context, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port
-        ), clearStores = true, uploadEnabled = true)
+        resetGlean(
+            context,
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port
+            ),
+            clearStores = true, uploadEnabled = true
+        )
 
         // Trigger work manager once.
         // This should launch one worker that handles all pending pings.
