@@ -182,8 +182,11 @@ detekt {
     }
 }
 
-tasks.withType(io.gitlab.arturbosch.detekt.Detekt) {
-    exclude(".*test.*,.*/resources/.*,.*/tmp/.*,.*/build/.*")
+tasks.withType(io.gitlab.arturbosch.detekt.Detekt).configureEach {
+    exclude("**/test/**")
+    exclude("**/resources/**")
+    exclude("**/tmp/**")
+    exclude("**/build/**")
 }
 
 configurations {
