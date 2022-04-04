@@ -15,10 +15,10 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import mozilla.telemetry.glean.Glean
+import mozilla.telemetry.glean.internal.PingUploadTask
 import mozilla.telemetry.glean.internal.gleanGetUploadTask
 import mozilla.telemetry.glean.internal.gleanProcessPingUploadResponse
-import mozilla.telemetry.glean.internal.PingUploadTask
-import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.utils.testFlushWorkManagerJob
 
 /**

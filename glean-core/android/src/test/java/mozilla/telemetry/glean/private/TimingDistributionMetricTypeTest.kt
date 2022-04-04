@@ -7,20 +7,18 @@ package mozilla.telemetry.glean.private
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import java.lang.NullPointerException
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.GleanBuildInfo
 import mozilla.telemetry.glean.testing.ErrorType
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.spy
+import java.lang.NullPointerException
 
 @RunWith(AndroidJUnit4::class)
 class TimingDistributionMetricTypeTest {
@@ -34,13 +32,16 @@ class TimingDistributionMetricTypeTest {
     @Test
     fun `The API saves to its storage engine`() {
         // Define a timing distribution metric which will be stored in "store1"
-        val metric = TimingDistributionMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.PING,
-            name = "timing_distribution",
-            sendInPings = listOf("store1")
-        ), timeUnit = TimeUnit.NANOSECOND)
+        val metric = TimingDistributionMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.PING,
+                name = "timing_distribution",
+                sendInPings = listOf("store1")
+            ),
+            timeUnit = TimeUnit.NANOSECOND
+        )
 
         // Accumulate a few values
         for (i in 1L..3L) {
@@ -54,56 +55,67 @@ class TimingDistributionMetricTypeTest {
         // Check the sum
         assertTrue(snapshot.sum > 0L)
         // Check that the 1L fell into the first bucket (max 1)
-        //assertEquals(1L, snapshot.values[1])
+        // assertEquals(1L, snapshot.values[1])
         // Check that the 2L fell into the second bucket (max 2)
-        //assertEquals(1L, snapshot.values[2])
+        // assertEquals(1L, snapshot.values[2])
         // Check that the 3L fell into the third bucket (max 3)
-        //assertEquals(1L, snapshot.values[3])
+        // assertEquals(1L, snapshot.values[3])
     }
 
     @Test
     fun `disabled timing distributions must not record data`() {
         // Define a timing distribution metric which will be stored in "store1"
         // It's lifetime is set to Lifetime.PING SO IT SHOULD NOT RECORD ANYTHING.
-        val metric = TimingDistributionMetricType(CommonMetricData(
-            disabled = true,
-            category = "telemetry",
-            lifetime = Lifetime.PING,
-            name = "timing_distribution",
-            sendInPings = listOf("store1"),
-        ), timeUnit = TimeUnit.NANOSECOND)
+        val metric = TimingDistributionMetricType(
+            CommonMetricData(
+                disabled = true,
+                category = "telemetry",
+                lifetime = Lifetime.PING,
+                name = "timing_distribution",
+                sendInPings = listOf("store1"),
+            ),
+            timeUnit = TimeUnit.NANOSECOND
+        )
 
         val id = metric.start()
         metric.stopAndAccumulate(id)
 
         // Check that nothing was recorded.
-        assertFalse("Disabled TimingDistributions should not record data.",
-            metric.testHasValue())
+        assertFalse(
+            "Disabled TimingDistributions should not record data.",
+            metric.testHasValue()
+        )
     }
 
     @Test
     fun `testGetValue() throws NullPointerException if nothing is stored`() {
         // Define a timing distribution metric which will be stored in "store1"
-        val metric = TimingDistributionMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.PING,
-            name = "timing_distribution",
-            sendInPings = listOf("store1"),
-        ), timeUnit = TimeUnit.NANOSECOND)
+        val metric = TimingDistributionMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.PING,
+                name = "timing_distribution",
+                sendInPings = listOf("store1"),
+            ),
+            timeUnit = TimeUnit.NANOSECOND
+        )
         assertNull(metric.testGetValue())
     }
 
     @Test
     fun `The API saves to secondary pings`() {
         // Define a timing distribution metric which will be stored in multiple stores
-        val metric = TimingDistributionMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.PING,
-            name = "timing_distribution",
-            sendInPings = listOf("store1", "store2", "store3"),
-        ), timeUnit = TimeUnit.NANOSECOND)
+        val metric = TimingDistributionMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.PING,
+                name = "timing_distribution",
+                sendInPings = listOf("store1", "store2", "store3"),
+            ),
+            timeUnit = TimeUnit.NANOSECOND
+        )
 
         // Accumulate a few values
         for (i in 1L..3L) {
@@ -117,11 +129,11 @@ class TimingDistributionMetricTypeTest {
         // Check the sum
         assertTrue(snapshot.sum > 0)
         // Check that the 1L fell into the first bucket
-        //assertEquals(1L, snapshot.values[1])
+        // assertEquals(1L, snapshot.values[1])
         // Check that the 2L fell into the second bucket
-        //assertEquals(1L, snapshot.values[2])
+        // assertEquals(1L, snapshot.values[2])
         // Check that the 3L fell into the third bucket
-        //assertEquals(1L, snapshot.values[3])
+        // assertEquals(1L, snapshot.values[3])
 
         // Check that data was properly recorded in the third ping.
         assertTrue(metric.testHasValue("store3"))
@@ -129,23 +141,26 @@ class TimingDistributionMetricTypeTest {
         // Check the sum
         assertEquals(snapshot.sum, snapshot2.sum)
         // Check that the 1L fell into the first bucket
-        //assertEquals(1L, snapshot2.values[1])
+        // assertEquals(1L, snapshot2.values[1])
         // Check that the 2L fell into the second bucket
-        //assertEquals(1L, snapshot2.values[2])
+        // assertEquals(1L, snapshot2.values[2])
         // Check that the 3L fell into the third bucket
-        //assertEquals(1L, snapshot2.values[3])
+        // assertEquals(1L, snapshot2.values[3])
     }
 
     @Test
     fun `The accumulateSamples API correctly stores timing values`() {
         // Define a timing distribution metric
-        val metric = TimingDistributionMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.PING,
-            name = "timing_distribution_samples",
-            sendInPings = listOf("store1"),
-        ), timeUnit = TimeUnit.SECOND)
+        val metric = TimingDistributionMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.PING,
+                name = "timing_distribution_samples",
+                sendInPings = listOf("store1"),
+            ),
+            timeUnit = TimeUnit.SECOND
+        )
 
         // Accumulate a few values
         val testSamples = (1L..3L).toList()
@@ -171,13 +186,16 @@ class TimingDistributionMetricTypeTest {
     fun `Starting a timer before initialization doesn't crash`() {
         Glean.testDestroyGleanHandle()
 
-        val metric = TimingDistributionMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.PING,
-            name = "timing_distribution_samples",
-            sendInPings = listOf("store1"),
-        ), timeUnit = TimeUnit.SECOND)
+        val metric = TimingDistributionMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.PING,
+                name = "timing_distribution_samples",
+                sendInPings = listOf("store1"),
+            ),
+            timeUnit = TimeUnit.SECOND
+        )
 
         val timerId = metric.start()
         Glean.initialize(context, true, buildInfo = GleanBuildInfo.buildInfo)
@@ -190,13 +208,16 @@ class TimingDistributionMetricTypeTest {
     fun `Starting and stopping a timer before initialization doesn't crash`() {
         Glean.testDestroyGleanHandle()
 
-        val metric = TimingDistributionMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.PING,
-            name = "timing_distribution_samples",
-            sendInPings = listOf("store1"),
-        ), timeUnit = TimeUnit.SECOND)
+        val metric = TimingDistributionMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.PING,
+                name = "timing_distribution_samples",
+                sendInPings = listOf("store1"),
+            ),
+            timeUnit = TimeUnit.SECOND
+        )
 
         val timerId = metric.start()
         metric.stopAndAccumulate(timerId)
@@ -207,13 +228,16 @@ class TimingDistributionMetricTypeTest {
 
     @Test
     fun `Stopping a non-existent timer records an error`() {
-        val metric = TimingDistributionMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.PING,
-            name = "timing_distribution_samples",
-            sendInPings = listOf("store1"),
-        ), timeUnit = TimeUnit.SECOND)
+        val metric = TimingDistributionMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.PING,
+                name = "timing_distribution_samples",
+                sendInPings = listOf("store1"),
+            ),
+            timeUnit = TimeUnit.SECOND
+        )
 
         metric.stopAndAccumulate(1337.toULong())
         assertEquals(1, metric.testGetNumRecordedErrors(ErrorType.INVALID_STATE))
@@ -221,13 +245,16 @@ class TimingDistributionMetricTypeTest {
 
     @Test
     fun `measure function correctly measures values`() {
-        val metric = TimingDistributionMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.PING,
-            name = "timing_distribution_samples",
-            sendInPings = listOf("store1"),
-        ), timeUnit = TimeUnit.NANOSECOND)
+        val metric = TimingDistributionMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.PING,
+                name = "timing_distribution_samples",
+                sendInPings = listOf("store1"),
+            ),
+            timeUnit = TimeUnit.NANOSECOND
+        )
 
         // Create a test function to "measure". This works by mocking the getElapsedNanos return
         // value setting it to return a known value to make it easier to validate.
@@ -252,22 +279,25 @@ class TimingDistributionMetricTypeTest {
         // Check the sum
         assertTrue(snapshot.sum > 0L)
         // Check that the 1L fell into the first bucket (max 1)
-        //assertEquals(1L, snapshot.values[1])
+        // assertEquals(1L, snapshot.values[1])
         // Check that the 2L fell into the second bucket (max 2)
-        //assertEquals(1L, snapshot.values[2])
+        // assertEquals(1L, snapshot.values[2])
         // Check that the 3L fell into the third bucket (max 3)
-        //assertEquals(1L, snapshot.values[3])
+        // assertEquals(1L, snapshot.values[3])
     }
 
     @Test
     fun `measure function does not change behavior with early return`() {
-        val metric = TimingDistributionMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.PING,
-            name = "inlined",
-            sendInPings = listOf("store1"),
-        ), timeUnit = TimeUnit.NANOSECOND)
+        val metric = TimingDistributionMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.PING,
+                name = "inlined",
+                sendInPings = listOf("store1"),
+            ),
+            timeUnit = TimeUnit.NANOSECOND
+        )
 
         // We define a function that measures the whole function call runtime
         fun testFunc(): Long = metric.measure {
@@ -291,13 +321,16 @@ class TimingDistributionMetricTypeTest {
 
     @Test
     fun `measure function bubbles up exceptions and timing is canceled`() {
-        val metric = TimingDistributionMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.PING,
-            name = "timing_distribution_samples",
-            sendInPings = listOf("store1"),
-        ), timeUnit = TimeUnit.SECOND)
+        val metric = TimingDistributionMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.PING,
+                name = "timing_distribution_samples",
+                sendInPings = listOf("store1"),
+            ),
+            timeUnit = TimeUnit.SECOND
+        )
 
         // Create a test function that throws a NPE
         fun testFunc() {

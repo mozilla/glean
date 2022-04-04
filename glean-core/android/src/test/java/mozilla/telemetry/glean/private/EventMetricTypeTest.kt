@@ -13,7 +13,6 @@ package mozilla.telemetry.glean.private
 import android.os.SystemClock
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import java.util.concurrent.TimeUnit
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.checkPingSchema
 import mozilla.telemetry.glean.delayMetricsPing
@@ -31,13 +30,13 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
-import org.junit.Assert.fail
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.util.concurrent.TimeUnit
 
 // Declared here, since Kotlin can not declare nested enum classes.
-enum class clickKeys: EventExtraKey {
+enum class clickKeys : EventExtraKey {
     objectId {
         override fun keyName(): String = "object_id"
     },
@@ -62,13 +61,13 @@ data class ClickExtras(val objectId: String? = null, val other: String? = null) 
     }
 }
 
-enum class testNameKeys: EventExtraKey {
+enum class testNameKeys : EventExtraKey {
     testName {
         override fun keyName(): String = "test_name"
     };
 }
 
-enum class SomeExtraKeys: EventExtraKey {
+enum class SomeExtraKeys : EventExtraKey {
     someExtra {
         override fun keyName(): String = "some_extra"
     };
@@ -85,13 +84,16 @@ class EventMetricTypeTest {
     @Test
     fun `The API records to its storage engine`() {
         // Define a 'click' event, which will be stored in "store1"
-        val click = EventMetricType<NoExtraKeys, ClickExtras>(CommonMetricData(
-            disabled = false,
-            category = "ui",
-            lifetime = Lifetime.PING,
-            name = "click",
-            sendInPings = listOf("store1"),
-        ), allowedExtraKeys = listOf("object_id", "other"))
+        val click = EventMetricType<NoExtraKeys, ClickExtras>(
+            CommonMetricData(
+                disabled = false,
+                category = "ui",
+                lifetime = Lifetime.PING,
+                name = "click",
+                sendInPings = listOf("store1"),
+            ),
+            allowedExtraKeys = listOf("object_id", "other")
+        )
 
         // Record two events of the same type, with a little delay.
         click.record(ClickExtras(objectId = "buttonA", other = "foo"))
@@ -116,21 +118,26 @@ class EventMetricTypeTest {
         assertEquals("click", secondEvent.name)
         assertEquals("bar", secondEvent.extra?.get("other"))
 
-        assertTrue("The sequence of the events must be preserved" +
-            ", first: ${firstEvent.timestamp}, second: ${secondEvent.timestamp}",
-            firstEvent.timestamp <= secondEvent.timestamp)
+        assertTrue(
+            "The sequence of the events must be preserved" +
+                ", first: ${firstEvent.timestamp}, second: ${secondEvent.timestamp}",
+            firstEvent.timestamp <= secondEvent.timestamp
+        )
     }
 
     @Test
     fun `The API records to its storage engine when category is empty`() {
         // Define a 'click' event, which will be stored in "store1"
-        val click = EventMetricType<clickKeys, NoExtras>(CommonMetricData(
-            disabled = false,
-            category = "",
-            lifetime = Lifetime.PING,
-            name = "click",
-            sendInPings = listOf("store1"),
-        ), allowedExtraKeys = listOf("object_id"))
+        val click = EventMetricType<clickKeys, NoExtras>(
+            CommonMetricData(
+                disabled = false,
+                category = "",
+                lifetime = Lifetime.PING,
+                name = "click",
+                sendInPings = listOf("store1"),
+            ),
+            allowedExtraKeys = listOf("object_id")
+        )
 
         // Record two events of the same type, with a little delay.
         click.record(extra = mapOf(clickKeys.objectId to "buttonA"))
@@ -151,53 +158,66 @@ class EventMetricTypeTest {
         val secondEvent = snapshot.single { e -> e.extra?.get("object_id") == "buttonB" }
         assertEquals("click", secondEvent.name)
 
-        assertTrue("The sequence of the events must be preserved" +
-            ", first: ${firstEvent.timestamp}, second: ${secondEvent.timestamp}",
-            firstEvent.timestamp <= secondEvent.timestamp)
+        assertTrue(
+            "The sequence of the events must be preserved" +
+                ", first: ${firstEvent.timestamp}, second: ${secondEvent.timestamp}",
+            firstEvent.timestamp <= secondEvent.timestamp
+        )
     }
 
     @Test
     fun `disabled events must not record data`() {
         // Define a 'click' event, which will be stored in "store1". It's disabled
         // so it should not record anything.
-        val click = EventMetricType<NoExtraKeys, NoExtras>(CommonMetricData(
-            disabled = true,
-            category = "ui",
-            lifetime = Lifetime.PING,
-            name = "click",
-            sendInPings = listOf("store1")
-        ), allowedExtraKeys = emptyList())
+        val click = EventMetricType<NoExtraKeys, NoExtras>(
+            CommonMetricData(
+                disabled = true,
+                category = "ui",
+                lifetime = Lifetime.PING,
+                name = "click",
+                sendInPings = listOf("store1")
+            ),
+            allowedExtraKeys = emptyList()
+        )
 
         // Attempt to store the event.
         click.record()
 
         // Check that nothing was recorded.
-        assertFalse("Events must not be recorded if they are disabled",
-            click.testHasValue())
+        assertFalse(
+            "Events must not be recorded if they are disabled",
+            click.testHasValue()
+        )
     }
 
     @Test
     fun `testGetValue() throws NullPointerException if nothing is stored`() {
-        val testEvent = EventMetricType<NoExtraKeys, NoExtras>(CommonMetricData(
-            disabled = false,
-            category = "ui",
-            lifetime = Lifetime.PING,
-            name = "testEvent",
-            sendInPings = listOf("store1")
-        ), allowedExtraKeys = emptyList())
+        val testEvent = EventMetricType<NoExtraKeys, NoExtras>(
+            CommonMetricData(
+                disabled = false,
+                category = "ui",
+                lifetime = Lifetime.PING,
+                name = "testEvent",
+                sendInPings = listOf("store1")
+            ),
+            allowedExtraKeys = emptyList()
+        )
         assertNull(testEvent.testGetValue())
     }
 
     @Test
     fun `The API records to secondary pings`() {
         // Define a 'click' event, which will be stored in "store1" and "store2"
-        val click = EventMetricType<clickKeys, NoExtras>(CommonMetricData(
-            disabled = false,
-            category = "ui",
-            lifetime = Lifetime.PING,
-            name = "click",
-            sendInPings = listOf("store1", "store2"),
-        ), allowedExtraKeys = listOf("object_id"))
+        val click = EventMetricType<clickKeys, NoExtras>(
+            CommonMetricData(
+                disabled = false,
+                category = "ui",
+                lifetime = Lifetime.PING,
+                name = "click",
+                sendInPings = listOf("store1", "store2"),
+            ),
+            allowedExtraKeys = listOf("object_id")
+        )
 
         // Record two events of the same type, with a little delay.
         click.record(extra = mapOf(clickKeys.objectId to "buttonA"))
@@ -220,20 +240,25 @@ class EventMetricTypeTest {
         assertEquals("ui", secondEvent.category)
         assertEquals("click", secondEvent.name)
 
-        assertTrue("The sequence of the events must be preserved" +
-            ", first: ${firstEvent.timestamp}, second: ${secondEvent.timestamp}",
-            firstEvent.timestamp <= secondEvent.timestamp)
+        assertTrue(
+            "The sequence of the events must be preserved" +
+                ", first: ${firstEvent.timestamp}, second: ${secondEvent.timestamp}",
+            firstEvent.timestamp <= secondEvent.timestamp
+        )
     }
 
     @Test
     fun `events should not record when upload is disabled`() {
-        val eventMetric = EventMetricType<testNameKeys, NoExtras>(CommonMetricData(
-            disabled = false,
-            category = "ui",
-            lifetime = Lifetime.PING,
-            name = "event_metric",
-            sendInPings = listOf("store1"),
-        ), allowedExtraKeys = listOf("test_name"))
+        val eventMetric = EventMetricType<testNameKeys, NoExtras>(
+            CommonMetricData(
+                disabled = false,
+                category = "ui",
+                lifetime = Lifetime.PING,
+                name = "event_metric",
+                sendInPings = listOf("store1"),
+            ),
+            allowedExtraKeys = listOf("test_name")
+        )
         Glean.setUploadEnabled(true)
         eventMetric.record(mapOf(testNameKeys.testName to "event1"))
         val snapshot1 = eventMetric.testGetValue()!!
@@ -261,13 +286,16 @@ class EventMetricTypeTest {
             clearStores = true
         )
 
-        val event = EventMetricType<SomeExtraKeys, NoExtras>(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            name = "test_event",
-            lifetime = Lifetime.PING,
-            sendInPings = listOf("events"),
-        ), allowedExtraKeys = listOf("some_extra"))
+        val event = EventMetricType<SomeExtraKeys, NoExtras>(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                name = "test_event",
+                lifetime = Lifetime.PING,
+                sendInPings = listOf("events"),
+            ),
+            allowedExtraKeys = listOf("some_extra")
+        )
 
         event.record(extra = mapOf(SomeExtraKeys.someExtra to "bar"))
         assertEquals(1, event.testGetValue()!!.size)
@@ -320,13 +348,16 @@ class EventMetricTypeTest {
             clearStores = true
         )
 
-        val event = EventMetricType<SomeExtraKeys, NoExtras>(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            name = "test_event",
-            lifetime = Lifetime.PING,
-            sendInPings = listOf("events"),
-        ), allowedExtraKeys = listOf("some_extra"))
+        val event = EventMetricType<SomeExtraKeys, NoExtras>(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                name = "test_event",
+                lifetime = Lifetime.PING,
+                sendInPings = listOf("events"),
+            ),
+            allowedExtraKeys = listOf("some_extra")
+        )
 
         // Record an event in the current run.
         event.record(extra = mapOf(SomeExtraKeys.someExtra to "run1"))
@@ -359,17 +390,17 @@ class EventMetricTypeTest {
 
         // This event comes from disk from the prior "run"
         assertEquals(
-            "Ping payload: ${pingJson}",
+            "Ping payload: $pingJson",
             "startup",
             pingJson.getJSONObject("ping_info").getString("reason")
         )
         assertEquals(
-            "Ping payload: ${pingJson}",
+            "Ping payload: $pingJson",
             1,
             pingJson.getJSONArray("events").length()
         )
         assertEquals(
-            "Ping payload: ${pingJson}",
+            "Ping payload: $pingJson",
             "run1",
             pingJson.getJSONArray("events").getJSONObject(0).getJSONObject("extra").getString("some_extra")
         )
@@ -385,7 +416,7 @@ class EventMetricTypeTest {
 
         // This event comes from the pre-initialization event
         assertEquals(
-            "Ping payload: ${pingJson}",
+            "Ping payload: $pingJson",
             "inactive",
             pingJson.getJSONObject("ping_info").getString("reason")
         )
@@ -406,13 +437,16 @@ class EventMetricTypeTest {
     @Test
     fun `Long extra values record an error`() {
         // Define a 'click' event, which will be stored in "store1"
-        val click = EventMetricType<clickKeys, NoExtras>(CommonMetricData(
-            disabled = false,
-            category = "ui",
-            lifetime = Lifetime.PING,
-            name = "click",
-            sendInPings = listOf("store1"),
-        ), allowedExtraKeys = listOf("object_id", "other"))
+        val click = EventMetricType<clickKeys, NoExtras>(
+            CommonMetricData(
+                disabled = false,
+                category = "ui",
+                lifetime = Lifetime.PING,
+                name = "click",
+                sendInPings = listOf("store1"),
+            ),
+            allowedExtraKeys = listOf("object_id", "other")
+        )
 
         val longString = "0123456789".repeat(11)
 
@@ -436,13 +470,16 @@ class EventMetricTypeTest {
         )
 
         val pingName = "another-ping"
-        val event = EventMetricType<SomeExtraKeys, NoExtras>(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            name = "test_event",
-            lifetime = Lifetime.PING,
-            sendInPings = listOf(pingName),
-        ), allowedExtraKeys = listOf("some_extra"))
+        val event = EventMetricType<SomeExtraKeys, NoExtras>(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                name = "test_event",
+                lifetime = Lifetime.PING,
+                sendInPings = listOf(pingName),
+            ),
+            allowedExtraKeys = listOf("some_extra")
+        )
 
         // Let's record a single event. This will be queued up but not be sent.
         event.record(extra = mapOf(SomeExtraKeys.someExtra to "alternative"))
@@ -457,7 +494,8 @@ class EventMetricTypeTest {
             name = pingName,
             includeClientId = true,
             sendIfEmpty = false,
-            reasonCodes = listOf())
+            reasonCodes = listOf()
+        )
 
         // Reset Glean
         resetGlean(
@@ -510,13 +548,16 @@ class EventMetricTypeTest {
         )
 
         val pingName = "another-ping-2"
-        val event = EventMetricType<SomeExtraKeys, NoExtras>(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            name = "test_event",
-            lifetime = Lifetime.PING,
-            sendInPings = listOf(pingName, "events"), // also send in builtin ping
-        ), allowedExtraKeys = listOf("some_extra"))
+        val event = EventMetricType<SomeExtraKeys, NoExtras>(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                name = "test_event",
+                lifetime = Lifetime.PING,
+                sendInPings = listOf(pingName, "events"), // also send in builtin ping
+            ),
+            allowedExtraKeys = listOf("some_extra")
+        )
 
         // Let's record a single event. This will be queued up but not be sent.
         event.record(extra = mapOf(SomeExtraKeys.someExtra to "alternative"))
@@ -540,7 +581,8 @@ class EventMetricTypeTest {
             name = pingName,
             includeClientId = true,
             sendIfEmpty = false,
-            reasonCodes = listOf())
+            reasonCodes = listOf()
+        )
 
         // Trigger worker task to upload the pings in the background.
         // Because this also triggers the builtin "events" ping

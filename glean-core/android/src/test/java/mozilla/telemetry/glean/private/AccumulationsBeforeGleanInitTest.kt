@@ -42,13 +42,15 @@ class AccumulationsBeforeGleanInitTest {
 
     @Test
     fun `LabeledMetricTypes must allow accumulation before Glean inits`() {
-        val counterMetric = CounterMetricType(CommonMetricData(
-            disabled = false,
-            category = "test.telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "pre_init_counter",
-            sendInPings = listOf("metrics")
-        ))
+        val counterMetric = CounterMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "test.telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "pre_init_counter",
+                sendInPings = listOf("metrics")
+            )
+        )
 
         val labeledCounterMetric = LabeledMetricType(
             disabled = false,

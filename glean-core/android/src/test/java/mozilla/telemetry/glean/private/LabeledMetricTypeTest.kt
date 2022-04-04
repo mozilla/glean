@@ -8,18 +8,15 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import mozilla.telemetry.glean.Glean
-import mozilla.telemetry.glean.GleanBuildInfo
-import mozilla.telemetry.glean.GleanMetrics.Pings
+import mozilla.telemetry.glean.resetGlean
 import mozilla.telemetry.glean.testing.ErrorType
 import mozilla.telemetry.glean.testing.GleanTestRule
-import org.junit.Test
-import org.junit.Ignore
-import org.junit.runner.RunWith
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Rule
-import mozilla.telemetry.glean.resetGlean
+import org.junit.Test
+import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class LabeledMetricTypeTest {
@@ -31,13 +28,15 @@ class LabeledMetricTypeTest {
 
     @Test
     fun `test labeled counter type`() {
-        val counterMetric = CounterMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "labeled_counter_metric",
-            sendInPings = listOf("metrics")
-        ))
+        val counterMetric = CounterMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "labeled_counter_metric",
+                sendInPings = listOf("metrics")
+            )
+        )
 
         val labeledCounterMetric = LabeledMetricType<CounterMetricType>(
             disabled = false,
@@ -68,13 +67,15 @@ class LabeledMetricTypeTest {
 
     @Test
     fun `test __other__ label with predefined labels`() {
-        val counterMetric = CounterMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "labeled_counter_metric",
-            sendInPings = listOf("metrics")
-        ))
+        val counterMetric = CounterMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "labeled_counter_metric",
+                sendInPings = listOf("metrics")
+            )
+        )
 
         val labeledCounterMetric = LabeledMetricType<CounterMetricType>(
             disabled = false,
@@ -100,16 +101,17 @@ class LabeledMetricTypeTest {
         assertEquals(3, labeledCounterMetric["not_there"].testGetValue())
     }
 
-
     @Test
     fun `test __other__ label without predefined labels`() {
-        val counterMetric = CounterMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "labeled_counter_metric",
-            sendInPings = listOf("metrics")
-        ))
+        val counterMetric = CounterMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "labeled_counter_metric",
+                sendInPings = listOf("metrics")
+            )
+        )
 
         val labeledCounterMetric = LabeledMetricType<CounterMetricType>(
             disabled = false,
@@ -135,13 +137,15 @@ class LabeledMetricTypeTest {
 
     @Test
     fun `test __other__ label without predefined labels before Glean initialization`() {
-        val counterMetric = CounterMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "labeled_counter_metric",
-            sendInPings = listOf("metrics")
-        ))
+        val counterMetric = CounterMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "labeled_counter_metric",
+                sendInPings = listOf("metrics")
+            )
+        )
 
         val labeledCounterMetric = LabeledMetricType<CounterMetricType>(
             disabled = false,
@@ -173,13 +177,15 @@ class LabeledMetricTypeTest {
 
     @Test
     fun `Ensure invalid labels on labeled counter go to __other__`() {
-        val counterMetric = CounterMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "labeled_counter_metric",
-            sendInPings = listOf("metrics")
-        ))
+        val counterMetric = CounterMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "labeled_counter_metric",
+                sendInPings = listOf("metrics")
+            )
+        )
 
         val labeledCounterMetric = LabeledMetricType<CounterMetricType>(
             disabled = false,
@@ -209,13 +215,15 @@ class LabeledMetricTypeTest {
 
     @Test
     fun `Ensure invalid labels on labeled boolean go to __other__`() {
-        val booleanMetric = BooleanMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "labeled_boolean_metric",
-            sendInPings = listOf("metrics")
-        ))
+        val booleanMetric = BooleanMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "labeled_boolean_metric",
+                sendInPings = listOf("metrics")
+            )
+        )
 
         val labeledBooleanMetric = LabeledMetricType<BooleanMetricType>(
             disabled = false,
@@ -245,13 +253,15 @@ class LabeledMetricTypeTest {
 
     @Test
     fun `Ensure invalid labels on labeled string go to __other__`() {
-        val stringMetric = StringMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "labeled_string_metric",
-            sendInPings = listOf("metrics")
-        ))
+        val stringMetric = StringMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "labeled_string_metric",
+                sendInPings = listOf("metrics")
+            )
+        )
 
         val labeledStringMetric = LabeledMetricType<StringMetricType>(
             disabled = false,
@@ -281,13 +291,15 @@ class LabeledMetricTypeTest {
 
     @Test
     fun `Test labeled string metric type`() {
-        val stringMetric = StringMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "labeled_string_metric",
-            sendInPings = listOf("metrics")
-        ))
+        val stringMetric = StringMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "labeled_string_metric",
+                sendInPings = listOf("metrics")
+            )
+        )
 
         val labeledStringMetric = LabeledMetricType<StringMetricType>(
             disabled = false,
@@ -307,13 +319,15 @@ class LabeledMetricTypeTest {
 
     @Test
     fun `Test labeled boolean metric type`() {
-        val booleanMetric = BooleanMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "labeled_string_list_metric",
-            sendInPings = listOf("metrics")
-        ))
+        val booleanMetric = BooleanMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "labeled_string_list_metric",
+                sendInPings = listOf("metrics")
+            )
+        )
 
         val labeledBooleanMetric = LabeledMetricType<BooleanMetricType>(
             disabled = false,
@@ -333,13 +347,16 @@ class LabeledMetricTypeTest {
 
     @Test(expected = IllegalStateException::class)
     fun `Test that labeled events are an exception`() {
-        val eventMetric = EventMetricType<NoExtraKeys, NoExtras>(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "labeled_event_metric",
-            sendInPings = listOf("metrics")
-        ), allowedExtraKeys = emptyList())
+        val eventMetric = EventMetricType<NoExtraKeys, NoExtras>(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "labeled_event_metric",
+                sendInPings = listOf("metrics")
+            ),
+            allowedExtraKeys = emptyList()
+        )
 
         val labeledEventMetric = LabeledMetricType<EventMetricType<NoExtraKeys, NoExtras>>(
             disabled = false,
@@ -358,13 +375,15 @@ class LabeledMetricTypeTest {
 
     @Test
     fun `test recording to static labels by label index`() {
-        val counterMetric = CounterMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "labeled_counter_metric",
-            sendInPings = listOf("metrics")
-        ))
+        val counterMetric = CounterMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "labeled_counter_metric",
+                sendInPings = listOf("metrics")
+            )
+        )
 
         val labeledCounterMetric = LabeledMetricType(
             disabled = false,
@@ -392,20 +411,21 @@ class LabeledMetricTypeTest {
         assertEquals(100, labeledCounterMetric["__other__"].testGetValue())
     }
 
-
     @Test
     fun `rapidly re-creating labeled metrics does not crash`() {
         // Regression test for bug 1733757.
         // The new implementation is different now,
         // but it still does the caching, so this is now a stress test of that implementation.
 
-        val counterMetric = CounterMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "labeled_nocrash_counter",
-            sendInPings = listOf("metrics")
-        ))
+        val counterMetric = CounterMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "labeled_nocrash_counter",
+                sendInPings = listOf("metrics")
+            )
+        )
 
         val labeledCounterMetric = LabeledMetricType(
             disabled = false,

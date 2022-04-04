@@ -11,8 +11,8 @@ import mozilla.telemetry.glean.testing.ErrorType
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -29,13 +29,16 @@ class MemoryDistributionMetricTypeTest {
     @Test
     fun `The API saves to its storage engine`() {
         // Define a memory distribution metric which will be stored in "store1"
-        val metric = MemoryDistributionMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.PING,
-            name = "memory_distribution",
-            sendInPings = listOf("store1"),
-        ), memoryUnit = MemoryUnit.KILOBYTE)
+        val metric = MemoryDistributionMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.PING,
+                name = "memory_distribution",
+                sendInPings = listOf("store1"),
+            ),
+            memoryUnit = MemoryUnit.KILOBYTE
+        )
 
         // Accumulate a few values
         for (i in 1L..3L) {
@@ -60,13 +63,16 @@ class MemoryDistributionMetricTypeTest {
     @Test
     fun `values are truncated to 1TB`() {
         // Define a memory distribution metric which will be stored in "store1"
-        val metric = MemoryDistributionMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.PING,
-            name = "memory_distribution",
-            sendInPings = listOf("store1"),
-        ), memoryUnit = MemoryUnit.GIGABYTE)
+        val metric = MemoryDistributionMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.PING,
+                name = "memory_distribution",
+                sendInPings = listOf("store1"),
+            ),
+            memoryUnit = MemoryUnit.GIGABYTE
+        )
 
         metric.accumulate(2048L)
 
@@ -85,44 +91,55 @@ class MemoryDistributionMetricTypeTest {
     fun `disabled memory distributions must not record data`() {
         // Define a memory distribution metric which will be stored in "store1"
         // It's lifetime is set to Lifetime.PING SO IT SHOULD NOT RECORD ANYTHING.
-        val metric = MemoryDistributionMetricType(CommonMetricData(
-            disabled = true,
-            category = "telemetry",
-            lifetime = Lifetime.PING,
-            name = "memory_distribution",
-            sendInPings = listOf("store1"),
-        ), memoryUnit = MemoryUnit.KILOBYTE)
+        val metric = MemoryDistributionMetricType(
+            CommonMetricData(
+                disabled = true,
+                category = "telemetry",
+                lifetime = Lifetime.PING,
+                name = "memory_distribution",
+                sendInPings = listOf("store1"),
+            ),
+            memoryUnit = MemoryUnit.KILOBYTE
+        )
 
         metric.accumulate(1L)
 
         // Check that nothing was recorded.
-        assertFalse("MemoryDistributions without a lifetime should not record data.",
-            metric.testHasValue())
+        assertFalse(
+            "MemoryDistributions without a lifetime should not record data.",
+            metric.testHasValue()
+        )
     }
 
     @Test
     fun `testGetValue() throws NullPointerException if nothing is stored`() {
         // Define a memory distribution metric which will be stored in "store1"
-        val metric = MemoryDistributionMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.PING,
-            name = "memory_distribution",
-            sendInPings = listOf("store1"),
-        ), memoryUnit = MemoryUnit.KILOBYTE)
+        val metric = MemoryDistributionMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.PING,
+                name = "memory_distribution",
+                sendInPings = listOf("store1"),
+            ),
+            memoryUnit = MemoryUnit.KILOBYTE
+        )
         assertNull(metric.testGetValue())
     }
 
     @Test
     fun `The API saves to secondary pings`() {
         // Define a memory distribution metric which will be stored in multiple stores
-        val metric = MemoryDistributionMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.PING,
-            name = "memory_distribution",
-            sendInPings = listOf("store1", "store2", "store3"),
-        ), memoryUnit = MemoryUnit.KILOBYTE)
+        val metric = MemoryDistributionMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.PING,
+                name = "memory_distribution",
+                sendInPings = listOf("store1", "store2", "store3"),
+            ),
+            memoryUnit = MemoryUnit.KILOBYTE
+        )
 
         // Accumulate a few values
         for (i in 1L..3L) {
@@ -157,13 +174,16 @@ class MemoryDistributionMetricTypeTest {
     @Test
     fun `The accumulateSamples API correctly stores memory values`() {
         // Define a memory distribution metric which will be stored in multiple stores
-        val metric = MemoryDistributionMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.PING,
-            name = "memory_distribution_samples",
-            sendInPings = listOf("store1"),
-        ), memoryUnit = MemoryUnit.KILOBYTE)
+        val metric = MemoryDistributionMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.PING,
+                name = "memory_distribution_samples",
+                sendInPings = listOf("store1"),
+            ),
+            memoryUnit = MemoryUnit.KILOBYTE
+        )
 
         // Accumulate a few values
         val testSamples = (1L..3L).toList()

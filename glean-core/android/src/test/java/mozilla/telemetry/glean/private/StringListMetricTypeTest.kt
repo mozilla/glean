@@ -12,13 +12,12 @@ package mozilla.telemetry.glean.private
 
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import java.lang.NullPointerException
 import mozilla.telemetry.glean.testing.ErrorType
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -32,13 +31,15 @@ class StringListMetricTypeTest {
     @Test
     fun `The API saves to its storage engine by first adding then setting`() {
         // Define a 'stringListMetric' string list metric, which will be stored in "store1"
-        val stringListMetric = StringListMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "string_list_metric",
-            sendInPings = listOf("store1")
-        ))
+        val stringListMetric = StringListMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "string_list_metric",
+                sendInPings = listOf("store1")
+            )
+        )
 
         // Record two lists using add and set
         stringListMetric.add("value1")
@@ -67,13 +68,15 @@ class StringListMetricTypeTest {
     @Test
     fun `The API saves to its storage engine by first setting then adding`() {
         // Define a 'stringListMetric' string list metric, which will be stored in "store1"
-        val stringListMetric = StringListMetricType(CommonMetricData(
+        val stringListMetric = StringListMetricType(
+            CommonMetricData(
                 disabled = false,
                 category = "telemetry",
                 lifetime = Lifetime.APPLICATION,
                 name = "string_list_metric",
                 sendInPings = listOf("store1")
-        ))
+            )
+        )
 
         // Record two lists using set and add
         stringListMetric.set(listOf("value1", "value2", "value3"))
@@ -102,49 +105,59 @@ class StringListMetricTypeTest {
     fun `disabled lists must not record data`() {
         // Define a string list metric which will be stored in "store1".
         // It's disabled so it should not record anything.
-        val stringListMetric = StringListMetricType(CommonMetricData(
-            disabled = true,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "string_list_metric",
-            sendInPings = listOf("store1")
-        ))
+        val stringListMetric = StringListMetricType(
+            CommonMetricData(
+                disabled = true,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "string_list_metric",
+                sendInPings = listOf("store1")
+            )
+        )
 
         // Attempt to store the string list using set.
         stringListMetric.set(listOf("value1", "value2", "value3"))
         // Check that nothing was recorded.
-        assertFalse("StringLists must not be recorded if they are disabled",
-            stringListMetric.testHasValue())
+        assertFalse(
+            "StringLists must not be recorded if they are disabled",
+            stringListMetric.testHasValue()
+        )
 
         // Attempt to store the string list using add.
         stringListMetric.add("value4")
         // Check that nothing was recorded.
-        assertFalse("StringLists must not be recorded if they are disabled",
-            stringListMetric.testHasValue())
+        assertFalse(
+            "StringLists must not be recorded if they are disabled",
+            stringListMetric.testHasValue()
+        )
     }
 
     @Test
     fun `testGetValue() throws NullPointerException if nothing is stored`() {
-        val stringListMetric = StringListMetricType(CommonMetricData(
-            disabled = true,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "string_list_metric",
-            sendInPings = listOf("store1")
-        ))
+        val stringListMetric = StringListMetricType(
+            CommonMetricData(
+                disabled = true,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "string_list_metric",
+                sendInPings = listOf("store1")
+            )
+        )
         assertNull(stringListMetric.testGetValue())
     }
 
     @Test
     fun `The API saves to secondary pings`() {
         // Define a 'stringListMetric' string list metric, which will be stored in "store1" and "store2"
-        val stringListMetric = StringListMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "string_list_metric",
-            sendInPings = listOf("store1", "store2")
-        ))
+        val stringListMetric = StringListMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "string_list_metric",
+                sendInPings = listOf("store1", "store2")
+            )
+        )
 
         // Record two lists using add and set
         stringListMetric.add("value1")
@@ -173,13 +186,15 @@ class StringListMetricTypeTest {
     @Test
     fun `Long string lists are truncated`() {
         // Define a 'stringListMetric' string list metric, which will be stored in "store1"
-        val stringListMetric = StringListMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "string_list_metric",
-            sendInPings = listOf("store1")
-        ))
+        val stringListMetric = StringListMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "string_list_metric",
+                sendInPings = listOf("store1")
+            )
+        )
 
         for (x in 0..20) {
             stringListMetric.add("value$x")
