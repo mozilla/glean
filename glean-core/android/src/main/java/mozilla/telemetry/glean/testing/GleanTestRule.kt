@@ -58,6 +58,7 @@ class GleanTestRule(
         // Set the current system time to a known datetime.
         val fakeNow = Calendar.getInstance()
         fakeNow.clear()
+        @Suppress("MagicNumber") // it's a fixed date only used in tests.
         fakeNow.set(2015, 6, 11, 2, 0, 0)
         SystemClock.setCurrentTimeMillis(fakeNow.timeInMillis)
 

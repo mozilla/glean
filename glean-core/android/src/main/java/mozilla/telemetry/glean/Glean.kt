@@ -92,15 +92,6 @@ open class GleanInternalAPI internal constructor() {
 
     private lateinit var gleanDataDir: File
 
-    // Keep track of this value before Glean is initialized
-    private var debugViewTag: String? = null
-
-    // Keep track of this value before Glean is initialized
-    private var logPings: Boolean = false
-
-    // Keep track of source tags if set before Glean is initialized.
-    private var sourceTags: Set<String>? = null
-
     // Are we in testing mode?
     internal var testingMode: Boolean = false
 

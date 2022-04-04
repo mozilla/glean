@@ -2,6 +2,13 @@ style:
   # We want to allow "TODO" in comments
   ForbiddenComment:
     active: false
+  # Allow for generated code
+  WildcardImport:
+    excludeImports:
+      - mozilla.telemetry.glean.internal.*
+  # Multiple returns are ok
+  ReturnCount:
+    active: false
 build:
   maxIssues: 0
 
