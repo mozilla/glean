@@ -5,7 +5,6 @@
 package mozilla.telemetry.glean.private
 
 import androidx.annotation.VisibleForTesting
-import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.internal.PingType as GleanPingType
 
 /**

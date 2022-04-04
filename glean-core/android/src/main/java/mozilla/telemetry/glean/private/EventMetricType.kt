@@ -29,7 +29,7 @@ enum class NoExtraKeys(
      * @suppress
      */
     val value: Int
-): EventExtraKey {
+) : EventExtraKey {
     // deliberately empty
 }
 
@@ -68,12 +68,12 @@ class NoExtras : EventExtras {
  * data and making sure that limits are enforced.
  */
 class EventMetricType<ExtraKeysEnum, ExtraObject> internal constructor(
-    private var inner: EventMetric,
-) where ExtraKeysEnum: Enum<ExtraKeysEnum>, ExtraKeysEnum: EventExtraKey, ExtraObject: EventExtras {
+    private var inner: EventMetric
+) where ExtraKeysEnum : Enum<ExtraKeysEnum>, ExtraKeysEnum : EventExtraKey, ExtraObject : EventExtras {
     /**
-    * The public constructor used by automatically generated metrics.
-    */
-    constructor(meta: CommonMetricData, allowedExtraKeys: List<String>): this(inner = EventMetric(meta, allowedExtraKeys))
+     * The public constructor used by automatically generated metrics.
+     */
+    constructor(meta: CommonMetricData, allowedExtraKeys: List<String>) : this(inner = EventMetric(meta, allowedExtraKeys))
 
     /**
      * Record an event by using the information provided by the instance of this class.

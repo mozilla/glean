@@ -5,16 +5,15 @@
 package mozilla.telemetry.glean.net
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import mozilla.telemetry.glean.utils.argumentCaptor
 import mozilla.telemetry.glean.config.Configuration
 import mozilla.telemetry.glean.getPlainBody
+import mozilla.telemetry.glean.utils.argumentCaptor
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
-
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.doReturn
@@ -100,8 +99,8 @@ class HttpURLConnectionUploaderTest {
         doReturn(connection).`when`(client).openConnection(anyString())
 
         assertEquals(
-                client.upload(testPath, testPing.toByteArray(Charsets.UTF_8), emptyMap()),
-                HttpStatus(200)
+            client.upload(testPath, testPing.toByteArray(Charsets.UTF_8), emptyMap()),
+            HttpStatus(200)
         )
         verify<HttpURLConnection>(connection, times(1)).disconnect()
     }

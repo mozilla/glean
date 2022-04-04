@@ -15,20 +15,20 @@ import androidx.work.testing.WorkManagerTestInitHelper
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
-import org.json.JSONObject
-import org.mockito.Mockito
 import mozilla.telemetry.glean.config.Configuration
-import mozilla.telemetry.glean.scheduler.PingUploadWorker
 import mozilla.telemetry.glean.private.TimeUnit
+import mozilla.telemetry.glean.scheduler.MetricsPingScheduler
+import mozilla.telemetry.glean.scheduler.PingUploadWorker
 import mozilla.telemetry.glean.utils.decompressGZIP
 import mozilla.telemetry.glean.utils.getISOTimeString
-import mozilla.telemetry.glean.scheduler.MetricsPingScheduler
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
+import org.json.JSONObject
 import org.junit.Assert
 import org.mockito.ArgumentCaptor
+import org.mockito.Mockito
 import org.robolectric.shadows.ShadowLog
 import java.io.ByteArrayInputStream
 import java.util.Calendar
@@ -204,8 +204,10 @@ internal fun triggerWorkManager(context: Context) {
     // Check that the work is scheduled
     val workerTag = PingUploadWorker.PING_WORKER_TAG
     val status = getWorkerStatus(context, workerTag)
-    Assert.assertTrue("A scheduled $workerTag must exist",
-        status.isEnqueued)
+    Assert.assertTrue(
+        "A scheduled $workerTag must exist",
+        status.isEnqueued
+    )
 
     // Trigger WorkManager using TestDriver
     val workManagerTestInitHelper = WorkManagerTestInitHelper.getTestDriver(context)
@@ -218,11 +220,13 @@ internal fun triggerWorkManager(context: Context) {
  */
 internal fun getMockWebServer(): MockWebServer {
     val server = MockWebServer()
-    server.dispatcher = (object : Dispatcher() {
-        override fun dispatch(request: RecordedRequest): MockResponse {
-            return MockResponse().setBody("OK")
+    server.dispatcher = (
+        object : Dispatcher() {
+            override fun dispatch(request: RecordedRequest): MockResponse {
+                return MockResponse().setBody("OK")
+            }
         }
-    })
+        )
     return server
 }
 
@@ -314,8 +318,7 @@ fun waitForPingContent(
     pingReason: String?,
     server: MockWebServer,
     maxAttempts: Int = 3
-): JSONObject?
-{
+): JSONObject? {
     var parsedPayload: JSONObject? = null
     @Suppress("LoopWithTooManyJumpStatements")
     for (ignored in 1..maxAttempts) {

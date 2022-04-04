@@ -16,8 +16,8 @@ import mozilla.telemetry.glean.testing.ErrorType
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -31,13 +31,15 @@ class QuantityMetricTypeTest {
     @Test
     fun `The API saves to its storage engine`() {
         // Define a 'quantityMetric' quantity metric, which will be stored in "store1"
-        val quantityMetric = QuantityMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "quantity_metric",
-            sendInPings = listOf("store1")
-        ))
+        val quantityMetric = QuantityMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "quantity_metric",
+                sendInPings = listOf("store1")
+            )
+        )
 
         assertFalse(quantityMetric.testHasValue())
 
@@ -60,62 +62,74 @@ class QuantityMetricTypeTest {
     fun `quantities with no lifetime must not record data`() {
         // Define a 'quantityMetric' quantity metric, which will be stored in "store1".
         // It's disabled so it should not record anything.
-        val quantityMetric = QuantityMetricType(CommonMetricData(
-            disabled = true,
-            category = "telemetry",
-            lifetime = Lifetime.PING,
-            name = "quantity_metric",
-            sendInPings = listOf("store1")
-        ))
+        val quantityMetric = QuantityMetricType(
+            CommonMetricData(
+                disabled = true,
+                category = "telemetry",
+                lifetime = Lifetime.PING,
+                name = "quantity_metric",
+                sendInPings = listOf("store1")
+            )
+        )
 
         // Attempt to increment the quantity
         quantityMetric.set(1L)
         // Check that nothing was recorded.
-        assertFalse("Quantities must not be recorded if they are disabled",
-            quantityMetric.testHasValue())
+        assertFalse(
+            "Quantities must not be recorded if they are disabled",
+            quantityMetric.testHasValue()
+        )
     }
 
     @Test
     fun `disabled quantities must not record data`() {
         // Define a 'quantityMetric' quantity metric, which will be stored in "store1".  It's disabled
         // so it should not record anything.
-        val quantityMetric = QuantityMetricType(CommonMetricData(
-            disabled = true,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "quantity_metric",
-            sendInPings = listOf("store1")
-        ))
+        val quantityMetric = QuantityMetricType(
+            CommonMetricData(
+                disabled = true,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "quantity_metric",
+                sendInPings = listOf("store1")
+            )
+        )
 
         // Attempt to store the quantity.
         quantityMetric.set(1L)
         // Check that nothing was recorded.
-        assertFalse("Quantities must not be recorded if they are disabled",
-            quantityMetric.testHasValue())
+        assertFalse(
+            "Quantities must not be recorded if they are disabled",
+            quantityMetric.testHasValue()
+        )
     }
 
     @Test
     fun `testGetValue() throws NullPointerException if nothing is stored`() {
-        val quantityMetric = QuantityMetricType(CommonMetricData(
-            disabled = true,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "quantity_metric",
-            sendInPings = listOf("store1")
-        ))
+        val quantityMetric = QuantityMetricType(
+            CommonMetricData(
+                disabled = true,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "quantity_metric",
+                sendInPings = listOf("store1")
+            )
+        )
         assertNull(quantityMetric.testGetValue())
     }
 
     @Test
     fun `The API saves to secondary pings`() {
         // Define a 'quantityMetric' quantity metric, which will be stored in "store1" and "store2"
-        val quantityMetric = QuantityMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "quantity_metric",
-            sendInPings = listOf("store1", "store2")
-        ))
+        val quantityMetric = QuantityMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "quantity_metric",
+                sendInPings = listOf("store1", "store2")
+            )
+        )
 
         quantityMetric.set(1L)
 
@@ -130,13 +144,15 @@ class QuantityMetricTypeTest {
     @Test
     fun `negative values are not recorded`() {
         // Define a 'quantityMetric' quantity metric, which will be stored in "store1"
-        val quantityMetric = QuantityMetricType(CommonMetricData(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "quantity_metric",
-            sendInPings = listOf("store1")
-        ))
+        val quantityMetric = QuantityMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "quantity_metric",
+                sendInPings = listOf("store1")
+            )
+        )
 
         quantityMetric.set(-10L)
         // Check that quantity was NOT recorded
