@@ -4,7 +4,6 @@
 
 package mozilla.telemetry.glean.private
 
-import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import mozilla.telemetry.glean.Glean
@@ -20,9 +19,6 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class LabeledMetricTypeTest {
-    private val context: Context
-        get() = ApplicationProvider.getApplicationContext()
-
     @get:Rule
     val gleanRule = GleanTestRule(ApplicationProvider.getApplicationContext())
 

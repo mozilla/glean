@@ -73,7 +73,8 @@ class EventMetricType<ExtraKeysEnum, ExtraObject> internal constructor(
     /**
      * The public constructor used by automatically generated metrics.
      */
-    constructor(meta: CommonMetricData, allowedExtraKeys: List<String>) : this(inner = EventMetric(meta, allowedExtraKeys))
+    constructor(meta: CommonMetricData, allowedExtraKeys: List<String>) :
+        this(inner = EventMetric(meta, allowedExtraKeys))
 
     /**
      * Record an event by using the information provided by the instance of this class.
