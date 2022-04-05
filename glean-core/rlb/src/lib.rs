@@ -177,11 +177,7 @@ pub fn set_experiment_active(
     branch: String,
     extra: Option<HashMap<String, String>>,
 ) {
-    glean_core::glean_set_experiment_active(
-        experiment_id,
-        branch,
-        extra.unwrap_or_default(),
-    )
+    glean_core::glean_set_experiment_active(experiment_id, branch, extra.unwrap_or_default())
 }
 
 /// Indicate that an experiment is no longer running.
