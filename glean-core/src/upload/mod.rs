@@ -659,10 +659,7 @@ impl PingUploadManager {
         use UploadResult::*;
 
         if let Some(label) = status.get_label() {
-            let metric = self
-                .upload_metrics
-                .ping_upload_failure
-                .get(label);
+            let metric = self.upload_metrics.ping_upload_failure.get(label);
             metric.add_sync(glean, 1);
         }
 
